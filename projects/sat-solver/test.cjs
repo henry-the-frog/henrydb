@@ -8,6 +8,7 @@ const path = require('path');
 const tests = [
   'src/solver.test.cjs',
   'src/smt.test.cjs',
+  'src/simplex.test.cjs',
 ];
 
 let totalPassed = 0, totalFailed = 0;
