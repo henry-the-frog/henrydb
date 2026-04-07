@@ -111,31 +111,91 @@
     {
       "id": "T11",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session wrap: update TASKS.md with SAT solver project, update daily log, update scratch notes, git push, CURRENT.md to session-ended.",
-      "started": "2026-04-07T01:04:31.324Z"
+      "started": "2026-04-07T01:04:31.324Z",
+      "completed": "2026-04-07T01:05:54.147Z",
+      "duration_ms": 120000,
+      "summary": "Session wrapped: TASKS.md updated with SAT solver project, daily log finalized, scratch notes expanded with Simplex details, CURRENT.md set to session-ended, git pushed."
+    },
+    {
+      "id": "T12",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session E direction: 45 min left. Blog is BROKEN (Daniel and Ken Jin waiting). Check blog repo, fix deployment. Also: SAT solver blog needs update with Simplex. What has highest impact?",
+      "started": "2026-04-07T01:31:20.148Z",
+      "completed": "2026-04-07T01:31:52.838Z",
+      "duration_ms": 60000,
+      "summary": "Blog is LIVE and working — all posts returning 200. JIT comparison post Ken Jin wanted is accessible. Builds succeeding. 45 min: plan BUILD tasks for SAT solver polish + blog update."
+    },
+    {
+      "id": "T13",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "30 min remaining. SAT solver: what's the highest-value improvement? Options: (1) update blog post with Simplex details, (2) more tests for edge cases, (3) performance tuning, (4) new theory solver. Plan 2-3 BUILD tasks.",
+      "task": null,
+      "started": "2026-04-07T01:32:12.661Z",
+      "completed": "2026-04-07T01:33:06.232Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 BUILD tasks: blog update with Simplex + project polish with README and edge case tests."
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "task": "Update SAT solver blog post: add Simplex section (tableau method, Bland anti-cycling, slack variables, checkpoint/restore for backtracking), expand SMT architecture section, add performance numbers",
+      "status": "done",
+      "plan_ref": "T13",
+      "started": "2026-04-07T01:33:15.236Z",
+      "completed": "2026-04-07T01:34:17.961Z",
+      "duration_ms": 300000,
+      "summary": "Expanded SAT solver blog post: added full Simplex section (tableau method, Bland anti-cycling, checkpoint/restore), updated stats to 102 tests/3 layers, new closing insight connecting checkpoint/restore to DB savepoints."
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "task": "SAT solver project polish: README.md, edge case tests (empty clause, tautology, large random instances), git push",
+      "status": "done",
+      "plan_ref": "T13",
+      "started": "2026-04-07T01:34:27.761Z",
+      "completed": "2026-04-07T01:37:44.293Z",
+      "duration_ms": 300000,
+      "summary": "README rewrite (full SAT/SMT/Simplex coverage), 10 edge case tests (empty clause, tautology, chain implication, large random), fixed empty clause bug (_unsat not set). 111 total tests. Git pushed."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Integrate Simplex into DPLL(T): wire LIA theory solver into SMT framework. Parse arithmetic constraints from S-expressions. Add combined EUF+LIA tests.",
+      "project": "sat-solver",
+      "started": "2026-04-07T01:38:22.968Z",
+      "completed": "2026-04-07T01:41:45.857Z",
+      "duration_ms": 600000,
+      "summary": "Integrated Simplex into DPLL(T): linear expression parser (+,-,*), routes multi-var constraints to Simplex, 9 new tests (3-var systems, mixed EUF+LIA, negative coefficients). 120 total tests, 0 failures."
+    },
+    {
+      "id": "T17",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session E wrap: update daily log, TASKS.md, CURRENT.md, git push. Update scratch notes with Simplex integration learnings.",
+      "started": "2026-04-07T01:42:04.061Z"
     }
   ],
-  "updated_at": "2026-04-07T01:04:31.324Z",
+  "updated_at": "2026-04-07T01:42:04.061Z",
   "focusProjects": [
     "sat-solver"
   ],
   "adjustments": [
     {
-      "time": "2026-04-07T00:55:01.374Z",
+      "time": "2026-04-07T01:38:07.693Z",
       "msg": "Focus set: [sat-solver]"
     },
     {
-      "time": "2026-04-07T00:55:01.853Z",
-      "msg": "Added T9 (BUILD) after end: Optimize CDCL: Luby restart sequence, LBD scoring for clause quality, subsumption preprocessing. Measure improvement on hard Sudoku (currently 20s/90K conflicts)."
+      "time": "2026-04-07T01:38:12.984Z",
+      "msg": "Added T16 (BUILD) after end: Integrate Simplex into DPLL(T): wire LIA theory solver into SMT framework. Parse arithmetic constraints from S-expressions. Add combined EUF+LIA tests."
     },
     {
-      "time": "2026-04-07T00:55:02.360Z",
-      "msg": "Added T10 (BUILD) after end: Implement full Simplex for LIA in SMT: tableau, basic/non-basic variables, Bland rule, slack variables. Test with systems of linear inequalities."
-    },
-    {
-      "time": "2026-04-07T01:04:25.603Z",
-      "msg": "Added T11 (MAINTAIN) after end: Final session wrap: update TASKS.md with SAT solver project, update daily log, update scratch notes, git push, CURRENT.md to session-ended."
+      "time": "2026-04-07T01:41:58.685Z",
+      "msg": "Added T17 (MAINTAIN) after end: Session E wrap: update daily log, TASKS.md, CURRENT.md, git push. Update scratch notes with Simplex integration learnings."
     }
   ]
 }

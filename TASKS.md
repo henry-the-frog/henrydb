@@ -79,6 +79,8 @@
   - 5 problem encoders: pigeonhole, N-Queens, graph coloring, Sudoku, random 3-SAT
   - Interactive CLI, DIMACS parser
   - **102 tests | Blog post updated**
+  - **Simplex integrated into DPLL(T)** — linear expression parser, multi-variable constraints
+  - **120 tests | Blog post updated with Simplex section**
 
 ## Today (2026-04-03) — Prolog Completion + Logic Programming + Boids
 ### Session A (Morning)
