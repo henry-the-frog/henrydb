@@ -11,6 +11,7 @@ import { BufferPool } from './buffer-pool.js';
 import { FileWAL, recoverFromFileWAL } from './file-wal.js';
 import { FileBackedHeap } from './file-backed-heap.js';
 import { MVCCManager, MVCCHeap, MVCCTransaction } from './mvcc.js';
+import { SSIManager } from './ssi.js';
 import { HeapFile } from './page.js';
 import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -32,7 +33,7 @@ import { join } from 'node:path';
  *   s1.commit();
  */
 export class TransactionalDatabase {
-  static open(dirPath, { poolSize = 64, recover = true } = {}) {
+  static open(dirPath, { poolSize = 64, recover = true, isolationLevel = 'snapshot' } = {}) {
     if (!existsSync(dirPath)) {
       mkdirSync(dirPath, { recursive: true });
     }
@@ -42,7 +43,7 @@ export class TransactionalDatabase {
     const mvccStatePath = join(dirPath, 'mvcc-state.json');
 
     const wal = new FileWAL(walPath);
-    const mvcc = new MVCCManager();
+    const mvcc = isolationLevel === 'serializable' ? new SSIManager() : new MVCCManager();
     const diskManagers = new Map();
     const heaps = new Map();       // tableName → FileBackedHeap
     const versionMaps = new Map(); // tableName → Map<"pageId:slotIdx" → {xmin,xmax}>
@@ -112,6 +113,7 @@ export class TransactionalDatabase {
     this._mvccStatePath = join(dirPath, 'mvcc-state.json');
     this._createSqls = new Map();
     this._poolSize = poolSize;
+    this._isolationLevel = mvcc instanceof SSIManager ? 'serializable' : 'snapshot';
     this._sessions = new Map();
     this._nextSessionId = 1;
     
@@ -347,6 +349,10 @@ export class TransactionalDatabase {
           const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
           
           if (created && !deleted) {
+            // SSI tracking: record the read for serializable isolation
+            if (tdb._mvcc.recordRead) {
+              tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, ver.xmin);
+            }
             yield row;
           }
         }
@@ -382,6 +388,10 @@ export class TransactionalDatabase {
             const oldXmax = ver.xmax;
             ver.xmax = tx.txId;
             tx.writeSet.add(`${name}:${key}:del`);
+            // SSI tracking: record the write for serializable isolation
+            if (tdb._mvcc.recordWrite) {
+              tdb._mvcc.recordWrite(tx.txId, `${name}:${key}`);
+            }
             tx.undoLog.push(() => { ver.xmax = oldXmax; });
           }
         }
@@ -410,6 +420,10 @@ export class TransactionalDatabase {
           // New row — created by this transaction
           vm.set(key, { xmin: tx.txId, xmax: 0 });
           tx.writeSet.add(`${tableName}:${key}`);
+          // SSI tracking
+          if (this._mvcc.recordWrite) {
+            this._mvcc.recordWrite(tx.txId, `${tableName}:${key}`);
+          }
         }
       }
     }
