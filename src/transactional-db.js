@@ -270,15 +270,26 @@ export class TransactionalDatabase {
       const dead = [];
       for (const [key, ver] of vm) {
         if (ver.xmax === 0) continue;
+        // Only reclaim rows deleted by committed transactions
+        // that are below the xmin horizon (no active snapshot can see them)
         if (ver.xmax < horizon && (this._mvcc.committedTxns.has(ver.xmax) || ver.xmax === -1)) {
           dead.push(key);
         }
       }
       for (const key of dead) {
         const [pageId, slotIdx] = key.split(':').map(Number);
-        const heap = this._heaps.get(name);
-        if (heap) {
-          try { heap.delete(pageId, slotIdx); } catch (e) { /* ignore */ }
+        const tableObj = this._db.tables.get(name);
+        if (!tableObj) continue;
+        const heap = tableObj.heap;
+        // Use original physical delete (bypass MVCC interceptor)
+        const origDelete = heap._origDelete;
+        if (origDelete) {
+          // Temporarily disable WAL on heap (VACUUM doesn't need to log deletes)
+          const fileHeap = this._heaps.get(name);
+          const savedWal = fileHeap?._wal;
+          if (fileHeap) fileHeap._wal = null;
+          try { origDelete(pageId, slotIdx); } catch (e) { /* already deleted */ }
+          if (fileHeap) fileHeap._wal = savedWal;
         }
         vm.delete(key);
         removed++;
