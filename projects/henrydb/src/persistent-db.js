@@ -109,10 +109,32 @@ export class PersistentDatabase {
    * Execute a SQL statement. Returns the same result as Database.execute().
    */
   execute(sql) {
+    const trimmed = sql.trim().toUpperCase();
+    const isDML = trimmed.startsWith('INSERT') || trimmed.startsWith('UPDATE') || 
+                  trimmed.startsWith('DELETE') || trimmed.startsWith('REPLACE');
+    
+    // For DML: wrap in WAL transaction for crash recovery
+    let txId;
+    if (isDML && this._wal) {
+      txId = this._wal.allocateTxId();
+      this._wal.beginTransaction(txId);
+      // Set txId on all heaps so WAL records have correct transaction
+      for (const heap of this._heaps.values()) {
+        heap._currentTxId = txId;
+      }
+    }
+    
     const result = this._db.execute(sql);
     
+    // Commit the WAL transaction
+    if (isDML && this._wal && txId !== undefined) {
+      this._wal.appendCommit(txId);
+      for (const heap of this._heaps.values()) {
+        heap._currentTxId = 0;
+      }
+    }
+    
     // Track CREATE TABLE and ANALYZE statements
-    const trimmed = sql.trim().toUpperCase();
     if (trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')) {
       const match = sql.match(/CREATE\s+(?:TABLE|INDEX)\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i);
       if (match) {
