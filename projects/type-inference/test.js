@@ -519,6 +519,104 @@ test('S combinator type', () => {
 });
 
 // ═══════════════════════════════════════════
+// More Polymorphism Tests
+// ═══════════════════════════════════════════
+console.log('── More Polymorphism ──');
+
+test('polymorphic pair swap', () => {
+  const t = typeOf('\\p -> (snd p, fst p)');
+  eq(t.includes('->'), true);
+});
+
+test('apply to pair elements', () => {
+  eq(typeOf('let p = (1, 2) in fst p + snd p'), 'Int');
+});
+
+test('list of pairs', () => {
+  eq(typeOf('[(1, true), (2, false)]'), '[(Int, Bool)]');
+});
+
+test('nested let polymorphism', () => {
+  eq(typeOf('let id = \\x -> x in let f = id in f 42'), 'Int');
+});
+
+test('twice function', () => {
+  // twice f x = f (f x)
+  const t = typeOf('\\f -> \\x -> f (f x)');
+  // Should be (a -> a) -> a -> a
+  const parts = t.split(' -> ');
+  eq(parts.length >= 3, true);
+});
+
+test('flip function', () => {
+  // flip f x y = f y x
+  const t = typeOf('\\f -> \\x -> \\y -> f y x');
+  eq(t.includes('->'), true);
+});
+
+test('recursive length', () => {
+  eq(typeOf('let rec len = \\xs -> if null xs then 0 else 1 + len (tail xs) in len [1, 2, 3]'), 'Int');
+});
+
+test('recursive append', () => {
+  const t = typeOf('let rec append = \\xs -> \\ys -> if null xs then ys else cons (head xs) (append (tail xs) ys) in append');
+  eq(t.includes('['), true);
+  eq(t.includes('->'), true);
+});
+
+test('nested list', () => {
+  eq(typeOf('[[1, 2], [3, 4]]'), '[[Int]]');
+});
+
+test('comparison chain', () => {
+  // x < y constrains x and y to same type, if returns x or y
+  const t = typeOf('\\x -> \\y -> if x < y then x else y');
+  // Most general type: a -> a -> a (comparison only requires equal types)
+  const parts = t.split(' -> ');
+  eq(parts.length, 3);
+  eq(parts[0], parts[1]);
+  eq(parts[1], parts[2]);
+});
+
+test('boolean logic', () => {
+  eq(typeOf('\\x -> if x then not x else x'), 'Bool -> Bool');
+});
+
+test('complex composition', () => {
+  eq(typeOf('let compose = \\f -> \\g -> \\x -> f (g x) in let inc = \\x -> x + 1 in let double = \\x -> x * 2 in compose inc double 5'), 'Int');
+});
+
+test('pair constructor function', () => {
+  const t = typeOf('\\x -> \\y -> (x, y)');
+  eq(t.includes('->'), true);
+  eq(t.includes(','), true);
+});
+
+test('list of functions', () => {
+  // This should type-check: all elements have type Int -> Int
+  eq(typeOf('[\\x -> x + 1, \\x -> x * 2, \\x -> x - 1]'), '[Int -> Int]');
+});
+
+test('higher-order with list', () => {
+  eq(typeOf('let rec map = \\f -> \\xs -> if null xs then [] else cons (f (head xs)) (map f (tail xs)) in map (\\x -> x * x) [1, 2, 3]'), '[Int]');
+});
+
+test('multiple type errors caught', () => {
+  throws(() => typeOf('let x = 1 in let y = true in x + y'));
+});
+
+test('error: string + int', () => {
+  throws(() => typeOf('"hello" + 1'));
+});
+
+test('deeply nested lambda', () => {
+  const t = typeOf('\\a -> \\b -> \\c -> \\d -> a');
+  const parts = t.split(' -> ');
+  eq(parts.length, 5);
+  eq(parts[0], parts[4]);
+});
+
+// ═══════════════════════════════════════════
 
 console.log(`\n══════════════════════════════`);
 console.log(`  ${passed}/${total} passed, ${failed} failed`);
