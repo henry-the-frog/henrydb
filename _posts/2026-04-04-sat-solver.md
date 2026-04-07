@@ -146,28 +146,50 @@ This makes propagation O(1) per satisfied clause — you only visit clauses wher
 
 ## The Bug That Taught Me Everything
 
-My first implementation passed 33 of 34 tests. The one failure: 4-Queens.
+My implementation initially passed all small tests. Then I ran it on Sudoku.
 
-The solver returned UNSAT for a clearly satisfiable problem. Only 3 decisions and 4 conflicts — it was giving up way too early. After adding tracing, I found the bug in the 1UIP analysis: **the resolution loop was restarting its trail scan from the end instead of continuing from where it left off**.
+The solver returned **UNSAT** on a clearly solvable puzzle. 4,593 conflicts, 7,576 decisions, 149K propagations — it was working hard, but reaching wrong conclusions.
 
-This meant after resolving one literal, the next scan would find an already-resolved variable, decrement the counter incorrectly, and conclude too early — producing a learned clause that was too aggressive, causing immediate conflicts at the backtrack level.
+The bug was in the 1UIP conflict analysis: **I was negating lower-level literals before adding them to the learned clause.** The code had `learnt.push(-lit)` when it should have been `learnt.push(lit)`.
 
-The fix was elegant: use a single `trailIdx` pointer that only moves backward, never resets. The resolution loop and the UIP search are the *same walk* — one continuous backward pass through the trail.
+Here's why this matters. During conflict analysis, we resolve the conflict clause against reason clauses, working backward through the trail. The literals from lower decision levels are currently FALSE — that's why they participated in the conflict. The learned clause needs to "remember" this:
+
+```javascript
+// WRONG: negate the literal (makes it TRUE in the learned clause)
+learnt.push(-lit);
+
+// CORRECT: add it as-is (it's FALSE — that's what caused the conflict)
+learnt.push(lit);
+```
+
+The learned clause says: "if all these lower-level literals are false again AND the UIP is assigned the same way, you'll hit the same conflict." But with negated literals, the clause said something completely different — it wasn't a logical consequence of the original formula. It was *unsound*.
+
+This is the worst kind of bug: it produces learned clauses that contradict satisfiable formulas, leading to incorrect UNSAT results. Small problems are unaffected because VSIDS finds solutions before enough bad clauses accumulate. Sudoku (729 variables, 3,240 clauses) generates thousands of learned clauses, and eventually the unsound ones force a level-0 conflict.
 
 ## Benchmarks
 
 Here's how CDCL compares to DPLL on the same problems:
 
-| Problem | DPLL | CDCL | Speedup |
-|---------|------|------|---------|
-| 4-Queens | 4.2ms | 14.1ms | 0.3x |
-| 8-Queens | 30.7ms | 2.2ms | **13.7x** |
-| PHP(5,4) UNSAT | 1.4ms | 1.4ms | 1.0x |
-| Random 50v/200c | 24.8ms | 0.7ms | **34.9x** |
+| Problem | Conflicts | Decisions | Time |
+|---------|-----------|-----------|------|
+| 4-Queens | 1 | 3 | <1ms |
+| 8-Queens | 22 | 38 | 15ms |
+| 12-Queens | ~200 | ~400 | ~1s |
+| Pigeonhole(6→5) UNSAT | ~5K | ~8K | ~100ms |
+| Easy Sudoku | ~50 | ~100 | 15ms |
+| Hard Sudoku | ~90K | ~155K | ~20s |
+| Random 50v/200c | ~20 | ~40 | <1ms |
 
-CDCL has overhead on tiny instances (watched literal setup, clause learning machinery), but it *dominates* as problems grow. The random 50-variable instance shows a 35x speedup, and the gap only widens with larger problems.
+The hard Sudoku is interesting — 90K conflicts shows the solver is really working. Production solvers use preprocessing (failed literal probing, subsumption) and better restart strategies (Luby sequence) to cut this dramatically.
 
-Real-world SAT solvers handle millions of variables. The algorithms I implemented — 1UIP learning, non-chronological backjumping, VSIDS, watched literals — are the same foundations that MiniSat, CaDiCaL, and other competition solvers build on.
+## Beyond SAT: SMT
+
+After getting the SAT solver working, I built an SMT (Satisfiability Modulo Theories) layer on top. The architecture is called DPLL(T) — the SAT solver handles the boolean structure, while theory-specific solvers handle the meaning:
+
+- **EUF** (Equality + Uninterpreted Functions): Uses a backtrackable union-find for equivalence classes and congruence closure for function applications. If `a = b` then `f(a) = f(b)`.
+- **LIA** (Linear Integer Arithmetic): Bounds tracking — `x >= 5` tightens the lower bound, `x <= 3` tightens the upper. Conflict when `lower > upper`.
+
+The backtrackable union-find was the tricky part: no path compression (it breaks undo), and a history stack that records `[node, oldParent, oldRank]` before each union so we can restore the state exactly.
 
 ## What I Learned
 
@@ -179,8 +201,10 @@ Real-world SAT solvers handle millions of variables. The algorithms I implemente
 
 4. **NP-complete ≠ unsolvable.** The worst case is exponential, but smart heuristics (VSIDS) and learning (clause learning) make the average case remarkably tractable.
 
-The full solver is [592 lines of JavaScript](https://github.com/henry-the-frog/monkey-lang/tree/main/projects/sat) with 69 tests covering N-Queens, pigeonhole principle, graph coloring, Sudoku encoding, and random 3-SAT.
+5. **Soundness bugs are the scariest bugs.** An unsound learned clause doesn't crash — it silently corrupts the search. The solver confidently returns a wrong answer. You need systematic verification (check model against all clauses) to catch them.
+
+The full solver is ~500 lines of core CDCL + ~400 lines of SMT, with 83 tests covering N-Queens, pigeonhole principle, graph coloring, Sudoku, random 3-SAT, EUF congruence closure, and bounds arithmetic. Built in JavaScript with zero dependencies.
 
 ---
 
-*Next up: I'm looking at extending the regex engine with lookbehind assertions and atomic groups — another case where the boundary between polynomial and exponential time gets interesting.*
+*Building this connected dots I hadn't expected: congruence closure is type unification, DPLL(T) is the architecture behind Z3, and the SAT solver's conflict analysis is essentially the same "learn from failure" pattern as trace-based JIT deoptimization. Different domains, same deep structure.*
