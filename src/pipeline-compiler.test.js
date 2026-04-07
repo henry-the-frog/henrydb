@@ -5,7 +5,7 @@ import { strict as assert } from 'node:assert';
 import { Database } from './db.js';
 import { SeqScan, Filter, Project, Limit, Sort, HashJoin, HashAggregate } from './volcano.js';
 import { identifyPipelines, compilePipeline, compileQueryPlan, CompiledIterator,
-         compilePredicate, compileProjection } from './pipeline-compiler.js';
+         compilePredicate, compileProjection, compilePipelineJIT, JITCompiledIterator } from './pipeline-compiler.js';
 
 let db;
 
@@ -267,5 +267,130 @@ describe('Pipeline Compilation Performance', () => {
     for (let i = 0; i < compiledResults.length; i++) {
       assert.deepEqual(compiledResults[i], volcanoResults[i], `Row ${i} mismatch`);
     }
+  });
+});
+
+// ===== JIT-COMPILED PIPELINE =====
+
+describe('JIT-Compiled Pipeline (Function constructor)', () => {
+  beforeEach(setup);
+  afterEach(teardown);
+
+  it('JIT scan+filter produces correct results', () => {
+    const heap = db.tables.get('employees').heap;
+    const scan = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+    const filter = new Filter(scan, (row) => row.salary > 90000);
+    
+    const jit = compilePipelineJIT([filter, scan]);
+    assert.ok(jit, 'Should JIT-compile');
+    assert.ok(jit.generatedCode, 'Should have generated code');
+    
+    const results = jit.execute();
+    assert.ok(results.length > 0);
+    for (const r of results) {
+      assert.ok(r.salary > 90000, `salary ${r.salary} should be > 90000`);
+    }
+  });
+
+  it('JIT scan+filter+project produces correct results', () => {
+    const heap = db.tables.get('employees').heap;
+    const scan = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+    const filter = new Filter(scan, (row) => row.dept === 'Engineering');
+    const project = new Project(filter, [{name:'name',expr:r=>r.name},{name:'salary',expr:r=>r.salary}]);
+    
+    const jit = compilePipelineJIT([project, filter, scan]);
+    const results = jit.execute();
+    
+    assert.equal(results.length, 250, '250 Engineering employees');
+    for (const r of results) {
+      assert.ok(r.name);
+      assert.ok(r.salary);
+      assert.equal(r.dept, undefined, 'dept should be projected out');
+    }
+  });
+
+  it('JIT with LIMIT', () => {
+    const heap = db.tables.get('employees').heap;
+    const scan = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+    const filter = new Filter(scan, (row) => row.salary > 60000);
+    const limit = new Limit(filter, 10);
+    
+    const jit = compilePipelineJIT([limit, filter, scan]);
+    const results = jit.execute();
+    
+    assert.equal(results.length, 10);
+  });
+
+  it('JIT matches Volcano results exactly', () => {
+    const heap = db.tables.get('employees').heap;
+    
+    // Volcano
+    const vs = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+    const vf = new Filter(vs, (row) => row.salary > 70000 && row.dept === 'Sales');
+    const vp = new Project(vf, [{name:'id',expr:r=>r.id},{name:'salary',expr:r=>r.salary}]);
+    const volcanoResults = vp.toArray();
+    
+    // JIT
+    const js = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+    const jf = new Filter(js, (row) => row.salary > 70000 && row.dept === 'Sales');
+    const jp = new Project(jf, [{name:'id',expr:r=>r.id},{name:'salary',expr:r=>r.salary}]);
+    const jit = compilePipelineJIT([jp, jf, js]);
+    const jitResults = jit.execute();
+    
+    assert.equal(jitResults.length, volcanoResults.length);
+    for (let i = 0; i < jitResults.length; i++) {
+      assert.deepEqual(jitResults[i], volcanoResults[i]);
+    }
+  });
+
+  it('JIT performance benchmark: scan+filter on 1000 rows', () => {
+    const heap = db.tables.get('employees').heap;
+    const iterations = 20;
+    
+    // Volcano
+    let volcanoTime = 0;
+    let volcanoCount = 0;
+    for (let i = 0; i < iterations; i++) {
+      const scan = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+      const filter = new Filter(scan, (row) => row.salary > 70000);
+      const start = process.hrtime.bigint();
+      const results = filter.toArray();
+      volcanoTime += Number(process.hrtime.bigint() - start);
+      volcanoCount = results.length;
+    }
+    
+    // JIT
+    let jitTime = 0;
+    let jitCount = 0;
+    for (let i = 0; i < iterations; i++) {
+      const scan = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+      const filter = new Filter(scan, (row) => row.salary > 70000);
+      const jit = compilePipelineJIT([filter, scan]);
+      const start = process.hrtime.bigint();
+      const results = jit.execute();
+      jitTime += Number(process.hrtime.bigint() - start);
+      jitCount = results.length;
+    }
+    
+    assert.equal(jitCount, volcanoCount);
+    
+    const volcanoAvg = volcanoTime / iterations / 1e6;
+    const jitAvg = jitTime / iterations / 1e6;
+    const speedup = volcanoAvg / jitAvg;
+    console.log(`    Volcano: ${volcanoAvg.toFixed(2)}ms, JIT: ${jitAvg.toFixed(2)}ms, Speedup: ${speedup.toFixed(2)}x`);
+  });
+
+  it('generated code is readable', () => {
+    const heap = db.tables.get('employees').heap;
+    const scan = new SeqScan(heap, ['id','name','dept','salary'], 'employees');
+    const filter = new Filter(scan, (row) => row.salary > 60000);
+    const project = new Project(filter, [{name:'name',expr:r=>r.name}]);
+    const limit = new Limit(project, 5);
+    
+    const jit = compilePipelineJIT([limit, project, filter, scan]);
+    assert.ok(jit.generatedCode.includes('maxRows'));
+    assert.ok(jit.generatedCode.includes('filters'));
+    assert.ok(jit.generatedCode.includes('projExprs'));
+    console.log('    Generated code:\n' + jit.generatedCode.split('\n').map(l => '      ' + l).join('\n'));
   });
 });
