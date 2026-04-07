@@ -106,14 +106,21 @@
   - Variables, constants, recursion (recurse), return stack, comments
   - Complex programs: FizzBuzz, factorial, fibonacci, GCD, Pythagorean
   - **73 tests | Blog post | README**
+- [ ] **Huffman Coding** → projects/huffman (NEW)
+  - Pure JS, zero deps, Huffman compression
+  - Min-heap priority queue, frequency analysis, tree construction
+  - Prefix-free code generation, encode/decode, tree serialization
+  - English text: 55.8% compression, skewed: 12.5%
+  - **36 tests | README**
 
 ## Today (2026-04-06) — Regex Engine + Type Inference + Forth
 ### Session C (Evening)
 - [x] Regex Engine: parser, Thompson's NFA, DFA, Hopcroft minimization, capturing groups — 110 tests
 - [x] Type Inference: Hindley-Milner Algorithm W, unification, let-polymorphism — 119 tests
 - [x] Forth Interpreter: stack machine, compilation mode, 50+ builtins, control flow — 73 tests
+- [x] Huffman Coding: min-heap, prefix-free codes, encode/decode, tree serialization — 36 tests
 - [x] 3 blog posts published
-- [x] Total new tests: 302 (110 + 119 + 73)
+- [x] Total new tests: 338 (110 + 119 + 73 + 36)
 
 ## Today (2026-04-03) — Prolog Completion + Logic Programming + Boids
 ### Session A (Morning)
