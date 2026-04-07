@@ -142,19 +142,27 @@ export class TransactionalDatabase {
     // DML: wrap in auto-commit transaction
     const tx = this._mvcc.begin();
     this._activeTx = tx;
+    this._setHeapTxId(tx.txId);
     try {
       const result = this._db.execute(sql);
       // Track new rows from INSERT
       this._trackNewRows(tx);
+      // Write WAL delete records BEFORE commit (so recovery replays them)
+      this._walLogDeletes(tx);
       this._mvcc.commit(tx.txId);
-      this._wal.flush();
+      this._wal.appendCommit(tx.txId);
+      // Physicalize committed deletes (physical heap cleanup, no additional WAL)
+      this._physicalizeDeletesNoWal(tx);
       this._activeTx = null;
+      this._setHeapTxId(0);
       return result;
     } catch (e) {
       // Rollback: undo any heap modifications
       this._rollbackNewRows(tx);
       try { this._mvcc.rollback(tx.txId); } catch (e2) { /* ignore */ }
+      this._wal.appendAbort(tx.txId);
       this._activeTx = null;
+      this._setHeapTxId(0);
       throw e;
     }
   }
@@ -182,6 +190,76 @@ export class TransactionalDatabase {
     this.flush();
     this._wal.close();
     for (const dm of this._diskManagers.values()) dm.close();
+  }
+
+  _setHeapTxId(txId) {
+    for (const heap of this._heaps.values()) {
+      heap._currentTxId = txId;
+    }
+  }
+
+  /**
+   * Write WAL DELETE records for all rows marked for deletion in this transaction.
+   * Must be called BEFORE the COMMIT WAL record so recovery can replay them.
+   */
+  _walLogDeletes(tx) {
+    for (const key of tx.writeSet) {
+      if (!key.endsWith(':del')) continue;
+      const parts = key.replace(/:del$/, '').split(':');
+      const tableName = parts[0];
+      const pageId = parseInt(parts[1]);
+      const slotIdx = parseInt(parts[2]);
+      if (isNaN(pageId) || isNaN(slotIdx)) continue;
+
+      // Read the current data for the before-image
+      const heap = this._heaps.get(tableName);
+      if (!heap) continue;
+      const values = heap.get ? heap.get(pageId, slotIdx) : null;
+      this._wal.appendDelete(tx.txId, tableName, pageId, slotIdx, values);
+    }
+  }
+
+  /**
+   * After a transaction commits, physically delete rows if safe (no other active snapshots).
+   * If other transactions are active, defer to VACUUM.
+   * WAL records have already been written by _walLogDeletes.
+   */
+  _physicalizeDeletesNoWal(tx) {
+    // Only safe to physicalize if no other active transactions could see these rows
+    const hasOtherActive = this._mvcc.activeTxns.size > 0;
+    
+    for (const key of tx.writeSet) {
+      if (!key.endsWith(':del')) continue;
+      const parts = key.replace(/:del$/, '').split(':');
+      const tableName = parts[0];
+      const pageId = parseInt(parts[1]);
+      const slotIdx = parseInt(parts[2]);
+      if (isNaN(pageId) || isNaN(slotIdx)) continue;
+
+      if (hasOtherActive) {
+        // Other transactions active — can't physically delete yet.
+        // Keep the version map entry so MVCC filtering still works.
+        // VACUUM will clean up later.
+        continue;
+      }
+
+      const tableObj = this._db.tables.get(tableName);
+      if (!tableObj) continue;
+      const heap = tableObj.heap;
+      const origDelete = heap._origDelete;
+      if (origDelete) {
+        // Temporarily disable WAL on heap to avoid double-logging
+        const fileHeap = this._heaps.get(tableName);
+        const savedWal = fileHeap?._wal;
+        if (fileHeap) fileHeap._wal = null;
+        try { origDelete(pageId, slotIdx); } catch (e) { /* already deleted */ }
+        if (fileHeap) fileHeap._wal = savedWal;
+      }
+
+      // Clean up version map
+      const vm = this._versionMaps.get(tableName);
+      if (vm) vm.delete(`${pageId}:${slotIdx}`);
+    }
   }
 
   vacuum() {
@@ -427,8 +505,12 @@ export class TransactionSession {
     if (!this._tx) throw new Error('No transaction in progress');
     // Track any new rows from this transaction
     this._tdb._trackNewRows(this._tx);
+    // Write WAL delete records before commit
+    this._tdb._walLogDeletes(this._tx);
     this._tdb._mvcc.commit(this._tx.txId);
-    this._tdb._wal.flush();
+    this._tdb._wal.appendCommit(this._tx.txId);
+    // Physicalize committed deletes (no additional WAL)
+    this._tdb._physicalizeDeletesNoWal(this._tx);
     this._tx = null;
     return { type: 'OK', message: 'COMMIT' };
   }
@@ -437,6 +519,7 @@ export class TransactionSession {
     if (!this._tx) throw new Error('No transaction in progress');
     this._tdb._rollbackNewRows(this._tx);
     this._tdb._mvcc.rollback(this._tx.txId);
+    this._tdb._wal.appendAbort(this._tx.txId);
     this._tx = null;
     return { type: 'OK', message: 'ROLLBACK' };
   }
@@ -466,6 +549,7 @@ export class TransactionSession {
       // Use explicit transaction
       const prevTx = this._tdb._activeTx;
       this._tdb._activeTx = this._tx;
+      this._tdb._setHeapTxId(this._tx.txId);
       try {
         const result = this._tdb._db.execute(sql);
         // Track new rows immediately
@@ -473,6 +557,7 @@ export class TransactionSession {
         return result;
       } finally {
         this._tdb._activeTx = prevTx;
+        this._tdb._setHeapTxId(prevTx ? prevTx.txId : 0);
       }
     }
     

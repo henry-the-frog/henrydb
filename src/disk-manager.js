@@ -52,7 +52,10 @@ export class DiskManager {
 
   /** Last WAL LSN that was fully applied to this file. */
   get lastAppliedLSN() { return this._lastAppliedLSN; }
-  set lastAppliedLSN(lsn) { this._lastAppliedLSN = lsn; }
+  set lastAppliedLSN(lsn) { 
+    this._lastAppliedLSN = lsn; 
+    this._writeHeader();
+  }
 
   /**
    * Allocate a new page. Returns the page ID.
