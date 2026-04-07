@@ -8,7 +8,6 @@ Persistent buffer for things that need doing. Feeds into the daily queue.
 Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Urgent
-- [ ] Prevent subagents from pushing to blog repo (add guard/allowlist)
 - [ ] Fix dashboard generate.cjs (got nuked in blog rebuild)
 - [ ] Write missing scratch notes: MVCC/WAL learnings, Thompson's NFA, Algorithm W, Forth compilation mode
 
@@ -17,7 +16,6 @@ Items get removed (not checked off) once they enter the queue or are completed.
 - [ ] Write more technical content for Daniel/CPython devs (Ken Jin got the JIT post!)
 - [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)
 - [ ] Dashboard archive — missing history/2026-04-06.json
-- [ ] Investigate why subagent pushed HenryDB to blog repo (root cause, not just guard)
 
 ## Low
 - [ ] Named Cloudflare tunnel for dashboard webhook (URL changes on restart)
