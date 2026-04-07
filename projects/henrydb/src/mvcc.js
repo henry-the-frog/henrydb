@@ -63,6 +63,8 @@ export class MVCCManager {
 
   // Is a given txId visible to a reader transaction?
   isVisible(versionTxId, readerTx) {
+    // txId 0 = always visible (recovered rows, auto-committed without transaction)
+    if (versionTxId === 0) return true;
     // Own writes are visible
     if (versionTxId === readerTx.txId) return true;
     // Must be committed AND in our snapshot
