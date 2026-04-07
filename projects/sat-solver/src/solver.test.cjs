@@ -715,6 +715,84 @@ test('learned clauses have LBD values', () => {
 });
 
 // ============================================================
+// Edge Cases
+// ============================================================
+
+test('empty clause → immediate UNSAT', () => {
+  const s = new Solver(2);
+  s.addClause([]);  // empty clause is always false
+  eq(s.solve(), 'UNSAT');
+});
+
+test('single variable, both polarities → UNSAT', () => {
+  const s = new Solver(1);
+  s.addClause([1]);   // x must be true
+  s.addClause([-1]);  // x must be false
+  eq(s.solve(), 'UNSAT');
+});
+
+test('tautological clause does not affect result', () => {
+  const s = new Solver(3);
+  s.addClause([1, -1]);   // tautology (always true)
+  s.addClause([2, 3]);
+  s.addClause([-2, -3]);
+  eq(s.solve(), 'SAT');
+});
+
+test('all-positive clauses are always SAT', () => {
+  const s = new Solver(5);
+  for (let i = 1; i <= 5; i++) s.addClause([i]);
+  eq(s.solve(), 'SAT');
+  const model = s.getModel();
+  for (let i = 1; i <= 5; i++) assert(model[i] === true, `var ${i} should be true`);
+});
+
+test('all-negative clauses are always SAT', () => {
+  const s = new Solver(5);
+  for (let i = 1; i <= 5; i++) s.addClause([-i]);
+  eq(s.solve(), 'SAT');
+  const model = s.getModel();
+  for (let i = 1; i <= 5; i++) assert(model[i] === false, `var ${i} should be false`);
+});
+
+test('long chain implication', () => {
+  // x1 → x2 → x3 → ... → x10, plus x1 = true and x10 = false → UNSAT
+  const s = new Solver(10);
+  s.addClause([1]);  // x1 must be true
+  for (let i = 1; i < 10; i++) s.addClause([-i, i + 1]); // xi → x(i+1)
+  s.addClause([-10]);  // x10 must be false
+  eq(s.solve(), 'UNSAT');
+});
+
+test('large random SAT at underconstrained ratio', () => {
+  // ratio 3.0 is well below phase transition (4.27) — almost always SAT
+  const problem = randomSAT(100, 300, 3);
+  const s = createSolver(problem);
+  eq(s.solve(), 'SAT');
+  // Verify model
+  const model = s.getModel();
+  for (const clause of problem.clauses) {
+    const sat = clause.some(lit => lit > 0 ? model[lit] : !model[-lit]);
+    assert(sat, 'every clause must be satisfied');
+  }
+});
+
+test('large random UNSAT at overconstrained ratio', () => {
+  // ratio 6.0 is well above phase transition — almost always UNSAT
+  const problem = randomSAT(30, 180, 3);
+  const s = createSolver(problem);
+  const result = s.solve();
+  // At 6.0 ratio, overwhelmingly UNSAT, but not guaranteed for every seed
+  assert(result === 'SAT' || result === 'UNSAT', 'should terminate');
+});
+
+test('pigeonhole(1) — 2 pigeons 1 hole', () => {
+  const p = encodePigeonhole(1);
+  const s = createSolver(p);
+  eq(s.solve(), 'UNSAT');
+});
+
+// ============================================================
 // Report
 // ============================================================
 

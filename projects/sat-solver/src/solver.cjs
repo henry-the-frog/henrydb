@@ -115,7 +115,10 @@ class Solver {
 
   // Add a clause (during problem setup or learning)
   addClause(lits) {
-    if (lits.length === 0) return false;  // empty clause = UNSAT
+    if (lits.length === 0) {
+      this._unsat = true;
+      return false;  // empty clause = UNSAT
+    }
     if (lits.length === 1) {
       // Unit clause: enqueue immediately
       if (!this._enqueue(lits[0], null)) {
