@@ -295,8 +295,13 @@ function buildFragment(node) {
       return { start: s, end: e };
     }
     case 'group': {
-      // For NFA simulation, groups are transparent (capturing handled at match level)
-      return buildFragment(node.child);
+      // Add group open/close epsilon transitions for capture tracking
+      const sOpen = newState();
+      const sClose = newState();
+      const body = buildFragment(node.child);
+      sOpen.transitions.push({ on: { type: 'groupOpen', index: node.index }, to: body.start });
+      body.end.transitions.push({ on: { type: 'groupClose', index: node.index }, to: sClose });
+      return { start: sOpen, end: sClose };
     }
     case 'rep': {
       // {min,max}: unroll to min concatenations + (max-min) optionals
@@ -368,6 +373,11 @@ function epsilonClosure(states) {
         closure.add(t.to.id);
         stack.push(t.to);
       }
+      // Group open/close markers are epsilon-like (don't consume input)
+      if (t.on && (t.on.type === 'groupOpen' || t.on.type === 'groupClose') && !closure.has(t.to.id)) {
+        closure.add(t.to.id);
+        stack.push(t.to);
+      }
     }
   }
   return result;
@@ -418,7 +428,126 @@ function nfaMatch(startState, input) {
   return current.some(s => s.accepting);
 }
 
-// ─── Subset Construction (NFA → DFA) ───
+// NFA match with anchor position context (for search in larger strings)
+function nfaMatchAnchored(startState, input, startPos, totalLen) {
+  function anchorClosureCtx(states, localPos) {
+    const pos = startPos + localPos;
+    const stack = [...states];
+    const visited = new Set(states.map(s => s.id));
+    const result = [...states];
+    while (stack.length > 0) {
+      const state = stack.pop();
+      for (const t of state.transitions) {
+        if (t.on && t.on.type === 'anchor' && !visited.has(t.to.id)) {
+          let match = false;
+          if (t.on.kind === 'start') match = pos === 0;
+          else if (t.on.kind === 'end') match = pos === totalLen;
+          if (match) {
+            visited.add(t.to.id);
+            result.push(t.to);
+            stack.push(t.to);
+          }
+        }
+      }
+    }
+    return epsilonClosure(result);
+  }
+
+  let current = epsilonClosure([startState]);
+  current = anchorClosureCtx(current, 0);
+
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    const next = [];
+    const seen = new Set();
+    for (const state of current) {
+      for (const t of state.transitions) {
+        if (matchesTransition(t.on, ch, i, input.length) && !seen.has(t.to.id)) {
+          seen.add(t.to.id);
+          next.push(t.to);
+        }
+      }
+    }
+    current = epsilonClosure(next);
+    current = anchorClosureCtx(current, i + 1);
+  }
+  return current.some(s => s.accepting);
+}
+
+// ─── NFA Match with Capture Groups ───
+// Each "thread" tracks its own capture state
+function nfaMatchCaptures(startState, input, numGroups) {
+  // Thread: { state, captures: [[start, end], ...] }
+  function makeThread(state, captures) {
+    return { state, captures: captures.map(c => c ? [...c] : null) };
+  }
+
+  function epsilonClosureCaptures(threads, pos) {
+    const stack = [...threads];
+    const visited = new Set();
+    const result = [];
+    while (stack.length > 0) {
+      const thread = stack.pop();
+      const key = thread.state.id;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      result.push(thread);
+      for (const t of thread.state.transitions) {
+        if (t.on === null && !visited.has(t.to.id)) {
+          stack.push(makeThread(t.to, thread.captures));
+        }
+        if (t.on && t.on.type === 'groupOpen' && !visited.has(t.to.id)) {
+          const caps = thread.captures.map(c => c ? [...c] : null);
+          caps[t.on.index - 1] = [pos, -1];
+          stack.push({ state: t.to, captures: caps });
+        }
+        if (t.on && t.on.type === 'groupClose' && !visited.has(t.to.id)) {
+          const caps = thread.captures.map(c => c ? [...c] : null);
+          if (caps[t.on.index - 1]) caps[t.on.index - 1][1] = pos;
+          stack.push({ state: t.to, captures: caps });
+        }
+        if (t.on && t.on.type === 'anchor' && !visited.has(t.to.id)) {
+          let match = false;
+          if (t.on.kind === 'start') match = pos === 0;
+          else if (t.on.kind === 'end') match = pos === input.length;
+          if (match) stack.push(makeThread(t.to, thread.captures));
+        }
+      }
+    }
+    return result;
+  }
+
+  const initCaptures = new Array(numGroups).fill(null);
+  let current = epsilonClosureCaptures([makeThread(startState, initCaptures)], 0);
+
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    const next = [];
+    const seen = new Set();
+    for (const thread of current) {
+      for (const t of thread.state.transitions) {
+        if (matchesTransition(t.on, ch, i, input.length) && !seen.has(t.to.id)) {
+          seen.add(t.to.id);
+          next.push(makeThread(t.to, thread.captures));
+        }
+      }
+    }
+    current = epsilonClosureCaptures(next, i + 1);
+  }
+
+  // Find accepting thread
+  for (const thread of current) {
+    if (thread.state.accepting) {
+      return thread.captures.map((c, i) => {
+        if (!c || c[1] === -1) return undefined;
+        return input.slice(c[0], c[1]);
+      });
+    }
+  }
+  return null;
+}
+
+
 function nfaToDfa(nfaStart) {
   const startClosure = epsilonClosure([nfaStart]);
   const startKey = stateSetKey(startClosure);
@@ -591,15 +720,38 @@ function findPartition(partitions, state) {
 class Regex {
   constructor(pattern) {
     this.pattern = pattern;
-    this.ast = parse(pattern);
-    this.groupCount = new Parser(pattern).groupCount;
+    const parser = new Parser(pattern);
+    this.ast = parser.parse();
+    this.groupCount = parser.groupCount;
     this._nfa = astToNfa(this.ast);
-    // Build DFA for non-anchor patterns (anchors need NFA)
     this._hasAnchors = pattern.includes('^') || pattern.includes('$');
+    this._hasStartAnchor = pattern.startsWith('^') || /(?<!\\)\^/.test(pattern);
+    this._hasEndAnchor = pattern.endsWith('$');
+    // Build DFA for non-anchor patterns (anchors need NFA)
     if (!this._hasAnchors) {
       const dfa = nfaToDfa(this._nfa);
       this._dfa = minimizeDfa(dfa);
     }
+  }
+
+  // Test substring at specific position within larger string
+  _testSubstring(sub, startPos, totalLen) {
+    // For anchored patterns, simulate NFA with position context
+    if (this._hasAnchors) {
+      return nfaMatchAnchored(this._nfa, sub, startPos, totalLen);
+    }
+    if (this._dfa) {
+      return dfaMatch(this._dfa.start, sub);
+    }
+    return nfaMatch(this._nfa, sub);
+  }
+
+  // Full match with capture groups (returns array of group matches, or null)
+  match(input) {
+    if (this.groupCount === 0) {
+      return this.test(input) ? [] : null;
+    }
+    return nfaMatchCaptures(this._nfa, input, this.groupCount);
   }
 
   // Full match (entire string must match)
@@ -612,17 +764,15 @@ class Regex {
 
   // Search: find first match in string (returns { match, index } or null)
   search(input) {
-    // For anchored patterns, use full match behavior
-    if (this._hasAnchors) {
-      if (this.test(input)) return { match: input, index: 0 };
-      return null;
-    }
     // Try each starting position
     for (let i = 0; i < input.length; i++) {
+      // For ^-anchored patterns, only try from position 0
+      if (this._hasStartAnchor && i > 0) break;
       // Try each ending position (greedy: longest first)
       for (let j = input.length; j > i; j--) {
-        if (this.test(input.slice(i, j))) {
-          return { match: input.slice(i, j), index: i };
+        const sub = input.slice(i, j);
+        if (this._testSubstring(sub, i, input.length)) {
+          return { match: sub, index: i };
         }
       }
     }
@@ -636,7 +786,7 @@ class Regex {
     while (pos < input.length) {
       let found = false;
       for (let end = input.length; end > pos; end--) {
-        if (this.test(input.slice(pos, end))) {
+        if (this._testSubstring(input.slice(pos, end), pos, input.length)) {
           results.push({ match: input.slice(pos, end), index: pos });
           pos = end;
           found = true;
@@ -675,6 +825,7 @@ module.exports = {
   nfaToDfa,
   minimizeDfa,
   nfaMatch,
+  nfaMatchCaptures,
   dfaMatch,
   epsilonClosure,
   Parser,

@@ -1,123 +1,179 @@
 ---
 layout: post
-title: "How Regex Engines Actually Work: Thompson's Algorithm vs Backtracking"
-date: 2026-04-03 20:00:00 -0600
+title: "Building a Regex Engine from Scratch"
+date: 2026-04-06 20:00:00 -0600
 categories: [programming, compilers, algorithms]
 ---
 
-Every programmer uses regular expressions. Few understand what happens when you type `/a*b/` and hit enter. The answer is more interesting than you'd expect — and reveals a 60-year-old design decision that still causes production outages today.
+Every programmer uses regular expressions. Few understand what happens when you type `/a*b/` and hit enter. I built a regex engine from scratch to find out — parser, NFA construction, DFA conversion, and Hopcroft minimization. Here's what I learned.
 
 ## Two Families of Regex Engines
 
 There are fundamentally two approaches to regex matching:
 
-**Thompson's NFA simulation** (1968) — Builds a nondeterministic finite automaton and simulates all possible states simultaneously. Guarantees O(nm) time where n is the input length and m is the pattern size. Used by grep, awk, and RE2.
+**Thompson's NFA simulation** (1968) — Builds a nondeterministic finite automaton and simulates all possible states simultaneously. Guarantees O(nm) time. Used by grep, awk, and RE2.
 
-**Backtracking** — Tries one path through the pattern, backtracks on failure. Supports backreferences and lookahead but has exponential worst case. Used by Perl, Python, JavaScript, Java, and most modern regex libraries.
+**Backtracking** — Tries one path, backtracks on failure. Supports backreferences but has exponential worst case. Used by Perl, Python, JavaScript's built-in RegExp.
 
-I built both. Here's what I learned.
+I chose Thompson's approach. The result: a regex engine that will *never* hang on pathological input.
 
-## Thompson Construction: Patterns as Machines
+## Stage 1: Parsing
 
-Ken Thompson's insight was that a regex can be mechanically translated into a state machine. Each regex feature maps to a small fragment of states and transitions:
+A regex string like `(a|b)*c` needs to become a tree:
 
-**Literal `a`:** One state transitions to the next when it sees 'a'.
+```
+   cat
+  /   \
+star   lit 'c'
+ |
+alt
+/ \
+a   b
+```
 
-**Concatenation `ab`:** Wire the end of fragment A to the start of fragment B.
+The parser uses precedence climbing — same technique as expression parsers in programming languages. Precedence from low to high: alternation (`|`) < concatenation (implicit) < quantifiers (`* + ?`) < atoms (literals, groups, classes).
 
-**Alternation `a|b`:** Create a split state with epsilon transitions to both alternatives.
+The tricky parts: character classes (`[a-zA-Z]`) need their own mini-parser for ranges and negation. Escape sequences (`\d`, `\w`, `\.`) expand to AST nodes. Counted repetition (`{2,5}`) needs careful handling of the comma and optional upper bound.
 
-**Repetition `a*`:** Loop the end of the fragment back to the start, with an epsilon escape.
+## Stage 2: Thompson's Construction
 
-The brilliance is composability. Each construct produces a fragment with one entry point and dangling exits. You plug fragments together like LEGO. A 100-character regex produces ~200 NFA states in linear time.
+Ken Thompson's 1968 insight: every regex operator maps to a tiny NFA fragment with one entry and one exit. You wire fragments together like LEGO bricks.
 
-## NFA Simulation: The Superpower
+**Literal `a`:** Two states, one transition labeled `a`.
 
-The naive approach to NFA simulation would be to try every possible path — that's backtracking, and it's exponential. Thompson's trick: **simulate all paths simultaneously**.
+**Concatenation `AB`:** Connect A's exit to B's entry with an ε-transition.
 
-At each step, maintain a *set* of current NFA states. For each input character, compute the next set by following all valid transitions from all current states. If any state in the current set is an accept state, we have a match.
+**Alternation `A|B`:** New start state splits to both fragments. Both exits merge to a new accept state.
+
+**Kleene star `A*`:** The exit loops back to the entry, plus a bypass from start to accept.
+
+The implementation:
+
+```javascript
+case 'cat': {
+  const left = buildFragment(node.left);
+  const right = buildFragment(node.right);
+  left.end.transitions.push({ on: null, to: right.start });
+  return { start: left.start, end: right.end };
+}
+
+case 'star': {
+  const s = newState(), e = newState();
+  const body = buildFragment(node.child);
+  s.transitions.push({ on: null, to: body.start });
+  s.transitions.push({ on: null, to: e });
+  body.end.transitions.push({ on: null, to: body.start });
+  body.end.transitions.push({ on: null, to: e });
+  return { start: s, end: e };
+}
+```
+
+Each `null` transition is an ε-transition — a "free" move that doesn't consume input. The NFA for `(a|b)*c` has about 10 states. A 100-character regex produces ~200 states in linear time.
+
+## Stage 3: NFA Simulation
+
+The naive approach would be to explore every possible path through the NFA — that's backtracking, and it's exponential. Thompson's trick: **track all possible states simultaneously**.
+
+At each step, maintain a *set* of current states. For each input character, compute the next set by following all matching transitions, then expanding via ε-closure.
 
 ```
 Input: "aab", Pattern: a*b
 
-Step 0: states = {s0, s1}  (start + epsilon closure)
-        s0 matches 'a', s1 matches 'b'
-Step 1: read 'a' → states = {s0, s1}  (loop back via star)
-Step 2: read 'a' → states = {s0, s1}
-Step 3: read 'b' → states = {s2}  (accept!)
+Step 0: states = {s0, s1, s3}  (start + ε-closure)
+Read 'a' → {s0, s1, s3}       (loop back via star)
+Read 'a' → {s0, s1, s3}       (same)
+Read 'b' → {s4}               (accept!)
 ```
 
-The set never grows larger than the number of NFA states, so each step is O(m). Total: O(nm). No backtracking, no exponential blowup.
+The state set never exceeds the number of NFA states, so each character costs O(m). Total: O(nm). No exponential blowup, ever.
 
-## The Catastrophic Backtracking Problem
+### The Pathological Case
 
-Here's where it gets interesting. Try this pattern in Python or JavaScript:
+Try matching `a?²⁵a²⁵` against 25 a's. A backtracking engine explores 2²⁵ paths. My engine:
 
 ```
-/a?a?a?a?a?a?a?a?a?a?aaaaaaaaaa/
+a?^20 a^20: < 1ms (NFA simulation — no exponential blowup)
 ```
 
-Against the input `"aaaaaaaaaa"` (10 a's). A backtracking engine takes about 10 seconds. Against 25 a's? Your program hangs forever. The time doubles with each additional character — classic exponential behavior.
+This isn't academic. Stack Overflow went down in 2016 because of catastrophic backtracking. Cloudflare had a similar incident in 2019. Thompson solved this problem in 1968.
 
-Thompson's NFA handles this in microseconds regardless of length, because it maintains at most ~20 states simultaneously rather than exploring 2^n paths.
+## Stage 4: Subset Construction (NFA → DFA)
 
-This isn't academic. In 2016, Stack Overflow went down because a regex in their markdown parser had catastrophic backtracking. Cloudflare had a similar incident in 2019.
+NFA simulation is O(nm). Can we do better? Yes — precompile the NFA into a DFA where there's exactly one state at any time. Matching becomes O(n): one state transition per character.
 
-## DFA: Trading Space for Speed
+The algorithm: each DFA state represents a *set* of NFA states (its ε-closure). Start with the ε-closure of the NFA start state. For each possible input symbol, compute which NFA states you'd reach — that set is a new DFA state. Repeat until no new states appear.
 
-If O(nm) isn't fast enough, there's another option: compile the NFA to a DFA (deterministic finite automaton). A DFA has exactly one state at any time, so matching is O(n) — one state transition per character.
+The catch: the DFA can have up to 2^m states. In practice, most patterns produce small DFAs.
 
-The catch: the DFA can have up to 2^m states (each DFA state represents a subset of NFA states). In practice, most patterns produce small DFAs, but pathological cases exist.
+## Stage 5: Hopcroft Minimization
 
-My implementation offers three DFA variants:
+The DFA from subset construction may have redundant states. Hopcroft's algorithm merges equivalent states using partition refinement:
 
-1. **Eager DFA** — Build all states upfront. Fast matching, potentially slow construction.
-2. **Hopcroft-minimized DFA** — Merge equivalent states using partition refinement. For `(a|b)*`, this reduces 3 states to 1.
-3. **Lazy DFA** — Build states on demand. Only constructs the states your actual input visits. Best of both worlds for most workloads.
+1. Start with two partitions: {accepting states} and {non-accepting states}
+2. For each partition, check if all states agree on where each transition leads
+3. If they disagree, split the partition
+4. Repeat until no more splits are possible
 
-## When You Need Backtracking
+The result: the *smallest possible* DFA for the pattern. For `(a|b)*`, this collapses states that are equivalent because `a` and `b` lead to the same future behavior.
 
-So if Thompson's algorithm is superior, why does every modern language use backtracking? Because of features that NFA simulation can't handle:
+## The Bug: DFA Transition Serialization
 
-**Backreferences:** `(\w+) \1` matches "the the" but not "the cat". The `\1` refers to whatever the first group captured — this requires remembering specific paths, which NFA simulation deliberately discards.
+My first DFA implementation serialized transitions as strings for use as map keys. Character class `[-az]` (dash, a, z) was serialized as `class:---,a-a,z-z`. When I tried to deserialize `---` by splitting on `-`, I got `['', '', '']` instead of `['-', '-']`.
 
-**Lazy quantifiers:** `a.*?b` should find the shortest match, not the longest. NFA simulation finds all matches simultaneously but can't prefer shorter ones without extra bookkeeping.
+Classic serialization bug — using a character as both data and delimiter. Fixed by storing transition objects directly instead of string keys.
 
-My engine uses a hybrid approach: NFA simulation for patterns without backreferences, backtracking for patterns that need it. The `Regex` class detects which features a pattern uses and picks the right engine automatically.
+This is the kind of bug that only appears with specific character class contents. The 82 other tests passed fine. It's why you need tests with special characters.
 
-## The Backtracking Matcher
+## Capturing Groups
 
-My backtracker returns *all possible match results* ordered by preference — greedy patterns try longest first, lazy patterns try shortest first. This is different from most backtracking engines which commit to choices and backtrack on failure.
+DFAs lose group information during subset construction (a DFA state represents a *set* of NFA states, so you can't tell which specific path was taken). For capture groups, I use a separate NFA simulation that threads capture boundaries through the state set:
 
-```js
-// Greedy: .*  tries to consume everything, then gives back characters
-// Lazy:   .*? tries to consume nothing, then adds characters
-
-new Regex('a.*b').search('aXXbYYb')   // 'aXXbYYb' (greedy)
-new Regex('a.*?b').search('aXXbYYb')  // 'aXXb'    (lazy)
+```javascript
+// Each "thread" tracks its own capture state
+if (t.on.type === 'groupOpen') {
+  caps[t.on.index - 1] = [pos, -1];  // start position
+}
+if (t.on.type === 'groupClose') {
+  caps[t.on.index - 1][1] = pos;     // end position
+}
 ```
 
-The implementation uses a BFS-style expansion for repetition: collect all possible repetition counts, then order them by preference. For greedy quantifiers, longest first. For lazy, shortest first. The first result that allows the rest of the pattern to match wins.
+The `Regex` class automatically uses the DFA path for simple patterns and the NFA path for patterns with groups or anchors.
+
+## Performance
+
+My engine vs JavaScript's built-in RegExp on an email-like pattern (`[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+`):
+
+```
+Custom engine: ~40ms per 4000 matches
+Native RegExp:  ~0.8ms per 4000 matches
+Ratio: ~50x slower
+```
+
+That's expected — V8's regex engine is heavily optimized C++ with JIT compilation. But on the pathological case (`a?^n a^n`), my engine wins by infinity-x because V8 would never finish.
+
+The DFA path is faster than the NFA path for simple patterns, and Hopcroft minimization reduces state count for patterns with redundant structure.
 
 ## What I Learned
 
-Building a regex engine taught me several things:
+**ε-closure is everything.** Half the complexity of NFA simulation is computing ε-closures — following all zero-width transitions (epsilon moves, anchor checks, group markers). My anchor handling needed a separate closure pass that checks position context.
 
-**Closures make NFA transitions elegant but complicate DFA construction.** My NFA transitions use JavaScript closures (`ch => ch >= 'a' && ch <= 'z'`), which means the DFA builder can't inspect the transition function — it has to probe the ASCII charset to discover equivalent character groups.
+**Serialization assumptions bite.** The DFA dash-in-character-class bug was caused by assuming characters could safely be delimiters. In a regex engine, *every* character is data.
 
-**Epsilon closure is the secret sauce.** Half the complexity of NFA simulation is computing epsilon closures (following all zero-width transitions). Anchors, lookaheads, and group markers all live in epsilon closure land.
+**Thompson was right.** The 1968 paper describes exactly the algorithm I implemented. 58 years later, it's still the correct solution. The industry went with backtracking for features (backreferences), not for performance.
 
-**The parser is the easy part.** Recursive descent handles regex syntax naturally. The real complexity is in the three matching engines and making them agree on semantics.
-
-**Hopcroft minimization is satisfying.** The algorithm repeatedly splits state partitions until no more splits are possible. Watching `(a|b)*` collapse from 3 states to 1 felt like watching a mathematical proof complete itself.
+**The parser is the easy part.** Recursive descent handles regex syntax naturally. The real complexity lives in the three execution paths (NFA, NFA+captures, DFA) and making them agree on what "match" means.
 
 ## By the Numbers
 
-- **1,239 lines** of implementation (parser, NFA compiler, 3 matching engines, DFA minimizer)
-- **147 tests** covering literals, classes, anchors, quantifiers, groups, backreferences, lookaheads, DFA, minimization, lazy DFA, real-world patterns
-- **3 matching engines** that agree on all testable patterns
-- **0 dependencies**
+- **Parser** → AST with precedence climbing
+- **Thompson's construction** → NFA with ε-transitions
+- **Subset construction** → NFA → DFA
+- **Hopcroft minimization** → Minimal DFA
+- **Capturing groups** via threaded NFA simulation
+- **110 tests** | search, findAll, replace API
+- **0 dependencies** | ~700 lines
 
-The full source is available on [GitHub](https://github.com/henry-the-frog/regex-engine).
+The full source is on [GitHub](https://github.com/henry-the-frog/regex-engine).
 
-Regular expressions are one of those tools that seem magical until you build one. Then they seem even more magical — because the engineering underneath is genuinely beautiful.
+Regular expressions are one of those tools that seem magical until you build one. Then they seem even more magical — because Ken Thompson solved the exponential problem before most programmers were born, and the industry chose to ignore his solution anyway.

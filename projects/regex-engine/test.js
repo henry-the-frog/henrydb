@@ -689,6 +689,245 @@ test('long literal string', () => {
 
 // ═══════════════════════════════════════════
 
+// ═══════════════════════════════════════════
+// Capturing Groups
+// ═══════════════════════════════════════════
+console.log('── Capturing Groups ──');
+
+test('simple capture group', () => {
+  const r = new Regex('(a)(b)(c)');
+  const m = r.match('abc');
+  assert(m !== null, 'should match');
+  eq(m[0], 'a');
+  eq(m[1], 'b');
+  eq(m[2], 'c');
+});
+
+test('capture group with alternation', () => {
+  const r = new Regex('(cat|dog) (food|water)');
+  const m = r.match('cat food');
+  assert(m !== null);
+  eq(m[0], 'cat');
+  eq(m[1], 'food');
+});
+
+test('capture group with quantifier', () => {
+  const r = new Regex('(ab)+c');
+  const m = r.match('ababc');
+  assert(m !== null);
+  // Last repetition captured
+  eq(m[0], 'ab');
+});
+
+test('nested capture groups', () => {
+  const r = new Regex('((a)(b))');
+  const m = r.match('ab');
+  assert(m !== null);
+  eq(m[0], 'ab');
+  eq(m[1], 'a');
+  eq(m[2], 'b');
+});
+
+test('optional capture group', () => {
+  const r = new Regex('a(b)?c');
+  const m = r.match('ac');
+  assert(m !== null);
+  eq(m[0], undefined);
+});
+
+test('optional capture group present', () => {
+  const r = new Regex('a(b)?c');
+  const m = r.match('abc');
+  assert(m !== null);
+  eq(m[0], 'b');
+});
+
+test('capture with star', () => {
+  const r = new Regex('(\\w+)@(\\w+)');
+  const m = r.match('user@host');
+  assert(m !== null);
+  eq(m[0], 'user');
+  eq(m[1], 'host');
+});
+
+test('match returns null on no match', () => {
+  const r = new Regex('(a)b(c)');
+  eq(r.match('xyz'), null);
+});
+
+test('no groups returns empty array', () => {
+  const r = new Regex('abc');
+  const m = r.match('abc');
+  assert(Array.isArray(m));
+  eq(m.length, 0);
+});
+
+// ═══════════════════════════════════════════
+// More Edge Cases
+// ═══════════════════════════════════════════
+console.log('── More Edge Cases ──');
+
+test('empty input empty pattern', () => {
+  const r = new Regex('');
+  assert(r.test(''));
+});
+
+test('star matches zero', () => {
+  const r = new Regex('a*');
+  assert(r.test(''));
+  assert(r.test('a'));
+  assert(r.test('aaa'));
+});
+
+test('complex character class', () => {
+  const r = new Regex('[a-zA-Z_][a-zA-Z0-9_]*');
+  assert(r.test('_foo'));
+  assert(r.test('camelCase'));
+  assert(!r.test('123'));
+});
+
+test('dot star', () => {
+  const r = new Regex('a.*b');
+  assert(r.test('ab'));
+  assert(r.test('aXb'));
+  assert(r.test('aXYZb'));
+  assert(!r.test('a'));
+  assert(!r.test('b'));
+});
+
+test('alternation of different lengths', () => {
+  const r = new Regex('a|bb|ccc');
+  assert(r.test('a'));
+  assert(r.test('bb'));
+  assert(r.test('ccc'));
+  assert(!r.test('b'));
+  assert(!r.test('cc'));
+});
+
+test('repeated group', () => {
+  const r = new Regex('(abc){3}');
+  assert(!r.test('abc'));
+  assert(!r.test('abcabc'));
+  assert(r.test('abcabcabc'));
+});
+
+test('\\d{4}-\\d{2}-\\d{2} date pattern', () => {
+  const r = new Regex('\\d{4}-\\d{2}-\\d{2}');
+  assert(r.test('2026-04-06'));
+  assert(!r.test('26-4-6'));
+  assert(!r.test('2026-4-06'));
+});
+
+test('complex URL pattern', () => {
+  const r = new Regex('https?://[a-zA-Z0-9.-]+(/[a-zA-Z0-9._/-]*)?');
+  assert(r.test('http://example.com'));
+  assert(r.test('https://foo.bar.com/path'));
+  assert(r.test('https://a.b.c.d/x/y/z'));
+});
+
+// ═══════════════════════════════════════════
+// Performance Comparison
+// ═══════════════════════════════════════════
+console.log('── Performance vs Native ──');
+
+test('performance: email-like pattern', () => {
+  const pattern = '[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z]+';
+  const r = new Regex(pattern);
+  const native = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+$/;
+  const inputs = ['user@example.com', 'invalid', 'a@b.c', 'test123@mail.org'];
+
+  const start1 = performance.now();
+  for (let i = 0; i < 1000; i++) for (const inp of inputs) r.test(inp);
+  const custom = performance.now() - start1;
+
+  const start2 = performance.now();
+  for (let i = 0; i < 1000; i++) for (const inp of inputs) native.test(inp);
+  const nativeTime = performance.now() - start2;
+
+  console.log(`    Custom: ${custom.toFixed(1)}ms, Native: ${nativeTime.toFixed(1)}ms, Ratio: ${(custom/nativeTime).toFixed(1)}x`);
+  assert(true); // informational
+});
+
+test('performance: pathological NFA vs backtracking', () => {
+  // a?^n a^n — NFA handles in O(n²), backtracking takes O(2^n)
+  const n = 20;
+  const pat = 'a?'.repeat(n) + 'a'.repeat(n);
+  const inp = 'a'.repeat(n);
+  const r = new Regex(pat);
+  const start = performance.now();
+  const result = r.test(inp);
+  const elapsed = performance.now() - start;
+  assert(result);
+  console.log(`    a?^${n} a^${n}: ${elapsed.toFixed(1)}ms (NFA simulation — no exponential blowup)`);
+});
+
+test('performance: long string literal', () => {
+  const s = 'abcdefghijklmnopqrstuvwxyz'.repeat(20);
+  const r = new Regex(s);
+  const start = performance.now();
+  for (let i = 0; i < 100; i++) r.test(s);
+  const elapsed = performance.now() - start;
+  console.log(`    520-char literal x100: ${elapsed.toFixed(1)}ms`);
+  assert(true);
+});
+
+// ═══════════════════════════════════════════
+// Additional pattern tests
+// ═══════════════════════════════════════════
+console.log('── Additional Patterns ──');
+
+test('\\w+ matches words', () => {
+  const r = new Regex('\\w+');
+  const matches = r.findAll('hello, world! foo123');
+  eq(matches.length, 3);
+  eq(matches[0].match, 'hello');
+  eq(matches[1].match, 'world');
+  eq(matches[2].match, 'foo123');
+});
+
+test('search with anchored pattern', () => {
+  const r = new Regex('^hello');
+  assert(r.search('hello world') !== null);
+  eq(r.search('say hello'), null);
+});
+
+test('replace with pattern', () => {
+  const r = new Regex('[aeiou]');
+  eq(r.replace('hello', '*', true), 'h*ll*');
+});
+
+test('consecutive classes', () => {
+  const r = new Regex('[A-Z][a-z]+');
+  assert(r.test('Hello'));
+  assert(!r.test('hello'));
+  assert(!r.test('HELLO'));
+});
+
+test('mixed class and literal', () => {
+  const r = new Regex('test[0-9]+\\.js');
+  assert(r.test('test1.js'));
+  assert(r.test('test123.js'));
+  assert(!r.test('test.js'));
+  assert(!r.test('testx.js'));
+});
+
+test('negated class \\S+', () => {
+  const r = new Regex('\\S+');
+  const matches = r.findAll('hello world  test');
+  eq(matches.length, 3);
+});
+
+test('counted zero min {0,3}', () => {
+  const r = new Regex('a{0,3}b');
+  assert(r.test('b'));
+  assert(r.test('ab'));
+  assert(r.test('aab'));
+  assert(r.test('aaab'));
+  assert(!r.test('aaaab'));
+});
+
+// ═══════════════════════════════════════════
+
 console.log(`\n══════════════════════════════`);
 console.log(`  ${passed}/${total} passed, ${failed} failed`);
 console.log(`══════════════════════════════`);
