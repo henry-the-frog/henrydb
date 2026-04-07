@@ -346,6 +346,92 @@ test('parse multiple expressions', () => {
 });
 
 // ============================================================
+// Integrated Simplex / LIA via SMT
+// ============================================================
+
+test('SMT+Simplex: linear constraint SAT', () => {
+  const smt = new SMTSolver();
+  // 2x + 3y <= 10, x + y >= 3  (feasible: x=3, y=0)
+  smt.assert(['<=', ['+', ['*', 2, 'x'], ['*', 3, 'y']], 10]);
+  smt.assert(['>=', ['+', 'x', 'y'], 3]);
+  eq(smt.checkSat(), 'SAT');
+});
+
+test('SMT+Simplex: linear constraint UNSAT', () => {
+  const smt = new SMTSolver();
+  // x + y <= 5, x >= 4, y >= 3  (infeasible: min(x+y) = 7 > 5)
+  smt.assert(['<=', ['+', 'x', 'y'], 5]);
+  smt.assert(['>=', 'x', 4]);
+  smt.assert(['>=', 'y', 3]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT+Simplex: 3-variable system', () => {
+  const smt = new SMTSolver();
+  // x + y + z <= 10, x >= 2, y >= 3, z >= 4 (feasible: sum >= 9 <= 10)
+  smt.assert(['<=', ['+', ['+', 'x', 'y'], 'z'], 10]);
+  smt.assert(['>=', 'x', 2]);
+  smt.assert(['>=', 'y', 3]);
+  smt.assert(['>=', 'z', 4]);
+  eq(smt.checkSat(), 'SAT');
+});
+
+test('SMT+Simplex: 3-variable system UNSAT', () => {
+  const smt = new SMTSolver();
+  // x + y + z <= 8, x >= 3, y >= 3, z >= 3 (infeasible: sum >= 9 > 8)
+  smt.assert(['<=', ['+', ['+', 'x', 'y'], 'z'], 8]);
+  smt.assert(['>=', 'x', 3]);
+  smt.assert(['>=', 'y', 3]);
+  smt.assert(['>=', 'z', 3]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT+Simplex: negative coefficients', () => {
+  const smt = new SMTSolver();
+  // 2x - y <= 4, x >= 3, y >= 1 (2*3 - 1 = 5 > 4 → need y >= 2)
+  smt.assert(['<=', ['-', ['*', 2, 'x'], 'y'], 4]);
+  smt.assert(['>=', 'x', 3]);
+  smt.assert(['>=', 'y', 2]);
+  eq(smt.checkSat(), 'SAT');
+});
+
+test('SMT+Simplex: mixed EUF + LIA', () => {
+  const smt = new SMTSolver();
+  // Equality + arithmetic: both must be satisfied
+  smt.assert(['=', 'a', 'b']);
+  smt.assert(['>=', 'x', 5]);
+  smt.assert(['<=', 'x', 10]);
+  eq(smt.checkSat(), 'SAT');
+});
+
+test('SMT+Simplex: mixed EUF conflict + LIA SAT', () => {
+  const smt = new SMTSolver();
+  // LIA is feasible but EUF conflicts
+  smt.assert(['=', 'a', 'b']);
+  smt.assert(['distinct', 'a', 'b']);
+  smt.assert(['>=', 'x', 0]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT+Simplex: equality as arithmetic', () => {
+  const smt = new SMTSolver();
+  // x + y = 10, x >= 3, y >= 3 (feasible)
+  smt.assert(['=', ['+', 'x', 'y'], 10]);
+  smt.assert(['>=', 'x', 3]);
+  smt.assert(['>=', 'y', 3]);
+  eq(smt.checkSat(), 'SAT');
+});
+
+test('SMT+Simplex: equality constraint UNSAT', () => {
+  const smt = new SMTSolver();
+  // x + y = 5, x >= 4, y >= 4 (infeasible: min sum = 8 ≠ 5)
+  smt.assert(['=', ['+', 'x', 'y'], 5]);
+  smt.assert(['>=', 'x', 4]);
+  smt.assert(['>=', 'y', 4]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+// ============================================================
 // Report
 // ============================================================
 

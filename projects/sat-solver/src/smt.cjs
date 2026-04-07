@@ -10,6 +10,7 @@
 // ============================================================
 
 const { Solver, TRUE, FALSE, UNDEF } = require('./solver.cjs');
+const { Simplex } = require('./simplex.cjs');
 
 // ============================================================
 // Union-Find with backtracking (for EUF)
@@ -359,6 +360,8 @@ class SMTSolver {
   constructor() {
     this.euf = new EUFSolver();
     this.bounds = new BoundsSolver();
+    this.simplex = new Simplex();
+    this.simplexUsed = false;  // track if any multi-var constraints added
     this.satSolver = null;
     this.nextBoolVar = 1;
     this.atomMap = new Map();  // boolVar → theory atom
@@ -448,8 +451,12 @@ class SMTSolver {
 
     const eufResult = this.euf.checkConsistency();
     const boundsResult = this.bounds.checkConsistency();
+    let simplexResult = { feasible: true };
+    if (this.simplexUsed) {
+      simplexResult = this.simplex.check();
+    }
 
-    const sat = eufResult.consistent && boundsResult.consistent;
+    const sat = eufResult.consistent && boundsResult.consistent && simplexResult.feasible;
 
     this.euf.pop();
     this.bounds.pop();
@@ -457,9 +464,142 @@ class SMTSolver {
     return sat ? 'SAT' : 'UNSAT';
   }
 
+  // Parse a linear arithmetic expression into terms [{var, coeff}] + constant
+  _parseLinearExpr(expr) {
+    if (typeof expr === 'number') return { terms: [], constant: expr };
+    if (typeof expr === 'string') return { terms: [{ var: expr, coeff: 1 }], constant: 0 };
+    if (!Array.isArray(expr)) return null;
+
+    const op = expr[0];
+    if (op === '+') {
+      const result = { terms: [], constant: 0 };
+      for (let i = 1; i < expr.length; i++) {
+        const sub = this._parseLinearExpr(expr[i]);
+        if (!sub) return null;
+        result.terms.push(...sub.terms);
+        result.constant += sub.constant;
+      }
+      return result;
+    }
+    if (op === '-' && expr.length === 3) {
+      const left = this._parseLinearExpr(expr[1]);
+      const right = this._parseLinearExpr(expr[2]);
+      if (!left || !right) return null;
+      return {
+        terms: [...left.terms, ...right.terms.map(t => ({ var: t.var, coeff: -t.coeff }))],
+        constant: left.constant - right.constant
+      };
+    }
+    if (op === '-' && expr.length === 2) {
+      const inner = this._parseLinearExpr(expr[1]);
+      if (!inner) return null;
+      return { terms: inner.terms.map(t => ({ var: t.var, coeff: -t.coeff })), constant: -inner.constant };
+    }
+    if (op === '*' && expr.length === 3) {
+      const left = this._parseLinearExpr(expr[1]);
+      const right = this._parseLinearExpr(expr[2]);
+      if (!left || !right) return null;
+      // One side must be constant for linearity
+      if (left.terms.length === 0) {
+        return {
+          terms: right.terms.map(t => ({ var: t.var, coeff: t.coeff * left.constant })),
+          constant: left.constant * right.constant
+        };
+      }
+      if (right.terms.length === 0) {
+        return {
+          terms: left.terms.map(t => ({ var: t.var, coeff: t.coeff * right.constant })),
+          constant: left.constant * right.constant
+        };
+      }
+      return null;  // non-linear
+    }
+    return null;
+  }
+
+  // Check if an expression is a linear arithmetic constraint
+  _isArithConstraint(expr) {
+    if (!Array.isArray(expr)) return false;
+    const op = expr[0];
+    if (op !== '<=' && op !== '>=' && op !== '<' && op !== '>' && op !== '=') return false;
+    if (expr.length !== 3) return false;
+    // Check if either side has arithmetic (not just simple var op const)
+    const left = expr[1];
+    const right = expr[2];
+    return Array.isArray(left) || Array.isArray(right) ||
+           (typeof left === 'string' && typeof right === 'number') ||
+           (typeof left === 'number' && typeof right === 'string');
+  }
+
+  _processArithConstraint(expr, negated) {
+    let op = expr[0];
+    const leftParsed = this._parseLinearExpr(expr[1]);
+    const rightParsed = this._parseLinearExpr(expr[2]);
+    if (!leftParsed || !rightParsed) return false;
+
+    // Normalize to: terms op constant (move everything to left side)
+    const terms = [...leftParsed.terms];
+    for (const t of rightParsed.terms) {
+      terms.push({ var: t.var, coeff: -t.coeff });
+    }
+    const bound = rightParsed.constant - leftParsed.constant;
+
+    // Handle negation
+    if (negated) {
+      if (op === '<=') op = '>';
+      else if (op === '>=') op = '<';
+      else if (op === '<') op = '>=';
+      else if (op === '>') op = '<=';
+      else if (op === '=') op = '!=';  // can't easily negate equality in Simplex
+    }
+
+    // Convert strict inequalities to non-strict (integers)
+    if (op === '<') { op = '<='; /* bound - 1 but we already have bound on right */ }
+    if (op === '>') { op = '>='; }
+
+    // Check if single-variable (use BoundsSolver) or multi-variable (use Simplex)
+    const mergedTerms = new Map();
+    for (const t of terms) {
+      mergedTerms.set(t.var, (mergedTerms.get(t.var) || 0) + t.coeff);
+    }
+    // Remove zero-coefficient terms
+    for (const [k, v] of mergedTerms) {
+      if (Math.abs(v) < 1e-15) mergedTerms.delete(k);
+    }
+
+    if (op === '<=' || op === '>=' || op === '=') {
+      // Always feed into Simplex for completeness
+      this.simplexUsed = true;
+      const simplexTerms = [...mergedTerms.entries()].map(([v, c]) => ({ var: v, coeff: c }));
+      for (const t of simplexTerms) this.simplex.addVar(t.var);
+      if (simplexTerms.length > 0) {
+        this.simplex.addConstraint(simplexTerms, op, bound);
+      }
+
+      // Also feed single-variable bounds into BoundsSolver for simple cases
+      if (mergedTerms.size === 1) {
+        const [varName, coeff] = [...mergedTerms.entries()][0];
+        const adjBound = bound / coeff;
+        const adjOp = coeff < 0 ? (op === '<=' ? '>=' : op === '>=' ? '<=' : '=') : op;
+        const bv = this._freshBoolVar();
+        const kind = adjOp === '<=' ? 'le' : adjOp === '>=' ? 'ge' : 'eq';
+        this.bounds.addAtom(kind, varName, adjBound, bv);
+        this.bounds.assertTrue(bv);
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   _processAssertion(expr) {
     if (!Array.isArray(expr)) return;
     const op = expr[0];
+
+    // Try linear arithmetic first
+    if (this._isArithConstraint(expr)) {
+      if (this._processArithConstraint(expr, false)) return;
+    }
 
     if (op === '=') {
       const a = String(expr[1]);
@@ -493,6 +633,11 @@ class SMTSolver {
   _processNegation(expr) {
     if (!Array.isArray(expr)) return;
     const op = expr[0];
+
+    // Try linear arithmetic first
+    if (this._isArithConstraint(expr)) {
+      if (this._processArithConstraint(expr, true)) return;
+    }
 
     if (op === '=') {
       const a = String(expr[1]);
