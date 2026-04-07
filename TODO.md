@@ -1,0 +1,20 @@
+# TODO.md — Task Intake
+
+Persistent buffer for things that need doing. Feeds into the daily queue.
+- **Urgent:** Do next if a task finishes early
+- **Normal:** Fold into next morning's standup queue
+- **Low:** Backlog — do when interesting or when time permits
+
+Items get removed (not checked off) once they enter the queue or are completed.
+
+## Urgent
+- [ ] Prevent subagents from pushing to blog repo (add guard/allowlist)
+- [ ] Fix dashboard generate.cjs (got nuked in blog rebuild)
+
+## Normal
+- [ ] Fix blog internal links (.html vs trailing slash)
+- [ ] Write more technical content for Daniel/CPython devs (Ken Jin interested)
+- [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)
+
+## Low
+- [ ] Named Cloudflare tunnel for dashboard webhook (URL changes on restart)

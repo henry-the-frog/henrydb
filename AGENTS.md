@@ -12,8 +12,9 @@ Before doing anything else:
 
 1. Read `SOUL.md` — this is who you are
 2. Read `USER.md` — this is who you're helping
-3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+3. Read `TODO.md` — this is what needs doing (see Task Intake below)
+4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 
 Don't ask permission. Just do it.
 
@@ -44,6 +45,19 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - When you learn a lesson → update AGENTS.md, TOOLS.md, or the relevant skill
 - When you make a mistake → document it so future-you doesn't repeat it
 - **Text > Brain** 📝
+
+## Task Intake (TODO.md)
+
+`TODO.md` is a persistent intake buffer for things that need doing. Three priority levels:
+- **Urgent** — Do next if a task finishes early (between `queue.cjs done` and `queue.cjs next`)
+- **Normal** — Fold into next morning's standup queue
+- **Low** — Backlog, do when interesting
+
+**Workflow:**
+1. **Capture immediately** — spot a problem or follow-up mid-work? Add it to TODO.md. 5 seconds.
+2. **Between tasks** — after finishing a task, check TODO.md Urgent. If something fits the session focus, pull it into the queue with `queue.cjs add` and start it.
+3. **Morning standup** — read TODO.md first. Drain Normal items into the day's queue. Urgent items that survived overnight get top priority.
+4. **Cleanup** — remove items once they enter the queue or are completed. Don't check off, delete the line. Keep the file clean.
 
 ## Red Lines
 
