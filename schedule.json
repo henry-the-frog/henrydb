@@ -289,12 +289,23 @@
       "completed": "2026-04-07T02:45:56.880Z",
       "duration_ms": 300000,
       "summary": "Forth blog post written. TASKS.md updated with 3 new projects (regex engine, type inference, forth). Session totals logged."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build Huffman coding from scratch: frequency analysis, priority queue, tree construction, code generation, encode/decode. Test: roundtrip on various strings, compression ratio, edge cases (single char, empty). Project: projects/huffman/",
+      "project": "huffman",
+      "started": "2026-04-07T02:46:40.248Z",
+      "completed": "2026-04-07T02:48:13.343Z",
+      "duration_ms": 600000,
+      "summary": "Built Huffman coding from scratch: min-heap priority queue, frequency analysis, tree construction, prefix-free code generation, encode/decode, tree serialization. English text 55.8% ratio, skewed 12.5%. 36 tests, 0 failures. README."
     }
   ],
-  "updated_at": "2026-04-07T02:45:56.880Z",
+  "updated_at": "2026-04-07T02:48:13.343Z",
   "focusProjects": [
-    "forth",
-    "type-inference"
+    "huffman",
+    "forth"
   ],
   "adjustments": [
     {
@@ -308,6 +319,14 @@
     {
       "time": "2026-04-07T02:44:31.784Z",
       "msg": "Added T27 (BUILD) after end: Write blog post about building a Forth interpreter. Update TASKS.md with all new projects. Final session wrap."
+    },
+    {
+      "time": "2026-04-07T02:46:23.882Z",
+      "msg": "Focus set: [huffman, forth]"
+    },
+    {
+      "time": "2026-04-07T02:46:32.028Z",
+      "msg": "Added T28 (BUILD) after end: Build Huffman coding from scratch: frequency analysis, priority queue, tree construction, code generation, encode/decode. Test: roundtrip on various strings, compression ratio, edge cases (single char, empty). Project: projects/huffman/"
     }
   ]
 }
