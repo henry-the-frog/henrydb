@@ -1,8 +1,8 @@
-# CDCL SAT Solver — Implementation Notes
-uses: 1
+# CDCL SAT Solver + SMT — Implementation Notes
+uses: 2
 created: 2026-04-06
 last-used: 2026-04-06
-topics: sat, cdcl, watched-literals, 1uip, vsids, smt, euf, conflict-analysis
+topics: sat, cdcl, watched-literals, 1uip, vsids, smt, euf, conflict-analysis, simplex, lia
 
 ## The Literal Negation Bug (Critical Insight)
 
@@ -67,3 +67,31 @@ This bug is subtle because:
 - Watched literal with blocking literal (further reduces cache misses)
 - Luby restart sequence instead of geometric
 - LBD (Literal Block Distance) for clause quality scoring
+
+## Simplex Implementation Notes
+
+### Core Architecture
+- Tableau form: basic variables expressed as linear combos of non-basic variables
+- Slack variables convert inequalities to equalities: x + y <= 10 → slack = 10 - x - y, slack >= 0
+- Non-basic variables have arbitrary values within bounds; basic variables are determined by tableau
+
+### The Non-Basic Fix
+Critical detail missed initially: when bounds are tightened on non-basic variables (via assertBound),
+their values must be updated BEFORE running the pivot loop. Otherwise the tableau values are stale.
+Fix: at start of check(), scan all non-basic variables and clamp to bounds, updating all dependent
+basic variables via the tableau coefficients.
+
+### Bland's Rule
+Anti-cycling: always pick the first (smallest index) violating basic variable, and the first eligible
+non-basic variable for pivot. Guarantees termination (no cycling through degenerate pivots).
+
+### Backtracking
+Full checkpoint saves ALL variable states (bounds + values). This is expensive but correct.
+A production solver would use a trail-based approach with undo stack entries per assertBound call.
+
+### Connection to DPLL(T)
+The Simplex solver's assertBound + check pattern maps directly to the DPLL(T) interface:
+- SAT solver assigns boolean variable representing x <= 5
+- Theory solver calls assertBound('x', '<=', 5) and check()
+- If infeasible, return conflict clause (the set of bounds causing infeasibility)
+- SAT solver learns this clause and backtracks

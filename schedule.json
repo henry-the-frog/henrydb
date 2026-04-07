@@ -58,23 +58,84 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard, knowledge capture, daily log",
-      "started": "2026-04-07T00:50:04.306Z"
+      "started": "2026-04-07T00:50:04.306Z",
+      "completed": "2026-04-07T00:52:34.656Z",
+      "duration_ms": 300000,
+      "summary": "Git pushed, wrote CDCL scratch note, fixed .gitignore (blog rebuild had deleted workspace files), restored queue.cjs, daily log updated."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on SAT solver: what was hard, what connects to SMT/type inference, what would I build next?"
+      "status": "done",
+      "task": "Reflect on SAT solver: what was hard, what connects to SMT/type inference, what would I build next?",
+      "started": "2026-04-07T00:52:46.576Z",
+      "completed": "2026-04-07T00:53:04.177Z",
+      "duration_ms": 60000,
+      "summary": "Reflected: hardest part was literal negation bug in 1UIP (unsound learned clauses). EUF connects to type unification/Hindley-Milner. DPLL(T) architecture mirrors SMT-based verification tools. Next: blog post, then maybe extend SMT with Simplex."
     },
     {
       "id": "T6",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write blog post about building a SAT solver from scratch",
-      "project": "sat-solver"
+      "project": "sat-solver",
+      "started": "2026-04-07T00:53:14.976Z",
+      "completed": "2026-04-07T00:54:38.896Z",
+      "duration_ms": 300000,
+      "summary": "Updated existing SAT solver blog post with real implementation details: the literal negation bug story (unsound learned clauses → incorrect UNSAT on Sudoku), actual benchmarks, new SMT section covering EUF congruence closure and backtrackable union-find, closing insight connecting SAT conflict analysis to JIT deoptimization."
+    },
+    {
+      "id": "T9",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Optimize CDCL: Luby restart sequence, LBD scoring for clause quality, subsumption preprocessing. Measure improvement on hard Sudoku (currently 20s/90K conflicts).",
+      "project": "sat-solver",
+      "started": "2026-04-07T00:55:12.283Z",
+      "completed": "2026-04-07T01:00:45.099Z",
+      "duration_ms": 600000,
+      "summary": "Added Luby restarts, LBD clause quality scoring, glue clause protection, subsumption preprocessing, failed literal probing. 88 total tests. Hard Sudoku still ~30s (needs variable elimination for real improvement), but small/medium problems benefit from better restart schedule."
+    },
+    {
+      "id": "T10",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement full Simplex for LIA in SMT: tableau, basic/non-basic variables, Bland rule, slack variables. Test with systems of linear inequalities.",
+      "project": "sat-solver",
+      "started": "2026-04-07T01:00:56.827Z",
+      "completed": "2026-04-07T01:04:11.699Z",
+      "duration_ms": 600000,
+      "summary": "Built full Simplex solver: tableau with basic/non-basic variables, Bland anti-cycling rule, slack variables for inequalities, non-basic bound fixing, checkpoint/restore for backtracking. 14 tests covering feasibility, infeasibility, multi-variable systems, tight constraints, negative coefficients. 102 total tests across SAT+SMT+Simplex."
+    },
+    {
+      "id": "T11",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session wrap: update TASKS.md with SAT solver project, update daily log, update scratch notes, git push, CURRENT.md to session-ended.",
+      "started": "2026-04-07T01:04:31.324Z"
     }
   ],
-  "updated_at": "2026-04-07T00:50:04.306Z"
+  "updated_at": "2026-04-07T01:04:31.324Z",
+  "focusProjects": [
+    "sat-solver"
+  ],
+  "adjustments": [
+    {
+      "time": "2026-04-07T00:55:01.374Z",
+      "msg": "Focus set: [sat-solver]"
+    },
+    {
+      "time": "2026-04-07T00:55:01.853Z",
+      "msg": "Added T9 (BUILD) after end: Optimize CDCL: Luby restart sequence, LBD scoring for clause quality, subsumption preprocessing. Measure improvement on hard Sudoku (currently 20s/90K conflicts)."
+    },
+    {
+      "time": "2026-04-07T00:55:02.360Z",
+      "msg": "Added T10 (BUILD) after end: Implement full Simplex for LIA in SMT: tableau, basic/non-basic variables, Bland rule, slack variables. Test with systems of linear inequalities."
+    },
+    {
+      "time": "2026-04-07T01:04:25.603Z",
+      "msg": "Added T11 (MAINTAIN) after end: Final session wrap: update TASKS.md with SAT solver project, update daily log, update scratch notes, git push, CURRENT.md to session-ended."
+    }
+  ]
 }
