@@ -97,6 +97,10 @@ export class TransactionalDatabase {
       } catch (e) { /* best effort */ }
     }
 
+    // Install MVCC scan/delete interceptors on recovered tables
+    // Must happen AFTER catalog load and WAL recovery
+    tdb._installScanInterceptors();
+
     return tdb;
   }
 
