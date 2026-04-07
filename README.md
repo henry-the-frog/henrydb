@@ -1,6 +1,8 @@
 # HenryDB
 
-A SQL database engine built from scratch in JavaScript. No dependencies. ~39,000 lines of code, 2,017 tests.
+A SQL database engine built from scratch in JavaScript. No dependencies. ~44,000 lines of code, 2,100+ tests.
+
+Now with crash-tested WAL recovery, Serializable Snapshot Isolation (SSI), Two-Phase Commit (2PC), JIT-compiled query pipelines, and proper Bloom filters.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -71,15 +73,17 @@ A SQL database engine built from scratch in JavaScript. No dependencies. ~39,000
 ### Transaction Support (ACID)
 - **Atomicity:** ROLLBACK undoes all operations; crash recovery ensures all-or-nothing
 - **Consistency:** Constraint violations don't corrupt state
-- **Isolation:** Snapshot isolation via MVCC (prevents dirty reads, non-repeatable reads, phantoms)
-- **Durability:** WAL with fsync ensures committed data survives crashes
+- **Isolation:** Snapshot isolation via MVCC; **Serializable Snapshot Isolation (SSI)** for preventing write skew
+- **Durability:** WAL with fsync ensures committed data survives crashes — crash-tested with 12 recovery tests
 - **Concurrent sessions:** Multiple connections with independent transaction contexts
+- **Distributed:** Two-Phase Commit (2PC) with coordinator crash recovery
 
 ### Query Optimization
 - **Histogram-based statistics** for cardinality estimation
 - **Dynamic programming join reordering**
 - **Predicate pushdown** through joins
 - **Query compilation** — compiles SQL to JavaScript functions (32x speedup)
+- **JIT pipeline compiler** — fuses scan+filter+project into single Function() (3x-17x speedup)
 - **Plan caching** for repeated queries
 
 ### Volcano Execution Engine
@@ -209,29 +213,32 @@ Volcano wins **10 out of 13** query patterns. The 750x LIMIT speedup demonstrate
 # Run all tests
 node --test src/*.test.js
 
-# 2,017 tests passing, 0 failures
+# 2,100+ tests passing, 0 failures
 ```
 
 ## Architecture
 
-53 source files organized by layer:
+57 source files organized by layer:
 
 - **SQL Layer:** `sql.js` (parser), `db.js` (query engine)
 - **Optimizer:** `planner.js`, `pushdown.js`, `decorrelate.js`, `compiler.js`
-- **Execution:** `volcano.js`, `volcano-planner.js`, `cost-model.js`
-- **Transactions:** `transactional-db.js`, `mvcc.js`, `transaction.js`, `lock-manager.js`
+- **Execution:** `volcano.js`, `volcano-planner.js`, `cost-model.js`, `pipeline-compiler.js`
+- **Transactions:** `transactional-db.js`, `mvcc.js`, `ssi.js`, `transaction.js`, `lock-manager.js`
+- **Distributed:** `two-phase-commit.js`, `raft.js`, `consistent-hashing.js`
 - **Storage:** `page.js`, `bplus-tree.js`, `buffer-pool.js`, `disk-manager.js`, `file-wal.js`, `file-backed-heap.js`
 - **Protocol:** `pg-protocol.js`, `prepared-statements.js`
-- **Data Structures:** `lsm.js`, `skip-list.js`, `rtree.js`, `bloom.js`, `trie.js`, `graph.js`, etc.
+- **Data Structures:** `lsm.js`, `skip-list.js`, `rtree.js`, `bloom-filter.js`, `trie.js`, `graph.js`, etc.
 
 ## What I Learned
 
 1. **The volcano model is elegant.** open()/next()/close() composes beautifully. The 750x LIMIT speedup proved pipelining works.
 2. **MVCC is about intercepting, not reimplementing.** Wrapping heap scans with visibility checks was far simpler than rewriting DML.
-3. **Cost models are heuristic.** Real optimizers use histograms and sampling; a simple 1/3 selectivity assumption works surprisingly well.
-4. **HashJoin beats IndexNestedLoopJoin for small tables.** Cache locality matters more than algorithmic complexity at small scale.
-5. **Tests are the real product.** 2,000+ tests made it safe to refactor everything. Every new feature was verified against the existing engine.
-6. **Window functions are just partitioned iteration.** The hard part isn't the computation — it's sorting the input correctly.
+3. **Infrastructure that's never tested doesn't work.** The WAL existed for months before I tested crash recovery — and found 7 real bugs. None of the 2,000 existing tests caught them.
+4. **SSI prevents what SI allows.** Serializable Snapshot Isolation detects the dangerous structures (rw-antidependency cycles) that cause write skew. The doctor on-call anomaly is a one-line prevention.
+5. **Pipeline JIT compilation helps selective queries.** 3x faster on 10% selectivity, 17x faster on LIMIT. But wide scans see no benefit — the bottleneck is data access, not dispatch overhead.
+6. **Bloom filters are optimal at 1.2 bytes/key.** For 1% false positive rate, theory says 9.585 bits per key. Our implementation achieves 1.2 bytes/key — spot on.
+7. **2PC is the coordinator's problem.** The hardest part of distributed transactions isn't the protocol — it's what happens when the coordinator crashes after deciding but before telling participants.
+8. **Tests are the real product.** 2,100+ tests made it safe to refactor everything. Every new feature was verified against the existing engine.
 
 ## Built By
 
