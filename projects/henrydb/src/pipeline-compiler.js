@@ -195,6 +195,116 @@ export function compileQueryPlan(root) {
 }
 
 /**
+ * Compile a pipeline using Function() constructor for maximum performance.
+ * Generates specialized code with no virtual dispatch, no generators, no closures.
+ * The generated function receives the scan iterator and returns an array of result rows.
+ */
+export function compilePipelineJIT(operators, options = {}) {
+  const scan = operators.find(op => op instanceof SeqScan || op instanceof IndexScan);
+  const filters = operators.filter(op => op instanceof Filter);
+  const projects = operators.filter(op => op instanceof Project);
+  const limit = operators.find(op => op instanceof Limit);
+  
+  if (!scan) return null;
+  
+  // Build the function body
+  const lines = [];
+  lines.push('const results = [];');
+  lines.push('let count = 0;');
+  if (limit) {
+    lines.push(`const maxRows = ${limit._limit};`);
+  }
+  lines.push('scan.open();');
+  lines.push('let row;');
+  if (limit) {
+    lines.push('while ((row = scan.next()) !== null && count < maxRows) {');
+  } else {
+    lines.push('while ((row = scan.next()) !== null) {');
+  }
+  
+  // Inline filter predicates
+  for (let i = 0; i < filters.length; i++) {
+    lines.push(`  if (!filters[${i}](row)) continue;`);
+  }
+  
+  // Inline projections
+  if (projects.length > 0) {
+    for (let i = 0; i < projects.length; i++) {
+      const project = projects[i];
+      if (project._projections && Array.isArray(project._projections)) {
+        const assigns = project._projections.map((p, j) => 
+          `${JSON.stringify(p.name)}: projExprs[${i}][${j}](row)`
+        ).join(', ');
+        lines.push(`  row = { ${assigns} };`);
+      }
+    }
+  }
+  
+  lines.push('  results.push(row);');
+  lines.push('  count++;');
+  lines.push('}');
+  lines.push('scan.close();');
+  lines.push('return results;');
+  
+  const body = lines.join('\n');
+  
+  // Extract filter predicates and projection expressions
+  const filterFns = filters.map(f => f._predicate);
+  const projExprs = projects.map(p => {
+    if (p._projections && Array.isArray(p._projections)) {
+      return p._projections.map(proj => proj.expr);
+    }
+    return [];
+  });
+  
+  // Compile using Function constructor
+  const compiledFn = new Function('scan', 'filters', 'projExprs', body);
+  
+  return {
+    type: 'jit-compiled',
+    operators: operators.map(op => op.constructor.name),
+    execute: () => compiledFn(scan, filterFns, projExprs),
+    generatedCode: body,
+    description: `JIT(${operators.map(op => op.constructor.name).join(' → ')})`
+  };
+}
+
+/**
+ * JITCompiledIterator — wraps a JIT-compiled pipeline as an Iterator
+ */
+export class JITCompiledIterator extends Iterator {
+  constructor(compiledPipeline) {
+    super();
+    this._compiled = compiledPipeline;
+    this._results = null;
+    this._idx = 0;
+  }
+  
+  open() {
+    this._results = this._compiled.execute();
+    this._idx = 0;
+  }
+  
+  next() {
+    if (this._idx >= this._results.length) return null;
+    return this._results[this._idx++];
+  }
+  
+  close() {
+    this._results = null;
+    this._idx = 0;
+  }
+  
+  describe() {
+    return {
+      type: 'JITCompiledPipeline',
+      children: [],
+      details: { ops: this._compiled.description, code: this._compiled.generatedCode }
+    };
+  }
+}
+
+/**
  * Generate a specialized predicate function from a SQL-like expression.
  * Uses Function() constructor for maximum performance.
  * 
