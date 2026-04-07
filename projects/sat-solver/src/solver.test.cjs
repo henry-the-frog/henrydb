@@ -654,6 +654,67 @@ test('benchmark: 100-var random SAT', () => {
 });
 
 // ============================================================
+// Luby Sequence
+// ============================================================
+
+test('Luby sequence first 15 values', () => {
+  const expected = [1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8];
+  for (let i = 0; i < expected.length; i++) {
+    eq(Solver._luby(i), expected[i], `luby(${i}) = ${Solver._luby(i)}, expected ${expected[i]}`);
+  }
+});
+
+// ============================================================
+// Preprocessing
+// ============================================================
+
+test('subsumption removes subsumed clauses', () => {
+  const s = new Solver(5);
+  s.addClause([1, 2]);       // small
+  s.addClause([1, 2, 3]);    // subsumed by [1,2]
+  s.addClause([1, 2, 3, 4]); // subsumed by [1,2]
+  s.addClause([3, 4]);       // not subsumed
+  eq(s.clauses.length, 4);
+  const { removed } = s.preprocess();
+  eq(removed, 2, `expected 2 removed, got ${removed}`);
+  eq(s.clauses.length, 2);
+  eq(s.solve(), 'SAT');
+});
+
+test('probing forces literals', () => {
+  const s = new Solver(3);
+  // x1 → x2, ~x1 → x2 — so x2 must be true
+  s.addClause([-1, 2]);
+  s.addClause([1, 2]);
+  const { forced } = s.probe();
+  assert(forced >= 1, 'should force x2');
+  eq(s.solve(), 'SAT');
+  eq(s.getModel()[2], true);
+});
+
+test('probing detects UNSAT', () => {
+  const s = new Solver(2);
+  s.addClause([1]);
+  s.addClause([-1, 2]);
+  s.addClause([-1, -2]);
+  const { unsat } = s.probe();
+  assert(unsat, 'should detect UNSAT via probing');
+});
+
+// ============================================================
+// LBD (clause quality)
+// ============================================================
+
+test('learned clauses have LBD values', () => {
+  const problem = randomSAT(20, 60);
+  const s = createSolver(problem);
+  s.solve();
+  // Some learned clauses should have LBD values
+  const withLBD = s.learneds.filter(c => c.lbd < Infinity);
+  assert(withLBD.length > 0 || s.learneds.length === 0, 'learned clauses should have LBD');
+});
+
+// ============================================================
 // Report
 // ============================================================
 

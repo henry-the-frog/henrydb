@@ -21,6 +21,7 @@ class Clause {
     this.lits = lits;       // mutable array of literals
     this.learned = learned;
     this.activity = 0;      // for clause deletion heuristic
+    this.lbd = Infinity;    // Literal Block Distance (clause quality metric)
   }
 }
 
@@ -67,14 +68,31 @@ class Solver {
     this.decisions = 0;
     this.propagations = 0;
 
-    // Restart
-    this.restartBase = 100;
-    this.restartInc = 1.5;
-    this.nextRestart = this.restartBase;
+    // Restart — Luby sequence
+    this._lubyIndex = 0;
+    this._lubyUnit = 100;  // base unit for Luby restarts
 
-    // Clause deletion
-    this.maxLearneds = 100;  // will grow
+    // Clause deletion — LBD-based
+    this.maxLearneds = 2000;  // start higher, use LBD to manage
     this.learnedInc = 1.1;
+    this._glueKeepLimit = 3;  // clauses with LBD <= 3 are never deleted ("glue clauses")
+  }
+
+  // Luby sequence: 1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, ...
+  static _luby(i) {
+    let size = 1, seq = 0;
+    while (size < i + 1) {
+      size = 2 * size + 1;
+      seq++;
+    }
+    while (size - 1 !== i) {
+      size = (size - 1) >> 1;
+      seq--;
+      if (i >= size) {
+        i -= size;
+      }
+    }
+    return 1 << seq;
   }
 
   // Literal → watch list index
@@ -285,7 +303,15 @@ class Solver {
       }
     }
 
-    return { learnt: minimized, btLevel };
+    // Compute LBD (Literal Block Distance) — count distinct decision levels
+    const levelSet = new Set();
+    for (const lit of minimized) {
+      const v = Math.abs(lit);
+      if (this.level[v] > 0) levelSet.add(this.level[v]);
+    }
+    const lbd = levelSet.size;
+
+    return { learnt: minimized, btLevel, lbd };
   }
 
   _minimizeClause(learnt, seen) {
@@ -381,7 +407,7 @@ class Solver {
         if (this._decisionLevel() === 0) return 'UNSAT';
 
         // Conflict analysis
-        const { learnt, btLevel } = this._analyze(conflict);
+        const { learnt, btLevel, lbd } = this._analyze(conflict);
         this._decayActivity();
 
         // Backtrack
@@ -392,18 +418,20 @@ class Solver {
           this._enqueue(learnt[0], null);
         } else {
           const clause = this._addLearned(learnt);
+          clause.lbd = lbd;
           this._enqueue(learnt[0], clause);
         }
 
-        // Restart check
-        if (this.conflicts >= this.nextRestart) {
-          this.nextRestart = Math.floor(this.nextRestart * this.restartInc);
+        // Luby restart check
+        const lubyLimit = Solver._luby(this._lubyIndex) * this._lubyUnit;
+        if (this.conflicts >= lubyLimit) {
+          this._lubyIndex++;
           this._backtrack(0);
           conflict = this._propagate();
           if (conflict) return 'UNSAT';
         }
 
-        // Clause deletion
+        // Clause deletion (LBD-aware)
         if (this.learneds.length > this.maxLearneds + this.trail.length) {
           this._reduceLearneds();
         }
@@ -433,18 +461,112 @@ class Solver {
     return model;
   }
 
-  // Clause database reduction
+  // Clause database reduction (LBD-aware)
   _reduceLearneds() {
-    // Sort by activity, remove bottom half
-    this.learneds.sort((a, b) => a.activity - b.activity);
-    const keep = Math.floor(this.learneds.length / 2);
-    const removed = this.learneds.splice(0, this.learneds.length - keep);
+    // Separate glue clauses (LBD <= limit) from removable
+    const glue = [];
+    const removable = [];
+    for (const c of this.learneds) {
+      if (c.lbd <= this._glueKeepLimit) {
+        glue.push(c);
+      } else {
+        removable.push(c);
+      }
+    }
 
-    // Rebuild watch lists for removed clauses
-    // (Lazy approach: rebuild all watches — simpler and correct)
+    // Sort removable by activity, remove bottom half
+    removable.sort((a, b) => a.activity - b.activity);
+    const keep = Math.floor(removable.length / 2);
+    const kept = removable.slice(removable.length - keep);
+
+    this.learneds = [...glue, ...kept];
+
+    // Rebuild watch lists
     this._rebuildWatches();
 
     this.maxLearneds = Math.floor(this.maxLearneds * this.learnedInc);
+  }
+
+  // Preprocessing: subsumption elimination + failed literal probing
+  preprocess() {
+    // Sort clauses by size (small clauses subsume large ones)
+    this.clauses.sort((a, b) => a.lits.length - b.lits.length);
+
+    // Forward subsumption: if clause A ⊆ clause B, remove B
+    const litSets = this.clauses.map(c => new Set(c.lits));
+    const keep = new Array(this.clauses.length).fill(true);
+
+    for (let i = 0; i < this.clauses.length; i++) {
+      if (!keep[i]) continue;
+      const setI = litSets[i];
+      for (let j = i + 1; j < this.clauses.length; j++) {
+        if (!keep[j]) continue;
+        if (setI.size > litSets[j].size) continue;
+        // Check if setI ⊆ setJ
+        let subsumed = true;
+        for (const lit of setI) {
+          if (!litSets[j].has(lit)) { subsumed = false; break; }
+        }
+        if (subsumed) keep[j] = false;
+      }
+    }
+
+    const removed = this.clauses.filter((_, i) => !keep[i]).length;
+    this.clauses = this.clauses.filter((_, i) => keep[i]);
+
+    // Rebuild watches after removing clauses
+    if (removed > 0) this._rebuildWatches();
+
+    return { removed };
+  }
+
+  // Failed literal probing: try assigning each unassigned literal,
+  // propagate, and if conflict → the opposite must be true
+  probe() {
+    let forced = 0;
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (let v = 1; v <= this.numVars; v++) {
+        if (this.assigns[v] !== UNDEF) continue;
+
+        for (const pol of [1, -1]) {
+          const lit = pol * v;
+          // Save state
+          const savedTrail = this.trail.length;
+          const savedQhead = this.qhead;
+          this.trailLim.push(this.trail.length);
+
+          this._enqueue(lit, null);
+          const conflict = this._propagate();
+
+          // Undo
+          for (let i = this.trail.length - 1; i >= savedTrail; i--) {
+            const tv = Math.abs(this.trail[i]);
+            this.assigns[tv] = UNDEF;
+            this.reason[tv] = null;
+            this.level[tv] = -1;
+          }
+          this.trail.length = savedTrail;
+          this.trailLim.pop();
+          this.qhead = savedQhead;
+
+          if (conflict) {
+            // lit leads to conflict → must assign -lit
+            this._enqueue(-lit, null);
+            const c2 = this._propagate();
+            if (c2) {
+              this._unsat = true;
+              return { forced, unsat: true };
+            }
+            forced++;
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+    return { forced, unsat: false };
   }
 
   _rebuildWatches() {
