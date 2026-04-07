@@ -81,6 +81,39 @@
   - **102 tests | Blog post updated**
   - **Simplex integrated into DPLL(T)** — linear expression parser, multi-variable constraints
   - **120 tests | Blog post updated with Simplex section**
+- [ ] **Regex Engine** → projects/regex-engine (NEW)
+  - Pure JS, zero deps, regex engine from scratch
+  - Parser (precedence climbing), Thompson's NFA construction, epsilon closure
+  - Subset construction (NFA → DFA), Hopcroft DFA minimization
+  - Character classes, anchors, shorthand classes (\d \w \s), counted repetition
+  - Capturing groups via threaded NFA simulation
+  - search/findAll/replace API, DFA path for simple patterns
+  - **110 tests | Blog post | README**
+- [ ] **Type Inference** → projects/type-inference (NEW)
+  - Pure JS, zero deps, Hindley-Milner type inference (Algorithm W)
+  - Types: TVar, TCon, TFun, TList, TPair
+  - Robinson unification with occurs check, substitution composition
+  - Let-polymorphism (generalize/instantiate), recursive functions (let rec)
+  - Mini-ML parser: lambda, let, if, arithmetic, lists, pairs, builtins
+  - Classic test passes: `let id = \x -> x in (id 42, id true)` → `(Int, Bool)`
+  - Map, filter, fold, church numerals, S combinator all type-check
+  - **119 tests | Blog post | README**
+- [ ] **Forth Interpreter** → projects/forth (NEW)
+  - Pure JS, zero deps, stack-based language interpreter
+  - Dual-mode: interpretation + compilation (: word ... ;)
+  - 50+ builtins: arithmetic, stack, comparison, boolean, I/O, memory
+  - Control flow: if/else/then, do/loop/+loop, begin/until/while/repeat
+  - Variables, constants, recursion (recurse), return stack, comments
+  - Complex programs: FizzBuzz, factorial, fibonacci, GCD, Pythagorean
+  - **73 tests | Blog post | README**
+
+## Today (2026-04-06) — Regex Engine + Type Inference + Forth
+### Session C (Evening)
+- [x] Regex Engine: parser, Thompson's NFA, DFA, Hopcroft minimization, capturing groups — 110 tests
+- [x] Type Inference: Hindley-Milner Algorithm W, unification, let-polymorphism — 119 tests
+- [x] Forth Interpreter: stack machine, compilation mode, 50+ builtins, control flow — 73 tests
+- [x] 3 blog posts published
+- [x] Total new tests: 302 (110 + 119 + 73)
 
 ## Today (2026-04-03) — Prolog Completion + Logic Programming + Boids
 ### Session A (Morning)

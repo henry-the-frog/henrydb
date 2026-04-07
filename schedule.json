@@ -181,24 +181,133 @@
       "completed": "2026-04-07T01:42:54.315Z",
       "duration_ms": 120000,
       "summary": "Session E wrapped: daily log updated, TASKS.md updated, CURRENT.md set to session-ended, git pushed."
+    },
+    {
+      "id": "T18",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session C evening direction: 2 hours, bias toward EXPLORE. Review TASKS.md ideas/backlog. SAT solver has 120 tests + Simplex. Options: (1) EXPLORE a new domain entirely (ECS game engine? regex engine? type checker?), (2) extend SAT solver (proof certificates, AllSAT, MaxSAT), (3) something from backlog (ray tracer motion blur, WASM GC). What has highest learning value and curiosity pull?",
+      "started": "2026-04-07T02:15:45.106Z",
+      "completed": "2026-04-07T02:16:19.785Z",
+      "duration_ms": 60000,
+      "summary": "Direction: build regex engine from scratch. NFA via Thompsons construction, subset construction for DFA, minimization. Classic automata theory not yet explored. 2 hours well-scoped."
+    },
+    {
+      "id": "T19",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan regex engine build. Core: parser (regex string → AST), Thompsons NFA construction, NFA simulation, subset construction (NFA→DFA), DFA minimization (Hopcroft). Features: concat, alternation, Kleene star/plus/optional, character classes, anchors, capturing groups. Tests: matching, edge cases, performance vs native RegExp. Blog post. Break into 2-3 BUILD tasks.",
+      "task": null,
+      "started": "2026-04-07T02:16:34.618Z",
+      "completed": "2026-04-07T02:16:53.350Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 BUILD tasks for regex engine: core NFA/DFA engine + advanced features and blog."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Build regex engine core: parser (regex string to AST with precedence climbing), Thompsons NFA construction (epsilon transitions), NFA simulation (epsilon closure + multi-state), subset construction (NFA to DFA), Hopcroft DFA minimization. Features: literals, dot, alternation, Kleene star/plus/optional, grouping, character classes [abc] [a-z] [^...], shorthand classes \\d\\w\\s, anchors ^$, escaping. Full test suite (60+ tests). Project: projects/regex-engine/",
+      "status": "done",
+      "plan_ref": "T19",
+      "started": "2026-04-07T02:17:01.859Z",
+      "completed": "2026-04-07T02:22:41.250Z",
+      "duration_ms": 600000,
+      "summary": "Built regex engine: parser (precedence climbing), Thompsons NFA construction, epsilon closure simulation, subset construction (NFA→DFA), Hopcroft minimization. Features: literals, dot, alternation, star/plus/opt, groups, character classes with ranges/negation, shorthand classes (\\d \\w \\s), anchors (^ $), counted repetition ({n,m}), escape sequences, search/findAll/replace API. Fixed DFA transition serialization bug (dash char in class ranges). 83 tests, 0 failures."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Advanced regex features + blog: capturing groups with submatch extraction, lazy quantifiers (*? +? ??), counted repetition ({n} {n,m}), find/findAll/replace API, special escapes. Performance comparison vs native RegExp. README. Blog post: Building a Regex Engine from Scratch. Tests to 100+.",
+      "status": "done",
+      "plan_ref": "T19",
+      "started": "2026-04-07T02:23:09.798Z",
+      "completed": "2026-04-07T02:28:40.473Z",
+      "duration_ms": 600000,
+      "summary": "Capturing groups with submatch extraction (threaded NFA simulation), anchored search fixed (position-context NFA), performance benchmarks (50x vs native, but immune to exponential). README, blog post rewritten with real implementation details. 110 tests, 0 failures."
+    },
+    {
+      "id": "T22",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening EXPLORE: Type inference from scratch. Hindley-Milner, Algorithm W, let-polymorphism. Connects to Prolog unification and SAT/SMT. Plan the build.",
+      "started": "2026-04-07T02:29:22.975Z",
+      "completed": "2026-04-07T02:29:36.415Z",
+      "duration_ms": 60000,
+      "summary": "Plan: build Hindley-Milner type inference. Algorithm W, unification, let-polymorphism, type constructors. Small functional language (lambda + let + if + arithmetic + lists). 1.5 hours."
+    },
+    {
+      "id": "T23",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan type inference build: parser for mini functional language, types module, Robinson unification, Algorithm W, let-polymorphism, type constructors (List, Pair, Maybe). Break into 2 BUILD tasks.",
+      "task": null,
+      "started": "2026-04-07T02:29:48.475Z",
+      "completed": "2026-04-07T02:30:05.647Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 BUILD tasks: core Algorithm W + advanced features/blog."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Build core type inference: types module (TVar, TCon, TFun, TList, TPair), Robinson unification with occurs check, substitution composition. Parser for mini-ML (lambda, let, let rec, if-then-else, arithmetic ops, booleans, integers, list literals, cons, head, tail, pair, fst, snd). Algorithm W: infer types by walking AST, fresh type variables, unification constraints, generalization at let-bindings, instantiation at variable use. Tests: basic literals, lambda, application, let-polymorphism (id applied to int and bool), recursive functions (factorial), list operations, pair operations, type errors (if branches disagree, applying non-function). Target: 70+ tests.",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-07T02:30:15.239Z",
+      "completed": "2026-04-07T02:35:00.149Z",
+      "duration_ms": 900000,
+      "summary": "Built Hindley-Milner type inference from scratch: types module (TVar/TCon/TFun/TList/TPair), Robinson unification with occurs check, substitution composition, generalize/instantiate, Algorithm W. Parser for mini-ML (lambda, let, let rec, if, arithmetic, lists, pairs, builtins). Let-polymorphism works (id applied to Int and Bool). Recursive functions (factorial, fibonacci, map, filter, fold). 101 tests, 0 failures."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Advanced type inference + blog: algebraic data types (Maybe/Either/custom), pattern matching with exhaustiveness checking, mutual recursion (let rec f = ... and g = ...), type annotations, better error messages with source locations. README. Blog post: How Type Inference Actually Works. Tests to 100+.",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-07T02:35:23.242Z",
+      "completed": "2026-04-07T02:37:38.957Z",
+      "duration_ms": 600000,
+      "summary": "README, blog post (How Type Inference Actually Works), 18 additional tests (polymorphic swap, nested let-polymorphism, twice/flip combinators, recursive append, list of functions, deeply nested lambda). 119 tests, 0 failures."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a Forth interpreter from scratch. Stack-based language: dictionary of words, operand stack, return stack. Core words: arithmetic, stack manipulation, comparison, I/O, control flow (if/then/else), loops (do/loop, begin/until), definitions (: word ... ;), variables, constants. Tests. Project: projects/forth/",
+      "project": "forth",
+      "started": "2026-04-07T02:38:39.535Z",
+      "completed": "2026-04-07T02:44:06.375Z",
+      "duration_ms": 900000,
+      "summary": "Built Forth interpreter: tokenizer, dual-mode execution (interpretation + compilation), dictionary of 50+ builtins (arithmetic, stack, comparison, boolean, I/O, memory), control flow (if/else/then, do/loop, begin/until/while/repeat), word definitions (: ;), variables, constants, recursion (recurse), return stack, comments. Complex programs: FizzBuzz, factorial, fibonacci, GCD, Pythagorean check. README. 73 tests, 0 failures."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write blog post about building a Forth interpreter. Update TASKS.md with all new projects. Final session wrap.",
+      "project": "forth",
+      "started": "2026-04-07T02:44:38.207Z",
+      "completed": "2026-04-07T02:45:56.880Z",
+      "duration_ms": 300000,
+      "summary": "Forth blog post written. TASKS.md updated with 3 new projects (regex engine, type inference, forth). Session totals logged."
     }
   ],
-  "updated_at": "2026-04-07T01:42:54.315Z",
+  "updated_at": "2026-04-07T02:45:56.880Z",
   "focusProjects": [
-    "sat-solver"
+    "forth",
+    "type-inference"
   ],
   "adjustments": [
     {
-      "time": "2026-04-07T01:38:07.693Z",
-      "msg": "Focus set: [sat-solver]"
+      "time": "2026-04-07T02:38:25.745Z",
+      "msg": "Focus set: [forth, type-inference]"
     },
     {
-      "time": "2026-04-07T01:38:12.984Z",
-      "msg": "Added T16 (BUILD) after end: Integrate Simplex into DPLL(T): wire LIA theory solver into SMT framework. Parse arithmetic constraints from S-expressions. Add combined EUF+LIA tests."
+      "time": "2026-04-07T02:38:33.090Z",
+      "msg": "Added T26 (BUILD) after end: Build a Forth interpreter from scratch. Stack-based language: dictionary of words, operand stack, return stack. Core words: arithmetic, stack manipulation, comparison, I/O, control flow (if/then/else), loops (do/loop, begin/until), definitions (: word ... ;), variables, constants. Tests. Project: projects/forth/"
     },
     {
-      "time": "2026-04-07T01:41:58.685Z",
-      "msg": "Added T17 (MAINTAIN) after end: Session E wrap: update daily log, TASKS.md, CURRENT.md, git push. Update scratch notes with Simplex integration learnings."
+      "time": "2026-04-07T02:44:31.784Z",
+      "msg": "Added T27 (BUILD) after end: Write blog post about building a Forth interpreter. Update TASKS.md with all new projects. Final session wrap."
     }
   ]
 }
