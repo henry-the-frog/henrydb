@@ -4,7 +4,8 @@
 
 import { openSync, readSync, writeSync, fsyncSync, closeSync, existsSync, statSync, ftruncateSync } from 'node:fs';
 import { WALRecord, WAL_TYPES, WAL_TYPE_NAMES } from './wal.js';
-import { encodeTuple, decodeTuple } from './page.js';
+import { encodeTuple, decodeTuple, FreeSpaceMap } from './page.js';
+import { PAGE_SIZE } from './disk-manager.js';
 
 export class FileWAL {
   /**
@@ -174,21 +175,57 @@ export function recoverFromFileWAL(heap, wal) {
   // Check last applied LSN — skip recovery if data is up to date
   const lastAppliedLSN = heap._dm ? heap._dm.lastAppliedLSN : 0;
   
-  const records = wal.readFromStable(Math.max(wal.lastCheckpointLsn, lastAppliedLSN));
+  const allRecords = wal.readFromStable(0);
+  if (allRecords.length === 0) return { redone: 0, skipped: 0, committedTxns: 0 };
+  
+  const maxWalLSN = allRecords[allRecords.length - 1].lsn;
+  
+  // If all WAL records are already applied, skip recovery
+  if (lastAppliedLSN >= maxWalLSN) {
+    return { redone: 0, skipped: 0, committedTxns: 0 };
+  }
   
   // Phase 1: Analysis — identify committed transactions
   const committedTxns = new Set();
   const abortedTxns = new Set();
-  for (const r of records) {
+  for (const r of allRecords) {
     if (r.type === WAL_TYPES.COMMIT) committedTxns.add(r.txId);
     if (r.type === WAL_TYPES.ABORT) abortedTxns.add(r.txId);
   }
   
-  // Phase 2: Redo — replay committed operations for this heap's table only
+  // Phase 2: Clear heap data and rebuild from WAL
+  // This ensures page/slot assignments match the original layout exactly
+  // We need to clear all pages and replay from scratch for this table
+  const dm = heap._dm;
+  const bp = heap._bp;
+  
+  // Evict all pages from buffer pool first
+  if (bp && bp.flushAll) {
+    bp.flushAll((pid, data) => dm.writePage(pid, data));
+  }
+  
+  // Clear all data pages (write zeroed pages)
+  for (let i = 0; i < dm.pageCount; i++) {
+    const zeroBuf = Buffer.alloc(PAGE_SIZE);
+    dm.writePage(i, zeroBuf);
+  }
+  // Reset page count to 0
+  dm._pageCount = 0;
+  dm._freeListHead = -1;
+  dm._writeHeader();
+  
+  // Re-initialize FSM
+  heap._fsm = new FreeSpaceMap();
+  
+  // Phase 3: Redo — replay committed operations for this heap's table only
   let redone = 0;
   let skipped = 0;
   
-  for (const r of records) {
+  // Disable WAL on heap during recovery to avoid recursive logging
+  const savedWal = heap._wal;
+  heap._wal = null;
+  
+  for (const r of allRecords) {
     if (!committedTxns.has(r.txId)) {
       skipped++;
       continue;
@@ -225,7 +262,15 @@ export function recoverFromFileWAL(heap, wal) {
     }
   }
   
+  // Restore WAL reference
+  heap._wal = savedWal;
+  
   heap.flush();
+  
+  // Update lastAppliedLSN
+  if (dm) {
+    dm.lastAppliedLSN = maxWalLSN;
+  }
   
   return { redone, skipped, committedTxns: committedTxns.size };
 }

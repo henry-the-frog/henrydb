@@ -114,6 +114,11 @@ export class FileBackedHeap {
     this._bp.setEvictCallback((pageId, data) => {
       this._enforceWriteAhead(pageId);
       this._dm.writePage(pageId, data);
+      // Track the max LSN written to disk so recovery skips already-applied records
+      const pageLsn = this._pageLSNs.get(pageId) || 0;
+      if (pageLsn > this._dm.lastAppliedLSN) {
+        this._dm.lastAppliedLSN = pageLsn;
+      }
     });
     
     // Initialize FSM from existing pages
@@ -135,6 +140,11 @@ export class FileBackedHeap {
       const slotIdx = page.insertTuple(tupleBytes);
       if (slotIdx >= 0) {
         this._fsm.update(targetPageId, page.freeSpace());
+        // WAL: log insert before marking page dirty
+        if (this._wal) {
+          const lsn = this._wal.appendInsert(this._currentTxId || 0, this.name, targetPageId, slotIdx, values);
+          this.setPageLSN(targetPageId, lsn);
+        }
         this._unpinPage(targetPageId, true);
         return { pageId: targetPageId, slotIdx };
       }
@@ -147,6 +157,10 @@ export class FileBackedHeap {
       const slotIdx = page.insertTuple(tupleBytes);
       if (slotIdx >= 0) {
         this._fsm.update(i, page.freeSpace());
+        if (this._wal) {
+          const lsn = this._wal.appendInsert(this._currentTxId || 0, this.name, i, slotIdx, values);
+          this.setPageLSN(i, lsn);
+        }
         this._unpinPage(i, true);
         return { pageId: i, slotIdx };
       }
@@ -159,6 +173,10 @@ export class FileBackedHeap {
     page.initialize();
     const slotIdx = page.insertTuple(tupleBytes);
     this._fsm.update(pageId, page.freeSpace());
+    if (this._wal) {
+      const lsn = this._wal.appendInsert(this._currentTxId || 0, this.name, pageId, slotIdx, values);
+      this.setPageLSN(pageId, lsn);
+    }
     this._unpinPage(pageId, true);
     return { pageId, slotIdx };
   }
@@ -174,6 +192,17 @@ export class FileBackedHeap {
 
   /** Delete a tuple by marking its slot as empty. */
   delete(pageId, slotIdx) {
+    // WAL: log delete before modifying page
+    if (this._wal) {
+      const page = this._fetchPage(pageId);
+      const tuple = page.getTuple(slotIdx);
+      const beforeData = tuple ? decodeTuple(tuple) : null;
+      this._unpinPage(pageId, false);
+      if (beforeData) {
+        const lsn = this._wal.appendDelete(this._currentTxId || 0, this.name, pageId, slotIdx, beforeData);
+        this.setPageLSN(pageId, lsn);
+      }
+    }
     const page = this._fetchPage(pageId);
     const result = page.deleteTuple(slotIdx);
     this._unpinPage(pageId, result);
