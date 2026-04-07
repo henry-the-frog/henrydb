@@ -206,19 +206,83 @@ export class LSMTree {
   }
 
   /**
-   * Compact: merge oldest SSTables to reduce read amplification.
+   * Compact: merge SSTables using leveled compaction strategy.
+   * 
+   * Leveled compaction (LevelDB/RocksDB style):
+   * - Level 0: raw flushed SSTables (may overlap)
+   * - Level 1+: non-overlapping, sorted SSTables
+   * - When level L has too many SSTables, pick one and merge into level L+1
+   * - Size ratio: each level is ~10x larger than previous
+   * 
+   * This simple implementation uses a two-level approach:
+   * - "young" SSTables (recently flushed, may overlap)
+   * - "old" SSTables (compacted, non-overlapping, sorted)
    */
   _compact() {
     if (this._sstables.length < 2) return;
     
-    // Merge the two oldest SSTables
+    // Separate SSTables by level
+    const byLevel = new Map();
+    for (const sst of this._sstables) {
+      const level = sst.level || 0;
+      if (!byLevel.has(level)) byLevel.set(level, []);
+      byLevel.get(level).push(sst);
+    }
+    
+    // Level 0: if more than 4 SSTables, merge all level-0 into level-1
+    const level0 = byLevel.get(0) || [];
+    if (level0.length >= 4) {
+      // Merge all level-0 SSTables together
+      let merged = level0[0].entries;
+      for (let i = 1; i < level0.length; i++) {
+        merged = mergeSorted(merged, level0[i].entries);
+      }
+      
+      // Also merge with any overlapping level-1 SSTables
+      const level1 = byLevel.get(1) || [];
+      for (const l1sst of level1) {
+        merged = mergeSorted(merged, l1sst.entries);
+      }
+      
+      const compacted = new SSTable(merged);
+      compacted.level = 1;
+      
+      // Replace all merged SSTables with the single compacted one
+      this._sstables = [
+        ...this._sstables.filter(s => s.level >= 2), // Keep higher levels
+        compacted
+      ];
+      this._compactionCount++;
+      return;
+    }
+    
+    // Level 1+: if a level has too many SSTables, promote to next level
+    for (const [level, sstables] of byLevel) {
+      if (level === 0) continue;
+      const maxForLevel = Math.pow(10, level); // 10, 100, 1000, ...
+      
+      if (sstables.length > maxForLevel) {
+        // Merge the two oldest at this level
+        const older = sstables.pop();
+        const newer = sstables.pop();
+        const merged = mergeSorted(older.entries, newer.entries);
+        const compacted = new SSTable(merged);
+        compacted.level = level + 1;
+        
+        // Update the global list
+        this._sstables = this._sstables.filter(s => s !== older && s !== newer);
+        this._sstables.push(compacted);
+        this._compactionCount++;
+        return;
+      }
+    }
+    
+    // Fallback: merge two oldest
     const older = this._sstables.pop();
     const newer = this._sstables.pop();
-    
     const merged = mergeSorted(older.entries, newer.entries);
     const compacted = new SSTable(merged);
     compacted.level = Math.max(older.level, newer.level) + 1;
-    
     this._sstables.push(compacted);
     this._compactionCount++;
   }
