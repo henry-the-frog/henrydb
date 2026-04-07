@@ -10,6 +10,7 @@
 // Read path: check memtable → check SSTables (newest first)
 
 import { SkipList } from './skip-list.js';
+import { BloomFilter } from './bloom-filter.js';
 
 // Tombstone marker for deletes (so they propagate through compaction)
 const TOMBSTONE = Symbol('TOMBSTONE');
@@ -22,7 +23,11 @@ class SSTable {
   constructor(entries = []) {
     // entries: [{ key, value }] sorted by key
     this._entries = entries;
-    this._bloomFilter = new Set(entries.map(e => e.key)); // Simple bloom approximation
+    // Use proper Bloom filter for probabilistic membership testing
+    this._bloomFilter = new BloomFilter(Math.max(entries.length, 10), 0.01);
+    for (const entry of entries) {
+      this._bloomFilter.add(entry.key);
+    }
     this.level = 0;
     this.created = Date.now();
   }
@@ -31,8 +36,8 @@ class SSTable {
    * Binary search for a key.
    */
   get(key) {
-    // Quick bloom check
-    if (!this._bloomFilter.has(key)) return undefined;
+    // Quick bloom check — skip binary search for keys definitely not present
+    if (!this._bloomFilter.mightContain(key)) return undefined;
     
     let lo = 0, hi = this._entries.length - 1;
     while (lo <= hi) {
