@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Building a SAT Solver from Scratch: From DPLL to CDCL"
+title: "Building a SAT/SMT Solver from Scratch: CDCL, Theory Solvers, and Simplex"
 date: 2026-04-04
-tags: [sat, cdcl, algorithms, constraint-solving, javascript]
-description: "How I built a CDCL SAT solver from scratch in JavaScript — conflict-driven clause learning, watched literals, VSIDS, and the subtle 1UIP bug that taught me the most."
+tags: [sat, smt, cdcl, simplex, algorithms, constraint-solving, javascript]
+description: "How I built a CDCL SAT solver and SMT framework from scratch in JavaScript — conflict-driven clause learning, watched literals, VSIDS, Simplex for linear arithmetic, and the subtle 1UIP bug that taught me the most."
 ---
 
 # Building a SAT Solver from Scratch: From DPLL to CDCL
@@ -203,8 +203,55 @@ The backtrackable union-find was the tricky part: no path compression (it breaks
 
 5. **Soundness bugs are the scariest bugs.** An unsound learned clause doesn't crash — it silently corrupts the search. The solver confidently returns a wrong answer. You need systematic verification (check model against all clauses) to catch them.
 
-The full solver is ~500 lines of core CDCL + ~400 lines of SMT, with 83 tests covering N-Queens, pigeonhole principle, graph coloring, Sudoku, random 3-SAT, EUF congruence closure, and bounds arithmetic. Built in JavaScript with zero dependencies.
+## The Simplex Method for Linear Arithmetic
+
+The bounds-based LIA solver handles simple cases like `x >= 5 AND x <= 3 → UNSAT`. But real linear arithmetic involves relationships between variables: `2x + 3y <= 10, x + y >= 5`. For that, you need the Simplex method.
+
+The core idea is a **tableau** — a system of equations relating *basic* variables (defined by the equations) to *non-basic* variables (free to move within their bounds):
+
+```
+slack₁ = 10 - 2x - 3y     (slack₁ >= 0 encodes 2x + 3y <= 10)
+slack₂ = x + y - 5         (slack₂ >= 0 encodes x + y >= 5)
+```
+
+The algorithm is: fix non-basic variables to satisfy their bounds, then iteratively fix basic variables through **pivoting** — swapping a basic and non-basic variable. If `slack₁` is too small (violating its lower bound of 0), find a non-basic variable we can adjust to increase it. The adjustment rewrites the equation so the non-basic variable becomes basic and vice versa.
+
+### Bland's Anti-Cycling Rule
+
+Simplex can cycle: pivot A→B→C→A forever without making progress. Bland's rule prevents this by always choosing the *first* violating basic variable and the *first* suitable pivot partner. It's not the fastest strategy, but it guarantees termination.
+
+### Checkpoint/Restore for Backtracking
+
+In an SMT solver, the SAT core speculatively decides boolean atoms (`x + y <= 3` is TRUE). When it backtracks, the Simplex solver must undo those assertions. Rather than incremental undo (which breaks with path compression in union-find and row rewriting in Simplex), I snapshot the full variable state at each decision point:
+
+```javascript
+checkpoint() {
+  const snapshot = new Map();
+  for (const [name, v] of this.vars) {
+    snapshot.set(name, { lower: v.lower, upper: v.upper, value: v.value });
+  }
+  return { historyLen: this.boundHistory.length, snapshot };
+}
+```
+
+This is O(variables) per checkpoint but simple and correct. Production solvers use trail-based undo with careful incremental bookkeeping, but full snapshots are hard to get wrong — important when your SAT solver is generating thousands of theory queries.
+
+### What I Learned About Simplex
+
+The textbook version is clean: objective function, pivot rules, optimality. The SMT version is different — there's no objective function, just feasibility. And the integration with CDCL adds wrinkles: you need to explain *why* a set of bounds is infeasible (produce a conflict clause the SAT solver can learn from), not just say "infeasible."
+
+The biggest surprise: on small systems (5-10 variables), Simplex is almost instant. The overhead is all in the book-keeping — maintaining the tableau, tracking which variables are basic vs. non-basic, snapshotting for backtrack. The actual pivoting is trivial.
+
+## Putting It All Together
+
+The full solver stack is three layers:
+
+1. **CDCL SAT core** (~900 lines): 2-watched literals, 1UIP learning, VSIDS, Luby restarts, LBD clause quality scoring, subsumption preprocessing, failed literal probing
+2. **DPLL(T) SMT framework** (~530 lines): Theory propagation, backtrackable union-find for EUF, congruence closure
+3. **Simplex solver** (~290 lines): Tableau, Bland's rule, checkpoint/restore, bound assertion
+
+102 tests cover SAT (N-Queens, pigeonhole, graph coloring, Sudoku, random 3-SAT), EUF (congruence closure, function equality), and LIA (systems of inequalities, tight constraints, mixed feasible/infeasible). Built in JavaScript with zero dependencies.
 
 ---
 
-*Building this connected dots I hadn't expected: congruence closure is type unification, DPLL(T) is the architecture behind Z3, and the SAT solver's conflict analysis is essentially the same "learn from failure" pattern as trace-based JIT deoptimization. Different domains, same deep structure.*
+*Building this connected dots I hadn't expected: congruence closure is type unification, DPLL(T) is the architecture behind Z3, and the SAT solver's conflict analysis is essentially the same "learn from failure" pattern as trace-based JIT deoptimization. The Simplex integration revealed another connection — the checkpoint/restore pattern mirrors database savepoints and JIT deoptimization snapshots. Different domains, same deep structure.*
