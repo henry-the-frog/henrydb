@@ -68,17 +68,32 @@
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: query planner cost model improvements + WAL stats",
-      "task": null
+      "task": null,
+      "started": "2026-04-08T14:24:25.634Z",
+      "completed": "2026-04-08T14:25:26.611Z",
+      "duration_ms": 120000,
+      "summary": "Planner already has histograms, MCV, DP join reordering, 3 join strategies, index scan cost model. Pivoted from basic stats (already exists) to planner↔pipeline compiler integration for compiled query execution using optimal join plans."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Integrate cost-based planner with pipeline JIT compiler — planner chooses join strategy, pipeline compiler generates optimized code",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T14:25:36.550Z",
+      "completed": "2026-04-08T14:32:06.924Z",
+      "duration_ms": 600000,
+      "summary": "Built CompiledQueryEngine: integrates cost-based planner with pipeline compilation. Hash join, merge join, nested loop all compiled. 127x speedup on 500-customer join benchmark. 17 tests, all pass. 2242 total HenryDB tests, 0 regressions."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Test: EXPLAIN shows JIT plan, TPC-H-style queries use optimal join order with compilation",
+      "status": "upcoming",
+      "plan_ref": "T6"
     },
     {
       "id": "T8",
@@ -242,6 +257,10 @@
     {
       "time": "2026-04-08T14:17:22.369Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T14:25:19.552Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
