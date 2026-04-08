@@ -200,8 +200,12 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "HenryDB: EXPLAIN COMPILED integrated into db.execute for SQL-level access",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-04-08T14:44:36.942Z",
+      "completed": "2026-04-08T14:48:20.037Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN COMPILED integrated into SQL. Parser handles EXPLAIN COMPILED SELECT, db.js produces compiled plan output showing access method, join strategies, compilation decision, estimated cost. 6 tests, all pass."
     },
     {
       "id": "T16",

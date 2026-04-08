@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T14:44:11.513Z",
+  "generated": "2026-04-08T14:48:20.073Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: compiled aggregation in pipeline (push GROUP BY + SUM/COUNT/AVG into compiled loop)",
-    "completedAt": "2026-04-08T14:44:11.513Z",
-    "taskId": "T15",
-    "summary": "Compiled aggregation: GROUP BY + SUM/COUNT/AVG/MIN/MAX pushed into compiled pipeline. NULL handling, whole-table agg, join+GROUP BY all work. 11 tests, all pass. 100K rows/1000 groups in 100ms.",
-    "durationMs": 300000
+    "task": "HenryDB: EXPLAIN COMPILED integrated into db.execute for SQL-level access",
+    "completedAt": "2026-04-08T14:48:20.073Z",
+    "taskId": "T22",
+    "summary": "EXPLAIN COMPILED integrated into SQL. Parser handles EXPLAIN COMPILED SELECT, db.js produces compiled plan output showing access method, join strategies, compilation decision, estimated cost. 6 tests, all pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -232,12 +232,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 18,
+    "blocksCompleted": 19,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 7,
+      "BUILD": 8,
       "MAINTAIN": 3
     }
   }
