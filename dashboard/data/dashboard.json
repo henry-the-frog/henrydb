@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T17:51:45.515Z",
+  "generated": "2026-04-08T17:54:54.472Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push + dashboard",
-    "completedAt": "2026-04-08T17:51:45.515Z",
-    "taskId": "T196",
-    "summary": "329 objects pushed. 2817 tests.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: comprehensive integration tests — cross-module tests spanning multiple subsystems",
+    "completedAt": "2026-04-08T17:54:54.472Z",
+    "taskId": "T197",
+    "summary": "12 cross-module integration tests. Fixed CMS hash bug (operator precedence). Tests: B+tree+buffer pool, lock mgr+deadlock, WAL+replay, sketches for optimization, bitmap+expression compiler, hash table comparison, constant folder+expression compiler, ring buffer history, skip list memtable.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 194,
+    "blocksCompleted": 195,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 142,
+      "BUILD": 143,
       "MAINTAIN": 39,
       "EXPLORE": 2
     }

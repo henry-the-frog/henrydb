@@ -2113,6 +2113,31 @@
       "completed": "2026-04-08T17:51:45.478Z",
       "duration_ms": 30000,
       "summary": "329 objects pushed. 2817 tests."
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: comprehensive integration tests — cross-module tests spanning multiple subsystems",
+      "project": "henrydb",
+      "started": "2026-04-08T17:51:54.631Z",
+      "completed": "2026-04-08T17:54:54.435Z",
+      "duration_ms": 180000,
+      "summary": "12 cross-module integration tests. Fixed CMS hash bug (operator precedence). Tests: B+tree+buffer pool, lock mgr+deadlock, WAL+replay, sketches for optimization, bitmap+expression compiler, hash table comparison, constant folder+expression compiler, ring buffer history, skip list memtable."
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: property-based tests — randomized tests for data structures",
+      "project": "henrydb"
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: edge case tests — null handling, overflow, empty collections",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2912,6 +2937,18 @@
     {
       "time": "2026-04-08T17:48:54.722Z",
       "msg": "Added T196 (MAINTAIN) after end: Push + dashboard"
+    },
+    {
+      "time": "2026-04-08T17:51:54.043Z",
+      "msg": "Added T197 (BUILD) after end: HenryDB: comprehensive integration tests — cross-module tests spanning multiple subsystems"
+    },
+    {
+      "time": "2026-04-08T17:51:54.163Z",
+      "msg": "Added T198 (BUILD) after end: HenryDB: property-based tests — randomized tests for data structures"
+    },
+    {
+      "time": "2026-04-08T17:51:54.282Z",
+      "msg": "Added T199 (BUILD) after end: HenryDB: edge case tests — null handling, overflow, empty collections"
     }
   ]
 }
