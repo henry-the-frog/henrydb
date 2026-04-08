@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:24:35.175Z",
+  "generated": "2026-04-08T16:25:45.523Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: cuckoo hash table — faster than chaining for high load factors",
-    "completedAt": "2026-04-08T16:24:35.175Z",
-    "taskId": "T87",
-    "summary": "Cuckoo hash table: O(1) worst-case lookup (check 2 positions), cuckoo eviction on collision, auto-resize. 1000 sequential inserts, string+integer keys. 10 tests.",
+    "task": "HenryDB: Robin Hood hash table — minimize variance in probe sequences",
+    "completedAt": "2026-04-08T16:25:45.523Z",
+    "taskId": "T88",
+    "summary": "Robin Hood hash table: open addressing with displacement stealing, backward-shift delete. Max displacement 5 on 500 keys, 1.27 avg probes/lookup. 8 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -935,12 +935,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 85,
+    "blocksCompleted": 86,
     "blocksTotal": 86,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 51,
+      "BUILD": 52,
       "MAINTAIN": 21,
       "EXPLORE": 2
     }
