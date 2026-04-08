@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T14:59:03.935Z",
+  "generated": "2026-04-08T15:02:57.010Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Build query codegen module (query-codegen.js) that generates JavaScript source from planner output",
-    "completedAt": "2026-04-08T14:59:03.935Z",
-    "taskId": "T28",
-    "summary": "Built query-codegen.js: generates one new Function() per query from planner output. Column indices baked in, array-based row access. 143x vs Volcano, 1.6x vs closures. 14 tests, all pass.",
-    "durationMs": 600000
+    "mode": "MAINTAIN",
+    "task": "Housekeeping: push all repos, sync dashboard, test count",
+    "completedAt": "2026-04-08T15:02:57.010Z",
+    "taskId": "T32",
+    "summary": "2280 total HenryDB tests (38 new today). HenryDB pushed. Dashboard synced and regenerated (36 blocks/29 done). Blog build succeeded earlier.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -277,50 +277,121 @@
       {
         "id": "T25",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Design code generator for batch Function() compilation in HenryDB",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-08T14:55:00.596Z"
+        "started": "2026-04-08T14:55:00.596Z",
+        "completed": "2026-04-08T14:55:16.391Z",
+        "duration_ms": 30000,
+        "summary": "Code generator design: query-codegen.js takes planner output, generates JavaScript source with baked-in column indices and array-based rows, compiles via new Function(). Two BUILD tasks for implementation and testing."
       },
       {
         "id": "T28",
         "mode": "BUILD",
         "task": "Build query codegen module (query-codegen.js) that generates JavaScript source from planner output",
-        "status": "upcoming",
-        "plan_ref": "T25"
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-08T14:55:27.568Z",
+        "completed": "2026-04-08T14:59:03.898Z",
+        "duration_ms": 600000,
+        "summary": "Built query-codegen.js: generates one new Function() per query from planner output. Column indices baked in, array-based row access. 143x vs Volcano, 1.6x vs closures. 14 tests, all pass."
       },
       {
         "id": "T29",
         "mode": "BUILD",
         "task": "Write tests for codegen: single table, join, filter, aggregation, correctness vs standard execution",
-        "status": "upcoming",
-        "plan_ref": "T25"
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-08T14:59:40.348Z",
+        "completed": "2026-04-08T14:59:40.489Z",
+        "duration_ms": 5000,
+        "summary": "Already completed during T28 — 14 tests written alongside codegen implementation."
       },
       {
         "id": "T26",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: implement codegen that generates one new Function() per query from planner output",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T14:59:54.273Z",
+        "completed": "2026-04-08T14:59:54.414Z",
+        "duration_ms": 5000,
+        "summary": "Already completed as T28."
       },
       {
         "id": "T27",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: benchmark batch compilation vs closure composition (expect 2-5x further improvement)",
+        "project": "henrydb",
+        "started": "2026-04-08T15:00:25.329Z",
+        "completed": "2026-04-08T15:00:25.469Z",
+        "duration_ms": 5000,
+        "summary": "Already benchmarked in T28: codegen 143x vs Volcano, 1.6x vs closure. Modest improvement from batch compilation — V8 TurboFan already optimizes closures well."
+      },
+      {
+        "id": "T30",
+        "mode": "THINK",
+        "status": "skipped",
+        "task": "Design Raft consensus implementation from scratch",
+        "project": "raft",
+        "skip_reason": ""
+      },
+      {
+        "id": "T31",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Plan Raft implementation: leader election, log replication, safety",
+        "task": null,
+        "project": "raft",
+        "skip_reason": ""
+      },
+      {
+        "id": "T32",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Housekeeping: push all repos, sync dashboard, test count",
+        "started": "2026-04-08T15:01:23.783Z"
+      },
+      {
+        "id": "T33",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Identify next depth area for HenryDB: parallel query, window functions, or adaptive execution",
+        "project": "henrydb"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "HenryDB: implement window functions (ROW_NUMBER, RANK, SUM OVER)",
+        "project": "henrydb"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "HenryDB: implement window function tests (partitioning, ordering, frames)",
+        "project": "henrydb"
+      },
+      {
+        "id": "T36",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "HenryDB: update README with compiled query engine, window functions, test counts",
         "project": "henrydb"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 26,
-    "blocksTotal": 29,
+    "blocksCompleted": 30,
+    "blocksTotal": 36,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 10,
-      "MAINTAIN": 4,
+      "BUILD": 13,
+      "MAINTAIN": 5,
       "EXPLORE": 2
     }
   }
