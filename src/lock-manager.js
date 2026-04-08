@@ -1,219 +1,190 @@
-// lock-manager.js — Lock manager with deadlock detection for HenryDB
-// Supports shared (S) and exclusive (X) locks.
-// Detects deadlocks via wait-for graph cycle detection.
+// lock-manager.js — Lock Manager with compatibility matrix
+// Supports: S (shared), X (exclusive), IS (intention shared), IX (intention exclusive), SIX
+// Compatibility matrix determines which lock modes can coexist.
+// Used for multigranularity locking (database → table → page → row).
 
-const LockMode = { SHARED: 'S', EXCLUSIVE: 'X' };
+const MODES = { S: 'S', X: 'X', IS: 'IS', IX: 'IX', SIX: 'SIX' };
+
+// Compatibility matrix: can lock mode A be granted if mode B is held?
+const COMPATIBLE = {
+  //       IS    IX    S     SIX   X
+  IS:  { IS: true,  IX: true,  S: true,  SIX: true,  X: false },
+  IX:  { IS: true,  IX: true,  S: false, SIX: false, X: false },
+  S:   { IS: true,  IX: false, S: true,  SIX: false, X: false },
+  SIX: { IS: true,  IX: false, S: false, SIX: false, X: false },
+  X:   { IS: false, IX: false, S: false, SIX: false, X: false },
+};
 
 /**
- * Lock request in the queue.
- */
-class LockRequest {
-  constructor(txId, mode) {
-    this.txId = txId;
-    this.mode = mode;
-    this.granted = false;
-  }
-}
-
-/**
- * Lock Manager with deadlock detection.
+ * LockManager — multigranularity lock manager.
  */
 export class LockManager {
   constructor() {
-    this._lockTable = new Map(); // resource → LockRequest[]
-    this._txLocks = new Map();   // txId → Set<resource>
-    this._waitFor = new Map();   // txId → Set<txId> (wait-for graph)
+    // resourceId → { holders: Map<txnId, mode>, waitQueue: [{txnId, mode, resolve, reject}] }
+    this._locks = new Map();
+    this.stats = { grants: 0, waits: 0, upgrades: 0, releases: 0, deadlockAborts: 0 };
   }
 
   /**
-   * Acquire a lock. Returns true if granted, throws on deadlock.
+   * Acquire a lock. Returns immediately if compatible, otherwise waits.
+   * 
+   * @param {string} txnId
+   * @param {string} resourceId
+   * @param {string} mode - 'S' | 'X' | 'IS' | 'IX' | 'SIX'
+   * @returns {Promise<boolean>} true if granted
    */
-  lock(txId, resource, mode = LockMode.EXCLUSIVE) {
-    if (!this._lockTable.has(resource)) {
-      this._lockTable.set(resource, []);
-    }
-    if (!this._txLocks.has(txId)) {
-      this._txLocks.set(txId, new Set());
+  async acquire(txnId, resourceId, mode) {
+    if (!COMPATIBLE[mode]) throw new Error(`Invalid lock mode: ${mode}`);
+
+    if (!this._locks.has(resourceId)) {
+      this._locks.set(resourceId, { holders: new Map(), waitQueue: [] });
     }
 
-    const requests = this._lockTable.get(resource);
-    
-    // Check if this tx already holds a compatible lock
-    const existing = requests.find(r => r.txId === txId && r.granted);
-    if (existing) {
-      if (existing.mode === LockMode.EXCLUSIVE || mode === LockMode.SHARED) {
+    const lock = this._locks.get(resourceId);
+
+    // Already hold this or stronger lock?
+    if (lock.holders.has(txnId)) {
+      const currentMode = lock.holders.get(txnId);
+      if (currentMode === mode || this._isStronger(currentMode, mode)) {
         return true; // Already have sufficient lock
       }
-      // Upgrade S → X: need to check compatibility
-      if (this._canGrant(resource, txId, LockMode.EXCLUSIVE)) {
-        existing.mode = LockMode.EXCLUSIVE;
+      // Upgrade attempt
+      if (this._canGrant(lock, txnId, mode)) {
+        lock.holders.set(txnId, mode);
+        this.stats.upgrades++;
         return true;
       }
     }
 
-    // Check if lock can be granted immediately
-    if (this._canGrant(resource, txId, mode)) {
-      const req = new LockRequest(txId, mode);
-      req.granted = true;
-      requests.push(req);
-      this._txLocks.get(txId).add(resource);
+    // Can we grant immediately?
+    if (this._canGrant(lock, txnId, mode)) {
+      lock.holders.set(txnId, mode);
+      this.stats.grants++;
       return true;
     }
 
-    // Cannot grant immediately — check for deadlock before waiting
-    const holders = this._getHolders(resource);
-    this._addWaitEdges(txId, holders);
-    
-    if (this._detectDeadlock(txId)) {
-      this._removeWaitEdges(txId);
-      throw new Error(`Deadlock detected: transaction ${txId} would cause a cycle`);
+    // Must wait
+    this.stats.waits++;
+    return new Promise((resolve, reject) => {
+      lock.waitQueue.push({ txnId, mode, resolve, reject });
+    });
+  }
+
+  /**
+   * Try to acquire without waiting. Returns true if granted, false otherwise.
+   */
+  tryAcquire(txnId, resourceId, mode) {
+    if (!this._locks.has(resourceId)) {
+      this._locks.set(resourceId, { holders: new Map(), waitQueue: [] });
     }
 
-    // In a real system we'd block here. In our simulation, we just queue it.
-    const req = new LockRequest(txId, mode);
-    requests.push(req);
-    this._txLocks.get(txId).add(resource);
-    return false; // Not granted (would need to wait)
+    const lock = this._locks.get(resourceId);
+
+    if (lock.holders.has(txnId)) {
+      const currentMode = lock.holders.get(txnId);
+      if (currentMode === mode || this._isStronger(currentMode, mode)) return true;
+    }
+
+    if (this._canGrant(lock, txnId, mode)) {
+      lock.holders.set(txnId, mode);
+      this.stats.grants++;
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Release a lock held by a transaction on a resource.
+   */
+  release(txnId, resourceId) {
+    const lock = this._locks.get(resourceId);
+    if (!lock || !lock.holders.has(txnId)) return false;
+
+    lock.holders.delete(txnId);
+    this.stats.releases++;
+
+    // Try to grant waiting requests
+    this._processWaitQueue(lock);
+
+    // Clean up empty locks
+    if (lock.holders.size === 0 && lock.waitQueue.length === 0) {
+      this._locks.delete(resourceId);
+    }
+
+    return true;
   }
 
   /**
    * Release all locks held by a transaction.
    */
-  unlock(txId) {
-    const resources = this._txLocks.get(txId);
-    if (!resources) return;
-
-    for (const resource of resources) {
-      const requests = this._lockTable.get(resource);
-      if (!requests) continue;
-      
-      // Remove this tx's requests
-      const filtered = requests.filter(r => r.txId !== txId);
-      this._lockTable.set(resource, filtered);
-      
-      // Try to grant waiting requests
-      this._grantWaiting(resource);
-    }
-
-    this._txLocks.delete(txId);
-    this._waitFor.delete(txId);
-    
-    // Remove this tx from other wait-for edges
-    for (const [, waitSet] of this._waitFor) {
-      waitSet.delete(txId);
+  releaseAll(txnId) {
+    for (const [resourceId, lock] of this._locks) {
+      if (lock.holders.has(txnId)) {
+        this.release(txnId, resourceId);
+      }
+      // Remove from wait queues
+      lock.waitQueue = lock.waitQueue.filter(w => {
+        if (w.txnId === txnId) {
+          w.reject(new Error('Transaction aborted'));
+          return false;
+        }
+        return true;
+      });
     }
   }
 
   /**
-   * Release a specific lock.
+   * Check if a transaction holds a lock on a resource.
    */
-  unlockResource(txId, resource) {
-    const requests = this._lockTable.get(resource);
-    if (!requests) return;
-    
-    const filtered = requests.filter(r => r.txId !== txId);
-    this._lockTable.set(resource, filtered);
-    
-    const txResources = this._txLocks.get(txId);
-    if (txResources) txResources.delete(resource);
-    
-    this._grantWaiting(resource);
+  isHeldBy(txnId, resourceId) {
+    const lock = this._locks.get(resourceId);
+    return lock ? lock.holders.has(txnId) : false;
   }
 
   /**
-   * Check if a lock can be granted.
+   * Get the lock mode held by a transaction.
    */
-  _canGrant(resource, txId, mode) {
-    const requests = this._lockTable.get(resource) || [];
-    const granted = requests.filter(r => r.granted && r.txId !== txId);
-    
-    if (granted.length === 0) return true;
-    
-    if (mode === LockMode.SHARED) {
-      // S lock: compatible with other S locks
-      return granted.every(r => r.mode === LockMode.SHARED);
-    }
-    
-    // X lock: incompatible with everything
-    return false;
+  getLockMode(txnId, resourceId) {
+    const lock = this._locks.get(resourceId);
+    return lock ? lock.holders.get(txnId) : null;
   }
 
-  _getHolders(resource) {
-    const requests = this._lockTable.get(resource) || [];
-    return requests.filter(r => r.granted).map(r => r.txId);
+  _canGrant(lock, txnId, requestedMode) {
+    for (const [holderId, heldMode] of lock.holders) {
+      if (holderId === txnId) continue; // Skip self
+      if (!COMPATIBLE[requestedMode][heldMode]) return false;
+    }
+    return true;
   }
 
-  _addWaitEdges(txId, holders) {
-    if (!this._waitFor.has(txId)) {
-      this._waitFor.set(txId, new Set());
-    }
-    for (const holder of holders) {
-      if (holder !== txId) {
-        this._waitFor.get(txId).add(holder);
+  _processWaitQueue(lock) {
+    const remaining = [];
+    for (const waiter of lock.waitQueue) {
+      if (this._canGrant(lock, waiter.txnId, waiter.mode)) {
+        lock.holders.set(waiter.txnId, waiter.mode);
+        this.stats.grants++;
+        waiter.resolve(true);
+      } else {
+        remaining.push(waiter);
       }
     }
+    lock.waitQueue = remaining;
   }
 
-  _removeWaitEdges(txId) {
-    this._waitFor.delete(txId);
+  _isStronger(held, requested) {
+    const strength = { IS: 0, S: 1, IX: 2, SIX: 3, X: 4 };
+    return strength[held] >= strength[requested];
   }
 
-  /**
-   * Detect deadlock using DFS cycle detection on the wait-for graph.
-   */
-  _detectDeadlock(startTx) {
-    const visited = new Set();
-    const stack = new Set();
-    
-    const dfs = (tx) => {
-      if (stack.has(tx)) return true; // Cycle!
-      if (visited.has(tx)) return false;
-      
-      visited.add(tx);
-      stack.add(tx);
-      
-      const waitsFor = this._waitFor.get(tx) || new Set();
-      for (const dep of waitsFor) {
-        if (dfs(dep)) return true;
-      }
-      
-      stack.delete(tx);
-      return false;
-    };
-    
-    return dfs(startTx);
-  }
-
-  _grantWaiting(resource) {
-    const requests = this._lockTable.get(resource) || [];
-    for (const req of requests) {
-      if (!req.granted && this._canGrant(resource, req.txId, req.mode)) {
-        req.granted = true;
-        // Remove wait edges
-        this._removeWaitEdges(req.txId);
-      }
+  getStats() {
+    let totalHolders = 0, totalWaiters = 0;
+    for (const lock of this._locks.values()) {
+      totalHolders += lock.holders.size;
+      totalWaiters += lock.waitQueue.length;
     }
-  }
-
-  /**
-   * Get current lock state for debugging.
-   */
-  state() {
-    const locks = {};
-    for (const [resource, requests] of this._lockTable) {
-      locks[resource] = requests.map(r => ({
-        tx: r.txId,
-        mode: r.mode,
-        granted: r.granted,
-      }));
-    }
-    return {
-      locks,
-      waitFor: Object.fromEntries(
-        [...this._waitFor.entries()].map(([tx, deps]) => [tx, [...deps]])
-      ),
-    };
+    return { ...this.stats, activeResources: this._locks.size, totalHolders, totalWaiters };
   }
 }
 
-export { LockMode };
+export { MODES, COMPATIBLE };
