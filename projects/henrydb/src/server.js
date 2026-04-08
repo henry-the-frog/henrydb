@@ -6,6 +6,7 @@ import net from 'node:net';
 import { Database } from './db.js';
 import { AdaptiveQueryEngine } from './adaptive-engine.js';
 import { parse } from './sql.js';
+import { QueryCache } from './query-cache.js';
 import {
   writeAuthenticationOk, writeParameterStatus, writeBackendKeyData,
   writeReadyForQuery, writeRowDescription, writeDataRow,
@@ -43,7 +44,23 @@ export class HenryDBServer {
     // Global prepared statement plan cache (shared across connections)
     this._planCache = new Map();
     // LISTEN/NOTIFY channel registry: channel → Set<conn>
-    this._channels = new Map(); // sql → { result: pre-computed result, hits: number, lastUsed: number }
+    this._channels = new Map();
+    // Query result cache
+    this._queryCache = new QueryCache({
+      maxSize: options.cacheSize || 500,
+      maxAgeMs: options.cacheTtlMs || 60000,
+      enabled: options.queryCache !== false,
+    });
+    // Server metrics
+    this._metrics = {
+      startTime: Date.now(),
+      totalConnections: 0,
+      peakConnections: 0,
+      totalQueries: 0,
+      totalErrors: 0,
+      queryLatencySum: 0,
+      queryLatencyCount: 0,
+    }; // sql → { result: pre-computed result, hits: number, lastUsed: number }
   }
 
   start() {
@@ -109,6 +126,10 @@ export class HenryDBServer {
       ]),
     };
     this.connections.add(conn);
+    this._metrics.totalConnections++;
+    if (this.connections.size > this._metrics.peakConnections) {
+      this._metrics.peakConnections = this.connections.size;
+    }
 
     if (this._verbose) {
       console.log(`[${conn.pid}] Client connected from ${socket.remoteAddress}`);
@@ -253,6 +274,7 @@ export class HenryDBServer {
     // Track current query for pg_stat_activity
     conn.currentQuery = { sql: sql.substring(0, 1000), startTime: Date.now() };
     conn.queryCount++;
+    this._metrics.totalQueries++;
 
     // Handle empty query
     if (!sql.trim()) {
@@ -272,6 +294,16 @@ export class HenryDBServer {
         // Intercept PostgreSQL system queries that ORMs/drivers commonly use
         const intercepted = this._interceptSystemQuery(conn, stmt);
         if (intercepted) continue;
+
+        // Check query cache for SELECT queries
+        const isSelect = /^\s*SELECT/i.test(stmt);
+        if (isSelect) {
+          const cached = this._queryCache.get(stmt);
+          if (cached) {
+            this._sendResult(conn, stmt, cached);
+            continue;
+          }
+        }
 
         // Try adaptive engine for SELECT queries
         let result;
@@ -297,6 +329,21 @@ export class HenryDBServer {
         } else {
           result = this.db.execute(stmt);
         }
+        // Cache SELECT results
+        if (isSelect && result && result.type === 'ROWS') {
+          const tables = QueryCache.extractTables(stmt);
+          this._queryCache.set(stmt, result, tables);
+        }
+
+        // Invalidate cache on mutations
+        if (!isSelect) {
+          const upper = stmt.toUpperCase().trim();
+          const tableMatch = stmt.match(/(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM|DROP\s+TABLE|ALTER\s+TABLE|TRUNCATE)\s+(\w+)/i);
+          if (tableMatch) {
+            this._queryCache.invalidate(tableMatch[1]);
+          }
+        }
+
         this._sendResult(conn, stmt, result);
       } catch (err) {
         conn.txStatus = conn.txStatus === 'T' ? 'E' : 'I';
@@ -305,6 +352,11 @@ export class HenryDBServer {
     }
 
     conn.currentQuery = null;
+    // Track latency
+    if (conn.currentQuery === null) {
+      // Already cleared — use estimated latency
+    }
+    this._metrics.queryLatencyCount++;
     conn.socket.write(writeReadyForQuery(conn.txStatus));
   }
 
@@ -751,6 +803,32 @@ export class HenryDBServer {
     // current_schema
     if (upper.includes('CURRENT_SCHEMA')) {
       this._sendResult(conn, sql, { type: 'ROWS', rows: [{ current_schema: 'public' }] });
+      return true;
+    }
+
+    // Query cache stats
+    if (upper.includes('PG_STAT_CACHE') || (upper.includes('QUERY') && upper.includes('CACHE') && upper.includes('STAT'))) {
+      const stats = this._queryCache.getStats();
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [stats] });
+      return true;
+    }
+
+    // Server metrics
+    if (upper.includes('PG_STAT_SERVER') || upper.includes('SERVER_METRICS')) {
+      const uptimeMs = Date.now() - this._metrics.startTime;
+      const qps = uptimeMs > 0 ? (this._metrics.totalQueries / (uptimeMs / 1000)).toFixed(2) : '0';
+      const cacheStats = this._queryCache.getStats();
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [{
+        uptime_seconds: Math.floor(uptimeMs / 1000),
+        total_connections: this._metrics.totalConnections,
+        active_connections: this.connections.size,
+        peak_connections: this._metrics.peakConnections,
+        total_queries: this._metrics.totalQueries,
+        queries_per_second: parseFloat(qps),
+        total_errors: this._metrics.totalErrors,
+        cache_hit_rate: cacheStats.hitRate,
+        cache_entries: cacheStats.entries,
+      }] });
       return true;
     }
 

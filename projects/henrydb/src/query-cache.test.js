@@ -1,123 +1,126 @@
-// query-cache.test.js — Tests for query result caching
+// query-cache.test.js — Tests for query result cache
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { QueryCache } from './query-cache.js';
 
 describe('QueryCache', () => {
-
-  it('set and get', () => {
+  it('caches and retrieves results', () => {
     const cache = new QueryCache();
-    cache.set('SELECT * FROM t', { rows: [{ id: 1 }] }, ['t']);
+    const result = { type: 'ROWS', rows: [{ id: 1, name: 'Alice' }] };
     
-    const result = cache.get('SELECT * FROM t');
-    assert.deepEqual(result, { rows: [{ id: 1 }] });
-  });
-
-  it('miss returns null', () => {
-    const cache = new QueryCache();
-    assert.equal(cache.get('SELECT * FROM unknown'), null);
-  });
-
-  it('TTL expiration', async () => {
-    const cache = new QueryCache({ defaultTTLMs: 50 });
-    cache.set('q1', { rows: [] }, ['t']);
-
-    assert.ok(cache.get('q1'));
-    await new Promise(r => setTimeout(r, 100));
-    assert.equal(cache.get('q1'), null);
-  });
-
-  it('table invalidation', () => {
-    const cache = new QueryCache();
-    cache.set('SELECT * FROM users', { rows: [] }, ['users']);
-    cache.set('SELECT * FROM orders', { rows: [] }, ['orders']);
-    cache.set('SELECT * FROM users JOIN orders', { rows: [] }, ['users', 'orders']);
-
-    const invalidated = cache.invalidateTable('users');
-    assert.equal(invalidated, 2); // users + users JOIN orders
-    assert.equal(cache.get('SELECT * FROM users'), null);
-    assert.ok(cache.get('SELECT * FROM orders')); // Not invalidated
-  });
-
-  it('LRU eviction when full', () => {
-    const cache = new QueryCache({ maxEntries: 3 });
-    cache.set('q1', { rows: [1] }, ['t']);
-    cache.set('q2', { rows: [2] }, ['t']);
-    cache.set('q3', { rows: [3] }, ['t']);
+    cache.set('SELECT * FROM users', result, ['users']);
+    const cached = cache.get('SELECT * FROM users');
     
-    // Access q1 to make it recently used
-    cache.get('q1');
-    
-    // Insert q4 → should evict q2 (least recently used)
-    cache.set('q4', { rows: [4] }, ['t']);
-    
-    assert.ok(cache.get('q1')); // Recently accessed
-    assert.equal(cache.get('q2'), null); // Evicted
-    assert.ok(cache.get('q3'));
-    assert.ok(cache.get('q4'));
+    assert.deepStrictEqual(cached, result);
   });
 
-  it('invalidateAll', () => {
+  it('returns null for cache miss', () => {
     const cache = new QueryCache();
-    cache.set('q1', { rows: [] }, ['t']);
-    cache.set('q2', { rows: [] }, ['t']);
-
-    cache.invalidateAll();
-    assert.equal(cache.size, 0);
-    assert.equal(cache.get('q1'), null);
+    assert.strictEqual(cache.get('SELECT * FROM unknown'), null);
   });
 
-  it('extractTables: FROM', () => {
-    const tables = QueryCache.extractTables('SELECT * FROM users WHERE id = 1');
-    assert.deepEqual(tables, ['users']);
-  });
-
-  it('extractTables: JOIN', () => {
-    const tables = QueryCache.extractTables('SELECT * FROM users u JOIN orders o ON u.id = o.user_id');
-    assert.ok(tables.includes('users'));
-    assert.ok(tables.includes('orders'));
-  });
-
-  it('hit rate tracking', () => {
+  it('normalizes query whitespace', () => {
     const cache = new QueryCache();
-    cache.set('q1', { rows: [] }, ['t']);
+    const result = { type: 'ROWS', rows: [] };
+    
+    cache.set('SELECT  *   FROM   users', result, ['users']);
+    const cached = cache.get('select * from users');
+    
+    assert.deepStrictEqual(cached, result);
+  });
 
-    cache.get('q1'); // hit
-    cache.get('q1'); // hit
-    cache.get('q2'); // miss
+  it('invalidates on table mutation', () => {
+    const cache = new QueryCache();
+    cache.set('SELECT * FROM users', { rows: [1] }, ['users']);
+    cache.set('SELECT * FROM orders', { rows: [2] }, ['orders']);
+    
+    cache.invalidate('users');
+    
+    assert.strictEqual(cache.get('SELECT * FROM users'), null);
+    assert.deepStrictEqual(cache.get('SELECT * FROM orders'), { rows: [2] });
+  });
 
+  it('invalidates cross-table queries', () => {
+    const cache = new QueryCache();
+    cache.set('SELECT * FROM users JOIN orders ON ...', { rows: [1] }, ['users', 'orders']);
+    
+    // Mutating either table should invalidate
+    cache.invalidate('orders');
+    assert.strictEqual(cache.get('SELECT * FROM users JOIN orders ON ...'), null);
+  });
+
+  it('evicts LRU entries when full', () => {
+    const cache = new QueryCache({ maxSize: 3 });
+    cache.set('SELECT 1', { v: 1 }, []);
+    cache.set('SELECT 2', { v: 2 }, []);
+    cache.set('SELECT 3', { v: 3 }, []);
+    
+    // Access 1 and 3 (making 2 the LRU)
+    cache.get('SELECT 1');
+    cache.get('SELECT 3');
+    
+    // Adding 4 should evict 2
+    cache.set('SELECT 4', { v: 4 }, []);
+    
+    assert.strictEqual(cache.get('SELECT 2'), null);
+    assert.deepStrictEqual(cache.get('SELECT 1'), { v: 1 });
+    assert.deepStrictEqual(cache.get('SELECT 3'), { v: 3 });
+    assert.deepStrictEqual(cache.get('SELECT 4'), { v: 4 });
+  });
+
+  it('respects TTL', async () => {
+    const cache = new QueryCache({ maxAgeMs: 100 });
+    cache.set('SELECT 1', { v: 1 }, []);
+    
+    assert.deepStrictEqual(cache.get('SELECT 1'), { v: 1 });
+    
+    await new Promise(r => setTimeout(r, 150));
+    
+    assert.strictEqual(cache.get('SELECT 1'), null);
+  });
+
+  it('tracks stats', () => {
+    const cache = new QueryCache();
+    cache.set('SELECT 1', { v: 1 }, ['t']);
+    cache.get('SELECT 1'); // hit
+    cache.get('SELECT 2'); // miss
+    cache.invalidate('t');
+    
     const stats = cache.getStats();
-    assert.equal(stats.hits, 2);
-    assert.equal(stats.misses, 1);
-    assert.equal(stats.hitRate, '66.7%');
+    assert.strictEqual(stats.hits, 1);
+    assert.strictEqual(stats.misses, 1);
+    assert.strictEqual(stats.sets, 1);
+    assert.strictEqual(stats.invalidations, 1);
+    assert.strictEqual(stats.hitRate, 50);
   });
 
-  it('custom TTL per query', () => {
-    const cache = new QueryCache({ defaultTTLMs: 60000 });
-    cache.set('fast', { rows: [] }, ['t'], 10); // 10ms TTL
-    cache.set('slow', { rows: [] }, ['t'], 60000); // 60s TTL
-
-    // Both should be present immediately
-    assert.ok(cache.get('fast'));
-    assert.ok(cache.get('slow'));
-  });
-
-  it('benchmark: cache lookup on 10K queries', () => {
-    const cache = new QueryCache({ maxEntries: 5000 });
+  it('invalidateAll clears everything', () => {
+    const cache = new QueryCache();
+    cache.set('SELECT 1', { v: 1 }, []);
+    cache.set('SELECT 2', { v: 2 }, []);
+    cache.set('SELECT 3', { v: 3 }, []);
     
-    // Fill cache
-    for (let i = 0; i < 5000; i++) {
-      cache.set(`SELECT * FROM t WHERE id = ${i}`, { rows: [{ id: i }] }, ['t']);
-    }
+    cache.invalidateAll();
+    
+    assert.strictEqual(cache.get('SELECT 1'), null);
+    assert.strictEqual(cache.get('SELECT 2'), null);
+    assert.strictEqual(cache.get('SELECT 3'), null);
+  });
 
-    // Benchmark lookups
-    const t0 = Date.now();
-    for (let i = 0; i < 10000; i++) {
-      cache.get(`SELECT * FROM t WHERE id = ${i % 5000}`);
-    }
-    const ms = Date.now() - t0;
+  it('extractTables finds table names', () => {
+    assert.deepStrictEqual(
+      QueryCache.extractTables('SELECT * FROM users WHERE id = 1'),
+      ['users']
+    );
+    assert.deepStrictEqual(
+      QueryCache.extractTables('SELECT * FROM users JOIN orders ON users.id = orders.user_id').sort(),
+      ['orders', 'users']
+    );
+  });
 
-    console.log(`    10K cache lookups: ${ms}ms (${(10000 / Math.max(ms, 0.1)).toFixed(0)} lookups/ms)`);
-    assert.ok(cache.getStats().hits >= 5000);
+  it('disabled cache returns null', () => {
+    const cache = new QueryCache({ enabled: false });
+    cache.set('SELECT 1', { v: 1 }, []);
+    assert.strictEqual(cache.get('SELECT 1'), null);
   });
 });

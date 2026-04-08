@@ -4285,10 +4285,43 @@
     {
       "id": "T395",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit and push",
       "project": "henrydb",
-      "started": "2026-04-08T21:48:29.882Z"
+      "started": "2026-04-08T21:48:29.882Z",
+      "completed": "2026-04-08T21:48:54.200Z",
+      "duration_ms": 30000,
+      "summary": "Pushed monitoring + params to GitHub."
+    },
+    {
+      "id": "T396",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build server-side query cache: LRU cache of SELECT results, invalidation on table mutations, cache hit/miss stats",
+      "project": "henrydb",
+      "started": "2026-04-08T21:49:31.628Z",
+      "completed": "2026-04-08T21:52:03.469Z",
+      "duration_ms": 300000,
+      "summary": "Query cache: LRU with table-level invalidation, TTL, stats tracking. Integrated into server: caches SELECT results, invalidates on INSERT/UPDATE/DELETE/DROP. pg_stat_cache view. 11 tests."
+    },
+    {
+      "id": "T397",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection pooler metrics: total connections, peak connections, average query latency, queries per second",
+      "project": "henrydb",
+      "started": "2026-04-08T21:52:03.932Z",
+      "completed": "2026-04-08T21:53:08.135Z",
+      "duration_ms": 120000,
+      "summary": "Server metrics: total/active/peak connections, QPS, total queries, cache hit rate. pg_stat_server view. Integrated into existing server."
+    },
+    {
+      "id": "T398",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final commit and push for session",
+      "project": "henrydb",
+      "started": "2026-04-08T21:53:08.399Z"
     }
   ],
   "focusProjects": [
@@ -5844,6 +5877,18 @@
     {
       "time": "2026-04-08T21:44:11.514Z",
       "msg": "Added T395 (MAINTAIN) after T394: Commit and push"
+    },
+    {
+      "time": "2026-04-08T21:49:22.050Z",
+      "msg": "Added T396 (BUILD) after end: Build server-side query cache: LRU cache of SELECT results, invalidation on table mutations, cache hit/miss stats"
+    },
+    {
+      "time": "2026-04-08T21:49:22.173Z",
+      "msg": "Added T397 (BUILD) after T396: Build connection pooler metrics: total connections, peak connections, average query latency, queries per second"
+    },
+    {
+      "time": "2026-04-08T21:49:22.296Z",
+      "msg": "Added T398 (MAINTAIN) after T397: Final commit and push for session"
     }
   ]
 }
