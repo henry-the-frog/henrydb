@@ -687,6 +687,17 @@
       "completed": "2026-04-08T02:37:42.511Z",
       "duration_ms": 240000,
       "summary": "7 branch predictors: AlwaysNotTaken, AlwaysTaken, BackwardTaken, OneBit, TwoBit saturating counter, GShare (global history XOR PC), Tournament (hybrid). Benchmarker with trace generators (loop, alternating, nested loop, mixed). TwoBit >99% on 1000-iter loops. 15 new tests. Total: 136 tests."
+    },
+    {
+      "id": "T64",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "RISC-V: Cache simulator — direct-mapped, N-way set-associative, fully-associative. LRU/FIFO/Random replacement. Hit/miss counting. Integrate with CPU memory access.",
+      "project": "henrydb",
+      "started": "2026-04-08T02:38:05.458Z",
+      "completed": "2026-04-08T02:40:05.779Z",
+      "duration_ms": 240000,
+      "summary": "Cache simulator: direct-mapped, N-way set-associative, fully-associative. LRU/FIFO/Random replacement. Write-back/write-through. Address decomposition, spatial locality, conflict misses, dirty eviction tracking. CacheHierarchy for multi-level (L1+L2). Access pattern tests: sequential scan (93.8% hit), stride, row vs column matrix. 21 new tests. Total: 157 tests."
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
@@ -738,6 +749,10 @@
     {
       "time": "2026-04-08T02:35:40.438Z",
       "msg": "Added T63 (EXPLORE) after end: RISC-V: Branch predictor for pipeline — static (always not-taken, backward-taken), dynamic (1-bit, 2-bit saturating counter, BTB). Compare misprediction rates."
+    },
+    {
+      "time": "2026-04-08T02:37:56.131Z",
+      "msg": "Added T64 (EXPLORE) after end: RISC-V: Cache simulator — direct-mapped, N-way set-associative, fully-associative. LRU/FIFO/Random replacement. Hit/miss counting. Integrate with CPU memory access."
     }
   ],
   "focusProjects": [
