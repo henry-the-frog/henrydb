@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:53:27.887Z",
+  "generated": "2026-04-08T16:54:38.337Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: query plan visualization — DOT graph output for EXPLAIN",
-    "completedAt": "2026-04-08T16:53:27.887Z",
-    "taskId": "T108",
-    "summary": "Query plan visualization: DOT graph output (Graphviz), text-based tree for terminal, JSON summary. Colored nodes by operator type (scans, joins, aggregates). 7 tests.",
-    "durationMs": 60000
+    "task": "HenryDB: statistics collector — histograms, NDV, null fraction for optimizer",
+    "completedAt": "2026-04-08T16:54:38.337Z",
+    "taskId": "T109",
+    "summary": "Statistics collector: ANALYZE table → row count, NDV, null fraction, min/max, MCV list, equi-height histograms. Selectivity estimation for EQ/GT/LT/BETWEEN/NULL. Sampling support. 11 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 106,
+    "blocksCompleted": 107,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 69,
+      "BUILD": 70,
       "MAINTAIN": 24,
       "EXPLORE": 2
     }
