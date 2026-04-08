@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:58:19.023Z",
+  "generated": "2026-04-08T15:59:01.533Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: update README with all new features: zone maps, pushdown, radix join, morsel, etc.",
-    "completedAt": "2026-04-08T15:58:19.023Z",
-    "taskId": "T65",
-    "summary": "README updated: 48K LOC, 2400+ tests, new architecture section with columnar/physical operators, updated lessons.",
-    "durationMs": 60000
+    "mode": "MAINTAIN",
+    "task": "Session housekeeping",
+    "completedAt": "2026-04-08T15:59:01.533Z",
+    "taskId": "T66",
+    "summary": "HenryDB pushed (181 objects). Dashboard synced. Server healthy (97min uptime). All good.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -683,20 +683,52 @@
       {
         "id": "T63",
         "mode": "MAINTAIN",
-        "status": "in-progress",
+        "status": "done",
         "task": "Push and sync",
-        "started": "2026-04-08T15:53:35.736Z"
+        "started": "2026-04-08T15:53:35.736Z",
+        "completed": "2026-04-08T15:54:03.671Z",
+        "duration_ms": 30000,
+        "summary": "HenryDB pushed (176 objects). Dashboard synced."
+      },
+      {
+        "id": "T64",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Bloom filter join — use Bloom filters as semi-join reducer before hash join",
+        "project": "henrydb",
+        "started": "2026-04-08T15:54:26.579Z",
+        "completed": "2026-04-08T15:56:35.117Z",
+        "duration_ms": 120000,
+        "summary": "Bloom filter semi-join: build Bloom on right, pre-filter left before hash join. 98% row elimination on 100K×1K. Multi-way reduce for chain joins. 7 tests."
+      },
+      {
+        "id": "T65",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: update README with all new features: zone maps, pushdown, radix join, morsel, etc.",
+        "project": "henrydb",
+        "started": "2026-04-08T15:56:53.617Z",
+        "completed": "2026-04-08T15:58:18.986Z",
+        "duration_ms": 60000,
+        "summary": "README updated: 48K LOC, 2400+ tests, new architecture section with columnar/physical operators, updated lessons."
+      },
+      {
+        "id": "T66",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Session housekeeping",
+        "started": "2026-04-08T15:58:29.336Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 63,
-    "blocksTotal": 63,
+    "blocksCompleted": 64,
+    "blocksTotal": 66,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
       "BUILD": 37,
-      "MAINTAIN": 13,
+      "MAINTAIN": 14,
       "EXPLORE": 2
     }
   }
