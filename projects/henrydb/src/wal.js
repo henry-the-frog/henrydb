@@ -31,6 +31,8 @@ const WAL_TYPES = {
   COMMIT: 4,
   ABORT: 5,
   CHECKPOINT: 6,
+  BEGIN_CHECKPOINT: 7,
+  END_CHECKPOINT: 8,
 };
 
 const WAL_TYPE_NAMES = Object.fromEntries(
@@ -188,6 +190,8 @@ export class WriteAheadLog {
     this._committedTxns = new Set();
     this._activeTxns = new Set();
     this._lastCheckpointLsn = 0;
+    this._dirtyPageTable = new Map(); // pageKey -> firstDirtyLsn (recLSN)
+    this._checkpointInProgress = false;
   }
 
   get nextLsn() { return this._nextLsn; }
@@ -227,6 +231,133 @@ export class WriteAheadLog {
     this._lastCheckpointLsn = lsn;
     this.flush(); // Force flush on checkpoint
     return lsn;
+  }
+
+  /**
+   * ARIES-style fuzzy checkpoint.
+   * 1. Write BEGIN_CHECKPOINT with active transaction table + dirty page table
+   * 2. Caller flushes dirty pages (async-safe — new writes can continue)
+   * 3. Write END_CHECKPOINT referencing the BEGIN
+   * 4. Truncate WAL records before the min(recLSN) in dirty page table
+   *
+   * The dirty page table tracks {pageKey -> recLSN} where recLSN is the
+   * LSN of the first modification to that page since the last checkpoint.
+   *
+   * @param {Object} options
+   * @param {Function} [options.flushDirtyPages] - callback to flush dirty pages to disk
+   * @returns {{ beginLsn, endLsn, truncatedBefore, dirtyPages, activeTxns }}
+   */
+  fuzzyCheckpoint(options = {}) {
+    const { flushDirtyPages } = options;
+
+    // Snapshot current state
+    const activeTxnSnapshot = [...this._activeTxns];
+    const dirtyPageSnapshot = new Map(this._dirtyPageTable);
+
+    // Phase 1: BEGIN_CHECKPOINT — record state
+    const beginLsn = this._append(0, WAL_TYPES.BEGIN_CHECKPOINT, '', -1, -1,
+      null,
+      {
+        activeTxns: activeTxnSnapshot,
+        dirtyPageTable: [...dirtyPageSnapshot.entries()].map(([k, v]) => ({ pageKey: k, recLSN: v })),
+      }
+    );
+    this._checkpointInProgress = true;
+    this.flush();
+
+    // Phase 2: Flush dirty pages (if callback provided)
+    if (flushDirtyPages) {
+      flushDirtyPages(dirtyPageSnapshot);
+    }
+
+    // Phase 3: END_CHECKPOINT — reference the begin
+    const endLsn = this._append(0, WAL_TYPES.END_CHECKPOINT, '', -1, -1,
+      null,
+      { beginCheckpointLsn: beginLsn }
+    );
+    this._lastCheckpointLsn = endLsn;
+    this._checkpointInProgress = false;
+    this.flush();
+
+    // Phase 4: Truncate WAL — safe to discard records before min recLSN
+    let truncateBefore = beginLsn; // At minimum, we can truncate up to begin
+    if (dirtyPageSnapshot.size > 0) {
+      const minRecLSN = Math.min(...dirtyPageSnapshot.values());
+      truncateBefore = Math.min(truncateBefore, minRecLSN);
+    }
+    const truncated = this.truncate(truncateBefore);
+
+    // Clear dirty page table for flushed pages
+    for (const [pageKey] of dirtyPageSnapshot) {
+      // Only clear if recLSN hasn't been updated since snapshot
+      if (this._dirtyPageTable.get(pageKey) === dirtyPageSnapshot.get(pageKey)) {
+        this._dirtyPageTable.delete(pageKey);
+      }
+    }
+
+    return {
+      beginLsn,
+      endLsn,
+      truncatedBefore: truncateBefore,
+      truncatedCount: truncated,
+      dirtyPages: dirtyPageSnapshot.size,
+      activeTxns: activeTxnSnapshot.length,
+    };
+  }
+
+  /**
+   * Mark a page as dirty with the given LSN as its recLSN.
+   * recLSN = LSN of the first modification since last checkpoint.
+   * Only sets if not already tracked (first-write wins).
+   */
+  markPageDirty(tableName, pageId, lsn) {
+    const pageKey = `${tableName}:${pageId}`;
+    if (!this._dirtyPageTable.has(pageKey)) {
+      this._dirtyPageTable.set(pageKey, lsn);
+    }
+  }
+
+  /**
+   * Get current dirty page table (for inspection/testing).
+   */
+  getDirtyPageTable() {
+    return new Map(this._dirtyPageTable);
+  }
+
+  /**
+   * Truncate WAL records with LSN < beforeLsn.
+   * Removes from both in-memory buffer and stable storage.
+   * Returns number of records truncated.
+   */
+  truncate(beforeLsn) {
+    const beforeCount = this._records.length + this._stableStorage.length;
+
+    // Truncate in-memory buffer
+    this._records = this._records.filter(r => r.lsn >= beforeLsn);
+
+    // Truncate stable storage
+    this._stableStorage = this._stableStorage.filter(buf => {
+      const result = WALRecord.deserialize(buf);
+      return result && result.record.lsn >= beforeLsn;
+    });
+
+    const afterCount = this._records.length + this._stableStorage.length;
+    return beforeCount - afterCount;
+  }
+
+  /**
+   * Get WAL size stats (for monitoring).
+   */
+  getStats() {
+    return {
+      inMemoryRecords: this._records.length,
+      stableRecords: this._stableStorage.length,
+      nextLsn: this._nextLsn,
+      flushedLsn: this._flushedLsn,
+      lastCheckpointLsn: this._lastCheckpointLsn,
+      dirtyPages: this._dirtyPageTable.size,
+      activeTxns: this._activeTxns.size,
+    };
   }
 
   beginTransaction(txId) {
@@ -297,6 +428,12 @@ export class WriteAheadLog {
     const record = new WALRecord(lsn, txId, type, tableName, pageId, slotIdx, before, after);
     this._records.push(record);
     
+    // Auto-track dirty pages for data modification records
+    if ((type === WAL_TYPES.INSERT || type === WAL_TYPES.DELETE || type === WAL_TYPES.UPDATE) && 
+        tableName && pageId >= 0) {
+      this.markPageDirty(tableName, pageId, lsn);
+    }
+    
     // Force-at-commit: automatically flush when committing
     if (type === WAL_TYPES.COMMIT) {
       this.forceToLsn(lsn);
@@ -314,34 +451,97 @@ export { WAL_TYPES, WAL_TYPE_NAMES, crc32 };
  * from the last checkpoint to reconstruct consistent state.
  * 
  * Three phases:
- * 1. Analysis: scan WAL to find committed and active transactions
- * 2. Redo: replay all operations from committed transactions
+ * 1. Analysis: scan WAL from last checkpoint, rebuild active txn table + dirty page table
+ * 2. Redo: replay all operations from committed transactions (from min recLSN)
  * 3. Undo: nothing to undo for committed transactions (in-memory model)
+ *
+ * Fuzzy checkpoint support:
+ * - If END_CHECKPOINT found, reads BEGIN_CHECKPOINT for saved state
+ * - Initializes analysis from checkpoint's active txn + dirty page tables
+ * - Only redoes records from min(recLSN) forward, skipping already-flushed pages
  */
 export function recoverFromWAL(wal, db) {
   const lastCheckpoint = wal.lastCheckpointLsn;
-  const records = wal.readFromStable(lastCheckpoint);
+  const records = wal.readFromStable(0); // Read all records for checkpoint scanning
   
-  // Phase 1: Analysis — find committed transactions
+  // Find the effective start point
+  let analysisStartLsn = 0;
+  let initialActiveTxns = new Set();
+  let initialDirtyPages = new Map(); // pageKey -> recLSN
+  
+  // Look for fuzzy checkpoint (END_CHECKPOINT -> BEGIN_CHECKPOINT)
+  let endCheckpoint = null;
+  for (let i = records.length - 1; i >= 0; i--) {
+    if (records[i].type === WAL_TYPES.END_CHECKPOINT) {
+      endCheckpoint = records[i];
+      break;
+    }
+  }
+  
+  if (endCheckpoint && endCheckpoint.after) {
+    const beginLsn = endCheckpoint.after.beginCheckpointLsn;
+    // Find the matching BEGIN_CHECKPOINT
+    for (const r of records) {
+      if (r.type === WAL_TYPES.BEGIN_CHECKPOINT && r.lsn === beginLsn && r.after) {
+        // Initialize from checkpoint state
+        if (r.after.activeTxns) {
+          for (const txId of r.after.activeTxns) initialActiveTxns.add(txId);
+        }
+        if (r.after.dirtyPageTable) {
+          for (const entry of r.after.dirtyPageTable) {
+            initialDirtyPages.set(entry.pageKey, entry.recLSN);
+          }
+        }
+        analysisStartLsn = beginLsn;
+        break;
+      }
+    }
+  } else if (lastCheckpoint > 0) {
+    // Fall back to simple checkpoint
+    analysisStartLsn = lastCheckpoint;
+  }
+  
+  // Phase 1: Analysis — scan from checkpoint, find committed and active transactions
   const committedTxns = new Set();
   const abortedTxns = new Set();
-  const activeTxns = new Set();
+  const activeTxns = new Set(initialActiveTxns);
+  const dirtyPages = new Map(initialDirtyPages);
   
-  for (const record of records) {
+  const analysisRecords = records.filter(r => r.lsn > analysisStartLsn);
+  
+  for (const record of analysisRecords) {
     if (record.type === WAL_TYPES.COMMIT) {
       committedTxns.add(record.txId);
       activeTxns.delete(record.txId);
     } else if (record.type === WAL_TYPES.ABORT) {
       abortedTxns.add(record.txId);
       activeTxns.delete(record.txId);
-    } else if (record.type !== WAL_TYPES.CHECKPOINT) {
+    } else if (record.type !== WAL_TYPES.CHECKPOINT && 
+               record.type !== WAL_TYPES.BEGIN_CHECKPOINT && 
+               record.type !== WAL_TYPES.END_CHECKPOINT) {
       activeTxns.add(record.txId);
+      // Track dirty pages
+      if (record.tableName && record.pageId >= 0) {
+        const pageKey = `${record.tableName}:${record.pageId}`;
+        if (!dirtyPages.has(pageKey)) {
+          dirtyPages.set(pageKey, record.lsn);
+        }
+      }
     }
   }
   
   // Phase 2: Redo — replay committed transaction operations
+  // Start from min(recLSN) in dirty page table (or analysisStartLsn)
+  let redoStartLsn = analysisStartLsn;
+  if (dirtyPages.size > 0) {
+    const minRecLSN = Math.min(...dirtyPages.values());
+    redoStartLsn = Math.min(redoStartLsn, minRecLSN);
+  }
+  
+  const redoRecords = records.filter(r => r.lsn > redoStartLsn);
   let redone = 0;
-  for (const record of records) {
+  
+  for (const record of redoRecords) {
     // Only replay committed transactions
     if (!committedTxns.has(record.txId)) continue;
     
@@ -395,5 +595,7 @@ export function recoverFromWAL(wal, db) {
     abortedTxns: abortedTxns.size,
     activeTxns: activeTxns.size, // These were in-flight at crash — data lost
     redone,
+    usedFuzzyCheckpoint: !!endCheckpoint,
+    dirtyPagesAtCheckpoint: dirtyPages.size,
   };
 }
