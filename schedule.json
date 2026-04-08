@@ -196,6 +196,14 @@
       "completed": "2026-04-08T03:55:03.481Z",
       "duration_ms": 180000,
       "summary": "WAL compact(): calculates safe truncation point from checkpoint LSN, active transactions, and dirty page table. Preserves active tx records. 8 tests. Pushed."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update HenryDB README with auto-checkpoint and WAL compaction features",
+      "project": "henrydb",
+      "started": "2026-04-08T03:56:03.708Z"
     }
   ],
   "focusProjects": [
@@ -295,6 +303,10 @@
     {
       "time": "2026-04-08T03:53:50.987Z",
       "msg": "Added T18 (BUILD) after end: WAL compaction: merge old WAL segments, keep only records needed for recovery. Tests."
+    },
+    {
+      "time": "2026-04-08T03:55:58.931Z",
+      "msg": "Added T19 (BUILD) after end: Update HenryDB README with auto-checkpoint and WAL compaction features"
     }
   ]
 }
