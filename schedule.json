@@ -709,6 +709,17 @@
       "completed": "2026-04-08T02:42:16.756Z",
       "duration_ms": 240000,
       "summary": "Sv32 virtual memory: 2-level page table walk, PTE flags (V/R/W/X/U/G/A/D), TLB with LRU eviction (32 entries), MMU with permission checks, accessed/dirty flag tracking, page fault handler callback, identity page table setup helper. 20 new tests. Total: 177 tests."
+    },
+    {
+      "id": "T66",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "RISC-V: Interrupt controller (PLIC/CLINT model) — timer interrupts, external interrupts, interrupt priority, exception handling (traps). CSR registers (mstatus, mie, mip, mtvec, mepc, mcause).",
+      "project": "henrydb",
+      "started": "2026-04-08T02:42:40.031Z",
+      "completed": "2026-04-08T02:44:10.019Z",
+      "duration_ms": 240000,
+      "summary": "Trap/interrupt system: CSR file (mstatus, mie, mip, mtvec, mepc, mcause, mtval), TrapController with vectored/direct handler dispatch, interrupt priority (external>software>timer), MRET return, nested trap support. 16 new tests. Total: 193 tests."
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
@@ -768,6 +779,10 @@
     {
       "time": "2026-04-08T02:40:22.227Z",
       "msg": "Added T65 (EXPLORE) after end: RISC-V: Virtual memory + TLB — page tables (SV32), TLB with LRU, page fault handling, address translation. Models RISC-V Sv32 scheme."
+    },
+    {
+      "time": "2026-04-08T02:42:34.921Z",
+      "msg": "Added T66 (EXPLORE) after end: RISC-V: Interrupt controller (PLIC/CLINT model) — timer interrupts, external interrupts, interrupt priority, exception handling (traps). CSR registers (mstatus, mie, mip, mtvec, mepc, mcause)."
     }
   ],
   "focusProjects": [
