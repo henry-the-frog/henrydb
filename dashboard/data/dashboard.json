@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T17:13:55.345Z",
+  "generated": "2026-04-08T17:14:56.549Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: consistent hashing — for distributed data placement",
-    "completedAt": "2026-04-08T17:13:55.345Z",
-    "taskId": "T126",
-    "summary": "Consistent hashing: virtual node ring, minimal disruption, replication, balanced. 7 tests.",
-    "durationMs": 30000
+    "task": "HenryDB: undo/redo log — ARIES-style recovery protocol",
+    "completedAt": "2026-04-08T17:14:56.549Z",
+    "taskId": "T127",
+    "summary": "ARIES recovery: 3-phase protocol (analysis, redo, undo). Before/after images in log. Checkpoint support. CLR (compensation log records) for nested abort. Crash simulation with full recovery. 8 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 124,
+    "blocksCompleted": 125,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 84,
+      "BUILD": 85,
       "MAINTAIN": 27,
       "EXPLORE": 2
     }
