@@ -591,6 +591,30 @@
       "completed": "2026-04-08T15:39:16.470Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (163 objects). Dashboard synced. Server healthy (78min uptime)."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: radix hash join — use radix partitioning for cache-conscious hash joins on TypedArray columns",
+      "project": "henrydb",
+      "started": "2026-04-08T15:39:42.903Z",
+      "completed": "2026-04-08T15:41:09.539Z",
+      "duration_ms": 180000,
+      "summary": "Radix-partitioned hash join: 256 partitions via bit-mixing hash, 100K×300K in 96ms. Standard hash join faster at this scale (JS Map cache-friendly). Value at larger datasets. 8 tests, all pass."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: late materialization — return column references instead of full rows, materialize only at projection",
+      "project": "henrydb"
+    },
+    {
+      "id": "T58",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and sync"
     }
   ],
   "focusProjects": [
@@ -826,6 +850,18 @@
     {
       "time": "2026-04-08T15:34:36.464Z",
       "msg": "Added T55 (MAINTAIN) after end: Final session housekeeping"
+    },
+    {
+      "time": "2026-04-08T15:39:36.995Z",
+      "msg": "Added T56 (BUILD) after end: HenryDB: radix hash join — use radix partitioning for cache-conscious hash joins on TypedArray columns"
+    },
+    {
+      "time": "2026-04-08T15:39:37.114Z",
+      "msg": "Added T57 (BUILD) after end: HenryDB: late materialization — return column references instead of full rows, materialize only at projection"
+    },
+    {
+      "time": "2026-04-08T15:39:37.231Z",
+      "msg": "Added T58 (MAINTAIN) after end: Push and sync"
     }
   ]
 }
