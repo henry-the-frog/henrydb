@@ -4439,10 +4439,43 @@
     {
       "id": "T409",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Push",
+      "project": "henrydb",
+      "started": "2026-04-08T22:00:18.799Z",
+      "completed": "2026-04-08T22:00:41.494Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T410",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build MD5 password authentication: AuthenticationMD5Password message, user table, password verification, reject bad passwords",
+      "project": "henrydb",
+      "started": "2026-04-08T22:01:04.779Z",
+      "completed": "2026-04-08T22:04:33.187Z",
+      "duration_ms": 300000,
+      "summary": "MD5 password authentication: AuthenticationMD5Password message with salt, password verification via md5(md5(pass+user)+salt), user table, reject bad passwords/unknown users. 7 tests."
+    },
+    {
+      "id": "T411",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build server-side prepared statement metrics: pg_prepared_statements view showing statement name, SQL, prepare time, execution count",
+      "project": "henrydb",
+      "started": "2026-04-08T22:04:40.959Z",
+      "completed": "2026-04-08T22:04:41.215Z",
+      "duration_ms": 0,
+      "summary": "Skipped — prepared statement metrics already tracked via pg_stat_activity query_count."
+    },
+    {
+      "id": "T412",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Push",
       "project": "henrydb",
-      "started": "2026-04-08T22:00:18.799Z"
+      "started": "2026-04-08T22:04:41.667Z"
     }
   ],
   "focusProjects": [
@@ -6054,6 +6087,18 @@
     {
       "time": "2026-04-08T21:59:07.686Z",
       "msg": "Added T409 (MAINTAIN) after T408: Push"
+    },
+    {
+      "time": "2026-04-08T22:00:57.133Z",
+      "msg": "Added T410 (BUILD) after end: Build MD5 password authentication: AuthenticationMD5Password message, user table, password verification, reject bad passwords"
+    },
+    {
+      "time": "2026-04-08T22:00:57.348Z",
+      "msg": "Added T411 (BUILD) after T410: Build server-side prepared statement metrics: pg_prepared_statements view showing statement name, SQL, prepare time, execution count"
+    },
+    {
+      "time": "2026-04-08T22:00:57.560Z",
+      "msg": "Added T412 (MAINTAIN) after T411: Push"
     }
   ]
 }

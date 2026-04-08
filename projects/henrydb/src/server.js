@@ -3,12 +3,14 @@
 // Accepts psql connections via the PostgreSQL wire protocol v3.
 
 import net from 'node:net';
+import crypto from 'node:crypto';
 import { Database } from './db.js';
 import { AdaptiveQueryEngine } from './adaptive-engine.js';
 import { parse } from './sql.js';
 import { QueryCache } from './query-cache.js';
 import {
-  writeAuthenticationOk, writeParameterStatus, writeBackendKeyData,
+  writeAuthenticationOk, writeAuthenticationMD5, parsePasswordMessage,
+  writeParameterStatus, writeBackendKeyData,
   writeReadyForQuery, writeRowDescription, writeDataRow,
   writeCommandComplete, writeErrorResponse,
   parseStartupMessage, parseQueryMessage, inferTypeOid,
@@ -29,6 +31,9 @@ export class HenryDBServer {
     this.port = options.port || DEFAULT_PORT;
     this.host = options.host || '127.0.0.1';
     this.db = options.db || new Database();
+    // User authentication: { username → { password } }
+    // If empty, authentication is disabled (accept all connections)
+    this._users = options.users || new Map();
     this.adaptiveEngine = null;
     if (options.adaptive !== false) {
       try {
@@ -159,9 +164,57 @@ export class HenryDBServer {
     });
   }
 
+  _sendStartupComplete(conn) {
+    const response = Buffer.concat([
+      writeAuthenticationOk(),
+      writeParameterStatus('server_version', '15.0 (HenryDB)'),
+      writeParameterStatus('server_encoding', 'UTF8'),
+      writeParameterStatus('client_encoding', 'UTF8'),
+      writeParameterStatus('DateStyle', 'ISO, MDY'),
+      writeParameterStatus('integer_datetimes', 'on'),
+      writeParameterStatus('standard_conforming_strings', 'on'),
+      writeBackendKeyData(conn.pid, conn.secretKey),
+      writeReadyForQuery(conn.txStatus),
+    ]);
+    conn.socket.write(response);
+    conn.state = 'ready';
+  }
+
   _processBuffer(conn) {
     while (conn.buffer.length > 0) {
-      if (conn.state === 'startup') {
+      if (conn.state === 'startup' || conn.state === 'authenticating') {
+        if (conn.state === 'authenticating') {
+          // Expecting password message
+          if (conn.buffer.length < 5) return;
+          const msgType = conn.buffer[0];
+          if (msgType !== 0x70) { // 'p' = PasswordMessage
+            conn.socket.write(writeErrorResponse('FATAL', '08P01', 'Expected password message'));
+            conn.socket.destroy();
+            return;
+          }
+          const len = conn.buffer.readInt32BE(1);
+          const totalLen = 1 + len;
+          if (conn.buffer.length < totalLen) return;
+
+          const msgBody = conn.buffer.subarray(1, totalLen);
+          conn.buffer = conn.buffer.subarray(totalLen);
+
+          const password = parsePasswordMessage(msgBody);
+
+          // Verify MD5: md5(md5(password + user) + salt)
+          const inner = crypto.createHash('md5').update(conn.authPassword + conn.user).digest('hex');
+          const expected = 'md5' + crypto.createHash('md5').update(inner + conn.authSalt.toString('binary')).digest('hex');
+
+          if (password === expected) {
+            this._sendStartupComplete(conn);
+          } else {
+            conn.socket.write(writeErrorResponse('FATAL', '28P01', `password authentication failed for user "${conn.user}"`));
+            conn.socket.destroy();
+            return;
+          }
+          continue;
+        }
+
         // Startup message: first 4 bytes are length
         if (conn.buffer.length < 4) return;
         const len = conn.buffer.readInt32BE(0);
@@ -189,21 +242,28 @@ export class HenryDBServer {
         if (this._verbose) {
           console.log(`[${conn.pid}] Startup: user=${startup.params.user} db=${startup.params.database}`);
         }
+        conn.user = startup.params.user || 'anonymous';
 
-        // Send authentication OK + server parameters
-        const response = Buffer.concat([
-          writeAuthenticationOk(),
-          writeParameterStatus('server_version', '15.0 (HenryDB)'),
-          writeParameterStatus('server_encoding', 'UTF8'),
-          writeParameterStatus('client_encoding', 'UTF8'),
-          writeParameterStatus('DateStyle', 'ISO, MDY'),
-          writeParameterStatus('integer_datetimes', 'on'),
-          writeParameterStatus('standard_conforming_strings', 'on'),
-          writeBackendKeyData(conn.pid, conn.secretKey),
-          writeReadyForQuery(conn.txStatus),
-        ]);
-        conn.socket.write(response);
-        conn.state = 'ready';
+        // Check if authentication is required
+        if (this._users.size > 0) {
+          const userEntry = this._users.get(conn.user);
+          if (!userEntry) {
+            conn.socket.write(writeErrorResponse('FATAL', '28P01', `password authentication failed for user "${conn.user}"`));
+            conn.socket.destroy();
+            return;
+          }
+          // Send MD5 auth challenge
+          const salt = Buffer.alloc(4);
+          for (let i = 0; i < 4; i++) salt[i] = Math.floor(Math.random() * 256);
+          conn.authSalt = salt;
+          conn.authPassword = userEntry.password;
+          conn.socket.write(writeAuthenticationMD5(salt));
+          conn.state = 'authenticating';
+          continue;
+        }
+
+        // No auth required — send OK
+        this._sendStartupComplete(conn);
         continue;
       }
 
