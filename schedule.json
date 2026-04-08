@@ -4632,6 +4632,14 @@
       "status": "upcoming",
       "task": "Build server-side aggregate cache: cache GROUP BY results that don't change frequently, invalidate on table mutations",
       "project": "henrydb"
+    },
+    {
+      "id": "T428",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build CREATE INDEX through wire protocol with EXPLAIN showing index usage vs sequential scan, demonstrate query speedup on large table",
+      "project": "henrydb",
+      "started": "2026-04-08T22:26:13.187Z"
     }
   ],
   "focusProjects": [
@@ -6315,6 +6323,10 @@
     {
       "time": "2026-04-08T22:21:24.831Z",
       "msg": "Added T427 (BUILD) after end: Build server-side aggregate cache: cache GROUP BY results that don't change frequently, invalidate on table mutations"
+    },
+    {
+      "time": "2026-04-08T22:26:12.771Z",
+      "msg": "Added T428 (BUILD) after end: Build CREATE INDEX through wire protocol with EXPLAIN showing index usage vs sequential scan, demonstrate query speedup on large table"
     }
   ]
 }
