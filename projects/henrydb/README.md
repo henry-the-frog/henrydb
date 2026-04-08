@@ -1,8 +1,8 @@
 # HenryDB
 
-A SQL database engine built from scratch in JavaScript. No dependencies. ~46,000 lines of code, 2,280+ tests.
+A SQL database engine built from scratch in JavaScript. No dependencies. ~48,000 lines of code, 2,400+ tests.
 
-Now with crash-tested WAL recovery, ARIES-style checkpointing, PITR, SSI, 2PC, **compiled query execution (365x faster on TPC-H joins)**, cost-based optimizer with histogram statistics, and `new Function()` codegen.
+Now with **2,062x faster compiled query execution** (4 engines + adaptive selection), zone maps with predicate pushdown, morsel-driven parallelism, TypedArray-backed columnar storage, Bloom filter joins, and late materialization.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -218,7 +218,7 @@ Volcano wins **10 out of 13** query patterns. The 750x LIMIT speedup demonstrate
 # Run all tests
 node --test src/*.test.js
 
-# 2,280+ tests passing
+# 2,400+ tests passing
 ```
 
 ## Architecture
@@ -227,7 +227,9 @@ node --test src/*.test.js
 
 - **SQL Layer:** `sql.js` (parser), `db.js` (query engine)
 - **Optimizer:** `planner.js`, `pushdown.js`, `decorrelate.js`, `compiler.js`
-- **Execution:** `volcano.js`, `volcano-planner.js`, `cost-model.js`, `pipeline-compiler.js`, `compiled-query.js`, `query-codegen.js`
+- **Execution:** `volcano.js`, `volcano-planner.js`, `cost-model.js`, `pipeline-compiler.js`, `compiled-query.js`, `query-codegen.js`, `vectorized-codegen.js`, `adaptive-engine.js`, `prepared-cache.js`
+- **Columnar:** `column-store.js`, `typed-columns.js`, `batch-ops.js`, `vectorized.js`, `string-intern.js`
+- **Physical Operators:** `radix-join.js`, `bloom-join.js`, `morsel-parallel.js`, `late-materialize.js`, `zone-maps.js`, `predicate-pushdown.js`
 - **Transactions:** `transactional-db.js`, `mvcc.js`, `ssi.js`, `transaction.js`, `lock-manager.js`
 - **Distributed:** `two-phase-commit.js`, `raft.js`, `consistent-hashing.js`
 - **Storage:** `page.js`, `bplus-tree.js`, `buffer-pool.js`, `disk-manager.js`, `file-wal.js`, `file-backed-heap.js`
@@ -244,7 +246,7 @@ node --test src/*.test.js
 6. **Batch codegen beats closures.** Generating one `new Function()` per query with baked-in column indices is 1.6x faster than composing closures, even though V8 optimizes closures well.
 7. **Bloom filters are optimal at 1.2 bytes/key.** For 1% false positive rate, theory says 9.585 bits per key. Our implementation achieves 1.2 bytes/key — spot on.
 8. **2PC is the coordinator's problem.** The hardest part of distributed transactions isn't the protocol — it's what happens when the coordinator crashes after deciding but before telling participants.
-9. **Tests are the real product.** 2,280+ tests made it safe to refactor everything. Every new feature was verified against the existing engine.
+9. **Tests are the real product.** 2,400+ tests made it safe to refactor everything. Every new feature was verified against the existing engine.
 
 ## Built By
 
