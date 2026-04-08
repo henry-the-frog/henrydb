@@ -1413,9 +1413,13 @@
     {
       "id": "T132",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: multi-version B-tree — copy-on-write for snapshot isolation",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T17:19:20.665Z",
+      "completed": "2026-04-08T17:20:15.898Z",
+      "duration_ms": 90000,
+      "summary": "Copy-on-Write B-tree: every write creates new node path. Snapshots preserve old roots. Multiple concurrent snapshots. 7 tests."
     },
     {
       "id": "T133",

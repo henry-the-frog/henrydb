@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T17:19:14.408Z",
+  "generated": "2026-04-08T17:20:15.935Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: R-tree — spatial index for 2D range queries",
-    "completedAt": "2026-04-08T17:19:14.408Z",
-    "taskId": "T131",
-    "summary": "R-tree: spatial index for 2D data. Range queries, KNN. Rectangle and point insertion. Node splitting. 7 tests.",
+    "task": "HenryDB: multi-version B-tree — copy-on-write for snapshot isolation",
+    "completedAt": "2026-04-08T17:20:15.935Z",
+    "taskId": "T132",
+    "summary": "Copy-on-Write B-tree: every write creates new node path. Snapshots preserve old roots. Multiple concurrent snapshots. 7 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 129,
+    "blocksCompleted": 130,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 88,
+      "BUILD": 89,
       "MAINTAIN": 28,
       "EXPLORE": 2
     }
