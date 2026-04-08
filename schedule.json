@@ -527,6 +527,30 @@
       "completed": "2026-04-08T15:29:09.651Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (153 objects). Dashboard synced."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: string interning for text columns — reduce memory and speed up equality comparisons",
+      "project": "henrydb",
+      "started": "2026-04-08T15:29:34.701Z",
+      "completed": "2026-04-08T15:31:18.326Z",
+      "duration_ms": 180000,
+      "summary": "String interning + dictionary encoding: StringInternPool maps strings to IDs, DictionaryEncodedColumn provides filterEquals, filterIn, groupBy on integer IDs. 1.6x filter speedup on 1M rows, 2500x string compression ratio. 13 tests."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: columnar storage engine with dictionary encoding for low-cardinality columns",
+      "project": "henrydb"
+    },
+    {
+      "id": "T52",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping, push, test count, dashboard"
     }
   ],
   "focusProjects": [
@@ -738,6 +762,18 @@
     {
       "time": "2026-04-08T15:22:45.281Z",
       "msg": "Added T49 (MAINTAIN) after end: Housekeeping, push, test count"
+    },
+    {
+      "time": "2026-04-08T15:29:26.628Z",
+      "msg": "Added T50 (BUILD) after end: HenryDB: string interning for text columns — reduce memory and speed up equality comparisons"
+    },
+    {
+      "time": "2026-04-08T15:29:26.745Z",
+      "msg": "Added T51 (BUILD) after end: HenryDB: columnar storage engine with dictionary encoding for low-cardinality columns"
+    },
+    {
+      "time": "2026-04-08T15:29:26.863Z",
+      "msg": "Added T52 (MAINTAIN) after end: Housekeeping, push, test count, dashboard"
     }
   ]
 }
