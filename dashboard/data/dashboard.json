@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:18:55.321Z",
+  "generated": "2026-04-08T16:19:34.499Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: nested loop index join — use B+tree index during join for selective predicates",
-    "completedAt": "2026-04-08T16:18:55.321Z",
-    "taskId": "T81",
-    "summary": "Index nested loop join: O(n*1) with index, semi-join (EXISTS), anti-join (NOT EXISTS). Optimal for selective queries with pre-built index. 8 tests.",
-    "durationMs": 90000
+    "mode": "MAINTAIN",
+    "task": "Push and sync",
+    "completedAt": "2026-04-08T16:19:34.499Z",
+    "taskId": "T83",
+    "summary": "HenryDB pushed (203 objects). Dashboard synced.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -864,20 +864,52 @@
       {
         "id": "T80",
         "mode": "MAINTAIN",
-        "status": "in-progress",
+        "status": "done",
         "task": "Push and test count",
-        "started": "2026-04-08T16:17:00.126Z"
+        "started": "2026-04-08T16:17:00.126Z",
+        "completed": "2026-04-08T16:17:39.146Z",
+        "duration_ms": 30000,
+        "summary": "HenryDB pushed (200 objects!). Dashboard synced. Massive session: 28+ new modules, ~260+ new tests."
+      },
+      {
+        "id": "T81",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: nested loop index join — use B+tree index during join for selective predicates",
+        "project": "henrydb",
+        "started": "2026-04-08T16:17:47.499Z",
+        "completed": "2026-04-08T16:18:55.284Z",
+        "duration_ms": 90000,
+        "summary": "Index nested loop join: O(n*1) with index, semi-join (EXISTS), anti-join (NOT EXISTS). Optimal for selective queries with pre-built index. 8 tests."
+      },
+      {
+        "id": "T82",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: semi-join and anti-join operators (EXISTS/NOT EXISTS)",
+        "project": "henrydb",
+        "started": "2026-04-08T16:19:09.494Z",
+        "completed": "2026-04-08T16:19:09.636Z",
+        "duration_ms": 5000,
+        "summary": "Already implemented in T81."
+      },
+      {
+        "id": "T83",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Push and sync",
+        "started": "2026-04-08T16:19:09.892Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 79,
-    "blocksTotal": 80,
+    "blocksCompleted": 81,
+    "blocksTotal": 83,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 47,
-      "MAINTAIN": 19,
+      "BUILD": 48,
+      "MAINTAIN": 20,
       "EXPLORE": 2
     }
   }
