@@ -574,9 +574,13 @@
     {
       "id": "T54",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: SIMD-like batch operations on TypedArray columns (sum, filter, compare)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:36:43.139Z",
+      "completed": "2026-04-08T15:38:14.503Z",
+      "duration_ms": 180000,
+      "summary": "SIMD-like batch operations: add/sub/mul/mulScalar, eqColumns/gtColumns, intersect/union/negate selection vectors, gather, sumAt/avgAt/minAt/maxAt, buildHash/probeHash. 1M batch add in 15ms, filter+agg in 8ms. 15 tests."
     },
     {
       "id": "T55",
