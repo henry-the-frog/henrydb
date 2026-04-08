@@ -647,9 +647,13 @@
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "RISC-V: ELF binary loader — parse minimal ELF32 headers, load program segments into memory, set entry point. Run real compiled RISC-V binaries.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T02:30:36.349Z",
+      "completed": "2026-04-08T02:31:56.106Z",
+      "duration_ms": 180000,
+      "summary": "ELF32 loader: parse headers, program segments, section headers. Load PT_LOAD segments into CPU memory with BSS zero-fill. buildMinimalELF helper for testing. Error handling for bad magic/class/machine. 10 new tests. Total: 111 tests."
     },
     {
       "id": "T61",
