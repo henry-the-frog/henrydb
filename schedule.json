@@ -720,6 +720,24 @@
       "completed": "2026-04-08T02:44:10.019Z",
       "duration_ms": 240000,
       "summary": "Trap/interrupt system: CSR file (mstatus, mie, mip, mtvec, mepc, mcause, mtval), TrapController with vectored/direct handler dispatch, interrupt priority (external>software>timer), MRET return, nested trap support. 16 new tests. Total: 193 tests."
+    },
+    {
+      "id": "T67",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "RISC-V: Update README with all components (cache, MMU, branch predictors, traps). Update blog with new project post.",
+      "project": "henrydb",
+      "started": "2026-04-08T02:44:36.511Z",
+      "completed": "2026-04-08T02:45:35.225Z",
+      "duration_ms": 120000,
+      "summary": "Updated README with all 10 components, architecture diagram, usage examples for each subsystem, full test coverage list, 7 What I Learned items."
+    },
+    {
+      "id": "T68",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "RISC-V: Out-of-order execution simulator — Tomasulo algorithm, reservation stations, reorder buffer, register renaming. The crown jewel of CPU microarchitecture.",
+      "project": "henrydb"
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
@@ -783,6 +801,14 @@
     {
       "time": "2026-04-08T02:42:34.921Z",
       "msg": "Added T66 (EXPLORE) after end: RISC-V: Interrupt controller (PLIC/CLINT model) — timer interrupts, external interrupts, interrupt priority, exception handling (traps). CSR registers (mstatus, mie, mip, mtvec, mepc, mcause)."
+    },
+    {
+      "time": "2026-04-08T02:44:24.110Z",
+      "msg": "Added T67 (MAINTAIN) after end: RISC-V: Update README with all components (cache, MMU, branch predictors, traps). Update blog with new project post."
+    },
+    {
+      "time": "2026-04-08T02:44:30.464Z",
+      "msg": "Added T68 (EXPLORE) after end: RISC-V: Out-of-order execution simulator — Tomasulo algorithm, reservation stations, reorder buffer, register renaming. The crown jewel of CPU microarchitecture."
     }
   ],
   "focusProjects": [
