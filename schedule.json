@@ -606,9 +606,13 @@
     {
       "id": "T57",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: late materialization — return column references instead of full rows, materialize only at projection",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:41:25.509Z",
+      "completed": "2026-04-08T15:43:09.107Z",
+      "duration_ms": 180000,
+      "summary": "Late materialization: VirtualRelation passes column references + index arrays through filter/join/aggregate, only materializes at projection. JoinedRelation for join results. LEFT JOIN with null markers. 9 tests."
     },
     {
       "id": "T58",
