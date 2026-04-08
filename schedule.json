@@ -819,9 +819,13 @@
     {
       "id": "T77",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: symmetric hash join for streaming/pipelined execution",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:13:37.388Z",
+      "completed": "2026-04-08T16:14:49.943Z",
+      "duration_ms": 120000,
+      "summary": "Symmetric hash join: streaming/pipelined execution, both sides build hash tables simultaneously, results available incrementally. Many-to-many, materialize. 10K×20K in 33ms. 8 tests."
     },
     {
       "id": "T78",

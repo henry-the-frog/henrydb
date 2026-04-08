@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:13:18.886Z",
+  "generated": "2026-04-08T16:14:49.979Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: hash aggregation with spill-to-disk for large GROUP BY",
-    "completedAt": "2026-04-08T16:13:18.886Z",
-    "taskId": "T76",
-    "summary": "Hash aggregation with spill: memory-bounded GROUP BY, multiAggregate (multiple aggs in one pass), partition+spill for large groups. 500K/100 groups in 62ms. 8 tests.",
+    "task": "HenryDB: symmetric hash join for streaming/pipelined execution",
+    "completedAt": "2026-04-08T16:14:49.979Z",
+    "taskId": "T77",
+    "summary": "Symmetric hash join: streaming/pipelined execution, both sides build hash tables simultaneously, results available incrementally. Many-to-many, materialize. 10K×20K in 33ms. 8 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -818,12 +818,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 74,
+    "blocksCompleted": 75,
     "blocksTotal": 75,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 44,
+      "BUILD": 45,
       "MAINTAIN": 17,
       "EXPLORE": 2
     }
