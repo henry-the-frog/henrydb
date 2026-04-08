@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T14:32:06.968Z",
+  "generated": "2026-04-08T14:34:17.210Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Integrate cost-based planner with pipeline JIT compiler — planner chooses join strategy, pipeline compiler generates optimized code",
-    "completedAt": "2026-04-08T14:32:06.968Z",
-    "taskId": "T7",
-    "summary": "Built CompiledQueryEngine: integrates cost-based planner with pipeline compilation. Hash join, merge join, nested loop all compiled. 127x speedup on 500-customer join benchmark. 17 tests, all pass. 2242 total HenryDB tests, 0 regressions.",
-    "durationMs": 600000
+    "task": "Test: EXPLAIN shows JIT plan, TPC-H-style queries use optimal join order with compilation",
+    "completedAt": "2026-04-08T14:34:17.210Z",
+    "taskId": "T20",
+    "summary": "7 TPC-H-style compiled query tests: Q1/Q3/Q5/Q9-like queries all compile and execute correctly. 365.7x speedup on 3-table join benchmark. 4-table join works. Correctness verified vs Volcano.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -178,12 +178,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 8,
+    "blocksCompleted": 9,
     "blocksTotal": 20,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 3,
+      "BUILD": 4,
       "MAINTAIN": 1
     }
   }
