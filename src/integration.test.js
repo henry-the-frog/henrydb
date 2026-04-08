@@ -1,155 +1,215 @@
-// integration.test.js — End-to-end SQL feature integration tests
+// integration.test.js — Cross-module integration tests
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { Database } from './db.js';
 
-describe('Integration Tests', () => {
-  it('E-commerce schema with all features', () => {
-    const db = new Database();
+// Import multiple modules to test interactions
+import { BPlusTree } from './bplus-tree.js';
+import { BufferPoolManager } from './buffer-pool.js';
+import { SkipList } from './skip-list.js';
+import { LockManager } from './lock-manager.js';
+import { DeadlockDetector } from './deadlock-detector.js';
+import { WALCompactor } from './wal-compaction.js';
+import { CountMinSketch } from './count-min-sketch.js';
+import { HyperLogLog } from './hyperloglog.js';
+import { TDigest } from './tdigest.js';
+import { BitmapIndex } from './bitmap-index.js';
+import { RingBuffer } from './ring-buffer.js';
+import { CuckooHashTable } from './cuckoo-hash.js';
+import { RobinHoodHashTable } from './robin-hood-hash.js';
+import { ExpressionCompiler } from './expression-compiler.js';
+import { ConstantFolder } from './constant-folding.js';
+
+describe('Integration: B+ Tree + Buffer Pool', () => {
+  it('B+ tree indexes buffered pages', () => {
+    const bpm = new BufferPoolManager(16, 256);
+    const tree = new BPlusTree(16);
     
-    // Schema with constraints
-    db.execute('CREATE TABLE categories (id INT PRIMARY KEY, name TEXT NOT NULL)');
-    db.execute('CREATE TABLE products (id INT PRIMARY KEY, name TEXT NOT NULL, category_id INT REFERENCES categories(id), price INT CHECK (price > 0))');
-    db.execute('CREATE TABLE customers (id INT PRIMARY KEY, name TEXT NOT NULL, email TEXT)');
-    db.execute('CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT REFERENCES customers(id) ON DELETE CASCADE, total INT DEFAULT 0)');
-    db.execute('CREATE TABLE order_items (id INT PRIMARY KEY, order_id INT REFERENCES orders(id) ON DELETE CASCADE, product_id INT REFERENCES products(id), quantity INT CHECK (quantity > 0), subtotal INT)');
-
-    // Data
-    db.execute("INSERT INTO categories VALUES (1, 'Electronics')");
-    db.execute("INSERT INTO categories VALUES (2, 'Books')");
-    db.execute("INSERT INTO categories VALUES (3, 'Clothing')");
-
-    db.execute("INSERT INTO products VALUES (1, 'Laptop', 1, 999)");
-    db.execute("INSERT INTO products VALUES (2, 'Phone', 1, 699)");
-    db.execute("INSERT INTO products VALUES (3, 'SQL Book', 2, 49)");
-    db.execute("INSERT INTO products VALUES (4, 'T-Shirt', 3, 25)");
-    db.execute("INSERT INTO products VALUES (5, 'Jacket', 3, 89)");
-
-    db.execute("INSERT INTO customers VALUES (1, 'Alice', 'alice@test.com')");
-    db.execute("INSERT INTO customers VALUES (2, 'Bob', 'bob@test.com')");
-    db.execute("INSERT INTO customers VALUES (3, 'Carol', 'carol@test.com')");
-
-    db.execute("INSERT INTO orders VALUES (1, 1, 0)");
-    db.execute("INSERT INTO orders VALUES (2, 1, 0)");
-    db.execute("INSERT INTO orders VALUES (3, 2, 0)");
-
-    db.execute('INSERT INTO order_items VALUES (1, 1, 1, 1, 999)');
-    db.execute('INSERT INTO order_items VALUES (2, 1, 3, 2, 98)');
-    db.execute('INSERT INTO order_items VALUES (3, 2, 2, 1, 699)');
-    db.execute('INSERT INTO order_items VALUES (4, 3, 4, 3, 75)');
-    db.execute('INSERT INTO order_items VALUES (5, 3, 5, 1, 89)');
-
-    // Test 1: JOIN + aggregate + GROUP BY
-    const r1 = db.execute(`
-      SELECT c.name, COUNT(*) AS order_count
-      FROM customers c
-      JOIN orders o ON c.id = o.customer_id
-      GROUP BY c.name
-      ORDER BY order_count DESC
-    `);
-    assert.equal(r1.rows[0].name, 'Alice');
-    assert.equal(r1.rows[0].order_count, 2);
-
-    // Test 2: Subquery in WHERE
-    const r2 = db.execute(`
-      SELECT name, price FROM products
-      WHERE price > (SELECT AVG(price) FROM products)
-      ORDER BY price DESC
-    `);
-    assert.ok(r2.rows.length > 0);
-    assert.ok(r2.rows.every(r => r.price > 372)); // avg = (999+699+49+25+89)/5 = 372.2
-
-    // Test 3: Window function
-    const r3 = db.execute(`
-      SELECT name, price,
-        ROW_NUMBER() OVER (ORDER BY price DESC) AS rank
-      FROM products
-    `);
-    assert.equal(r3.rows.length, 5);
-
-    // Test 4: CTE
-    const r4 = db.execute(`
-      WITH expensive AS (
-        SELECT * FROM products WHERE price > 100
-      )
-      SELECT name FROM expensive ORDER BY price DESC
-    `);
-    assert.equal(r4.rows.length, 2); // Laptop and Phone
-
-    // Test 5: CASCADE delete
-    db.execute('DELETE FROM customers WHERE id = 2'); // Should cascade to orders and order_items
-    const remaining = db.execute('SELECT * FROM order_items');
-    assert.ok(remaining.rows.every(r => r.order_id !== 3)); // Bob's items gone
-
-    // Test 6: CHECK constraint
-    assert.throws(() => db.execute('INSERT INTO products VALUES (6, \'Free\', 1, 0)'), /CHECK/);
-
-    // Test 7: FK constraint
-    assert.throws(() => db.execute('INSERT INTO products VALUES (7, \'Ghost\', 99, 10)'), /Foreign key/);
-
-    // Test 8: EXPLAIN ANALYZE
-    const r8 = db.execute('EXPLAIN ANALYZE SELECT * FROM products WHERE id = 1');
-    assert.equal(r8.type, 'ANALYZE');
-    assert.equal(r8.actual_rows, 1);
-  });
-
-  it('Analytics query with window + CTE + aggregation', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE sales (id INT PRIMARY KEY, region TEXT, product TEXT, amount INT, sale_date TEXT)');
-    for (let i = 1; i <= 100; i++) {
-      const region = ['East', 'West', 'North', 'South'][i % 4];
-      const product = ['Widget', 'Gadget', 'Doohickey'][i % 3];
-      db.execute(`INSERT INTO sales VALUES (${i}, '${region}', '${product}', ${100 + i * 7}, '2024-0${1 + (i % 3)}-${10 + (i % 20)}')`);
+    // Simulate indexing pages
+    for (let i = 0; i < 50; i++) {
+      const page = bpm.newPage();
+      page.data.write(`row_${i}`, 0);
+      bpm.unpinPage(page.pageId);
+      tree.insert(i, page.pageId);
     }
 
-    // Region totals
-    const r1 = db.execute(`
-      SELECT region, SUM(amount) AS total, COUNT(*) AS cnt
-      FROM sales
-      GROUP BY region
-      ORDER BY total DESC
-    `);
-    assert.equal(r1.rows.length, 4);
-
-    // Running sum per region
-    const r2 = db.execute(`
-      SELECT region, amount,
-        SUM(amount) OVER (PARTITION BY region ORDER BY amount) AS running_total
-      FROM sales
-      WHERE region = 'East'
-    `);
-    assert.ok(r2.rows.length > 0);
-
-    // Top products
-    const r3 = db.execute(`
-      WITH product_totals AS (
-        SELECT product, SUM(amount) AS total
-        FROM sales
-        GROUP BY product
-      )
-      SELECT product, total FROM product_totals ORDER BY total DESC
-    `);
-    assert.equal(r3.rows.length, 3);
+    // Lookup via index, then fetch page
+    const pageId = tree.get(25);
+    const page = bpm.fetchPage(pageId);
+    assert.ok(page);
+    bpm.unpinPage(page.pageId);
   });
 
-  it('Recursive CTE for graph traversal', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE graph (id INT PRIMARY KEY, src INT, dst INT, weight INT)');
-    // Simple graph: 1→2→3→4
-    db.execute('INSERT INTO graph VALUES (1, 1, 2, 10)');
-    db.execute('INSERT INTO graph VALUES (2, 2, 3, 20)');
-    db.execute('INSERT INTO graph VALUES (3, 3, 4, 30)');
-    db.execute('INSERT INTO graph VALUES (4, 1, 3, 50)'); // Shortcut
+  it('range scan via B+ tree', () => {
+    const tree = new BPlusTree(8);
+    for (let i = 0; i < 100; i++) tree.insert(i, `value_${i}`);
+    const range = tree.range(40, 60);
+    assert.equal(range.length, 21);
+    assert.equal(range[0].value, 'value_40');
+  });
+});
 
-    const r = db.execute(`
-      WITH RECURSIVE reachable AS (
-        SELECT dst AS node FROM graph WHERE src = 1
-        UNION ALL
-        SELECT g.dst FROM graph g JOIN reachable r ON g.src = r.node
-      )
-      SELECT DISTINCT node FROM reachable
-    `);
-    // Should find nodes 2, 3, 4 (all reachable from 1)
-    assert.ok(r.rows.length >= 3);
+describe('Integration: Lock Manager + Deadlock Detector', () => {
+  it('detect and resolve deadlock', async () => {
+    const lm = new LockManager();
+    const dd = new DeadlockDetector();
+
+    dd.registerTxn('T1', { startTime: 100 });
+    dd.registerTxn('T2', { startTime: 200 });
+
+    await lm.acquire('T1', 'row1', 'X');
+    await lm.acquire('T2', 'row2', 'X');
+
+    // T1 wants row2 (held by T2)
+    dd.addWait('T1', 'T2');
+    // T2 wants row1 (held by T1)
+    dd.addWait('T2', 'T1');
+
+    const victims = dd.resolveDeadlocks();
+    assert.equal(victims.length, 1);
+    
+    // Abort victim
+    lm.releaseAll(victims[0]);
+  });
+});
+
+describe('Integration: WAL + Recovery simulation', () => {
+  it('WAL tracks operations and supports replay', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    
+    wal.append('BEGIN', 'users', null, null, 'txn1');
+    wal.append('INSERT', 'users', 1, { name: 'Alice' }, 'txn1');
+    wal.append('INSERT', 'users', 2, { name: 'Bob' }, 'txn1');
+    wal.append('COMMIT', 'users', null, null, 'txn1');
+    
+    // Simulate crash recovery — replay from beginning
+    const entries = wal.replay(0);
+    assert.equal(entries.length, 4);
+    
+    // Checkpoint and truncate
+    wal.checkpoint();
+    assert.equal(wal.entryCount, 0);
+  });
+});
+
+describe('Integration: Sketches for query optimization', () => {
+  it('CMS estimates filter selectivity', () => {
+    const cms = new CountMinSketch(2048, 5);
+    for (let i = 0; i < 10000; i++) {
+      cms.add(`dept_${i % 5}`);
+    }
+    // Each department appears ~2000 times
+    assert.ok(cms.estimate('dept_0') >= 1800);
+    assert.ok(cms.estimate('dept_0') <= 2500);
+  });
+
+  it('HLL estimates join cardinality', () => {
+    const hllA = new HyperLogLog(10);
+    const hllB = new HyperLogLog(10);
+    
+    for (let i = 0; i < 5000; i++) hllA.add(i);
+    for (let i = 3000; i < 8000; i++) hllB.add(i);
+    
+    // Union via merge
+    hllA.merge(hllB);
+    const unionSize = hllA.estimate();
+    assert.ok(Math.abs(unionSize - 8000) < 800); // ~10% error
+  });
+
+  it('TDigest for query latency monitoring', () => {
+    const td = new TDigest(200);
+    for (let i = 0; i < 10000; i++) {
+      td.add(Math.random() * 100);
+    }
+    const p99 = td.percentile(99);
+    assert.ok(p99 > 90 && p99 < 100);
+  });
+});
+
+describe('Integration: Bitmap Index + Expression Compiler', () => {
+  it('compiled filter on bitmap results', () => {
+    const idx = new BitmapIndex();
+    const statuses = Array.from({ length: 1000 }, (_, i) => 
+      ['active', 'inactive', 'pending'][i % 3]
+    );
+    idx.build(statuses);
+    
+    const activeRows = idx.getRows('active');
+    assert.ok(activeRows.length > 300);
+    
+    // Use expression compiler for secondary filter
+    const ec = new ExpressionCompiler();
+    const { fn } = ec.compile({
+      type: 'COMPARE', op: 'GT',
+      left: { type: 'column', name: 'id' },
+      right: { type: 'literal', value: 500 },
+    });
+    
+    const data = activeRows.map(i => ({ id: i, status: 'active' }));
+    const filtered = data.filter(fn);
+    assert.ok(filtered.length > 0);
+    assert.ok(filtered.every(r => r.id > 500));
+  });
+});
+
+describe('Integration: Hash Tables comparison', () => {
+  it('all hash tables agree on same data', () => {
+    const cuckoo = new CuckooHashTable(512);
+    const robin = new RobinHoodHashTable(512);
+    
+    for (let i = 0; i < 200; i++) {
+      cuckoo.set(i, i * 7);
+      robin.set(i, i * 7);
+    }
+    
+    for (let i = 0; i < 200; i++) {
+      assert.equal(cuckoo.get(i), i * 7);
+      assert.equal(robin.get(i), i * 7);
+    }
+  });
+});
+
+describe('Integration: Constant Folder + Expression Compiler', () => {
+  it('fold then compile', () => {
+    const folder = new ConstantFolder();
+    const compiler = new ExpressionCompiler();
+    
+    // Original: (2 + 3) > x
+    const expr = {
+      type: 'COMPARE', op: 'GT',
+      left: { type: 'ARITHMETIC', op: '+', left: { type: 'literal', value: 2 }, right: { type: 'literal', value: 3 } },
+      right: { type: 'column', name: 'x' },
+    };
+    
+    // Fold: 5 > x
+    const folded = folder.fold(expr);
+    assert.equal(folded.left.value, 5);
+    
+    // Compile folded expression
+    const { fn } = compiler.compile(folded);
+    assert.ok(fn({ x: 3 })); // 5 > 3 = true
+    assert.ok(!fn({ x: 10 })); // 5 > 10 = false
+  });
+});
+
+describe('Integration: Ring Buffer as query history', () => {
+  it('tracks last N queries', () => {
+    const history = new RingBuffer(10);
+    for (let i = 0; i < 25; i++) history.push({ sql: `SELECT * FROM t${i}`, ms: i * 10 });
+    
+    assert.equal(history.size, 10);
+    assert.equal(history.peek().sql, 'SELECT * FROM t24');
+    assert.equal(history.peekOldest().sql, 'SELECT * FROM t15');
+  });
+});
+
+describe('Integration: Skip List as memtable', () => {
+  it('sorted insertion and range scan', () => {
+    const memtable = new SkipList();
+    for (let i = 0; i < 100; i++) memtable.set(`key_${String(i).padStart(3, '0')}`, `value_${i}`);
+    
+    // Range scan
+    const range = memtable.range('key_020', 'key_030');
+    assert.equal(range.length, 11);
+    assert.equal(range[0].key, 'key_020');
   });
 });

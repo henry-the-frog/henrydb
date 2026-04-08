@@ -79,7 +79,7 @@ export class CountMinSketch {
       h = ((h << 5) - h + s.charCodeAt(i)) | 0;
     }
     h = ((h >>> 16) ^ h) * 0x45d9f3b;
-    return ((h >>> 16) ^ h) >>> 0 % this.width;
+    return (((h >>> 16) ^ h) >>> 0) % this.width;
   }
 
   getStats() {
