@@ -1387,6 +1387,51 @@
       "completed": "2026-04-08T17:16:47.224Z",
       "duration_ms": 60000,
       "summary": "Pushed 285 objects. Daily log updated through 11:16."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: inverted index — full-text search with TF-IDF scoring",
+      "project": "henrydb",
+      "started": "2026-04-08T17:16:57.510Z",
+      "completed": "2026-04-08T17:18:03.058Z",
+      "duration_ms": 90000,
+      "summary": "Inverted index: full-text search with BM25 scoring. Token position tracking. AND search, phrase search. Term info (DF, TF). 10K searches over 1K docs in 131ms. 8 tests."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: R-tree — spatial index for 2D range queries",
+      "project": "henrydb"
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: multi-version B-tree — copy-on-write for snapshot isolation",
+      "project": "henrydb"
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: parallel hash join — partition and join with work-stealing",
+      "project": "henrydb"
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: optimistic concurrency control — validate at commit time",
+      "project": "henrydb"
+    },
+    {
+      "id": "T135",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push"
     }
   ],
   "focusProjects": [
@@ -1918,6 +1963,30 @@
     {
       "time": "2026-04-08T17:09:12.734Z",
       "msg": "Added T129 (MAINTAIN) after end: Push + update daily log"
+    },
+    {
+      "time": "2026-04-08T17:16:56.684Z",
+      "msg": "Added T130 (BUILD) after end: HenryDB: inverted index — full-text search with TF-IDF scoring"
+    },
+    {
+      "time": "2026-04-08T17:16:56.803Z",
+      "msg": "Added T131 (BUILD) after end: HenryDB: R-tree — spatial index for 2D range queries"
+    },
+    {
+      "time": "2026-04-08T17:16:56.921Z",
+      "msg": "Added T132 (BUILD) after end: HenryDB: multi-version B-tree — copy-on-write for snapshot isolation"
+    },
+    {
+      "time": "2026-04-08T17:16:57.040Z",
+      "msg": "Added T133 (BUILD) after end: HenryDB: parallel hash join — partition and join with work-stealing"
+    },
+    {
+      "time": "2026-04-08T17:16:57.160Z",
+      "msg": "Added T134 (BUILD) after end: HenryDB: optimistic concurrency control — validate at commit time"
+    },
+    {
+      "time": "2026-04-08T17:16:57.277Z",
+      "msg": "Added T135 (MAINTAIN) after end: Push"
     }
   ]
 }
