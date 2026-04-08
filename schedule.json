@@ -698,6 +698,17 @@
       "completed": "2026-04-08T02:40:05.779Z",
       "duration_ms": 240000,
       "summary": "Cache simulator: direct-mapped, N-way set-associative, fully-associative. LRU/FIFO/Random replacement. Write-back/write-through. Address decomposition, spatial locality, conflict misses, dirty eviction tracking. CacheHierarchy for multi-level (L1+L2). Access pattern tests: sequential scan (93.8% hit), stride, row vs column matrix. 21 new tests. Total: 157 tests."
+    },
+    {
+      "id": "T65",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "RISC-V: Virtual memory + TLB — page tables (SV32), TLB with LRU, page fault handling, address translation. Models RISC-V Sv32 scheme.",
+      "project": "henrydb",
+      "started": "2026-04-08T02:40:27.421Z",
+      "completed": "2026-04-08T02:42:16.756Z",
+      "duration_ms": 240000,
+      "summary": "Sv32 virtual memory: 2-level page table walk, PTE flags (V/R/W/X/U/G/A/D), TLB with LRU eviction (32 entries), MMU with permission checks, accessed/dirty flag tracking, page fault handler callback, identity page table setup helper. 20 new tests. Total: 177 tests."
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
@@ -753,6 +764,10 @@
     {
       "time": "2026-04-08T02:37:56.131Z",
       "msg": "Added T64 (EXPLORE) after end: RISC-V: Cache simulator — direct-mapped, N-way set-associative, fully-associative. LRU/FIFO/Random replacement. Hit/miss counting. Integrate with CPU memory access."
+    },
+    {
+      "time": "2026-04-08T02:40:22.227Z",
+      "msg": "Added T65 (EXPLORE) after end: RISC-V: Virtual memory + TLB — page tables (SV32), TLB with LRU, page fault handling, address translation. Models RISC-V Sv32 scheme."
     }
   ],
   "focusProjects": [
