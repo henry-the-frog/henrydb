@@ -1322,6 +1322,51 @@
       "completed": "2026-04-08T17:08:51.647Z",
       "duration_ms": 30000,
       "summary": "Pushed 275 objects."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: extendible hashing — directory-based dynamic hash table",
+      "project": "henrydb",
+      "started": "2026-04-08T17:09:12.965Z",
+      "completed": "2026-04-08T17:10:48.105Z",
+      "duration_ms": 60000,
+      "summary": "Extendible hashing: directory-based dynamic hash table. Directory doubles on overflow, only split bucket reorganized. Global/local depth tracking. 7 tests."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: linear hashing — gradual bucket splitting, no directory",
+      "project": "henrydb"
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: consistent hashing — for distributed data placement",
+      "project": "henrydb"
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: undo/redo log — ARIES-style recovery protocol",
+      "project": "henrydb"
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: cursor-based pagination — keyset pagination for large result sets",
+      "project": "henrydb"
+    },
+    {
+      "id": "T129",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + update daily log"
     }
   ],
   "focusProjects": [
@@ -1829,6 +1874,30 @@
     {
       "time": "2026-04-08T17:02:56.724Z",
       "msg": "Added T123 (MAINTAIN) after end: Push + dashboard sync"
+    },
+    {
+      "time": "2026-04-08T17:09:12.145Z",
+      "msg": "Added T124 (BUILD) after end: HenryDB: extendible hashing — directory-based dynamic hash table"
+    },
+    {
+      "time": "2026-04-08T17:09:12.263Z",
+      "msg": "Added T125 (BUILD) after end: HenryDB: linear hashing — gradual bucket splitting, no directory"
+    },
+    {
+      "time": "2026-04-08T17:09:12.380Z",
+      "msg": "Added T126 (BUILD) after end: HenryDB: consistent hashing — for distributed data placement"
+    },
+    {
+      "time": "2026-04-08T17:09:12.498Z",
+      "msg": "Added T127 (BUILD) after end: HenryDB: undo/redo log — ARIES-style recovery protocol"
+    },
+    {
+      "time": "2026-04-08T17:09:12.616Z",
+      "msg": "Added T128 (BUILD) after end: HenryDB: cursor-based pagination — keyset pagination for large result sets"
+    },
+    {
+      "time": "2026-04-08T17:09:12.734Z",
+      "msg": "Added T129 (MAINTAIN) after end: Push + update daily log"
     }
   ]
 }
