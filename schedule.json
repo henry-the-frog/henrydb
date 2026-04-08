@@ -836,6 +836,23 @@
       "completed": "2026-04-08T16:15:35.224Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (197 objects). Dashboard synced."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: grace hash join — partitioned hash join for when hash table exceeds memory",
+      "project": "henrydb",
+      "started": "2026-04-08T16:15:44.660Z",
+      "completed": "2026-04-08T16:16:45.589Z",
+      "duration_ms": 90000,
+      "summary": "Grace hash join: 16-partition hash join for memory-bounded execution. 100K×100K in 21ms. Correctness verified vs standard hash join. 6 tests."
+    },
+    {
+      "id": "T80",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and test count"
     }
   ],
   "focusProjects": [
@@ -1163,6 +1180,14 @@
     {
       "time": "2026-04-08T16:11:45.535Z",
       "msg": "Added T78 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-08T16:15:44.298Z",
+      "msg": "Added T79 (BUILD) after end: HenryDB: grace hash join — partitioned hash join for when hash table exceeds memory"
+    },
+    {
+      "time": "2026-04-08T16:15:44.415Z",
+      "msg": "Added T80 (MAINTAIN) after end: Push and test count"
     }
   ]
 }
