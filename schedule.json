@@ -1127,6 +1127,51 @@
       "completed": "2026-04-08T16:49:57.558Z",
       "duration_ms": 30000,
       "summary": "Pushed 244 objects. Dashboard synced."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: B+ tree index — non-leaf nodes store only keys, leaf nodes doubly linked for range scans",
+      "project": "henrydb",
+      "started": "2026-04-08T16:50:08.672Z",
+      "completed": "2026-04-08T16:52:25.717Z",
+      "duration_ms": 180000,
+      "summary": "B+ tree index: internal nodes store only keys, leaf nodes doubly linked for O(k) range scans. 50K inserts in 18ms, lookups in 7ms, 10K range scan in 2ms, tree height 3. 11 tests."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: hash join with partitioning — partition both inputs, then probe partition-wise",
+      "project": "henrydb"
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: query plan visualization — DOT graph output for EXPLAIN",
+      "project": "henrydb"
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: statistics collector — histograms, NDV, null fraction for optimizer",
+      "project": "henrydb"
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: deadlock detector — wait-for graph cycle detection",
+      "project": "henrydb"
+    },
+    {
+      "id": "T111",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard sync"
     }
   ],
   "focusProjects": [
@@ -1562,6 +1607,30 @@
     {
       "time": "2026-04-08T16:43:50.652Z",
       "msg": "Added T105 (MAINTAIN) after end: Push + dashboard sync"
+    },
+    {
+      "time": "2026-04-08T16:50:07.832Z",
+      "msg": "Added T106 (BUILD) after end: HenryDB: B+ tree index — non-leaf nodes store only keys, leaf nodes doubly linked for range scans"
+    },
+    {
+      "time": "2026-04-08T16:50:07.953Z",
+      "msg": "Added T107 (BUILD) after end: HenryDB: hash join with partitioning — partition both inputs, then probe partition-wise"
+    },
+    {
+      "time": "2026-04-08T16:50:08.073Z",
+      "msg": "Added T108 (BUILD) after end: HenryDB: query plan visualization — DOT graph output for EXPLAIN"
+    },
+    {
+      "time": "2026-04-08T16:50:08.195Z",
+      "msg": "Added T109 (BUILD) after end: HenryDB: statistics collector — histograms, NDV, null fraction for optimizer"
+    },
+    {
+      "time": "2026-04-08T16:50:08.315Z",
+      "msg": "Added T110 (BUILD) after end: HenryDB: deadlock detector — wait-for graph cycle detection"
+    },
+    {
+      "time": "2026-04-08T16:50:08.435Z",
+      "msg": "Added T111 (MAINTAIN) after end: Push + dashboard sync"
     }
   ]
 }
