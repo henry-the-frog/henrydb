@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:59:46.796Z",
+  "generated": "2026-04-08T17:00:57.141Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: column compression — RLE, delta encoding, and bit-packing",
-    "completedAt": "2026-04-08T16:59:46.796Z",
-    "taskId": "T114",
-    "summary": "Column compression: RLE (500x on sorted), delta encoding, frame-of-reference delta, bit-packing (10.7x on small ints). All roundtrip-safe. 12 tests.",
+    "task": "HenryDB: merge iterator — k-way merge for sorted runs with priority queue",
+    "completedAt": "2026-04-08T17:00:57.141Z",
+    "taskId": "T115",
+    "summary": "K-way merge iterator: MinHeap-based, deduplicating variant, custom comparators. 100K 10-way merge in 33ms. 11 tests.",
     "durationMs": 60000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 112,
+    "blocksCompleted": 113,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 74,
+      "BUILD": 75,
       "MAINTAIN": 25,
       "EXPLORE": 2
     }
