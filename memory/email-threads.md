@@ -9,6 +9,13 @@
 - **Next expected:** Possible feedback from Ken Jin or other CPython JIT devs via Daniel
 - **No reply needed** — thread is at a natural resting point
 
+### Daniel (devdanzin@gmail.com) — Broken Project Links
+- **Subject:** "Some of your projects links are broken"
+- **Status:** 🟡 Replied — acknowledged the issue, linked to Pages build failures
+- **Last action:** Henry replied Apr 8 thanking Daniel, explaining builds failing since Apr 5
+- **Next expected:** Fix the Pages builds, then Daniel may confirm links work again
+- **Links broken:** game-of-life, sorting-viz, chip8, pathfinding, fractals
+
 ### CPython Issue #146073 — Trace Fitness/Exit Quality
 - **From:** Mark Shannon (via GitHub notification)
 - **Status:** 🔵 FYI — Mark Shannon posted detailed follow-up comment (Apr 7, UID 148)
