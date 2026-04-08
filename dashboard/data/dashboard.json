@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T17:57:01.846Z",
+  "generated": "2026-04-08T17:59:46.594Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: property-based tests — randomized tests for data structures",
-    "completedAt": "2026-04-08T17:57:01.846Z",
-    "taskId": "T198",
-    "summary": "13 property-based tests: sorted iteration invariant (4 structures), hash table consistency (2), ring buffer invariants, Fenwick tree verification, heap ordering, string keys, idempotent ops, random workload. 13 tests.",
+    "task": "HenryDB: edge case tests — null handling, overflow, empty collections",
+    "completedAt": "2026-04-08T17:59:46.594Z",
+    "taskId": "T199",
+    "summary": "56 edge case tests: empty collections (19), single elements (9), boundary values (12), special values (9), duplicate handling (6), stress tests (4). Plus 13 property-based tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 196,
+    "blocksCompleted": 197,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 144,
+      "BUILD": 145,
       "MAINTAIN": 39,
       "EXPLORE": 2
     }
