@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T17:03:56.820Z",
+  "generated": "2026-04-08T17:05:01.496Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: timestamp ordering — optimistic concurrency control with read/write timestamps",
-    "completedAt": "2026-04-08T17:03:56.820Z",
-    "taskId": "T118",
-    "summary": "Timestamp ordering: optimistic concurrency with per-item read/write timestamps. Abort on stale read/write. Thomas Write Rule for obsolete writes. Serializable schedules. 7 tests.",
-    "durationMs": 60000
+    "task": "HenryDB: page layout — slotted page with fixed/variable length records",
+    "completedAt": "2026-04-08T17:05:01.496Z",
+    "taskId": "T119",
+    "summary": "Slotted page: variable-length records growing backward, slot directory growing forward. In-place update, compaction/defrag, fill factor tracking. 9 tests.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 116,
+    "blocksCompleted": 117,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 77,
+      "BUILD": 78,
       "MAINTAIN": 26,
       "EXPLORE": 2
     }
