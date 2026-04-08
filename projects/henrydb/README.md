@@ -2,7 +2,7 @@
 
 **A teaching database engine built from scratch in JavaScript.**
 
-3,900+ tests · 79K+ lines · 464 files · Every major concept implemented.
+3,970+ tests · 81K+ lines · 470 files · Every major concept implemented.
 
 ## What Is This?
 
@@ -66,10 +66,15 @@ recovered.execute('SELECT * FROM accounts');
 - **Simple Query Protocol** — `psql` compatible
 - **Extended Query Protocol** — Parse/Bind/Describe/Execute/Sync/Close
 - **Prepared Statements** — named statement reuse, parameter substitution
+- **COPY Protocol** — bulk load (COPY FROM STDIN) + export (COPY TO STDOUT)
+- **LISTEN/NOTIFY** — real-time pub/sub through wire protocol
+- **Server-Side Cursors** — DECLARE/FETCH/MOVE/CLOSE for streaming results
+- **EXPLAIN ANALYZE** — execution stats with timing, row counts, engine info
 - **System Query Interception** — `version()`, `SET`, `pg_catalog` for ORM compatibility
 - **Connection Pooling** — multiple concurrent clients
 - **ORM Support** — tested with Knex, pg driver, connection pools
 - **Express Integration** — full REST API demo (Express + Knex → HenryDB)
+- **Streaming Replication** — primary-replica sync via LISTEN/NOTIFY + SQL replay
 
 ### 💾 Write-Ahead Log (WAL)
 - **Binary format** with CRC32 checksums and LSN tracking
@@ -126,6 +131,7 @@ Fenwick tree · Segment tree · Union-Find · Treap · Splay tree · Binary heap
 | Prepared query cache | **246x** |
 | Peak (10-table join) | **2,062x** |
 | WAL write throughput | **10K records in 180ms** |
+| COPY bulk load | **1000 rows instant** |
 
 ## Running
 
@@ -156,7 +162,7 @@ node --experimental-vm-modules --test src/wal*.test.js src/db-wal*.test.js
 
 ```
 src/
-├── Server: server.js, cli.js, example-app.js, pg-protocol.js
+├── Server: server.js, cli.js, example-app.js, pg-protocol.js, replication.js
 ├── WAL: wal.js, wal-replay.js
 ├── Query Engines: volcano.js, pipeline-compiler.js, vectorized.js, query-codegen.js, adaptive-engine.js
 ├── Indexes: bplus-tree.js, rtree.js, art.js, skip-list.js, trie.js, inverted-index.js
@@ -167,7 +173,7 @@ src/
 ├── Compression: column-compression.js, string-intern.js
 ├── Probabilistic: bloom-join.js, hyperloglog.js, count-min-sketch.js, tdigest.js
 ├── SQL: window-functions.js, cte.js, subquery.js, expression-compiler.js, constant-folding.js
-└── Testing: 297 test files, 3900+ test cases
+└── Testing: 297+ test files, 3970+ test cases
 ```
 
 ## License
