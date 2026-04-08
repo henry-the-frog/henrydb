@@ -6,3 +6,4 @@
 - **thompsons-nfa.md** — Thompson's NFA construction, linear-time regex matching (uses: 1, created: 2026-04-07)
 - **algorithm-w.md** — Hindley-Milner type inference, unification, generalization (uses: 1, created: 2026-04-07)
 - **forth-compilation.md** — Forth compile vs interpret mode, IMMEDIATE words, threaded code (uses: 1, created: 2026-04-07)
+- **riscv-architecture.md** — RISC-V instruction encoding, pipeline hazards, branch prediction, cache behavior, Sv32 page tables, Tomasulo OoO (uses: 1, created: 2026-04-07)
