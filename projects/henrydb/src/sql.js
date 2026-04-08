@@ -11,7 +11,7 @@ const KEYWORDS = new Set([
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
-  'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE',
+  'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED',
   'INTERSECT', 'EXCEPT',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
@@ -150,12 +150,13 @@ export function parse(sql) {
   if (isKeyword('EXPLAIN')) {
     advance();
     const analyze = isKeyword('ANALYZE') ? (advance(), true) : false;
+    const compiled = isKeyword('COMPILED') ? (advance(), true) : false;
     // Parse the underlying statement
     let statement;
     if (isKeyword('WITH')) statement = parseWith();
     else if (isKeyword('SELECT')) statement = parseSelect();
     else throw new Error('EXPLAIN requires a SELECT statement');
-    return { type: 'EXPLAIN', statement, analyze };
+    return { type: 'EXPLAIN', statement, analyze, compiled };
   }
 
   // SELECT or WITH

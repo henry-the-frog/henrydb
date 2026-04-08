@@ -8,6 +8,7 @@ import { QueryPlanner } from './planner.js';
 import { makeCompositeKey } from './composite-key.js';
 import { parse } from './sql.js';
 import { WriteAheadLog } from './wal.js';
+import { CompiledQueryEngine } from './compiled-query.js';
 import { InvertedIndex, tokenize } from './fulltext.js';
 import { PlanCache } from './plan-cache.js';
 
@@ -1791,6 +1792,11 @@ export class Database {
   _explain(ast) {
     const stmt = ast.statement;
 
+    // EXPLAIN COMPILED: show the compiled query plan
+    if (ast.compiled) {
+      return this._explainCompiled(stmt);
+    }
+
     // EXPLAIN ANALYZE: execute the query and measure actual performance
     if (ast.analyze) {
       return this._explainAnalyze(stmt);
@@ -1946,6 +1952,42 @@ export class Database {
     }
 
     return allRows;
+  }
+
+  _explainCompiled(stmt) {
+    if (stmt.type !== 'SELECT') {
+      return { type: 'COMPILED_PLAN', message: 'Only SELECT queries can be compiled' };
+    }
+
+    const engine = new CompiledQueryEngine(this);
+    
+    const plan = engine.planner.plan(stmt);
+    const explainText = engine.explainCompiled(stmt);
+    
+    // Also check if it would actually compile
+    const tableStats = engine.planner.getStats(stmt.from?.table);
+    const wouldCompile = (tableStats?.rowCount || 0) >= 50;
+    
+    const lines = explainText.split('\n');
+    lines.push('');
+    lines.push(`Compilation: ${wouldCompile ? 'YES (table has ' + (tableStats?.rowCount || 0) + ' rows)' : 'NO (table too small)'}`);
+    
+    if (plan.joins?.length > 0) {
+      lines.push(`Join strategies: ${plan.joins.map(j => j.type).join(', ')}`);
+    }
+    
+    const aggInfo = engine._extractAggregation?.(stmt);
+    if (aggInfo) {
+      lines.push(`Aggregation: compiled (${aggInfo.aggregates.map(a => a.fn).join(', ')} with ${aggInfo.groupBy.length} group columns)`);
+    }
+
+    return {
+      type: 'COMPILED_PLAN',
+      plan: lines,
+      message: lines.join('\n'),
+      compiled: wouldCompile,
+      estimatedCost: plan.estimatedCost || plan.totalCost,
+    };
   }
 
   _explainAnalyze(stmt) {
