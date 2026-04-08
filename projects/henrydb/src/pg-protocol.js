@@ -428,4 +428,66 @@ export function writeNotificationResponse(pid, channel, payload = '') {
   return buf;
 }
 
+// ===== COPY Protocol Messages =====
+
+/**
+ * Write CopyInResponse (G) — server tells client to start sending COPY data.
+ * format: 0 = text, 1 = binary
+ */
+export function writeCopyInResponse(numColumns, format = 0) {
+  const len = 4 + 1 + 2 + numColumns * 2;
+  const buf = Buffer.alloc(1 + len);
+  buf[0] = 0x47; // 'G'
+  buf.writeInt32BE(len, 1);
+  buf[5] = format;
+  buf.writeInt16BE(numColumns, 6);
+  let offset = 8;
+  for (let i = 0; i < numColumns; i++) {
+    buf.writeInt16BE(format, offset);
+    offset += 2;
+  }
+  return buf;
+}
+
+/**
+ * Write CopyOutResponse (H) — server tells client it will send COPY data.
+ */
+export function writeCopyOutResponse(numColumns, format = 0) {
+  const len = 4 + 1 + 2 + numColumns * 2;
+  const buf = Buffer.alloc(1 + len);
+  buf[0] = 0x48; // 'H'
+  buf.writeInt32BE(len, 1);
+  buf[5] = format;
+  buf.writeInt16BE(numColumns, 6);
+  let offset = 8;
+  for (let i = 0; i < numColumns; i++) {
+    buf.writeInt16BE(format, offset);
+    offset += 2;
+  }
+  return buf;
+}
+
+/**
+ * Write CopyData (d) — a chunk of COPY data.
+ */
+export function writeCopyData(data) {
+  const dataBuf = typeof data === 'string' ? Buffer.from(data, 'utf8') : data;
+  const len = 4 + dataBuf.length;
+  const buf = Buffer.alloc(1 + len);
+  buf[0] = 0x64; // 'd'
+  buf.writeInt32BE(len, 1);
+  dataBuf.copy(buf, 5);
+  return buf;
+}
+
+/**
+ * Write CopyDone (c) — end of COPY data.
+ */
+export function writeCopyDone() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x63; // 'c'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
 export { PG_TYPES };

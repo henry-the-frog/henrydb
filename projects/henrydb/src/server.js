@@ -17,6 +17,7 @@ import {
   writeNoData, writeParameterDescription, writeEmptyQueryResponse,
   writePortalSuspended,
   writeNotificationResponse,
+  writeCopyInResponse, writeCopyOutResponse, writeCopyData, writeCopyDone,
   PG_TYPES,
 } from './pg-protocol.js';
 
@@ -85,6 +86,7 @@ export class HenryDBServer {
       preparedStatements: new Map(), // name → { sql, paramTypes, ast }
       portals: new Map(), // name → { statement, paramValues, result }
       listeningChannels: new Set(), // channels this connection is LISTENing on
+      copyState: null, // { table, columns, buffer, rowCount } when in COPY mode
     };
     this.connections.add(conn);
 
@@ -199,6 +201,15 @@ export class HenryDBServer {
           break;
         case 0x48: // 'H' — Flush
           // Just drain any pending data (no-op for us)
+          break;
+        case 0x64: // 'd' — CopyData
+          this._handleCopyData(conn, msgBody);
+          break;
+        case 0x63: // 'c' — CopyDone
+          this._handleCopyDone(conn);
+          break;
+        case 0x66: // 'f' — CopyFail
+          this._handleCopyFail(conn, msgBody);
           break;
         case 0x58: // 'X' — Terminate
           conn.state = 'terminated';
@@ -573,6 +584,66 @@ export class HenryDBServer {
     }
   }
 
+  _handleCopyData(conn, msgBody) {
+    if (!conn.copyState) return;
+    // Extract data from CopyData message (skip 4-byte length)
+    const data = msgBody.toString('utf8', 4);
+    conn.copyState.buffer += data;
+  }
+
+  _handleCopyDone(conn) {
+    if (!conn.copyState) {
+      conn.socket.write(writeReadyForQuery(conn.txStatus));
+      return;
+    }
+
+    const { table, columns, buffer } = conn.copyState;
+    let rowCount = 0;
+
+    try {
+      // Parse TSV (PostgreSQL default COPY format)
+      const lines = buffer.split('\n').filter(l => l.length > 0 && l !== '\\.');
+      for (const line of lines) {
+        const values = line.split('\t').map(v => {
+          if (v === '\\N') return null;
+          return v;
+        });
+
+        // Build INSERT SQL
+        const vals = values.map((v, i) => {
+          if (v === null) return 'NULL';
+          // Try to detect numbers
+          if (/^-?\d+(\.\d+)?$/.test(v)) return v;
+          return `'${v.replace(/'/g, "''")}'`;
+        });
+
+        this.db.execute(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${vals.join(', ')})`);
+        rowCount++;
+      }
+
+      conn.copyState = null;
+      conn.socket.write(Buffer.concat([
+        writeCommandComplete(`COPY ${rowCount}`),
+        writeReadyForQuery(conn.txStatus),
+      ]));
+    } catch (err) {
+      conn.copyState = null;
+      conn.socket.write(Buffer.concat([
+        writeErrorResponse('ERROR', '42000', err.message),
+        writeReadyForQuery(conn.txStatus),
+      ]));
+    }
+  }
+
+  _handleCopyFail(conn, msgBody) {
+    const message = msgBody.toString('utf8', 4).replace(/\0/g, '');
+    conn.copyState = null;
+    conn.socket.write(Buffer.concat([
+      writeErrorResponse('ERROR', '57014', `COPY failed: ${message}`),
+      writeReadyForQuery(conn.txStatus),
+    ]));
+  }
+
   _handleClose(conn, msgBody) {
     try {
       const { type, name } = parseCloseMessage(msgBody);
@@ -709,6 +780,65 @@ export class HenryDBServer {
       if (this._verbose) console.log(`[${conn.pid}] UNLISTEN ${arg}`);
       conn.socket.write(writeCommandComplete('UNLISTEN'));
       return true;
+    }
+
+    // COPY FROM STDIN
+    if (upper.startsWith('COPY ') && upper.includes('FROM STDIN')) {
+      const match = sql.match(/COPY\s+(\w+)\s*(?:\(([^)]+)\))?\s+FROM\s+STDIN/i);
+      if (match) {
+        const table = match[1];
+        const tableObj = this.db.tables.get(table);
+        if (!tableObj) {
+          conn.socket.write(writeErrorResponse('ERROR', '42P01', `Table "${table}" not found`));
+          return true;
+        }
+        const columns = match[2] 
+          ? match[2].split(',').map(c => c.trim())
+          : tableObj.schema.map(c => c.name);
+        
+        conn.copyState = { table, columns, buffer: '', rowCount: 0 };
+        conn.socket.write(writeCopyInResponse(columns.length));
+        return true;
+      }
+    }
+
+    // COPY TO STDOUT
+    if (upper.startsWith('COPY ') && upper.includes('TO STDOUT')) {
+      const match = sql.match(/COPY\s+(\w+)\s*(?:\(([^)]+)\))?\s+TO\s+STDOUT/i);
+      if (match) {
+        const table = match[1];
+        const tableObj = this.db.tables.get(table);
+        if (!tableObj) {
+          conn.socket.write(writeErrorResponse('ERROR', '42P01', `Table "${table}" not found`));
+          return true;
+        }
+        const columns = match[2]
+          ? match[2].split(',').map(c => c.trim())
+          : tableObj.schema.map(c => c.name);
+
+        // Send CopyOutResponse
+        conn.socket.write(writeCopyOutResponse(columns.length));
+
+        // Send all rows as CSV
+        const result = this.db.execute(`SELECT ${columns.join(', ')} FROM ${table}`);
+        let rowCount = 0;
+        if (result.type === 'ROWS') {
+          for (const row of result.rows) {
+            const line = columns.map(c => {
+              const v = row[c];
+              if (v === null || v === undefined) return '\\N';
+              return String(v);
+            }).join('\t') + '\n';
+            conn.socket.write(writeCopyData(line));
+            rowCount++;
+          }
+        }
+
+        // Send CopyDone + CommandComplete
+        conn.socket.write(writeCopyDone());
+        conn.socket.write(writeCommandComplete(`COPY ${rowCount}`));
+        return true;
+      }
     }
 
     // NOTIFY channel [, 'payload']

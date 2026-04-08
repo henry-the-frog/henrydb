@@ -4054,10 +4054,65 @@
     {
       "id": "T372",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Sync WAL + server changes to GitHub and update dashboard",
       "project": "henrydb",
-      "started": "2026-04-08T21:13:21.086Z"
+      "started": "2026-04-08T21:13:21.086Z",
+      "completed": "2026-04-08T21:13:45.733Z",
+      "duration_ms": 30000,
+      "summary": "Pushed LISTEN/NOTIFY to GitHub. Session total: ~116 new tests (106 + 10 LISTEN/NOTIFY)."
+    },
+    {
+      "id": "T375",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Build COPY protocol for high-throughput bulk data loading — COPY table FROM STDIN with CSV/TSV format",
+      "project": "henrydb",
+      "started": "2026-04-08T21:14:16.673Z",
+      "completed": "2026-04-08T21:14:29.834Z",
+      "duration_ms": 30000,
+      "summary": "COPY protocol design: CopyInResponse/CopyOutResponse/CopyData/CopyDone/CopyFail messages. CSV parsing for COPY FROM STDIN, CSV generation for COPY TO STDOUT."
+    },
+    {
+      "id": "T376",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement COPY IN protocol: CopyInResponse, CopyData messages, CopyDone/CopyFail handling, CSV parsing, bulk INSERT",
+      "project": "henrydb",
+      "started": "2026-04-08T21:14:30.293Z",
+      "completed": "2026-04-08T21:17:26.121Z",
+      "duration_ms": 300000,
+      "summary": "COPY IN protocol: CopyInResponse, CopyData, CopyDone, CopyFail. TSV parsing, NULL handling, bulk INSERT. 7 tests."
+    },
+    {
+      "id": "T377",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement COPY OUT protocol: CopyOutResponse, stream table data as CSV through wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-08T21:17:26.579Z",
+      "completed": "2026-04-08T21:17:36.141Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T376 — COPY TO STDOUT with CopyOutResponse, CopyData streaming, CopyDone. Test 4 in the COPY test suite verifies it."
+    },
+    {
+      "id": "T378",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Test COPY with pg driver: copy-from stream, copy-to stream, large datasets, error handling",
+      "project": "henrydb",
+      "started": "2026-04-08T21:17:45.803Z",
+      "completed": "2026-04-08T21:17:46.063Z",
+      "duration_ms": 0,
+      "summary": "Already tested in T376 — 7 tests cover bulk load, large datasets (1000 rows), NULL handling, COPY OUT, CopyFail, error handling, post-COPY queries."
+    },
+    {
+      "id": "T379",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Commit COPY protocol implementation and sync to GitHub",
+      "project": "henrydb",
+      "started": "2026-04-08T21:17:53.557Z"
     }
   ],
   "focusProjects": [
@@ -5529,6 +5584,26 @@
     {
       "time": "2026-04-08T21:10:08.565Z",
       "msg": "PLAN T369 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T21:13:59.480Z",
+      "msg": "Added T375 (THINK) after end: Build COPY protocol for high-throughput bulk data loading — COPY table FROM STDIN with CSV/TSV format"
+    },
+    {
+      "time": "2026-04-08T21:14:07.781Z",
+      "msg": "Added T376 (BUILD) after T375: Implement COPY IN protocol: CopyInResponse, CopyData messages, CopyDone/CopyFail handling, CSV parsing, bulk INSERT"
+    },
+    {
+      "time": "2026-04-08T21:14:07.994Z",
+      "msg": "Added T377 (BUILD) after T376: Implement COPY OUT protocol: CopyOutResponse, stream table data as CSV through wire protocol"
+    },
+    {
+      "time": "2026-04-08T21:14:08.212Z",
+      "msg": "Added T378 (BUILD) after T377: Test COPY with pg driver: copy-from stream, copy-to stream, large datasets, error handling"
+    },
+    {
+      "time": "2026-04-08T21:14:08.425Z",
+      "msg": "Added T379 (MAINTAIN) after T378: Commit COPY protocol implementation and sync to GitHub"
     }
   ]
 }
