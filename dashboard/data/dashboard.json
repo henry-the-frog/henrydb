@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:57:35.846Z",
+  "generated": "2026-04-08T16:58:22.424Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: lock manager — shared/exclusive/intention locks with compatibility matrix",
-    "completedAt": "2026-04-08T16:57:35.846Z",
-    "taskId": "T112",
-    "summary": "Lock manager: 5 lock modes (S/X/IS/IX/SIX) with full compatibility matrix. Async acquire with wait queue. Lock upgrades (S→X). tryAcquire for non-blocking. releaseAll for transaction cleanup. 11 tests.",
-    "durationMs": 90000
+    "task": "HenryDB: ring buffer — fixed-size circular buffer for streaming data",
+    "completedAt": "2026-04-08T16:58:22.424Z",
+    "taskId": "T113",
+    "summary": "Ring buffer: fixed-size circular buffer with O(1) push/pop/get. Overwrites oldest on overflow. Iteration oldest→newest. 1M pushes in 12ms. 8 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 110,
+    "blocksCompleted": 111,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 72,
+      "BUILD": 73,
       "MAINTAIN": 25,
       "EXPLORE": 2
     }

@@ -1207,9 +1207,13 @@
     {
       "id": "T113",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: ring buffer — fixed-size circular buffer for streaming data",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:57:36.164Z",
+      "completed": "2026-04-08T16:58:22.363Z",
+      "duration_ms": 60000,
+      "summary": "Ring buffer: fixed-size circular buffer with O(1) push/pop/get. Overwrites oldest on overflow. Iteration oldest→newest. 1M pushes in 12ms. 8 tests."
     },
     {
       "id": "T114",
