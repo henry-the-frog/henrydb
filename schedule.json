@@ -708,6 +708,30 @@
       "completed": "2026-04-08T15:59:01.497Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (181 objects). Dashboard synced. Server healthy (97min uptime). All good."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ART (Adaptive Radix Tree) index — cache-conscious alternative to B+tree for in-memory workloads",
+      "project": "henrydb",
+      "started": "2026-04-08T15:59:30.823Z",
+      "completed": "2026-04-08T16:01:19.247Z",
+      "duration_ms": 180000,
+      "summary": "ART (Adaptive Radix Tree): Node4/16/48/256 adaptive sizing, integer+string keys, handles negatives, 100K keys, sorted traversal. Map is faster for pure lookups but ART provides ordered access. 13 tests."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: connection pool + query queue for concurrent OLTP workloads",
+      "project": "henrydb"
+    },
+    {
+      "id": "T69",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session push"
     }
   ],
   "focusProjects": [
@@ -987,6 +1011,18 @@
     {
       "time": "2026-04-08T15:54:19.454Z",
       "msg": "Added T66 (MAINTAIN) after end: Session housekeeping"
+    },
+    {
+      "time": "2026-04-08T15:59:23.940Z",
+      "msg": "Added T67 (BUILD) after end: HenryDB: ART (Adaptive Radix Tree) index — cache-conscious alternative to B+tree for in-memory workloads"
+    },
+    {
+      "time": "2026-04-08T15:59:24.057Z",
+      "msg": "Added T68 (BUILD) after end: HenryDB: connection pool + query queue for concurrent OLTP workloads"
+    },
+    {
+      "time": "2026-04-08T15:59:24.174Z",
+      "msg": "Added T69 (MAINTAIN) after end: Mid-session push"
     }
   ]
 }
