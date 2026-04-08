@@ -1517,6 +1517,51 @@
       "completed": "2026-04-08T17:25:43.704Z",
       "duration_ms": 60000,
       "summary": "Pushed 297 objects. Daily log updated."
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Serde framework — pluggable serialization (JSON, MessagePack-like binary, CSV)",
+      "project": "henrydb",
+      "started": "2026-04-08T17:25:59.540Z",
+      "completed": "2026-04-08T17:27:34.329Z",
+      "duration_ms": 90000,
+      "summary": "Serde framework: JSON, compact binary (type-tagged), CSV (RFC4180 quoting). Nested objects/arrays in binary. 10K row benchmark. 10 tests."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: query rewriter — predicate simplification, join reordering hints",
+      "project": "henrydb"
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: table partitioning — range and hash partitioning",
+      "project": "henrydb"
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: log-structured hash table — append-only writes with hash index",
+      "project": "henrydb"
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: multi-version timestamp ordering (MVTO)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T147",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push"
     }
   ],
   "focusProjects": [
@@ -2096,6 +2141,30 @@
     {
       "time": "2026-04-08T17:22:21.266Z",
       "msg": "Added T141 (MAINTAIN) after end: Push + daily log update"
+    },
+    {
+      "time": "2026-04-08T17:25:58.693Z",
+      "msg": "Added T142 (BUILD) after end: HenryDB: Serde framework — pluggable serialization (JSON, MessagePack-like binary, CSV)"
+    },
+    {
+      "time": "2026-04-08T17:25:58.814Z",
+      "msg": "Added T143 (BUILD) after end: HenryDB: query rewriter — predicate simplification, join reordering hints"
+    },
+    {
+      "time": "2026-04-08T17:25:58.933Z",
+      "msg": "Added T144 (BUILD) after end: HenryDB: table partitioning — range and hash partitioning"
+    },
+    {
+      "time": "2026-04-08T17:25:59.052Z",
+      "msg": "Added T145 (BUILD) after end: HenryDB: log-structured hash table — append-only writes with hash index"
+    },
+    {
+      "time": "2026-04-08T17:25:59.189Z",
+      "msg": "Added T146 (BUILD) after end: HenryDB: multi-version timestamp ordering (MVTO)"
+    },
+    {
+      "time": "2026-04-08T17:25:59.307Z",
+      "msg": "Added T147 (MAINTAIN) after end: Push"
     }
   ]
 }
