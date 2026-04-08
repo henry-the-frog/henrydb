@@ -1,105 +1,170 @@
-// bitmap-index.js — Bitmap index for low-cardinality columns
-// Each distinct value gets a bit vector where bit i = 1 if row i has that value.
-// Extremely efficient for columns with few distinct values (gender, status, etc.).
+// bitmap-index.js — Bitmap Index for low-cardinality columns
+// Each distinct value gets a bit vector. Bit i is set if row i has that value.
+// Enables fast AND/OR/NOT operations for complex predicates.
+// Ideal for columns with few distinct values (status, gender, country, etc.)
 
+/**
+ * BitVector — compressed bit array with set operations.
+ */
+export class BitVector {
+  constructor(size = 0) {
+    this._words = new Uint32Array(Math.ceil(size / 32));
+    this._size = size;
+  }
+
+  set(pos) {
+    const word = pos >>> 5;
+    const bit = pos & 31;
+    if (word >= this._words.length) this._grow(word + 1);
+    this._words[word] |= (1 << bit);
+  }
+
+  clear(pos) {
+    const word = pos >>> 5;
+    const bit = pos & 31;
+    if (word < this._words.length) this._words[word] &= ~(1 << bit);
+  }
+
+  get(pos) {
+    const word = pos >>> 5;
+    const bit = pos & 31;
+    return word < this._words.length ? (this._words[word] & (1 << bit)) !== 0 : false;
+  }
+
+  and(other) {
+    const len = Math.min(this._words.length, other._words.length);
+    const result = new BitVector(Math.max(this._size, other._size));
+    result._words = new Uint32Array(len);
+    for (let i = 0; i < len; i++) result._words[i] = this._words[i] & other._words[i];
+    return result;
+  }
+
+  or(other) {
+    const len = Math.max(this._words.length, other._words.length);
+    const result = new BitVector(Math.max(this._size, other._size));
+    result._words = new Uint32Array(len);
+    for (let i = 0; i < len; i++) {
+      const a = i < this._words.length ? this._words[i] : 0;
+      const b = i < other._words.length ? other._words[i] : 0;
+      result._words[i] = a | b;
+    }
+    return result;
+  }
+
+  not(totalBits) {
+    const result = new BitVector(totalBits);
+    const len = Math.ceil(totalBits / 32);
+    result._words = new Uint32Array(len);
+    for (let i = 0; i < len; i++) {
+      result._words[i] = i < this._words.length ? ~this._words[i] : 0xFFFFFFFF;
+    }
+    // Clear bits beyond totalBits
+    const extraBits = totalBits & 31;
+    if (extraBits > 0 && len > 0) {
+      result._words[len - 1] &= (1 << extraBits) - 1;
+    }
+    return result;
+  }
+
+  popcount() {
+    let count = 0;
+    for (let i = 0; i < this._words.length; i++) {
+      let w = this._words[i];
+      // Hamming weight
+      w = w - ((w >>> 1) & 0x55555555);
+      w = (w & 0x33333333) + ((w >>> 2) & 0x33333333);
+      count += (((w + (w >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
+    }
+    return count;
+  }
+
+  *positions() {
+    for (let w = 0; w < this._words.length; w++) {
+      let word = this._words[w];
+      while (word !== 0) {
+        const bit = word & (-word); // Lowest set bit
+        const pos = (w << 5) + (31 - Math.clz32(bit));
+        yield pos;
+        word ^= bit;
+      }
+    }
+  }
+
+  _grow(newLen) {
+    const old = this._words;
+    this._words = new Uint32Array(newLen);
+    this._words.set(old);
+  }
+}
+
+/**
+ * BitmapIndex — bitmap index for a single column.
+ */
 export class BitmapIndex {
-  constructor(name, column) {
-    this.name = name;
-    this.column = column;
-    this._bitmaps = new Map(); // value → bit array
-    this._size = 0;
+  constructor() {
+    this._bitmaps = new Map(); // value → BitVector
+    this._rowCount = 0;
   }
 
   /**
-   * Add a row with a given value.
+   * Build index from column values.
    */
-  addRow(rowId, value) {
-    if (!this._bitmaps.has(value)) {
-      this._bitmaps.set(value, []);
+  build(values) {
+    this._rowCount = values.length;
+    this._bitmaps.clear();
+
+    for (let i = 0; i < values.length; i++) {
+      const val = values[i];
+      if (!this._bitmaps.has(val)) {
+        this._bitmaps.set(val, new BitVector(values.length));
+      }
+      this._bitmaps.get(val).set(i);
     }
-    const bitmap = this._bitmaps.get(value);
-    // Ensure bitmap is large enough
-    while (bitmap.length <= rowId) bitmap.push(0);
-    bitmap[rowId] = 1;
-    this._size = Math.max(this._size, rowId + 1);
   }
 
   /**
-   * Find all row IDs that have a specific value. O(n/word_size).
+   * Get bitmap for a specific value.
    */
-  findEqual(value) {
-    const bitmap = this._bitmaps.get(value);
-    if (!bitmap) return [];
-    const results = [];
-    for (let i = 0; i < bitmap.length; i++) {
-      if (bitmap[i]) results.push(i);
-    }
-    return results;
+  eq(value) {
+    return this._bitmaps.get(value) || new BitVector(this._rowCount);
   }
 
   /**
-   * AND two bitmaps: rows matching BOTH value1 AND value2 (different columns).
+   * Get bitmap for IN (value1, value2, ...).
    */
-  static and(bitmap1, bitmap2) {
-    const len = Math.min(bitmap1.length, bitmap2.length);
-    const result = [];
-    for (let i = 0; i < len; i++) {
-      if (bitmap1[i] && bitmap2[i]) result.push(i);
+  in(values) {
+    let result = new BitVector(this._rowCount);
+    for (const v of values) {
+      const bm = this._bitmaps.get(v);
+      if (bm) result = result.or(bm);
     }
     return result;
   }
 
   /**
-   * OR two bitmaps: rows matching value1 OR value2.
+   * Get bitmap for NOT value.
    */
-  static or(bitmap1, bitmap2) {
-    const len = Math.max(bitmap1.length, bitmap2.length);
-    const result = [];
-    for (let i = 0; i < len; i++) {
-      if ((bitmap1[i] || 0) || (bitmap2[i] || 0)) result.push(i);
-    }
-    return result;
+  neq(value) {
+    const bm = this.eq(value);
+    return bm.not(this._rowCount);
   }
 
   /**
-   * NOT a bitmap: rows NOT having the value.
+   * Get matching row indices for a value.
    */
-  not(value) {
-    const bitmap = this._bitmaps.get(value) || [];
-    const results = [];
-    for (let i = 0; i < this._size; i++) {
-      if (!bitmap[i]) results.push(i);
-    }
-    return results;
+  getRows(value) {
+    return [...this.eq(value).positions()];
   }
 
-  /**
-   * Count rows with a specific value (without materializing the list).
-   */
-  count(value) {
-    const bitmap = this._bitmaps.get(value);
-    if (!bitmap) return 0;
-    return bitmap.reduce((sum, bit) => sum + bit, 0);
-  }
+  get distinctValues() { return [...this._bitmaps.keys()]; }
+  get cardinality() { return this._bitmaps.size; }
+  get rowCount() { return this._rowCount; }
 
-  /**
-   * Get all distinct values.
-   */
-  distinctValues() {
-    return [...this._bitmaps.keys()];
-  }
-
-  /**
-   * Get statistics.
-   */
-  stats() {
+  getStats() {
     return {
-      column: this.column,
+      rowCount: this._rowCount,
       distinctValues: this._bitmaps.size,
-      totalRows: this._size,
-      valueCounts: Object.fromEntries(
-        [...this._bitmaps.entries()].map(([v, bm]) => [v, bm.reduce((s, b) => s + b, 0)])
-      ),
+      memoryWords: [...this._bitmaps.values()].reduce((s, bv) => s + bv._words.length, 0),
     };
   }
 }
