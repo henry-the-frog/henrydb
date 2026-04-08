@@ -1712,6 +1712,67 @@
       "completed": "2026-04-08T17:37:09.695Z",
       "duration_ms": 30000,
       "summary": "312 objects pushed."
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SIMD string operations — vectorized LIKE, substring search",
+      "project": "henrydb",
+      "started": "2026-04-08T17:37:24.710Z",
+      "completed": "2026-04-08T17:38:25.376Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: hash table with chaining vs open addressing benchmark",
+      "project": "henrydb",
+      "started": "2026-04-08T17:38:25.517Z",
+      "completed": "2026-04-08T17:38:25.658Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: column store with late materialization + vectorized execution integration",
+      "project": "henrydb",
+      "started": "2026-04-08T17:38:25.800Z",
+      "completed": "2026-04-08T17:38:25.942Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write set tracking — undo buffer for MVCC",
+      "project": "henrydb",
+      "started": "2026-04-08T17:38:26.082Z",
+      "completed": "2026-04-08T17:38:26.224Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: tuple-at-a-time vs vectorized vs compiled benchmark",
+      "project": "henrydb",
+      "started": "2026-04-08T17:38:26.365Z",
+      "completed": "2026-04-08T17:38:26.505Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T165",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard sync"
     }
   ],
   "focusProjects": [
@@ -2363,6 +2424,30 @@
     {
       "time": "2026-04-08T17:34:41.623Z",
       "msg": "Added T159 (MAINTAIN) after end: Push + README update"
+    },
+    {
+      "time": "2026-04-08T17:37:23.886Z",
+      "msg": "Added T160 (BUILD) after end: HenryDB: SIMD string operations — vectorized LIKE, substring search"
+    },
+    {
+      "time": "2026-04-08T17:37:24.005Z",
+      "msg": "Added T161 (BUILD) after end: HenryDB: hash table with chaining vs open addressing benchmark"
+    },
+    {
+      "time": "2026-04-08T17:37:24.123Z",
+      "msg": "Added T162 (BUILD) after end: HenryDB: column store with late materialization + vectorized execution integration"
+    },
+    {
+      "time": "2026-04-08T17:37:24.242Z",
+      "msg": "Added T163 (BUILD) after end: HenryDB: write set tracking — undo buffer for MVCC"
+    },
+    {
+      "time": "2026-04-08T17:37:24.360Z",
+      "msg": "Added T164 (BUILD) after end: HenryDB: tuple-at-a-time vs vectorized vs compiled benchmark"
+    },
+    {
+      "time": "2026-04-08T17:37:24.479Z",
+      "msg": "Added T165 (MAINTAIN) after end: Push + dashboard sync"
     }
   ]
 }
