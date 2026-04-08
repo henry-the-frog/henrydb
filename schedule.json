@@ -542,9 +542,13 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: columnar storage engine with dictionary encoding for low-cardinality columns",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:31:48.603Z",
+      "completed": "2026-04-08T15:33:21.585Z",
+      "duration_ms": 180000,
+      "summary": "Column store with auto dictionary encoding: autoDictEncode detects low-cardinality text columns (<10% cardinality), dictFilter 2x faster, dictGroupBy for fast analytics. Combined with vectorized aggregate. 6 tests."
     },
     {
       "id": "T52",
