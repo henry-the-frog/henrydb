@@ -659,9 +659,13 @@
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: predicate pushdown into storage layer — skip pages where min/max rules out matches",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:51:44.484Z",
+      "completed": "2026-04-08T15:53:13.747Z",
+      "duration_ms": 120000,
+      "summary": "Predicate pushdown: PushdownScanner uses zone maps to skip pages, multi-predicate AND support, equality/range/comparison pushdown. 95 pages skipped on 100K sorted data. 7 tests."
     },
     {
       "id": "T63",

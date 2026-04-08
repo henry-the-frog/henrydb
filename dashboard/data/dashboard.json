@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T15:51:05.824Z",
+  "generated": "2026-04-08T15:53:13.784Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: zone maps (min/max per data page) for skip-scan optimization",
-    "completedAt": "2026-04-08T15:51:05.824Z",
-    "taskId": "T61",
-    "summary": "Zone maps: track min/max per page (1K rows). 95% page skip rate on sorted data, sub-ms scan on 100K rows. ZoneMapIndex for multi-column tracking. Predicate types: EQ, GT, GE, LT, LE, RANGE. 10 tests.",
+    "task": "HenryDB: predicate pushdown into storage layer — skip pages where min/max rules out matches",
+    "completedAt": "2026-04-08T15:53:13.784Z",
+    "taskId": "T62",
+    "summary": "Predicate pushdown: PushdownScanner uses zone maps to skip pages, multi-predicate AND support, equality/range/comparison pushdown. 95 pages skipped on 100K sorted data. 7 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -658,12 +658,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 59,
+    "blocksCompleted": 60,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 34,
+      "BUILD": 35,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }
