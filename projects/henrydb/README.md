@@ -2,7 +2,7 @@
 
 **A teaching database engine built from scratch in JavaScript.**
 
-4,300+ tests · 90K+ lines · 520 files · Every major concept implemented.
+4,460+ tests · 92K+ lines · 543 files · Every major concept implemented.
 
 ## What Is This?
 
@@ -168,6 +168,13 @@ Window functions (ROW_NUMBER, RANK, LAG, LEAD, SUM OVER) · Common Table Express
 - **Full-Text Search** — LIKE, LOWER, multi-column, relevance ranking
 - **Schema Migrations** — versioned schema changes with rollback tracking
 - **GraphQL-like** — field selection, filtering, nested relations
+- **Banking** — accounts, transactions, transfers, customer assets
+- **School/University** — students, courses, enrollments, dean's list, GPA analytics
+- **Music Streaming** — artists, albums, tracks, playlists, genre stats
+- **Fitness Tracking** — workouts, calories, step counts, leaderboard
+- **Travel Booking** — flights, hotels, bookings, route search
+- **Log Analysis** — 100-entry access logs, status codes, error rates, top endpoints
+- **Real Estate** — property listings, agent performance, sold analysis
 - **Stress Tests** — 10 concurrent connections, connection pools, rapid cycling
 
 ### Analytics & Observability
@@ -227,7 +234,7 @@ src/
 ├── Compression: column-compression.js, string-intern.js
 ├── Probabilistic: bloom-join.js, hyperloglog.js, count-min-sketch.js, tdigest.js
 ├── SQL: window-functions.js, cte.js, subquery.js, expression-compiler.js, constant-folding.js
-└── Testing: 330+ test files, 4300+ test cases
+└── Testing: 350+ test files, 4460+ test cases
 ```
 
 ## License
