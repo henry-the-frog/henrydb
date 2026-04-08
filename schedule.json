@@ -1257,6 +1257,51 @@
       "completed": "2026-04-08T17:02:46.470Z",
       "duration_ms": 60000,
       "summary": "Pushed 264 objects. Daily log updated."
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: timestamp ordering — optimistic concurrency control with read/write timestamps",
+      "project": "henrydb",
+      "started": "2026-04-08T17:02:56.958Z",
+      "completed": "2026-04-08T17:03:56.783Z",
+      "duration_ms": 60000,
+      "summary": "Timestamp ordering: optimistic concurrency with per-item read/write timestamps. Abort on stale read/write. Thomas Write Rule for obsolete writes. Serializable schedules. 7 tests."
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: page layout — slotted page with fixed/variable length records",
+      "project": "henrydb"
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: data page — heap file organization with free space tracking",
+      "project": "henrydb"
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: tuple descriptor — schema-aware row serialization/deserialization",
+      "project": "henrydb"
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: materialized views — auto-refresh on base table changes",
+      "project": "henrydb"
+    },
+    {
+      "id": "T123",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard sync"
     }
   ],
   "focusProjects": [
@@ -1740,6 +1785,30 @@
     {
       "time": "2026-04-08T16:56:25.211Z",
       "msg": "Added T117 (MAINTAIN) after end: Push + update daily log + dashboard sync"
+    },
+    {
+      "time": "2026-04-08T17:02:56.127Z",
+      "msg": "Added T118 (BUILD) after end: HenryDB: timestamp ordering — optimistic concurrency control with read/write timestamps"
+    },
+    {
+      "time": "2026-04-08T17:02:56.247Z",
+      "msg": "Added T119 (BUILD) after end: HenryDB: page layout — slotted page with fixed/variable length records"
+    },
+    {
+      "time": "2026-04-08T17:02:56.366Z",
+      "msg": "Added T120 (BUILD) after end: HenryDB: data page — heap file organization with free space tracking"
+    },
+    {
+      "time": "2026-04-08T17:02:56.485Z",
+      "msg": "Added T121 (BUILD) after end: HenryDB: tuple descriptor — schema-aware row serialization/deserialization"
+    },
+    {
+      "time": "2026-04-08T17:02:56.606Z",
+      "msg": "Added T122 (BUILD) after end: HenryDB: materialized views — auto-refresh on base table changes"
+    },
+    {
+      "time": "2026-04-08T17:02:56.724Z",
+      "msg": "Added T123 (MAINTAIN) after end: Push + dashboard sync"
     }
   ]
 }
