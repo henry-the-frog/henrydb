@@ -1,5 +1,10 @@
 // column-store.js — Columnar storage engine for HenryDB
 // Optimized for analytical queries (aggregations over many rows, few columns).
+// Now with automatic dictionary encoding for low-cardinality text columns.
+
+import { DictionaryEncodedColumn } from './string-intern.js';
+
+const DICT_ENCODING_THRESHOLD = 0.1; // Encode if cardinality < 10% of row count
 
 /**
  * Column Store: stores data column-by-column for fast analytics.
@@ -168,4 +173,87 @@ export class ColumnStore {
 
   get rowCount() { return this._rowCount; }
   get columnCount() { return this._schema.length; }
+
+  /**
+   * Automatically dictionary-encode columns with low cardinality.
+   * Returns stats about which columns were encoded.
+   */
+  autoDictEncode() {
+    const encodedColumns = [];
+    
+    for (const col of this._schema) {
+      if (col.type !== 'TEXT' && col.type !== 'text' && col.type !== 'string') continue;
+      
+      const data = this._columns.get(col.name);
+      if (data.length === 0) continue;
+
+      // Check cardinality
+      const uniqueValues = new Set(data);
+      const cardinality = uniqueValues.size;
+      
+      if (cardinality / data.length <= DICT_ENCODING_THRESHOLD) {
+        // Low cardinality — use dictionary encoding
+        const dictCol = new DictionaryEncodedColumn();
+        for (const val of data) dictCol.push(val);
+        
+        this._dictColumns = this._dictColumns || new Map();
+        this._dictColumns.set(col.name, dictCol);
+        
+        encodedColumns.push({
+          column: col.name,
+          cardinality,
+          rowCount: data.length,
+          compressionRatio: (data.length / cardinality).toFixed(1),
+        });
+      }
+    }
+
+    return { encoded: encodedColumns };
+  }
+
+  /**
+   * Get dictionary-encoded column if available.
+   */
+  getDictColumn(name) {
+    return this._dictColumns?.get(name) || null;
+  }
+
+  /**
+   * Fast equality filter using dictionary encoding.
+   * Falls back to standard scan if not dictionary-encoded.
+   */
+  dictFilter(column, value) {
+    const dictCol = this.getDictColumn(column);
+    if (dictCol) {
+      return dictCol.filterEquals(value);
+    }
+    
+    // Fallback: standard scan
+    const data = this._columns.get(column);
+    const result = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] === value) result.push(i);
+    }
+    return result;
+  }
+
+  /**
+   * Fast group-by using dictionary encoding.
+   */
+  dictGroupBy(column) {
+    const dictCol = this.getDictColumn(column);
+    if (dictCol) {
+      return dictCol.groupBy();
+    }
+    
+    // Fallback: standard group-by
+    const data = this._columns.get(column);
+    const groups = new Map();
+    for (let i = 0; i < data.length; i++) {
+      const key = data[i];
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(i);
+    }
+    return groups;
+  }
 }
