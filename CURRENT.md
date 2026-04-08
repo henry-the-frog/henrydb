@@ -1,19 +1,19 @@
 # Current Task
 
 status: session-ended
-session: Work Session C (21:30-22:15 MDT)
-tasks_completed: 14
-last_task: T18 (WAL compaction)
-focus: HenryDB WAL deep work — ARIES checkpointing, PITR, auto-checkpoint, compaction
+session: Work Session C Part 2 (21:30-22:00 MDT)
+tasks_completed: 15 (T1-T19, some skipped)
+last_task: T19 (README update)
+focus: HenryDB WAL deep work
 
-## Session C Part 2 Achievements
-1. **Enriched scratch notes** — henrydb-transactions.md expanded with SSI, 2PC, pipeline JIT, bloom filters
-2. **ARIES-style fuzzy checkpointing** — BEGIN/END markers, dirty page table with recLSN, WAL truncation (20 tests)
-3. **Point-in-time recovery (PITR)** — recoverToTimestamp() for any historical state (12 tests)
-4. **CHECKPOINT SQL command** — parser keyword + executor handler (5 tests)
-5. **Auto-checkpoint** — configurable threshold, callback, counter reset (8 tests)
-6. **WAL compaction** — safe truncation point from checkpoint/active txns/dirty pages (8 tests)
-7. **Full regression**: 2209 tests, 2203 pass, 4 pre-existing failures
-8. **All pushed to GitHub** (henry-the-frog/henrydb)
+## Session Achievements
+1. Enriched henrydb-transactions scratch note (SSI, 2PC, pipeline JIT, bloom filters, PITR)
+2. **ARIES-style fuzzy checkpointing** — 20 tests
+3. **Point-in-time recovery (PITR)** — 12 tests  
+4. **CHECKPOINT SQL command** — 5 tests
+5. **Auto-checkpoint** (threshold-based) — 8 tests
+6. **WAL compaction** (safe truncation) — 8 tests
+7. Full regression: 2209 tests, 2203 pass
+8. 5 GitHub pushes to henry-the-frog/henrydb
 
-Total new tests: 53
+New tests: 53 | All pushed to GitHub
