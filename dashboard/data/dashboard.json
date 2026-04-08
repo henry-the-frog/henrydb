@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:21:14.551Z",
+  "generated": "2026-04-08T16:22:16.477Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: band join — join on range predicates (a.val BETWEEN b.lo AND b.hi)",
-    "completedAt": "2026-04-08T16:21:14.551Z",
-    "taskId": "T84",
-    "summary": "Band join: range predicate join (BETWEEN) using sorted sweep + binary search. Temporal join for events within sessions. 10K×1K in 75ms. 7 tests.",
-    "durationMs": 90000
+    "task": "HenryDB: nested-loop join with predicate compilation (theta join)",
+    "completedAt": "2026-04-08T16:22:16.477Z",
+    "taskId": "T85",
+    "summary": "Theta join: arbitrary predicate NL join + block NL for cache locality. 6 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -903,12 +903,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 82,
+    "blocksCompleted": 83,
     "blocksTotal": 83,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 49,
+      "BUILD": 50,
       "MAINTAIN": 20,
       "EXPLORE": 2
     }
