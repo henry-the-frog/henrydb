@@ -4615,9 +4615,13 @@
     {
       "id": "T425",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Build connection pool proxy: accept N client connections, multiplex onto M database connections (N:M pooling). Track pool utilization.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T23:45:37.260Z",
+      "completed": "2026-04-08T23:50:16.917Z",
+      "duration_ms": 180000,
+      "summary": "Connection pool proxy: N:M multiplexing with transaction/session/statement modes. 3 pooling modes, wait queue, utilization tracking, auto-rollback on disconnect. 13 tests."
     },
     {
       "id": "T426",
@@ -4636,10 +4640,12 @@
     {
       "id": "T428",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build CREATE INDEX through wire protocol with EXPLAIN showing index usage vs sequential scan, demonstrate query speedup on large table",
       "project": "henrydb",
-      "started": "2026-04-08T22:26:13.187Z"
+      "started": "2026-04-08T22:26:13.187Z",
+      "completed": "2026-04-08T23:45:27.597Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
     }
   ],
   "focusProjects": [
