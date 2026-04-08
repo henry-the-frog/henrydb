@@ -308,6 +308,128 @@ export class VectorizedCodeGen {
     });
   }
 
+  /**
+   * Vectorized aggregation: process column arrays directly.
+   * Much faster than row-at-a-time for SUM/COUNT/AVG/MIN/MAX.
+   */
+  vectorizedAggregate(rows, groupByColumns, aggregates) {
+    if (!rows || rows.length === 0) return [];
+
+    // Build columnar representation from rows
+    const columns = {};
+    const colNames = Object.keys(rows[0]);
+    for (const name of colNames) columns[name] = [];
+    for (const row of rows) {
+      for (const name of colNames) {
+        columns[name].push(row[name]);
+      }
+    }
+    const totalRows = rows.length;
+
+    return this._vectorAggregateColumnar(columns, totalRows, groupByColumns, aggregates);
+  }
+
+  /**
+   * Aggregate directly on columnar data.
+   */
+  _vectorAggregateColumnar(columns, totalRows, groupByColumns, aggregates) {
+    // Build group map: key → indices
+    const groups = new Map();
+
+    if (groupByColumns.length === 0) {
+      // No GROUP BY: all rows in one group
+      const indices = new Uint32Array(totalRows);
+      for (let i = 0; i < totalRows; i++) indices[i] = i;
+      groups.set('__all__', { key: [], indices });
+    } else {
+      // Group by column values
+      for (let i = 0; i < totalRows; i++) {
+        const keyParts = groupByColumns.map(col => {
+          const arr = columns[col] || columns[col.split('.').pop()];
+          return arr ? arr[i] : null;
+        });
+        const key = keyParts.join('|');
+        if (!groups.has(key)) groups.set(key, { key: keyParts, indices: [] });
+        groups.get(key).indices.push(i);
+      }
+    }
+
+    // Compute aggregates per group using vectorized column operations
+    const results = [];
+    for (const group of groups.values()) {
+      const row = {};
+
+      // Add group-by columns
+      for (let gi = 0; gi < groupByColumns.length; gi++) {
+        const colName = groupByColumns[gi].split('.').pop();
+        row[colName] = group.key[gi];
+      }
+
+      // Compute each aggregate
+      for (const agg of aggregates) {
+        const colArr = agg.column === '*' ? null : (columns[agg.column] || columns[agg.column?.split('.').pop()]);
+        const indices = group.indices;
+        const n = indices.length;
+
+        switch (agg.fn) {
+          case 'COUNT': {
+            if (agg.column === '*') {
+              row[agg.alias] = n;
+            } else {
+              // Count non-null
+              let cnt = 0;
+              for (let i = 0; i < n; i++) {
+                if (colArr[indices[i]] != null) cnt++;
+              }
+              row[agg.alias] = cnt;
+            }
+            break;
+          }
+          case 'SUM': {
+            let sum = 0;
+            for (let i = 0; i < n; i++) {
+              const v = colArr[indices[i]];
+              if (v != null) sum += (typeof v === 'number' ? v : parseFloat(v) || 0);
+            }
+            row[agg.alias] = sum;
+            break;
+          }
+          case 'AVG': {
+            let sum = 0, cnt = 0;
+            for (let i = 0; i < n; i++) {
+              const v = colArr[indices[i]];
+              if (v != null) { sum += (typeof v === 'number' ? v : parseFloat(v) || 0); cnt++; }
+            }
+            row[agg.alias] = cnt > 0 ? sum / cnt : null;
+            break;
+          }
+          case 'MIN': {
+            let min = Infinity;
+            for (let i = 0; i < n; i++) {
+              const v = colArr[indices[i]];
+              if (v != null && v < min) min = v;
+            }
+            row[agg.alias] = min === Infinity ? null : min;
+            break;
+          }
+          case 'MAX': {
+            let max = -Infinity;
+            for (let i = 0; i < n; i++) {
+              const v = colArr[indices[i]];
+              if (v != null && v > max) max = v;
+            }
+            row[agg.alias] = max === -Infinity ? null : max;
+            break;
+          }
+        }
+      }
+
+      results.push(row);
+    }
+
+    return results;
+  }
+
   _extractJoinColumns(onExpr) {
     if (!onExpr) return null;
     if (onExpr.type === 'COMPARE' && onExpr.op === 'EQ') {
