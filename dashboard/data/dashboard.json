@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:30:54.820Z",
+  "generated": "2026-04-08T16:34:05.048Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: T-Digest for approximate percentile/quantile estimation (P50, P95, P99)",
-    "completedAt": "2026-04-08T16:30:54.820Z",
-    "taskId": "T92",
-    "summary": "T-Digest: approximate percentile estimation (P50/P95/P99). 105 centroids for 1M values. Adaptive compression for tail accuracy. Merge support. 8 tests.",
-    "durationMs": 60000
+    "task": "HenryDB: constant folding optimizer — simplify WHERE 1=1, 2+3→5, etc. before execution",
+    "completedAt": "2026-04-08T16:34:05.048Z",
+    "taskId": "T94",
+    "summary": "Constant folding optimizer: arithmetic (2+3→5), comparisons (1=1→true), boolean (true AND x→x, false AND x→false), NOT NOT elimination, identity (x+0→x, x*1→x), zero (x*0→0), string concat, BETWEEN, IN, CASE. 18 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -967,12 +967,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 90,
+    "blocksCompleted": 92,
     "blocksTotal": 89,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 55,
+      "BUILD": 57,
       "MAINTAIN": 22,
       "EXPLORE": 2
     }

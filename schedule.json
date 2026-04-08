@@ -986,6 +986,28 @@
       "completed": "2026-04-08T16:30:54.785Z",
       "duration_ms": 60000,
       "summary": "T-Digest: approximate percentile estimation (P50/P95/P99). 105 centroids for 1M values. Adaptive compression for tail accuracy. Merge support. 8 tests."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: MVCC garbage collector — reclaim old row versions that no active transaction needs",
+      "project": "henrydb",
+      "started": "2026-04-08T16:31:26.719Z",
+      "completed": "2026-04-08T16:31:48.185Z",
+      "duration_ms": 5000,
+      "summary": "VACUUM already implemented (202 LOC). Moving on."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: constant folding optimizer — simplify WHERE 1=1, 2+3→5, etc. before execution",
+      "project": "henrydb",
+      "started": "2026-04-08T16:31:56.804Z",
+      "completed": "2026-04-08T16:34:05.012Z",
+      "duration_ms": 120000,
+      "summary": "Constant folding optimizer: arithmetic (2+3→5), comparisons (1=1→true), boolean (true AND x→x, false AND x→false), NOT NOT elimination, identity (x+0→x, x*1→x), zero (x*0→0), string concat, BETWEEN, IN, CASE. 18 tests."
     }
   ],
   "focusProjects": [
@@ -1369,6 +1391,14 @@
     {
       "time": "2026-04-08T16:29:41.150Z",
       "msg": "Added T92 (BUILD) after end: HenryDB: T-Digest for approximate percentile/quantile estimation (P50, P95, P99)"
+    },
+    {
+      "time": "2026-04-08T16:31:26.487Z",
+      "msg": "Added T93 (BUILD) after end: HenryDB: MVCC garbage collector — reclaim old row versions that no active transaction needs"
+    },
+    {
+      "time": "2026-04-08T16:31:56.573Z",
+      "msg": "Added T94 (BUILD) after end: HenryDB: constant folding optimizer — simplify WHERE 1=1, 2+3→5, etc. before execution"
     }
   ]
 }
