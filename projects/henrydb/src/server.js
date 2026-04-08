@@ -1259,6 +1259,36 @@ export class HenryDBServer {
       return true;
     }
 
+    // SAVEPOINT
+    if (upper.startsWith('SAVEPOINT ')) {
+      const name = sql.substring(10).trim().replace(/;$/, '');
+      try {
+        this.db.execute(`SAVEPOINT ${name}`);
+      } catch (e) { /* ignore if not in tx */ }
+      conn.socket.write(writeCommandComplete('SAVEPOINT'));
+      return true;
+    }
+
+    // RELEASE SAVEPOINT
+    if (upper.startsWith('RELEASE SAVEPOINT') || upper.startsWith('RELEASE ')) {
+      const name = sql.replace(/RELEASE\s+(?:SAVEPOINT\s+)?/i, '').trim().replace(/;$/, '');
+      try {
+        this.db.execute(`RELEASE SAVEPOINT ${name}`);
+      } catch (e) { /* ignore */ }
+      conn.socket.write(writeCommandComplete('RELEASE'));
+      return true;
+    }
+
+    // ROLLBACK TO SAVEPOINT
+    if (upper.startsWith('ROLLBACK TO')) {
+      const name = sql.replace(/ROLLBACK\s+TO\s+(?:SAVEPOINT\s+)?/i, '').trim().replace(/;$/, '');
+      try {
+        this.db.execute(`ROLLBACK TO SAVEPOINT ${name}`);
+      } catch (e) { /* ignore */ }
+      conn.socket.write(writeCommandComplete('ROLLBACK'));
+      return true;
+    }
+
     // VACUUM [ANALYZE] [table_name]
     if (upper.startsWith('VACUUM')) {
       const analyzeFlag = upper.includes('ANALYZE');
