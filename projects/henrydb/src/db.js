@@ -1654,6 +1654,8 @@ export class Database {
       }
     }
 
+    const returnedRows = [];
+
     for (const item of toUpdate) {
       const newValues = [...item.values];
       const row = this._valuesToRow(item.values, table.schema, ast.table);
@@ -1684,7 +1686,24 @@ export class Database {
         index.insert(newValues[colIdx], newRid);
       }
 
+      if (ast.returning) {
+        const cleanRow = {};
+        for (let i = 0; i < table.schema.length; i++) {
+          cleanRow[table.schema[i].name] = newValues[i];
+        }
+        returnedRows.push(cleanRow);
+      }
+
       updated++;
+    }
+
+    if (ast.returning) {
+      const filteredRows = ast.returning === '*' ? returnedRows : returnedRows.map(row => {
+        const filtered = {};
+        for (const col of ast.returning) filtered[col] = row[col];
+        return filtered;
+      });
+      return { type: 'ROWS', rows: filteredRows, count: updated };
     }
 
     return { type: 'OK', message: `${updated} row(s) updated`, count: updated };
@@ -1749,9 +1768,19 @@ export class Database {
       }
     }
 
+    const deletedRows = [];
+
     for (const { pageId, slotIdx } of toDelete) {
       const values = table.heap.get(pageId, slotIdx);
       
+      if (values && ast.returning) {
+        const cleanRow = {};
+        for (let i = 0; i < table.schema.length; i++) {
+          cleanRow[table.schema[i].name] = values[i];
+        }
+        deletedRows.push(cleanRow);
+      }
+
       // Check foreign key constraints from child tables
       if (values) {
         this._handleForeignKeyDelete(ast.table, table, values);
@@ -1767,6 +1796,15 @@ export class Database {
       }
       
       deleted++;
+    }
+
+    if (ast.returning) {
+      const filteredRows = ast.returning === '*' ? deletedRows : deletedRows.map(row => {
+        const filtered = {};
+        for (const col of ast.returning) filtered[col] = row[col];
+        return filtered;
+      });
+      return { type: 'ROWS', rows: filteredRows, count: deleted };
     }
 
     return { type: 'OK', message: `${deleted} row(s) deleted`, count: deleted };

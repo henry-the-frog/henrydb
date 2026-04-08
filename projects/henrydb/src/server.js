@@ -625,7 +625,18 @@ export class HenryDBServer {
       }
 
       // Send CommandComplete
-      conn.socket.write(writeCommandComplete(`SELECT ${rows.length}`));
+      const upperForTag = sql.toUpperCase().trim();
+      let tag;
+      if (upperForTag.startsWith('INSERT') && result.count !== undefined) {
+        tag = `INSERT 0 ${result.count}`;
+      } else if (upperForTag.startsWith('UPDATE') && result.count !== undefined) {
+        tag = `UPDATE ${result.count}`;
+      } else if (upperForTag.startsWith('DELETE') && result.count !== undefined) {
+        tag = `DELETE ${result.count}`;
+      } else {
+        tag = `SELECT ${rows.length}`;
+      }
+      conn.socket.write(writeCommandComplete(tag));
       return;
     }
 

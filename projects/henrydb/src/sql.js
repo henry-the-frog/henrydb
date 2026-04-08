@@ -916,7 +916,13 @@ export function parse(sql) {
     } while (match(','));
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
-    return { type: 'UPDATE', table, assignments, where };
+    let returning = null;
+    if (isKeyword('RETURNING')) {
+      advance();
+      if (match('*')) { returning = '*'; }
+      else { returning = []; do { returning.push(advance().value); } while (match(',')); }
+    }
+    return { type: 'UPDATE', table, assignments, where, returning };
   }
 
   function parseDelete() {
@@ -925,7 +931,13 @@ export function parse(sql) {
     const table = advance().value;
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
-    return { type: 'DELETE', table, where };
+    let returning = null;
+    if (isKeyword('RETURNING')) {
+      advance();
+      if (match('*')) { returning = '*'; }
+      else { returning = []; do { returning.push(advance().value); } while (match(',')); }
+    }
+    return { type: 'DELETE', table, where, returning };
   }
 
   function parseAlter() {
