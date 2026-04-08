@@ -58,8 +58,12 @@
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on dashboard fix, assess HenryDB direction"
+      "status": "done",
+      "task": "Reflect on dashboard fix, assess HenryDB direction",
+      "started": "2026-04-08T14:23:18.900Z",
+      "completed": "2026-04-08T14:24:03.061Z",
+      "duration_ms": 90000,
+      "summary": "Dashboard solid. HenryDB direction: ANALYZE + histogram stats for better join ordering (most impactful). WAL stats low-value (skip). Added generate.cjs update to backlog. Will fix GitHub Pages during next MAINTAIN."
     },
     {
       "id": "T6",
@@ -155,7 +159,9 @@
     "henrydb",
     "dashboard"
   ],
-  "backlog": [],
+  "backlog": [
+    "Update generate.cjs to read schedule.json instead of SCHEDULE.md"
+  ],
   "adjustments": [
     {
       "time": "2026-04-08T14:01:07.004Z",
