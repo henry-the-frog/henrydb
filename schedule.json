@@ -510,9 +510,13 @@
     {
       "id": "T48",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: vectorized aggregation (SUM/COUNT/AVG over batched columns)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:27:02.576Z",
+      "completed": "2026-04-08T15:28:23.428Z",
+      "duration_ms": 180000,
+      "summary": "Vectorized aggregation: SUM/COUNT/AVG/MIN/MAX operating on column arrays with group-by indices. 100K rows/1000 groups in 71ms. NULL handling correct. 8 tests."
     },
     {
       "id": "T49",

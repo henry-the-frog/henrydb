@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:26:45.519Z",
+  "generated": "2026-04-08T15:28:23.464Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: fix codegen 'values is not defined' error in filtered join pattern",
-    "completedAt": "2026-04-08T15:26:45.519Z",
-    "taskId": "T47",
-    "summary": "Fixed codegen filtered join bug: _genFilterExpr and _genValueExpr now accept varName parameter, defaults to values for single-table, uses lv in join context. All 14 codegen tests pass.",
-    "durationMs": 120000
+    "task": "HenryDB: vectorized aggregation (SUM/COUNT/AVG over batched columns)",
+    "completedAt": "2026-04-08T15:28:23.464Z",
+    "taskId": "T48",
+    "summary": "Vectorized aggregation: SUM/COUNT/AVG/MIN/MAX operating on column arrays with group-by indices. 100K rows/1000 groups in 71ms. NULL handling correct. 8 tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -498,12 +498,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 45,
+    "blocksCompleted": 46,
     "blocksTotal": 45,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 25,
+      "BUILD": 26,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
