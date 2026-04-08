@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:19:34.499Z",
+  "generated": "2026-04-08T16:21:14.551Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push and sync",
-    "completedAt": "2026-04-08T16:19:34.499Z",
-    "taskId": "T83",
-    "summary": "HenryDB pushed (203 objects). Dashboard synced.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: band join — join on range predicates (a.val BETWEEN b.lo AND b.hi)",
+    "completedAt": "2026-04-08T16:21:14.551Z",
+    "taskId": "T84",
+    "summary": "Band join: range predicate join (BETWEEN) using sorted sweep + binary search. Temporal join for events within sessions. 10K×1K in 75ms. 7 tests.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -903,12 +903,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 81,
+    "blocksCompleted": 82,
     "blocksTotal": 83,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 48,
+      "BUILD": 49,
       "MAINTAIN": 20,
       "EXPLORE": 2
     }

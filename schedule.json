@@ -889,6 +889,30 @@
       "completed": "2026-04-08T16:19:34.463Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (203 objects). Dashboard synced."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: band join — join on range predicates (a.val BETWEEN b.lo AND b.hi)",
+      "project": "henrydb",
+      "started": "2026-04-08T16:20:07.164Z",
+      "completed": "2026-04-08T16:21:14.515Z",
+      "duration_ms": 90000,
+      "summary": "Band join: range predicate join (BETWEEN) using sorted sweep + binary search. Temporal join for events within sessions. 10K×1K in 75ms. 7 tests."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: nested-loop join with predicate compilation (theta join)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T86",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and sync"
     }
   ],
   "focusProjects": [
@@ -1236,6 +1260,18 @@
     {
       "time": "2026-04-08T16:17:47.267Z",
       "msg": "Added T83 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-08T16:20:06.697Z",
+      "msg": "Added T84 (BUILD) after end: HenryDB: band join — join on range predicates (a.val BETWEEN b.lo AND b.hi)"
+    },
+    {
+      "time": "2026-04-08T16:20:06.815Z",
+      "msg": "Added T85 (BUILD) after end: HenryDB: nested-loop join with predicate compilation (theta join)"
+    },
+    {
+      "time": "2026-04-08T16:20:06.933Z",
+      "msg": "Added T86 (MAINTAIN) after end: Push and sync"
     }
   ]
 }
