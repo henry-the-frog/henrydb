@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T17:00:57.141Z",
+  "generated": "2026-04-08T17:01:58.776Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: merge iterator — k-way merge for sorted runs with priority queue",
-    "completedAt": "2026-04-08T17:00:57.141Z",
-    "taskId": "T115",
-    "summary": "K-way merge iterator: MinHeap-based, deduplicating variant, custom comparators. 100K 10-way merge in 33ms. 11 tests.",
+    "task": "HenryDB: row-level locking with 2PL (two-phase locking)",
+    "completedAt": "2026-04-08T17:01:58.776Z",
+    "taskId": "T116",
+    "summary": "Two-phase locking: growing phase (only acquire), shrinking phase (only release). Shared/exclusive row locks. Lock upgrade S→X. 2PL violation detection. 10 tests.",
     "durationMs": 60000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 113,
+    "blocksCompleted": 114,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 75,
+      "BUILD": 76,
       "MAINTAIN": 25,
       "EXPLORE": 2
     }
