@@ -676,6 +676,30 @@
       "completed": "2026-04-08T15:54:03.671Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (176 objects). Dashboard synced."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Bloom filter join — use Bloom filters as semi-join reducer before hash join",
+      "project": "henrydb",
+      "started": "2026-04-08T15:54:26.579Z",
+      "completed": "2026-04-08T15:56:35.117Z",
+      "duration_ms": 120000,
+      "summary": "Bloom filter semi-join: build Bloom on right, pre-filter left before hash join. 98% row elimination on 100K×1K. Multi-way reduce for chain joins. 7 tests."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: update README with all new features: zone maps, pushdown, radix join, morsel, etc.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T66",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session housekeeping"
     }
   ],
   "focusProjects": [
@@ -943,6 +967,18 @@
     {
       "time": "2026-04-08T15:49:20.462Z",
       "msg": "Added T63 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-08T15:54:19.219Z",
+      "msg": "Added T64 (BUILD) after end: HenryDB: Bloom filter join — use Bloom filters as semi-join reducer before hash join"
+    },
+    {
+      "time": "2026-04-08T15:54:19.337Z",
+      "msg": "Added T65 (BUILD) after end: HenryDB: update README with all new features: zone maps, pushdown, radix join, morsel, etc."
+    },
+    {
+      "time": "2026-04-08T15:54:19.454Z",
+      "msg": "Added T66 (MAINTAIN) after end: Session housekeeping"
     }
   ]
 }
