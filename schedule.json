@@ -571,29 +571,45 @@
       "id": "T53",
       "mode": "BUILD",
       "task": "RISC-V: Instruction decoder (R/I/S/B/U/J formats) + all RV32I ALU instructions (ADD, SUB, AND, OR, XOR, SLT, SLTU, shifts)",
-      "status": "upcoming",
-      "plan_ref": "T51"
+      "status": "done",
+      "plan_ref": "T51",
+      "started": "2026-04-08T02:21:24.257Z",
+      "completed": "2026-04-08T02:21:24.399Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T52 — full decoder + all ALU instructions"
     },
     {
       "id": "T54",
       "mode": "BUILD",
       "task": "RISC-V: Branch/jump instructions (BEQ, BNE, BLT, BGE, BLTU, BGEU, JAL, JALR) + AUIPC/LUI",
-      "status": "upcoming",
-      "plan_ref": "T51"
+      "status": "done",
+      "plan_ref": "T51",
+      "started": "2026-04-08T02:21:33.141Z",
+      "completed": "2026-04-08T02:21:33.286Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T52"
     },
     {
       "id": "T55",
       "mode": "BUILD",
       "task": "RISC-V: Load/Store instructions (LB, LH, LW, LBU, LHU, SB, SH, SW) + ECALL/EBREAK for syscalls",
-      "status": "upcoming",
-      "plan_ref": "T51"
+      "status": "done",
+      "plan_ref": "T51",
+      "started": "2026-04-08T02:21:42.135Z",
+      "completed": "2026-04-08T02:21:42.276Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T52"
     },
     {
       "id": "T56",
       "mode": "BUILD",
       "task": "RISC-V: Assembler (text → machine code) — parse RISC-V assembly, encode instructions, resolve labels",
-      "status": "upcoming",
-      "plan_ref": "T51"
+      "status": "done",
+      "plan_ref": "T51",
+      "started": "2026-04-08T02:21:50.794Z",
+      "completed": "2026-04-08T02:26:35.193Z",
+      "duration_ms": 300000,
+      "summary": "Full RV32I assembler: label resolution, all instructions, 12 pseudo-instructions (li, la, mv, nop, not, neg, j, jr, ret, call, beqz, bnez, bgt, ble), memory operand parsing, directives. Fixed li size estimation bug. 30 assembler tests including recursive fibonacci, bubble sort, GCD, stack ops. Total: 66 tests."
     },
     {
       "id": "T57",
