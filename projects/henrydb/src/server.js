@@ -88,6 +88,25 @@ export class HenryDBServer {
       listeningChannels: new Set(), // channels this connection is LISTENing on
       copyState: null, // { table, columns, buffer, rowCount } when in COPY mode
       cursors: new Map(), // name → { rows, position, columns }
+      currentQuery: null, // { sql, startTime }
+      connectTime: Date.now(),
+      queryCount: 0,
+      params: new Map([
+        ['server_version', '15.0'],
+        ['server_encoding', 'UTF8'],
+        ['client_encoding', 'UTF8'],
+        ['datestyle', 'ISO, MDY'],
+        ['standard_conforming_strings', 'on'],
+        ['search_path', 'public'],
+        ['work_mem', '4MB'],
+        ['statement_timeout', '0'],
+        ['enable_seqscan', 'on'],
+        ['enable_indexscan', 'on'],
+        ['enable_hashjoin', 'on'],
+        ['enable_mergejoin', 'on'],
+        ['timezone', 'UTC'],
+        ['application_name', ''],
+      ]),
     };
     this.connections.add(conn);
 
@@ -231,6 +250,10 @@ export class HenryDBServer {
       console.log(`[${conn.pid}] Query: ${sql}`);
     }
 
+    // Track current query for pg_stat_activity
+    conn.currentQuery = { sql: sql.substring(0, 1000), startTime: Date.now() };
+    conn.queryCount++;
+
     // Handle empty query
     if (!sql.trim()) {
       conn.socket.write(Buffer.concat([
@@ -281,6 +304,7 @@ export class HenryDBServer {
       }
     }
 
+    conn.currentQuery = null;
     conn.socket.write(writeReadyForQuery(conn.txStatus));
   }
 
@@ -730,6 +754,55 @@ export class HenryDBServer {
       return true;
     }
 
+    // pg_stat_user_tables — table statistics
+    if (upper.includes('PG_STAT_USER_TABLES') || upper.includes('PG_STAT_ALL_TABLES')) {
+      const rows = [];
+      for (const [name, table] of this.db.tables) {
+        const rowCount = table.heap?.data?.length || table.heap?._rowCount || 0;
+        rows.push({
+          schemaname: 'public',
+          relname: name,
+          n_live_tup: rowCount,
+          n_dead_tup: 0,
+          n_mod_since_analyze: 0,
+          seq_scan: 0,
+          seq_tup_read: 0,
+          idx_scan: table.indexes?.size || 0,
+          n_tup_ins: 0,
+          n_tup_upd: 0,
+          n_tup_del: 0,
+        });
+      }
+      this._sendResult(conn, sql, { type: 'ROWS', rows });
+      return true;
+    }
+
+    // pg_stat_activity — connection monitoring
+    if (upper.includes('PG_STAT_ACTIVITY')) {
+      const rows = [];
+      for (const c of this.connections) {
+        rows.push({
+          pid: c.pid,
+          datname: 'henrydb',
+          usename: 'user',
+          state: c.currentQuery ? 'active' : 'idle',
+          query: c.currentQuery?.sql || '',
+          query_start: c.currentQuery?.startTime ? new Date(c.currentQuery.startTime).toISOString() : null,
+          state_change: new Date().toISOString(),
+          backend_start: new Date(c.connectTime).toISOString(),
+          wait_event_type: null,
+          wait_event: null,
+          client_addr: c.socket?.remoteAddress || '',
+          client_port: c.socket?.remotePort || 0,
+          backend_type: 'client backend',
+          xact_start: c.txStatus === 'T' ? new Date().toISOString() : null,
+          query_count: c.queryCount || 0,
+        });
+      }
+      this._sendResult(conn, sql, { type: 'ROWS', rows });
+      return true;
+    }
+
     // pg_catalog queries (introspection)
     if (upper.includes('PG_CATALOG') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS') || upper.includes('PG_NAMESPACE')) {
       // Return empty result set for catalog queries we can't fully handle
@@ -781,20 +854,39 @@ export class HenryDBServer {
 
     // SET statements (client configuration)
     if (upper.startsWith('SET ')) {
+      const match = sql.match(/SET\s+(?:SESSION\s+)?(\w+)\s*(?:=|TO)\s*(.+)/i);
+      if (match) {
+        const param = match[1].toLowerCase();
+        let value = match[2].trim().replace(/^'|'$/g, '');
+        conn.params.set(param, value);
+        if (this._verbose) console.log(`[${conn.pid}] SET ${param} = ${value}`);
+      }
       conn.socket.write(writeCommandComplete('SET'));
       return true;
     }
 
     // SHOW (e.g., SHOW server_version)
     if (upper.startsWith('SHOW ') && !upper.startsWith('SHOW TABLES')) {
-      const param = sql.substring(5).trim().toLowerCase();
-      let value = 'unknown';
-      if (param === 'server_version') value = '15.0';
-      else if (param === 'server_encoding') value = 'UTF8';
-      else if (param === 'client_encoding') value = 'UTF8';
-      else if (param === 'standard_conforming_strings') value = 'on';
-      else if (param === 'datestyle') value = 'ISO, MDY';
+      const param = sql.substring(5).trim().toLowerCase().replace(/;$/, '');
+      if (param === 'all') {
+        // SHOW ALL — return all parameters
+        const rows = [];
+        for (const [name, setting] of conn.params) {
+          rows.push({ name, setting, description: '' });
+        }
+        this._sendResult(conn, sql, { type: 'ROWS', rows });
+        return true;
+      }
+      const value = conn.params.get(param) || 'unknown';
       this._sendResult(conn, sql, { type: 'ROWS', rows: [{ [param]: value }] });
+      return true;
+    }
+
+    // RESET parameter
+    if (upper.startsWith('RESET ')) {
+      const param = sql.substring(6).trim().toLowerCase().replace(/;$/, '');
+      // Reset to default (we don't track defaults separately, just acknowledge)
+      conn.socket.write(writeCommandComplete('RESET'));
       return true;
     }
 

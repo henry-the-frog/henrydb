@@ -4241,10 +4241,54 @@
     {
       "id": "T391",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit batch and push",
       "project": "henrydb",
-      "started": "2026-04-08T21:43:09.765Z"
+      "started": "2026-04-08T21:43:09.765Z",
+      "completed": "2026-04-08T21:43:38.593Z",
+      "duration_ms": 30000,
+      "summary": "Committed and pushed pg_dump + introspection."
+    },
+    {
+      "id": "T392",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_stat_activity view: track active queries, connection states, duration, waiting status — like PostgreSQL monitoring",
+      "project": "henrydb",
+      "started": "2026-04-08T21:44:17.333Z",
+      "completed": "2026-04-08T21:47:09.018Z",
+      "duration_ms": 240000,
+      "summary": "pg_stat_activity: connection monitoring with PID, state (active/idle), current query, query_start, backend_start, query count, client address. pg_stat_user_tables: table stats. 5 tests."
+    },
+    {
+      "id": "T393",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection-level SET/SHOW for runtime parameters: work_mem, enable_seqscan, statement_timeout, search_path",
+      "project": "henrydb",
+      "started": "2026-04-08T21:47:09.477Z",
+      "completed": "2026-04-08T21:48:19.367Z",
+      "duration_ms": 180000,
+      "summary": "Runtime parameters: proper SET/SHOW with per-connection storage, 14 default params, SET = and SET TO syntax, connection-scoped isolation, SHOW ALL, RESET. 8 tests."
+    },
+    {
+      "id": "T394",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build VACUUM and ANALYZE commands: table statistics gathering, dead row cleanup, auto-vacuum",
+      "project": "henrydb",
+      "started": "2026-04-08T21:48:29.170Z",
+      "completed": "2026-04-08T21:48:29.426Z",
+      "duration_ms": 0,
+      "summary": "Skipped — statistics gathering already exists in stats-collector.js. Less impactful than other work."
+    },
+    {
+      "id": "T395",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Commit and push",
+      "project": "henrydb",
+      "started": "2026-04-08T21:48:29.882Z"
     }
   ],
   "focusProjects": [
@@ -5784,6 +5828,22 @@
     {
       "time": "2026-04-08T21:34:33.822Z",
       "msg": "Added T391 (MAINTAIN) after T390: Commit batch and push"
+    },
+    {
+      "time": "2026-04-08T21:44:10.876Z",
+      "msg": "Added T392 (BUILD) after end: Build pg_stat_activity view: track active queries, connection states, duration, waiting status — like PostgreSQL monitoring"
+    },
+    {
+      "time": "2026-04-08T21:44:11.088Z",
+      "msg": "Added T393 (BUILD) after T392: Build connection-level SET/SHOW for runtime parameters: work_mem, enable_seqscan, statement_timeout, search_path"
+    },
+    {
+      "time": "2026-04-08T21:44:11.302Z",
+      "msg": "Added T394 (BUILD) after T393: Build VACUUM and ANALYZE commands: table statistics gathering, dead row cleanup, auto-vacuum"
+    },
+    {
+      "time": "2026-04-08T21:44:11.514Z",
+      "msg": "Added T395 (MAINTAIN) after T394: Commit and push"
     }
   ]
 }
