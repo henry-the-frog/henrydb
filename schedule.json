@@ -124,10 +124,32 @@
     {
       "id": "T12",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add EXPLAIN CHECKPOINT and PITR SQL commands to HenryDB — expose checkpoint/PITR through SQL interface",
       "project": "henrydb",
-      "started": "2026-04-08T03:44:29.374Z"
+      "started": "2026-04-08T03:44:29.374Z",
+      "completed": "2026-04-08T03:46:23.014Z",
+      "duration_ms": 180000,
+      "summary": "CHECKPOINT SQL command added: parser keyword, executor handler, table/row stats. 5 tests. Pushed to GitHub."
+    },
+    {
+      "id": "T13",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run full HenryDB test suite to get definitive test count, ensure no regressions from checkpoint/PITR additions",
+      "project": "henrydb",
+      "started": "2026-04-08T03:46:39.890Z",
+      "completed": "2026-04-08T03:48:35.435Z",
+      "duration_ms": 60000,
+      "summary": "Full regression: 2209 tests, 2203 pass, 4 fail (pre-existing: bulk timing, LSM compaction, SQLite comparison). 54 WAL/checkpoint/PITR tests all green. No regressions from tonight."
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update daily log with Session C work and commit",
+      "project": "henrydb",
+      "started": "2026-04-08T03:48:51.262Z"
     }
   ],
   "focusProjects": [
@@ -203,6 +225,14 @@
     {
       "time": "2026-04-08T03:44:24.455Z",
       "msg": "Added T12 (BUILD) after end: Add EXPLAIN CHECKPOINT and PITR SQL commands to HenryDB — expose checkpoint/PITR through SQL interface"
+    },
+    {
+      "time": "2026-04-08T03:46:34.943Z",
+      "msg": "Added T13 (BUILD) after end: Run full HenryDB test suite to get definitive test count, ensure no regressions from checkpoint/PITR additions"
+    },
+    {
+      "time": "2026-04-08T03:48:46.989Z",
+      "msg": "Added T14 (BUILD) after end: Update daily log with Session C work and commit"
     }
   ]
 }
