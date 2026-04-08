@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:22:16.477Z",
+  "generated": "2026-04-08T16:22:52.215Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: nested-loop join with predicate compilation (theta join)",
-    "completedAt": "2026-04-08T16:22:16.477Z",
-    "taskId": "T85",
-    "summary": "Theta join: arbitrary predicate NL join + block NL for cache locality. 6 tests.",
-    "durationMs": 60000
+    "mode": "MAINTAIN",
+    "task": "Push and sync",
+    "completedAt": "2026-04-08T16:22:52.215Z",
+    "taskId": "T86",
+    "summary": "HenryDB pushed (207 objects). Dashboard synced.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -896,20 +896,52 @@
       {
         "id": "T83",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and sync",
+        "started": "2026-04-08T16:19:09.892Z",
+        "completed": "2026-04-08T16:19:34.463Z",
+        "duration_ms": 30000,
+        "summary": "HenryDB pushed (203 objects). Dashboard synced."
+      },
+      {
+        "id": "T84",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: band join — join on range predicates (a.val BETWEEN b.lo AND b.hi)",
+        "project": "henrydb",
+        "started": "2026-04-08T16:20:07.164Z",
+        "completed": "2026-04-08T16:21:14.515Z",
+        "duration_ms": 90000,
+        "summary": "Band join: range predicate join (BETWEEN) using sorted sweep + binary search. Temporal join for events within sessions. 10K×1K in 75ms. 7 tests."
+      },
+      {
+        "id": "T85",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: nested-loop join with predicate compilation (theta join)",
+        "project": "henrydb",
+        "started": "2026-04-08T16:21:22.285Z",
+        "completed": "2026-04-08T16:22:16.440Z",
+        "duration_ms": 60000,
+        "summary": "Theta join: arbitrary predicate NL join + block NL for cache locality. 6 tests."
+      },
+      {
+        "id": "T86",
+        "mode": "MAINTAIN",
         "status": "in-progress",
         "task": "Push and sync",
-        "started": "2026-04-08T16:19:09.892Z"
+        "started": "2026-04-08T16:22:23.251Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 83,
-    "blocksTotal": 83,
+    "blocksCompleted": 84,
+    "blocksTotal": 86,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
       "BUILD": 50,
-      "MAINTAIN": 20,
+      "MAINTAIN": 21,
       "EXPLORE": 2
     }
   }
