@@ -1981,6 +1981,7 @@ export class Database {
 
   _explain(ast) {
     const stmt = ast.statement;
+    const format = ast.format || 'text';
 
     // EXPLAIN COMPILED: show the compiled query plan
     if (ast.compiled) {
@@ -2083,7 +2084,84 @@ export class Database {
       plan.push({ operation: 'LIMIT', count: stmt.limit });
     }
 
-    return { type: 'PLAN', plan };
+    return this._formatPlan(plan, format);
+  }
+
+  _formatPlan(plan, format) {
+    switch (format) {
+      case 'json': {
+        const json = JSON.stringify(plan, null, 2);
+        return { type: 'PLAN', rows: [{ 'QUERY PLAN': json }] };
+      }
+      case 'yaml': {
+        const yaml = this._planToYaml(plan);
+        return { type: 'PLAN', rows: [{ 'QUERY PLAN': yaml }] };
+      }
+      case 'dot': {
+        const dot = this._planToDot(plan);
+        return { type: 'PLAN', rows: [{ 'QUERY PLAN': dot }] };
+      }
+      case 'text':
+      default:
+        return { type: 'PLAN', plan };
+    }
+  }
+
+  _planToYaml(plan, indent = 0) {
+    const lines = [];
+    const prefix = '  '.repeat(indent);
+    if (Array.isArray(plan)) {
+      for (const item of plan) {
+        if (typeof item === 'object' && item !== null) {
+          lines.push(`${prefix}-`);
+          for (const [key, value] of Object.entries(item)) {
+            if (Array.isArray(value)) {
+              lines.push(`${prefix}  ${key}:`);
+              for (const v of value) {
+                lines.push(`${prefix}    - ${v}`);
+              }
+            } else {
+              lines.push(`${prefix}  ${key}: ${value}`);
+            }
+          }
+        } else {
+          lines.push(`${prefix}- ${item}`);
+        }
+      }
+    } else if (typeof plan === 'object' && plan !== null) {
+      for (const [key, value] of Object.entries(plan)) {
+        if (typeof value === 'object' && value !== null) {
+          lines.push(`${prefix}${key}:`);
+          lines.push(this._planToYaml(value, indent + 1));
+        } else {
+          lines.push(`${prefix}${key}: ${value}`);
+        }
+      }
+    }
+    return lines.join('\n');
+  }
+
+  _planToDot(plan) {
+    const lines = ['digraph QueryPlan {', '  rankdir=TB;', '  node [shape=record, fontname="Courier"];'];
+    let nextId = 0;
+    const nodes = Array.isArray(plan) ? plan : [plan];
+    let prevId = null;
+    for (const node of nodes) {
+      const id = `n${nextId++}`;
+      const op = node.operation || node.type || 'unknown';
+      const details = Object.entries(node)
+        .filter(([k]) => k !== 'operation' && k !== 'type')
+        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+        .join('\\n');
+      const label = details ? `${op}|${details}` : op;
+      lines.push(`  ${id} [label="{${label}}"];`);
+      if (prevId !== null) {
+        lines.push(`  ${prevId} -> ${id};`);
+      }
+      prevId = id;
+    }
+    lines.push('}');
+    return lines.join('\n');
   }
 
   // Execute a recursive CTE: base UNION ALL recursive

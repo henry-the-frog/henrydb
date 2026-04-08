@@ -11,7 +11,7 @@ const KEYWORDS = new Set([
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
-  'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED',
+  'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
@@ -149,14 +149,33 @@ export function parse(sql) {
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
     advance();
-    const analyze = isKeyword('ANALYZE') ? (advance(), true) : false;
-    const compiled = isKeyword('COMPILED') ? (advance(), true) : false;
+    let analyze = false, compiled = false, format = 'text';
+    // Parse options: ANALYZE, COMPILED, (FORMAT JSON|YAML|DOT|TEXT)
+    while (true) {
+      if (isKeyword('ANALYZE')) { advance(); analyze = true; continue; }
+      if (isKeyword('COMPILED')) { advance(); compiled = true; continue; }
+      if (peek() && peek().type === '(') {
+        advance(); // skip '('
+        if (isKeyword('FORMAT')) {
+          advance();
+          const fmtToken = peek();
+          const fmt = (fmtToken.value || '').toUpperCase();
+          if (['JSON', 'YAML', 'DOT', 'TEXT'].includes(fmt)) {
+            format = fmt.toLowerCase();
+            advance();
+          }
+        }
+        if (peek() && peek().type === ')') advance(); // skip ')'
+        continue;
+      }
+      break;
+    }
     // Parse the underlying statement
     let statement;
     if (isKeyword('WITH')) statement = parseWith();
     else if (isKeyword('SELECT')) statement = parseSelect();
     else throw new Error('EXPLAIN requires a SELECT statement');
-    return { type: 'EXPLAIN', statement, analyze, compiled };
+    return { type: 'EXPLAIN', statement, analyze, compiled, format };
   }
 
   // SELECT or WITH

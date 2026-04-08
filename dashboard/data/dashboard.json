@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T23:50:16.989Z",
+  "generated": "2026-04-08T23:54:15.663Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build connection pool proxy: accept N client connections, multiplex onto M database connections (N:M pooling). Track pool utilization.",
-    "completedAt": "2026-04-08T23:50:16.989Z",
-    "taskId": "T425",
-    "summary": "Connection pool proxy: N:M multiplexing with transaction/session/statement modes. 3 pooling modes, wait queue, utilization tracking, auto-rollback on disconnect. 13 tests.",
+    "task": "Build EXPLAIN (FORMAT JSON) and EXPLAIN (FORMAT YAML): multiple output formats for query plans, including DOT graph format",
+    "completedAt": "2026-04-08T23:54:15.663Z",
+    "taskId": "T426",
+    "summary": "EXPLAIN (FORMAT JSON|YAML|DOT|TEXT): parser support for FORMAT clause, JSON/YAML/DOT output generators. 11 tests.",
     "durationMs": 180000
   },
   "schedule": {
@@ -4055,12 +4055,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 424,
+    "blocksCompleted": 425,
     "blocksTotal": 374,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 11,
-      "BUILD": 323,
+      "BUILD": 324,
       "MAINTAIN": 75,
       "EXPLORE": 2
     }
