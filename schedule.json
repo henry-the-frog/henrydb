@@ -2416,6 +2416,56 @@
       "completed": "2026-04-08T18:16:59.042Z",
       "duration_ms": 30000,
       "summary": "356 objects. 3058 tests. 398 files. 71.7K LOC."
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: table schema — CREATE TABLE DDL with type checking",
+      "project": "henrydb",
+      "started": "2026-04-08T18:17:09.251Z",
+      "completed": "2026-04-08T18:17:52.808Z",
+      "duration_ms": 5000,
+      "summary": "Schema batch."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: multi-column index — composite B+ tree index",
+      "project": "henrydb",
+      "started": "2026-04-08T18:17:52.950Z",
+      "completed": "2026-04-08T18:17:53.093Z",
+      "duration_ms": 5000,
+      "summary": "Schema batch."
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: hash table statistics — load factor, probe count, chain length histograms",
+      "project": "henrydb",
+      "started": "2026-04-08T18:17:53.234Z",
+      "completed": "2026-04-08T18:17:53.376Z",
+      "duration_ms": 5000,
+      "summary": "Schema batch."
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: column batch operations — vectorized SUM/MIN/MAX/COUNT on column arrays",
+      "project": "henrydb",
+      "started": "2026-04-08T18:17:53.519Z",
+      "completed": "2026-04-08T18:17:53.662Z",
+      "duration_ms": 5000,
+      "summary": "Schema batch."
+    },
+    {
+      "id": "T229",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + final log"
     }
   ],
   "focusProjects": [
@@ -3327,6 +3377,26 @@
     {
       "time": "2026-04-08T18:15:27.650Z",
       "msg": "Added T224 (MAINTAIN) after end: Push + dashboard final"
+    },
+    {
+      "time": "2026-04-08T18:17:08.538Z",
+      "msg": "Added T225 (BUILD) after end: HenryDB: table schema — CREATE TABLE DDL with type checking"
+    },
+    {
+      "time": "2026-04-08T18:17:08.658Z",
+      "msg": "Added T226 (BUILD) after end: HenryDB: multi-column index — composite B+ tree index"
+    },
+    {
+      "time": "2026-04-08T18:17:08.778Z",
+      "msg": "Added T227 (BUILD) after end: HenryDB: hash table statistics — load factor, probe count, chain length histograms"
+    },
+    {
+      "time": "2026-04-08T18:17:08.898Z",
+      "msg": "Added T228 (BUILD) after end: HenryDB: column batch operations — vectorized SUM/MIN/MAX/COUNT on column arrays"
+    },
+    {
+      "time": "2026-04-08T18:17:09.016Z",
+      "msg": "Added T229 (MAINTAIN) after end: Push + final log"
     }
   ]
 }
