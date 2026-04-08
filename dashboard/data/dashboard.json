@@ -534,27 +534,12 @@
       "summary": "EXPLAIN ANALYZE already implemented. Tested: estimated 49 vs actual 50 rows (1.02x accuracy), execution time tracking, selectivity calculation. No changes needed."
     }
   ],
-  "updated_at": "2026-04-07T16:40:59.174Z",
-  "adjustments": [
-    {
-      "time": "2026-04-07T16:10:59.056Z",
-      "msg": "Added T47 (MAINTAIN) after end: Write scratch note: HenryDB vs SQLite analysis + update daily log"
-    },
-    {
-      "time": "2026-04-07T16:26:19.363Z",
-      "msg": "Focus set: [henrydb, blog-infra]"
-    },
-    {
-      "time": "2026-04-07T16:26:23.406Z",
-      "msg": "Added T48 (BUILD) after end: SSI + crash recovery integration: verify SSI prevents write skew even after crash+recovery"
-    },
-    {
-      "time": "2026-04-07T16:38:50.501Z",
-      "msg": "Added T49 (BUILD) after end: HenryDB: EXPLAIN ANALYZE — actual vs estimated rows, execution time per operator"
-    }
-  ],
-  "focusProjects": [
-    "henrydb",
-    "blog-infra"
-  ]
+  "current": null,
+  "stats": {
+    "completed": 49,
+    "yielded": 0,
+    "skipped": 0,
+    "total_duration_ms": 6360000
+  },
+  "updated_at": "2026-04-07T16:40:59.174Z"
 }
