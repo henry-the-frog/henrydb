@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:47:28.152Z",
+  "generated": "2026-04-08T16:48:30.039Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: bitmap index — fast set operations for low-cardinality columns",
-    "completedAt": "2026-04-08T16:47:28.152Z",
-    "taskId": "T102",
-    "summary": "Bitmap index: BitVector (Uint32Array-backed) with AND/OR/NOT/popcount/positions. BitmapIndex for EQ/IN/NEQ queries. Compound queries via AND. 100K rows build in 5ms, 10K EQ queries in 1ms. 12 tests.",
+    "task": "HenryDB: expression compiler — compile WHERE clauses to native JS functions",
+    "completedAt": "2026-04-08T16:48:30.039Z",
+    "taskId": "T103",
+    "summary": "Expression compiler: JIT compile WHERE ASTs to new Function() via code generation. EQ/GT/LT/AND/OR/NOT/BETWEEN/IN/LIKE/IS_NULL/IS_NOT_NULL/FUNC. Compilation cache. 1.3x native speed on 100K rows. 13 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 100,
+    "blocksCompleted": 101,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 64,
+      "BUILD": 65,
       "MAINTAIN": 23,
       "EXPLORE": 2
     }

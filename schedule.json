@@ -1099,9 +1099,13 @@
     {
       "id": "T103",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: expression compiler — compile WHERE clauses to native JS functions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:47:28.681Z",
+      "completed": "2026-04-08T16:48:30.001Z",
+      "duration_ms": 90000,
+      "summary": "Expression compiler: JIT compile WHERE ASTs to new Function() via code generation. EQ/GT/LT/AND/OR/NOT/BETWEEN/IN/LIKE/IS_NULL/IS_NOT_NULL/FUNC. Compilation cache. 1.3x native speed on 100K rows. 13 tests."
     },
     {
       "id": "T104",
