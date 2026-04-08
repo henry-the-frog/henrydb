@@ -4637,9 +4637,13 @@
     {
       "id": "T427",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Build server-side aggregate cache: cache GROUP BY results that don't change frequently, invalidate on table mutations",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T23:54:31.591Z",
+      "completed": "2026-04-08T23:55:59.259Z",
+      "duration_ms": 150000,
+      "summary": "Aggregate cache: LRU, TTL, table-level invalidation, SQL normalization, CachingDatabase wrapper. 14 tests."
     },
     {
       "id": "T428",

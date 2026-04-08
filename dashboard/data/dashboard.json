@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T23:54:15.663Z",
+  "generated": "2026-04-08T23:55:59.325Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build EXPLAIN (FORMAT JSON) and EXPLAIN (FORMAT YAML): multiple output formats for query plans, including DOT graph format",
-    "completedAt": "2026-04-08T23:54:15.663Z",
-    "taskId": "T426",
-    "summary": "EXPLAIN (FORMAT JSON|YAML|DOT|TEXT): parser support for FORMAT clause, JSON/YAML/DOT output generators. 11 tests.",
-    "durationMs": 180000
+    "task": "Build server-side aggregate cache: cache GROUP BY results that don't change frequently, invalidate on table mutations",
+    "completedAt": "2026-04-08T23:55:59.325Z",
+    "taskId": "T427",
+    "summary": "Aggregate cache: LRU, TTL, table-level invalidation, SQL normalization, CachingDatabase wrapper. 14 tests.",
+    "durationMs": 150000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4055,12 +4055,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 425,
+    "blocksCompleted": 426,
     "blocksTotal": 374,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 11,
-      "BUILD": 324,
+      "BUILD": 325,
       "MAINTAIN": 75,
       "EXPLORE": 2
     }
