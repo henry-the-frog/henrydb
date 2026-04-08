@@ -35,10 +35,44 @@
       "summary": "Enriched henrydb-transactions.md with SSI, 2PC, pipeline JIT, bloom filters, crash bugs #8-#9, SQLite benchmark, property-based testing. 55→125 lines. Updated INDEX. Cleared stale TODO item."
     },
     {
+      "id": "T5",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What HenryDB feature would be most impressive to build next? Consider: query planner cost model, write-ahead log compaction, buffer pool with clock sweep, or something else",
+      "started": "2026-04-08T03:33:58.900Z",
+      "completed": "2026-04-08T03:34:23.241Z",
+      "duration_ms": 60000,
+      "summary": "WAL checkpointing — complete the WAL lifecycle (fuzzy checkpoint, dirty page tracking, log truncation). Achievable in 20 min, completes a real database story."
+    },
+    {
+      "id": "T6",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build next impressive HenryDB feature",
+      "task": null,
+      "started": "2026-04-08T03:34:30.971Z",
+      "completed": "2026-04-08T03:34:59.019Z",
+      "duration_ms": 30000,
+      "summary": "Plan: ARIES-style checkpointing — dirty page table, fuzzy checkpoint (begin/end markers), WAL truncation, checkpoint-aware recovery. One BUILD task."
+    },
+    {
+      "id": "T7",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement ARIES-style WAL checkpointing: dirty page table, fuzzy checkpoint, WAL truncation, checkpoint-aware recovery. Tests.",
+      "plan_ref": "T6",
+      "project": "henrydb",
+      "started": "2026-04-08T03:35:07.768Z",
+      "completed": "2026-04-08T03:38:47.285Z",
+      "duration_ms": 300000,
+      "summary": "ARIES-style WAL checkpointing: fuzzy checkpoint (BEGIN/END markers), dirty page table with recLSN tracking, WAL truncation, checkpoint-aware recovery. 20 tests, all passing. 71 existing WAL tests still green."
+    },
+    {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push, cleanup"
+      "status": "in-progress",
+      "task": "Final git push, cleanup",
+      "started": "2026-04-08T03:39:01.403Z"
     }
   ],
   "focusProjects": [
@@ -70,6 +104,26 @@
     {
       "time": "2026-04-08T03:32:08.695Z",
       "msg": "PLAN T2 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T03:33:45.481Z",
+      "msg": "Added T5 (THINK) after T3: What HenryDB feature would be most impressive to build next? Consider: query planner cost model, write-ahead log compaction, buffer pool with clock sweep, or something else"
+    },
+    {
+      "time": "2026-04-08T03:33:50.698Z",
+      "msg": "Added T6 (PLAN) after T5: Build next impressive HenryDB feature"
+    },
+    {
+      "time": "2026-04-08T03:33:50.815Z",
+      "msg": "Added T7 (BUILD) after T6: null"
+    },
+    {
+      "time": "2026-04-08T03:33:55.072Z",
+      "msg": "Moved T4 after T7"
+    },
+    {
+      "time": "2026-04-08T03:34:54.405Z",
+      "msg": "PLAN T6 filled 1 BUILD tasks"
     }
   ]
 }
