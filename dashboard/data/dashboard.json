@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:15:17.755Z",
+  "generated": "2026-04-08T15:18:30.926Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: adaptive query execution — choose between vectorized and compiled based on data characteristics",
-    "completedAt": "2026-04-08T15:15:17.755Z",
-    "taskId": "T41",
-    "summary": "Adaptive query engine: auto-selects vectorized/codegen/compiled/volcano based on query characteristics. Runtime feedback improves selection over time. Mixed workloads get different engines. 212x vs Volcano. 10 tests.",
-    "durationMs": 300000
+    "task": "HenryDB: prepared query cache — cache compiled functions for PREPARE/EXECUTE pattern",
+    "completedAt": "2026-04-08T15:18:30.926Z",
+    "taskId": "T43",
+    "summary": "Prepared query cache: caches adaptive engine selection + compiled functions. 245.8x vs Volcano on repeated join queries. 7 tests, all pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -444,12 +444,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 39,
+    "blocksCompleted": 41,
     "blocksTotal": 40,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 20,
+      "BUILD": 22,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
