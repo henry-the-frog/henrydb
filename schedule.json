@@ -264,10 +264,32 @@
     {
       "id": "T25",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Design code generator for batch Function() compilation in HenryDB",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T14:55:00.596Z",
+      "completed": "2026-04-08T14:55:16.391Z",
+      "duration_ms": 30000,
+      "summary": "Code generator design: query-codegen.js takes planner output, generates JavaScript source with baked-in column indices and array-based rows, compiles via new Function(). Two BUILD tasks for implementation and testing."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Build query codegen module (query-codegen.js) that generates JavaScript source from planner output",
+      "status": "done",
+      "plan_ref": "T25",
+      "started": "2026-04-08T14:55:27.568Z",
+      "completed": "2026-04-08T14:59:03.898Z",
+      "duration_ms": 600000,
+      "summary": "Built query-codegen.js: generates one new Function() per query from planner output. Column indices baked in, array-based row access. 143x vs Volcano, 1.6x vs closures. 14 tests, all pass."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Write tests for codegen: single table, join, filter, aggregation, correctness vs standard execution",
+      "status": "upcoming",
+      "plan_ref": "T25"
     },
     {
       "id": "T26",
@@ -401,6 +423,10 @@
     {
       "time": "2026-04-08T14:54:38.980Z",
       "msg": "Added T27 (BUILD) after end: HenryDB: benchmark batch compilation vs closure composition (expect 2-5x further improvement)"
+    },
+    {
+      "time": "2026-04-08T14:55:08.590Z",
+      "msg": "PLAN T25 filled 2 BUILD tasks"
     }
   ]
 }
