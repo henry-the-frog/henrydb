@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:39:54.829Z",
+  "generated": "2026-04-08T16:41:32.251Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: skip list — concurrent-friendly sorted data structure",
-    "completedAt": "2026-04-08T16:39:54.829Z",
-    "taskId": "T96",
-    "summary": "Skip list: probabilistic sorted data structure. O(log n) insert/search/delete. Range scan, sorted iteration, first/last, string keys. 50K entries in 31ms build. 9 tests.",
-    "durationMs": 90000
+    "task": "HenryDB: window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER",
+    "completedAt": "2026-04-08T16:41:32.251Z",
+    "taskId": "T97",
+    "summary": "Window functions: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG/COUNT/MIN/MAX OVER, FIRST_VALUE, LAST_VALUE, NTILE. PARTITION BY + ORDER BY. Frame support (UNBOUNDED PRECEDING to CURRENT ROW). 12 tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -967,12 +967,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 94,
+    "blocksCompleted": 95,
     "blocksTotal": 89,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 59,
+      "BUILD": 60,
       "MAINTAIN": 22,
       "EXPLORE": 2
     }
