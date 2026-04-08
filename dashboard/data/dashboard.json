@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:38:59.620Z",
+  "generated": "2026-04-08T16:39:54.829Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: buffer pool manager — LRU page cache with pin/unpin, dirty page tracking, eviction",
-    "completedAt": "2026-04-08T16:38:59.620Z",
-    "taskId": "T95",
-    "summary": "Buffer pool manager: LRU page cache with pin/unpin semantics, dirty page tracking and writeback on eviction, page deletion, flush-all. 10K Zipf accesses in 31ms. 10 tests.",
-    "durationMs": 120000
+    "task": "HenryDB: skip list — concurrent-friendly sorted data structure",
+    "completedAt": "2026-04-08T16:39:54.829Z",
+    "taskId": "T96",
+    "summary": "Skip list: probabilistic sorted data structure. O(log n) insert/search/delete. Range scan, sorted iteration, first/last, string keys. 50K entries in 31ms build. 9 tests.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -967,12 +967,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 93,
+    "blocksCompleted": 94,
     "blocksTotal": 89,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 58,
+      "BUILD": 59,
       "MAINTAIN": 22,
       "EXPLORE": 2
     }
