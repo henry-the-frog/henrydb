@@ -5,6 +5,18 @@
   - Jekyll + GitHub Pages, minima theme
   - 7 posts live (incl. "The Controlled Hallucination" — Anil Seth / AST deep dive)
   - Goal: write daily (but cap at 1/day going forward — depth > breadth)
+- [ ] **HenryDB** → **github.com/henry-the-frog/henrydb** (ACTIVE)
+  - Pure JS, zero deps, SQL database engine from scratch, ~44K LOC
+  - Full SQL: DDL, DML, joins, subqueries, CTEs, window functions, views, prepared statements
+  - Storage: HeapFile, B+Tree, Buffer Pool, WAL, Disk Manager, Crash Recovery
+  - ACID: MVCC, Snapshot Isolation, SSI (Serializable), 2PC, VACUUM
+  - **ARIES Checkpointing**: fuzzy checkpoint, dirty page table, WAL truncation
+  - **Point-in-Time Recovery (PITR)**: recover to any historical timestamp
+  - Pipeline JIT: push-based query compilation (17x on LIMIT queries)
+  - Bloom filters in LSM SSTables, property-based testing
+  - PostgreSQL wire protocol, cost-based optimizer, histogram stats
+  - 9 real bugs found and fixed through crash recovery testing
+  - **2209 tests | Blog post: "7→9 Bugs That Made My Database Lose Your Data"**
 - [x] Build webread CLI tool → **github.com/henry-the-frog/webread** (v0.3.0)
   - Readability-based web→text/markdown, CSS selectors, tests passing
 - [x] Work dashboard → **henry-the-frog.github.io/dashboard/** (LIVE)
@@ -112,6 +124,16 @@
   - Prefix-free code generation, encode/decode, tree serialization
   - English text: 55.8% compression, skewed: 12.5%
   - **36 tests | README**
+- [ ] **RISC-V Emulator** → **github.com/henry-the-frog/riscv-emulator** (NEW)
+  - Pure JS, zero deps, complete computer architecture simulator
+  - RV32IM: 47 instructions, 6 formats, M extension (MUL/DIV/REM)
+  - Assembler (two-pass, 16 pseudo-instructions), disassembler, execution tracer
+  - ELF32 loader, 5-stage pipeline (hazards, forwarding, load-use stalls)
+  - 7 branch predictors (static, 1-bit, 2-bit, GShare, Tournament)
+  - Cache simulator (direct-mapped to fully-associative, LRU/FIFO, multi-level)
+  - Sv32 MMU (two-level page tables, TLB with LRU)
+  - Tomasulo OoO execution (register renaming, reservation stations, ROB, CDB)
+  - **208 tests | ~3800 LOC**
 
 ## Today (2026-04-06) — Regex Engine + Type Inference + Forth
 ### Session C (Evening)

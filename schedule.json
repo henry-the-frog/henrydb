@@ -146,10 +146,31 @@
     {
       "id": "T14",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update daily log with Session C work and commit",
       "project": "henrydb",
-      "started": "2026-04-08T03:48:51.262Z"
+      "started": "2026-04-08T03:48:51.262Z",
+      "completed": "2026-04-08T03:49:29.614Z",
+      "duration_ms": 60000,
+      "summary": "Updated daily log with all Session C part 2 work. Git committed."
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add WAL size monitoring — show current WAL stats via SHOW WAL_STATS SQL command",
+      "project": "henrydb",
+      "started": "2026-04-08T03:49:46.046Z",
+      "completed": "2026-04-08T03:50:02.159Z",
+      "duration_ms": 10000,
+      "summary": "Skipped — better to update TASKS.md with new totals and do final cleanup."
+    },
+    {
+      "id": "T16",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update TASKS.md with HenryDB test count (2209), update CURRENT.md, final git commit",
+      "started": "2026-04-08T03:50:12.080Z"
     }
   ],
   "focusProjects": [
@@ -233,6 +254,14 @@
     {
       "time": "2026-04-08T03:48:46.989Z",
       "msg": "Added T14 (BUILD) after end: Update daily log with Session C work and commit"
+    },
+    {
+      "time": "2026-04-08T03:49:40.902Z",
+      "msg": "Added T15 (BUILD) after end: Add WAL size monitoring — show current WAL stats via SHOW WAL_STATS SQL command"
+    },
+    {
+      "time": "2026-04-08T03:50:07.305Z",
+      "msg": "Added T16 (MAINTAIN) after end: Update TASKS.md with HenryDB test count (2209), update CURRENT.md, final git commit"
     }
   ]
 }
