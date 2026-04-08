@@ -3,6 +3,7 @@
 // Accepts psql connections via the PostgreSQL wire protocol v3.
 
 import net from 'node:net';
+import http from 'node:http';
 import crypto from 'node:crypto';
 import { Database } from './db.js';
 import { AdaptiveQueryEngine } from './adaptive-engine.js';
@@ -101,24 +102,109 @@ export class HenryDBServer {
         if (this._verbose) {
           console.log(`HenryDB server listening on ${this.host}:${this.port}`);
         }
-        resolve(this);
+        
+        // Start HTTP health check server on port+1
+        this._healthServer = http.createServer((req, res) => {
+          if (req.url === '/health' || req.url === '/') {
+            const status = this._getHealthStatus();
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(status, null, 2));
+          } else if (req.url === '/metrics') {
+            const metrics = this._getPrometheusMetrics();
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end(metrics);
+          } else {
+            res.writeHead(404);
+            res.end('Not found');
+          }
+        });
+        this._healthServer.listen(this.port + 1, this.host, () => {
+          if (this._verbose) console.log(`Health check on ${this.host}:${this.port + 1}`);
+          resolve(this);
+        });
+        this._healthServer.on('error', () => {
+          // Health server is optional — don't fail if port is busy
+          resolve(this);
+        });
       });
     });
   }
 
   stop() {
     return new Promise((resolve) => {
-      // Close all active connections
       for (const conn of this.connections) {
         conn.socket.destroy();
       }
       this.connections.clear();
+      if (this._healthServer) {
+        this._healthServer.close();
+        this._healthServer = null;
+      }
       if (this.server) {
         this.server.close(() => resolve());
       } else {
         resolve();
       }
     });
+  }
+
+  _getHealthStatus() {
+    const uptimeMs = Date.now() - this._metrics.startTime;
+    const cacheStats = this._queryCache.getStats();
+    const walStats = this.db.wal?.getStats?.() || {};
+    const tableCount = this.db.tables?.size || 0;
+    
+    return {
+      status: 'healthy',
+      version: '15.0 (HenryDB)',
+      uptime_seconds: Math.floor(uptimeMs / 1000),
+      connections: {
+        active: this.connections.size,
+        total: this._metrics.totalConnections,
+        peak: this._metrics.peakConnections,
+      },
+      queries: {
+        total: this._metrics.totalQueries,
+        per_second: uptimeMs > 0 ? parseFloat((this._metrics.totalQueries / (uptimeMs / 1000)).toFixed(2)) : 0,
+        slow_count: this._slowQueries.length,
+        errors: this._metrics.totalErrors,
+      },
+      cache: {
+        entries: cacheStats.entries,
+        hit_rate: cacheStats.hitRate,
+        hits: cacheStats.hits,
+        misses: cacheStats.misses,
+      },
+      wal: {
+        records_written: walStats.recordsWritten || 0,
+        bytes_written: walStats.bytesWritten || 0,
+        checkpoints: walStats.checkpoints || 0,
+      },
+      tables: tableCount,
+      statement_patterns: this._queryStats.size,
+    };
+  }
+
+  _getPrometheusMetrics() {
+    const m = this._metrics;
+    const c = this._queryCache.getStats();
+    const uptimeMs = Date.now() - m.startTime;
+    return [
+      `# HELP henrydb_uptime_seconds Server uptime`,
+      `henrydb_uptime_seconds ${Math.floor(uptimeMs / 1000)}`,
+      `# HELP henrydb_connections_active Active connections`,
+      `henrydb_connections_active ${this.connections.size}`,
+      `henrydb_connections_total ${m.totalConnections}`,
+      `henrydb_connections_peak ${m.peakConnections}`,
+      `# HELP henrydb_queries_total Total queries executed`,
+      `henrydb_queries_total ${m.totalQueries}`,
+      `henrydb_queries_errors ${m.totalErrors}`,
+      `# HELP henrydb_cache_hits Query cache hits`,
+      `henrydb_cache_hits ${c.hits}`,
+      `henrydb_cache_misses ${c.misses}`,
+      `henrydb_cache_entries ${c.entries}`,
+      `henrydb_tables_count ${this.db.tables?.size || 0}`,
+    ].join('\n');
   }
 
   _handleConnection(socket) {

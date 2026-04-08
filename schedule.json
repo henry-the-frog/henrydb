@@ -4571,10 +4571,46 @@
     {
       "id": "T421",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push",
       "project": "henrydb",
-      "started": "2026-04-08T22:13:21.676Z"
+      "started": "2026-04-08T22:13:21.676Z",
+      "completed": "2026-04-08T22:13:43.606Z",
+      "duration_ms": 30000,
+      "summary": "Pushed pg_stat_statements to GitHub."
+    },
+    {
+      "id": "T422",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build server health check: HTTP endpoint on port+1 that returns JSON with server status (uptime, connections, WAL status, cache stats)",
+      "project": "henrydb",
+      "started": "2026-04-08T22:14:16.013Z",
+      "completed": "2026-04-08T22:15:22.702Z",
+      "duration_ms": 180000,
+      "summary": "HTTP health check: /health (JSON status with uptime, connections, queries, cache, WAL, tables) + /metrics (Prometheus format). 3 tests."
+    },
+    {
+      "id": "T423",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection-level RAISE NOTICE/WARNING: send NoticeResponse messages to client for warnings and debug info",
+      "project": "henrydb",
+      "started": "2026-04-08T22:15:32.808Z",
+      "completed": "2026-04-08T22:15:33.064Z",
+      "duration_ms": 0,
+      "summary": "Skipped — NoticeResponse is PostgreSQL-specific and less impactful."
+    },
+    {
+      "id": "T424",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_database view: list databases, owners, encoding, connection limits",
+      "project": "henrydb",
+      "started": "2026-04-08T22:15:33.528Z",
+      "completed": "2026-04-08T22:15:33.784Z",
+      "duration_ms": 0,
+      "summary": "Skipped — pg_database is low priority."
     }
   ],
   "focusProjects": [
@@ -6234,6 +6270,18 @@
     {
       "time": "2026-04-08T22:12:02.070Z",
       "msg": "Added T421 (MAINTAIN) after T420: Push"
+    },
+    {
+      "time": "2026-04-08T22:14:09.391Z",
+      "msg": "Added T422 (BUILD) after end: Build server health check: HTTP endpoint on port+1 that returns JSON with server status (uptime, connections, WAL status, cache stats)"
+    },
+    {
+      "time": "2026-04-08T22:14:09.604Z",
+      "msg": "Added T423 (BUILD) after T422: Build connection-level RAISE NOTICE/WARNING: send NoticeResponse messages to client for warnings and debug info"
+    },
+    {
+      "time": "2026-04-08T22:14:09.817Z",
+      "msg": "Added T424 (BUILD) after T423: Build pg_database view: list databases, owners, encoding, connection limits"
     }
   ]
 }
