@@ -4197,10 +4197,54 @@
     {
       "id": "T387",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final commit and push",
       "project": "henrydb",
-      "started": "2026-04-08T21:33:39.801Z"
+      "started": "2026-04-08T21:33:39.801Z",
+      "completed": "2026-04-08T21:34:15.962Z",
+      "duration_ms": 30000,
+      "summary": "Pushed to GitHub."
+    },
+    {
+      "id": "T388",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_dump compatible output: COPY format table dumps, schema DDL export, full database dump to SQL file",
+      "project": "henrydb",
+      "started": "2026-04-08T21:34:42.885Z",
+      "completed": "2026-04-08T21:42:56.808Z",
+      "duration_ms": 420000,
+      "summary": "pg_dump: SQL and COPY format export/import, schema-only, data-only, table filtering, DROP TABLE, NULL handling, round-trip. information_schema.tables/.columns with WHERE filtering. 17 tests (10 pg_dump + 7 introspection)."
+    },
+    {
+      "id": "T389",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection rate limiter and query timeout: SET statement_timeout, cancel running queries, per-connection resource limits",
+      "project": "henrydb",
+      "started": "2026-04-08T21:43:08.338Z",
+      "completed": "2026-04-08T21:43:08.593Z",
+      "duration_ms": 0,
+      "summary": "Skipped — less impactful than other work."
+    },
+    {
+      "id": "T390",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SAVEPOINT support in server: SAVEPOINT name, RELEASE SAVEPOINT, ROLLBACK TO SAVEPOINT for nested transaction control",
+      "project": "henrydb",
+      "started": "2026-04-08T21:43:09.052Z",
+      "completed": "2026-04-08T21:43:09.308Z",
+      "duration_ms": 0,
+      "summary": "Skipped — savepoints already implemented in db.js."
+    },
+    {
+      "id": "T391",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Commit batch and push",
+      "project": "henrydb",
+      "started": "2026-04-08T21:43:09.765Z"
     }
   ],
   "focusProjects": [
@@ -5724,6 +5768,22 @@
     {
       "time": "2026-04-08T21:27:12.607Z",
       "msg": "Added T387 (MAINTAIN) after T386: Final commit and push"
+    },
+    {
+      "time": "2026-04-08T21:34:33.181Z",
+      "msg": "Added T388 (BUILD) after end: Build pg_dump compatible output: COPY format table dumps, schema DDL export, full database dump to SQL file"
+    },
+    {
+      "time": "2026-04-08T21:34:33.397Z",
+      "msg": "Added T389 (BUILD) after T388: Build connection rate limiter and query timeout: SET statement_timeout, cancel running queries, per-connection resource limits"
+    },
+    {
+      "time": "2026-04-08T21:34:33.610Z",
+      "msg": "Added T390 (BUILD) after T389: Build SAVEPOINT support in server: SAVEPOINT name, RELEASE SAVEPOINT, ROLLBACK TO SAVEPOINT for nested transaction control"
+    },
+    {
+      "time": "2026-04-08T21:34:33.822Z",
+      "msg": "Added T391 (MAINTAIN) after T390: Commit batch and push"
     }
   ]
 }
