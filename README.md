@@ -67,9 +67,10 @@ Now with crash-tested WAL recovery, ARIES-style checkpointing, point-in-time rec
 - **B+Tree** — order-32 tree with leaf-level linked list for range scans
 - **Buffer Pool** — LRU page cache with dirty page tracking
 - **WAL** — write-ahead log with CRC32 integrity, binary serialization, fsync on commit
-- **ARIES Checkpointing** — fuzzy checkpoints with dirty page table, WAL truncation, BEGIN/END markers
+- **ARIES Checkpointing** — fuzzy checkpoints with dirty page table, WAL truncation, auto-checkpoint after N commits
 - **Crash Recovery** — ARIES-style 3-phase recovery (analysis, redo, undo) from WAL
 - **Point-in-Time Recovery (PITR)** — recover database to any historical timestamp via WAL replay
+- **WAL Compaction** — automatic safe truncation, preserves active transaction records
 
 ### Transaction Support (ACID)
 - **Atomicity:** ROLLBACK undoes all operations; crash recovery ensures all-or-nothing
