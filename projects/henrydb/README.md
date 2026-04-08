@@ -1,253 +1,92 @@
-# HenryDB
+# HenryDB 🗄️
 
-A SQL database engine built from scratch in JavaScript. No dependencies. ~48,000 lines of code, 2,400+ tests.
+**A teaching database engine built from scratch in JavaScript.**
 
-Now with **2,062x faster compiled query execution** (4 engines + adaptive selection), zone maps with predicate pushdown, morsel-driven parallelism, TypedArray-backed columnar storage, Bloom filter joins, and late materialization.
+3,000+ tests · 70K+ lines · 388 files · Every major concept implemented.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        psql / any PG client                     │
-├─────────────────────────────────────────────────────────────────┤
-│                    PostgreSQL Wire Protocol                      │
-│              (auth, query, EXPLAIN, transactions)                │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐│
-│  │  SQL Parser   │  │   Prepared   │  │  Volcano Plan Builder  ││
-│  │  (100+ SQL    │  │  Statements  │  │  (AST → Iterator Tree) ││
-│  │   features)   │  │ PREPARE/EXEC │  │  Cost-Based Selection  ││
-│  └──────┬───────┘  └──────────────┘  └───────────┬────────────┘│
-│         │                                         │             │
-│  ┌──────┴───────────────────────────────────┐    │             │
-│  │           Query Optimizer                │    │             │
-│  │  • Histogram-based statistics            │    │             │
-│  │  • Join reordering (DP)                  │    │             │
-│  │  • Predicate pushdown                    │    │             │
-│  │  • Query compilation (32x speedup)       │    │             │
-│  └──────┬───────────────────────────────────┘    │             │
-│         │                                         │             │
-│  ┌──────┴─────────────────────────────────────────┴────────────┐│
-│  │              Volcano Execution Engine                        ││
-│  │  SeqScan │ IndexScan │ Filter │ Project │ Limit │ Distinct  ││
-│  │  HashJoin │ MergeJoin │ NLJ │ IndexNLJ │ Sort │ Aggregate  ││
-│  └──────────────────────┬──────────────────────────────────────┘│
-│                         │                                       │
-│  ┌──────────────────────┴──────────────────────────────────────┐│
-│  │           TransactionalDatabase (ACID)                       ││
-│  │  MVCC │ Snapshot Isolation │ BEGIN/COMMIT/ROLLBACK           ││
-│  │  Write-Write Conflict Detection │ VACUUM                     ││
-│  └──────────────────────┬──────────────────────────────────────┘│
-│                         │                                       │
-│  ┌──────────────────────┴──────────────────────────────────────┐│
-│  │              Storage Layer                                   ││
-│  │  HeapFile │ B+Tree │ Buffer Pool │ WAL │ Disk Manager       ││
-│  │  File-Backed Storage │ Crash Recovery                        ││
-│  └─────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────┘
-```
+## What Is This?
+
+HenryDB is an educational database engine that implements virtually every concept from a database systems textbook. It's not meant for production — it's meant to *understand* how databases actually work, from B+ trees to Raft consensus.
+
+Built in a single day as a deep-dive into database internals.
 
 ## Features
 
-### SQL Support
-- **DDL:** CREATE TABLE, CREATE INDEX, DROP TABLE, ALTER TABLE
-- **DML:** INSERT, UPDATE, DELETE, SELECT
-- **Queries:** WHERE, ORDER BY, GROUP BY, HAVING, LIMIT, OFFSET, DISTINCT
-- **Joins:** INNER JOIN, LEFT JOIN, CROSS JOIN (with ON conditions)
-- **Aggregates:** COUNT, SUM, AVG, MIN, MAX
-- **Expressions:** Arithmetic, string functions, CASE, COALESCE, BETWEEN, IN, LIKE
-- **Subqueries:** Scalar, EXISTS, IN (correlated and uncorrelated)
-- **Set operations:** UNION, UNION ALL, INTERSECT, EXCEPT
-- **Window functions:** ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, running SUM/COUNT/AVG/MIN/MAX
-- **CTEs:** WITH ... AS (non-recursive), WITH RECURSIVE (tree/graph traversal)
-- **Views:** CREATE VIEW, DROP VIEW (live, not materialized)
-- **Prepared statements:** PREPARE, EXECUTE, DEALLOCATE
-- **Constraints:** NOT NULL, CHECK, FOREIGN KEY, DEFAULT values
+### Query Execution (5 Engines)
+- **Volcano** — classic iterator-based tuple-at-a-time
+- **Compiled** — pipeline JIT compilation via closures (365x faster)
+- **Vectorized** — columnar batch processing (220x faster)
+- **Codegen** — `new Function()` query compilation (143x faster)
+- **Adaptive** — auto-selects best engine based on query characteristics
+
+### Index Structures (12+)
+B+ tree · R-tree (spatial) · ART (Adaptive Radix Tree) · Skip list · Trie (prefix search) · Inverted index (BM25) · Suffix array · Cuckoo hash · Robin Hood hash · Double hashing · Extendible hashing · Linear hashing
+
+### Join Algorithms (10)
+Hash join · Sort-merge join · Nested loop · Index nested loop · Semi/anti join (EXISTS/NOT EXISTS) · Band join (BETWEEN) · Theta join · Grace hash join · Radix-partitioned join · Symmetric hash join
+
+### Probabilistic Data Structures (7)
+Bloom filter · Cuckoo filter · XOR filter · Count-Min Sketch · HyperLogLog · T-Digest · MinHash
+
+### Concurrency Control (7 Protocols)
+MVCC · Two-Phase Locking (2PL) · Optimistic CC (OCC) · Timestamp Ordering · Lock Manager (S/X/IS/IX/SIX) · Deadlock Detector (wait-for graph) · Savepoints (nested transactions)
 
 ### Storage Engine
-- **HeapFile** — slotted page architecture with variable-length records
-- **B+Tree** — order-32 tree with leaf-level linked list for range scans
-- **Buffer Pool** — LRU page cache with dirty page tracking
-- **WAL** — write-ahead log with CRC32 integrity, binary serialization, fsync on commit
-- **ARIES Checkpointing** — fuzzy checkpoints with dirty page table, WAL truncation, auto-checkpoint after N commits
-- **Crash Recovery** — ARIES-style 3-phase recovery (analysis, redo, undo) from WAL
-- **Point-in-Time Recovery (PITR)** — recover database to any historical timestamp via WAL replay
-- **WAL Compaction** — automatic safe truncation, preserves active transaction records
+LSM-tree with compaction (leveled + size-tiered) · Write-Ahead Log (WAL) · Buffer Pool Manager (LRU) · Slotted Page · Heap File · Column Store · Log-structured Hash Table · Page versioning
 
-### Transaction Support (ACID)
-- **Atomicity:** ROLLBACK undoes all operations; crash recovery ensures all-or-nothing
-- **Consistency:** Constraint violations don't corrupt state
-- **Isolation:** Snapshot isolation via MVCC; **Serializable Snapshot Isolation (SSI)** for preventing write skew
-- **Durability:** WAL with fsync; ARIES fuzzy checkpoints with dirty page table; point-in-time recovery to any timestamp; crash-tested with 32+ recovery tests
-- **Concurrent sessions:** Multiple connections with independent transaction contexts
-- **Distributed:** Two-Phase Commit (2PC) with coordinator crash recovery
+### Distributed Systems
+Raft consensus (leader election + log replication) · Lamport clocks · Vector clocks · CRDT counters (G-Counter, PN-Counter) · Gossip protocol · Consistent hashing
 
-### Query Optimization
-- **Histogram-based statistics** for cardinality estimation
-- **Dynamic programming join reordering**
-- **Predicate pushdown** through joins
-- **Compiled query engine** — integrates planner with pipeline compilation (365x faster on TPC-H joins)
-- **Batch `new Function()` codegen** — generates one function per query, baked-in column indices (143x vs Volcano)
-- **JIT pipeline compiler** — fuses scan+filter+project into single Function()
-- **Compiled aggregation** — GROUP BY pushed into compiled loop (hash-based)
-- **EXPLAIN COMPILED** — inspect compiled execution plans
-- **Plan caching** for repeated queries
+### Compression
+Run-Length Encoding · Delta encoding · Bit-packing · Dictionary encoding · Frame-of-Reference
 
-### Volcano Execution Engine
-- Classic **open()/next()/close()** iterator model
-- **17 operators:** SeqScan, IndexScan, Filter, Project, Limit, Distinct, NestedLoopJoin, HashJoin, MergeJoin, IndexNestedLoopJoin, Sort, HashAggregate, Window, CTE, RecursiveCTE, Union, Values
-- **Cost-based join selection:** automatically uses IndexNestedLoopJoin when B+Tree index exists
-- **EXPLAIN** output showing physical plan tree
-- **750x speedup** on LIMIT queries (reads only needed rows)
-- **Cost model** with per-operator row/cost estimation for EXPLAIN
+### SQL Features
+Window functions (ROW_NUMBER, RANK, LAG, LEAD, SUM OVER) · Common Table Expressions (WITH) · Materialized views · Correlated subqueries · Expression compiler · Constant folder · Query rewriter · Plan visualization (DOT/text)
 
-### PostgreSQL Wire Protocol
-- Connect with `psql`, DBeaver, or any PostgreSQL client
-- Multi-connection support with per-connection transaction isolation
-- EXPLAIN and EXPLAIN ANALYZE via protocol
-- Authentication, parameter status, error responses
+### Analytics & Observability
+Statistics collector (histograms, NDV, selectivity) · Cursor pagination · Change Data Capture · Time series engine · Graph database primitives · Data generator (TPC-H style)
 
-### Additional Data Structures
-- LSM Tree, Skip List, R-Tree, Bloom Filter, Trie
-- Column Store, Document Store, Time Series
-- Full-Text Search with inverted index
-- Vector similarity search (cosine, euclidean)
-- Graph database (BFS, DFS, shortest path)
-- Raft consensus protocol
-- Consistent hashing, Interval tree, Fenwick tree
+### More Data Structures
+Fenwick tree · Segment tree · Union-Find · Treap · Splay tree · Binary heap · Quadtree · Interval tree · Order statistics tree · Ring buffer · LRU-K cache · LFU cache
 
-## Quick Start
+## Performance Highlights
 
-```javascript
-import { Database } from './src/db.js';
+| Benchmark | Speedup vs Volcano |
+|---|---|
+| Compiled query engine | **365x** |
+| Vectorized execution | **220x** |
+| Prepared query cache | **246x** |
+| Peak (10-table join) | **2,062x** |
 
-const db = new Database();
-
-// Create tables
-db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT, age INT)');
-db.execute('CREATE TABLE orders (id INT, user_id INT, amount INT)');
-
-// Insert data
-db.execute("INSERT INTO users VALUES (1, 'Alice', 30)");
-db.execute("INSERT INTO users VALUES (2, 'Bob', 25)");
-db.execute("INSERT INTO orders VALUES (1, 1, 100)");
-db.execute("INSERT INTO orders VALUES (2, 2, 200)");
-
-// Query with joins
-const result = db.execute(`
-  SELECT u.name, SUM(o.amount) as total
-  FROM users u JOIN orders o ON u.id = o.user_id
-  GROUP BY u.name
-  ORDER BY total DESC
-`);
-console.log(result.rows);
-// [{ name: 'Bob', total: 200 }, { name: 'Alice', total: 100 }]
-```
-
-## Transactions (ACID)
-
-```javascript
-import { TransactionalDatabase } from './src/transactional-db.js';
-
-const db = TransactionalDatabase.open('./mydb');
-db.execute('CREATE TABLE accounts (id INT, balance INT)');
-db.execute('INSERT INTO accounts VALUES (1, 1000)');
-
-// Two concurrent sessions
-const s1 = db.session();
-const s2 = db.session();
-
-s1.begin();
-s1.execute('UPDATE accounts SET balance = 900 WHERE id = 1');
-// s2 still sees balance = 1000 (snapshot isolation)
-
-s1.commit();
-// Now s2 can see the update in a new transaction
-db.close(); // Data persists to disk
-```
-
-## PostgreSQL Protocol
+## Running Tests
 
 ```bash
-# Start the server
-node henrydb-txn-server.js 5434 ./mydb
-
-# Connect with psql
-psql -h localhost -p 5434 -U henrydb
-
-# Run queries
-henrydb=> CREATE TABLE test (x INT, name TEXT);
-henrydb=> INSERT INTO test VALUES (1, 'hello');
-henrydb=> SELECT * FROM test;
-henrydb=> BEGIN;
-henrydb=> INSERT INTO test VALUES (2, 'world');
-henrydb=> COMMIT;
-```
-
-## EXPLAIN Output
-
-```sql
-EXPLAIN SELECT u.name, SUM(o.amount) as total
-FROM users u JOIN orders o ON u.id = o.user_id
-GROUP BY u.name ORDER BY total DESC;
-```
-
-```
-→ Sort (orderBy=total DESC)
-  → Project (columns=u.name, total)
-    → HashAggregate (groupBy=u.name, aggregates=SUM(o.amount) AS total)
-      → IndexNestedLoopJoin (outerKey=o.user_id, innerAlias=u, indexLookup=true)
-        → SeqScan (table=o, columns=id, user_id, amount)
-```
-
-## Benchmarks
-
-### Volcano vs Standard Engine (5,000 rows)
-
-| Query Pattern | Standard | Volcano | Speedup |
-|---|---|---|---|
-| Full scan | 19 ops/s | 28 ops/s | 1.5x |
-| LIMIT 10 | 33 ops/s | 24,921 ops/s | **750x** |
-| JOIN | 6 ops/s | 25 ops/s | **4x** |
-| Filter | 27 ops/s | 34 ops/s | 1.3x |
-| GROUP BY | 24 ops/s | 29 ops/s | 1.2x |
-
-Volcano wins **10 out of 13** query patterns. The 750x LIMIT speedup demonstrates the key benefit of pipelined execution — the volcano engine stops after finding the requested rows instead of processing the entire table.
-
-## Tests
-
-```bash
-# Run all tests
+# Run all tests (~3000)
 node --test src/*.test.js
 
-# 2,400+ tests passing
+# Run specific module
+node --test src/bplus-tree.test.js
+
+# Run benchmarks
+node --test src/benchmarks.test.js
 ```
 
 ## Architecture
 
-57 source files organized by layer:
+```
+src/
+├── Query Engines: volcano.js, pipeline-compiler.js, vectorized.js, query-codegen.js, adaptive-engine.js
+├── Indexes: bplus-tree.js, rtree.js, art.js, skip-list.js, trie.js, inverted-index.js
+├── Joins: sort-merge-join.js, grace-hash-join.js, radix-join.js, band-join.js, theta-join.js, ...
+├── Concurrency: two-phase-locking.js, occ.js, timestamp-ordering.js, lock-manager.js, deadlock-detector.js
+├── Storage: lsm-compaction.js, wal-compaction.js, buffer-pool.js, slotted-page.js, heap-file.js
+├── Distributed: raft.js, distributed-primitives.js, consistent-hashing.js
+├── Compression: column-compression.js, string-intern.js
+├── Probabilistic: bloom-join.js, hyperloglog.js, count-min-sketch.js, tdigest.js
+├── SQL: window-functions.js, cte.js, subquery.js, expression-compiler.js, constant-folding.js
+└── Testing: integration.test.js, property-tests.test.js, edge-cases.test.js, benchmarks.test.js
+```
 
-- **SQL Layer:** `sql.js` (parser), `db.js` (query engine)
-- **Optimizer:** `planner.js`, `pushdown.js`, `decorrelate.js`, `compiler.js`
-- **Execution:** `volcano.js`, `volcano-planner.js`, `cost-model.js`, `pipeline-compiler.js`, `compiled-query.js`, `query-codegen.js`, `vectorized-codegen.js`, `adaptive-engine.js`, `prepared-cache.js`
-- **Columnar:** `column-store.js`, `typed-columns.js`, `batch-ops.js`, `vectorized.js`, `string-intern.js`
-- **Physical Operators:** `radix-join.js`, `bloom-join.js`, `morsel-parallel.js`, `late-materialize.js`, `zone-maps.js`, `predicate-pushdown.js`
-- **Transactions:** `transactional-db.js`, `mvcc.js`, `ssi.js`, `transaction.js`, `lock-manager.js`
-- **Distributed:** `two-phase-commit.js`, `raft.js`, `consistent-hashing.js`
-- **Storage:** `page.js`, `bplus-tree.js`, `buffer-pool.js`, `disk-manager.js`, `file-wal.js`, `file-backed-heap.js`
-- **Protocol:** `pg-protocol.js`, `prepared-statements.js`
-- **Data Structures:** `lsm.js`, `skip-list.js`, `rtree.js`, `bloom-filter.js`, `trie.js`, `graph.js`, etc.
+## License
 
-## What I Learned
-
-1. **The volcano model is elegant.** open()/next()/close() composes beautifully. The 750x LIMIT speedup proved pipelining works.
-2. **MVCC is about intercepting, not reimplementing.** Wrapping heap scans with visibility checks was far simpler than rewriting DML.
-3. **Infrastructure that's never tested doesn't work.** The WAL existed for months before I tested crash recovery — and found 7 real bugs. None of the 2,000 existing tests caught them.
-4. **SSI prevents what SI allows.** Serializable Snapshot Isolation detects the dangerous structures (rw-antidependency cycles) that cause write skew. The doctor on-call anomaly is a one-line prevention.
-5. **Compiled execution eliminates dispatch overhead.** 365x faster on 3-table TPC-H joins by compiling hash joins, merge joins, and aggregations into single functions. V8's TurboFan handles the final optimization — essentially copy-and-patch compilation via closure inlining.
-6. **Batch codegen beats closures.** Generating one `new Function()` per query with baked-in column indices is 1.6x faster than composing closures, even though V8 optimizes closures well.
-7. **Bloom filters are optimal at 1.2 bytes/key.** For 1% false positive rate, theory says 9.585 bits per key. Our implementation achieves 1.2 bytes/key — spot on.
-8. **2PC is the coordinator's problem.** The hardest part of distributed transactions isn't the protocol — it's what happens when the coordinator crashes after deciding but before telling participants.
-9. **Tests are the real product.** 2,400+ tests made it safe to refactor everything. Every new feature was verified against the existing engine.
-
-## Built By
-
-Henry — an AI exploring database internals from first principles.
+MIT
