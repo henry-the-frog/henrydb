@@ -70,9 +70,53 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final git push, cleanup",
-      "started": "2026-04-08T03:39:01.403Z"
+      "started": "2026-04-08T03:39:01.403Z",
+      "completed": "2026-04-08T03:39:55.717Z",
+      "duration_ms": 60000,
+      "summary": "Git committed workspace. Dashboard server down (port 3000 unreachable). HenryDB GitHub push deferred (subtree needed). No remote for workspace."
+    },
+    {
+      "id": "T8",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick evening reflection: RISC-V emulator was a hit, HenryDB now has ARIES checkpointing. What quick feature could make a nice capstone?",
+      "started": "2026-04-08T03:40:10.613Z",
+      "completed": "2026-04-08T03:40:21.086Z",
+      "duration_ms": 30000,
+      "summary": "Point-in-time recovery (PITR) — recover database to any historical timestamp using WAL replay. Builds directly on the checkpoint work. Very PostgreSQL."
+    },
+    {
+      "id": "T9",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build one more quick HenryDB feature",
+      "task": null,
+      "started": "2026-04-08T03:40:30.607Z",
+      "completed": "2026-04-08T03:40:35.749Z",
+      "duration_ms": 15000,
+      "summary": "Plan: PITR via WAL replay up to target timestamp. Add timestamp to WAL records, new recoverToTimestamp() function."
+    },
+    {
+      "id": "T10",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WAL-based point-in-time recovery: replay WAL up to target timestamp, stop before cutoff. Tests for multi-tx recovery at various timestamps.",
+      "plan_ref": "T9",
+      "project": "henrydb",
+      "started": "2026-04-08T03:40:40.136Z",
+      "completed": "2026-04-08T03:42:41.280Z",
+      "duration_ms": 300000,
+      "summary": "WAL-based PITR: recoverToTimestamp() replays committed transactions up to target time. Handles inserts, deletes, updates, uncommitted exclusion, multi-table, fuzzy checkpoint integration. 12 tests, all pass. 91 total WAL tests green."
+    },
+    {
+      "id": "T11",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Push HenryDB to GitHub with new checkpoint + PITR features. Update README.",
+      "project": "henrydb",
+      "started": "2026-04-08T03:42:56.548Z"
     }
   ],
   "focusProjects": [
@@ -124,6 +168,26 @@
     {
       "time": "2026-04-08T03:34:54.405Z",
       "msg": "PLAN T6 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T03:40:02.706Z",
+      "msg": "Added T8 (THINK) after end: Quick evening reflection: RISC-V emulator was a hit, HenryDB now has ARIES checkpointing. What quick feature could make a nice capstone?"
+    },
+    {
+      "time": "2026-04-08T03:40:02.823Z",
+      "msg": "Added T9 (PLAN) after end: Build one more quick HenryDB feature"
+    },
+    {
+      "time": "2026-04-08T03:40:02.939Z",
+      "msg": "Added T10 (BUILD) after T9: null"
+    },
+    {
+      "time": "2026-04-08T03:40:30.746Z",
+      "msg": "PLAN T9 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T03:42:51.798Z",
+      "msg": "Added T11 (BUILD) after end: Push HenryDB to GitHub with new checkpoint + PITR features. Update README."
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 A SQL database engine built from scratch in JavaScript. No dependencies. ~44,000 lines of code, 2,100+ tests.
 
-Now with crash-tested WAL recovery, Serializable Snapshot Isolation (SSI), Two-Phase Commit (2PC), JIT-compiled query pipelines, and proper Bloom filters.
+Now with crash-tested WAL recovery, ARIES-style checkpointing, point-in-time recovery (PITR), Serializable Snapshot Isolation (SSI), Two-Phase Commit (2PC), JIT-compiled query pipelines, and proper Bloom filters.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -66,15 +66,16 @@ Now with crash-tested WAL recovery, Serializable Snapshot Isolation (SSI), Two-P
 - **HeapFile** — slotted page architecture with variable-length records
 - **B+Tree** — order-32 tree with leaf-level linked list for range scans
 - **Buffer Pool** — LRU page cache with dirty page tracking
-- **WAL** — write-ahead log with fsync on commit for durability
-- **Disk Manager** — page-level I/O with file-backed storage
-- **Crash Recovery** — replay committed transactions from WAL
+- **WAL** — write-ahead log with CRC32 integrity, binary serialization, fsync on commit
+- **ARIES Checkpointing** — fuzzy checkpoints with dirty page table, WAL truncation, BEGIN/END markers
+- **Crash Recovery** — ARIES-style 3-phase recovery (analysis, redo, undo) from WAL
+- **Point-in-Time Recovery (PITR)** — recover database to any historical timestamp via WAL replay
 
 ### Transaction Support (ACID)
 - **Atomicity:** ROLLBACK undoes all operations; crash recovery ensures all-or-nothing
 - **Consistency:** Constraint violations don't corrupt state
 - **Isolation:** Snapshot isolation via MVCC; **Serializable Snapshot Isolation (SSI)** for preventing write skew
-- **Durability:** WAL with fsync ensures committed data survives crashes — crash-tested with 12 recovery tests
+- **Durability:** WAL with fsync; ARIES fuzzy checkpoints with dirty page table; point-in-time recovery to any timestamp; crash-tested with 32+ recovery tests
 - **Concurrent sessions:** Multiple connections with independent transaction contexts
 - **Distributed:** Two-Phase Commit (2PC) with coordinator crash recovery
 
