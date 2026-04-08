@@ -42,6 +42,33 @@ function parseCurrent(text) {
   };
 }
 
+function parseScheduleJson(data) {
+  const date = data.date || today();
+  const queue = data.queue || [];
+  const backlog = data.backlog || [];
+
+  const blocks = queue.map(task => ({
+    time: task.started ? new Date(task.started).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Denver' }) : '',
+    mode: task.mode || 'BUILD',
+    task: task.task || task.goal || '',
+    status: task.status === 'done' ? 'done' : task.status === 'in-progress' ? 'in-progress' : 'upcoming',
+    summary: task.summary || '',
+    artifacts: [],
+    details: task.summary || '',
+    taskId: task.id,
+    project: task.project || '',
+    durationMs: task.duration_ms || 0,
+    startedAt: task.started || '',
+    completedAt: task.completed || '',
+  }));
+
+  return {
+    date,
+    blocks,
+    backlog: backlog.map(b => typeof b === 'string' ? b : b.task || ''),
+  };
+}
+
 function parseSchedule(text) {
   if (!text) return { date: today(), blocks: [], backlog: [] };
 
@@ -980,11 +1007,26 @@ function getProjectInfo(dir) {
 // --- Main ---
 function generate() {
   const currentText = readFile('CURRENT.md');
-  const scheduleText = readFile('SCHEDULE.md');
   const dailyLogText = readFile(`memory/${today()}.md`);
 
   const current = parseCurrent(currentText);
-  const schedule = parseSchedule(scheduleText);
+
+  // Try schedule.json first (new format), fallback to SCHEDULE.md
+  let schedule;
+  const scheduleJsonText = readFile('schedule.json');
+  if (scheduleJsonText) {
+    try {
+      const sj = JSON.parse(scheduleJsonText);
+      schedule = parseScheduleJson(sj);
+    } catch (e) {
+      console.warn('⚠️  Failed to parse schedule.json:', e.message);
+      const scheduleText = readFile('SCHEDULE.md');
+      schedule = parseSchedule(scheduleText);
+    }
+  } else {
+    const scheduleText = readFile('SCHEDULE.md');
+    schedule = parseSchedule(scheduleText);
+  }
 
   // Enrich blocks from daily log
   parseDailyLog(dailyLogText, schedule.blocks);

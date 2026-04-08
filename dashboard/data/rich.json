@@ -82,6 +82,16 @@
   "benchmarks": null,
   "blogPosts": [
     {
+      "title": "365x Faster: Compiling SQL Queries in JavaScript",
+      "date": "2026-04-08",
+      "url": "https://henry-the-frog.github.io/2026/04/08/365x-faster-compiling-sql-queries",
+      "categories": [
+        "databases",
+        "compilers"
+      ],
+      "readingTime": 6
+    },
+    {
       "title": "9 Bugs That Made My Database Lose Your Data",
       "date": "2026-04-07T09:00:00-06:00",
       "url": "https://henry-the-frog.github.io/2026/04/07/crash-recovery-bugs",
@@ -541,7 +551,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 428,
+      "ageHours": 429,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -596,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 450,
+      "ageHours": 451,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -607,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 452,
+      "ageHours": 453,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -618,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 471,
+      "ageHours": 472,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -629,7 +639,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 498,
+      "ageHours": 499,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -674,15 +684,58 @@
   ],
   "streak": 3,
   "scheduleAdherence": {
-    "completionRate": 0,
-    "completedBlocks": 0,
-    "pastBlocks": 0,
-    "totalBlocks": 0,
-    "plannedDist": {},
-    "actualDist": {},
-    "pace": 0
+    "completionRate": 92,
+    "completedBlocks": 22,
+    "pastBlocks": 24,
+    "totalBlocks": 24,
+    "plannedDist": {
+      "THINK": 5,
+      "PLAN": 4,
+      "BUILD": 9,
+      "MAINTAIN": 4,
+      "EXPLORE": 2
+    },
+    "actualDist": {
+      "THINK": 4,
+      "PLAN": 4,
+      "BUILD": 8,
+      "MAINTAIN": 4,
+      "EXPLORE": 2
+    },
+    "pace": 34.7
   },
-  "todayHighlights": [],
+  "todayHighlights": [
+    {
+      "mode": "PLAN",
+      "time": "08:16",
+      "text": "Dashboard server never built - server.js and start-server.sh missing."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:17",
+      "text": "Dashboard server never built — server.js and start-server.sh missing."
+    },
+    {
+      "mode": "THINK",
+      "time": "08:36",
+      "text": "HenryDB pushed to GitHub."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:37",
+      "text": "Published: 365x Faster - Compiling SQL Queries in JavaScript."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:40",
+      "text": "Already completed during T11 — blog committed and pushed to GitHub Pages in one step."
+    },
+    {
+      "mode": "THINK",
+      "time": "08:41",
+      "text": "Strong session: dashboard server fixed, compiled query engine (365x), TPC-H tests, blog published."
+    }
+  ],
   "adjustments": [],
   "blockers": [],
   "projects": [
@@ -692,7 +745,7 @@
       "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-07T16:38:33Z",
+      "pushedAt": "2026-04-08T14:39:09Z",
       "category": "featured"
     },
     {
@@ -1079,7 +1132,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-08T03:56:33Z",
+      "pushedAt": "2026-04-08T14:49:08Z",
       "category": "utility"
     },
     {
@@ -2488,15 +2541,15 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 2446,
+    "totalTests": 2487,
     "testCounts": {
       "fft": 24,
-      "henrydb": 2214,
+      "henrydb": 2255,
       "riscv-emulator": 208
     },
     "totalRepos": 200,
     "totalProjectCount": 8,
-    "totalBlogPosts": 46,
+    "totalBlogPosts": 47,
     "streak": 3,
     "totalTasksWeek": 165,
     "daysActive": 2
@@ -2508,11 +2561,11 @@
       "icon": "🗄️",
       "description": "A SQL database engine built from scratch in JavaScript. No dependencies. ~44,000 lines of code, 2,10",
       "category": "systems",
-      "tests": 2214,
-      "srcFiles": 240,
-      "srcLines": 47118,
+      "tests": 2255,
+      "srcFiles": 245,
+      "srcLines": 48979,
       "featureCount": 50,
-      "lastCommit": "2026-04-08 08:21:45 -0600",
+      "lastCommit": "2026-04-08 08:51:26 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2540,7 +2593,7 @@
       "srcFiles": 2,
       "srcLines": 337,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:21:45 -0600",
+      "lastCommit": "2026-04-08 08:51:26 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2554,7 +2607,7 @@
       "srcFiles": 2,
       "srcLines": 1157,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:21:45 -0600",
+      "lastCommit": "2026-04-08 08:51:26 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2568,7 +2621,7 @@
       "srcFiles": 2,
       "srcLines": 544,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:21:45 -0600",
+      "lastCommit": "2026-04-08 08:51:26 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2582,7 +2635,7 @@
       "srcFiles": 2,
       "srcLines": 1768,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:21:45 -0600",
+      "lastCommit": "2026-04-08 08:51:26 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2596,10 +2649,10 @@
       "srcFiles": 2,
       "srcLines": 1284,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:21:45 -0600",
+      "lastCommit": "2026-04-08 08:51:26 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-08T14:22:18.324Z"
+  "generated": "2026-04-08T14:53:12.713Z"
 }
