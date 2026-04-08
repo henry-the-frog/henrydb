@@ -484,6 +484,37 @@
       "completed": "2026-04-08T15:22:20.154Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (147 objects). Dashboard synced. Server healthy (1h+ uptime)."
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: update blog post with 2062x result and benchmark table",
+      "project": "henrydb",
+      "started": "2026-04-08T15:22:53.911Z",
+      "completed": "2026-04-08T15:24:18.485Z",
+      "duration_ms": 180000,
+      "summary": "Updated blog: 2062x Faster: Four Approaches to Compiling SQL Queries. Added comprehensive benchmark table, four engines section, updated title. Pushed to GitHub Pages."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: fix codegen 'values is not defined' error in filtered join pattern",
+      "project": "henrydb"
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: vectorized aggregation (SUM/COUNT/AVG over batched columns)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T49",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping, push, test count"
     }
   ],
   "focusProjects": [
@@ -679,6 +710,22 @@
     {
       "time": "2026-04-08T15:16:20.070Z",
       "msg": "Added T45 (MAINTAIN) after end: Mid-session push: HenryDB to GitHub, test count update, dashboard sync"
+    },
+    {
+      "time": "2026-04-08T15:22:44.930Z",
+      "msg": "Added T46 (BUILD) after end: HenryDB: update blog post with 2062x result and benchmark table"
+    },
+    {
+      "time": "2026-04-08T15:22:45.048Z",
+      "msg": "Added T47 (BUILD) after end: HenryDB: fix codegen 'values is not defined' error in filtered join pattern"
+    },
+    {
+      "time": "2026-04-08T15:22:45.165Z",
+      "msg": "Added T48 (BUILD) after end: HenryDB: vectorized aggregation (SUM/COUNT/AVG over batched columns)"
+    },
+    {
+      "time": "2026-04-08T15:22:45.281Z",
+      "msg": "Added T49 (MAINTAIN) after end: Housekeeping, push, test count"
     }
   ]
 }
