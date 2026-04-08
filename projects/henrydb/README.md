@@ -2,7 +2,7 @@
 
 **A teaching database engine built from scratch in JavaScript.**
 
-3,970+ tests · 81K+ lines · 470 files · Every major concept implemented.
+4,300+ tests · 90K+ lines · 520 files · Every major concept implemented.
 
 ## What Is This?
 
@@ -116,6 +116,60 @@ Run-Length Encoding · Delta encoding · Bit-packing · Dictionary encoding · F
 ### SQL Features
 Window functions (ROW_NUMBER, RANK, LAG, LEAD, SUM OVER) · Common Table Expressions (WITH) · Materialized views · Correlated subqueries · Expression compiler · Constant folder · Query rewriter · Plan visualization (DOT/text) · EXPLAIN
 
+### PostgreSQL Wire Protocol (Full Server)
+- **TCP server** with PostgreSQL v3 wire protocol handshake
+- **Simple query protocol** + **Extended query protocol** (Parse/Bind/Describe/Execute/Sync)
+- **MD5 authentication** with salt
+- **SSL negotiation** rejection (graceful downgrade)
+- **LISTEN/NOTIFY** — real-time pub/sub messaging
+- **COPY protocol** — bulk COPY FROM STDIN and COPY TO STDOUT
+- **Server-side cursors** — DECLARE/FETCH/MOVE/CLOSE
+- **EXPLAIN ANALYZE** — execution stats with timing and row counts
+- **EXPLAIN (FORMAT JSON/YAML/DOT)** — multiple output formats, Graphviz visualization
+- **VACUUM/ANALYZE/TRUNCATE** — maintenance commands
+- **SAVEPOINT/RELEASE/ROLLBACK TO** — nested transaction support
+- **RETURNING clause** — INSERT/UPDATE/DELETE RETURNING * through wire protocol
+- **INSERT ON CONFLICT DO NOTHING** — upsert support
+- **CREATE/DROP INDEX** — B-tree indexes through wire protocol
+- **ALTER TABLE** — ADD/DROP COLUMN, RENAME TABLE/COLUMN
+- **CREATE TEMP TABLE** — connection-scoped, auto-dropped on disconnect
+- **SET/SHOW parameters** — per-connection runtime configuration
+
+### Server Monitoring & Observability
+- **HTTP Health Check** — /health (JSON) + /metrics (Prometheus format) on port+1
+- **pg_stat_statements** — query pattern tracking with timing stats
+- **pg_stat_activity** — connection monitoring
+- **pg_stat_bgwriter** — WAL/checkpoint metrics
+- **pg_stat_slow_queries** — slow query log with configurable threshold
+- **pg_locks** — transaction-level lock information
+- **pg_cancel_backend/pg_terminate_backend** — connection management
+- **information_schema** — tables/columns views
+- **Query cache** — LRU with table-level invalidation and hit rate stats
+
+### ORM & Driver Compatibility
+- **pg (node-postgres)** — full integration including connection pools
+- **Knex.js** — CRUD, aggregates, JOINs, subqueries, transactions
+- **Sequelize** — connect, raw queries, model operations, aggregates, JOINs
+- **pg_dump/pg_restore** — SQL and COPY format export/import
+
+### Application Patterns (Tested Through Wire Protocol)
+- **Express REST API** — full task management app with Knex + HenryDB
+- **TPC-H Benchmark** — 6 tables, 800+ rows, 10 adapted queries
+- **E-Commerce** — 4-table schema with order history, revenue analytics, inventory
+- **Social Network** — friends graph, mutual friends, news feed, engagement metrics
+- **Multi-Tenant SaaS** — tenant isolation, admin dashboard, usage billing
+- **Time-Series** — IoT sensor data, range queries, downsampling, anomaly detection
+- **Document Store** — JSON CRUD with nested extraction, aggregates
+- **Analytics/BI** — star schema, revenue by region/category, cross-tabulation
+- **ETL Pipeline** — extract-transform-load with staging/summary/report tables
+- **CQRS** — event sourcing, materialized read models, event replay
+- **CDC** — change data capture via LISTEN/NOTIFY
+- **Geospatial** — bounding box queries, distance ordering, nearest neighbors
+- **Full-Text Search** — LIKE, LOWER, multi-column, relevance ranking
+- **Schema Migrations** — versioned schema changes with rollback tracking
+- **GraphQL-like** — field selection, filtering, nested relations
+- **Stress Tests** — 10 concurrent connections, connection pools, rapid cycling
+
 ### Analytics & Observability
 Statistics collector (histograms, NDV, selectivity) · Cursor pagination · Change Data Capture · Time series engine · Graph database primitives · Data generator (TPC-H style)
 
@@ -173,7 +227,7 @@ src/
 ├── Compression: column-compression.js, string-intern.js
 ├── Probabilistic: bloom-join.js, hyperloglog.js, count-min-sketch.js, tdigest.js
 ├── SQL: window-functions.js, cte.js, subquery.js, expression-compiler.js, constant-folding.js
-└── Testing: 297+ test files, 3970+ test cases
+└── Testing: 330+ test files, 4300+ test cases
 ```
 
 ## License
