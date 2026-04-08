@@ -491,3 +491,23 @@ export function writeCopyDone() {
 }
 
 export { PG_TYPES };
+
+/**
+ * Write AuthenticationMD5Password (R) — request MD5 password with 4-byte salt.
+ */
+export function writeAuthenticationMD5(salt) {
+  const buf = Buffer.alloc(13);
+  buf[0] = 0x52; // 'R'
+  buf.writeInt32BE(12, 1); // length
+  buf.writeInt32BE(5, 5);  // MD5 auth type
+  salt.copy(buf, 9);
+  return buf;
+}
+
+/**
+ * Parse PasswordMessage (p) — extract password string from client.
+ */
+export function parsePasswordMessage(buf) {
+  // buf is the message body (after type byte and length)
+  return buf.toString('utf8', 0, buf.indexOf(0));
+}

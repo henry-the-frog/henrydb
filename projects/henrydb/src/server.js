@@ -67,25 +67,6 @@ export class HenryDBServer {
       queryLatencySum: 0,
       queryLatencyCount: 0,
     };
-    // pg_stat_statements — query pattern tracking
-    if (upper.includes('PG_STAT_STATEMENTS')) {
-      const rows = [];
-      for (const [normalized, stats] of this._queryStats) {
-        rows.push({
-          query: stats.query,
-          calls: stats.calls,
-          total_time_ms: Math.round(stats.totalTimeMs * 100) / 100,
-          mean_time_ms: Math.round(stats.totalTimeMs / stats.calls * 100) / 100,
-          min_time_ms: stats.minTimeMs,
-          max_time_ms: stats.maxTimeMs,
-        });
-      }
-      // Sort by total time descending
-      rows.sort((a, b) => b.total_time_ms - a.total_time_ms);
-      this._sendResult(conn, sql, { type: 'ROWS', rows: rows.slice(0, 100) });
-      return true;
-    }
-
     // Slow query log: circular buffer of slow queries
     this._slowQueries = [];
     this._slowQueryMaxEntries = 100;
@@ -224,6 +205,7 @@ export class HenryDBServer {
       currentQuery: null, // { sql, startTime }
       connectTime: Date.now(),
       queryCount: 0,
+      tempTables: new Set(), // Temp tables created by this connection
       params: new Map([
         ['server_version', '15.0'],
         ['server_encoding', 'UTF8'],
@@ -261,6 +243,13 @@ export class HenryDBServer {
     });
 
     socket.on('close', () => {
+      // Cleanup temp tables
+      for (const tempTable of conn.tempTables) {
+        try {
+          this.db.execute(`DROP TABLE IF EXISTS ${tempTable}`);
+        } catch (e) { /* ignore */ }
+      }
+      conn.tempTables.clear();
       // Unregister from all LISTEN channels
       for (const channel of conn.listeningChannels) {
         const listeners = this._channels.get(channel);
@@ -1084,6 +1073,30 @@ export class HenryDBServer {
       return true;
     }
 
+    // pg_stat_statements — query pattern tracking
+    if (upper.includes('PG_STAT_STATEMENTS')) {
+      const rows = [];
+      for (const [normalized, stats] of this._queryStats) {
+        rows.push({
+          query: stats.query,
+          calls: stats.calls,
+          total_time_ms: Math.round(stats.totalTimeMs * 100) / 100,
+          mean_time_ms: Math.round(stats.totalTimeMs / stats.calls * 100) / 100,
+          min_time_ms: stats.minTimeMs,
+          max_time_ms: stats.maxTimeMs,
+        });
+      }
+      rows.sort((a, b) => b.total_time_ms - a.total_time_ms);
+      this._sendResult(conn, sql, { type: 'ROWS', rows: rows.slice(0, 100) });
+      return true;
+    }
+
+    // Slow query log
+    if (upper.includes('PG_STAT_SLOW') || upper.includes('SLOW_QUERIES')) {
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [...this._slowQueries].reverse() });
+      return true;
+    }
+
     // pg_locks — lock information
     if (upper.includes('PG_LOCKS')) {
       const rows = [];
@@ -1280,6 +1293,24 @@ export class HenryDBServer {
       
       conn.socket.write(writeCommandComplete('ANALYZE'));
       return true;
+    }
+
+    // CREATE TEMP TABLE — track for auto-cleanup
+    if (upper.startsWith('CREATE TEMP TABLE') || upper.startsWith('CREATE TEMPORARY TABLE')) {
+      const match = sql.match(/CREATE\s+(?:TEMP|TEMPORARY)\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i);
+      if (match) {
+        const tableName = match[1];
+        try {
+          // Create the table normally but track it for this connection
+          const createSql = sql.replace(/CREATE\s+(?:TEMP|TEMPORARY)\s+TABLE/i, 'CREATE TABLE');
+          this.db.execute(createSql);
+          conn.tempTables.add(tableName);
+          conn.socket.write(writeCommandComplete('CREATE TABLE'));
+        } catch (e) {
+          conn.socket.write(writeErrorResponse('ERROR', '42000', e.message));
+        }
+        return true;
+      }
     }
 
     // TRUNCATE table_name
