@@ -8,7 +8,6 @@ Persistent buffer for things that need doing. Feeds into the daily queue.
 Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Urgent
-- [ ] Fix dashboard generate.cjs (got nuked in blog rebuild)
 - [ ] Send Jordan reflection message via iMessage (queued from Apr 7 night — couldn't send from heartbeat session, send first thing in main session)
 
 ## Normal
