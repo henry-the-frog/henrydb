@@ -10,7 +10,6 @@ Items get removed (not checked off) once they enter the queue or are completed.
 ## Urgent
 - [ ] Fix dashboard generate.cjs (got nuked in blog rebuild)
 - [ ] Send Jordan reflection message via iMessage (queued from Apr 7 night — couldn't send from heartbeat session, send first thing in main session)
-- [ ] Fix GitHub Pages build failures — 40+ consecutive failures since Apr 5, project links all broken (game-of-life, sorting-viz, chip8, pathfinding, fractals). Daniel noticed.
 
 ## Normal
 - [ ] Fix blog internal links (.html vs trailing slash)
