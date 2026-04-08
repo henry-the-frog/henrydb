@@ -1,89 +1,100 @@
 // lock-manager.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { LockManager, LockMode } from './lock-manager.js';
+import { LockManager } from './lock-manager.js';
 
-describe('Lock Manager', () => {
-  it('grants exclusive lock on free resource', () => {
+describe('LockManager', () => {
+  it('grant exclusive lock', async () => {
     const lm = new LockManager();
-    assert.equal(lm.lock(1, 'row:1', LockMode.EXCLUSIVE), true);
+    assert.ok(await lm.acquire('T1', 'table1', 'X'));
+    assert.ok(lm.isHeldBy('T1', 'table1'));
+    assert.equal(lm.getLockMode('T1', 'table1'), 'X');
   });
 
-  it('grants shared lock on free resource', () => {
+  it('multiple shared locks are compatible', async () => {
     const lm = new LockManager();
-    assert.equal(lm.lock(1, 'row:1', LockMode.SHARED), true);
+    assert.ok(await lm.acquire('T1', 'row1', 'S'));
+    assert.ok(await lm.acquire('T2', 'row1', 'S'));
+    assert.ok(lm.isHeldBy('T1', 'row1'));
+    assert.ok(lm.isHeldBy('T2', 'row1'));
   });
 
-  it('multiple shared locks are compatible', () => {
+  it('exclusive blocks shared', async () => {
     const lm = new LockManager();
-    assert.equal(lm.lock(1, 'row:1', LockMode.SHARED), true);
-    assert.equal(lm.lock(2, 'row:1', LockMode.SHARED), true);
+    await lm.acquire('T1', 'row1', 'X');
+    assert.ok(!lm.tryAcquire('T2', 'row1', 'S'));
   });
 
-  it('exclusive lock conflicts with shared lock', () => {
+  it('shared blocks exclusive', async () => {
     const lm = new LockManager();
-    lm.lock(1, 'row:1', LockMode.SHARED);
-    assert.equal(lm.lock(2, 'row:1', LockMode.EXCLUSIVE), false); // Cannot grant
+    await lm.acquire('T1', 'row1', 'S');
+    assert.ok(!lm.tryAcquire('T2', 'row1', 'X'));
   });
 
-  it('exclusive lock conflicts with exclusive lock', () => {
+  it('intention locks are compatible', async () => {
     const lm = new LockManager();
-    lm.lock(1, 'row:1', LockMode.EXCLUSIVE);
-    assert.equal(lm.lock(2, 'row:1', LockMode.EXCLUSIVE), false);
+    assert.ok(await lm.acquire('T1', 'db', 'IS'));
+    assert.ok(await lm.acquire('T2', 'db', 'IX'));
+    assert.ok(await lm.acquire('T3', 'db', 'IS'));
   });
 
-  it('unlock releases locks and grants waiting', () => {
+  it('release grants waiters', async () => {
     const lm = new LockManager();
-    lm.lock(1, 'row:1', LockMode.EXCLUSIVE);
-    lm.lock(2, 'row:1', LockMode.EXCLUSIVE); // Queued
+    await lm.acquire('T1', 'row1', 'X');
     
-    lm.unlock(1); // Release tx 1's lock
+    let granted = false;
+    const waitPromise = lm.acquire('T2', 'row1', 'S').then(() => { granted = true; });
     
-    // Now tx 2's waiting lock should be granted
-    const state = lm.state();
-    const row1Locks = state.locks['row:1'];
-    assert.ok(row1Locks.some(l => l.tx === 2 && l.granted));
+    assert.ok(!granted);
+    lm.release('T1', 'row1');
+    await waitPromise;
+    assert.ok(granted);
   });
 
-  it('detects simple deadlock', () => {
+  it('releaseAll releases everything', async () => {
     const lm = new LockManager();
+    await lm.acquire('T1', 'r1', 'X');
+    await lm.acquire('T1', 'r2', 'S');
+    await lm.acquire('T1', 'r3', 'IX');
     
-    // Tx 1 holds row:1, wants row:2
-    lm.lock(1, 'row:1', LockMode.EXCLUSIVE);
-    // Tx 2 holds row:2, wants row:1
-    lm.lock(2, 'row:2', LockMode.EXCLUSIVE);
-    
-    // Tx 1 tries to get row:2 (held by tx 2)
-    lm.lock(1, 'row:2', LockMode.EXCLUSIVE); // Queued, tx 1 waits for tx 2
-    
-    // Tx 2 tries to get row:1 (held by tx 1) → DEADLOCK!
-    assert.throws(() => {
-      lm.lock(2, 'row:1', LockMode.EXCLUSIVE);
-    }, /Deadlock detected/);
+    lm.releaseAll('T1');
+    assert.ok(!lm.isHeldBy('T1', 'r1'));
+    assert.ok(!lm.isHeldBy('T1', 'r2'));
+    assert.ok(!lm.isHeldBy('T1', 'r3'));
   });
 
-  it('same tx can re-acquire its own lock', () => {
+  it('lock upgrade: S → X', async () => {
     const lm = new LockManager();
-    lm.lock(1, 'row:1', LockMode.EXCLUSIVE);
-    assert.equal(lm.lock(1, 'row:1', LockMode.EXCLUSIVE), true); // Re-entrant
+    await lm.acquire('T1', 'row1', 'S');
+    assert.ok(await lm.acquire('T1', 'row1', 'X')); // Upgrade
+    assert.equal(lm.getLockMode('T1', 'row1'), 'X');
   });
 
-  it('lock different resources independently', () => {
+  it('idempotent: re-acquiring same lock', async () => {
     const lm = new LockManager();
-    assert.equal(lm.lock(1, 'row:1', LockMode.EXCLUSIVE), true);
-    assert.equal(lm.lock(2, 'row:2', LockMode.EXCLUSIVE), true);
+    await lm.acquire('T1', 'row1', 'X');
+    assert.ok(await lm.acquire('T1', 'row1', 'X'));
   });
 
-  it('unlock releases all locks for a transaction', () => {
+  it('stats tracking', async () => {
     const lm = new LockManager();
-    lm.lock(1, 'row:1', LockMode.EXCLUSIVE);
-    lm.lock(1, 'row:2', LockMode.EXCLUSIVE);
-    lm.lock(1, 'row:3', LockMode.EXCLUSIVE);
+    await lm.acquire('T1', 'r1', 'X');
+    await lm.acquire('T2', 'r2', 'S');
+    lm.release('T1', 'r1');
     
-    lm.unlock(1);
-    
-    // All resources should be available
-    assert.equal(lm.lock(2, 'row:1', LockMode.EXCLUSIVE), true);
-    assert.equal(lm.lock(2, 'row:2', LockMode.EXCLUSIVE), true);
+    const stats = lm.getStats();
+    assert.equal(stats.grants, 2);
+    assert.equal(stats.releases, 1);
+  });
+
+  it('SIX compatibility', async () => {
+    const lm = new LockManager();
+    await lm.acquire('T1', 'table', 'SIX');
+    // IS is compatible with SIX
+    assert.ok(lm.tryAcquire('T2', 'table', 'IS'));
+    // S is NOT compatible with SIX
+    assert.ok(!lm.tryAcquire('T3', 'table', 'S'));
+    // IX is NOT compatible with SIX
+    assert.ok(!lm.tryAcquire('T4', 'table', 'IX'));
   });
 });
