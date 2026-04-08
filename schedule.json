@@ -975,6 +975,17 @@
       "completed": "2026-04-08T16:29:04.573Z",
       "duration_ms": 60000,
       "summary": "HyperLogLog: approximate COUNT DISTINCT using 4KB memory. 2.4% error on 1M elements. Merge support for distributed estimation. Linear counting correction for small cardinalities. 7 tests."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: T-Digest for approximate percentile/quantile estimation (P50, P95, P99)",
+      "project": "henrydb",
+      "started": "2026-04-08T16:29:41.381Z",
+      "completed": "2026-04-08T16:30:54.785Z",
+      "duration_ms": 60000,
+      "summary": "T-Digest: approximate percentile estimation (P50/P95/P99). 105 centroids for 1M values. Adaptive compression for tail accuracy. Merge support. 8 tests."
     }
   ],
   "focusProjects": [
@@ -1354,6 +1365,10 @@
     {
       "time": "2026-04-08T16:26:53.601Z",
       "msg": "Added T91 (BUILD) after end: HenryDB: HyperLogLog for approximate cardinality estimation (COUNT DISTINCT)"
+    },
+    {
+      "time": "2026-04-08T16:29:41.150Z",
+      "msg": "Added T92 (BUILD) after end: HenryDB: T-Digest for approximate percentile/quantile estimation (P50, P95, P99)"
     }
   ]
 }

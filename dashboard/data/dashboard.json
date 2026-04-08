@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:29:04.616Z",
+  "generated": "2026-04-08T16:30:54.820Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: HyperLogLog for approximate cardinality estimation (COUNT DISTINCT)",
-    "completedAt": "2026-04-08T16:29:04.616Z",
-    "taskId": "T91",
-    "summary": "HyperLogLog: approximate COUNT DISTINCT using 4KB memory. 2.4% error on 1M elements. Merge support for distributed estimation. Linear counting correction for small cardinalities. 7 tests.",
+    "task": "HenryDB: T-Digest for approximate percentile/quantile estimation (P50, P95, P99)",
+    "completedAt": "2026-04-08T16:30:54.820Z",
+    "taskId": "T92",
+    "summary": "T-Digest: approximate percentile estimation (P50/P95/P99). 105 centroids for 1M values. Adaptive compression for tail accuracy. Merge support. 8 tests.",
     "durationMs": 60000
   },
   "schedule": {
@@ -967,12 +967,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 89,
+    "blocksCompleted": 90,
     "blocksTotal": 89,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 54,
+      "BUILD": 55,
       "MAINTAIN": 22,
       "EXPLORE": 2
     }
