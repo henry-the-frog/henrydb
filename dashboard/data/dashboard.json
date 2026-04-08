@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T17:54:54.472Z",
+  "generated": "2026-04-08T17:57:01.846Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: comprehensive integration tests — cross-module tests spanning multiple subsystems",
-    "completedAt": "2026-04-08T17:54:54.472Z",
-    "taskId": "T197",
-    "summary": "12 cross-module integration tests. Fixed CMS hash bug (operator precedence). Tests: B+tree+buffer pool, lock mgr+deadlock, WAL+replay, sketches for optimization, bitmap+expression compiler, hash table comparison, constant folder+expression compiler, ring buffer history, skip list memtable.",
-    "durationMs": 180000
+    "task": "HenryDB: property-based tests — randomized tests for data structures",
+    "completedAt": "2026-04-08T17:57:01.846Z",
+    "taskId": "T198",
+    "summary": "13 property-based tests: sorted iteration invariant (4 structures), hash table consistency (2), ring buffer invariants, Fenwick tree verification, heap ordering, string keys, idempotent ops, random workload. 13 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 195,
+    "blocksCompleted": 196,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 143,
+      "BUILD": 144,
       "MAINTAIN": 39,
       "EXPLORE": 2
     }
