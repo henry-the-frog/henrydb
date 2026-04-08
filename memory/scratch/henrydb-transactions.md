@@ -1,6 +1,6 @@
 # HenryDB: Transactional Correctness Learnings
 
-uses: 4
+uses: 5
 created: 2026-04-07
 tags: database, mvcc, wal, crash-recovery, transactions
 
