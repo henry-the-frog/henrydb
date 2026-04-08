@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:44:07.820Z",
+  "generated": "2026-04-08T15:46:32.837Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push and sync",
-    "completedAt": "2026-04-08T15:44:07.820Z",
-    "taskId": "T58",
-    "summary": "HenryDB pushed (168 objects). Dashboard synced.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: morsel-driven parallelism with worker threads — partition work into morsels, fan out to workers",
+    "completedAt": "2026-04-08T15:46:32.837Z",
+    "taskId": "T59",
+    "summary": "Morsel-driven parallelism: split data into 10K-row morsels, distribute to workers. parallelFilter, parallelSum, parallelGroupBy (SUM/COUNT/AVG/MIN/MAX), parallelBuildHash. 500K group-by in 51ms. 12 tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -637,12 +637,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 56,
+    "blocksCompleted": 57,
     "blocksTotal": 58,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 32,
+      "BUILD": 33,
       "MAINTAIN": 11,
       "EXPLORE": 2
     }

@@ -623,6 +623,23 @@
       "completed": "2026-04-08T15:44:07.783Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (168 objects). Dashboard synced."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: morsel-driven parallelism with worker threads — partition work into morsels, fan out to workers",
+      "project": "henrydb",
+      "started": "2026-04-08T15:44:29.053Z",
+      "completed": "2026-04-08T15:46:32.801Z",
+      "duration_ms": 300000,
+      "summary": "Morsel-driven parallelism: split data into 10K-row morsels, distribute to workers. parallelFilter, parallelSum, parallelGroupBy (SUM/COUNT/AVG/MIN/MAX), parallelBuildHash. 500K group-by in 51ms. 12 tests."
+    },
+    {
+      "id": "T60",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push, sync, final test count"
     }
   ],
   "focusProjects": [
@@ -870,6 +887,14 @@
     {
       "time": "2026-04-08T15:39:37.231Z",
       "msg": "Added T58 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-08T15:44:22.479Z",
+      "msg": "Added T59 (BUILD) after end: HenryDB: morsel-driven parallelism with worker threads — partition work into morsels, fan out to workers"
+    },
+    {
+      "time": "2026-04-08T15:44:22.596Z",
+      "msg": "Added T60 (MAINTAIN) after end: Push, sync, final test count"
     }
   ]
 }
