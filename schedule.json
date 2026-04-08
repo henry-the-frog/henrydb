@@ -1142,16 +1142,24 @@
     {
       "id": "T107",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: hash join with partitioning — partition both inputs, then probe partition-wise",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:52:26.069Z",
+      "completed": "2026-04-08T16:52:33.655Z",
+      "duration_ms": 5000,
+      "summary": "Skipped: radix-join.js and grace-hash-join.js already implement partitioned hash joins."
     },
     {
       "id": "T108",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: query plan visualization — DOT graph output for EXPLAIN",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:52:34.093Z",
+      "completed": "2026-04-08T16:53:27.849Z",
+      "duration_ms": 60000,
+      "summary": "Query plan visualization: DOT graph output (Graphviz), text-based tree for terminal, JSON summary. Colored nodes by operator type (scans, joins, aggregates). 7 tests."
     },
     {
       "id": "T109",
