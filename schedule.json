@@ -3100,6 +3100,78 @@
       "completed": "2026-04-08T18:50:32.385Z",
       "duration_ms": 60000,
       "summary": "387 objects. 3284 tests. 442 files."
+    },
+    {
+      "id": "T288",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: intent locks — hierarchical locking with IS/IX intentions",
+      "project": "henrydb",
+      "started": "2026-04-08T18:50:45.066Z",
+      "completed": "2026-04-08T18:51:58.042Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T289",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: WAL group commit — batch fsync for higher throughput",
+      "project": "henrydb",
+      "started": "2026-04-08T18:51:58.184Z",
+      "completed": "2026-04-08T18:51:58.330Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T290",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: read-copy-update (RCU) — lockless concurrent reads",
+      "project": "henrydb",
+      "started": "2026-04-08T18:51:58.471Z",
+      "completed": "2026-04-08T18:51:58.615Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T291",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: page split tracking — track B+tree page splits for monitoring",
+      "project": "henrydb",
+      "started": "2026-04-08T18:51:58.758Z",
+      "completed": "2026-04-08T18:51:58.901Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T292",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: query plan cost model — estimate I/O + CPU for operators",
+      "project": "henrydb",
+      "started": "2026-04-08T18:51:59.043Z",
+      "completed": "2026-04-08T18:51:59.186Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T293",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: gap lock — range locking to prevent phantom reads",
+      "project": "henrydb",
+      "started": "2026-04-08T18:51:59.329Z",
+      "completed": "2026-04-08T18:51:59.471Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T294",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push"
     }
   ],
   "focusProjects": [
@@ -4263,6 +4335,34 @@
     {
       "time": "2026-04-08T18:46:25.960Z",
       "msg": "Added T287 (MAINTAIN) after end: Push + log"
+    },
+    {
+      "time": "2026-04-08T18:50:43.382Z",
+      "msg": "Added T288 (BUILD) after end: HenryDB: intent locks — hierarchical locking with IS/IX intentions"
+    },
+    {
+      "time": "2026-04-08T18:50:43.596Z",
+      "msg": "Added T289 (BUILD) after end: HenryDB: WAL group commit — batch fsync for higher throughput"
+    },
+    {
+      "time": "2026-04-08T18:50:43.806Z",
+      "msg": "Added T290 (BUILD) after end: HenryDB: read-copy-update (RCU) — lockless concurrent reads"
+    },
+    {
+      "time": "2026-04-08T18:50:44.019Z",
+      "msg": "Added T291 (BUILD) after end: HenryDB: page split tracking — track B+tree page splits for monitoring"
+    },
+    {
+      "time": "2026-04-08T18:50:44.229Z",
+      "msg": "Added T292 (BUILD) after end: HenryDB: query plan cost model — estimate I/O + CPU for operators"
+    },
+    {
+      "time": "2026-04-08T18:50:44.440Z",
+      "msg": "Added T293 (BUILD) after end: HenryDB: gap lock — range locking to prevent phantom reads"
+    },
+    {
+      "time": "2026-04-08T18:50:44.651Z",
+      "msg": "Added T294 (MAINTAIN) after end: Push"
     }
   ]
 }
