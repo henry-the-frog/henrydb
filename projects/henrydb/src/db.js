@@ -22,7 +22,17 @@ export class Database {
     
     // Storage factory: can be overridden for file-backed storage
     this._heapFactory = options.heapFactory || ((name) => new HeapFile(name));
-    this.wal = new WriteAheadLog();
+    
+    // WAL: if dataDir is provided, create a persistent WAL for crash recovery
+    this._dataDir = options.dataDir || null;
+    if (this._dataDir) {
+      const walDir = this._dataDir + '/wal';
+      this.wal = new WriteAheadLog(walDir, { syncMode: options.walSync || 'batch' });
+      this.wal.open();
+    } else {
+      this.wal = new WriteAheadLog(); // No-op WAL (in-memory only)
+    }
+    
     this.fulltextIndexes = new Map(); // indexName → InvertedIndex
     this._nextTxId = 1;
     this._currentTxId = 0;  // 0 = auto-commit mode
@@ -43,7 +53,143 @@ export class Database {
   }
 
   checkpoint() {
+    if (this._dataDir) {
+      // Build checkpoint data from current state
+      const tableNames = [...this.tables.keys()];
+      return this.wal.checkpoint({ tables: tableNames, txId: this._nextTxId });
+    }
     return this.wal.checkpoint();
+  }
+
+  /**
+   * Close the database and flush the WAL.
+   */
+  close() {
+    if (this.wal && this.wal.close) {
+      this.wal.close();
+    }
+  }
+
+  /**
+   * Recover database state from WAL after a crash.
+   * Creates a fresh Database, replays committed transactions from the WAL.
+   * @param {string} dataDir — Path to the database data directory
+   * @param {object} options — Additional options
+   * @returns {Database} A recovered Database instance
+   */
+  static recover(dataDir, options = {}) {
+    // Import here to avoid circular dependency at module level
+    // WALReplayEngine is loaded dynamically
+    const db = new Database({ dataDir, ...options });
+    
+    // Read and replay WAL records
+    // We need ALL records for DDL (CREATE TABLE), but only post-checkpoint for DML
+    const allRecords = [...db.wal.reader.readRecords()];
+    if (allRecords.length > 0) {
+      // Use inline replay (avoid importing wal-replay to prevent circular deps)
+      // Two-pass: find committed txs, then apply
+      const committed = new Set();
+      for (const r of allRecords) {
+        if (r.type === 'COMMIT') committed.add(r.payload.txId);
+      }
+
+      // Temporarily disable WAL writing during replay to avoid re-logging
+      const origWal = db.wal;
+      db.wal = new WriteAheadLog(); // No-op during replay
+
+      for (const record of allRecords) {
+        const txId = record.payload?.txId;
+        if (txId !== undefined && txId !== null && !committed.has(txId)) continue;
+
+        try {
+          switch (record.type) {
+            case 'CREATE_TABLE': {
+              const { table, columns } = record.payload;
+              const colDefs = columns.map(c => typeof c === 'string' ? `${c} TEXT` : `${c.name} ${c.type || 'TEXT'}`).join(', ');
+              db.execute(`CREATE TABLE ${table} (${colDefs})`);
+              break;
+            }
+            case 'INSERT': {
+              const { table, row } = record.payload;
+              
+              // Handle two formats:
+              // 1. Named columns: { id: 1, name: 'Alice' } (from WALReplayEngine)
+              // 2. Array values: { _pageId, _slotIdx, values: [1, 'Alice'] } (from appendInsert)
+              if (row.values && Array.isArray(row.values)) {
+                // Get column names from table schema
+                const tableObj = db.tables.get(table);
+                if (tableObj) {
+                  const colNames = tableObj.schema.map(c => c.name);
+                  const vals = row.values.map(v => v === null ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`);
+                  db.execute(`INSERT INTO ${table} (${colNames.join(', ')}) VALUES (${vals.join(', ')})`);
+                }
+              } else {
+                // Named columns format
+                const cols = Object.keys(row).filter(k => !k.startsWith('_'));
+                const vals = cols.map(c => {
+                  const v = row[c];
+                  return v === null ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`;
+                });
+                db.execute(`INSERT INTO ${table} (${cols.join(', ')}) VALUES (${vals.join(', ')})`);
+              }
+              break;
+            }
+            case 'UPDATE': {
+              const { table, old: oldRow, new: newRow } = record.payload;
+              const tableObj = db.tables.get(table);
+              if (!tableObj) break;
+              const colNames = tableObj.schema.map(c => c.name);
+
+              // Convert array format to named format if needed
+              const oldVals = oldRow.values && Array.isArray(oldRow.values) ? oldRow.values : null;
+              const newVals = newRow.values && Array.isArray(newRow.values) ? newRow.values : null;
+
+              if (newVals && oldVals) {
+                const setClauses = colNames.map((c, i) => {
+                  const v = newVals[i];
+                  return v === null ? `${c} = NULL` : typeof v === 'number' ? `${c} = ${v}` : `${c} = '${String(v).replace(/'/g, "''")}'`;
+                });
+                const where = colNames.map((c, i) => {
+                  const v = oldVals[i];
+                  return v === null ? `${c} IS NULL` : typeof v === 'number' ? `${c} = ${v}` : `${c} = '${String(v).replace(/'/g, "''")}'`;
+                });
+                db.execute(`UPDATE ${table} SET ${setClauses.join(', ')} WHERE ${where.join(' AND ')}`);
+              } else {
+                const setClauses = Object.entries(newRow).filter(([k]) => !k.startsWith('_')).map(([c, v]) => v === null ? `${c} = NULL` : typeof v === 'number' ? `${c} = ${v}` : `${c} = '${String(v).replace(/'/g, "''")}'`);
+                const where = Object.entries(oldRow).filter(([k]) => !k.startsWith('_')).map(([c, v]) => v === null ? `${c} IS NULL` : typeof v === 'number' ? `${c} = ${v}` : `${c} = '${String(v).replace(/'/g, "''")}'`);
+                db.execute(`UPDATE ${table} SET ${setClauses.join(', ')} WHERE ${where.join(' AND ')}`);
+              }
+              break;
+            }
+            case 'DELETE': {
+              const { table, row } = record.payload;
+              const tableObj = db.tables.get(table);
+              if (!tableObj) break;
+
+              if (row.values && Array.isArray(row.values)) {
+                const colNames = tableObj.schema.map(c => c.name);
+                const where = colNames.map((c, i) => {
+                  const v = row.values[i];
+                  return v === null ? `${c} IS NULL` : typeof v === 'number' ? `${c} = ${v}` : `${c} = '${String(v).replace(/'/g, "''")}'`;
+                });
+                db.execute(`DELETE FROM ${table} WHERE ${where.join(' AND ')}`);
+              } else {
+                const where = Object.entries(row).filter(([k]) => !k.startsWith('_')).map(([c, v]) => v === null ? `${c} IS NULL` : typeof v === 'number' ? `${c} = ${v}` : `${c} = '${String(v).replace(/'/g, "''")}'`);
+                db.execute(`DELETE FROM ${table} WHERE ${where.join(' AND ')}`);
+              }
+              break;
+            }
+          }
+        } catch (e) {
+          // Skip errors during replay — best effort
+        }
+      }
+
+      // Restore real WAL
+      db.wal = origWal;
+    }
+
+    return db;
   }
 
   getWALRecords() {
@@ -372,6 +518,12 @@ export class Database {
 
     this.tables.set(ast.table, { heap, schema, indexes });
     this.catalog.push({ name: ast.table, columns: schema });
+    
+    // Log DDL to WAL for crash recovery
+    if (this._dataDir && this.wal && this.wal.logCreateTable) {
+      this.wal.logCreateTable(ast.table, schema.map(c => ({ name: c.name, type: c.type })));
+    }
+    
     return { type: 'OK', message: `Table ${ast.table} created` };
   }
 

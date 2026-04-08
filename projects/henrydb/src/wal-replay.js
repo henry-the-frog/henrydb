@@ -1,84 +1,210 @@
-// wal-replay.js — Write-Ahead Log with replay for crash recovery
-// Records operations as log entries, replays them to reconstruct state.
+// wal-replay.js — WAL Replay Engine for HenryDB
+// Reconstructs database state from WAL records after crash recovery.
 
-export class WALEntry {
-  constructor(lsn, txnId, type, table, key, before, after) {
-    this.lsn = lsn;
-    this.txnId = txnId;
-    this.type = type; // 'INSERT' | 'UPDATE' | 'DELETE' | 'COMMIT' | 'ABORT' | 'CHECKPOINT'
-    this.table = table;
-    this.key = key;
-    this.before = before;
-    this.after = after;
-    this.timestamp = Date.now();
-  }
-}
+import { WALReader, RECORD_TYPES } from './wal.js';
 
-export class WAL {
-  constructor() {
-    this._log = [];
-    this._lsn = 0;
-    this._committed = new Set();
-    this._aborted = new Set();
-  }
-
-  /** Append a log entry */
-  append(txnId, type, table = null, key = null, before = null, after = null) {
-    const entry = new WALEntry(++this._lsn, txnId, type, table, key, before, after);
-    this._log.push(entry);
-    if (type === 'COMMIT') this._committed.add(txnId);
-    if (type === 'ABORT') this._aborted.add(txnId);
-    return entry;
+/**
+ * Replays WAL records against a Database instance.
+ * Handles transaction tracking — only committed transactions' changes are applied.
+ */
+export class WALReplayEngine {
+  constructor(db) {
+    this.db = db;
+    this.stats = {
+      recordsProcessed: 0,
+      recordsApplied: 0,
+      recordsSkipped: 0,
+      transactionsReplayed: 0,
+      transactionsRolledBack: 0,
+      tablesCreated: 0,
+      tablesDropped: 0,
+      rowsInserted: 0,
+      rowsUpdated: 0,
+      rowsDeleted: 0,
+    };
   }
 
-  /** Replay log to reconstruct state (redo committed, skip aborted) */
-  replay() {
-    const state = new Map(); // table → Map<key, value>
+  /**
+   * Two-pass replay: first identify committed transactions, then apply only those.
+   * This handles the case where a transaction started but didn't commit before crash.
+   */
+  replay(records) {
+    const allRecords = Array.isArray(records) ? records : [...records];
+
+    // Pass 1: Identify committed transactions
+    const committedTxIds = new Set();
+    const rolledBackTxIds = new Set();
     
-    for (const entry of this._log) {
-      if (entry.type === 'COMMIT' || entry.type === 'ABORT' || entry.type === 'CHECKPOINT') continue;
-      if (this._aborted.has(entry.txnId)) continue;
-      if (!this._committed.has(entry.txnId)) continue;
-      
-      if (!state.has(entry.table)) state.set(entry.table, new Map());
-      const table = state.get(entry.table);
-      
-      switch (entry.type) {
-        case 'INSERT': case 'UPDATE':
-          table.set(entry.key, entry.after);
-          break;
-        case 'DELETE':
-          table.delete(entry.key);
-          break;
+    for (const record of allRecords) {
+      if (record.type === 'COMMIT') {
+        committedTxIds.add(record.payload.txId);
+      } else if (record.type === 'ROLLBACK') {
+        rolledBackTxIds.add(record.payload.txId);
       }
     }
-    return state;
-  }
 
-  /** Undo uncommitted transactions */
-  undo() {
-    const undone = [];
-    for (let i = this._log.length - 1; i >= 0; i--) {
-      const entry = this._log[i];
-      if (entry.type === 'COMMIT' || entry.type === 'ABORT' || entry.type === 'CHECKPOINT') continue;
-      if (!this._committed.has(entry.txnId) && !this._aborted.has(entry.txnId)) {
-        undone.push({ txnId: entry.txnId, type: entry.type, table: entry.table, key: entry.key, before: entry.before });
+    // Pass 2: Apply records from committed transactions (and non-transactional DDL)
+    for (const record of allRecords) {
+      this.stats.recordsProcessed++;
+      const txId = record.payload?.txId;
+
+      // Skip records from uncommitted or rolled-back transactions
+      if (txId !== undefined && txId !== null) {
+        if (!committedTxIds.has(txId)) {
+          this.stats.recordsSkipped++;
+          continue;
+        }
+      }
+
+      try {
+        this._applyRecord(record);
+        this.stats.recordsApplied++;
+      } catch (err) {
+        // Log but continue — partial recovery is better than no recovery
+        if (this._onError) {
+          this._onError(record, err);
+        }
       }
     }
-    return undone;
+
+    // Count transactions
+    this.stats.transactionsReplayed = committedTxIds.size;
+    this.stats.transactionsRolledBack = rolledBackTxIds.size;
+
+    // Count uncommitted transactions (started but neither committed nor rolled back)
+    const allTxIds = new Set();
+    for (const record of allRecords) {
+      if (record.type === 'BEGIN') allTxIds.add(record.payload.txId);
+    }
+    for (const txId of allTxIds) {
+      if (!committedTxIds.has(txId) && !rolledBackTxIds.has(txId)) {
+        this.stats.transactionsRolledBack++; // Implicitly rolled back
+      }
+    }
+
+    return this.stats;
   }
 
-  /** Truncate log up to LSN (after checkpoint) */
-  truncate(lsn) {
-    this._log = this._log.filter(e => e.lsn > lsn);
+  /**
+   * Apply a single WAL record to the database.
+   */
+  _applyRecord(record) {
+    switch (record.type) {
+      case 'CREATE_TABLE':
+        this._replayCreateTable(record.payload);
+        break;
+      case 'DROP_TABLE':
+        this._replayDropTable(record.payload);
+        break;
+      case 'CREATE_INDEX':
+        this._replayCreateIndex(record.payload);
+        break;
+      case 'INSERT':
+        this._replayInsert(record.payload);
+        break;
+      case 'UPDATE':
+        this._replayUpdate(record.payload);
+        break;
+      case 'DELETE':
+        this._replayDelete(record.payload);
+        break;
+      case 'BEGIN':
+      case 'COMMIT':
+      case 'ROLLBACK':
+      case 'CHECKPOINT':
+        // No-op for replay — these are control records
+        break;
+      default:
+        // Unknown record type — skip
+        break;
+    }
   }
 
-  /** Create checkpoint */
-  checkpoint() {
-    return this.append(0, 'CHECKPOINT');
+  _replayCreateTable(payload) {
+    const { table, columns } = payload;
+    // Only create if it doesn't exist
+    try {
+      const colDefs = columns.map(c => {
+        if (typeof c === 'string') return `${c} TEXT`;
+        return `${c.name} ${c.type || 'TEXT'}`;
+      }).join(', ');
+      this.db.execute(`CREATE TABLE IF NOT EXISTS ${table} (${colDefs})`);
+      this.stats.tablesCreated++;
+    } catch (e) {
+      // Table might already exist — that's OK
+      if (!e.message.includes('already exists')) throw e;
+    }
   }
 
-  get length() { return this._log.length; }
-  get currentLSN() { return this._lsn; }
-  get committedCount() { return this._committed.size; }
+  _replayDropTable(payload) {
+    try {
+      this.db.execute(`DROP TABLE IF EXISTS ${payload.table}`);
+      this.stats.tablesDropped++;
+    } catch (e) {
+      // Ignore if table doesn't exist
+    }
+  }
+
+  _replayCreateIndex(payload) {
+    try {
+      const { index, table, columns } = payload;
+      this.db.execute(`CREATE INDEX IF NOT EXISTS ${index} ON ${table} (${columns.join(', ')})`);
+    } catch (e) {
+      // Ignore index creation errors during replay
+    }
+  }
+
+  _replayInsert(payload) {
+    const { table, row } = payload;
+    const columns = Object.keys(row);
+    const values = Object.values(row).map(v => {
+      if (v === null) return 'NULL';
+      if (typeof v === 'number') return String(v);
+      return `'${String(v).replace(/'/g, "''")}'`;
+    });
+    this.db.execute(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${values.join(', ')})`);
+    this.stats.rowsInserted++;
+  }
+
+  _replayUpdate(payload) {
+    const { table, old: oldRow, new: newRow } = payload;
+    
+    // Build SET clause from new values
+    const setClauses = Object.entries(newRow).map(([col, val]) => {
+      if (val === null) return `${col} = NULL`;
+      if (typeof val === 'number') return `${col} = ${val}`;
+      return `${col} = '${String(val).replace(/'/g, "''")}'`;
+    });
+
+    // Build WHERE clause from old values (use primary key if available, otherwise all columns)
+    const whereClauses = Object.entries(oldRow).map(([col, val]) => {
+      if (val === null) return `${col} IS NULL`;
+      if (typeof val === 'number') return `${col} = ${val}`;
+      return `${col} = '${String(val).replace(/'/g, "''")}'`;
+    });
+
+    this.db.execute(`UPDATE ${table} SET ${setClauses.join(', ')} WHERE ${whereClauses.join(' AND ')}`);
+    this.stats.rowsUpdated++;
+  }
+
+  _replayDelete(payload) {
+    const { table, row } = payload;
+    const whereClauses = Object.entries(row).map(([col, val]) => {
+      if (val === null) return `${col} IS NULL`;
+      if (typeof val === 'number') return `${col} = ${val}`;
+      return `${col} = '${String(val).replace(/'/g, "''")}'`;
+    });
+    this.db.execute(`DELETE FROM ${table} WHERE ${whereClauses.join(' AND ')}`);
+    this.stats.rowsDeleted++;
+  }
+
+  /**
+   * Set an error handler for replay errors.
+   */
+  onError(handler) {
+    this._onError = handler;
+    return this;
+  }
 }
+
+export default WALReplayEngine;

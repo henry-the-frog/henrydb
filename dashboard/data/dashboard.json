@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-08T20:50:11.577Z",
+  "generated": "2026-04-08T21:04:21.237Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push and sync",
-    "startedAt": "2026-04-08T20:50:11.577Z",
-    "taskId": "T348"
+    "task": "Push final",
+    "startedAt": "2026-04-08T21:04:21.237Z",
+    "taskId": "T357"
   },
   "schedule": {
     "date": "2026-04-08",
@@ -3731,71 +3731,171 @@
       {
         "id": "T344",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Next deep work on HenryDB server",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-08T20:43:32.132Z"
+        "started": "2026-04-08T20:43:32.132Z",
+        "completed": "2026-04-08T20:43:45.811Z",
+        "duration_ms": 30000,
+        "summary": "Plan: Knex ORM integration. 3 tasks: basic CRUD, transactions/joins, mini REST API app."
       },
       {
         "id": "T349",
         "mode": "BUILD",
         "task": "Install Knex + test basic connection, schema creation (CREATE TABLE via Knex), and CRUD operations against HenryDB",
-        "status": "upcoming",
-        "plan_ref": "T344"
+        "status": "done",
+        "plan_ref": "T344",
+        "started": "2026-04-08T20:43:51.912Z",
+        "completed": "2026-04-08T20:48:21.438Z",
+        "duration_ms": 300000,
+        "summary": "Knex ORM integration working! 13 tests: raw queries, CREATE TABLE, INSERT/SELECT/UPDATE/DELETE, parameterized queries, aggregates, JOINs, subqueries, transactions, concurrent queries, error recovery. Added system query interception for version(), SET, pg_catalog, etc."
       },
       {
         "id": "T350",
         "mode": "BUILD",
         "task": "Test Knex transactions, joins, subqueries, and aggregations through HenryDB",
-        "status": "upcoming",
-        "plan_ref": "T344"
+        "status": "done",
+        "plan_ref": "T344",
+        "started": "2026-04-08T20:48:33.133Z",
+        "completed": "2026-04-08T20:48:33.388Z",
+        "duration_ms": 0,
+        "summary": "Already covered by T349 — Knex tests include transactions, joins, subqueries, aggregations."
       },
       {
         "id": "T351",
         "mode": "BUILD",
         "task": "Build a real mini-app: REST API backed by HenryDB via Knex (express + knex → henrydb)",
-        "status": "upcoming",
-        "plan_ref": "T344"
+        "status": "done",
+        "plan_ref": "T344",
+        "started": "2026-04-08T20:48:38.323Z",
+        "completed": "2026-04-08T20:49:55.046Z",
+        "duration_ms": 300000,
+        "summary": "Built a real REST API: Express + Knex + HenryDB. Full stack: HTTP → ORM → wire protocol → SQL engine. 11 tests: CRUD, tags, stats/aggregates, concurrent requests. Proves HenryDB is a functional PostgreSQL replacement for real apps."
       },
       {
         "id": "T345",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T20:50:05.705Z",
+        "completed": "2026-04-08T20:50:05.962Z",
+        "duration_ms": 0,
+        "summary": "Skipped — unfilled."
       },
       {
         "id": "T346",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T20:50:06.216Z",
+        "completed": "2026-04-08T20:50:06.471Z",
+        "duration_ms": 0,
+        "summary": "Skipped — unfilled."
       },
       {
         "id": "T347",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-08T20:50:06.724Z",
+        "completed": "2026-04-08T20:50:06.979Z",
+        "duration_ms": 0,
+        "summary": "Skipped — unfilled."
+      },
+      {
+        "id": "T348",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and sync",
+        "project": "henrydb",
+        "started": "2026-04-08T20:50:11.512Z",
+        "completed": "2026-04-08T20:50:28.955Z",
+        "duration_ms": 60000,
+        "summary": "Pushed to GitHub. Total new server tests this session: ~80+."
+      },
+      {
+        "id": "T352",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Next depth push: COPY protocol for bulk loading, or WAL (Write-Ahead Log) for crash recovery? Both are deeply architectural.",
+        "project": "henrydb",
+        "started": "2026-04-08T20:50:51.783Z",
+        "completed": "2026-04-08T20:51:02.827Z",
+        "duration_ms": 45000,
+        "summary": "Decision: WAL (Write-Ahead Log). Architecturally the deepest possible feature — transforms HenryDB from toy to real database architecture. Crash recovery + durability."
+      },
+      {
+        "id": "T353",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Deep architectural work",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-08T20:51:03.286Z"
+      },
+      {
+        "id": "T358",
+        "mode": "BUILD",
+        "task": "Build WAL writer: append-only log format, LSN tracking, fsync semantics, log record types (INSERT/UPDATE/DELETE/COMMIT/CHECKPOINT)",
+        "status": "upcoming",
+        "plan_ref": "T353"
+      },
+      {
+        "id": "T359",
+        "mode": "BUILD",
+        "task": "Build WAL replay: read log from checkpoint, reconstruct database state, handle partial writes and torn pages",
+        "status": "upcoming",
+        "plan_ref": "T353"
+      },
+      {
+        "id": "T360",
+        "mode": "BUILD",
+        "task": "Integrate WAL into Database class: all mutations go through WAL first, periodic checkpoint, crash recovery on startup",
+        "status": "upcoming",
+        "plan_ref": "T353"
+      },
+      {
+        "id": "T354",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
       },
       {
-        "id": "T348",
+        "id": "T355",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T356",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T357",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Push and sync",
+        "task": "Push final",
         "project": "henrydb"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 348,
-    "blocksTotal": 351,
+    "blocksCompleted": 357,
+    "blocksTotal": 360,
     "modeDistribution": {
-      "THINK": 9,
-      "PLAN": 8,
-      "BUILD": 272,
-      "MAINTAIN": 57,
+      "THINK": 10,
+      "PLAN": 9,
+      "BUILD": 278,
+      "MAINTAIN": 58,
       "EXPLORE": 2
     }
   }

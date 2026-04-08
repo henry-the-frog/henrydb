@@ -3798,10 +3798,110 @@
     {
       "id": "T348",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push and sync",
       "project": "henrydb",
-      "started": "2026-04-08T20:50:11.512Z"
+      "started": "2026-04-08T20:50:11.512Z",
+      "completed": "2026-04-08T20:50:28.955Z",
+      "duration_ms": 60000,
+      "summary": "Pushed to GitHub. Total new server tests this session: ~80+."
+    },
+    {
+      "id": "T352",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Next depth push: COPY protocol for bulk loading, or WAL (Write-Ahead Log) for crash recovery? Both are deeply architectural.",
+      "project": "henrydb",
+      "started": "2026-04-08T20:50:51.783Z",
+      "completed": "2026-04-08T20:51:02.827Z",
+      "duration_ms": 45000,
+      "summary": "Decision: WAL (Write-Ahead Log). Architecturally the deepest possible feature — transforms HenryDB from toy to real database architecture. Crash recovery + durability."
+    },
+    {
+      "id": "T353",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Deep architectural work",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:51:03.286Z",
+      "completed": "2026-04-08T20:51:15.707Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 3-phase WAL build. Writer (log format + fsync), Replay (recovery), Integration (mutations through WAL + checkpoint)."
+    },
+    {
+      "id": "T358",
+      "mode": "BUILD",
+      "task": "Build WAL writer: append-only log format, LSN tracking, fsync semantics, log record types (INSERT/UPDATE/DELETE/COMMIT/CHECKPOINT)",
+      "status": "done",
+      "plan_ref": "T353",
+      "started": "2026-04-08T20:51:15.970Z",
+      "completed": "2026-04-08T20:53:33.606Z",
+      "duration_ms": 360000,
+      "summary": "WAL writer complete: binary record format with CRC32 checksums, LSN tracking, segment rotation, fsync semantics (immediate/batch/none), convenience logging methods, auto-checkpoint. WALReader with forward/recovery scanning, corruption detection. WALManager coordinates the full cycle. 24 tests, 10K records in 180ms write/251ms read."
+    },
+    {
+      "id": "T359",
+      "mode": "BUILD",
+      "task": "Build WAL replay: read log from checkpoint, reconstruct database state, handle partial writes and torn pages",
+      "status": "done",
+      "plan_ref": "T353",
+      "started": "2026-04-08T20:53:39.059Z",
+      "completed": "2026-04-08T20:58:22.138Z",
+      "duration_ms": 300000,
+      "summary": "WAL replay engine complete: two-pass replay (identify committed txs, then apply), handles uncommitted/rolled-back transactions, interleaved txs, crash recovery, error tolerance. 9 tests. Full end-to-end crash simulation works correctly."
+    },
+    {
+      "id": "T360",
+      "mode": "BUILD",
+      "task": "Integrate WAL into Database class: all mutations go through WAL first, periodic checkpoint, crash recovery on startup",
+      "status": "done",
+      "plan_ref": "T353",
+      "started": "2026-04-08T20:58:27.525Z",
+      "completed": "2026-04-08T21:03:59.265Z",
+      "duration_ms": 420000,
+      "summary": "WAL integrated into Database class: persistent WAL with dataDir option, Database.recover() static method for crash recovery, handles DDL + DML replay from WAL, multiple recovery cycles work. 8 new integration tests (41 total WAL tests)."
+    },
+    {
+      "id": "T354",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T21:04:13.727Z",
+      "completed": "2026-04-08T21:04:13.983Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T355",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T21:04:14.237Z",
+      "completed": "2026-04-08T21:04:14.496Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T356",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T21:04:14.749Z",
+      "completed": "2026-04-08T21:04:15.005Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T357",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push final",
+      "project": "henrydb",
+      "started": "2026-04-08T21:04:21.170Z"
     }
   ],
   "focusProjects": [
@@ -5197,6 +5297,34 @@
     {
       "time": "2026-04-08T20:43:39.237Z",
       "msg": "PLAN T344 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T20:50:38.907Z",
+      "msg": "Added T352 (THINK) after end: Next depth push: COPY protocol for bulk loading, or WAL (Write-Ahead Log) for crash recovery? Both are deeply architectural."
+    },
+    {
+      "time": "2026-04-08T20:50:45.013Z",
+      "msg": "Added T353 (PLAN) after T352: Deep architectural work"
+    },
+    {
+      "time": "2026-04-08T20:50:45.224Z",
+      "msg": "Added T354 (BUILD) after T353: null"
+    },
+    {
+      "time": "2026-04-08T20:50:45.437Z",
+      "msg": "Added T355 (BUILD) after T354: null"
+    },
+    {
+      "time": "2026-04-08T20:50:45.648Z",
+      "msg": "Added T356 (BUILD) after T355: null"
+    },
+    {
+      "time": "2026-04-08T20:50:45.861Z",
+      "msg": "Added T357 (MAINTAIN) after T356: Push final"
+    },
+    {
+      "time": "2026-04-08T20:51:10.430Z",
+      "msg": "PLAN T353 filled 3 BUILD tasks"
     }
   ]
 }
