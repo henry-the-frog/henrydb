@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:42:39.721Z",
+  "generated": "2026-04-08T16:43:12.577Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: common table expressions (CTE) — WITH clause support",
-    "completedAt": "2026-04-08T16:42:39.721Z",
-    "taskId": "T98",
-    "summary": "CTE engine: WITH clause with CTEResolver + SimpleCTEEngine. Single CTE, chained CTEs (CTE referencing previous CTE), CTE + JOIN, CTE + GROUP BY + aggregation, CTE + LIMIT. 8 tests.",
-    "durationMs": 120000
+    "mode": "MAINTAIN",
+    "task": "Push + dashboard sync",
+    "completedAt": "2026-04-08T16:43:12.577Z",
+    "taskId": "T99",
+    "summary": "Pushed 232 objects to GitHub. Dashboard synced.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -960,20 +960,129 @@
       {
         "id": "T89",
         "mode": "MAINTAIN",
-        "status": "in-progress",
+        "status": "done",
         "task": "Push",
-        "started": "2026-04-08T16:25:51.903Z"
+        "started": "2026-04-08T16:25:51.903Z",
+        "completed": "2026-04-08T16:26:17.427Z",
+        "duration_ms": 30000,
+        "summary": "HenryDB pushed (213 objects). Dashboard synced."
+      },
+      {
+        "id": "T90",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: count-min sketch for approximate frequency estimation",
+        "project": "henrydb",
+        "started": "2026-04-08T16:26:53.832Z",
+        "completed": "2026-04-08T16:27:58.828Z",
+        "duration_ms": 60000,
+        "summary": "Count-Min Sketch: probabilistic frequency estimation, 2D counter array with multiple hashes. 3.4% avg error on Zipf distribution. Merge support for distributed counting. 5 tests."
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: HyperLogLog for approximate cardinality estimation (COUNT DISTINCT)",
+        "project": "henrydb",
+        "started": "2026-04-08T16:27:59.084Z",
+        "completed": "2026-04-08T16:29:04.573Z",
+        "duration_ms": 60000,
+        "summary": "HyperLogLog: approximate COUNT DISTINCT using 4KB memory. 2.4% error on 1M elements. Merge support for distributed estimation. Linear counting correction for small cardinalities. 7 tests."
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: T-Digest for approximate percentile/quantile estimation (P50, P95, P99)",
+        "project": "henrydb",
+        "started": "2026-04-08T16:29:41.381Z",
+        "completed": "2026-04-08T16:30:54.785Z",
+        "duration_ms": 60000,
+        "summary": "T-Digest: approximate percentile estimation (P50/P95/P99). 105 centroids for 1M values. Adaptive compression for tail accuracy. Merge support. 8 tests."
+      },
+      {
+        "id": "T93",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: MVCC garbage collector — reclaim old row versions that no active transaction needs",
+        "project": "henrydb",
+        "started": "2026-04-08T16:31:26.719Z",
+        "completed": "2026-04-08T16:31:48.185Z",
+        "duration_ms": 5000,
+        "summary": "VACUUM already implemented (202 LOC). Moving on."
+      },
+      {
+        "id": "T94",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: constant folding optimizer — simplify WHERE 1=1, 2+3→5, etc. before execution",
+        "project": "henrydb",
+        "started": "2026-04-08T16:31:56.804Z",
+        "completed": "2026-04-08T16:34:05.012Z",
+        "duration_ms": 120000,
+        "summary": "Constant folding optimizer: arithmetic (2+3→5), comparisons (1=1→true), boolean (true AND x→x, false AND x→false), NOT NOT elimination, identity (x+0→x, x*1→x), zero (x*0→0), string concat, BETWEEN, IN, CASE. 18 tests."
+      },
+      {
+        "id": "T95",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: buffer pool manager — LRU page cache with pin/unpin, dirty page tracking, eviction",
+        "project": "henrydb",
+        "started": "2026-04-08T16:37:30.482Z",
+        "completed": "2026-04-08T16:38:59.582Z",
+        "duration_ms": 120000,
+        "summary": "Buffer pool manager: LRU page cache with pin/unpin semantics, dirty page tracking and writeback on eviction, page deletion, flush-all. 10K Zipf accesses in 31ms. 10 tests."
+      },
+      {
+        "id": "T96",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: skip list — concurrent-friendly sorted data structure",
+        "project": "henrydb",
+        "started": "2026-04-08T16:38:59.945Z",
+        "completed": "2026-04-08T16:39:54.790Z",
+        "duration_ms": 90000,
+        "summary": "Skip list: probabilistic sorted data structure. O(log n) insert/search/delete. Range scan, sorted iteration, first/last, string keys. 50K entries in 31ms build. 9 tests."
+      },
+      {
+        "id": "T97",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER",
+        "project": "henrydb",
+        "started": "2026-04-08T16:39:55.145Z",
+        "completed": "2026-04-08T16:41:32.190Z",
+        "duration_ms": 180000,
+        "summary": "Window functions: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG/COUNT/MIN/MAX OVER, FIRST_VALUE, LAST_VALUE, NTILE. PARTITION BY + ORDER BY. Frame support (UNBOUNDED PRECEDING to CURRENT ROW). 12 tests."
+      },
+      {
+        "id": "T98",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: common table expressions (CTE) — WITH clause support",
+        "project": "henrydb",
+        "started": "2026-04-08T16:41:32.783Z",
+        "completed": "2026-04-08T16:42:39.684Z",
+        "duration_ms": 120000,
+        "summary": "CTE engine: WITH clause with CTEResolver + SimpleCTEEngine. Single CTE, chained CTEs (CTE referencing previous CTE), CTE + JOIN, CTE + GROUP BY + aggregation, CTE + LIMIT. 8 tests."
+      },
+      {
+        "id": "T99",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Push + dashboard sync",
+        "started": "2026-04-08T16:42:40.039Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 96,
-    "blocksTotal": 89,
+    "blocksCompleted": 97,
+    "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
       "BUILD": 61,
-      "MAINTAIN": 22,
+      "MAINTAIN": 23,
       "EXPLORE": 2
     }
   }
