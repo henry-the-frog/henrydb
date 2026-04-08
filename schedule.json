@@ -953,6 +953,28 @@
       "completed": "2026-04-08T16:26:17.427Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (213 objects). Dashboard synced."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: count-min sketch for approximate frequency estimation",
+      "project": "henrydb",
+      "started": "2026-04-08T16:26:53.832Z",
+      "completed": "2026-04-08T16:27:58.828Z",
+      "duration_ms": 60000,
+      "summary": "Count-Min Sketch: probabilistic frequency estimation, 2D counter array with multiple hashes. 3.4% avg error on Zipf distribution. Merge support for distributed counting. 5 tests."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: HyperLogLog for approximate cardinality estimation (COUNT DISTINCT)",
+      "project": "henrydb",
+      "started": "2026-04-08T16:27:59.084Z",
+      "completed": "2026-04-08T16:29:04.573Z",
+      "duration_ms": 60000,
+      "summary": "HyperLogLog: approximate COUNT DISTINCT using 4KB memory. 2.4% error on 1M elements. Merge support for distributed estimation. Linear counting correction for small cardinalities. 7 tests."
     }
   ],
   "focusProjects": [
@@ -1324,6 +1346,14 @@
     {
       "time": "2026-04-08T16:23:13.850Z",
       "msg": "Added T89 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-08T16:26:53.483Z",
+      "msg": "Added T90 (BUILD) after end: HenryDB: count-min sketch for approximate frequency estimation"
+    },
+    {
+      "time": "2026-04-08T16:26:53.601Z",
+      "msg": "Added T91 (BUILD) after end: HenryDB: HyperLogLog for approximate cardinality estimation (COUNT DISTINCT)"
     }
   ]
 }
