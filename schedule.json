@@ -4549,10 +4549,32 @@
     {
       "id": "T419",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit and push",
       "project": "henrydb",
-      "started": "2026-04-08T22:11:10.306Z"
+      "started": "2026-04-08T22:11:10.306Z",
+      "completed": "2026-04-08T22:11:30.953Z",
+      "duration_ms": 30000,
+      "summary": "Pushed pg_locks, pg_stat_bgwriter."
+    },
+    {
+      "id": "T420",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_stat_statements: track unique query patterns (normalized SQL), execution count, total time, avg time, min/max time, rows returned",
+      "project": "henrydb",
+      "started": "2026-04-08T22:12:07.981Z",
+      "completed": "2026-04-08T22:13:21.217Z",
+      "duration_ms": 120000,
+      "summary": "pg_stat_statements: tracks unique query patterns, calls, total/mean/min/max time. Sorted by total time desc. 3 tests."
+    },
+    {
+      "id": "T421",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push",
+      "project": "henrydb",
+      "started": "2026-04-08T22:13:21.676Z"
     }
   ],
   "focusProjects": [
@@ -6204,6 +6226,14 @@
     {
       "time": "2026-04-08T22:10:21.618Z",
       "msg": "Added T419 (MAINTAIN) after T418: Commit and push"
+    },
+    {
+      "time": "2026-04-08T22:12:01.857Z",
+      "msg": "Added T420 (BUILD) after end: Build pg_stat_statements: track unique query patterns (normalized SQL), execution count, total time, avg time, min/max time, rows returned"
+    },
+    {
+      "time": "2026-04-08T22:12:02.070Z",
+      "msg": "Added T421 (MAINTAIN) after T420: Push"
     }
   ]
 }

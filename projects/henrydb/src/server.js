@@ -66,10 +66,31 @@ export class HenryDBServer {
       queryLatencySum: 0,
       queryLatencyCount: 0,
     };
+    // pg_stat_statements — query pattern tracking
+    if (upper.includes('PG_STAT_STATEMENTS')) {
+      const rows = [];
+      for (const [normalized, stats] of this._queryStats) {
+        rows.push({
+          query: stats.query,
+          calls: stats.calls,
+          total_time_ms: Math.round(stats.totalTimeMs * 100) / 100,
+          mean_time_ms: Math.round(stats.totalTimeMs / stats.calls * 100) / 100,
+          min_time_ms: stats.minTimeMs,
+          max_time_ms: stats.maxTimeMs,
+        });
+      }
+      // Sort by total time descending
+      rows.sort((a, b) => b.total_time_ms - a.total_time_ms);
+      this._sendResult(conn, sql, { type: 'ROWS', rows: rows.slice(0, 100) });
+      return true;
+    }
+
     // Slow query log: circular buffer of slow queries
     this._slowQueries = [];
     this._slowQueryMaxEntries = 100;
-    this._slowQueryThresholdMs = options.slowQueryThresholdMs || 100; // sql → { result: pre-computed result, hits: number, lastUsed: number }
+    this._slowQueryThresholdMs = options.slowQueryThresholdMs || 100;
+    // pg_stat_statements: query pattern tracking
+    this._queryStats = new Map(); // normalized SQL → { calls, totalTime, minTime, maxTime, rows } // sql → { result: pre-computed result, hits: number, lastUsed: number }
   }
 
   start() {
@@ -432,6 +453,24 @@ export class HenryDBServer {
         if (this._slowQueries.length > this._slowQueryMaxEntries) {
           this._slowQueries.shift();
         }
+      }
+
+      // pg_stat_statements tracking
+      const normalized = conn.currentQuery.sql.substring(0, 200).trim().replace(/\s+/g, ' ').toLowerCase();
+      const existing = this._queryStats.get(normalized);
+      if (existing) {
+        existing.calls++;
+        existing.totalTimeMs += duration;
+        existing.minTimeMs = Math.min(existing.minTimeMs, duration);
+        existing.maxTimeMs = Math.max(existing.maxTimeMs, duration);
+      } else {
+        this._queryStats.set(normalized, {
+          query: conn.currentQuery.sql.substring(0, 200),
+          calls: 1,
+          totalTimeMs: duration,
+          minTimeMs: duration,
+          maxTimeMs: duration,
+        });
       }
     }
     conn.currentQuery = null;
