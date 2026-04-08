@@ -20,7 +20,7 @@ const KEYWORDS = new Set([
   'CURRENT_TIMESTAMP', 'CURRENT_DATE', 'NOW', 'STRFTIME',
   'SHOW', 'TABLES', 'COLUMNS',
   'TRUNCATE', 'RENAME', 'DESCRIBE',
-  'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM',
+  'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT',
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
@@ -212,6 +212,7 @@ export function parse(sql) {
   if (isKeyword('COMMIT')) { advance(); return { type: 'COMMIT' }; }
   if (isKeyword('ROLLBACK')) { advance(); return { type: 'ROLLBACK' }; }
   if (isKeyword('VACUUM')) { advance(); let table = null; if (peek().type === 'IDENT' || peek().type === 'KEYWORD') table = (advance().originalValue || tokens[pos-1].value); return { type: 'VACUUM', table }; }
+  if (isKeyword('CHECKPOINT')) { advance(); return { type: 'CHECKPOINT' }; }
   if (isKeyword('ANALYZE') && !isKeyword('EXPLAIN')) {
     advance();
     let table = null;

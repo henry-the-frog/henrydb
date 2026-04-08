@@ -340,6 +340,7 @@ export class Database {
       case 'COMMIT': this._inTransaction = false; return { type: 'OK', message: 'COMMIT' };
       case 'ROLLBACK': this._inTransaction = false; return { type: 'OK', message: 'ROLLBACK' };
       case 'VACUUM': return this._vacuum(ast);
+      case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
     }
@@ -1677,6 +1678,28 @@ export class Database {
       type: 'OK',
       message: `VACUUM: ${totalDead} dead tuples removed, ${totalBytes} bytes freed, ${totalPages} pages compacted`,
       details: { deadTuplesRemoved: totalDead, bytesFreed: totalBytes, pagesCompacted: totalPages },
+    };
+  }
+
+  _checkpoint() {
+    // CHECKPOINT command — creates a WAL checkpoint for durability
+    // In the base Database class (no WAL), this is a no-op but still valid SQL.
+    // TransactionalDatabase overrides this with real fuzzy checkpoint logic.
+    const stats = {
+      tables: this.tables.size,
+      totalRows: 0,
+    };
+    for (const [, table] of this.tables) {
+      if (table.heap && table.heap._pages) {
+        for (const page of table.heap._pages) {
+          stats.totalRows += page ? page.filter(Boolean).length : 0;
+        }
+      }
+    }
+    return {
+      type: 'CHECKPOINT',
+      message: `CHECKPOINT complete: ${stats.tables} tables, ${stats.totalRows} rows`,
+      details: stats,
     };
   }
 
