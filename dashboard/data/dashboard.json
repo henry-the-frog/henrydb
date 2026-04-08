@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:09:00.051Z",
+  "generated": "2026-04-08T16:10:27.101Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: sorted-merge external sort for ORDER BY on large datasets (exceeding memory)",
-    "completedAt": "2026-04-08T16:09:00.051Z",
-    "taskId": "T73",
-    "summary": "External sort: split into sorted runs, k-way merge. Multi-column sort, topK optimization (O(n log k) for LIMIT). 100K in 92ms. 9 tests.",
+    "task": "HenryDB: parallel sort-merge join using sorted TypedArrays",
+    "completedAt": "2026-04-08T16:10:27.101Z",
+    "taskId": "T74",
+    "summary": "Sort-merge join on TypedArrays: sorted merge O(n+m), unsorted auto-sort, many-to-many, correctness verified vs hash join. 50K in 47ms. 7 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -786,12 +786,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 71,
+    "blocksCompleted": 72,
     "blocksTotal": 72,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 42,
+      "BUILD": 43,
       "MAINTAIN": 16,
       "EXPLORE": 2
     }
