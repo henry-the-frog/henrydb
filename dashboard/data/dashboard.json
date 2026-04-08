@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:41:32.251Z",
+  "generated": "2026-04-08T16:42:39.721Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER",
-    "completedAt": "2026-04-08T16:41:32.251Z",
-    "taskId": "T97",
-    "summary": "Window functions: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG/COUNT/MIN/MAX OVER, FIRST_VALUE, LAST_VALUE, NTILE. PARTITION BY + ORDER BY. Frame support (UNBOUNDED PRECEDING to CURRENT ROW). 12 tests.",
-    "durationMs": 180000
+    "task": "HenryDB: common table expressions (CTE) — WITH clause support",
+    "completedAt": "2026-04-08T16:42:39.721Z",
+    "taskId": "T98",
+    "summary": "CTE engine: WITH clause with CTEResolver + SimpleCTEEngine. Single CTE, chained CTEs (CTE referencing previous CTE), CTE + JOIN, CTE + GROUP BY + aggregation, CTE + LIMIT. 8 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -967,12 +967,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 95,
+    "blocksCompleted": 96,
     "blocksTotal": 89,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 60,
+      "BUILD": 61,
       "MAINTAIN": 22,
       "EXPLORE": 2
     }
