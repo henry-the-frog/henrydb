@@ -474,6 +474,195 @@ export class CompiledQueryEngine {
     return undefined;
   }
 
+  /**
+   * Compiled aggregation — push GROUP BY + aggregates into the compiled loop.
+   * Instead of materializing all rows then grouping, aggregate incrementally.
+   */
+  _compiledAggregate(rows, groupByColumns, aggregates) {
+    const groups = new Map();
+
+    for (const row of rows) {
+      // Build group key
+      const keyParts = groupByColumns.map(col => {
+        const val = row[col] !== undefined ? row[col] : row[col.split('.').pop()];
+        return val;
+      });
+      const key = keyParts.length === 1 ? keyParts[0] : keyParts.join('|');
+
+      if (!groups.has(key)) {
+        // Initialize group
+        const group = { _key: keyParts, _count: 0 };
+        for (const agg of aggregates) {
+          switch (agg.fn) {
+            case 'COUNT': group[`_agg_${agg.alias}`] = 0; break;
+            case 'SUM': group[`_agg_${agg.alias}`] = 0; break;
+            case 'MIN': group[`_agg_${agg.alias}`] = Infinity; break;
+            case 'MAX': group[`_agg_${agg.alias}`] = -Infinity; break;
+            case 'AVG': group[`_agg_${agg.alias}_sum`] = 0; group[`_agg_${agg.alias}_cnt`] = 0; break;
+          }
+        }
+        groups.set(key, group);
+      }
+
+      const group = groups.get(key);
+      group._count++;
+
+      // Accumulate aggregates
+      for (const agg of aggregates) {
+        const val = agg.column === '*' ? 1 : (row[agg.column] !== undefined ? row[agg.column] : row[agg.column?.split('.').pop()]);
+        const numVal = typeof val === 'number' ? val : (parseFloat(val) || 0);
+        
+        switch (agg.fn) {
+          case 'COUNT':
+            if (agg.column === '*' || val != null) group[`_agg_${agg.alias}`]++;
+            break;
+          case 'SUM':
+            if (val != null) group[`_agg_${agg.alias}`] += numVal;
+            break;
+          case 'MIN':
+            if (val != null && numVal < group[`_agg_${agg.alias}`]) group[`_agg_${agg.alias}`] = numVal;
+            break;
+          case 'MAX':
+            if (val != null && numVal > group[`_agg_${agg.alias}`]) group[`_agg_${agg.alias}`] = numVal;
+            break;
+          case 'AVG':
+            if (val != null) {
+              group[`_agg_${agg.alias}_sum`] += numVal;
+              group[`_agg_${agg.alias}_cnt`]++;
+            }
+            break;
+        }
+      }
+    }
+
+    // Build result rows from groups
+    const result = [];
+    for (const group of groups.values()) {
+      const row = {};
+      
+      // Add group-by columns
+      for (let i = 0; i < groupByColumns.length; i++) {
+        const colName = groupByColumns[i].split('.').pop();
+        row[colName] = group._key[i];
+      }
+
+      // Add aggregate results
+      for (const agg of aggregates) {
+        if (agg.fn === 'AVG') {
+          const cnt = group[`_agg_${agg.alias}_cnt`];
+          row[agg.alias] = cnt > 0 ? group[`_agg_${agg.alias}_sum`] / cnt : null;
+        } else {
+          let val = group[`_agg_${agg.alias}`];
+          if (agg.fn === 'MIN' && val === Infinity) val = null;
+          if (agg.fn === 'MAX' && val === -Infinity) val = null;
+          row[agg.alias] = val;
+        }
+      }
+
+      result.push(row);
+    }
+
+    return result;
+  }
+
+  /**
+   * Execute a compiled query with aggregation.
+   * Detects GROUP BY and aggregate functions in the AST,
+   * runs the scan/join compiled, then aggregates the results.
+   */
+  executeSelectWithAggregation(ast) {
+    // First, try to detect aggregation
+    const aggInfo = this._extractAggregation(ast);
+    if (!aggInfo) {
+      // No aggregation — use standard compiled path
+      return this.executeSelect(ast);
+    }
+
+    // Run the scan/join phase (get raw rows before aggregation)
+    const startTime = Date.now();
+    const tableStats = this.planner.getStats(ast.from?.table);
+    const tableRows = tableStats?.rowCount || 0;
+    if (tableRows < 50) return null;
+
+    const plan = this.planner.plan(ast);
+
+    let rawRows;
+    // Strip aggregation from AST for the scan phase
+    const scanAst = { ...ast, columns: [{ name: '*' }], groupBy: undefined, having: undefined, orderBy: undefined, limit: undefined };
+    
+    try {
+      const result = this._compileFromPlan(scanAst, plan);
+      if (!result) return null;
+      rawRows = result.rows;
+    } catch (e) {
+      return null;
+    }
+
+    // Run compiled aggregation
+    const aggregated = this._compiledAggregate(rawRows, aggInfo.groupBy, aggInfo.aggregates);
+
+    // Apply HAVING filter
+    if (aggInfo.having) {
+      const havingFn = this._compileHavingFilter(aggInfo.having);
+      if (havingFn) {
+        const filtered = aggregated.filter(havingFn);
+        this.stats.queriesCompiled++;
+        this.stats.totalCompileTimeMs += Date.now() - startTime;
+        return { rows: ast.limit?.value ? filtered.slice(0, ast.limit.value) : filtered };
+      }
+    }
+
+    // Apply ORDER BY
+    if (ast.orderBy) {
+      aggregated.sort((a, b) => {
+        for (const ob of ast.orderBy) {
+          const col = ob.column || ob.name;
+          const dir = ob.direction === 'DESC' ? -1 : 1;
+          const av = a[col], bv = b[col];
+          if (av < bv) return -dir;
+          if (av > bv) return dir;
+        }
+        return 0;
+      });
+    }
+
+    this.stats.queriesCompiled++;
+    this.stats.totalCompileTimeMs += Date.now() - startTime;
+    return { rows: ast.limit?.value ? aggregated.slice(0, ast.limit.value) : aggregated };
+  }
+
+  /**
+   * Extract aggregation info from AST.
+   * Returns { groupBy: string[], aggregates: [{fn, column, alias}] } or null.
+   */
+  _extractAggregation(ast) {
+    if (!ast.columns) return null;
+
+    const aggregates = [];
+    const groupBy = ast.groupBy || [];
+
+    for (const col of ast.columns) {
+      if (col.aggregate || col.fn) {
+        const fn = (col.aggregate || col.fn).toUpperCase();
+        const column = col.args?.[0]?.name || col.column || col.args?.[0] || '*';
+        const alias = col.alias || `${fn.toLowerCase()}_${column}`;
+        aggregates.push({ fn, column, alias });
+      }
+    }
+
+    if (aggregates.length === 0) return null;
+
+    return {
+      groupBy: groupBy.map(g => typeof g === 'string' ? g : g.name),
+      aggregates,
+      having: ast.having || null,
+    };
+  }
+
+  _compileHavingFilter(havingExpr) {
+    return this._compileExpr(havingExpr);
+  }
+
   _applyProjectAndLimit(rows, ast) {
     // Apply projection
     if (ast.columns && !ast.columns.some(c => c === '*' || c.name === '*')) {
