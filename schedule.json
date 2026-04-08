@@ -253,8 +253,34 @@
     {
       "id": "T24",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "Plan batch Function() compilation for HenryDB - generate one big function per query",
+      "project": "henrydb",
+      "started": "2026-04-08T14:54:21.354Z",
+      "completed": "2026-04-08T14:54:46.343Z",
+      "duration_ms": 60000,
+      "summary": "Designed batch Function() compilation approach: generate one new Function() per query with baked-in column indices, array-based rows, single-pass execution. Creates 3 follow-up tasks for implementation."
+    },
+    {
+      "id": "T25",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Design code generator for batch Function() compilation in HenryDB",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: implement codegen that generates one new Function() per query from planner output",
+      "project": "henrydb"
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: benchmark batch compilation vs closure composition (expect 2-5x further improvement)",
       "project": "henrydb"
     }
   ],
@@ -363,6 +389,18 @@
     {
       "time": "2026-04-08T14:52:12.357Z",
       "msg": "Added T24 (THINK) after end: Plan batch Function() compilation for HenryDB - generate one big function per query"
+    },
+    {
+      "time": "2026-04-08T14:54:38.746Z",
+      "msg": "Added T25 (PLAN) after end: Design code generator for batch Function() compilation in HenryDB"
+    },
+    {
+      "time": "2026-04-08T14:54:38.864Z",
+      "msg": "Added T26 (BUILD) after end: HenryDB: implement codegen that generates one new Function() per query from planner output"
+    },
+    {
+      "time": "2026-04-08T14:54:38.980Z",
+      "msg": "Added T27 (BUILD) after end: HenryDB: benchmark batch compilation vs closure composition (expect 2-5x further improvement)"
     }
   ]
 }
