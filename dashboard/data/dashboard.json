@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:46:25.441Z",
+  "generated": "2026-04-08T16:47:28.152Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: write-ahead log (WAL) compaction — checkpoint and truncate",
-    "completedAt": "2026-04-08T16:46:25.441Z",
-    "taskId": "T101",
-    "summary": "WAL compaction: checkpoint with LSN tracking, truncation (only up to checkpoint), auto-checkpoint at threshold, replay from LSN, transaction/table filtering. 8 tests.",
+    "task": "HenryDB: bitmap index — fast set operations for low-cardinality columns",
+    "completedAt": "2026-04-08T16:47:28.152Z",
+    "taskId": "T102",
+    "summary": "Bitmap index: BitVector (Uint32Array-backed) with AND/OR/NOT/popcount/positions. BitmapIndex for EQ/IN/NEQ queries. Compound queries via AND. 100K rows build in 5ms, 10K EQ queries in 1ms. 12 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 99,
+    "blocksCompleted": 100,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 63,
+      "BUILD": 64,
       "MAINTAIN": 23,
       "EXPLORE": 2
     }

@@ -1088,9 +1088,13 @@
     {
       "id": "T102",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: bitmap index — fast set operations for low-cardinality columns",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:46:25.966Z",
+      "completed": "2026-04-08T16:47:28.092Z",
+      "duration_ms": 90000,
+      "summary": "Bitmap index: BitVector (Uint32Array-backed) with AND/OR/NOT/popcount/positions. BitmapIndex for EQ/IN/NEQ queries. Compound queries via AND. 100K rows build in 5ms, 10K EQ queries in 1ms. 12 tests."
     },
     {
       "id": "T103",
