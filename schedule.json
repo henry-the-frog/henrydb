@@ -4142,10 +4142,32 @@
     {
       "id": "T382",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit cursors + EXPLAIN ANALYZE and sync to GitHub",
       "project": "henrydb",
-      "started": "2026-04-08T21:22:09.882Z"
+      "started": "2026-04-08T21:22:09.882Z",
+      "completed": "2026-04-08T21:22:32.404Z",
+      "duration_ms": 30000,
+      "summary": "Pushed cursors + EXPLAIN ANALYZE to GitHub."
+    },
+    {
+      "id": "T383",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build streaming replication: primary writes WAL, replica subscribes via LISTEN/NOTIFY and replays WAL records. Two HenryDB instances in sync.",
+      "project": "henrydb",
+      "started": "2026-04-08T21:23:07.556Z",
+      "completed": "2026-04-08T21:25:02.573Z",
+      "duration_ms": 420000,
+      "summary": "Streaming replication working! Primary publishes mutations via LISTEN/NOTIFY, replica subscribes and replays. CREATE TABLE, INSERT, UPDATE, DELETE all replicated. 9 tests: multi-table replication, stats tracking, independent replica reads. Two HenryDB instances in sync."
+    },
+    {
+      "id": "T384",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Commit replication and update README with full feature list",
+      "project": "henrydb",
+      "started": "2026-04-08T21:25:03.034Z"
     }
   ],
   "focusProjects": [
@@ -5649,6 +5671,14 @@
     {
       "time": "2026-04-08T21:18:35.724Z",
       "msg": "Added T382 (MAINTAIN) after T381: Commit cursors + EXPLAIN ANALYZE and sync to GitHub"
+    },
+    {
+      "time": "2026-04-08T21:23:01.014Z",
+      "msg": "Added T383 (BUILD) after end: Build streaming replication: primary writes WAL, replica subscribes via LISTEN/NOTIFY and replays WAL records. Two HenryDB instances in sync."
+    },
+    {
+      "time": "2026-04-08T21:23:01.226Z",
+      "msg": "Added T384 (MAINTAIN) after T383: Commit replication and update README with full feature list"
     }
   ]
 }
