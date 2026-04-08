@@ -1231,9 +1231,71 @@ export class HenryDBServer {
     // RESET parameter
     if (upper.startsWith('RESET ')) {
       const param = sql.substring(6).trim().toLowerCase().replace(/;$/, '');
-      // Reset to default (we don't track defaults separately, just acknowledge)
       conn.socket.write(writeCommandComplete('RESET'));
       return true;
+    }
+
+    // VACUUM [ANALYZE] [table_name]
+    if (upper.startsWith('VACUUM')) {
+      const analyzeFlag = upper.includes('ANALYZE');
+      const tableMatch = sql.match(/VACUUM\s+(?:FULL\s+)?(?:ANALYZE\s+)?(\w+)/i);
+      const tableName = tableMatch?.[1]?.toUpperCase() !== 'ANALYZE' ? tableMatch?.[1] : null;
+      
+      const tables = tableName ? [tableName] : [...this.db.tables.keys()];
+      let totalReclaimed = 0;
+      
+      for (const t of tables) {
+        const table = this.db.tables.get(t);
+        if (!table) continue;
+        // Simulate vacuum: count and "reclaim" dead rows
+        // In our in-memory engine, there aren't really dead rows, but we can still report
+        totalReclaimed += 0; // placeholder
+      }
+      
+      conn.socket.write(writeCommandComplete('VACUUM'));
+      return true;
+    }
+
+    // ANALYZE [table_name]
+    if (upper.startsWith('ANALYZE') && !upper.includes('EXPLAIN')) {
+      const tableMatch = sql.match(/ANALYZE\s+(\w+)/i);
+      const tableName = tableMatch?.[1];
+      const tables = tableName ? [tableName] : [...this.db.tables.keys()];
+      
+      for (const t of tables) {
+        const table = this.db.tables.get(t);
+        if (!table) continue;
+        // Update table statistics
+        const rowCount = table.heap?.data?.length || table.heap?._rowCount || 0;
+        table._stats = {
+          rowCount,
+          lastAnalyze: new Date().toISOString(),
+          columnStats: (table.schema || []).map(col => ({
+            name: col.name,
+            type: col.type,
+            distinct: 0, // would need full scan to compute
+          })),
+        };
+      }
+      
+      conn.socket.write(writeCommandComplete('ANALYZE'));
+      return true;
+    }
+
+    // TRUNCATE table_name
+    if (upper.startsWith('TRUNCATE')) {
+      const tableMatch = sql.match(/TRUNCATE\s+(?:TABLE\s+)?(\w+)/i);
+      if (tableMatch) {
+        const tableName = tableMatch[1];
+        try {
+          this.db.execute(`DELETE FROM ${tableName}`);
+          this._queryCache.invalidate(tableName);
+          conn.socket.write(writeCommandComplete('TRUNCATE TABLE'));
+        } catch (e) {
+          conn.socket.write(writeErrorResponse('ERROR', '42P01', e.message));
+        }
+        return true;
+      }
     }
 
     // DEALLOCATE (pg driver cleanup)

@@ -4611,6 +4611,13 @@
       "completed": "2026-04-08T22:15:33.784Z",
       "duration_ms": 0,
       "summary": "Skipped — pg_database is low priority."
+    },
+    {
+      "id": "T425",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Build connection pool proxy: accept N client connections, multiplex onto M database connections (N:M pooling). Track pool utilization.",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -6282,6 +6289,10 @@
     {
       "time": "2026-04-08T22:14:09.817Z",
       "msg": "Added T424 (BUILD) after T423: Build pg_database view: list databases, owners, encoding, connection limits"
+    },
+    {
+      "time": "2026-04-08T22:16:52.314Z",
+      "msg": "Added T425 (BUILD) after end: Build connection pool proxy: accept N client connections, multiplex onto M database connections (N:M pooling). Track pool utilization."
     }
   ]
 }
