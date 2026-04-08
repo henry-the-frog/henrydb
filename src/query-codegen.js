@@ -229,7 +229,7 @@ export class QueryCodeGen {
 
     // Apply pre-join filter on main table
     if (ast.where) {
-      const preFilter = this._genFilterExpr(ast.where, mainMeta.colMap, mainMeta.alias, true);
+      const preFilter = this._genFilterExpr(ast.where, mainMeta.colMap, mainMeta.alias, true, 'lv');
       if (preFilter) {
         lines.push(`  if (!(${preFilter})) continue;`);
       }
@@ -327,13 +327,13 @@ export class QueryCodeGen {
    * Generate a filter expression as JavaScript code.
    * Returns a string that evaluates to boolean, or null if not compilable.
    */
-  _genFilterExpr(expr, colMap, tableAlias, preJoinOnly = false) {
+  _genFilterExpr(expr, colMap, tableAlias, preJoinOnly = false, varName = 'values') {
     if (!expr) return null;
 
     switch (expr.type) {
       case 'COMPARE': {
-        const leftCode = this._genValueExpr(expr.left, colMap, tableAlias, preJoinOnly);
-        const rightCode = this._genValueExpr(expr.right, colMap, tableAlias, preJoinOnly);
+        const leftCode = this._genValueExpr(expr.left, colMap, tableAlias, preJoinOnly, varName);
+        const rightCode = this._genValueExpr(expr.right, colMap, tableAlias, preJoinOnly, varName);
         if (!leftCode || !rightCode) return null;
 
         const ops = { 'EQ': '===', 'NE': '!==', 'LT': '<', 'GT': '>', 'LE': '<=', 'GE': '>=' };
@@ -342,28 +342,28 @@ export class QueryCodeGen {
         return `(${leftCode} ${op} ${rightCode})`;
       }
       case 'AND': {
-        const left = this._genFilterExpr(expr.left, colMap, tableAlias, preJoinOnly);
-        const right = this._genFilterExpr(expr.right, colMap, tableAlias, preJoinOnly);
+        const left = this._genFilterExpr(expr.left, colMap, tableAlias, preJoinOnly, varName);
+        const right = this._genFilterExpr(expr.right, colMap, tableAlias, preJoinOnly, varName);
         if (left && right) return `(${left} && ${right})`;
         return left || right;
       }
       case 'OR': {
-        const left = this._genFilterExpr(expr.left, colMap, tableAlias, preJoinOnly);
-        const right = this._genFilterExpr(expr.right, colMap, tableAlias, preJoinOnly);
+        const left = this._genFilterExpr(expr.left, colMap, tableAlias, preJoinOnly, varName);
+        const right = this._genFilterExpr(expr.right, colMap, tableAlias, preJoinOnly, varName);
         if (left && right) return `(${left} || ${right})`;
         return null;
       }
       case 'NOT': {
-        const inner = this._genFilterExpr(expr.expr, colMap, tableAlias, preJoinOnly);
+        const inner = this._genFilterExpr(expr.expr, colMap, tableAlias, preJoinOnly, varName);
         return inner ? `!(${inner})` : null;
       }
       case 'IS_NULL': {
-        const val = this._genValueExpr(expr.expr || expr.left, colMap, tableAlias, preJoinOnly);
+        const val = this._genValueExpr(expr.expr || expr.left, colMap, tableAlias, preJoinOnly, varName);
         if (!val) return null;
         return `(${val} == null)`;
       }
       case 'IS_NOT_NULL': {
-        const val = this._genValueExpr(expr.expr || expr.left, colMap, tableAlias, preJoinOnly);
+        const val = this._genValueExpr(expr.expr || expr.left, colMap, tableAlias, preJoinOnly, varName);
         if (!val) return null;
         return `(${val} != null)`;
       }
@@ -372,7 +372,7 @@ export class QueryCodeGen {
     }
   }
 
-  _genValueExpr(expr, colMap, tableAlias, preJoinOnly = false) {
+  _genValueExpr(expr, colMap, tableAlias, preJoinOnly = false, varName = 'values') {
     if (!expr) return null;
     
     if (expr.type === 'column_ref') {
@@ -381,7 +381,7 @@ export class QueryCodeGen {
       
       const colName = expr.name;
       const idx = colMap[colName];
-      if (idx !== undefined) return `values[${idx}]`;
+      if (idx !== undefined) return `${varName}[${idx}]`;
       
       // Try without table prefix
       if (!preJoinOnly) return null;
