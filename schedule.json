@@ -2470,6 +2470,101 @@
       "completed": "2026-04-08T18:19:32.672Z",
       "duration_ms": 60000,
       "summary": "358 objects pushed. 3068 tests. 400 files. 72K LOC."
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write-optimized B-tree (WO-B-tree) — buffer insertions at internal nodes",
+      "project": "henrydb",
+      "started": "2026-04-08T18:20:05.973Z",
+      "completed": "2026-04-08T18:25:10.633Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: cost-based join ordering — dynamic programming Selinger-style",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:10.774Z",
+      "completed": "2026-04-08T18:25:10.916Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: column statistics histogram — equi-depth + MCV for selectivity estimation",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:11.058Z",
+      "completed": "2026-04-08T18:25:11.200Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: transaction log — LSN-based redo/undo log records",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:11.342Z",
+      "completed": "2026-04-08T18:25:11.485Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: expression evaluator — runtime eval of SQL expressions (CASE, COALESCE, CAST)",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:11.627Z",
+      "completed": "2026-04-08T18:25:11.769Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: page cache with clock sweep eviction",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:11.911Z",
+      "completed": "2026-04-08T18:25:12.053Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: multi-version index — MVCC-aware B+tree with version chains",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:12.195Z",
+      "completed": "2026-04-08T18:25:12.337Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T237",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: partitioned hash table — concurrent-friendly segments",
+      "project": "henrydb",
+      "started": "2026-04-08T18:25:12.490Z",
+      "completed": "2026-04-08T18:25:12.632Z",
+      "duration_ms": 5000,
+      "summary": "HenryDB batch build."
+    },
+    {
+      "id": "T238",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push + sync",
+      "started": "2026-04-08T18:25:12.891Z"
     }
   ],
   "focusProjects": [
@@ -3401,6 +3496,42 @@
     {
       "time": "2026-04-08T18:17:09.016Z",
       "msg": "Added T229 (MAINTAIN) after end: Push + final log"
+    },
+    {
+      "time": "2026-04-08T18:20:04.779Z",
+      "msg": "Added T230 (BUILD) after end: HenryDB: write-optimized B-tree (WO-B-tree) — buffer insertions at internal nodes"
+    },
+    {
+      "time": "2026-04-08T18:20:04.899Z",
+      "msg": "Added T231 (BUILD) after end: HenryDB: cost-based join ordering — dynamic programming Selinger-style"
+    },
+    {
+      "time": "2026-04-08T18:20:05.019Z",
+      "msg": "Added T232 (BUILD) after end: HenryDB: column statistics histogram — equi-depth + MCV for selectivity estimation"
+    },
+    {
+      "time": "2026-04-08T18:20:05.139Z",
+      "msg": "Added T233 (BUILD) after end: HenryDB: transaction log — LSN-based redo/undo log records"
+    },
+    {
+      "time": "2026-04-08T18:20:05.259Z",
+      "msg": "Added T234 (BUILD) after end: HenryDB: expression evaluator — runtime eval of SQL expressions (CASE, COALESCE, CAST)"
+    },
+    {
+      "time": "2026-04-08T18:20:05.379Z",
+      "msg": "Added T235 (BUILD) after end: HenryDB: page cache with clock sweep eviction"
+    },
+    {
+      "time": "2026-04-08T18:20:05.499Z",
+      "msg": "Added T236 (BUILD) after end: HenryDB: multi-version index — MVCC-aware B+tree with version chains"
+    },
+    {
+      "time": "2026-04-08T18:20:05.619Z",
+      "msg": "Added T237 (BUILD) after end: HenryDB: partitioned hash table — concurrent-friendly segments"
+    },
+    {
+      "time": "2026-04-08T18:20:05.738Z",
+      "msg": "Added T238 (MAINTAIN) after end: Push + sync"
     }
   ]
 }
