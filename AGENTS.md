@@ -14,7 +14,8 @@ Before doing anything else:
 2. Read `USER.md` — this is who you're helping
 3. Read `TODO.md` — this is what needs doing (see Task Intake below)
 4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+5. Read `memory/reflections/` (latest entry) — what did you learn last time?
+6. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 
 Don't ask permission. Just do it.
 
@@ -58,6 +59,8 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 2. **Between tasks** — after finishing a task, check TODO.md Urgent. If something fits the session focus, pull it into the queue with `queue.cjs add` and start it.
 3. **Morning standup** — read TODO.md first. Drain Normal items into the day's queue. Urgent items that survived overnight get top priority.
 4. **Cleanup** — remove items once they enter the queue or are completed. Don't check off, delete the line. Keep the file clean.
+
+**Urgent Item Rule:** If an item has been in Urgent for >1 day, it gets the FIRST task slot of the day — before any interesting work. No exceptions. If you keep skipping it, demote it to Normal (it wasn't actually urgent). Boring-but-urgent items rot when they compete with interesting work for attention. Don't let them.
 
 ## Red Lines
 

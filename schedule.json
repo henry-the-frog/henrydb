@@ -1,315 +1,210 @@
 {
-  "date": "2026-04-07",
+  "date": "2026-04-08",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "done",
-      "task": "Evening session C: assess what to tackle in ~30 min window. Check TODO urgent items + explore ideas.",
-      "started": "2026-04-08T03:31:12.444Z",
-      "completed": "2026-04-08T03:31:28.081Z",
-      "duration_ms": 60000,
-      "summary": "30-min window. Priority: write 4 missing scratch notes (MVCC/WAL, Thompson NFA, Algorithm W, Forth compilation). Quick knowledge capture fits evening time well."
+      "status": "upcoming",
+      "task": "Morning orientation: review yesterday, assess priorities, set direction"
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Write scratch notes for MVCC/WAL, Thompson NFA, Algorithm W, Forth compilation",
-      "task": null,
-      "started": "2026-04-08T03:31:52.560Z",
-      "completed": "2026-04-08T03:32:14.100Z",
-      "duration_ms": 30000,
-      "summary": "Scratch notes already exist with content. Pivoting to enriching henrydb-transactions.md with SSI, 2PC, pipeline JIT, bloom filter, crash bugs #8-#9."
+      "status": "upcoming",
+      "goal": "Fix dashboard server reliability (auto-start, health checks)",
+      "task": null
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Enrich scratch notes with deeper learnings from today's HenryDB work (SSI, 2PC, pipeline JIT, bloom filters, crash recovery bugs #8-#9)",
-      "plan_ref": "T2",
-      "project": "henrydb",
-      "started": "2026-04-08T03:32:22.785Z",
-      "completed": "2026-04-08T03:33:25.200Z",
-      "duration_ms": 120000,
-      "summary": "Enriched henrydb-transactions.md with SSI, 2PC, pipeline JIT, bloom filters, crash bugs #8-#9, SQLite benchmark, property-based testing. 55→125 lines. Updated INDEX. Cleared stale TODO item."
-    },
-    {
-      "id": "T5",
-      "mode": "THINK",
-      "status": "done",
-      "task": "What HenryDB feature would be most impressive to build next? Consider: query planner cost model, write-ahead log compaction, buffer pool with clock sweep, or something else",
-      "started": "2026-04-08T03:33:58.900Z",
-      "completed": "2026-04-08T03:34:23.241Z",
-      "duration_ms": 60000,
-      "summary": "WAL checkpointing — complete the WAL lifecycle (fuzzy checkpoint, dirty page tracking, log truncation). Achievable in 20 min, completes a real database story."
-    },
-    {
-      "id": "T6",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Build next impressive HenryDB feature",
+      "status": "upcoming",
       "task": null,
-      "started": "2026-04-08T03:34:30.971Z",
-      "completed": "2026-04-08T03:34:59.019Z",
-      "duration_ms": 30000,
-      "summary": "Plan: ARIES-style checkpointing — dirty page table, fuzzy checkpoint (begin/end markers), WAL truncation, checkpoint-aware recovery. One BUILD task."
-    },
-    {
-      "id": "T7",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Implement ARIES-style WAL checkpointing: dirty page table, fuzzy checkpoint, WAL truncation, checkpoint-aware recovery. Tests.",
-      "plan_ref": "T6",
-      "project": "henrydb",
-      "started": "2026-04-08T03:35:07.768Z",
-      "completed": "2026-04-08T03:38:47.285Z",
-      "duration_ms": 300000,
-      "summary": "ARIES-style WAL checkpointing: fuzzy checkpoint (BEGIN/END markers), dirty page table with recLSN tracking, WAL truncation, checkpoint-aware recovery. 20 tests, all passing. 71 existing WAL tests still green."
+      "plan_ref": "T2",
+      "project": "dashboard"
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final git push, cleanup",
-      "started": "2026-04-08T03:39:01.403Z",
-      "completed": "2026-04-08T03:39:55.717Z",
-      "duration_ms": 60000,
-      "summary": "Git committed workspace. Dashboard server down (port 3000 unreachable). HenryDB GitHub push deferred (subtree needed). No remote for workspace."
+      "status": "upcoming",
+      "task": "Housekeeping: git commit, dashboard health, email check"
+    },
+    {
+      "id": "T5",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on dashboard fix, assess HenryDB direction"
+    },
+    {
+      "id": "T6",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB depth: query planner cost model improvements + WAL stats",
+      "task": null
+    },
+    {
+      "id": "T7",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T6",
+      "project": "henrydb"
     },
     {
       "id": "T8",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Quick evening reflection: RISC-V emulator was a hit, HenryDB now has ARIES checkpointing. What quick feature could make a nice capstone?",
-      "started": "2026-04-08T03:40:10.613Z",
-      "completed": "2026-04-08T03:40:21.086Z",
-      "duration_ms": 30000,
-      "summary": "Point-in-time recovery (PITR) — recover database to any historical timestamp using WAL replay. Builds directly on the checkpoint work. Very PostgreSQL."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, knowledge capture"
     },
     {
       "id": "T9",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Build one more quick HenryDB feature",
-      "task": null,
-      "started": "2026-04-08T03:40:30.607Z",
-      "completed": "2026-04-08T03:40:35.749Z",
-      "duration_ms": 15000,
-      "summary": "Plan: PITR via WAL replay up to target timestamp. Add timestamp to WAL records, new recoverToTimestamp() function."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess HenryDB progress, plan blog content for CPython audience"
     },
     {
       "id": "T10",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WAL-based point-in-time recovery: replay WAL up to target timestamp, stop before cutoff. Tests for multi-tx recovery at various timestamps.",
-      "plan_ref": "T9",
-      "project": "henrydb",
-      "started": "2026-04-08T03:40:40.136Z",
-      "completed": "2026-04-08T03:42:41.280Z",
-      "duration_ms": 300000,
-      "summary": "WAL-based PITR: recoverToTimestamp() replays committed transactions up to target time. Handles inserts, deletes, updates, uncommitted exclusion, multi-table, fuzzy checkpoint integration. 12 tests, all pass. 91 total WAL tests green."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Write technical blog post targeting CPython devs (trace quality, JIT design)",
+      "task": null
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Push HenryDB to GitHub with new checkpoint + PITR features. Update README.",
-      "project": "henrydb",
-      "started": "2026-04-08T03:42:56.548Z",
-      "completed": "2026-04-08T03:44:12.498Z",
-      "duration_ms": 120000,
-      "summary": "Pushed HenryDB to GitHub with ARIES checkpointing + PITR. Updated README with new features. 6 files changed, 1236 insertions."
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T10",
+      "project": "henrydb"
     },
     {
       "id": "T12",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add EXPLAIN CHECKPOINT and PITR SQL commands to HenryDB — expose checkpoint/PITR through SQL interface",
-      "project": "henrydb",
-      "started": "2026-04-08T03:44:29.374Z",
-      "completed": "2026-04-08T03:46:23.014Z",
-      "duration_ms": 180000,
-      "summary": "CHECKPOINT SQL command added: parser keyword, executor handler, table/row stats. 5 tests. Pushed to GitHub."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, PR status check, knowledge capture"
     },
     {
       "id": "T13",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Run full HenryDB test suite to get definitive test count, ensure no regressions from checkpoint/PITR additions",
-      "project": "henrydb",
-      "started": "2026-04-08T03:46:39.890Z",
-      "completed": "2026-04-08T03:48:35.435Z",
-      "duration_ms": 60000,
-      "summary": "Full regression: 2209 tests, 2203 pass, 4 fail (pre-existing: bulk timing, LSM compaction, SQLite comparison). 54 WAL/checkpoint/PITR tests all green. No regressions from tonight."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Afternoon reflection: what worked, what to explore tonight"
     },
     {
       "id": "T14",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update daily log with Session C work and commit",
-      "project": "henrydb",
-      "started": "2026-04-08T03:48:51.262Z",
-      "completed": "2026-04-08T03:49:29.614Z",
-      "duration_ms": 60000,
-      "summary": "Updated daily log with all Session C part 2 work. Git committed."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: buffer pool clock sweep or query compilation deep dive",
+      "task": null
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Add WAL size monitoring — show current WAL stats via SHOW WAL_STATS SQL command",
-      "project": "henrydb",
-      "started": "2026-04-08T03:49:46.046Z",
-      "completed": "2026-04-08T03:50:02.159Z",
-      "duration_ms": 10000,
-      "summary": "Skipped — better to update TASKS.md with new totals and do final cleanup."
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T14",
+      "project": "henrydb"
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update TASKS.md with HenryDB test count (2209), update CURRENT.md, final git commit",
-      "started": "2026-04-08T03:50:12.080Z",
-      "completed": "2026-04-08T03:51:11.007Z",
-      "duration_ms": 60000,
-      "summary": "Updated TASKS.md (added HenryDB + RISC-V entries), CURRENT.md, git committed."
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard regenerate"
     },
     {
       "id": "T17",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add automatic checkpoint trigger: auto-checkpoint after N transactions or N WAL records",
-      "project": "henrydb",
-      "started": "2026-04-08T03:52:24.672Z",
-      "completed": "2026-04-08T03:53:38.741Z",
-      "duration_ms": 180000,
-      "summary": "Auto-checkpoint: setAutoCheckpoint(N) triggers fuzzy checkpoint every N commits. Callback support, counter reset, disable option. 8 tests. Pushed to GitHub."
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Research: sea-of-nodes IR or copy-and-patch compilation (follow CPython connection)",
+      "project": "henrydb"
     },
     {
       "id": "T18",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WAL compaction: merge old WAL segments, keep only records needed for recovery. Tests.",
-      "project": "henrydb",
-      "started": "2026-04-08T03:53:55.746Z",
-      "completed": "2026-04-08T03:55:03.481Z",
-      "duration_ms": 180000,
-      "summary": "WAL compact(): calculates safe truncation point from checkpoint LSN, active transactions, and dirty page table. Preserves active tx records. 8 tests. Pushed."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update HenryDB README with auto-checkpoint and WAL compaction features",
-      "project": "henrydb",
-      "started": "2026-04-08T03:56:03.708Z",
-      "completed": "2026-04-08T03:56:44.873Z",
-      "duration_ms": 60000,
-      "summary": "Updated HenryDB README with auto-checkpoint and WAL compaction. Pushed to GitHub."
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Research: new project ideas or extend RISC-V emulator (C extension, syscalls, debugger)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
     "henrydb",
-    "blog-infra"
+    "dashboard"
   ],
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-08T03:30:54.374Z",
-      "msg": "Re-initialized same-day queue. Focus preserved: [henrydb, blog-infra]"
+      "time": "2026-04-08T14:01:07.004Z",
+      "msg": "Added T1 (THINK) after end: Morning orientation: review yesterday, assess priorities, set direction"
     },
     {
-      "time": "2026-04-08T03:31:08.126Z",
-      "msg": "Added T1 (THINK) after end: Evening session C: assess what to tackle in ~30 min window. Check TODO urgent items + explore ideas."
+      "time": "2026-04-08T14:01:07.120Z",
+      "msg": "Added T2 (PLAN) after T1: Fix dashboard server reliability (auto-start, health checks)"
     },
     {
-      "time": "2026-04-08T03:31:34.410Z",
-      "msg": "Added T2 (PLAN) after end: Plan scratch note writing for 4 missing topics"
+      "time": "2026-04-08T14:01:25.244Z",
+      "msg": "Focus set: [henrydb, dashboard]"
     },
     {
-      "time": "2026-04-08T03:31:43.939Z",
-      "msg": "Added T3 (BUILD) after end: null"
+      "time": "2026-04-08T14:01:34.232Z",
+      "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-08T03:31:44.055Z",
-      "msg": "Added T4 (MAINTAIN) after end: Final git push, cleanup"
+      "time": "2026-04-08T14:01:34.348Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: git commit, dashboard health, email check"
     },
     {
-      "time": "2026-04-08T03:32:08.695Z",
-      "msg": "PLAN T2 filled 1 BUILD tasks"
+      "time": "2026-04-08T14:01:34.464Z",
+      "msg": "Added T5 (THINK) after T4: Reflect on dashboard fix, assess HenryDB direction"
     },
     {
-      "time": "2026-04-08T03:33:45.481Z",
-      "msg": "Added T5 (THINK) after T3: What HenryDB feature would be most impressive to build next? Consider: query planner cost model, write-ahead log compaction, buffer pool with clock sweep, or something else"
+      "time": "2026-04-08T14:01:34.581Z",
+      "msg": "Added T6 (PLAN) after T5: HenryDB depth: query planner cost model improvements + WAL stats"
     },
     {
-      "time": "2026-04-08T03:33:50.698Z",
-      "msg": "Added T6 (PLAN) after T5: Build next impressive HenryDB feature"
-    },
-    {
-      "time": "2026-04-08T03:33:50.815Z",
+      "time": "2026-04-08T14:01:34.697Z",
       "msg": "Added T7 (BUILD) after T6: null"
     },
     {
-      "time": "2026-04-08T03:33:55.072Z",
-      "msg": "Moved T4 after T7"
+      "time": "2026-04-08T14:01:34.813Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: git push, knowledge capture"
     },
     {
-      "time": "2026-04-08T03:34:54.405Z",
-      "msg": "PLAN T6 filled 1 BUILD tasks"
+      "time": "2026-04-08T14:01:34.932Z",
+      "msg": "Added T9 (THINK) after T8: Assess HenryDB progress, plan blog content for CPython audience"
     },
     {
-      "time": "2026-04-08T03:40:02.706Z",
-      "msg": "Added T8 (THINK) after end: Quick evening reflection: RISC-V emulator was a hit, HenryDB now has ARIES checkpointing. What quick feature could make a nice capstone?"
+      "time": "2026-04-08T14:01:35.049Z",
+      "msg": "Added T10 (PLAN) after T9: Write technical blog post targeting CPython devs (trace quality, JIT design)"
     },
     {
-      "time": "2026-04-08T03:40:02.823Z",
-      "msg": "Added T9 (PLAN) after end: Build one more quick HenryDB feature"
+      "time": "2026-04-08T14:01:35.166Z",
+      "msg": "Added T11 (BUILD) after T10: null"
     },
     {
-      "time": "2026-04-08T03:40:02.939Z",
-      "msg": "Added T10 (BUILD) after T9: null"
+      "time": "2026-04-08T14:01:35.282Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: git push, PR status check, knowledge capture"
     },
     {
-      "time": "2026-04-08T03:40:30.746Z",
-      "msg": "PLAN T9 filled 1 BUILD tasks"
+      "time": "2026-04-08T14:01:35.399Z",
+      "msg": "Added T13 (THINK) after T12: Afternoon reflection: what worked, what to explore tonight"
     },
     {
-      "time": "2026-04-08T03:42:51.798Z",
-      "msg": "Added T11 (BUILD) after end: Push HenryDB to GitHub with new checkpoint + PITR features. Update README."
+      "time": "2026-04-08T14:01:35.515Z",
+      "msg": "Added T14 (PLAN) after T13: HenryDB: buffer pool clock sweep or query compilation deep dive"
     },
     {
-      "time": "2026-04-08T03:44:24.455Z",
-      "msg": "Added T12 (BUILD) after end: Add EXPLAIN CHECKPOINT and PITR SQL commands to HenryDB — expose checkpoint/PITR through SQL interface"
+      "time": "2026-04-08T14:01:35.633Z",
+      "msg": "Added T15 (BUILD) after T14: null"
     },
     {
-      "time": "2026-04-08T03:46:34.943Z",
-      "msg": "Added T13 (BUILD) after end: Run full HenryDB test suite to get definitive test count, ensure no regressions from checkpoint/PITR additions"
+      "time": "2026-04-08T14:01:35.750Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping: git push, dashboard regenerate"
     },
     {
-      "time": "2026-04-08T03:48:46.989Z",
-      "msg": "Added T14 (BUILD) after end: Update daily log with Session C work and commit"
+      "time": "2026-04-08T14:01:35.866Z",
+      "msg": "Added T17 (EXPLORE) after T16: Research: sea-of-nodes IR or copy-and-patch compilation (follow CPython connection)"
     },
     {
-      "time": "2026-04-08T03:49:40.902Z",
-      "msg": "Added T15 (BUILD) after end: Add WAL size monitoring — show current WAL stats via SHOW WAL_STATS SQL command"
-    },
-    {
-      "time": "2026-04-08T03:50:07.305Z",
-      "msg": "Added T16 (MAINTAIN) after end: Update TASKS.md with HenryDB test count (2209), update CURRENT.md, final git commit"
-    },
-    {
-      "time": "2026-04-08T03:52:19.773Z",
-      "msg": "Added T17 (BUILD) after end: Add automatic checkpoint trigger: auto-checkpoint after N transactions or N WAL records"
-    },
-    {
-      "time": "2026-04-08T03:53:50.987Z",
-      "msg": "Added T18 (BUILD) after end: WAL compaction: merge old WAL segments, keep only records needed for recovery. Tests."
-    },
-    {
-      "time": "2026-04-08T03:55:58.931Z",
-      "msg": "Added T19 (BUILD) after end: Update HenryDB README with auto-checkpoint and WAL compaction features"
+      "time": "2026-04-08T14:01:35.981Z",
+      "msg": "Added T18 (EXPLORE) after T17: Research: new project ideas or extend RISC-V emulator (C extension, syscalls, debugger)"
     }
   ]
 }
