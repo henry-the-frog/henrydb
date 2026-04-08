@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T17:10:48.143Z",
+  "generated": "2026-04-08T17:13:39.415Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: extendible hashing — directory-based dynamic hash table",
-    "completedAt": "2026-04-08T17:10:48.143Z",
-    "taskId": "T124",
-    "summary": "Extendible hashing: directory-based dynamic hash table. Directory doubles on overflow, only split bucket reorganized. Global/local depth tracking. 7 tests.",
+    "task": "HenryDB: linear hashing — gradual bucket splitting, no directory",
+    "completedAt": "2026-04-08T17:13:39.415Z",
+    "taskId": "T125",
+    "summary": "Linear hashing: round-robin bucket splitting, no directory. Split pointer advances on load threshold. 6 tests.",
     "durationMs": 60000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 122,
+    "blocksCompleted": 123,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 82,
+      "BUILD": 83,
       "MAINTAIN": 27,
       "EXPLORE": 2
     }
