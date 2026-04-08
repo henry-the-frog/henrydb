@@ -1062,6 +1062,51 @@
       "completed": "2026-04-08T16:43:12.517Z",
       "duration_ms": 30000,
       "summary": "Pushed 232 objects to GitHub. Dashboard synced."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LSM-tree compaction — size-tiered and leveled compaction strategies",
+      "project": "henrydb",
+      "started": "2026-04-08T16:43:50.886Z",
+      "completed": "2026-04-08T16:45:33.013Z",
+      "duration_ms": 120000,
+      "summary": "LSM-tree with compaction: memtable flush to SSTables, leveled compaction (size ratio 10), size-tiered compaction (merge N same-size). Binary search in SSTables, tombstone deletes, range scan. 10K writes in 10ms. 10 tests."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: write-ahead log (WAL) compaction — checkpoint and truncate",
+      "project": "henrydb"
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: bitmap index — fast set operations for low-cardinality columns",
+      "project": "henrydb"
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: expression compiler — compile WHERE clauses to native JS functions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: correlated subqueries — EXISTS, IN with subselect",
+      "project": "henrydb"
+    },
+    {
+      "id": "T105",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard sync"
     }
   ],
   "focusProjects": [
@@ -1473,6 +1518,30 @@
     {
       "time": "2026-04-08T16:37:30.247Z",
       "msg": "Added T99 (MAINTAIN) after end: Push + dashboard sync"
+    },
+    {
+      "time": "2026-04-08T16:43:50.053Z",
+      "msg": "Added T100 (BUILD) after end: HenryDB: LSM-tree compaction — size-tiered and leveled compaction strategies"
+    },
+    {
+      "time": "2026-04-08T16:43:50.173Z",
+      "msg": "Added T101 (BUILD) after end: HenryDB: write-ahead log (WAL) compaction — checkpoint and truncate"
+    },
+    {
+      "time": "2026-04-08T16:43:50.293Z",
+      "msg": "Added T102 (BUILD) after end: HenryDB: bitmap index — fast set operations for low-cardinality columns"
+    },
+    {
+      "time": "2026-04-08T16:43:50.413Z",
+      "msg": "Added T103 (BUILD) after end: HenryDB: expression compiler — compile WHERE clauses to native JS functions"
+    },
+    {
+      "time": "2026-04-08T16:43:50.533Z",
+      "msg": "Added T104 (BUILD) after end: HenryDB: correlated subqueries — EXISTS, IN with subselect"
+    },
+    {
+      "time": "2026-04-08T16:43:50.652Z",
+      "msg": "Added T105 (MAINTAIN) after end: Push + dashboard sync"
     }
   ]
 }
