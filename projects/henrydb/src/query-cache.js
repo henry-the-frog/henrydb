@@ -1,145 +1,181 @@
-// query-cache.js — Query plan cache with compiled execution
-// Caches compiled query functions for repeated queries.
-// First execution compiles and caches; subsequent executions use the cache.
+// query-cache.js — Query result cache with TTL and write invalidation
+// Caches the results of SELECT queries. Invalidated when:
+// 1. TTL expires (time-based)
+// 2. Any INSERT/UPDATE/DELETE touches a cached table (write invalidation)
+// 3. Cache is full (LRU eviction)
 
-import { compileScanFilterProject } from './query-compiler.js';
-import { parse } from './sql.js';
-
+/**
+ * QueryCache — LRU cache with TTL and table-based invalidation.
+ */
 export class QueryCache {
-  constructor(maxSize = 100) {
-    this._cache = new Map();
-    this._maxSize = maxSize;
-    this._hits = 0;
-    this._misses = 0;
-    this._compilations = 0;
-  }
-
-  /** Look up a cached compiled query function. */
-  get(sql) {
-    const entry = this._cache.get(sql);
-    if (entry) {
-      entry.lastUsed = Date.now();
-      entry.useCount++;
-      this._hits++;
-      return entry;
-    }
-    this._misses++;
-    return null;
+  constructor(options = {}) {
+    this.maxEntries = options.maxEntries || 1000;
+    this.defaultTTLMs = options.defaultTTLMs || 60000; // 60s default
+    this._cache = new Map(); // sql → { result, tables, insertedAt, ttl, hits }
+    this._tableIndex = new Map(); // table → Set<sql> (for invalidation)
+    this._accessOrder = []; // LRU tracking
+    this.stats = { hits: 0, misses: 0, invalidations: 0, evictions: 0, sets: 0 };
   }
 
   /**
-   * Cache a compiled query.
-   * @param {string} sql — the SQL query string
-   * @param {Function} compiledFn — compiled scan-filter-project function
-   * @param {object} metadata — { columns, schema, etc. }
+   * Get a cached result for a SQL query.
+   * Returns the result or null if not cached/expired.
    */
-  put(sql, compiledFn, metadata) {
-    if (this._cache.size >= this._maxSize) {
+  get(sql) {
+    const entry = this._cache.get(sql);
+    if (!entry) {
+      this.stats.misses++;
+      return null;
+    }
+
+    // Check TTL
+    if (Date.now() - entry.insertedAt > entry.ttl) {
+      this._remove(sql);
+      this.stats.misses++;
+      return null;
+    }
+
+    // LRU: move to end
+    this._touch(sql);
+    entry.hits++;
+    this.stats.hits++;
+    return entry.result;
+  }
+
+  /**
+   * Cache a SELECT result.
+   * @param {string} sql — the SQL query
+   * @param {object} result — the query result { rows, ... }
+   * @param {string[]} tables — tables referenced by this query
+   * @param {number} ttl — TTL in ms (optional)
+   */
+  set(sql, result, tables = [], ttl = this.defaultTTLMs) {
+    // Evict if full
+    while (this._cache.size >= this.maxEntries) {
       this._evictLRU();
     }
+
     this._cache.set(sql, {
-      compiledFn,
-      metadata,
-      lastUsed: Date.now(),
-      useCount: 1,
-      created: Date.now(),
+      result,
+      tables,
+      insertedAt: Date.now(),
+      ttl,
+      hits: 0,
     });
-    this._compilations++;
+
+    // Update table index for invalidation
+    for (const table of tables) {
+      if (!this._tableIndex.has(table)) this._tableIndex.set(table, new Set());
+      this._tableIndex.get(table).add(sql);
+    }
+
+    this._touch(sql);
+    this.stats.sets++;
   }
 
-  /** Get cache statistics. */
-  stats() {
-    return {
-      entries: this._cache.size,
-      maxSize: this._maxSize,
-      hits: this._hits,
-      misses: this._misses,
-      compilations: this._compilations,
-      hitRate: this._hits + this._misses > 0 ? this._hits / (this._hits + this._misses) : 0,
-    };
+  /**
+   * Invalidate all cached results that reference a specific table.
+   * Called after INSERT/UPDATE/DELETE on that table.
+   */
+  invalidateTable(table) {
+    const queries = this._tableIndex.get(table);
+    if (!queries) return 0;
+
+    let count = 0;
+    for (const sql of queries) {
+      this._remove(sql);
+      count++;
+    }
+    this._tableIndex.delete(table);
+    this.stats.invalidations += count;
+    return count;
   }
 
-  /** Clear the cache. */
-  clear() {
+  /**
+   * Invalidate all cached results.
+   */
+  invalidateAll() {
+    const count = this._cache.size;
     this._cache.clear();
+    this._tableIndex.clear();
+    this._accessOrder = [];
+    this.stats.invalidations += count;
+    return count;
   }
 
-  /** Evict the least recently used entry. */
-  _evictLRU() {
-    let oldest = Infinity;
-    let oldestKey = null;
-    for (const [key, entry] of this._cache) {
-      if (entry.lastUsed < oldest) {
-        oldest = entry.lastUsed;
-        oldestKey = key;
+  /**
+   * Extract table names from a SQL query (simple heuristic).
+   */
+  static extractTables(sql) {
+    const tables = new Set();
+    const upper = sql.toUpperCase();
+    
+    // FROM table
+    const fromMatch = upper.match(/FROM\s+(\w+)/g);
+    if (fromMatch) {
+      for (const m of fromMatch) {
+        tables.add(m.replace(/FROM\s+/i, '').toLowerCase());
       }
     }
-    if (oldestKey) this._cache.delete(oldestKey);
-  }
-}
 
-/**
- * Try to execute a SELECT query using compiled code.
- * Returns null if the query can't be compiled (complex query).
- * 
- * @param {string} sql — SQL query
- * @param {Database} db — database instance
- * @param {QueryCache} cache — query cache
- * @returns {{ rows: object[] } | null}
- */
-export function tryCompiledExecution(sql, db, cache) {
-  // Only compile simple SELECT queries (no subqueries, no JOINs for now)
-  const trimmed = sql.trim().toUpperCase();
-  if (!trimmed.startsWith('SELECT')) return null;
-  
-  // Check cache
-  const cached = cache.get(sql);
-  if (cached) {
-    // Use cached compiled function
-    const tableName = cached.metadata.tableName;
-    const table = db.tables.get(tableName);
-    if (!table) return null;
-    
-    const heap = table.heap.scan();
-    const rows = cached.compiledFn(heap);
-    return { rows };
+    // JOIN table
+    const joinMatch = upper.match(/JOIN\s+(\w+)/g);
+    if (joinMatch) {
+      for (const m of joinMatch) {
+        tables.add(m.replace(/JOIN\s+/i, '').toLowerCase());
+      }
+    }
+
+    // INSERT INTO / UPDATE / DELETE FROM
+    const writeMatch = upper.match(/(?:INTO|UPDATE|FROM)\s+(\w+)/g);
+    if (writeMatch) {
+      for (const m of writeMatch) {
+        tables.add(m.replace(/(?:INTO|UPDATE|FROM)\s+/i, '').toLowerCase());
+      }
+    }
+
+    return [...tables];
   }
+
+  _remove(sql) {
+    const entry = this._cache.get(sql);
+    if (!entry) return;
+
+    // Remove from table index
+    for (const table of entry.tables) {
+      const queries = this._tableIndex.get(table);
+      if (queries) {
+        queries.delete(sql);
+        if (queries.size === 0) this._tableIndex.delete(table);
+      }
+    }
+
+    this._cache.delete(sql);
+    this._accessOrder = this._accessOrder.filter(s => s !== sql);
+  }
+
+  _touch(sql) {
+    this._accessOrder = this._accessOrder.filter(s => s !== sql);
+    this._accessOrder.push(sql);
+  }
+
+  _evictLRU() {
+    if (this._accessOrder.length === 0) return;
+    const oldest = this._accessOrder.shift();
+    this._remove(oldest);
+    this.stats.evictions++;
+  }
+
+  get size() { return this._cache.size; }
   
-  // Try to parse and compile
-  try {
-    const ast = parse(sql);
-    
-    // Only handle simple single-table SELECTs
-    if (ast.type !== 'SELECT') return null;
-    if (!ast.from || ast.from.join) return null; // No JOINs
-    if (ast.groupBy) return null; // No GROUP BY (need aggregation)
-    if (ast.having) return null;
-    if (ast.union) return null;
-    
-    const tableName = ast.from.table || ast.from.name;
-    if (!tableName) return null;
-    
-    const table = db.tables.get(tableName);
-    if (!table) return null;
-    
-    const schema = table.schema;
-    const compiled = compileScanFilterProject(
-      ast.where,
-      ast.columns,
-      schema,
-      { limit: ast.limit, offset: ast.offset }
-    );
-    
-    if (!compiled) return null;
-    
-    // Execute and cache
-    const heap = table.heap.scan();
-    const rows = compiled(heap);
-    
-    cache.put(sql, compiled, { tableName, schema });
-    
-    return { rows };
-  } catch (e) {
-    return null; // Can't compile — fall back to interpreter
+  getStats() {
+    const hitRate = this.stats.hits + this.stats.misses > 0
+      ? (this.stats.hits / (this.stats.hits + this.stats.misses) * 100).toFixed(1)
+      : '0';
+    return {
+      ...this.stats,
+      size: this._cache.size,
+      hitRate: hitRate + '%',
+    };
   }
 }
