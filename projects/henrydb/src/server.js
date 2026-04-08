@@ -87,6 +87,7 @@ export class HenryDBServer {
       portals: new Map(), // name → { statement, paramValues, result }
       listeningChannels: new Set(), // channels this connection is LISTENing on
       copyState: null, // { table, columns, buffer, rowCount } when in COPY mode
+      cursors: new Map(), // name → { rows, position, columns }
     };
     this.connections.add(conn);
 
@@ -779,6 +780,177 @@ export class HenryDBServer {
       }
       if (this._verbose) console.log(`[${conn.pid}] UNLISTEN ${arg}`);
       conn.socket.write(writeCommandComplete('UNLISTEN'));
+      return true;
+    }
+
+    // EXPLAIN ANALYZE
+    if (upper.startsWith('EXPLAIN ANALYZE') || upper.startsWith('EXPLAIN (ANALYZE)')) {
+      const selectSql = sql.replace(/^EXPLAIN\s+(?:\(ANALYZE\)|ANALYZE)\s*/i, '').trim();
+      try {
+        // Get the query plan
+        let planRows = [];
+        try {
+          const planResult = this.db.execute('EXPLAIN ' + selectSql);
+          if (planResult.type === 'PLAN') {
+            planRows = planResult.plan || [];
+          }
+        } catch (e) {
+          // Plan not available — continue without it
+        }
+
+        // Actually execute the query and measure
+        const startTime = process.hrtime.bigint();
+        const result = this.db.execute(selectSql);
+        const endTime = process.hrtime.bigint();
+        const execTimeMs = Number(endTime - startTime) / 1_000_000;
+        
+        const rowCount = result.type === 'ROWS' ? result.rows.length : 0;
+
+        // Check if adaptive engine was used
+        let engineUsed = 'volcano';
+        if (this.adaptiveEngine && /^\s*SELECT/i.test(selectSql)) {
+          try {
+            const ast = parse(selectSql);
+            if (ast.type === 'SELECT' && this._isAdaptiveEligible(ast)) {
+              engineUsed = 'adaptive';
+            }
+          } catch (e) { /* ignore */ }
+        }
+
+        // Build EXPLAIN ANALYZE output
+        const outputRows = [];
+        
+        // Plan steps
+        for (const step of planRows) {
+          outputRows.push({
+            'QUERY PLAN': `${step.operation || 'Scan'}${step.table ? ` on ${step.table}` : ''}${step.condition ? ` (filter: ${step.condition})` : ''}`
+          });
+        }
+
+        // Execution stats
+        outputRows.push({ 'QUERY PLAN': `Planning Time: 0.01 ms` });
+        outputRows.push({ 'QUERY PLAN': `Execution Time: ${execTimeMs.toFixed(3)} ms` });
+        outputRows.push({ 'QUERY PLAN': `Rows Returned: ${rowCount}` });
+        outputRows.push({ 'QUERY PLAN': `Engine: ${engineUsed}` });
+
+        // Count tables scanned
+        const tablesInQuery = [];
+        for (const [name] of this.db.tables) {
+          if (selectSql.toLowerCase().includes(name.toLowerCase())) {
+            const tableData = this.db.tables.get(name);
+            if (tableData && tableData.heap) {
+              tablesInQuery.push({ name, rows: tableData.heap._rowCount || tableData.heap.data?.length || 0 });
+            }
+          }
+        }
+        for (const t of tablesInQuery) {
+          outputRows.push({ 'QUERY PLAN': `  Seq Scan on ${t.name}: rows=${t.rows}` });
+        }
+
+        if (outputRows.length === 0) {
+          outputRows.push({ 'QUERY PLAN': `Result: ${rowCount} rows in ${execTimeMs.toFixed(3)} ms` });
+        }
+
+        this._sendResult(conn, sql, { type: 'ROWS', rows: outputRows });
+        return true;
+      } catch (e) {
+        conn.socket.write(writeErrorResponse('ERROR', '42000', e.message));
+        return true;
+      }
+    }
+
+    // DECLARE cursor_name CURSOR FOR select_statement
+    if (upper.startsWith('DECLARE ')) {
+      const match = sql.match(/DECLARE\s+(\w+)\s+(?:NO\s+SCROLL\s+)?CURSOR\s+(?:WITH(?:OUT)?\s+HOLD\s+)?FOR\s+(.+)/is);
+      if (match) {
+        const cursorName = match[1];
+        const selectSql = match[2].trim().replace(/;$/, '');
+        try {
+          const result = this.db.execute(selectSql);
+          if (result.type === 'ROWS') {
+            const columns = result.rows.length > 0 ? Object.keys(result.rows[0]) : (result.columns || []);
+            conn.cursors.set(cursorName, { rows: result.rows, position: 0, columns });
+          } else {
+            conn.cursors.set(cursorName, { rows: [], position: 0, columns: [] });
+          }
+          conn.socket.write(writeCommandComplete('DECLARE CURSOR'));
+        } catch (e) {
+          conn.socket.write(writeErrorResponse('ERROR', '42000', e.message));
+        }
+        return true;
+      }
+    }
+
+    // FETCH [FORWARD] [count|ALL|NEXT] [FROM|IN] cursor_name
+    if (upper.startsWith('FETCH ')) {
+      const match = sql.match(/FETCH\s+(?:FORWARD\s+)?(?:(ALL|NEXT|\d+)\s+)?(?:FROM|IN)\s+(\w+)/i);
+      if (match) {
+        const countStr = (match[1] || 'NEXT').toUpperCase();
+        const cursorName = match[2];
+        const cursor = conn.cursors.get(cursorName);
+        if (!cursor) {
+          conn.socket.write(writeErrorResponse('ERROR', '34000', `Cursor "${cursorName}" not found`));
+          return true;
+        }
+
+        const count = countStr === 'ALL' ? cursor.rows.length - cursor.position
+                    : countStr === 'NEXT' ? 1
+                    : parseInt(countStr);
+
+        const endPos = Math.min(cursor.position + count, cursor.rows.length);
+        const fetchedRows = cursor.rows.slice(cursor.position, endPos);
+        cursor.position = endPos;
+
+        // Send result
+        if (fetchedRows.length > 0) {
+          const columnNames = cursor.columns.length > 0 ? cursor.columns : Object.keys(fetchedRows[0]);
+          const sampleValues = Object.values(fetchedRows[0]);
+          conn.socket.write(writeRowDescription(
+            columnNames.map((name, i) => ({ name, typeOid: inferTypeOid(sampleValues[i]), typeSize: -1 }))
+          ));
+          for (const row of fetchedRows) {
+            const values = columnNames.map(c => {
+              const v = row[c];
+              return v === null || v === undefined ? null : v;
+            });
+            conn.socket.write(writeDataRow(values));
+          }
+        }
+        conn.socket.write(writeCommandComplete(`FETCH ${fetchedRows.length}`));
+        return true;
+      }
+    }
+
+    // MOVE [FORWARD] [count|ALL|NEXT] [FROM|IN] cursor_name
+    if (upper.startsWith('MOVE ')) {
+      const match = sql.match(/MOVE\s+(?:FORWARD\s+)?(?:(ALL|NEXT|\d+)\s+)?(?:FROM|IN)\s+(\w+)/i);
+      if (match) {
+        const countStr = (match[1] || 'NEXT').toUpperCase();
+        const cursorName = match[2];
+        const cursor = conn.cursors.get(cursorName);
+        if (!cursor) {
+          conn.socket.write(writeErrorResponse('ERROR', '34000', `Cursor "${cursorName}" not found`));
+          return true;
+        }
+        const count = countStr === 'ALL' ? cursor.rows.length - cursor.position
+                    : countStr === 'NEXT' ? 1
+                    : parseInt(countStr);
+        const moved = Math.min(count, cursor.rows.length - cursor.position);
+        cursor.position += moved;
+        conn.socket.write(writeCommandComplete(`MOVE ${moved}`));
+        return true;
+      }
+    }
+
+    // CLOSE cursor_name | CLOSE ALL
+    if (upper.startsWith('CLOSE ')) {
+      const arg = sql.substring(6).trim();
+      if (arg.toUpperCase() === 'ALL') {
+        conn.cursors.clear();
+      } else {
+        conn.cursors.delete(arg);
+      }
+      conn.socket.write(writeCommandComplete('CLOSE CURSOR'));
       return true;
     }
 

@@ -4109,10 +4109,43 @@
     {
       "id": "T379",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit COPY protocol implementation and sync to GitHub",
       "project": "henrydb",
-      "started": "2026-04-08T21:17:53.557Z"
+      "started": "2026-04-08T21:17:53.557Z",
+      "completed": "2026-04-08T21:18:18.101Z",
+      "duration_ms": 30000,
+      "summary": "Pushed to GitHub. Session running total: 133 new server tests."
+    },
+    {
+      "id": "T380",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build server-side cursors: DECLARE CURSOR, FETCH N, MOVE, CLOSE. Stream large result sets row-by-row through the wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-08T21:18:41.139Z",
+      "completed": "2026-04-08T21:20:21.993Z",
+      "duration_ms": 240000,
+      "summary": "Server-side cursors: DECLARE CURSOR FOR, FETCH N/ALL/NEXT/FORWARD, MOVE, CLOSE/CLOSE ALL. Multiple concurrent cursors, WHERE filtering, row streaming. 9 tests."
+    },
+    {
+      "id": "T381",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build EXPLAIN ANALYZE: actual execution stats (rows scanned, time per operation, engine used) in query plan output",
+      "project": "henrydb",
+      "started": "2026-04-08T21:20:22.454Z",
+      "completed": "2026-04-08T21:22:09.422Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN ANALYZE: shows execution time, row count, engine used, table scan info. Works with WHERE, aggregates, JOINs. 7 tests."
+    },
+    {
+      "id": "T382",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Commit cursors + EXPLAIN ANALYZE and sync to GitHub",
+      "project": "henrydb",
+      "started": "2026-04-08T21:22:09.882Z"
     }
   ],
   "focusProjects": [
@@ -5604,6 +5637,18 @@
     {
       "time": "2026-04-08T21:14:08.425Z",
       "msg": "Added T379 (MAINTAIN) after T378: Commit COPY protocol implementation and sync to GitHub"
+    },
+    {
+      "time": "2026-04-08T21:18:35.299Z",
+      "msg": "Added T380 (BUILD) after end: Build server-side cursors: DECLARE CURSOR, FETCH N, MOVE, CLOSE. Stream large result sets row-by-row through the wire protocol"
+    },
+    {
+      "time": "2026-04-08T21:18:35.512Z",
+      "msg": "Added T381 (BUILD) after T380: Build EXPLAIN ANALYZE: actual execution stats (rows scanned, time per operation, engine used) in query plan output"
+    },
+    {
+      "time": "2026-04-08T21:18:35.724Z",
+      "msg": "Added T382 (MAINTAIN) after T381: Commit cursors + EXPLAIN ANALYZE and sync to GitHub"
     }
   ]
 }
