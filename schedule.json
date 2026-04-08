@@ -740,6 +740,34 @@
       "completed": "2026-04-08T16:04:07.901Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (186 objects). Dashboard synced."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write-optimized LSM store for high-throughput inserts (memtable + sorted runs)",
+      "project": "henrydb",
+      "started": "2026-04-08T16:04:38.092Z",
+      "completed": "2026-04-08T16:05:06.222Z",
+      "duration_ms": 10000,
+      "summary": "LSM already implemented (313 LOC): memtable (skip list), SSTables with Bloom filters, compaction. Skipping to query result caching."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: query result caching with TTL and invalidation",
+      "project": "henrydb",
+      "started": "2026-04-08T16:05:06.478Z",
+      "completed": "2026-04-08T16:06:33.817Z",
+      "duration_ms": 120000,
+      "summary": "Query result cache: LRU eviction, per-query TTL, table-based write invalidation, auto table extraction from SQL. 11 tests, all pass."
+    },
+    {
+      "id": "T72",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and sync"
     }
   ],
   "focusProjects": [
@@ -1031,6 +1059,18 @@
     {
       "time": "2026-04-08T15:59:24.174Z",
       "msg": "Added T69 (MAINTAIN) after end: Mid-session push"
+    },
+    {
+      "time": "2026-04-08T16:04:28.259Z",
+      "msg": "Added T70 (BUILD) after end: HenryDB: write-optimized LSM store for high-throughput inserts (memtable + sorted runs)"
+    },
+    {
+      "time": "2026-04-08T16:04:28.376Z",
+      "msg": "Added T71 (BUILD) after end: HenryDB: query result caching with TTL and invalidation"
+    },
+    {
+      "time": "2026-04-08T16:04:28.494Z",
+      "msg": "Added T72 (MAINTAIN) after end: Push and sync"
     }
   ]
 }
