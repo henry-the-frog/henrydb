@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:14:49.979Z",
+  "generated": "2026-04-08T16:15:35.260Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: symmetric hash join for streaming/pipelined execution",
-    "completedAt": "2026-04-08T16:14:49.979Z",
-    "taskId": "T77",
-    "summary": "Symmetric hash join: streaming/pipelined execution, both sides build hash tables simultaneously, results available incrementally. Many-to-many, materialize. 10K×20K in 33ms. 8 tests.",
-    "durationMs": 120000
+    "mode": "MAINTAIN",
+    "task": "Push and sync",
+    "completedAt": "2026-04-08T16:15:35.260Z",
+    "taskId": "T78",
+    "summary": "HenryDB pushed (197 objects). Dashboard synced.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -811,20 +811,52 @@
       {
         "id": "T75",
         "mode": "MAINTAIN",
-        "status": "in-progress",
+        "status": "done",
         "task": "Push, sync, final test count for session",
-        "started": "2026-04-08T16:10:42.544Z"
+        "started": "2026-04-08T16:10:42.544Z",
+        "completed": "2026-04-08T16:11:29.727Z",
+        "duration_ms": 60000,
+        "summary": "HenryDB pushed (192 objects). 214 new tests today (all passing). Dashboard synced. Server healthy."
+      },
+      {
+        "id": "T76",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: hash aggregation with spill-to-disk for large GROUP BY",
+        "project": "henrydb",
+        "started": "2026-04-08T16:11:52.467Z",
+        "completed": "2026-04-08T16:13:18.849Z",
+        "duration_ms": 120000,
+        "summary": "Hash aggregation with spill: memory-bounded GROUP BY, multiAggregate (multiple aggs in one pass), partition+spill for large groups. 500K/100 groups in 62ms. 8 tests."
+      },
+      {
+        "id": "T77",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: symmetric hash join for streaming/pipelined execution",
+        "project": "henrydb",
+        "started": "2026-04-08T16:13:37.388Z",
+        "completed": "2026-04-08T16:14:49.943Z",
+        "duration_ms": 120000,
+        "summary": "Symmetric hash join: streaming/pipelined execution, both sides build hash tables simultaneously, results available incrementally. Many-to-many, materialize. 10K×20K in 33ms. 8 tests."
+      },
+      {
+        "id": "T78",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Push and sync",
+        "started": "2026-04-08T16:15:07.878Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 75,
-    "blocksTotal": 75,
+    "blocksCompleted": 76,
+    "blocksTotal": 78,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
       "BUILD": 45,
-      "MAINTAIN": 17,
+      "MAINTAIN": 18,
       "EXPLORE": 2
     }
   }
