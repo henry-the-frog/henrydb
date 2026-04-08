@@ -1,6 +1,6 @@
 # HenryDB: Transactional Correctness Learnings
 
-uses: 3
+uses: 4
 created: 2026-04-07
 tags: database, mvcc, wal, crash-recovery, transactions
 
@@ -47,9 +47,81 @@ when other transactions are active — VACUUM cleans up later.
 - **Write-ahead constraint works**: Buffer pool eviction correctly calls `_enforceWriteAhead`
   before flushing dirty pages. This ensures WAL records reach disk before page data.
 
+### 7. Bug #8: Ghost Interceptors After Crash Recovery
+After crash + recovery, MVCC interceptors (which wrap heap.insert/delete for version
+tracking) weren't reinstalled. SSI rw-dependency tracking was completely absent post-recovery.
+Fix: TransactionalDatabase reinstalls interceptors as part of recovery sequence.
+
+### 8. Bug #9: isVisible(0) Returns False
+Rows with xmin=0 (inserted during recovery replay, no real txId) were invisible to
+subsequent queries because isVisible() treated txId 0 as "uncommitted." Fix: treat
+xmin=0 as always-visible (bootstrap rows).
+
+## Serializable Snapshot Isolation (SSI)
+
+- Strongest isolation level — prevents ALL anomalies including write skew
+- Implementation: rw-dependency tracking on top of MVCC snapshots
+- **Dangerous structure**: T1 →rw→ T2 →rw→ T3 where T1 committed before T3 started
+  - 3-way cycle detection: if a transaction has both incoming and outgoing rw-dependencies
+    with committed transactions, abort it
+- Tracks: `rwInDeps` (who read something I overwrote) and `rwOutDeps` (whose data I read that they overwrote)
+- SSI is the hardest isolation level in database engineering — PostgreSQL only added it in 9.1 (2011)
+- Doctor on-call write skew example: two doctors both read "2 on call", both remove themselves → 0 on call. SSI detects and aborts one.
+
+## Two-Phase Commit (2PC)
+
+- Distributed transaction protocol for multi-node atomicity
+- **Phase 1 (Prepare)**: Coordinator asks all participants to vote COMMIT or ABORT
+- **Phase 2 (Commit/Abort)**: If all vote COMMIT, coordinator sends COMMIT; if any votes ABORT, all abort
+- WAL-backed decisions: coordinator and participants log their votes before responding
+- Crash recovery: read WAL to determine vote, re-send if coordinator asks
+- Timeout handling: if coordinator doesn't hear back, abort the transaction
+- Tested with 5 concurrent 2PC transactions — all or nothing semantics proven
+
+## Pipeline JIT Compilation
+
+- Push-based query execution (HyPer-inspired) via Function() constructor
+- Generates tight JS loops with inlined predicates and projections
+- Benchmark on 10K rows:
+  - Selective filter (1% selectivity): JIT **3.07x** faster than Volcano iterator
+  - LIMIT queries: JIT **17.41x** faster (short-circuits without iterator overhead)
+  - Filter+project: JIT **1.11x** (marginal gain when work per tuple dominates)
+- Key insight: Volcano's per-tuple virtual dispatch dominates for selective queries; compiled code eliminates it
+
+## Bloom Filters in LSM Tree
+
+- Probabilistic set membership: false positives possible, false negatives impossible
+- FPR achieved: 1.02% (target 1%) at 1.2 bytes/key — near optimal
+- Counting Bloom filter variant: supports deletions (4-bit counters per slot)
+- Integrated into LSM SSTables: skip SSTable disk reads when key definitely not present
+- Measured: skips 1 in 5 SSTables on average (ideal: 1 in 1, but depends on key distribution)
+
+## SQLite Comparison Benchmark (10K rows)
+
+- COUNT(*): 39,000x slower (full heap scan vs SQLite's B-tree count)
+- Filter (WHERE x > 5000): 22x slower
+- GROUP BY: 5.5x slower
+- Key insight: ratio shrinks with query complexity because algorithmic overhead
+  (hash joins, sorts) dominates over raw I/O speed
+- HenryDB is algorithmically correct but not I/O-optimized (no page cache tuning, JS overhead)
+
+## Property-Based Testing
+
+- 13 property-based tests across 10 random seeds
+- SQL invariants verified: COUNT complement, SUM additivity, ORDER BY determinism,
+  DISTINCT uniqueness, WHERE monotonicity, MIN/MAX/AVG correctness, JOIN cardinality, LIMIT bounds
+- Random seed approach catches edge cases deterministic tests miss
+
 ## Test Coverage
 
 - 16 concurrent MVCC tests (dirty reads, phantoms, write skew, etc.)
 - 12 crash recovery tests (committed survives, uncommitted lost, repeated crashes)
 - 9 bank transfer invariant tests (200 random transfers, sum conserved)
-- Total: 37 new correctness tests
+- 10 SSI tests (write skew prevention, dangerous structure detection)
+- 14 2PC tests (coordinator/participant, crash recovery, concurrent)
+- 4 SSI + crash recovery integration tests (bugs #8 and #9)
+- 13 property-based tests (10 seeds × 8 invariants)
+- 13 bloom filter tests
+- 14 LSM tree tests (bloom filter integration)
+- 20 pipeline JIT tests
+- Total: ~125 new correctness tests (session total 2054+)

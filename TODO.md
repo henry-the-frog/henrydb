@@ -9,7 +9,6 @@ Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Urgent
 - [ ] Fix dashboard generate.cjs (got nuked in blog rebuild)
-- [ ] Write missing scratch notes: MVCC/WAL learnings, Thompson's NFA, Algorithm W, Forth compilation mode
 
 ## Normal
 - [ ] Fix blog internal links (.html vs trailing slash)
