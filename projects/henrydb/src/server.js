@@ -452,8 +452,26 @@ export class HenryDBServer {
         const upper = sql.toUpperCase().trim();
         if (upper === 'SELECT VERSION()' || upper === 'SELECT VERSION ()') {
           result = { type: 'ROWS', rows: [{ version: 'PostgreSQL 15.0 on HenryDB (JavaScript)' }] };
-        } else if (upper.includes('PG_CATALOG') || upper.includes('INFORMATION_SCHEMA') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS')) {
+        } else if (upper.includes('PG_CATALOG') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS') || upper.includes('PG_NAMESPACE')) {
           result = { type: 'ROWS', rows: [], columns: [] };
+        } else if (upper.includes('INFORMATION_SCHEMA.TABLES')) {
+          const rows = [];
+          for (const [name] of this.db.tables) {
+            rows.push({ table_catalog: 'henrydb', table_schema: 'public', table_name: name, table_type: 'BASE TABLE' });
+          }
+          result = { type: 'ROWS', rows };
+        } else if (upper.includes('INFORMATION_SCHEMA.COLUMNS')) {
+          const rows = [];
+          const tableFilter = sql.match(/table_name\s*=\s*'([^']+)'/i);
+          for (const [tableName, table] of this.db.tables) {
+            if (tableFilter && tableName !== tableFilter[1]) continue;
+            if (table.schema) {
+              table.schema.forEach((col, idx) => {
+                rows.push({ table_catalog: 'henrydb', table_schema: 'public', table_name: tableName, column_name: col.name, ordinal_position: idx + 1, data_type: col.type || 'text', is_nullable: 'YES' });
+              });
+            }
+          }
+          result = { type: 'ROWS', rows };
         } else if (upper.startsWith('SET ')) {
           result = { type: 'OK', message: 'SET' };
         } else if (upper.startsWith('DEALLOCATE')) {
@@ -713,9 +731,51 @@ export class HenryDBServer {
     }
 
     // pg_catalog queries (introspection)
-    if (upper.includes('PG_CATALOG') || upper.includes('INFORMATION_SCHEMA') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS')) {
-      // Return empty result set for catalog queries
+    if (upper.includes('PG_CATALOG') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS') || upper.includes('PG_NAMESPACE')) {
+      // Return empty result set for catalog queries we can't fully handle
       this._sendResult(conn, sql, { type: 'ROWS', rows: [], columns: [] });
+      return true;
+    }
+
+    // information_schema.columns (check BEFORE tables since column queries contain 'table_name')
+    if (upper.includes('INFORMATION_SCHEMA.COLUMNS')) {
+      const rows = [];
+      const tableFilter = sql.match(/table_name\s*=\s*'([^']+)'/i);
+      for (const [tableName, table] of this.db.tables) {
+        if (tableFilter && tableName !== tableFilter[1]) continue;
+        if (table.schema) {
+          table.schema.forEach((col, idx) => {
+            rows.push({
+              table_catalog: 'henrydb',
+              table_schema: 'public',
+              table_name: tableName,
+              column_name: col.name,
+              ordinal_position: idx + 1,
+              data_type: col.type || 'text',
+              is_nullable: 'YES',
+            });
+          });
+        }
+      }
+      this._sendResult(conn, sql, { type: 'ROWS', rows });
+      return true;
+    }
+
+    // information_schema.tables
+    if (upper.includes('INFORMATION_SCHEMA.TABLES')) {
+      const rows = [];
+      const tableFilter = sql.match(/table_name\s*=\s*'([^']+)'/i);
+      const schemaFilter = sql.match(/table_schema\s*=\s*'([^']+)'/i);
+      for (const [name] of this.db.tables) {
+        if (tableFilter && name !== tableFilter[1]) continue;
+        rows.push({
+          table_catalog: 'henrydb',
+          table_schema: 'public',
+          table_name: name,
+          table_type: 'BASE TABLE',
+        });
+      }
+      this._sendResult(conn, sql, { type: 'ROWS', rows });
       return true;
     }
 
