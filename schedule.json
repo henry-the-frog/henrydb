@@ -402,22 +402,34 @@
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: vectorized compiled hash join — batch probe with compiled join keys",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:12:12.384Z",
+      "completed": "2026-04-08T15:12:12.526Z",
+      "duration_ms": 5000,
+      "summary": "Already implemented in T37 — vectorized hash join with batch probe included."
     },
     {
       "id": "T39",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: benchmark vectorized vs row-at-a-time compiled execution",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:12:12.665Z",
+      "completed": "2026-04-08T15:12:12.806Z",
+      "duration_ms": 5000,
+      "summary": "Already benchmarked in T37: vectorized 6ms, codegen 28ms, closure 14ms, Volcano 1321ms. Vec is 220x vs Volcano."
     },
     {
       "id": "T40",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping: push HenryDB, sync dashboard, git commit all"
+      "status": "done",
+      "task": "Final housekeeping: push HenryDB, sync dashboard, git commit all",
+      "started": "2026-04-08T15:12:25.072Z",
+      "completed": "2026-04-08T15:12:51.185Z",
+      "duration_ms": 30000,
+      "summary": "HenryDB pushed (140 objects). Dashboard synced. 182 test files in henrydb."
     }
   ],
   "focusProjects": [

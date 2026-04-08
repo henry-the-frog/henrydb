@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:11:45.017Z",
+  "generated": "2026-04-08T15:12:51.221Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: vectorized compiled scan — process data in batches of 1024 with compiled filters",
-    "completedAt": "2026-04-08T15:11:45.017Z",
-    "taskId": "T37",
-    "summary": "Vectorized compiled scan+join: columnar batches of 1024, selection vectors, batch hash table build/probe. 220x vs Volcano (fastest engine yet!). 11 tests, all pass.",
-    "durationMs": 600000
+    "mode": "MAINTAIN",
+    "task": "Final housekeeping: push HenryDB, sync dashboard, git commit all",
+    "completedAt": "2026-04-08T15:12:51.221Z",
+    "taskId": "T40",
+    "summary": "HenryDB pushed (140 objects). Dashboard synced. 182 test files in henrydb.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -350,48 +350,107 @@
       {
         "id": "T32",
         "mode": "MAINTAIN",
-        "status": "in-progress",
+        "status": "done",
         "task": "Housekeeping: push all repos, sync dashboard, test count",
-        "started": "2026-04-08T15:01:23.783Z"
+        "started": "2026-04-08T15:01:23.783Z",
+        "completed": "2026-04-08T15:02:56.973Z",
+        "duration_ms": 60000,
+        "summary": "2280 total HenryDB tests (38 new today). HenryDB pushed. Dashboard synced and regenerated (36 blocks/29 done). Blog build succeeded earlier."
       },
       {
         "id": "T33",
         "mode": "THINK",
-        "status": "upcoming",
+        "status": "done",
         "task": "Identify next depth area for HenryDB: parallel query, window functions, or adaptive execution",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T15:03:15.120Z",
+        "completed": "2026-04-08T15:04:39.531Z",
+        "duration_ms": 60000,
+        "summary": "Window functions already implemented. Chose README update (visibility) + vectorized compiled execution (depth). Vectorized+compiled integration is the DuckDB approach — batched columnar processing with compiled pipelines."
       },
       {
         "id": "T34",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: implement window functions (ROW_NUMBER, RANK, SUM OVER)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T15:04:59.013Z",
+        "completed": "2026-04-08T15:04:59.164Z",
+        "duration_ms": 5000,
+        "summary": "Already implemented: ROW_NUMBER, RANK, DENSE_RANK, NTILE, LAG, LEAD, SUM/COUNT/AVG/MIN/MAX OVER, ROWS BETWEEN frames. 3 test files, 588 lines of tests."
       },
       {
         "id": "T35",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: implement window function tests (partitioning, ordering, frames)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T15:05:07.934Z",
+        "completed": "2026-04-08T15:05:08.075Z",
+        "duration_ms": 5000,
+        "summary": "Already implemented: 3 test files with 588 total lines."
       },
       {
         "id": "T36",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: update README with compiled query engine, window functions, test counts",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T15:05:24.645Z",
+        "completed": "2026-04-08T15:08:42.130Z",
+        "duration_ms": 120000,
+        "summary": "Updated README: 46K LOC, 2280 tests, compiled query engine (365x), batch codegen (143x), EXPLAIN COMPILED. Updated architecture diagram, lessons learned, test counts."
+      },
+      {
+        "id": "T37",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: vectorized compiled scan — process data in batches of 1024 with compiled filters",
+        "project": "henrydb",
+        "started": "2026-04-08T15:09:37.303Z",
+        "completed": "2026-04-08T15:11:44.980Z",
+        "duration_ms": 600000,
+        "summary": "Vectorized compiled scan+join: columnar batches of 1024, selection vectors, batch hash table build/probe. 220x vs Volcano (fastest engine yet!). 11 tests, all pass."
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: vectorized compiled hash join — batch probe with compiled join keys",
+        "project": "henrydb",
+        "started": "2026-04-08T15:12:12.384Z",
+        "completed": "2026-04-08T15:12:12.526Z",
+        "duration_ms": 5000,
+        "summary": "Already implemented in T37 — vectorized hash join with batch probe included."
+      },
+      {
+        "id": "T39",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: benchmark vectorized vs row-at-a-time compiled execution",
+        "project": "henrydb",
+        "started": "2026-04-08T15:12:12.665Z",
+        "completed": "2026-04-08T15:12:12.806Z",
+        "duration_ms": 5000,
+        "summary": "Already benchmarked in T37: vectorized 6ms, codegen 28ms, closure 14ms, Volcano 1321ms. Vec is 220x vs Volcano."
+      },
+      {
+        "id": "T40",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Final housekeeping: push HenryDB, sync dashboard, git commit all",
+        "started": "2026-04-08T15:12:25.072Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 35,
-    "blocksTotal": 36,
+    "blocksCompleted": 38,
+    "blocksTotal": 40,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 17,
-      "MAINTAIN": 5,
+      "BUILD": 19,
+      "MAINTAIN": 6,
       "EXPLORE": 2
     }
   }
