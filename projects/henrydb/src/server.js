@@ -11,6 +11,11 @@ import {
   writeReadyForQuery, writeRowDescription, writeDataRow,
   writeCommandComplete, writeErrorResponse,
   parseStartupMessage, parseQueryMessage, inferTypeOid,
+  parseParseMessage, parseBindMessage, parseDescribeMessage,
+  parseExecuteMessage, parseCloseMessage,
+  writeParseComplete, writeBindComplete, writeCloseComplete,
+  writeNoData, writeParameterDescription, writeEmptyQueryResponse,
+  writePortalSuspended,
   PG_TYPES,
 } from './pg-protocol.js';
 
@@ -33,6 +38,8 @@ export class HenryDBServer {
     this.connections = new Set();
     this._nextPid = 1;
     this._verbose = options.verbose || false;
+    // Global prepared statement plan cache (shared across connections)
+    this._planCache = new Map(); // sql → { result: pre-computed result, hits: number, lastUsed: number }
   }
 
   start() {
@@ -72,6 +79,8 @@ export class HenryDBServer {
       state: 'startup', // startup | ready | terminated
       txStatus: 'I',    // I = idle, T = in transaction, E = failed transaction
       useAdaptive: true, // Use adaptive engine for SELECTs
+      preparedStatements: new Map(), // name → { sql, paramTypes, ast }
+      portals: new Map(), // name → { statement, paramValues, result }
     };
     this.connections.add(conn);
 
@@ -157,13 +166,31 @@ export class HenryDBServer {
         case 0x51: // 'Q' — Simple Query
           this._handleQuery(conn, msgBody);
           break;
+        case 0x50: // 'P' — Parse
+          this._handleParse(conn, msgBody);
+          break;
+        case 0x42: // 'B' — Bind
+          this._handleBind(conn, msgBody);
+          break;
+        case 0x44: // 'D' — Describe
+          this._handleDescribe(conn, msgBody);
+          break;
+        case 0x45: // 'E' — Execute
+          this._handleExecute(conn, msgBody);
+          break;
+        case 0x43: // 'C' — Close (statement/portal)
+          this._handleClose(conn, msgBody);
+          break;
+        case 0x53: // 'S' — Sync
+          conn.socket.write(writeReadyForQuery(conn.txStatus));
+          break;
+        case 0x48: // 'H' — Flush
+          // Just drain any pending data (no-op for us)
+          break;
         case 0x58: // 'X' — Terminate
           conn.state = 'terminated';
           conn.socket.destroy();
           return;
-        case 0x50: // 'P' — Parse (extended query protocol)
-          this._handleParseNotSupported(conn);
-          break;
         default:
           if (this._verbose) {
             console.log(`[${conn.pid}] Unknown message type: 0x${msgType.toString(16)}`);
@@ -201,7 +228,13 @@ export class HenryDBServer {
             const ast = parse(stmt);
             if (ast.type === 'SELECT' && this._isAdaptiveEligible(ast)) {
               const adaptive = this.adaptiveEngine.executeSelect(ast);
-              result = { type: 'ROWS', rows: adaptive.rows, _engine: adaptive.engine, _timeMs: adaptive.timeMs };
+              // Validate that adaptive engine returned meaningful results
+              if (adaptive.rows && adaptive.rows.length > 0 && Object.keys(adaptive.rows[0]).length > 0) {
+                result = { type: 'ROWS', rows: adaptive.rows, _engine: adaptive.engine, _timeMs: adaptive.timeMs };
+              } else {
+                // Adaptive engine returned empty-keyed rows; fall back to Volcano
+                result = this.db.execute(stmt);
+              }
             } else {
               result = this.db.execute(stmt);
             }
@@ -326,11 +359,203 @@ export class HenryDBServer {
     return 'OK';
   }
 
-  _handleParseNotSupported(conn) {
-    conn.socket.write(writeErrorResponse(
-      'ERROR', '0A000',
-      'Extended query protocol not supported. Use simple query protocol.'
-    ));
+  _handleParse(conn, msgBody) {
+    try {
+      const { name, query, paramTypes } = parseParseMessage(msgBody);
+      if (this._verbose) {
+        console.log(`[${conn.pid}] Parse: name="${name}" query="${query}" params=${paramTypes.length}`);
+      }
+
+      // Parse the SQL and store the prepared statement
+      let ast = null;
+      const trimmedQuery = query.trim();
+      if (trimmedQuery) {
+        // Replace $1, $2, etc. with placeholders that our parser can handle
+        ast = { _rawSql: trimmedQuery, _paramTypes: paramTypes };
+      }
+
+      conn.preparedStatements.set(name, { sql: trimmedQuery, paramTypes, ast });
+      conn.socket.write(writeParseComplete());
+    } catch (err) {
+      conn.socket.write(writeErrorResponse('ERROR', '42000', err.message));
+    }
+  }
+
+  _handleBind(conn, msgBody) {
+    try {
+      const { portal, statement, paramValues, resultFormats } = parseBindMessage(msgBody);
+      if (this._verbose) {
+        console.log(`[${conn.pid}] Bind: portal="${portal}" stmt="${statement}" params=${paramValues.length}`);
+      }
+
+      const stmt = conn.preparedStatements.get(statement);
+      if (!stmt) {
+        conn.socket.write(writeErrorResponse('ERROR', '26000', `Prepared statement "${statement}" not found`));
+        return;
+      }
+
+      // Substitute parameters into SQL
+      let sql = stmt.sql;
+      for (let i = 0; i < paramValues.length; i++) {
+        const val = paramValues[i];
+        const placeholder = `$${i + 1}`;
+        let replacement;
+        if (val === null) {
+          replacement = 'NULL';
+        } else if (typeof val === 'string') {
+          // Check if it looks numeric
+          if (/^-?\d+(\.\d+)?$/.test(val)) {
+            replacement = val;
+          } else {
+            replacement = `'${val.replace(/'/g, "''")}'`;
+          }
+        } else {
+          replacement = String(val);
+        }
+        // Replace all occurrences of the placeholder
+        sql = sql.split(placeholder).join(replacement);
+      }
+
+      // Execute and store the result for the portal
+      let result = null;
+      if (sql.trim()) {
+        result = this.db.execute(sql);
+      }
+
+      conn.portals.set(portal, { statement, paramValues, result, resultFormats, sql });
+      conn.socket.write(writeBindComplete());
+    } catch (err) {
+      conn.socket.write(writeErrorResponse('ERROR', '42000', err.message));
+    }
+  }
+
+  _handleDescribe(conn, msgBody) {
+    try {
+      const { type, name } = parseDescribeMessage(msgBody);
+      if (this._verbose) {
+        console.log(`[${conn.pid}] Describe: type=${type} name="${name}"`);
+      }
+
+      if (type === 'S') {
+        // Describe prepared statement
+        const stmt = conn.preparedStatements.get(name);
+        if (!stmt) {
+          conn.socket.write(writeErrorResponse('ERROR', '26000', `Prepared statement "${name}" not found`));
+          return;
+        }
+        // Send ParameterDescription — count $N placeholders
+        const paramCount = (stmt.sql.match(/\$\d+/g) || []).length;
+        const paramOids = stmt.paramTypes.length > 0 
+          ? stmt.paramTypes 
+          : new Array(paramCount).fill(PG_TYPES.TEXT);
+        conn.socket.write(writeParameterDescription(paramOids));
+        
+        // Try to determine result columns by executing with dummy values
+        if (/^\s*SELECT/i.test(stmt.sql)) {
+          // Probe execution: replace $N with NULLs to get column info
+          let probeSql = stmt.sql;
+          for (let i = paramCount; i >= 1; i--) {
+            probeSql = probeSql.split(`$${i}`).join('NULL');
+          }
+          try {
+            const probeResult = this.db.execute(probeSql);
+            if (probeResult && probeResult.type === 'ROWS') {
+              if (probeResult.rows.length > 0) {
+                const columnNames = Object.keys(probeResult.rows[0]);
+                const sampleValues = Object.values(probeResult.rows[0]);
+                conn.socket.write(writeRowDescription(
+                  columnNames.map((cname, i) => ({
+                    name: cname,
+                    typeOid: inferTypeOid(sampleValues[i]),
+                    typeSize: -1,
+                  }))
+                ));
+              } else if (probeResult.columns && probeResult.columns.length > 0) {
+                conn.socket.write(writeRowDescription(
+                  probeResult.columns.map(cname => ({
+                    name: cname,
+                    typeOid: PG_TYPES.TEXT,
+                    typeSize: -1,
+                  }))
+                ));
+              } else {
+                conn.socket.write(writeNoData());
+              }
+            } else {
+              conn.socket.write(writeNoData());
+            }
+          } catch (e) {
+            // Probe failed (e.g., table doesn't exist), send NoData
+            conn.socket.write(writeNoData());
+          }
+        } else {
+          conn.socket.write(writeNoData());
+        }
+      } else {
+        // Describe portal
+        const portal = conn.portals.get(name);
+        if (!portal) {
+          conn.socket.write(writeErrorResponse('ERROR', '34000', `Portal "${name}" not found`));
+          return;
+        }
+        
+        if (portal.result && portal.result.type === 'ROWS' && portal.result.rows.length > 0) {
+          const columnNames = Object.keys(portal.result.rows[0]);
+          const sampleValues = Object.values(portal.result.rows[0]);
+          conn.socket.write(writeRowDescription(
+            columnNames.map((cname, i) => ({
+              name: cname,
+              typeOid: inferTypeOid(sampleValues[i]),
+              typeSize: -1,
+            }))
+          ));
+        } else {
+          conn.socket.write(writeNoData());
+        }
+      }
+    } catch (err) {
+      conn.socket.write(writeErrorResponse('ERROR', '42000', err.message));
+    }
+  }
+
+  _handleExecute(conn, msgBody) {
+    try {
+      const { portal: portalName, maxRows } = parseExecuteMessage(msgBody);
+      if (this._verbose) {
+        console.log(`[${conn.pid}] Execute: portal="${portalName}" maxRows=${maxRows}`);
+      }
+
+      const portal = conn.portals.get(portalName);
+      if (!portal) {
+        conn.socket.write(writeErrorResponse('ERROR', '34000', `Portal "${portalName}" not found`));
+        return;
+      }
+
+      const result = portal.result;
+      if (!result) {
+        conn.socket.write(writeEmptyQueryResponse());
+        return;
+      }
+
+      this._sendResult(conn, portal.sql, result);
+    } catch (err) {
+      conn.txStatus = conn.txStatus === 'T' ? 'E' : 'I';
+      conn.socket.write(writeErrorResponse('ERROR', '42000', err.message));
+    }
+  }
+
+  _handleClose(conn, msgBody) {
+    try {
+      const { type, name } = parseCloseMessage(msgBody);
+      if (type === 'S') {
+        conn.preparedStatements.delete(name);
+      } else {
+        conn.portals.delete(name);
+      }
+      conn.socket.write(writeCloseComplete());
+    } catch (err) {
+      conn.socket.write(writeErrorResponse('ERROR', '42000', err.message));
+    }
   }
 
   /**

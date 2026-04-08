@@ -3598,10 +3598,110 @@
     {
       "id": "T330",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard sync",
       "project": "henrydb",
-      "started": "2026-04-08T20:30:06.572Z"
+      "started": "2026-04-08T20:30:06.572Z",
+      "completed": "2026-04-08T20:31:07.340Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed to GitHub (rebase + push). Dashboard synced and healthy. 32 new server tests (14 unit + 11 integration + 7 adaptive). Total HenryDB estimate: ~3500+ tests."
+    },
+    {
+      "id": "T334",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What's the best next move for HenryDB? Options: blog about TCP server, TPC-H end-to-end benchmark, prepared statements, or something new entirely",
+      "project": "henrydb",
+      "started": "2026-04-08T20:31:45.395Z",
+      "completed": "2026-04-08T20:32:13.440Z",
+      "duration_ms": 60000,
+      "summary": "Best move: prepared statements + extended query protocol. Makes HenryDB accessible from real drivers (pg for Node.js). Qualitative leap from toy to usable. TPC-H can come after."
+    },
+    {
+      "id": "T335",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Next HenryDB depth area",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:32:24.218Z",
+      "completed": "2026-04-08T20:32:45.564Z",
+      "duration_ms": 30000,
+      "summary": "Plan: extended query protocol (Parse/Bind/Describe/Execute/Sync/Close), test with pg Node.js driver, prepared statement caching. 3 BUILD tasks."
+    },
+    {
+      "id": "T340",
+      "mode": "BUILD",
+      "task": "Implement extended query protocol: Parse/Bind/Describe/Execute/Sync/Close messages in server.js",
+      "status": "done",
+      "plan_ref": "T335",
+      "started": "2026-04-08T20:32:57.080Z",
+      "completed": "2026-04-08T20:36:34.737Z",
+      "duration_ms": 300000,
+      "summary": "Extended query protocol fully implemented: Parse/Bind/Describe/Execute/Sync/Close. Named prepared statements with reuse. Parameter substitution ($1, $2, etc). NULL handling. Close/cleanup. 11 tests, all passing."
+    },
+    {
+      "id": "T341",
+      "mode": "BUILD",
+      "task": "Test with Node.js pg driver: connect, query, parameterized queries, transactions",
+      "status": "done",
+      "plan_ref": "T335",
+      "started": "2026-04-08T20:36:43.653Z",
+      "completed": "2026-04-08T20:40:49.521Z",
+      "duration_ms": 300000,
+      "summary": "Real pg driver integration working! 10 tests: connect, CREATE/INSERT/SELECT, parameterized queries, transactions, JOINs, aggregates, error recovery, connection pool. Fixed adaptive engine fallback for empty-keyed rows. Total: 53 server tests."
+    },
+    {
+      "id": "T342",
+      "mode": "BUILD",
+      "task": "Prepared statement cache: reuse compiled plans across Bind/Execute cycles",
+      "status": "done",
+      "plan_ref": "T335",
+      "started": "2026-04-08T20:41:01.502Z",
+      "completed": "2026-04-08T20:41:49.794Z",
+      "duration_ms": 120000,
+      "summary": "Prepared statement caching tested: pg driver named statements, multi-parameter, multi-connection isolation, prepared INSERT/UPDATE/DELETE, benchmark. 6 tests."
+    },
+    {
+      "id": "T336",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:42:02.238Z",
+      "completed": "2026-04-08T20:42:02.491Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T337",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:42:08.790Z",
+      "completed": "2026-04-08T20:42:09.045Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T338",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:42:14.328Z",
+      "completed": "2026-04-08T20:42:14.580Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T339",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push, sync, commit",
+      "project": "henrydb",
+      "started": "2026-04-08T20:42:19.545Z"
     }
   ],
   "focusProjects": [
@@ -4941,6 +5041,34 @@
     {
       "time": "2026-04-08T20:19:43.454Z",
       "msg": "PLAN T328 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T20:31:29.156Z",
+      "msg": "Added T334 (THINK) after end: What's the best next move for HenryDB? Options: blog about TCP server, TPC-H end-to-end benchmark, prepared statements, or something new entirely"
+    },
+    {
+      "time": "2026-04-08T20:31:35.295Z",
+      "msg": "Added T335 (PLAN) after T334: Next HenryDB depth area"
+    },
+    {
+      "time": "2026-04-08T20:31:35.507Z",
+      "msg": "Added T336 (BUILD) after T335: null"
+    },
+    {
+      "time": "2026-04-08T20:31:35.748Z",
+      "msg": "Added T337 (BUILD) after T336: null"
+    },
+    {
+      "time": "2026-04-08T20:31:35.962Z",
+      "msg": "Added T338 (BUILD) after T337: null"
+    },
+    {
+      "time": "2026-04-08T20:31:36.171Z",
+      "msg": "Added T339 (MAINTAIN) after T338: Push, sync, commit"
+    },
+    {
+      "time": "2026-04-08T20:32:36.100Z",
+      "msg": "PLAN T335 filled 3 BUILD tasks"
     }
   ]
 }

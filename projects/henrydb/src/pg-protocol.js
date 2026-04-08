@@ -221,4 +221,194 @@ export function inferTypeOid(value) {
   return PG_TYPES.TEXT;
 }
 
+// ===== Extended Query Protocol Messages =====
+
+/**
+ * Parse a Parse message from the client (extended query).
+ * Format: [byte 'P'] [Int32 length] [string name\0] [string query\0] [Int16 numParams] [Int32 paramOids...]
+ */
+export function parseParseMessage(buf) {
+  let offset = 4; // skip length
+  
+  // Statement name (null-terminated)
+  const nameEnd = buf.indexOf(0, offset);
+  const name = buf.toString('utf8', offset, nameEnd);
+  offset = nameEnd + 1;
+  
+  // Query string (null-terminated)
+  const queryEnd = buf.indexOf(0, offset);
+  const query = buf.toString('utf8', offset, queryEnd);
+  offset = queryEnd + 1;
+  
+  // Number of parameter type OIDs
+  const numParams = buf.readInt16BE(offset);
+  offset += 2;
+  
+  const paramTypes = [];
+  for (let i = 0; i < numParams; i++) {
+    paramTypes.push(buf.readInt32BE(offset));
+    offset += 4;
+  }
+  
+  return { name, query, paramTypes };
+}
+
+/**
+ * Parse a Bind message from the client.
+ * Format: [byte 'B'] [Int32 length] [string portal\0] [string stmt\0] 
+ *         [Int16 numFormats] [Int16 formats...] [Int16 numParams] [Int32 len + bytes...]
+ *         [Int16 numResultFormats] [Int16 formats...]
+ */
+export function parseBindMessage(buf) {
+  let offset = 4; // skip length
+  
+  // Portal name
+  const portalEnd = buf.indexOf(0, offset);
+  const portal = buf.toString('utf8', offset, portalEnd);
+  offset = portalEnd + 1;
+  
+  // Statement name
+  const stmtEnd = buf.indexOf(0, offset);
+  const statement = buf.toString('utf8', offset, stmtEnd);
+  offset = stmtEnd + 1;
+  
+  // Parameter format codes
+  const numFormats = buf.readInt16BE(offset);
+  offset += 2;
+  const paramFormats = [];
+  for (let i = 0; i < numFormats; i++) {
+    paramFormats.push(buf.readInt16BE(offset));
+    offset += 2;
+  }
+  
+  // Parameter values
+  const numParams = buf.readInt16BE(offset);
+  offset += 2;
+  const paramValues = [];
+  for (let i = 0; i < numParams; i++) {
+    const len = buf.readInt32BE(offset);
+    offset += 4;
+    if (len === -1) {
+      paramValues.push(null);
+    } else {
+      // Format code: 0 = text, 1 = binary
+      const format = paramFormats.length === 1 ? paramFormats[0] : (paramFormats[i] || 0);
+      if (format === 0) {
+        paramValues.push(buf.toString('utf8', offset, offset + len));
+      } else {
+        paramValues.push(buf.subarray(offset, offset + len));
+      }
+      offset += len;
+    }
+  }
+  
+  // Result format codes
+  const numResultFormats = buf.readInt16BE(offset);
+  offset += 2;
+  const resultFormats = [];
+  for (let i = 0; i < numResultFormats; i++) {
+    resultFormats.push(buf.readInt16BE(offset));
+    offset += 2;
+  }
+  
+  return { portal, statement, paramFormats, paramValues, resultFormats };
+}
+
+/**
+ * Parse a Describe message from the client.
+ * Format: [byte 'D'] [Int32 length] [byte type] [string name\0]
+ * type: 'S' = prepared statement, 'P' = portal
+ */
+export function parseDescribeMessage(buf) {
+  const type = String.fromCharCode(buf[4]); // 'S' or 'P'
+  const nameEnd = buf.indexOf(0, 5);
+  const name = buf.toString('utf8', 5, nameEnd);
+  return { type, name };
+}
+
+/**
+ * Parse an Execute message from the client.
+ * Format: [byte 'E'] [Int32 length] [string portal\0] [Int32 maxRows]
+ */
+export function parseExecuteMessage(buf) {
+  const portalEnd = buf.indexOf(0, 4);
+  const portal = buf.toString('utf8', 4, portalEnd);
+  const maxRows = buf.readInt32BE(portalEnd + 1);
+  return { portal, maxRows };
+}
+
+/**
+ * Parse a Close message from the client.
+ * Format: [byte 'C'] [Int32 length] [byte type] [string name\0]
+ */
+export function parseCloseMessage(buf) {
+  const type = String.fromCharCode(buf[4]);
+  const nameEnd = buf.indexOf(0, 5);
+  const name = buf.toString('utf8', 5, nameEnd);
+  return { type, name };
+}
+
+/** Write ParseComplete (1) */
+export function writeParseComplete() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x31; // '1'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
+/** Write BindComplete (2) */
+export function writeBindComplete() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x32; // '2'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
+/** Write CloseComplete (3) */
+export function writeCloseComplete() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x33; // '3'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
+/** Write NoData (n) — no result columns */
+export function writeNoData() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x6E; // 'n'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
+/** Write ParameterDescription (t) — parameter types for prepared statement */
+export function writeParameterDescription(paramTypes) {
+  const len = 4 + 2 + paramTypes.length * 4;
+  const buf = Buffer.alloc(1 + len);
+  buf[0] = 0x74; // 't'
+  buf.writeInt32BE(len, 1);
+  buf.writeInt16BE(paramTypes.length, 5);
+  let offset = 7;
+  for (const oid of paramTypes) {
+    buf.writeInt32BE(oid, offset);
+    offset += 4;
+  }
+  return buf;
+}
+
+/** Write EmptyQueryResponse (I) */
+export function writeEmptyQueryResponse() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x49; // 'I'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
+/** Write PortalSuspended (s) */
+export function writePortalSuspended() {
+  const buf = Buffer.alloc(5);
+  buf[0] = 0x73; // 's'
+  buf.writeInt32BE(4, 1);
+  return buf;
+}
+
 export { PG_TYPES };
