@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T17:27:34.367Z",
+  "generated": "2026-04-08T17:28:43.708Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: Serde framework — pluggable serialization (JSON, MessagePack-like binary, CSV)",
-    "completedAt": "2026-04-08T17:27:34.367Z",
-    "taskId": "T142",
-    "summary": "Serde framework: JSON, compact binary (type-tagged), CSV (RFC4180 quoting). Nested objects/arrays in binary. 10K row benchmark. 10 tests.",
+    "task": "HenryDB: query rewriter — predicate simplification, join reordering hints",
+    "completedAt": "2026-04-08T17:28:43.708Z",
+    "taskId": "T143",
+    "summary": "Query rewriter: predicate simplification (tautology/contradiction removal, range merge, OR→IN, NOT NOT, self-comparison). Join order suggestion (smallest first). Predicate pushdown. 9 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 140,
+    "blocksCompleted": 141,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 97,
+      "BUILD": 98,
       "MAINTAIN": 30,
       "EXPLORE": 2
     }

@@ -1532,9 +1532,13 @@
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: query rewriter — predicate simplification, join reordering hints",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T17:27:34.677Z",
+      "completed": "2026-04-08T17:28:43.671Z",
+      "duration_ms": 90000,
+      "summary": "Query rewriter: predicate simplification (tautology/contradiction removal, range merge, OR→IN, NOT NOT, self-comparison). Join order suggestion (smallest first). Predicate pushdown. 9 tests."
     },
     {
       "id": "T144",
