@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:17:39.187Z",
+  "generated": "2026-04-08T16:18:55.321Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push and test count",
-    "completedAt": "2026-04-08T16:17:39.187Z",
-    "taskId": "T80",
-    "summary": "HenryDB pushed (200 objects!). Dashboard synced. Massive session: 28+ new modules, ~260+ new tests.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: nested loop index join — use B+tree index during join for selective predicates",
+    "completedAt": "2026-04-08T16:18:55.321Z",
+    "taskId": "T81",
+    "summary": "Index nested loop join: O(n*1) with index, semi-join (EXISTS), anti-join (NOT EXISTS). Optimal for selective queries with pre-built index. 8 tests.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -871,12 +871,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 78,
+    "blocksCompleted": 79,
     "blocksTotal": 80,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 46,
+      "BUILD": 47,
       "MAINTAIN": 19,
       "EXPLORE": 2
     }

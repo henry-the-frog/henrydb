@@ -857,6 +857,30 @@
       "completed": "2026-04-08T16:17:39.146Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (200 objects!). Dashboard synced. Massive session: 28+ new modules, ~260+ new tests."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: nested loop index join — use B+tree index during join for selective predicates",
+      "project": "henrydb",
+      "started": "2026-04-08T16:17:47.499Z",
+      "completed": "2026-04-08T16:18:55.284Z",
+      "duration_ms": 90000,
+      "summary": "Index nested loop join: O(n*1) with index, semi-join (EXISTS), anti-join (NOT EXISTS). Optimal for selective queries with pre-built index. 8 tests."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: semi-join and anti-join operators (EXISTS/NOT EXISTS)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T83",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and sync"
     }
   ],
   "focusProjects": [
@@ -1192,6 +1216,18 @@
     {
       "time": "2026-04-08T16:15:44.415Z",
       "msg": "Added T80 (MAINTAIN) after end: Push and test count"
+    },
+    {
+      "time": "2026-04-08T16:17:47.032Z",
+      "msg": "Added T81 (BUILD) after end: HenryDB: nested loop index join — use B+tree index during join for selective predicates"
+    },
+    {
+      "time": "2026-04-08T16:17:47.150Z",
+      "msg": "Added T82 (BUILD) after end: HenryDB: semi-join and anti-join operators (EXISTS/NOT EXISTS)"
+    },
+    {
+      "time": "2026-04-08T16:17:47.267Z",
+      "msg": "Added T83 (MAINTAIN) after end: Push and sync"
     }
   ]
 }
