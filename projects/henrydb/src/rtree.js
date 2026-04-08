@@ -1,213 +1,149 @@
-// rtree.js — R-tree spatial index for HenryDB
-// Stores rectangles (bounding boxes) for efficient spatial queries.
-// Used in PostGIS, SQLite R*Tree, and other spatial databases.
-
-class Rect {
-  constructor(minX, minY, maxX, maxY) {
-    this.minX = minX;
-    this.minY = minY;
-    this.maxX = maxX;
-    this.maxY = maxY;
-  }
-
-  area() {
-    return (this.maxX - this.minX) * (this.maxY - this.minY);
-  }
-
-  enlargement(other) {
-    const merged = Rect.merge(this, other);
-    return merged.area() - this.area();
-  }
-
-  overlaps(other) {
-    return !(this.maxX < other.minX || this.minX > other.maxX ||
-             this.maxY < other.minY || this.minY > other.maxY);
-  }
-
-  contains(other) {
-    return this.minX <= other.minX && this.maxX >= other.maxX &&
-           this.minY <= other.minY && this.maxY >= other.maxY;
-  }
-
-  static merge(a, b) {
-    return new Rect(
-      Math.min(a.minX, b.minX), Math.min(a.minY, b.minY),
-      Math.max(a.maxX, b.maxX), Math.max(a.maxY, b.maxY)
-    );
-  }
-
-  static point(x, y) {
-    return new Rect(x, y, x, y);
-  }
-}
+// rtree.js — R-tree spatial index for 2D range and nearest-neighbor queries
+// Each node contains a bounding box (MBR) that encloses all children.
+// Insertions pick the subtree with least enlargement.
 
 class RTreeNode {
-  constructor(isLeaf = true) {
+  constructor(isLeaf = true, maxEntries = 4) {
     this.isLeaf = isLeaf;
-    this.entries = []; // { rect, data } for leaves, { rect, child } for internal
-    this.rect = null; // Bounding box of all entries
+    this.maxEntries = maxEntries;
+    this.entries = []; // leaf: {bbox, data}. internal: {bbox, child}
   }
 
-  updateBounds() {
-    if (this.entries.length === 0) { this.rect = null; return; }
-    this.rect = this.entries[0].rect;
-    for (let i = 1; i < this.entries.length; i++) {
-      this.rect = Rect.merge(this.rect, this.entries[i].rect);
+  get mbr() {
+    if (this.entries.length === 0) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const e of this.entries) {
+      if (e.bbox.minX < minX) minX = e.bbox.minX;
+      if (e.bbox.minY < minY) minY = e.bbox.minY;
+      if (e.bbox.maxX > maxX) maxX = e.bbox.maxX;
+      if (e.bbox.maxY > maxY) maxY = e.bbox.maxY;
     }
+    return { minX, minY, maxX, maxY };
   }
 }
 
-/**
- * R-tree spatial index.
- * Supports insert, search (overlap), and contains queries.
- */
 export class RTree {
-  constructor(maxEntries = 9, minEntries = 4) {
-    this._maxEntries = maxEntries;
-    this._minEntries = minEntries;
-    this._root = new RTreeNode(true);
+  constructor(maxEntries = 9) {
+    this.maxEntries = maxEntries;
+    this.root = new RTreeNode(true, maxEntries);
     this._size = 0;
   }
 
   /**
-   * Insert a rectangle with associated data.
+   * Insert a point or rectangle with associated data.
    */
-  insert(rect, data) {
-    const entry = { rect, data };
-    this._insert(entry, this._root);
-    this._size++;
-    
-    // Handle root split
-    if (this._root.entries.length > this._maxEntries) {
-      const newRoot = new RTreeNode(false);
-      const [node1, node2] = this._split(this._root);
-      newRoot.entries.push({ rect: node1.rect, child: node1 });
-      newRoot.entries.push({ rect: node2.rect, child: node2 });
-      newRoot.updateBounds();
-      this._root = newRoot;
+  insert(bbox, data) {
+    if (typeof bbox.x !== 'undefined') {
+      bbox = { minX: bbox.x, minY: bbox.y, maxX: bbox.x, maxY: bbox.y };
     }
+    const entry = { bbox, data };
+    this._insert(entry, this.root);
+    this._size++;
   }
-
-  /**
-   * Search for all entries whose bounding box overlaps the query rectangle.
-   */
-  search(queryRect) {
-    const results = [];
-    this._search(this._root, queryRect, results);
-    return results;
-  }
-
-  /**
-   * Search for entries within a radius of a point.
-   */
-  searchRadius(x, y, radius) {
-    const queryRect = new Rect(x - radius, y - radius, x + radius, y + radius);
-    const candidates = this.search(queryRect);
-    
-    // Filter to actual distance
-    return candidates.filter(entry => {
-      const cx = (entry.rect.minX + entry.rect.maxX) / 2;
-      const cy = (entry.rect.minY + entry.rect.maxY) / 2;
-      const dist = Math.sqrt((cx - x) ** 2 + (cy - y) ** 2);
-      return dist <= radius;
-    });
-  }
-
-  get size() { return this._size; }
 
   _insert(entry, node) {
     if (node.isLeaf) {
       node.entries.push(entry);
-      node.updateBounds();
+      if (node.entries.length > this.maxEntries) this._splitNode(node);
       return;
     }
-
     // Choose subtree with least enlargement
-    let bestIdx = 0;
-    let bestEnlargement = Infinity;
+    let best = 0, bestEnlargement = Infinity;
     for (let i = 0; i < node.entries.length; i++) {
-      const enlargement = node.entries[i].rect.enlargement(entry.rect);
-      if (enlargement < bestEnlargement) {
-        bestEnlargement = enlargement;
-        bestIdx = i;
-      }
+      const enl = this._enlargement(node.entries[i].bbox, entry.bbox);
+      if (enl < bestEnlargement) { bestEnlargement = enl; best = i; }
     }
+    this._insert(entry, node.entries[best].child);
+    node.entries[best].bbox = node.entries[best].child.mbr;
+  }
 
-    const child = node.entries[bestIdx].child;
-    this._insert(entry, child);
-    node.entries[bestIdx].rect = child.rect;
-    node.updateBounds();
-
-    // Split child if overflow
-    if (child.entries.length > this._maxEntries) {
-      const [node1, node2] = this._split(child);
-      node.entries[bestIdx] = { rect: node1.rect, child: node1 };
-      node.entries.push({ rect: node2.rect, child: node2 });
-      node.updateBounds();
+  _splitNode(node) {
+    // Simple split: sort by X midpoint and split in half
+    const sorted = [...node.entries].sort((a, b) => {
+      const ax = (a.bbox.minX + a.bbox.maxX) / 2;
+      const bx = (b.bbox.minX + b.bbox.maxX) / 2;
+      return ax - bx;
+    });
+    const mid = Math.ceil(sorted.length / 2);
+    
+    if (node === this.root) {
+      const left = new RTreeNode(node.isLeaf, this.maxEntries);
+      const right = new RTreeNode(node.isLeaf, this.maxEntries);
+      left.entries = sorted.slice(0, mid);
+      right.entries = sorted.slice(mid);
+      node.isLeaf = false;
+      node.entries = [
+        { bbox: left.mbr, child: left },
+        { bbox: right.mbr, child: right },
+      ];
     }
   }
 
-  _search(node, queryRect, results) {
-    if (node.isLeaf) {
-      for (const entry of node.entries) {
-        if (entry.rect.overlaps(queryRect)) {
-          results.push(entry);
-        }
-      }
-      return;
-    }
+  /**
+   * Search: find all entries whose bboxes intersect the query rectangle.
+   */
+  search(queryBbox) {
+    const results = [];
+    this._search(this.root, queryBbox, results);
+    return results;
+  }
 
+  _search(node, query, results) {
     for (const entry of node.entries) {
-      if (entry.rect.overlaps(queryRect)) {
-        this._search(entry.child, queryRect, results);
+      if (!this._intersects(entry.bbox, query)) continue;
+      if (node.isLeaf) {
+        results.push(entry.data);
+      } else {
+        this._search(entry.child, query, results);
       }
     }
   }
 
   /**
-   * Split a node into two using linear split heuristic.
+   * Nearest neighbor search (brute force within R-tree).
    */
-  _split(node) {
-    const entries = [...node.entries];
-    
-    // Pick two seeds that are most distant
-    let seed1 = 0, seed2 = 1;
-    let maxDist = 0;
-    for (let i = 0; i < entries.length; i++) {
-      for (let j = i + 1; j < entries.length; j++) {
-        const dist = Rect.merge(entries[i].rect, entries[j].rect).area();
-        if (dist > maxDist) {
-          maxDist = dist;
-          seed1 = i;
-          seed2 = j;
-        }
-      }
-    }
-
-    const node1 = new RTreeNode(node.isLeaf);
-    const node2 = new RTreeNode(node.isLeaf);
-    
-    node1.entries.push(entries[seed1]);
-    node2.entries.push(entries[seed2]);
-
-    // Distribute remaining entries
-    for (let i = 0; i < entries.length; i++) {
-      if (i === seed1 || i === seed2) continue;
-      
-      node1.updateBounds();
-      node2.updateBounds();
-      
-      const enlarge1 = node1.rect ? node1.rect.enlargement(entries[i].rect) : 0;
-      const enlarge2 = node2.rect ? node2.rect.enlargement(entries[i].rect) : 0;
-      
-      if (enlarge1 < enlarge2) node1.entries.push(entries[i]);
-      else node2.entries.push(entries[i]);
-    }
-
-    node1.updateBounds();
-    node2.updateBounds();
-    return [node1, node2];
+  nearest(point, k = 1) {
+    const all = [];
+    this._collectAll(this.root, all);
+    all.sort((a, b) => {
+      const da = this._pointDist(point, a.bbox);
+      const db = this._pointDist(point, b.bbox);
+      return da - db;
+    });
+    return all.slice(0, k).map(e => ({
+      data: e.data,
+      distance: Math.sqrt(this._pointDist(point, e.bbox)),
+    }));
   }
-}
 
-export { Rect };
+  _collectAll(node, results) {
+    for (const entry of node.entries) {
+      if (node.isLeaf) results.push(entry);
+      else this._collectAll(entry.child, results);
+    }
+  }
+
+  _intersects(a, b) {
+    return a.minX <= b.maxX && a.maxX >= b.minX && a.minY <= b.maxY && a.maxY >= b.minY;
+  }
+
+  _enlargement(a, b) {
+    const merged = {
+      minX: Math.min(a.minX, b.minX), minY: Math.min(a.minY, b.minY),
+      maxX: Math.max(a.maxX, b.maxX), maxY: Math.max(a.maxY, b.maxY),
+    };
+    return this._area(merged) - this._area(a);
+  }
+
+  _area(bbox) {
+    return (bbox.maxX - bbox.minX) * (bbox.maxY - bbox.minY);
+  }
+
+  _pointDist(point, bbox) {
+    const dx = Math.max(bbox.minX - point.x, 0, point.x - bbox.maxX);
+    const dy = Math.max(bbox.minY - point.y, 0, point.y - bbox.maxY);
+    return dx * dx + dy * dy;
+  }
+
+  get size() { return this._size; }
+}
