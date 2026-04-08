@@ -1008,6 +1008,44 @@
       "completed": "2026-04-08T16:34:05.012Z",
       "duration_ms": 120000,
       "summary": "Constant folding optimizer: arithmetic (2+3→5), comparisons (1=1→true), boolean (true AND x→x, false AND x→false), NOT NOT elimination, identity (x+0→x, x*1→x), zero (x*0→0), string concat, BETWEEN, IN, CASE. 18 tests."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: buffer pool manager — LRU page cache with pin/unpin, dirty page tracking, eviction",
+      "project": "henrydb",
+      "started": "2026-04-08T16:37:30.482Z",
+      "completed": "2026-04-08T16:38:59.582Z",
+      "duration_ms": 120000,
+      "summary": "Buffer pool manager: LRU page cache with pin/unpin semantics, dirty page tracking and writeback on eviction, page deletion, flush-all. 10K Zipf accesses in 31ms. 10 tests."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: skip list — concurrent-friendly sorted data structure",
+      "project": "henrydb"
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER",
+      "project": "henrydb"
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: common table expressions (CTE) — WITH clause support",
+      "project": "henrydb"
+    },
+    {
+      "id": "T99",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard sync"
     }
   ],
   "focusProjects": [
@@ -1399,6 +1437,26 @@
     {
       "time": "2026-04-08T16:31:56.573Z",
       "msg": "Added T94 (BUILD) after end: HenryDB: constant folding optimizer — simplify WHERE 1=1, 2+3→5, etc. before execution"
+    },
+    {
+      "time": "2026-04-08T16:37:29.767Z",
+      "msg": "Added T95 (BUILD) after end: HenryDB: buffer pool manager — LRU page cache with pin/unpin, dirty page tracking, eviction"
+    },
+    {
+      "time": "2026-04-08T16:37:29.889Z",
+      "msg": "Added T96 (BUILD) after end: HenryDB: skip list — concurrent-friendly sorted data structure"
+    },
+    {
+      "time": "2026-04-08T16:37:30.008Z",
+      "msg": "Added T97 (BUILD) after end: HenryDB: window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER"
+    },
+    {
+      "time": "2026-04-08T16:37:30.127Z",
+      "msg": "Added T98 (BUILD) after end: HenryDB: common table expressions (CTE) — WITH clause support"
+    },
+    {
+      "time": "2026-04-08T16:37:30.247Z",
+      "msg": "Added T99 (MAINTAIN) after end: Push + dashboard sync"
     }
   ]
 }
