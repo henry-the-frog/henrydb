@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:24:18.521Z",
+  "generated": "2026-04-08T15:26:45.519Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: update blog post with 2062x result and benchmark table",
-    "completedAt": "2026-04-08T15:24:18.521Z",
-    "taskId": "T46",
-    "summary": "Updated blog: 2062x Faster: Four Approaches to Compiling SQL Queries. Added comprehensive benchmark table, four engines section, updated title. Pushed to GitHub Pages.",
-    "durationMs": 180000
+    "task": "HenryDB: fix codegen 'values is not defined' error in filtered join pattern",
+    "completedAt": "2026-04-08T15:26:45.519Z",
+    "taskId": "T47",
+    "summary": "Fixed codegen filtered join bug: _genFilterExpr and _genValueExpr now accept varName parameter, defaults to values for single-table, uses lv in join context. All 14 codegen tests pass.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -498,12 +498,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 44,
+    "blocksCompleted": 45,
     "blocksTotal": 45,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 24,
+      "BUILD": 25,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }

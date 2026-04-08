@@ -499,9 +499,13 @@
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: fix codegen 'values is not defined' error in filtered join pattern",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T15:24:37.374Z",
+      "completed": "2026-04-08T15:26:45.482Z",
+      "duration_ms": 120000,
+      "summary": "Fixed codegen filtered join bug: _genFilterExpr and _genValueExpr now accept varName parameter, defaults to values for single-table, uses lv in join context. All 14 codegen tests pass."
     },
     {
       "id": "T48",
