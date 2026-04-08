@@ -2362,6 +2362,56 @@
       "completed": "2026-04-08T18:15:16.158Z",
       "duration_ms": 30000,
       "summary": "353 objects. 3050 tests."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: parallel hash aggregate — partition-wise hash group by",
+      "project": "henrydb",
+      "started": "2026-04-08T18:15:27.884Z",
+      "completed": "2026-04-08T18:16:17.953Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: cascade optimizer framework — Cascades-style cost-based planning",
+      "project": "henrydb",
+      "started": "2026-04-08T18:16:18.096Z",
+      "completed": "2026-04-08T18:16:18.239Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T222",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: query profiler — per-operator timing and row counts",
+      "project": "henrydb",
+      "started": "2026-04-08T18:16:18.382Z",
+      "completed": "2026-04-08T18:16:18.524Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: index advisor — suggest indexes based on query workload",
+      "project": "henrydb",
+      "started": "2026-04-08T18:16:18.664Z",
+      "completed": "2026-04-08T18:16:18.806Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T224",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard final"
     }
   ],
   "focusProjects": [
@@ -3253,6 +3303,26 @@
     {
       "time": "2026-04-08T18:13:23.491Z",
       "msg": "Added T219 (MAINTAIN) after end: Push + final sync"
+    },
+    {
+      "time": "2026-04-08T18:15:27.173Z",
+      "msg": "Added T220 (BUILD) after end: HenryDB: parallel hash aggregate — partition-wise hash group by"
+    },
+    {
+      "time": "2026-04-08T18:15:27.292Z",
+      "msg": "Added T221 (BUILD) after end: HenryDB: cascade optimizer framework — Cascades-style cost-based planning"
+    },
+    {
+      "time": "2026-04-08T18:15:27.412Z",
+      "msg": "Added T222 (BUILD) after end: HenryDB: query profiler — per-operator timing and row counts"
+    },
+    {
+      "time": "2026-04-08T18:15:27.531Z",
+      "msg": "Added T223 (BUILD) after end: HenryDB: index advisor — suggest indexes based on query workload"
+    },
+    {
+      "time": "2026-04-08T18:15:27.650Z",
+      "msg": "Added T224 (MAINTAIN) after end: Push + dashboard final"
     }
   ]
 }
