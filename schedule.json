@@ -1175,9 +1175,13 @@
     {
       "id": "T110",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: deadlock detector — wait-for graph cycle detection",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:54:38.656Z",
+      "completed": "2026-04-08T16:55:43.830Z",
+      "duration_ms": 90000,
+      "summary": "Deadlock detector: wait-for graph with DFS cycle detection. Victim policies: youngest (abort most recent txn) or cheapest (abort lowest cost txn). 2-way and 3-way deadlock detection. Edge removal for lock grants. 9 tests."
     },
     {
       "id": "T111",

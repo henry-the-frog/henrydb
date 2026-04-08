@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:54:38.337Z",
+  "generated": "2026-04-08T16:55:43.867Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: statistics collector — histograms, NDV, null fraction for optimizer",
-    "completedAt": "2026-04-08T16:54:38.337Z",
-    "taskId": "T109",
-    "summary": "Statistics collector: ANALYZE table → row count, NDV, null fraction, min/max, MCV list, equi-height histograms. Selectivity estimation for EQ/GT/LT/BETWEEN/NULL. Sampling support. 11 tests.",
-    "durationMs": 120000
+    "task": "HenryDB: deadlock detector — wait-for graph cycle detection",
+    "completedAt": "2026-04-08T16:55:43.867Z",
+    "taskId": "T110",
+    "summary": "Deadlock detector: wait-for graph with DFS cycle detection. Victim policies: youngest (abort most recent txn) or cheapest (abort lowest cost txn). 2-way and 3-way deadlock detection. Edge removal for lock grants. 9 tests.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 107,
+    "blocksCompleted": 108,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 70,
+      "BUILD": 71,
       "MAINTAIN": 24,
       "EXPLORE": 2
     }
