@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T17:07:17.763Z",
+  "generated": "2026-04-08T17:08:13.847Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: tuple descriptor — schema-aware row serialization/deserialization",
-    "completedAt": "2026-04-08T17:07:17.763Z",
-    "taskId": "T121",
-    "summary": "Tuple descriptor: schema-aware binary serialization with null bitmap. INT32/FLOAT64/BOOL/VARCHAR types. 2.3x more compact than JSON. Unicode support. 10K rows in 26ms. 10 tests.",
-    "durationMs": 90000
+    "task": "HenryDB: materialized views — auto-refresh on base table changes",
+    "completedAt": "2026-04-08T17:08:13.847Z",
+    "taskId": "T122",
+    "summary": "Materialized views: eager/lazy/manual refresh modes. Table dependency tracking with auto-invalidation. TTL support. View manager with create/drop/list/refreshAll. 8 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 119,
+    "blocksCompleted": 120,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 80,
+      "BUILD": 81,
       "MAINTAIN": 26,
       "EXPLORE": 2
     }
