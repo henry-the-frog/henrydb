@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:43:09.144Z",
+  "generated": "2026-04-08T15:44:07.820Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: late materialization — return column references instead of full rows, materialize only at projection",
-    "completedAt": "2026-04-08T15:43:09.144Z",
-    "taskId": "T57",
-    "summary": "Late materialization: VirtualRelation passes column references + index arrays through filter/join/aggregate, only materializes at projection. JoinedRelation for join results. LEFT JOIN with null markers. 9 tests.",
-    "durationMs": 180000
+    "mode": "MAINTAIN",
+    "task": "Push and sync",
+    "completedAt": "2026-04-08T15:44:07.820Z",
+    "taskId": "T58",
+    "summary": "HenryDB pushed (168 objects). Dashboard synced.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -598,20 +598,52 @@
       {
         "id": "T55",
         "mode": "MAINTAIN",
-        "status": "in-progress",
+        "status": "done",
         "task": "Final session housekeeping",
-        "started": "2026-04-08T15:38:47.197Z"
+        "started": "2026-04-08T15:38:47.197Z",
+        "completed": "2026-04-08T15:39:16.470Z",
+        "duration_ms": 30000,
+        "summary": "HenryDB pushed (163 objects). Dashboard synced. Server healthy (78min uptime)."
+      },
+      {
+        "id": "T56",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: radix hash join — use radix partitioning for cache-conscious hash joins on TypedArray columns",
+        "project": "henrydb",
+        "started": "2026-04-08T15:39:42.903Z",
+        "completed": "2026-04-08T15:41:09.539Z",
+        "duration_ms": 180000,
+        "summary": "Radix-partitioned hash join: 256 partitions via bit-mixing hash, 100K×300K in 96ms. Standard hash join faster at this scale (JS Map cache-friendly). Value at larger datasets. 8 tests, all pass."
+      },
+      {
+        "id": "T57",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: late materialization — return column references instead of full rows, materialize only at projection",
+        "project": "henrydb",
+        "started": "2026-04-08T15:41:25.509Z",
+        "completed": "2026-04-08T15:43:09.107Z",
+        "duration_ms": 180000,
+        "summary": "Late materialization: VirtualRelation passes column references + index arrays through filter/join/aggregate, only materializes at projection. JoinedRelation for join results. LEFT JOIN with null markers. 9 tests."
+      },
+      {
+        "id": "T58",
+        "mode": "MAINTAIN",
+        "status": "in-progress",
+        "task": "Push and sync",
+        "started": "2026-04-08T15:43:40.604Z"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 55,
-    "blocksTotal": 55,
+    "blocksCompleted": 56,
+    "blocksTotal": 58,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
       "BUILD": 32,
-      "MAINTAIN": 10,
+      "MAINTAIN": 11,
       "EXPLORE": 2
     }
   }
