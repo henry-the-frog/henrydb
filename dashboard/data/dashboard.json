@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:02:57.010Z",
+  "generated": "2026-04-08T15:08:42.173Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: push all repos, sync dashboard, test count",
-    "completedAt": "2026-04-08T15:02:57.010Z",
-    "taskId": "T32",
-    "summary": "2280 total HenryDB tests (38 new today). HenryDB pushed. Dashboard synced and regenerated (36 blocks/29 done). Blog build succeeded earlier.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "HenryDB: update README with compiled query engine, window functions, test counts",
+    "completedAt": "2026-04-08T15:08:42.173Z",
+    "taskId": "T36",
+    "summary": "Updated README: 46K LOC, 2280 tests, compiled query engine (365x), batch codegen (143x), EXPLAIN COMPILED. Updated architecture diagram, lessons learned, test counts.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -385,12 +385,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 30,
+    "blocksCompleted": 34,
     "blocksTotal": 36,
     "modeDistribution": {
-      "THINK": 5,
+      "THINK": 6,
       "PLAN": 5,
-      "BUILD": 13,
+      "BUILD": 16,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
