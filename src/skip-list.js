@@ -1,172 +1,152 @@
-// skip-list.js — Skip list index for HenryDB
-// Probabilistic data structure with O(log n) expected search/insert/delete.
-// Alternative to B+tree that's simpler to implement and lock-free friendly.
+// skip-list.js — Skip List: probabilistic sorted data structure
+// O(log n) search, insert, delete with O(n) space.
+// Used in LevelDB/RocksDB memtables and Redis sorted sets.
+// Concurrent-friendly: insertions only need local locks.
 
 class SkipListNode {
   constructor(key, value, level) {
     this.key = key;
     this.value = value;
-    this.forward = new Array(level + 1).fill(null); // Forward pointers for each level
+    this.forward = new Array(level + 1).fill(null); // forward[i] = next node at level i
   }
 }
 
+/**
+ * SkipList — sorted key-value store with O(log n) operations.
+ */
 export class SkipList {
-  constructor(maxLevel = 16, probability = 0.5) {
-    this._maxLevel = maxLevel;
-    this._probability = probability;
-    this._level = 0;
+  constructor(maxLevel = 16, p = 0.5) {
+    this.maxLevel = maxLevel;
+    this.p = p;
+    this.level = 0; // Current highest level
+    this.header = new SkipListNode(null, null, maxLevel);
     this._size = 0;
-    this._header = new SkipListNode(null, null, maxLevel);
+    this.stats = { inserts: 0, searches: 0, comparisons: 0 };
   }
 
   /**
-   * Generate random level for a new node.
-   * Each level has `probability` chance of being promoted.
+   * Insert or update a key-value pair.
    */
-  _randomLevel() {
-    let level = 0;
-    while (Math.random() < this._probability && level < this._maxLevel) {
-      level++;
-    }
-    return level;
-  }
+  set(key, value) {
+    const update = new Array(this.maxLevel + 1).fill(null);
+    let current = this.header;
 
-  /**
-   * Insert a key-value pair. O(log n) expected.
-   */
-  insert(key, value) {
-    const update = new Array(this._maxLevel + 1).fill(null);
-    let current = this._header;
-
-    // Find insertion point at each level
-    for (let i = this._level; i >= 0; i--) {
-      while (current.forward[i] !== null && current.forward[i].key < key) {
+    // Find position
+    for (let i = this.level; i >= 0; i--) {
+      while (current.forward[i] !== null && this._compare(current.forward[i].key, key) < 0) {
         current = current.forward[i];
+        this.stats.comparisons++;
       }
       update[i] = current;
     }
 
+    current = current.forward[0];
+
+    if (current !== null && this._compare(current.key, key) === 0) {
+      // Update existing
+      current.value = value;
+      return;
+    }
+
+    // Insert new
     const newLevel = this._randomLevel();
-    
-    // If new level is higher than current max, update header pointers
-    if (newLevel > this._level) {
-      for (let i = this._level + 1; i <= newLevel; i++) {
-        update[i] = this._header;
+    if (newLevel > this.level) {
+      for (let i = this.level + 1; i <= newLevel; i++) {
+        update[i] = this.header;
       }
-      this._level = newLevel;
+      this.level = newLevel;
     }
 
     const newNode = new SkipListNode(key, value, newLevel);
-    
-    // Insert node by updating forward pointers
     for (let i = 0; i <= newLevel; i++) {
       newNode.forward[i] = update[i].forward[i];
       update[i].forward[i] = newNode;
     }
 
     this._size++;
+    this.stats.inserts++;
   }
 
   /**
-   * Search for a key. Returns the value or null. O(log n) expected.
+   * Search for a key. Returns value or undefined.
    */
-  find(key) {
-    let current = this._header;
-    
-    for (let i = this._level; i >= 0; i--) {
-      while (current.forward[i] !== null && current.forward[i].key < key) {
+  get(key) {
+    this.stats.searches++;
+    let current = this.header;
+
+    for (let i = this.level; i >= 0; i--) {
+      while (current.forward[i] !== null && this._compare(current.forward[i].key, key) < 0) {
         current = current.forward[i];
+        this.stats.comparisons++;
       }
     }
-    
+
     current = current.forward[0];
-    if (current !== null && current.key === key) {
+    if (current !== null && this._compare(current.key, key) === 0) {
       return current.value;
     }
-    return null;
+    return undefined;
   }
 
-  /**
-   * Find all values with a given key.
-   */
-  findAll(key) {
-    const results = [];
-    let current = this._header;
-    
-    for (let i = this._level; i >= 0; i--) {
-      while (current.forward[i] !== null && current.forward[i].key < key) {
-        current = current.forward[i];
-      }
-    }
-    
-    current = current.forward[0];
-    while (current !== null && current.key === key) {
-      results.push(current.value);
-      current = current.forward[0];
-    }
-    return results;
-  }
+  has(key) { return this.get(key) !== undefined; }
 
   /**
-   * Range scan: return all entries where low <= key <= high.
-   */
-  range(low, high) {
-    const results = [];
-    let current = this._header;
-    
-    // Navigate to first node >= low
-    for (let i = this._level; i >= 0; i--) {
-      while (current.forward[i] !== null && current.forward[i].key < low) {
-        current = current.forward[i];
-      }
-    }
-    
-    current = current.forward[0];
-    while (current !== null && current.key <= high) {
-      results.push({ key: current.key, value: current.value });
-      current = current.forward[0];
-    }
-    return results;
-  }
-
-  /**
-   * Delete a key. O(log n) expected.
+   * Delete a key. Returns true if found.
    */
   delete(key) {
-    const update = new Array(this._maxLevel + 1).fill(null);
-    let current = this._header;
+    const update = new Array(this.maxLevel + 1).fill(null);
+    let current = this.header;
 
-    for (let i = this._level; i >= 0; i--) {
-      while (current.forward[i] !== null && current.forward[i].key < key) {
+    for (let i = this.level; i >= 0; i--) {
+      while (current.forward[i] !== null && this._compare(current.forward[i].key, key) < 0) {
         current = current.forward[i];
       }
       update[i] = current;
     }
 
     current = current.forward[0];
-    if (current !== null && current.key === key) {
-      for (let i = 0; i <= this._level; i++) {
-        if (update[i].forward[i] !== current) break;
-        update[i].forward[i] = current.forward[i];
-      }
-      
-      // Reduce level if needed
-      while (this._level > 0 && this._header.forward[this._level] === null) {
-        this._level--;
-      }
-      this._size--;
-      return true;
+    if (current === null || this._compare(current.key, key) !== 0) return false;
+
+    for (let i = 0; i <= this.level; i++) {
+      if (update[i].forward[i] !== current) break;
+      update[i].forward[i] = current.forward[i];
     }
-    return false;
+
+    while (this.level > 0 && this.header.forward[this.level] === null) {
+      this.level--;
+    }
+
+    this._size--;
+    return true;
   }
 
-  get size() { return this._size; }
+  /**
+   * Range scan: all entries with key in [lo, hi].
+   */
+  range(lo, hi) {
+    const results = [];
+    let current = this.header;
+
+    for (let i = this.level; i >= 0; i--) {
+      while (current.forward[i] !== null && this._compare(current.forward[i].key, lo) < 0) {
+        current = current.forward[i];
+      }
+    }
+
+    current = current.forward[0];
+    while (current !== null && this._compare(current.key, hi) <= 0) {
+      results.push({ key: current.key, value: current.value });
+      current = current.forward[0];
+    }
+
+    return results;
+  }
 
   /**
    * Iterate all entries in sorted order.
    */
   *[Symbol.iterator]() {
-    let current = this._header.forward[0];
+    let current = this.header.forward[0];
     while (current !== null) {
       yield { key: current.key, value: current.value };
       current = current.forward[0];
@@ -174,21 +154,46 @@ export class SkipList {
   }
 
   /**
-   * Get statistics about the skip list structure.
+   * First entry.
    */
-  stats() {
-    const levelCounts = new Array(this._level + 1).fill(0);
-    let current = this._header.forward[0];
-    while (current !== null) {
-      for (let i = 0; i < current.forward.length; i++) {
-        if (i <= this._level) levelCounts[i]++;
-      }
-      current = current.forward[0];
+  first() {
+    const node = this.header.forward[0];
+    return node ? { key: node.key, value: node.value } : null;
+  }
+
+  /**
+   * Last entry (O(n) scan — skip lists don't have back pointers here).
+   */
+  last() {
+    let current = this.header;
+    for (let i = this.level; i >= 0; i--) {
+      while (current.forward[i] !== null) current = current.forward[i];
     }
+    return current !== this.header ? { key: current.key, value: current.value } : null;
+  }
+
+  get size() { return this._size; }
+
+  _randomLevel() {
+    let level = 0;
+    while (Math.random() < this.p && level < this.maxLevel) level++;
+    return level;
+  }
+
+  _compare(a, b) {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  }
+
+  getStats() {
     return {
+      ...this.stats,
       size: this._size,
-      maxLevel: this._level,
-      levelCounts,
+      currentLevel: this.level,
+      avgComparisonsPerSearch: this.stats.searches > 0
+        ? (this.stats.comparisons / this.stats.searches).toFixed(2)
+        : '0',
     };
   }
 }

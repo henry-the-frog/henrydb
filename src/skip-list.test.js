@@ -1,79 +1,106 @@
-// skip-list.test.js — Skip list tests
+// skip-list.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { SkipList } from './skip-list.js';
 
 describe('SkipList', () => {
-  it('insert and find', () => {
+  it('basic set/get', () => {
     const sl = new SkipList();
-    sl.insert(5, 'five');
-    sl.insert(3, 'three');
-    sl.insert(7, 'seven');
-    
-    assert.equal(sl.find(5), 'five');
-    assert.equal(sl.find(3), 'three');
-    assert.equal(sl.find(7), 'seven');
-    assert.equal(sl.find(99), null);
+    sl.set(5, 'five');
+    sl.set(3, 'three');
+    sl.set(8, 'eight');
+    assert.equal(sl.get(5), 'five');
+    assert.equal(sl.get(3), 'three');
+    assert.equal(sl.get(8), 'eight');
+    assert.equal(sl.get(999), undefined);
   });
 
-  it('maintains sorted order', () => {
+  it('update existing key', () => {
     const sl = new SkipList();
-    const values = [50, 20, 80, 10, 40, 60, 30, 70, 90];
-    for (const v of values) sl.insert(v, v);
-    
-    const sorted = [...sl].map(e => e.key);
-    assert.deepEqual(sorted, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
+    sl.set(1, 'old');
+    sl.set(1, 'new');
+    assert.equal(sl.get(1), 'new');
+    assert.equal(sl.size, 1);
+  });
+
+  it('delete', () => {
+    const sl = new SkipList();
+    sl.set(1, 'a');
+    sl.set(2, 'b');
+    assert.ok(sl.delete(1));
+    assert.equal(sl.get(1), undefined);
+    assert.equal(sl.size, 1);
+    assert.ok(!sl.delete(999));
   });
 
   it('range scan', () => {
     const sl = new SkipList();
-    for (let i = 1; i <= 20; i++) sl.insert(i, `val${i}`);
-    
-    const range = sl.range(5, 10);
-    assert.equal(range.length, 6);
-    assert.equal(range[0].key, 5);
-    assert.equal(range[5].key, 10);
+    for (let i = 0; i < 100; i++) sl.set(i, i * 10);
+
+    const range = sl.range(25, 30);
+    assert.equal(range.length, 6); // 25,26,27,28,29,30
+    assert.equal(range[0].key, 25);
+    assert.equal(range[5].key, 30);
   });
 
-  it('delete removes entries', () => {
+  it('sorted iteration', () => {
     const sl = new SkipList();
-    sl.insert(1, 'a');
-    sl.insert(2, 'b');
-    sl.insert(3, 'c');
-    
-    sl.delete(2);
-    assert.equal(sl.find(2), null);
-    assert.equal(sl.find(1), 'a');
-    assert.equal(sl.find(3), 'c');
-    assert.equal(sl.size, 2);
+    sl.set(50, 'c');
+    sl.set(10, 'a');
+    sl.set(30, 'b');
+
+    const entries = [...sl];
+    assert.deepEqual(entries.map(e => e.key), [10, 30, 50]);
   });
 
-  it('handles many entries', () => {
+  it('first and last', () => {
     const sl = new SkipList();
-    for (let i = 0; i < 10000; i++) {
-      sl.insert(i, i);
-    }
+    sl.set(50, 'c');
+    sl.set(10, 'a');
+    sl.set(30, 'b');
+    assert.equal(sl.first().key, 10);
+    assert.equal(sl.last().key, 50);
+  });
+
+  it('string keys', () => {
+    const sl = new SkipList();
+    sl.set('banana', 2);
+    sl.set('apple', 1);
+    sl.set('cherry', 3);
+    assert.equal(sl.get('apple'), 1);
+    assert.deepEqual([...sl].map(e => e.key), ['apple', 'banana', 'cherry']);
+  });
+
+  it('10K inserts + lookups', () => {
+    const sl = new SkipList();
+    for (let i = 0; i < 10000; i++) sl.set(i, i);
+
     assert.equal(sl.size, 10000);
-    assert.equal(sl.find(5000), 5000);
-    assert.equal(sl.find(9999), 9999);
+    for (let i = 0; i < 10000; i++) assert.equal(sl.get(i), i);
   });
 
-  it('duplicate keys create multiple entries', () => {
+  it('benchmark vs Map on 50K entries', () => {
+    const n = 50000;
     const sl = new SkipList();
-    sl.insert(5, 'a');
-    sl.insert(5, 'b');
-    
-    const results = sl.findAll(5);
-    assert.equal(results.length, 2);
-  });
+    const map = new Map();
 
-  it('stats reports level distribution', () => {
-    const sl = new SkipList();
-    for (let i = 0; i < 100; i++) sl.insert(i, i);
-    
-    const stats = sl.stats();
-    assert.equal(stats.size, 100);
-    assert.ok(stats.maxLevel > 0);
-    assert.ok(stats.levelCounts[0] === 100); // All nodes at level 0
+    const t0 = Date.now();
+    for (let i = 0; i < n; i++) sl.set(i, i);
+    const slBuild = Date.now() - t0;
+
+    const t1 = Date.now();
+    for (let i = 0; i < n; i++) map.set(i, i);
+    const mapBuild = Date.now() - t1;
+
+    const t2 = Date.now();
+    for (let i = 0; i < n; i++) sl.get(i);
+    const slLookup = Date.now() - t2;
+
+    const t3 = Date.now();
+    for (let i = 0; i < n; i++) map.get(i);
+    const mapLookup = Date.now() - t3;
+
+    console.log(`    Build: SL ${slBuild}ms vs Map ${mapBuild}ms | Lookup: SL ${slLookup}ms vs Map ${mapLookup}ms`);
+    console.log(`    Skip list levels: ${sl.level}, avg comparisons/search: ${sl.getStats().avgComparisonsPerSearch}`);
   });
 });
