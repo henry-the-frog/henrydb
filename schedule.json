@@ -2200,6 +2200,44 @@
       "completed": "2026-04-08T18:08:37.526Z",
       "duration_ms": 30000,
       "summary": "344 objects pushed. 3024 tests."
+    },
+    {
+      "id": "T205",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: data generator — TPC-H lineitem, orders, customer generation",
+      "project": "henrydb",
+      "started": "2026-04-08T18:08:47.913Z",
+      "completed": "2026-04-08T18:09:39.308Z",
+      "duration_ms": 60000,
+      "summary": "TPC-H data generator: customers, orders, line items, parts, suppliers. 100K rows in 32ms. 8 tests."
+    },
+    {
+      "id": "T206",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: parallel scan — partition data and scan in parallel",
+      "project": "henrydb"
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: hash group by — build hash table of groups, aggregate",
+      "project": "henrydb"
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: string dictionary — shared string pool for column dedup",
+      "project": "henrydb"
+    },
+    {
+      "id": "T209",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + update README"
     }
   ],
   "focusProjects": [
@@ -3031,6 +3069,26 @@
     {
       "time": "2026-04-08T18:07:11.158Z",
       "msg": "Added T204 (MAINTAIN) after end: Push + dashboard"
+    },
+    {
+      "time": "2026-04-08T18:08:47.182Z",
+      "msg": "Added T205 (BUILD) after end: HenryDB: data generator — TPC-H lineitem, orders, customer generation"
+    },
+    {
+      "time": "2026-04-08T18:08:47.302Z",
+      "msg": "Added T206 (BUILD) after end: HenryDB: parallel scan — partition data and scan in parallel"
+    },
+    {
+      "time": "2026-04-08T18:08:47.441Z",
+      "msg": "Added T207 (BUILD) after end: HenryDB: hash group by — build hash table of groups, aggregate"
+    },
+    {
+      "time": "2026-04-08T18:08:47.560Z",
+      "msg": "Added T208 (BUILD) after end: HenryDB: string dictionary — shared string pool for column dedup"
+    },
+    {
+      "time": "2026-04-08T18:08:47.680Z",
+      "msg": "Added T209 (MAINTAIN) after end: Push + update README"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T18:08:37.562Z",
+  "generated": "2026-04-08T18:09:39.345Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push + dashboard",
-    "completedAt": "2026-04-08T18:08:37.562Z",
-    "taskId": "T204",
-    "summary": "344 objects pushed. 3024 tests.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: data generator — TPC-H lineitem, orders, customer generation",
+    "completedAt": "2026-04-08T18:09:39.345Z",
+    "taskId": "T205",
+    "summary": "TPC-H data generator: customers, orders, line items, parts, suppliers. 100K rows in 32ms. 8 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 202,
+    "blocksCompleted": 203,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 149,
+      "BUILD": 150,
       "MAINTAIN": 40,
       "EXPLORE": 2
     }
