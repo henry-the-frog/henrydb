@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T17:05:01.496Z",
+  "generated": "2026-04-08T17:06:20.031Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: page layout — slotted page with fixed/variable length records",
-    "completedAt": "2026-04-08T17:05:01.496Z",
-    "taskId": "T119",
-    "summary": "Slotted page: variable-length records growing backward, slot directory growing forward. In-place update, compaction/defrag, fill factor tracking. 9 tests.",
+    "task": "HenryDB: data page — heap file organization with free space tracking",
+    "completedAt": "2026-04-08T17:06:20.031Z",
+    "taskId": "T120",
+    "summary": "Heap file: unordered multi-page record storage with free space map. Record IDs (pageId, slotId). Full table scan. FSM-guided inserts. Multi-page spanning. 8 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 117,
+    "blocksCompleted": 118,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 78,
+      "BUILD": 79,
       "MAINTAIN": 26,
       "EXPLORE": 2
     }
