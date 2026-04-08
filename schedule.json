@@ -658,9 +658,13 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "RISC-V: Pipeline simulation — 5-stage pipeline (IF, ID, EX, MEM, WB) with data hazard detection, forwarding, and stall counting. Show pipeline diagram.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T02:32:09.586Z",
+      "completed": "2026-04-08T02:34:13.508Z",
+      "duration_ms": 300000,
+      "summary": "5-stage pipeline simulator: IF/ID/EX/MEM/WB. Models data hazards (RAW), forwarding, load-use stalls, control hazards. Stats: CPI, IPC, stall/flush/forward counts. Pipeline diagram output. 10 tests including hazard detection, forwarding comparison, straight-line correctness. Total: 121 tests."
     },
     {
       "id": "T62",
