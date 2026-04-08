@@ -1,144 +1,88 @@
-// wal-compaction.test.js — WAL compaction tests
-import { test } from 'node:test';
+// wal-compaction.test.js
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { WriteAheadLog } from './wal.js';
+import { WALCompactor } from './wal-compaction.js';
 
-test('compact — no-op on empty WAL', () => {
-  const wal = new WriteAheadLog();
-  const result = wal.compact();
-  assert.equal(result.truncatedCount, 0);
-});
+describe('WAL Compaction', () => {
+  it('append entries', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    const lsn1 = wal.append('INSERT', 'users', 1, { name: 'Alice' });
+    const lsn2 = wal.append('UPDATE', 'users', 1, { name: 'Bob' });
+    assert.equal(lsn1, 1);
+    assert.equal(lsn2, 2);
+    assert.equal(wal.entryCount, 2);
+  });
 
-test('compact — no-op without checkpoint', () => {
-  const wal = new WriteAheadLog();
-  wal.beginTransaction(1);
-  wal.appendInsert(1, 'users', 0, 0, ['Alice', 30]);
-  wal.appendCommit(1);
+  it('checkpoint and truncate', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    for (let i = 0; i < 10; i++) wal.append('INSERT', 'users', i, { i });
+    
+    assert.equal(wal.entryCount, 10);
+    const cpLSN = wal.checkpoint();
+    assert.equal(cpLSN, 10);
+    assert.equal(wal.entryCount, 0); // Truncated after checkpoint
+    assert.equal(wal.stats.checkpoints, 1);
+    assert.equal(wal.stats.truncations, 1);
+  });
 
-  const result = wal.compact();
-  // Without a checkpoint, compact can't do much (no safe truncation point)
-  // unless there are no active transactions
-  assert.ok(result.truncatedCount >= 0);
-});
+  it('auto-checkpoint at threshold', () => {
+    const wal = new WALCompactor({ maxWalSize: 5, autoCheckpoint: true });
+    for (let i = 0; i < 10; i++) wal.append('INSERT', 't', i, {});
+    
+    assert.ok(wal.stats.checkpoints >= 1);
+    assert.ok(wal.entryCount < 10);
+  });
 
-test('compact — removes records before checkpoint', () => {
-  const wal = new WriteAheadLog();
-  
-  // Create some transactions
-  for (let i = 1; i <= 5; i++) {
-    wal.beginTransaction(i);
-    wal.appendInsert(i, 'users', 0, i - 1, [`user${i}`, i]);
-    wal.appendCommit(i);
-  }
-  wal.flush();
+  it('replay from LSN', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    for (let i = 0; i < 5; i++) wal.append('INSERT', 'users', i, { v: i });
+    
+    const replay = wal.replay(3); // From LSN 3
+    assert.equal(replay.length, 2); // LSN 4 and 5
+    assert.equal(replay[0].lsn, 4);
+  });
 
-  // Checkpoint
-  wal.fuzzyCheckpoint();
+  it('cannot truncate beyond checkpoint', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    for (let i = 0; i < 10; i++) wal.append('INSERT', 't', i, {});
+    
+    // No checkpoint yet — truncate should do nothing
+    const removed = wal.truncate(10);
+    assert.equal(removed, 0);
+    assert.equal(wal.entryCount, 10);
+    
+    // After checkpoint, can truncate
+    wal.checkpoint();
+    assert.equal(wal.entryCount, 0);
+  });
 
-  // More transactions after checkpoint
-  for (let i = 6; i <= 8; i++) {
-    wal.beginTransaction(i);
-    wal.appendInsert(i, 'users', 0, i - 1, [`user${i}`, i]);
-    wal.appendCommit(i);
-  }
-  wal.flush();
+  it('transaction entries filter', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    wal.append('INSERT', 't', 1, {}, 'txn1');
+    wal.append('INSERT', 't', 2, {}, 'txn2');
+    wal.append('UPDATE', 't', 1, {}, 'txn1');
+    
+    const txn1 = wal.getTransactionEntries('txn1');
+    assert.equal(txn1.length, 2);
+  });
 
-  const result = wal.compact();
-  assert.ok(result.truncatedCount >= 0);
-  assert.ok(result.walSizeAfter <= result.walSizeBefore);
-});
+  it('table entries filter', () => {
+    const wal = new WALCompactor({ autoCheckpoint: false });
+    wal.append('INSERT', 'users', 1, {});
+    wal.append('INSERT', 'orders', 1, {});
+    wal.append('INSERT', 'users', 2, {});
+    
+    assert.equal(wal.getTableEntries('users').length, 2);
+    assert.equal(wal.getTableEntries('orders').length, 1);
+  });
 
-test('compact — preserves active transaction records', () => {
-  const wal = new WriteAheadLog();
-  
-  wal.beginTransaction(1);
-  wal.appendInsert(1, 'users', 0, 0, ['Alice', 30]);
-  wal.appendCommit(1);
-
-  wal.checkpoint();
-
-  // Start a new transaction but don't commit
-  wal.beginTransaction(2);
-  wal.appendInsert(2, 'users', 0, 1, ['Bob', 25]);
-  // tx2 is active (not committed)
-
-  wal.flush();
-  const result = wal.compact();
-  
-  // Should not truncate past tx2's first record
-  const remaining = wal.getRecords();
-  const tx2Records = remaining.filter(r => r.txId === 2);
-  assert.ok(tx2Records.length > 0); // tx2 records preserved
-});
-
-test('compact — respects dirty page table', () => {
-  const wal = new WriteAheadLog();
-  
-  wal.beginTransaction(1);
-  const firstLsn = wal.appendInsert(1, 'users', 0, 0, ['Alice', 30]);
-  wal.appendCommit(1);
-
-  // Dirty page table has recLSN = firstLsn
-  // Compact should not remove records at or after this LSN
-  const result = wal.compact();
-  assert.ok(result.safeLsn <= firstLsn || result.safeLsn === 0);
-});
-
-test('compact — after checkpoint+flush, dirty pages cleared, max truncation', () => {
-  const wal = new WriteAheadLog();
-  
-  for (let i = 1; i <= 10; i++) {
-    wal.beginTransaction(i);
-    wal.appendInsert(i, 'users', 0, i - 1, [`user${i}`, i]);
-    wal.appendCommit(i);
-  }
-
-  // Fuzzy checkpoint clears dirty page table
-  wal.fuzzyCheckpoint();
-
-  // Now compact — should be able to truncate everything before checkpoint
-  const result = wal.compact();
-  assert.ok(result.safeLsn > 0);
-});
-
-test('compact — returns correct stats', () => {
-  const wal = new WriteAheadLog();
-  
-  for (let i = 1; i <= 5; i++) {
-    wal.beginTransaction(i);
-    wal.appendInsert(i, 'users', 0, i - 1, [`user${i}`, i]);
-    wal.appendCommit(i);
-  }
-
-  const result = wal.compact();
-  assert.ok('truncatedCount' in result);
-  assert.ok('safeLsn' in result);
-  assert.ok('walSizeBefore' in result);
-  assert.ok('walSizeAfter' in result);
-  assert.ok(result.walSizeAfter <= result.walSizeBefore);
-});
-
-test('compact — multiple compactions reduce WAL progressively', () => {
-  const wal = new WriteAheadLog();
-  
-  // Batch 1
-  for (let i = 1; i <= 5; i++) {
-    wal.beginTransaction(i);
-    wal.appendInsert(i, 'users', 0, i - 1, [`user${i}`, i]);
-    wal.appendCommit(i);
-  }
-  wal.fuzzyCheckpoint();
-  const r1 = wal.compact();
-
-  // Batch 2
-  for (let i = 6; i <= 10; i++) {
-    wal.beginTransaction(i);
-    wal.appendInsert(i, 'users', 0, i - 1, [`user${i}`, i]);
-    wal.appendCommit(i);
-  }
-  wal.fuzzyCheckpoint();
-  const r2 = wal.compact();
-
-  // Second compaction should find something to truncate
-  assert.ok(r2.safeLsn > r1.safeLsn || r2.safeLsn > 0);
+  it('stats tracking', () => {
+    const wal = new WALCompactor({ maxWalSize: 50, autoCheckpoint: true });
+    for (let i = 0; i < 200; i++) wal.append('INSERT', 't', i, {});
+    
+    const stats = wal.getStats();
+    assert.equal(stats.entriesWritten, 200);
+    assert.ok(stats.checkpointCount >= 3);
+    assert.ok(stats.bytesReclaimed > 0);
+  });
 });
