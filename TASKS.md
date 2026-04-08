@@ -135,7 +135,27 @@
   - Tomasulo OoO execution (register renaming, reservation stations, ROB, CDB)
   - **208 tests | ~3800 LOC**
 
-## Today (2026-04-06) — Regex Engine + Type Inference + Forth
+## Today (2026-04-07) — HenryDB Depth + Blog Fix + RISC-V Emulator
+### Session A (Morning)
+- [x] Blog force-push fix (Pages deployment restored) + .gitignore guard
+- [x] HenryDB restored from git, 16 concurrent MVCC tests, 12 crash recovery tests (7 real bugs fixed)
+- [x] SSI (Serializable Snapshot Isolation) — 10 tests, write skew prevention
+- [x] Two-Phase Commit (2PC) — 14 tests, WAL-backed decisions
+- [x] Pipeline JIT compiler — 20 tests, 17x on LIMIT queries
+- [x] Bloom filters in LSM SSTables — 13 tests
+- [x] Property-based testing — 13 tests across 10 random seeds
+- [x] Blog post updated: "7→9 Bugs That Made My Database Lose Your Data"
+- [x] 2054 tests, all pushed to GitHub
+
+### Session C (Evening)
+- [x] RISC-V emulator from scratch — 11 components, 208 tests, ~3800 LOC, pushed to GitHub
+- [x] ARIES-style WAL checkpointing — 20 tests
+- [x] Point-in-time recovery (PITR) — 12 tests
+- [x] Auto-checkpoint + WAL compaction — 16 tests
+- [x] HenryDB total: 2209 tests
+- [x] ~470 new tests today
+
+## Yesterday (2026-04-06) — Regex Engine + Type Inference + Forth
 ### Session C (Evening)
 - [x] Regex Engine: parser, Thompson's NFA, DFA, Hopcroft minimization, capturing groups — 110 tests
 - [x] Type Inference: Hindley-Milner Algorithm W, unification, let-polymorphism — 119 tests
