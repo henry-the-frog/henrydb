@@ -112,6 +112,21 @@ xmin=0 as always-visible (bootstrap rows).
   DISTINCT uniqueness, WHERE monotonicity, MIN/MAX/AVG correctness, JOIN cardinality, LIMIT bounds
 - Random seed approach catches edge cases deterministic tests miss
 
+## Point-in-Time Recovery (PITR)
+
+- "Recover my database to 3pm yesterday" — critical for disaster recovery
+- Implementation: replay WAL records up to target timestamp, only include
+  transactions that COMMITTED before the target time
+- Key design decisions:
+  - Timestamp is wall-clock (Date.now()) stored on each WAL record
+  - Analysis phase: scan all COMMIT records, partition by target timestamp
+  - Redo phase: replay only committed-before-target, stop at timestamp boundary
+  - Uncommitted transactions at target time are excluded (correct: they hadn't committed yet)
+- Works with fuzzy checkpoints: can use checkpoint LSN as replay start point
+- In a real DB: timestamps would be serialized to WAL on disk; in HenryDB they're
+  in-memory metadata (sufficient for the simulation)
+- PostgreSQL equivalent: pg_basebackup + WAL archiving + recovery_target_time
+
 ## Test Coverage
 
 - 16 concurrent MVCC tests (dirty reads, phantoms, write skew, etc.)
