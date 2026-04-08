@@ -166,23 +166,42 @@
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon reflection: what worked, what to explore tonight"
+      "status": "done",
+      "task": "Afternoon reflection: what worked, what to explore tonight",
+      "started": "2026-04-08T14:41:03.419Z",
+      "completed": "2026-04-08T14:41:16.756Z",
+      "duration_ms": 90000,
+      "summary": "Strong session: dashboard server fixed, compiled query engine (365x), TPC-H tests, blog published. Next: adaptive execution, morsel parallelism, dashboard generate.cjs fix."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: buffer pool clock sweep or query compilation deep dive",
-      "task": null
+      "task": null,
+      "started": "2026-04-08T14:41:29.462Z",
+      "completed": "2026-04-08T14:41:59.593Z",
+      "duration_ms": 60000,
+      "summary": "Chose compilation deep dive over buffer pool. Plan: compiled aggregation (push GROUP BY into compiled loop) + EXPLAIN COMPILED via SQL. Compilation momentum is stronger."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "HenryDB: compiled aggregation in pipeline (push GROUP BY + SUM/COUNT/AVG into compiled loop)",
       "plan_ref": "T14",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T14:42:13.336Z",
+      "completed": "2026-04-08T14:44:11.477Z",
+      "duration_ms": 300000,
+      "summary": "Compiled aggregation: GROUP BY + SUM/COUNT/AVG/MIN/MAX pushed into compiled pipeline. NULL handling, whole-table agg, join+GROUP BY all work. 11 tests, all pass. 100K rows/1000 groups in 100ms."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "HenryDB: EXPLAIN COMPILED integrated into db.execute for SQL-level access",
+      "status": "upcoming",
+      "plan_ref": "T14"
     },
     {
       "id": "T16",
@@ -300,6 +319,10 @@
     {
       "time": "2026-04-08T14:37:34.670Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T14:41:52.864Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
     }
   ]
 }
