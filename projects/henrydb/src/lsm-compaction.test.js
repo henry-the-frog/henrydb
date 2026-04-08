@@ -1,138 +1,111 @@
-// lsm-compaction.test.js — Tests for leveled LSM compaction
-
+// lsm-compaction.test.js
 import { describe, it } from 'node:test';
-import { strict as assert } from 'node:assert';
-import { LSMTree } from './lsm.js';
+import assert from 'node:assert/strict';
+import { LSMTree } from './lsm-compaction.js';
 
-describe('LSM Leveled Compaction', () => {
-  it('compaction triggers after 4 SSTables in level 0', () => {
-    const lsm = new LSMTree({ memtableThreshold: 5 });
-    
-    // Insert enough to create 5+ SSTables
-    for (let i = 0; i < 30; i++) {
-      lsm.put(`key-${String(i).padStart(3, '0')}`, `val-${i}`);
-    }
-    
-    const stats = lsm.stats();
-    assert.ok(stats.compactions > 0, 'Should have triggered at least one compaction');
-    assert.ok(stats.sstables < 10, 'Compaction should reduce SSTable count');
+describe('LSMTree Compaction', () => {
+  it('basic put/get', () => {
+    const lsm = new LSMTree({ strategy: 'leveled', memtableLimit: 8 });
+    lsm.put('a', 1);
+    lsm.put('b', 2);
+    lsm.put('c', 3);
+    assert.equal(lsm.get('a'), 1);
+    assert.equal(lsm.get('b'), 2);
+    assert.equal(lsm.get('d'), undefined);
   });
 
-  it('all data survives compaction', () => {
-    const lsm = new LSMTree({ memtableThreshold: 5 });
-    
-    const n = 50;
-    for (let i = 0; i < n; i++) {
-      lsm.put(`key-${String(i).padStart(3, '0')}`, `val-${i}`);
-    }
-    
-    // Force final flush
-    lsm.flush();
-    
-    // Verify all data is still readable
-    for (let i = 0; i < n; i++) {
-      const val = lsm.get(`key-${String(i).padStart(3, '0')}`);
-      assert.equal(val, `val-${i}`, `key-${i} should survive compaction`);
-    }
+  it('delete with tombstone', () => {
+    const lsm = new LSMTree({ memtableLimit: 16 });
+    lsm.put('x', 100);
+    assert.equal(lsm.get('x'), 100);
+    lsm.delete('x');
+    assert.equal(lsm.get('x'), undefined);
   });
 
-  it('updates survive compaction (latest version wins)', () => {
-    const lsm = new LSMTree({ memtableThreshold: 5 });
-    
-    // Insert initial values
-    for (let i = 0; i < 20; i++) {
-      lsm.put(`key-${i}`, `original-${i}`);
-    }
-    
-    // Update all values
-    for (let i = 0; i < 20; i++) {
-      lsm.put(`key-${i}`, `updated-${i}`);
-    }
-    
-    lsm.flush();
-    
-    // Latest values should be visible
-    for (let i = 0; i < 20; i++) {
-      const val = lsm.get(`key-${i}`);
-      assert.equal(val, `updated-${i}`, `key-${i} should have updated value`);
-    }
+  it('update overwrites', () => {
+    const lsm = new LSMTree({ memtableLimit: 16 });
+    lsm.put('k', 'old');
+    lsm.put('k', 'new');
+    assert.equal(lsm.get('k'), 'new');
   });
 
-  it('deletes propagate through compaction', () => {
-    const lsm = new LSMTree({ memtableThreshold: 5 });
+  it('leveled compaction triggers', () => {
+    const lsm = new LSMTree({ strategy: 'leveled', memtableLimit: 4, sizeTierThreshold: 2 });
+    // Insert enough to trigger multiple flushes and compactions
+    for (let i = 0; i < 40; i++) lsm.put(i, i * 10);
+
+    assert.ok(lsm.stats.flushes >= 5);
+    assert.ok(lsm.stats.compactions >= 1);
+    // All data still accessible
+    for (let i = 0; i < 40; i++) assert.equal(lsm.get(i), i * 10);
+  });
+
+  it('size-tiered compaction triggers', () => {
+    const lsm = new LSMTree({ strategy: 'size-tiered', memtableLimit: 4, sizeTierThreshold: 3 });
+    for (let i = 0; i < 30; i++) lsm.put(i, i);
+
+    assert.ok(lsm.stats.compactions >= 1);
+    for (let i = 0; i < 30; i++) assert.equal(lsm.get(i), i);
+  });
+
+  it('scan range', () => {
+    const lsm = new LSMTree({ memtableLimit: 8 });
+    for (let i = 0; i < 20; i++) lsm.put(i, i * 100);
+
+    const range = [...lsm.scan(5, 10)];
+    assert.equal(range.length, 6); // 5,6,7,8,9,10
+    assert.equal(range[0].key, 5);
+    assert.equal(range[0].value, 500);
+  });
+
+  it('data survives compaction', () => {
+    const lsm = new LSMTree({ strategy: 'leveled', memtableLimit: 4, sizeTierThreshold: 2 });
+    for (let i = 0; i < 100; i++) lsm.put(`key_${String(i).padStart(3, '0')}`, i);
     
-    // Insert values
-    for (let i = 0; i < 20; i++) {
-      lsm.put(`key-${i}`, `val-${i}`);
-    }
+    lsm.compact();
     
-    // Delete half
-    for (let i = 0; i < 10; i++) {
-      lsm.delete(`key-${i}`);
-    }
-    
-    lsm.flush();
-    
-    // Deleted keys should return undefined
-    for (let i = 0; i < 10; i++) {
-      assert.equal(lsm.get(`key-${i}`), undefined, `key-${i} should be deleted`);
-    }
-    
-    // Non-deleted keys should still be there
-    for (let i = 10; i < 20; i++) {
-      assert.equal(lsm.get(`key-${i}`), `val-${i}`);
+    for (let i = 0; i < 100; i++) {
+      assert.equal(lsm.get(`key_${String(i).padStart(3, '0')}`), i);
     }
   });
 
-  it('range scan returns correct results after compaction', () => {
-    const lsm = new LSMTree({ memtableThreshold: 5 });
+  it('deletes are visible after flush', () => {
+    const lsm = new LSMTree({ memtableLimit: 16 });
+    for (let i = 0; i < 10; i++) lsm.put(i, i);
+    lsm.put(5, 'five');
+    lsm.delete(5);
     
-    for (let i = 0; i < 30; i++) {
-      lsm.put(`k-${String(i).padStart(3, '0')}`, `v-${i}`);
-    }
+    // Delete should be visible even without compaction
+    assert.equal(lsm.get(5), undefined);
+    assert.equal(lsm.get(3), 3);
     
-    lsm.flush();
-    
-    // Range scan
-    const results = lsm.range('k-010', 'k-020');
-    assert.ok(results.length >= 10 && results.length <= 11, `Range should have ~10-11 results, got ${results.length}`);
+    // After flush, still visible
+    lsm._flush();
+    assert.equal(lsm.get(5), undefined);
+    assert.equal(lsm.get(3), 3);
   });
 
-  it('1000 keys survive heavy compaction', () => {
-    const lsm = new LSMTree({ memtableThreshold: 50 });
-    
-    for (let i = 0; i < 1000; i++) {
-      lsm.put(`key-${String(i).padStart(4, '0')}`, `val-${i}`);
-    }
-    
-    lsm.flush();
-    const stats = lsm.stats();
-    
-    // All 1000 keys should be readable
-    let found = 0;
-    for (let i = 0; i < 1000; i++) {
-      if (lsm.get(`key-${String(i).padStart(4, '0')}`) !== undefined) found++;
-    }
-    assert.equal(found, 1000, 'All 1000 keys should survive compaction');
-    
-    console.log(`    1000 keys: ${stats.sstables} SSTables, ${stats.compactions} compactions`);
+  it('stats tracking', () => {
+    const lsm = new LSMTree({ memtableLimit: 4 });
+    for (let i = 0; i < 20; i++) lsm.put(i, i);
+    for (let i = 0; i < 5; i++) lsm.get(i);
+
+    const stats = lsm.getStats();
+    assert.equal(stats.writes, 20);
+    assert.equal(stats.reads, 5);
+    assert.ok(stats.flushes >= 1);
   });
 
-  it('SSTable levels increase with compaction', () => {
-    const lsm = new LSMTree({ memtableThreshold: 3 });
-    
-    for (let i = 0; i < 50; i++) {
-      lsm.put(`key-${i}`, `val-${i}`);
-    }
-    
-    lsm.flush();
-    
-    // Check that some SSTables have level > 0
-    const stats = lsm.stats();
-    const levels = lsm._sstables.map(s => s.level);
-    const maxLevel = Math.max(...levels);
-    
-    assert.ok(maxLevel >= 1, `Max level should be >= 1, got ${maxLevel}`);
-    console.log(`    Levels: ${JSON.stringify(levels)}, max: ${maxLevel}`);
+  it('benchmark: 10K ops with leveled compaction', () => {
+    const lsm = new LSMTree({ strategy: 'leveled', memtableLimit: 64 });
+    const t0 = Date.now();
+    for (let i = 0; i < 10000; i++) lsm.put(i, i);
+    const writeMs = Date.now() - t0;
+
+    const t1 = Date.now();
+    for (let i = 0; i < 10000; i++) lsm.get(i);
+    const readMs = Date.now() - t1;
+
+    console.log(`    10K writes: ${writeMs}ms, 10K reads: ${readMs}ms, ${lsm.getStats().sstables}`);
   });
 });
