@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:58:22.424Z",
+  "generated": "2026-04-08T16:59:46.796Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: ring buffer — fixed-size circular buffer for streaming data",
-    "completedAt": "2026-04-08T16:58:22.424Z",
-    "taskId": "T113",
-    "summary": "Ring buffer: fixed-size circular buffer with O(1) push/pop/get. Overwrites oldest on overflow. Iteration oldest→newest. 1M pushes in 12ms. 8 tests.",
+    "task": "HenryDB: column compression — RLE, delta encoding, and bit-packing",
+    "completedAt": "2026-04-08T16:59:46.796Z",
+    "taskId": "T114",
+    "summary": "Column compression: RLE (500x on sorted), delta encoding, frame-of-reference delta, bit-packing (10.7x on small ints). All roundtrip-safe. 12 tests.",
     "durationMs": 60000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 111,
+    "blocksCompleted": 112,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 73,
+      "BUILD": 74,
       "MAINTAIN": 25,
       "EXPLORE": 2
     }

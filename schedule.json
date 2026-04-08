@@ -1218,9 +1218,13 @@
     {
       "id": "T114",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: column compression — RLE, delta encoding, and bit-packing",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:58:22.957Z",
+      "completed": "2026-04-08T16:59:46.733Z",
+      "duration_ms": 60000,
+      "summary": "Column compression: RLE (500x on sorted), delta encoding, frame-of-reference delta, bit-packing (10.7x on small ints). All roundtrip-safe. 12 tests."
     },
     {
       "id": "T115",
