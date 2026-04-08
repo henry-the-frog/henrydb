@@ -61,6 +61,7 @@ export class WALRecord {
     this.slotIdx = slotIdx;
     this.before = before;
     this.after = after;
+    this.timestamp = Date.now(); // Wall-clock time for PITR
   }
 
   get typeName() {
@@ -597,5 +598,112 @@ export function recoverFromWAL(wal, db) {
     redone,
     usedFuzzyCheckpoint: !!endCheckpoint,
     dirtyPagesAtCheckpoint: dirtyPages.size,
+  };
+}
+
+/**
+ * Point-in-Time Recovery (PITR).
+ * Replays WAL records up to a target timestamp, recovering the database
+ * to its state at that moment. Only transactions that committed before
+ * the target timestamp are replayed.
+ *
+ * This enables "recover my database to how it was at 3pm yesterday"
+ * — a critical feature for data recovery and disaster mitigation.
+ *
+ * @param {WriteAheadLog} wal - The WAL to replay from
+ * @param {Object} db - Database with tables map
+ * @param {number} targetTimestamp - Unix timestamp (ms) to recover to
+ * @param {Object} [options]
+ * @param {number} [options.fromLsn=0] - Start replay from this LSN (for checkpoint-based PITR)
+ * @returns {{ committedTxns, skippedTxns, redone, targetTimestamp, actualTimestamp }}
+ */
+export function recoverToTimestamp(wal, db, targetTimestamp, options = {}) {
+  const { fromLsn = 0 } = options;
+  
+  // Get all records (in-memory buffer has timestamps)
+  // Note: in a real DB, timestamps would be serialized to disk. In our simulation,
+  // the in-memory records preserve timestamps from when they were created.
+  const allRecords = wal.getRecords().filter(r => r.lsn > fromLsn);
+  allRecords.sort((a, b) => a.lsn - b.lsn);
+  const records = allRecords;
+  
+  // Phase 1: Analysis — find transactions that COMMITTED before target time
+  const committedTxns = new Set();
+  const skippedTxns = new Set(); // Committed after target
+  const txCommitTimestamps = new Map(); // txId -> commit timestamp
+  
+  for (const record of records) {
+    if (record.type === WAL_TYPES.COMMIT) {
+      if (record.timestamp <= targetTimestamp) {
+        committedTxns.add(record.txId);
+        txCommitTimestamps.set(record.txId, record.timestamp);
+      } else {
+        skippedTxns.add(record.txId);
+      }
+    }
+  }
+  
+  // Phase 2: Redo — replay only committed-before-target transactions
+  let redone = 0;
+  let lastReplayedTimestamp = 0;
+  
+  for (const record of records) {
+    // Stop processing records after target timestamp
+    if (record.timestamp > targetTimestamp) break;
+    
+    // Only replay committed transactions
+    if (!committedTxns.has(record.txId)) continue;
+    
+    const table = db.tables.get(record.tableName);
+    if (!table) continue;
+    
+    switch (record.type) {
+      case WAL_TYPES.INSERT: {
+        if (record.after) {
+          table.heap.insert(record.after);
+          for (const [colName, index] of table.indexes) {
+            const colIdx = table.schema.findIndex(c => c.name === colName);
+            if (colIdx >= 0) {
+              index.insert(record.after[colIdx], { pageId: record.pageId, slotIdx: record.slotIdx });
+            }
+          }
+        }
+        redone++;
+        lastReplayedTimestamp = record.timestamp;
+        break;
+      }
+      case WAL_TYPES.DELETE: {
+        if (record.pageId >= 0 && record.slotIdx >= 0) {
+          table.heap.delete(record.pageId, record.slotIdx);
+        }
+        redone++;
+        lastReplayedTimestamp = record.timestamp;
+        break;
+      }
+      case WAL_TYPES.UPDATE: {
+        if (record.after && record.pageId >= 0) {
+          table.heap.delete(record.pageId, record.slotIdx);
+          const newRid = table.heap.insert(record.after);
+          for (const [colName, index] of table.indexes) {
+            const colIdx = table.schema.findIndex(c => c.name === colName);
+            if (colIdx >= 0) {
+              index.insert(record.after[colIdx], newRid);
+            }
+          }
+        }
+        redone++;
+        lastReplayedTimestamp = record.timestamp;
+        break;
+      }
+    }
+  }
+  
+  return {
+    committedTxns: committedTxns.size,
+    skippedTxns: skippedTxns.size,
+    redone,
+    targetTimestamp,
+    actualTimestamp: lastReplayedTimestamp || targetTimestamp,
+    txCommitTimestamps: Object.fromEntries(txCommitTimestamps),
   };
 }
