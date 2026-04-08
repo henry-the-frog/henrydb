@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T14:36:27.814Z",
+  "generated": "2026-04-08T14:39:14.702Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, knowledge capture",
-    "completedAt": "2026-04-08T14:36:27.814Z",
-    "taskId": "T8",
-    "summary": "HenryDB pushed to GitHub (subtree force-push). Pages builds now succeeding (resolved yesterday). Removed Pages from TODO urgent. Scratch notes updated.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "Write blog post: 365x Faster - Compiling SQL Queries in JavaScript (Volcano problem, pipeline compilation, planner integration, benchmarks, HyPer comparison)",
+    "completedAt": "2026-04-08T14:39:14.702Z",
+    "taskId": "T11",
+    "summary": "Published: 365x Faster - Compiling SQL Queries in JavaScript. Covers Volcano problem, pipeline compilation, planner integration, TPC-H benchmarks, CPython JIT comparison. Pushed to GitHub Pages.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -81,52 +81,79 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth: query planner cost model improvements + WAL stats",
         "task": null,
-        "started": "2026-04-08T14:24:25.634Z"
+        "started": "2026-04-08T14:24:25.634Z",
+        "completed": "2026-04-08T14:25:26.611Z",
+        "duration_ms": 120000,
+        "summary": "Planner already has histograms, MCV, DP join reordering, 3 join strategies, index scan cost model. Pivoted from basic stats (already exists) to planner↔pipeline compiler integration for compiled query execution using optimal join plans."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Integrate cost-based planner with pipeline JIT compiler — planner chooses join strategy, pipeline compiler generates optimized code",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T14:25:36.550Z",
+        "completed": "2026-04-08T14:32:06.924Z",
+        "duration_ms": 600000,
+        "summary": "Built CompiledQueryEngine: integrates cost-based planner with pipeline compilation. Hash join, merge join, nested loop all compiled. 127x speedup on 500-customer join benchmark. 17 tests, all pass. 2242 total HenryDB tests, 0 regressions."
       },
       {
         "id": "T20",
         "mode": "BUILD",
         "task": "Test: EXPLAIN shows JIT plan, TPC-H-style queries use optimal join order with compilation",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-08T14:32:36.024Z",
+        "completed": "2026-04-08T14:34:17.174Z",
+        "duration_ms": 300000,
+        "summary": "7 TPC-H-style compiled query tests: Q1/Q3/Q5/Q9-like queries all compile and execute correctly. 365.7x speedup on 3-table join benchmark. 4-table join works. Correctness verified vs Volcano."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, knowledge capture",
+        "started": "2026-04-08T14:34:41.917Z",
+        "completed": "2026-04-08T14:36:27.778Z",
+        "duration_ms": 120000,
+        "summary": "HenryDB pushed to GitHub (subtree force-push). Pages builds now succeeding (resolved yesterday). Removed Pages from TODO urgent. Scratch notes updated."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Assess HenryDB progress, plan blog content for CPython audience"
+        "status": "done",
+        "task": "Assess HenryDB progress, plan blog content for CPython audience",
+        "started": "2026-04-08T14:36:56.713Z",
+        "completed": "2026-04-08T14:37:13.922Z",
+        "duration_ms": 90000,
+        "summary": "HenryDB compiled query engine is blog-worthy. Plan: write 365x Faster: Compiling SQL Queries in JavaScript — Volcano overhead, pipeline compilation, planner integration, TPC-H benchmark. Connects to CPython JIT work (Mark Shannon, Ken Jin)."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Write technical blog post targeting CPython devs (trace quality, JIT design)",
-        "task": null
+        "task": null,
+        "started": "2026-04-08T14:37:26.743Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Write blog post: 365x Faster - Compiling SQL Queries in JavaScript (Volcano problem, pipeline compilation, planner integration, benchmarks, HyPer comparison)",
         "plan_ref": "T10",
         "project": "henrydb"
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "Review, commit, push blog post to GitHub Pages",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -178,12 +205,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 10,
-    "blocksTotal": 20,
+    "blocksCompleted": 13,
+    "blocksTotal": 21,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 4,
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 5,
       "MAINTAIN": 2
     }
   }

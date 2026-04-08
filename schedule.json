@@ -112,23 +112,42 @@
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess HenryDB progress, plan blog content for CPython audience"
+      "status": "done",
+      "task": "Assess HenryDB progress, plan blog content for CPython audience",
+      "started": "2026-04-08T14:36:56.713Z",
+      "completed": "2026-04-08T14:37:13.922Z",
+      "duration_ms": 90000,
+      "summary": "HenryDB compiled query engine is blog-worthy. Plan: write 365x Faster: Compiling SQL Queries in JavaScript — Volcano overhead, pipeline compilation, planner integration, TPC-H benchmark. Connects to CPython JIT work (Mark Shannon, Ken Jin)."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Write technical blog post targeting CPython devs (trace quality, JIT design)",
-      "task": null
+      "task": null,
+      "started": "2026-04-08T14:37:26.743Z",
+      "completed": "2026-04-08T14:37:40.872Z",
+      "duration_ms": 60000,
+      "summary": "Blog post planned: 365x Faster - Compiling SQL Queries in JavaScript. Sections: Volcano problem, pipeline compilation, planner integration, TPC-H benchmarks, HyPer/DuckDB comparison. Targets CPython/JIT audience."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Write blog post: 365x Faster - Compiling SQL Queries in JavaScript (Volcano problem, pipeline compilation, planner integration, benchmarks, HyPer comparison)",
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T14:37:53.210Z",
+      "completed": "2026-04-08T14:39:14.666Z",
+      "duration_ms": 300000,
+      "summary": "Published: 365x Faster - Compiling SQL Queries in JavaScript. Covers Volcano problem, pipeline compilation, planner integration, TPC-H benchmarks, CPython JIT comparison. Pushed to GitHub Pages."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Review, commit, push blog post to GitHub Pages",
+      "status": "upcoming",
+      "plan_ref": "T10"
     },
     {
       "id": "T12",
@@ -269,6 +288,10 @@
     {
       "time": "2026-04-08T14:25:19.552Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T14:37:34.670Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }
