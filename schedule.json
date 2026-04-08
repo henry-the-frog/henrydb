@@ -113,10 +113,21 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push HenryDB to GitHub with new checkpoint + PITR features. Update README.",
       "project": "henrydb",
-      "started": "2026-04-08T03:42:56.548Z"
+      "started": "2026-04-08T03:42:56.548Z",
+      "completed": "2026-04-08T03:44:12.498Z",
+      "duration_ms": 120000,
+      "summary": "Pushed HenryDB to GitHub with ARIES checkpointing + PITR. Updated README with new features. 6 files changed, 1236 insertions."
+    },
+    {
+      "id": "T12",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add EXPLAIN CHECKPOINT and PITR SQL commands to HenryDB — expose checkpoint/PITR through SQL interface",
+      "project": "henrydb",
+      "started": "2026-04-08T03:44:29.374Z"
     }
   ],
   "focusProjects": [
@@ -188,6 +199,10 @@
     {
       "time": "2026-04-08T03:42:51.798Z",
       "msg": "Added T11 (BUILD) after end: Push HenryDB to GitHub with new checkpoint + PITR features. Update README."
+    },
+    {
+      "time": "2026-04-08T03:44:24.455Z",
+      "msg": "Added T12 (BUILD) after end: Add EXPLAIN CHECKPOINT and PITR SQL commands to HenryDB — expose checkpoint/PITR through SQL interface"
     }
   ]
 }
