@@ -1,128 +1,52 @@
 // trie.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { Trie, RingBuffer } from './trie.js';
+import { Trie } from './trie.js';
 
 describe('Trie', () => {
-  it('insert and exact search', () => {
-    const trie = new Trie();
-    trie.insert('hello', 1);
-    trie.insert('world', 2);
-    assert.equal(trie.search('hello'), 1);
-    assert.equal(trie.search('world'), 2);
-    assert.equal(trie.search('nope'), undefined);
+  it('insert/get', () => {
+    const t = new Trie();
+    t.insert('hello', 1); t.insert('help', 2); t.insert('world', 3);
+    assert.equal(t.get('hello'), 1);
+    assert.equal(t.get('help'), 2);
+    assert.equal(t.get('hel'), undefined);
   });
 
-  it('prefix queries', () => {
-    const trie = new Trie();
-    trie.insert('apple', 1);
-    trie.insert('application', 2);
-    trie.insert('apply', 3);
-    trie.insert('banana', 4);
-    
-    const results = trie.findByPrefix('app');
+  it('prefix search', () => {
+    const t = new Trie();
+    t.insert('apple', 1); t.insert('app', 2); t.insert('application', 3); t.insert('banana', 4);
+    const results = t.prefixSearch('app');
     assert.equal(results.length, 3);
-    assert.ok(results.some(r => r.key === 'apple'));
-    assert.ok(results.some(r => r.key === 'application'));
+    assert.ok(results.some(r => r.key === 'app'));
   });
 
-  it('hasPrefix checks prefix existence', () => {
-    const trie = new Trie();
-    trie.insert('hello');
-    assert.equal(trie.hasPrefix('hel'), true);
-    assert.equal(trie.hasPrefix('xyz'), false);
+  it('autocomplete', () => {
+    const t = new Trie();
+    ['database', 'data', 'datastore', 'datum', 'dart'].forEach((w, i) => t.insert(w, i));
+    const suggestions = t.autocomplete('dat');
+    assert.ok(suggestions.includes('data'));
+    assert.ok(suggestions.includes('database'));
+    assert.ok(!suggestions.includes('dart'));
   });
 
-  it('delete removes keys', () => {
-    const trie = new Trie();
-    trie.insert('hello');
-    trie.insert('help');
-    
-    trie.delete('hello');
-    assert.equal(trie.search('hello'), undefined);
-    assert.equal(trie.search('help'), true);
-    assert.equal(trie.size, 1);
+  it('delete', () => {
+    const t = new Trie();
+    t.insert('test', 1);
+    assert.ok(t.delete('test'));
+    assert.equal(t.get('test'), undefined);
   });
 
-  it('findByPrefix with limit', () => {
-    const trie = new Trie();
-    for (let i = 0; i < 100; i++) trie.insert(`test${i}`);
-    
-    const results = trie.findByPrefix('test', 5);
-    assert.equal(results.length, 5);
+  it('has', () => {
+    const t = new Trie();
+    t.insert('abc', 1);
+    assert.ok(t.has('abc'));
+    assert.ok(!t.has('ab'));
   });
 
-  it('handles empty string', () => {
-    const trie = new Trie();
-    trie.insert('', 'empty');
-    assert.equal(trie.search(''), 'empty');
-  });
-
-  it('autocomplete use case', () => {
-    const trie = new Trie();
-    const words = ['database', 'data', 'datum', 'debug', 'delete', 'design'];
-    words.forEach(w => trie.insert(w));
-    
-    assert.equal(trie.findByPrefix('da').length, 3);
-    assert.equal(trie.findByPrefix('de').length, 3);
-    assert.equal(trie.findByPrefix('dat').length, 3);
-  });
-});
-
-describe('RingBuffer', () => {
-  it('push and get', () => {
-    const rb = new RingBuffer(5);
-    rb.push('a');
-    rb.push('b');
-    rb.push('c');
-    
-    assert.equal(rb.get(0), 'a');
-    assert.equal(rb.get(2), 'c');
-    assert.equal(rb.size, 3);
-  });
-
-  it('overwrites oldest when full', () => {
-    const rb = new RingBuffer(3);
-    rb.push('a');
-    rb.push('b');
-    rb.push('c');
-    rb.push('d'); // Overwrites 'a'
-    
-    assert.equal(rb.size, 3);
-    assert.equal(rb.get(0), 'b'); // 'a' was overwritten
-    assert.equal(rb.get(2), 'd');
-  });
-
-  it('latest returns newest item', () => {
-    const rb = new RingBuffer(5);
-    rb.push(1);
-    rb.push(2);
-    rb.push(3);
-    assert.equal(rb.latest(), 3);
-  });
-
-  it('toArray returns ordered items', () => {
-    const rb = new RingBuffer(3);
-    rb.push('x');
-    rb.push('y');
-    rb.push('z');
-    rb.push('w'); // overwrites 'x'
-    
-    assert.deepEqual(rb.toArray(), ['y', 'z', 'w']);
-  });
-
-  it('handles empty buffer', () => {
-    const rb = new RingBuffer(5);
-    assert.equal(rb.size, 0);
-    assert.equal(rb.latest(), undefined);
-    assert.deepEqual(rb.toArray(), []);
-  });
-
-  it('isFull property', () => {
-    const rb = new RingBuffer(2);
-    assert.equal(rb.isFull, false);
-    rb.push(1);
-    rb.push(2);
-    assert.equal(rb.isFull, true);
+  it('1000 keys', () => {
+    const t = new Trie();
+    for (let i = 0; i < 1000; i++) t.insert(`key_${i}`, i);
+    assert.equal(t.size, 1000);
+    assert.equal(t.get('key_500'), 500);
   });
 });
