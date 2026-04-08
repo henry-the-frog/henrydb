@@ -193,6 +193,9 @@ export class WriteAheadLog {
     this._lastCheckpointLsn = 0;
     this._dirtyPageTable = new Map(); // pageKey -> firstDirtyLsn (recLSN)
     this._checkpointInProgress = false;
+    this._commitsSinceCheckpoint = 0;
+    this._autoCheckpointThreshold = 0; // 0 = disabled
+    this._onAutoCheckpoint = null; // callback for auto-checkpoint
   }
 
   get nextLsn() { return this._nextLsn; }
@@ -358,7 +361,37 @@ export class WriteAheadLog {
       lastCheckpointLsn: this._lastCheckpointLsn,
       dirtyPages: this._dirtyPageTable.size,
       activeTxns: this._activeTxns.size,
+      commitsSinceCheckpoint: this._commitsSinceCheckpoint,
     };
+  }
+
+  /**
+   * Configure automatic checkpointing after N commits.
+   * Set threshold to 0 to disable.
+   * @param {number} threshold - Number of commits between checkpoints
+   * @param {Function} [callback] - Optional callback invoked on auto-checkpoint
+   */
+  setAutoCheckpoint(threshold, callback = null) {
+    this._autoCheckpointThreshold = threshold;
+    this._onAutoCheckpoint = callback;
+  }
+
+  /**
+   * Check if auto-checkpoint should fire and do it.
+   * Called internally after each COMMIT.
+   * @returns {Object|null} Checkpoint result if triggered, null otherwise
+   */
+  _maybeAutoCheckpoint() {
+    if (this._autoCheckpointThreshold <= 0) return null;
+    if (this._checkpointInProgress) return null;
+    if (this._commitsSinceCheckpoint < this._autoCheckpointThreshold) return null;
+
+    const result = this.fuzzyCheckpoint();
+    this._commitsSinceCheckpoint = 0;
+    if (this._onAutoCheckpoint) {
+      this._onAutoCheckpoint(result);
+    }
+    return result;
   }
 
   beginTransaction(txId) {
@@ -438,6 +471,8 @@ export class WriteAheadLog {
     // Force-at-commit: automatically flush when committing
     if (type === WAL_TYPES.COMMIT) {
       this.forceToLsn(lsn);
+      this._commitsSinceCheckpoint++;
+      this._maybeAutoCheckpoint();
     }
     
     return lsn;
