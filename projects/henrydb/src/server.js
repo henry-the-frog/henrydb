@@ -959,6 +959,48 @@ export class HenryDBServer {
       return true;
     }
 
+    // pg_locks — lock information
+    if (upper.includes('PG_LOCKS')) {
+      const rows = [];
+      for (const c of this.connections) {
+        if (c.txStatus === 'T') {
+          // Connection has an active transaction — show advisory lock
+          rows.push({
+            locktype: 'transactionid',
+            database: 'henrydb',
+            relation: null,
+            page: null,
+            tuple: null,
+            pid: c.pid,
+            mode: 'ExclusiveLock',
+            granted: true,
+            fastpath: false,
+          });
+        }
+      }
+      this._sendResult(conn, sql, { type: 'ROWS', rows });
+      return true;
+    }
+
+    // pg_stat_bgwriter — WAL and checkpoint metrics
+    if (upper.includes('PG_STAT_BGWRITER')) {
+      const walStats = this.db.wal?.getStats?.() || {};
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [{
+        checkpoints_timed: walStats.checkpoints || 0,
+        checkpoints_req: 0,
+        buffers_checkpoint: walStats.syncs || 0,
+        buffers_clean: 0,
+        maxwritten_clean: 0,
+        buffers_backend: 0,
+        buffers_backend_fsync: 0,
+        buffers_alloc: 0,
+        wal_records: walStats.recordsWritten || 0,
+        wal_bytes: walStats.bytesWritten || 0,
+        stats_reset: new Date(this._metrics.startTime).toISOString(),
+      }] });
+      return true;
+    }
+
     // pg_cancel_backend / pg_terminate_backend
     if (upper.includes('PG_CANCEL_BACKEND') || upper.includes('PG_TERMINATE_BACKEND')) {
       const pidMatch = sql.match(/pg_(?:cancel|terminate)_backend\s*\(\s*(\d+)\s*\)/i);

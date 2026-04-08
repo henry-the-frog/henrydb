@@ -4516,10 +4516,43 @@
     {
       "id": "T416",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session push",
       "project": "henrydb",
-      "started": "2026-04-08T22:09:23.741Z"
+      "started": "2026-04-08T22:09:23.741Z",
+      "completed": "2026-04-08T22:09:48.089Z",
+      "duration_ms": 30000,
+      "summary": "Pushed monitoring, storage metrics, cancel backend."
+    },
+    {
+      "id": "T417",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_stat_bgwriter-like metrics: checkpoint counts, WAL bytes written, buffer writes, backend writes",
+      "project": "henrydb",
+      "started": "2026-04-08T22:10:27.732Z",
+      "completed": "2026-04-08T22:10:46.248Z",
+      "duration_ms": 60000,
+      "summary": "pg_stat_bgwriter: WAL records written, WAL bytes, checkpoint count, fsync count."
+    },
+    {
+      "id": "T418",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build table-level locking views: pg_locks showing lock types, granted status, relation names",
+      "project": "henrydb",
+      "started": "2026-04-08T22:10:46.514Z",
+      "completed": "2026-04-08T22:11:09.845Z",
+      "duration_ms": 60000,
+      "summary": "pg_locks view: shows transaction-level locks for connections in active transactions."
+    },
+    {
+      "id": "T419",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Commit and push",
+      "project": "henrydb",
+      "started": "2026-04-08T22:11:10.306Z"
     }
   ],
   "focusProjects": [
@@ -6159,6 +6192,18 @@
     {
       "time": "2026-04-08T22:07:09.389Z",
       "msg": "Added T416 (MAINTAIN) after T415: Final session push"
+    },
+    {
+      "time": "2026-04-08T22:10:21.191Z",
+      "msg": "Added T417 (BUILD) after end: Build pg_stat_bgwriter-like metrics: checkpoint counts, WAL bytes written, buffer writes, backend writes"
+    },
+    {
+      "time": "2026-04-08T22:10:21.404Z",
+      "msg": "Added T418 (BUILD) after T417: Build table-level locking views: pg_locks showing lock types, granted status, relation names"
+    },
+    {
+      "time": "2026-04-08T22:10:21.618Z",
+      "msg": "Added T419 (MAINTAIN) after T418: Commit and push"
     }
   ]
 }
