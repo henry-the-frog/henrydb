@@ -112,6 +112,11 @@ class Disassembler {
   }
 
   static _aluReg(d, rd, rs1, rs2) {
+    // M extension
+    if (d.funct7 === 0b0000001) {
+      const mnemonics = { 0: 'mul', 1: 'mulh', 2: 'mulhsu', 3: 'mulhu', 4: 'div', 5: 'divu', 6: 'rem', 7: 'remu' };
+      return `${mnemonics[d.funct3]} ${rd}, ${rs1}, ${rs2}`;
+    }
     if (d.funct3 === 0 && d.funct7 === 0b0100000) return `sub ${rd}, ${rs1}, ${rs2}`;
     if (d.funct3 === 0 && d.funct7 === 0b0100000 && d.rs1 === 0) return `neg ${rd}, ${rs2}`;
     if (d.funct3 === 5 && d.funct7 === 0b0100000) return `sra ${rd}, ${rs1}, ${rs2}`;

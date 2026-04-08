@@ -238,6 +238,16 @@ class Assembler {
       case 'or':    return Assembler.encR(0b0110011, R(args[0]), 0b110, R(args[1]), R(args[2]), 0);
       case 'and':   return Assembler.encR(0b0110011, R(args[0]), 0b111, R(args[1]), R(args[2]), 0);
 
+      // M extension
+      case 'mul':    return Assembler.encR(0b0110011, R(args[0]), 0b000, R(args[1]), R(args[2]), 0b0000001);
+      case 'mulh':   return Assembler.encR(0b0110011, R(args[0]), 0b001, R(args[1]), R(args[2]), 0b0000001);
+      case 'mulhsu': return Assembler.encR(0b0110011, R(args[0]), 0b010, R(args[1]), R(args[2]), 0b0000001);
+      case 'mulhu':  return Assembler.encR(0b0110011, R(args[0]), 0b011, R(args[1]), R(args[2]), 0b0000001);
+      case 'div':    return Assembler.encR(0b0110011, R(args[0]), 0b100, R(args[1]), R(args[2]), 0b0000001);
+      case 'divu':   return Assembler.encR(0b0110011, R(args[0]), 0b101, R(args[1]), R(args[2]), 0b0000001);
+      case 'rem':    return Assembler.encR(0b0110011, R(args[0]), 0b110, R(args[1]), R(args[2]), 0b0000001);
+      case 'remu':   return Assembler.encR(0b0110011, R(args[0]), 0b111, R(args[1]), R(args[2]), 0b0000001);
+
       // I-type ALU
       case 'addi':  return Assembler.encI(0b0010011, R(args[0]), 0b000, R(args[1]), I(args[2]) & 0xFFF);
       case 'slti':  return Assembler.encI(0b0010011, R(args[0]), 0b010, R(args[1]), I(args[2]) & 0xFFF);

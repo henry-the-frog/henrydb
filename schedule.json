@@ -632,6 +632,38 @@
       "completed": "2026-04-08T02:28:16.968Z",
       "duration_ms": 180000,
       "summary": "Disassembler: round-trips all RV32I instructions back to readable assembly, detects pseudo-instructions (nop, li, mv, ret, j, beqz, bnez). Tracer: step-by-step execution log with register changes and PC tracking. 15 new tests (11 disassembler + 4 tracer). Total: 81 tests."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "RISC-V: M extension (multiply/divide) — MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU. Update assembler + disassembler.",
+      "project": "henrydb",
+      "started": "2026-04-08T02:28:55.883Z",
+      "completed": "2026-04-08T02:30:19.836Z",
+      "duration_ms": 180000,
+      "summary": "RV32M extension: MUL, MULH, MULHSU, MULHU (BigInt 64-bit precision), DIV, DIVU, REM, REMU with all edge cases (div-by-zero, overflow). Assembler + disassembler updated. 20 new tests including factorial(10!) with MUL, GCD with REM, isPrime. Total: 101 tests."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "RISC-V: ELF binary loader — parse minimal ELF32 headers, load program segments into memory, set entry point. Run real compiled RISC-V binaries.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "RISC-V: Pipeline simulation — 5-stage pipeline (IF, ID, EX, MEM, WB) with data hazard detection, forwarding, and stall counting. Show pipeline diagram.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T62",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "RISC-V: README + push to GitHub as henry-the-frog/riscv-emulator",
+      "project": "henrydb"
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
@@ -663,6 +695,22 @@
     {
       "time": "2026-04-08T02:17:39.893Z",
       "msg": "PLAN T51 filled 7 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T02:28:30.223Z",
+      "msg": "Added T59 (BUILD) after end: RISC-V: M extension (multiply/divide) — MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU. Update assembler + disassembler."
+    },
+    {
+      "time": "2026-04-08T02:28:36.106Z",
+      "msg": "Added T60 (BUILD) after end: RISC-V: ELF binary loader — parse minimal ELF32 headers, load program segments into memory, set entry point. Run real compiled RISC-V binaries."
+    },
+    {
+      "time": "2026-04-08T02:28:42.012Z",
+      "msg": "Added T61 (BUILD) after end: RISC-V: Pipeline simulation — 5-stage pipeline (IF, ID, EX, MEM, WB) with data hazard detection, forwarding, and stall counting. Show pipeline diagram."
+    },
+    {
+      "time": "2026-04-08T02:28:47.205Z",
+      "msg": "Added T62 (MAINTAIN) after end: RISC-V: README + push to GitHub as henry-the-frog/riscv-emulator"
     }
   ],
   "focusProjects": [

@@ -263,6 +263,14 @@ class CPU {
     const a = this.regs.get(d.rs1);
     const b = this.regs.get(d.rs2);
     let result;
+
+    // M extension: funct7 === 0b0000001
+    if (d.funct7 === 0b0000001) {
+      result = this._execMulDiv(d.funct3, a, b);
+      this.regs.set(d.rd, result);
+      return;
+    }
+
     switch (d.funct3) {
       case 0b000: // ADD / SUB
         result = d.funct7 === 0b0100000 ? (a - b) | 0 : (a + b) | 0;
@@ -283,6 +291,45 @@ class CPU {
       default: throw new Error(`Unknown ALU funct3: ${d.funct3}`);
     }
     this.regs.set(d.rd, result);
+  }
+
+  _execMulDiv(funct3, a, b) {
+    // Use BigInt for 64-bit precision in multiply
+    switch (funct3) {
+      case 0b000: { // MUL — lower 32 bits of signed×signed
+        return Math.imul(a, b);
+      }
+      case 0b001: { // MULH — upper 32 bits of signed×signed
+        const product = BigInt(a) * BigInt(b);
+        return Number((product >> 32n) & 0xFFFFFFFFn) | 0;
+      }
+      case 0b010: { // MULHSU — upper 32 bits of signed×unsigned
+        const product = BigInt(a) * BigInt(b >>> 0);
+        return Number((product >> 32n) & 0xFFFFFFFFn) | 0;
+      }
+      case 0b011: { // MULHU — upper 32 bits of unsigned×unsigned
+        const product = BigInt(a >>> 0) * BigInt(b >>> 0);
+        return Number((product >> 32n) & 0xFFFFFFFFn) | 0;
+      }
+      case 0b100: { // DIV — signed division
+        if (b === 0) return -1; // division by zero → -1
+        if (a === (-2147483648 | 0) && b === -1) return a; // overflow
+        return (a / b) | 0;
+      }
+      case 0b101: { // DIVU — unsigned division
+        if (b === 0) return 0xFFFFFFFF | 0;
+        return ((a >>> 0) / (b >>> 0)) | 0;
+      }
+      case 0b110: { // REM — signed remainder
+        if (b === 0) return a;
+        if (a === (-2147483648 | 0) && b === -1) return 0;
+        return (a % b) | 0;
+      }
+      case 0b111: { // REMU — unsigned remainder
+        if (b === 0) return a;
+        return ((a >>> 0) % (b >>> 0)) | 0;
+      }
+    }
   }
 
   _execSystem(d, inst) {
