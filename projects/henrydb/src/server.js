@@ -65,7 +65,11 @@ export class HenryDBServer {
       totalErrors: 0,
       queryLatencySum: 0,
       queryLatencyCount: 0,
-    }; // sql → { result: pre-computed result, hits: number, lastUsed: number }
+    };
+    // Slow query log: circular buffer of slow queries
+    this._slowQueries = [];
+    this._slowQueryMaxEntries = 100;
+    this._slowQueryThresholdMs = options.slowQueryThresholdMs || 100; // sql → { result: pre-computed result, hits: number, lastUsed: number }
   }
 
   start() {
@@ -411,12 +415,26 @@ export class HenryDBServer {
       }
     }
 
-    conn.currentQuery = null;
-    // Track latency
-    if (conn.currentQuery === null) {
-      // Already cleared — use estimated latency
+    // Track query latency and slow queries
+    if (conn.currentQuery) {
+      const duration = Date.now() - conn.currentQuery.startTime;
+      this._metrics.queryLatencySum += duration;
+      this._metrics.queryLatencyCount++;
+      
+      if (duration >= this._slowQueryThresholdMs) {
+        this._slowQueries.push({
+          pid: conn.pid,
+          user: conn.user || 'unknown',
+          query: conn.currentQuery.sql.substring(0, 500),
+          duration_ms: duration,
+          timestamp: new Date().toISOString(),
+        });
+        if (this._slowQueries.length > this._slowQueryMaxEntries) {
+          this._slowQueries.shift();
+        }
+      }
     }
-    this._metrics.queryLatencyCount++;
+    conn.currentQuery = null;
     conn.socket.write(writeReadyForQuery(conn.txStatus));
   }
 
@@ -939,6 +957,29 @@ export class HenryDBServer {
       }
       this._sendResult(conn, sql, { type: 'ROWS', rows });
       return true;
+    }
+
+    // pg_cancel_backend / pg_terminate_backend
+    if (upper.includes('PG_CANCEL_BACKEND') || upper.includes('PG_TERMINATE_BACKEND')) {
+      const pidMatch = sql.match(/pg_(?:cancel|terminate)_backend\s*\(\s*(\d+)\s*\)/i);
+      if (pidMatch) {
+        const targetPid = parseInt(pidMatch[1]);
+        let found = false;
+        for (const c of this.connections) {
+          if (c.pid === targetPid && c !== conn) {
+            if (upper.includes('TERMINATE')) {
+              c.socket.write(writeErrorResponse('FATAL', '57P01', 'terminating connection due to administrator command'));
+              c.socket.destroy();
+            } else {
+              c.socket.write(writeErrorResponse('ERROR', '57014', 'canceling statement due to user request'));
+            }
+            found = true;
+            break;
+          }
+        }
+        this._sendResult(conn, sql, { type: 'ROWS', rows: [{ pg_cancel_backend: found }] });
+        return true;
+      }
     }
 
     // pg_catalog queries (introspection)

@@ -4479,6 +4479,47 @@
       "completed": "2026-04-08T22:05:01.961Z",
       "duration_ms": 30000,
       "summary": "Pushed auth to GitHub."
+    },
+    {
+      "id": "T413",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection-level slow query log: track queries exceeding statement_timeout, log to pg_stat_slow_queries view with execution time, rows returned, query text",
+      "project": "henrydb",
+      "started": "2026-04-08T22:07:17.212Z",
+      "completed": "2026-04-08T22:08:42.338Z",
+      "duration_ms": 180000,
+      "summary": "Slow query log: circular buffer (100 entries), configurable threshold, pg_stat_slow_queries view. Tracks PID, user, query text, duration, timestamp. Server metrics enhanced. 3 tests."
+    },
+    {
+      "id": "T414",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build table storage metrics: pg_total_relation_size showing per-table row count, estimated size, index count, column count",
+      "project": "henrydb",
+      "started": "2026-04-08T22:08:42.797Z",
+      "completed": "2026-04-08T22:09:03.914Z",
+      "duration_ms": 60000,
+      "summary": "Table storage metrics: pg_total_relation_size(), pg_relation_size_details view. Shows row count, column count, index count, estimated bytes per table."
+    },
+    {
+      "id": "T415",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_cancel_backend and pg_terminate_backend: cancel running queries on other connections",
+      "project": "henrydb",
+      "started": "2026-04-08T22:09:04.377Z",
+      "completed": "2026-04-08T22:09:23.280Z",
+      "duration_ms": 60000,
+      "summary": "pg_cancel_backend and pg_terminate_backend: cancel/terminate other connections by PID. Sends error message to target connection."
+    },
+    {
+      "id": "T416",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session push",
+      "project": "henrydb",
+      "started": "2026-04-08T22:09:23.741Z"
     }
   ],
   "focusProjects": [
@@ -6102,6 +6143,22 @@
     {
       "time": "2026-04-08T22:00:57.560Z",
       "msg": "Added T412 (MAINTAIN) after T411: Push"
+    },
+    {
+      "time": "2026-04-08T22:07:08.748Z",
+      "msg": "Added T413 (BUILD) after end: Build connection-level slow query log: track queries exceeding statement_timeout, log to pg_stat_slow_queries view with execution time, rows returned, query text"
+    },
+    {
+      "time": "2026-04-08T22:07:08.962Z",
+      "msg": "Added T414 (BUILD) after T413: Build table storage metrics: pg_total_relation_size showing per-table row count, estimated size, index count, column count"
+    },
+    {
+      "time": "2026-04-08T22:07:09.175Z",
+      "msg": "Added T415 (BUILD) after T414: Build pg_cancel_backend and pg_terminate_backend: cancel running queries on other connections"
+    },
+    {
+      "time": "2026-04-08T22:07:09.389Z",
+      "msg": "Added T416 (MAINTAIN) after T415: Final session push"
     }
   ]
 }
