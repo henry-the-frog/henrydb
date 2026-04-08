@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T16:48:30.039Z",
+  "generated": "2026-04-08T16:49:27.722Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: expression compiler — compile WHERE clauses to native JS functions",
-    "completedAt": "2026-04-08T16:48:30.039Z",
-    "taskId": "T103",
-    "summary": "Expression compiler: JIT compile WHERE ASTs to new Function() via code generation. EQ/GT/LT/AND/OR/NOT/BETWEEN/IN/LIKE/IS_NULL/IS_NOT_NULL/FUNC. Compilation cache. 1.3x native speed on 100K rows. 13 tests.",
+    "task": "HenryDB: correlated subqueries — EXISTS, IN with subselect",
+    "completedAt": "2026-04-08T16:49:27.722Z",
+    "taskId": "T104",
+    "summary": "Correlated subqueries: EXISTS (semi-join), NOT EXISTS (anti-join), IN/NOT IN with subselect and filter, scalar subqueries (COUNT/SUM/MAX/MIN/AVG), lateral join. 9 tests.",
     "durationMs": 90000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 101,
+    "blocksCompleted": 102,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 65,
+      "BUILD": 66,
       "MAINTAIN": 23,
       "EXPLORE": 2
     }
