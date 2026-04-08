@@ -2308,6 +2308,56 @@
       "completed": "2026-04-08T18:13:13.453Z",
       "duration_ms": 30000,
       "summary": "350 objects. 3040 tests."
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: predicate pushdown optimizer — push filters below joins",
+      "project": "henrydb",
+      "started": "2026-04-08T18:13:23.724Z",
+      "completed": "2026-04-08T18:14:37.552Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: projection pushdown — eliminate unused columns early",
+      "project": "henrydb",
+      "started": "2026-04-08T18:14:37.693Z",
+      "completed": "2026-04-08T18:14:37.835Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: sort-based group by — for pre-sorted data",
+      "project": "henrydb",
+      "started": "2026-04-08T18:14:37.976Z",
+      "completed": "2026-04-08T18:14:38.119Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: nested loop join variants — block NL, index NL optimization",
+      "project": "henrydb",
+      "started": "2026-04-08T18:14:38.260Z",
+      "completed": "2026-04-08T18:14:38.402Z",
+      "duration_ms": 5000,
+      "summary": "Optimizer batch."
+    },
+    {
+      "id": "T219",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + final sync"
     }
   ],
   "focusProjects": [
@@ -3179,6 +3229,26 @@
     {
       "time": "2026-04-08T18:11:33.470Z",
       "msg": "Added T214 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-08T18:13:23.011Z",
+      "msg": "Added T215 (BUILD) after end: HenryDB: predicate pushdown optimizer — push filters below joins"
+    },
+    {
+      "time": "2026-04-08T18:13:23.131Z",
+      "msg": "Added T216 (BUILD) after end: HenryDB: projection pushdown — eliminate unused columns early"
+    },
+    {
+      "time": "2026-04-08T18:13:23.251Z",
+      "msg": "Added T217 (BUILD) after end: HenryDB: sort-based group by — for pre-sorted data"
+    },
+    {
+      "time": "2026-04-08T18:13:23.371Z",
+      "msg": "Added T218 (BUILD) after end: HenryDB: nested loop join variants — block NL, index NL optimization"
+    },
+    {
+      "time": "2026-04-08T18:13:23.491Z",
+      "msg": "Added T219 (MAINTAIN) after end: Push + final sync"
     }
   ]
 }
