@@ -4,23 +4,42 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Morning orientation: review yesterday, assess priorities, set direction"
+      "status": "done",
+      "task": "Morning orientation: review yesterday, assess priorities, set direction",
+      "started": "2026-04-08T14:15:18.046Z",
+      "completed": "2026-04-08T14:16:16.399Z",
+      "duration_ms": 120000,
+      "summary": "Reviewed yesterday (470+ tests, RISC-V, HenryDB 2209 tests, 9 bugs). Priorities: dashboard reliability first, then HenryDB depth, blog for CPython. Queue unchanged - solid plan. Pages build failures noted for MAINTAIN."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix dashboard server reliability (auto-start, health checks)",
-      "task": null
+      "task": null,
+      "started": "2026-04-08T14:16:30.094Z",
+      "completed": "2026-04-08T14:17:28.734Z",
+      "duration_ms": 90000,
+      "summary": "Dashboard server never built - server.js and start-server.sh missing. LaunchAgent configured correctly. Plan: build server.js with all endpoints per WORK-SYSTEM-V2.md, create start-server.sh, restart LaunchAgent."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Build dashboard webhook server (server.js + start-server.sh) with task-update, queue-update, dashboard, history, archive endpoints",
       "plan_ref": "T2",
-      "project": "dashboard"
+      "project": "dashboard",
+      "started": "2026-04-08T14:17:37.776Z",
+      "completed": "2026-04-08T14:20:33.364Z",
+      "duration_ms": 180000,
+      "summary": "Built dashboard server.js (9 endpoints, auth, CORS, state persistence), start-server.sh, restarted LaunchAgent. Server running on port 3000. All endpoints tested: task-update, queue-update, archive, dashboard, rich, history, health. Cleaned up duplicate DASHBOARD_TOKEN in .env."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Test server, verify LaunchAgent auto-restart, end-to-end curl → dashboard update",
+      "status": "upcoming",
+      "plan_ref": "T2"
     },
     {
       "id": "T4",
@@ -205,6 +224,10 @@
     {
       "time": "2026-04-08T14:01:35.981Z",
       "msg": "Added T18 (EXPLORE) after T17: Research: new project ideas or extend RISC-V emulator (C extension, syscalls, debugger)"
+    },
+    {
+      "time": "2026-04-08T14:17:22.369Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }
