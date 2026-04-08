@@ -1343,6 +1343,62 @@ export class HenryDBServer {
       return true;
     }
 
+    // EXPLAIN (FORMAT JSON|YAML|DOT)
+    if (upper.match(/EXPLAIN\s*\(\s*FORMAT\s+(JSON|YAML|DOT)/i)) {
+      const formatMatch = sql.match(/FORMAT\s+(JSON|YAML|DOT)/i);
+      const format = formatMatch[1].toUpperCase();
+      const selectSql = sql.replace(/EXPLAIN\s*\([^)]+\)\s*/i, '').trim();
+      
+      try {
+        let planRows = [];
+        try {
+          const planResult = this.db.execute('EXPLAIN ' + selectSql);
+          if (planResult.type === 'PLAN') planRows = planResult.plan || [];
+        } catch (e) { /* plan not available */ }
+
+        // Execute to get actual stats
+        const startTime = process.hrtime.bigint();
+        const result = this.db.execute(selectSql);
+        const execMs = Number(process.hrtime.bigint() - startTime) / 1_000_000;
+        const rowCount = result.type === 'ROWS' ? result.rows.length : 0;
+
+        const plan = {
+          Plan: {
+            'Node Type': planRows[0]?.operation || 'Result',
+            'Relation Name': planRows[0]?.table || null,
+            'Startup Cost': 0.00,
+            'Total Cost': execMs,
+            'Plan Rows': rowCount,
+            'Plan Width': 0,
+            'Actual Total Time': execMs,
+            'Actual Rows': rowCount,
+            'Actual Loops': 1,
+            Plans: planRows.slice(1).map(p => ({
+              'Node Type': p.operation,
+              'Relation Name': p.table || null,
+              'Filter': p.condition || null,
+            })),
+          },
+          'Execution Time': execMs,
+        };
+
+        let output;
+        if (format === 'JSON') {
+          output = JSON.stringify([plan], null, 2);
+        } else if (format === 'YAML') {
+          output = this._planToYaml(plan, 0);
+        } else if (format === 'DOT') {
+          output = this._planToDot(plan);
+        }
+
+        this._sendResult(conn, sql, { type: 'ROWS', rows: [{ 'QUERY PLAN': output }] });
+        return true;
+      } catch (e) {
+        conn.socket.write(writeErrorResponse('ERROR', '42000', e.message));
+        return true;
+      }
+    }
+
     // EXPLAIN ANALYZE
     if (upper.startsWith('EXPLAIN ANALYZE') || upper.startsWith('EXPLAIN (ANALYZE)')) {
       const selectSql = sql.replace(/^EXPLAIN\s+(?:\(ANALYZE\)|ANALYZE)\s*/i, '').trim();
@@ -1605,6 +1661,51 @@ export class HenryDBServer {
     }
 
     return false;
+  }
+
+  _planToYaml(obj, indent = 0) {
+    const lines = [];
+    const pad = '  '.repeat(indent);
+    for (const [key, val] of Object.entries(obj)) {
+      if (val === null || val === undefined) continue;
+      if (Array.isArray(val)) {
+        lines.push(`${pad}${key}:`);
+        for (const item of val) {
+          lines.push(`${pad}  -`);
+          lines.push(this._planToYaml(item, indent + 2));
+        }
+      } else if (typeof val === 'object') {
+        lines.push(`${pad}${key}:`);
+        lines.push(this._planToYaml(val, indent + 1));
+      } else {
+        lines.push(`${pad}${key}: ${val}`);
+      }
+    }
+    return lines.join('\n');
+  }
+
+  _planToDot(plan) {
+    const lines = ['digraph QueryPlan {', '  rankdir=BT;', '  node [shape=box, style=filled, fillcolor=lightyellow];'];
+    let nodeId = 0;
+    
+    const addNode = (node, parentId) => {
+      const myId = nodeId++;
+      const label = `${node['Node Type'] || 'Unknown'}${node['Relation Name'] ? '\\n' + node['Relation Name'] : ''}${node['Actual Rows'] !== undefined ? '\\nrows=' + node['Actual Rows'] : ''}${node['Actual Total Time'] !== undefined ? '\\n' + node['Actual Total Time'].toFixed(2) + 'ms' : ''}`;
+      lines.push(`  n${myId} [label="${label}"];`);
+      if (parentId !== null) {
+        lines.push(`  n${myId} -> n${parentId};`);
+      }
+      if (node.Plans) {
+        for (const child of node.Plans) {
+          addNode(child, myId);
+        }
+      }
+      return myId;
+    };
+    
+    addNode(plan.Plan, null);
+    lines.push('}');
+    return lines.join('\n');
   }
 
   _hasSubquery(expr) {
