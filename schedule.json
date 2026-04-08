@@ -735,9 +735,13 @@
     {
       "id": "T68",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "RISC-V: Out-of-order execution simulator — Tomasulo algorithm, reservation stations, reorder buffer, register renaming. The crown jewel of CPU microarchitecture.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T02:45:54.634Z",
+      "completed": "2026-04-08T02:49:04.931Z",
+      "duration_ms": 300000,
+      "summary": "Tomasulo OoO execution simulator: register renaming (RAT), reservation stations (3 ALU + 2 MUL + 2 LD + 2 ST + 1 BR), reorder buffer (16 entries, circular), CDB broadcast for dependency resolution, in-order commit, configurable execution latencies. Fixed RS clear bug. Instruction timing log. 15 new tests. Total: 208 tests."
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
