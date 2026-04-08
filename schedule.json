@@ -220,9 +220,13 @@
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research: sea-of-nodes IR or copy-and-patch compilation (follow CPython connection)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T14:49:36.191Z",
+      "completed": "2026-04-08T14:51:14.078Z",
+      "duration_ms": 120000,
+      "summary": "Explored copy-and-patch compilation vs HenryDB closures. Key insight: V8 TurboFan already does our patching for us via closure inlining. Sea-of-nodes IR is overkill. Better investments: new Function() batch compilation and ArrayBuffer row storage."
     },
     {
       "id": "T18",
