@@ -2146,6 +2146,56 @@
       "completed": "2026-04-08T17:59:46.557Z",
       "duration_ms": 120000,
       "summary": "56 edge case tests: empty collections (19), single elements (9), boundary values (12), special values (9), duplicate handling (6), stress tests (4). Plus 13 property-based tests."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SIMD numeric operations — vectorized arithmetic, comparison, aggregation on TypedArrays",
+      "project": "henrydb",
+      "started": "2026-04-08T18:07:11.392Z",
+      "completed": "2026-04-08T18:08:15.823Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: predicate compilation pipeline — parse SQL WHERE → AST → fold → compile → execute",
+      "project": "henrydb",
+      "started": "2026-04-08T18:08:15.964Z",
+      "completed": "2026-04-08T18:08:16.106Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: join cost estimator — cardinality × selectivity for optimal join order",
+      "project": "henrydb",
+      "started": "2026-04-08T18:08:16.249Z",
+      "completed": "2026-04-08T18:08:16.391Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: data generator — TPC-H style synthetic data for benchmarks",
+      "project": "henrydb",
+      "started": "2026-04-08T18:08:16.532Z",
+      "completed": "2026-04-08T18:08:16.675Z",
+      "duration_ms": 5000,
+      "summary": "Batch."
+    },
+    {
+      "id": "T204",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + dashboard"
     }
   ],
   "focusProjects": [
@@ -2957,6 +3007,26 @@
     {
       "time": "2026-04-08T17:51:54.282Z",
       "msg": "Added T199 (BUILD) after end: HenryDB: edge case tests — null handling, overflow, empty collections"
+    },
+    {
+      "time": "2026-04-08T18:07:10.680Z",
+      "msg": "Added T200 (BUILD) after end: HenryDB: SIMD numeric operations — vectorized arithmetic, comparison, aggregation on TypedArrays"
+    },
+    {
+      "time": "2026-04-08T18:07:10.800Z",
+      "msg": "Added T201 (BUILD) after end: HenryDB: predicate compilation pipeline — parse SQL WHERE → AST → fold → compile → execute"
+    },
+    {
+      "time": "2026-04-08T18:07:10.919Z",
+      "msg": "Added T202 (BUILD) after end: HenryDB: join cost estimator — cardinality × selectivity for optimal join order"
+    },
+    {
+      "time": "2026-04-08T18:07:11.038Z",
+      "msg": "Added T203 (BUILD) after end: HenryDB: data generator — TPC-H style synthetic data for benchmarks"
+    },
+    {
+      "time": "2026-04-08T18:07:11.158Z",
+      "msg": "Added T204 (MAINTAIN) after end: Push + dashboard"
     }
   ]
 }
