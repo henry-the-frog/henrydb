@@ -2254,6 +2254,44 @@
       "completed": "2026-04-08T18:11:07.089Z",
       "duration_ms": 30000,
       "summary": "README update with full feature list, architecture overview, performance table."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: hash group by — in-memory hash aggregation with multiple aggregates",
+      "project": "henrydb",
+      "started": "2026-04-08T18:11:33.703Z",
+      "completed": "2026-04-08T18:12:25.699Z",
+      "duration_ms": 60000,
+      "summary": "Hash group by: in-memory hash aggregation with SUM/COUNT/AVG/MIN/MAX/COUNT_DISTINCT. Multi-column keys, multi-aggregate. 100K rows in 25ms. 8 tests."
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: parallel scan — work-stealing parallel table scan",
+      "project": "henrydb"
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: string dictionary — global string pool for deduplication",
+      "project": "henrydb"
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: query plan cache — parameterized query plans with LRU eviction",
+      "project": "henrydb"
+    },
+    {
+      "id": "T214",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push"
     }
   ],
   "focusProjects": [
@@ -3105,6 +3143,26 @@
     {
       "time": "2026-04-08T18:08:47.680Z",
       "msg": "Added T209 (MAINTAIN) after end: Push + update README"
+    },
+    {
+      "time": "2026-04-08T18:11:32.992Z",
+      "msg": "Added T210 (BUILD) after end: HenryDB: hash group by — in-memory hash aggregation with multiple aggregates"
+    },
+    {
+      "time": "2026-04-08T18:11:33.112Z",
+      "msg": "Added T211 (BUILD) after end: HenryDB: parallel scan — work-stealing parallel table scan"
+    },
+    {
+      "time": "2026-04-08T18:11:33.231Z",
+      "msg": "Added T212 (BUILD) after end: HenryDB: string dictionary — global string pool for deduplication"
+    },
+    {
+      "time": "2026-04-08T18:11:33.351Z",
+      "msg": "Added T213 (BUILD) after end: HenryDB: query plan cache — parameterized query plans with LRU eviction"
+    },
+    {
+      "time": "2026-04-08T18:11:33.470Z",
+      "msg": "Added T214 (MAINTAIN) after end: Push"
     }
   ]
 }

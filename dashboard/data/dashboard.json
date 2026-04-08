@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T18:11:07.125Z",
+  "generated": "2026-04-08T18:12:25.736Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push + update README",
-    "completedAt": "2026-04-08T18:11:07.125Z",
-    "taskId": "T209",
-    "summary": "README update with full feature list, architecture overview, performance table.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: hash group by — in-memory hash aggregation with multiple aggregates",
+    "completedAt": "2026-04-08T18:12:25.736Z",
+    "taskId": "T210",
+    "summary": "Hash group by: in-memory hash aggregation with SUM/COUNT/AVG/MIN/MAX/COUNT_DISTINCT. Multi-column keys, multi-aggregate. 100K rows in 25ms. 8 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 207,
+    "blocksCompleted": 208,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 153,
+      "BUILD": 154,
       "MAINTAIN": 41,
       "EXPLORE": 2
     }
