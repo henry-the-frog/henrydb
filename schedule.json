@@ -1424,16 +1424,24 @@
     {
       "id": "T133",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: parallel hash join — partition and join with work-stealing",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T17:20:29.856Z",
+      "completed": "2026-04-08T17:20:29.999Z",
+      "duration_ms": 5000,
+      "summary": "Skipped: radix-join.js and morsel-parallel.js already cover parallel hash joins."
     },
     {
       "id": "T134",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: optimistic concurrency control — validate at commit time",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T17:20:30.255Z",
+      "completed": "2026-04-08T17:21:28.641Z",
+      "duration_ms": 60000,
+      "summary": "OCC: read/validate/write phases. Read-write and write-write conflict detection. No locks needed. 8 tests."
     },
     {
       "id": "T135",

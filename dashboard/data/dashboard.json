@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T17:20:15.935Z",
+  "generated": "2026-04-08T17:21:28.679Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: multi-version B-tree — copy-on-write for snapshot isolation",
-    "completedAt": "2026-04-08T17:20:15.935Z",
-    "taskId": "T132",
-    "summary": "Copy-on-Write B-tree: every write creates new node path. Snapshots preserve old roots. Multiple concurrent snapshots. 7 tests.",
-    "durationMs": 90000
+    "task": "HenryDB: optimistic concurrency control — validate at commit time",
+    "completedAt": "2026-04-08T17:21:28.679Z",
+    "taskId": "T134",
+    "summary": "OCC: read/validate/write phases. Read-write and write-write conflict detection. No locks needed. 8 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 130,
+    "blocksCompleted": 132,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 89,
+      "BUILD": 91,
       "MAINTAIN": 28,
       "EXPLORE": 2
     }
