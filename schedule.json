@@ -921,6 +921,30 @@
       "completed": "2026-04-08T16:22:52.179Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (207 objects). Dashboard synced."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: cuckoo hash table — faster than chaining for high load factors",
+      "project": "henrydb",
+      "started": "2026-04-08T16:23:14.082Z",
+      "completed": "2026-04-08T16:24:35.138Z",
+      "duration_ms": 90000,
+      "summary": "Cuckoo hash table: O(1) worst-case lookup (check 2 positions), cuckoo eviction on collision, auto-resize. 1000 sequential inserts, string+integer keys. 10 tests."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: Robin Hood hash table — minimize variance in probe sequences",
+      "project": "henrydb"
+    },
+    {
+      "id": "T89",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push"
     }
   ],
   "focusProjects": [
@@ -1280,6 +1304,18 @@
     {
       "time": "2026-04-08T16:20:06.933Z",
       "msg": "Added T86 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-08T16:23:13.614Z",
+      "msg": "Added T87 (BUILD) after end: HenryDB: cuckoo hash table — faster than chaining for high load factors"
+    },
+    {
+      "time": "2026-04-08T16:23:13.733Z",
+      "msg": "Added T88 (BUILD) after end: HenryDB: Robin Hood hash table — minimize variance in probe sequences"
+    },
+    {
+      "time": "2026-04-08T16:23:13.850Z",
+      "msg": "Added T89 (MAINTAIN) after end: Push"
     }
   ]
 }
