@@ -772,6 +772,30 @@
       "completed": "2026-04-08T16:07:25.399Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (189 objects). Dashboard synced."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: sorted-merge external sort for ORDER BY on large datasets (exceeding memory)",
+      "project": "henrydb",
+      "started": "2026-04-08T16:07:43.591Z",
+      "completed": "2026-04-08T16:09:00.012Z",
+      "duration_ms": 120000,
+      "summary": "External sort: split into sorted runs, k-way merge. Multi-column sort, topK optimization (O(n log k) for LIMIT). 100K in 92ms. 9 tests."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: parallel sort-merge join using sorted TypedArrays",
+      "project": "henrydb"
+    },
+    {
+      "id": "T75",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push, sync, final test count for session"
     }
   ],
   "focusProjects": [
@@ -1075,6 +1099,18 @@
     {
       "time": "2026-04-08T16:04:28.494Z",
       "msg": "Added T72 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-08T16:07:37.267Z",
+      "msg": "Added T73 (BUILD) after end: HenryDB: sorted-merge external sort for ORDER BY on large datasets (exceeding memory)"
+    },
+    {
+      "time": "2026-04-08T16:07:37.384Z",
+      "msg": "Added T74 (BUILD) after end: HenryDB: parallel sort-merge join using sorted TypedArrays"
+    },
+    {
+      "time": "2026-04-08T16:07:37.502Z",
+      "msg": "Added T75 (MAINTAIN) after end: Push, sync, final test count for session"
     }
   ]
 }

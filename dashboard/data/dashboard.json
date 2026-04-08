@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:07:25.436Z",
+  "generated": "2026-04-08T16:09:00.051Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Push and sync",
-    "completedAt": "2026-04-08T16:07:25.436Z",
-    "taskId": "T72",
-    "summary": "HenryDB pushed (189 objects). Dashboard synced.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "HenryDB: sorted-merge external sort for ORDER BY on large datasets (exceeding memory)",
+    "completedAt": "2026-04-08T16:09:00.051Z",
+    "taskId": "T73",
+    "summary": "External sort: split into sorted runs, k-way merge. Multi-column sort, topK optimization (O(n log k) for LIMIT). 100K in 92ms. 9 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -786,12 +786,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 70,
+    "blocksCompleted": 71,
     "blocksTotal": 72,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 41,
+      "BUILD": 42,
       "MAINTAIN": 16,
       "EXPLORE": 2
     }
