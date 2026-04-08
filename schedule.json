@@ -676,6 +676,17 @@
       "completed": "2026-04-08T02:35:25.936Z",
       "duration_ms": 120000,
       "summary": "README with architecture diagram, usage examples (CPU, assembler, pipeline, ELF loader), instruction set tables, what-I-learned section. Pushed to GitHub: henry-the-frog/riscv-emulator."
+    },
+    {
+      "id": "T63",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "RISC-V: Branch predictor for pipeline — static (always not-taken, backward-taken), dynamic (1-bit, 2-bit saturating counter, BTB). Compare misprediction rates.",
+      "project": "henrydb",
+      "started": "2026-04-08T02:35:49.106Z",
+      "completed": "2026-04-08T02:37:42.511Z",
+      "duration_ms": 240000,
+      "summary": "7 branch predictors: AlwaysNotTaken, AlwaysTaken, BackwardTaken, OneBit, TwoBit saturating counter, GShare (global history XOR PC), Tournament (hybrid). Benchmarker with trace generators (loop, alternating, nested loop, mixed). TwoBit >99% on 1000-iter loops. 15 new tests. Total: 136 tests."
     }
   ],
   "updated_at": "2026-04-07T16:40:59.174Z",
@@ -723,6 +734,10 @@
     {
       "time": "2026-04-08T02:28:47.205Z",
       "msg": "Added T62 (MAINTAIN) after end: RISC-V: README + push to GitHub as henry-the-frog/riscv-emulator"
+    },
+    {
+      "time": "2026-04-08T02:35:40.438Z",
+      "msg": "Added T63 (EXPLORE) after end: RISC-V: Branch predictor for pipeline — static (always not-taken, backward-taken), dynamic (1-bit, 2-bit saturating counter, BTB). Compare misprediction rates."
     }
   ],
   "focusProjects": [
