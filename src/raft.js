@@ -1,272 +1,194 @@
-// raft.js — Raft consensus algorithm for distributed HenryDB
-// Simplified implementation focusing on the core protocol:
-// 1. Leader election with randomized timeouts
-// 2. Log replication with AppendEntries
-// 3. Commit protocol with majority agreement
-//
-// This is an in-memory simulation — no actual networking.
+// raft.js — Raft consensus algorithm (simplified)
+// Leader election + log replication. Each node is follower/candidate/leader.
+// Leader sends heartbeats. Followers promote to candidate on timeout.
+// Majority vote wins election. Log entries replicated through AppendEntries.
 
-const State = { FOLLOWER: 'follower', CANDIDATE: 'candidate', LEADER: 'leader' };
-
-/**
- * Log entry in the Raft replicated log.
- */
-class LogEntry {
-  constructor(term, command) {
-    this.term = term;
-    this.command = command; // The SQL command or operation
-  }
-}
-
-/**
- * Raft node — a single server in the consensus cluster.
- */
 export class RaftNode {
-  constructor(id, cluster) {
+  constructor(id, peers = []) {
     this.id = id;
-    this.cluster = cluster; // Reference to the cluster for "sending" messages
-    
-    // Persistent state
+    this.peers = peers;
+    this.state = 'follower'; // follower | candidate | leader
     this.currentTerm = 0;
     this.votedFor = null;
-    this.log = []; // Array of LogEntry
-    
-    // Volatile state
+    this.log = []; // [{term, command}]
     this.commitIndex = -1;
     this.lastApplied = -1;
-    this.state = State.FOLLOWER;
-    
-    // Leader-only volatile state
-    this.nextIndex = {};  // For each node: index of next entry to send
-    this.matchIndex = {}; // For each node: highest entry known replicated
-    
-    // Applied commands (the "state machine")
-    this.appliedCommands = [];
+    // Leader state
+    this.nextIndex = {}; // peerId → next log index to send
+    this.matchIndex = {}; // peerId → highest replicated index
+    this.votesReceived = new Set();
+    this.stats = { elections: 0, appendEntries: 0, commits: 0 };
   }
 
   /**
-   * Start an election (called when election timeout fires).
+   * Start election (follower → candidate).
    */
   startElection() {
-    this.state = State.CANDIDATE;
+    this.state = 'candidate';
     this.currentTerm++;
     this.votedFor = this.id;
-    
-    let votes = 1; // Vote for self
-    const lastLogIndex = this.log.length - 1;
-    const lastLogTerm = lastLogIndex >= 0 ? this.log[lastLogIndex].term : 0;
-    
-    // Request votes from all other nodes
-    const others = this.cluster.getOtherNodes(this.id);
-    for (const node of others) {
-      const granted = node.handleRequestVote(this.currentTerm, this.id, lastLogIndex, lastLogTerm);
-      if (granted) votes++;
-    }
-    
-    // Check if we won majority
-    const majority = Math.floor(this.cluster.size / 2) + 1;
-    if (votes >= majority) {
-      this._becomeLeader();
-      return true;
-    }
-    
-    // Election failed, revert to follower
-    this.state = State.FOLLOWER;
-    return false;
+    this.votesReceived = new Set([this.id]);
+    this.stats.elections++;
+
+    return {
+      type: 'RequestVote',
+      term: this.currentTerm,
+      candidateId: this.id,
+      lastLogIndex: this.log.length - 1,
+      lastLogTerm: this.log.length > 0 ? this.log[this.log.length - 1].term : 0,
+    };
   }
 
   /**
    * Handle a RequestVote RPC.
-   * Returns true if vote is granted.
    */
-  handleRequestVote(term, candidateId, lastLogIndex, lastLogTerm) {
-    // Rule 1: Reply false if term < currentTerm
-    if (term < this.currentTerm) return false;
-    
-    // Update term if we see a newer one
-    if (term > this.currentTerm) {
-      this.currentTerm = term;
+  handleRequestVote(request) {
+    if (request.term < this.currentTerm) {
+      return { term: this.currentTerm, voteGranted: false };
+    }
+
+    if (request.term > this.currentTerm) {
+      this.currentTerm = request.term;
+      this.state = 'follower';
       this.votedFor = null;
-      this.state = State.FOLLOWER;
     }
-    
-    // Rule 2: Vote if not already voted for someone else AND candidate's log is up-to-date
-    if (this.votedFor === null || this.votedFor === candidateId) {
-      const myLastIndex = this.log.length - 1;
-      const myLastTerm = myLastIndex >= 0 ? this.log[myLastIndex].term : 0;
-      
-      // Candidate's log must be at least as up-to-date as ours
-      if (lastLogTerm > myLastTerm || (lastLogTerm === myLastTerm && lastLogIndex >= myLastIndex)) {
-        this.votedFor = candidateId;
-        return true;
-      }
+
+    const logOk = request.lastLogTerm > this._lastLogTerm() ||
+      (request.lastLogTerm === this._lastLogTerm() && request.lastLogIndex >= this.log.length - 1);
+
+    if ((this.votedFor === null || this.votedFor === request.candidateId) && logOk) {
+      this.votedFor = request.candidateId;
+      return { term: this.currentTerm, voteGranted: true };
     }
-    
-    return false;
+
+    return { term: this.currentTerm, voteGranted: false };
   }
 
   /**
-   * Append a new command (leader only).
+   * Handle vote response (as candidate).
    */
-  appendCommand(command) {
-    if (this.state !== State.LEADER) {
-      throw new Error(`Node ${this.id} is not the leader`);
+  handleVoteResponse(response) {
+    if (response.term > this.currentTerm) {
+      this.currentTerm = response.term;
+      this.state = 'follower';
+      return;
     }
-    
-    // Append to our log
-    this.log.push(new LogEntry(this.currentTerm, command));
-    
-    // Replicate to followers
-    this._replicateToFollowers();
-    
-    // Check if we can advance commit index
-    this._advanceCommitIndex();
-    
-    // Apply committed entries
-    this._applyCommitted();
-    
-    // Replicate again with updated commitIndex so followers can advance
-    this._replicateToFollowers();
-    
-    return this.log.length - 1; // Return log index
-  }
 
-  /**
-   * Handle AppendEntries RPC (from leader).
-   */
-  handleAppendEntries(term, leaderId, prevLogIndex, prevLogTerm, entries, leaderCommit) {
-    // Rule 1: Reply false if term < currentTerm
-    if (term < this.currentTerm) return { success: false, term: this.currentTerm };
-    
-    // Update term
-    if (term > this.currentTerm) {
-      this.currentTerm = term;
-      this.votedFor = null;
+    if (this.state !== 'candidate') return;
+
+    if (response.voteGranted) {
+      this.votesReceived.add(response.from || `peer_${this.votesReceived.size}`);
     }
-    this.state = State.FOLLOWER;
-    
-    // Rule 2: Reply false if log doesn't contain entry at prevLogIndex with prevLogTerm
-    if (prevLogIndex >= 0) {
-      if (prevLogIndex >= this.log.length) return { success: false, term: this.currentTerm };
-      if (this.log[prevLogIndex].term !== prevLogTerm) return { success: false, term: this.currentTerm };
+
+    // Check majority
+    const majority = Math.floor((this.peers.length + 1) / 2) + 1;
+    if (this.votesReceived.size >= majority) {
+      this._becomeLeader();
     }
-    
-    // Rule 3: Append new entries (remove conflicting ones first)
-    for (let i = 0; i < entries.length; i++) {
-      const logIdx = prevLogIndex + 1 + i;
-      if (logIdx < this.log.length) {
-        if (this.log[logIdx].term !== entries[i].term) {
-          // Conflict: truncate from here
-          this.log.length = logIdx;
-        }
-      }
-      if (logIdx >= this.log.length) {
-        this.log.push(entries[i]);
-      }
-    }
-    
-    // Rule 5: Update commit index
-    if (leaderCommit > this.commitIndex) {
-      this.commitIndex = Math.min(leaderCommit, this.log.length - 1);
-      this._applyCommitted();
-    }
-    
-    return { success: true, term: this.currentTerm };
   }
 
   _becomeLeader() {
-    this.state = State.LEADER;
-    // Initialize leader state
-    const others = this.cluster.getOtherNodes(this.id);
-    for (const node of others) {
-      this.nextIndex[node.id] = this.log.length;
-      this.matchIndex[node.id] = -1;
+    this.state = 'leader';
+    for (const peer of this.peers) {
+      this.nextIndex[peer] = this.log.length;
+      this.matchIndex[peer] = -1;
     }
   }
 
-  _replicateToFollowers() {
-    const others = this.cluster.getOtherNodes(this.id);
-    for (const node of others) {
-      const nextIdx = this.nextIndex[node.id] || 0;
-      const prevLogIndex = nextIdx - 1;
-      const prevLogTerm = prevLogIndex >= 0 ? this.log[prevLogIndex].term : 0;
-      const entries = this.log.slice(nextIdx);
-      
-      const result = node.handleAppendEntries(
-        this.currentTerm, this.id,
-        prevLogIndex, prevLogTerm,
-        entries, this.commitIndex
-      );
-      
-      if (result.success) {
-        this.nextIndex[node.id] = this.log.length;
-        this.matchIndex[node.id] = this.log.length - 1;
-      } else {
-        // Decrement nextIndex and retry (simplified)
-        this.nextIndex[node.id] = Math.max(0, (this.nextIndex[node.id] || 1) - 1);
+  /**
+   * Client request: append command to log (leader only).
+   */
+  clientRequest(command) {
+    if (this.state !== 'leader') return { ok: false, reason: 'not leader' };
+    this.log.push({ term: this.currentTerm, command });
+    return { ok: true, index: this.log.length - 1 };
+  }
+
+  /**
+   * Create AppendEntries RPC for a peer.
+   */
+  createAppendEntries(peerId) {
+    const nextIdx = this.nextIndex[peerId] || 0;
+    const prevLogIndex = nextIdx - 1;
+    const prevLogTerm = prevLogIndex >= 0 ? this.log[prevLogIndex].term : 0;
+
+    return {
+      type: 'AppendEntries',
+      term: this.currentTerm,
+      leaderId: this.id,
+      prevLogIndex,
+      prevLogTerm,
+      entries: this.log.slice(nextIdx),
+      leaderCommit: this.commitIndex,
+    };
+  }
+
+  /**
+   * Handle AppendEntries RPC (as follower).
+   */
+  handleAppendEntries(request) {
+    if (request.term < this.currentTerm) {
+      return { term: this.currentTerm, success: false };
+    }
+
+    this.currentTerm = request.term;
+    this.state = 'follower';
+
+    // Check log consistency
+    if (request.prevLogIndex >= 0) {
+      if (request.prevLogIndex >= this.log.length || 
+          this.log[request.prevLogIndex].term !== request.prevLogTerm) {
+        return { term: this.currentTerm, success: false };
       }
+    }
+
+    // Append new entries
+    for (let i = 0; i < request.entries.length; i++) {
+      const idx = request.prevLogIndex + 1 + i;
+      if (idx < this.log.length) {
+        this.log[idx] = request.entries[i]; // Overwrite conflicting
+      } else {
+        this.log.push(request.entries[i]);
+      }
+    }
+
+    if (request.leaderCommit > this.commitIndex) {
+      this.commitIndex = Math.min(request.leaderCommit, this.log.length - 1);
+    }
+
+    this.stats.appendEntries++;
+    return { term: this.currentTerm, success: true, matchIndex: this.log.length - 1 };
+  }
+
+  /**
+   * Handle AppendEntries response (as leader).
+   */
+  handleAppendResponse(peerId, response) {
+    if (response.success) {
+      this.nextIndex[peerId] = (response.matchIndex || 0) + 1;
+      this.matchIndex[peerId] = response.matchIndex || 0;
+      this._advanceCommitIndex();
+    } else {
+      this.nextIndex[peerId] = Math.max(0, (this.nextIndex[peerId] || 1) - 1);
     }
   }
 
   _advanceCommitIndex() {
-    // Find the highest N such that a majority has matchIndex >= N
-    const majority = Math.floor(this.cluster.size / 2) + 1;
-    
     for (let n = this.log.length - 1; n > this.commitIndex; n--) {
       if (this.log[n].term !== this.currentTerm) continue;
-      
-      let replicated = 1; // Count self
-      for (const [, matchIdx] of Object.entries(this.matchIndex)) {
-        if (matchIdx >= n) replicated++;
+      let count = 1; // Self
+      for (const peer of this.peers) {
+        if ((this.matchIndex[peer] || -1) >= n) count++;
       }
-      
-      if (replicated >= majority) {
+      if (count > (this.peers.length + 1) / 2) {
         this.commitIndex = n;
+        this.stats.commits++;
         break;
       }
     }
   }
 
-  _applyCommitted() {
-    while (this.lastApplied < this.commitIndex) {
-      this.lastApplied++;
-      this.appliedCommands.push(this.log[this.lastApplied].command);
-    }
+  _lastLogTerm() {
+    return this.log.length > 0 ? this.log[this.log.length - 1].term : 0;
   }
 }
-
-/**
- * Raft cluster — manages a group of Raft nodes.
- */
-export class RaftCluster {
-  constructor(nodeCount = 3) {
-    this.nodes = [];
-    for (let i = 0; i < nodeCount; i++) {
-      this.nodes.push(new RaftNode(i, this));
-    }
-  }
-
-  get size() { return this.nodes.length; }
-
-  getNode(id) { return this.nodes[id]; }
-
-  getOtherNodes(id) {
-    return this.nodes.filter(n => n.id !== id);
-  }
-
-  /**
-   * Elect a leader (simulate election).
-   */
-  electLeader(nodeId = 0) {
-    return this.nodes[nodeId].startElection();
-  }
-
-  /**
-   * Get the current leader.
-   */
-  getLeader() {
-    return this.nodes.find(n => n.state === State.LEADER) || null;
-  }
-}
-
-export { State, LogEntry };
