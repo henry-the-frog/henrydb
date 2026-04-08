@@ -430,6 +430,24 @@
       "completed": "2026-04-08T15:12:51.185Z",
       "duration_ms": 30000,
       "summary": "HenryDB pushed (140 objects). Dashboard synced. 182 test files in henrydb."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: adaptive query execution — choose between vectorized and compiled based on data characteristics",
+      "project": "henrydb",
+      "started": "2026-04-08T15:13:30.723Z",
+      "completed": "2026-04-08T15:15:17.718Z",
+      "duration_ms": 300000,
+      "summary": "Adaptive query engine: auto-selects vectorized/codegen/compiled/volcano based on query characteristics. Runtime feedback improves selection over time. Mixed workloads get different engines. 212x vs Volcano. 10 tests."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: query optimizer auto-selects execution engine (vectorized for scans, compiled for selective joins)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -605,6 +623,14 @@
     {
       "time": "2026-04-08T15:09:20.120Z",
       "msg": "Added T40 (MAINTAIN) after end: Final housekeeping: push HenryDB, sync dashboard, git commit all"
+    },
+    {
+      "time": "2026-04-08T15:13:20.375Z",
+      "msg": "Added T41 (BUILD) after end: HenryDB: adaptive query execution — choose between vectorized and compiled based on data characteristics"
+    },
+    {
+      "time": "2026-04-08T15:13:20.493Z",
+      "msg": "Added T42 (BUILD) after end: HenryDB: query optimizer auto-selects execution engine (vectorized for scans, compiled for selective joins)"
     }
   ]
 }
