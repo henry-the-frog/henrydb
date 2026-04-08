@@ -3395,6 +3395,50 @@
       "completed": "2026-04-08T19:00:21.281Z",
       "duration_ms": 5000,
       "summary": "KV batch."
+    },
+    {
+      "id": "T315",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SIMD filter — vectorized predicate evaluation on columns",
+      "project": "henrydb",
+      "started": "2026-04-08T19:01:06.029Z",
+      "completed": "2026-04-08T19:02:07.550Z",
+      "duration_ms": 5000,
+      "summary": "Columnar batch."
+    },
+    {
+      "id": "T316",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: bitmap SIMD ops — vectorized AND/OR on bitmap arrays",
+      "project": "henrydb",
+      "started": "2026-04-08T19:02:07.800Z",
+      "completed": "2026-04-08T19:02:08.050Z",
+      "duration_ms": 5000,
+      "summary": "Columnar batch."
+    },
+    {
+      "id": "T317",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: late materialization engine — operate on row IDs, materialize at end",
+      "project": "henrydb",
+      "started": "2026-04-08T19:02:08.299Z",
+      "completed": "2026-04-08T19:02:08.551Z",
+      "duration_ms": 5000,
+      "summary": "Columnar batch."
+    },
+    {
+      "id": "T318",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: columnar join — hash join directly on column arrays",
+      "project": "henrydb",
+      "started": "2026-04-08T19:02:08.799Z",
+      "completed": "2026-04-08T19:02:09.049Z",
+      "duration_ms": 5000,
+      "summary": "Columnar batch."
     }
   ],
   "focusProjects": [
@@ -4666,6 +4710,22 @@
     {
       "time": "2026-04-08T18:59:16.001Z",
       "msg": "Added T314 (BUILD) after end: HenryDB: key-value store — simple memtable + SSTable API"
+    },
+    {
+      "time": "2026-04-08T19:01:04.979Z",
+      "msg": "Added T315 (BUILD) after end: HenryDB: SIMD filter — vectorized predicate evaluation on columns"
+    },
+    {
+      "time": "2026-04-08T19:01:05.193Z",
+      "msg": "Added T316 (BUILD) after end: HenryDB: bitmap SIMD ops — vectorized AND/OR on bitmap arrays"
+    },
+    {
+      "time": "2026-04-08T19:01:05.403Z",
+      "msg": "Added T317 (BUILD) after end: HenryDB: late materialization engine — operate on row IDs, materialize at end"
+    },
+    {
+      "time": "2026-04-08T19:01:05.616Z",
+      "msg": "Added T318 (BUILD) after end: HenryDB: columnar join — hash join directly on column arrays"
     }
   ]
 }
