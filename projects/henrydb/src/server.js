@@ -221,6 +221,10 @@ export class HenryDBServer {
 
     for (const stmt of statements) {
       try {
+        // Intercept PostgreSQL system queries that ORMs/drivers commonly use
+        const intercepted = this._interceptSystemQuery(conn, stmt);
+        if (intercepted) continue;
+
         // Try adaptive engine for SELECT queries
         let result;
         if (this.adaptiveEngine && conn.useAdaptive && /^\s*SELECT/i.test(stmt)) {
@@ -419,7 +423,19 @@ export class HenryDBServer {
       // Execute and store the result for the portal
       let result = null;
       if (sql.trim()) {
-        result = this.db.execute(sql);
+        // Check system queries first
+        const upper = sql.toUpperCase().trim();
+        if (upper === 'SELECT VERSION()' || upper === 'SELECT VERSION ()') {
+          result = { type: 'ROWS', rows: [{ version: 'PostgreSQL 15.0 on HenryDB (JavaScript)' }] };
+        } else if (upper.includes('PG_CATALOG') || upper.includes('INFORMATION_SCHEMA') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS')) {
+          result = { type: 'ROWS', rows: [], columns: [] };
+        } else if (upper.startsWith('SET ')) {
+          result = { type: 'OK', message: 'SET' };
+        } else if (upper.startsWith('DEALLOCATE')) {
+          result = { type: 'OK', message: 'DEALLOCATE' };
+        } else {
+          result = this.db.execute(sql);
+        }
       }
 
       conn.portals.set(portal, { statement, paramValues, result, resultFormats, sql });
@@ -580,6 +596,70 @@ export class HenryDBServer {
     // No UNION/INTERSECT/EXCEPT
     if (ast.union || ast.intersect || ast.except) return false;
     return true;
+  }
+
+  /**
+   * Intercept PostgreSQL system queries that ORMs and drivers commonly execute.
+   * Returns true if the query was intercepted and handled.
+   */
+  _interceptSystemQuery(conn, sql) {
+    const upper = sql.toUpperCase().trim();
+    
+    // version() — Knex, Prisma, etc. call this on connect
+    if (upper === 'SELECT VERSION()' || upper === 'SELECT VERSION ()') {
+      const versionResult = {
+        type: 'ROWS',
+        rows: [{ version: 'PostgreSQL 15.0 on HenryDB (JavaScript)' }],
+      };
+      this._sendResult(conn, sql, versionResult);
+      return true;
+    }
+
+    // current_database() 
+    if (upper.includes('CURRENT_DATABASE()')) {
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [{ current_database: 'henrydb' }] });
+      return true;
+    }
+
+    // current_schema
+    if (upper.includes('CURRENT_SCHEMA')) {
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [{ current_schema: 'public' }] });
+      return true;
+    }
+
+    // pg_catalog queries (introspection)
+    if (upper.includes('PG_CATALOG') || upper.includes('INFORMATION_SCHEMA') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS')) {
+      // Return empty result set for catalog queries
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [], columns: [] });
+      return true;
+    }
+
+    // SET statements (client configuration)
+    if (upper.startsWith('SET ')) {
+      conn.socket.write(writeCommandComplete('SET'));
+      return true;
+    }
+
+    // SHOW (e.g., SHOW server_version)
+    if (upper.startsWith('SHOW ') && !upper.startsWith('SHOW TABLES')) {
+      const param = sql.substring(5).trim().toLowerCase();
+      let value = 'unknown';
+      if (param === 'server_version') value = '15.0';
+      else if (param === 'server_encoding') value = 'UTF8';
+      else if (param === 'client_encoding') value = 'UTF8';
+      else if (param === 'standard_conforming_strings') value = 'on';
+      else if (param === 'datestyle') value = 'ISO, MDY';
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [{ [param]: value }] });
+      return true;
+    }
+
+    // DEALLOCATE (pg driver cleanup)
+    if (upper.startsWith('DEALLOCATE')) {
+      conn.socket.write(writeCommandComplete('DEALLOCATE'));
+      return true;
+    }
+
+    return false;
   }
 
   _hasSubquery(expr) {
