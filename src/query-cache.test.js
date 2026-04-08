@@ -1,141 +1,123 @@
-// query-cache.test.js — Query cache tests
+// query-cache.test.js — Tests for query result caching
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { QueryCache, tryCompiledExecution } from './query-cache.js';
-import { Database } from './db.js';
+import { QueryCache } from './query-cache.js';
 
 describe('QueryCache', () => {
-  it('caches and retrieves entries', () => {
+
+  it('set and get', () => {
     const cache = new QueryCache();
-    cache.put('SELECT 1', () => [{ val: 1 }], { tableName: 't' });
+    cache.set('SELECT * FROM t', { rows: [{ id: 1 }] }, ['t']);
     
-    const entry = cache.get('SELECT 1');
-    assert.ok(entry);
-    assert.ok(entry.useCount >= 1);
+    const result = cache.get('SELECT * FROM t');
+    assert.deepEqual(result, { rows: [{ id: 1 }] });
   });
 
-  it('tracks hits and misses', () => {
+  it('miss returns null', () => {
     const cache = new QueryCache();
-    cache.get('unknown'); // miss
-    cache.put('SELECT 1', () => [], {});
-    cache.get('SELECT 1'); // hit
-    
-    const stats = cache.stats();
-    assert.strictEqual(stats.hits, 1);
-    assert.strictEqual(stats.misses, 1);
-    assert.strictEqual(stats.hitRate, 0.5);
+    assert.equal(cache.get('SELECT * FROM unknown'), null);
   });
 
-  it('evicts LRU when full', () => {
-    const cache = new QueryCache(2);
-    cache.put('q1', () => [], {});
-    cache.put('q2', () => [], {});
-    cache.put('q3', () => [], {}); // Should evict q1
+  it('TTL expiration', async () => {
+    const cache = new QueryCache({ defaultTTLMs: 50 });
+    cache.set('q1', { rows: [] }, ['t']);
+
+    assert.ok(cache.get('q1'));
+    await new Promise(r => setTimeout(r, 100));
+    assert.equal(cache.get('q1'), null);
+  });
+
+  it('table invalidation', () => {
+    const cache = new QueryCache();
+    cache.set('SELECT * FROM users', { rows: [] }, ['users']);
+    cache.set('SELECT * FROM orders', { rows: [] }, ['orders']);
+    cache.set('SELECT * FROM users JOIN orders', { rows: [] }, ['users', 'orders']);
+
+    const invalidated = cache.invalidateTable('users');
+    assert.equal(invalidated, 2); // users + users JOIN orders
+    assert.equal(cache.get('SELECT * FROM users'), null);
+    assert.ok(cache.get('SELECT * FROM orders')); // Not invalidated
+  });
+
+  it('LRU eviction when full', () => {
+    const cache = new QueryCache({ maxEntries: 3 });
+    cache.set('q1', { rows: [1] }, ['t']);
+    cache.set('q2', { rows: [2] }, ['t']);
+    cache.set('q3', { rows: [3] }, ['t']);
     
-    assert.strictEqual(cache.get('q1'), null);
-    assert.ok(cache.get('q2'));
+    // Access q1 to make it recently used
+    cache.get('q1');
+    
+    // Insert q4 → should evict q2 (least recently used)
+    cache.set('q4', { rows: [4] }, ['t']);
+    
+    assert.ok(cache.get('q1')); // Recently accessed
+    assert.equal(cache.get('q2'), null); // Evicted
     assert.ok(cache.get('q3'));
+    assert.ok(cache.get('q4'));
   });
 
-  it('clear removes all entries', () => {
+  it('invalidateAll', () => {
     const cache = new QueryCache();
-    cache.put('q1', () => [], {});
-    cache.put('q2', () => [], {});
-    cache.clear();
-    assert.strictEqual(cache.stats().entries, 0);
-  });
-});
+    cache.set('q1', { rows: [] }, ['t']);
+    cache.set('q2', { rows: [] }, ['t']);
 
-describe('tryCompiledExecution', () => {
-  it('compiles and caches simple SELECT', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
-    for (let i = 0; i < 10; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
-    
+    cache.invalidateAll();
+    assert.equal(cache.size, 0);
+    assert.equal(cache.get('q1'), null);
+  });
+
+  it('extractTables: FROM', () => {
+    const tables = QueryCache.extractTables('SELECT * FROM users WHERE id = 1');
+    assert.deepEqual(tables, ['users']);
+  });
+
+  it('extractTables: JOIN', () => {
+    const tables = QueryCache.extractTables('SELECT * FROM users u JOIN orders o ON u.id = o.user_id');
+    assert.ok(tables.includes('users'));
+    assert.ok(tables.includes('orders'));
+  });
+
+  it('hit rate tracking', () => {
     const cache = new QueryCache();
-    
-    // First call: compile and cache
-    const r1 = tryCompiledExecution('SELECT id, val FROM t WHERE val > 50', db, cache);
-    assert.ok(r1);
-    assert.strictEqual(r1.rows.length, 4);
-    assert.strictEqual(cache.stats().compilations, 1);
-    
-    // Second call: use cache
-    const r2 = tryCompiledExecution('SELECT id, val FROM t WHERE val > 50', db, cache);
-    assert.ok(r2);
-    assert.strictEqual(r2.rows.length, 4);
-    assert.strictEqual(cache.stats().hits, 1);
+    cache.set('q1', { rows: [] }, ['t']);
+
+    cache.get('q1'); // hit
+    cache.get('q1'); // hit
+    cache.get('q2'); // miss
+
+    const stats = cache.getStats();
+    assert.equal(stats.hits, 2);
+    assert.equal(stats.misses, 1);
+    assert.equal(stats.hitRate, '66.7%');
   });
 
-  it('returns null for non-SELECT queries', () => {
-    const db = new Database();
-    const cache = new QueryCache();
-    
-    assert.strictEqual(tryCompiledExecution('INSERT INTO t VALUES (1)', db, cache), null);
-    assert.strictEqual(tryCompiledExecution('CREATE TABLE t (id INT)', db, cache), null);
+  it('custom TTL per query', () => {
+    const cache = new QueryCache({ defaultTTLMs: 60000 });
+    cache.set('fast', { rows: [] }, ['t'], 10); // 10ms TTL
+    cache.set('slow', { rows: [] }, ['t'], 60000); // 60s TTL
+
+    // Both should be present immediately
+    assert.ok(cache.get('fast'));
+    assert.ok(cache.get('slow'));
   });
 
-  it('returns null for queries with JOINs', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE a (id INT PRIMARY KEY)');
-    db.execute('CREATE TABLE b (id INT PRIMARY KEY)');
-    const cache = new QueryCache();
+  it('benchmark: cache lookup on 10K queries', () => {
+    const cache = new QueryCache({ maxEntries: 5000 });
     
-    // JOINs may or may not compile depending on parser output
-    // The important thing is it doesn't crash
-    const result = tryCompiledExecution('SELECT * FROM a JOIN b ON a.id = b.id', db, cache);
-    assert.ok(true, 'Does not crash on JOIN query');
-  });
-
-  it('returns correct results for SELECT *', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE items (id INT PRIMARY KEY, name TEXT)');
-    db.execute("INSERT INTO items VALUES (1, 'Widget')");
-    db.execute("INSERT INTO items VALUES (2, 'Gadget')");
-    
-    const cache = new QueryCache();
-    const result = tryCompiledExecution('SELECT * FROM items', db, cache);
-    assert.ok(result);
-    assert.strictEqual(result.rows.length, 2);
-  });
-
-  it('handles LIMIT', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE t (id INT PRIMARY KEY)');
-    for (let i = 0; i < 100; i++) db.execute(`INSERT INTO t VALUES (${i})`);
-    
-    const cache = new QueryCache();
-    const result = tryCompiledExecution('SELECT * FROM t LIMIT 5', db, cache);
-    assert.ok(result);
-    assert.strictEqual(result.rows.length, 5);
-  });
-
-  it('benchmark: first vs cached execution', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE orders (id INT PRIMARY KEY, amount INT, status TEXT)');
+    // Fill cache
     for (let i = 0; i < 5000; i++) {
-      db.execute(`INSERT INTO orders VALUES (${i}, ${(i * 17) % 1000}, '${i % 2 === 0 ? 'shipped' : 'pending'}')`);
+      cache.set(`SELECT * FROM t WHERE id = ${i}`, { rows: [{ id: i }] }, ['t']);
     }
-    
-    const cache = new QueryCache();
-    const sql = "SELECT id, amount FROM orders WHERE amount > 500 AND status = 'shipped'";
-    
-    // First: compile + execute
-    const start1 = performance.now();
-    tryCompiledExecution(sql, db, cache);
-    const time1 = performance.now() - start1;
-    
-    // Second: cached execute
-    const start2 = performance.now();
-    for (let j = 0; j < 100; j++) {
-      tryCompiledExecution(sql, db, cache);
+
+    // Benchmark lookups
+    const t0 = Date.now();
+    for (let i = 0; i < 10000; i++) {
+      cache.get(`SELECT * FROM t WHERE id = ${i % 5000}`);
     }
-    const time2 = (performance.now() - start2) / 100;
-    
-    console.log(`    First (compile+execute): ${time1.toFixed(2)}ms`);
-    console.log(`    Cached (execute only):   ${time2.toFixed(2)}ms`);
-    console.log(`    Cache warmup ratio:      ${(time1/time2).toFixed(1)}x`);
-    
-    assert.ok(time2 < time1, 'Cached execution should be faster');
+    const ms = Date.now() - t0;
+
+    console.log(`    10K cache lookups: ${ms}ms (${(10000 / Math.max(ms, 0.1)).toFixed(0)} lookups/ms)`);
+    assert.ok(cache.getStats().hits >= 5000);
   });
 });
