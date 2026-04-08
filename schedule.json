@@ -178,10 +178,21 @@
     {
       "id": "T17",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add automatic checkpoint trigger: auto-checkpoint after N transactions or N WAL records",
       "project": "henrydb",
-      "started": "2026-04-08T03:52:24.672Z"
+      "started": "2026-04-08T03:52:24.672Z",
+      "completed": "2026-04-08T03:53:38.741Z",
+      "duration_ms": 180000,
+      "summary": "Auto-checkpoint: setAutoCheckpoint(N) triggers fuzzy checkpoint every N commits. Callback support, counter reset, disable option. 8 tests. Pushed to GitHub."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "WAL compaction: merge old WAL segments, keep only records needed for recovery. Tests.",
+      "project": "henrydb",
+      "started": "2026-04-08T03:53:55.746Z"
     }
   ],
   "focusProjects": [
@@ -277,6 +288,10 @@
     {
       "time": "2026-04-08T03:52:19.773Z",
       "msg": "Added T17 (BUILD) after end: Add automatic checkpoint trigger: auto-checkpoint after N transactions or N WAL records"
+    },
+    {
+      "time": "2026-04-08T03:53:50.987Z",
+      "msg": "Added T18 (BUILD) after end: WAL compaction: merge old WAL segments, keep only records needed for recovery. Tests."
     }
   ]
 }

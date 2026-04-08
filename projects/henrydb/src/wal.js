@@ -394,6 +394,53 @@ export class WriteAheadLog {
     return result;
   }
 
+  /**
+   * Compact the WAL: remove records that are no longer needed for recovery.
+   * 
+   * Safe truncation point is determined by:
+   * 1. The earliest active transaction's first record LSN
+   * 2. The min recLSN in the dirty page table
+   * 3. The last checkpoint LSN
+   *
+   * Records before min(above) can be safely removed.
+   * 
+   * @returns {{ truncatedCount, safeLsn, walSizeBefore, walSizeAfter }}
+   */
+  compact() {
+    const candidates = [];
+
+    // Last checkpoint establishes a baseline
+    if (this._lastCheckpointLsn > 0) {
+      candidates.push(this._lastCheckpointLsn);
+    }
+
+    // Can't truncate past any active transaction's records
+    if (this._activeTxns.size > 0) {
+      for (const record of this._records) {
+        if (this._activeTxns.has(record.txId)) {
+          candidates.push(record.lsn);
+          break; // First record of any active txn
+        }
+      }
+    }
+
+    // Can't truncate past dirty page recLSNs
+    if (this._dirtyPageTable.size > 0) {
+      candidates.push(Math.min(...this._dirtyPageTable.values()));
+    }
+
+    if (candidates.length === 0) {
+      return { truncatedCount: 0, safeLsn: 0, walSizeBefore: this._records.length, walSizeAfter: this._records.length };
+    }
+
+    const safeLsn = Math.min(...candidates);
+    const walSizeBefore = this._records.length + this._stableStorage.length;
+    const truncatedCount = this.truncate(safeLsn);
+    const walSizeAfter = this._records.length + this._stableStorage.length;
+
+    return { truncatedCount, safeLsn, walSizeBefore, walSizeAfter };
+  }
+
   beginTransaction(txId) {
     this._activeTxns.add(txId);
   }
