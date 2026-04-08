@@ -16,6 +16,7 @@ import {
   writeParseComplete, writeBindComplete, writeCloseComplete,
   writeNoData, writeParameterDescription, writeEmptyQueryResponse,
   writePortalSuspended,
+  writeNotificationResponse,
   PG_TYPES,
 } from './pg-protocol.js';
 
@@ -39,7 +40,9 @@ export class HenryDBServer {
     this._nextPid = 1;
     this._verbose = options.verbose || false;
     // Global prepared statement plan cache (shared across connections)
-    this._planCache = new Map(); // sql → { result: pre-computed result, hits: number, lastUsed: number }
+    this._planCache = new Map();
+    // LISTEN/NOTIFY channel registry: channel → Set<conn>
+    this._channels = new Map(); // sql → { result: pre-computed result, hits: number, lastUsed: number }
   }
 
   start() {
@@ -81,6 +84,7 @@ export class HenryDBServer {
       useAdaptive: true, // Use adaptive engine for SELECTs
       preparedStatements: new Map(), // name → { sql, paramTypes, ast }
       portals: new Map(), // name → { statement, paramValues, result }
+      listeningChannels: new Set(), // channels this connection is LISTENing on
     };
     this.connections.add(conn);
 
@@ -98,6 +102,15 @@ export class HenryDBServer {
     });
 
     socket.on('close', () => {
+      // Unregister from all LISTEN channels
+      for (const channel of conn.listeningChannels) {
+        const listeners = this._channels.get(channel);
+        if (listeners) {
+          listeners.delete(conn);
+          if (listeners.size === 0) this._channels.delete(channel);
+        }
+      }
+      conn.listeningChannels.clear();
       this.connections.delete(conn);
       if (this._verbose) console.log(`[${conn.pid}] Client disconnected`);
     });
@@ -656,6 +669,76 @@ export class HenryDBServer {
     // DEALLOCATE (pg driver cleanup)
     if (upper.startsWith('DEALLOCATE')) {
       conn.socket.write(writeCommandComplete('DEALLOCATE'));
+      return true;
+    }
+
+    // LISTEN channel
+    if (upper.startsWith('LISTEN ')) {
+      const channel = sql.substring(7).trim().replace(/['"]/g, '');
+      conn.listeningChannels.add(channel);
+      if (!this._channels.has(channel)) {
+        this._channels.set(channel, new Set());
+      }
+      this._channels.get(channel).add(conn);
+      if (this._verbose) console.log(`[${conn.pid}] LISTEN ${channel}`);
+      conn.socket.write(writeCommandComplete('LISTEN'));
+      return true;
+    }
+
+    // UNLISTEN channel / UNLISTEN *
+    if (upper.startsWith('UNLISTEN')) {
+      const arg = sql.substring(8).trim().replace(/['"]/g, '');
+      if (arg === '*') {
+        // Unlisten all
+        for (const channel of conn.listeningChannels) {
+          const listeners = this._channels.get(channel);
+          if (listeners) {
+            listeners.delete(conn);
+            if (listeners.size === 0) this._channels.delete(channel);
+          }
+        }
+        conn.listeningChannels.clear();
+      } else {
+        conn.listeningChannels.delete(arg);
+        const listeners = this._channels.get(arg);
+        if (listeners) {
+          listeners.delete(conn);
+          if (listeners.size === 0) this._channels.delete(arg);
+        }
+      }
+      if (this._verbose) console.log(`[${conn.pid}] UNLISTEN ${arg}`);
+      conn.socket.write(writeCommandComplete('UNLISTEN'));
+      return true;
+    }
+
+    // NOTIFY channel [, 'payload']
+    if (upper.startsWith('NOTIFY ')) {
+      const args = sql.substring(7).trim();
+      let channel, payload = '';
+      const commaIdx = args.indexOf(',');
+      if (commaIdx !== -1) {
+        channel = args.substring(0, commaIdx).trim().replace(/['"]/g, '');
+        payload = args.substring(commaIdx + 1).trim().replace(/^'|'$/g, '').replace(/''/g, "'");
+      } else {
+        channel = args.replace(/['"]/g, '');
+      }
+
+      if (this._verbose) console.log(`[${conn.pid}] NOTIFY ${channel}: ${payload}`);
+
+      // Send notification to all listeners (including the sender)
+      const listeners = this._channels.get(channel);
+      if (listeners) {
+        const notifBuf = writeNotificationResponse(conn.pid, channel, payload);
+        for (const listener of listeners) {
+          try {
+            listener.socket.write(notifBuf);
+          } catch (e) {
+            // Listener socket might be dead
+          }
+        }
+      }
+
+      conn.socket.write(writeCommandComplete('NOTIFY'));
       return true;
     }
 

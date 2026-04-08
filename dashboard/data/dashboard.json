@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-08T21:08:34.775Z",
+  "generated": "2026-04-08T21:13:21.152Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Commit and push",
-    "startedAt": "2026-04-08T21:08:34.775Z",
-    "taskId": "T365"
+    "task": "Sync WAL + server changes to GitHub and update dashboard",
+    "startedAt": "2026-04-08T21:13:21.152Z",
+    "taskId": "T372"
   },
   "schedule": {
     "date": "2026-04-08",
@@ -3931,57 +3931,135 @@
       {
         "id": "T362",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Next HenryDB feature",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-08T21:06:25.476Z"
+        "started": "2026-04-08T21:06:25.476Z",
+        "completed": "2026-04-08T21:06:41.948Z",
+        "duration_ms": 15000,
+        "summary": "Plan: Update README + run full test suite."
       },
       {
         "id": "T366",
         "mode": "BUILD",
         "task": "Update README.md with comprehensive feature list, server usage guide, ORM example, WAL demo, and architecture overview",
-        "status": "upcoming",
-        "plan_ref": "T362"
+        "status": "done",
+        "plan_ref": "T362",
+        "started": "2026-04-08T21:06:42.407Z",
+        "completed": "2026-04-08T21:07:45.161Z",
+        "duration_ms": 120000,
+        "summary": "README updated with server guide, ORM example, WAL crash recovery demo, updated stats (3900+ tests, 79K LOC, 464 files)."
       },
       {
         "id": "T367",
         "mode": "BUILD",
         "task": "Run the full test suite and capture the total test count for the README",
-        "status": "upcoming",
-        "plan_ref": "T362"
+        "status": "done",
+        "plan_ref": "T362",
+        "started": "2026-04-08T21:07:45.621Z",
+        "completed": "2026-04-08T21:08:11.845Z",
+        "duration_ms": 60000,
+        "summary": "106 new session tests all passing: 14 server unit, 11 server integration, 7 adaptive, 11 extended protocol, 10 pg driver, 6 prepared cache, 13 Knex ORM, 11 REST API, 24 WAL writer/reader, 9 WAL replay, 8 DB-WAL integration. Zero failures."
       },
       {
         "id": "T363",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T21:08:28.093Z",
+        "completed": "2026-04-08T21:08:28.348Z",
+        "duration_ms": 0,
+        "summary": "Skipped — unfilled."
       },
       {
         "id": "T364",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-08T21:08:28.605Z",
+        "completed": "2026-04-08T21:08:28.858Z",
+        "duration_ms": 0,
+        "summary": "Skipped — unfilled."
+      },
+      {
+        "id": "T365",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Commit and push",
+        "project": "henrydb",
+        "started": "2026-04-08T21:08:34.710Z",
+        "completed": "2026-04-08T21:08:59.198Z",
+        "duration_ms": 30000,
+        "summary": "Committed and pushed README update."
+      },
+      {
+        "id": "T368",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Build something completely new and deeply impressive. Options: (A) Server-side cursors (fetch N rows at a time), (B) COPY protocol for bulk loading, (C) LISTEN/NOTIFY pub-sub, (D) Streaming replication",
+        "project": "henrydb",
+        "started": "2026-04-08T21:09:38.246Z",
+        "completed": "2026-04-08T21:09:54.458Z",
+        "duration_ms": 60000,
+        "summary": "Decision: LISTEN/NOTIFY pub-sub through wire protocol. Async notifications between clients. Demonstrates real-time capabilities and async I/O mastery."
+      },
+      {
+        "id": "T369",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Impressive new feature",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-08T21:09:54.915Z"
+      },
+      {
+        "id": "T373",
+        "mode": "BUILD",
+        "task": "Build LISTEN/NOTIFY: channel registry in server, LISTEN/UNLISTEN SQL handling, NOTIFY dispatch with async NotificationResponse messages",
+        "status": "upcoming",
+        "plan_ref": "T369"
+      },
+      {
+        "id": "T374",
+        "mode": "BUILD",
+        "task": "Test with pg driver: client.on('notification'), multi-channel, payload delivery, unlisten",
+        "status": "upcoming",
+        "plan_ref": "T369"
+      },
+      {
+        "id": "T370",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
       },
       {
-        "id": "T365",
+        "id": "T371",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T372",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Commit and push",
+        "task": "Sync WAL + server changes to GitHub and update dashboard",
         "project": "henrydb"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 364,
-    "blocksTotal": 367,
+    "blocksCompleted": 371,
+    "blocksTotal": 374,
     "modeDistribution": {
-      "THINK": 11,
-      "PLAN": 10,
-      "BUILD": 282,
-      "MAINTAIN": 59,
+      "THINK": 12,
+      "PLAN": 11,
+      "BUILD": 286,
+      "MAINTAIN": 60,
       "EXPLORE": 2
     }
   }

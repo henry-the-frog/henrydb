@@ -3976,10 +3976,88 @@
     {
       "id": "T365",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit and push",
       "project": "henrydb",
-      "started": "2026-04-08T21:08:34.710Z"
+      "started": "2026-04-08T21:08:34.710Z",
+      "completed": "2026-04-08T21:08:59.198Z",
+      "duration_ms": 30000,
+      "summary": "Committed and pushed README update."
+    },
+    {
+      "id": "T368",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Build something completely new and deeply impressive. Options: (A) Server-side cursors (fetch N rows at a time), (B) COPY protocol for bulk loading, (C) LISTEN/NOTIFY pub-sub, (D) Streaming replication",
+      "project": "henrydb",
+      "started": "2026-04-08T21:09:38.246Z",
+      "completed": "2026-04-08T21:09:54.458Z",
+      "duration_ms": 60000,
+      "summary": "Decision: LISTEN/NOTIFY pub-sub through wire protocol. Async notifications between clients. Demonstrates real-time capabilities and async I/O mastery."
+    },
+    {
+      "id": "T369",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Impressive new feature",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T21:09:54.915Z",
+      "completed": "2026-04-08T21:10:14.751Z",
+      "duration_ms": 20000,
+      "summary": "Plan: LISTEN/NOTIFY in 2 tasks. Channel registry + SQL handling + async dispatch, then test with pg driver."
+    },
+    {
+      "id": "T373",
+      "mode": "BUILD",
+      "task": "Build LISTEN/NOTIFY: channel registry in server, LISTEN/UNLISTEN SQL handling, NOTIFY dispatch with async NotificationResponse messages",
+      "status": "done",
+      "plan_ref": "T369",
+      "started": "2026-04-08T21:10:15.015Z",
+      "completed": "2026-04-08T21:12:29.310Z",
+      "duration_ms": 300000,
+      "summary": "LISTEN/NOTIFY pub-sub working: channel registry, LISTEN/UNLISTEN/UNLISTEN *, NOTIFY with payloads, async NotificationResponse delivery, multi-listener broadcast, self-notify, disconnect cleanup. 10 tests with real pg driver, all passing."
+    },
+    {
+      "id": "T374",
+      "mode": "BUILD",
+      "task": "Test with pg driver: client.on('notification'), multi-channel, payload delivery, unlisten",
+      "status": "done",
+      "plan_ref": "T369",
+      "started": "2026-04-08T21:12:44.135Z",
+      "completed": "2026-04-08T21:12:44.389Z",
+      "duration_ms": 0,
+      "summary": "Already covered by T373 — all pg driver LISTEN/NOTIFY tests passed."
+    },
+    {
+      "id": "T370",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T21:13:00.059Z",
+      "completed": "2026-04-08T21:13:00.311Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T371",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T21:13:00.586Z",
+      "completed": "2026-04-08T21:13:00.851Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T372",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Sync WAL + server changes to GitHub and update dashboard",
+      "project": "henrydb",
+      "started": "2026-04-08T21:13:21.086Z"
     }
   ],
   "focusProjects": [
@@ -5427,6 +5505,30 @@
     {
       "time": "2026-04-08T21:06:34.221Z",
       "msg": "PLAN T362 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-08T21:09:14.819Z",
+      "msg": "Added T368 (THINK) after end: Build something completely new and deeply impressive. Options: (A) Server-side cursors (fetch N rows at a time), (B) COPY protocol for bulk loading, (C) LISTEN/NOTIFY pub-sub, (D) Streaming replication"
+    },
+    {
+      "time": "2026-04-08T21:09:24.768Z",
+      "msg": "Added T369 (PLAN) after T368: Impressive new feature"
+    },
+    {
+      "time": "2026-04-08T21:09:24.981Z",
+      "msg": "Added T370 (BUILD) after T369: null"
+    },
+    {
+      "time": "2026-04-08T21:09:25.192Z",
+      "msg": "Added T371 (BUILD) after T370: null"
+    },
+    {
+      "time": "2026-04-08T21:09:31.214Z",
+      "msg": "Added T372 (MAINTAIN) after T371: Sync WAL + server changes to GitHub and update dashboard"
+    },
+    {
+      "time": "2026-04-08T21:10:08.565Z",
+      "msg": "PLAN T369 filled 2 BUILD tasks"
     }
   ]
 }

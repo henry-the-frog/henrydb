@@ -411,4 +411,21 @@ export function writePortalSuspended() {
   return buf;
 }
 
+/**
+ * Write NotificationResponse (A) — async notification to a listening client.
+ * Format: [byte 'A'] [Int32 length] [Int32 pid] [string channel\0] [string payload\0]
+ */
+export function writeNotificationResponse(pid, channel, payload = '') {
+  const channelBuf = Buffer.from(channel + '\0', 'utf8');
+  const payloadBuf = Buffer.from(payload + '\0', 'utf8');
+  const len = 4 + 4 + channelBuf.length + payloadBuf.length;
+  const buf = Buffer.alloc(1 + len);
+  buf[0] = 0x41; // 'A'
+  buf.writeInt32BE(len, 1);
+  buf.writeInt32BE(pid, 5);
+  channelBuf.copy(buf, 9);
+  payloadBuf.copy(buf, 9 + channelBuf.length);
+  return buf;
+}
+
 export { PG_TYPES };
