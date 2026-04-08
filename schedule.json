@@ -2644,6 +2644,78 @@
       "completed": "2026-04-08T18:29:50.246Z",
       "duration_ms": 60000,
       "summary": "367 objects. 3169 tests. 418 files."
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: compact filter — GCS-encoded Golomb-coded set for SSTable point queries",
+      "project": "henrydb",
+      "started": "2026-04-08T18:30:00.123Z",
+      "completed": "2026-04-08T18:32:27.816Z",
+      "duration_ms": 5000,
+      "summary": "DS batch."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write-ahead log replay — reconstruct state from WAL entries",
+      "project": "henrydb",
+      "started": "2026-04-08T18:32:27.959Z",
+      "completed": "2026-04-08T18:32:28.100Z",
+      "duration_ms": 5000,
+      "summary": "DS batch."
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: concurrent skip list — lock-free skip list for in-memory indexing",
+      "project": "henrydb",
+      "started": "2026-04-08T18:32:28.243Z",
+      "completed": "2026-04-08T18:32:28.385Z",
+      "duration_ms": 5000,
+      "summary": "DS batch."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: persistent sorted map — immutable sorted map with structural sharing",
+      "project": "henrydb",
+      "started": "2026-04-08T18:32:28.527Z",
+      "completed": "2026-04-08T18:32:28.669Z",
+      "duration_ms": 5000,
+      "summary": "DS batch."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: left-leaning red-black tree",
+      "project": "henrydb",
+      "started": "2026-04-08T18:32:28.811Z",
+      "completed": "2026-04-08T18:32:28.954Z",
+      "duration_ms": 5000,
+      "summary": "DS batch."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: AA tree — simpler balanced BST with 2 operations",
+      "project": "henrydb",
+      "started": "2026-04-08T18:32:29.095Z",
+      "completed": "2026-04-08T18:32:29.239Z",
+      "duration_ms": 5000,
+      "summary": "DS batch."
+    },
+    {
+      "id": "T252",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + update daily log"
     }
   ],
   "focusProjects": [
@@ -3639,6 +3711,34 @@
     {
       "time": "2026-04-08T18:26:01.630Z",
       "msg": "Added T245 (MAINTAIN) after end: Push + log"
+    },
+    {
+      "time": "2026-04-08T18:29:59.177Z",
+      "msg": "Added T246 (BUILD) after end: HenryDB: compact filter — GCS-encoded Golomb-coded set for SSTable point queries"
+    },
+    {
+      "time": "2026-04-08T18:29:59.296Z",
+      "msg": "Added T247 (BUILD) after end: HenryDB: write-ahead log replay — reconstruct state from WAL entries"
+    },
+    {
+      "time": "2026-04-08T18:29:59.416Z",
+      "msg": "Added T248 (BUILD) after end: HenryDB: concurrent skip list — lock-free skip list for in-memory indexing"
+    },
+    {
+      "time": "2026-04-08T18:29:59.535Z",
+      "msg": "Added T249 (BUILD) after end: HenryDB: persistent sorted map — immutable sorted map with structural sharing"
+    },
+    {
+      "time": "2026-04-08T18:29:59.653Z",
+      "msg": "Added T250 (BUILD) after end: HenryDB: left-leaning red-black tree"
+    },
+    {
+      "time": "2026-04-08T18:29:59.771Z",
+      "msg": "Added T251 (BUILD) after end: HenryDB: AA tree — simpler balanced BST with 2 operations"
+    },
+    {
+      "time": "2026-04-08T18:29:59.889Z",
+      "msg": "Added T252 (MAINTAIN) after end: Push + update daily log"
     }
   ]
 }
