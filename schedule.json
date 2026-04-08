@@ -189,10 +189,13 @@
     {
       "id": "T18",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "WAL compaction: merge old WAL segments, keep only records needed for recovery. Tests.",
       "project": "henrydb",
-      "started": "2026-04-08T03:53:55.746Z"
+      "started": "2026-04-08T03:53:55.746Z",
+      "completed": "2026-04-08T03:55:03.481Z",
+      "duration_ms": 180000,
+      "summary": "WAL compact(): calculates safe truncation point from checkpoint LSN, active transactions, and dirty page table. Preserves active tx records. 8 tests. Pushed."
     }
   ],
   "focusProjects": [
