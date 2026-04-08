@@ -1,102 +1,84 @@
-// rtree.test.js — R-tree spatial index tests
+// rtree.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { RTree, Rect } from './rtree.js';
-
-describe('Rect', () => {
-  it('calculates area', () => {
-    const r = new Rect(0, 0, 10, 5);
-    assert.equal(r.area(), 50);
-  });
-
-  it('detects overlap', () => {
-    const r1 = new Rect(0, 0, 10, 10);
-    const r2 = new Rect(5, 5, 15, 15);
-    assert.equal(r1.overlaps(r2), true);
-  });
-
-  it('detects non-overlap', () => {
-    const r1 = new Rect(0, 0, 5, 5);
-    const r2 = new Rect(10, 10, 15, 15);
-    assert.equal(r1.overlaps(r2), false);
-  });
-
-  it('merges bounding boxes', () => {
-    const merged = Rect.merge(new Rect(0, 0, 5, 5), new Rect(3, 3, 10, 10));
-    assert.equal(merged.minX, 0);
-    assert.equal(merged.maxX, 10);
-  });
-});
+import { RTree } from './rtree.js';
 
 describe('RTree', () => {
   it('insert and search points', () => {
     const tree = new RTree();
-    tree.insert(Rect.point(5, 5), 'A');
-    tree.insert(Rect.point(10, 10), 'B');
-    tree.insert(Rect.point(50, 50), 'C');
+    tree.insert({ x: 10, y: 10 }, 'A');
+    tree.insert({ x: 20, y: 20 }, 'B');
+    tree.insert({ x: 30, y: 30 }, 'C');
     
-    const results = tree.search(new Rect(0, 0, 20, 20));
-    assert.equal(results.length, 2);
-    assert.ok(results.some(r => r.data === 'A'));
-    assert.ok(results.some(r => r.data === 'B'));
+    const results = tree.search({ minX: 5, minY: 5, maxX: 25, maxY: 25 });
+    assert.ok(results.includes('A'));
+    assert.ok(results.includes('B'));
+    assert.ok(!results.includes('C'));
   });
 
-  it('search returns empty for non-overlapping query', () => {
+  it('insert rectangles', () => {
     const tree = new RTree();
-    tree.insert(Rect.point(5, 5), 'A');
+    tree.insert({ minX: 0, minY: 0, maxX: 10, maxY: 10 }, 'rect1');
+    tree.insert({ minX: 5, minY: 5, maxX: 15, maxY: 15 }, 'rect2');
+    tree.insert({ minX: 20, minY: 20, maxX: 30, maxY: 30 }, 'rect3');
     
-    const results = tree.search(new Rect(100, 100, 200, 200));
-    assert.equal(results.length, 0);
+    const results = tree.search({ minX: 8, minY: 8, maxX: 12, maxY: 12 });
+    assert.ok(results.includes('rect1'));
+    assert.ok(results.includes('rect2'));
+    assert.ok(!results.includes('rect3'));
   });
 
-  it('handles many insertions with splitting', () => {
-    const tree = new RTree(4, 2); // Small node size to trigger splits
+  it('nearest neighbor', () => {
+    const tree = new RTree();
+    tree.insert({ x: 0, y: 0 }, 'origin');
+    tree.insert({ x: 100, y: 100 }, 'far');
+    tree.insert({ x: 5, y: 5 }, 'close');
     
+    const nearest = tree.nearest({ x: 3, y: 3 }, 1);
+    assert.equal(nearest[0].data, 'close');
+  });
+
+  it('k nearest neighbors', () => {
+    const tree = new RTree();
+    for (let i = 0; i < 20; i++) tree.insert({ x: i * 10, y: i * 10 }, `p${i}`);
+    
+    const knn = tree.nearest({ x: 50, y: 50 }, 3);
+    assert.equal(knn.length, 3);
+    assert.equal(knn[0].data, 'p5'); // Closest to (50,50)
+  });
+
+  it('empty tree returns empty', () => {
+    const tree = new RTree();
+    assert.deepEqual(tree.search({ minX: 0, minY: 0, maxX: 100, maxY: 100 }), []);
+    assert.deepEqual(tree.nearest({ x: 0, y: 0 }), []);
+  });
+
+  it('many insertions with splitting', () => {
+    const tree = new RTree(4); // Small node capacity
     for (let i = 0; i < 100; i++) {
-      tree.insert(Rect.point(i, i), `item_${i}`);
+      tree.insert({ x: Math.random() * 1000, y: Math.random() * 1000 }, `p${i}`);
     }
-    
     assert.equal(tree.size, 100);
     
-    // Search a region that should contain some items
-    const results = tree.search(new Rect(10, 10, 20, 20));
-    assert.ok(results.length >= 10);
+    // Search should find points in range
+    const results = tree.search({ minX: 0, minY: 0, maxX: 1000, maxY: 1000 });
+    assert.equal(results.length, 100);
   });
 
-  it('searches overlapping rectangles', () => {
-    const tree = new RTree();
-    tree.insert(new Rect(0, 0, 10, 10), 'rect1');
-    tree.insert(new Rect(5, 5, 15, 15), 'rect2');
-    tree.insert(new Rect(20, 20, 30, 30), 'rect3');
-    
-    const results = tree.search(new Rect(8, 8, 12, 12));
-    assert.equal(results.length, 2); // rect1 and rect2 overlap
-  });
+  it('benchmark: 10K points', () => {
+    const tree = new RTree(16);
+    const t0 = Date.now();
+    for (let i = 0; i < 10000; i++) {
+      tree.insert({ x: Math.random() * 10000, y: Math.random() * 10000 }, i);
+    }
+    const buildMs = Date.now() - t0;
 
-  it('radius search', () => {
-    const tree = new RTree();
-    tree.insert(Rect.point(0, 0), 'origin');
-    tree.insert(Rect.point(3, 4), 'near'); // distance = 5
-    tree.insert(Rect.point(10, 10), 'far'); // distance ~14
-    
-    const results = tree.searchRadius(0, 0, 6);
-    assert.equal(results.length, 2);
-    assert.ok(results.some(r => r.data === 'origin'));
-    assert.ok(results.some(r => r.data === 'near'));
-  });
+    const t1 = Date.now();
+    for (let i = 0; i < 1000; i++) {
+      tree.search({ minX: i * 10, minY: i * 10, maxX: i * 10 + 100, maxY: i * 10 + 100 });
+    }
+    const searchMs = Date.now() - t1;
 
-  it('geographic-style data', () => {
-    const tree = new RTree();
-    // Simulate US cities (approximate lat/lon)
-    tree.insert(Rect.point(-73.9, 40.7), 'New York');
-    tree.insert(Rect.point(-118.2, 34.0), 'Los Angeles');
-    tree.insert(Rect.point(-87.6, 41.9), 'Chicago');
-    tree.insert(Rect.point(-95.4, 29.7), 'Houston');
-    tree.insert(Rect.point(-112.1, 33.4), 'Phoenix');
-    
-    // Search East Coast region
-    const eastCoast = tree.search(new Rect(-80, 25, -70, 45));
-    assert.ok(eastCoast.some(r => r.data === 'New York'));
-    assert.ok(!eastCoast.some(r => r.data === 'Los Angeles'));
+    console.log(`    10K build: ${buildMs}ms, 1K searches: ${searchMs}ms`);
   });
 });
