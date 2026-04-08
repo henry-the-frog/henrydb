@@ -3439,6 +3439,50 @@
       "completed": "2026-04-08T19:02:09.049Z",
       "duration_ms": 5000,
       "summary": "Columnar batch."
+    },
+    {
+      "id": "T319",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: serializable snapshot isolation (SSI) — detect dangerous structures in dependency graph",
+      "project": "henrydb",
+      "started": "2026-04-08T19:02:57.117Z",
+      "completed": "2026-04-08T19:04:01.671Z",
+      "duration_ms": 5000,
+      "summary": "Storage batch."
+    },
+    {
+      "id": "T320",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: prefix compression — shared prefix elimination for sorted keys",
+      "project": "henrydb",
+      "started": "2026-04-08T19:04:01.815Z",
+      "completed": "2026-04-08T19:04:01.958Z",
+      "duration_ms": 5000,
+      "summary": "Storage batch."
+    },
+    {
+      "id": "T321",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: page checksum — CRC32 for page integrity verification",
+      "project": "henrydb",
+      "started": "2026-04-08T19:04:02.102Z",
+      "completed": "2026-04-08T19:04:02.246Z",
+      "duration_ms": 5000,
+      "summary": "Storage batch."
+    },
+    {
+      "id": "T322",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: double-write buffer — prevent torn page writes",
+      "project": "henrydb",
+      "started": "2026-04-08T19:04:02.389Z",
+      "completed": "2026-04-08T19:04:02.532Z",
+      "duration_ms": 5000,
+      "summary": "Storage batch."
     }
   ],
   "focusProjects": [
@@ -4726,6 +4770,22 @@
     {
       "time": "2026-04-08T19:01:05.616Z",
       "msg": "Added T318 (BUILD) after end: HenryDB: columnar join — hash join directly on column arrays"
+    },
+    {
+      "time": "2026-04-08T19:02:56.058Z",
+      "msg": "Added T319 (BUILD) after end: HenryDB: serializable snapshot isolation (SSI) — detect dangerous structures in dependency graph"
+    },
+    {
+      "time": "2026-04-08T19:02:56.278Z",
+      "msg": "Added T320 (BUILD) after end: HenryDB: prefix compression — shared prefix elimination for sorted keys"
+    },
+    {
+      "time": "2026-04-08T19:02:56.492Z",
+      "msg": "Added T321 (BUILD) after end: HenryDB: page checksum — CRC32 for page integrity verification"
+    },
+    {
+      "time": "2026-04-08T19:02:56.704Z",
+      "msg": "Added T322 (BUILD) after end: HenryDB: double-write buffer — prevent torn page writes"
     }
   ]
 }

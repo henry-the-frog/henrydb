@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-08T19:02:09.111Z",
+  "generated": "2026-04-08T19:04:02.569Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: columnar join — hash join directly on column arrays",
-    "completedAt": "2026-04-08T19:02:09.111Z",
-    "taskId": "T318",
-    "summary": "Columnar batch.",
+    "task": "HenryDB: double-write buffer — prevent torn page writes",
+    "completedAt": "2026-04-08T19:04:02.569Z",
+    "taskId": "T322",
+    "summary": "Storage batch.",
     "durationMs": 5000
   },
   "schedule": {
@@ -1076,12 +1076,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 316,
+    "blocksCompleted": 320,
     "blocksTotal": 99,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 248,
+      "BUILD": 252,
       "MAINTAIN": 55,
       "EXPLORE": 2
     }
