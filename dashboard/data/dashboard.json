@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T15:56:35.154Z",
+  "generated": "2026-04-08T15:58:19.023Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: Bloom filter join — use Bloom filters as semi-join reducer before hash join",
-    "completedAt": "2026-04-08T15:56:35.154Z",
-    "taskId": "T64",
-    "summary": "Bloom filter semi-join: build Bloom on right, pre-filter left before hash join. 98% row elimination on 100K×1K. Multi-way reduce for chain joins. 7 tests.",
-    "durationMs": 120000
+    "task": "HenryDB: update README with all new features: zone maps, pushdown, radix join, morsel, etc.",
+    "completedAt": "2026-04-08T15:58:19.023Z",
+    "taskId": "T65",
+    "summary": "README updated: 48K LOC, 2400+ tests, new architecture section with columnar/physical operators, updated lessons.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -690,12 +690,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 62,
+    "blocksCompleted": 63,
     "blocksTotal": 63,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 36,
+      "BUILD": 37,
       "MAINTAIN": 13,
       "EXPLORE": 2
     }
