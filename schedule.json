@@ -723,9 +723,13 @@
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: connection pool + query queue for concurrent OLTP workloads",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-08T16:01:48.437Z",
+      "completed": "2026-04-08T16:03:24.789Z",
+      "duration_ms": 120000,
+      "summary": "Connection pool: acquire/release/reuse, pool limits with waiters, auto-acquire query(), transaction() with auto-rollback, idle eviction, concurrent queries (10 queries → 3 connections). 9 tests."
     },
     {
       "id": "T69",

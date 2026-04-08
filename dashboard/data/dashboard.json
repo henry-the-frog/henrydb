@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08T16:01:19.284Z",
+  "generated": "2026-04-08T16:03:24.824Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: ART (Adaptive Radix Tree) index — cache-conscious alternative to B+tree for in-memory workloads",
-    "completedAt": "2026-04-08T16:01:19.284Z",
-    "taskId": "T67",
-    "summary": "ART (Adaptive Radix Tree): Node4/16/48/256 adaptive sizing, integer+string keys, handles negatives, 100K keys, sorted traversal. Map is faster for pure lookups but ART provides ordered access. 13 tests.",
-    "durationMs": 180000
+    "task": "HenryDB: connection pool + query queue for concurrent OLTP workloads",
+    "completedAt": "2026-04-08T16:03:24.824Z",
+    "taskId": "T68",
+    "summary": "Connection pool: acquire/release/reuse, pool limits with waiters, auto-acquire query(), transaction() with auto-rollback, idle eviction, concurrent queries (10 queries → 3 connections). 9 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -722,12 +722,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 65,
+    "blocksCompleted": 66,
     "blocksTotal": 66,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 38,
+      "BUILD": 39,
       "MAINTAIN": 14,
       "EXPLORE": 2
     }
