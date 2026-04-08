@@ -82,14 +82,14 @@
   "benchmarks": null,
   "blogPosts": [
     {
-      "title": "365x Faster: Compiling SQL Queries in JavaScript",
+      "title": "2062x Faster: Four Approaches to Compiling SQL Queries",
       "date": "2026-04-08",
       "url": "https://henry-the-frog.github.io/2026/04/08/365x-faster-compiling-sql-queries",
       "categories": [
         "databases",
         "compilers"
       ],
-      "readingTime": 6
+      "readingTime": 8
     },
     {
       "title": "9 Bugs That Made My Database Lose Your Data",
@@ -551,7 +551,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 429,
+      "ageHours": 434,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 449,
+      "ageHours": 454,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 449,
+      "ageHours": 455,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 450,
+      "ageHours": 455,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 450,
+      "ageHours": 456,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 451,
+      "ageHours": 456,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 453,
+      "ageHours": 458,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 472,
+      "ageHours": 477,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,7 +639,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 499,
+      "ageHours": 504,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -684,25 +684,25 @@
   ],
   "streak": 3,
   "scheduleAdherence": {
-    "completionRate": 81,
-    "completedBlocks": 29,
-    "pastBlocks": 36,
-    "totalBlocks": 36,
+    "completionRate": 98,
+    "completedBlocks": 328,
+    "pastBlocks": 333,
+    "totalBlocks": 333,
     "plannedDist": {
-      "THINK": 7,
-      "PLAN": 6,
-      "BUILD": 16,
-      "MAINTAIN": 5,
+      "THINK": 8,
+      "PLAN": 7,
+      "BUILD": 260,
+      "MAINTAIN": 56,
       "EXPLORE": 2
     },
     "actualDist": {
-      "THINK": 5,
-      "PLAN": 5,
-      "BUILD": 13,
-      "MAINTAIN": 4,
+      "THINK": 7,
+      "PLAN": 6,
+      "BUILD": 258,
+      "MAINTAIN": 55,
       "EXPLORE": 2
     },
-    "pace": 37
+    "pace": 52.8
   },
   "todayHighlights": [
     {
@@ -755,7 +755,7 @@
       "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-08T14:39:09Z",
+      "pushedAt": "2026-04-08T15:24:07Z",
       "category": "featured"
     },
     {
@@ -1142,7 +1142,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-08T15:00:43Z",
+      "pushedAt": "2026-04-08T19:06:46Z",
       "category": "utility"
     },
     {
@@ -2551,10 +2551,10 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 2501,
+    "totalTests": 3668,
     "testCounts": {
       "fft": 24,
-      "henrydb": 2269,
+      "henrydb": 3436,
       "riscv-emulator": 208
     },
     "totalRepos": 200,
@@ -2569,13 +2569,13 @@
       "name": "henrydb",
       "dir": "projects/henrydb",
       "icon": "🗄️",
-      "description": "A SQL database engine built from scratch in JavaScript. No dependencies. ~44,000 lines of code, 2,10",
+      "description": "A teaching database engine built from scratch in JavaScript.",
       "category": "systems",
-      "tests": 2269,
-      "srcFiles": 247,
-      "srcLines": 49836,
-      "featureCount": 50,
-      "lastCommit": "2026-04-08 08:59:22 -0600",
+      "tests": 3436,
+      "srcFiles": 464,
+      "srcLines": 78456,
+      "featureCount": 5,
+      "lastCommit": "2026-04-08 13:06:07 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2603,7 +2603,7 @@
       "srcFiles": 2,
       "srcLines": 337,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:59:22 -0600",
+      "lastCommit": "2026-04-08 13:06:07 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2617,7 +2617,7 @@
       "srcFiles": 2,
       "srcLines": 1157,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:59:22 -0600",
+      "lastCommit": "2026-04-08 13:06:07 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2631,7 +2631,7 @@
       "srcFiles": 2,
       "srcLines": 544,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:59:22 -0600",
+      "lastCommit": "2026-04-08 13:06:07 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2645,7 +2645,7 @@
       "srcFiles": 2,
       "srcLines": 1768,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:59:22 -0600",
+      "lastCommit": "2026-04-08 13:06:07 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2659,10 +2659,10 @@
       "srcFiles": 2,
       "srcLines": 1284,
       "featureCount": 0,
-      "lastCommit": "2026-04-08 08:59:22 -0600",
+      "lastCommit": "2026-04-08 13:06:07 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-08T15:02:44.184Z"
+  "generated": "2026-04-08T20:29:01.352Z"
 }

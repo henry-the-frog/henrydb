@@ -1,0 +1,397 @@
+#!/usr/bin/env node
+// server.js — HenryDB PostgreSQL-compatible TCP server
+// Accepts psql connections via the PostgreSQL wire protocol v3.
+
+import net from 'node:net';
+import { Database } from './db.js';
+import { AdaptiveQueryEngine } from './adaptive-engine.js';
+import { parse } from './sql.js';
+import {
+  writeAuthenticationOk, writeParameterStatus, writeBackendKeyData,
+  writeReadyForQuery, writeRowDescription, writeDataRow,
+  writeCommandComplete, writeErrorResponse,
+  parseStartupMessage, parseQueryMessage, inferTypeOid,
+  PG_TYPES,
+} from './pg-protocol.js';
+
+const DEFAULT_PORT = 5433; // Avoid conflict with real PostgreSQL on 5432
+
+export class HenryDBServer {
+  constructor(options = {}) {
+    this.port = options.port || DEFAULT_PORT;
+    this.host = options.host || '127.0.0.1';
+    this.db = options.db || new Database();
+    this.adaptiveEngine = null;
+    if (options.adaptive !== false) {
+      try {
+        this.adaptiveEngine = new AdaptiveQueryEngine(this.db);
+      } catch (e) {
+        // Adaptive engine not available — fall back to Volcano
+      }
+    }
+    this.server = null;
+    this.connections = new Set();
+    this._nextPid = 1;
+    this._verbose = options.verbose || false;
+  }
+
+  start() {
+    return new Promise((resolve, reject) => {
+      this.server = net.createServer(socket => this._handleConnection(socket));
+      this.server.on('error', reject);
+      this.server.listen(this.port, this.host, () => {
+        if (this._verbose) {
+          console.log(`HenryDB server listening on ${this.host}:${this.port}`);
+        }
+        resolve(this);
+      });
+    });
+  }
+
+  stop() {
+    return new Promise((resolve) => {
+      // Close all active connections
+      for (const conn of this.connections) {
+        conn.socket.destroy();
+      }
+      this.connections.clear();
+      if (this.server) {
+        this.server.close(() => resolve());
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  _handleConnection(socket) {
+    const conn = {
+      socket,
+      pid: this._nextPid++,
+      secretKey: Math.floor(Math.random() * 0x7FFFFFFF),
+      buffer: Buffer.alloc(0),
+      state: 'startup', // startup | ready | terminated
+      txStatus: 'I',    // I = idle, T = in transaction, E = failed transaction
+      useAdaptive: true, // Use adaptive engine for SELECTs
+    };
+    this.connections.add(conn);
+
+    if (this._verbose) {
+      console.log(`[${conn.pid}] Client connected from ${socket.remoteAddress}`);
+    }
+
+    socket.on('data', (data) => {
+      conn.buffer = Buffer.concat([conn.buffer, data]);
+      this._processBuffer(conn);
+    });
+
+    socket.on('error', (err) => {
+      if (this._verbose) console.log(`[${conn.pid}] Socket error: ${err.message}`);
+    });
+
+    socket.on('close', () => {
+      this.connections.delete(conn);
+      if (this._verbose) console.log(`[${conn.pid}] Client disconnected`);
+    });
+  }
+
+  _processBuffer(conn) {
+    while (conn.buffer.length > 0) {
+      if (conn.state === 'startup') {
+        // Startup message: first 4 bytes are length
+        if (conn.buffer.length < 4) return;
+        const len = conn.buffer.readInt32BE(0);
+        if (conn.buffer.length < len) return;
+
+        const msgBuf = conn.buffer.subarray(0, len);
+        conn.buffer = conn.buffer.subarray(len);
+
+        // Check for SSL request (protocol 80877103)
+        const protocolCode = msgBuf.readInt32BE(4);
+        if (protocolCode === 80877103) {
+          // SSL request — send 'N' (not supported)
+          conn.socket.write(Buffer.from('N'));
+          continue;
+        }
+
+        // Check for cancel request (protocol 80877102)
+        if (protocolCode === 80877102) {
+          // Cancel request — ignore for now
+          conn.socket.destroy();
+          return;
+        }
+
+        const startup = parseStartupMessage(msgBuf);
+        if (this._verbose) {
+          console.log(`[${conn.pid}] Startup: user=${startup.params.user} db=${startup.params.database}`);
+        }
+
+        // Send authentication OK + server parameters
+        const response = Buffer.concat([
+          writeAuthenticationOk(),
+          writeParameterStatus('server_version', '15.0 (HenryDB)'),
+          writeParameterStatus('server_encoding', 'UTF8'),
+          writeParameterStatus('client_encoding', 'UTF8'),
+          writeParameterStatus('DateStyle', 'ISO, MDY'),
+          writeParameterStatus('integer_datetimes', 'on'),
+          writeParameterStatus('standard_conforming_strings', 'on'),
+          writeBackendKeyData(conn.pid, conn.secretKey),
+          writeReadyForQuery(conn.txStatus),
+        ]);
+        conn.socket.write(response);
+        conn.state = 'ready';
+        continue;
+      }
+
+      // Normal message: first byte is type, next 4 bytes are length (including self)
+      if (conn.buffer.length < 5) return;
+      const msgType = conn.buffer[0];
+      const len = conn.buffer.readInt32BE(1);
+      const totalLen = 1 + len;
+
+      if (conn.buffer.length < totalLen) return;
+
+      const msgBody = conn.buffer.subarray(1, totalLen);
+      conn.buffer = conn.buffer.subarray(totalLen);
+
+      switch (msgType) {
+        case 0x51: // 'Q' — Simple Query
+          this._handleQuery(conn, msgBody);
+          break;
+        case 0x58: // 'X' — Terminate
+          conn.state = 'terminated';
+          conn.socket.destroy();
+          return;
+        case 0x50: // 'P' — Parse (extended query protocol)
+          this._handleParseNotSupported(conn);
+          break;
+        default:
+          if (this._verbose) {
+            console.log(`[${conn.pid}] Unknown message type: 0x${msgType.toString(16)}`);
+          }
+          break;
+      }
+    }
+  }
+
+  _handleQuery(conn, msgBody) {
+    const sql = parseQueryMessage(msgBody);
+    if (this._verbose) {
+      console.log(`[${conn.pid}] Query: ${sql}`);
+    }
+
+    // Handle empty query
+    if (!sql.trim()) {
+      conn.socket.write(Buffer.concat([
+        writeCommandComplete('EMPTY'),
+        writeReadyForQuery(conn.txStatus),
+      ]));
+      return;
+    }
+
+    // Split on semicolons for multi-statement queries
+    // (simple approach — doesn't handle semicolons inside strings)
+    const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);
+
+    for (const stmt of statements) {
+      try {
+        // Try adaptive engine for SELECT queries
+        let result;
+        if (this.adaptiveEngine && conn.useAdaptive && /^\s*SELECT/i.test(stmt)) {
+          try {
+            const ast = parse(stmt);
+            if (ast.type === 'SELECT' && this._isAdaptiveEligible(ast)) {
+              const adaptive = this.adaptiveEngine.executeSelect(ast);
+              result = { type: 'ROWS', rows: adaptive.rows, _engine: adaptive.engine, _timeMs: adaptive.timeMs };
+            } else {
+              result = this.db.execute(stmt);
+            }
+          } catch (e) {
+            // Fallback to standard execution if adaptive fails
+            result = this.db.execute(stmt);
+          }
+        } else {
+          result = this.db.execute(stmt);
+        }
+        this._sendResult(conn, stmt, result);
+      } catch (err) {
+        conn.txStatus = conn.txStatus === 'T' ? 'E' : 'I';
+        conn.socket.write(writeErrorResponse('ERROR', '42000', err.message));
+      }
+    }
+
+    conn.socket.write(writeReadyForQuery(conn.txStatus));
+  }
+
+  _sendResult(conn, sql, result) {
+    if (!result) {
+      conn.socket.write(writeCommandComplete('OK'));
+      return;
+    }
+
+    // Update transaction status
+    const upperSql = sql.toUpperCase().trim();
+    if (upperSql.startsWith('BEGIN')) conn.txStatus = 'T';
+    else if (upperSql.startsWith('COMMIT') || upperSql.startsWith('ROLLBACK')) conn.txStatus = 'I';
+
+    if (result.type === 'PLAN') {
+      // EXPLAIN result — convert plan to rows for display
+      const rows = result.plan.map(step => ({
+        operation: step.operation,
+        detail: step.table || step.condition || step.detail || '',
+        estimated_rows: step.estimated_rows || '',
+      }));
+      const columns = ['operation', 'detail', 'estimated_rows'];
+      conn.socket.write(writeRowDescription(
+        columns.map(c => ({ name: c, typeOid: PG_TYPES.TEXT }))
+      ));
+      for (const row of rows) {
+        conn.socket.write(writeDataRow(columns.map(c => row[c] || null)));
+      }
+      conn.socket.write(writeCommandComplete(`EXPLAIN`));
+      return;
+    }
+
+    if (result.type === 'OK') {
+      // DDL or DML result
+      const tag = this._getCommandTag(sql, result);
+      conn.socket.write(writeCommandComplete(tag));
+      return;
+    }
+
+    if (result.type === 'ROWS') {
+      const rows = result.rows || [];
+
+      if (rows.length === 0) {
+        // Empty result set — still send RowDescription with no rows
+        const columns = result.columns || [];
+        if (columns.length > 0) {
+          conn.socket.write(writeRowDescription(
+            columns.map(c => ({ name: c, typeOid: PG_TYPES.TEXT }))
+          ));
+        }
+        conn.socket.write(writeCommandComplete(`SELECT 0`));
+        return;
+      }
+
+      // Derive columns from first row
+      const columnNames = Object.keys(rows[0]);
+      const sampleValues = Object.values(rows[0]);
+
+      // Send RowDescription
+      const colDescs = columnNames.map((name, i) => ({
+        name,
+        typeOid: inferTypeOid(sampleValues[i]),
+        typeSize: -1,
+      }));
+      conn.socket.write(writeRowDescription(colDescs));
+
+      // Send DataRows
+      for (const row of rows) {
+        const values = columnNames.map(c => {
+          const v = row[c];
+          return v === null || v === undefined ? null : v;
+        });
+        conn.socket.write(writeDataRow(values));
+      }
+
+      // Send CommandComplete
+      conn.socket.write(writeCommandComplete(`SELECT ${rows.length}`));
+      return;
+    }
+
+    // Fallback
+    conn.socket.write(writeCommandComplete('OK'));
+  }
+
+  _getCommandTag(sql, result) {
+    const upper = sql.toUpperCase().trim();
+    if (upper.startsWith('INSERT')) {
+      const count = result.count || result.message?.match(/(\d+)/)?.[1] || 0;
+      return `INSERT 0 ${count}`;
+    }
+    if (upper.startsWith('UPDATE')) {
+      const count = result.count || result.message?.match(/(\d+)/)?.[1] || 0;
+      return `UPDATE ${count}`;
+    }
+    if (upper.startsWith('DELETE')) {
+      const count = result.count || result.message?.match(/(\d+)/)?.[1] || 0;
+      return `DELETE ${count}`;
+    }
+    if (upper.startsWith('CREATE')) return 'CREATE TABLE';
+    if (upper.startsWith('DROP')) return 'DROP TABLE';
+    if (upper.startsWith('ALTER')) return 'ALTER TABLE';
+    if (upper.startsWith('BEGIN')) return 'BEGIN';
+    if (upper.startsWith('COMMIT')) return 'COMMIT';
+    if (upper.startsWith('ROLLBACK')) return 'ROLLBACK';
+    return 'OK';
+  }
+
+  _handleParseNotSupported(conn) {
+    conn.socket.write(writeErrorResponse(
+      'ERROR', '0A000',
+      'Extended query protocol not supported. Use simple query protocol.'
+    ));
+  }
+
+  /**
+   * Check if a query AST is eligible for the adaptive engine.
+   * Only simple scans with optional WHERE, ORDER BY, and LIMIT qualify.
+   * Aggregates, GROUP BY, JOINs, subqueries go through the standard path
+   * (which is more correct if less optimized).
+   */
+  _isAdaptiveEligible(ast) {
+    // Must be a simple SELECT
+    if (ast.type !== 'SELECT') return false;
+    // No aggregates
+    if (ast.columns?.some(c => c.type === 'aggregate' || c.type === 'function_call')) return false;
+    // No GROUP BY
+    if (ast.groupBy && ast.groupBy.length > 0) return false;
+    // No HAVING
+    if (ast.having) return false;
+    // No JOINs (must be single table)
+    if (ast.from?.type === 'join') return false;
+    // No subqueries in WHERE
+    if (ast.where && this._hasSubquery(ast.where)) return false;
+    // No UNION/INTERSECT/EXCEPT
+    if (ast.union || ast.intersect || ast.except) return false;
+    return true;
+  }
+
+  _hasSubquery(expr) {
+    if (!expr || typeof expr !== 'object') return false;
+    if (expr.type === 'subquery' || expr.type === 'exists' || expr.type === 'in_subquery') return true;
+    for (const key of Object.keys(expr)) {
+      const val = expr[key];
+      if (typeof val === 'object' && val !== null) {
+        if (Array.isArray(val)) {
+          for (const item of val) {
+            if (this._hasSubquery(item)) return true;
+          }
+        } else {
+          if (this._hasSubquery(val)) return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+
+// CLI entry point
+if (process.argv[1] && (process.argv[1].endsWith('server.js') || process.argv[1].endsWith('server'))) {
+  const port = parseInt(process.argv[2]) || DEFAULT_PORT;
+  const server = new HenryDBServer({ port, verbose: true });
+  server.start().then(() => {
+    console.log(`HenryDB ready. Connect with: psql -h 127.0.0.1 -p ${port}`);
+    console.log('Press Ctrl+C to stop.');
+  }).catch(err => {
+    console.error('Failed to start:', err.message);
+    process.exit(1);
+  });
+
+  process.on('SIGINT', () => {
+    console.log('\nShutting down...');
+    server.stop().then(() => process.exit(0));
+  });
+}
+
+export default HenryDBServer;

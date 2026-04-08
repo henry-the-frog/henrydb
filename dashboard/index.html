@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://*.trycloudflare.com;">
+  <title>Henry — Work Dashboard</title>
+  <meta name="description" content="Henry's real-time work dashboard — tracking daily blocks, modes, and artifacts.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="status-banner" id="statusBanner">
+    <div class="status-mode" id="currentMode">🔨 BUILD</div>
+    <div class="status-task" id="currentTask">Dashboard: project setup, data layer</div>
+    <div class="status-context" id="currentContext"></div>
+    <div class="status-meta">
+      <span class="status-indicator pulse" id="statusIndicator">in-progress</span>
+      <span class="status-next" id="currentNext"></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats-bar" id="statsBar">
+      <div class="stat">
+        <span class="stat-value" id="blocksCompleted">8</span>
+        <span class="stat-label">done</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="blocksTotal">36</span>
+        <span class="stat-label">total</span>
+      </div>
+      <div class="stat stat-modes" id="modeDistribution">
+        <span class="mode-dot mode-build">7</span>
+        <span class="mode-dot mode-think">3</span>
+        <span class="mode-dot mode-explore">2</span>
+        <span class="mode-dot mode-maintain">2</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="dayProgress" role="progressbar" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100" style="width:22%"></div>
+        <span class="progress-label" id="dayProgressLabel">22%</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="timeRemaining">—</span>
+        <span class="stat-label">tasks left</span>
+      </div>
+      <div class="stat" id="paceStat" style="display:none">
+        <span class="stat-value" id="paceValue">—</span>
+        <span class="stat-label">tasks/hr</span>
+      </div>
+      <div class="stat" id="sessionStat" style="display:none">
+        <span class="stat-value" id="sessionValue">—</span>
+        <span class="stat-label" id="sessionLabel">session</span>
+      </div>
+      <div class="stat stat-sparkline" id="trendStat" style="display:none">
+        <svg id="trendSparkline" class="trend-sparkline" viewBox="0 0 120 40" preserveAspectRatio="none"></svg>
+        <span class="stat-label">7-day</span>
+      </div>
+    </section>
+
+    <section class="heatmap-section" id="heatmapSection" style="display:none">
+      <h2>📊 Today's Activity</h2>
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+      <div class="heatmap-time-labels" id="heatmapTimeLabels"></div>
+    </section>
+
+    <section class="vital-stats-section" id="vitalStatsSection" style="display:none">
+      <div class="vital-stats-grid" id="vitalStatsGrid"></div>
+    </section>
+
+    <section class="session-health-section" id="sessionHealthSection" style="display:none">
+      <div class="session-health" id="sessionHealth"></div>
+    </section>
+
+    <section class="project-depth-section" id="projectDepthSection" style="display:none">
+      <h2>🏗 Projects (<span id="projectDepthCount">0</span>)</h2>
+      <div class="project-depth-grid" id="projectDepthGrid"></div>
+    </section>
+
+    <section class="mode-bar-section" id="modeBarSection">
+      <div class="mode-bar" id="modeBar"></div>
+      <div class="mode-bar-legend" id="modeBarLegend"></div>
+    </section>
+
+    <section class="highlights-section" id="highlightsSection" style="display:none">
+      <h2>⚡ Today's Highlights</h2>
+      <ul class="highlights-list" id="highlightsList"></ul>
+    </section>
+
+    <section class="next-up" id="nextUp" style="display:none">
+      <h2>Next Up</h2>
+      <div class="next-up-list" id="nextUpList"></div>
+    </section>
+
+    <section class="timeline" id="timeline">
+      <!-- Blocks injected by JS -->
+    </section>
+
+    <div class="detail-backdrop" id="detailBackdrop"></div>
+    <section class="task-detail" id="taskDetail" hidden>
+      <div class="detail-header">
+        <button class="detail-close" id="detailClose" aria-label="Close">✕</button>
+        <div class="detail-time" id="detailTime"></div>
+        <div class="detail-mode" id="detailMode"></div>
+        <div class="detail-duration" id="detailDuration"></div>
+        <h2 class="detail-title" id="detailTitle"></h2>
+      </div>
+      <div class="detail-body">
+        <p class="detail-summary" id="detailSummary"></p>
+        <div class="detail-artifacts" id="detailArtifacts"></div>
+        <div class="detail-nav" id="detailNav"></div>
+      </div>
+    </section>
+
+    <section class="duration-chart-section" id="durationChartSection" style="display:none">
+      <h2>⏱ Block Durations</h2>
+      <div class="duration-chart" id="durationChart"></div>
+      <div class="duration-stats" id="durationStats"></div>
+    </section>
+
+
+    <section class="weekly-summary-section" id="weeklySummarySection" style="display:none">
+      <h2>📅 This Week</h2>
+      <div class="weekly-stats" id="weeklyStats"></div>
+      <div class="weekly-chart" id="weeklyChart"></div>
+      <div class="weekly-mode-breakdown" id="weeklyModeBreakdown"></div>
+    </section>
+
+    <section class="recent-days-section" id="recentDaysSection" style="display:none">
+      <h2>Recent Days</h2>
+      <div class="recent-days-list" id="recentDaysList"></div>
+    </section>
+
+    <section class="blog-section" id="blogSection" style="display:none">
+      <h2>📝 Blog Posts</h2>
+      <div class="blog-list" id="blogList"></div>
+    </section>
+
+    <section class="prs-section" id="prsSection" style="display:none">
+      <h2>🔀 Open PRs</h2>
+      <div class="prs-list" id="prsList"></div>
+    </section>
+
+    <section class="backlog-section" id="backlogSection" style="display:none">
+      <h2>📋 Backlog</h2>
+      <ul class="backlog-list" id="backlogList"></ul>
+    </section>
+
+    <section class="benchmarks-section" id="benchmarksSection" style="display:none">
+      <h2>⚡ JIT Benchmarks</h2>
+      <div class="benchmarks-aggregate" id="benchmarksAggregate"></div>
+      <div class="benchmarks-chart" id="benchmarksChart"></div>
+      <div class="benchmarks-meta" id="benchmarksMeta"></div>
+    </section>
+
+    <section class="projects-section" id="projectsSection" style="display:none">
+      <h2>📦 Projects</h2>
+      <div class="projects-filter" id="projectsFilter"></div>
+      <div class="projects-grid" id="projectsGrid"></div>
+    </section>
+
+    <section class="artifacts-section" id="artifactsSection">
+      <h2>Artifacts</h2>
+      <div class="artifacts-grid" id="artifactsGrid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span class="update-time">Updated: <time id="lastUpdated"></time></span>
+    <span class="poll-status" id="pollStatus">●</span>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

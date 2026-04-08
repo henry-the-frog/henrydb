@@ -3527,6 +3527,81 @@
       "completed": "2026-04-08T19:06:07.736Z",
       "duration_ms": 5000,
       "summary": "Distributed batch."
+    },
+    {
+      "id": "T327",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess HenryDB architecture: what's the hardest unsolved problem in the query engine?",
+      "project": "henrydb",
+      "started": "2026-04-08T20:18:07.930Z",
+      "completed": "2026-04-08T20:19:02.245Z",
+      "duration_ms": 90000,
+      "summary": "HenryDB has massive breadth but lacks integration depth. Hardest problem: making it a real server. Priority: PostgreSQL wire protocol → full SQL integration → TPC-H end-to-end. Wire protocol forces all components to actually work together."
+    },
+    {
+      "id": "T328",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB depth: tackle the hardest remaining challenge",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:19:15.980Z",
+      "completed": "2026-04-08T20:19:49.184Z",
+      "duration_ms": 60000,
+      "summary": "Plan: build TCP server wrapping Database + pg-protocol, test with psql, integrate adaptive engine. 3 BUILD tasks."
+    },
+    {
+      "id": "T331",
+      "mode": "BUILD",
+      "task": "Build HenryDB TCP server (server.js) — net.createServer + pg-protocol + Database integration, handle startup/query/terminate",
+      "status": "done",
+      "plan_ref": "T328",
+      "started": "2026-04-08T20:19:59.494Z",
+      "completed": "2026-04-08T20:23:23.882Z",
+      "duration_ms": 300000,
+      "summary": "Built HenryDB TCP server (server.js) — PostgreSQL wire protocol v3, startup handshake, simple query protocol, SSL negotiation, transaction status tracking, multi-connection support, error handling. 14 tests all passing. Accepts psql connections on port 5433."
+    },
+    {
+      "id": "T332",
+      "mode": "BUILD",
+      "task": "Test server with psql: CREATE TABLE, INSERT, SELECT, JOIN, transactions",
+      "status": "done",
+      "plan_ref": "T328",
+      "started": "2026-04-08T20:23:39.662Z",
+      "completed": "2026-04-08T20:26:17.473Z",
+      "duration_ms": 300000,
+      "summary": "25 server tests passing (14 unit + 11 integration). Full DDL/DML lifecycle, JOINs, GROUP BY, subqueries, transactions, concurrent clients, views, EXPLAIN, indexes, error recovery, large result sets. Also built cli.js REPL client."
+    },
+    {
+      "id": "T333",
+      "mode": "BUILD",
+      "task": "End-to-end integration: connect adaptive query engine + planner through the server path",
+      "status": "done",
+      "plan_ref": "T328",
+      "started": "2026-04-08T20:26:26.383Z",
+      "completed": "2026-04-08T20:29:39.727Z",
+      "duration_ms": 240000,
+      "summary": "Integrated adaptive query engine into server path. Simple scans (no aggregates/JOINs/subqueries) route through AdaptiveQueryEngine for potential speedup; complex queries fall back to Volcano. 7 new tests. Total: 32 server tests (14+11+7), all pass individually."
+    },
+    {
+      "id": "T329",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-08T20:29:55.612Z",
+      "completed": "2026-04-08T20:29:55.866Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T330",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard sync",
+      "project": "henrydb",
+      "started": "2026-04-08T20:30:06.572Z"
     }
   ],
   "focusProjects": [
@@ -4846,6 +4921,26 @@
     {
       "time": "2026-04-08T19:05:06.628Z",
       "msg": "Added T326 (BUILD) after end: HenryDB: hash partitioned table — horizontal split by hash"
+    },
+    {
+      "time": "2026-04-08T20:17:44.220Z",
+      "msg": "Added T327 (THINK) after end: Assess HenryDB architecture: what's the hardest unsolved problem in the query engine?"
+    },
+    {
+      "time": "2026-04-08T20:17:48.847Z",
+      "msg": "Added T328 (PLAN) after T327: HenryDB depth: tackle the hardest remaining challenge"
+    },
+    {
+      "time": "2026-04-08T20:17:54.883Z",
+      "msg": "Added T329 (BUILD) after T328: null"
+    },
+    {
+      "time": "2026-04-08T20:17:59.542Z",
+      "msg": "Added T330 (MAINTAIN) after T329: Housekeeping: git push, dashboard sync"
+    },
+    {
+      "time": "2026-04-08T20:19:43.454Z",
+      "msg": "PLAN T328 filled 3 BUILD tasks"
     }
   ]
 }
