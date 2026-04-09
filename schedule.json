@@ -1761,10 +1761,21 @@
     {
       "id": "T167",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HyperLogLog: cardinality estimation (count distinct) using O(1) space",
       "project": "henrydb",
-      "started": "2026-04-09T22:10:12.107Z"
+      "started": "2026-04-09T22:10:12.107Z",
+      "completed": "2026-04-09T22:11:53.722Z",
+      "duration_ms": 300000,
+      "summary": "HyperLogLog: COUNT DISTINCT in 16KB. 0.81% standard error. 0.113µs/add. Merge for union. Accuracy: 0.7% at 10K, 1.5% at 100K. 11 tests."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Cuckoo filter: alternative to Bloom filter with deletion support, used in network databases",
+      "project": "henrydb",
+      "started": "2026-04-09T22:12:17.356Z"
     }
   ],
   "focusProjects": [
@@ -2436,6 +2447,10 @@
     {
       "time": "2026-04-09T22:10:11.695Z",
       "msg": "Added T167 (BUILD) after end: HyperLogLog: cardinality estimation (count distinct) using O(1) space"
+    },
+    {
+      "time": "2026-04-09T22:12:16.948Z",
+      "msg": "Added T168 (BUILD) after end: Cuckoo filter: alternative to Bloom filter with deletion support, used in network databases"
     }
   ]
 }
