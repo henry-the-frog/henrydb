@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:37:58.979Z",
+  "generated": "2026-04-09T00:42:01.131Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build connection-level query timeout and statement cancellation system",
-    "completedAt": "2026-04-09T00:37:58.979Z",
-    "taskId": "T445",
-    "summary": "Query timeout and cancellation: CancelToken (cooperative), TimeoutManager with per-query tracking, withTimeout async helper, QueryCancelledError/QueryTimeoutError, active query monitoring. 16 tests.",
-    "durationMs": 120000
+    "task": "Build full-text search: tsvector/tsquery types, text search index, ts_rank scoring, to_tsvector/to_tsquery functions",
+    "completedAt": "2026-04-09T00:42:01.131Z",
+    "taskId": "T446",
+    "summary": "Full-text search: TSVector (fromText, concat, positions), TSQuery (AND/OR/NOT/phrase, parse, fromPlainText), stemming, stop words, ts_rank scoring, TextSearchIndex (inverted index, ranked search). 24 tests.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 443,
+    "blocksCompleted": 444,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 339,
+      "BUILD": 340,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

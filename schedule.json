@@ -4840,6 +4840,17 @@
       "completed": "2026-04-09T00:37:58.911Z",
       "duration_ms": 120000,
       "summary": "Query timeout and cancellation: CancelToken (cooperative), TimeoutManager with per-query tracking, withTimeout async helper, QueryCancelledError/QueryTimeoutError, active query monitoring. 16 tests."
+    },
+    {
+      "id": "T446",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build full-text search: tsvector/tsquery types, text search index, ts_rank scoring, to_tsvector/to_tsquery functions",
+      "project": "henrydb",
+      "started": "2026-04-09T00:38:23.564Z",
+      "completed": "2026-04-09T00:42:01.065Z",
+      "duration_ms": 240000,
+      "summary": "Full-text search: TSVector (fromText, concat, positions), TSQuery (AND/OR/NOT/phrase, parse, fromPlainText), stemming, stop words, ts_rank scoring, TextSearchIndex (inverted index, ranked search). 24 tests."
     }
   ],
   "focusProjects": [
@@ -6591,6 +6602,10 @@
     {
       "time": "2026-04-09T00:36:54.159Z",
       "msg": "Added T445 (BUILD) after end: Build connection-level query timeout and statement cancellation system"
+    },
+    {
+      "time": "2026-04-09T00:38:23.148Z",
+      "msg": "Added T446 (BUILD) after end: Build full-text search: tsvector/tsquery types, text search index, ts_rank scoring, to_tsvector/to_tsquery functions"
     }
   ]
 }
