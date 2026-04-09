@@ -55,6 +55,56 @@ export class Database {
     return this.execute_ast(ast);
   }
 
+  /**
+   * Execute a query with detailed timing profile.
+   * Returns { result, profile } where profile has phase-level timing.
+   */
+  profile(sql) {
+    const phases = [];
+    const t0 = performance.now();
+    
+    // PARSE phase
+    const parseStart = performance.now();
+    let ast = this._planCache.get(sql);
+    const cached = !!ast;
+    if (!ast) {
+      ast = parse(sql);
+      if (ast.type === 'SELECT') this._planCache.put(sql, ast);
+    }
+    const parseEnd = performance.now();
+    phases.push({ name: 'PARSE', durationMs: parseEnd - parseStart, cached });
+    
+    // EXECUTE phase (includes scan, filter, sort, aggregate)
+    const execStart = performance.now();
+    const result = this.execute_ast(ast);
+    const execEnd = performance.now();
+    phases.push({ name: 'EXECUTE', durationMs: execEnd - execStart, rows: result?.rows?.length || 0 });
+    
+    const totalMs = performance.now() - t0;
+    
+    // Format report
+    const lines = [`Query: ${sql.slice(0, 80)}${sql.length > 80 ? '...' : ''}`];
+    lines.push('─'.repeat(60));
+    lines.push(`${'Phase'.padEnd(15)} ${'Duration'.padStart(12)} ${'Pct'.padStart(6)} Details`);
+    lines.push('─'.repeat(60));
+    for (const p of phases) {
+      const pct = totalMs > 0 ? (p.durationMs / totalMs * 100).toFixed(1) : '0.0';
+      const details = p.cached ? '(cached)' : p.rows !== undefined ? `${p.rows} rows` : '';
+      lines.push(`${p.name.padEnd(15)} ${(p.durationMs.toFixed(3) + 'ms').padStart(12)} ${(pct + '%').padStart(6)} ${details}`);
+    }
+    lines.push('─'.repeat(60));
+    lines.push(`${'TOTAL'.padEnd(15)} ${(totalMs.toFixed(3) + 'ms').padStart(12)} ${'100%'.padStart(6)}`);
+    
+    return {
+      result,
+      profile: {
+        totalMs: parseFloat(totalMs.toFixed(3)),
+        phases,
+        formatted: lines.join('\n'),
+      },
+    };
+  }
+
   checkpoint() {
     if (this._dataDir) {
       // Build checkpoint data from current state

@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-09T21:51:36.907Z",
+  "generated": "2026-04-09T21:57:43.988Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB showcase: comprehensive demo that exercises ALL features with benchmarks, serving as both documentation and regression test",
-    "completedAt": "2026-04-09T21:51:36.907Z",
-    "taskId": "T159",
-    "summary": "24-test showcase covering ALL features: 2 storage engines, 3 index types, full SQL (JOINs, aggregations, CTEs, window functions), prepared statements, materialized views, UPSERT, RETURNING, optimizer. All green.",
-    "durationMs": 300000
+    "task": "Query profiler: instrument execution phases (parse, plan, scan, filter, sort, aggregate), output with EXPLAIN PROFILE",
+    "startedAt": "2026-04-09T21:57:43.988Z",
+    "taskId": "T162"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1710,12 +1708,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 146,
+    "blocksCompleted": 148,
     "blocksTotal": 136,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 13,
-      "BUILD": 88,
+      "BUILD": 90,
       "MAINTAIN": 24,
       "EXPLORE": 3
     }

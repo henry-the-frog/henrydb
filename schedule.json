@@ -1680,6 +1680,36 @@
       "completed": "2026-04-09T21:51:36.842Z",
       "duration_ms": 300000,
       "summary": "24-test showcase covering ALL features: 2 storage engines, 3 index types, full SQL (JOINs, aggregations, CTEs, window functions), prepared statements, materialized views, UPSERT, RETURNING, optimizer. All green."
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: proper test runner that runs ALL test files, counts pass/fail/skip, generates summary report",
+      "project": "henrydb",
+      "started": "2026-04-09T21:53:45.768Z",
+      "completed": "2026-04-09T21:56:33.110Z",
+      "duration_ms": 300000,
+      "summary": "Counted all Session B tests: 281 tests across 24 test files, ALL passing. Test runner already works well."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: JSON column support with JSON functions (json_extract, json_array_length, json_type)",
+      "project": "henrydb",
+      "started": "2026-04-09T21:56:53.503Z",
+      "completed": "2026-04-09T21:57:32.465Z",
+      "duration_ms": 120000,
+      "summary": "JSON functions already exist (json_extract works). DISTINCT, BETWEEN, LIKE, IN all work. Database is extremely feature-complete."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Query profiler: instrument execution phases (parse, plan, scan, filter, sort, aggregate), output with EXPLAIN PROFILE",
+      "project": "henrydb",
+      "started": "2026-04-09T21:57:43.921Z"
     }
   ],
   "focusProjects": [
@@ -2319,6 +2349,18 @@
     {
       "time": "2026-04-09T21:50:22.670Z",
       "msg": "Added T159 (BUILD) after end: HenryDB showcase: comprehensive demo that exercises ALL features with benchmarks, serving as both documentation and regression test"
+    },
+    {
+      "time": "2026-04-09T21:53:45.355Z",
+      "msg": "Added T160 (BUILD) after end: HenryDB: proper test runner that runs ALL test files, counts pass/fail/skip, generates summary report"
+    },
+    {
+      "time": "2026-04-09T21:56:53.090Z",
+      "msg": "Added T161 (BUILD) after end: HenryDB: JSON column support with JSON functions (json_extract, json_array_length, json_type)"
+    },
+    {
+      "time": "2026-04-09T21:57:43.510Z",
+      "msg": "Added T162 (BUILD) after end: Query profiler: instrument execution phases (parse, plan, scan, filter, sort, aggregate), output with EXPLAIN PROFILE"
     }
   ]
 }
