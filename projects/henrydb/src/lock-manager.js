@@ -188,3 +188,7 @@ export class LockManager {
 }
 
 export { MODES, COMPATIBLE };
+
+// Alias for tests expecting LockMode
+const LockMode = { SHARED: 'S', EXCLUSIVE: 'X', INTENT_SHARED: 'IS', INTENT_EXCLUSIVE: 'IX', SHARED_INTENT_EXCLUSIVE: 'SIX', ...MODES };
+export { LockMode };

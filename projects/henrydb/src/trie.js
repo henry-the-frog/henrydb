@@ -60,3 +60,22 @@ export class Trie {
 
   get size() { return this._size; }
 }
+
+export class RingBuffer {
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.buffer = new Array(capacity);
+    this.head = 0;
+    this.size = 0;
+  }
+  push(item) {
+    this.buffer[this.head] = item;
+    this.head = (this.head + 1) % this.capacity;
+    if (this.size < this.capacity) this.size++;
+  }
+  toArray() {
+    if (this.size < this.capacity) return this.buffer.slice(0, this.size);
+    return [...this.buffer.slice(this.head), ...this.buffer.slice(0, this.head)];
+  }
+  get length() { return this.size; }
+}

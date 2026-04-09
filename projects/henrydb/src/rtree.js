@@ -147,3 +147,19 @@ export class RTree {
 
   get size() { return this._size; }
 }
+
+export class Rect {
+  constructor(minX, minY, maxX, maxY) {
+    this.minX = minX; this.minY = minY;
+    this.maxX = maxX; this.maxY = maxY;
+  }
+  static point(x, y) { return new Rect(x, y, x, y); }
+  contains(other) {
+    return this.minX <= other.minX && this.minY <= other.minY &&
+           this.maxX >= other.maxX && this.maxY >= other.maxY;
+  }
+  intersects(other) {
+    return this.minX <= other.maxX && this.maxX >= other.minX &&
+           this.minY <= other.maxY && this.maxY >= other.minY;
+  }
+}

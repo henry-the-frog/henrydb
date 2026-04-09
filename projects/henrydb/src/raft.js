@@ -192,3 +192,21 @@ export class RaftNode {
     return this.log.length > 0 ? this.log[this.log.length - 1].term : 0;
   }
 }
+
+export class RaftCluster {
+  constructor(size) {
+    this.nodes = Array.from({ length: size }, (_, i) => new RaftNode(i, size));
+    // Connect nodes
+    for (const node of this.nodes) {
+      node.peers = this.nodes.filter(n => n.id !== node.id);
+    }
+  }
+  getLeader() { return this.nodes.find(n => n.state === 'leader'); }
+  electLeader() {
+    // Simple election: first node becomes leader
+    const candidate = this.nodes[0];
+    candidate.state = 'leader';
+    candidate.term++;
+    return candidate;
+  }
+}

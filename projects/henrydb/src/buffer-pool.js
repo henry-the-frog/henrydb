@@ -240,3 +240,5 @@ export class BufferPoolManager {
     };
   }
 }
+
+export { BufferPoolManager as BufferPool };

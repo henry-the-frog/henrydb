@@ -155,3 +155,4 @@ export class SavepointManager {
     }
   }
 }
+export { SavepointManager as SavepointTransaction };
