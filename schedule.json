@@ -5159,6 +5159,17 @@
       "completed": "2026-04-09T01:28:05.837Z",
       "duration_ms": 120000,
       "summary": "Tablespaces: CREATE/DROP/ALTER TABLESPACE, SET TABLESPACE, built-in pg_default/pg_global, object tracking, size. 14 tests."
+    },
+    {
+      "id": "T475",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build event triggers: CREATE EVENT TRIGGER, ddl_command_start/end, table_rewrite, sql_drop events",
+      "project": "henrydb",
+      "started": "2026-04-09T01:28:16.627Z",
+      "completed": "2026-04-09T01:29:08.005Z",
+      "duration_ms": 120000,
+      "summary": "Event triggers: ddl_command_start/end, table_rewrite, sql_drop, tag filtering, abort on start, fire count tracking. 14 tests."
     }
   ],
   "focusProjects": [
@@ -7026,6 +7037,10 @@
     {
       "time": "2026-04-09T01:27:18.396Z",
       "msg": "Added T474 (BUILD) after end: Build table spaces: CREATE TABLESPACE, SET TABLESPACE, storage location management"
+    },
+    {
+      "time": "2026-04-09T01:28:16.208Z",
+      "msg": "Added T475 (BUILD) after end: Build event triggers: CREATE EVENT TRIGGER, ddl_command_start/end, table_rewrite, sql_drop events"
     }
   ]
 }

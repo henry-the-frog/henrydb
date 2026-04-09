@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T01:28:05.904Z",
+  "generated": "2026-04-09T01:29:08.077Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build table spaces: CREATE TABLESPACE, SET TABLESPACE, storage location management",
-    "completedAt": "2026-04-09T01:28:05.904Z",
-    "taskId": "T474",
-    "summary": "Tablespaces: CREATE/DROP/ALTER TABLESPACE, SET TABLESPACE, built-in pg_default/pg_global, object tracking, size. 14 tests.",
+    "task": "Build event triggers: CREATE EVENT TRIGGER, ddl_command_start/end, table_rewrite, sql_drop events",
+    "completedAt": "2026-04-09T01:29:08.077Z",
+    "taskId": "T475",
+    "summary": "Event triggers: ddl_command_start/end, table_rewrite, sql_drop, tag filtering, abort on start, fire count tracking. 14 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 472,
+    "blocksCompleted": 473,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 368,
+      "BUILD": 369,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
