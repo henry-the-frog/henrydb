@@ -5115,6 +5115,17 @@
       "completed": "2026-04-09T01:23:34.827Z",
       "duration_ms": 120000,
       "summary": "Range types: int4range/numrange/tsrange/daterange, contains, containsRange, overlaps, intersection, union, adjacent, parse/toString. 19 tests."
+    },
+    {
+      "id": "T471",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection session variables: SET/SHOW/RESET, session-scoped GUCs, search_path, client_encoding",
+      "project": "henrydb",
+      "started": "2026-04-09T01:23:46.007Z",
+      "completed": "2026-04-09T01:24:33.663Z",
+      "duration_ms": 120000,
+      "summary": "Session variables: SET/SHOW/RESET, SET LOCAL, GUC defaults, savepoints, typed getters (bool/int/float/memory), SHOW ALL. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6966,6 +6977,10 @@
     {
       "time": "2026-04-09T01:22:36.338Z",
       "msg": "Added T470 (BUILD) after end: Build range types: int4range, numrange, tsrange, daterange, containment, overlap, intersection operators"
+    },
+    {
+      "time": "2026-04-09T01:23:45.586Z",
+      "msg": "Added T471 (BUILD) after end: Build connection session variables: SET/SHOW/RESET, session-scoped GUCs, search_path, client_encoding"
     }
   ]
 }
