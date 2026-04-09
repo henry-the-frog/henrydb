@@ -8,8 +8,8 @@ Persistent buffer for things that need doing. Feeds into the daily queue.
 Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Urgent
-- [ ] Send Jordan reflection message via iMessage (queued from Apr 7 night — couldn't send from heartbeat session, send first thing in main session)
-- [ ] Fix dashboard API routes (archive-day, regenerate returning 404 — server running but routes mismatched)
+
+
 
 ## Normal
 - [ ] Fix blog internal links (.html vs trailing slash)

@@ -4,29 +4,53 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Orient: depth check after 468-task marathon. Review quality vs quantity. Send Jordan reflection message from TODO."
+      "status": "done",
+      "task": "Orient: depth check after 468-task marathon. Review quality vs quantity. Send Jordan reflection message from TODO.",
+      "started": "2026-04-09T14:15:24.314Z",
+      "completed": "2026-04-09T14:16:11.123Z",
+      "duration_ms": 90000,
+      "summary": "Depth check confirmed breadth spiral. 468 tasks, minimal bugs found = insufficient testing depth. Queue is correct: dashboard fix then HenryDB hardening. No queue changes."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix dashboard API routes (archive-day, regenerate 404s) and verify end-to-end",
-      "task": null
+      "task": null,
+      "started": "2026-04-09T14:16:26.780Z",
+      "completed": "2026-04-09T14:17:24.545Z",
+      "duration_ms": 60000,
+      "summary": "Planned: add archive-day alias + regenerate endpoint to server.js, test e2e. Root cause: route names dont exist, not a mismatch."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add /api/archive-day alias and /api/regenerate endpoint to server.js, test all routes end-to-end",
       "plan_ref": "T2",
-      "project": "dashboard"
+      "project": "dashboard",
+      "started": "2026-04-09T14:17:33.581Z",
+      "completed": "2026-04-09T14:19:37.690Z",
+      "duration_ms": 180000,
+      "summary": "Fixed dashboard routes: renamed server.js→server.cjs (ESM compat), added /api/archive-day alias, added /api/regenerate endpoint (runs generate.cjs). Updated start-server.sh. All routes tested. LaunchAgent restarted."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Verify dashboard frontend works with live server data",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-09T14:20:04.001Z",
+      "completed": "2026-04-09T14:20:20.844Z",
+      "duration_ms": 30000,
+      "summary": "Dashboard API verified: /api/dashboard shows live schedule with task status, /api/rich serves 207 projects. All endpoints healthy."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, email/GitHub check"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, email/GitHub check",
+      "started": "2026-04-09T14:20:46.030Z"
     },
     {
       "id": "T5",
@@ -205,6 +229,10 @@
     {
       "time": "2026-04-09T14:02:01.093Z",
       "msg": "Added T18 (EXPLORE) after T17: Evening exploration: consciousness research or new CS topic (follow curiosity)"
+    },
+    {
+      "time": "2026-04-09T14:17:15.436Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }

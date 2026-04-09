@@ -215,6 +215,24 @@ async function handleArchive(req, res) {
   sendJSON(res, 200, { ok: true, archived: date, file: histFile });
 }
 
+async function handleRegenerate(req, res) {
+  // Run generate.cjs to regenerate dashboard data
+  const { execSync } = require('child_process');
+  try {
+    const output = execSync('node generate.cjs', {
+      cwd: __dirname,
+      encoding: 'utf8',
+      timeout: 30000,
+      env: { ...process.env, SKIP_GH: process.env.SKIP_GH || '0' },
+    });
+    // Reload state from the freshly generated file
+    state = loadState();
+    sendJSON(res, 200, { ok: true, output: output.trim() });
+  } catch (e) {
+    sendJSON(res, 500, { error: `Regenerate failed: ${e.message}` });
+  }
+}
+
 function handleGetDashboard(req, res) {
   // Light response: current + schedule + stats
   const light = {
@@ -288,7 +306,8 @@ const server = http.createServer(async (req, res) => {
 
       if (pathname === '/api/task-update') return await handleTaskUpdate(req, res);
       if (pathname === '/api/queue-update') return await handleQueueUpdate(req, res);
-      if (pathname === '/api/archive') return await handleArchive(req, res);
+      if (pathname === '/api/archive' || pathname === '/api/archive-day') return await handleArchive(req, res);
+      if (pathname === '/api/regenerate') return await handleRegenerate(req, res);
       return send404(res);
     }
 
