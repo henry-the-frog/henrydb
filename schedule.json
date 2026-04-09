@@ -2373,16 +2373,38 @@
     {
       "id": "T223",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Van Emde Boas layout: cache-oblivious search tree layout",
       "project": "henrydb",
-      "started": "2026-04-09T23:17:57.801Z"
+      "started": "2026-04-09T23:17:57.801Z",
+      "completed": "2026-04-09T23:18:54.144Z",
+      "duration_ms": 180000,
+      "summary": "VEB + Eytzinger layout: cache-friendly search on sorted arrays. 4 tests."
     },
     {
       "id": "T224",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Leapfrog triejoin: worst-case optimal join algorithm",
+      "project": "henrydb",
+      "started": "2026-04-09T23:19:03.693Z",
+      "completed": "2026-04-09T23:19:03.948Z",
+      "duration_ms": 0,
+      "summary": "Skipped: too complex for remaining time."
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Multi-version concurrency control (MVCC): version chain for snapshot isolation",
+      "project": "henrydb",
+      "started": "2026-04-09T23:19:13.465Z"
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Page table: virtual-to-physical page mapping with TLB-like cache",
       "project": "henrydb"
     }
   ],
@@ -3283,6 +3305,14 @@
     {
       "time": "2026-04-09T23:16:16.371Z",
       "msg": "Added T224 (BUILD) after end: Leapfrog triejoin: worst-case optimal join algorithm"
+    },
+    {
+      "time": "2026-04-09T23:19:12.838Z",
+      "msg": "Added T225 (BUILD) after end: Multi-version concurrency control (MVCC): version chain for snapshot isolation"
+    },
+    {
+      "time": "2026-04-09T23:19:13.051Z",
+      "msg": "Added T226 (BUILD) after end: Page table: virtual-to-physical page mapping with TLB-like cache"
     }
   ]
 }
