@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T00:49:57.021Z",
+  "generated": "2026-04-09T00:52:04.735Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build advisory locks: pg_advisory_lock, pg_try_advisory_lock, session-level and transaction-level locks",
-    "completedAt": "2026-04-09T00:49:57.021Z",
-    "taskId": "T451",
-    "summary": "Advisory locks: exclusive/shared modes, session/transaction levels, recursive locking, async blocking with timeout, array keys, session cleanup. 15 tests.",
+    "task": "Build query result streaming: cursor-based iteration, server-side cursors, FETCH FORWARD/BACKWARD, SCROLL cursors",
+    "completedAt": "2026-04-09T00:52:04.735Z",
+    "taskId": "T452",
+    "summary": "Server-side cursors: DECLARE, FETCH FORWARD/BACKWARD/FIRST/LAST/ABSOLUTE/RELATIVE/ALL, SCROLL, WITH HOLD, MOVE, CLOSE. 21 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 449,
+    "blocksCompleted": 450,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 345,
+      "BUILD": 346,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

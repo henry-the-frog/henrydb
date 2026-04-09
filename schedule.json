@@ -4906,6 +4906,17 @@
       "completed": "2026-04-09T00:49:56.955Z",
       "duration_ms": 120000,
       "summary": "Advisory locks: exclusive/shared modes, session/transaction levels, recursive locking, async blocking with timeout, array keys, session cleanup. 15 tests."
+    },
+    {
+      "id": "T452",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build query result streaming: cursor-based iteration, server-side cursors, FETCH FORWARD/BACKWARD, SCROLL cursors",
+      "project": "henrydb",
+      "started": "2026-04-09T00:50:21.436Z",
+      "completed": "2026-04-09T00:52:04.669Z",
+      "duration_ms": 120000,
+      "summary": "Server-side cursors: DECLARE, FETCH FORWARD/BACKWARD/FIRST/LAST/ABSOLUTE/RELATIVE/ALL, SCROLL, WITH HOLD, MOVE, CLOSE. 21 tests."
     }
   ],
   "focusProjects": [
@@ -6681,6 +6692,10 @@
     {
       "time": "2026-04-09T00:48:46.791Z",
       "msg": "Added T451 (BUILD) after end: Build advisory locks: pg_advisory_lock, pg_try_advisory_lock, session-level and transaction-level locks"
+    },
+    {
+      "time": "2026-04-09T00:50:21.020Z",
+      "msg": "Added T452 (BUILD) after end: Build query result streaming: cursor-based iteration, server-side cursors, FETCH FORWARD/BACKWARD, SCROLL cursors"
     }
   ]
 }
