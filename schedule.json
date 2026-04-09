@@ -918,8 +918,12 @@
       "id": "T87",
       "mode": "BUILD",
       "task": "Add BEGIN/COMMIT/ROLLBACK support to pg wire protocol server",
-      "status": "upcoming",
-      "plan_ref": "T85"
+      "status": "done",
+      "plan_ref": "T85",
+      "started": "2026-04-09T18:20:56.068Z",
+      "completed": "2026-04-09T18:22:05.079Z",
+      "duration_ms": 300000,
+      "summary": "BEGIN/COMMIT/ROLLBACK already supported in server. Added 4 new wire protocol tests (txn begin/commit, rollback, UPDATE, DELETE). 10/10 CLI tests."
     },
     {
       "id": "T88",

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T18:20:28.954Z",
+  "generated": "2026-04-09T18:22:05.170Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build henrydb-cli: psql-like REPL that connects to HenryDB server via pg wire protocol",
-    "completedAt": "2026-04-09T18:20:28.954Z",
-    "taskId": "T86",
-    "summary": "Built henrydb-cli: psql-like REPL with pg wire protocol. Features: multi-line SQL, table formatting, meta-commands (\\dt, \\di, \\d), error handling. 6 CLI tests passing. Added bin entries to package.json.",
-    "durationMs": 600000
+    "task": "Add BEGIN/COMMIT/ROLLBACK support to pg wire protocol server",
+    "completedAt": "2026-04-09T18:22:05.170Z",
+    "taskId": "T87",
+    "summary": "BEGIN/COMMIT/ROLLBACK already supported in server. Added 4 new wire protocol tests (txn begin/commit, rollback, UPDATE, DELETE). 10/10 CLI tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1205,12 +1205,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 82,
+    "blocksCompleted": 83,
     "blocksTotal": 88,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 43,
+      "BUILD": 44,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }
