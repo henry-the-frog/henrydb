@@ -1334,22 +1334,27 @@
       "id": "T130",
       "mode": "BUILD",
       "task": "EXPLAIN shows storage engine and sort elimination in query plan",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T119",
-      "started": "2026-04-09T20:52:55.186Z"
+      "started": "2026-04-09T20:52:55.186Z",
+      "completed": "2026-04-09T20:54:55.795Z",
+      "duration_ms": 300000,
+      "summary": "EXPLAIN shows engine=btree|heap, BTREE_PK_LOOKUP plan node, SORT_ELIMINATED with reason. 9 tests."
     },
     {
       "id": "T120",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Empty placeholder"
     },
     {
       "id": "T121",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Late session housekeeping + git push"
+      "status": "in-progress",
+      "task": "Late session housekeeping + git push",
+      "started": "2026-04-09T20:55:06.190Z"
     },
     {
       "id": "T122",
@@ -1871,6 +1876,10 @@
     {
       "time": "2026-04-09T20:48:53.054Z",
       "msg": "PLAN T119 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T20:55:01.314Z",
+      "msg": "Removed T120: Empty placeholder"
     }
   ]
 }
