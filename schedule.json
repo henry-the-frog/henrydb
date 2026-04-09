@@ -1427,16 +1427,20 @@
       "id": "T135",
       "mode": "BUILD",
       "task": "Comprehensive tests: eviction under pressure, pin prevents eviction, dirty page tracking, concurrent access patterns",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-04-09T21:02:17.886Z"
+      "started": "2026-04-09T21:02:17.886Z",
+      "completed": "2026-04-09T21:03:53.593Z",
+      "duration_ms": 300000,
+      "summary": "9 stress tests: 1000-page eviction integrity, mixed pin/unpin, fetch-modify-unpin, all-pinned, flush optimization, data isolation, rapid alloc-delete, working set (0% hit rate = LRU flooding), 10K perf (1.2µs avg)."
     },
     {
       "id": "T136",
       "mode": "BUILD",
       "task": "Clock replacer variant: implement ClockReplacer as alternative to LRU for comparison",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-04-09T21:03:58.550Z"
     }
   ],
   "focusProjects": [
