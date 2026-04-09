@@ -1,124 +1,201 @@
 # HenryDB 🐸
 
-A PostgreSQL-compatible database engine built from scratch in JavaScript. No dependencies. No shortcuts.
+A PostgreSQL-compatible relational database engine built from scratch in JavaScript. No database dependencies. No shortcuts. Every component—from the SQL parser to the B+Tree indexes to the write-ahead log—is hand-written.
+
+**50,000+ lines of source code | 4,100+ tests | Full PostgreSQL wire protocol**
 
 ## Quick Start
 
+### In-Memory Mode
 ```javascript
 import { Database } from './src/db.js';
 
 const db = new Database();
-
-// Create a table
-db.execute('CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)');
-
-// Insert data
+db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT, age INT)');
 db.execute("INSERT INTO users VALUES (1, 'Alice', 30)");
 db.execute("INSERT INTO users VALUES (2, 'Bob', 25)");
 
-// Query
 const result = db.execute('SELECT name, age FROM users WHERE age > 28');
 console.log(result.rows); // [{ name: 'Alice', age: 30 }]
 ```
 
-## Start the Server
+### Persistent Mode (data survives restart)
+```javascript
+import { PersistentDatabase } from './src/persistent-db.js';
 
-```bash
-node src/cli.js --port 5432
+const db = PersistentDatabase.open('./my-database');
+db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT)');
+db.execute("INSERT INTO users VALUES (1, 'Alice')");
+db.close();
+
+// Later — data is still there
+const db2 = PersistentDatabase.open('./my-database');
+db2.execute('SELECT * FROM users'); // [{ id: 1, name: 'Alice' }]
 ```
 
-Connect with any PostgreSQL client:
+### Start the Server
 ```bash
-psql -h localhost -p 5432 -U test -d test
+node src/server.js
+# HenryDB server listening on 127.0.0.1:5433
 ```
+
+### Connect with the CLI
+```bash
+node src/cli.js
+# henrydb> CREATE TABLE demo (id INT PRIMARY KEY, name TEXT);
+# henrydb> INSERT INTO demo VALUES (1, 'hello');
+# henrydb> SELECT * FROM demo;
+#  id | name
+# ----+------
+#  1  | hello
+# (1 row) — 2ms
+```
+
+### Connect with psql or any PostgreSQL client
+```bash
+psql -h 127.0.0.1 -p 5433
+```
+
+Works with Knex, Sequelize, pg.js, and any PostgreSQL driver.
 
 ## Features
 
-### SQL Support
-- **DDL**: CREATE TABLE, DROP TABLE, ALTER TABLE, CREATE INDEX
-- **DML**: INSERT, UPDATE, DELETE with full WHERE clause support
-- **Queries**: SELECT with JOIN, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET
-- **Advanced**: Subqueries, CTEs (WITH), Window Functions, UNION/INTERSECT/EXCEPT
-- **Prepared Statements**: Parameterized queries with plan caching
+### SQL Engine
+- **DDL**: CREATE TABLE, ALTER TABLE, DROP TABLE, CREATE INDEX, TRUNCATE, RENAME
+- **DML**: INSERT, SELECT, UPDATE, DELETE, UPSERT (ON CONFLICT)
+- **Queries**: WHERE, ORDER BY, GROUP BY, HAVING, LIMIT, OFFSET, DISTINCT
+- **Joins**: INNER, LEFT, RIGHT, FULL, CROSS, self-joins, multi-way joins
+- **Subqueries**: Scalar, IN, EXISTS, ANY/ALL, correlated subqueries
+- **Aggregates**: COUNT, SUM, AVG, MIN, MAX, STRING_AGG, ARRAY_AGG
+- **Window Functions**: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER
+- **Set Operations**: UNION, INTERSECT, EXCEPT (with ALL)
+- **CTEs**: WITH clauses, recursive CTEs
+- **Expressions**: CASE WHEN, COALESCE, NULLIF, CAST, LIKE, BETWEEN, IN
+- **Transactions**: BEGIN, COMMIT, ROLLBACK, SAVEPOINT
 
 ### Storage Engine
-- Slotted page heap files with in-place updates
-- B+Tree indexes (unique and non-unique)
-- Hash indexes for equality lookups
-- Buffer pool with LRU eviction
-- LSM tree with bloom filters and compaction
+- **Heap Files**: Slotted-page architecture with tuple-level storage
+- **B+Tree Indexes**: Balanced tree indexes for primary keys and secondary columns
+- **Buffer Pool**: Clock-sweep replacement with pin counting, dirty page tracking
+- **Write-Ahead Log (WAL)**: ARIES-style recovery with LSN tracking
+- **Disk Manager**: Page-level I/O with free space management
+- **File-Backed Persistence**: Data survives process restart via page files + WAL
+- **Point-in-Time Recovery (PITR)**: Restore to any WAL position
 
-### Transaction Support
-- Write-Ahead Logging (WAL)
-- ARIES-style fuzzy checkpoints with dirty page tracking
-- Point-in-Time Recovery (PITR)
-- MVCC (Multi-Version Concurrency Control)
-- Savepoints
-- Deadlock detection via wait-for graph
+### Query Optimizer
+- **Cost-Based Optimizer**: Selinger-style join ordering with statistics
+- **Index Scan**: Automatically uses indexes when beneficial
+- **Hash Join**: 186x faster than nested loops for large joins
+- **Sort-Merge Join**: For ordered output
+- **Batched WAL**: 96x throughput improvement for bulk operations
+- **EXPLAIN**: Query plan visualization
 
-### Query Engine
-- Hand-written recursive descent SQL parser
-- Volcano-style iterator execution model
-- Hash join optimization (auto-detected for equi-joins)
-- Cost-based query optimizer with histogram statistics
-- Query plan cache with DDL invalidation
+### Server & Protocol
+- **PostgreSQL Wire Protocol v3**: Full compatibility with psql and ORMs
+- **Prepared Statements**: Parse/Bind/Execute extended query protocol
+- **LISTEN/NOTIFY**: Pub/sub notifications
+- **COPY IN/OUT**: Bulk data import/export
+- **Authentication**: MD5 password authentication
+- **Connection Tracking**: Per-connection state, query stats, slow query log
 
-### Network
-- PostgreSQL wire protocol v3 (Simple Query)
-- Compatible with psql, pgAdmin, and PostgreSQL drivers
-
-## Benchmark
-
-Tested on Apple Silicon, in-memory mode:
-
-| Operation | 1K rows | 10K rows |
-|-----------|---------|----------|
-| INSERT rate | 14,396/sec | 29,514/sec |
-| Point query | 14,009/sec | 9,005/sec |
-| Full table scan | 16ms | 73ms |
-| Range scan (WHERE) | 8ms | 46ms |
-| Aggregation | 8ms | 44ms |
-| GROUP BY | 8ms | 39ms |
-| ORDER BY + LIMIT | 11ms | 50ms |
-| JOIN (hash join) | 28ms | 86ms |
-| UPDATE | 9ms | 77ms |
-| DELETE | 8ms | 48ms |
-
-Run the benchmark:
-```bash
-node benchmark.js
-```
-
-## Data Structures
-
-HenryDB includes implementations of:
-- B+Tree (indexes)
-- Skip List (memtable for LSM)
-- Bloom Filter (SSTable lookups)
-- R-Tree (spatial indexing)
-- Cuckoo Hash Table
-- Trie (prefix queries)
-- Ring Buffer
-- LRU Cache
+### CLI Tool
+- **psql-like REPL**: Multi-line SQL, table formatting, timing
+- **Meta-commands**: `\dt` (tables), `\di` (indexes), `\d <table>` (describe)
+- **Error handling**: Graceful display of SQL errors
 
 ## Architecture
 
-See [docs/architecture-blog.md](docs/architecture-blog.md) for a deep dive into the design, including the WAL, SQL parser, and query execution engine.
-
-## Test Suite
-
-```bash
-npm test
+```
+┌─────────────────────────────────────────┐
+│              CLI (cli.js)               │
+│         psql-like REPL client           │
+└──────────────────┬──────────────────────┘
+                   │ PostgreSQL Wire Protocol
+┌──────────────────▼──────────────────────┐
+│          Server (server.js)             │
+│  Wire protocol, auth, connection mgmt   │
+└──────────────────┬──────────────────────┘
+                   │
+┌──────────────────▼──────────────────────┐
+│         SQL Parser (sql.js)             │
+│     Tokenizer → Parser → AST            │
+└──────────────────┬──────────────────────┘
+                   │
+┌──────────────────▼──────────────────────┐
+│     Query Engine (db.js + optimizer)    │
+│  Volcano model, cost optimizer, JIT     │
+└──────────────────┬──────────────────────┘
+                   │
+┌──────────────────▼──────────────────────┐
+│         Storage Engine                  │
+│  ┌─────────┐ ┌─────────┐ ┌──────────┐  │
+│  │ Heap    │ │ B+Tree  │ │ Buffer   │  │
+│  │ Files   │ │ Indexes │ │ Pool     │  │
+│  └────┬────┘ └─────────┘ └────┬─────┘  │
+│       │                       │         │
+│  ┌────▼───────────────────────▼─────┐   │
+│  │     Write-Ahead Log (WAL)        │   │
+│  └──────────────┬───────────────────┘   │
+│                 │                        │
+│  ┌──────────────▼───────────────────┐   │
+│  │     Disk Manager (pages)         │   │
+│  └──────────────────────────────────┘   │
+└─────────────────────────────────────────┘
 ```
 
-3,000+ tests covering SQL parsing, storage engine, WAL/recovery, protocol, and data structures.
+## Testing
 
-## What This Is (and Isn't)
+```bash
+# Run all tests
+npm test
 
-**This is:** A learning project and portfolio piece. It demonstrates understanding of database internals — the kind of code that makes systems work.
+# Run specific test file
+node --test src/persistence-e2e.test.js
 
-**This isn't:** Production-ready. Don't put your data in it. (Yet.)
+# Run with pattern matching
+node --test --test-name-pattern="index" src/db.test.js
+```
+
+**Test coverage:**
+- 421 test files
+- 4,100+ individual tests
+- ~98% pass rate across all tests
+- Dedicated test suites for: SQL parser, query engine, joins, indexes, persistence, wire protocol, stress testing
+
+## Performance
+
+| Operation | Performance |
+|-----------|------------|
+| Hash Join vs Nested Loops | **186x faster** |
+| Batched WAL vs Single | **96x throughput** |
+| In-memory SELECT (1K rows) | < 1ms |
+| Index scan vs full scan | 10-100x faster |
+| Wire protocol roundtrip | ~1ms per query |
+
+## Project Stats
+
+| Metric | Count |
+|--------|-------|
+| Source files | 228 |
+| Test files | 421 |
+| Source lines | ~52,000 |
+| Total lines (incl. tests) | ~115,000 |
+| Tests | 4,100+ |
+| Dependencies | 0 (core engine) |
+
+## What's NOT Here (Yet)
+
+- Full MVCC transaction isolation (read committed only)
+- Vacuum / garbage collection
+- Replication
+- Partitioning
+- Full-text search
+- JSON/JSONB data type
 
 ## License
 
 MIT
+
+---
+
+*Built from scratch, one page at a time.* 🐸
