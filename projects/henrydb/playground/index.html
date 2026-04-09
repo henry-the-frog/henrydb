@@ -227,6 +227,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <div class="tabs">
         <div class="tab active" data-tab="results" onclick="switchTab('results')">Results</div>
         <div class="tab" data-tab="chart" onclick="switchTab('chart')">📊 Chart</div>
+        <div class="tab" data-tab="schema" onclick="switchTab('schema')">🗺️ Schema</div>
         <div class="tab" data-tab="plan" onclick="switchTab('plan')">Plan</div>
       </div>
       <span class="timing" id="timing"></span>
@@ -241,7 +242,7 @@ footer a { color: var(--accent); text-decoration: none; }
 <footer>108K+ LOC · 4,295 tests · 209 modules · 115KB browser bundle · Built from scratch in JS</footer>
 <script type="module">
 import { Database } from './henrydb.bundle.js';
-import { parse, formatSQL, lintSQL } from './henrydb.bundle.js';
+import { parse, formatSQL, lintSQL, generateERDiagram, extractSchema } from './henrydb.bundle.js';
 import { tutorials, getLesson } from './tutorial.js';
 let db, queryHistory = [], lastPlan = null, lastRows = null, activeTab = 'results';
 let currentTutorial = null, currentLessonIdx = 0, lessonDb = null;
@@ -475,6 +476,9 @@ window.switchTab = function(tab) {
   const el = document.getElementById('output');
   if (tab === 'plan' && lastPlan) el.innerHTML = renderPlan(lastPlan);
   else if (tab === 'chart' && lastRows) el.innerHTML = renderChart(lastRows);
+  else if (tab === 'schema') {
+    try { el.innerHTML = generateERDiagram(extractSchema(db)); } catch(e) { el.innerHTML = `<span class="result-error">${esc(e.message)}</span>`; }
+  }
 };
 window.clearOutput = function() {
   document.getElementById('output').innerHTML = '<span class="result-info">Cleared.</span>';
