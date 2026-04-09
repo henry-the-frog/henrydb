@@ -1115,6 +1115,13 @@ export function parse(sql) {
 
   function parseCreateIndex(unique) {
     advance(); // INDEX
+    let ifNotExists = false;
+    if (isKeyword('IF')) {
+      advance(); // IF
+      expect('KEYWORD', 'NOT');
+      expect('KEYWORD', 'EXISTS');
+      ifNotExists = true;
+    }
     const name = advance().value;
     expect('KEYWORD', 'ON');
     const table = advance().value;
@@ -1137,7 +1144,7 @@ export function parse(sql) {
       advance();
       where = parseExpr();
     }
-    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where };
+    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, ifNotExists };
   }
 
   function parseCreateView() {
@@ -1152,8 +1159,13 @@ export function parse(sql) {
     advance(); // DROP
     if (isKeyword('INDEX')) {
       advance();
+      let ifExists = false;
+      if (isKeyword('IF')) {
+        advance(); expect('KEYWORD', 'EXISTS');
+        ifExists = true;
+      }
       const name = advance().value;
-      return { type: 'DROP_INDEX', name };
+      return { type: 'DROP_INDEX', name, ifExists };
     }
     if (isKeyword('VIEW')) {
       advance();

@@ -640,6 +640,12 @@ export class Database {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
+    // Check IF NOT EXISTS
+    const colName = ast.columns.join(',');
+    if (ast.ifNotExists && table.indexes?.has(colName)) {
+      return { type: 'OK', message: 'CREATE INDEX' };
+    }
+
     // Validate columns exist
     for (const col of ast.columns) {
       if (!table.schema.find(c => c.name === col)) {
@@ -648,7 +654,6 @@ export class Database {
     }
 
     // For simplicity, support single-column indexes (composite uses CompositeKey)
-    const colName = ast.columns.join(',');
     const isComposite = ast.columns.length > 1;
     const colIndices = ast.columns.map(c => table.schema.findIndex(s => s.name === c));
 
@@ -708,7 +713,10 @@ export class Database {
 
   _dropIndex(ast) {
     const meta = this.indexCatalog.get(ast.name);
-    if (!meta) throw new Error(`Index ${ast.name} not found`);
+    if (!meta) {
+      if (ast.ifExists) return { type: 'OK', message: 'DROP INDEX' };
+      throw new Error(`Index ${ast.name} not found`);
+    }
 
     const table = this.tables.get(meta.table);
     if (table) {
