@@ -4961,6 +4961,17 @@
       "completed": "2026-04-09T01:01:07.707Z",
       "duration_ms": 150000,
       "summary": "Pool health: warm-up, validation, idle/lifetime eviction, error eviction, health checks, pool sizing recommendations, exhaustion tracking. 14 tests."
+    },
+    {
+      "id": "T457",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build savepoint support: SAVEPOINT name, RELEASE SAVEPOINT, ROLLBACK TO SAVEPOINT with nested savepoint stacks",
+      "project": "henrydb",
+      "started": "2026-04-09T01:01:34.731Z",
+      "completed": "2026-04-09T01:03:10.936Z",
+      "duration_ms": 120000,
+      "summary": "Savepoints: SAVEPOINT, RELEASE, ROLLBACK TO with nested stacks, snapshot/restore, case-insensitive, replacement semantics. 15 tests."
     }
   ],
   "focusProjects": [
@@ -6756,6 +6767,10 @@
     {
       "time": "2026-04-09T00:59:01.800Z",
       "msg": "Added T456 (BUILD) after end: Build connection pool warm-up and health checking: connection validation, idle timeout, health probes, pool sizing recommendations"
+    },
+    {
+      "time": "2026-04-09T01:01:34.350Z",
+      "msg": "Added T457 (BUILD) after end: Build savepoint support: SAVEPOINT name, RELEASE SAVEPOINT, ROLLBACK TO SAVEPOINT with nested savepoint stacks"
     }
   ]
 }
