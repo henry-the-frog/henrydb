@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:30:03.995Z",
+  "generated": "2026-04-09T00:31:29.912Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build table partitioning: PARTITION BY RANGE/LIST/HASH, partition pruning during query, partition-wise joins",
-    "completedAt": "2026-04-09T00:30:03.995Z",
-    "taskId": "T440",
-    "summary": "Table partitioning: RANGE, LIST, HASH strategies. Partition pruning on =, >, <, >=, <=, IN, BETWEEN. Delete with pruning. Distribution stats. 16 tests.",
-    "durationMs": 180000
+    "task": "Build materialized view system: CREATE MATERIALIZED VIEW, REFRESH, incremental refresh tracking, stale detection",
+    "completedAt": "2026-04-09T00:31:29.912Z",
+    "taskId": "T441",
+    "summary": "Materialized views: CREATE/DROP, REFRESH, WITH NO DATA, stale detection, table dependency tracking, refreshAllStale, OR REPLACE, multi-table deps. 14 tests.",
+    "durationMs": 150000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 438,
+    "blocksCompleted": 439,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 334,
+      "BUILD": 335,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

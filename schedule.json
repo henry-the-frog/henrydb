@@ -4785,6 +4785,17 @@
       "completed": "2026-04-09T00:30:03.930Z",
       "duration_ms": 180000,
       "summary": "Table partitioning: RANGE, LIST, HASH strategies. Partition pruning on =, >, <, >=, <=, IN, BETWEEN. Delete with pruning. Distribution stats. 16 tests."
+    },
+    {
+      "id": "T441",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build materialized view system: CREATE MATERIALIZED VIEW, REFRESH, incremental refresh tracking, stale detection",
+      "project": "henrydb",
+      "started": "2026-04-09T00:30:22.219Z",
+      "completed": "2026-04-09T00:31:29.846Z",
+      "duration_ms": 150000,
+      "summary": "Materialized views: CREATE/DROP, REFRESH, WITH NO DATA, stale detection, table dependency tracking, refreshAllStale, OR REPLACE, multi-table deps. 14 tests."
     }
   ],
   "focusProjects": [
@@ -6516,6 +6527,10 @@
     {
       "time": "2026-04-09T00:28:33.883Z",
       "msg": "Added T440 (BUILD) after end: Build table partitioning: PARTITION BY RANGE/LIST/HASH, partition pruning during query, partition-wise joins"
+    },
+    {
+      "time": "2026-04-09T00:30:21.801Z",
+      "msg": "Added T441 (BUILD) after end: Build materialized view system: CREATE MATERIALIZED VIEW, REFRESH, incremental refresh tracking, stale detection"
     }
   ]
 }
