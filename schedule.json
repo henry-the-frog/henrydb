@@ -298,9 +298,44 @@
     {
       "id": "T26",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard sync, daily summary",
-      "started": "2026-04-09T15:23:16.981Z"
+      "started": "2026-04-09T15:23:16.981Z",
+      "completed": "2026-04-09T15:23:30.116Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, dashboard synced (28 blocks/27 done). Almost complete."
+    },
+    {
+      "id": "T29",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Analyze UPDATE/DELETE performance: 498ms and 1028ms for 1K rows. Where is the bottleneck?",
+      "project": "henrydb",
+      "started": "2026-04-09T15:24:12.663Z",
+      "completed": "2026-04-09T15:24:48.123Z",
+      "duration_ms": 60000,
+      "summary": "UPDATE/DELETE bottleneck: individual WAL commit per row (200 rows = 200 txns). Also _valuesToRow called on all rows including non-matching. Fix: batch WAL into single txn, skip row conversion for non-matching."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Optimize UPDATE/DELETE: avoid full WAL replay per row, batch operations",
+      "project": "henrydb",
+      "started": "2026-04-09T15:25:01.270Z"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update blog post with hash join results. Update benchmark table.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T32",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping: git push, dashboard sync, TASKS.md update"
     }
   ],
   "focusProjects": [
@@ -416,6 +451,22 @@
     {
       "time": "2026-04-09T15:20:42.582Z",
       "msg": "PLAN T25 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T15:23:38.535Z",
+      "msg": "Added T29 (THINK) after end: Analyze UPDATE/DELETE performance: 498ms and 1028ms for 1K rows. Where is the bottleneck?"
+    },
+    {
+      "time": "2026-04-09T15:23:48.522Z",
+      "msg": "Added T30 (BUILD) after end: Optimize UPDATE/DELETE: avoid full WAL replay per row, batch operations"
+    },
+    {
+      "time": "2026-04-09T15:23:55.791Z",
+      "msg": "Added T31 (BUILD) after end: Update blog post with hash join results. Update benchmark table."
+    },
+    {
+      "time": "2026-04-09T15:24:02.790Z",
+      "msg": "Added T32 (MAINTAIN) after end: Final housekeeping: git push, dashboard sync, TASKS.md update"
     }
   ]
 }

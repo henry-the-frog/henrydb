@@ -1776,6 +1776,10 @@ export class Database {
     }
 
     const returnedRows = [];
+    
+    // Batch WAL: use a single transaction for all updates
+    const batchTxId = this._currentTxId || this._nextTxId++;
+    const isAutoCommit = !this._currentTxId;
 
     for (const item of toUpdate) {
       const newValues = [...item.values];
@@ -1797,9 +1801,7 @@ export class Database {
       const newRid = table.heap.insert(newValues);
 
       // WAL: log the update
-      const txId = this._currentTxId || this._nextTxId++;
-      this.wal.appendUpdate(txId, ast.table, newRid.pageId, newRid.slotIdx, item.values, newValues);
-      if (!this._currentTxId) this.wal.appendCommit(txId);
+      this.wal.appendUpdate(batchTxId, ast.table, newRid.pageId, newRid.slotIdx, item.values, newValues);
 
       // Update indexes with new entries
       for (const [colName, index] of table.indexes) {
@@ -1817,6 +1819,9 @@ export class Database {
 
       updated++;
     }
+
+    // Single WAL commit for all updates
+    if (isAutoCommit && updated > 0) this.wal.appendCommit(batchTxId);
 
     if (ast.returning) {
       const filteredRows = ast.returning === '*' ? returnedRows : returnedRows.map(row => {
@@ -1890,6 +1895,10 @@ export class Database {
     }
 
     const deletedRows = [];
+    
+    // Batch WAL: use a single transaction for all deletes
+    const batchTxId = this._currentTxId || this._nextTxId++;
+    const isAutoCommit = !this._currentTxId;
 
     for (const { pageId, slotIdx } of toDelete) {
       const values = table.heap.get(pageId, slotIdx);
@@ -1911,13 +1920,14 @@ export class Database {
       
       // WAL: log the delete
       if (values) {
-        const txId = this._currentTxId || this._nextTxId++;
-        this.wal.appendDelete(txId, ast.table, pageId, slotIdx, values);
-        if (!this._currentTxId) this.wal.appendCommit(txId);
+        this.wal.appendDelete(batchTxId, ast.table, pageId, slotIdx, values);
       }
       
       deleted++;
     }
+
+    // Single WAL commit for all deletes
+    if (isAutoCommit && deleted > 0) this.wal.appendCommit(batchTxId);
 
     if (ast.returning) {
       const filteredRows = ast.returning === '*' ? deletedRows : deletedRows.map(row => {
