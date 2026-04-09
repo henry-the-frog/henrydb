@@ -405,6 +405,7 @@ export class WALManager {
     this._commitsSinceCheckpoint = 0;
     this._autoCheckpointByCommits = false;
     this._checkpointCallback = null;
+    this._lastFlushedIdx = 0; // Track last flushed index for O(1) flush
 
     if (!walDir) {
       this._noop = false;
@@ -508,12 +509,11 @@ export class WALManager {
   }
 
   _flushToStable() {
-    // Move all unflushed records to stable storage
-    for (const rec of this._memRecords) {
-      if (!this._stableRecords.includes(rec)) {
-        this._stableRecords.push(rec);
-      }
+    // Append only new records since last flush — O(delta) not O(n²)
+    for (let i = this._lastFlushedIdx; i < this._memRecords.length; i++) {
+      this._stableRecords.push(this._memRecords[i]);
     }
+    this._lastFlushedIdx = this._memRecords.length;
   }
 
   checkpoint(data) {

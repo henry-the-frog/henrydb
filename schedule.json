@@ -341,9 +341,44 @@
     {
       "id": "T32",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping: git push, dashboard sync, TASKS.md update",
-      "started": "2026-04-09T15:28:32.323Z"
+      "started": "2026-04-09T15:28:32.323Z",
+      "completed": "2026-04-09T15:29:26.919Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard synced (32 blocks/31 done), TASKS.md updated with ARIES/hash join/benchmark stats."
+    },
+    {
+      "id": "T33",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate why orders INSERT is 5x slower than users INSERT (1341ms vs 276ms for 1K rows each)",
+      "project": "henrydb",
+      "started": "2026-04-09T15:29:57.580Z",
+      "completed": "2026-04-09T15:30:25.584Z",
+      "duration_ms": 60000,
+      "summary": "Confirmed: slowdown is table size, not schema. PK uniqueness check is O(n) scan per insert = O(n²) total. 1K inserts into empty table: 275ms. 1K inserts into 1K-row table: 1363ms. Fix: hash set for PK values."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Optimize INSERT performance: batch WAL commits, reduce PK checking overhead",
+      "project": "henrydb",
+      "started": "2026-04-09T15:30:35.072Z"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Run expanded benchmark at 10K rows to test scalability",
+      "project": "henrydb"
+    },
+    {
+      "id": "T36",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session git push and dashboard sync"
     }
   ],
   "focusProjects": [
@@ -475,6 +510,22 @@
     {
       "time": "2026-04-09T15:24:02.790Z",
       "msg": "Added T32 (MAINTAIN) after end: Final housekeeping: git push, dashboard sync, TASKS.md update"
+    },
+    {
+      "time": "2026-04-09T15:29:48.325Z",
+      "msg": "Added T33 (THINK) after end: Investigate why orders INSERT is 5x slower than users INSERT (1341ms vs 276ms for 1K rows each)"
+    },
+    {
+      "time": "2026-04-09T15:29:48.531Z",
+      "msg": "Added T34 (BUILD) after end: Optimize INSERT performance: batch WAL commits, reduce PK checking overhead"
+    },
+    {
+      "time": "2026-04-09T15:29:48.738Z",
+      "msg": "Added T35 (BUILD) after end: Run expanded benchmark at 10K rows to test scalability"
+    },
+    {
+      "time": "2026-04-09T15:29:48.943Z",
+      "msg": "Added T36 (MAINTAIN) after end: Mid-session git push and dashboard sync"
     }
   ]
 }
