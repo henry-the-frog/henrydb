@@ -1352,23 +1352,83 @@
     {
       "id": "T121",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Late session housekeeping + git push",
-      "started": "2026-04-09T20:55:06.190Z"
+      "started": "2026-04-09T20:55:06.190Z",
+      "completed": "2026-04-09T20:55:46.572Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed (6 commits), daily log updated, 431 test files total, 69 new tests this session."
     },
     {
       "id": "T122",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T20:55:52.743Z",
+      "completed": "2026-04-09T20:57:10.496Z",
+      "duration_ms": 300000,
+      "summary": "Researched buffer pool management (CMU 15-445): LRU, Clock, LRU-K policies. Documented design sketch for HenryDB BufferPoolManager with Clock eviction. 2-3 session project. Notes in scratch/buffer-pool-research.md."
     },
     {
       "id": "T127",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "Query optimizer: detect BTreeTable for PK lookups (IndexScan plan node) and ORDER BY elimination when table is BTree-sorted",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Already completed in T128 (sort elimination), T129 (PK lookup), T130 (EXPLAIN)"
+    },
+    {
+      "id": "T131",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Buffer pool design: decide scope for this session. Full Clock-eviction buffer pool is 2-3 sessions. What's the right first chunk?",
+      "project": "henrydb",
+      "started": "2026-04-09T20:57:42.896Z",
+      "completed": "2026-04-09T20:57:58.164Z",
+      "duration_ms": 120000,
+      "summary": "Scoped: LRU buffer pool manager this session. In-memory only (no disk I/O yet). Focus on eviction correctness, pin/unpin, dirty tracking. DiskManager deferred to next session."
+    },
+    {
+      "id": "T132",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "LRU Buffer Pool Manager: fixed-size pool, page frame allocation, LRU eviction, pin/unpin, dirty tracking",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-09T20:58:16.077Z",
+      "completed": "2026-04-09T20:58:30.023Z",
+      "duration_ms": 60000,
+      "summary": "Planned 4 tasks: LRUReplacer, BufferPoolManager, comprehensive tests, ClockReplacer."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "task": "Implement LRUReplacer: doubly-linked list + hash map for O(1) evict/record/remove/pin/unpin",
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-04-09T20:58:35.173Z"
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "task": "Implement BufferPoolManager: fixed pool, page table, fetchPage/unpinPage/flushPage/newPage/deletePage",
+      "status": "upcoming",
+      "plan_ref": "T132"
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "task": "Comprehensive tests: eviction under pressure, pin prevents eviction, dirty page tracking, concurrent access patterns",
+      "status": "upcoming",
+      "plan_ref": "T132"
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "task": "Clock replacer variant: implement ClockReplacer as alternative to LRU for comparison",
+      "status": "upcoming",
+      "plan_ref": "T132"
     }
   ],
   "focusProjects": [
@@ -1880,6 +1940,22 @@
     {
       "time": "2026-04-09T20:55:01.314Z",
       "msg": "Removed T120: Empty placeholder"
+    },
+    {
+      "time": "2026-04-09T20:57:21.966Z",
+      "msg": "Removed T127: Already completed in T128 (sort elimination), T129 (PK lookup), T130 (EXPLAIN)"
+    },
+    {
+      "time": "2026-04-09T20:57:37.592Z",
+      "msg": "Added T131 (THINK) after end: Buffer pool design: decide scope for this session. Full Clock-eviction buffer pool is 2-3 sessions. What's the right first chunk?"
+    },
+    {
+      "time": "2026-04-09T20:58:04.725Z",
+      "msg": "Added T132 (PLAN) after end: LRU Buffer Pool Manager: fixed-size pool, page frame allocation, LRU eviction, pin/unpin, dirty tracking"
+    },
+    {
+      "time": "2026-04-09T20:58:24.195Z",
+      "msg": "PLAN T132 filled 4 BUILD tasks"
     }
   ]
 }

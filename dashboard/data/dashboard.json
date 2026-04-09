@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T20:55:06.228Z",
+  "generated": "2026-04-09T20:58:35.212Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Late session housekeeping + git push",
-    "startedAt": "2026-04-09T20:55:06.228Z",
-    "taskId": "T121"
+    "mode": "BUILD",
+    "task": "Implement LRUReplacer: doubly-linked list + hash map for O(1) evict/record/remove/pin/unpin",
+    "startedAt": "2026-04-09T20:58:35.212Z",
+    "taskId": "T133"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1578,71 +1578,144 @@
       {
         "id": "T119",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Second HenryDB depth cycle: address findings from first cycle",
         "task": null,
-        "started": "2026-04-09T20:48:40.755Z"
+        "started": "2026-04-09T20:48:40.755Z",
+        "completed": "2026-04-09T20:48:58.520Z",
+        "duration_ms": 60000,
+        "summary": "Planned 3 optimizer tasks: ORDER BY elimination for BTree, PK point lookup bypass, EXPLAIN engine visibility."
       },
       {
         "id": "T128",
         "mode": "BUILD",
         "task": "Optimizer: eliminate ORDER BY sort when BTreeTable already provides PK ordering",
-        "status": "upcoming",
-        "plan_ref": "T119"
+        "status": "done",
+        "plan_ref": "T119",
+        "started": "2026-04-09T20:49:02.966Z",
+        "completed": "2026-04-09T20:51:21.383Z",
+        "duration_ms": 300000,
+        "summary": "ORDER BY sort elimination: _canEliminateSort detects BTreeTable PK ordering, skips sort for ASC queries. 2.2x speedup on 5K rows. 9 tests. DESC and non-PK still sort correctly."
       },
       {
         "id": "T129",
         "mode": "BUILD",
         "task": "Optimizer: use BTreeTable.findByPK for WHERE pk=value instead of full scan",
-        "status": "upcoming",
-        "plan_ref": "T119"
+        "status": "done",
+        "plan_ref": "T119",
+        "started": "2026-04-09T20:51:27.451Z",
+        "completed": "2026-04-09T20:52:50.075Z",
+        "duration_ms": 300000,
+        "summary": "Direct PK lookup: BTreeTable.findByPK bypasses secondary index. 4.7x faster than Heap+index. 0.044ms avg per lookup. 9 tests."
       },
       {
         "id": "T130",
         "mode": "BUILD",
         "task": "EXPLAIN shows storage engine and sort elimination in query plan",
-        "status": "upcoming",
-        "plan_ref": "T119"
+        "status": "done",
+        "plan_ref": "T119",
+        "started": "2026-04-09T20:52:55.186Z",
+        "completed": "2026-04-09T20:54:55.795Z",
+        "duration_ms": 300000,
+        "summary": "EXPLAIN shows engine=btree|heap, BTREE_PK_LOOKUP plan node, SORT_ELIMINATED with reason. 9 tests."
       },
       {
         "id": "T120",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Empty placeholder"
       },
       {
         "id": "T121",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Late session housekeeping + git push"
+        "status": "done",
+        "task": "Late session housekeeping + git push",
+        "started": "2026-04-09T20:55:06.190Z",
+        "completed": "2026-04-09T20:55:46.572Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed (6 commits), daily log updated, 431 test files total, 69 new tests this session."
       },
       {
         "id": "T122",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T20:55:52.743Z",
+        "completed": "2026-04-09T20:57:10.496Z",
+        "duration_ms": 300000,
+        "summary": "Researched buffer pool management (CMU 15-445): LRU, Clock, LRU-K policies. Documented design sketch for HenryDB BufferPoolManager with Clock eviction. 2-3 session project. Notes in scratch/buffer-pool-research.md."
       },
       {
         "id": "T127",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": "Query optimizer: detect BTreeTable for PK lookups (IndexScan plan node) and ORDER BY elimination when table is BTree-sorted",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Already completed in T128 (sort elimination), T129 (PK lookup), T130 (EXPLAIN)"
+      },
+      {
+        "id": "T131",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Buffer pool design: decide scope for this session. Full Clock-eviction buffer pool is 2-3 sessions. What's the right first chunk?",
+        "project": "henrydb",
+        "started": "2026-04-09T20:57:42.896Z",
+        "completed": "2026-04-09T20:57:58.164Z",
+        "duration_ms": 120000,
+        "summary": "Scoped: LRU buffer pool manager this session. In-memory only (no disk I/O yet). Focus on eviction correctness, pin/unpin, dirty tracking. DiskManager deferred to next session."
+      },
+      {
+        "id": "T132",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "LRU Buffer Pool Manager: fixed-size pool, page frame allocation, LRU eviction, pin/unpin, dirty tracking",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-09T20:58:16.077Z"
+      },
+      {
+        "id": "T133",
+        "mode": "BUILD",
+        "task": "Implement LRUReplacer: doubly-linked list + hash map for O(1) evict/record/remove/pin/unpin",
+        "status": "upcoming",
+        "plan_ref": "T132"
+      },
+      {
+        "id": "T134",
+        "mode": "BUILD",
+        "task": "Implement BufferPoolManager: fixed pool, page table, fetchPage/unpinPage/flushPage/newPage/deletePage",
+        "status": "upcoming",
+        "plan_ref": "T132"
+      },
+      {
+        "id": "T135",
+        "mode": "BUILD",
+        "task": "Comprehensive tests: eviction under pressure, pin prevents eviction, dirty page tracking, concurrent access patterns",
+        "status": "upcoming",
+        "plan_ref": "T132"
+      },
+      {
+        "id": "T136",
+        "mode": "BUILD",
+        "task": "Clock replacer variant: implement ClockReplacer as alternative to LRU for comparison",
+        "status": "upcoming",
+        "plan_ref": "T132"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 120,
-    "blocksTotal": 130,
+    "blocksCompleted": 124,
+    "blocksTotal": 136,
     "modeDistribution": {
-      "THINK": 16,
-      "PLAN": 12,
+      "THINK": 17,
+      "PLAN": 13,
       "BUILD": 69,
-      "MAINTAIN": 21,
-      "EXPLORE": 2
+      "MAINTAIN": 22,
+      "EXPLORE": 3
     }
   },
   "artifacts": [
