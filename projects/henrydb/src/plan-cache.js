@@ -1,81 +1,202 @@
-// plan-cache.js — Query plan cache with LRU eviction for HenryDB
+// plan-cache.js — Query plan cache with LRU eviction and DDL invalidation
+// Caches compiled query plans keyed on normalized SQL.
+// PostgreSQL-inspired: generic vs custom plans, auto-eviction, DDL invalidation.
 
 /**
- * LRU Cache for parsed SQL ASTs.
- * Avoids re-parsing identical SQL strings.
+ * PlanCacheEntry — a cached query plan.
+ */
+class PlanCacheEntry {
+  constructor(normalizedSQL, plan, tables) {
+    this.normalizedSQL = normalizedSQL;
+    this.plan = plan;
+    this.tables = tables; // Tables referenced in the plan
+    this.hitCount = 0;
+    this.totalExecTime = 0;
+    this.createdAt = Date.now();
+    this.lastUsed = Date.now();
+    this.estimatedCost = plan?.cost || 0;
+    this.isGeneric = false; // True if plan uses generic parameters
+  }
+}
+
+/**
+ * PlanCache — LRU cache for query plans.
  */
 export class PlanCache {
-  constructor(maxSize = 256) {
-    this._maxSize = maxSize;
-    this._cache = new Map(); // sql → { ast, hits, lastAccess }
-    this._hits = 0;
-    this._misses = 0;
+  constructor(options = {}) {
+    this.maxEntries = options.maxEntries || 500;
+    this.maxMemoryBytes = options.maxMemoryBytes || 50 * 1024 * 1024; // 50MB
+    this._cache = new Map(); // normalizedSQL → PlanCacheEntry
+    this._tableDeps = new Map(); // table → Set<normalizedSQL>
+    this._stats = {
+      hits: 0,
+      misses: 0,
+      evictions: 0,
+      invalidations: 0,
+      inserts: 0,
+    };
+    this._estimatedMemory = 0;
   }
 
   /**
-   * Get cached AST for a SQL string.
-   * Returns the cached AST or null if not cached.
+   * Look up a cached plan.
    */
   get(sql) {
-    const entry = this._cache.get(sql);
-    if (entry) {
-      entry.hits++;
-      entry.lastAccess = Date.now();
-      this._hits++;
-      // Move to end (most recently used) by deleting and re-adding
-      this._cache.delete(sql);
-      this._cache.set(sql, entry);
-      return entry.ast;
-    }
-    this._misses++;
-    return null;
-  }
-
-  /**
-   * Store a parsed AST in the cache.
-   */
-  put(sql, ast) {
-    if (this._cache.has(sql)) {
-      this._cache.delete(sql);
-    }
+    const key = this._normalize(sql);
+    const entry = this._cache.get(key);
     
-    // Evict LRU if at capacity
-    if (this._cache.size >= this._maxSize) {
-      // Map iterates in insertion order, first entry is LRU
-      const lruKey = this._cache.keys().next().value;
-      this._cache.delete(lruKey);
+    if (!entry) {
+      this._stats.misses++;
+      return null;
     }
 
-    this._cache.set(sql, {
-      ast,
-      hits: 0,
-      lastAccess: Date.now(),
-      created: Date.now(),
-    });
+    entry.hitCount++;
+    entry.lastUsed = Date.now();
+    this._stats.hits++;
+    return entry.plan;
   }
 
   /**
-   * Invalidate cache (e.g., after DDL changes).
+   * Cache a query plan.
    */
-  clear() {
+  put(sql, plan, tables = []) {
+    const key = this._normalize(sql);
+
+    // Remove old entry if exists
+    if (this._cache.has(key)) {
+      this._removeEntry(key);
+    }
+
+    // Evict if necessary
+    while (this._cache.size >= this.maxEntries) {
+      this._evictLRU();
+    }
+
+    const entry = new PlanCacheEntry(key, plan, tables);
+    this._cache.set(key, entry);
+
+    // Register table dependencies
+    for (const table of tables) {
+      const lowerTable = table.toLowerCase();
+      if (!this._tableDeps.has(lowerTable)) {
+        this._tableDeps.set(lowerTable, new Set());
+      }
+      this._tableDeps.get(lowerTable).add(key);
+    }
+
+    this._stats.inserts++;
+    return entry;
+  }
+
+  /**
+   * Invalidate all plans that reference a given table.
+   * Called on DDL (CREATE/ALTER/DROP TABLE, CREATE/DROP INDEX).
+   */
+  invalidateTable(tableName) {
+    const lowerTable = tableName.toLowerCase();
+    const keys = this._tableDeps.get(lowerTable);
+    if (!keys || keys.size === 0) return 0;
+
+    let count = 0;
+    for (const key of [...keys]) {
+      this._removeEntry(key);
+      count++;
+    }
+    this._stats.invalidations += count;
+    return count;
+  }
+
+  /**
+   * Invalidate all cached plans.
+   */
+  invalidateAll() {
+    const count = this._cache.size;
     this._cache.clear();
+    this._tableDeps.clear();
+    this._stats.invalidations += count;
+    return count;
   }
 
   /**
    * Get cache statistics.
    */
-  stats() {
-    const total = this._hits + this._misses;
+  getStats() {
+    const total = this._stats.hits + this._stats.misses;
     return {
-      size: this._cache.size,
-      maxSize: this._maxSize,
-      hits: this._hits,
-      misses: this._misses,
-      hitRate: total > 0 ? Math.round(this._hits / total * 1000) / 1000 : 0,
-      entries: [...this._cache.entries()].map(([sql, entry]) => ({
-        sql: sql.length > 50 ? sql.slice(0, 50) + '...' : sql,
-        hits: entry.hits,
-      })),
+      ...this._stats,
+      entries: this._cache.size,
+      hitRate: total > 0 ? +(this._stats.hits / total * 100).toFixed(1) : 0,
+      tables: this._tableDeps.size,
     };
   }
+
+  /**
+   * Get detailed info about cached plans.
+   */
+  getEntries(options = {}) {
+    const entries = [...this._cache.values()].map(e => ({
+      sql: e.normalizedSQL.substring(0, 100),
+      hitCount: e.hitCount,
+      avgExecMs: e.hitCount > 0 ? +(e.totalExecTime / e.hitCount).toFixed(3) : 0,
+      tables: e.tables,
+      createdAt: e.createdAt,
+      lastUsed: e.lastUsed,
+    }));
+
+    if (options.sortBy === 'hits') {
+      entries.sort((a, b) => b.hitCount - a.hitCount);
+    } else if (options.sortBy === 'recent') {
+      entries.sort((a, b) => b.lastUsed - a.lastUsed);
+    }
+
+    return options.limit ? entries.slice(0, options.limit) : entries;
+  }
+
+  _normalize(sql) {
+    return sql.trim().replace(/\s+/g, ' ').toLowerCase();
+  }
+
+  _removeEntry(key) {
+    const entry = this._cache.get(key);
+    if (!entry) return;
+
+    // Remove table dependencies
+    for (const table of entry.tables) {
+      const deps = this._tableDeps.get(table.toLowerCase());
+      if (deps) {
+        deps.delete(key);
+        if (deps.size === 0) this._tableDeps.delete(table.toLowerCase());
+      }
+    }
+
+    this._cache.delete(key);
+  }
+
+  _evictLRU() {
+    let oldestKey = null;
+    let oldestTime = Infinity;
+    for (const [key, entry] of this._cache) {
+      if (entry.lastUsed < oldestTime) {
+        oldestTime = entry.lastUsed;
+        oldestKey = key;
+      }
+    }
+    if (oldestKey) {
+      this._removeEntry(oldestKey);
+      this._stats.evictions++;
+    }
+  }
+}
+
+/**
+ * SQL Normalizer — normalizes SQL for plan cache keys.
+ * Replaces literal values with $N placeholders.
+ */
+export function normalizeSQL(sql) {
+  let paramIdx = 1;
+  // Replace number literals
+  let normalized = sql.replace(/\b\d+(\.\d+)?\b/g, () => `$${paramIdx++}`);
+  // Replace string literals
+  normalized = normalized.replace(/'[^']*'/g, () => `$${paramIdx++}`);
+  return normalized.trim().replace(/\s+/g, ' ').toLowerCase();
 }
