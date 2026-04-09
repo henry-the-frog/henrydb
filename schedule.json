@@ -5261,9 +5261,316 @@
     {
       "id": "T481",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git commit, push, dashboard health",
-      "started": "2026-04-09T02:45:07.094Z"
+      "started": "2026-04-09T02:45:07.094Z",
+      "completed": "2026-04-09T02:45:45.087Z",
+      "duration_ms": 60000,
+      "summary": "Housekeeping done. Git push successful. Stats: HenryDB at 108,199 LOC, 4,295 test cases across 397 test files, 209 source modules. Playground bundle: 115KB."
+    },
+    {
+      "id": "T485",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What high-impact HenryDB module is missing? Pick next exploration.",
+      "started": "2026-04-09T02:46:10.077Z",
+      "completed": "2026-04-09T02:46:25.892Z",
+      "duration_ms": 60000,
+      "summary": "Direction: Build proper HenryDB README with architecture overview, feature list, benchmarks, and playground link. This is the highest-impact work for portfolio presentation."
+    },
+    {
+      "id": "T486",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan README + benchmarks for HenryDB",
+      "task": null,
+      "started": "2026-04-09T02:46:46.740Z",
+      "completed": "2026-04-09T02:46:57.970Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 tasks: comprehensive README and performance benchmarks"
+    },
+    {
+      "id": "T488",
+      "mode": "BUILD",
+      "task": "Write comprehensive HenryDB README.md with architecture, features, examples, benchmark results",
+      "status": "done",
+      "plan_ref": "T486",
+      "started": "2026-04-09T02:48:33.785Z",
+      "completed": "2026-04-09T02:49:57.190Z",
+      "duration_ms": 180000,
+      "summary": "Wrote comprehensive HenryDB README: performance benchmarks (table with actual numbers), architecture overview, feature catalog (SQL, indexes, joins, concurrency, distributed), playground section, integration tests section. Streamlined from old version — more scannable, better organized."
+    },
+    {
+      "id": "T489",
+      "mode": "BUILD",
+      "task": "Build and run performance benchmark suite with actual numbers",
+      "status": "done",
+      "plan_ref": "T486",
+      "started": "2026-04-09T02:47:09.475Z",
+      "completed": "2026-04-09T02:48:13.974Z",
+      "duration_ms": 120000,
+      "summary": "Built benchmark suite with 14 tests. Results: 36K inserts/sec, 7.5K indexed lookups/sec, 37K txn/sec, GROUP BY on 10K rows in 44ms. Correlated subquery is O(n²) bottleneck at 3.2s."
+    },
+    {
+      "id": "T487",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-09T03:03:25.396Z",
+      "completed": "2026-04-09T03:05:46.214Z",
+      "duration_ms": 300000,
+      "summary": "Built interactive SQL tutorial system for playground: 4 tutorial modules (Basics, Aggregates, JOINs, Advanced) with 13 total lessons. Each lesson has setup SQL, challenge description, hint, auto-checking of answers, show solution button, prev/next navigation. Tutorial sidebar in playground."
+    },
+    {
+      "id": "T490",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Build HenryDB SQL REPL with syntax highlighting and auto-complete",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T491",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Enhance HenryDB playground: visual query plan tree, table schema browser, query history",
+      "project": "henrydb",
+      "started": "2026-04-09T02:50:23.051Z",
+      "completed": "2026-04-09T02:53:51.799Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced playground v2: left sidebar with schema browser (click table to see columns with types), query history (last 15 queries, clickable), Results/Plan tabs (auto-switches to Plan on EXPLAIN), colored plan nodes (scan=green, filter=yellow), number highlighting, NULL styling, up-arrow for last query."
+    },
+    {
+      "id": "T492",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add auto-chart visualization to HenryDB playground (bar/pie for GROUP BY queries)",
+      "project": "henrydb",
+      "started": "2026-04-09T02:54:27.161Z",
+      "completed": "2026-04-09T02:55:43.943Z",
+      "duration_ms": 180000,
+      "summary": "Added Chart tab to playground: auto-detects chartable data (text + numeric columns), renders SVG bar charts with gridlines, value labels, rotated X labels, multi-series legend. Supports up to 3 numeric series and 50 rows. Colors from GitHub palette."
+    },
+    {
+      "id": "T493",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build HenryDB test runner with formatted summary report (pass/fail counts per module, timing, coverage map)",
+      "project": "henrydb",
+      "started": "2026-04-09T02:56:12.648Z",
+      "completed": "2026-04-09T03:02:15.349Z",
+      "duration_ms": 300000,
+      "summary": "Built test runner: runs all 400 test files in parallel (8 at a time), parses node:test output, formatted table with status/pass/fail/timing, category breakdown (indexes, concurrency, storage, server, sql, engines, joins, distributed, integration, columnar). Result: 4,277 of 4,330 tests passing (98.8%). Full run in 274s (16 tests/sec)."
+    },
+    {
+      "id": "T494",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build HenryDB GitHub Pages deploy config + landing page",
+      "project": "henrydb",
+      "started": "2026-04-09T03:02:33.725Z",
+      "completed": "2026-04-09T03:03:12.112Z",
+      "duration_ms": 60000,
+      "summary": "Created GitHub Actions workflow for deploying playground to GitHub Pages (auto-builds bundle from source, deploys on push to main). Updated README with live playground URL."
+    },
+    {
+      "id": "T495",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build HenryDB architecture visualization (SVG diagram of module dependencies and data flow)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:06:03.455Z",
+      "completed": "2026-04-09T03:07:25.362Z",
+      "duration_ms": 180000,
+      "summary": "Created SVG architecture diagram showing all 6 layers: Client Interface (PG wire, COPY, auth, cursors), SQL Engine (tokenizer→parser→rewriter→planner→cache→stats→EXPLAIN), Execution (5 engines with speedup numbers), Concurrency (7 protocols), Storage (LSM+WAL+buffer), Indexes (12+), Distributed, SQL features, Probabilistic. Embedded in README."
+    },
+    {
+      "id": "T496",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL formatter module for HenryDB (pretty-print AST back to SQL)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:10:07.545Z",
+      "completed": "2026-04-09T03:13:33.468Z",
+      "duration_ms": 300000,
+      "summary": "Built SQL formatter: AST→SQL pretty-printer supporting SELECT (WHERE, JOIN, GROUP BY, HAVING, ORDER BY, LIMIT/OFFSET, DISTINCT, CTEs, subqueries, CASE, BETWEEN, LIKE, IN), INSERT, UPDATE, DELETE, CREATE TABLE, CREATE INDEX. Round-trip tested. 20 tests all passing."
+    },
+    {
+      "id": "T497",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add Format SQL button to playground + integrate formatter into bundle",
+      "project": "henrydb",
+      "started": "2026-04-09T03:13:57.161Z",
+      "completed": "2026-04-09T03:14:51.853Z",
+      "duration_ms": 60000,
+      "summary": "Integrated SQL formatter into playground bundle (120KB). Added Format button that pretty-prints SQL in the editor. Exports parse + formatSQL from bundle."
+    },
+    {
+      "id": "T498",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL linter for HenryDB (detect anti-patterns: SELECT *, missing WHERE on UPDATE/DELETE, implicit type conversion, etc.)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:15:12.074Z",
+      "completed": "2026-04-09T03:17:05.841Z",
+      "duration_ms": 180000,
+      "summary": "Built SQL linter with 14 rules: no-select-star, update/delete-without-where, select-without-limit, cartesian-product, deep-nesting, function-in-where, distinct-star, order-by-ordinal, null-comparison, leading-wildcard, redundant-distinct. Each issue has rule name, severity (error/warning/info), message, and suggestion. 15 tests."
+    },
+    {
+      "id": "T499",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add lint warnings to playground + build SQL diff tool",
+      "project": "henrydb",
+      "started": "2026-04-09T03:17:18.799Z",
+      "completed": "2026-04-09T03:18:15.866Z",
+      "duration_ms": 120000,
+      "summary": "Integrated SQL linter into playground. Queries now show lint warnings below results with severity colors (🔴 error, 🟡 warning, 🔵 info). Bundle now 125KB with formatter + linter included."
+    },
+    {
+      "id": "T500",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build ER diagram generator for HenryDB playground (SVG from schema)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:18:31.973Z",
+      "completed": "2026-04-09T03:20:24.912Z",
+      "duration_ms": 180000,
+      "summary": "Built ER diagram generator: extracts schema from Database, generates SVG with table boxes (columns, PK/FK icons), relationship arrows, grid layout. Added Schema tab to playground. 8 tests. Bundle 128KB."
+    },
+    {
+      "id": "T501",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build schema migration system for HenryDB (versioned up/down migrations)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:20:53.715Z",
+      "completed": "2026-04-09T03:22:08.397Z",
+      "duration_ms": 180000,
+      "summary": "Built schema migration system: MigrationRunner with add(), up(), down(), reset(), redo(), status(), applied(), pending(). Supports multi-statement migrations, transaction wrapping, error handling with stop-on-first-error, idempotent re-runs. 15 tests all passing."
+    },
+    {
+      "id": "T502",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build query result cache for HenryDB (TTL + auto-invalidation on DDL/DML)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:22:23.445Z",
+      "completed": "2026-04-09T03:23:35.871Z",
+      "duration_ms": 120000,
+      "summary": "Built query result cache: LRU eviction, TTL (per-query or default), table dependency tracking with auto-invalidation on mutations, SQL normalization (case+whitespace), prune(), invalidateAll(), stats with hit rate. 12 tests."
+    },
+    {
+      "id": "T503",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build data seeder/faker for HenryDB (generate realistic test data)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:23:54.248Z",
+      "completed": "2026-04-09T03:25:23.695Z",
+      "duration_ms": 120000,
+      "summary": "Built data seeder: PRNG-based deterministic faker for users/products/orders. Generates names, emails, cities, prices, dates. seedEcommerce() for full e-commerce schema. seedTable() for custom schemas. 14 tests. Complex JOINs verified on seeded data."
+    },
+    {
+      "id": "T504",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build query audit log for HenryDB (track all SQL with timing, user, result counts)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:25:40.030Z",
+      "completed": "2026-04-09T03:26:58.003Z",
+      "duration_ms": 120000,
+      "summary": "Built query audit log: logs all SQL with timing/rows/user/tables, classifies types (SELECT/INSERT/UPDATE/DELETE/DDL/TCL), finds slow queries, frequency analysis, table-based filtering, error tracking, percentiles (p50/p95/p99), LRU eviction, summary stats. 12 tests."
+    },
+    {
+      "id": "T505",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL permissions/ACL system (GRANT/REVOKE with role-based access)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:27:33.058Z",
+      "completed": "2026-04-09T03:28:12.194Z",
+      "duration_ms": 10000,
+      "summary": "Skipped — RBAC already exists with full GRANT/REVOKE. Pivoting to pg_dump equivalent."
+    },
+    {
+      "id": "T506",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_dump/restore for HenryDB (serialize schema + data to SQL script)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:28:20.925Z",
+      "completed": "2026-04-09T03:31:18.260Z",
+      "duration_ms": 180000,
+      "summary": "Built dump/restore/clone system: dump() serializes schema+data to SQL script (with schemaOnly, dataOnly, table filtering, DROP existing). restore() executes script. clone() copies between databases. Round-trip verified. 12 tests."
+    },
+    {
+      "id": "T507",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL type system for HenryDB (type checking for expressions, column type inference)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:31:33.443Z",
+      "completed": "2026-04-09T03:33:03.015Z",
+      "duration_ms": 180000,
+      "summary": "Built SQL type system: SQLType enum, resolveAffinity (INT/REAL/TEXT/BOOL/DATE/JSON/BLOB), binaryResultType (arithmetic promotion, comparison→BOOLEAN, NULL propagation), aggregateResultType (COUNT→INT, AVG→REAL), functionResultType (80+ functions), canCoerce (safe widening rules), TypeChecker with schema-aware inference. 28 tests."
+    },
+    {
+      "id": "T508",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection string parser for HenryDB (parse postgres:// URLs and DSN formats)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:33:19.161Z",
+      "completed": "2026-04-09T03:34:34.897Z",
+      "duration_ms": 120000,
+      "summary": "Built connection string parser: URL format (postgres://user:pass@host:port/db?ssl=true), DSN format (key=value pairs), builder (config→URL), URL encoding, IPv6, round-trip verified. 19 tests."
+    },
+    {
+      "id": "T509",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build simple connection pool for HenryDB (max connections, idle timeout, health checks)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:35:04.905Z",
+      "completed": "2026-04-09T03:36:22.249Z",
+      "duration_ms": 120000,
+      "summary": "Built connection pool: acquire/release with auto-reuse, max connections (throws when exhausted), pre-warming (min), idle timeout with prune(), auto-acquire execute(), stats tracking, shutdown(). 11 tests."
+    },
+    {
+      "id": "T510",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL schema diff tool for HenryDB (compare two databases and generate ALTER statements)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:36:36.898Z",
+      "completed": "2026-04-09T03:37:43.122Z",
+      "duration_ms": 120000,
+      "summary": "Built schema diff: compare two schemas/databases, detect added/removed/modified tables and columns, generate migration SQL (CREATE TABLE, DROP TABLE, ALTER TABLE ADD/DROP COLUMN). Works with schema objects or Database instances. 9 tests."
+    },
+    {
+      "id": "T511",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL statement counter/analyzer for HenryDB (parse SQL and count operations, joins, subqueries, etc.)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:38:00.392Z",
+      "completed": "2026-04-09T03:40:03.859Z",
+      "duration_ms": 120000,
+      "summary": "Built SQL complexity analyzer: counts tables, joins, subqueries, conditions, aggregates, window funcs, CTEs; computes complexity score; classifies as simple/moderate/complex/very-complex. 13 tests."
+    },
+    {
+      "id": "T512",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL table stats collector for HenryDB (row count, column stats, index usage)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:40:33.996Z",
+      "completed": "2026-04-09T03:41:41.867Z",
+      "duration_ms": 120000,
+      "summary": "Built table stats collector: row count, per-column stats (distinct values, min/max, null count/rate, selectivity), numeric stats (avg/sum), size estimate, all-tables collection, formatted report. 10 tests."
     }
   ],
   "focusProjects": [
@@ -7163,6 +7470,118 @@
     {
       "time": "2026-04-09T02:18:02.004Z",
       "msg": "PLAN T479 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T02:46:04.698Z",
+      "msg": "Added T485 (THINK) after end: What high-impact HenryDB module is missing? Pick next exploration."
+    },
+    {
+      "time": "2026-04-09T02:46:31.797Z",
+      "msg": "Added T486 (PLAN) after end: Plan README + benchmarks for HenryDB"
+    },
+    {
+      "time": "2026-04-09T02:46:37.758Z",
+      "msg": "Added T487 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-09T02:46:52.560Z",
+      "msg": "PLAN T486 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T02:50:09.637Z",
+      "msg": "Added T490 (BUILD) after end: Build HenryDB SQL REPL with syntax highlighting and auto-complete"
+    },
+    {
+      "time": "2026-04-09T02:50:18.073Z",
+      "msg": "Removed T490: "
+    },
+    {
+      "time": "2026-04-09T02:50:18.308Z",
+      "msg": "Added T491 (BUILD) after end: Enhance HenryDB playground: visual query plan tree, table schema browser, query history"
+    },
+    {
+      "time": "2026-04-09T02:54:21.353Z",
+      "msg": "Added T492 (BUILD) after end: Add auto-chart visualization to HenryDB playground (bar/pie for GROUP BY queries)"
+    },
+    {
+      "time": "2026-04-09T02:56:07.342Z",
+      "msg": "Added T493 (BUILD) after end: Build HenryDB test runner with formatted summary report (pass/fail counts per module, timing, coverage map)"
+    },
+    {
+      "time": "2026-04-09T03:02:28.730Z",
+      "msg": "Added T494 (BUILD) after end: Build HenryDB GitHub Pages deploy config + landing page"
+    },
+    {
+      "time": "2026-04-09T03:05:58.664Z",
+      "msg": "Added T495 (BUILD) after end: Build HenryDB architecture visualization (SVG diagram of module dependencies and data flow)"
+    },
+    {
+      "time": "2026-04-09T03:10:00.433Z",
+      "msg": "Added T496 (BUILD) after end: Build SQL formatter module for HenryDB (pretty-print AST back to SQL)"
+    },
+    {
+      "time": "2026-04-09T03:13:50.154Z",
+      "msg": "Added T497 (BUILD) after end: Add Format SQL button to playground + integrate formatter into bundle"
+    },
+    {
+      "time": "2026-04-09T03:15:06.819Z",
+      "msg": "Added T498 (BUILD) after end: Build SQL linter for HenryDB (detect anti-patterns: SELECT *, missing WHERE on UPDATE/DELETE, implicit type conversion, etc.)"
+    },
+    {
+      "time": "2026-04-09T03:17:18.572Z",
+      "msg": "Added T499 (BUILD) after end: Add lint warnings to playground + build SQL diff tool"
+    },
+    {
+      "time": "2026-04-09T03:18:31.760Z",
+      "msg": "Added T500 (BUILD) after end: Build ER diagram generator for HenryDB playground (SVG from schema)"
+    },
+    {
+      "time": "2026-04-09T03:20:53.501Z",
+      "msg": "Added T501 (BUILD) after end: Build schema migration system for HenryDB (versioned up/down migrations)"
+    },
+    {
+      "time": "2026-04-09T03:22:23.232Z",
+      "msg": "Added T502 (BUILD) after end: Build query result cache for HenryDB (TTL + auto-invalidation on DDL/DML)"
+    },
+    {
+      "time": "2026-04-09T03:23:54.126Z",
+      "msg": "Added T503 (BUILD) after end: Build data seeder/faker for HenryDB (generate realistic test data)"
+    },
+    {
+      "time": "2026-04-09T03:25:39.907Z",
+      "msg": "Added T504 (BUILD) after end: Build query audit log for HenryDB (track all SQL with timing, user, result counts)"
+    },
+    {
+      "time": "2026-04-09T03:27:32.839Z",
+      "msg": "Added T505 (BUILD) after end: Build SQL permissions/ACL system (GRANT/REVOKE with role-based access)"
+    },
+    {
+      "time": "2026-04-09T03:28:20.703Z",
+      "msg": "Added T506 (BUILD) after end: Build pg_dump/restore for HenryDB (serialize schema + data to SQL script)"
+    },
+    {
+      "time": "2026-04-09T03:31:33.228Z",
+      "msg": "Added T507 (BUILD) after end: Build SQL type system for HenryDB (type checking for expressions, column type inference)"
+    },
+    {
+      "time": "2026-04-09T03:33:18.947Z",
+      "msg": "Added T508 (BUILD) after end: Build connection string parser for HenryDB (parse postgres:// URLs and DSN formats)"
+    },
+    {
+      "time": "2026-04-09T03:35:04.690Z",
+      "msg": "Added T509 (BUILD) after end: Build simple connection pool for HenryDB (max connections, idle timeout, health checks)"
+    },
+    {
+      "time": "2026-04-09T03:36:36.686Z",
+      "msg": "Added T510 (BUILD) after end: Build SQL schema diff tool for HenryDB (compare two databases and generate ALTER statements)"
+    },
+    {
+      "time": "2026-04-09T03:38:00.178Z",
+      "msg": "Added T511 (BUILD) after end: Build SQL statement counter/analyzer for HenryDB (parse SQL and count operations, joins, subqueries, etc.)"
+    },
+    {
+      "time": "2026-04-09T03:40:33.781Z",
+      "msg": "Added T512 (BUILD) after end: Build SQL table stats collector for HenryDB (row count, column stats, index usage)"
     }
   ]
 }

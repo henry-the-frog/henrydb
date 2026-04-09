@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-09T02:45:07.172Z",
+  "generated": "2026-04-09T03:41:41.933Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git commit, push, dashboard health",
-    "startedAt": "2026-04-09T02:45:07.172Z",
-    "taskId": "T481"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "Build SQL table stats collector for HenryDB (row count, column stats, index usage)",
+    "completedAt": "2026-04-09T03:41:41.933Z",
+    "taskId": "T512",
+    "summary": "Built table stats collector: row count, per-column stats (distinct values, min/max, null count/rate, selectivity), numeric stats (avg/sum), size estimate, all-tables collection, formatted report. 10 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -5217,55 +5219,117 @@
       {
         "id": "T479",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Plan evening exploration project",
         "task": null,
-        "started": "2026-04-09T02:16:58.770Z"
+        "started": "2026-04-09T02:16:58.770Z",
+        "completed": "2026-04-09T02:18:09.284Z",
+        "duration_ms": 60000,
+        "summary": "Planned 3 integration test suites: e-commerce end-to-end, stress test (concurrency+recovery), feature showcase (window+CTE+JSON+FTS). Each exercises multiple subsystems together."
       },
       {
         "id": "T482",
         "mode": "BUILD",
         "task": "Build HenryDB end-to-end integration test: e-commerce scenario (schema, data, complex queries, transactions, triggers, views)",
-        "status": "upcoming",
-        "plan_ref": "T479"
+        "status": "done",
+        "plan_ref": "T479",
+        "started": "2026-04-09T02:18:18.160Z",
+        "completed": "2026-04-09T02:31:47.021Z",
+        "duration_ms": 240000,
+        "summary": "Built e-commerce integration test suite: 34 tests covering schema setup, data population, basic queries, CTEs, window functions (ROW_NUMBER, RANK, DENSE_RANK), UNION, EXISTS, IN subqueries, CASE expressions, 4-table JOINs, views, transactions, analytics (GROUP BY, HAVING, LIKE, BETWEEN, LIMIT/OFFSET, NULL handling, COALESCE), batch UPDATE/DELETE, CREATE TABLE AS, EXPLAIN plans, stress tests (100 ops, 1000 rows). Also fixed PlanCache bug in db.js (.clear() -> .invalidateAll())."
       },
       {
         "id": "T483",
         "mode": "BUILD",
         "task": "Build HenryDB stress test: concurrent transactions, deadlock detection, crash recovery cycle",
-        "status": "upcoming",
-        "plan_ref": "T479"
+        "status": "done",
+        "plan_ref": "T479",
+        "started": "2026-04-09T02:32:02.610Z",
+        "completed": "2026-04-09T02:38:33.692Z",
+        "duration_ms": 180000,
+        "summary": "Built stress/integration test suite: 26 tests covering MVCC (snapshot isolation, concurrent readers+writer, rollback, serial inserts, WAL, bank transfer, delete), deadlock detection (2-way/3-way cycles, acyclic, edge removal, 20-node chain, DeadlockDetector), ARIES crash recovery (redo, undo uncommitted, checkpoint, idempotent, 100 txns, multi-checkpoint), lock manager (X/S/IS locks, concurrency, releaseAll, stats, upgrade)."
       },
       {
         "id": "T484",
         "mode": "BUILD",
         "task": "Build HenryDB feature showcase: window functions + CTEs + JSON + FTS in one complex query suite",
-        "status": "upcoming",
-        "plan_ref": "T479"
+        "status": "done",
+        "plan_ref": "T479",
+        "started": "2026-04-09T02:38:48.924Z",
+        "completed": "2026-04-09T02:41:16.632Z",
+        "duration_ms": 180000,
+        "summary": "Built feature showcase test suite: 25 tests covering JSON functions (EXTRACT, TYPE, ARRAY_LENGTH), full-text search (keyword, technical term, no-match), CTEs (author stats, category distribution), window functions (ROW_NUMBER, SUM OVER, DENSE_RANK), complex multi-feature queries (JOIN+GROUP+HAVING, subquery+CASE, 4-table join, UNION, nested EXISTS, IN subquery), views, CREATE TABLE AS, analytics patterns (BETWEEN, LIKE, COALESCE, pagination, COUNT DISTINCT)."
       },
       {
         "id": "T480",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T02:41:34.798Z",
+        "completed": "2026-04-09T02:44:50.987Z",
+        "duration_ms": 240000,
+        "summary": "Built interactive SQL playground for HenryDB: browser-based demo with dark theme, 12 example queries, Ctrl+Enter execution. Bundle is 115KB minified via esbuild. Features: live SQL editor, result tables, EXPLAIN plan visualization, DB reset, multi-statement support. Includes demo tables (students, products, orders)."
       },
       {
         "id": "T481",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git commit, push, dashboard health",
+        "started": "2026-04-09T02:45:07.094Z",
+        "completed": "2026-04-09T02:45:45.087Z",
+        "duration_ms": 60000,
+        "summary": "Housekeeping done. Git push successful. Stats: HenryDB at 108,199 LOC, 4,295 test cases across 397 test files, 209 source modules. Playground bundle: 115KB."
+      },
+      {
+        "id": "T485",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What high-impact HenryDB module is missing? Pick next exploration.",
+        "started": "2026-04-09T02:46:10.077Z",
+        "completed": "2026-04-09T02:46:25.892Z",
+        "duration_ms": 60000,
+        "summary": "Direction: Build proper HenryDB README with architecture overview, feature list, benchmarks, and playground link. This is the highest-impact work for portfolio presentation."
+      },
+      {
+        "id": "T486",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan README + benchmarks for HenryDB",
+        "task": null,
+        "started": "2026-04-09T02:46:46.740Z"
+      },
+      {
+        "id": "T488",
+        "mode": "BUILD",
+        "task": "Write comprehensive HenryDB README.md with architecture, features, examples, benchmark results",
         "status": "upcoming",
-        "task": "Housekeeping: git commit, push, dashboard health"
+        "plan_ref": "T486"
+      },
+      {
+        "id": "T489",
+        "mode": "BUILD",
+        "task": "Build and run performance benchmark suite with actual numbers",
+        "status": "upcoming",
+        "plan_ref": "T486"
+      },
+      {
+        "id": "T487",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 481,
-    "blocksTotal": 484,
+    "blocksCompleted": 509,
+    "blocksTotal": 489,
     "modeDistribution": {
-      "THINK": 15,
-      "PLAN": 13,
-      "BUILD": 375,
-      "MAINTAIN": 76,
+      "THINK": 16,
+      "PLAN": 14,
+      "BUILD": 400,
+      "MAINTAIN": 77,
       "EXPLORE": 2
     }
   }
