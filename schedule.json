@@ -5170,6 +5170,17 @@
       "completed": "2026-04-09T01:29:08.005Z",
       "duration_ms": 120000,
       "summary": "Event triggers: ddl_command_start/end, table_rewrite, sql_drop, tag filtering, abort on start, fire count tracking. 14 tests."
+    },
+    {
+      "id": "T476",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, object namespacing",
+      "project": "henrydb",
+      "started": "2026-04-09T01:29:25.002Z",
+      "completed": "2026-04-09T01:30:20.058Z",
+      "duration_ms": 180000,
+      "summary": "Schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, qualified names, pg_catalog priority, CASCADE, object namespacing. 19 tests."
     }
   ],
   "focusProjects": [
@@ -7041,6 +7052,10 @@
     {
       "time": "2026-04-09T01:28:16.208Z",
       "msg": "Added T475 (BUILD) after end: Build event triggers: CREATE EVENT TRIGGER, ddl_command_start/end, table_rewrite, sql_drop events"
+    },
+    {
+      "time": "2026-04-09T01:29:24.582Z",
+      "msg": "Added T476 (BUILD) after end: Build schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, object namespacing"
     }
   ]
 }
