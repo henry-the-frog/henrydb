@@ -5038,6 +5038,17 @@
       "completed": "2026-04-09T01:13:15.610Z",
       "duration_ms": 120000,
       "summary": "Pagination: offset/limit, keyset (seek), cursor-based (GraphQL-style edges/pageInfo). Full cursor traversal, asc/desc. 14 tests."
+    },
+    {
+      "id": "T464",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build sequence generator: CREATE SEQUENCE, nextval, currval, setval, SERIAL column type",
+      "project": "henrydb",
+      "started": "2026-04-09T01:13:33.568Z",
+      "completed": "2026-04-09T01:14:26.966Z",
+      "duration_ms": 120000,
+      "summary": "Sequences: CREATE/DROP SEQUENCE, nextval/currval/setval, CYCLE, restart, SERIAL, custom increment/start/min/max. 18 tests."
     }
   ],
   "focusProjects": [
@@ -6861,6 +6872,10 @@
     {
       "time": "2026-04-09T01:12:19.026Z",
       "msg": "Added T463 (BUILD) after end: Build query result pagination: OFFSET/LIMIT optimization, keyset pagination, cursor-based pagination for APIs"
+    },
+    {
+      "time": "2026-04-09T01:13:33.149Z",
+      "msg": "Added T464 (BUILD) after end: Build sequence generator: CREATE SEQUENCE, nextval, currval, setval, SERIAL column type"
     }
   ]
 }
