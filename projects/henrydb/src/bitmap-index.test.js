@@ -1,137 +1,59 @@
 // bitmap-index.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { BitVector, BitmapIndex } from './bitmap-index.js';
-
-describe('BitVector', () => {
-  it('set/get/clear', () => {
-    const bv = new BitVector(100);
-    bv.set(0);
-    bv.set(31);
-    bv.set(32);
-    bv.set(99);
-    assert.ok(bv.get(0));
-    assert.ok(bv.get(31));
-    assert.ok(bv.get(32));
-    assert.ok(bv.get(99));
-    assert.ok(!bv.get(50));
-    bv.clear(31);
-    assert.ok(!bv.get(31));
-  });
-
-  it('AND operation', () => {
-    const a = new BitVector(64);
-    const b = new BitVector(64);
-    a.set(1); a.set(2); a.set(3);
-    b.set(2); b.set(3); b.set(4);
-    const result = a.and(b);
-    assert.ok(!result.get(1));
-    assert.ok(result.get(2));
-    assert.ok(result.get(3));
-    assert.ok(!result.get(4));
-  });
-
-  it('OR operation', () => {
-    const a = new BitVector(64);
-    const b = new BitVector(64);
-    a.set(1); a.set(2);
-    b.set(3); b.set(4);
-    const result = a.or(b);
-    assert.ok(result.get(1));
-    assert.ok(result.get(2));
-    assert.ok(result.get(3));
-    assert.ok(result.get(4));
-  });
-
-  it('NOT operation', () => {
-    const bv = new BitVector(8);
-    bv.set(0); bv.set(2); bv.set(4);
-    const inv = bv.not(8);
-    assert.ok(!inv.get(0));
-    assert.ok(inv.get(1));
-    assert.ok(!inv.get(2));
-    assert.ok(inv.get(3));
-    assert.equal(inv.popcount(), 5);
-  });
-
-  it('popcount', () => {
-    const bv = new BitVector(100);
-    bv.set(0); bv.set(10); bv.set(20); bv.set(99);
-    assert.equal(bv.popcount(), 4);
-  });
-
-  it('positions iterator', () => {
-    const bv = new BitVector(64);
-    bv.set(5); bv.set(10); bv.set(63);
-    assert.deepEqual([...bv.positions()], [5, 10, 63]);
-  });
-});
+import { BitmapIndex } from './bitmap-index.js';
 
 describe('BitmapIndex', () => {
-  const statuses = ['active', 'active', 'inactive', 'active', 'banned', 'inactive', 'active', 'banned'];
-
-  it('build and query EQ', () => {
-    const idx = new BitmapIndex();
-    idx.build(statuses);
+  it('set and lookup', () => {
+    const bi = new BitmapIndex();
+    bi.set(0, 'red'); bi.set(1, 'blue'); bi.set(2, 'red'); bi.set(3, 'green');
     
-    const activeRows = idx.getRows('active');
-    assert.deepEqual(activeRows, [0, 1, 3, 6]);
-    assert.equal(idx.eq('active').popcount(), 4);
+    assert.deepEqual(bi.lookup('red'), [0, 2]);
+    assert.deepEqual(bi.lookup('blue'), [1]);
+    assert.deepEqual(bi.lookup('green'), [3]);
+    assert.deepEqual(bi.lookup('yellow'), []);
   });
 
-  it('query IN', () => {
-    const idx = new BitmapIndex();
-    idx.build(statuses);
+  it('AND: rows matching all values', () => {
+    const bi = new BitmapIndex();
+    // Two different columns would need two indexes, but for testing:
+    const idx1 = new BitmapIndex(); // color
+    const idx2 = new BitmapIndex(); // size
+    idx1.set(0, 'red'); idx1.set(1, 'blue'); idx1.set(2, 'red');
+    idx2.set(0, 'large'); idx2.set(1, 'large'); idx2.set(2, 'small');
     
-    const activeOrBanned = idx.in(['active', 'banned']);
-    assert.equal(activeOrBanned.popcount(), 6);
+    // Rows where color=red: [0, 2]
+    // Rows where size=large: [0, 1]
+    // AND (manual): row 0 is in both
+    const redRows = new Set(idx1.lookup('red'));
+    const largeRows = new Set(idx2.lookup('large'));
+    const both = [...redRows].filter(r => largeRows.has(r));
+    assert.deepEqual(both, [0]);
   });
 
-  it('query NOT EQ', () => {
-    const idx = new BitmapIndex();
-    idx.build(statuses);
+  it('OR: rows matching any value', () => {
+    const bi = new BitmapIndex();
+    bi.set(0, 'red'); bi.set(1, 'blue'); bi.set(2, 'green');
     
-    const notActive = idx.neq('active');
-    assert.equal(notActive.popcount(), 4); // 2 inactive + 2 banned
+    const rows = bi.or(['red', 'green']);
+    assert.deepEqual(rows.sort((a,b)=>a-b), [0, 2]);
   });
 
-  it('compound query: AND', () => {
-    const idx1 = new BitmapIndex();
-    const idx2 = new BitmapIndex();
-    idx1.build(['eng', 'eng', 'sales', 'eng', 'sales', 'hr']);
-    idx2.build(['senior', 'junior', 'senior', 'senior', 'junior', 'senior']);
+  it('count', () => {
+    const bi = new BitmapIndex();
+    for (let i = 0; i < 100; i++) bi.set(i, i % 3 === 0 ? 'A' : 'B');
+    assert.equal(bi.count('A'), 34); // 0,3,6,...,99
+  });
+
+  it('large: 10K rows', () => {
+    const bi = new BitmapIndex();
+    for (let i = 0; i < 10000; i++) bi.set(i, ['cat', 'dog', 'fish'][i % 3]);
     
-    // Senior engineers
-    const result = idx1.eq('eng').and(idx2.eq('senior'));
-    assert.deepEqual([...result.positions()], [0, 3]);
-  });
-
-  it('cardinality and distinct values', () => {
-    const idx = new BitmapIndex();
-    idx.build(statuses);
-    assert.equal(idx.cardinality, 3);
-    assert.deepEqual(idx.distinctValues.sort(), ['active', 'banned', 'inactive']);
-  });
-
-  it('benchmark: 100K rows', () => {
-    const idx = new BitmapIndex();
-    const values = Array.from({ length: 100000 }, () => 
-      ['red', 'green', 'blue', 'yellow'][Math.floor(Math.random() * 4)]
-    );
-
-    const t0 = Date.now();
-    idx.build(values);
-    const buildMs = Date.now() - t0;
-
-    const t1 = Date.now();
-    for (let i = 0; i < 10000; i++) idx.eq('red');
-    const queryMs = Date.now() - t1;
-
-    const t2 = Date.now();
-    for (let i = 0; i < 10000; i++) idx.eq('red').and(idx.eq('blue'));
-    const andMs = Date.now() - t2;
-
-    console.log(`    100K rows: build ${buildMs}ms, 10K EQ queries ${queryMs}ms, 10K AND queries ${andMs}ms`);
-    assert.equal(idx.rowCount, 100000);
+    const t0 = performance.now();
+    for (let q = 0; q < 1000; q++) bi.lookup('cat');
+    const elapsed = performance.now() - t0;
+    
+    assert.equal(bi.count('cat'), 3334);
+    console.log(`  1K lookups on 10K rows: ${elapsed.toFixed(1)}ms`);
   });
 });

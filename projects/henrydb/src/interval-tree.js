@@ -1,109 +1,70 @@
-// interval-tree.js — Interval tree + Min-Heap for HenryDB
+// interval-tree.js — Augmented BST for interval queries
+// Find all intervals that overlap with a query point or range.
+// Used for: temporal queries, scheduling, geospatial ranges.
 
-/**
- * Min-Heap (Priority Queue).
- * Used for ORDER BY ... LIMIT K (top-K queries) without sorting all rows.
- */
-export class MinHeap {
-  constructor(comparator = (a, b) => a - b) {
-    this._data = [];
-    this._cmp = comparator;
-  }
-
-  push(item) {
-    this._data.push(item);
-    this._bubbleUp(this._data.length - 1);
-  }
-
-  pop() {
-    if (this._data.length === 0) return undefined;
-    const min = this._data[0];
-    const last = this._data.pop();
-    if (this._data.length > 0) {
-      this._data[0] = last;
-      this._sinkDown(0);
-    }
-    return min;
-  }
-
-  peek() { return this._data[0]; }
-  get size() { return this._data.length; }
-
-  _bubbleUp(i) {
-    while (i > 0) {
-      const parent = (i - 1) >>> 1;
-      if (this._cmp(this._data[i], this._data[parent]) < 0) {
-        [this._data[i], this._data[parent]] = [this._data[parent], this._data[i]];
-        i = parent;
-      } else break;
-    }
-  }
-
-  _sinkDown(i) {
-    const n = this._data.length;
-    while (true) {
-      let smallest = i;
-      const left = 2 * i + 1;
-      const right = 2 * i + 2;
-      if (left < n && this._cmp(this._data[left], this._data[smallest]) < 0) smallest = left;
-      if (right < n && this._cmp(this._data[right], this._data[smallest]) < 0) smallest = right;
-      if (smallest !== i) {
-        [this._data[i], this._data[smallest]] = [this._data[smallest], this._data[i]];
-        i = smallest;
-      } else break;
-    }
+class ITNode {
+  constructor(low, high, value) {
+    this.low = low;
+    this.high = high;
+    this.value = value;
+    this.max = high; // Max high in subtree
+    this.left = null;
+    this.right = null;
   }
 }
 
-/**
- * Interval Tree for overlapping range queries.
- * Stores intervals [low, high] and efficiently finds all intervals overlapping a point or range.
- */
 export class IntervalTree {
-  constructor() {
-    this._intervals = []; // Simple sorted-list implementation
-    this._size = 0;
-  }
+  constructor() { this._root = null; this._size = 0; }
+  get size() { return this._size; }
 
-  /**
-   * Insert an interval [low, high] with associated data.
-   */
-  insert(low, high, data = null) {
-    this._intervals.push({ low, high, data });
-    this._intervals.sort((a, b) => a.low - b.low);
+  insert(low, high, value) {
+    this._root = this._insert(this._root, low, high, value);
     this._size++;
   }
 
-  /**
-   * Find all intervals containing a point.
-   */
+  _insert(node, low, high, value) {
+    if (!node) return new ITNode(low, high, value);
+    if (low < node.low) node.left = this._insert(node.left, low, high, value);
+    else node.right = this._insert(node.right, low, high, value);
+    node.max = Math.max(node.max, high);
+    return node;
+  }
+
+  /** Find all intervals containing point. */
   queryPoint(point) {
-    return this._intervals.filter(i => i.low <= point && point <= i.high);
+    const results = [];
+    this._queryPoint(this._root, point, results);
+    return results;
   }
 
-  /**
-   * Find all intervals overlapping with [queryLow, queryHigh].
-   */
-  queryRange(queryLow, queryHigh) {
-    return this._intervals.filter(i => i.low <= queryHigh && queryLow <= i.high);
+  _queryPoint(node, point, results) {
+    if (!node) return;
+    if (node.low <= point && point <= node.high) {
+      results.push({ low: node.low, high: node.high, value: node.value });
+    }
+    if (node.left && node.left.max >= point) {
+      this._queryPoint(node.left, point, results);
+    }
+    this._queryPoint(node.right, point, results);
   }
 
-  /**
-   * Find all intervals completely contained within [queryLow, queryHigh].
-   */
-  queryContained(queryLow, queryHigh) {
-    return this._intervals.filter(i => i.low >= queryLow && i.high <= queryHigh);
+  /** Find all intervals overlapping [qLow, qHigh]. */
+  queryRange(qLow, qHigh) {
+    const results = [];
+    this._queryRange(this._root, qLow, qHigh, results);
+    return results;
   }
 
-  /**
-   * Remove intervals matching a predicate.
-   */
-  remove(predicate) {
-    const before = this._intervals.length;
-    this._intervals = this._intervals.filter(i => !predicate(i));
-    this._size = this._intervals.length;
-    return before - this._size;
+  _queryRange(node, qLow, qHigh, results) {
+    if (!node) return;
+    if (node.low <= qHigh && qLow <= node.high) {
+      results.push({ low: node.low, high: node.high, value: node.value });
+    }
+    if (node.left && node.left.max >= qLow) {
+      this._queryRange(node.left, qLow, qHigh, results);
+    }
+    if (node.low <= qHigh) {
+      this._queryRange(node.right, qLow, qHigh, results);
+    }
   }
-
-  get size() { return this._size; }
 }

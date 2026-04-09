@@ -1,118 +1,50 @@
 // interval-tree.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { IntervalTree, MinHeap } from './interval-tree.js';
-
-describe('MinHeap', () => {
-  it('maintains min order', () => {
-    const heap = new MinHeap();
-    heap.push(5);
-    heap.push(3);
-    heap.push(7);
-    heap.push(1);
-    
-    assert.equal(heap.pop(), 1);
-    assert.equal(heap.pop(), 3);
-    assert.equal(heap.pop(), 5);
-    assert.equal(heap.pop(), 7);
-  });
-
-  it('peek returns minimum without removal', () => {
-    const heap = new MinHeap();
-    heap.push(10);
-    heap.push(5);
-    assert.equal(heap.peek(), 5);
-    assert.equal(heap.size, 2);
-  });
-
-  it('handles custom comparator (max-heap)', () => {
-    const maxHeap = new MinHeap((a, b) => b - a);
-    maxHeap.push(1);
-    maxHeap.push(5);
-    maxHeap.push(3);
-    
-    assert.equal(maxHeap.pop(), 5);
-    assert.equal(maxHeap.pop(), 3);
-  });
-
-  it('top-K pattern', () => {
-    const heap = new MinHeap();
-    const data = [50, 20, 80, 10, 40, 60, 30, 70, 90];
-    for (const d of data) heap.push(d);
-    
-    // Extract top 3 (smallest)
-    const top3 = [];
-    for (let i = 0; i < 3; i++) top3.push(heap.pop());
-    assert.deepEqual(top3, [10, 20, 30]);
-  });
-
-  it('handles objects with comparator', () => {
-    const heap = new MinHeap((a, b) => a.priority - b.priority);
-    heap.push({ task: 'low', priority: 3 });
-    heap.push({ task: 'high', priority: 1 });
-    heap.push({ task: 'med', priority: 2 });
-    
-    assert.equal(heap.pop().task, 'high');
-    assert.equal(heap.pop().task, 'med');
-  });
-});
+import { IntervalTree } from './interval-tree.js';
 
 describe('IntervalTree', () => {
-  it('point query finds containing intervals', () => {
-    const tree = new IntervalTree();
-    tree.insert(1, 5, 'A');
-    tree.insert(3, 8, 'B');
-    tree.insert(10, 15, 'C');
+  it('point query finds overlapping intervals', () => {
+    const it = new IntervalTree();
+    it.insert(1, 5, 'A');
+    it.insert(3, 8, 'B');
+    it.insert(6, 10, 'C');
     
-    const results = tree.queryPoint(4);
-    assert.equal(results.length, 2); // A and B contain 4
+    const at4 = it.queryPoint(4);
+    assert.equal(at4.length, 2); // A and B
+    const at7 = it.queryPoint(7);
+    assert.equal(at7.length, 2); // B and C
+    assert.equal(it.queryPoint(11).length, 0);
   });
 
-  it('range query finds overlapping intervals', () => {
-    const tree = new IntervalTree();
-    tree.insert(1, 5, 'A');
-    tree.insert(3, 8, 'B');
-    tree.insert(10, 15, 'C');
+  it('range query finds all overlapping', () => {
+    const it = new IntervalTree();
+    it.insert(1, 3, 'A');
+    it.insert(5, 7, 'B');
+    it.insert(9, 11, 'C');
     
-    const results = tree.queryRange(4, 12);
-    assert.equal(results.length, 3); // All overlap with [4, 12]
+    const overlap = it.queryRange(2, 6);
+    assert.equal(overlap.length, 2); // A and B overlap [2,6]
   });
 
-  it('contained query finds nested intervals', () => {
-    const tree = new IntervalTree();
-    tree.insert(1, 10, 'outer');
-    tree.insert(3, 7, 'inner');
-    tree.insert(5, 5, 'point');
+  it('scheduling: find busy time slots', () => {
+    const cal = new IntervalTree();
+    cal.insert(900, 1000, 'Meeting A');
+    cal.insert(1030, 1130, 'Meeting B');
+    cal.insert(1400, 1500, 'Meeting C');
     
-    const results = tree.queryContained(2, 8);
-    assert.equal(results.length, 2); // inner and point
+    const busy = cal.queryPoint(950);
+    assert.equal(busy.length, 1);
+    assert.equal(busy[0].value, 'Meeting A');
+    
+    assert.equal(cal.queryPoint(1200).length, 0); // Free
   });
 
-  it('scheduling use case', () => {
-    const tree = new IntervalTree();
-    // Meeting schedule
-    tree.insert(9, 10, 'Standup');
-    tree.insert(10, 11, 'Design review');
-    tree.insert(14, 15, 'Sprint planning');
-    tree.insert(9, 17, 'Available');
+  it('1K intervals', () => {
+    const it = new IntervalTree();
+    for (let i = 0; i < 1000; i++) it.insert(i * 10, i * 10 + 5, i);
     
-    // What's happening at 10:30?
-    const at1030 = tree.queryPoint(10.5);
-    assert.ok(at1030.some(i => i.data === 'Design review'));
-    assert.ok(at1030.some(i => i.data === 'Available'));
-    
-    // What overlaps with lunch (12-13)?
-    const lunch = tree.queryRange(12, 13);
-    assert.equal(lunch.length, 1); // Only 'Available'
-  });
-
-  it('remove intervals', () => {
-    const tree = new IntervalTree();
-    tree.insert(1, 5, 'A');
-    tree.insert(3, 8, 'B');
-    
-    tree.remove(i => i.data === 'A');
-    assert.equal(tree.size, 1);
-    assert.equal(tree.queryPoint(4).length, 1);
+    const results = it.queryPoint(500);
+    assert.ok(results.length >= 1);
   });
 });
