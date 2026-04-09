@@ -4741,6 +4741,24 @@
       "completed": "2026-04-09T00:22:24.883Z",
       "duration_ms": 120000,
       "summary": "LISTEN/NOTIFY event system: channel subscription, broadcast, sender exclusion, UNLISTEN/*, async waitForNotification, queue drain/peek, stats. 21 tests."
+    },
+    {
+      "id": "T437",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build query rewriting engine: view expansion, subquery flattening, predicate pushdown as AST-to-AST transformations",
+      "project": "henrydb",
+      "started": "2026-04-09T00:23:07.401Z",
+      "completed": "2026-04-09T00:24:48.359Z",
+      "duration_ms": 180000,
+      "summary": "Query rewriter engine: 5 rules (view expansion, predicate pushdown, subquery flattening, constant folding, redundant elimination). AST-to-AST, immutable transforms. 17 tests."
+    },
+    {
+      "id": "T438",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Build JSON path query support: JSON_PATH_QUERY, @>, @@, jsonpath syntax for querying JSONB columns",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -6456,6 +6474,14 @@
     {
       "time": "2026-04-09T00:18:58.691Z",
       "msg": "Added T436 (BUILD) after T435: Build event notification system: LISTEN/NOTIFY for client-to-client messaging through the database"
+    },
+    {
+      "time": "2026-04-09T00:22:54.780Z",
+      "msg": "Added T437 (BUILD) after end: Build query rewriting engine: view expansion, subquery flattening, predicate pushdown as AST-to-AST transformations"
+    },
+    {
+      "time": "2026-04-09T00:23:01.367Z",
+      "msg": "Added T438 (BUILD) after T437: Build JSON path query support: JSON_PATH_QUERY, @>, @@, jsonpath syntax for querying JSONB columns"
     }
   ]
 }

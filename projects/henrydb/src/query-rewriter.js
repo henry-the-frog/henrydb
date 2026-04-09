@@ -1,171 +1,332 @@
-// query-rewriter.js — Query rewriter for predicate simplification and join ordering
-// Rewrites query ASTs before execution for better performance:
-// 1. Predicate pushdown hints
-// 2. Constant propagation
-// 3. Join order suggestions based on estimated sizes
-// 4. Subquery decorrelation hints
+// query-rewriter.js — AST-to-AST query rewriting engine
+// Performs logical transformations on the query AST before execution:
+// 1. View expansion — inline view definitions
+// 2. Subquery flattening — convert correlated subqueries to joins where possible
+// 3. Predicate pushdown — move WHERE conditions closer to their source tables
+// 4. Constant folding — evaluate constant expressions at compile time
+// 5. Redundant predicate elimination — remove tautologies (1=1, x=x)
 
+/**
+ * QueryRewriter — transforms query ASTs for optimization.
+ */
 export class QueryRewriter {
-  constructor() {
-    this.stats = { rewrites: 0 };
+  constructor(options = {}) {
+    this.views = options.views || new Map(); // view name → view definition AST
+    this.rules = [
+      this._expandViews.bind(this),
+      this._pushdownPredicates.bind(this),
+      this._flattenSubqueries.bind(this),
+      this._foldConstants.bind(this),
+      this._eliminateRedundantPredicates.bind(this),
+    ];
+    this._stats = {
+      viewExpansions: 0,
+      predicatePushdowns: 0,
+      subqueryFlattenings: 0,
+      constantFolds: 0,
+      redundantEliminations: 0,
+    };
   }
 
   /**
-   * Rewrite a WHERE clause: simplify predicates.
+   * Rewrite a query AST by applying all rules.
+   * Returns the transformed AST (new object, original unchanged).
    */
-  simplifyPredicate(pred) {
-    if (!pred) return pred;
-    return this._simplify(pred);
+  rewrite(ast) {
+    let current = this._deepClone(ast);
+    for (const rule of this.rules) {
+      current = rule(current);
+    }
+    return current;
   }
 
-  _simplify(expr) {
-    if (!expr) return expr;
+  getStats() {
+    return { ...this._stats };
+  }
 
-    // Recursively simplify children first
-    if (expr.type === 'AND') {
-      const left = this._simplify(expr.left);
-      const right = this._simplify(expr.right);
-      // Remove tautologies
-      if (this._isTrueLiteral(left)) { this.stats.rewrites++; return right; }
-      if (this._isTrueLiteral(right)) { this.stats.rewrites++; return left; }
-      if (this._isFalseLiteral(left) || this._isFalseLiteral(right)) { this.stats.rewrites++; return { type: 'literal', value: false }; }
-      // Combine range predicates: x > 5 AND x > 3 → x > 5
-      const merged = this._mergeRangePredicates(left, right);
-      if (merged) { this.stats.rewrites++; return merged; }
-      return { ...expr, left, right };
+  // --- Rule 1: View Expansion ---
+  _expandViews(ast) {
+    if (ast.type !== 'SELECT') return ast;
+
+    // Check FROM clause
+    if (ast.from && ast.from.table && this.views.has(ast.from.table)) {
+      const viewDef = this._deepClone(this.views.get(ast.from.table));
+      const alias = ast.from.alias || ast.from.table;
+
+      // Replace FROM with the view's subquery
+      ast.from = { type: 'subquery', query: viewDef, alias };
+      this._stats.viewExpansions++;
     }
 
-    if (expr.type === 'OR') {
-      const left = this._simplify(expr.left);
-      const right = this._simplify(expr.right);
-      if (this._isTrueLiteral(left) || this._isTrueLiteral(right)) { this.stats.rewrites++; return { type: 'literal', value: true }; }
-      if (this._isFalseLiteral(left)) { this.stats.rewrites++; return right; }
-      if (this._isFalseLiteral(right)) { this.stats.rewrites++; return left; }
-      // Convert OR of equalities to IN: x=1 OR x=2 → x IN (1,2)
-      const inExpr = this._orToIn(left, right);
-      if (inExpr) { this.stats.rewrites++; return inExpr; }
-      return { ...expr, left, right };
+    // Check JOIN tables
+    if (ast.joins) {
+      for (const join of ast.joins) {
+        const joinTable = join.table?.table || join.table;
+        if (typeof joinTable === 'string' && this.views.has(joinTable)) {
+          const viewDef = this._deepClone(this.views.get(joinTable));
+          const alias = join.table?.alias || joinTable;
+          join.table = { type: 'subquery', query: viewDef, alias };
+          this._stats.viewExpansions++;
+        }
+      }
     }
 
-    if (expr.type === 'NOT') {
-      const inner = this._simplify(expr.expr);
-      if (this._isTrueLiteral(inner)) { this.stats.rewrites++; return { type: 'literal', value: false }; }
-      if (this._isFalseLiteral(inner)) { this.stats.rewrites++; return { type: 'literal', value: true }; }
-      if (inner.type === 'NOT') { this.stats.rewrites++; return inner.expr; } // NOT NOT x → x
-      return { ...expr, expr: inner };
+    return ast;
+  }
+
+  // --- Rule 2: Predicate Pushdown ---
+  _pushdownPredicates(ast) {
+    if (ast.type !== 'SELECT' || !ast.where || !ast.joins || ast.joins.length === 0) {
+      return ast;
     }
 
-    // Self-comparison: x = x → true (for non-nullable)
-    if (expr.type === 'COMPARE' && expr.op === 'EQ' && 
-        expr.left?.type === 'column' && expr.right?.type === 'column' &&
-        expr.left.name === expr.right.name) {
-      this.stats.rewrites++;
-      return { type: 'literal', value: true };
+    // Analyze WHERE conditions to determine which table they reference
+    const conditions = this._splitConjunction(ast.where);
+    const pushed = [];
+    const remaining = [];
+
+    for (const cond of conditions) {
+      const tables = this._extractTableRefs(cond);
+
+      // If condition references only one table, push it down
+      if (tables.size === 1) {
+        const tableName = [...tables][0];
+        
+        // Try to push to FROM table
+        if (ast.from && (ast.from.table === tableName || ast.from.alias === tableName)) {
+          // Add as a filter on the FROM clause
+          if (!ast.from.filter) ast.from.filter = [];
+          ast.from.filter.push(cond);
+          pushed.push(cond);
+          this._stats.predicatePushdowns++;
+          continue;
+        }
+
+        // Try to push to a JOIN table
+        let pushedToJoin = false;
+        for (const join of ast.joins) {
+          const joinTableName = join.table?.table || join.table?.alias || join.table;
+          if (joinTableName === tableName || join.table?.alias === tableName) {
+            if (!join.additionalConditions) join.additionalConditions = [];
+            join.additionalConditions.push(cond);
+            pushed.push(cond);
+            this._stats.predicatePushdowns++;
+            pushedToJoin = true;
+            break;
+          }
+        }
+        if (pushedToJoin) continue;
+      }
+
+      remaining.push(cond);
+    }
+
+    // Reconstruct WHERE from remaining conditions
+    if (remaining.length === 0) {
+      ast.where = null;
+    } else if (remaining.length === 1) {
+      ast.where = remaining[0];
+    } else {
+      ast.where = { type: 'AND', left: remaining[0], right: this._buildConjunction(remaining.slice(1)) };
+    }
+
+    return ast;
+  }
+
+  // --- Rule 3: Subquery Flattening ---
+  _flattenSubqueries(ast) {
+    if (ast.type !== 'SELECT' || !ast.where) return ast;
+
+    // Look for IN (SELECT ...) patterns and convert to JOIN
+    ast.where = this._flattenInSubquery(ast, ast.where);
+    return ast;
+  }
+
+  _flattenInSubquery(ast, where) {
+    if (!where || typeof where !== 'object') return where;
+
+    // Pattern: column IN (SELECT col FROM table WHERE ...)
+    if (where.type === 'IN' && where.right?.type === 'SELECT') {
+      const subquery = where.right;
+      // Can flatten if subquery is a simple single-table SELECT with one column
+      if (subquery.from && !subquery.joins && subquery.columns?.length === 1) {
+        const subTable = subquery.from.table;
+        const subCol = subquery.columns[0].name || subquery.columns[0];
+        const alias = `_sq_${subTable}`;
+
+        // Convert to a semi-join
+        const joinCondition = {
+          type: 'EQUALS',
+          left: where.left,
+          right: { type: 'column_ref', table: alias, column: subCol },
+        };
+
+        if (!ast.joins) ast.joins = [];
+        ast.joins.push({
+          type: 'INNER',
+          table: { table: subTable, alias },
+          condition: subquery.where
+            ? { type: 'AND', left: joinCondition, right: subquery.where }
+            : joinCondition,
+        });
+
+        // Add DISTINCT to prevent duplicate rows from the join
+        ast.distinct = true;
+
+        this._stats.subqueryFlattenings++;
+        return null; // Remove the IN condition from WHERE
+      }
+    }
+
+    // Recurse into AND/OR
+    if (where.type === 'AND') {
+      where.left = this._flattenInSubquery(ast, where.left);
+      where.right = this._flattenInSubquery(ast, where.right);
+      if (!where.left) return where.right;
+      if (!where.right) return where.left;
+    }
+
+    return where;
+  }
+
+  // --- Rule 4: Constant Folding ---
+  _foldConstants(ast) {
+    if (ast.type !== 'SELECT') return ast;
+
+    // Fold constants in WHERE clause
+    if (ast.where) {
+      ast.where = this._foldExpr(ast.where);
+    }
+
+    // Fold in columns
+    if (ast.columns) {
+      ast.columns = ast.columns.map(col => {
+        if (col.expression) {
+          return { ...col, expression: this._foldExpr(col.expression) };
+        }
+        return col;
+      });
+    }
+
+    return ast;
+  }
+
+  _foldExpr(expr) {
+    if (!expr || typeof expr !== 'object') return expr;
+
+    // Arithmetic on two constants
+    if (expr.type === 'BINARY_OP' && expr.left?.type === 'literal' && expr.right?.type === 'literal') {
+      const l = expr.left.value;
+      const r = expr.right.value;
+      if (typeof l === 'number' && typeof r === 'number') {
+        let result;
+        switch (expr.op) {
+          case '+': result = l + r; break;
+          case '-': result = l - r; break;
+          case '*': result = l * r; break;
+          case '/': result = r !== 0 ? l / r : undefined; break;
+          case '%': result = r !== 0 ? l % r : undefined; break;
+        }
+        if (result !== undefined) {
+          this._stats.constantFolds++;
+          return { type: 'literal', value: result };
+        }
+      }
+    }
+
+    // String concatenation of two constants
+    if (expr.type === 'CONCAT' && expr.left?.type === 'literal' && expr.right?.type === 'literal') {
+      this._stats.constantFolds++;
+      return { type: 'literal', value: String(expr.left.value) + String(expr.right.value) };
+    }
+
+    // Recurse
+    if (expr.left) expr.left = this._foldExpr(expr.left);
+    if (expr.right) expr.right = this._foldExpr(expr.right);
+    if (expr.conditions) {
+      expr.conditions = expr.conditions.map(c => this._foldExpr(c));
     }
 
     return expr;
   }
 
-  /**
-   * Suggest join order based on table sizes.
-   * Smaller tables should be on the build side (inner) of hash joins.
-   */
-  suggestJoinOrder(tables) {
-    // Sort by estimated size ascending — build hash table on smallest
-    return [...tables].sort((a, b) => (a.estimatedRows || 0) - (b.estimatedRows || 0));
+  // --- Rule 5: Redundant Predicate Elimination ---
+  _eliminateRedundantPredicates(ast) {
+    if (ast.type !== 'SELECT' || !ast.where) return ast;
+    ast.where = this._eliminateRedundant(ast.where);
+    return ast;
   }
 
-  /**
-   * Push predicates down to individual tables.
-   * Returns { pushed: [{table, predicate}], remaining: predicate }
-   */
-  pushdownPredicates(predicate, tables) {
-    const pushed = [];
-    const remaining = [];
+  _eliminateRedundant(expr) {
+    if (!expr || typeof expr !== 'object') return expr;
 
-    const preds = this._flattenAnd(predicate);
-    for (const pred of preds) {
-      const cols = this._extractColumns(pred);
-      // Can push if all columns belong to one table
-      const table = this._findSingleTable(cols, tables);
-      if (table) {
-        pushed.push({ table, predicate: pred });
-      } else {
-        remaining.push(pred);
+    // 1 = 1, TRUE = TRUE, etc.
+    if (expr.type === 'EQUALS' || expr.type === 'comparison') {
+      if (this._isEqual(expr.left, expr.right)) {
+        this._stats.redundantEliminations++;
+        return { type: 'literal', value: true };
       }
     }
 
-    return {
-      pushed,
-      remaining: remaining.length > 0 ? this._buildAnd(remaining) : null,
-    };
-  }
-
-  _mergeRangePredicates(left, right) {
-    if (left.type === 'COMPARE' && right.type === 'COMPARE' &&
-        left.left?.type === 'column' && right.left?.type === 'column' &&
-        left.left.name === right.left.name) {
-      // x > 5 AND x > 3 → x > 5
-      if (left.op === 'GT' && right.op === 'GT') {
-        return left.right.value >= right.right.value ? left : right;
-      }
-      // x < 5 AND x < 3 → x < 3
-      if (left.op === 'LT' && right.op === 'LT') {
-        return left.right.value <= right.right.value ? left : right;
-      }
+    // AND with TRUE → other side
+    if (expr.type === 'AND') {
+      expr.left = this._eliminateRedundant(expr.left);
+      expr.right = this._eliminateRedundant(expr.right);
+      if (expr.left?.type === 'literal' && expr.left.value === true) return expr.right;
+      if (expr.right?.type === 'literal' && expr.right.value === true) return expr.left;
     }
-    return null;
-  }
 
-  _orToIn(left, right) {
-    if (left.type === 'COMPARE' && left.op === 'EQ' &&
-        right.type === 'COMPARE' && right.op === 'EQ' &&
-        left.left?.type === 'column' && right.left?.type === 'column' &&
-        left.left.name === right.left.name &&
-        left.right?.type === 'literal' && right.right?.type === 'literal') {
-      return {
-        type: 'IN',
-        column: left.left,
-        values: [left.right, right.right],
-      };
+    // OR with TRUE → TRUE
+    if (expr.type === 'OR') {
+      expr.left = this._eliminateRedundant(expr.left);
+      expr.right = this._eliminateRedundant(expr.right);
+      if (expr.left?.type === 'literal' && expr.left.value === true) return expr.left;
+      if (expr.right?.type === 'literal' && expr.right.value === true) return expr.right;
     }
-    return null;
+
+    return expr;
   }
 
-  _isTrueLiteral(e) { return e?.type === 'literal' && e.value === true; }
-  _isFalseLiteral(e) { return e?.type === 'literal' && e.value === false; }
+  // --- Utility Methods ---
 
-  _flattenAnd(expr) {
-    if (!expr) return [];
-    if (expr.type === 'AND') return [...this._flattenAnd(expr.left), ...this._flattenAnd(expr.right)];
-    return [expr];
+  _splitConjunction(where) {
+    if (!where) return [];
+    if (where.type === 'AND') {
+      return [...this._splitConjunction(where.left), ...this._splitConjunction(where.right)];
+    }
+    return [where];
   }
 
-  _buildAnd(preds) {
-    if (preds.length === 0) return null;
-    if (preds.length === 1) return preds[0];
-    return preds.reduce((a, b) => ({ type: 'AND', left: a, right: b }));
+  _buildConjunction(conditions) {
+    if (conditions.length === 1) return conditions[0];
+    return { type: 'AND', left: conditions[0], right: this._buildConjunction(conditions.slice(1)) };
   }
 
-  _extractColumns(expr) {
-    const cols = new Set();
-    const walk = (e) => {
-      if (!e) return;
-      if (e.type === 'column') cols.add(e.name);
-      for (const key of ['left', 'right', 'expr', 'value', 'column']) {
-        if (e[key]) walk(e[key]);
+  _extractTableRefs(expr) {
+    const tables = new Set();
+    this._walkExpr(expr, node => {
+      if (node.type === 'column_ref' && node.table) {
+        tables.add(node.table);
       }
-    };
-    walk(expr);
-    return cols;
+    });
+    return tables;
   }
 
-  _findSingleTable(cols, tables) {
-    for (const table of tables) {
-      if ([...cols].every(c => table.columns?.includes(c))) return table.name;
-    }
-    return null;
+  _walkExpr(expr, fn) {
+    if (!expr || typeof expr !== 'object') return;
+    fn(expr);
+    if (expr.left) this._walkExpr(expr.left, fn);
+    if (expr.right) this._walkExpr(expr.right, fn);
+    if (expr.conditions) expr.conditions.forEach(c => this._walkExpr(c, fn));
+    if (expr.args) expr.args.forEach(a => this._walkExpr(a, fn));
   }
 
-  getStats() { return { ...this.stats }; }
+  _isEqual(a, b) {
+    if (!a || !b) return false;
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
+  _deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
 }
