@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HenryDB — Interactive SQL Playground</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --red: #f85149;
+  --yellow: #d29922;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+header h1 span { color: var(--accent); }
+
+header .badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2rem;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 2rem;
+  gap: 1rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.editor-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.editor-toolbar button {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: opacity 0.15s;
+}
+
+.editor-toolbar button:hover { opacity: 0.9; }
+.editor-toolbar button:active { transform: scale(0.98); }
+
+.editor-toolbar button.secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.editor-toolbar .hint {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+#editor {
+  width: 100%;
+  min-height: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 1rem;
+  resize: vertical;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+#editor:focus { outline: none; border-color: var(--accent); }
+
+.output-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 200px;
+}
+
+.output-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.output-header .timing {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+#output {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  min-height: 200px;
+}
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.5rem;
+}
+
+.result-table th {
+  text-align: left;
+  padding: 0.35rem 0.75rem;
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.result-table td {
+  padding: 0.3rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.result-table tr:hover td { background: rgba(88,166,255,0.05); }
+
+.result-ok { color: var(--green); }
+.result-error { color: var(--red); }
+.result-info { color: var(--text-dim); }
+
+.examples {
+  margin-top: 0.5rem;
+}
+
+.examples summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.example-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.example-card:hover { border-color: var(--accent); }
+
+.example-card h4 {
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.example-card code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: block;
+  white-space: pre-wrap;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+footer {
+  padding: 0.75rem 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+  main { padding: 0.75rem 1rem; }
+  header { padding: 0.75rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐘 <span>Henry</span>DB</h1>
+  <span class="badge">v1.0</span>
+  <span class="subtitle">Interactive SQL Playground — 100% in-browser, no server needed</span>
+</header>
+
+<main>
+  <div class="editor-area">
+    <div class="editor-toolbar">
+      <button id="run-btn" onclick="runQuery()">▶ Run (Ctrl+Enter)</button>
+      <button class="secondary" onclick="clearOutput()">Clear</button>
+      <button class="secondary" onclick="resetDb()">🔄 Reset DB</button>
+      <span class="hint" id="status">Ready — database initialized</span>
+    </div>
+    <textarea id="editor" spellcheck="false" placeholder="Type SQL here...
+Try: SELECT * FROM demo ORDER BY score DESC">SELECT name, score, grade FROM demo ORDER BY score DESC;</textarea>
+  </div>
+
+  <div class="output-area">
+    <div class="output-header">
+      <span>📋 Results</span>
+      <span class="timing" id="timing"></span>
+    </div>
+    <div id="output"><span class="result-info">Run a query to see results here.</span></div>
+  </div>
+
+  <details class="examples">
+    <summary>📚 Example Queries (click to load)</summary>
+    <div class="example-grid" id="examples"></div>
+  </details>
+</main>
+
+<footer>
+  Built from scratch in JavaScript — 200+ modules, 100K+ lines of code.
+  <a href="https://github.com/henrygd/henrydb" target="_blank">GitHub</a>
+</footer>
+
+<script type="module">
+import { Database } from './henrydb.bundle.js';
+
+let db;
+
+function initDb() {
+  db = new Database();
+  
+  // Create demo tables
+  db.execute(`CREATE TABLE demo (
+    id INTEGER PRIMARY KEY, name TEXT NOT NULL,
+    score INTEGER, grade TEXT, enrolled TEXT
+  )`);
+  db.execute('CREATE INDEX idx_demo_score ON demo(score)');
+  
+  const students = [
+    [1, 'Alice', 95, 'A', '2025-09-01'],
+    [2, 'Bob', 87, 'B', '2025-09-01'],
+    [3, 'Charlie', 92, 'A', '2025-09-02'],
+    [4, 'Diana', 78, 'C', '2025-09-02'],
+    [5, 'Eve', 88, 'B', '2025-09-03'],
+    [6, 'Frank', 91, 'A', '2025-09-03'],
+    [7, 'Grace', 85, 'B', '2025-09-04'],
+    [8, 'Hank', 73, 'C', '2025-09-04'],
+    [9, 'Ivy', 96, 'A', '2025-09-05'],
+    [10, 'Jack', 82, 'B', '2025-09-05'],
+  ];
+  for (const [id, name, score, grade, enrolled] of students) {
+    db.execute(`INSERT INTO demo (id, name, score, grade, enrolled) VALUES (${id}, '${name}', ${score}, '${grade}', '${enrolled}')`);
+  }
+  
+  db.execute(`CREATE TABLE products (
+    id INTEGER PRIMARY KEY, name TEXT, price REAL, category TEXT, in_stock INTEGER
+  )`);
+  const products = [
+    [1, 'Laptop', 999.99, 'Electronics', 15],
+    [2, 'Headphones', 79.99, 'Electronics', 42],
+    [3, 'Desk Chair', 249.99, 'Furniture', 8],
+    [4, 'Notebook', 4.99, 'Office', 200],
+    [5, 'Monitor', 349.99, 'Electronics', 12],
+    [6, 'Keyboard', 59.99, 'Electronics', 35],
+    [7, 'Standing Desk', 599.99, 'Furniture', 5],
+    [8, 'Pen Set', 12.99, 'Office', 150],
+    [9, 'Webcam', 89.99, 'Electronics', 20],
+    [10, 'Bookshelf', 149.99, 'Furniture', 10],
+  ];
+  for (const [id, name, price, cat, stock] of products) {
+    db.execute(`INSERT INTO products (id, name, price, category, in_stock) VALUES (${id}, '${name}', ${price}, '${cat}', ${stock})`);
+  }
+  
+  db.execute(`CREATE TABLE orders (
+    id INTEGER PRIMARY KEY, product_id INTEGER, customer TEXT,
+    quantity INTEGER, order_date TEXT
+  )`);
+  const orders = [
+    [1, 1, 'Alice', 1, '2026-01-15'],
+    [2, 2, 'Bob', 2, '2026-01-16'],
+    [3, 5, 'Alice', 1, '2026-01-17'],
+    [4, 3, 'Charlie', 1, '2026-02-01'],
+    [5, 6, 'Diana', 3, '2026-02-05'],
+    [6, 4, 'Bob', 10, '2026-02-10'],
+    [7, 1, 'Eve', 1, '2026-02-15'],
+    [8, 9, 'Frank', 2, '2026-03-01'],
+    [9, 2, 'Alice', 1, '2026-03-05'],
+    [10, 7, 'Charlie', 1, '2026-03-10'],
+  ];
+  for (const [id, pid, cust, qty, date] of orders) {
+    db.execute(`INSERT INTO orders (id, product_id, customer, quantity, order_date) VALUES (${id}, ${pid}, '${cust}', ${qty}, '${date}')`);
+  }
+}
+
+initDb();
+
+const examples = [
+  { title: 'Basic SELECT', sql: 'SELECT * FROM demo ORDER BY score DESC;' },
+  { title: 'Aggregates + GROUP BY', sql: `SELECT grade, COUNT(*) as count, AVG(score) as avg_score\nFROM demo\nGROUP BY grade\nORDER BY avg_score DESC;` },
+  { title: 'Window: ROW_NUMBER', sql: `SELECT name, score,\n  ROW_NUMBER() OVER (ORDER BY score DESC) as rank\nFROM demo;` },
+  { title: 'Window: Running Total', sql: `SELECT name, score,\n  SUM(score) OVER (ORDER BY name) as running_total\nFROM demo;` },
+  { title: 'CTE + Aggregates', sql: `WITH category_stats AS (\n  SELECT category, COUNT(*) as cnt,\n         ROUND(AVG(price), 2) as avg_price\n  FROM products\n  GROUP BY category\n)\nSELECT * FROM category_stats\nORDER BY avg_price DESC;` },
+  { title: 'JOIN: Order Details', sql: `SELECT o.id, p.name as product, o.customer,\n  o.quantity, p.price,\n  o.quantity * p.price as total\nFROM orders o\nJOIN products p ON o.product_id = p.id\nORDER BY total DESC;` },
+  { title: 'Subquery: Top Spenders', sql: `SELECT customer, SUM(total) as spent FROM (\n  SELECT o.customer,\n    o.quantity * p.price as total\n  FROM orders o\n  JOIN products p ON o.product_id = p.id\n) sub\nGROUP BY customer\nORDER BY spent DESC;` },
+  { title: 'CASE Expression', sql: `SELECT name, price,\n  CASE\n    WHEN price > 500 THEN 'Premium'\n    WHEN price > 100 THEN 'Mid-range'\n    ELSE 'Budget'\n  END as tier\nFROM products\nORDER BY price DESC;` },
+  { title: 'EXISTS Subquery', sql: `SELECT name FROM products p\nWHERE EXISTS (\n  SELECT 1 FROM orders o\n  WHERE o.product_id = p.id\n);` },
+  { title: 'UNION', sql: `SELECT name, 'student' as type FROM demo WHERE score > 90\nUNION\nSELECT name, 'product' as type FROM products WHERE price > 200;` },
+  { title: 'CREATE + INSERT', sql: `CREATE TABLE notes (id INTEGER PRIMARY KEY, text TEXT);\nINSERT INTO notes VALUES (1, 'Hello HenryDB!');\nINSERT INTO notes VALUES (2, 'SQL is fun');\nSELECT * FROM notes;` },
+  { title: 'EXPLAIN Plan', sql: `EXPLAIN SELECT p.name, SUM(o.quantity)\nFROM products p\nJOIN orders o ON o.product_id = p.id\nGROUP BY p.name;` },
+];
+
+// Render examples
+const exGrid = document.getElementById('examples');
+examples.forEach(ex => {
+  const card = document.createElement('div');
+  card.className = 'example-card';
+  card.innerHTML = `<h4>${ex.title}</h4><code>${escapeHtml(ex.sql)}</code>`;
+  card.onclick = () => {
+    document.getElementById('editor').value = ex.sql;
+    runQuery();
+  };
+  exGrid.appendChild(card);
+});
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatValue(v) {
+  if (v === null || v === undefined) return '<span class="result-info">NULL</span>';
+  if (typeof v === 'number') return v.toLocaleString('en-US', { maximumFractionDigits: 4 });
+  return escapeHtml(String(v));
+}
+
+function renderTable(rows) {
+  if (!rows || rows.length === 0) return '<span class="result-info">No rows returned.</span>';
+  const cols = Object.keys(rows[0]);
+  let html = '<table class="result-table"><thead><tr>';
+  for (const col of cols) html += `<th>${escapeHtml(col)}</th>`;
+  html += '</tr></thead><tbody>';
+  for (const row of rows) {
+    html += '<tr>';
+    for (const col of cols) html += `<td>${formatValue(row[col])}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  html += `<span class="result-info">${rows.length} row${rows.length !== 1 ? 's' : ''}</span>`;
+  return html;
+}
+
+function renderPlan(plan) {
+  let html = '<div style="color:var(--yellow)">';
+  for (const step of plan) {
+    html += `<div>→ ${escapeHtml(step.operation)}`;
+    if (step.table) html += ` on <strong>${escapeHtml(step.table)}</strong>`;
+    if (step.index) html += ` using index <strong>${escapeHtml(step.index)}</strong>`;
+    if (step.estimated_rows !== undefined) html += ` (est. ${step.estimated_rows} rows)`;
+    if (step.condition) html += ` [${escapeHtml(step.condition)}]`;
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+window.runQuery = function() {
+  const editor = document.getElementById('editor');
+  const sql = editor.value.trim();
+  if (!sql) return;
+  
+  const outputEl = document.getElementById('output');
+  const timingEl = document.getElementById('timing');
+  const statusEl = document.getElementById('status');
+  
+  // Split by semicolons for multiple statements
+  const statements = sql.split(';').map(s => s.trim()).filter(Boolean);
+  let html = '';
+  const t0 = performance.now();
+  
+  for (const stmt of statements) {
+    try {
+      const result = db.execute(stmt);
+      
+      if (result.type === 'ROWS') {
+        html += renderTable(result.rows);
+      } else if (result.type === 'PLAN') {
+        html += renderPlan(result.plan);
+      } else if (result.type === 'OK') {
+        html += `<div class="result-ok">✓ ${escapeHtml(result.message)}</div>`;
+      } else if (result.rows) {
+        html += renderTable(result.rows);
+      } else {
+        html += `<div class="result-ok">✓ ${escapeHtml(JSON.stringify(result))}</div>`;
+      }
+    } catch (e) {
+      html += `<div class="result-error">✗ Error: ${escapeHtml(e.message)}</div>`;
+    }
+    html += '<br>';
+  }
+  
+  const elapsed = (performance.now() - t0).toFixed(1);
+  outputEl.innerHTML = html;
+  timingEl.textContent = `${elapsed}ms`;
+  statusEl.textContent = `Executed ${statements.length} statement${statements.length !== 1 ? 's' : ''} in ${elapsed}ms`;
+};
+
+window.clearOutput = function() {
+  document.getElementById('output').innerHTML = '<span class="result-info">Output cleared.</span>';
+  document.getElementById('timing').textContent = '';
+};
+
+window.resetDb = function() {
+  initDb();
+  document.getElementById('status').textContent = 'Database reset to initial state';
+  document.getElementById('output').innerHTML = '<span class="result-ok">✓ Database reset. All demo tables restored.</span>';
+};
+
+// Keyboard shortcut
+document.getElementById('editor').addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    runQuery();
+  }
+  // Tab support
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const ta = e.target;
+    const start = ta.selectionStart;
+    ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = start + 2;
+  }
+});
+
+// Auto-run the default query
+runQuery();
+</script>
+
+</body>
+</html>
