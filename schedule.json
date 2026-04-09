@@ -1595,8 +1595,41 @@
     {
       "id": "T151",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final git push and daily log update with session statistics",
+      "started": "2026-04-09T21:32:18.972Z",
+      "completed": "2026-04-09T21:32:19.226Z",
+      "duration_ms": 30000,
+      "summary": "Pushed to git, cleaned up queue."
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Prepared statements: PREPARE name AS query, EXECUTE name(params). Parse once, bind parameters, execute many times.",
+      "project": "henrydb",
+      "started": "2026-04-09T21:33:21.966Z"
+    },
+    {
+      "id": "T153",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final git push and daily log update with session statistics"
+      "task": "Parameterized queries: db.prepare(sql) returns statement object with .execute(params), .explain(), .close()",
+      "project": "henrydb"
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Benchmark: prepared vs unprepared for 10K identical-structure queries",
+      "project": "henrydb"
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Query plan cache: automatically cache parsed ASTs and plans for repeated queries",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2192,6 +2225,22 @@
     {
       "time": "2026-04-09T21:31:57.977Z",
       "msg": "Removed T150: LAG/LEAD already implemented in T148."
+    },
+    {
+      "time": "2026-04-09T21:33:13.560Z",
+      "msg": "Added T152 (BUILD) after end: Prepared statements: PREPARE name AS query, EXECUTE name(params). Parse once, bind parameters, execute many times."
+    },
+    {
+      "time": "2026-04-09T21:33:13.683Z",
+      "msg": "Added T153 (BUILD) after end: Parameterized queries: db.prepare(sql) returns statement object with .execute(params), .explain(), .close()"
+    },
+    {
+      "time": "2026-04-09T21:33:13.803Z",
+      "msg": "Added T154 (BUILD) after end: Benchmark: prepared vs unprepared for 10K identical-structure queries"
+    },
+    {
+      "time": "2026-04-09T21:33:13.924Z",
+      "msg": "Added T155 (BUILD) after end: Query plan cache: automatically cache parsed ASTs and plans for repeated queries"
     }
   ]
 }

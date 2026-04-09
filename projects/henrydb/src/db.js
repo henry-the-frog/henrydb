@@ -17,6 +17,7 @@ import { PlanCache } from './plan-cache.js';
 export class Database {
   constructor(options = {}) {
     this.tables = new Map();  // name -> { heap, schema, indexes }
+    this._prepared = new Map(); // name -> { ast, sql }
     this.catalog = [];
     this.indexCatalog = new Map();  // indexName -> { table, columns, unique }
     this.views = new Map();  // viewName -> { query (AST) }
@@ -489,6 +490,9 @@ export class Database {
       case 'COMMIT': this._inTransaction = false; return { type: 'OK', message: 'COMMIT' };
       case 'ROLLBACK': this._inTransaction = false; return { type: 'OK', message: 'ROLLBACK' };
       case 'VACUUM': return this._vacuum(ast);
+      case 'PREPARE': return this._prepareSql(ast);
+      case 'EXECUTE_PREPARED': return this._executePrepared(ast);
+      case 'DEALLOCATE': return this._deallocate(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -2148,6 +2152,96 @@ export class Database {
       type: 'CHECKPOINT',
       message: `CHECKPOINT complete: ${stats.tables} tables, ${stats.totalRows} rows`,
       details: stats,
+    };
+  }
+
+  // === Prepared Statements ===
+  
+  _prepareSql(ast) {
+    const name = ast.name;
+    if (this._prepared.has(name)) {
+      throw new Error(`Prepared statement '${name}' already exists`);
+    }
+    this._prepared.set(name, { ast: ast.query, name });
+    return { message: `PREPARE ${name}` };
+  }
+
+  _executePrepared(ast) {
+    const name = ast.name;
+    if (!this._prepared.has(name)) {
+      throw new Error(`Prepared statement '${name}' not found`);
+    }
+    const stmt = this._prepared.get(name);
+    
+    // Bind parameters: replace PARAM nodes in the AST with literal values
+    const paramValues = ast.params.map(p => {
+      if (p.type === 'literal') return p.value;
+      if (p.type === 'PARAM') throw new Error('Cannot use parameters in EXECUTE parameter list');
+      return p.value;
+    });
+    
+    const boundAst = this._bindParams(JSON.parse(JSON.stringify(stmt.ast)), paramValues);
+    return this.execute_ast(boundAst);
+  }
+
+  _deallocate(ast) {
+    if (ast.all) {
+      const count = this._prepared.size;
+      this._prepared.clear();
+      return { message: `DEALLOCATE ALL (${count} statements)` };
+    }
+    if (!this._prepared.has(ast.name)) {
+      throw new Error(`Prepared statement '${ast.name}' not found`);
+    }
+    this._prepared.delete(ast.name);
+    return { message: `DEALLOCATE ${ast.name}` };
+  }
+
+  /**
+   * Bind parameter values into an AST by replacing PARAM nodes with literals.
+   */
+  _bindParams(node, params) {
+    if (!node || typeof node !== 'object') return node;
+    
+    if (node.type === 'PARAM') {
+      const idx = node.index - 1; // $1 is index 0
+      if (idx < 0 || idx >= params.length) {
+        throw new Error(`Parameter $${node.index} not provided (got ${params.length} params)`);
+      }
+      return { type: 'literal', value: params[idx] };
+    }
+    
+    // Recursively bind in all object properties
+    for (const key of Object.keys(node)) {
+      if (Array.isArray(node[key])) {
+        node[key] = node[key].map(item => this._bindParams(item, params));
+      } else if (typeof node[key] === 'object' && node[key] !== null) {
+        node[key] = this._bindParams(node[key], params);
+      }
+    }
+    
+    return node;
+  }
+
+  /**
+   * Programmatic API: prepare a statement for repeated execution.
+   * Returns a PreparedStatement object.
+   */
+  prepare(sql) {
+    const ast = parse(sql);
+    const name = `__stmt_${this._prepared.size}`;
+    this._prepared.set(name, { ast, name });
+    
+    const db = this;
+    return {
+      name,
+      execute(...params) {
+        const bound = db._bindParams(JSON.parse(JSON.stringify(ast)), params);
+        return db.execute_ast(bound);
+      },
+      close() {
+        db._prepared.delete(name);
+      },
     };
   }
 

@@ -29,7 +29,7 @@ const KEYWORDS = new Set([
   'CONFLICT', 'DO', 'NOTHING',
   'ANALYZE', 'RETURNING', 'USING', 'FIRST_VALUE', 'LAST_VALUE',
   'MATERIALIZED', 'REFRESH',
-  'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
+  'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE', 'PREPARE', 'DEALLOCATE',
   'IF', 'EXISTS',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
@@ -238,6 +238,47 @@ export function parse(sql) {
     let table = null;
     if (peek()?.type === 'IDENT') table = advance().value;
     return { type: 'ANALYZE_TABLE', table };
+  }
+  // PREPARE name AS query
+  if (isKeyword('PREPARE')) {
+    advance(); // PREPARE
+    const name = advance().value;
+    if (isKeyword('AS')) advance(); // AS
+    // Parse the inner statement (SELECT, INSERT, UPDATE, DELETE)
+    let query;
+    if (isKeyword('SELECT') || isKeyword('WITH')) {
+      query = isKeyword('WITH') ? parseWith() : parseSelect();
+    } else if (isKeyword('INSERT')) {
+      query = parseInsert();
+    } else if (isKeyword('UPDATE')) {
+      query = parseUpdate();
+    } else if (isKeyword('DELETE')) {
+      query = parseDelete();
+    } else {
+      throw new Error(`PREPARE body must be SELECT, INSERT, UPDATE, or DELETE`);
+    }
+    return { type: 'PREPARE', name, query };
+  }
+  // EXECUTE name(param1, param2, ...)
+  if (isKeyword('EXECUTE') && peek()?.type !== '(') {
+    advance(); // EXECUTE
+    const name = advance().value;
+    const params = [];
+    if (match('(')) {
+      if (!match(')')) {
+        params.push(parseExpr());
+        while (match(',')) params.push(parseExpr());
+        expect(')');
+      }
+    }
+    return { type: 'EXECUTE_PREPARED', name, params };
+  }
+  // DEALLOCATE name
+  if (isKeyword('DEALLOCATE')) {
+    advance();
+    if (isKeyword('ALL')) { advance(); return { type: 'DEALLOCATE', name: null, all: true }; }
+    const name = advance().value;
+    return { type: 'DEALLOCATE', name, all: false };
   }
   throw new Error(`Unexpected token: ${peek().type} ${peek().value || ''}`);
 
