@@ -1174,6 +1174,17 @@
       "completed": "2026-04-09T19:34:35.677Z",
       "duration_ms": 300000,
       "summary": "7 upsert/savepoint/txn tests. Discovered ON CONFLICT DO UPDATE bug (values not applied on conflict). Documented for future fix. Basic UPSERT works."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Comprehensive SQL feature coverage test: one test per major feature",
+      "project": "henrydb",
+      "started": "2026-04-09T19:35:01.402Z",
+      "completed": "2026-04-09T19:35:53.224Z",
+      "duration_ms": 300000,
+      "summary": "41 SQL feature coverage tests — all pass. Covers: SELECT, WHERE, ORDER BY, LIMIT, OFFSET, DISTINCT, all aggregates, GROUP BY, HAVING, LIKE, BETWEEN, IN, IS NULL, COALESCE, CASE WHEN, JOIN, LEFT JOIN, subquery, EXISTS, INSERT, UPDATE, DELETE, TRUNCATE, CREATE INDEX, EXPLAIN, VACUUM, ANALYZE, SHOW TABLES, DESCRIBE, BEGIN/COMMIT, UNION, CTE, WINDOW, RETURNING, CAST, arithmetic, concatenation, NULLIF."
     }
   ],
   "focusProjects": [
@@ -1609,6 +1620,10 @@
     {
       "time": "2026-04-09T19:31:20.317Z",
       "msg": "Added T110 (BUILD) after end: Add UPSERT (ON CONFLICT) tests and SAVEPOINT tests"
+    },
+    {
+      "time": "2026-04-09T19:35:01.271Z",
+      "msg": "Added T111 (BUILD) after end: Comprehensive SQL feature coverage test: one test per major feature"
     }
   ]
 }

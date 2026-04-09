@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T19:34:35.741Z",
+  "generated": "2026-04-09T19:35:53.289Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add UPSERT (ON CONFLICT) tests and SAVEPOINT tests",
-    "completedAt": "2026-04-09T19:34:35.741Z",
-    "taskId": "T110",
-    "summary": "7 upsert/savepoint/txn tests. Discovered ON CONFLICT DO UPDATE bug (values not applied on conflict). Documented for future fix. Basic UPSERT works.",
+    "task": "Comprehensive SQL feature coverage test: one test per major feature",
+    "completedAt": "2026-04-09T19:35:53.289Z",
+    "taskId": "T111",
+    "summary": "41 SQL feature coverage tests — all pass. Covers: SELECT, WHERE, ORDER BY, LIMIT, OFFSET, DISTINCT, all aggregates, GROUP BY, HAVING, LIKE, BETWEEN, IN, IS NULL, COALESCE, CASE WHEN, JOIN, LEFT JOIN, subquery, EXISTS, INSERT, UPDATE, DELETE, TRUNCATE, CREATE INDEX, EXPLAIN, VACUUM, ANALYZE, SHOW TABLES, DESCRIBE, BEGIN/COMMIT, UNION, CTE, WINDOW, RETURNING, CAST, arithmetic, concatenation, NULLIF.",
     "durationMs": 300000
   },
   "schedule": {
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 106,
+    "blocksCompleted": 107,
     "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 10,
-      "BUILD": 61,
+      "BUILD": 62,
       "MAINTAIN": 19,
       "EXPLORE": 2
     }
