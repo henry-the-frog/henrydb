@@ -1,6 +1,7 @@
 # Scratch Notes Index
 
 ## Active Notes
+- **henrydb-persistence-bugs.md** — BufferPool bugs (#1-#3), layer mismatches, WAL recovery, autocommit txId=0 issue, architecture diagram (uses: 1, created: 2026-04-09)
 - **copy-and-patch-compilation.md** — Copy-and-patch technique, comparison with HenryDB closure approach, sea-of-nodes verdict (overkill), action items (uses: 1, created: 2026-04-08)
 - **henrydb-transactions.md** — MVCC/WAL bugs (#1-#9), SSI, 2PC, ARIES checkpointing, PITR, auto-checkpoint, WAL compaction, compiled query engine (uses: 6, created: 2026-04-07)
 - **cdcl-sat-solver.md** — CDCL SAT solver design, clause learning, VSIDS (uses: 2, created: 2026-04-06)

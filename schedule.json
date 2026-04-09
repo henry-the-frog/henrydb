@@ -1109,6 +1109,27 @@
       "completed": "2026-04-09T19:16:06.403Z",
       "duration_ms": 120000,
       "summary": "System catalog queries (SHOW TABLES, DESCRIBE, SHOW COLUMNS) all work. 6 tests added."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add information_schema.tables and information_schema.columns virtual tables for pg compatibility",
+      "project": "henrydb",
+      "started": "2026-04-09T19:16:28.012Z",
+      "completed": "2026-04-09T19:16:58.854Z",
+      "duration_ms": 30000,
+      "summary": "information_schema.tables and .columns already implemented in server.js (intercepted pg queries). No changes needed."
+    },
+    {
+      "id": "T106",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push, knowledge capture, update scratch/INDEX.md with persistence learnings",
+      "started": "2026-04-09T19:17:07.280Z",
+      "completed": "2026-04-09T19:18:37.732Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, knowledge system updated: scratch/INDEX.md + persistence-bugs.md + failures.md with 4 new bugs and 2 new lessons."
     }
   ],
   "focusProjects": [
@@ -1520,6 +1541,14 @@
     {
       "time": "2026-04-09T19:15:19.097Z",
       "msg": "Added T104 (BUILD) after end: Add SHOW TABLES/SHOW COLUMNS and system catalog queries (information_schema)"
+    },
+    {
+      "time": "2026-04-09T19:16:27.595Z",
+      "msg": "Added T105 (BUILD) after end: Add information_schema.tables and information_schema.columns virtual tables for pg compatibility"
+    },
+    {
+      "time": "2026-04-09T19:16:27.805Z",
+      "msg": "Added T106 (MAINTAIN) after end: Git push, knowledge capture, update scratch/INDEX.md with persistence learnings"
     }
   ]
 }
