@@ -1946,10 +1946,41 @@
     {
       "id": "T184",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Sorted array with binary search: simplest possible index structure for baselines",
       "project": "henrydb",
-      "started": "2026-04-09T22:43:04.769Z"
+      "started": "2026-04-09T22:43:04.769Z",
+      "completed": "2026-04-09T22:43:46.166Z",
+      "duration_ms": 120000,
+      "summary": "SortedArray: O(log n) lookup baseline. Range, min/max. 6 tests."
+    },
+    {
+      "id": "T185",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Grand benchmark: compare ALL index structures (B+tree, SkipList, ART, Trie, Hash, RobinHood, SortedArray, LSM, BEpsilon) for insert/lookup/range",
+      "project": "henrydb",
+      "started": "2026-04-09T22:43:57.167Z"
+    },
+    {
+      "id": "T186",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Treap: randomized BST combining tree+heap for balanced search",
+      "project": "henrydb"
+    },
+    {
+      "id": "T187",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "COLA (Cache-Oblivious Lookahead Array): write-optimized structure",
+      "project": "henrydb"
+    },
+    {
+      "id": "T188",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session wrap: README update, daily log, CURRENT.md, git push"
     }
   ],
   "focusProjects": [
@@ -2689,6 +2720,22 @@
     {
       "time": "2026-04-09T22:39:15.576Z",
       "msg": "Added T184 (BUILD) after end: Sorted array with binary search: simplest possible index structure for baselines"
+    },
+    {
+      "time": "2026-04-09T22:43:56.116Z",
+      "msg": "Added T185 (BUILD) after end: Grand benchmark: compare ALL index structures (B+tree, SkipList, ART, Trie, Hash, RobinHood, SortedArray, LSM, BEpsilon) for insert/lookup/range"
+    },
+    {
+      "time": "2026-04-09T22:43:56.330Z",
+      "msg": "Added T186 (BUILD) after end: Treap: randomized BST combining tree+heap for balanced search"
+    },
+    {
+      "time": "2026-04-09T22:43:56.544Z",
+      "msg": "Added T187 (BUILD) after end: COLA (Cache-Oblivious Lookahead Array): write-optimized structure"
+    },
+    {
+      "time": "2026-04-09T22:43:56.756Z",
+      "msg": "Added T188 (MAINTAIN) after end: Final session wrap: README update, daily log, CURRENT.md, git push"
     }
   ]
 }
