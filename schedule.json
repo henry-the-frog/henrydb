@@ -1794,10 +1794,21 @@
     {
       "id": "T170",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "LSM-tree memtable: in-memory sorted buffer using SkipList that flushes to immutable sorted runs",
       "project": "henrydb",
-      "started": "2026-04-09T22:18:09.754Z"
+      "started": "2026-04-09T22:18:09.754Z",
+      "completed": "2026-04-09T22:19:52.009Z",
+      "duration_ms": 300000,
+      "summary": "LSM-tree: SkipList memtable → SSTable flush → compaction. Tombstone deletes. 1.4µs write, 2.7µs read. 12 tests."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Trie (prefix tree): O(k) insert/search/prefix-search where k=key length. For autocomplete and prefix matching.",
+      "project": "henrydb",
+      "started": "2026-04-09T22:20:19.039Z"
     }
   ],
   "focusProjects": [
@@ -2481,6 +2492,10 @@
     {
       "time": "2026-04-09T22:18:09.345Z",
       "msg": "Added T170 (BUILD) after end: LSM-tree memtable: in-memory sorted buffer using SkipList that flushes to immutable sorted runs"
+    },
+    {
+      "time": "2026-04-09T22:20:18.804Z",
+      "msg": "Added T171 (BUILD) after end: Trie (prefix tree): O(k) insert/search/prefix-search where k=key length. For autocomplete and prefix matching."
     }
   ]
 }
