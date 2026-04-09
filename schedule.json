@@ -1323,16 +1323,20 @@
       "id": "T129",
       "mode": "BUILD",
       "task": "Optimizer: use BTreeTable.findByPK for WHERE pk=value instead of full scan",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T119",
-      "started": "2026-04-09T20:51:27.451Z"
+      "started": "2026-04-09T20:51:27.451Z",
+      "completed": "2026-04-09T20:52:50.075Z",
+      "duration_ms": 300000,
+      "summary": "Direct PK lookup: BTreeTable.findByPK bypasses secondary index. 4.7x faster than Heap+index. 0.044ms avg per lookup. 9 tests."
     },
     {
       "id": "T130",
       "mode": "BUILD",
       "task": "EXPLAIN shows storage engine and sort elimination in query plan",
-      "status": "upcoming",
-      "plan_ref": "T119"
+      "status": "in-progress",
+      "plan_ref": "T119",
+      "started": "2026-04-09T20:52:55.186Z"
     },
     {
       "id": "T120",

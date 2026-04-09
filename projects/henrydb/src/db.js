@@ -2236,18 +2236,22 @@ export class Database {
 
       // Determine scan type
       const estRows = this._estimateRowCount(table);
+      const engine = table.heap instanceof BTreeTable ? 'btree' : 'heap';
       if (!hasJoins && stmt.where) {
         const indexScan = this._tryIndexScan(table, stmt.where, stmt.from.alias || tableName);
         if (indexScan !== null) {
-          // Find which index was used
-          const colName = this._findIndexedColumn(stmt.where);
-          plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, estimated_rows: indexScan.rows.length });
+          if (indexScan.btreeLookup) {
+            plan.push({ operation: 'BTREE_PK_LOOKUP', table: tableName, engine, estimated_rows: indexScan.rows.length });
+          } else {
+            const colName = this._findIndexedColumn(stmt.where);
+            plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: indexScan.rows.length });
+          }
         } else {
-          plan.push({ operation: 'TABLE_SCAN', table: tableName, estimated_rows: estRows });
+          plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows });
           plan.push({ operation: 'FILTER', condition: 'WHERE' });
         }
       } else {
-        plan.push({ operation: 'TABLE_SCAN', table: tableName, estimated_rows: estRows });
+        plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows });
       }
 
       // Joins
@@ -2290,7 +2294,11 @@ export class Database {
 
     // ORDER BY
     if (stmt.orderBy) {
-      plan.push({ operation: 'SORT', columns: stmt.orderBy.map(o => `${o.column} ${o.direction}`) });
+      if (this._canEliminateSort(stmt)) {
+        plan.push({ operation: 'SORT_ELIMINATED', reason: 'BTree PK ordering', columns: stmt.orderBy.map(o => `${o.column} ${o.direction}`) });
+      } else {
+        plan.push({ operation: 'SORT', columns: stmt.orderBy.map(o => `${o.column} ${o.direction}`) });
+      }
     }
 
     // DISTINCT
@@ -2329,11 +2337,15 @@ export class Database {
           const prefix = '  '.repeat(indent) + (indent > 0 ? '->  ' : '');
           switch (step.operation) {
             case 'TABLE_SCAN':
-              lines.push(`${prefix}Seq Scan on ${step.table}  (rows=${step.estimated_rows})`);
+              lines.push(`${prefix}Seq Scan on ${step.table}  (engine=${step.engine || 'heap'}, rows=${step.estimated_rows})`);
               indent++;
               break;
             case 'INDEX_SCAN':
-              lines.push(`${prefix}Index Scan using ${step.index} on ${step.table}  (rows=${step.estimated_rows})`);
+              lines.push(`${prefix}Index Scan using ${step.index} on ${step.table}  (engine=${step.engine || 'heap'}, rows=${step.estimated_rows})`);
+              indent++;
+              break;
+            case 'BTREE_PK_LOOKUP':
+              lines.push(`${prefix}BTree PK Lookup on ${step.table}  (engine=btree, rows=${step.estimated_rows})`);
               indent++;
               break;
             case 'HASH_JOIN':
@@ -2355,6 +2367,9 @@ export class Database {
               break;
             case 'SORT':
               lines.push(`${prefix}Sort  (keys: ${step.columns.join(', ')})`);
+              break;
+            case 'SORT_ELIMINATED':
+              lines.push(`${prefix}Sort Eliminated  (keys: ${step.columns.join(', ')}, reason: ${step.reason})`);
               break;
             case 'LIMIT':
               lines.push(`${prefix}Limit  (count=${step.count})`);
