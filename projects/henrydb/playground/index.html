@@ -154,6 +154,29 @@ footer {
 footer a { color: var(--accent); text-decoration: none; }
 /* Charts */
 .chart-container { padding: 0.5rem; }
+/* Tutorials */
+.tutorial-card {
+  padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer;
+  font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;
+}
+.tutorial-card:hover { background: rgba(88,166,255,0.1); }
+.tutorial-card .count { color: var(--text-dim); font-size: 0.65rem; margin-left: auto; }
+.lesson-panel {
+  background: var(--surface); border: 1px solid var(--accent); border-radius: 6px;
+  padding: 0.75rem; margin-bottom: 0.5rem;
+}
+.lesson-panel h4 { color: var(--accent); font-size: 0.85rem; margin-bottom: 0.3rem; }
+.lesson-panel p { color: var(--text-dim); font-size: 0.78rem; margin-bottom: 0.4rem; }
+.lesson-panel .challenge { color: var(--yellow); font-weight: 600; font-size: 0.8rem; }
+.lesson-panel .hint { color: var(--text-dim); font-size: 0.72rem; font-family: var(--font-mono); }
+.lesson-nav { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.lesson-nav button {
+  padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); cursor: pointer; font-size: 0.75rem;
+}
+.lesson-nav button:hover { border-color: var(--accent); }
+.lesson-nav button.primary { background: var(--accent); color: var(--bg); }
+.lesson-success { color: var(--green); font-weight: 600; font-size: 0.85rem; padding: 0.3rem 0; }
 .chart-container svg { width: 100%; max-height: 300px; }
 .chart-bar { transition: opacity 0.15s; }
 .chart-bar:hover { opacity: 0.8; }
@@ -173,6 +196,10 @@ footer a { color: var(--accent); text-decoration: none; }
 </header>
 <div class="app-layout">
   <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>🎓 Tutorials</h3>
+      <div class="section-body" id="tutorial-list"></div>
+    </div>
     <div class="sidebar-section">
       <h3>📋 Schema</h3>
       <div class="section-body" id="schema-list"></div>
@@ -208,7 +235,9 @@ footer a { color: var(--accent); text-decoration: none; }
 <footer>108K+ LOC · 4,295 tests · 209 modules · 115KB browser bundle · Built from scratch in JS</footer>
 <script type="module">
 import { Database } from './henrydb.bundle.js';
+import { tutorials, getLesson } from './tutorial.js';
 let db, queryHistory = [], lastPlan = null, lastRows = null, activeTab = 'results';
+let currentTutorial = null, currentLessonIdx = 0, lessonDb = null;
 
 const CHART_COLORS = ['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#f0883e','#79c0ff','#56d364','#e3b341','#ff7b72'];
 
@@ -437,6 +466,58 @@ window.resetDb = function() {
   document.getElementById('history-list').innerHTML = '';
   document.getElementById('output').innerHTML = '<span class="result-ok">✓ Database reset.</span>';
 };
+// Tutorials
+function initTutorials() {
+  const list = document.getElementById('tutorial-list');
+  tutorials.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'tutorial-card';
+    card.innerHTML = `${t.title}<span class="count">${t.lessons.length} lessons</span>`;
+    card.onclick = () => { currentTutorial = t.id; currentLessonIdx = 0; showLesson(); };
+    list.appendChild(card);
+  });
+}
+function showLesson() {
+  const lesson = getLesson(currentTutorial, currentLessonIdx);
+  if (!lesson) { window.endTutorial(); return; }
+  if (lesson.setup) {
+    lessonDb = new Database();
+    lesson.setup.split(';').filter(Boolean).forEach(s => { try { lessonDb.execute(s.trim()); } catch(e) {} });
+  }
+  let panel = document.getElementById('lesson-panel');
+  if (!panel) {
+    panel = document.createElement('div'); panel.id = 'lesson-panel'; panel.className = 'lesson-panel';
+    document.getElementById('editor').parentElement.insertBefore(panel, document.getElementById('editor'));
+  }
+  panel.innerHTML = `<h4>${lesson.tutorialTitle} — ${lesson.index+1}/${lesson.total}: ${lesson.title}</h4>
+    <p>${lesson.description}</p><p class="challenge">Challenge: ${lesson.challenge}</p>
+    <p class="hint">💡 <code>${lesson.hint}</code></p>
+    <div class="lesson-nav">${lesson.index>0?'<button onclick="prevLesson()">← Prev</button>':''}
+    <button onclick="showSolution()">Solution</button>
+    <button onclick="checkAnswer()" class="primary">✓ Check</button>
+    <button onclick="endTutorial()">✕ Exit</button></div><div id="lesson-feedback"></div>`;
+  document.getElementById('editor').value = '-- Write your query here\n';
+}
+window.checkAnswer = function() {
+  const lesson = getLesson(currentTutorial, currentLessonIdx);
+  if (!lesson) return;
+  try {
+    const r = (lessonDb||db).execute(document.getElementById('editor').value.trim().replace(/;$/,''));
+    const fb = document.getElementById('lesson-feedback');
+    if (lesson.check(r.rows)) {
+      fb.innerHTML = '<div class="lesson-success">🎉 Correct!</div>';
+      document.getElementById('output').innerHTML = renderTable(r.rows);
+      setTimeout(() => { currentLessonIdx++; showLesson(); }, 1500);
+    } else {
+      fb.innerHTML = '<div class="result-error">Not quite — try again.</div>';
+      document.getElementById('output').innerHTML = renderTable(r.rows);
+    }
+  } catch(e) { document.getElementById('lesson-feedback').innerHTML = `<div class="result-error">${esc(e.message)}</div>`; }
+};
+window.showSolution = function() { const l = getLesson(currentTutorial, currentLessonIdx); if(l) document.getElementById('editor').value = l.solution; };
+window.prevLesson = function() { if(currentLessonIdx>0){currentLessonIdx--;showLesson();} };
+window.endTutorial = function() { currentTutorial=null; lessonDb=null; const p=document.getElementById('lesson-panel'); if(p)p.remove(); };
+initTutorials();
 const examples = [
   {t:'Basic SELECT',s:'SELECT * FROM demo ORDER BY score DESC;'},
   {t:'Aggregates',s:"SELECT grade, COUNT(*) as count,\n  ROUND(AVG(score),1) as avg\nFROM demo GROUP BY grade\nORDER BY avg DESC;"},
