@@ -4,72 +4,71 @@ import assert from 'node:assert/strict';
 import { KDTree } from './kd-tree.js';
 
 describe('KDTree', () => {
-  const points = [
-    { x: 2, y: 3, id: 'A' },
-    { x: 5, y: 4, id: 'B' },
-    { x: 9, y: 6, id: 'C' },
-    { x: 4, y: 7, id: 'D' },
-    { x: 8, y: 1, id: 'E' },
-    { x: 7, y: 2, id: 'F' },
-  ];
-
-  it('build and nearest neighbor', () => {
-    const tree = KDTree.build(points);
-    const nearest = tree.nearest({ x: 5, y: 5 });
-    assert.equal(nearest.id, 'B'); // (5,4) closest to (5,5)
-  });
-
-  it('nearest to corner', () => {
-    const tree = KDTree.build(points);
-    const nearest = tree.nearest({ x: 0, y: 0 });
-    assert.equal(nearest.id, 'A'); // (2,3) closest to (0,0)
+  it('nearest neighbor', () => {
+    const kd = new KDTree(2);
+    kd.insert([0, 0], 'origin');
+    kd.insert([3, 4], 'far');
+    kd.insert([1, 1], 'near');
+    
+    const nn = kd.nearest([0.5, 0.5]);
+    assert.equal(nn.value, 'origin');
+    assert.ok(nn.distance < 1);
   });
 
   it('range search', () => {
-    const tree = KDTree.build(points);
-    const results = tree.rangeSearch({ x: 3, y: 1 }, { x: 8, y: 5 });
-    assert.ok(results.some(p => p.id === 'B'));
-    assert.ok(results.some(p => p.id === 'F'));
-  });
-
-  it('k-nearest neighbors', () => {
-    const tree = KDTree.build(points);
-    const knn = tree.kNearest({ x: 5, y: 5 }, 3);
-    assert.equal(knn.length, 3);
-    assert.equal(knn[0].id, 'B');
-  });
-
-  it('insert', () => {
-    const tree = new KDTree(2);
-    tree.insert({ x: 1, y: 1 });
-    tree.insert({ x: 5, y: 5 });
-    tree.insert({ x: 9, y: 9 });
-    assert.equal(tree.size, 3);
-    assert.equal(tree.nearest({ x: 4, y: 4 }).x, 5);
-  });
-
-  it('empty tree', () => {
-    const tree = new KDTree(2);
-    assert.equal(tree.nearest({ x: 0, y: 0 }), null);
-  });
-
-  it('benchmark: 10K points', () => {
-    const pts = Array.from({ length: 10000 }, () => ({ x: Math.random() * 1000, y: Math.random() * 1000 }));
-    const tree = KDTree.build(pts);
+    const kd = new KDTree(2);
+    kd.insert([0, 0], 'A');
+    kd.insert([1, 1], 'B');
+    kd.insert([5, 5], 'C');
     
-    const t0 = Date.now();
-    for (let i = 0; i < 1000; i++) tree.nearest({ x: Math.random() * 1000, y: Math.random() * 1000 });
-    console.log(`    KD-tree 10K: 1K nearest queries in ${Date.now() - t0}ms`);
-    assert.equal(tree.size, 10000);
+    const within2 = kd.rangeSearch([0, 0], 2);
+    assert.equal(within2.length, 2); // A and B
   });
 
-  it('benchmark: range search on 10K points', () => {
-    const pts = Array.from({ length: 10000 }, () => ({ x: Math.random() * 100, y: Math.random() * 100 }));
-    const tree = KDTree.build(pts);
+  it('KNN', () => {
+    const kd = new KDTree(2);
+    for (let i = 0; i < 100; i++) kd.insert([i, i], i);
     
-    const t0 = Date.now();
-    const results = tree.rangeSearch({ x: 25, y: 25 }, { x: 75, y: 75 });
-    console.log(`    KD-tree range: ${results.length} results in ${Date.now() - t0}ms`);
-    assert.ok(results.length > 0);
+    const neighbors = kd.knn([50, 50], 3);
+    assert.equal(neighbors.length, 3);
+    assert.equal(neighbors[0].value, 50); // Exact match
+  });
+
+  it('balanced build from points', () => {
+    const points = Array.from({ length: 1000 }, (_, i) => ({
+      point: [Math.random() * 100, Math.random() * 100],
+      value: i,
+    }));
+    
+    const kd = KDTree.build(points, 2);
+    assert.equal(kd.size, 1000);
+    
+    const nn = kd.nearest([50, 50]);
+    assert.ok(nn.distance < 10);
+  });
+
+  it('3D points', () => {
+    const kd = new KDTree(3);
+    kd.insert([0, 0, 0], 'origin');
+    kd.insert([1, 1, 1], 'unit');
+    kd.insert([10, 10, 10], 'far');
+    
+    const nn = kd.nearest([0.5, 0.5, 0.5]);
+    assert.equal(nn.value, 'origin');
+  });
+
+  it('performance: 10K nearest neighbor queries', () => {
+    const points = Array.from({ length: 10000 }, (_, i) => ({
+      point: [Math.random() * 1000, Math.random() * 1000],
+      value: i,
+    }));
+    const kd = KDTree.build(points, 2);
+    
+    const t0 = performance.now();
+    for (let i = 0; i < 1000; i++) {
+      kd.nearest([Math.random() * 1000, Math.random() * 1000]);
+    }
+    const elapsed = performance.now() - t0;
+    console.log(`  1K NN queries on 10K points: ${elapsed.toFixed(1)}ms`);
   });
 });

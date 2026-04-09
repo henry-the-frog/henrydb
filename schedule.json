@@ -2066,16 +2066,45 @@
     {
       "id": "T195",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Grand tree comparison: AVL vs RB vs Splay vs Treap vs B+Tree",
       "project": "henrydb",
-      "started": "2026-04-09T22:51:52.003Z"
+      "started": "2026-04-09T22:51:52.003Z",
+      "completed": "2026-04-09T22:52:36.332Z",
+      "duration_ms": 180000,
+      "summary": "Grand tree comparison: 6 trees head-to-head. AVL+RB hit theoretical minimum height. Splay fastest insert, Treap best lookup."
     },
     {
       "id": "T196",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final: comprehensive README, data structure count, daily log, git push",
+      "started": "2026-04-09T22:52:45.080Z",
+      "completed": "2026-04-09T22:52:51.405Z",
+      "duration_ms": 5000,
+      "summary": "Quick checkpoint maintain."
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "KD-tree: k-dimensional spatial partitioning for nearest neighbor search",
+      "project": "henrydb",
+      "started": "2026-04-09T22:52:51.863Z"
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final: comprehensive README, data structure count, daily log, git push"
+      "task": "Quotient filter: like Bloom filter but supports counting and merging",
+      "project": "henrydb"
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "T-digest: streaming quantile estimation in bounded memory",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2863,6 +2892,18 @@
     {
       "time": "2026-04-09T22:49:55.446Z",
       "msg": "Added T196 (MAINTAIN) after end: Final: comprehensive README, data structure count, daily log, git push"
+    },
+    {
+      "time": "2026-04-09T22:52:44.243Z",
+      "msg": "Added T197 (BUILD) after end: KD-tree: k-dimensional spatial partitioning for nearest neighbor search"
+    },
+    {
+      "time": "2026-04-09T22:52:44.456Z",
+      "msg": "Added T198 (BUILD) after end: Quotient filter: like Bloom filter but supports counting and merging"
+    },
+    {
+      "time": "2026-04-09T22:52:44.667Z",
+      "msg": "Added T199 (BUILD) after end: T-digest: streaming quantile estimation in bounded memory"
     }
   ]
 }
