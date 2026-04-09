@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" style="background:#0d1117">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#8b949e"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, sans-serif; }
+      .title { fill: #c9d1d9; font-size: 20px; font-weight: bold; }
+      .subtitle { fill: #8b949e; font-size: 11px; }
+      .layer-label { fill: #8b949e; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+      .module { font-size: 10px; fill: #c9d1d9; }
+      .module-detail { font-size: 8px; fill: #8b949e; }
+      .flow-line { stroke: #8b949e; stroke-width: 1.5; fill: none; marker-end: url(#arrow); opacity: 0.5; }
+      .flow-bold { stroke: #58a6ff; stroke-width: 2; fill: none; marker-end: url(#arrow); opacity: 0.7; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" class="title">🐘 HenryDB Architecture</text>
+  <text x="450" y="52" text-anchor="middle" class="subtitle">108K+ LOC · 209 modules · 4,295 tests</text>
+
+  <!-- Layer 1: Client Interface -->
+  <rect x="30" y="70" width="840" height="70" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="50" y="88" class="layer-label" fill="#58a6ff">Client Interface</text>
+  
+  <rect x="50" y="95" width="110" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="105" y="115" text-anchor="middle" class="module">PG Wire Protocol</text>
+  <text x="105" y="125" text-anchor="middle" class="module-detail">v3 · Simple + Extended</text>
+
+  <rect x="175" y="95" width="90" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="220" y="115" text-anchor="middle" class="module">COPY Protocol</text>
+  <text x="220" y="125" text-anchor="middle" class="module-detail">IN / OUT / CSV</text>
+
+  <rect x="280" y="95" width="100" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="330" y="115" text-anchor="middle" class="module">LISTEN/NOTIFY</text>
+  <text x="330" y="125" text-anchor="middle" class="module-detail">Pub/Sub</text>
+
+  <rect x="395" y="95" width="90" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="440" y="115" text-anchor="middle" class="module">Auth</text>
+  <text x="440" y="125" text-anchor="middle" class="module-detail">MD5 · SCRAM · TLS</text>
+
+  <rect x="500" y="95" width="90" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="545" y="115" text-anchor="middle" class="module">Cursors</text>
+  <text x="545" y="125" text-anchor="middle" class="module-detail">DECLARE/FETCH</text>
+
+  <rect x="605" y="95" width="90" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="650" y="115" text-anchor="middle" class="module">Prepared Stmt</text>
+  <text x="650" y="125" text-anchor="middle" class="module-detail">Parse/Bind/Exec</text>
+
+  <rect x="710" y="95" width="145" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="782" y="115" text-anchor="middle" class="module">Connection Pool</text>
+  <text x="782" y="125" text-anchor="middle" class="module-detail">Health · Monitoring</text>
+
+  <!-- Layer 2: SQL Engine -->
+  <rect x="30" y="155" width="840" height="90" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="50" y="173" class="layer-label" fill="#3fb950">SQL Engine</text>
+
+  <rect x="50" y="180" width="90" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="95" y="200" text-anchor="middle" class="module">Tokenizer</text>
+  <text x="95" y="212" text-anchor="middle" class="module-detail">SQL → tokens</text>
+  <text x="95" y="222" text-anchor="middle" class="module-detail">keywords · literals</text>
+
+  <rect x="155" y="180" width="90" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="200" y="200" text-anchor="middle" class="module">Parser</text>
+  <text x="200" y="212" text-anchor="middle" class="module-detail">tokens → AST</text>
+  <text x="200" y="222" text-anchor="middle" class="module-detail">DDL · DML · TCL</text>
+
+  <rect x="260" y="180" width="110" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="315" y="200" text-anchor="middle" class="module">Query Rewriter</text>
+  <text x="315" y="212" text-anchor="middle" class="module-detail">Constant folding</text>
+  <text x="315" y="222" text-anchor="middle" class="module-detail">Decorrelation</text>
+
+  <rect x="385" y="180" width="100" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="435" y="200" text-anchor="middle" class="module">Planner</text>
+  <text x="435" y="212" text-anchor="middle" class="module-detail">Cost-based opt</text>
+  <text x="435" y="222" text-anchor="middle" class="module-detail">Join ordering</text>
+
+  <rect x="500" y="180" width="100" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="550" y="200" text-anchor="middle" class="module">Plan Cache</text>
+  <text x="550" y="212" text-anchor="middle" class="module-detail">LRU cache</text>
+  <text x="550" y="222" text-anchor="middle" class="module-detail">Table invalidation</text>
+
+  <rect x="615" y="180" width="110" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="670" y="200" text-anchor="middle" class="module">Statistics</text>
+  <text x="670" y="212" text-anchor="middle" class="module-detail">Histograms · NDV</text>
+  <text x="670" y="222" text-anchor="middle" class="module-detail">Selectivity est.</text>
+
+  <rect x="740" y="180" width="115" height="55" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="797" y="200" text-anchor="middle" class="module">EXPLAIN</text>
+  <text x="797" y="212" text-anchor="middle" class="module-detail">Text · JSON · DOT</text>
+  <text x="797" y="222" text-anchor="middle" class="module-detail">ANALYZE timing</text>
+
+  <!-- Layer 3: Execution Engines -->
+  <rect x="30" y="260" width="540" height="70" rx="8" fill="#161b22" stroke="#d29922" stroke-width="1.5"/>
+  <text x="50" y="278" class="layer-label" fill="#d29922">Execution Engines (5)</text>
+
+  <rect x="50" y="285" width="80" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="90" y="302" text-anchor="middle" class="module">Volcano</text>
+  <text x="90" y="312" text-anchor="middle" class="module-detail">Iterator · 1×</text>
+
+  <rect x="140" y="285" width="80" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="180" y="302" text-anchor="middle" class="module">Compiled</text>
+  <text x="180" y="312" text-anchor="middle" class="module-detail">Pipelines · 365×</text>
+
+  <rect x="230" y="285" width="80" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="270" y="302" text-anchor="middle" class="module">Vectorized</text>
+  <text x="270" y="312" text-anchor="middle" class="module-detail">Columnar · 220×</text>
+
+  <rect x="320" y="285" width="80" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="360" y="302" text-anchor="middle" class="module">Codegen</text>
+  <text x="360" y="312" text-anchor="middle" class="module-detail">JIT · 143×</text>
+
+  <rect x="410" y="285" width="80" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="450" y="302" text-anchor="middle" class="module">Adaptive</text>
+  <text x="450" y="312" text-anchor="middle" class="module-detail">Auto-select</text>
+
+  <!-- Join Algorithms -->
+  <rect x="585" y="260" width="285" height="70" rx="8" fill="#161b22" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="605" y="278" class="layer-label" fill="#bc8cff">Join Algorithms (10)</text>
+  <text x="605" y="295" class="module-detail" fill="#8b949e">Hash · Merge · Nested Loop · Grace</text>
+  <text x="605" y="307" class="module-detail" fill="#8b949e">Radix · Band · Theta · Semi/Anti</text>
+  <text x="605" y="319" class="module-detail" fill="#8b949e">Index NL · Symmetric Hash</text>
+
+  <!-- Layer 4: Concurrency & Transactions -->
+  <rect x="30" y="345" width="400" height="70" rx="8" fill="#161b22" stroke="#f85149" stroke-width="1.5"/>
+  <text x="50" y="363" class="layer-label" fill="#f85149">Concurrency (7 Protocols)</text>
+
+  <rect x="50" y="370" width="60" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="80" y="390" text-anchor="middle" class="module">MVCC</text>
+
+  <rect x="120" y="370" width="50" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="145" y="390" text-anchor="middle" class="module">2PL</text>
+
+  <rect x="180" y="370" width="50" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="205" y="390" text-anchor="middle" class="module">OCC</text>
+
+  <rect x="240" y="370" width="50" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="265" y="390" text-anchor="middle" class="module">SSI</text>
+
+  <rect x="300" y="370" width="55" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="327" y="390" text-anchor="middle" class="module">Locks</text>
+
+  <rect x="365" y="370" width="50" height="35" rx="5" fill="#1c2333" stroke="#30363d"/>
+  <text x="390" y="388" text-anchor="middle" class="module">Dead-</text>
+  <text x="390" y="398" text-anchor="middle" class="module">lock</text>
+
+  <!-- Storage -->
+  <rect x="445" y="345" width="425" height="70" rx="8" fill="#161b22" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="465" y="363" class="layer-label" fill="#f0883e">Storage Engine</text>
+  <text x="465" y="380" class="module-detail" fill="#8b949e">LSM-tree (leveled + size-tiered compaction)</text>
+  <text x="465" y="392" class="module-detail" fill="#8b949e">WAL (CRC32 · segments · crash recovery)</text>
+  <text x="465" y="404" class="module-detail" fill="#8b949e">Buffer Pool · Slotted Page · Heap File · Column Store</text>
+
+  <!-- Layer 5: Indexes -->
+  <rect x="30" y="430" width="540" height="55" rx="8" fill="#161b22" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="50" y="448" class="layer-label" fill="#79c0ff">Index Structures (12+)</text>
+  <text x="50" y="465" class="module" fill="#8b949e">B+ Tree · R-Tree · ART · Skip List · Trie · Bloom · Cuckoo Hash</text>
+  <text x="50" y="477" class="module" fill="#8b949e">Robin Hood · Extendible Hash · Linear Hash · Bitmap · Inverted (BM25)</text>
+
+  <!-- Distributed -->
+  <rect x="585" y="430" width="285" height="55" rx="8" fill="#161b22" stroke="#56d364" stroke-width="1.5"/>
+  <text x="605" y="448" class="layer-label" fill="#56d364">Distributed</text>
+  <text x="605" y="465" class="module" fill="#8b949e">Raft · Lamport · Vector Clocks</text>
+  <text x="605" y="477" class="module" fill="#8b949e">CRDTs · Gossip · Consistent Hash</text>
+
+  <!-- SQL Features -->
+  <rect x="30" y="500" width="540" height="55" rx="8" fill="#161b22" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="50" y="518" class="layer-label" fill="#e3b341">SQL Features</text>
+  <text x="50" y="535" class="module" fill="#8b949e">Window Funcs · CTEs · Triggers · Views · Sequences · Domains · Enums</text>
+  <text x="50" y="547" class="module" fill="#8b949e">JSON · FTS · RLS · COPY · Partitioning · Inheritance · Rules · FDW</text>
+
+  <!-- Probabilistic -->
+  <rect x="585" y="500" width="285" height="55" rx="8" fill="#161b22" stroke="#ff7b72" stroke-width="1.5"/>
+  <text x="605" y="518" class="layer-label" fill="#ff7b72">Probabilistic (7)</text>
+  <text x="605" y="535" class="module" fill="#8b949e">Bloom · Cuckoo · XOR · CMS</text>
+  <text x="605" y="547" class="module" fill="#8b949e">HyperLogLog · T-Digest · MinHash</text>
+
+  <!-- Data flow arrows -->
+  <path d="M105 130 L105 155" class="flow-bold"/>
+  <path d="M200 130 L200 155" class="flow-line"/>
+  <path d="M95 235 L95 260" class="flow-bold"/>
+  <path d="M200 235 L270 260" class="flow-bold"/>
+  <path d="M435 235 L435 260" class="flow-bold"/>
+  <path d="M450 320 L300 345" class="flow-line"/>
+  <path d="M270 320 L550 345" class="flow-line"/>
+
+  <!-- Footer -->
+  <text x="450" y="585" text-anchor="middle" class="subtitle">All modules have dedicated tests · 98.8% pass rate (4,277/4,330)</text>
+  <text x="450" y="600" text-anchor="middle" class="subtitle">github.com/henry-the-frog/henrydb</text>
+</svg>

@@ -135,6 +135,8 @@ Raft consensus (leader election + log replication) · Lamport clocks · Vector c
 
 ## Architecture
 
+<img src="docs/architecture.svg" alt="HenryDB Architecture" width="100%">
+
 ```
 src/ (209 modules, 108K+ lines)
 ├── Core: db.js, sql.js (tokenizer + parser + executor)
