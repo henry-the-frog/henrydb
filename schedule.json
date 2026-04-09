@@ -2109,10 +2109,42 @@
     {
       "id": "T199",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "T-digest: streaming quantile estimation in bounded memory",
       "project": "henrydb",
-      "started": "2026-04-09T22:54:37.143Z"
+      "started": "2026-04-09T22:54:37.143Z",
+      "completed": "2026-04-09T22:59:08.525Z",
+      "duration_ms": 300000,
+      "summary": "T-Digest: streaming quantile estimation. p50/p90/p95/p99, merge support. 5 tests."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "LFU (Least Frequently Used) cache: O(1) eviction by access frequency",
+      "project": "henrydb",
+      "started": "2026-04-09T22:59:19.350Z"
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Persistent stack: immutable stack with O(1) persistent push/pop via path copying",
+      "project": "henrydb"
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Bitwise trie: compact integer indexing using bit manipulation",
+      "project": "henrydb"
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "FINAL: comprehensive README + run full test suite + data structure count",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2912,6 +2944,22 @@
     {
       "time": "2026-04-09T22:52:44.667Z",
       "msg": "Added T199 (BUILD) after end: T-digest: streaming quantile estimation in bounded memory"
+    },
+    {
+      "time": "2026-04-09T22:59:18.114Z",
+      "msg": "Added T200 (BUILD) after end: LFU (Least Frequently Used) cache: O(1) eviction by access frequency"
+    },
+    {
+      "time": "2026-04-09T22:59:18.366Z",
+      "msg": "Added T201 (BUILD) after end: Persistent stack: immutable stack with O(1) persistent push/pop via path copying"
+    },
+    {
+      "time": "2026-04-09T22:59:18.614Z",
+      "msg": "Added T202 (BUILD) after end: Bitwise trie: compact integer indexing using bit manipulation"
+    },
+    {
+      "time": "2026-04-09T22:59:18.857Z",
+      "msg": "Added T203 (BUILD) after end: FINAL: comprehensive README + run full test suite + data structure count"
     }
   ]
 }
