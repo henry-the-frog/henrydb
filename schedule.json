@@ -1957,17 +1957,21 @@
     {
       "id": "T185",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Grand benchmark: compare ALL index structures (B+tree, SkipList, ART, Trie, Hash, RobinHood, SortedArray, LSM, BEpsilon) for insert/lookup/range",
       "project": "henrydb",
-      "started": "2026-04-09T22:43:57.167Z"
+      "started": "2026-04-09T22:43:57.167Z",
+      "completed": "2026-04-09T22:44:43.582Z",
+      "duration_ms": 300000,
+      "summary": "Grand benchmark: 9 structures head-to-head. RobinHood fastest lookup (0.22µs), Bε fastest insert (0.73µs), B+Tree best all-around."
     },
     {
       "id": "T186",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Treap: randomized BST combining tree+heap for balanced search",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T22:44:44.035Z"
     },
     {
       "id": "T187",
