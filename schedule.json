@@ -1750,10 +1750,21 @@
     {
       "id": "T166",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Count-Min Sketch: approximate frequency counting for query optimization (top-k value tracking)",
       "project": "henrydb",
-      "started": "2026-04-09T22:06:21.573Z"
+      "started": "2026-04-09T22:06:21.573Z",
+      "completed": "2026-04-09T22:09:47.794Z",
+      "duration_ms": 300000,
+      "summary": "Count-Min Sketch: approximate frequency counting. Never underestimates. 0.274µs add, 0.243µs estimate. Heavy hitter detection demo. 10 tests."
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HyperLogLog: cardinality estimation (count distinct) using O(1) space",
+      "project": "henrydb",
+      "started": "2026-04-09T22:10:12.107Z"
     }
   ],
   "focusProjects": [
@@ -2421,6 +2432,10 @@
     {
       "time": "2026-04-09T22:06:21.161Z",
       "msg": "Added T166 (BUILD) after end: Count-Min Sketch: approximate frequency counting for query optimization (top-k value tracking)"
+    },
+    {
+      "time": "2026-04-09T22:10:11.695Z",
+      "msg": "Added T167 (BUILD) after end: HyperLogLog: cardinality estimation (count distinct) using O(1) space"
     }
   ]
 }
