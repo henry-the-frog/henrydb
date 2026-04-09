@@ -1481,16 +1481,41 @@
     {
       "id": "T140",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "DiskManager: real file I/O with page read/write, integrate with BufferPoolManager",
       "project": "henrydb",
-      "started": "2026-04-09T21:10:03.019Z"
+      "started": "2026-04-09T21:10:03.019Z",
+      "completed": "2026-04-09T21:11:38.602Z",
+      "duration_ms": 600000,
+      "summary": "DiskManager with real file I/O. allocate/read/write pages, persistence through close/reopen. Full stack: DiskManager→BufferPoolManager→ClockReplacer. 13 tests including BPM integration. 10K pages: 96ms alloc, 41ms write, 37ms read."
     },
     {
       "id": "T141",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session B final: git push, daily log, test count",
+      "started": "2026-04-09T21:12:01.157Z"
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session B final: git push, daily log, test count"
+      "task": "Implement extendible hash table for HenryDB: dynamic hash index that splits buckets on overflow without full rehash",
+      "project": "henrydb"
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Wire extendible hash table as HASH index type: CREATE INDEX ... USING HASH",
+      "project": "henrydb"
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Benchmark: B+tree index vs Hash index for equality lookups and range scans",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2038,6 +2063,18 @@
     {
       "time": "2026-04-09T21:07:48.821Z",
       "msg": "Added T141 (MAINTAIN) after end: Session B final: git push, daily log, test count"
+    },
+    {
+      "time": "2026-04-09T21:11:54.955Z",
+      "msg": "Added T142 (BUILD) after end: Implement extendible hash table for HenryDB: dynamic hash index that splits buckets on overflow without full rehash"
+    },
+    {
+      "time": "2026-04-09T21:11:55.167Z",
+      "msg": "Added T143 (BUILD) after end: Wire extendible hash table as HASH index type: CREATE INDEX ... USING HASH"
+    },
+    {
+      "time": "2026-04-09T21:11:55.376Z",
+      "msg": "Added T144 (BUILD) after end: Benchmark: B+tree index vs Hash index for equality lookups and range scans"
     }
   ]
 }
