@@ -394,31 +394,43 @@
     {
       "id": "T37",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update blog post with latest benchmark (29.5K inserts/sec, O(n²) WAL fix story)",
       "project": "henrydb",
-      "started": "2026-04-09T15:38:06.709Z"
+      "started": "2026-04-09T15:38:06.709Z",
+      "completed": "2026-04-09T15:39:01.612Z",
+      "duration_ms": 120000,
+      "summary": "Updated blog: 10K benchmark table, O(n²) WAL bug narrative with before/after code, 8x speedup from one index variable."
     },
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix dashboard archive: create missing history/2026-04-06.json",
-      "project": "dashboard"
+      "project": "dashboard",
+      "started": "2026-04-09T15:39:09.325Z",
+      "completed": "2026-04-09T15:40:14.430Z",
+      "duration_ms": 30000,
+      "summary": "Dashboard history/2026-04-06.json already exists (3998 bytes). TODO item was stale — removed."
     },
     {
       "id": "T39",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "What is the hardest unsolved problem in HenryDB right now?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T15:40:23.523Z",
+      "completed": "2026-04-09T15:40:50.850Z",
+      "duration_ms": 90000,
+      "summary": "Hardest problems: (1) file-backed persistence — most foundational but least interesting, (2) real MVCC — most impressive to demo, (3) query optimizer — most educational, (4) concurrency — least urgent. For learning: query optimizer. For portfolio: MVCC. For production: persistence."
     },
     {
       "id": "T40",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Write blog post about performance debugging (the O(n²) WAL story)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T15:40:58.207Z"
     },
     {
       "id": "T41",
