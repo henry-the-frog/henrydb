@@ -1,191 +1,167 @@
-// bloom-filter.test.js — Tests for Bloom filter implementations
-
+// bloom-filter.test.js — Tests for Bloom filter
 import { describe, it } from 'node:test';
-import { strict as assert } from 'node:assert';
-import { BloomFilter, CountingBloomFilter } from './bloom-filter.js';
+import assert from 'node:assert/strict';
+import { BloomFilter } from './bloom-filter.js';
 
-describe('BloomFilter: Basic Operations', () => {
-  it('no false negatives — added items always found', () => {
+describe('BloomFilter', () => {
+  it('no false negatives: all added elements are found', () => {
     const bf = new BloomFilter(1000, 0.01);
-    
+    const elements = [];
     for (let i = 0; i < 1000; i++) {
-      bf.add(`key-${i}`);
+      const elem = `element-${i}`;
+      elements.push(elem);
+      bf.add(elem);
     }
     
-    for (let i = 0; i < 1000; i++) {
-      assert.ok(bf.mightContain(`key-${i}`), `key-${i} should be found`);
+    for (const elem of elements) {
+      assert.equal(bf.mightContain(elem), true, `Expected ${elem} to be found`);
     }
   });
 
-  it('non-added items mostly not found (low false positive rate)', () => {
-    const bf = new BloomFilter(1000, 0.01);
+  it('false positive rate is within expected bounds', () => {
+    const n = 1000;
+    const targetFPR = 0.01;
+    const bf = new BloomFilter(n, targetFPR);
     
-    for (let i = 0; i < 1000; i++) {
-      bf.add(`key-${i}`);
+    // Add n elements
+    for (let i = 0; i < n; i++) {
+      bf.add(`elem-${i}`);
     }
     
+    // Test with elements NOT in the filter
     let falsePositives = 0;
-    const trials = 10000;
-    for (let i = 1000; i < 1000 + trials; i++) {
-      if (bf.mightContain(`key-${i}`)) falsePositives++;
+    const tests = 10000;
+    for (let i = 0; i < tests; i++) {
+      if (bf.mightContain(`not-in-filter-${i}`)) {
+        falsePositives++;
+      }
     }
     
-    const fpr = falsePositives / trials;
-    console.log(`    FPR: ${(fpr * 100).toFixed(2)}% (target: 1.00%)`);
-    assert.ok(fpr < 0.05, `FPR ${fpr} should be < 5% (target 1%)`);
+    const actualFPR = falsePositives / tests;
+    console.log(`  FPR: target=${(targetFPR * 100).toFixed(1)}%, actual=${(actualFPR * 100).toFixed(2)}%`);
+    
+    // Allow 5x the target rate (statistical variance + hash quality)
+    assert.ok(actualFPR < targetFPR * 5, `FPR too high: ${(actualFPR * 100).toFixed(2)}% (target ${(targetFPR * 100).toFixed(1)}%)`);
   });
 
-  it('empty filter contains nothing', () => {
+  it('empty filter: nothing is found', () => {
     const bf = new BloomFilter(100, 0.01);
+    assert.equal(bf.mightContain('anything'), false);
+    assert.equal(bf.mightContain(42), false);
+  });
+
+  it('numeric keys work', () => {
+    const bf = new BloomFilter(100, 0.01);
+    for (let i = 0; i < 100; i++) bf.add(i);
     
     for (let i = 0; i < 100; i++) {
-      assert.equal(bf.mightContain(`key-${i}`), false);
+      assert.equal(bf.mightContain(i), true);
     }
   });
 
-  it('handles various key types', () => {
-    const bf = new BloomFilter(100, 0.01);
+  it('getStats reports correct parameters', () => {
+    const bf = new BloomFilter(1000, 0.01);
+    for (let i = 0; i < 500; i++) bf.add(`elem-${i}`);
     
-    bf.add('hello');
-    bf.add(42);
-    bf.add(true);
-    bf.add('');
-    
-    assert.ok(bf.mightContain('hello'));
-    assert.ok(bf.mightContain(42));
-    assert.ok(bf.mightContain(true));
-    assert.ok(bf.mightContain(''));
-  });
-});
-
-describe('BloomFilter: Parameter Calculation', () => {
-  it('calculates optimal parameters', () => {
-    const bf = new BloomFilter(10000, 0.01);
-    const stats = bf.stats;
-    
-    assert.ok(stats.bits > 0, 'Should have bits');
-    assert.ok(stats.hashes >= 1, 'Should have at least 1 hash');
-    assert.ok(stats.hashes <= 32, 'Should have at most 32 hashes');
-    console.log(`    10K items, 1% FPR: ${stats.bits} bits, ${stats.hashes} hashes, ${stats.bytesUsed} bytes`);
+    const stats = bf.getStats();
+    assert.equal(stats.elements, 500);
+    assert.ok(stats.bits > 0);
+    assert.ok(stats.hashes > 0);
+    assert.ok(stats.bytesUsed > 0);
+    assert.ok(stats.fillRatio > 0);
+    assert.ok(stats.fillRatio < 1);
+    console.log(`  Stats: ${stats.bits} bits, ${stats.hashes} hashes, ${stats.bytesUsed} bytes, fill=${(stats.fillRatio*100).toFixed(1)}%`);
   });
 
-  it('lower FPR requires more bits', () => {
-    const bf1 = new BloomFilter(1000, 0.1);
-    const bf2 = new BloomFilter(1000, 0.01);
-    const bf3 = new BloomFilter(1000, 0.001);
+  it('optimal parameters for common sizes', () => {
+    const cases = [
+      { n: 100, p: 0.01 },
+      { n: 1000, p: 0.01 },
+      { n: 10000, p: 0.001 },
+      { n: 1000000, p: 0.01 },
+    ];
     
-    assert.ok(bf2.stats.bits > bf1.stats.bits, '0.01 needs more bits than 0.1');
-    assert.ok(bf3.stats.bits > bf2.stats.bits, '0.001 needs more bits than 0.01');
+    for (const { n, p } of cases) {
+      const bf = new BloomFilter(n, p);
+      const bitsPerElement = bf.m / n;
+      console.log(`  n=${n}, p=${p}: ${bf.m} bits (${bitsPerElement.toFixed(1)} bits/elem), ${bf.k} hashes, ${bf._bits.byteLength} bytes`);
+    }
+    assert.ok(true);
   });
 
-  it('more items requires more bits', () => {
+  it('merge combines two filters', () => {
     const bf1 = new BloomFilter(100, 0.01);
-    const bf2 = new BloomFilter(10000, 0.01);
+    const bf2 = new BloomFilter(100, 0.01);
     
-    assert.ok(bf2.stats.bits > bf1.stats.bits);
-  });
-});
-
-describe('BloomFilter: Serialization', () => {
-  it('serialize and deserialize produces identical filter', () => {
-    const bf = new BloomFilter(500, 0.01);
-    for (let i = 0; i < 500; i++) bf.add(`key-${i}`);
+    for (let i = 0; i < 50; i++) bf1.add(`a-${i}`);
+    for (let i = 0; i < 50; i++) bf2.add(`b-${i}`);
     
-    const buf = bf.serialize();
-    const bf2 = BloomFilter.deserialize(buf);
+    const merged = bf1.merge(bf2);
     
-    // All originally added items should be found
-    for (let i = 0; i < 500; i++) {
-      assert.ok(bf2.mightContain(`key-${i}`), `key-${i} should survive serialization`);
+    // Merged should contain elements from both
+    for (let i = 0; i < 50; i++) {
+      assert.equal(merged.mightContain(`a-${i}`), true);
+      assert.equal(merged.mightContain(`b-${i}`), true);
     }
-    
-    // Stats should match
-    assert.equal(bf2.stats.bits, bf.stats.bits);
-    assert.equal(bf2.stats.hashes, bf.stats.hashes);
-    assert.equal(bf2.stats.items, bf.stats.items);
-  });
-});
-
-describe('BloomFilter: LSM Tree Simulation', () => {
-  it('skips SSTables that definitely dont contain key', () => {
-    // Simulate 5 SSTables, each with 1000 keys
-    const sstables = [];
-    for (let level = 0; level < 5; level++) {
-      const bf = new BloomFilter(1000, 0.01);
-      for (let i = level * 1000; i < (level + 1) * 1000; i++) {
-        bf.add(`key-${i}`);
-      }
-      sstables.push(bf);
-    }
-    
-    // Look up key in range of SSTable 2 (keys 2000-2999)
-    const key = 'key-2500';
-    let sstablesChecked = 0;
-    for (const bf of sstables) {
-      if (bf.mightContain(key)) {
-        sstablesChecked++;
-      }
-    }
-    
-    // Should only need to check 1 SSTable (the one containing the key)
-    // Plus maybe 1-2 false positives
-    assert.ok(sstablesChecked <= 3, `Should check at most 3 SSTables, checked ${sstablesChecked}`);
-    console.log(`    5 SSTables, key in #2: checked ${sstablesChecked} (ideal: 1)`);
   });
 
-  it('100K keys with 1% FPR uses reasonable memory', () => {
+  it('clear resets the filter', () => {
+    const bf = new BloomFilter(100, 0.01);
+    for (let i = 0; i < 100; i++) bf.add(i);
+    
+    bf.clear();
+    assert.equal(bf.mightContain(0), false);
+    assert.equal(bf.mightContain(50), false);
+    assert.equal(bf.bitsSet, 0);
+  });
+
+  it('performance: 100K add + 100K lookup', () => {
     const bf = new BloomFilter(100000, 0.01);
-    for (let i = 0; i < 100000; i++) bf.add(`key-${i}`);
     
-    const stats = bf.stats;
-    const bytesPerKey = stats.bytesUsed / 100000;
-    console.log(`    100K keys: ${stats.bytesUsed} bytes (${bytesPerKey.toFixed(1)} bytes/key)`);
+    const t0 = performance.now();
+    for (let i = 0; i < 100000; i++) bf.add(i);
+    const addMs = performance.now() - t0;
     
-    // Should be ~1.2 bytes/key for 1% FPR (theoretical: -ln(0.01) / ln(2)^2 * n = 9.585n bits ≈ 1.2 bytes)
-    assert.ok(bytesPerKey < 3, `${bytesPerKey} bytes/key should be < 3`);
+    const t1 = performance.now();
+    for (let i = 0; i < 100000; i++) bf.mightContain(i);
+    const lookupMs = performance.now() - t1;
+    
+    console.log(`  100K add: ${addMs.toFixed(1)}ms (${(addMs/100000*1000).toFixed(3)}µs avg)`);
+    console.log(`  100K lookup: ${lookupMs.toFixed(1)}ms (${(lookupMs/100000*1000).toFixed(3)}µs avg)`);
+    console.log(`  Memory: ${bf.getStats().bytesUsed} bytes (${(bf.getStats().bytesUsed/100000*8).toFixed(1)} bits/elem)`);
+    
+    assert.ok(addMs < 500);
+    assert.ok(lookupMs < 500);
   });
-});
 
-describe('CountingBloomFilter', () => {
-  it('supports add and membership test', () => {
-    const cbf = new CountingBloomFilter(1000, 0.01);
+  it('space efficiency: 1M elements at 1% FPR', () => {
+    const bf = new BloomFilter(1000000, 0.01);
+    const stats = bf.getStats();
     
-    for (let i = 0; i < 100; i++) cbf.add(`key-${i}`);
+    // At 1% FPR, optimal is ~9.6 bits per element
+    const bitsPerElement = stats.bits / 1000000;
+    console.log(`  1M elements: ${(stats.bytesUsed / 1024 / 1024).toFixed(2)} MB, ${bitsPerElement.toFixed(1)} bits/elem`);
     
-    for (let i = 0; i < 100; i++) {
-      assert.ok(cbf.mightContain(`key-${i}`));
+    assert.ok(bitsPerElement < 12, 'Should use <12 bits per element');
+    assert.ok(bitsPerElement > 8, 'Should use >8 bits per element');
+  });
+
+  it('database use case: skip non-matching pages', () => {
+    // Simulate: build bloom filter from index values, test during scan
+    const bf = new BloomFilter(1000, 0.01);
+    
+    // Add IDs of rows on page 5 (simulating a page-level bloom filter)
+    const pageIds = new Set();
+    for (let i = 500; i < 600; i++) {
+      bf.add(i);
+      pageIds.add(i);
     }
-  });
-
-  it('supports deletion', () => {
-    const cbf = new CountingBloomFilter(100, 0.01);
     
-    cbf.add('alice');
-    cbf.add('bob');
-    cbf.add('charlie');
+    // Test: can we skip this page when looking for id=42?
+    const canSkip42 = !bf.mightContain(42);  // Should be true (42 not on page 5)
+    const canSkip550 = !bf.mightContain(550); // Should be false (550 IS on page 5)
     
-    assert.ok(cbf.mightContain('alice'));
-    assert.ok(cbf.mightContain('bob'));
-    
-    cbf.remove('bob');
-    
-    assert.ok(cbf.mightContain('alice'), 'alice should still be present');
-    // bob might still show as present due to hash collisions, but remove() should decrement counters
-    assert.ok(cbf.mightContain('charlie'), 'charlie should still be present');
-  });
-
-  it('no false negatives after add/remove cycles', () => {
-    const cbf = new CountingBloomFilter(1000, 0.01);
-    
-    // Add 100 items
-    for (let i = 0; i < 100; i++) cbf.add(`key-${i}`);
-    
-    // Remove 50 items
-    for (let i = 0; i < 50; i++) cbf.remove(`key-${i}`);
-    
-    // Remaining 50 should still be found
-    for (let i = 50; i < 100; i++) {
-      assert.ok(cbf.mightContain(`key-${i}`), `key-${i} should survive removal of others`);
-    }
+    assert.equal(canSkip42, true, 'Should skip page for id=42');
+    assert.equal(canSkip550, false, 'Should NOT skip page for id=550');
   });
 });

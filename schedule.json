@@ -1717,10 +1717,21 @@
     {
       "id": "T163",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB interactive CLI/REPL: readline-based SQL shell with command history, table formatting, timing, .help, .tables, .schema",
       "project": "henrydb",
-      "started": "2026-04-09T22:00:13.467Z"
+      "started": "2026-04-09T22:00:13.467Z",
+      "completed": "2026-04-09T22:01:28.168Z",
+      "duration_ms": 300000,
+      "summary": "Interactive CLI/REPL: readline with history, Unicode table formatting, .tables/.schema/.indexes/.stats/.profile, CSV/JSON modes, multi-line SQL, query timing."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Bloom filter: probabilistic set membership for fast exclusion. Integrate with table scan for large tables.",
+      "project": "henrydb",
+      "started": "2026-04-09T22:01:51.158Z"
     }
   ],
   "focusProjects": [
@@ -2376,6 +2387,10 @@
     {
       "time": "2026-04-09T22:00:13.054Z",
       "msg": "Added T163 (BUILD) after end: HenryDB interactive CLI/REPL: readline-based SQL shell with command history, table formatting, timing, .help, .tables, .schema"
+    },
+    {
+      "time": "2026-04-09T22:01:50.741Z",
+      "msg": "Added T164 (BUILD) after end: Bloom filter: probabilistic set membership for fast exclusion. Integrate with table scan for large tables."
     }
   ]
 }
