@@ -1620,6 +1620,14 @@ export class Database {
     }
 
     // INNER or LEFT JOIN
+    // Try hash join for equi-join conditions
+    const equiJoinKey = this._extractEquiJoinKey(join.on, leftAlias, rightAlias);
+    if (equiJoinKey) {
+      const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType);
+      if (hashResult) return hashResult;
+    }
+
+    // Fallback: nested loop join
     for (const leftRow of leftRows) {
       let matched = false;
       for (const { values } of rightTable.heap.scan()) {
@@ -1633,6 +1641,119 @@ export class Database {
       if (!matched && join.joinType === 'LEFT') {
         const nullRow = {};
         for (const col of rightTable.schema) nullRow[`${rightAlias}.${col.name}`] = null;
+        result.push({ ...leftRow, ...nullRow });
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Extract equi-join key columns from a join condition AST.
+   * Returns { leftKey, rightKey } if it's a simple equality, null otherwise.
+   */
+  _extractEquiJoinKey(onExpr, leftAlias, rightAlias) {
+    if (!onExpr || onExpr.type !== 'COMPARE' || onExpr.op !== 'EQ') return null;
+    if (onExpr.left.type !== 'column_ref' || onExpr.right.type !== 'column_ref') return null;
+
+    const leftCol = onExpr.left.name;
+    const rightCol = onExpr.right.name;
+
+    // Determine which column belongs to which table
+    // Column refs can be "alias.col" or just "col"
+    const isLeftSide = (col) => {
+      if (col.startsWith(leftAlias + '.')) return true;
+      // If no prefix, check if it exists in left rows
+      return false;
+    };
+    const isRightSide = (col) => {
+      if (col.startsWith(rightAlias + '.')) return true;
+      return false;
+    };
+
+    let leftKey, rightKey;
+    if (isLeftSide(leftCol) && isRightSide(rightCol)) {
+      leftKey = leftCol;
+      rightKey = rightCol.includes('.') ? rightCol.split('.').pop() : rightCol;
+    } else if (isRightSide(leftCol) && isLeftSide(rightCol)) {
+      leftKey = rightCol;
+      rightKey = leftCol.includes('.') ? leftCol.split('.').pop() : leftCol;
+    } else {
+      // Can't determine sides — try both orientations
+      // If left col has right alias prefix, swap
+      if (leftCol.startsWith(rightAlias + '.')) {
+        leftKey = rightCol;
+        rightKey = leftCol.split('.').pop();
+      } else {
+        leftKey = leftCol;
+        rightKey = rightCol.includes('.') ? rightCol.split('.').pop() : rightCol;
+      }
+    }
+
+    return { leftKey, rightKey };
+  }
+
+  /**
+   * Hash join: build hash table on right table, probe with left rows.
+   * O(n + m) instead of O(n * m).
+   */
+  _hashJoin(leftRows, rightTable, keys, rightAlias, joinType) {
+    const { leftKey, rightKey } = keys;
+
+    // Build phase: hash the right table by join key
+    const hashMap = new Map();
+    const rightKeyIdx = rightTable.schema.findIndex(c => c.name === rightKey);
+    if (rightKeyIdx < 0) {
+      // Key not found in schema — fall back to nested loop
+      return null;
+    }
+
+    for (const { values } of rightTable.heap.scan()) {
+      const keyVal = values[rightKeyIdx];
+      const keyStr = String(keyVal);
+      if (!hashMap.has(keyStr)) hashMap.set(keyStr, []);
+      hashMap.get(keyStr).push(values);
+    }
+
+    // Probe phase: look up each left row in the hash map
+    const result = [];
+    for (const leftRow of leftRows) {
+      // Get the left key value — try with and without alias prefix
+      let leftVal = leftRow[leftKey];
+      if (leftVal === undefined) {
+        // Try without alias prefix
+        const bare = leftKey.includes('.') ? leftKey.split('.').pop() : leftKey;
+        leftVal = leftRow[bare];
+      }
+      if (leftVal === undefined) {
+        // Try all keys that end with the column name
+        const bare = leftKey.includes('.') ? leftKey.split('.').pop() : leftKey;
+        for (const k of Object.keys(leftRow)) {
+          if (k === bare || k.endsWith('.' + bare)) {
+            leftVal = leftRow[k];
+            break;
+          }
+        }
+      }
+
+      const keyStr = String(leftVal);
+      const matches = hashMap.get(keyStr);
+      let matched = false;
+
+      if (matches) {
+        for (const values of matches) {
+          const rightRow = this._valuesToRow(values, rightTable.schema, rightAlias);
+          result.push({ ...leftRow, ...rightRow });
+          matched = true;
+        }
+      }
+
+      if (!matched && joinType === 'LEFT') {
+        const nullRow = {};
+        for (const col of rightTable.schema) {
+          nullRow[col.name] = null;
+          nullRow[`${rightAlias}.${col.name}`] = null;
+        }
         result.push({ ...leftRow, ...nullRow });
       }
     }

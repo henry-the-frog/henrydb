@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T15:14:29.285Z",
+  "generated": "2026-04-09T15:20:59.910Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Write architecture blog post with benchmark results, WAL/MVCC design, and pg wire protocol details",
-    "startedAt": "2026-04-09T15:14:29.285Z",
-    "taskId": "T23"
+    "task": "Implement hash join in db.js _executeJoin: detect equi-join, build hash map, probe. Support INNER and LEFT JOIN.",
+    "startedAt": "2026-04-09T15:20:59.910Z",
+    "taskId": "T27"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -465,57 +465,121 @@
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Blog post: technical deep-dive on HenryDB architecture for database engineers",
         "task": null,
-        "started": "2026-04-09T15:10:17.701Z"
+        "started": "2026-04-09T15:10:17.701Z",
+        "completed": "2026-04-09T15:10:32.262Z",
+        "duration_ms": 30000,
+        "summary": "Planned: benchmark first (INSERT 10K, SELECT, WHERE, COUNT, JOIN), then blog post with real numbers."
       },
       {
         "id": "T15",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Build HenryDB benchmark: INSERT 10K rows, SELECT all, SELECT with WHERE, COUNT, JOIN performance",
         "plan_ref": "T14",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T15:10:44.376Z",
+        "completed": "2026-04-09T15:14:07.312Z",
+        "duration_ms": 180000,
+        "summary": "Benchmark: 3,647 inserts/sec (PK), 13,344 point queries/sec, full scan 16ms/1K rows, aggregation 8ms, JOIN 2.8s (nested loop bottleneck). ORDER BY 4.6ms. Real numbers showing both strengths (point queries) and weaknesses (JOINs)."
       },
       {
         "id": "T23",
         "mode": "BUILD",
         "task": "Write architecture blog post with benchmark results, WAL/MVCC design, and pg wire protocol details",
-        "status": "upcoming",
-        "plan_ref": "T14"
+        "status": "done",
+        "plan_ref": "T14",
+        "started": "2026-04-09T15:14:29.245Z",
+        "completed": "2026-04-09T15:15:43.110Z",
+        "duration_ms": 240000,
+        "summary": "Wrote architecture blog post: covers pg wire protocol, ARIES WAL, SQL parser, benchmark results. Honest about weaknesses (JOIN 2.8s) and strengths (13K point queries/sec). ~1500 words with code examples."
       },
       {
         "id": "T16",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync, knowledge capture",
+        "started": "2026-04-09T15:15:57.456Z",
+        "completed": "2026-04-09T15:16:08.114Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, dashboard synced (23 blocks/20 done)."
       },
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research: read a real database internals resource (Andy Pavlo lectures, CockroachDB design docs, or SQLite architecture)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T15:16:19.831Z",
+        "completed": "2026-04-09T15:16:59.842Z",
+        "duration_ms": 180000,
+        "summary": "Read SQLite architecture docs. Key insight: SQLite compiles to bytecode (VDBE), stores everything in B-Trees, and has massive query planner complexity. HenryDB needs: B-Tree organized tables for PK lookups, cost-based join optimizer, possible bytecode compilation."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Evening exploration: consciousness research or new CS topic (follow curiosity)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T15:17:26.865Z",
+        "completed": "2026-04-09T15:18:47.843Z",
+        "duration_ms": 120000,
+        "summary": "Found that db.js uses inline NESTED_LOOP_JOIN, completely ignoring the HashJoin in volcano.js. This is why JOINs are 2.8s. Fix: wire db.js _select to use HashJoin when equi-join conditions detected. The code exists, its just not connected."
+      },
+      {
+        "id": "T24",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Analyze db.js join execution path. Map exactly where nested loop happens and design hash join integration.",
+        "project": "henrydb",
+        "started": "2026-04-09T15:19:52.698Z",
+        "completed": "2026-04-09T15:20:28.301Z",
+        "duration_ms": 90000,
+        "summary": "Mapped join path: db.js _executeJoin lines 1623-1637 does nested loop with full heap scan per left row. Need to detect equi-join conditions from join.on AST, build hash map on right table join column, probe for each left row. O(n*m) -> O(n+m). Filter condition: join.on is a BinaryExpression with = operator and column refs from different tables."
+      },
+      {
+        "id": "T25",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Wire hash join into db.js for equi-joins. Target: reduce JOIN benchmark from 2.8s to <100ms.",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-09T15:20:42.334Z"
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "task": "Implement hash join in db.js _executeJoin: detect equi-join, build hash map, probe. Support INNER and LEFT JOIN.",
+        "status": "upcoming",
+        "plan_ref": "T25"
+      },
+      {
+        "id": "T28",
+        "mode": "BUILD",
+        "task": "Re-run benchmark, verify JOIN drops from 2.8s to <100ms. Run server tests to ensure no regressions.",
+        "status": "upcoming",
+        "plan_ref": "T25"
+      },
+      {
+        "id": "T26",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, dashboard sync, daily summary"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 19,
-    "blocksTotal": 23,
+    "blocksCompleted": 25,
+    "blocksTotal": 28,
     "modeDistribution": {
-      "THINK": 4,
-      "PLAN": 4,
-      "BUILD": 8,
-      "MAINTAIN": 3
+      "THINK": 5,
+      "PLAN": 5,
+      "BUILD": 9,
+      "MAINTAIN": 4,
+      "EXPLORE": 2
     }
   },
   "artifacts": [
