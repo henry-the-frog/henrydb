@@ -1640,10 +1640,21 @@
     {
       "id": "T156",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "CREATE MATERIALIZED VIEW with automatic refresh on underlying table changes",
       "project": "henrydb",
-      "started": "2026-04-09T21:39:22.365Z"
+      "started": "2026-04-09T21:39:22.365Z",
+      "completed": "2026-04-09T21:42:12.345Z",
+      "duration_ms": 300000,
+      "summary": "Materialized views already work. 8 tests: CREATE, REFRESH, JOINs, WHERE, ORDER BY, DROP, pre-computed aggregation, window functions."
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Full-text search: inverted index with TF-IDF ranking. CREATE FULLTEXT INDEX, MATCH AGAINST syntax.",
+      "project": "henrydb",
+      "started": "2026-04-09T21:42:40.294Z"
     }
   ],
   "focusProjects": [
@@ -2271,6 +2282,10 @@
     {
       "time": "2026-04-09T21:39:21.952Z",
       "msg": "Added T156 (BUILD) after end: CREATE MATERIALIZED VIEW with automatic refresh on underlying table changes"
+    },
+    {
+      "time": "2026-04-09T21:42:39.885Z",
+      "msg": "Added T157 (BUILD) after end: Full-text search: inverted index with TF-IDF ranking. CREATE FULLTEXT INDEX, MATCH AGAINST syntax."
     }
   ]
 }
