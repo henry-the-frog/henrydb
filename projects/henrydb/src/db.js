@@ -2835,6 +2835,60 @@ export class Database {
             }
             break;
           }
+          case 'LAG': {
+            const lagArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
+            const offset = col.offset || 1;
+            const defaultVal = col.defaultValue ?? null;
+            for (let i = 0; i < partition.length; i++) {
+              const prevIdx = i - offset;
+              if (prevIdx >= 0) {
+                partition[i][`__window_${name}`] = this._resolveColumn(lagArg, partition[prevIdx]);
+              } else {
+                partition[i][`__window_${name}`] = defaultVal;
+              }
+            }
+            break;
+          }
+          case 'LEAD': {
+            const leadArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
+            const offset2 = col.offset || 1;
+            const defaultVal2 = col.defaultValue ?? null;
+            for (let i = 0; i < partition.length; i++) {
+              const nextIdx = i + offset2;
+              if (nextIdx < partition.length) {
+                partition[i][`__window_${name}`] = this._resolveColumn(leadArg, partition[nextIdx]);
+              } else {
+                partition[i][`__window_${name}`] = defaultVal2;
+              }
+            }
+            break;
+          }
+          case 'NTILE': {
+            const nArg = typeof col.arg === 'object' && col.arg?.value ? col.arg.value : (col.arg || 4);
+            const bucketSize = Math.ceil(partition.length / nArg);
+            for (let i = 0; i < partition.length; i++) {
+              partition[i][`__window_${name}`] = Math.floor(i / bucketSize) + 1;
+            }
+            break;
+          }
+          case 'FIRST_VALUE': {
+            const fvArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
+            const firstVal = partition.length > 0 ? this._resolveColumn(fvArg, partition[0]) : null;
+            for (const r of partition) r[`__window_${name}`] = firstVal;
+            break;
+          }
+          case 'LAST_VALUE': {
+            const lvArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
+            if (orderBy) {
+              for (let i = 0; i < partition.length; i++) {
+                partition[i][`__window_${name}`] = this._resolveColumn(lvArg, partition[i]);
+              }
+            } else {
+              const lastVal = partition.length > 0 ? this._resolveColumn(lvArg, partition[partition.length - 1]) : null;
+              for (const r of partition) r[`__window_${name}`] = lastVal;
+            }
+            break;
+          }
         }
       }
     }

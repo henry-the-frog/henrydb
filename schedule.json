@@ -1564,6 +1564,34 @@
       "completed": "2026-04-09T21:26:13.048Z",
       "duration_ms": 300000,
       "summary": "Enhanced EXPLAIN ANALYZE: engine=btree|heap, estimated vs actual rows, selectivity, sort elimination, planning+execution time. 8 tests."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Window functions: ROW_NUMBER(), RANK(), DENSE_RANK() with OVER (PARTITION BY ... ORDER BY ...)",
+      "project": "henrydb",
+      "started": "2026-04-09T21:26:56.525Z"
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Window aggregates: SUM/AVG/COUNT/MIN/MAX OVER with frame clause (ROWS BETWEEN)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "LAG/LEAD window functions for row-relative access",
+      "project": "henrydb"
+    },
+    {
+      "id": "T151",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push and daily log update with session statistics"
     }
   ],
   "focusProjects": [
@@ -2135,6 +2163,22 @@
     {
       "time": "2026-04-09T21:19:25.975Z",
       "msg": "Added T147 (BUILD) after end: EXPLAIN ANALYZE: show actual vs estimated rows, execution time per plan node"
+    },
+    {
+      "time": "2026-04-09T21:26:46.175Z",
+      "msg": "Added T148 (BUILD) after end: Window functions: ROW_NUMBER(), RANK(), DENSE_RANK() with OVER (PARTITION BY ... ORDER BY ...)"
+    },
+    {
+      "time": "2026-04-09T21:26:46.386Z",
+      "msg": "Added T149 (BUILD) after end: Window aggregates: SUM/AVG/COUNT/MIN/MAX OVER with frame clause (ROWS BETWEEN)"
+    },
+    {
+      "time": "2026-04-09T21:26:46.596Z",
+      "msg": "Added T150 (BUILD) after end: LAG/LEAD window functions for row-relative access"
+    },
+    {
+      "time": "2026-04-09T21:26:56.111Z",
+      "msg": "Added T151 (MAINTAIN) after end: Final git push and daily log update with session statistics"
     }
   ]
 }

@@ -27,7 +27,7 @@ const KEYWORDS = new Set([
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'SEPARATOR',
   'CONFLICT', 'DO', 'NOTHING',
-  'ANALYZE', 'RETURNING', 'USING',
+  'ANALYZE', 'RETURNING', 'USING', 'FIRST_VALUE', 'LAST_VALUE',
   'MATERIALIZED', 'REFRESH',
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
   'IF', 'EXISTS',
@@ -417,6 +417,29 @@ export function parse(sql) {
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'window', func, arg: null, over, alias };
+    }
+
+    // LAG/LEAD window functions with arguments
+    if (peek().type === 'KEYWORD' && ['LAG', 'LEAD', 'NTILE', 'FIRST_VALUE', 'LAST_VALUE'].includes(peek().value)) {
+      const func = advance().value;
+      expect('(');
+      let arg = null;
+      let offset = 1;
+      let defaultValue = null;
+      if (!match(')')) {
+        arg = parseExpr();
+        if (match(',')) {
+          offset = parseExpr().value || 1;
+          if (match(',')) {
+            defaultValue = parseExpr().value ?? null;
+          }
+        }
+        expect(')');
+      }
+      const over = parseOverClause();
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'window', func, arg, offset, defaultValue, over, alias };
     }
 
     // String functions in SELECT
