@@ -1513,17 +1513,21 @@
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Wire extendible hash table as HASH index type: CREATE INDEX ... USING HASH",
       "project": "henrydb",
-      "started": "2026-04-09T21:13:52.899Z"
+      "started": "2026-04-09T21:13:52.899Z",
+      "completed": "2026-04-09T21:18:00.049Z",
+      "duration_ms": 600000,
+      "summary": "HASH index: CREATE INDEX ... USING HASH with ExtendibleHashTable. O(1) lookups, non-unique support, coexists with B+tree. 0.031ms avg lookup. INSERT/DELETE maintain index. 9 tests."
     },
     {
       "id": "T144",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Benchmark: B+tree index vs Hash index for equality lookups and range scans",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T21:18:00.504Z"
     }
   ],
   "focusProjects": [
