@@ -15,492 +15,353 @@
   --green: #3fb950;
   --red: #f85149;
   --yellow: #d29922;
+  --purple: #bc8cff;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh; display: flex; flex-direction: column;
 }
-
 header {
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.75rem;
 }
-
-header h1 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
+header h1 { font-size: 1.15rem; font-weight: 600; }
 header h1 span { color: var(--accent); }
-
-header .badge {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 2rem;
-  background: var(--accent);
-  color: var(--bg);
-  font-weight: 600;
+.badge {
+  font-size: 0.7rem; padding: 0.12rem 0.45rem; border-radius: 2rem;
+  background: var(--accent); color: var(--bg); font-weight: 600;
 }
-
-.subtitle {
-  color: var(--text-dim);
-  font-size: 0.85rem;
+.subtitle { color: var(--text-dim); font-size: 0.8rem; }
+.stats { margin-left: auto; color: var(--text-dim); font-size: 0.75rem; font-family: var(--font-mono); }
+.app-layout { flex: 1; display: flex; overflow: hidden; }
+.sidebar {
+  width: 220px; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow-y: auto;
+  flex-shrink: 0; background: var(--surface);
 }
-
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 2rem;
-  gap: 1rem;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.editor-area {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.editor-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.editor-toolbar button {
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--green);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: opacity 0.15s;
-}
-
-.editor-toolbar button:hover { opacity: 0.9; }
-.editor-toolbar button:active { transform: scale(0.98); }
-
-.editor-toolbar button.secondary {
-  background: var(--surface);
-  color: var(--text);
-}
-
-.editor-toolbar .hint {
-  color: var(--text-dim);
-  font-size: 0.8rem;
-  margin-left: auto;
-}
-
-#editor {
-  width: 100%;
-  min-height: 120px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  padding: 1rem;
-  resize: vertical;
-  line-height: 1.5;
-  tab-size: 2;
-}
-
-#editor:focus { outline: none; border-color: var(--accent); }
-
-.output-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-height: 200px;
-}
-
-.output-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-dim);
-  font-size: 0.85rem;
-}
-
-.output-header .timing {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-}
-
-#output {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  overflow: auto;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  min-height: 200px;
-}
-
-.result-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 0.5rem;
-}
-
-.result-table th {
-  text-align: left;
-  padding: 0.35rem 0.75rem;
-  border-bottom: 2px solid var(--accent);
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.result-table td {
-  padding: 0.3rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-.result-table tr:hover td { background: rgba(88,166,255,0.05); }
-
-.result-ok { color: var(--green); }
-.result-error { color: var(--red); }
-.result-info { color: var(--text-dim); }
-
-.examples {
-  margin-top: 0.5rem;
-}
-
-.examples summary {
-  cursor: pointer;
-  color: var(--accent);
-  font-size: 0.85rem;
+.sidebar-section { border-bottom: 1px solid var(--border); }
+.sidebar-section h3 {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-dim); padding: 0.5rem 0.6rem 0.25rem; cursor: pointer;
   user-select: none;
 }
-
+.section-body { padding: 0 0.4rem 0.4rem; }
+.table-item {
+  padding: 0.25rem 0.4rem; border-radius: 4px; cursor: pointer;
+  font-size: 0.78rem; font-family: var(--font-mono);
+  display: flex; align-items: center; gap: 0.3rem;
+}
+.table-item:hover { background: rgba(88,166,255,0.1); }
+.table-item .icon { font-size: 0.65rem; }
+.table-item.active { background: rgba(88,166,255,0.15); color: var(--accent); }
+.column-list {
+  margin-left: 1.2rem; font-size: 0.7rem; color: var(--text-dim);
+  font-family: var(--font-mono); padding: 0.1rem 0;
+}
+.column-list .col-type { color: var(--purple); margin-left: 0.2rem; }
+.history-item {
+  padding: 0.2rem 0.4rem; border-radius: 4px; cursor: pointer;
+  font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.history-item:hover { background: rgba(88,166,255,0.1); color: var(--text); }
+.main-area {
+  flex: 1; display: flex; flex-direction: column; min-width: 0;
+  padding: 0.75rem 1.5rem; gap: 0.5rem;
+}
+.editor-toolbar { display: flex; align-items: center; gap: 0.5rem; }
+.editor-toolbar button {
+  padding: 0.3rem 0.75rem; border-radius: 5px; border: 1px solid var(--border);
+  background: var(--green); color: #fff; font-weight: 600;
+  cursor: pointer; font-size: 0.78rem;
+}
+.editor-toolbar button:hover { opacity: 0.9; }
+.editor-toolbar button.secondary { background: var(--surface); color: var(--text); }
+.editor-toolbar .hint { color: var(--text-dim); font-size: 0.7rem; margin-left: auto; }
+#editor {
+  width: 100%; min-height: 90px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px;
+  color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;
+  padding: 0.6rem; resize: vertical; line-height: 1.5; tab-size: 2;
+}
+#editor:focus { outline: none; border-color: var(--accent); }
+.output-header { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; }
+.tabs { display: flex; gap: 0; }
+.tab {
+  padding: 0.3rem 0.6rem; font-size: 0.78rem; cursor: pointer;
+  color: var(--text-dim); border-bottom: 2px solid transparent;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-color: var(--accent); }
+.timing { margin-left: auto; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); }
+#output {
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.6rem; overflow: auto;
+  font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.5;
+  min-height: 160px;
+}
+.result-table { width: 100%; border-collapse: collapse; margin-bottom: 0.3rem; }
+.result-table th {
+  text-align: left; padding: 0.25rem 0.5rem; border-bottom: 2px solid var(--accent);
+  color: var(--accent); font-weight: 600; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.result-table td { padding: 0.2rem 0.5rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.result-table tr:hover td { background: rgba(88,166,255,0.05); }
+.result-table td.null { color: var(--text-dim); font-style: italic; }
+.result-table td.num { color: var(--yellow); }
+.result-ok { color: var(--green); }
+.result-error { color: var(--red); }
+.result-info { color: var(--text-dim); font-size: 0.75rem; }
+.plan-tree { padding: 0.3rem; }
+.plan-node { margin-left: 1.2rem; padding: 0.2rem 0; position: relative; }
+.plan-node::before {
+  content: ''; position: absolute; left: -0.8rem; top: 0;
+  width: 0.8rem; height: 0.8rem; border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.plan-op {
+  display: inline-block; padding: 0.15rem 0.4rem; border-radius: 3px;
+  font-size: 0.75rem; font-weight: 600;
+  background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.2); color: var(--accent);
+}
+.plan-op.scan { background: rgba(63,185,80,0.1); border-color: rgba(63,185,80,0.2); color: var(--green); }
+.plan-op.filter { background: rgba(210,153,34,0.1); border-color: rgba(210,153,34,0.2); color: var(--yellow); }
+.plan-detail { font-size: 0.7rem; color: var(--text-dim); margin-left: 0.4rem; }
+.examples { margin-top: 0.25rem; }
+.examples summary { cursor: pointer; color: var(--accent); font-size: 0.78rem; user-select: none; }
 .example-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.3rem; margin-top: 0.4rem;
 }
-
 .example-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.75rem;
-  cursor: pointer;
-  transition: border-color 0.15s;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  padding: 0.4rem; cursor: pointer;
 }
-
 .example-card:hover { border-color: var(--accent); }
-
-.example-card h4 {
-  font-size: 0.8rem;
-  color: var(--accent);
-  margin-bottom: 0.25rem;
-}
-
+.example-card h4 { font-size: 0.72rem; color: var(--accent); margin-bottom: 0.1rem; }
 .example-card code {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  display: block;
-  white-space: pre-wrap;
-  max-height: 60px;
-  overflow: hidden;
+  font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim);
+  display: block; white-space: pre-wrap; max-height: 40px; overflow: hidden;
 }
-
 footer {
-  padding: 0.75rem 2rem;
-  border-top: 1px solid var(--border);
-  color: var(--text-dim);
-  font-size: 0.75rem;
-  text-align: center;
+  padding: 0.4rem 1.5rem; border-top: 1px solid var(--border);
+  color: var(--text-dim); font-size: 0.65rem; text-align: center;
 }
-
 footer a { color: var(--accent); text-decoration: none; }
-footer a:hover { text-decoration: underline; }
-
-@media (max-width: 768px) {
-  main { padding: 0.75rem 1rem; }
-  header { padding: 0.75rem 1rem; }
-}
+@media (max-width: 768px) { .sidebar { display: none; } .main-area { padding: 0.5rem; } }
 </style>
 </head>
 <body>
-
 <header>
   <h1>🐘 <span>Henry</span>DB</h1>
   <span class="badge">v1.0</span>
-  <span class="subtitle">Interactive SQL Playground — 100% in-browser, no server needed</span>
+  <span class="subtitle">Interactive SQL Playground</span>
+  <span class="stats" id="db-stats"></span>
 </header>
-
-<main>
-  <div class="editor-area">
-    <div class="editor-toolbar">
-      <button id="run-btn" onclick="runQuery()">▶ Run (Ctrl+Enter)</button>
-      <button class="secondary" onclick="clearOutput()">Clear</button>
-      <button class="secondary" onclick="resetDb()">🔄 Reset DB</button>
-      <span class="hint" id="status">Ready — database initialized</span>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>📋 Schema</h3>
+      <div class="section-body" id="schema-list"></div>
     </div>
-    <textarea id="editor" spellcheck="false" placeholder="Type SQL here...
-Try: SELECT * FROM demo ORDER BY score DESC">SELECT name, score, grade FROM demo ORDER BY score DESC;</textarea>
-  </div>
-
-  <div class="output-area">
+    <div class="sidebar-section">
+      <h3>🕐 History</h3>
+      <div class="section-body" id="history-list"></div>
+    </div>
+  </aside>
+  <div class="main-area">
+    <div class="editor-toolbar">
+      <button onclick="runQuery()">▶ Run</button>
+      <button class="secondary" onclick="clearOutput()">Clear</button>
+      <button class="secondary" onclick="resetDb()">🔄 Reset</button>
+      <span class="hint">⌘Enter to run</span>
+    </div>
+    <textarea id="editor" spellcheck="false" rows="4">SELECT name, score, grade FROM demo ORDER BY score DESC;</textarea>
     <div class="output-header">
-      <span>📋 Results</span>
+      <div class="tabs">
+        <div class="tab active" data-tab="results" onclick="switchTab('results')">Results</div>
+        <div class="tab" data-tab="plan" onclick="switchTab('plan')">Plan</div>
+      </div>
       <span class="timing" id="timing"></span>
     </div>
-    <div id="output"><span class="result-info">Run a query to see results here.</span></div>
+    <div id="output"><span class="result-info">Run a query to see results.</span></div>
+    <details class="examples">
+      <summary>📚 Example Queries</summary>
+      <div class="example-grid" id="examples"></div>
+    </details>
   </div>
-
-  <details class="examples">
-    <summary>📚 Example Queries (click to load)</summary>
-    <div class="example-grid" id="examples"></div>
-  </details>
-</main>
-
-<footer>
-  Built from scratch in JavaScript — 200+ modules, 100K+ lines of code.
-  <a href="https://github.com/henrygd/henrydb" target="_blank">GitHub</a>
-</footer>
-
+</div>
+<footer>108K+ LOC · 4,295 tests · 209 modules · 115KB browser bundle · Built from scratch in JS</footer>
 <script type="module">
 import { Database } from './henrydb.bundle.js';
-
-let db;
+let db, queryHistory = [], lastPlan = null, activeTab = 'results';
 
 function initDb() {
   db = new Database();
-  
-  // Create demo tables
-  db.execute(`CREATE TABLE demo (
-    id INTEGER PRIMARY KEY, name TEXT NOT NULL,
-    score INTEGER, grade TEXT, enrolled TEXT
-  )`);
+  db.execute('CREATE TABLE demo (id INTEGER PRIMARY KEY, name TEXT NOT NULL, score INTEGER, grade TEXT, enrolled TEXT)');
   db.execute('CREATE INDEX idx_demo_score ON demo(score)');
-  
-  const students = [
-    [1, 'Alice', 95, 'A', '2025-09-01'],
-    [2, 'Bob', 87, 'B', '2025-09-01'],
-    [3, 'Charlie', 92, 'A', '2025-09-02'],
-    [4, 'Diana', 78, 'C', '2025-09-02'],
-    [5, 'Eve', 88, 'B', '2025-09-03'],
-    [6, 'Frank', 91, 'A', '2025-09-03'],
-    [7, 'Grace', 85, 'B', '2025-09-04'],
-    [8, 'Hank', 73, 'C', '2025-09-04'],
-    [9, 'Ivy', 96, 'A', '2025-09-05'],
-    [10, 'Jack', 82, 'B', '2025-09-05'],
-  ];
-  for (const [id, name, score, grade, enrolled] of students) {
-    db.execute(`INSERT INTO demo (id, name, score, grade, enrolled) VALUES (${id}, '${name}', ${score}, '${grade}', '${enrolled}')`);
-  }
-  
-  db.execute(`CREATE TABLE products (
-    id INTEGER PRIMARY KEY, name TEXT, price REAL, category TEXT, in_stock INTEGER
-  )`);
-  const products = [
-    [1, 'Laptop', 999.99, 'Electronics', 15],
-    [2, 'Headphones', 79.99, 'Electronics', 42],
-    [3, 'Desk Chair', 249.99, 'Furniture', 8],
-    [4, 'Notebook', 4.99, 'Office', 200],
-    [5, 'Monitor', 349.99, 'Electronics', 12],
-    [6, 'Keyboard', 59.99, 'Electronics', 35],
-    [7, 'Standing Desk', 599.99, 'Furniture', 5],
-    [8, 'Pen Set', 12.99, 'Office', 150],
-    [9, 'Webcam', 89.99, 'Electronics', 20],
-    [10, 'Bookshelf', 149.99, 'Furniture', 10],
-  ];
-  for (const [id, name, price, cat, stock] of products) {
-    db.execute(`INSERT INTO products (id, name, price, category, in_stock) VALUES (${id}, '${name}', ${price}, '${cat}', ${stock})`);
-  }
-  
-  db.execute(`CREATE TABLE orders (
-    id INTEGER PRIMARY KEY, product_id INTEGER, customer TEXT,
-    quantity INTEGER, order_date TEXT
-  )`);
-  const orders = [
-    [1, 1, 'Alice', 1, '2026-01-15'],
-    [2, 2, 'Bob', 2, '2026-01-16'],
-    [3, 5, 'Alice', 1, '2026-01-17'],
-    [4, 3, 'Charlie', 1, '2026-02-01'],
-    [5, 6, 'Diana', 3, '2026-02-05'],
-    [6, 4, 'Bob', 10, '2026-02-10'],
-    [7, 1, 'Eve', 1, '2026-02-15'],
-    [8, 9, 'Frank', 2, '2026-03-01'],
-    [9, 2, 'Alice', 1, '2026-03-05'],
-    [10, 7, 'Charlie', 1, '2026-03-10'],
-  ];
-  for (const [id, pid, cust, qty, date] of orders) {
-    db.execute(`INSERT INTO orders (id, product_id, customer, quantity, order_date) VALUES (${id}, ${pid}, '${cust}', ${qty}, '${date}')`);
-  }
+  [[1,'Alice',95,'A','2025-09-01'],[2,'Bob',87,'B','2025-09-01'],[3,'Charlie',92,'A','2025-09-02'],
+   [4,'Diana',78,'C','2025-09-02'],[5,'Eve',88,'B','2025-09-03'],[6,'Frank',91,'A','2025-09-03'],
+   [7,'Grace',85,'B','2025-09-04'],[8,'Hank',73,'C','2025-09-04'],[9,'Ivy',96,'A','2025-09-05'],
+   [10,'Jack',82,'B','2025-09-05']].forEach(([i,n,s,g,e])=>db.execute(`INSERT INTO demo VALUES (${i},'${n}',${s},'${g}','${e}')`));
+  db.execute('CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL, category TEXT, in_stock INTEGER)');
+  [[1,'Laptop',999.99,'Electronics',15],[2,'Headphones',79.99,'Electronics',42],[3,'Desk Chair',249.99,'Furniture',8],
+   [4,'Notebook',4.99,'Office',200],[5,'Monitor',349.99,'Electronics',12],[6,'Keyboard',59.99,'Electronics',35],
+   [7,'Standing Desk',599.99,'Furniture',5],[8,'Pen Set',12.99,'Office',150],[9,'Webcam',89.99,'Electronics',20],
+   [10,'Bookshelf',149.99,'Furniture',10]].forEach(([i,n,p,c,s])=>db.execute(`INSERT INTO products VALUES (${i},'${n}',${p},'${c}',${s})`));
+  db.execute('CREATE TABLE orders (id INTEGER PRIMARY KEY, product_id INTEGER, customer TEXT, quantity INTEGER, order_date TEXT)');
+  [[1,1,'Alice',1,'2026-01-15'],[2,2,'Bob',2,'2026-01-16'],[3,5,'Alice',1,'2026-01-17'],
+   [4,3,'Charlie',1,'2026-02-01'],[5,6,'Diana',3,'2026-02-05'],[6,4,'Bob',10,'2026-02-10'],
+   [7,1,'Eve',1,'2026-02-15'],[8,9,'Frank',2,'2026-03-01'],[9,2,'Alice',1,'2026-03-05'],
+   [10,7,'Charlie',1,'2026-03-10']].forEach(([i,p,c,q,d])=>db.execute(`INSERT INTO orders VALUES (${i},${p},'${c}',${q},'${d}')`));
+  refreshSchema(); updateStats();
 }
-
-initDb();
-
-const examples = [
-  { title: 'Basic SELECT', sql: 'SELECT * FROM demo ORDER BY score DESC;' },
-  { title: 'Aggregates + GROUP BY', sql: `SELECT grade, COUNT(*) as count, AVG(score) as avg_score\nFROM demo\nGROUP BY grade\nORDER BY avg_score DESC;` },
-  { title: 'Window: ROW_NUMBER', sql: `SELECT name, score,\n  ROW_NUMBER() OVER (ORDER BY score DESC) as rank\nFROM demo;` },
-  { title: 'Window: Running Total', sql: `SELECT name, score,\n  SUM(score) OVER (ORDER BY name) as running_total\nFROM demo;` },
-  { title: 'CTE + Aggregates', sql: `WITH category_stats AS (\n  SELECT category, COUNT(*) as cnt,\n         ROUND(AVG(price), 2) as avg_price\n  FROM products\n  GROUP BY category\n)\nSELECT * FROM category_stats\nORDER BY avg_price DESC;` },
-  { title: 'JOIN: Order Details', sql: `SELECT o.id, p.name as product, o.customer,\n  o.quantity, p.price,\n  o.quantity * p.price as total\nFROM orders o\nJOIN products p ON o.product_id = p.id\nORDER BY total DESC;` },
-  { title: 'Subquery: Top Spenders', sql: `SELECT customer, SUM(total) as spent FROM (\n  SELECT o.customer,\n    o.quantity * p.price as total\n  FROM orders o\n  JOIN products p ON o.product_id = p.id\n) sub\nGROUP BY customer\nORDER BY spent DESC;` },
-  { title: 'CASE Expression', sql: `SELECT name, price,\n  CASE\n    WHEN price > 500 THEN 'Premium'\n    WHEN price > 100 THEN 'Mid-range'\n    ELSE 'Budget'\n  END as tier\nFROM products\nORDER BY price DESC;` },
-  { title: 'EXISTS Subquery', sql: `SELECT name FROM products p\nWHERE EXISTS (\n  SELECT 1 FROM orders o\n  WHERE o.product_id = p.id\n);` },
-  { title: 'UNION', sql: `SELECT name, 'student' as type FROM demo WHERE score > 90\nUNION\nSELECT name, 'product' as type FROM products WHERE price > 200;` },
-  { title: 'CREATE + INSERT', sql: `CREATE TABLE notes (id INTEGER PRIMARY KEY, text TEXT);\nINSERT INTO notes VALUES (1, 'Hello HenryDB!');\nINSERT INTO notes VALUES (2, 'SQL is fun');\nSELECT * FROM notes;` },
-  { title: 'EXPLAIN Plan', sql: `EXPLAIN SELECT p.name, SUM(o.quantity)\nFROM products p\nJOIN orders o ON o.product_id = p.id\nGROUP BY p.name;` },
-];
-
-// Render examples
-const exGrid = document.getElementById('examples');
-examples.forEach(ex => {
-  const card = document.createElement('div');
-  card.className = 'example-card';
-  card.innerHTML = `<h4>${ex.title}</h4><code>${escapeHtml(ex.sql)}</code>`;
-  card.onclick = () => {
-    document.getElementById('editor').value = ex.sql;
-    runQuery();
-  };
-  exGrid.appendChild(card);
-});
-
-function escapeHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function refreshSchema() {
+  const el = document.getElementById('schema-list'); el.innerHTML = '';
+  try {
+    const t = db.execute('SHOW TABLES');
+    t.rows.forEach(row => {
+      const name = row.table_name || row.name || Object.values(row)[0];
+      const item = document.createElement('div');
+      item.className = 'table-item';
+      item.innerHTML = `<span class="icon">📄</span> ${esc(name)}`;
+      item.onclick = () => {
+        const ex = item.nextElementSibling;
+        if (ex?.className === 'column-list') { ex.remove(); item.classList.remove('active'); return; }
+        document.querySelectorAll('.column-list').forEach(e=>e.remove());
+        document.querySelectorAll('.table-item.active').forEach(e=>e.classList.remove('active'));
+        item.classList.add('active');
+        try {
+          const peek = db.execute(`SELECT * FROM ${name} LIMIT 1`);
+          if (peek.rows?.length) {
+            const div = document.createElement('div'); div.className = 'column-list';
+            Object.entries(peek.rows[0]).forEach(([k,v]) => {
+              div.innerHTML += `<div>├ ${esc(k)}<span class="col-type"> ${v===null?'null':typeof v}</span></div>`;
+            });
+            item.after(div);
+          }
+        } catch(e) {}
+      };
+      el.appendChild(item);
+    });
+  } catch(e) {}
 }
-
-function formatValue(v) {
-  if (v === null || v === undefined) return '<span class="result-info">NULL</span>';
-  if (typeof v === 'number') return v.toLocaleString('en-US', { maximumFractionDigits: 4 });
-  return escapeHtml(String(v));
+function updateStats() {
+  try { const t = db.execute('SHOW TABLES'); document.getElementById('db-stats').textContent = `${t.rows.length} tables · ${queryHistory.length} queries`; } catch(e) {}
 }
-
+function addHistory(sql, ms) {
+  queryHistory.unshift({ sql: sql.trim(), ms }); if (queryHistory.length > 30) queryHistory.pop();
+  const el = document.getElementById('history-list'); el.innerHTML = '';
+  queryHistory.slice(0, 15).forEach(h => {
+    const item = document.createElement('div'); item.className = 'history-item';
+    item.textContent = h.sql.substring(0, 50); item.title = h.sql;
+    item.onclick = () => { document.getElementById('editor').value = h.sql; runQuery(); };
+    el.appendChild(item);
+  });
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function renderTable(rows) {
-  if (!rows || rows.length === 0) return '<span class="result-info">No rows returned.</span>';
-  const cols = Object.keys(rows[0]);
-  let html = '<table class="result-table"><thead><tr>';
-  for (const col of cols) html += `<th>${escapeHtml(col)}</th>`;
-  html += '</tr></thead><tbody>';
-  for (const row of rows) {
-    html += '<tr>';
-    for (const col of cols) html += `<td>${formatValue(row[col])}</td>`;
-    html += '</tr>';
+  if (!rows?.length) return '<span class="result-info">No rows.</span>';
+  const cols = Object.keys(rows[0]), max = Math.min(rows.length, 200);
+  let h = '<table class="result-table"><thead><tr>';
+  cols.forEach(c => h += `<th>${esc(c)}</th>`);
+  h += '</tr></thead><tbody>';
+  for (let i = 0; i < max; i++) {
+    h += '<tr>';
+    cols.forEach(c => {
+      const v = rows[i][c];
+      if (v === null || v === undefined) h += '<td class="null">NULL</td>';
+      else if (typeof v === 'number') h += `<td class="num">${v}</td>`;
+      else h += `<td>${esc(v)}</td>`;
+    });
+    h += '</tr>';
   }
-  html += '</tbody></table>';
-  html += `<span class="result-info">${rows.length} row${rows.length !== 1 ? 's' : ''}</span>`;
-  return html;
+  h += `</tbody></table><span class="result-info">${rows.length} row${rows.length!==1?'s':''}${rows.length>200?' (showing 200)':''}</span>`;
+  return h;
 }
-
 function renderPlan(plan) {
-  let html = '<div style="color:var(--yellow)">';
-  for (const step of plan) {
-    html += `<div>→ ${escapeHtml(step.operation)}`;
-    if (step.table) html += ` on <strong>${escapeHtml(step.table)}</strong>`;
-    if (step.index) html += ` using index <strong>${escapeHtml(step.index)}</strong>`;
-    if (step.estimated_rows !== undefined) html += ` (est. ${step.estimated_rows} rows)`;
-    if (step.condition) html += ` [${escapeHtml(step.condition)}]`;
-    html += '</div>';
-  }
-  html += '</div>';
-  return html;
+  if (!plan?.length) return '<span class="result-info">No plan.</span>';
+  let h = '<div class="plan-tree">';
+  plan.forEach(s => {
+    const cls = s.operation.includes('SCAN') ? ' scan' : s.operation.includes('FILTER') ? ' filter' : '';
+    h += `<div class="plan-node"><span class="plan-op${cls}">${esc(s.operation)}</span>`;
+    const d = [];
+    if (s.table) d.push(`table: ${s.table}`);
+    if (s.index) d.push(`idx: ${s.index}`);
+    if (s.estimated_rows !== undefined) d.push(`~${s.estimated_rows} rows`);
+    if (s.condition) d.push(s.condition);
+    if (d.length) h += `<span class="plan-detail">${esc(d.join(' · '))}</span>`;
+    h += '</div>';
+  });
+  return h + '</div>';
 }
-
 window.runQuery = function() {
-  const editor = document.getElementById('editor');
-  const sql = editor.value.trim();
+  const sql = document.getElementById('editor').value.trim();
   if (!sql) return;
-  
-  const outputEl = document.getElementById('output');
-  const timingEl = document.getElementById('timing');
-  const statusEl = document.getElementById('status');
-  
-  // Split by semicolons for multiple statements
-  const statements = sql.split(';').map(s => s.trim()).filter(Boolean);
-  let html = '';
-  const t0 = performance.now();
-  
-  for (const stmt of statements) {
+  const stmts = sql.split(';').map(s=>s.trim()).filter(Boolean);
+  let html = ''; const t0 = performance.now(); lastPlan = null;
+  for (const s of stmts) {
     try {
-      const result = db.execute(stmt);
-      
-      if (result.type === 'ROWS') {
-        html += renderTable(result.rows);
-      } else if (result.type === 'PLAN') {
-        html += renderPlan(result.plan);
-      } else if (result.type === 'OK') {
-        html += `<div class="result-ok">✓ ${escapeHtml(result.message)}</div>`;
-      } else if (result.rows) {
-        html += renderTable(result.rows);
-      } else {
-        html += `<div class="result-ok">✓ ${escapeHtml(JSON.stringify(result))}</div>`;
+      const r = db.execute(s);
+      if (r.type === 'PLAN') { lastPlan = r.plan; html += renderPlan(r.plan); switchTab('plan'); }
+      else if (r.type === 'OK') html += `<div class="result-ok">✓ ${esc(r.message)}</div>`;
+      else if (r.rows) {
+        html += renderTable(r.rows);
+        try { const p = db.execute('EXPLAIN ' + s); if (p.plan) lastPlan = p.plan; } catch(e) {}
       }
-    } catch (e) {
-      html += `<div class="result-error">✗ Error: ${escapeHtml(e.message)}</div>`;
-    }
+      else html += '<div class="result-ok">✓ OK</div>';
+    } catch(e) { html += `<div class="result-error">✗ ${esc(e.message)}</div>`; }
     html += '<br>';
   }
-  
-  const elapsed = (performance.now() - t0).toFixed(1);
-  outputEl.innerHTML = html;
-  timingEl.textContent = `${elapsed}ms`;
-  statusEl.textContent = `Executed ${statements.length} statement${statements.length !== 1 ? 's' : ''} in ${elapsed}ms`;
+  const ms = (performance.now()-t0).toFixed(1);
+  document.getElementById('output').innerHTML = html;
+  document.getElementById('timing').textContent = `${ms}ms`;
+  addHistory(sql, ms); refreshSchema(); updateStats();
 };
-
+window.switchTab = function(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  if (tab === 'plan' && lastPlan) document.getElementById('output').innerHTML = renderPlan(lastPlan);
+};
 window.clearOutput = function() {
-  document.getElementById('output').innerHTML = '<span class="result-info">Output cleared.</span>';
-  document.getElementById('timing').textContent = '';
+  document.getElementById('output').innerHTML = '<span class="result-info">Cleared.</span>';
+  document.getElementById('timing').textContent = ''; lastPlan = null;
 };
-
 window.resetDb = function() {
-  initDb();
-  document.getElementById('status').textContent = 'Database reset to initial state';
-  document.getElementById('output').innerHTML = '<span class="result-ok">✓ Database reset. All demo tables restored.</span>';
+  initDb(); queryHistory.length = 0;
+  document.getElementById('history-list').innerHTML = '';
+  document.getElementById('output').innerHTML = '<span class="result-ok">✓ Database reset.</span>';
 };
-
-// Keyboard shortcut
-document.getElementById('editor').addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    runQuery();
-  }
-  // Tab support
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const ta = e.target;
-    const start = ta.selectionStart;
-    ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(ta.selectionEnd);
-    ta.selectionStart = ta.selectionEnd = start + 2;
-  }
+const examples = [
+  {t:'Basic SELECT',s:'SELECT * FROM demo ORDER BY score DESC;'},
+  {t:'Aggregates',s:"SELECT grade, COUNT(*) as count,\n  ROUND(AVG(score),1) as avg\nFROM demo GROUP BY grade\nORDER BY avg DESC;"},
+  {t:'Window: Ranking',s:"SELECT name, score,\n  ROW_NUMBER() OVER (ORDER BY score DESC) as rank\nFROM demo;"},
+  {t:'Running Total',s:"SELECT name, score,\n  SUM(score) OVER (ORDER BY name) as running\nFROM demo;"},
+  {t:'CTE',s:"WITH stats AS (\n  SELECT category, COUNT(*) as cnt,\n    ROUND(AVG(price),2) as avg_price\n  FROM products GROUP BY category\n)\nSELECT * FROM stats ORDER BY avg_price DESC;"},
+  {t:'JOIN',s:"SELECT o.id, p.name, o.customer,\n  o.quantity * p.price as total\nFROM orders o\nJOIN products p ON o.product_id = p.id\nORDER BY total DESC;"},
+  {t:'CASE',s:"SELECT name, price,\n  CASE WHEN price>500 THEN 'Premium'\n    WHEN price>100 THEN 'Mid-range'\n    ELSE 'Budget' END as tier\nFROM products ORDER BY price DESC;"},
+  {t:'EXISTS',s:"SELECT name FROM products p\nWHERE EXISTS (\n  SELECT 1 FROM orders o\n  WHERE o.product_id = p.id);"},
+  {t:'UNION',s:"SELECT name,'student' as type FROM demo WHERE score>90\nUNION\nSELECT name,'product' FROM products WHERE price>200;"},
+  {t:'CREATE+INSERT',s:"CREATE TABLE notes (id INTEGER PRIMARY KEY, text TEXT);\nINSERT INTO notes VALUES (1,'Hello HenryDB!');\nINSERT INTO notes VALUES (2,'SQL is fun');\nSELECT * FROM notes;"},
+  {t:'EXPLAIN',s:"EXPLAIN SELECT p.name, SUM(o.quantity)\nFROM products p\nJOIN orders o ON o.product_id=p.id\nGROUP BY p.name;"},
+  {t:'Subquery',s:"SELECT customer, SUM(total) as spent FROM (\n  SELECT o.customer, o.quantity*p.price as total\n  FROM orders o JOIN products p ON o.product_id=p.id\n) sub GROUP BY customer ORDER BY spent DESC;"},
+];
+const grid = document.getElementById('examples');
+examples.forEach(e => {
+  const c = document.createElement('div'); c.className = 'example-card';
+  c.innerHTML = `<h4>${e.t}</h4><code>${esc(e.s)}</code>`;
+  c.onclick = () => { document.getElementById('editor').value = e.s; runQuery(); };
+  grid.appendChild(c);
 });
-
-// Auto-run the default query
-runQuery();
+document.getElementById('editor').addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='Enter') { e.preventDefault(); runQuery(); }
+  if (e.key==='Tab') { e.preventDefault(); const t=e.target,s=t.selectionStart; t.value=t.value.substring(0,s)+'  '+t.value.substring(t.selectionEnd); t.selectionStart=t.selectionEnd=s+2; }
+});
+initDb(); runQuery();
 </script>
-
 </body>
 </html>
