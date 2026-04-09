@@ -480,17 +480,21 @@
     {
       "id": "T45",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix LSM test failures (9 failing) — likely missing compaction or bloom filter integration",
       "project": "henrydb",
-      "started": "2026-04-09T16:07:18.435Z"
+      "started": "2026-04-09T16:07:18.435Z",
+      "completed": "2026-04-09T16:10:15.180Z",
+      "duration_ms": 120000,
+      "summary": "LSM tree fixed: 3 one-line API mismatches (insert→set, find→get, null→undefined). 0/14 → 14/14 tests passing. Classic ghost export pattern."
     },
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Fix cuckoo-hash test failure (1 failing)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T16:10:25.198Z"
     },
     {
       "id": "T47",

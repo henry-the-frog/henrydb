@@ -127,7 +127,7 @@ export class CuckooHashTable {
     }
     h = ((h >>> 16) ^ h) * 0x45d9f3b;
     h = ((h >>> 16) ^ h) * 0x45d9f3b;
-    return ((h >>> 16) ^ h) >>> 0 % this._capacity;
+    return (((h >>> 16) ^ h) >>> 0) % this._capacity;
   }
 
   _hash2(key) {
@@ -137,7 +137,7 @@ export class CuckooHashTable {
     }
     h = ((h >>> 16) ^ h) * 0x119de1f3;
     h = ((h >>> 16) ^ h) * 0x119de1f3;
-    return ((h >>> 16) ^ h) >>> 0 % this._capacity;
+    return (((h >>> 16) ^ h) >>> 0) % this._capacity;
   }
 
   _resize() {
