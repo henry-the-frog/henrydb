@@ -1,168 +1,255 @@
-// deadlock-detector.js — Wait-for graph cycle detection
-// Maintains a directed graph where edges represent "transaction A waits for transaction B".
-// Periodically checks for cycles, which indicate deadlocks.
-// When a deadlock is detected, selects a victim transaction to abort.
+// deadlock-detector.js — Wait-for graph deadlock detection for HenryDB
+// Detects deadlocks via cycle detection in the wait-for graph.
+// Selects victim transaction with lowest cost to abort.
 
 /**
- * DeadlockDetector — wait-for graph with cycle detection.
+ * WaitForGraph — directed graph where edge A→B means "A waits for B".
  */
-export class DeadlockDetector {
-  constructor(options = {}) {
-    this.victimPolicy = options.victimPolicy || 'youngest'; // 'youngest' | 'cheapest'
-    
-    // Wait-for graph: txnId → Set<txnId it waits for>
-    this._waitFor = new Map();
-    // Transaction metadata: txnId → { startTime, cost }
-    this._txnMeta = new Map();
-    
-    this.stats = { checks: 0, deadlocksDetected: 0, victimsChosen: 0 };
+export class WaitForGraph {
+  constructor() {
+    this._edges = new Map(); // txId → Set<txId> (waits for)
+    this._edgeInfo = new Map(); // `${from}:${to}` → { resource, timestamp }
   }
 
   /**
-   * Register a transaction.
+   * Add a wait-for edge: txA is waiting for txB.
    */
-  registerTxn(txnId, meta = {}) {
-    this._txnMeta.set(txnId, {
-      startTime: meta.startTime || Date.now(),
-      cost: meta.cost || 0,
+  addEdge(waiter, holder, resource = null) {
+    if (!this._edges.has(waiter)) {
+      this._edges.set(waiter, new Set());
+    }
+    this._edges.get(waiter).add(holder);
+    this._edgeInfo.set(`${waiter}:${holder}`, {
+      resource,
+      timestamp: Date.now(),
     });
-    if (!this._waitFor.has(txnId)) {
-      this._waitFor.set(txnId, new Set());
+  }
+
+  /**
+   * Remove a wait-for edge.
+   */
+  removeEdge(waiter, holder) {
+    const waitees = this._edges.get(waiter);
+    if (waitees) {
+      waitees.delete(holder);
+      if (waitees.size === 0) this._edges.delete(waiter);
     }
+    this._edgeInfo.delete(`${waiter}:${holder}`);
   }
 
   /**
-   * Record that txnA is waiting for txnB (txnA wants a lock held by txnB).
+   * Remove all edges involving a transaction (completed/aborted).
    */
-  addWait(txnA, txnB) {
-    if (!this._waitFor.has(txnA)) this._waitFor.set(txnA, new Set());
-    this._waitFor.get(txnA).add(txnB);
-  }
-
-  /**
-   * Remove a wait edge (lock granted or txn aborted).
-   */
-  removeWait(txnA, txnB) {
-    if (this._waitFor.has(txnA)) {
-      this._waitFor.get(txnA).delete(txnB);
+  removeTransaction(txId) {
+    // Remove outgoing edges
+    this._edges.delete(txId);
+    
+    // Remove incoming edges
+    for (const [waiter, holders] of this._edges) {
+      holders.delete(txId);
+      if (holders.size === 0) this._edges.delete(waiter);
     }
-  }
 
-  /**
-   * Remove all edges for a transaction (txn committed/aborted).
-   */
-  removeTxn(txnId) {
-    this._waitFor.delete(txnId);
-    this._txnMeta.delete(txnId);
-    // Remove edges pointing to this txn
-    for (const [, waitsFor] of this._waitFor) {
-      waitsFor.delete(txnId);
-    }
-  }
-
-  /**
-   * Check for deadlocks. Returns array of cycles found.
-   * Each cycle is an array of txn IDs forming the cycle.
-   */
-  detectDeadlocks() {
-    this.stats.checks++;
-    const cycles = [];
-    const visited = new Set();
-    const inStack = new Set();
-    const path = [];
-
-    for (const txnId of this._waitFor.keys()) {
-      if (!visited.has(txnId)) {
-        this._dfs(txnId, visited, inStack, path, cycles);
+    // Clean edge info
+    for (const key of [...this._edgeInfo.keys()]) {
+      if (key.startsWith(`${txId}:`) || key.endsWith(`:${txId}`)) {
+        this._edgeInfo.delete(key);
       }
     }
+  }
 
-    if (cycles.length > 0) {
-      this.stats.deadlocksDetected += cycles.length;
+  /**
+   * Detect all cycles (deadlocks) in the wait-for graph.
+   * Returns an array of cycles, where each cycle is an array of transaction IDs.
+   */
+  detectCycles() {
+    const visited = new Set();
+    const recStack = new Set();
+    const cycles = [];
+
+    for (const node of this._edges.keys()) {
+      if (!visited.has(node)) {
+        this._dfs(node, visited, recStack, [], cycles);
+      }
     }
 
     return cycles;
   }
 
-  _dfs(node, visited, inStack, path, cycles) {
+  _dfs(node, visited, recStack, path, cycles) {
     visited.add(node);
-    inStack.add(node);
+    recStack.add(node);
     path.push(node);
 
-    const waitsFor = this._waitFor.get(node) || new Set();
-    for (const neighbor of waitsFor) {
+    const neighbors = this._edges.get(node) || new Set();
+    for (const neighbor of neighbors) {
       if (!visited.has(neighbor)) {
-        this._dfs(neighbor, visited, inStack, path, cycles);
-      } else if (inStack.has(neighbor)) {
-        // Found a cycle!
+        this._dfs(neighbor, visited, recStack, [...path], cycles);
+      } else if (recStack.has(neighbor)) {
+        // Found a cycle — extract it
         const cycleStart = path.indexOf(neighbor);
-        cycles.push(path.slice(cycleStart));
+        if (cycleStart >= 0) {
+          const cycle = path.slice(cycleStart);
+          cycle.push(neighbor); // Close the cycle
+          cycles.push(cycle);
+        }
       }
     }
 
-    path.pop();
-    inStack.delete(node);
+    recStack.delete(node);
   }
 
   /**
-   * Detect deadlocks and choose victims to abort.
-   * Returns array of victim txn IDs.
+   * Get all edges in the graph (for visualization).
    */
-  resolveDeadlocks() {
-    const cycles = this.detectDeadlocks();
-    const victims = [];
-
-    for (const cycle of cycles) {
-      const victim = this._chooseVictim(cycle);
-      if (victim !== null) {
-        victims.push(victim);
-        this.removeTxn(victim);
-        this.stats.victimsChosen++;
+  getEdges() {
+    const edges = [];
+    for (const [waiter, holders] of this._edges) {
+      for (const holder of holders) {
+        const info = this._edgeInfo.get(`${waiter}:${holder}`) || {};
+        edges.push({
+          waiter,
+          holder,
+          resource: info.resource,
+          waitingSince: info.timestamp,
+        });
       }
     }
-
-    return victims;
+    return edges;
   }
 
-  _chooseVictim(cycle) {
-    if (cycle.length === 0) return null;
+  get size() {
+    let count = 0;
+    for (const holders of this._edges.values()) count += holders.size;
+    return count;
+  }
+}
 
-    if (this.victimPolicy === 'youngest') {
-      // Abort the youngest transaction (most recent start)
-      let youngest = cycle[0];
-      let youngestTime = 0;
-      for (const txnId of cycle) {
-        const meta = this._txnMeta.get(txnId);
-        if (meta && meta.startTime > youngestTime) {
-          youngestTime = meta.startTime;
-          youngest = txnId;
-        }
-      }
-      return youngest;
+/**
+ * DeadlockDetector — monitors for deadlocks and selects victims.
+ */
+export class DeadlockDetector {
+  constructor(options = {}) {
+    this.graph = new WaitForGraph();
+    this.checkIntervalMs = options.checkIntervalMs || 1000;
+    this._txInfo = new Map(); // txId → { startTime, statementsExecuted, rowsModified }
+    this._stats = {
+      checksPerformed: 0,
+      deadlocksDetected: 0,
+      victimsSelected: 0,
+    };
+    this._timer = null;
+  }
+
+  /**
+   * Register a transaction.
+   */
+  registerTransaction(txId, info = {}) {
+    this._txInfo.set(txId, {
+      startTime: Date.now(),
+      statementsExecuted: info.statementsExecuted || 0,
+      rowsModified: info.rowsModified || 0,
+      priority: info.priority || 0,
+    });
+  }
+
+  /**
+   * Record that txA is waiting for txB on a resource.
+   */
+  recordWait(waiter, holder, resource) {
+    this.graph.addEdge(waiter, holder, resource);
+  }
+
+  /**
+   * Record that a wait has been resolved (lock acquired).
+   */
+  resolveWait(waiter, holder) {
+    this.graph.removeEdge(waiter, holder);
+  }
+
+  /**
+   * Remove a completed/aborted transaction.
+   */
+  removeTransaction(txId) {
+    this.graph.removeTransaction(txId);
+    this._txInfo.delete(txId);
+  }
+
+  /**
+   * Check for deadlocks and select victims.
+   * Returns array of { cycle, victim, reason }.
+   */
+  check() {
+    this._stats.checksPerformed++;
+    const cycles = this.graph.detectCycles();
+
+    if (cycles.length === 0) return [];
+
+    const results = [];
+    for (const cycle of cycles) {
+      this._stats.deadlocksDetected++;
+      const victim = this._selectVictim(cycle);
+      this._stats.victimsSelected++;
+      results.push({
+        cycle: cycle.slice(0, -1), // Remove duplicate closing node
+        victim: victim.txId,
+        reason: victim.reason,
+      });
     }
 
-    if (this.victimPolicy === 'cheapest') {
-      // Abort the transaction with lowest cost
-      let cheapest = cycle[0];
-      let cheapestCost = Infinity;
-      for (const txnId of cycle) {
-        const meta = this._txnMeta.get(txnId);
-        if (meta && meta.cost < cheapestCost) {
-          cheapestCost = meta.cost;
-          cheapest = txnId;
-        }
-      }
-      return cheapest;
-    }
+    return results;
+  }
 
-    return cycle[0]; // Default: first in cycle
+  /**
+   * Start periodic deadlock checking.
+   */
+  startMonitoring() {
+    this._timer = setInterval(() => this.check(), this.checkIntervalMs);
+  }
+
+  /**
+   * Stop monitoring.
+   */
+  stopMonitoring() {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = null;
+    }
   }
 
   getStats() {
     return {
-      ...this.stats,
-      activeTransactions: this._txnMeta.size,
-      waitEdges: [...this._waitFor.values()].reduce((s, set) => s + set.size, 0),
+      ...this._stats,
+      activeTransactions: this._txInfo.size,
+      waitEdges: this.graph.size,
+    };
+  }
+
+  /**
+   * Select the best victim from a cycle.
+   * Strategy: abort the transaction with the least work done.
+   */
+  _selectVictim(cycle) {
+    const candidates = cycle.slice(0, -1); // Remove duplicate
+    let bestVictim = candidates[0];
+    let bestCost = Infinity;
+
+    for (const txId of candidates) {
+      const info = this._txInfo.get(txId);
+      if (!info) continue;
+
+      // Cost = statements * 10 + rows modified + priority bonus
+      // Lower cost = more expendable
+      const cost = (info.statementsExecuted * 10) + info.rowsModified + (info.priority * 1000);
+      if (cost < bestCost) {
+        bestCost = cost;
+        bestVictim = txId;
+      }
+    }
+
+    return {
+      txId: bestVictim,
+      reason: `Lowest cost transaction in deadlock cycle (cost=${bestCost})`,
     };
   }
 }

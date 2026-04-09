@@ -4917,6 +4917,17 @@
       "completed": "2026-04-09T00:52:04.669Z",
       "duration_ms": 120000,
       "summary": "Server-side cursors: DECLARE, FETCH FORWARD/BACKWARD/FIRST/LAST/ABSOLUTE/RELATIVE/ALL, SCROLL, WITH HOLD, MOVE, CLOSE. 21 tests."
+    },
+    {
+      "id": "T453",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build query deadlock detector: wait-for graph, cycle detection, automatic victim selection",
+      "project": "henrydb",
+      "started": "2026-04-09T00:52:31.421Z",
+      "completed": "2026-04-09T00:53:48.598Z",
+      "duration_ms": 120000,
+      "summary": "Deadlock detector: wait-for graph, DFS cycle detection, victim selection by cost (statements, rows, priority), 3-way deadlock support. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6696,6 +6707,10 @@
     {
       "time": "2026-04-09T00:50:21.020Z",
       "msg": "Added T452 (BUILD) after end: Build query result streaming: cursor-based iteration, server-side cursors, FETCH FORWARD/BACKWARD, SCROLL cursors"
+    },
+    {
+      "time": "2026-04-09T00:52:31.002Z",
+      "msg": "Added T453 (BUILD) after end: Build query deadlock detector: wait-for graph, cycle detection, automatic victim selection"
     }
   ]
 }

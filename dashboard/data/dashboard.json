@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T00:52:04.735Z",
+  "generated": "2026-04-09T00:53:48.663Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build query result streaming: cursor-based iteration, server-side cursors, FETCH FORWARD/BACKWARD, SCROLL cursors",
-    "completedAt": "2026-04-09T00:52:04.735Z",
-    "taskId": "T452",
-    "summary": "Server-side cursors: DECLARE, FETCH FORWARD/BACKWARD/FIRST/LAST/ABSOLUTE/RELATIVE/ALL, SCROLL, WITH HOLD, MOVE, CLOSE. 21 tests.",
+    "task": "Build query deadlock detector: wait-for graph, cycle detection, automatic victim selection",
+    "completedAt": "2026-04-09T00:53:48.663Z",
+    "taskId": "T453",
+    "summary": "Deadlock detector: wait-for graph, DFS cycle detection, victim selection by cost (statements, rows, priority), 3-way deadlock support. 16 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 450,
+    "blocksCompleted": 451,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 346,
+      "BUILD": 347,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
