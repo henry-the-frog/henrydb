@@ -2186,10 +2186,35 @@
     {
       "id": "T206",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Suffix array: sorted array of all suffixes for pattern matching",
       "project": "henrydb",
-      "started": "2026-04-09T23:03:22.073Z"
+      "started": "2026-04-09T23:03:22.073Z",
+      "completed": "2026-04-09T23:04:05.844Z",
+      "duration_ms": 180000,
+      "summary": "SuffixArray: O(m log n) search, LCP array. 6 tests."
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fibonacci heap: O(1) insert + decrease-key for Dijkstra's algorithm",
+      "project": "henrydb",
+      "started": "2026-04-09T23:04:23.309Z"
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Merkle tree: hash tree for data integrity verification (Git/blockchain)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T209",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Zobrist hashing: fast incremental hash for game states and dedup",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3017,6 +3042,18 @@
     {
       "time": "2026-04-09T23:02:04.468Z",
       "msg": "Added T206 (BUILD) after end: Suffix array: sorted array of all suffixes for pattern matching"
+    },
+    {
+      "time": "2026-04-09T23:04:22.267Z",
+      "msg": "Added T207 (BUILD) after end: Fibonacci heap: O(1) insert + decrease-key for Dijkstra's algorithm"
+    },
+    {
+      "time": "2026-04-09T23:04:22.517Z",
+      "msg": "Added T208 (BUILD) after end: Merkle tree: hash tree for data integrity verification (Git/blockchain)"
+    },
+    {
+      "time": "2026-04-09T23:04:22.797Z",
+      "msg": "Added T209 (BUILD) after end: Zobrist hashing: fast incremental hash for game states and dedup"
     }
   ]
 }
