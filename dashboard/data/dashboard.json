@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T01:22:25.763Z",
+  "generated": "2026-04-09T01:23:34.868Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build composite types: CREATE TYPE name AS (field type, ...), record types, row constructors",
-    "completedAt": "2026-04-09T01:22:25.763Z",
-    "taskId": "T469",
-    "summary": "Composite types: CREATE TYPE AS, row constructors, field access, compare, ALTER ADD/DROP ATTRIBUTE, ROW string format. 15 tests.",
+    "task": "Build range types: int4range, numrange, tsrange, daterange, containment, overlap, intersection operators",
+    "completedAt": "2026-04-09T01:23:34.868Z",
+    "taskId": "T470",
+    "summary": "Range types: int4range/numrange/tsrange/daterange, contains, containsRange, overlaps, intersection, union, adjacent, parse/toString. 19 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 467,
+    "blocksCompleted": 468,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 363,
+      "BUILD": 364,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
