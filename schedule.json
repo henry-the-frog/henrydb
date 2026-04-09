@@ -2219,10 +2219,21 @@
     {
       "id": "T209",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Zobrist hashing: fast incremental hash for game states and dedup",
       "project": "henrydb",
-      "started": "2026-04-09T23:05:56.370Z"
+      "started": "2026-04-09T23:05:56.370Z",
+      "completed": "2026-04-09T23:07:06.849Z",
+      "duration_ms": 180000,
+      "summary": "ZobristHash: O(1) incremental XOR hashing. Set + board variants. 6 tests."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "50th structure: Radix sort helper with counting sort for O(n) integer sorting",
+      "project": "henrydb",
+      "started": "2026-04-09T23:07:21.505Z"
     }
   ],
   "focusProjects": [
@@ -3062,6 +3073,10 @@
     {
       "time": "2026-04-09T23:04:22.797Z",
       "msg": "Added T209 (BUILD) after end: Zobrist hashing: fast incremental hash for game states and dedup"
+    },
+    {
+      "time": "2026-04-09T23:07:21.010Z",
+      "msg": "Added T210 (BUILD) after end: 50th structure: Radix sort helper with counting sort for O(n) integer sorting"
     }
   ]
 }
