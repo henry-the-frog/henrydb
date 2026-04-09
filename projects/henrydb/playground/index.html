@@ -177,6 +177,11 @@ footer a { color: var(--accent); text-decoration: none; }
 .lesson-nav button:hover { border-color: var(--accent); }
 .lesson-nav button.primary { background: var(--accent); color: var(--bg); }
 .lesson-success { color: var(--green); font-weight: 600; font-size: 0.85rem; padding: 0.3rem 0; }
+.lint-issues { margin-top: 0.3rem; }
+.lint-issue { font-size: 0.72rem; padding: 0.15rem 0.4rem; border-radius: 3px; margin: 0.1rem 0; font-family: var(--font-mono); }
+.lint-issue.error { background: rgba(248,81,73,0.1); color: var(--red); }
+.lint-issue.warning { background: rgba(210,153,34,0.1); color: var(--yellow); }
+.lint-issue.info { background: rgba(88,166,255,0.1); color: var(--accent); }
 .chart-container svg { width: 100%; max-height: 300px; }
 .chart-bar { transition: opacity 0.15s; }
 .chart-bar:hover { opacity: 0.8; }
@@ -236,7 +241,7 @@ footer a { color: var(--accent); text-decoration: none; }
 <footer>108K+ LOC · 4,295 tests · 209 modules · 115KB browser bundle · Built from scratch in JS</footer>
 <script type="module">
 import { Database } from './henrydb.bundle.js';
-import { parse, formatSQL } from './henrydb.bundle.js';
+import { parse, formatSQL, lintSQL } from './henrydb.bundle.js';
 import { tutorials, getLesson } from './tutorial.js';
 let db, queryHistory = [], lastPlan = null, lastRows = null, activeTab = 'results';
 let currentTutorial = null, currentLessonIdx = 0, lessonDb = null;
@@ -445,6 +450,18 @@ window.runQuery = function() {
       }
       else html += '<div class="result-ok">✓ OK</div>';
     } catch(e) { html += `<div class="result-error">✗ ${esc(e.message)}</div>`; }
+    // Lint
+    try {
+      const issues = lintSQL(parse(s));
+      if (issues.length) {
+        html += '<div class="lint-issues">';
+        for (const i of issues) {
+          const icon = i.severity === 'error' ? '🔴' : i.severity === 'warning' ? '🟡' : '🔵';
+          html += `<div class="lint-issue ${i.severity}">${icon} ${esc(i.message)}</div>`;
+        }
+        html += '</div>';
+      }
+    } catch(e) {}
     html += '<br>';
   }
   const ms = (performance.now()-t0).toFixed(1);
