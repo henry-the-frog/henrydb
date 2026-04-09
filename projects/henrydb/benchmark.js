@@ -17,7 +17,7 @@ let t1 = performance.now();
 console.log(`Schema creation: ${(t1 - t0).toFixed(1)}ms`);
 
 // 2. Single-row INSERT
-const N = 1000;
+const N = 10000;
 t0 = performance.now();
 for (let i = 1; i <= N; i++) {
   db.execute(`INSERT INTO users VALUES (${i}, 'User_${i}', 'user${i}@example.com', ${20 + (i % 50)})`);

@@ -362,17 +362,21 @@
     {
       "id": "T34",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Optimize INSERT performance: batch WAL commits, reduce PK checking overhead",
       "project": "henrydb",
-      "started": "2026-04-09T15:30:35.072Z"
+      "started": "2026-04-09T15:30:35.072Z",
+      "completed": "2026-04-09T15:35:55.316Z",
+      "duration_ms": 300000,
+      "summary": "Fixed O(n²) WAL _flushToStable (used .includes() linear scan per record). Now O(1) with index tracking. INSERT 14x faster (16.7K rows/sec), orders INSERT 27x faster (1341→50ms). All 101 tests passing."
     },
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Run expanded benchmark at 10K rows to test scalability",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T15:36:14.596Z"
     },
     {
       "id": "T36",
