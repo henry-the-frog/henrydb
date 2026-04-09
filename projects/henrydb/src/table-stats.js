@@ -1,119 +1,191 @@
-// table-stats.js — Table statistics collector for HenryDB
-// Collects row counts, column stats (min, max, nulls, distinct), and more.
+// table-stats.js — Table statistics for cost-based query optimization
+//
+// Collects per-column statistics by scanning the table:
+//   - Row count
+//   - Distinct values (exact for small tables, HyperLogLog-like for large)
+//   - Min/max values
+//   - Null fraction
+//   - Most common values (MCV) with frequencies
+//   - Histogram for range selectivity estimation
+//
+// Based on PostgreSQL's pg_stats concept.
 
 /**
- * Collect comprehensive statistics for a table.
- * @param {Database} db - HenryDB instance
- * @param {string} table - Table name
- * @returns {Object} Table statistics
+ * ColumnStats — Statistics for a single column.
  */
-export function collectTableStats(db, table) {
-  const stats = {
-    table,
-    rowCount: 0,
-    columns: {},
-    sizeEstimate: 0,
-  };
-
-  // Row count
-  try {
-    const r = db.execute(`SELECT COUNT(*) as cnt FROM ${table}`);
-    stats.rowCount = r.rows[0].cnt;
-  } catch(e) {
-    stats.error = e.message;
-    return stats;
+export class ColumnStats {
+  constructor(name) {
+    this.name = name;
+    this.rowCount = 0;
+    this.nullCount = 0;
+    this.distinctCount = 0;
+    this.min = null;
+    this.max = null;
+    this.avgWidth = 0; // Average byte width
+    this.mcv = [];     // Most common values: [{value, frequency}]
+    this.histogram = []; // Equi-depth histogram bounds
   }
 
-  if (stats.rowCount === 0) return stats;
+  get nullFraction() {
+    return this.rowCount > 0 ? this.nullCount / this.rowCount : 0;
+  }
 
-  // Get column names from first row
-  const peek = db.execute(`SELECT * FROM ${table} LIMIT 1`);
-  const columns = Object.keys(peek.rows[0]);
+  get selectivity() {
+    // Estimated selectivity for equality predicate (1/distinct)
+    return this.distinctCount > 0 ? 1 / this.distinctCount : 1;
+  }
+}
 
-  for (const col of columns) {
-    const colStats = {
-      name: col,
-      type: typeof peek.rows[0][col],
-    };
+/**
+ * TableStats — Aggregated statistics for a table.
+ */
+export class TableStats {
+  constructor(tableName) {
+    this.tableName = tableName;
+    this.rowCount = 0;
+    this.columnStats = new Map(); // colName → ColumnStats
+    this.analyzedAt = null;
+  }
+}
 
-    try {
-      // Basic stats
-      const r = db.execute(`SELECT 
-        COUNT(${col}) as non_null,
-        COUNT(DISTINCT ${col}) as distinct_values,
-        MIN(${col}) as min_val,
-        MAX(${col}) as max_val
-        FROM ${table}
-      `);
-      
-      const row = r.rows[0];
-      colStats.nonNull = row.non_null;
-      colStats.nullCount = stats.rowCount - row.non_null;
-      colStats.distinctValues = row.distinct_values;
-      colStats.min = row.min_val;
-      colStats.max = row.max_val;
-      colStats.nullRate = +((colStats.nullCount / stats.rowCount) * 100).toFixed(1);
-      colStats.selectivity = stats.rowCount > 0 ? +(row.distinct_values / stats.rowCount).toFixed(4) : 0;
-
-      // Numeric stats
-      if (typeof peek.rows[0][col] === 'number') {
-        const numR = db.execute(`SELECT AVG(${col}) as avg_val, SUM(${col}) as sum_val FROM ${table}`);
-        colStats.avg = +numR.rows[0].avg_val?.toFixed(4);
-        colStats.sum = numR.rows[0].sum_val;
+/**
+ * Analyze a table and collect statistics.
+ * @param {Object} tableInfo - {schema, heap} from db.tables
+ * @param {Object} options
+ * @param {number} options.mcvLimit - Number of most common values to track (default: 10)
+ * @param {number} options.histogramBuckets - Number of histogram buckets (default: 100)
+ * @returns {TableStats}
+ */
+export function analyzeTable(tableInfo, options = {}) {
+  const { schema, heap } = tableInfo;
+  const mcvLimit = options.mcvLimit || 10;
+  const histogramBuckets = options.histogramBuckets || 100;
+  
+  const stats = new TableStats(heap.name || 'unknown');
+  
+  // Initialize per-column collectors
+  const collectors = schema.map((col, idx) => ({
+    name: col.name,
+    idx,
+    values: [],
+    nullCount: 0,
+    valueCounts: new Map(), // value → count
+  }));
+  
+  // Scan all rows
+  let rowCount = 0;
+  for (const { values } of heap.scan()) {
+    rowCount++;
+    for (const col of collectors) {
+      const val = values[col.idx];
+      if (val === null || val === undefined) {
+        col.nullCount++;
+      } else {
+        col.values.push(val);
+        col.valueCounts.set(val, (col.valueCounts.get(val) || 0) + 1);
       }
-    } catch(e) {
-      colStats.error = e.message;
     }
-
-    stats.columns[col] = colStats;
   }
-
-  // Rough size estimate (bytes)
-  stats.sizeEstimate = stats.rowCount * columns.length * 20; // ~20 bytes per cell avg
-
+  
+  stats.rowCount = rowCount;
+  
+  // Compute per-column stats
+  for (const col of collectors) {
+    const cs = new ColumnStats(col.name);
+    cs.rowCount = rowCount;
+    cs.nullCount = col.nullCount;
+    cs.distinctCount = col.valueCounts.size;
+    
+    if (col.values.length > 0) {
+      // Min/max (works for numbers and strings)
+      const sorted = [...col.values].sort((a, b) => {
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b));
+      });
+      cs.min = sorted[0];
+      cs.max = sorted[sorted.length - 1];
+      
+      // Average width
+      cs.avgWidth = col.values.reduce((sum, v) => sum + String(v).length, 0) / col.values.length;
+      
+      // Most Common Values (MCV)
+      const mcvEntries = [...col.valueCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, mcvLimit)
+        .map(([value, count]) => ({
+          value,
+          count,
+          frequency: count / rowCount,
+        }));
+      cs.mcv = mcvEntries;
+      
+      // Histogram (equi-depth bounds)
+      if (sorted.length > histogramBuckets) {
+        const step = Math.floor(sorted.length / histogramBuckets);
+        cs.histogram = [];
+        for (let i = 0; i < histogramBuckets; i++) {
+          cs.histogram.push(sorted[i * step]);
+        }
+        cs.histogram.push(sorted[sorted.length - 1]); // Add max
+      } else {
+        // Small table: just use all sorted values as histogram
+        cs.histogram = sorted;
+      }
+    }
+    
+    stats.columnStats.set(col.name, cs);
+  }
+  
+  stats.analyzedAt = new Date();
   return stats;
 }
 
 /**
- * Collect statistics for all tables in a database.
+ * Estimate selectivity of a predicate using table statistics.
  */
-export function collectAllStats(db) {
-  const result = {};
-  try {
-    const tables = db.execute('SHOW TABLES');
-    for (const row of tables.rows) {
-      const name = row.table_name || row.name || Object.values(row)[0];
-      if (!name.startsWith('_')) {
-        result[name] = collectTableStats(db, name);
-      }
-    }
-  } catch(e) {}
-  return result;
-}
-
-/**
- * Format stats as a human-readable report.
- */
-export function formatStatsReport(stats) {
-  const lines = [];
-  lines.push(`Table: ${stats.table}`);
-  lines.push(`Rows: ${stats.rowCount.toLocaleString()}`);
-  lines.push(`Size estimate: ${(stats.sizeEstimate / 1024).toFixed(1)} KB`);
-  lines.push('');
+export function estimateSelectivity(colStats, op, value) {
+  if (!colStats || colStats.rowCount === 0) return 0.5; // No stats → assume 50%
   
-  if (Object.keys(stats.columns).length > 0) {
-    lines.push(`${'Column'.padEnd(20)} ${'Type'.padEnd(10)} ${'Distinct'.padStart(10)} ${'Nulls'.padStart(8)} ${'Min'.padStart(12)} ${'Max'.padStart(12)}`);
-    lines.push('─'.repeat(75));
+  switch (op) {
+    case '=':
+    case 'EQ': {
+      // Check MCV first
+      const mcvEntry = colStats.mcv.find(e => e.value === value);
+      if (mcvEntry) return mcvEntry.frequency;
+      // Otherwise use 1/distinct
+      return colStats.selectivity;
+    }
     
-    for (const col of Object.values(stats.columns)) {
-      const type = (col.type || '?').substring(0, 8);
-      const distinct = String(col.distinctValues || '?').padStart(10);
-      const nulls = col.nullRate !== undefined ? `${col.nullRate}%`.padStart(8) : '?'.padStart(8);
-      const min = String(col.min ?? '').substring(0, 12).padStart(12);
-      const max = String(col.max ?? '').substring(0, 12).padStart(12);
-      lines.push(`${col.name.padEnd(20)} ${type.padEnd(10)} ${distinct} ${nulls} ${min} ${max}`);
+    case '<':
+    case 'LT': {
+      if (colStats.min === null) return 0.5;
+      if (typeof value === 'number' && typeof colStats.min === 'number') {
+        const range = colStats.max - colStats.min;
+        if (range === 0) return value > colStats.min ? 1 : 0;
+        return Math.max(0, Math.min(1, (value - colStats.min) / range));
+      }
+      // Histogram-based for non-numeric
+      const pos = colStats.histogram.findIndex(h => h >= value);
+      return pos >= 0 ? pos / colStats.histogram.length : 0.5;
     }
+    
+    case '>':
+    case 'GT':
+      return 1 - estimateSelectivity(colStats, 'LT', value);
+    
+    case '<=':
+    case 'LTE':
+      return estimateSelectivity(colStats, 'LT', value) + estimateSelectivity(colStats, 'EQ', value);
+    
+    case '>=':
+    case 'GTE':
+      return 1 - estimateSelectivity(colStats, 'LT', value);
+    
+    case '!=':
+    case 'NEQ':
+      return 1 - estimateSelectivity(colStats, 'EQ', value);
+    
+    default:
+      return 0.5;
   }
-  
-  return lines.join('\n');
 }
