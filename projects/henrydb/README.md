@@ -1,199 +1,123 @@
-# HenryDB 🐘
+# HenryDB 🐸
 
-**A complete database engine built from scratch in JavaScript.**
-
-**108K+ lines of code · 4,295 tests · 209 modules · 115KB browser bundle**
-
-[**🎮 Try the Live Playground**](https://henry-the-frog.github.io/henrydb/) — run SQL in your browser, no install needed.
-
----
-
-## What Is This?
-
-HenryDB is an educational database engine that implements virtually every concept from a database systems textbook — from B+ trees and MVCC to Raft consensus and columnar execution. It's not production software; it's an exercise in understanding how databases actually work at every level.
-
-**Connects to real PostgreSQL clients, ORMs, and `psql`.**
+A PostgreSQL-compatible database engine built from scratch in JavaScript. No dependencies. No shortcuts.
 
 ## Quick Start
 
-```bash
-# In-memory usage
-node -e "
-  import { Database } from './src/db.js';
-  const db = new Database();
-  db.execute('CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, score REAL)');
-  db.execute(\"INSERT INTO users VALUES (1, 'Alice', 95.5)\");
-  console.log(db.execute('SELECT * FROM users').rows);
-"
+```javascript
+import { Database } from './src/db.js';
 
-# PostgreSQL-compatible server
-node src/server.js 5433
-psql -h 127.0.0.1 -p 5433
+const db = new Database();
 
-# Interactive CLI
-node src/cli.js
+// Create a table
+db.execute('CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)');
 
-# Run all 4,295 tests
-node --test src/*.test.js
+// Insert data
+db.execute("INSERT INTO users VALUES (1, 'Alice', 30)");
+db.execute("INSERT INTO users VALUES (2, 'Bob', 25)");
+
+// Query
+const result = db.execute('SELECT name, age FROM users WHERE age > 28');
+console.log(result.rows); // [{ name: 'Alice', age: 30 }]
 ```
 
-## Performance
+## Start the Server
 
-Benchmarks on 10,000-row dataset with B+ tree indexes:
+```bash
+node src/cli.js --port 5432
+```
 
-| Operation | Time | Throughput |
-|---|---|---|
-| INSERT 10K rows | 273ms | **36,600 rows/sec** |
-| Point SELECT (indexed) | 0.13ms | **7,500 queries/sec** |
-| GROUP BY + 5 aggregates | 44ms | — |
-| Window function (1K rows) | 24ms | — |
-| ORDER BY + LIMIT | 53ms | — |
-| Range scan (BETWEEN) | 39ms | — |
-| Transaction (BEGIN/COMMIT) | 0.03ms | **37,700 txn/sec** |
-| CTE + aggregate | 41ms | — |
-| Self-JOIN (100×100) | 26ms | — |
-| DELETE 500 of 1K rows | 17ms | — |
-
-### Query Engine Speedups vs Volcano (Iterator) Baseline
-
-| Engine | Speedup |
-|---|---|
-| Compiled (closure pipelines) | **365×** |
-| Prepared (cached plans) | **246×** |
-| Vectorized (columnar batches) | **220×** |
-| Codegen (`new Function()`) | **143×** |
-| Peak (10-table join, compiled) | **2,062×** |
+Connect with any PostgreSQL client:
+```bash
+psql -h localhost -p 5432 -U test -d test
+```
 
 ## Features
 
 ### SQL Support
-- **DDL**: CREATE/DROP/ALTER TABLE, CREATE INDEX, CREATE VIEW, CREATE TABLE AS
-- **DML**: SELECT, INSERT, UPDATE, DELETE with full WHERE clause support
-- **Joins**: INNER, LEFT, RIGHT, CROSS — up to N-way joins
-- **Aggregates**: COUNT, SUM, AVG, MIN, MAX with GROUP BY and HAVING
-- **Window Functions**: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER
-- **CTEs**: WITH ... AS (common table expressions)
-- **Subqueries**: correlated, EXISTS, IN, scalar subqueries
-- **Set Operations**: UNION, INTERSECT, EXCEPT
-- **Expressions**: CASE/WHEN, BETWEEN, LIKE, COALESCE, CAST
-- **JSON**: JSON_EXTRACT, JSON_TYPE, JSON_ARRAY_LENGTH, JSON_KEYS
-- **Full-Text Search**: MATCH...AGAINST with inverted index and BM25 scoring
-- **EXPLAIN**: query plan visualization (text, JSON, DOT/Graphviz)
-- **Transactions**: BEGIN, COMMIT, ROLLBACK, SAVEPOINT, nested transactions
-- **Triggers**: BEFORE/AFTER INSERT/UPDATE/DELETE
-- **Views**: CREATE VIEW with full query support
-- **Sequences**: CREATE SEQUENCE, NEXTVAL, CURRVAL
-- **Domains & Enums**: custom types
-- **Row-Level Security**: per-user access policies
-- **COPY**: bulk import/export (PostgreSQL COPY protocol)
+- **DDL**: CREATE TABLE, DROP TABLE, ALTER TABLE, CREATE INDEX
+- **DML**: INSERT, UPDATE, DELETE with full WHERE clause support
+- **Queries**: SELECT with JOIN, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET
+- **Advanced**: Subqueries, CTEs (WITH), Window Functions, UNION/INTERSECT/EXCEPT
+- **Prepared Statements**: Parameterized queries with plan caching
 
-### PostgreSQL Wire Protocol
-Full TCP server speaking PostgreSQL v3 protocol:
-- Simple + Extended query protocols (Parse/Bind/Describe/Execute/Sync)
-- Prepared statements, server-side cursors (DECLARE/FETCH/MOVE/CLOSE)
-- LISTEN/NOTIFY pub/sub, COPY IN/OUT
-- MD5/SCRAM-SHA-256 authentication, TLS negotiation
-- Connection pooling, HTTP health/metrics endpoints
-- Compatible with `psql`, `pg` driver, Knex.js, Sequelize
+### Storage Engine
+- Slotted page heap files with in-place updates
+- B+Tree indexes (unique and non-unique)
+- Hash indexes for equality lookups
+- Buffer pool with LRU eviction
+- LSM tree with bloom filters and compaction
 
-### Query Execution (5 Engines)
-| Engine | Strategy | Best For |
-|---|---|---|
-| Volcano | Iterator, tuple-at-a-time | Baseline, simple queries |
-| Compiled | Pipeline JIT via closures | Complex queries, 365× faster |
-| Vectorized | Columnar batch processing | Analytics, 220× faster |
-| Codegen | `new Function()` compilation | Hot paths, 143× faster |
-| Adaptive | Auto-selects best engine | General use |
+### Transaction Support
+- Write-Ahead Logging (WAL)
+- ARIES-style fuzzy checkpoints with dirty page tracking
+- Point-in-Time Recovery (PITR)
+- MVCC (Multi-Version Concurrency Control)
+- Savepoints
+- Deadlock detection via wait-for graph
 
-### Storage & Indexing
+### Query Engine
+- Hand-written recursive descent SQL parser
+- Volcano-style iterator execution model
+- Hash join optimization (auto-detected for equi-joins)
+- Cost-based query optimizer with histogram statistics
+- Query plan cache with DDL invalidation
 
-**12+ Index Structures:**
-B+ tree · R-tree (spatial) · ART (Adaptive Radix Tree) · Skip list · Trie · Inverted index (BM25) · Bloom filter · Cuckoo hash · Robin Hood hash · Extendible hashing · Linear hashing · Bitmap index
+### Network
+- PostgreSQL wire protocol v3 (Simple Query)
+- Compatible with psql, pgAdmin, and PostgreSQL drivers
 
-**Storage Engines:**
-LSM-tree (leveled + size-tiered compaction) · Write-Ahead Log (WAL with CRC32, segment rotation, crash recovery) · Buffer Pool (LRU, clock-sweep) · Slotted Page · Heap File · Column Store · Log-structured Hash Table
+## Benchmark
 
-**10 Join Algorithms:**
-Hash join · Sort-merge · Nested loop · Index nested loop · Grace hash · Radix-partitioned · Band join · Theta join · Semi/anti join · Symmetric hash join
+Tested on Apple Silicon, in-memory mode:
 
-### Concurrency & Recovery
+| Operation | 1K rows | 10K rows |
+|-----------|---------|----------|
+| INSERT rate | 14,396/sec | 29,514/sec |
+| Point query | 14,009/sec | 9,005/sec |
+| Full table scan | 16ms | 73ms |
+| Range scan (WHERE) | 8ms | 46ms |
+| Aggregation | 8ms | 44ms |
+| GROUP BY | 8ms | 39ms |
+| ORDER BY + LIMIT | 11ms | 50ms |
+| JOIN (hash join) | 28ms | 86ms |
+| UPDATE | 9ms | 77ms |
+| DELETE | 8ms | 48ms |
 
-**7 Concurrency Protocols:**
-MVCC (snapshot isolation) · Two-Phase Locking (2PL, S/X/IS/IX/SIX) · Optimistic CC · Timestamp Ordering · SSI (Serializable Snapshot Isolation) · Deadlock Detection (wait-for graph) · Savepoints
+Run the benchmark:
+```bash
+node benchmark.js
+```
 
-**ARIES Recovery:**
-Write-Ahead Log → Analysis → Redo → Undo. Survives crash/restart cycles. Checkpoint support.
+## Data Structures
 
-### Distributed Systems
-Raft consensus (leader election + log replication) · Lamport clocks · Vector clocks · CRDTs (G-Counter, PN-Counter) · Gossip protocol · Consistent hashing · Two-Phase Commit
-
-### Advanced
-- **Probabilistic Structures**: Bloom filter, Cuckoo filter, XOR filter, Count-Min Sketch, HyperLogLog, T-Digest, MinHash
-- **Compression**: RLE, Delta, Bit-packing, Dictionary, Frame-of-Reference
-- **Query Optimization**: cost model, statistics collector, histograms, predicate pushdown, decorrelation, constant folding
-- **Data Structures**: Fenwick tree, Segment tree, Union-Find, Treap, Splay tree, Quadtree, Interval tree, Ring buffer, LRU-K, vEB tree, Wavelet tree
+HenryDB includes implementations of:
+- B+Tree (indexes)
+- Skip List (memtable for LSM)
+- Bloom Filter (SSTable lookups)
+- R-Tree (spatial indexing)
+- Cuckoo Hash Table
+- Trie (prefix queries)
+- Ring Buffer
+- LRU Cache
 
 ## Architecture
 
-<img src="docs/architecture.svg" alt="HenryDB Architecture" width="100%">
+See [docs/architecture-blog.md](docs/architecture-blog.md) for a deep dive into the design, including the WAL, SQL parser, and query execution engine.
 
-```
-src/ (209 modules, 108K+ lines)
-├── Core: db.js, sql.js (tokenizer + parser + executor)
-├── Server: server.js, pg-protocol.js, cli.js, tls-handler.js
-├── WAL & Recovery: wal.js, wal-replay.js, aries-recovery.js
-├── Query Engines: volcano.js, compiled-query.js, vectorized.js, query-codegen.js, adaptive-engine.js
-├── Optimization: planner.js, cost-model.js, decorrelate.js, constant-folding.js, plan-cache.js
-├── Indexes: btree.js, bplus-tree.js, rtree.js, art.js, skip-list.js, trie.js, bloom.js, ...
-├── Joins: sort-merge-join.js, grace-hash-join.js, radix-join.js, band-join.js, ...
-├── Concurrency: mvcc.js, two-phase-locking.js, occ.js, lock-manager.js, deadlock-detector.js, ssi.js
-├── Storage: lsm.js, buffer-pool.js, slotted-page.js, heap-file.js, column-store.js
-├── Distributed: raft.js, distributed-primitives.js, consistent-hashing.js
-├── SQL Features: window-functions.js, cte.js, fulltext.js, jsonpath.js, triggers.js, ...
-└── Testing: 4,295 tests across 200+ test files
-```
-
-## Interactive Playground
-
-The [playground](playground/index.html) runs entirely in the browser — a 115KB bundle with the full SQL engine. Type queries, see results instantly. Includes 12 example queries covering JOINs, CTEs, window functions, CASE expressions, subqueries, and EXPLAIN plans.
-
-## Integration Tests
-
-Three end-to-end test suites verify that modules work together as a cohesive system:
-
-- **E-Commerce Scenario** (34 tests): schema setup → data population → complex queries → transactions → views → analytics
-- **Stress Suite** (26 tests): MVCC snapshot isolation, deadlock detection, ARIES crash recovery, lock manager
-- **Feature Showcase** (25 tests): JSON functions, full-text search, CTEs, window functions, multi-table joins, UNION, EXISTS
-
-## Running
+## Test Suite
 
 ```bash
-# Start PostgreSQL-compatible server
-node src/server.js 5433
-
-# Interactive CLI
-node src/cli.js
-
-# Run all tests (~4,295)
-node --test src/*.test.js
-
-# Run specific module tests
-node --test src/btree.test.js
-node --test src/mvcc.test.js
-node --test src/integration-ecommerce.test.js
-
-# Run benchmarks
-node src/benchmark-suite.js
-
-# Serve playground locally
-cd playground && python3 -m http.server 8080
+npm test
 ```
 
-## Why JavaScript?
+3,000+ tests covering SQL parsing, storage engine, WAL/recovery, protocol, and data structures.
 
-Not for performance — for accessibility. JavaScript is the most widely known programming language. Anyone can read this code, run it in Node.js or a browser, and step through it with DevTools. The goal is understanding, not speed.
+## What This Is (and Isn't)
 
-That said, the compiled query engine hits **2,000×** speedup over naive interpretation. Not bad for a teaching tool.
+**This is:** A learning project and portfolio piece. It demonstrates understanding of database internals — the kind of code that makes systems work.
+
+**This isn't:** Production-ready. Don't put your data in it. (Yet.)
 
 ## License
 
