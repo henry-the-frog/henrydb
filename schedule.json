@@ -727,16 +727,20 @@
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix remaining persistence test failures by adding rowCount tracking to PagedHeap",
       "project": "henrydb",
-      "started": "2026-04-09T16:54:01.360Z"
+      "started": "2026-04-09T16:54:01.360Z",
+      "completed": "2026-04-09T16:55:57.509Z",
+      "duration_ms": 120000,
+      "summary": "Added rowCount/tupleCount tracking to HeapFile (increment on insert, decrement on delete). EXPLAIN now uses O(1) count instead of scanning. 42 tests passing."
     },
     {
       "id": "T69",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard sync"
+      "status": "in-progress",
+      "task": "Git push, dashboard sync",
+      "started": "2026-04-09T16:56:12.343Z"
     }
   ],
   "focusProjects": [
