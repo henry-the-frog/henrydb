@@ -513,9 +513,33 @@
     {
       "id": "T48",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard sync",
-      "started": "2026-04-09T16:13:17.051Z"
+      "started": "2026-04-09T16:13:17.051Z",
+      "completed": "2026-04-09T16:13:29.515Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. Dashboard: 48 blocks/47 done."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix lru-cache.test.js failure (1)",
+      "project": "henrydb",
+      "started": "2026-04-09T16:13:58.380Z"
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement index-based PK uniqueness checking: use B+Tree index for O(log n) duplicate detection during INSERT",
+      "project": "henrydb"
+    },
+    {
+      "id": "T51",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard"
     }
   ],
   "focusProjects": [
@@ -711,6 +735,18 @@
     {
       "time": "2026-04-09T16:07:06.462Z",
       "msg": "Added T48 (MAINTAIN) after end: Git push, dashboard sync"
+    },
+    {
+      "time": "2026-04-09T16:13:47.659Z",
+      "msg": "Added T49 (BUILD) after end: Fix lru-cache.test.js failure (1)"
+    },
+    {
+      "time": "2026-04-09T16:13:47.867Z",
+      "msg": "Added T50 (BUILD) after end: Implement index-based PK uniqueness checking: use B+Tree index for O(log n) duplicate detection during INSERT"
+    },
+    {
+      "time": "2026-04-09T16:13:48.072Z",
+      "msg": "Added T51 (MAINTAIN) after end: Housekeeping: git push, dashboard"
     }
   ]
 }

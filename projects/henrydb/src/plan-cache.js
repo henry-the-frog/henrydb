@@ -13,7 +13,7 @@ class PlanCacheEntry {
     this.hitCount = 0;
     this.totalExecTime = 0;
     this.createdAt = Date.now();
-    this.lastUsed = Date.now();
+    this.lastUsed = 0; // Set by PlanCache on insert
     this.estimatedCost = plan?.cost || 0;
     this.isGeneric = false; // True if plan uses generic parameters
   }
@@ -24,6 +24,7 @@ class PlanCacheEntry {
  */
 export class PlanCache {
   constructor(options = {}) {
+    if (typeof options === 'number') options = { maxEntries: options };
     this.maxEntries = options.maxEntries || 500;
     this.maxMemoryBytes = options.maxMemoryBytes || 50 * 1024 * 1024; // 50MB
     this._cache = new Map(); // normalizedSQL → PlanCacheEntry
@@ -36,6 +37,7 @@ export class PlanCache {
       inserts: 0,
     };
     this._estimatedMemory = 0;
+    this._accessCounter = 0; // Monotonic counter for LRU ordering
   }
 
   /**
@@ -51,7 +53,7 @@ export class PlanCache {
     }
 
     entry.hitCount++;
-    entry.lastUsed = Date.now();
+    entry.lastUsed = ++this._accessCounter;
     this._stats.hits++;
     return entry.plan;
   }
@@ -73,6 +75,7 @@ export class PlanCache {
     }
 
     const entry = new PlanCacheEntry(key, plan, tables);
+    entry.lastUsed = ++this._accessCounter;
     this._cache.set(key, entry);
 
     // Register table dependencies
