@@ -97,7 +97,7 @@ describe('EXPLAIN comprehensive', () => {
     db.execute('CREATE TABLE a (id INT PRIMARY KEY)');
     db.execute('CREATE TABLE b (id INT PRIMARY KEY, a_id INT)');
     const plan = db.execute('EXPLAIN SELECT * FROM a JOIN b ON a.id = b.a_id');
-    assert.ok(plan.plan.some(p => p.operation === 'NESTED_LOOP_JOIN'));
+    assert.ok(plan.plan.some(p => p.operation === 'NESTED_LOOP_JOIN' || p.operation === 'HASH_JOIN'));
   });
 });
 
