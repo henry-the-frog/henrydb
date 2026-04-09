@@ -438,9 +438,33 @@
     {
       "id": "T41",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard sync, update TASKS.md",
-      "started": "2026-04-09T15:41:56.467Z"
+      "started": "2026-04-09T15:41:56.467Z",
+      "completed": "2026-04-09T15:42:10.019Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. Dashboard: 41 blocks/40 done."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix file-wal.test.js and catalog.test.js remaining failures (BufferPool integration)",
+      "project": "henrydb",
+      "started": "2026-04-09T15:42:29.444Z"
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Run broader test sweep: find and fix broken tests in batch (20 files at a time)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T44",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "End-of-batch housekeeping: git push, dashboard, knowledge capture"
     }
   ],
   "focusProjects": [
@@ -608,6 +632,18 @@
     {
       "time": "2026-04-09T15:37:57.956Z",
       "msg": "Added T41 (MAINTAIN) after end: Git push, dashboard sync, update TASKS.md"
+    },
+    {
+      "time": "2026-04-09T15:42:21.019Z",
+      "msg": "Added T42 (BUILD) after end: Fix file-wal.test.js and catalog.test.js remaining failures (BufferPool integration)"
+    },
+    {
+      "time": "2026-04-09T15:42:21.226Z",
+      "msg": "Added T43 (BUILD) after end: Run broader test sweep: find and fix broken tests in batch (20 files at a time)"
+    },
+    {
+      "time": "2026-04-09T15:42:21.433Z",
+      "msg": "Added T44 (MAINTAIN) after end: End-of-batch housekeeping: git push, dashboard, knowledge capture"
     }
   ]
 }

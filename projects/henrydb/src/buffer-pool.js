@@ -34,6 +34,17 @@ export class BufferPoolManager {
 
     // Stats
     this.stats = { hits: 0, misses: 0, evictions: 0, dirtyEvictions: 0, fetches: 0, flushes: 0 };
+    
+    // Eviction callback for WAL integration
+    this._evictCallback = null;
+  }
+
+  /**
+   * Set a callback invoked when a dirty page is evicted.
+   * Used for WAL: ensure dirty page's WAL records are flushed before page eviction.
+   */
+  setEvictCallback(fn) {
+    this._evictCallback = fn;
   }
 
   /**
@@ -180,6 +191,7 @@ export class BufferPoolManager {
 
       // Write dirty page back
       if (frame.dirty) {
+        if (this._evictCallback) this._evictCallback(frame.pageId, frame.data);
         this._writeToDisk(frame.pageId, frame.data);
         this.stats.dirtyEvictions++;
       }
