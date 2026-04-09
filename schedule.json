@@ -1087,6 +1087,17 @@
       "completed": "2026-04-09T19:12:57.165Z",
       "duration_ms": 300000,
       "summary": "VACUUM command now works without MVCC: processes tables, counts live tuples, flushes dirty pages, updates stats. 6/6 tests. Works through wire protocol."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add ANALYZE command: collect table statistics (row count, distinct values, null fraction) for query optimizer",
+      "project": "henrydb",
+      "started": "2026-04-09T19:13:35.716Z",
+      "completed": "2026-04-09T19:14:56.351Z",
+      "duration_ms": 120000,
+      "summary": "ANALYZE command already existed and works great (per-column NDV, nulls, min/max, avg_width). Added 6 tests for it."
     }
   ],
   "focusProjects": [
@@ -1490,6 +1501,10 @@
     {
       "time": "2026-04-09T19:11:23.821Z",
       "msg": "Added T102 (BUILD) after end: Add VACUUM command: reclaim space from deleted tuples, update table statistics"
+    },
+    {
+      "time": "2026-04-09T19:13:35.596Z",
+      "msg": "Added T103 (BUILD) after end: Add ANALYZE command: collect table statistics (row count, distinct values, null fraction) for query optimizer"
     }
   ]
 }
