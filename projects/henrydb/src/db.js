@@ -1770,7 +1770,9 @@ export class Database {
   }
 
   _estimateRowCount(table) {
-    // Quick count via heap scan (cached per explain call)
+    // Use tracked row count if available
+    if (table.heap?.rowCount !== undefined) return table.heap.rowCount;
+    // Fallback: quick scan
     let count = 0;
     for (const _ of table.heap.scan()) count++;
     return count;

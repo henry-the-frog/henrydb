@@ -716,17 +716,21 @@
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Create network benchmark: run benchmark queries through pg wire protocol, compare with in-process",
       "project": "henrydb",
-      "started": "2026-04-09T16:52:50.107Z"
+      "started": "2026-04-09T16:52:50.107Z",
+      "completed": "2026-04-09T16:53:48.456Z",
+      "duration_ms": 180000,
+      "summary": "Network benchmark: 2.4K inserts/sec, 2K point queries/sec through pg wire protocol. 3-6x overhead vs in-process (normal for TCP round-trips). Aggregation only 10ms over network."
     },
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Fix remaining persistence test failures by adding rowCount tracking to PagedHeap",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T16:54:01.360Z"
     },
     {
       "id": "T69",

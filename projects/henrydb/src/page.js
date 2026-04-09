@@ -335,7 +335,11 @@ export class HeapFile {
     this.pages = [];
     this.nextPageId = 0;
     this.fsm = new FreeSpaceMap();
+    this._rowCount = 0;
   }
+
+  get rowCount() { return this._rowCount; }
+  get tupleCount() { return this._rowCount; }
 
   _allocPage() {
     const page = new Page(this.nextPageId++);
@@ -355,6 +359,7 @@ export class HeapFile {
         const slotIdx = page.insertTuple(tupleBytes);
         if (slotIdx >= 0) {
           this.fsm.update(page.id, page.freeSpace());
+          this._rowCount++;
           return { pageId: page.id, slotIdx };
         }
       }
@@ -372,6 +377,7 @@ export class HeapFile {
     const page = this._allocPage();
     const slotIdx = page.insertTuple(tupleBytes);
     this.fsm.update(page.id, page.freeSpace());
+    this._rowCount++;
     return { pageId: page.id, slotIdx };
   }
 
@@ -386,7 +392,9 @@ export class HeapFile {
   delete(pageId, slotIdx) {
     const page = this.pages.find(p => p.id === pageId);
     if (!page) return false;
-    return page.deleteTuple(slotIdx);
+    const result = page.deleteTuple(slotIdx);
+    if (result) this._rowCount--;
+    return result;
   }
 
   *scan() {
