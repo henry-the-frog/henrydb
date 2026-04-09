@@ -5005,6 +5005,17 @@
       "completed": "2026-04-09T01:08:45.055Z",
       "duration_ms": 180000,
       "summary": "GiST index: extensible generalized search tree with range and 2D point operator classes. Containment, overlap, nearest-neighbor, split/merge. 12 tests."
+    },
+    {
+      "id": "T461",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection audit log: track all connections, authentications, DDL, and failed attempts with rotation",
+      "project": "henrydb",
+      "started": "2026-04-09T01:09:06.554Z",
+      "completed": "2026-04-09T01:10:13.180Z",
+      "duration_ms": 120000,
+      "summary": "Audit log: connection/auth/DDL/DML/error tracking, query filtering, log rotation, levels, exclude patterns, external sinks. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6816,6 +6827,10 @@
     {
       "time": "2026-04-09T01:07:20.306Z",
       "msg": "Added T460 (BUILD) after end: Build GiST (Generalized Search Tree) index: extensible index for geometric/range types, support for containment and overlap operators"
+    },
+    {
+      "time": "2026-04-09T01:09:06.137Z",
+      "msg": "Added T461 (BUILD) after end: Build connection audit log: track all connections, authentications, DDL, and failed attempts with rotation"
     }
   ]
 }
