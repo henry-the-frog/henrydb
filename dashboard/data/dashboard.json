@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T18:44:28.964Z",
+  "generated": "2026-04-09T18:46:16.219Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Crash recovery test: committed data survives simulated crash (no close call), uncommitted data is lost",
-    "completedAt": "2026-04-09T18:44:28.964Z",
-    "taskId": "T96",
-    "summary": "7 crash recovery tests: page loss + WAL recovery, large dataset (200 rows), UPDATE/DELETE survival, multi-table with joins, index rebuild, committed-only txn replay. All pass.",
-    "durationMs": 600000
+    "task": "Partial write recovery: insert batch, crash mid-batch, verify only committed prefix survives",
+    "completedAt": "2026-04-09T18:46:16.219Z",
+    "taskId": "T97",
+    "summary": "Added 2 more crash recovery tests: partial batch (20 committed survive, 5 uncommitted lost) and interleaved txns (only committed survive). 9/9 total crash recovery tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 92,
+    "blocksCompleted": 93,
     "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 10,
-      "BUILD": 49,
+      "BUILD": 50,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }

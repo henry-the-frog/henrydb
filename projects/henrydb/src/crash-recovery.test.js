@@ -241,4 +241,102 @@ describe('Crash Recovery', () => {
     wal.close();
     dm.close();
   });
+
+  it('partial batch: only complete transactions survive crash', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    mkdirSync(dir, { recursive: true });
+    
+    const walPath = join(dir, 'batch.wal');
+    const dbPath = join(dir, 'batch.db');
+    
+    const wal = new FileWAL(walPath);
+    
+    // Batch 1: 10 inserts, committed
+    const tx1 = wal.allocateTxId();
+    for (let i = 0; i < 10; i++) {
+      wal.appendInsert(tx1, 'batch', 0, i, [i, `batch1_${i}`]);
+    }
+    wal.appendCommit(tx1);
+    
+    // Batch 2: 10 inserts, committed
+    const tx2 = wal.allocateTxId();
+    for (let i = 10; i < 20; i++) {
+      wal.appendInsert(tx2, 'batch', 0, i, [i, `batch2_${i}`]);
+    }
+    wal.appendCommit(tx2);
+    
+    // Batch 3: 5 inserts, NOT committed (crash mid-batch)
+    const tx3 = wal.allocateTxId();
+    for (let i = 20; i < 25; i++) {
+      wal.appendInsert(tx3, 'batch', 0, i, [i, `batch3_${i}`]);
+    }
+    // No commit for tx3!
+    
+    wal.flush();
+    
+    // Recover
+    const dm = new DiskManager(dbPath);
+    const bp = new BufferPool(16);
+    const heap = new FileBackedHeap('batch', dm, bp);
+    
+    recoverFromFileWAL(heap, wal);
+    
+    const rows = [...heap.scan()].map(r => r.values);
+    
+    // Should have 20 rows (batch 1 + batch 2), NOT 25
+    assert.strictEqual(rows.length, 20, `Expected 20 committed rows, got ${rows.length}`);
+    
+    // Verify batch 3 data is absent
+    const batch3Rows = rows.filter(r => r[0] >= 20);
+    assert.strictEqual(batch3Rows.length, 0, 'Batch 3 (uncommitted) should be absent');
+    
+    wal.close();
+    dm.close();
+  });
+
+  it('interleaved transactions: committed ones recovered, uncommitted discarded', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    mkdirSync(dir, { recursive: true });
+    
+    const walPath = join(dir, 'interleave.wal');
+    const dbPath = join(dir, 'interleave.db');
+    
+    const wal = new FileWAL(walPath);
+    const txA = wal.allocateTxId(); // Will commit
+    const txB = wal.allocateTxId(); // Will abort
+    const txC = wal.allocateTxId(); // Will commit
+    
+    // Interleaved operations
+    wal.appendInsert(txA, 'data', 0, 0, [1, 'A1']);
+    wal.appendInsert(txB, 'data', 0, 1, [2, 'B1']);
+    wal.appendInsert(txC, 'data', 0, 2, [3, 'C1']);
+    wal.appendInsert(txA, 'data', 0, 3, [4, 'A2']);
+    wal.appendInsert(txB, 'data', 0, 4, [5, 'B2']);
+    wal.appendCommit(txA);
+    wal.appendInsert(txC, 'data', 0, 5, [6, 'C2']);
+    // txB crashes (no commit or abort)
+    wal.appendCommit(txC);
+    
+    wal.flush();
+    
+    const dm = new DiskManager(dbPath);
+    const bp = new BufferPool(16);
+    const heap = new FileBackedHeap('data', dm, bp);
+    
+    recoverFromFileWAL(heap, wal);
+    
+    const rows = [...heap.scan()].map(r => r.values);
+    
+    // Should have: A1, A2 (txA committed), C1, C2 (txC committed) = 4 rows
+    assert.strictEqual(rows.length, 4, `Expected 4 committed rows, got ${rows.length}`);
+    
+    // B1, B2 should be absent
+    const bRows = rows.filter(r => String(r[1]).startsWith('B'));
+    assert.strictEqual(bRows.length, 0, 'txB (uncommitted) should not survive');
+    
+    wal.close();
+    dm.close();
+  });
 });

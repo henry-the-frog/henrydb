@@ -1027,8 +1027,12 @@
       "id": "T97",
       "mode": "BUILD",
       "task": "Partial write recovery: insert batch, crash mid-batch, verify only committed prefix survives",
-      "status": "upcoming",
-      "plan_ref": "T95"
+      "status": "done",
+      "plan_ref": "T95",
+      "started": "2026-04-09T18:45:27.682Z",
+      "completed": "2026-04-09T18:46:16.151Z",
+      "duration_ms": 300000,
+      "summary": "Added 2 more crash recovery tests: partial batch (20 committed survive, 5 uncommitted lost) and interleaved txns (only committed survive). 9/9 total crash recovery tests."
     }
   ],
   "focusProjects": [
