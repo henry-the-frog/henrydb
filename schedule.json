@@ -1416,16 +1416,20 @@
       "id": "T134",
       "mode": "BUILD",
       "task": "Implement BufferPoolManager: fixed pool, page table, fetchPage/unpinPage/flushPage/newPage/deletePage",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-04-09T20:59:56.077Z"
+      "started": "2026-04-09T20:59:56.077Z",
+      "completed": "2026-04-09T21:02:11.787Z",
+      "duration_ms": 600000,
+      "summary": "BufferPoolManager: fixed pool, page table, fetchPage/unpinPage/flushPage/newPage/deletePage. InMemoryDiskManager for testing. Pin semantics, dirty tracking, hit rate stats. 14 tests including 100-page stress and sequential flooding demo."
     },
     {
       "id": "T135",
       "mode": "BUILD",
       "task": "Comprehensive tests: eviction under pressure, pin prevents eviction, dirty page tracking, concurrent access patterns",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-04-09T21:02:17.886Z"
     },
     {
       "id": "T136",
