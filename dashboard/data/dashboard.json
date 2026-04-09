@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-09T21:57:43.988Z",
+  "generated": "2026-04-09T21:59:43.441Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Query profiler: instrument execution phases (parse, plan, scan, filter, sort, aggregate), output with EXPLAIN PROFILE",
-    "startedAt": "2026-04-09T21:57:43.988Z",
-    "taskId": "T162"
+    "completedAt": "2026-04-09T21:59:43.441Z",
+    "taskId": "T162",
+    "summary": "Query profiler: db.profile(sql) returns phase timing (PARSE+EXECUTE). Cached parse detection. Formatted report. 0.097ms avg. 8 tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1708,12 +1710,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 148,
+    "blocksCompleted": 149,
     "blocksTotal": 136,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 13,
-      "BUILD": 90,
+      "BUILD": 91,
       "MAINTAIN": 24,
       "EXPLORE": 3
     }

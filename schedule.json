@@ -1706,10 +1706,13 @@
     {
       "id": "T162",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Query profiler: instrument execution phases (parse, plan, scan, filter, sort, aggregate), output with EXPLAIN PROFILE",
       "project": "henrydb",
-      "started": "2026-04-09T21:57:43.921Z"
+      "started": "2026-04-09T21:57:43.921Z",
+      "completed": "2026-04-09T21:59:43.376Z",
+      "duration_ms": 300000,
+      "summary": "Query profiler: db.profile(sql) returns phase timing (PARSE+EXECUTE). Cached parse detection. Formatted report. 0.097ms avg. 8 tests."
     }
   ],
   "focusProjects": [
