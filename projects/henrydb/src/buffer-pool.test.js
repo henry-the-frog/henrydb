@@ -80,7 +80,7 @@ describe('BufferPoolManager', () => {
     // Evict p1 by allocating more
     const p3 = bpm.newPage();
     assert.ok(p3);
-    assert.equal(bpm.stats.dirtyEvictions, 1);
+    assert.equal(bpm.stats().dirtyEvictions, 1);
   });
 
   it('flush all dirty pages', () => {
@@ -92,7 +92,7 @@ describe('BufferPoolManager', () => {
     }
 
     bpm.flushAll();
-    assert.equal(bpm.stats.flushes, 4);
+    assert.equal(bpm.stats().flushes, 4);
     assert.equal(bpm.getStats().dirty, 0);
   });
 
@@ -127,7 +127,7 @@ describe('BufferPoolManager', () => {
 
     const stats = bpm.getStats();
     assert.ok(stats.hits >= 4);
-    assert.ok(stats.hitRate.includes('%'));
+    assert.ok(stats.hitRate >= 0 && stats.hitRate <= 1);
   });
 
   it('benchmark: 10K page accesses with Zipf pattern', () => {

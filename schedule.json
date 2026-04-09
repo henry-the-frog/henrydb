@@ -738,9 +738,104 @@
     {
       "id": "T69",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard sync",
-      "started": "2026-04-09T16:56:12.343Z"
+      "started": "2026-04-09T16:56:12.343Z",
+      "completed": "2026-04-09T17:30:30.857Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review what's most impactful for remaining 2.5hrs. Check TODO urgents, project gaps, blog fixes.",
+      "started": "2026-04-09T17:31:12.949Z",
+      "completed": "2026-04-09T17:31:44.646Z",
+      "duration_ms": 60000,
+      "summary": "Prioritized: 1) Fix blog broken links (Daniel reported), 2) HenryDB file persistence (biggest gap), 3) Update architecture blog. Built queue."
+    },
+    {
+      "id": "T72",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB file-backed persistence: make data survive process restart",
+      "task": null,
+      "started": "2026-04-09T17:32:29.452Z",
+      "completed": "2026-04-09T17:34:55.806Z",
+      "duration_ms": 120000,
+      "summary": "Diagnosed persistence failures: 1) bp.stats() is getStats() method vs stats property, 2) e2e tests work at PersistentDatabase level but fail at raw FileBackedHeap level (data types, evictions), 3) Need index rebuild on reopen. 2 BUILD tasks planned."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "Fix persistence test failures: BufferPool.stats() alias, DiskManager {create:false}, mixed data types encoding",
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-09T17:35:06.122Z",
+      "completed": "2026-04-09T17:40:59.751Z",
+      "duration_ms": 600000,
+      "summary": "Fixed 3 critical persistence bugs: 1) BufferPool.fetchPage ignored disk read callback - pages loaded as zeros on reopen, 2) BufferPool.flushAll ignored evict callback - dirty pages never written to disk files, 3) BufferPool.stats was property not method. All 38 persistence tests now passing (was 17/38). File-backed persistence actually works now."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "task": "Rebuild indexes on reopen + add crash recovery integration test",
+      "status": "upcoming",
+      "plan_ref": "T72"
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "henrydb"
+    },
+    {
+      "id": "T76",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on persistence work. What else needs hardening?"
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "henrydb"
+    },
+    {
+      "id": "T71",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "Fix blog broken links and project pages (Daniel reported 5 broken pages)",
+      "task": null,
+      "skip_reason": "Blog is 3rd project, depth rule violation"
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "henrydb"
+    },
+    {
+      "id": "T75",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard sync"
+    },
+    {
+      "id": "T77",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB next depth target based on reflection",
+      "task": null
+    },
+    {
+      "id": "T79",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping: git push, dashboard sync, knowledge capture"
     }
   ],
   "focusProjects": [
@@ -1020,6 +1115,54 @@
     {
       "time": "2026-04-09T16:52:41.263Z",
       "msg": "Added T69 (MAINTAIN) after end: Git push, dashboard sync"
+    },
+    {
+      "time": "2026-04-09T17:31:07.905Z",
+      "msg": "Added T70 (THINK) after T69: Review what's most impactful for remaining 2.5hrs. Check TODO urgents, project gaps, blog fixes."
+    },
+    {
+      "time": "2026-04-09T17:31:51.547Z",
+      "msg": "Added T71 (PLAN) after T70: Fix blog broken links and project pages (Daniel reported 5 broken pages)"
+    },
+    {
+      "time": "2026-04-09T17:32:20.307Z",
+      "msg": "Removed T71: Blog is 3rd project, depth rule violation"
+    },
+    {
+      "time": "2026-04-09T17:32:20.428Z",
+      "msg": "Added T72 (PLAN) after T70: HenryDB file-backed persistence: make data survive process restart"
+    },
+    {
+      "time": "2026-04-09T17:32:20.549Z",
+      "msg": "Added T73 (BUILD) after T71: placeholder"
+    },
+    {
+      "time": "2026-04-09T17:32:20.668Z",
+      "msg": "Added T74 (BUILD) after T72: placeholder"
+    },
+    {
+      "time": "2026-04-09T17:32:20.789Z",
+      "msg": "Added T75 (MAINTAIN) after T73: Housekeeping: git push, dashboard sync"
+    },
+    {
+      "time": "2026-04-09T17:32:20.909Z",
+      "msg": "Added T76 (THINK) after T74: Reflect on persistence work. What else needs hardening?"
+    },
+    {
+      "time": "2026-04-09T17:32:21.029Z",
+      "msg": "Added T77 (PLAN) after T75: HenryDB next depth target based on reflection"
+    },
+    {
+      "time": "2026-04-09T17:32:21.149Z",
+      "msg": "Added T78 (BUILD) after T76: placeholder"
+    },
+    {
+      "time": "2026-04-09T17:32:21.269Z",
+      "msg": "Added T79 (MAINTAIN) after T77: Final housekeeping: git push, dashboard sync, knowledge capture"
+    },
+    {
+      "time": "2026-04-09T17:34:48.697Z",
+      "msg": "PLAN T72 filled 2 BUILD tasks"
     }
   ]
 }

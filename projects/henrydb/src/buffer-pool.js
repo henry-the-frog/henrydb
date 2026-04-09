@@ -33,7 +33,7 @@ export class BufferPoolManager {
     this._disk = new Map(); // pageId → Buffer
 
     // Stats
-    this.stats = { hits: 0, misses: 0, evictions: 0, dirtyEvictions: 0, fetches: 0, flushes: 0 };
+    this._stats = { hits: 0, misses: 0, evictions: 0, dirtyEvictions: 0, fetches: 0, flushes: 0 };
     
     // Eviction callback for WAL integration
     this._evictCallback = null;
@@ -51,7 +51,7 @@ export class BufferPoolManager {
    * Fetch a page into the buffer pool and pin it.
    * Returns the frame with the page data.
    */
-  fetchPage(pageId) {
+  fetchPage(pageId, diskReadFn) {
     // Check if page is already in buffer pool
     if (this._pageTable.has(pageId)) {
       const frameId = this._pageTable.get(pageId);
@@ -59,26 +59,26 @@ export class BufferPoolManager {
       frame.pinCount++;
       frame.refBit = true;
       this._removeLru(frameId); // Pinned pages aren't in LRU
-      this.stats.hits++;
+      this._stats.hits++;
       return { frameId, data: frame.data, pageId };
     }
 
     // Page not in pool — need to fetch from "disk"
-    this.stats.misses++;
+    this._stats.misses++;
     const frameId = this._getFrame();
     if (frameId === null) return null; // All frames pinned
 
     const frame = this._frames[frameId];
     
-    // Load page data
+    // Load page data — use provided disk read function or fall back to internal disk
     frame.pageId = pageId;
-    frame.data = this._readFromDisk(pageId);
+    frame.data = diskReadFn ? diskReadFn(pageId) : this._readFromDisk(pageId);
     frame.pinCount = 1;
     frame.dirty = false;
     frame.refBit = true;
 
     this._pageTable.set(pageId, frameId);
-    this.stats.fetches++;
+    this._stats.fetches++;
 
     return { frameId, data: frame.data, pageId };
   }
@@ -131,22 +131,32 @@ export class BufferPoolManager {
     const frameId = this._pageTable.get(pageId);
     const frame = this._frames[frameId];
 
-    this._writeToDisk(frame.pageId, frame.data);
+    if (this._evictCallback) {
+      this._evictCallback(frame.pageId, frame.data);
+    } else {
+      this._writeToDisk(frame.pageId, frame.data);
+    }
     frame.dirty = false;
-    this.stats.flushes++;
+    this._stats.flushes++;
     return true;
   }
 
   /**
    * Flush all dirty pages.
    */
-  flushAll() {
+  flushAll(writeCallback) {
     for (let i = 0; i < this.poolSize; i++) {
       const frame = this._frames[i];
       if (frame.pageId !== null && frame.dirty) {
-        this._writeToDisk(frame.pageId, frame.data);
+        if (writeCallback) {
+          writeCallback(frame.pageId, frame.data);
+        } else if (this._evictCallback) {
+          this._evictCallback(frame.pageId, frame.data);
+        } else {
+          this._writeToDisk(frame.pageId, frame.data);
+        }
         frame.dirty = false;
-        this.stats.flushes++;
+        this._stats.flushes++;
       }
     }
   }
@@ -193,11 +203,11 @@ export class BufferPoolManager {
       if (frame.dirty) {
         if (this._evictCallback) this._evictCallback(frame.pageId, frame.data);
         this._writeToDisk(frame.pageId, frame.data);
-        this.stats.dirtyEvictions++;
+        this._stats.dirtyEvictions++;
       }
 
       this._pageTable.delete(frame.pageId);
-      this.stats.evictions++;
+      this._stats.evictions++;
       return frameId;
     }
 
@@ -234,21 +244,24 @@ export class BufferPoolManager {
     return this._pageIdCounter++;
   }
 
+  stats() { return this.getStats(); }
+
   getStats() {
     const inUse = this._frames.filter(f => f.pageId !== null).length;
     const pinned = this._frames.filter(f => f.pinCount > 0).length;
     const dirty = this._frames.filter(f => f.dirty).length;
+    const totalRequests = this._stats.hits + this._stats.misses;
+    const hitRateNum = totalRequests > 0 ? this._stats.hits / totalRequests : 0;
     return {
-      ...this.stats,
+      ...this._stats,
       poolSize: this.poolSize,
+      used: inUse,
       inUse,
       pinned,
       dirty,
       freeFrames: this._freeList.length,
       lruSize: this._lruOrder.length,
-      hitRate: this.stats.hits + this.stats.misses > 0
-        ? ((this.stats.hits / (this.stats.hits + this.stats.misses)) * 100).toFixed(1) + '%'
-        : '0%',
+      hitRate: hitRateNum,
     };
   }
 }
