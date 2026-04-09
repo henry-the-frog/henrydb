@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T21:42:40.359Z",
+  "generated": "2026-04-09T21:45:11.950Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Full-text search: inverted index with TF-IDF ranking. CREATE FULLTEXT INDEX, MATCH AGAINST syntax.",
-    "startedAt": "2026-04-09T21:42:40.359Z",
-    "taskId": "T157"
+    "task": "Wire full-text search into SQL: CREATE FULLTEXT INDEX on table(column), SELECT ... WHERE MATCH(column) AGAINST(query)",
+    "startedAt": "2026-04-09T21:45:11.950Z",
+    "taskId": "T158"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1708,12 +1708,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 143,
+    "blocksCompleted": 144,
     "blocksTotal": 136,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 13,
-      "BUILD": 85,
+      "BUILD": 86,
       "MAINTAIN": 24,
       "EXPLORE": 3
     }

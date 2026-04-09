@@ -19,18 +19,44 @@ const STOP_WORDS = new Set([
 ]);
 
 /**
+ * Simple suffix stemmer (not full Porter, but handles common cases).
+ */
+function stem(word) {
+  if (word.length < 4) return word;
+  // Remove common suffixes (order matters)
+  if (word.endsWith('ies') && word.length > 4) return word.slice(0, -3) + 'y';
+  if (word.endsWith('ing') && word.length > 5) return word.slice(0, -3);
+  if (word.endsWith('ment') && word.length > 6) return word.slice(0, -4);
+  if (word.endsWith('ness') && word.length > 6) return word.slice(0, -4);
+  if (word.endsWith('tion') && word.length > 6) return word.slice(0, -4);
+  if (word.endsWith('ly') && word.length > 4) return word.slice(0, -2);
+  if (word.endsWith('ed') && word.length > 4) return word.slice(0, -2);
+  // Handle 'es' → 's' removal: "databases" → "database", "classes" → "class"
+  if (word.endsWith('ses') && word.length > 4) return word.slice(0, -1); // databases → database
+  if (word.endsWith('xes') && word.length > 4) return word.slice(0, -2); // boxes → box
+  if (word.endsWith('zes') && word.length > 4) return word.slice(0, -2);
+  if (word.endsWith('ches') && word.length > 5) return word.slice(0, -2);
+  if (word.endsWith('shes') && word.length > 5) return word.slice(0, -2);
+  if (word.endsWith('es') && word.length > 4) return word.slice(0, -1); // trees → tree
+  if (word.endsWith('s') && !word.endsWith('ss') && word.length > 3) return word.slice(0, -1);
+  return word;
+}
+
+/**
  * Tokenize text into searchable terms.
  * - Lowercase
  * - Split on non-alphanumeric characters
  * - Remove stop words
  * - Remove tokens shorter than 2 characters
+ * - Apply simple stemming
  */
 export function tokenize(text) {
   if (!text || typeof text !== 'string') return [];
   return text
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .filter(t => t.length >= 2 && !STOP_WORDS.has(t));
+    .filter(t => t.length >= 2 && !STOP_WORDS.has(t))
+    .map(stem);
 }
 
 /**
