@@ -122,18 +122,18 @@ Why hand-written? Two reasons: (1) learning — you understand SQL grammar much 
 
 On a MacBook Pro (M-series), in-memory mode:
 
-| Operation | Result |
-|-----------|--------|
-| INSERT (1K rows, PK) | 3,628 rows/sec |
-| Point query (PK lookup) | 13,986 queries/sec |
-| Full table scan (1K rows) | 16ms |
-| Range scan with filter | 6.7ms |
-| COUNT/AVG/MIN/MAX | 5.8ms |
-| GROUP BY (50 groups) | 7.4ms |
-| ORDER BY + LIMIT | 8.2ms |
-| JOIN (1K × 1K, hash join) | 15ms |
-| UPDATE (WHERE filter) | 17ms |
-| DELETE (WHERE filter) | 11ms |
+| Operation | 1K rows | 10K rows |
+|-----------|---------|----------|
+| INSERT rate | 14,396/sec | 29,514/sec |
+| Point query (PK lookup) | 14,009/sec | 9,005/sec |
+| Full table scan | 16ms | 73ms |
+| Range scan with filter | 8ms | 46ms |
+| COUNT/AVG/MIN/MAX | 8ms | 44ms |
+| GROUP BY (50 groups) | 8ms | 39ms |
+| ORDER BY + LIMIT | 11ms | 50ms |
+| JOIN (hash join) | 28ms | 86ms |
+| UPDATE (WHERE filter) | 9ms | 77ms |
+| DELETE (WHERE filter) | 8ms | 48ms |
 
 ### What's Slow (and Why)
 
@@ -148,6 +148,45 @@ On a MacBook Pro (M-series), in-memory mode:
 **Point queries are surprisingly fast** at 14K/sec — this is pure JavaScript, no native code. The secret is that small tables fit in the V8 JIT's fast path.
 
 **Aggregation is efficient** because it's a single scan with running accumulators — no intermediate materialization.
+
+## Performance: Finding the O(n²) Bug
+
+The most dramatic performance improvement came from a single-line fix.
+
+**The symptom:** Inserting the second batch of 1,000 rows took 5x longer than the first batch, even though the code path was identical.
+
+**The investigation:** I profiled each component: SQL parsing (8ms for 1K parses), heap insert (7ms for 1K inserts), B+Tree index (1ms), constraint validation (1ms). Everything was fast except... the WAL. **3,491ms** for 1,000 WAL operations.
+
+**The bug:**
+
+```javascript
+// BEFORE: O(n²) — scans entire stable array for every record
+_flushToStable() {
+  for (const rec of this._memRecords) {
+    if (!this._stableRecords.includes(rec)) {  // O(n) per record!
+      this._stableRecords.push(rec);
+    }
+  }
+}
+```
+
+`Array.includes()` is O(n). Called for every record in `_memRecords` (which grows with every operation). After 2,000 records, each flush checked 4,000+ records.
+
+**The fix:**
+
+```javascript
+// AFTER: O(delta) — only append new records
+_flushToStable() {
+  for (let i = this._lastFlushedIdx; i < this._memRecords.length; i++) {
+    this._stableRecords.push(this._memRecords[i]);
+  }
+  this._lastFlushedIdx = this._memRecords.length;
+}
+```
+
+**Result:** INSERT rate jumped from 3,600/sec to 29,500/sec — an **8x improvement** from one index variable.
+
+This is why profiling matters. The bottleneck wasn't where I expected (PK uniqueness checking), it was in the WAL flush path that I'd written months earlier and never profiled at scale.
 
 ## What I Learned
 
