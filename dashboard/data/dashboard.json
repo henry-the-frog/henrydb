@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T01:30:20.124Z",
+  "generated": "2026-04-09T01:31:29.567Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, object namespacing",
-    "completedAt": "2026-04-09T01:30:20.124Z",
-    "taskId": "T476",
-    "summary": "Schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, qualified names, pg_catalog priority, CASCADE, object namespacing. 19 tests.",
+    "task": "Build extensions system: CREATE/DROP EXTENSION, extension catalog, version tracking, depends-on",
+    "completedAt": "2026-04-09T01:31:29.567Z",
+    "taskId": "T477",
+    "summary": "Extensions: CREATE/DROP EXTENSION, version tracking, dependencies, CASCADE, built-in catalog (uuid-ossp, pgcrypto, pg_trgm, hstore, postgis). 16 tests.",
     "durationMs": 180000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 474,
+    "blocksCompleted": 475,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 370,
+      "BUILD": 371,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

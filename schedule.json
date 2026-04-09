@@ -5181,6 +5181,17 @@
       "completed": "2026-04-09T01:30:20.058Z",
       "duration_ms": 180000,
       "summary": "Schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, qualified names, pg_catalog priority, CASCADE, object namespacing. 19 tests."
+    },
+    {
+      "id": "T477",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build extensions system: CREATE/DROP EXTENSION, extension catalog, version tracking, depends-on",
+      "project": "henrydb",
+      "started": "2026-04-09T01:30:36.022Z",
+      "completed": "2026-04-09T01:31:29.501Z",
+      "duration_ms": 180000,
+      "summary": "Extensions: CREATE/DROP EXTENSION, version tracking, dependencies, CASCADE, built-in catalog (uuid-ossp, pgcrypto, pg_trgm, hstore, postgis). 16 tests."
     }
   ],
   "focusProjects": [
@@ -7056,6 +7067,10 @@
     {
       "time": "2026-04-09T01:29:24.582Z",
       "msg": "Added T476 (BUILD) after end: Build schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, object namespacing"
+    },
+    {
+      "time": "2026-04-09T01:30:35.783Z",
+      "msg": "Added T477 (BUILD) after end: Build extensions system: CREATE/DROP EXTENSION, extension catalog, version tracking, depends-on"
     }
   ]
 }
