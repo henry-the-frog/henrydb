@@ -5571,6 +5571,50 @@
       "completed": "2026-04-09T03:41:41.867Z",
       "duration_ms": 120000,
       "summary": "Built table stats collector: row count, per-column stats (distinct values, min/max, null count/rate, selectivity), numeric stats (avg/sum), size estimate, all-tables collection, formatted report. 10 tests."
+    },
+    {
+      "id": "T513",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL table rename/copy utility for HenryDB",
+      "project": "henrydb",
+      "started": "2026-04-09T03:43:27.876Z",
+      "completed": "2026-04-09T03:44:31.427Z",
+      "duration_ms": 60000,
+      "summary": "Built table utilities: copyTable (full or filtered), sampleTable (random rows), describeTable (DESCRIBE equivalent), tableInfo (metadata), truncateTable, topN. 9 tests."
+    },
+    {
+      "id": "T514",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL event emitter for HenryDB (subscribe to INSERT/UPDATE/DELETE events)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:44:47.816Z",
+      "completed": "2026-04-09T03:45:51.926Z",
+      "duration_ms": 60000,
+      "summary": "Built database event emitter: on(), once(), off(), emit() with table:event wildcards, unsubscribe functions, stats tracking. 11 tests."
+    },
+    {
+      "id": "T515",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL health checker for HenryDB (connection test, table integrity, index check)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:46:07.103Z",
+      "completed": "2026-04-09T03:47:11.119Z",
+      "duration_ms": 60000,
+      "summary": "Built health checker: 5 checks (connectivity, table count, table access, query performance with QPS, data integrity/row count). Formatted report with pass/fail icons. 7 tests."
+    },
+    {
+      "id": "T516",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SQL data validator for HenryDB (check constraints, type validation, uniqueness)",
+      "project": "henrydb",
+      "started": "2026-04-09T03:47:38.540Z",
+      "completed": "2026-04-09T03:48:53.333Z",
+      "duration_ms": 60000,
+      "summary": "Built data validator: 7 rule types (notNull, unique, type, range, pattern, enum, custom), builder functions, multi-rule per column. 9 tests."
     }
   ],
   "focusProjects": [
@@ -7582,6 +7626,22 @@
     {
       "time": "2026-04-09T03:40:33.781Z",
       "msg": "Added T512 (BUILD) after end: Build SQL table stats collector for HenryDB (row count, column stats, index usage)"
+    },
+    {
+      "time": "2026-04-09T03:43:27.753Z",
+      "msg": "Added T513 (BUILD) after end: Build SQL table rename/copy utility for HenryDB"
+    },
+    {
+      "time": "2026-04-09T03:44:47.602Z",
+      "msg": "Added T514 (BUILD) after end: Build SQL event emitter for HenryDB (subscribe to INSERT/UPDATE/DELETE events)"
+    },
+    {
+      "time": "2026-04-09T03:46:06.890Z",
+      "msg": "Added T515 (BUILD) after end: Build SQL health checker for HenryDB (connection test, table integrity, index check)"
+    },
+    {
+      "time": "2026-04-09T03:47:38.326Z",
+      "msg": "Added T516 (BUILD) after end: Build SQL data validator for HenryDB (check constraints, type validation, uniqueness)"
     }
   ]
 }

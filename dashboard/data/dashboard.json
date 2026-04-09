@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T03:41:41.933Z",
+  "generated": "2026-04-09T03:48:53.399Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build SQL table stats collector for HenryDB (row count, column stats, index usage)",
-    "completedAt": "2026-04-09T03:41:41.933Z",
-    "taskId": "T512",
-    "summary": "Built table stats collector: row count, per-column stats (distinct values, min/max, null count/rate, selectivity), numeric stats (avg/sum), size estimate, all-tables collection, formatted report. 10 tests.",
-    "durationMs": 120000
+    "task": "Build SQL data validator for HenryDB (check constraints, type validation, uniqueness)",
+    "completedAt": "2026-04-09T03:48:53.399Z",
+    "taskId": "T516",
+    "summary": "Built data validator: 7 rule types (notNull, unique, type, range, pattern, enum, custom), builder functions, multi-rule per column. 9 tests.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -5323,12 +5323,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 509,
+    "blocksCompleted": 513,
     "blocksTotal": 489,
     "modeDistribution": {
       "THINK": 16,
       "PLAN": 14,
-      "BUILD": 400,
+      "BUILD": 404,
       "MAINTAIN": 77,
       "EXPLORE": 2
     }
