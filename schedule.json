@@ -4713,8 +4713,30 @@
     {
       "id": "T432",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard sync",
+      "started": "2026-04-09T00:18:11.542Z",
+      "completed": "2026-04-09T00:18:39.845Z",
+      "duration_ms": 30000,
+      "summary": "Git push to origin. Dashboard sync skipped (not in local workspace)."
+    },
+    {
+      "id": "T435",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build trigger system: CREATE TRIGGER BEFORE/AFTER INSERT/UPDATE/DELETE, trigger execution engine, NEW/OLD row references",
+      "project": "henrydb",
+      "started": "2026-04-09T00:19:09.143Z",
+      "completed": "2026-04-09T00:20:58.624Z",
+      "duration_ms": 180000,
+      "summary": "Enhanced trigger system: BEFORE/AFTER, INSERT/UPDATE/DELETE, FOR EACH ROW/STATEMENT, WHEN conditions, NEW/OLD row refs, TG_ variables, enable/disable, PL/HenryDB execution. 16 tests."
+    },
+    {
+      "id": "T436",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard sync"
+      "task": "Build event notification system: LISTEN/NOTIFY for client-to-client messaging through the database",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -6422,6 +6444,14 @@
     {
       "time": "2026-04-08T23:58:00.224Z",
       "msg": "PLAN T430 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T00:18:53.427Z",
+      "msg": "Added T435 (BUILD) after end: Build trigger system: CREATE TRIGGER BEFORE/AFTER INSERT/UPDATE/DELETE, trigger execution engine, NEW/OLD row references"
+    },
+    {
+      "time": "2026-04-09T00:18:58.691Z",
+      "msg": "Added T436 (BUILD) after T435: Build event notification system: LISTEN/NOTIFY for client-to-client messaging through the database"
     }
   ]
 }
