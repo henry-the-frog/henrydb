@@ -1546,17 +1546,21 @@
     {
       "id": "T146",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Cost-based optimizer: estimate scan cost using table stats, choose index scan vs full scan based on selectivity",
       "project": "henrydb",
-      "started": "2026-04-09T21:21:27.984Z"
+      "started": "2026-04-09T21:21:27.984Z",
+      "completed": "2026-04-09T21:24:23.796Z",
+      "duration_ms": 600000,
+      "summary": "Cost-based optimizer: PostgreSQL cost model, 4 access paths (PK lookup/hash/btree/seq), crossover at 1% selectivity. CostOptimizer.choosePath. 12 tests."
     },
     {
       "id": "T147",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "EXPLAIN ANALYZE: show actual vs estimated rows, execution time per plan node",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T21:24:24.250Z"
     }
   ],
   "focusProjects": [

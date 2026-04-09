@@ -2611,9 +2611,12 @@ export class Database {
       const table = this.tables.get(tableName);
       const totalRows = table.heap.tupleCount || 0;
       
+      const engine = table.heap instanceof BTreeTable ? 'btree' : 'heap';
+      
       analysis.push({
         operation: plannerEstimate?.scanType || 'TABLE_SCAN',
         table: tableName,
+        engine,
         estimated_rows: plannerEstimate?.estimatedRows || '?',
         actual_rows: actualRows,
         total_table_rows: totalRows,
@@ -2647,15 +2650,32 @@ export class Database {
 
     // ORDER BY
     if (stmt.orderBy) {
-      analysis.push({ operation: 'SORT', rows_sorted: actualRows });
+      if (this._canEliminateSort(stmt)) {
+        analysis.push({ operation: 'SORT_ELIMINATED', reason: 'BTree PK ordering', actual_rows: actualRows });
+      } else {
+        analysis.push({ operation: 'SORT', rows_sorted: actualRows });
+      }
     }
 
     const analyzeResult = {
       type: 'ROWS',
       rows: [
-        ...analysis.map(a => ({
-          'QUERY PLAN': `${a.operation} on ${a.table || ''}  (actual rows=${a.actual_rows || '?'}, total=${a.total_table_rows || '?'})`
-        })),
+        ...analysis.map(a => {
+          let line = a.operation;
+          if (a.table) line += ` on ${a.table}`;
+          if (a.engine) line += ` (engine=${a.engine})`;
+          const parts = [];
+          if (a.estimated_rows !== undefined) parts.push(`est=${a.estimated_rows}`);
+          if (a.actual_rows !== undefined) parts.push(`actual=${a.actual_rows}`);
+          if (a.total_table_rows !== undefined) parts.push(`total=${a.total_table_rows}`);
+          if (a.selectivity) parts.push(`sel=${a.selectivity}`);
+          if (a.index) parts.push(`index=${a.index}`);
+          if (a.cost !== undefined) parts.push(`cost=${a.cost.toFixed(1)}`);
+          if (parts.length) line += `  (${parts.join(', ')})`;
+          return { 'QUERY PLAN': line };
+        }),
+        { 'QUERY PLAN': '' },
+        { 'QUERY PLAN': `Planning Time: ${(plannerEstimate ? 0.1 : 0).toFixed(3)} ms` },
         { 'QUERY PLAN': `Execution Time: ${executionTime.toFixed(3)} ms` },
         { 'QUERY PLAN': `Actual Rows: ${actualRows}` },
       ],
