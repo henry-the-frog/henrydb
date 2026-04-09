@@ -216,7 +216,7 @@ export class SkipList {
     }
     node = node.forward[0];
     while (node && node.key <= high) {
-      results.push(node.value);
+      results.push({ key: node.key, value: node.value });
       node = node.forward[0];
     }
     return results;

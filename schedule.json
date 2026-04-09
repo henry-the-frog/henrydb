@@ -1065,6 +1065,17 @@
       "completed": "2026-04-09T19:01:03.026Z",
       "duration_ms": 600000,
       "summary": "Fixed 24 more test failures: EXPLAIN returns type PLAN with plan array (was ROWS without plan), all 50 EXPLAIN tests pass, HASH_JOIN accepted alongside NESTED_LOOP_JOIN, catalog tests 28/28 (9 fixed). Total improvement: ~30+ tests fixed this session."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Continue fixing test failures — focus on remaining EXPLAIN, Task API, and other quick wins",
+      "project": "henrydb",
+      "started": "2026-04-09T19:01:36.648Z",
+      "completed": "2026-04-09T19:11:03.913Z",
+      "duration_ms": 600000,
+      "summary": "Fixed SkipList.range to return {key, value} entries. Integration + catalog all green (40/40). EXPLAIN 50/50. Still hunting for easy wins."
     }
   ],
   "focusProjects": [
@@ -1460,6 +1471,10 @@
     {
       "time": "2026-04-09T18:54:40.709Z",
       "msg": "Added T100 (BUILD) after end: Fix more failing tests across the suite — identify and fix the easiest wins"
+    },
+    {
+      "time": "2026-04-09T19:01:36.404Z",
+      "msg": "Added T101 (BUILD) after end: Continue fixing test failures — focus on remaining EXPLAIN, Task API, and other quick wins"
     }
   ]
 }
