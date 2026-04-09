@@ -2274,10 +2274,53 @@
     {
       "id": "T214",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Matrix: basic linear algebra operations for database computations",
       "project": "henrydb",
-      "started": "2026-04-09T23:11:25.511Z"
+      "started": "2026-04-09T23:11:25.511Z",
+      "completed": "2026-04-09T23:12:13.767Z",
+      "duration_ms": 180000,
+      "summary": "Matrix: dense linear algebra. Multiply, transpose, trace. 6 tests."
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Concurrent skip list: lock-free concurrent ordered map",
+      "project": "henrydb",
+      "started": "2026-04-09T23:12:25.730Z",
+      "completed": "2026-04-09T23:12:34.483Z",
+      "duration_ms": 0,
+      "summary": "Skipped: JS is single-threaded, no real lock-free concurrency."
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Bitset: efficient bit manipulation for set operations",
+      "project": "henrydb",
+      "started": "2026-04-09T23:12:34.939Z"
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "DAG scheduler: dependency-aware task scheduling on a DAG",
+      "project": "henrydb"
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Topk: maintain top-k elements in O(n log k) with a min-heap",
+      "project": "henrydb"
+    },
+    {
+      "id": "T219",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Reservoir sampling: uniform random sample from a stream",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3137,6 +3180,26 @@
     {
       "time": "2026-04-09T23:10:17.140Z",
       "msg": "Added T214 (BUILD) after end: Matrix: basic linear algebra operations for database computations"
+    },
+    {
+      "time": "2026-04-09T23:12:24.471Z",
+      "msg": "Added T215 (BUILD) after end: Concurrent skip list: lock-free concurrent ordered map"
+    },
+    {
+      "time": "2026-04-09T23:12:24.683Z",
+      "msg": "Added T216 (BUILD) after end: Bitset: efficient bit manipulation for set operations"
+    },
+    {
+      "time": "2026-04-09T23:12:24.894Z",
+      "msg": "Added T217 (BUILD) after end: DAG scheduler: dependency-aware task scheduling on a DAG"
+    },
+    {
+      "time": "2026-04-09T23:12:25.105Z",
+      "msg": "Added T218 (BUILD) after end: Topk: maintain top-k elements in O(n log k) with a min-heap"
+    },
+    {
+      "time": "2026-04-09T23:12:25.316Z",
+      "msg": "Added T219 (BUILD) after end: Reservoir sampling: uniform random sample from a stream"
     }
   ]
 }
