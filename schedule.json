@@ -4763,6 +4763,17 @@
       "completed": "2026-04-09T00:26:36.109Z",
       "duration_ms": 180000,
       "summary": "JSONPath query engine: $, .key, [index], [*], .*, .., [?(@.x op val)], [start:end], contains (@>), exists, first. Full bookstore example. 28 tests."
+    },
+    {
+      "id": "T439",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build query profiler: timing per plan node, I/O counters, memory tracking, EXPLAIN ANALYZE integration for real performance analysis",
+      "project": "henrydb",
+      "started": "2026-04-09T00:26:59.103Z",
+      "completed": "2026-04-09T00:28:21.953Z",
+      "duration_ms": 180000,
+      "summary": "Query profiler: per-node timing (self vs total), I/O counters (pages read/written, index lookups), memory tracking, loop counting, hot path analysis, estimate accuracy ratio, formatted reports. 15 tests."
     }
   ],
   "focusProjects": [
@@ -6486,6 +6497,10 @@
     {
       "time": "2026-04-09T00:23:01.367Z",
       "msg": "Added T438 (BUILD) after T437: Build JSON path query support: JSON_PATH_QUERY, @>, @@, jsonpath syntax for querying JSONB columns"
+    },
+    {
+      "time": "2026-04-09T00:26:54.086Z",
+      "msg": "Added T439 (BUILD) after end: Build query profiler: timing per plan node, I/O counters, memory tracking, EXPLAIN ANALYZE integration for real performance analysis"
     }
   ]
 }
