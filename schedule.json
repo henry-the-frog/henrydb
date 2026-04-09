@@ -5071,6 +5071,17 @@
       "completed": "2026-04-09T01:16:55.973Z",
       "duration_ms": 120000,
       "summary": "Domain types: CREATE/ALTER/DROP DOMAIN, CHECK constraints, NOT NULL, DEFAULT, multiple constraints, constraint management. 16 tests."
+    },
+    {
+      "id": "T467",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection SSL/TLS handler: TLS negotiation, certificate validation, encrypted transport",
+      "project": "henrydb",
+      "started": "2026-04-09T01:17:15.429Z",
+      "completed": "2026-04-09T01:18:13.343Z",
+      "duration_ms": 120000,
+      "summary": "TLS handler: SSL negotiation, TLSConfig modes (disable/allow/prefer/require/verify-ca/verify-full), self-signed cert generation, certificate validation, stats. 14 tests."
     }
   ],
   "focusProjects": [
@@ -6906,6 +6917,10 @@
     {
       "time": "2026-04-09T01:16:05.428Z",
       "msg": "Added T466 (BUILD) after end: Build domain types: CREATE DOMAIN with CHECK constraints, NOT NULL, DEFAULT, for reusable column types"
+    },
+    {
+      "time": "2026-04-09T01:17:15.007Z",
+      "msg": "Added T467 (BUILD) after end: Build connection SSL/TLS handler: TLS negotiation, certificate validation, encrypted transport"
     }
   ]
 }
