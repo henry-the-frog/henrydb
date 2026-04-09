@@ -79,18 +79,22 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix WAL exports: add WAL_TYPES and WALRecord aliases, fix 7 broken test files, run them all",
       "plan_ref": "T6",
       "project": "henrydb",
-      "started": "2026-04-09T14:28:57.976Z"
+      "started": "2026-04-09T14:28:57.976Z",
+      "completed": "2026-04-09T14:38:03.734Z",
+      "duration_ms": 600000,
+      "summary": "Fixed WAL exports: added WAL_TYPES, WALRecord class with serialize/deserialize/CRC, recoverFromWAL, recoverToTimestamp. Built full in-memory WAL mode with LSN tracking, auto-flush on COMMIT, readFromStable, beginTransaction, flush, setAutoCheckpoint. 26/26 wal-stress tests + 8/8 auto-checkpoint tests now passing. Remaining: checkpoint.test (19 failures need dirty page tracking), pitr.test (12 need PITR), wal-recovery (6) — genuine new features."
     },
     {
       "id": "T20",
       "mode": "BUILD",
       "task": "Stress test WAL/transaction path: crash recovery, concurrent txns, edge cases",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-09T14:38:25.348Z"
     },
     {
       "id": "T21",

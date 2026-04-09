@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T14:28:58.053Z",
+  "generated": "2026-04-09T14:38:25.421Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix WAL exports: add WAL_TYPES and WALRecord aliases, fix 7 broken test files, run them all",
-    "startedAt": "2026-04-09T14:28:58.053Z",
-    "taskId": "T7"
+    "task": "Stress test WAL/transaction path: crash recovery, concurrent txns, edge cases",
+    "startedAt": "2026-04-09T14:38:25.421Z",
+    "taskId": "T20"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -451,12 +451,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 7,
+    "blocksCompleted": 8,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 2,
+      "BUILD": 3,
       "MAINTAIN": 1
     }
   },

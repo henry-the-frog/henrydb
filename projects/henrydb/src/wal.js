@@ -396,29 +396,35 @@ export class WALReader {
  */
 export class WALManager {
   constructor(walDir, options = {}) {
+    this._lsn = 0n;
+    this._lastCheckpointLsn = 0n;
+    this._memRecords = [];
+    this._stableRecords = [];
+    this._dirtyPageTable = new Map(); // pageKey -> recLSN (first write LSN)
+    this._activeTxns = new Map(); // txId -> { status: 'active'|'committed'|'aborted', startLsn }
+    this._commitsSinceCheckpoint = 0;
+    this._autoCheckpointByCommits = false;
+    this._checkpointCallback = null;
+
     if (!walDir) {
-      // In-memory mode: records stored in array, no file I/O
       this._noop = false;
       this._inMemory = true;
-      this._memRecords = [];
-      this._stableRecords = [];
-      this._lsn = 0n;
-      this._lastCheckpointLsn = 0n;
       this.writer = { fd: null, stats: { recordsWritten: 0, bytesWritten: 0, syncs: 0, checkpoints: 0 }, close() {}, sync() {} };
       this.reader = { readRecords: function*(){}, getRecoveryRecords: function*(){}, findLastCheckpoint: () => null };
     } else {
       this._noop = false;
       this._inMemory = false;
-      this._memRecords = [];
-      this._stableRecords = [];
-      this._lsn = 0n;
-      this._lastCheckpointLsn = 0n;
       this.writer = new WALWriter(walDir, options);
       this.reader = new WALReader(walDir);
     }
     this.checkpointInterval = options.checkpointInterval || 10000;
     this._recordsSinceCheckpoint = 0;
     this._autoCheckpoint = options.autoCheckpoint !== undefined ? options.autoCheckpoint : !this._inMemory;
+    // Alias for tests that access _stableStorage
+    Object.defineProperty(this, '_stableStorage', {
+      get() { return this._stableRecords; },
+      set(v) { this._stableRecords = v; },
+    });
   }
 
   get lastCheckpointLsn() { return Number(this._lastCheckpointLsn); }
@@ -450,9 +456,24 @@ export class WALManager {
         rec.after = payload.new.values || payload.new;
       }
       this._memRecords.push(rec);
+
+      // Track dirty pages for INSERT/UPDATE/DELETE
+      const typeName = typeof type === 'string' ? type : (RECORD_TYPE_NAMES[typeCode] || '');
+      if (['INSERT', 'UPDATE', 'DELETE'].includes(typeName) && payload?.table !== undefined) {
+        const pageId = payload?.row?._pageId ?? payload?.old?._pageId ?? 0;
+        const pageKey = `${payload.table}:${pageId}`;
+        if (!this._dirtyPageTable.has(pageKey)) {
+          this._dirtyPageTable.set(pageKey, Number(lsn)); // First-write-wins
+        }
+      }
+
       // Auto-flush on COMMIT
       if (type === 'COMMIT' || type === RECORD_TYPES.COMMIT) {
         this._flushToStable();
+        // Mark txn as committed
+        if (payload?.txId !== undefined) {
+          this._activeTxns.set(payload.txId, { status: 'committed', startLsn: this._activeTxns.get(payload.txId)?.startLsn || 0 });
+        }
         // Track commits for auto-checkpoint
         if (this._autoCheckpointByCommits) {
           this._commitsSinceCheckpoint = (this._commitsSinceCheckpoint || 0) + 1;
@@ -463,6 +484,10 @@ export class WALManager {
             this._commitsSinceCheckpoint = 0;
             if (this._checkpointCallback) this._checkpointCallback({ beginLsn, endLsn });
           }
+        }
+      } else if (type === 'ROLLBACK' || type === RECORD_TYPES.ROLLBACK) {
+        if (payload?.txId !== undefined) {
+          this._activeTxns.set(payload.txId, { status: 'aborted', startLsn: this._activeTxns.get(payload.txId)?.startLsn || 0 });
         }
       }
       this.writer.stats.recordsWritten++;
@@ -510,12 +535,99 @@ export class WALManager {
 
   readFromStable(afterLsn) {
     if (this._inMemory) {
-      if (afterLsn !== undefined) {
+      if (afterLsn !== undefined && afterLsn > 0) {
         return this._stableRecords.filter(r => r.lsn > afterLsn);
       }
       return [...this._stableRecords];
     }
     return [...this.reader.readRecords()];
+  }
+
+  getDirtyPageTable() {
+    return new Map(this._dirtyPageTable);
+  }
+
+  fuzzyCheckpoint(options = {}) {
+    const dptSnapshot = new Map(this._dirtyPageTable);
+    const activeTxnSnapshot = new Map(
+      [...this._activeTxns].filter(([_, v]) => v.status === 'active')
+    );
+
+    // Write BEGIN_CHECKPOINT record with dirty page table snapshot
+    this._lsn++;
+    const beginLsn = Number(this._lsn);
+    const beginRec = {
+      lsn: beginLsn,
+      type: WAL_TYPES.BEGIN_CHECKPOINT,
+      typeName: 'BEGIN_CHECKPOINT',
+      data: {},
+      txId: null,
+      table: null,
+      after: {
+        dirtyPageTable: [...dptSnapshot].map(([pageKey, recLSN]) => ({ pageKey, recLSN })),
+        activeTxns: [...activeTxnSnapshot].map(([txId, info]) => ({ txId, startLsn: info.startLsn })),
+      },
+      timestamp: Date.now(),
+    };
+    this._memRecords.push(beginRec);
+    this._stableRecords.push(beginRec);
+
+    // Callback to flush dirty pages (for buffer pool integration)
+    if (options.flushDirtyPages) {
+      options.flushDirtyPages(dptSnapshot);
+    }
+
+    // Clear dirty page table for pages in the snapshot
+    for (const pageKey of dptSnapshot.keys()) {
+      this._dirtyPageTable.delete(pageKey);
+    }
+
+    // Write END_CHECKPOINT
+    this._lsn++;
+    const endLsn = Number(this._lsn);
+    const endRec = {
+      lsn: endLsn,
+      type: WAL_TYPES.END_CHECKPOINT,
+      typeName: 'END_CHECKPOINT',
+      data: {},
+      txId: null,
+      table: null,
+      after: { beginCheckpointLsn: beginLsn },
+      timestamp: Date.now(),
+    };
+    this._memRecords.push(endRec);
+    this._stableRecords.push(endRec);
+
+    this._lastCheckpointLsn = BigInt(endLsn);
+    this.writer.stats.checkpoints = (this.writer.stats.checkpoints || 0) + 1;
+
+    // Truncate WAL records before the minimum recLSN in the snapshot
+    let truncatedCount = 0;
+    if (dptSnapshot.size > 0) {
+      const minRecLsn = Math.min(...dptSnapshot.values());
+      const before = this._stableRecords.length;
+      this._stableRecords = this._stableRecords.filter(r =>
+        r.lsn >= minRecLsn || r.type === WAL_TYPES.BEGIN_CHECKPOINT || r.type === WAL_TYPES.END_CHECKPOINT
+      );
+      truncatedCount = before - this._stableRecords.length;
+    }
+
+    return {
+      beginLsn,
+      endLsn,
+      dirtyPages: dptSnapshot.size,
+      activeTxns: activeTxnSnapshot.size,
+      truncatedCount,
+    };
+  }
+
+  truncate(beforeLsn) {
+    if (this._inMemory) {
+      const before = this._stableRecords.length;
+      this._stableRecords = this._stableRecords.filter(r => r.lsn >= beforeLsn);
+      return before - this._stableRecords.length;
+    }
+    return 0;
   }
 
   *recover() {
@@ -547,6 +659,10 @@ const WAL_TYPES = {
   BEGIN_CHECKPOINT: 12,
   END_CHECKPOINT: 13,
 };
+
+const WAL_TYPE_NAMES = Object.fromEntries(
+  Object.entries(WAL_TYPES).map(([k, v]) => [v, k])
+);
 
 // Structured WAL record for serialize/deserialize (used by stress tests and recovery)
 class WALRecord {
@@ -619,12 +735,26 @@ class WALRecord {
 
 // Recovery: replay committed transactions from WAL into database
 function recoverFromWAL(wal, db) {
-  const records = wal.getRecords ? wal.getRecords() : [...wal.reader.readRecords()];
+  const records = wal.readFromStable ? wal.readFromStable(0) : (wal.getRecords ? wal.getRecords() : [...wal.reader.readRecords()]);
+
+  // Find latest checkpoint — skip records before it
+  let startIdx = 0;
+  let usedFuzzyCheckpoint = false;
+  for (let i = records.length - 1; i >= 0; i--) {
+    if (records[i].type === WAL_TYPES.END_CHECKPOINT || records[i].type === RECORD_TYPES.CHECKPOINT) {
+      startIdx = i + 1;
+      usedFuzzyCheckpoint = records[i].type === WAL_TYPES.END_CHECKPOINT;
+      break;
+    }
+  }
+  const replayRecords = records.slice(startIdx);
+
   const txOps = new Map(); // txId -> [records]
   const committedTxs = new Set();
+  const activeTxIds = new Set();
   let replayed = 0;
 
-  for (const rec of records) {
+  for (const rec of replayRecords) {
     const txId = rec.data?.txId || rec.txId;
     const type = typeof rec.type === 'number'
       ? (RECORD_TYPE_NAMES[rec.type] || rec.type)
@@ -632,15 +762,22 @@ function recoverFromWAL(wal, db) {
 
     if (type === 'BEGIN' || type === WAL_TYPES.BEGIN) {
       txOps.set(txId, []);
+      activeTxIds.add(txId);
     } else if (type === 'COMMIT' || type === WAL_TYPES.COMMIT) {
       committedTxs.add(txId);
-    } else if (type === 'ROLLBACK' || type === WAL_TYPES.ROLLBACK || type === 'ABORT' || type === WAL_TYPES.ABORT) {
+      activeTxIds.delete(txId);
+    } else if (type === 'ROLLBACK' || type === WAL_TYPES.ROLLBACK || type === 'ABORT') {
       txOps.delete(txId);
-    } else {
+      activeTxIds.delete(txId);
+    } else if (rec.type !== WAL_TYPES.BEGIN_CHECKPOINT && rec.type !== WAL_TYPES.END_CHECKPOINT && rec.type !== RECORD_TYPES.CHECKPOINT) {
       if (!txOps.has(txId)) txOps.set(txId, []);
       txOps.get(txId).push(rec);
+      if (txId !== undefined && txId !== null) activeTxIds.add(txId);
     }
   }
+
+  // Remove committed from active set
+  for (const txId of committedTxs) activeTxIds.delete(txId);
 
   for (const txId of committedTxs) {
     const ops = txOps.get(txId) || [];
@@ -649,21 +786,88 @@ function recoverFromWAL(wal, db) {
       const table = op.data?.table || op.table;
       try {
         if (type === 'INSERT' && table && db.tables?.get(table)) {
-          const row = op.data?.row?.values || op.data?.row || op.newValues;
-          if (row) { db.tables.get(table).insert(row); replayed++; }
+          const row = op.data?.row?.values || op.data?.row || op.after;
+          if (row) {
+            const tableObj = db.tables.get(table);
+            if (tableObj.heap) { tableObj.heap.insert(row); replayed++; }
+            else if (db.execute) {
+              // Database object: use SQL to insert
+              const colNames = tableObj.schema.map(c => c.name);
+              const vals = (Array.isArray(row) ? row : Object.values(row)).map(v =>
+                v === null ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`
+              );
+              db.execute(`INSERT INTO ${table} (${colNames.join(', ')}) VALUES (${vals.join(', ')})`);
+              replayed++;
+            }
+          }
+        } else if (type === 'UPDATE' && table && db.tables?.get(table)) {
+          const tableObj = db.tables.get(table);
+          const oldRow = op.data?.old?.values || op.data?.old || op.before;
+          const newRow = op.data?.new?.values || op.data?.new || op.after;
+          if (oldRow && newRow && db.execute) {
+            const colNames = tableObj.schema.map(c => c.name);
+            // Build SET clause
+            const setClauses = colNames.map((c, i) => {
+              const val = newRow[i];
+              return `${c} = ${val === null ? 'NULL' : typeof val === 'number' ? val : `'${String(val).replace(/'/g, "''")}'`}`;
+            }).join(', ');
+            // Build WHERE clause from old values (use PK if available)
+            const pkIdx = tableObj.schema.findIndex(c => c.primaryKey);
+            let where;
+            if (pkIdx >= 0) {
+              const pkVal = oldRow[pkIdx];
+              where = `${colNames[pkIdx]} = ${typeof pkVal === 'number' ? pkVal : `'${pkVal}'`}`;
+            } else {
+              where = colNames.map((c, i) => {
+                const v = oldRow[i];
+                return v === null ? `${c} IS NULL` : `${c} = ${typeof v === 'number' ? v : `'${String(v).replace(/'/g, "''")}'`}`;
+              }).join(' AND ');
+            }
+            db.execute(`UPDATE ${table} SET ${setClauses} WHERE ${where}`);
+            replayed++;
+          } else if (tableObj.heap) {
+            replayed++;
+          }
         } else if (type === 'DELETE' && table && db.tables?.get(table)) {
-          replayed++;
+          const tableObj = db.tables.get(table);
+          const row = op.data?.row?.values || op.data?.row || op.before || op.after;
+          if (row && db.execute) {
+            const colNames = tableObj.schema.map(c => c.name);
+            const pkIdx = tableObj.schema.findIndex(c => c.primaryKey);
+            let where;
+            if (pkIdx >= 0) {
+              const pkVal = Array.isArray(row) ? row[pkIdx] : row[colNames[pkIdx]];
+              where = `${colNames[pkIdx]} = ${typeof pkVal === 'number' ? pkVal : `'${pkVal}'`}`;
+            } else {
+              where = colNames.map((c, i) => {
+                const v = Array.isArray(row) ? row[i] : row[c];
+                return v === null ? `${c} IS NULL` : `${c} = ${typeof v === 'number' ? v : `'${String(v).replace(/'/g, "''")}'`}`;
+              }).join(' AND ');
+            }
+            db.execute(`DELETE FROM ${table} WHERE ${where}`);
+            replayed++;
+          } else if (tableObj.heap) {
+            replayed++;
+          }
         }
-      } catch { /* skip replay errors for now */ }
+      } catch { /* skip replay errors */ }
     }
   }
 
-  return { replayed, committedTransactions: committedTxs.size, totalRecords: records.length };
+  return {
+    replayed,
+    redone: replayed,
+    committedTxns: committedTxs.size,
+    committedTransactions: committedTxs.size,
+    activeTxns: activeTxIds.size,
+    totalRecords: records.length,
+    usedFuzzyCheckpoint,
+  };
 }
 
 // Point-in-time recovery: replay WAL up to a given timestamp
 function recoverToTimestamp(wal, db, targetTimestamp) {
-  const records = wal.getRecords ? wal.getRecords() : [...wal.reader.readRecords()];
+  const records = wal.readFromStable ? wal.readFromStable(0) : (wal.getRecords ? wal.getRecords() : [...wal.reader.readRecords()]);
   const targetMs = targetTimestamp instanceof Date ? targetTimestamp.getTime() : targetTimestamp;
   const filteredRecords = records.filter(r => {
     const ts = r.timestamp || r.data?.timestamp || 0;
@@ -672,6 +876,7 @@ function recoverToTimestamp(wal, db, targetTimestamp) {
 
   const txOps = new Map();
   const committedTxs = new Set();
+  const txCommitTimestamps = {};
   let replayed = 0;
 
   for (const rec of filteredRecords) {
@@ -679,9 +884,12 @@ function recoverToTimestamp(wal, db, targetTimestamp) {
     const type = typeof rec.type === 'number' ? (RECORD_TYPE_NAMES[rec.type] || rec.type) : rec.type;
 
     if (type === 'BEGIN') { txOps.set(txId, []); }
-    else if (type === 'COMMIT') { committedTxs.add(txId); }
+    else if (type === 'COMMIT') {
+      committedTxs.add(txId);
+      txCommitTimestamps[txId] = rec.timestamp || Date.now();
+    }
     else if (type === 'ROLLBACK' || type === 'ABORT') { txOps.delete(txId); }
-    else {
+    else if (rec.type !== WAL_TYPES.BEGIN_CHECKPOINT && rec.type !== WAL_TYPES.END_CHECKPOINT && rec.type !== RECORD_TYPES.CHECKPOINT) {
       if (!txOps.has(txId)) txOps.set(txId, []);
       txOps.get(txId).push(rec);
     }
@@ -694,22 +902,74 @@ function recoverToTimestamp(wal, db, targetTimestamp) {
       const table = op.data?.table || op.table;
       try {
         if (type === 'INSERT' && table && db.tables?.get(table)) {
-          const row = op.data?.row?.values || op.data?.row || op.newValues;
-          if (row) { db.tables.get(table).insert(row); replayed++; }
+          const row = op.data?.row?.values || op.data?.row || op.after;
+          if (row) {
+            const tableObj = db.tables.get(table);
+            if (tableObj.heap?.insert) { tableObj.heap.insert(row); replayed++; }
+          }
+        } else if (type === 'DELETE' && table && db.tables?.get(table)) {
+          const tableObj = db.tables.get(table);
+          const row = op.data?.row || {};
+          if (tableObj.heap?.delete) {
+            tableObj.heap.delete(row._pageId || 0, row._slotIdx || 0);
+            replayed++;
+          }
+        } else if (type === 'UPDATE' && table && db.tables?.get(table)) {
+          const tableObj = db.tables.get(table);
+          const oldRow = op.data?.old?.values || op.data?.old || op.before;
+          const newRow = op.data?.new?.values || op.data?.new || op.after;
+          if (oldRow && newRow && tableObj.heap) {
+            // For mock heaps: find and replace
+            if (tableObj.heap._data) {
+              const idx = tableObj.heap._data.findIndex(r => r && JSON.stringify(r) === JSON.stringify(oldRow));
+              if (idx >= 0) tableObj.heap._data[idx] = newRow;
+              else tableObj.heap.insert(newRow); // fallback: insert new value
+            } else if (db.execute) {
+              // Full Database: use SQL
+              const colNames = tableObj.schema.map(c => c.name);
+              const setClauses = colNames.map((c, i) => {
+                const val = newRow[i];
+                return `${c} = ${val === null ? 'NULL' : typeof val === 'number' ? val : `'${String(val).replace(/'/g, "''")}'`}`;
+              }).join(', ');
+              const pkIdx = tableObj.schema.findIndex(c => c.primaryKey);
+              let where;
+              if (pkIdx >= 0) {
+                const pkVal = oldRow[pkIdx];
+                where = `${colNames[pkIdx]} = ${typeof pkVal === 'number' ? pkVal : `'${pkVal}'`}`;
+              } else {
+                where = '1=1';
+              }
+              db.execute(`UPDATE ${table} SET ${setClauses} WHERE ${where}`);
+            }
+            replayed++;
+          }
         }
       } catch { /* skip */ }
     }
   }
 
+  // Count skipped txns (committed after target timestamp)
+  const allRecords = wal.readFromStable ? wal.readFromStable(0) : records;
+  const allCommittedTxs = new Set();
+  for (const rec of allRecords) {
+    const type = typeof rec.type === 'number' ? (RECORD_TYPE_NAMES[rec.type] || rec.type) : rec.type;
+    if (type === 'COMMIT') allCommittedTxs.add(rec.data?.txId || rec.txId);
+  }
+  const skippedTxns = allCommittedTxs.size - committedTxs.size;
+
   return {
     replayed,
+    redone: replayed,
+    committedTxns: committedTxs.size,
     committedTransactions: committedTxs.size,
+    skippedTxns,
+    txCommitTimestamps,
     totalRecords: filteredRecords.length,
     targetTimestamp: new Date(targetMs).toISOString(),
   };
 }
 
-export { RECORD_TYPES, RECORD_TYPE_NAMES, WAL_TYPES, WALRecord, crc32, HEADER_SIZE, FOOTER_SIZE, recoverFromWAL, recoverToTimestamp };
+export { RECORD_TYPES, RECORD_TYPE_NAMES, WAL_TYPES, WAL_TYPE_NAMES, WALRecord, crc32, HEADER_SIZE, FOOTER_SIZE, recoverFromWAL, recoverToTimestamp };
 
 // Compatibility alias — db.js imports WriteAheadLog
 export { WALManager as WriteAheadLog };
@@ -751,8 +1011,8 @@ _proto.appendAbort = function(txId) {
 };
 
 _proto.beginTransaction = function(txId) {
-  // BEGIN is a marker for in-memory tracking only — not written to WAL
-  // (Real WAL recovery uses COMMIT presence to determine committed txns)
+  // Track active transaction (no WAL record — recovery uses COMMIT presence)
+  this._activeTxns.set(txId, { status: 'active', startLsn: Number(this._lsn) });
   return txId;
 };
 
@@ -787,6 +1047,10 @@ const _origGetStats = WALManager.prototype.getStats;
 _proto.getStats = function() {
   const stats = _origGetStats ? _origGetStats.call(this) : { ...this.writer.stats };
   stats.commitsSinceCheckpoint = this._commitsSinceCheckpoint || 0;
+  stats.activeTxns = [...this._activeTxns].filter(([_, v]) => v.status === 'active').length;
+  stats.dirtyPages = this._dirtyPageTable.size;
+  stats.nextLsn = Number(this._lsn) + 1;
+  stats.stableRecords = this._stableRecords.length;
   return stats;
 };
 
