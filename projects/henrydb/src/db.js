@@ -1761,6 +1761,13 @@ export class Database {
     return result;
   }
 
+  _estimateRowCount(table) {
+    // Quick count via heap scan (cached per explain call)
+    let count = 0;
+    for (const _ of table.heap.scan()) count++;
+    return count;
+  }
+
   _update(ast) {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
@@ -2147,30 +2154,30 @@ export class Database {
       const table = this.tables.get(tableName);
 
       // Determine scan type
+      const estRows = this._estimateRowCount(table);
       if (!hasJoins && stmt.where) {
         const indexScan = this._tryIndexScan(table, stmt.where, stmt.from.alias || tableName);
         if (indexScan !== null) {
           // Find which index was used
           const colName = this._findIndexedColumn(stmt.where);
           plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, estimated_rows: indexScan.rows.length });
-          if (indexScan.residual) {
-            plan.push({ operation: 'FILTER', condition: 'residual' });
-          }
         } else {
-          plan.push({ operation: 'TABLE_SCAN', table: tableName, estimated_rows: table.heap.rowCount || '?' });
+          plan.push({ operation: 'TABLE_SCAN', table: tableName, estimated_rows: estRows });
           plan.push({ operation: 'FILTER', condition: 'WHERE' });
         }
       } else {
-        plan.push({ operation: 'TABLE_SCAN', table: tableName, estimated_rows: table.heap.rowCount || '?' });
+        plan.push({ operation: 'TABLE_SCAN', table: tableName, estimated_rows: estRows });
       }
 
       // Joins
       for (const join of stmt.joins || []) {
         const joinTable = join.table?.table || join.table;
+        const equiJoinKey = join.on ? this._extractEquiJoinKey(join.on, stmt.from.alias || tableName, join.alias || joinTable) : null;
         plan.push({
-          operation: 'NESTED_LOOP_JOIN',
+          operation: equiJoinKey ? 'HASH_JOIN' : 'NESTED_LOOP_JOIN',
           type: join.type || 'INNER',
           table: joinTable,
+          on: equiJoinKey ? `${equiJoinKey.leftKey} = ${equiJoinKey.rightKey}` : 'complex condition',
         });
       }
     }
@@ -2233,8 +2240,64 @@ export class Database {
         return { type: 'PLAN', rows: [{ 'QUERY PLAN': dot }] };
       }
       case 'text':
-      default:
-        return { type: 'PLAN', plan };
+      default: {
+        // Format like PostgreSQL's EXPLAIN output
+        const lines = [];
+        let indent = 0;
+        for (const step of plan) {
+          const prefix = '  '.repeat(indent) + (indent > 0 ? '->  ' : '');
+          switch (step.operation) {
+            case 'TABLE_SCAN':
+              lines.push(`${prefix}Seq Scan on ${step.table}  (rows=${step.estimated_rows})`);
+              indent++;
+              break;
+            case 'INDEX_SCAN':
+              lines.push(`${prefix}Index Scan using ${step.index} on ${step.table}  (rows=${step.estimated_rows})`);
+              indent++;
+              break;
+            case 'HASH_JOIN':
+              lines.push(`${prefix}Hash ${step.type} Join  (on: ${step.on})`);
+              indent++;
+              break;
+            case 'NESTED_LOOP_JOIN':
+              lines.push(`${prefix}Nested Loop ${step.type} Join  (${step.on})`);
+              indent++;
+              break;
+            case 'FILTER':
+              lines.push(`${prefix}Filter: ${step.condition}`);
+              break;
+            case 'HASH_GROUP_BY':
+              lines.push(`${prefix}HashAggregate  (keys: ${step.columns.join(', ')})`);
+              break;
+            case 'AGGREGATE':
+              lines.push(`${prefix}Aggregate`);
+              break;
+            case 'SORT':
+              lines.push(`${prefix}Sort  (keys: ${step.columns.join(', ')})`);
+              break;
+            case 'LIMIT':
+              lines.push(`${prefix}Limit  (count=${step.count})`);
+              break;
+            case 'DISTINCT':
+              lines.push(`${prefix}Unique`);
+              break;
+            case 'WINDOW_FUNCTION':
+              lines.push(`${prefix}WindowAgg`);
+              break;
+            case 'CTE':
+              lines.push(`${prefix}CTE Scan on ${step.name}${step.recursive ? ' (recursive)' : ''}`);
+              indent++;
+              break;
+            case 'VIEW_SCAN':
+              lines.push(`${prefix}View Scan on ${step.view}`);
+              indent++;
+              break;
+            default:
+              lines.push(`${prefix}${step.operation}  ${JSON.stringify(step)}`);
+          }
+        }
+        return { type: 'ROWS', rows: lines.map(l => ({ 'QUERY PLAN': l })) };
+      }
     }
   }
 
@@ -2453,16 +2516,20 @@ export class Database {
       analysis.push({ operation: 'SORT', rows_sorted: actualRows });
     }
 
-    return {
-      type: 'ANALYZE',
-      plan: analysis,
+    const analyzeResult = {
+      type: 'ROWS',
+      rows: [
+        ...analysis.map(a => ({
+          'QUERY PLAN': `${a.operation} on ${a.table || ''}  (actual rows=${a.actual_rows || '?'}, total=${a.total_table_rows || '?'})`
+        })),
+        { 'QUERY PLAN': `Execution Time: ${executionTime.toFixed(3)} ms` },
+        { 'QUERY PLAN': `Actual Rows: ${actualRows}` },
+      ],
+      analysis,
       execution_time_ms: parseFloat(executionTime.toFixed(3)),
       actual_rows: actualRows,
-      estimated_rows: plannerEstimate?.estimatedRows || '?',
-      estimation_accuracy: plannerEstimate?.estimatedRows
-        ? parseFloat((actualRows / plannerEstimate.estimatedRows).toFixed(3))
-        : '?',
     };
+    return analyzeResult;
   }
 
   _findIndexedColumn(where) {
