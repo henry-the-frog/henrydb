@@ -491,23 +491,31 @@
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix cuckoo-hash test failure (1 failing)",
       "project": "henrydb",
-      "started": "2026-04-09T16:10:25.198Z"
+      "started": "2026-04-09T16:10:25.198Z",
+      "completed": "2026-04-09T16:12:23.886Z",
+      "duration_ms": 60000,
+      "summary": "Real bug: operator precedence in cuckoo hash — (>>> 0 % capacity) was (>>> (0 % capacity)) instead of ((>>> 0) % capacity). Hash always returned the raw hash, never modulo capacity. 10/10 tests passing."
     },
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Update TASKS.md with test suite status and performance numbers",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T16:12:34.802Z",
+      "completed": "2026-04-09T16:13:05.511Z",
+      "duration_ms": 30000,
+      "summary": "Updated TASKS.md with current stats: 3068+ tests (98.9%), 29.5K inserts/sec, architecture + perf blog posts, remaining work items."
     },
     {
       "id": "T48",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard sync"
+      "status": "in-progress",
+      "task": "Git push, dashboard sync",
+      "started": "2026-04-09T16:13:17.051Z"
     }
   ],
   "focusProjects": [

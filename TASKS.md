@@ -14,11 +14,14 @@
   - **Point-in-Time Recovery (PITR)**: recover to any historical timestamp
   - **Hash Join**: equi-join detection from AST, 186x faster than nested loop
   - **Batched WAL**: UPDATE 29x faster, DELETE 96x faster
+  - **O(n²) WAL flush fix**: INSERT 8.2x faster (29.5K rows/sec)
   - Pipeline JIT: push-based query compilation (17x on LIMIT queries)
   - Bloom filters in LSM SSTables, property-based testing
   - PostgreSQL wire protocol (14/14 server tests), cost-based optimizer, histogram stats
-  - Benchmark: 3.6K inserts/sec, 14K point queries/sec, all ops <20ms for 1K rows
-  - **2209 tests | Architecture blog post**
+  - Benchmark (10K): 29.5K inserts/sec, 9K point queries/sec, JOIN 86ms, all ops <100ms
+  - **Test suite: 3,068+ tests, 98.9% pass rate across 240 files**
+  - **Architecture blog + performance debugging blog**
+  - Remaining: file-backed persistence, real MVCC integration, query optimizer
 - [x] Build webread CLI tool → **github.com/henry-the-frog/webread** (v0.3.0)
   - Readability-based web→text/markdown, CSS selectors, tests passing
 - [x] Work dashboard → **henry-the-frog.github.io/dashboard/** (LIVE)
