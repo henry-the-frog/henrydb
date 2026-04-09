@@ -693,22 +693,58 @@ export class PLInterpreter {
   }
 
   _substituteVars(expr, scope) {
-    // Replace variable references with their values
-    let result = expr;
-    for (const [name, value] of scope) {
-      const regex = new RegExp(`\\b${name}\\b`, 'gi');
-      if (value === null) {
-        result = result.replace(regex, 'null');
-      } else if (typeof value === 'string') {
-        result = result.replace(regex, `'${value}'`);
-      } else {
-        result = result.replace(regex, String(value));
+    // Replace variable references with their values, but NOT inside string literals
+    let result = '';
+    let i = 0;
+    while (i < expr.length) {
+      // Skip string literals
+      if (expr[i] === "'") {
+        let end = i + 1;
+        while (end < expr.length) {
+          if (expr[end] === "'" && expr[end + 1] === "'") { end += 2; continue; }
+          if (expr[end] === "'") { end++; break; }
+          end++;
+        }
+        result += expr.substring(i, end);
+        i = end;
+        continue;
       }
+      // Check for variable name at this position
+      if (/[a-zA-Z_]/.test(expr[i])) {
+        let word = '';
+        let start = i;
+        while (i < expr.length && /[a-zA-Z0-9_]/.test(expr[i])) word += expr[i++];
+        const lower = word.toLowerCase();
+        if (scope.has(lower)) {
+          const value = scope.get(lower);
+          if (value === null) result += 'null';
+          else if (typeof value === 'string') result += `'${value}'`;
+          else result += String(value);
+        } else {
+          result += word;
+        }
+        continue;
+      }
+      result += expr[i++];
     }
     return result;
   }
 
   _evalSimpleExpr(expr, scope) {
+    // Pure literals — only if the entire expression IS a single literal
+    if (expr === 'null' || expr === 'NULL') return null;
+    if (expr === 'true' || expr === 'TRUE') return true;
+    if (expr === 'false' || expr === 'FALSE') return false;
+    if (/^-?\d+(\.\d+)?$/.test(expr)) return parseFloat(expr);
+    // String literal — must be a complete single-quoted string (no operators outside)
+    if (expr.startsWith("'") && expr.endsWith("'") && !expr.includes('||')) {
+      // Verify it's a single string (count unescaped quotes)
+      const inner = expr.slice(1, -1);
+      if (!inner.includes("'") || inner.replace(/''/g, '').indexOf("'") === -1) {
+        return inner.replace(/''/g, "'");
+      }
+    }
+
     // Handle string concatenation (||)
     if (expr.includes('||')) {
       const parts = expr.split('||').map(p => {
@@ -777,13 +813,6 @@ export class PLInterpreter {
       if (mulMatch[2] === '/') return left / right;
       return left % right;
     }
-
-    // Literals
-    if (expr === 'null' || expr === 'NULL') return null;
-    if (expr === 'true' || expr === 'TRUE') return true;
-    if (expr === 'false' || expr === 'FALSE') return false;
-    if (/^-?\d+(\.\d+)?$/.test(expr)) return parseFloat(expr);
-    if (expr.startsWith("'") && expr.endsWith("'")) return expr.slice(1, -1);
 
     // Variable lookup
     const varName = expr.toLowerCase().trim();

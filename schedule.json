@@ -4703,8 +4703,12 @@
       "id": "T434",
       "mode": "BUILD",
       "task": "Build query execution inside procedures: EXECUTE, SELECT INTO, dynamic SQL, cursor support",
-      "status": "upcoming",
-      "plan_ref": "T430"
+      "status": "done",
+      "plan_ref": "T430",
+      "started": "2026-04-09T00:14:21.523Z",
+      "completed": "2026-04-09T00:17:54.770Z",
+      "duration_ms": 240000,
+      "summary": "Advanced PL/HenryDB: dynamic SQL via EXECUTE, SELECT INTO with var substitution, FOUND tracking, string-safe variable substitution, literal-safe expression eval. Fixed string concat vs arithmetic precedence. 13 advanced tests + all 51 PL tests pass."
     },
     {
       "id": "T432",

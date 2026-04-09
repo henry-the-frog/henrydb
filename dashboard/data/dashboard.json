@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:14:05.051Z",
+  "generated": "2026-04-09T00:17:54.840Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build CREATE FUNCTION/PROCEDURE, CALL, SELECT fn(), stored routine catalog",
-    "completedAt": "2026-04-09T00:14:05.051Z",
-    "taskId": "T433",
-    "summary": "CREATE FUNCTION/PROCEDURE, CALL, stored routine catalog, OR REPLACE, DROP, IF EXISTS, default params, IMMUTABLE/STABLE/VOLATILE, dollar-quoting, parseCreateRoutine, parseCall. 18 tests.",
-    "durationMs": 180000
+    "task": "Build query execution inside procedures: EXECUTE, SELECT INTO, dynamic SQL, cursor support",
+    "completedAt": "2026-04-09T00:17:54.840Z",
+    "taskId": "T434",
+    "summary": "Advanced PL/HenryDB: dynamic SQL via EXECUTE, SELECT INTO with var substitution, FOUND tracking, string-safe variable substitution, literal-safe expression eval. Fixed string concat vs arithmetic precedence. 13 advanced tests + all 51 PL tests pass.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 430,
+    "blocksCompleted": 431,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 327,
+      "BUILD": 328,
       "MAINTAIN": 75,
       "EXPLORE": 2
     }
