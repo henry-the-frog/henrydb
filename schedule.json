@@ -1728,10 +1728,21 @@
     {
       "id": "T164",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Bloom filter: probabilistic set membership for fast exclusion. Integrate with table scan for large tables.",
       "project": "henrydb",
-      "started": "2026-04-09T22:01:51.158Z"
+      "started": "2026-04-09T22:01:51.158Z",
+      "completed": "2026-04-09T22:03:54.950Z",
+      "duration_ms": 300000,
+      "summary": "Bloom filter: optimal parameters, double hashing, 0.227µs add, 0.124µs lookup. 9.6 bits/elem for 1M at 1% FPR. Merge, clear, page-skip demo. 11 tests."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Skip list: probabilistic ordered data structure, O(log n) insert/search/delete, alternative to B+tree",
+      "project": "henrydb",
+      "started": "2026-04-09T22:04:17.353Z"
     }
   ],
   "focusProjects": [
@@ -2391,6 +2402,10 @@
     {
       "time": "2026-04-09T22:01:50.741Z",
       "msg": "Added T164 (BUILD) after end: Bloom filter: probabilistic set membership for fast exclusion. Integrate with table scan for large tables."
+    },
+    {
+      "time": "2026-04-09T22:04:16.943Z",
+      "msg": "Added T165 (BUILD) after end: Skip list: probabilistic ordered data structure, O(log n) insert/search/delete, alternative to B+tree"
     }
   ]
 }
