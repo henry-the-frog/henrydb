@@ -118,7 +118,7 @@ export class LSMTree {
    * Put a key-value pair. O(log n) for memtable.
    */
   put(key, value) {
-    this._memtable.insert(key, value);
+    this._memtable.set(key, value);
     this._writeCount++;
     
     // Flush memtable to SSTable when full
@@ -142,8 +142,8 @@ export class LSMTree {
     this._readCount++;
     
     // 1. Check memtable
-    const memValue = this._memtable.find(key);
-    if (memValue !== null) {
+    const memValue = this._memtable.get(key);
+    if (memValue !== undefined) {
       return memValue === TOMBSTONE ? undefined : memValue;
     }
     

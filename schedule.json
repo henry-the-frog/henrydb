@@ -470,9 +470,40 @@
     {
       "id": "T44",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "End-of-batch housekeeping: git push, dashboard, knowledge capture",
-      "started": "2026-04-09T16:06:15.192Z"
+      "started": "2026-04-09T16:06:15.192Z",
+      "completed": "2026-04-09T16:06:54.609Z",
+      "duration_ms": 60000,
+      "summary": "Pushed, dashboard synced (44 blocks/43 done). Knowledge captured in scratch/henrydb-transactions.md."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix LSM test failures (9 failing) — likely missing compaction or bloom filter integration",
+      "project": "henrydb",
+      "started": "2026-04-09T16:07:18.435Z"
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix cuckoo-hash test failure (1 failing)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update TASKS.md with test suite status and performance numbers",
+      "project": "henrydb"
+    },
+    {
+      "id": "T48",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, dashboard sync"
     }
   ],
   "focusProjects": [
@@ -652,6 +683,22 @@
     {
       "time": "2026-04-09T15:42:21.433Z",
       "msg": "Added T44 (MAINTAIN) after end: End-of-batch housekeeping: git push, dashboard, knowledge capture"
+    },
+    {
+      "time": "2026-04-09T16:07:05.840Z",
+      "msg": "Added T45 (BUILD) after end: Fix LSM test failures (9 failing) — likely missing compaction or bloom filter integration"
+    },
+    {
+      "time": "2026-04-09T16:07:06.047Z",
+      "msg": "Added T46 (BUILD) after end: Fix cuckoo-hash test failure (1 failing)"
+    },
+    {
+      "time": "2026-04-09T16:07:06.254Z",
+      "msg": "Added T47 (BUILD) after end: Update TASKS.md with test suite status and performance numbers"
+    },
+    {
+      "time": "2026-04-09T16:07:06.462Z",
+      "msg": "Added T48 (MAINTAIN) after end: Git push, dashboard sync"
     }
   ]
 }

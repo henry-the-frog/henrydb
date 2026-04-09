@@ -1,8 +1,8 @@
 # HenryDB: Transactional Correctness Learnings
 
-uses: 6
+uses: 7
 created: 2026-04-07
-tags: database, mvcc, wal, crash-recovery, transactions, aries, checkpoints
+tags: database, mvcc, wal, crash-recovery, transactions, aries, checkpoints, performance
 
 ## Key Bugs Found & Fixed (2026-04-07)
 
@@ -176,3 +176,36 @@ xmin=0 as always-visible (bootstrap rows).
 - recoverFromWAL: replays committed transactions after latest checkpoint
 - recoverToTimestamp: PITR with timestamp filtering + skippedTxns count
 - Both handle mock heaps (._data.push) and full Database objects (.execute())
+
+## Performance Debugging (2026-04-09)
+
+### The O(n²) WAL Flush Bug
+- `_flushToStable()` used `Array.includes()` (O(n) per record) inside a loop over all records
+- At 4K records, each flush checked 16M comparisons
+- Fix: track `_lastFlushedIdx`, only append new records — O(1) amortized
+- Impact: INSERT 3.6K → 29.5K rows/sec (8.2x), orders INSERT 27x faster
+
+### Hash Join Integration
+- db.js `_executeJoin` used nested loop (O(n×m) heap scan per left row)
+- Fix: detect equi-join from AST (`join.on.type === 'COMPARE' && op === 'EQ'`), build hash map on right table join column, probe for each left row
+- Impact: JOIN 2798ms → 20ms (138x)
+- Works for INNER and LEFT JOIN
+
+### Batch WAL Commits
+- UPDATE/DELETE committed after each individual row
+- Fix: allocate one txId for the entire operation, commit once after the loop
+- Impact: UPDATE 498→17ms (29x), DELETE 1028→11ms (96x)
+
+### Profiling Methodology
+1. Time each batch of 100 inserts to see if cost grows with table size
+2. If yes, profile components individually: parse, heap, WAL, triggers, indexes
+3. The bottleneck was NOT where expected (PK check was O(1), WAL was O(n²))
+4. Direct heap insert: 7ms. SQL INSERT: 1323ms. The gap is the hot path.
+
+### Current Benchmark (10K rows)
+- INSERT: 29,514 rows/sec
+- Point queries: 9,005/sec
+- Full scan: 73ms
+- JOIN (10K × 10K, hash): 86ms
+- UPDATE: 77ms
+- DELETE: 48ms
