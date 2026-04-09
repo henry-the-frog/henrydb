@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T01:25:51.549Z",
+  "generated": "2026-04-09T01:27:02.116Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build rule system: CREATE RULE, ON SELECT/INSERT/UPDATE/DELETE, INSTEAD/ALSO, updatable views via rules",
-    "completedAt": "2026-04-09T01:25:51.549Z",
-    "taskId": "T472",
-    "summary": "Rule system: CREATE/DROP RULE, INSTEAD/ALSO, conditional rules, ON SELECT/INSERT/UPDATE/DELETE, enable/disable, OR REPLACE. 14 tests.",
-    "durationMs": 120000
+    "task": "Build foreign data wrapper: CREATE FOREIGN TABLE, CREATE SERVER, remote table mapping, pushdown predicates",
+    "completedAt": "2026-04-09T01:27:02.116Z",
+    "taskId": "T473",
+    "summary": "Foreign data wrapper: CREATE WRAPPER/SERVER/FOREIGN TABLE, user mappings, predicate+limit pushdown, data providers, CASCADE drop, IMPORT SCHEMA. 14 tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 470,
+    "blocksCompleted": 471,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 366,
+      "BUILD": 367,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
