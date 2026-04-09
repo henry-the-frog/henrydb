@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T18:39:36.418Z",
+  "generated": "2026-04-09T18:44:28.964Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Update HenryDB README: showcase persistence, CLI, wire protocol, 4100+ tests, architecture",
-    "completedAt": "2026-04-09T18:39:36.418Z",
-    "taskId": "T94",
-    "summary": "Comprehensive README: quick start (3 modes), full feature list, architecture diagram, performance table, project stats. Professional and demo-ready.",
-    "durationMs": 300000
+    "task": "Crash recovery test: committed data survives simulated crash (no close call), uncommitted data is lost",
+    "completedAt": "2026-04-09T18:44:28.964Z",
+    "taskId": "T96",
+    "summary": "7 crash recovery tests: page loss + WAL recovery, large dataset (200 rows), UPDATE/DELETE survival, multi-table with joins, index rebuild, committed-only txn replay. All pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1229,35 +1229,90 @@
       {
         "id": "T90",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Persistence stress test: chaos testing, crash simulation, large datasets",
         "task": null,
-        "started": "2026-04-09T18:23:08.965Z"
+        "started": "2026-04-09T18:23:08.965Z",
+        "completed": "2026-04-09T18:23:09.585Z",
+        "duration_ms": 30000,
+        "summary": "Planned 2 stress tests: persistence chaos + concurrent wire protocol."
       },
       {
         "id": "T91",
         "mode": "BUILD",
         "task": "Write persistence stress test: 10K rows, random crashes (kill mid-write), verify recovery",
-        "status": "upcoming",
-        "plan_ref": "T90"
+        "status": "done",
+        "plan_ref": "T90",
+        "started": "2026-04-09T18:23:14.870Z",
+        "completed": "2026-04-09T18:33:54.950Z",
+        "duration_ms": 600000,
+        "summary": "7 persistence stress tests passing: 1K row reopen, 10-cycle open/close, mixed INSERT/UPDATE/DELETE survival, multi-table persistence with joins, tiny buffer pool eviction, file growth, special characters. Found parser bug with single quotes (pre-existing)."
       },
       {
         "id": "T92",
         "mode": "BUILD",
         "task": "Wire protocol stress test: concurrent clients hammering the server with transactions",
+        "status": "done",
+        "plan_ref": "T90",
+        "started": "2026-04-09T18:34:32.173Z",
+        "completed": "2026-04-09T18:37:20.479Z",
+        "duration_ms": 600000,
+        "summary": "4 wire protocol stress tests: 5 concurrent clients x 50 queries (250 total), rapid connect/disconnect cycles, query results, transaction isolation. All pass."
+      },
+      {
+        "id": "T93",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What next? Persistence solid, CLI done, stress tests passing. Pick something with real depth.",
+        "started": "2026-04-09T18:37:52.717Z",
+        "completed": "2026-04-09T18:38:29.868Z",
+        "duration_ms": 60000,
+        "summary": "Prepared statements already exist. Decision: update README to showcase full feature set (persistence, CLI, wire protocol, 4100+ tests). Project is demo-ready but docs are weak."
+      },
+      {
+        "id": "T94",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Update HenryDB README: showcase persistence, CLI, wire protocol, 4100+ tests, architecture",
+        "project": "henrydb",
+        "started": "2026-04-09T18:38:38.026Z",
+        "completed": "2026-04-09T18:39:36.295Z",
+        "duration_ms": 300000,
+        "summary": "Comprehensive README: quick start (3 modes), full feature list, architecture diagram, performance table, project stats. Professional and demo-ready."
+      },
+      {
+        "id": "T95",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: implement proper crash recovery simulation (kill process mid-write, verify WAL replay recovers)",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-09T18:40:03.167Z"
+      },
+      {
+        "id": "T96",
+        "mode": "BUILD",
+        "task": "Crash recovery test: committed data survives simulated crash (no close call), uncommitted data is lost",
         "status": "upcoming",
-        "plan_ref": "T90"
+        "plan_ref": "T95"
+      },
+      {
+        "id": "T97",
+        "mode": "BUILD",
+        "task": "Partial write recovery: insert batch, crash mid-batch, verify only committed prefix survives",
+        "status": "upcoming",
+        "plan_ref": "T95"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 90,
-    "blocksTotal": 92,
+    "blocksCompleted": 92,
+    "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 13,
-      "PLAN": 9,
-      "BUILD": 48,
+      "PLAN": 10,
+      "BUILD": 49,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }
