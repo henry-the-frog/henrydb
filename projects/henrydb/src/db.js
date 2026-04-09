@@ -379,9 +379,9 @@ export class Database {
 
   execute_ast(ast) {
     switch (ast.type) {
-      case 'CREATE_TABLE': this._planCache.clear(); return this._createTable(ast);
-      case 'CREATE_TABLE_AS': this._planCache.clear(); return this._createTableAs(ast);
-      case 'ALTER_TABLE': this._planCache.clear(); return this._alterTable(ast);
+      case 'CREATE_TABLE': this._planCache.invalidateAll(); return this._createTable(ast);
+      case 'CREATE_TABLE_AS': this._planCache.invalidateAll(); return this._createTableAs(ast);
+      case 'ALTER_TABLE': this._planCache.invalidateAll(); return this._alterTable(ast);
       case 'DROP_TABLE': return this._dropTable(ast);
       case 'TRUNCATE_TABLE': {
         const table = this.tables.get(ast.table);
@@ -391,7 +391,7 @@ export class Database {
         for (const [colName] of table.indexes) {
           table.indexes.set(colName, new BPlusTree(32));
         }
-        this._planCache.clear();
+        this._planCache.invalidateAll();
         return { type: 'OK', message: `Table ${ast.table} truncated` };
       }
       case 'RENAME_TABLE': {
@@ -401,7 +401,7 @@ export class Database {
         this.tables.set(ast.to, table);
         this.tables.delete(ast.from);
         if (table.heap) table.heap.name = ast.to;
-        this._planCache.clear();
+        this._planCache.invalidateAll();
         return { type: 'OK', message: `Table ${ast.from} renamed to ${ast.to}` };
       }
       case 'SHOW_TABLES': {
