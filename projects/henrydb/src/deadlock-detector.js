@@ -153,6 +153,11 @@ export class DeadlockDetector {
     });
   }
 
+  // Alias for tests
+  registerTxn(txId, info) { return this.registerTransaction(txId, info); }
+  addWait(waiter, holder, resource) { return this.recordWait(waiter, holder, resource); }
+  resolveDeadlocks() { return this.check(); }
+
   /**
    * Record that txA is waiting for txB on a resource.
    */
