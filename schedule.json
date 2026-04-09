@@ -1438,9 +1438,51 @@
       "id": "T136",
       "mode": "BUILD",
       "task": "Clock replacer variant: implement ClockReplacer as alternative to LRU for comparison",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-04-09T21:03:58.550Z"
+      "started": "2026-04-09T21:03:58.550Z",
+      "completed": "2026-04-09T21:07:11.054Z",
+      "duration_ms": 300000,
+      "summary": "ClockReplacer: PostgreSQL-style usage_count sweep. 0/100 hot frames evicted, 10/10 working set survived flooding. 0.369µs evict, 0.250µs record. 10 tests. Drop-in LRUReplacer replacement."
+    },
+    {
+      "id": "T137",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Buffer pool plan complete. What's next? Wire ClockReplacer into BufferPoolManager, or move to a different HenryDB depth area?",
+      "project": "henrydb",
+      "started": "2026-04-09T21:07:25.337Z",
+      "completed": "2026-04-09T21:07:39.604Z",
+      "duration_ms": 60000,
+      "summary": "Depth check: 3/3 yes. Next: wire ClockReplacer into BPM as configurable option, then benchmark LRU vs Clock buffer pools, then DiskManager if time."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Make BufferPoolManager accept replacer option (LRU or Clock), default to Clock",
+      "project": "henrydb",
+      "started": "2026-04-09T21:07:56.754Z"
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Benchmark: LRU vs Clock buffer pools under sequential flooding and working set patterns",
+      "project": "henrydb"
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "DiskManager: real file I/O with page read/write, integrate with BufferPoolManager",
+      "project": "henrydb"
+    },
+    {
+      "id": "T141",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session B final: git push, daily log, test count"
     }
   ],
   "focusProjects": [
@@ -1968,6 +2010,26 @@
     {
       "time": "2026-04-09T20:58:24.195Z",
       "msg": "PLAN T132 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T21:07:24.927Z",
+      "msg": "Added T137 (THINK) after end: Buffer pool plan complete. What's next? Wire ClockReplacer into BufferPoolManager, or move to a different HenryDB depth area?"
+    },
+    {
+      "time": "2026-04-09T21:07:48.190Z",
+      "msg": "Added T138 (BUILD) after end: Make BufferPoolManager accept replacer option (LRU or Clock), default to Clock"
+    },
+    {
+      "time": "2026-04-09T21:07:48.405Z",
+      "msg": "Added T139 (BUILD) after end: Benchmark: LRU vs Clock buffer pools under sequential flooding and working set patterns"
+    },
+    {
+      "time": "2026-04-09T21:07:48.614Z",
+      "msg": "Added T140 (BUILD) after end: DiskManager: real file I/O with page read/write, integrate with BufferPoolManager"
+    },
+    {
+      "time": "2026-04-09T21:07:48.821Z",
+      "msg": "Added T141 (MAINTAIN) after end: Session B final: git push, daily log, test count"
     }
   ]
 }

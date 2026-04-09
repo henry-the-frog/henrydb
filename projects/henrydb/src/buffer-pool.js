@@ -13,6 +13,7 @@
 //   flushAll()         → Flush all dirty pages
 
 import { LRUReplacer } from './lru-replacer.js';
+import { ClockReplacer } from './clock-replacer.js';
 
 /**
  * Simple in-memory disk manager for testing.
@@ -92,11 +93,20 @@ export class BufferPoolManager {
   /**
    * @param {number} poolSize - Number of frames in the buffer pool
    * @param {Object} diskManager - Disk manager for page I/O
+   * @param {Object} options
+   * @param {string} options.replacer - 'lru' or 'clock' (default: 'clock')
    */
-  constructor(poolSize, diskManager) {
+  constructor(poolSize, diskManager, options = {}) {
     this.poolSize = poolSize;
     this.disk = diskManager;
-    this.replacer = new LRUReplacer(poolSize);
+    
+    const replacerType = (options.replacer || 'clock').toLowerCase();
+    if (replacerType === 'lru') {
+      this.replacer = new LRUReplacer(poolSize);
+    } else {
+      this.replacer = new ClockReplacer(poolSize);
+    }
+    this.replacerType = replacerType;
     
     // Frame storage
     this._frames = Array.from({ length: poolSize }, () => new FrameInfo());
@@ -275,6 +285,7 @@ export class BufferPoolManager {
     }
     return {
       poolSize: this.poolSize,
+      replacer: this.replacerType,
       used,
       free: this._freeList.length,
       pinned,

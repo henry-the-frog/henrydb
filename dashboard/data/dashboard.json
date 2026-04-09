@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T21:03:58.615Z",
+  "generated": "2026-04-09T21:07:56.819Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Clock replacer variant: implement ClockReplacer as alternative to LRU for comparison",
-    "startedAt": "2026-04-09T21:03:58.615Z",
-    "taskId": "T136"
+    "task": "Make BufferPoolManager accept replacer option (LRU or Clock), default to Clock",
+    "startedAt": "2026-04-09T21:07:56.819Z",
+    "taskId": "T138"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1708,12 +1708,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 127,
+    "blocksCompleted": 129,
     "blocksTotal": 136,
     "modeDistribution": {
-      "THINK": 17,
+      "THINK": 18,
       "PLAN": 13,
-      "BUILD": 72,
+      "BUILD": 73,
       "MAINTAIN": 22,
       "EXPLORE": 3
     }
