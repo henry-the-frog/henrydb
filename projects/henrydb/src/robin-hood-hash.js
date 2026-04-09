@@ -1,170 +1,254 @@
-// robin-hood-hash.js — Robin Hood hash table
-// Open addressing with Robin Hood heuristic: during insertion, if the
-// displacement of the current entry is less than that of the entry being
-// inserted, swap them (the "rich" entry gives its position to the "poor" one).
-// This equalizes probe sequence lengths, giving more predictable performance.
+// robin-hood-hash.js — Robin Hood hashing: open-addressing hash table
+//
+// Robin Hood hashing is an open-addressing hash table that reduces
+// variance in probe lengths by "robbing from the rich" — when inserting,
+// if the current element has a shorter probe distance than the element
+// at the current slot, they swap (the "richer" element gives up its spot).
+//
+// Properties:
+//   - Expected max probe length: O(log log n) (much better than linear probing)
+//   - Low variance: all elements have similar probe distances
+//   - Cache-friendly: sequential memory access
+//   - Good for hash joins in databases
+//
+// Used by: Rust's std::HashMap (until 1.36), many game engines, some DB systems
+
+const EMPTY = Symbol('EMPTY');
+const DELETED = Symbol('DELETED');
 
 /**
- * RobinHoodHashTable — open addressing with displacement-based stealing.
+ * RobinHoodHashMap — Open-addressing hash table with Robin Hood probing.
  */
-export class RobinHoodHashTable {
-  constructor(capacity = 1024) {
-    this._capacity = this._nextPow2(capacity);
+export class RobinHoodHashMap {
+  /**
+   * @param {number} initialCapacity - Initial table size (will be rounded to power of 2)
+   * @param {number} maxLoadFactor - Maximum load before resize (default: 0.85)
+   */
+  constructor(initialCapacity = 16, maxLoadFactor = 0.85) {
+    this._capacity = 1 << Math.ceil(Math.log2(Math.max(4, initialCapacity)));
     this._mask = this._capacity - 1;
-    this._keys = new Array(this._capacity).fill(undefined);
-    this._values = new Array(this._capacity).fill(undefined);
-    this._displacements = new Int32Array(this._capacity); // -1 = empty
-    this._displacements.fill(-1);
+    this._maxLoad = maxLoadFactor;
+    
+    this._keys = new Array(this._capacity).fill(EMPTY);
+    this._values = new Array(this._capacity).fill(EMPTY);
+    this._distances = new Int32Array(this._capacity); // Probe distance for each slot
     this._size = 0;
-    this._maxDisplacement = 0;
-    this.stats = { inserts: 0, lookups: 0, probes: 0, steals: 0, resizes: 0 };
-  }
-
-  set(key, value) {
-    if (this._size >= this._capacity * 0.7) this._resize();
-
-    let pos = this._hash(key) & this._mask;
-    let displacement = 0;
-    let k = key, v = value;
-
-    while (true) {
-      if (this._displacements[pos] === -1) {
-        // Empty slot
-        this._keys[pos] = k;
-        this._values[pos] = v;
-        this._displacements[pos] = displacement;
-        this._size++;
-        this.stats.inserts++;
-        if (displacement > this._maxDisplacement) this._maxDisplacement = displacement;
-        return;
-      }
-
-      if (this._keys[pos] === k) {
-        // Update existing
-        this._values[pos] = v;
-        return;
-      }
-
-      // Robin Hood: steal from rich entries
-      if (this._displacements[pos] < displacement) {
-        // Current occupant has shorter displacement — swap
-        const tmpK = this._keys[pos];
-        const tmpV = this._values[pos];
-        const tmpD = this._displacements[pos];
-        this._keys[pos] = k;
-        this._values[pos] = v;
-        this._displacements[pos] = displacement;
-        k = tmpK;
-        v = tmpV;
-        displacement = tmpD;
-        this.stats.steals++;
-      }
-
-      pos = (pos + 1) & this._mask;
-      displacement++;
-    }
-  }
-
-  get(key) {
-    this.stats.lookups++;
-    let pos = this._hash(key) & this._mask;
-    let displacement = 0;
-
-    while (true) {
-      if (this._displacements[pos] === -1) return undefined;
-      if (this._displacements[pos] < displacement) return undefined; // Robin Hood: can stop early
-      
-      this.stats.probes++;
-      if (this._keys[pos] === key) return this._values[pos];
-
-      pos = (pos + 1) & this._mask;
-      displacement++;
-    }
-  }
-
-  has(key) { return this.get(key) !== undefined; }
-
-  delete(key) {
-    let pos = this._hash(key) & this._mask;
-    let displacement = 0;
-
-    while (true) {
-      if (this._displacements[pos] === -1) return false;
-      if (this._displacements[pos] < displacement) return false;
-      
-      if (this._keys[pos] === key) {
-        // Found: backward shift delete
-        this._backwardShift(pos);
-        this._size--;
-        return true;
-      }
-
-      pos = (pos + 1) & this._mask;
-      displacement++;
-    }
-  }
-
-  _backwardShift(pos) {
-    let next = (pos + 1) & this._mask;
-    while (this._displacements[next] > 0) {
-      this._keys[pos] = this._keys[next];
-      this._values[pos] = this._values[next];
-      this._displacements[pos] = this._displacements[next] - 1;
-      pos = next;
-      next = (next + 1) & this._mask;
-    }
-    this._keys[pos] = undefined;
-    this._values[pos] = undefined;
-    this._displacements[pos] = -1;
+    this._maxProbe = 0;
+    this._totalProbes = 0; // For average probe length
   }
 
   get size() { return this._size; }
+  get capacity() { return this._capacity; }
+  get loadFactor() { return this._size / this._capacity; }
 
+  /**
+   * Hash a key to an index.
+   */
   _hash(key) {
-    let h = typeof key === 'number' ? key | 0 : 0;
-    if (typeof key === 'string') {
-      for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+    const str = typeof key === 'string' ? key : String(key);
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = (h * 0x01000193) >>> 0;
     }
-    h = ((h >>> 16) ^ h) * 0x45d9f3b;
-    h = ((h >>> 16) ^ h) * 0x45d9f3b;
-    return (h >>> 16) ^ h;
+    // Additional mixing
+    h ^= h >>> 16;
+    h = (h * 0x85ebca6b) >>> 0;
+    h ^= h >>> 13;
+    return h & this._mask;
   }
 
-  _nextPow2(n) {
-    let p = 1;
-    while (p < n) p <<= 1;
-    return p;
+  /**
+   * Insert or update a key-value pair.
+   */
+  set(key, value) {
+    if (this._size >= this._capacity * this._maxLoad) {
+      this._resize(this._capacity * 2);
+    }
+    
+    this._insert(key, value);
   }
 
-  _resize() {
-    this.stats.resizes++;
+  _insert(key, value) {
+    let idx = this._hash(key);
+    let dist = 0;
+    
+    // Track the element we're trying to insert
+    let insertKey = key;
+    let insertValue = value;
+    let insertDist = dist;
+    
+    while (true) {
+      const slotKey = this._keys[idx];
+      
+      // Empty slot — insert here
+      if (slotKey === EMPTY || slotKey === DELETED) {
+        this._keys[idx] = insertKey;
+        this._values[idx] = insertValue;
+        this._distances[idx] = insertDist;
+        this._size++;
+        this._maxProbe = Math.max(this._maxProbe, insertDist);
+        return;
+      }
+      
+      // Key already exists — update
+      if (slotKey === key) {
+        this._values[idx] = value;
+        return;
+      }
+      
+      // Robin Hood: if our probe distance is longer, steal the slot
+      if (insertDist > this._distances[idx]) {
+        // Swap with existing element
+        const tmpKey = this._keys[idx];
+        const tmpValue = this._values[idx];
+        const tmpDist = this._distances[idx];
+        
+        this._keys[idx] = insertKey;
+        this._values[idx] = insertValue;
+        this._distances[idx] = insertDist;
+        
+        insertKey = tmpKey;
+        insertValue = tmpValue;
+        insertDist = tmpDist;
+      }
+      
+      // Continue probing
+      idx = (idx + 1) & this._mask;
+      insertDist++;
+    }
+  }
+
+  /**
+   * Get a value by key. O(1) expected.
+   */
+  get(key) {
+    let idx = this._hash(key);
+    let dist = 0;
+    
+    while (true) {
+      const slotKey = this._keys[idx];
+      
+      if (slotKey === EMPTY) return undefined;
+      if (slotKey === key) return this._values[idx];
+      
+      // Robin Hood optimization: if current probe distance > slot's distance,
+      // the key definitely doesn't exist (it would have been placed here)
+      if (dist > this._distances[idx]) return undefined;
+      
+      idx = (idx + 1) & this._mask;
+      dist++;
+    }
+  }
+
+  /**
+   * Check if a key exists.
+   */
+  has(key) {
+    return this.get(key) !== undefined;
+  }
+
+  /**
+   * Delete a key. Uses backward shift deletion.
+   */
+  delete(key) {
+    let idx = this._hash(key);
+    let dist = 0;
+    
+    while (true) {
+      if (this._keys[idx] === EMPTY) return false;
+      if (dist > this._distances[idx]) return false;
+      
+      if (this._keys[idx] === key) {
+        // Found — backward shift to fill gap
+        this._backwardShiftDelete(idx);
+        this._size--;
+        return true;
+      }
+      
+      idx = (idx + 1) & this._mask;
+      dist++;
+    }
+  }
+
+  _backwardShiftDelete(idx) {
+    let current = idx;
+    let next = (current + 1) & this._mask;
+    
+    while (this._keys[next] !== EMPTY && this._distances[next] > 0) {
+      // Shift back
+      this._keys[current] = this._keys[next];
+      this._values[current] = this._values[next];
+      this._distances[current] = this._distances[next] - 1;
+      
+      current = next;
+      next = (current + 1) & this._mask;
+    }
+    
+    // Clear the last slot
+    this._keys[current] = EMPTY;
+    this._values[current] = EMPTY;
+    this._distances[current] = 0;
+  }
+
+  /**
+   * Resize the table.
+   */
+  _resize(newCapacity) {
     const oldKeys = this._keys;
     const oldValues = this._values;
-    const oldDisp = this._displacements;
     const oldCapacity = this._capacity;
-
-    this._capacity *= 2;
-    this._mask = this._capacity - 1;
-    this._keys = new Array(this._capacity).fill(undefined);
-    this._values = new Array(this._capacity).fill(undefined);
-    this._displacements = new Int32Array(this._capacity);
-    this._displacements.fill(-1);
+    
+    this._capacity = newCapacity;
+    this._mask = newCapacity - 1;
+    this._keys = new Array(newCapacity).fill(EMPTY);
+    this._values = new Array(newCapacity).fill(EMPTY);
+    this._distances = new Int32Array(newCapacity);
     this._size = 0;
-    this._maxDisplacement = 0;
-
+    this._maxProbe = 0;
+    
     for (let i = 0; i < oldCapacity; i++) {
-      if (oldDisp[i] !== -1) this.set(oldKeys[i], oldValues[i]);
+      if (oldKeys[i] !== EMPTY && oldKeys[i] !== DELETED) {
+        this._insert(oldKeys[i], oldValues[i]);
+      }
     }
   }
 
+  /**
+   * Iterate all entries.
+   */
+  *entries() {
+    for (let i = 0; i < this._capacity; i++) {
+      if (this._keys[i] !== EMPTY && this._keys[i] !== DELETED) {
+        yield { key: this._keys[i], value: this._values[i], probeDistance: this._distances[i] };
+      }
+    }
+  }
+
+  /**
+   * Get statistics about probe distances.
+   */
   getStats() {
+    let totalDist = 0;
+    let maxDist = 0;
+    let distHisto = {};
+    
+    for (let i = 0; i < this._capacity; i++) {
+      if (this._keys[i] !== EMPTY && this._keys[i] !== DELETED) {
+        const d = this._distances[i];
+        totalDist += d;
+        maxDist = Math.max(maxDist, d);
+        distHisto[d] = (distHisto[d] || 0) + 1;
+      }
+    }
+    
     return {
-      ...this.stats,
-      capacity: this._capacity,
       size: this._size,
-      loadFactor: (this._size / this._capacity).toFixed(3),
-      maxDisplacement: this._maxDisplacement,
-      avgProbesPerLookup: this.stats.lookups > 0 ? (this.stats.probes / this.stats.lookups).toFixed(2) : '0',
+      capacity: this._capacity,
+      loadFactor: parseFloat(this.loadFactor.toFixed(4)),
+      avgProbeDistance: this._size > 0 ? parseFloat((totalDist / this._size).toFixed(2)) : 0,
+      maxProbeDistance: maxDist,
+      probeDistribution: distHisto,
     };
   }
 }
