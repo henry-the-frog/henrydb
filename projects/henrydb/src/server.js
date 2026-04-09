@@ -492,7 +492,7 @@ export class HenryDBServer {
         // Cache SELECT results
         if (isSelect && result && result.type === 'ROWS') {
           const tables = QueryCache.extractTables(stmt);
-          this._queryCache.set(stmt, result, tables);
+          this._queryCache.set(stmt, tables, result);
         }
 
         // Invalidate cache on mutations

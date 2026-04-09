@@ -1,8 +1,8 @@
 # HenryDB: Transactional Correctness Learnings
 
-uses: 5
+uses: 6
 created: 2026-04-07
-tags: database, mvcc, wal, crash-recovery, transactions
+tags: database, mvcc, wal, crash-recovery, transactions, aries, checkpoints
 
 ## Key Bugs Found & Fixed (2026-04-07)
 
@@ -140,3 +140,39 @@ xmin=0 as always-visible (bootstrap rows).
 - 14 LSM tree tests (bloom filter integration)
 - 20 pipeline JIT tests
 - Total: ~125 new correctness tests (session total 2054+)
+
+## ARIES-Style Checkpointing (2026-04-09)
+
+### Dirty Page Table (DPT)
+- Tracks `pageKey -> recLSN` (first-write-wins)
+- pageKey format: `tableName:pageId`
+- DPT is snapshot during checkpoint, then cleared
+
+### Fuzzy Checkpoints
+- BEGIN_CHECKPOINT record: snapshots DPT + active transactions
+- END_CHECKPOINT record: references beginLsn
+- Pages flushed between BEGIN and END (the "fuzzy" part)
+- WAL truncation: removes records before min(recLSN in DPT)
+
+### Key Design: beginTransaction() is a no-op
+- No WAL record for BEGIN — only bookkeeping
+- Tests expected 3 records (INSERT, INSERT, COMMIT), not 4 (with BEGIN)
+- Recovery uses COMMIT presence to determine committed txns
+- This matches real databases (PostgreSQL doesn't write BEGIN to WAL)
+
+### WALRecord Class
+- Serialize: JSON payload + CRC32 footer
+- Deserialize: returns `null` on any error (CRC mismatch, truncation, etc.)
+- On success: `{ record, bytesRead }` (for multi-record parsing)
+- Fields: lsn, txId, type, tableName, before, after
+
+### In-Memory WAL Mode
+- WriteAheadLog() with no args = in-memory mode
+- _memRecords (all records) vs _stableRecords (flushed on COMMIT)
+- Auto-checkpoint disabled by default in memory mode
+- setAutoCheckpoint(N) enables commit-based checkpointing (every N commits)
+
+### Recovery Function
+- recoverFromWAL: replays committed transactions after latest checkpoint
+- recoverToTimestamp: PITR with timestamp filtering + skippedTxns count
+- Both handle mock heaps (._data.push) and full Database objects (.execute())

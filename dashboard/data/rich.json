@@ -602,29 +602,50 @@
   ],
   "streak": 4,
   "scheduleAdherence": {
-    "completionRate": 21,
-    "completedBlocks": 4,
-    "pastBlocks": 19,
-    "totalBlocks": 19,
+    "completionRate": 52,
+    "completedBlocks": 11,
+    "pastBlocks": 21,
+    "totalBlocks": 21,
     "plannedDist": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 5,
+      "BUILD": 7,
       "MAINTAIN": 4,
       "EXPLORE": 2
     },
     "actualDist": {
-      "THINK": 1,
-      "PLAN": 1,
-      "BUILD": 2
+      "THINK": 2,
+      "PLAN": 2,
+      "BUILD": 5,
+      "MAINTAIN": 2
     },
-    "pace": 40
+    "pace": 14.3
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
       "time": "08:20",
       "text": "Fixed dashboard: server.js→server.cjs (ESM), /api/archive-day alias, /api/regenerate endpoint."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:28",
+      "text": "Fixed WAL exports: added WAL_TYPES, WALRecord class with…"
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:38",
+      "text": "Fixed WAL exports + built in-memory WAL mode."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:48",
+      "text": "Built ARIES-style WAL: dirty page tracking, fuzzy checkpoints, WAL truncation,…"
+    },
+    {
+      "mode": "MAINTAIN",
+      "time": "09:01",
+      "text": "Fixed 6 more missing exports (BufferPool, LockMode, Rect, RaftCluster,…"
     }
   ],
   "adjustments": [],
@@ -653,9 +674,9 @@
       "category": "systems",
       "tests": 4861,
       "srcFiles": 657,
-      "srcLines": 115396,
+      "srcLines": 116016,
       "featureCount": 29,
-      "lastCommit": "2026-04-09 08:20:51 -0600",
+      "lastCommit": "2026-04-09 09:01:46 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -683,7 +704,7 @@
       "srcFiles": 2,
       "srcLines": 337,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 08:20:51 -0600",
+      "lastCommit": "2026-04-09 09:01:46 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -697,7 +718,7 @@
       "srcFiles": 2,
       "srcLines": 1157,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 08:20:51 -0600",
+      "lastCommit": "2026-04-09 09:01:46 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -711,7 +732,7 @@
       "srcFiles": 2,
       "srcLines": 544,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 08:20:51 -0600",
+      "lastCommit": "2026-04-09 09:01:46 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -725,7 +746,7 @@
       "srcFiles": 2,
       "srcLines": 1768,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 08:20:51 -0600",
+      "lastCommit": "2026-04-09 09:01:46 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -739,10 +760,10 @@
       "srcFiles": 2,
       "srcLines": 1284,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 08:20:51 -0600",
+      "lastCommit": "2026-04-09 09:01:46 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-09T14:21:07.934Z"
+  "generated": "2026-04-09T15:01:55.398Z"
 }

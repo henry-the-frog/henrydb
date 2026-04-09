@@ -113,30 +113,49 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard sync, knowledge capture",
-      "started": "2026-04-09T15:01:40.718Z"
+      "started": "2026-04-09T15:01:40.718Z",
+      "completed": "2026-04-09T15:02:30.442Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard synced (21 blocks/11 done). Captured ARIES checkpoint knowledge in scratch/henrydb-transactions.md."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on HenryDB quality pass. What broke? What patterns emerged? Is the architecture sound?"
+      "status": "done",
+      "task": "Reflect on HenryDB quality pass. What broke? What patterns emerged? Is the architecture sound?",
+      "started": "2026-04-09T15:02:45.637Z",
+      "completed": "2026-04-09T15:03:04.426Z",
+      "duration_ms": 90000,
+      "summary": "Reflection: Ghost exports pattern (tests generated with imagined APIs). In-memory WAL was no-op shell, now real. Recovery was INSERT-only (data loss risk). Architecture is sound but db.js is god object at 3K lines. Next priority: pg-protocol/server tests."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB integration depth: stress test the PostgreSQL wire protocol with real workloads",
-      "task": null
+      "task": null,
+      "started": "2026-04-09T15:03:18.745Z",
+      "completed": "2026-04-09T15:04:33.286Z",
+      "duration_ms": 60000,
+      "summary": "Planned: pg-protocol 15/15 passing already. Server.test.js 6/14 — RowDescription missing for SELECT after INSERT. 2 BUILD tasks: fix server protocol + psql integration test."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Fix pg-wire protocol: server not sending RowDescription for SELECT after INSERT/CREATE. Debug server.test.js failures.",
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T15:04:46.703Z"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Integration test: connect to HenryDB with actual psql client and run queries",
+      "status": "upcoming",
+      "plan_ref": "T10"
     },
     {
       "id": "T12",
@@ -275,6 +294,10 @@
     {
       "time": "2026-04-09T14:28:42.417Z",
       "msg": "PLAN T6 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T15:04:25.443Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }

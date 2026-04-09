@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T15:01:40.804Z",
+  "generated": "2026-04-09T15:04:46.775Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard sync, knowledge capture",
-    "startedAt": "2026-04-09T15:01:40.804Z",
-    "taskId": "T8"
+    "mode": "BUILD",
+    "task": "Fix pg-wire protocol: server not sending RowDescription for SELECT after INSERT/CREATE. Debug server.test.js failures.",
+    "startedAt": "2026-04-09T15:04:46.775Z",
+    "taskId": "T11"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -346,59 +346,90 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB quality pass: pick 3-5 weakest modules and harden with edge-case tests, fix bugs",
         "task": null,
-        "started": "2026-04-09T14:28:28.695Z"
+        "started": "2026-04-09T14:28:28.695Z",
+        "completed": "2026-04-09T14:28:47.883Z",
+        "duration_ms": 60000,
+        "summary": "Planned 3 BUILD tasks: fix WAL exports (7 broken test files), stress test WAL/txn path, run full suite for other failures."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix WAL exports: add WAL_TYPES and WALRecord aliases, fix 7 broken test files, run them all",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T14:28:57.976Z",
+        "completed": "2026-04-09T14:38:03.734Z",
+        "duration_ms": 600000,
+        "summary": "Fixed WAL exports: added WAL_TYPES, WALRecord class with serialize/deserialize/CRC, recoverFromWAL, recoverToTimestamp. Built full in-memory WAL mode with LSN tracking, auto-flush on COMMIT, readFromStable, beginTransaction, flush, setAutoCheckpoint. 26/26 wal-stress tests + 8/8 auto-checkpoint tests now passing. Remaining: checkpoint.test (19 failures need dirty page tracking), pitr.test (12 need PITR), wal-recovery (6) — genuine new features."
       },
       {
         "id": "T20",
         "mode": "BUILD",
         "task": "Stress test WAL/transaction path: crash recovery, concurrent txns, edge cases",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-09T14:38:25.348Z",
+        "completed": "2026-04-09T14:48:13.999Z",
+        "duration_ms": 600000,
+        "summary": "Built ARIES-style WAL subsystem: dirty page tracking (first-write-wins recLSN), fuzzy checkpoints (BEGIN/END markers, DPT snapshot, truncation), WAL truncation, full UPDATE/DELETE recovery replay for both Database and mock objects, PITR with timestamp filtering and commit timestamps. 72/72 WAL tests passing (wal-stress 26, auto-checkpoint 8, checkpoint 20, wal-recovery 6, pitr 12)."
       },
       {
         "id": "T21",
         "mode": "BUILD",
         "task": "Run full test suite, find and fix any other broken tests",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-09T14:48:33.667Z",
+        "completed": "2026-04-09T15:01:17.553Z",
+        "duration_ms": 600000,
+        "summary": "Fixed missing exports: BufferPool, LockMode, Rect, RaftCluster, RingBuffer, SavepointTransaction. WAL_TYPE_NAMES export. 72/72 WAL tests + catalog 20/28 passing. Some test files still have deep dependency issues (pg-protocol, example-app) but core modules are solid."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync, knowledge capture",
+        "started": "2026-04-09T15:01:40.718Z",
+        "completed": "2026-04-09T15:02:30.442Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard synced (21 blocks/11 done). Captured ARIES checkpoint knowledge in scratch/henrydb-transactions.md."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on HenryDB quality pass. What broke? What patterns emerged? Is the architecture sound?"
+        "status": "done",
+        "task": "Reflect on HenryDB quality pass. What broke? What patterns emerged? Is the architecture sound?",
+        "started": "2026-04-09T15:02:45.637Z",
+        "completed": "2026-04-09T15:03:04.426Z",
+        "duration_ms": 90000,
+        "summary": "Reflection: Ghost exports pattern (tests generated with imagined APIs). In-memory WAL was no-op shell, now real. Recovery was INSERT-only (data loss risk). Architecture is sound but db.js is god object at 3K lines. Next priority: pg-protocol/server tests."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB integration depth: stress test the PostgreSQL wire protocol with real workloads",
-        "task": null
+        "task": null,
+        "started": "2026-04-09T15:03:18.745Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix pg-wire protocol: server not sending RowDescription for SELECT after INSERT/CREATE. Debug server.test.js failures.",
         "plan_ref": "T10",
         "project": "henrydb"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Integration test: connect to HenryDB with actual psql client and run queries",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -451,13 +482,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 10,
-    "blocksTotal": 21,
+    "blocksCompleted": 13,
+    "blocksTotal": 22,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
+      "THINK": 3,
+      "PLAN": 3,
       "BUILD": 5,
-      "MAINTAIN": 1
+      "MAINTAIN": 2
     }
   },
   "artifacts": [

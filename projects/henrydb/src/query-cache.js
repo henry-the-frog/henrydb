@@ -197,4 +197,25 @@ export class QueryCache {
    * Get cache size.
    */
   get size() { return this._cache.size; }
+
+  /**
+   * Extract table names from a SQL query (static utility).
+   */
+  static extractTables(sql) {
+    const tables = new Set();
+    const patterns = [
+      /\bFROM\s+(\w+)/gi,
+      /\bJOIN\s+(\w+)/gi,
+      /\bINTO\s+(\w+)/gi,
+      /\bUPDATE\s+(\w+)/gi,
+      /\bTABLE\s+(\w+)/gi,
+    ];
+    for (const pat of patterns) {
+      let m;
+      while ((m = pat.exec(sql)) !== null) {
+        tables.add(m[1].toLowerCase());
+      }
+    }
+    return [...tables];
+  }
 }
