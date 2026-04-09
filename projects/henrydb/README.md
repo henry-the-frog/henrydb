@@ -2,7 +2,7 @@
 
 A PostgreSQL-compatible relational database engine built from scratch in JavaScript. No database dependencies. No shortcuts. Every component—from the SQL parser to the B+Tree indexes to the write-ahead log—is hand-written.
 
-**50,000+ lines of source code | 460+ test files | Full PostgreSQL wire protocol**
+**50,000+ lines of source code | 480+ test files | 60+ data structures | Full PostgreSQL wire protocol**
 
 ## Quick Start
 
@@ -73,33 +73,84 @@ Works with Knex, Sequelize, pg.js, and any PostgreSQL driver.
 - **Expressions**: CASE WHEN, COALESCE, NULLIF, CAST, LIKE, BETWEEN, IN
 - **Transactions**: BEGIN, COMMIT, ROLLBACK, SAVEPOINT
 
-### Data Structures Library
+### Data Structures Library (60+)
 
-HenryDB includes a comprehensive collection of database-focused data structures:
+HenryDB includes a comprehensive collection of 60+ data structures:
 
-**Tree Structures:**
-- **B+Tree** — Balanced tree for sorted data + range queries (order 64)
-- **BTreeTable** — Clustered B+tree storage engine (5,578x faster point lookups)
+**Tree Structures (15):**
+- **B+Tree** — Balanced tree for sorted data + range queries
+- **BTreeTable** — Clustered B+tree storage engine
+- **AVLTree** — Strictly balanced BST (height 14 for 10K sorted)
+- **RedBlackTree** — Left-leaning RB BST (Sedgewick)
+- **SplayTree** — Self-adjusting BST with working set property
+- **Treap** — Randomized BST with order statistics
 - **Trie** — Prefix tree for O(k) string operations + autocomplete
-- **SkipList** — Probabilistic ordered list (Redis-style, P=0.25)
-- **LSM-Tree** — Log-Structured Merge Tree (LevelDB/RocksDB-style)
+- **WildcardTrie** — Pattern matching with ? and * wildcards
+- **ART** — Adaptive Radix Tree (DuckDB/HyPer-style, 4 node types)
+- **BitwiseTrie** — Integer-keyed trie with 5-bit partitioning
+- **SkipList** — Probabilistic ordered list (Redis-style)
+- **LSM-Tree** — Log-Structured Merge Tree (LevelDB/RocksDB)
+- **B-epsilon Tree** — Write-optimized B-tree with message buffers (TokuDB)
+- **COLA** — Cache-Oblivious Lookahead Array
+- **SortedArray** — Simplest index structure (baseline)
 
-**Hash Structures:**
+**Hash Structures (3):**
 - **ExtendibleHashTable** — Dynamic hash with bucket splitting
 - **RobinHoodHashMap** — Open-addressing with probe distance balancing
+- **ConsistentHash** — Virtual node ring for distributed partitioning
 
-**Probabilistic Structures:**
-- **BloomFilter** — Set membership, no false negatives (9.6 bits/element)
+**Probabilistic & Streaming (10):**
+- **BloomFilter** — Set membership, no false negatives
 - **CuckooFilter** — Bloom alternative with deletion support
-- **HyperLogLog** — Cardinality estimation in 16KB (0.81% error)
+- **QuotientFilter** — Merge-friendly probabilistic filter
+- **HyperLogLog** — Cardinality estimation in 16KB
 - **CountMinSketch** — Approximate frequency counting
+- **TDigest** — Streaming quantile estimation (p50/p95/p99)
+- **SpaceSaving** — Heavy hitters detection
+- **ExponentialHistogram** — Sliding window approximate counting
+- **TopK** — Stream top-k maintenance
+- **ReservoirSampler** — Uniform random sampling from streams
 
-**Storage Structures:**
+**Storage & Caching (8):**
 - **LRUReplacer** — O(1) LRU page eviction
 - **ClockReplacer** — PostgreSQL-style usage count sweep
+- **LRU-K** — Frequency-aware replacement (DB2/Oracle-style)
+- **LFUCache** — O(1) least-frequently-used eviction
 - **BufferPoolManager** — Configurable LRU/Clock page caching
 - **DiskManager** — File-backed page I/O
 - **RingBuffer** — Fixed-size circular buffer for streaming
+- **SSTable** — Immutable sorted string table with bloom filter
+- **WALFormat** — Binary WAL with CRC32 checksums
+
+**Spatial Structures (3):**
+- **RTree** — 2D rectangle queries (PostGIS-style)
+- **KDTree** — k-dimensional nearest neighbor search
+- **IntervalTree** — Interval overlap queries
+
+**Heaps & Priority Queues (4):**
+- **MinHeap** — Binary heap priority queue
+- **MinMaxHeap** — Double-ended priority queue
+- **FibonacciHeap** — O(1) insert/decrease-key for Dijkstra
+- **Deque** — Double-ended queue with circular buffer
+
+**Graph & Set Structures (4):**
+- **Graph** — Adjacency list with BFS/DFS/topological sort/Dijkstra
+- **UnionFind** — Disjoint set with path compression + union by rank
+- **DisjointIntervals** — Interval merge/split/gap management
+- **BitSet** — Uint32Array bit manipulation with AND/OR/XOR
+
+**Other Structures (10+):**
+- **SegmentTree** — O(log n) range sum/min/max queries
+- **FenwickTree** — O(log n) prefix sums in O(n) space
+- **SparseTable** — O(1) range min/max after O(n log n) preprocess
+- **SuffixArray** — Sorted suffixes for pattern matching
+- **Rope** — Balanced tree for large text operations
+- **PersistentStack** — Immutable with structural sharing
+- **MerkleTree** — SHA-256 hash tree for data integrity
+- **ZobristHash** — O(1) incremental hashing via XOR
+- **Matrix** — Dense linear algebra operations
+- **BitmapIndex** — Bit vectors for low-cardinality columns
+- **RadixSort/CountingSort/BucketSort** — Non-comparison sorting
 
 ### Storage Engine
 - **Heap Files**: Slotted-page architecture with tuple-level storage
