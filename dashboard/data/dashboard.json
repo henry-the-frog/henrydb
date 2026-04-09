@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T01:24:33.731Z",
+  "generated": "2026-04-09T01:25:51.549Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build connection session variables: SET/SHOW/RESET, session-scoped GUCs, search_path, client_encoding",
-    "completedAt": "2026-04-09T01:24:33.731Z",
-    "taskId": "T471",
-    "summary": "Session variables: SET/SHOW/RESET, SET LOCAL, GUC defaults, savepoints, typed getters (bool/int/float/memory), SHOW ALL. 16 tests.",
+    "task": "Build rule system: CREATE RULE, ON SELECT/INSERT/UPDATE/DELETE, INSTEAD/ALSO, updatable views via rules",
+    "completedAt": "2026-04-09T01:25:51.549Z",
+    "taskId": "T472",
+    "summary": "Rule system: CREATE/DROP RULE, INSTEAD/ALSO, conditional rules, ON SELECT/INSERT/UPDATE/DELETE, enable/disable, OR REPLACE. 14 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 469,
+    "blocksCompleted": 470,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 365,
+      "BUILD": 366,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

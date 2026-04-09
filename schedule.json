@@ -5126,6 +5126,17 @@
       "completed": "2026-04-09T01:24:33.663Z",
       "duration_ms": 120000,
       "summary": "Session variables: SET/SHOW/RESET, SET LOCAL, GUC defaults, savepoints, typed getters (bool/int/float/memory), SHOW ALL. 16 tests."
+    },
+    {
+      "id": "T472",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build rule system: CREATE RULE, ON SELECT/INSERT/UPDATE/DELETE, INSTEAD/ALSO, updatable views via rules",
+      "project": "henrydb",
+      "started": "2026-04-09T01:24:54.873Z",
+      "completed": "2026-04-09T01:25:51.481Z",
+      "duration_ms": 120000,
+      "summary": "Rule system: CREATE/DROP RULE, INSTEAD/ALSO, conditional rules, ON SELECT/INSERT/UPDATE/DELETE, enable/disable, OR REPLACE. 14 tests."
     }
   ],
   "focusProjects": [
@@ -6981,6 +6992,10 @@
     {
       "time": "2026-04-09T01:23:45.586Z",
       "msg": "Added T471 (BUILD) after end: Build connection session variables: SET/SHOW/RESET, session-scoped GUCs, search_path, client_encoding"
+    },
+    {
+      "time": "2026-04-09T01:24:54.618Z",
+      "msg": "Added T472 (BUILD) after end: Build rule system: CREATE RULE, ON SELECT/INSERT/UPDATE/DELETE, INSTEAD/ALSO, updatable views via rules"
     }
   ]
 }
