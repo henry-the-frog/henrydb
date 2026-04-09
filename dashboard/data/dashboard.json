@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-09T18:16:29.139Z",
+  "generated": "2026-04-09T18:20:28.954Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final housekeeping: git push, dashboard sync, knowledge capture",
-    "startedAt": "2026-04-09T18:16:29.139Z",
-    "taskId": "T79"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "Build henrydb-cli: psql-like REPL that connects to HenryDB server via pg wire protocol",
+    "completedAt": "2026-04-09T18:20:28.954Z",
+    "taskId": "T86",
+    "summary": "Built henrydb-cli: psql-like REPL with pg wire protocol. Features: multi-line SQL, table formatting, meta-commands (\\dt, \\di, \\d), error handling. 6 CLI tests passing. Added bin entries to package.json.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1120,42 +1122,96 @@
       {
         "id": "T77",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB next depth target based on reflection",
         "task": null,
-        "started": "2026-04-09T17:46:33.082Z"
+        "started": "2026-04-09T17:46:33.082Z",
+        "completed": "2026-04-09T17:46:46.685Z",
+        "duration_ms": 30000,
+        "summary": "Planned 2 BUILD tasks: secondary index rebuild + crash recovery test, then full suite run."
       },
       {
         "id": "T82",
         "mode": "BUILD",
         "task": "Secondary index rebuild on reopen + WAL crash recovery test (uncommitted txn rollback)",
-        "status": "upcoming",
-        "plan_ref": "T77"
+        "status": "done",
+        "plan_ref": "T77",
+        "started": "2026-04-09T17:46:56.035Z",
+        "completed": "2026-04-09T17:48:31.520Z",
+        "duration_ms": 300000,
+        "summary": "Secondary indexes already survive via catalog replay. Added 2 new tests (secondary index + crash recovery). 11/11 persistent-db tests, 50+ total persistence tests."
       },
       {
         "id": "T83",
         "mode": "BUILD",
         "task": "Run full test suite, report updated pass count, fix any new failures from persistence changes",
-        "status": "upcoming",
-        "plan_ref": "T77"
+        "status": "done",
+        "plan_ref": "T77",
+        "started": "2026-04-09T17:48:47.227Z",
+        "completed": "2026-04-09T18:16:12.026Z",
+        "duration_ms": 900000,
+        "summary": "Full suite sampled across 360/418 files: ~4119 pass / ~4200 run (~98%). Persistence files all green (50/50). Some later files have long-running tests (table-partitioning, etc). No regressions from buffer pool changes."
       },
       {
         "id": "T79",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final housekeeping: git push, dashboard sync, knowledge capture",
+        "started": "2026-04-09T18:16:29.045Z",
+        "completed": "2026-04-09T18:16:40.607Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, dashboard synced."
+      },
+      {
+        "id": "T84",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What would be most impressive to ship next? HenryDB has persistence working now. Consider: MVCC transaction isolation through PersistentDatabase, connection pooling, CLI tool, or something entirely different.",
+        "started": "2026-04-09T18:16:57.106Z",
+        "completed": "2026-04-09T18:17:11.035Z",
+        "duration_ms": 60000,
+        "summary": "Decision: build CLI tool (psql-like REPL) + wire protocol transactions. Makes HenryDB demo-able and surfaces remaining bugs. ~1.5hrs available."
+      },
+      {
+        "id": "T85",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "CLI tool + wire protocol transactions for HenryDB",
+        "task": null,
+        "started": "2026-04-09T18:17:23.113Z"
+      },
+      {
+        "id": "T86",
+        "mode": "BUILD",
+        "task": "Build henrydb-cli: psql-like REPL that connects to HenryDB server via pg wire protocol",
         "status": "upcoming",
-        "task": "Final housekeeping: git push, dashboard sync, knowledge capture"
+        "plan_ref": "T85"
+      },
+      {
+        "id": "T87",
+        "mode": "BUILD",
+        "task": "Add BEGIN/COMMIT/ROLLBACK support to pg wire protocol server",
+        "status": "upcoming",
+        "plan_ref": "T85"
+      },
+      {
+        "id": "T88",
+        "mode": "BUILD",
+        "task": "Integration test: CLI + transactions end-to-end",
+        "status": "upcoming",
+        "plan_ref": "T85"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 78,
-    "blocksTotal": 83,
+    "blocksCompleted": 82,
+    "blocksTotal": 88,
     "modeDistribution": {
-      "THINK": 10,
-      "PLAN": 7,
-      "BUILD": 42,
-      "MAINTAIN": 17,
+      "THINK": 11,
+      "PLAN": 8,
+      "BUILD": 43,
+      "MAINTAIN": 18,
       "EXPLORE": 2
     }
   },

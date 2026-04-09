@@ -875,9 +875,58 @@
     {
       "id": "T79",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping: git push, dashboard sync, knowledge capture",
-      "started": "2026-04-09T18:16:29.045Z"
+      "started": "2026-04-09T18:16:29.045Z",
+      "completed": "2026-04-09T18:16:40.607Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, dashboard synced."
+    },
+    {
+      "id": "T84",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What would be most impressive to ship next? HenryDB has persistence working now. Consider: MVCC transaction isolation through PersistentDatabase, connection pooling, CLI tool, or something entirely different.",
+      "started": "2026-04-09T18:16:57.106Z",
+      "completed": "2026-04-09T18:17:11.035Z",
+      "duration_ms": 60000,
+      "summary": "Decision: build CLI tool (psql-like REPL) + wire protocol transactions. Makes HenryDB demo-able and surfaces remaining bugs. ~1.5hrs available."
+    },
+    {
+      "id": "T85",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "CLI tool + wire protocol transactions for HenryDB",
+      "task": null,
+      "started": "2026-04-09T18:17:23.113Z",
+      "completed": "2026-04-09T18:17:29.601Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks: CLI REPL, wire txn support, integration test."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "task": "Build henrydb-cli: psql-like REPL that connects to HenryDB server via pg wire protocol",
+      "status": "done",
+      "plan_ref": "T85",
+      "started": "2026-04-09T18:17:35.030Z",
+      "completed": "2026-04-09T18:20:28.886Z",
+      "duration_ms": 600000,
+      "summary": "Built henrydb-cli: psql-like REPL with pg wire protocol. Features: multi-line SQL, table formatting, meta-commands (\\dt, \\di, \\d), error handling. 6 CLI tests passing. Added bin entries to package.json."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "task": "Add BEGIN/COMMIT/ROLLBACK support to pg wire protocol server",
+      "status": "upcoming",
+      "plan_ref": "T85"
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "task": "Integration test: CLI + transactions end-to-end",
+      "status": "upcoming",
+      "plan_ref": "T85"
     }
   ],
   "focusProjects": [
@@ -1221,6 +1270,18 @@
     {
       "time": "2026-04-09T17:46:41.154Z",
       "msg": "PLAN T77 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T18:16:51.992Z",
+      "msg": "Added T84 (THINK) after end: What would be most impressive to ship next? HenryDB has persistence working now. Consider: MVCC transaction isolation through PersistentDatabase, connection pooling, CLI tool, or something entirely different."
+    },
+    {
+      "time": "2026-04-09T18:17:16.413Z",
+      "msg": "Added T85 (PLAN) after end: CLI tool + wire protocol transactions for HenryDB"
+    },
+    {
+      "time": "2026-04-09T18:17:23.547Z",
+      "msg": "PLAN T85 filled 3 BUILD tasks"
     }
   ]
 }
