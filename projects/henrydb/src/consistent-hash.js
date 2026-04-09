@@ -1,135 +1,114 @@
-// consistent-hash.js — Consistent hashing ring for HenryDB
-// Used for data distribution across nodes (sharding).
-// Key insight: when adding/removing nodes, only K/N keys need to move
-// (where K = total keys, N = total nodes).
+// consistent-hash.js — Consistent hashing with virtual nodes
+// Used in distributed databases for key-to-node mapping with minimal
+// key redistribution when nodes join/leave (DynamoDB, Cassandra, Riak).
 
-/**
- * Consistent Hash Ring with virtual nodes.
- */
-export class ConsistentHashRing {
+export class ConsistentHash {
+  /**
+   * @param {number} virtualNodes - Virtual nodes per physical node (default 150)
+   */
   constructor(virtualNodes = 150) {
-    this._virtualNodes = virtualNodes;
-    this._ring = new Map(); // hash → { node, virtualId }
-    this._sortedHashes = []; // Sorted hash positions on the ring
+    this._vnodes = virtualNodes;
+    this._ring = [];       // Sorted array of {hash, node}
     this._nodes = new Set();
   }
 
+  get nodeCount() { return this._nodes.size; }
+
   /**
    * Add a node to the ring.
-   * Creates `virtualNodes` positions on the ring for better distribution.
    */
   addNode(node) {
     if (this._nodes.has(node)) return;
     this._nodes.add(node);
-    
-    for (let i = 0; i < this._virtualNodes; i++) {
+    for (let i = 0; i < this._vnodes; i++) {
       const hash = this._hash(`${node}:${i}`);
-      this._ring.set(hash, { node, virtualId: i });
+      this._ring.push({ hash, node });
     }
-    
-    this._rebuildSorted();
+    this._ring.sort((a, b) => a.hash - b.hash);
   }
 
   /**
-   * Remove a node from the ring.
+   * Remove a node from the ring. Keys migrate to next node.
    */
   removeNode(node) {
     if (!this._nodes.has(node)) return;
     this._nodes.delete(node);
-    
-    for (let i = 0; i < this._virtualNodes; i++) {
-      const hash = this._hash(`${node}:${i}`);
-      this._ring.delete(hash);
-    }
-    
-    this._rebuildSorted();
+    this._ring = this._ring.filter(v => v.node !== node);
   }
 
   /**
-   * Get the node responsible for a given key.
-   * Walks clockwise from the key's hash position to find the first node.
+   * Get the node responsible for a key.
    */
   getNode(key) {
-    if (this._sortedHashes.length === 0) return null;
+    if (this._ring.length === 0) return null;
+    const hash = this._hash(key);
     
-    const hash = this._hash(String(key));
-    
-    // Binary search for the first hash >= key hash
-    let lo = 0, hi = this._sortedHashes.length - 1;
-    
-    if (hash > this._sortedHashes[hi]) {
-      // Wrap around to first node
-      return this._ring.get(this._sortedHashes[0]).node;
-    }
-    
+    // Binary search for first vnode >= hash
+    let lo = 0, hi = this._ring.length;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (this._sortedHashes[mid] < hash) lo = mid + 1;
+      if (this._ring[mid].hash < hash) lo = mid + 1;
       else hi = mid;
     }
     
-    return this._ring.get(this._sortedHashes[lo]).node;
+    // Wrap around
+    if (lo >= this._ring.length) lo = 0;
+    return this._ring[lo].node;
   }
 
   /**
-   * Get N nodes responsible for a key (for replication).
+   * Get N replica nodes for a key (for replication).
    */
-  getNodes(key, count = 3) {
-    if (this._sortedHashes.length === 0) return [];
+  getNodes(key, n) {
+    if (this._ring.length === 0) return [];
+    const hash = this._hash(key);
     
-    const hash = this._hash(String(key));
-    const nodes = [];
-    const seen = new Set();
-    
-    // Find starting position
-    let startIdx = 0;
-    for (let i = 0; i < this._sortedHashes.length; i++) {
-      if (this._sortedHashes[i] >= hash) { startIdx = i; break; }
+    let lo = 0, hi = this._ring.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (this._ring[mid].hash < hash) lo = mid + 1;
+      else hi = mid;
     }
     
-    // Walk clockwise collecting unique nodes
-    for (let i = 0; i < this._sortedHashes.length && nodes.length < count; i++) {
-      const idx = (startIdx + i) % this._sortedHashes.length;
-      const node = this._ring.get(this._sortedHashes[idx]).node;
+    const result = [];
+    const seen = new Set();
+    for (let i = 0; i < this._ring.length && result.length < n; i++) {
+      const idx = (lo + i) % this._ring.length;
+      const node = this._ring[idx].node;
       if (!seen.has(node)) {
         seen.add(node);
-        nodes.push(node);
+        result.push(node);
       }
     }
-    
-    return nodes;
+    return result;
   }
 
   /**
-   * Get distribution of keys across nodes.
+   * Get load distribution across nodes.
    */
   getDistribution(keys) {
-    const dist = {};
-    for (const node of this._nodes) dist[node] = 0;
-    
+    const dist = new Map();
+    for (const node of this._nodes) dist.set(node, 0);
     for (const key of keys) {
       const node = this.getNode(key);
-      if (node) dist[node]++;
+      dist.set(node, (dist.get(node) || 0) + 1);
     }
-    return dist;
+    return Object.fromEntries(dist);
   }
 
-  get nodeCount() { return this._nodes.size; }
-  get ringSize() { return this._sortedHashes.length; }
-
-  _rebuildSorted() {
-    this._sortedHashes = [...this._ring.keys()].sort((a, b) => a - b);
-  }
-
-  /**
-   * FNV-1a hash (consistent with other HenryDB hash functions).
-   */
+  // MurmurHash3 finalizer-based hash (better distribution for consistent hashing)
   _hash(str) {
-    let hash = 0x811c9dc5;
+    let h = 0;
     for (let i = 0; i < str.length; i++) {
-      hash ^= str.charCodeAt(i);
-      hash = Math.imul(hash, 0x01000193);
+      h = Math.imul(h ^ str.charCodeAt(i), 0x5bd1e995);
+      h ^= h >>> 13;
     }
-    return hash >>> 0;
+    // Avalanche
+    h ^= h >>> 16;
+    h = Math.imul(h, 0x85ebca6b);
+    h ^= h >>> 13;
+    h = Math.imul(h, 0xc2b2ae35);
+    h ^= h >>> 16;
+    return h >>> 0;
   }
 }
