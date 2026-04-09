@@ -167,29 +167,49 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard sync"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard sync",
+      "started": "2026-04-09T15:09:21.480Z",
+      "completed": "2026-04-09T15:09:28.943Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. Dashboard synced (22 blocks/16 done)."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon reflection: are we building something real or collecting test counts? What would make HenryDB impressive to a DB engineer?"
+      "status": "done",
+      "task": "Afternoon reflection: are we building something real or collecting test counts? What would make HenryDB impressive to a DB engineer?",
+      "started": "2026-04-09T15:09:40.359Z",
+      "completed": "2026-04-09T15:09:56.858Z",
+      "duration_ms": 90000,
+      "summary": "Today shifted from quantity to quality with real results: ALL SELECTs were broken in server (found+fixed), WAL was no-op (built real one). 468 tasks yesterday were superficial; today made it actually work. Next: simple benchmark to expose performance truth."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog post: technical deep-dive on HenryDB architecture for database engineers",
-      "task": null
+      "task": null,
+      "started": "2026-04-09T15:10:17.701Z",
+      "completed": "2026-04-09T15:10:32.262Z",
+      "duration_ms": 30000,
+      "summary": "Planned: benchmark first (INSERT 10K, SELECT, WHERE, COUNT, JOIN), then blog post with real numbers."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Build HenryDB benchmark: INSERT 10K rows, SELECT all, SELECT with WHERE, COUNT, JOIN performance",
       "plan_ref": "T14",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T15:10:44.376Z"
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "Write architecture blog post with benchmark results, WAL/MVCC design, and pg wire protocol details",
+      "status": "upcoming",
+      "plan_ref": "T14"
     },
     {
       "id": "T16",
@@ -305,6 +325,10 @@
     {
       "time": "2026-04-09T15:04:25.443Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T15:10:26.306Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
     }
   ]
 }

@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-09T15:08:55.629Z",
+  "generated": "2026-04-09T15:10:44.413Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Integration test: connect to HenryDB with actual psql client and run queries",
-    "completedAt": "2026-04-09T15:08:55.629Z",
-    "taskId": "T22",
-    "summary": "Full integration test: 13/13 queries through pg wire protocol. CREATE TABLE, INSERT, SELECT (WHERE, COUNT, AVG, ORDER BY), UPDATE, DELETE all working. HenryDB serves real SQL queries!",
-    "durationMs": 120000
+    "task": "Build HenryDB benchmark: INSERT 10K rows, SELECT all, SELECT with WHERE, COUNT, JOIN performance",
+    "startedAt": "2026-04-09T15:10:44.413Z",
+    "taskId": "T15"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -413,52 +411,79 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB integration depth: stress test the PostgreSQL wire protocol with real workloads",
         "task": null,
-        "started": "2026-04-09T15:03:18.745Z"
+        "started": "2026-04-09T15:03:18.745Z",
+        "completed": "2026-04-09T15:04:33.286Z",
+        "duration_ms": 60000,
+        "summary": "Planned: pg-protocol 15/15 passing already. Server.test.js 6/14 — RowDescription missing for SELECT after INSERT. 2 BUILD tasks: fix server protocol + psql integration test."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix pg-wire protocol: server not sending RowDescription for SELECT after INSERT/CREATE. Debug server.test.js failures.",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-09T15:04:46.703Z",
+        "completed": "2026-04-09T15:07:59.892Z",
+        "duration_ms": 300000,
+        "summary": "Root cause: QueryCache.extractTables was missing + set() args were swapped. ALL SELECT queries were throwing errors. Fixed both. Server 14/14 tests passing. HenryDB is now actually serving queries correctly!"
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Integration test: connect to HenryDB with actual psql client and run queries",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-09T15:08:22.739Z",
+        "completed": "2026-04-09T15:08:55.564Z",
+        "duration_ms": 120000,
+        "summary": "Full integration test: 13/13 queries through pg wire protocol. CREATE TABLE, INSERT, SELECT (WHERE, COUNT, AVG, ORDER BY), UPDATE, DELETE all working. HenryDB serves real SQL queries!"
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync",
+        "started": "2026-04-09T15:09:21.480Z",
+        "completed": "2026-04-09T15:09:28.943Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed. Dashboard synced (22 blocks/16 done)."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon reflection: are we building something real or collecting test counts? What would make HenryDB impressive to a DB engineer?"
+        "status": "done",
+        "task": "Afternoon reflection: are we building something real or collecting test counts? What would make HenryDB impressive to a DB engineer?",
+        "started": "2026-04-09T15:09:40.359Z",
+        "completed": "2026-04-09T15:09:56.858Z",
+        "duration_ms": 90000,
+        "summary": "Today shifted from quantity to quality with real results: ALL SELECTs were broken in server (found+fixed), WAL was no-op (built real one). 468 tasks yesterday were superficial; today made it actually work. Next: simple benchmark to expose performance truth."
       },
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Blog post: technical deep-dive on HenryDB architecture for database engineers",
-        "task": null
+        "task": null,
+        "started": "2026-04-09T15:10:17.701Z"
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Build HenryDB benchmark: INSERT 10K rows, SELECT all, SELECT with WHERE, COUNT, JOIN performance",
         "plan_ref": "T14",
         "project": "henrydb"
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "task": "Write architecture blog post with benchmark results, WAL/MVCC design, and pg wire protocol details",
+        "status": "upcoming",
+        "plan_ref": "T14"
       },
       {
         "id": "T16",
@@ -484,13 +509,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
-    "blocksTotal": 22,
+    "blocksCompleted": 18,
+    "blocksTotal": 23,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
+      "THINK": 4,
+      "PLAN": 4,
       "BUILD": 7,
-      "MAINTAIN": 2
+      "MAINTAIN": 3
     }
   },
   "artifacts": [
