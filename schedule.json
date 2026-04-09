@@ -1636,6 +1636,14 @@
       "task": "Query plan cache: automatically cache parsed ASTs and plans for repeated queries",
       "project": "henrydb",
       "skip_reason": "Plan cache already exists"
+    },
+    {
+      "id": "T156",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "CREATE MATERIALIZED VIEW with automatic refresh on underlying table changes",
+      "project": "henrydb",
+      "started": "2026-04-09T21:39:22.365Z"
     }
   ],
   "focusProjects": [
@@ -2259,6 +2267,10 @@
     {
       "time": "2026-04-09T21:38:50.225Z",
       "msg": "Removed T155: Plan cache already exists"
+    },
+    {
+      "time": "2026-04-09T21:39:21.952Z",
+      "msg": "Added T156 (BUILD) after end: CREATE MATERIALIZED VIEW with automatic refresh on underlying table changes"
     }
   ]
 }
