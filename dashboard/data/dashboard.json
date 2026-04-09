@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-09T21:26:56.592Z",
+  "generated": "2026-04-09T21:31:41.616Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Window functions: ROW_NUMBER(), RANK(), DENSE_RANK() with OVER (PARTITION BY ... ORDER BY ...)",
-    "startedAt": "2026-04-09T21:26:56.592Z",
-    "taskId": "T148"
+    "completedAt": "2026-04-09T21:31:41.616Z",
+    "taskId": "T148",
+    "summary": "LAG/LEAD/FIRST_VALUE/LAST_VALUE/NTILE window functions. Parser updated for arg parsing. 14 tests: ROW_NUMBER, RANK, DENSE_RANK, LAG/LEAD, running aggregates, PARTITION BY, WHERE, BTreeTable, 1000-row stress (9.9ms).",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1708,12 +1710,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 139,
+    "blocksCompleted": 140,
     "blocksTotal": 136,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 13,
-      "BUILD": 82,
+      "BUILD": 83,
       "MAINTAIN": 23,
       "EXPLORE": 3
     }
