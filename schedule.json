@@ -2296,30 +2296,60 @@
     {
       "id": "T216",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Bitset: efficient bit manipulation for set operations",
       "project": "henrydb",
-      "started": "2026-04-09T23:12:34.939Z"
+      "started": "2026-04-09T23:12:34.939Z",
+      "completed": "2026-04-09T23:14:17.724Z",
+      "duration_ms": 60000,
+      "summary": "BitSet: Uint32Array, AND/OR/XOR, popcount. 5 tests."
     },
     {
       "id": "T217",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "DAG scheduler: dependency-aware task scheduling on a DAG",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T23:14:17.979Z",
+      "completed": "2026-04-09T23:14:18.233Z",
+      "duration_ms": 0,
+      "summary": "Skipped DAG scheduler — Graph already has toposort."
     },
     {
       "id": "T218",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Topk: maintain top-k elements in O(n log k) with a min-heap",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T23:14:18.485Z",
+      "completed": "2026-04-09T23:14:18.740Z",
+      "duration_ms": 60000,
+      "summary": "TopK: O(n log k) stream top-k. 3 tests."
     },
     {
       "id": "T219",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Reservoir sampling: uniform random sample from a stream",
+      "project": "henrydb",
+      "started": "2026-04-09T23:14:18.997Z",
+      "completed": "2026-04-09T23:14:19.250Z",
+      "duration_ms": 60000,
+      "summary": "ReservoirSampler: uniform stream sampling. 3 tests."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Exponential histogram: sliding window approximate counting (Datar-Gionis-Indyk-Motwani)",
+      "project": "henrydb",
+      "started": "2026-04-09T23:14:40.510Z"
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Space-saving: heavy hitters detection (find most frequent items in stream)",
       "project": "henrydb"
     }
   ],
@@ -3200,6 +3230,14 @@
     {
       "time": "2026-04-09T23:12:25.316Z",
       "msg": "Added T219 (BUILD) after end: Reservoir sampling: uniform random sample from a stream"
+    },
+    {
+      "time": "2026-04-09T23:14:39.884Z",
+      "msg": "Added T220 (BUILD) after end: Exponential histogram: sliding window approximate counting (Datar-Gionis-Indyk-Motwani)"
+    },
+    {
+      "time": "2026-04-09T23:14:40.097Z",
+      "msg": "Added T221 (BUILD) after end: Space-saving: heavy hitters detection (find most frequent items in stream)"
     }
   ]
 }
