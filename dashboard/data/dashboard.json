@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T21:19:33.385Z",
+  "generated": "2026-04-09T21:21:28.050Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Table statistics collector: row count, distinct values per column, min/max, null fraction. ANALYZE command.",
-    "startedAt": "2026-04-09T21:19:33.385Z",
-    "taskId": "T145"
+    "task": "Cost-based optimizer: estimate scan cost using table stats, choose index scan vs full scan based on selectivity",
+    "startedAt": "2026-04-09T21:21:28.050Z",
+    "taskId": "T146"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1708,12 +1708,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 136,
+    "blocksCompleted": 137,
     "blocksTotal": 136,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 13,
-      "BUILD": 79,
+      "BUILD": 80,
       "MAINTAIN": 23,
       "EXPLORE": 3
     }

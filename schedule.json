@@ -1535,17 +1535,21 @@
     {
       "id": "T145",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Table statistics collector: row count, distinct values per column, min/max, null fraction. ANALYZE command.",
       "project": "henrydb",
-      "started": "2026-04-09T21:19:33.320Z"
+      "started": "2026-04-09T21:19:33.320Z",
+      "completed": "2026-04-09T21:21:27.529Z",
+      "duration_ms": 600000,
+      "summary": "Table stats: analyzeTable collects per-column distinct, min/max, null fraction, MCV (with frequencies), histograms. estimateSelectivity for all comparison operators. ANALYZE SQL works. 12 tests."
     },
     {
       "id": "T146",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Cost-based optimizer: estimate scan cost using table stats, choose index scan vs full scan based on selectivity",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T21:21:27.984Z"
     },
     {
       "id": "T147",
