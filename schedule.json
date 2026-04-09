@@ -4983,6 +4983,17 @@
       "completed": "2026-04-09T01:05:12.125Z",
       "duration_ms": 120000,
       "summary": "COPY TO/FROM: CSV/TSV with header, quoted fields, escaped quotes, NULL handling, auto type detection, custom delimiter, roundtrip. 18 tests."
+    },
+    {
+      "id": "T459",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build role-based access control: CREATE ROLE, GRANT, REVOKE, role hierarchies, privilege checking",
+      "project": "henrydb",
+      "started": "2026-04-09T01:05:33.917Z",
+      "completed": "2026-04-09T01:06:59.841Z",
+      "duration_ms": 150000,
+      "summary": "RBAC: CREATE/DROP/ALTER ROLE, GRANT/REVOKE privileges, role hierarchies with inheritance, circular membership detection, public role, WITH GRANT OPTION, superuser bypass. 21 tests."
     }
   ],
   "focusProjects": [
@@ -6786,6 +6797,10 @@
     {
       "time": "2026-04-09T01:04:06.084Z",
       "msg": "Added T458 (BUILD) after end: Build COPY TO/FROM: bulk data import/export in CSV/TSV/binary formats"
+    },
+    {
+      "time": "2026-04-09T01:05:33.498Z",
+      "msg": "Added T459 (BUILD) after end: Build role-based access control: CREATE ROLE, GRANT, REVOKE, role hierarchies, privilege checking"
     }
   ]
 }
