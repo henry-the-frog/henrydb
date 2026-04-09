@@ -1,190 +1,200 @@
-// query-cache.js — Server-side query result cache for HenryDB
-// LRU cache with table-level invalidation on mutations.
+// query-cache.js — Query result cache with TTL and auto-invalidation
+// Caches SELECT query results, invalidates on table mutations.
 
 /**
- * Query result cache with LRU eviction and automatic invalidation.
+ * QueryCache — LRU cache for query results with TTL and table dependency tracking.
+ * 
+ * Usage:
+ *   const cache = new QueryCache({ maxEntries: 100, defaultTTL: 60000 });
+ *   
+ *   // Cache a query result
+ *   cache.set('SELECT * FROM users', ['users'], [{ id: 1, name: 'Alice' }]);
+ *   
+ *   // Get cached result
+ *   const result = cache.get('SELECT * FROM users'); // returns rows or null
+ *   
+ *   // Invalidate when table changes
+ *   cache.invalidate('users'); // Removes all queries that depend on 'users'
  */
 export class QueryCache {
   constructor(options = {}) {
-    this.maxSize = options.maxSize || 1000;
-    this.maxAgeMs = options.maxAgeMs || 60000; // 1 minute default TTL
-    this.enabled = options.enabled !== false;
-    
-    // LRU cache: key → { result, tables, timestamp, size, accessCount }
+    this.maxEntries = options.maxEntries || 100;
+    this.defaultTTL = options.defaultTTL || 60000; // 60 seconds
     this._cache = new Map();
-    this._order = []; // LRU order (most recently used last)
-    
-    // Stats
-    this.stats = {
+    this._tableDeps = new Map(); // table → Set<sql>
+    this._stats = {
       hits: 0,
       misses: 0,
-      evictions: 0,
-      invalidations: 0,
       sets: 0,
-      totalSizeBytes: 0,
+      invalidations: 0,
+      evictions: 0,
     };
   }
 
   /**
-   * Get a cached result for a query.
-   * @param {string} sql — The SQL query
-   * @returns {object|null} Cached result or null
+   * Normalize SQL for cache key (basic: lowercase, trim, collapse whitespace).
+   */
+  _normalize(sql) {
+    return sql.trim().replace(/\s+/g, ' ').toLowerCase();
+  }
+
+  /**
+   * Get cached query result.
+   * @param {string} sql - SQL query
+   * @returns {Array|null} Cached rows or null if miss/expired
    */
   get(sql) {
-    if (!this.enabled) return null;
-    
-    const key = this._normalizeKey(sql);
+    const key = this._normalize(sql);
     const entry = this._cache.get(key);
     
     if (!entry) {
-      this.stats.misses++;
+      this._stats.misses++;
       return null;
     }
-
-    // Check TTL
-    if (Date.now() - entry.timestamp > this.maxAgeMs) {
-      this._cache.delete(key);
-      this._removeFromOrder(key);
-      this.stats.misses++;
-      return null;
-    }
-
-    // Move to end (most recently used)
-    this._removeFromOrder(key);
-    this._order.push(key);
-    entry.accessCount++;
     
-    this.stats.hits++;
-    return entry.result;
+    // Check TTL
+    if (Date.now() > entry.expiresAt) {
+      this._cache.delete(key);
+      this._removeTableDeps(key);
+      this._stats.misses++;
+      return null;
+    }
+    
+    // Update access time for LRU
+    entry.lastAccessed = Date.now();
+    entry.hitCount++;
+    this._stats.hits++;
+    
+    return entry.rows;
   }
 
   /**
    * Cache a query result.
-   * @param {string} sql — The SQL query
-   * @param {object} result — The query result
-   * @param {string[]} tables — Tables referenced by the query (for invalidation)
+   * @param {string} sql - SQL query
+   * @param {string[]} tables - Tables this query depends on
+   * @param {Array} rows - Query result rows
+   * @param {number} [ttl] - TTL in ms (default: defaultTTL)
    */
-  set(sql, result, tables = []) {
-    if (!this.enabled) return;
-    
-    const key = this._normalizeKey(sql);
+  set(sql, tables, rows, ttl) {
+    const key = this._normalize(sql);
     
     // Evict if at capacity
-    while (this._cache.size >= this.maxSize) {
+    if (this._cache.size >= this.maxEntries && !this._cache.has(key)) {
       this._evictLRU();
     }
-
-    const size = JSON.stringify(result).length;
     
+    const now = Date.now();
     this._cache.set(key, {
-      result,
-      tables: new Set(tables.map(t => t.toLowerCase())),
-      timestamp: Date.now(),
-      size,
-      accessCount: 0,
+      sql: key,
+      tables,
+      rows,
+      createdAt: now,
+      lastAccessed: now,
+      expiresAt: now + (ttl || this.defaultTTL),
+      hitCount: 0,
     });
     
-    this._removeFromOrder(key);
-    this._order.push(key);
-    this.stats.sets++;
-    this.stats.totalSizeBytes += size;
-  }
-
-  /**
-   * Invalidate all cached results that reference a table.
-   * Called when a table is mutated (INSERT/UPDATE/DELETE/DROP).
-   */
-  invalidate(tableName) {
-    const lowerName = tableName.toLowerCase();
-    const keysToRemove = [];
+    // Track table dependencies
+    for (const table of tables) {
+      const t = table.toLowerCase();
+      if (!this._tableDeps.has(t)) this._tableDeps.set(t, new Set());
+      this._tableDeps.get(t).add(key);
+    }
     
-    for (const [key, entry] of this._cache) {
-      if (entry.tables.has(lowerName)) {
-        keysToRemove.push(key);
-      }
-    }
-
-    for (const key of keysToRemove) {
-      const entry = this._cache.get(key);
-      if (entry) this.stats.totalSizeBytes -= entry.size;
-      this._cache.delete(key);
-      this._removeFromOrder(key);
-      this.stats.invalidations++;
-    }
+    this._stats.sets++;
   }
 
   /**
-   * Invalidate all cached results.
+   * Invalidate all cached queries that depend on a table.
+   * @param {string} table - Table name
+   * @returns {number} Number of cache entries invalidated
+   */
+  invalidate(table) {
+    const t = table.toLowerCase();
+    const deps = this._tableDeps.get(t);
+    if (!deps) return 0;
+    
+    let count = 0;
+    for (const key of deps) {
+      if (this._cache.delete(key)) count++;
+    }
+    this._tableDeps.delete(t);
+    this._stats.invalidations += count;
+    return count;
+  }
+
+  /**
+   * Invalidate all cached queries.
    */
   invalidateAll() {
     const count = this._cache.size;
     this._cache.clear();
-    this._order = [];
-    this.stats.invalidations += count;
-    this.stats.totalSizeBytes = 0;
+    this._tableDeps.clear();
+    this._stats.invalidations += count;
+    return count;
+  }
+
+  /**
+   * Remove expired entries.
+   */
+  prune() {
+    const now = Date.now();
+    let pruned = 0;
+    for (const [key, entry] of this._cache) {
+      if (now > entry.expiresAt) {
+        this._cache.delete(key);
+        this._removeTableDeps(key);
+        pruned++;
+      }
+    }
+    return pruned;
+  }
+
+  /**
+   * Evict the least recently used entry.
+   */
+  _evictLRU() {
+    let oldest = null;
+    let oldestKey = null;
+    
+    for (const [key, entry] of this._cache) {
+      if (!oldest || entry.lastAccessed < oldest.lastAccessed) {
+        oldest = entry;
+        oldestKey = key;
+      }
+    }
+    
+    if (oldestKey) {
+      this._cache.delete(oldestKey);
+      this._removeTableDeps(oldestKey);
+      this._stats.evictions++;
+    }
+  }
+
+  /**
+   * Remove a cache key from all table dependency sets.
+   */
+  _removeTableDeps(key) {
+    for (const deps of this._tableDeps.values()) {
+      deps.delete(key);
+    }
   }
 
   /**
    * Get cache statistics.
    */
-  getStats() {
-    const hitRate = this.stats.hits + this.stats.misses > 0
-      ? this.stats.hits / (this.stats.hits + this.stats.misses)
-      : 0;
-    
+  stats() {
+    const total = this._stats.hits + this._stats.misses;
     return {
-      ...this.stats,
+      ...this._stats,
       entries: this._cache.size,
-      hitRate: Math.round(hitRate * 10000) / 100, // percent with 2 decimals
-      maxSize: this.maxSize,
-      maxAgeMs: this.maxAgeMs,
+      hitRate: total > 0 ? +(this._stats.hits / total * 100).toFixed(1) : 0,
+      tables: this._tableDeps.size,
     };
   }
 
   /**
-   * Extract table names from a SQL query (best effort).
+   * Get cache size.
    */
-  static extractTables(sql) {
-    const tables = new Set();
-    const upper = sql.toUpperCase();
-    
-    // FROM clause
-    const fromMatches = sql.match(/FROM\s+(\w+)/gi);
-    if (fromMatches) {
-      for (const m of fromMatches) {
-        tables.add(m.replace(/FROM\s+/i, '').toLowerCase());
-      }
-    }
-    
-    // JOIN clause
-    const joinMatches = sql.match(/JOIN\s+(\w+)/gi);
-    if (joinMatches) {
-      for (const m of joinMatches) {
-        tables.add(m.replace(/JOIN\s+/i, '').toLowerCase());
-      }
-    }
-    
-    return [...tables];
-  }
-
-  _normalizeKey(sql) {
-    // Normalize whitespace for better cache hit rate
-    return sql.trim().replace(/\s+/g, ' ').toLowerCase();
-  }
-
-  _evictLRU() {
-    if (this._order.length === 0) return;
-    const key = this._order.shift();
-    const entry = this._cache.get(key);
-    if (entry) this.stats.totalSizeBytes -= entry.size;
-    this._cache.delete(key);
-    this.stats.evictions++;
-  }
-
-  _removeFromOrder(key) {
-    const idx = this._order.indexOf(key);
-    if (idx !== -1) this._order.splice(idx, 1);
-  }
+  get size() { return this._cache.size; }
 }
-
-export default QueryCache;
