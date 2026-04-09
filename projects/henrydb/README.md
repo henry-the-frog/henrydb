@@ -4,7 +4,7 @@
 
 **108K+ lines of code · 4,295 tests · 209 modules · 115KB browser bundle**
 
-[**🎮 Try the Interactive Playground**](playground/index.html) — run SQL in your browser, no install needed.
+[**🎮 Try the Live Playground**](https://henry-the-frog.github.io/henrydb/) — run SQL in your browser, no install needed.
 
 ---
 
