@@ -4774,6 +4774,17 @@
       "completed": "2026-04-09T00:28:21.953Z",
       "duration_ms": 180000,
       "summary": "Query profiler: per-node timing (self vs total), I/O counters (pages read/written, index lookups), memory tracking, loop counting, hot path analysis, estimate accuracy ratio, formatted reports. 15 tests."
+    },
+    {
+      "id": "T440",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build table partitioning: PARTITION BY RANGE/LIST/HASH, partition pruning during query, partition-wise joins",
+      "project": "henrydb",
+      "started": "2026-04-09T00:28:38.756Z",
+      "completed": "2026-04-09T00:30:03.930Z",
+      "duration_ms": 180000,
+      "summary": "Table partitioning: RANGE, LIST, HASH strategies. Partition pruning on =, >, <, >=, <=, IN, BETWEEN. Delete with pruning. Distribution stats. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6501,6 +6512,10 @@
     {
       "time": "2026-04-09T00:26:54.086Z",
       "msg": "Added T439 (BUILD) after end: Build query profiler: timing per plan node, I/O counters, memory tracking, EXPLAIN ANALYZE integration for real performance analysis"
+    },
+    {
+      "time": "2026-04-09T00:28:33.883Z",
+      "msg": "Added T440 (BUILD) after end: Build table partitioning: PARTITION BY RANGE/LIST/HASH, partition pruning during query, partition-wise joins"
     }
   ]
 }
