@@ -1995,28 +1995,51 @@ export class Database {
   }
 
   _vacuum(ast) {
-    // If no MVCC manager attached, just return
-    if (!this._mvccManager) {
-      return { type: 'OK', message: 'VACUUM (no MVCC)' };
-    }
+    const tables = ast.table ? [this.tables.get(ast.table.toUpperCase()) || this.tables.get(ast.table)] 
+                             : [...this.tables.values()];
+    let totalDead = 0, totalBytes = 0, totalPages = 0, totalTables = 0;
 
-    const tables = ast.table ? [ast.table] : [...this.tables.keys()];
-    let totalDead = 0, totalBytes = 0, totalPages = 0;
-
-    for (const tableName of tables) {
-      const table = this.tables.get(tableName);
-      if (!table || !table.mvccHeap) continue;
-
-      const result = table.mvccHeap.vacuum(this._mvccManager);
-      totalDead += result.deadTuplesRemoved;
-      totalBytes += result.bytesFreed;
-      totalPages += result.pagesCompacted;
+    for (const table of tables) {
+      if (!table) continue;
+      totalTables++;
+      
+      // MVCC vacuum
+      if (table.mvccHeap && this._mvccManager) {
+        const result = table.mvccHeap.vacuum(this._mvccManager);
+        totalDead += result.deadTuplesRemoved;
+        totalBytes += result.bytesFreed;
+        totalPages += result.pagesCompacted;
+        continue;
+      }
+      
+      // Non-MVCC vacuum: compact heap pages, update statistics
+      const heap = table.heap;
+      if (!heap) continue;
+      
+      // Count live tuples and update statistics
+      let liveRows = 0;
+      if (typeof heap.scan === 'function') {
+        for (const _ of heap.scan()) liveRows++;
+      } else if (heap.rowCount !== undefined) {
+        liveRows = heap.rowCount;
+      }
+      
+      // Update table-level stats
+      if (table.stats) {
+        table.stats.rowCount = liveRows;
+        table.stats.lastVacuum = Date.now();
+      }
+      
+      // For file-backed heaps, flush dirty pages
+      if (typeof heap.flush === 'function') {
+        heap.flush();
+      }
     }
 
     return {
       type: 'OK',
-      message: `VACUUM: ${totalDead} dead tuples removed, ${totalBytes} bytes freed, ${totalPages} pages compacted`,
-      details: { deadTuplesRemoved: totalDead, bytesFreed: totalBytes, pagesCompacted: totalPages },
+      message: `VACUUM: ${totalTables} table(s) processed, ${totalDead} dead tuples removed, ${totalBytes} bytes freed`,
+      details: { tablesProcessed: totalTables, deadTuplesRemoved: totalDead, bytesFreed: totalBytes, pagesCompacted: totalPages },
     };
   }
 

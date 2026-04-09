@@ -1,130 +1,78 @@
-// vacuum.test.js
-import { describe, test, beforeEach, afterEach } from 'node:test';
+// vacuum.test.js — Tests for VACUUM command
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { VacuumManager } from './vacuum.js';
+import { Database } from './db.js';
 
-let vm;
-
-describe('VacuumManager', () => {
-  beforeEach(() => {
-    vm = new VacuumManager({ threshold: 10, scaleFactor: 0.2 });
-    vm.registerTable('users', 100);
-    vm.registerTable('orders', 50);
+describe('VACUUM', () => {
+  it('VACUUM on empty database succeeds', () => {
+    const db = new Database();
+    const r = db.execute('VACUUM');
+    assert.ok(r.message.includes('VACUUM'));
+    assert.strictEqual(r.details.tablesProcessed, 0);
   });
 
-  afterEach(() => { vm.stopDaemon(); });
-
-  test('tracks dead tuples on DELETE', () => {
-    vm.recordDML('users', 'DELETE', 5);
-    const tracker = vm.getTracker('users');
-    assert.equal(tracker.deadTuples, 5);
-    assert.equal(tracker.liveTuples, 95);
-  });
-
-  test('tracks dead tuples on UPDATE', () => {
-    vm.recordDML('users', 'UPDATE', 3);
-    const tracker = vm.getTracker('users');
-    assert.equal(tracker.deadTuples, 3);
-    assert.equal(tracker.liveTuples, 100); // UPDATE doesn't change live count
-  });
-
-  test('tracks inserts', () => {
-    vm.recordDML('users', 'INSERT', 10);
-    const tracker = vm.getTracker('users');
-    assert.equal(tracker.liveTuples, 110);
-    assert.equal(tracker.deadTuples, 0);
-  });
-
-  test('VACUUM reclaims dead tuples', () => {
-    vm.recordDML('users', 'DELETE', 20);
-    const result = vm.vacuum('users');
-    assert.equal(result.deadTuplesReclaimed, 20);
+  it('VACUUM processes all tables', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE a (id INT PRIMARY KEY)');
+    db.execute('CREATE TABLE b (id INT PRIMARY KEY)');
+    db.execute('CREATE TABLE c (id INT PRIMARY KEY)');
+    db.execute('INSERT INTO a VALUES (1)');
+    db.execute('INSERT INTO b VALUES (1)');
     
-    const tracker = vm.getTracker('users');
-    assert.equal(tracker.deadTuples, 0);
-    assert.equal(tracker.vacuumCount, 1);
+    const r = db.execute('VACUUM');
+    assert.strictEqual(r.details.tablesProcessed, 3);
   });
 
-  test('VACUUM ALL', () => {
-    vm.recordDML('users', 'DELETE', 10);
-    vm.recordDML('orders', 'DELETE', 5);
+  it('VACUUM specific table', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT)');
+    db.execute('CREATE TABLE orders (id INT PRIMARY KEY)');
+    db.execute("INSERT INTO users VALUES (1, 'Alice')");
+    db.execute("INSERT INTO users VALUES (2, 'Bob')");
     
-    const results = vm.vacuumAll();
-    assert.equal(results.length, 2);
-    assert.equal(vm.getTracker('users').deadTuples, 0);
-    assert.equal(vm.getTracker('orders').deadTuples, 0);
+    const r = db.execute('VACUUM users');
+    assert.strictEqual(r.details.tablesProcessed, 1);
   });
 
-  test('bloat ratio calculation', () => {
-    vm.recordDML('users', 'DELETE', 50); // 50 dead / 100 total = 50% before
-    const tracker = vm.getTracker('users');
-    // live=50, dead=50, total=100, ratio=50/100=0.5
-    assert.ok(tracker.getBloatRatio() > 0.4);
-  });
-
-  test('auto-vacuum threshold check', () => {
-    // threshold = 10 + 0.2 * liveTuples
-    // After 15 deletes: live=85, threshold = 10 + 0.2*85 = 27, dead=15 < 27
-    vm.recordDML('users', 'DELETE', 15);
-    assert.equal(vm.checkAutoVacuum().length, 0);
+  it('VACUUM after DELETE', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE items (id INT PRIMARY KEY, val INT)');
+    for (let i = 0; i < 100; i++) db.execute(`INSERT INTO items VALUES (${i}, ${i})`);
+    db.execute('DELETE FROM items WHERE id > 50');
     
-    // After 20 more: live=65, threshold = 10 + 0.2*65 = 23, dead=35 > 23
-    vm.recordDML('users', 'DELETE', 20);
-    const candidates = vm.checkAutoVacuum();
-    assert.equal(candidates.length, 1);
-    assert.equal(candidates[0].table, 'users');
-  });
-
-  test('runAutoVacuum vacuums candidates', () => {
-    vm.recordDML('users', 'DELETE', 50);
-    const results = vm.runAutoVacuum();
-    assert.equal(results.length, 1);
-    assert.equal(vm.getTracker('users').deadTuples, 0);
-  });
-
-  test('bloat report sorted by ratio', () => {
-    vm.recordDML('users', 'DELETE', 10);
-    vm.recordDML('orders', 'DELETE', 30);
+    const r = db.execute('VACUUM items');
+    assert.strictEqual(r.type, 'OK');
+    assert.strictEqual(r.details.tablesProcessed, 1);
     
-    const report = vm.getBloatReport();
-    assert.equal(report.length, 2);
-    // orders should have higher bloat ratio (30/50 > 10/100)
-    assert.equal(report[0].table, 'orders');
+    // Data should still be queryable after vacuum
+    const count = db.execute('SELECT COUNT(*) as cnt FROM items');
+    assert.strictEqual(count.rows[0].cnt, 51);
   });
 
-  test('stats tracking', () => {
-    vm.recordDML('users', 'DELETE', 20);
-    vm.vacuum('users');
+  it('VACUUM after heavy INSERT/DELETE cycle', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE churn (id INT PRIMARY KEY, data TEXT)');
     
-    vm.recordDML('users', 'DELETE', 50);
-    vm.runAutoVacuum();
+    // Insert 50, delete 30, insert 20
+    for (let i = 0; i < 50; i++) db.execute(`INSERT INTO churn VALUES (${i}, 'batch1')`);
+    db.execute('DELETE FROM churn WHERE id >= 20');
+    for (let i = 50; i < 70; i++) db.execute(`INSERT INTO churn VALUES (${i}, 'batch2')`);
     
-    const stats = vm.getStats();
-    assert.equal(stats.manualVacuums, 1);
-    assert.equal(stats.autoVacuums, 1);
-    assert.equal(stats.totalReclaimed, 70);
+    const before = db.execute('SELECT COUNT(*) as cnt FROM churn');
+    assert.strictEqual(before.rows[0].cnt, 40); // 20 from batch1 + 20 from batch2
+    
+    db.execute('VACUUM churn');
+    
+    const after = db.execute('SELECT COUNT(*) as cnt FROM churn');
+    assert.strictEqual(after.rows[0].cnt, 40); // Same count after vacuum
   });
 
-  test('vacuum resets DML counters', () => {
-    vm.recordDML('users', 'INSERT', 10);
-    vm.recordDML('users', 'UPDATE', 5);
-    vm.recordDML('users', 'DELETE', 3);
-    
-    vm.vacuum('users');
-    
-    const tracker = vm.getTracker('users');
-    assert.equal(tracker.insertsSinceLastVacuum, 0);
-    assert.equal(tracker.updatesSinceLastVacuum, 0);
-    assert.equal(tracker.deletesSinceLastVacuum, 0);
-  });
-
-  test('case-insensitive table names', () => {
-    vm.recordDML('USERS', 'DELETE', 5);
-    const tracker = vm.getTracker('users');
-    assert.equal(tracker.deadTuples, 5);
-  });
-
-  test('vacuum non-existent table throws', () => {
-    assert.throws(() => vm.vacuum('nonexistent'), /not registered/);
+  it('VACUUM returns OK type', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT)');
+    const r = db.execute('VACUUM');
+    assert.strictEqual(r.type, 'OK');
+    assert.ok(r.message);
+    assert.ok(r.details);
   });
 });

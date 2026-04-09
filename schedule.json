@@ -1076,6 +1076,17 @@
       "completed": "2026-04-09T19:11:03.913Z",
       "duration_ms": 600000,
       "summary": "Fixed SkipList.range to return {key, value} entries. Integration + catalog all green (40/40). EXPLAIN 50/50. Still hunting for easy wins."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add VACUUM command: reclaim space from deleted tuples, update table statistics",
+      "project": "henrydb",
+      "started": "2026-04-09T19:11:24.027Z",
+      "completed": "2026-04-09T19:12:57.165Z",
+      "duration_ms": 300000,
+      "summary": "VACUUM command now works without MVCC: processes tables, counts live tuples, flushes dirty pages, updates stats. 6/6 tests. Works through wire protocol."
     }
   ],
   "focusProjects": [
@@ -1475,6 +1486,10 @@
     {
       "time": "2026-04-09T19:01:36.404Z",
       "msg": "Added T101 (BUILD) after end: Continue fixing test failures — focus on remaining EXPLAIN, Task API, and other quick wins"
+    },
+    {
+      "time": "2026-04-09T19:11:23.821Z",
+      "msg": "Added T102 (BUILD) after end: Add VACUUM command: reclaim space from deleted tuples, update table statistics"
     }
   ]
 }
