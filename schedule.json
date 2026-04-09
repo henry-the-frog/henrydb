@@ -2417,23 +2417,77 @@
     {
       "id": "T227",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Lock manager: 2PL with deadlock detection",
       "project": "henrydb",
-      "started": "2026-04-09T23:21:45.996Z"
+      "started": "2026-04-09T23:21:45.996Z",
+      "completed": "2026-04-09T23:23:40.430Z",
+      "duration_ms": 180000,
+      "summary": "LockManager: 2PL, S/X locks, deadlock detection. 6 tests."
     },
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Timestamp ordering: concurrency control via timestamps",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T23:23:40.684Z",
+      "completed": "2026-04-09T23:23:40.940Z",
+      "duration_ms": 0,
+      "summary": "Skipped: MVCC already covers this."
     },
     {
       "id": "T229",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Column store: columnar storage layout for analytics",
+      "project": "henrydb",
+      "started": "2026-04-09T23:23:41.193Z",
+      "completed": "2026-04-09T23:23:41.446Z",
+      "duration_ms": 180000,
+      "summary": "ColumnStore built with LockManager. 5 tests."
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Run length encoding: simple compression for sorted columns",
+      "project": "henrydb",
+      "started": "2026-04-09T23:24:03.764Z"
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Delta encoding: compress sorted integer sequences",
+      "project": "henrydb"
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "LZ77 compressor: sliding window compression",
+      "project": "henrydb"
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Connection pool: manage pooled database connections",
+      "project": "henrydb"
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Rate limiter: token bucket + sliding window algorithms",
+      "project": "henrydb"
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Thread pool simulator: work-stealing task scheduler",
       "project": "henrydb"
     }
   ],
@@ -3354,6 +3408,30 @@
     {
       "time": "2026-04-09T23:21:45.578Z",
       "msg": "Added T229 (BUILD) after end: Column store: columnar storage layout for analytics"
+    },
+    {
+      "time": "2026-04-09T23:24:02.294Z",
+      "msg": "Added T230 (BUILD) after end: Run length encoding: simple compression for sorted columns"
+    },
+    {
+      "time": "2026-04-09T23:24:02.506Z",
+      "msg": "Added T231 (BUILD) after end: Delta encoding: compress sorted integer sequences"
+    },
+    {
+      "time": "2026-04-09T23:24:02.717Z",
+      "msg": "Added T232 (BUILD) after end: LZ77 compressor: sliding window compression"
+    },
+    {
+      "time": "2026-04-09T23:24:02.927Z",
+      "msg": "Added T233 (BUILD) after end: Connection pool: manage pooled database connections"
+    },
+    {
+      "time": "2026-04-09T23:24:03.138Z",
+      "msg": "Added T234 (BUILD) after end: Rate limiter: token bucket + sliding window algorithms"
+    },
+    {
+      "time": "2026-04-09T23:24:03.351Z",
+      "msg": "Added T235 (BUILD) after end: Thread pool simulator: work-stealing task scheduler"
     }
   ]
 }
