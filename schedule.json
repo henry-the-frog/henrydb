@@ -5060,6 +5060,17 @@
       "completed": "2026-04-09T01:15:39.274Z",
       "duration_ms": 120000,
       "summary": "Table inheritance: INHERITS, column inheritance, query targets, multi-level, inheritance chain, descendant check, noInherit, tree view. 13 tests."
+    },
+    {
+      "id": "T466",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build domain types: CREATE DOMAIN with CHECK constraints, NOT NULL, DEFAULT, for reusable column types",
+      "project": "henrydb",
+      "started": "2026-04-09T01:16:05.669Z",
+      "completed": "2026-04-09T01:16:55.973Z",
+      "duration_ms": 120000,
+      "summary": "Domain types: CREATE/ALTER/DROP DOMAIN, CHECK constraints, NOT NULL, DEFAULT, multiple constraints, constraint management. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6891,6 +6902,10 @@
     {
       "time": "2026-04-09T01:14:46.965Z",
       "msg": "Added T465 (BUILD) after end: Build table inheritance system: CREATE TABLE child INHERITS (parent), query routing, column inheritance"
+    },
+    {
+      "time": "2026-04-09T01:16:05.428Z",
+      "msg": "Added T466 (BUILD) after end: Build domain types: CREATE DOMAIN with CHECK constraints, NOT NULL, DEFAULT, for reusable column types"
     }
   ]
 }
