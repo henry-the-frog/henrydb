@@ -373,16 +373,20 @@
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Run expanded benchmark at 10K rows to test scalability",
       "project": "henrydb",
-      "started": "2026-04-09T15:36:14.596Z"
+      "started": "2026-04-09T15:36:14.596Z",
+      "completed": "2026-04-09T15:36:48.565Z",
+      "duration_ms": 120000,
+      "summary": "10K benchmark: 29.5K inserts/sec, 9K point queries/sec, JOIN 86ms (10K×10K). Linear scaling verified for scan/update/delete. INSERT rate actually increases at scale."
     },
     {
       "id": "T36",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session git push and dashboard sync"
+      "status": "in-progress",
+      "task": "Mid-session git push and dashboard sync",
+      "started": "2026-04-09T15:36:57.496Z"
     }
   ],
   "focusProjects": [
