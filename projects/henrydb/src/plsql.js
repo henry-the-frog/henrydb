@@ -658,7 +658,9 @@ export class PLInterpreter {
   }
 
   _executeSelectInto(stmt, scope) {
-    const result = this.db.execute(stmt.sql);
+    // Substitute variables in the SQL before executing
+    const sql = this._substituteVars(stmt.sql, scope);
+    const result = this.db.execute(sql);
 
     scope.set('found', result && result.rows && result.rows.length > 0);
 

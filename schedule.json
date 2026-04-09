@@ -4692,8 +4692,12 @@
       "id": "T433",
       "mode": "BUILD",
       "task": "Build CREATE FUNCTION/PROCEDURE, CALL, SELECT fn(), stored routine catalog",
-      "status": "upcoming",
-      "plan_ref": "T430"
+      "status": "done",
+      "plan_ref": "T430",
+      "started": "2026-04-09T00:12:20.404Z",
+      "completed": "2026-04-09T00:14:04.984Z",
+      "duration_ms": 180000,
+      "summary": "CREATE FUNCTION/PROCEDURE, CALL, stored routine catalog, OR REPLACE, DROP, IF EXISTS, default params, IMMUTABLE/STABLE/VOLATILE, dollar-quoting, parseCreateRoutine, parseCall. 18 tests."
     },
     {
       "id": "T434",
