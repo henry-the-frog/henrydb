@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T00:48:28.046Z",
+  "generated": "2026-04-09T00:49:57.021Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build query plan cache: LRU plan cache keyed on normalized SQL, cache invalidation on DDL, hit rate tracking",
-    "completedAt": "2026-04-09T00:48:28.046Z",
-    "taskId": "T450",
-    "summary": "Plan cache: LRU eviction, DDL invalidation, SQL normalization, hit rate tracking, sorted entries. 14 tests.",
+    "task": "Build advisory locks: pg_advisory_lock, pg_try_advisory_lock, session-level and transaction-level locks",
+    "completedAt": "2026-04-09T00:49:57.021Z",
+    "taskId": "T451",
+    "summary": "Advisory locks: exclusive/shared modes, session/transaction levels, recursive locking, async blocking with timeout, array keys, session cleanup. 15 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 448,
+    "blocksCompleted": 449,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 344,
+      "BUILD": 345,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

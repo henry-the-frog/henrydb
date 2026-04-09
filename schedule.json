@@ -4895,6 +4895,17 @@
       "completed": "2026-04-09T00:48:27.980Z",
       "duration_ms": 120000,
       "summary": "Plan cache: LRU eviction, DDL invalidation, SQL normalization, hit rate tracking, sorted entries. 14 tests."
+    },
+    {
+      "id": "T451",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build advisory locks: pg_advisory_lock, pg_try_advisory_lock, session-level and transaction-level locks",
+      "project": "henrydb",
+      "started": "2026-04-09T00:48:47.213Z",
+      "completed": "2026-04-09T00:49:56.955Z",
+      "duration_ms": 120000,
+      "summary": "Advisory locks: exclusive/shared modes, session/transaction levels, recursive locking, async blocking with timeout, array keys, session cleanup. 15 tests."
     }
   ],
   "focusProjects": [
@@ -6666,6 +6677,10 @@
     {
       "time": "2026-04-09T00:47:17.366Z",
       "msg": "Added T450 (BUILD) after end: Build query plan cache: LRU plan cache keyed on normalized SQL, cache invalidation on DDL, hit rate tracking"
+    },
+    {
+      "time": "2026-04-09T00:48:46.791Z",
+      "msg": "Added T451 (BUILD) after end: Build advisory locks: pg_advisory_lock, pg_try_advisory_lock, session-level and transaction-level locks"
     }
   ]
 }
