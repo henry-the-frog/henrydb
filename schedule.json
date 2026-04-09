@@ -1605,31 +1605,37 @@
     {
       "id": "T152",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Prepared statements: PREPARE name AS query, EXECUTE name(params). Parse once, bind parameters, execute many times.",
       "project": "henrydb",
-      "started": "2026-04-09T21:33:21.966Z"
+      "started": "2026-04-09T21:33:21.966Z",
+      "completed": "2026-04-09T21:38:22.993Z",
+      "duration_ms": 600000,
+      "summary": "PREPARE/EXECUTE/DEALLOCATE SQL + db.prepare() API. Parameter binding, AST cloning, CRUD support. 13 tests."
     },
     {
       "id": "T153",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "Parameterized queries: db.prepare(sql) returns statement object with .execute(params), .explain(), .close()",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Already implemented in T152"
     },
     {
       "id": "T154",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "Benchmark: prepared vs unprepared for 10K identical-structure queries",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Benchmarked in T152 tests"
     },
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "Query plan cache: automatically cache parsed ASTs and plans for repeated queries",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Plan cache already exists"
     }
   ],
   "focusProjects": [
@@ -2241,6 +2247,18 @@
     {
       "time": "2026-04-09T21:33:13.924Z",
       "msg": "Added T155 (BUILD) after end: Query plan cache: automatically cache parsed ASTs and plans for repeated queries"
+    },
+    {
+      "time": "2026-04-09T21:38:31.878Z",
+      "msg": "Removed T153: Already implemented in T152"
+    },
+    {
+      "time": "2026-04-09T21:38:32.086Z",
+      "msg": "Removed T154: Benchmarked in T152 tests"
+    },
+    {
+      "time": "2026-04-09T21:38:50.225Z",
+      "msg": "Removed T155: Plan cache already exists"
     }
   ]
 }
