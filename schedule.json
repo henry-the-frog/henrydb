@@ -4939,6 +4939,17 @@
       "completed": "2026-04-09T00:56:18.157Z",
       "duration_ms": 120000,
       "summary": "VACUUM system: dead tuple tracking (INSERT/UPDATE/DELETE), VACUUM/VACUUM ALL, auto-vacuum threshold with scale factor, bloat report, daemon mode. 13 tests."
+    },
+    {
+      "id": "T455",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build pg_stat_statements equivalent: normalized query tracking, execution counts, timing, mean/stddev, top queries by time/calls",
+      "project": "henrydb",
+      "started": "2026-04-09T00:56:44.204Z",
+      "completed": "2026-04-09T00:58:29.903Z",
+      "duration_ms": 120000,
+      "summary": "pg_stat_statements: normalized query tracking, calls/timing/rows/blocks stats, mean/stddev (Welford online), topN queries, reset, summary. 13 tests."
     }
   ],
   "focusProjects": [
@@ -6726,6 +6737,10 @@
     {
       "time": "2026-04-09T00:54:31.884Z",
       "msg": "Added T454 (BUILD) after end: Build vacuum/analyze daemon: dead tuple tracking, VACUUM to reclaim space, auto-vacuum trigger, bloat estimation"
+    },
+    {
+      "time": "2026-04-09T00:56:43.785Z",
+      "msg": "Added T455 (BUILD) after end: Build pg_stat_statements equivalent: normalized query tracking, execution counts, timing, mean/stddev, top queries by time/calls"
     }
   ]
 }
