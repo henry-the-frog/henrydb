@@ -5016,6 +5016,17 @@
       "completed": "2026-04-09T01:10:13.180Z",
       "duration_ms": 120000,
       "summary": "Audit log: connection/auth/DDL/DML/error tracking, query filtering, log rotation, levels, exclude patterns, external sinks. 16 tests."
+    },
+    {
+      "id": "T462",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection multiplexing protocol: client authentication pooling, SCRAM-SHA-256 auth passthrough",
+      "project": "henrydb",
+      "started": "2026-04-09T01:10:51.729Z",
+      "completed": "2026-04-09T01:11:57.520Z",
+      "duration_ms": 180000,
+      "summary": "SCRAM-SHA-256 auth: full client/server handshake, hashPassword, PBKDF2, client proof verification, server signature, concurrent sessions, wrong password rejection. 7 tests."
     }
   ],
   "focusProjects": [
@@ -6831,6 +6842,10 @@
     {
       "time": "2026-04-09T01:09:06.137Z",
       "msg": "Added T461 (BUILD) after end: Build connection audit log: track all connections, authentications, DDL, and failed attempts with rotation"
+    },
+    {
+      "time": "2026-04-09T01:10:51.309Z",
+      "msg": "Added T462 (BUILD) after end: Build connection multiplexing protocol: client authentication pooling, SCRAM-SHA-256 auth passthrough"
     }
   ]
 }
