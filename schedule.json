@@ -684,23 +684,31 @@
     {
       "id": "T64",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement CREATE INDEX IF NOT EXISTS and DROP INDEX support",
       "project": "henrydb",
-      "started": "2026-04-09T16:47:20.978Z"
+      "started": "2026-04-09T16:47:20.978Z",
+      "completed": "2026-04-09T16:51:13.759Z",
+      "duration_ms": 120000,
+      "summary": "CREATE INDEX IF NOT EXISTS + DROP INDEX IF EXISTS. Parser handles IF/NOT/EXISTS between INDEX and name. 60/60 tests passing."
     },
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add index scan to EXPLAIN when WHERE uses indexed column",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T16:51:24.939Z",
+      "completed": "2026-04-09T16:51:46.787Z",
+      "duration_ms": 30000,
+      "summary": "Already working! EXPLAIN correctly shows Index Scan when WHERE uses an indexed column (age=30 → Index Scan using age, 2 rows) vs Seq Scan for non-indexed columns (name → 100 rows)."
     },
     {
       "id": "T66",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final batch: git push, dashboard, daily summary"
+      "status": "in-progress",
+      "task": "Final batch: git push, dashboard, daily summary",
+      "started": "2026-04-09T16:51:59.563Z"
     }
   ],
   "focusProjects": [
