@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T19:30:59.666Z",
+  "generated": "2026-04-09T19:34:35.741Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add RETURNING clause to INSERT/UPDATE/DELETE",
-    "completedAt": "2026-04-09T19:30:59.666Z",
-    "taskId": "T109",
-    "summary": "RETURNING clause already implemented. Added 7 tests: INSERT/UPDATE/DELETE RETURNING * and specific columns, multi-row, ON CONFLICT. All pass.",
-    "durationMs": 120000
+    "task": "Add UPSERT (ON CONFLICT) tests and SAVEPOINT tests",
+    "completedAt": "2026-04-09T19:34:35.741Z",
+    "taskId": "T110",
+    "summary": "7 upsert/savepoint/txn tests. Discovered ON CONFLICT DO UPDATE bug (values not applied on conflict). Documented for future fix. Basic UPSERT works.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 105,
+    "blocksCompleted": 106,
     "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 10,
-      "BUILD": 60,
+      "BUILD": 61,
       "MAINTAIN": 19,
       "EXPLORE": 2
     }

@@ -1163,6 +1163,17 @@
       "completed": "2026-04-09T19:30:59.602Z",
       "duration_ms": 120000,
       "summary": "RETURNING clause already implemented. Added 7 tests: INSERT/UPDATE/DELETE RETURNING * and specific columns, multi-row, ON CONFLICT. All pass."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add UPSERT (ON CONFLICT) tests and SAVEPOINT tests",
+      "project": "henrydb",
+      "started": "2026-04-09T19:31:20.524Z",
+      "completed": "2026-04-09T19:34:35.677Z",
+      "duration_ms": 300000,
+      "summary": "7 upsert/savepoint/txn tests. Discovered ON CONFLICT DO UPDATE bug (values not applied on conflict). Documented for future fix. Basic UPSERT works."
     }
   ],
   "focusProjects": [
@@ -1594,6 +1605,10 @@
     {
       "time": "2026-04-09T19:29:52.503Z",
       "msg": "Added T109 (BUILD) after end: Add RETURNING clause to INSERT/UPDATE/DELETE"
+    },
+    {
+      "time": "2026-04-09T19:31:20.317Z",
+      "msg": "Added T110 (BUILD) after end: Add UPSERT (ON CONFLICT) tests and SAVEPOINT tests"
     }
   ]
 }
