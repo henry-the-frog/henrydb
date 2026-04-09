@@ -4928,6 +4928,17 @@
       "completed": "2026-04-09T00:53:48.598Z",
       "duration_ms": 120000,
       "summary": "Deadlock detector: wait-for graph, DFS cycle detection, victim selection by cost (statements, rows, priority), 3-way deadlock support. 16 tests."
+    },
+    {
+      "id": "T454",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build vacuum/analyze daemon: dead tuple tracking, VACUUM to reclaim space, auto-vacuum trigger, bloat estimation",
+      "project": "henrydb",
+      "started": "2026-04-09T00:54:32.302Z",
+      "completed": "2026-04-09T00:56:18.157Z",
+      "duration_ms": 120000,
+      "summary": "VACUUM system: dead tuple tracking (INSERT/UPDATE/DELETE), VACUUM/VACUUM ALL, auto-vacuum threshold with scale factor, bloat report, daemon mode. 13 tests."
     }
   ],
   "focusProjects": [
@@ -6711,6 +6722,10 @@
     {
       "time": "2026-04-09T00:52:31.002Z",
       "msg": "Added T453 (BUILD) after end: Build query deadlock detector: wait-for graph, cycle detection, automatic victim selection"
+    },
+    {
+      "time": "2026-04-09T00:54:31.884Z",
+      "msg": "Added T454 (BUILD) after end: Build vacuum/analyze daemon: dead tuple tracking, VACUUM to reclaim space, auto-vacuum trigger, bloat estimation"
     }
   ]
 }
