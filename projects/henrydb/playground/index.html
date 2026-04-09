@@ -152,6 +152,15 @@ footer {
   color: var(--text-dim); font-size: 0.65rem; text-align: center;
 }
 footer a { color: var(--accent); text-decoration: none; }
+/* Charts */
+.chart-container { padding: 0.5rem; }
+.chart-container svg { width: 100%; max-height: 300px; }
+.chart-bar { transition: opacity 0.15s; }
+.chart-bar:hover { opacity: 0.8; }
+.chart-label { fill: var(--text-dim); font-size: 11px; font-family: var(--font-mono); }
+.chart-value { fill: var(--text); font-size: 10px; font-family: var(--font-mono); }
+.chart-axis { stroke: var(--border); }
+.chart-title { fill: var(--text-dim); font-size: 12px; }
 @media (max-width: 768px) { .sidebar { display: none; } .main-area { padding: 0.5rem; } }
 </style>
 </head>
@@ -184,6 +193,7 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="output-header">
       <div class="tabs">
         <div class="tab active" data-tab="results" onclick="switchTab('results')">Results</div>
+        <div class="tab" data-tab="chart" onclick="switchTab('chart')">📊 Chart</div>
         <div class="tab" data-tab="plan" onclick="switchTab('plan')">Plan</div>
       </div>
       <span class="timing" id="timing"></span>
@@ -198,7 +208,95 @@ footer a { color: var(--accent); text-decoration: none; }
 <footer>108K+ LOC · 4,295 tests · 209 modules · 115KB browser bundle · Built from scratch in JS</footer>
 <script type="module">
 import { Database } from './henrydb.bundle.js';
-let db, queryHistory = [], lastPlan = null, activeTab = 'results';
+let db, queryHistory = [], lastPlan = null, lastRows = null, activeTab = 'results';
+
+const CHART_COLORS = ['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#f0883e','#79c0ff','#56d364','#e3b341','#ff7b72'];
+
+function detectChartable(rows) {
+  if (!rows || rows.length < 2 || rows.length > 50) return null;
+  const cols = Object.keys(rows[0]);
+  if (cols.length < 2) return null;
+  // Find a label column (string/text) and numeric columns
+  let labelCol = null;
+  const numCols = [];
+  for (const col of cols) {
+    const sample = rows[0][col];
+    if (typeof sample === 'string' && !labelCol) labelCol = col;
+    else if (typeof sample === 'number') numCols.push(col);
+  }
+  // Fallback: first col as label even if number
+  if (!labelCol && cols.length >= 2) {
+    labelCol = cols[0];
+    numCols.length = 0;
+    for (const col of cols.slice(1)) {
+      if (typeof rows[0][col] === 'number') numCols.push(col);
+    }
+  }
+  if (!labelCol || numCols.length === 0) return null;
+  return { labelCol, numCols: numCols.slice(0, 3) }; // max 3 series
+}
+
+function renderChart(rows) {
+  const info = detectChartable(rows);
+  if (!info) return '<span class="result-info">No chartable data. Needs a text column + numeric column(s), 2-50 rows.</span>';
+  
+  const { labelCol, numCols } = info;
+  const labels = rows.map(r => String(r[labelCol]).substring(0, 15));
+  const series = numCols.map(col => rows.map(r => r[col] || 0));
+  const allVals = series.flat();
+  const maxVal = Math.max(...allVals, 1);
+  
+  const W = 600, H = 280, pad = { top: 30, right: 20, bottom: 60, left: 60 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const n = labels.length;
+  const barGroupW = chartW / n;
+  const barW = Math.min(barGroupW * 0.7 / numCols.length, 40);
+  const gap = (barGroupW - barW * numCols.length) / 2;
+  
+  let svg = `<div class="chart-container"><svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  
+  // Y axis gridlines
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + chartH * (1 - i/4);
+    const val = (maxVal * i/4).toFixed(maxVal > 100 ? 0 : 1);
+    svg += `<line x1="${pad.left}" y1="${y}" x2="${W-pad.right}" y2="${y}" stroke="${i===0?'var(--border)':'rgba(48,54,61,0.5)'}" stroke-width="1"/>`;
+    svg += `<text x="${pad.left-8}" y="${y+4}" text-anchor="end" class="chart-label">${val}</text>`;
+  }
+  
+  // Bars
+  for (let si = 0; si < series.length; si++) {
+    const color = CHART_COLORS[si % CHART_COLORS.length];
+    for (let i = 0; i < n; i++) {
+      const val = series[si][i];
+      const barH = (val / maxVal) * chartH;
+      const x = pad.left + i * barGroupW + gap + si * barW;
+      const y = pad.top + chartH - barH;
+      svg += `<rect class="chart-bar" x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${color}" rx="2"/>`;
+      if (n <= 15) {
+        svg += `<text x="${x + barW/2}" y="${y - 4}" text-anchor="middle" class="chart-value">${val >= 1000 ? (val/1000).toFixed(1)+'K' : val % 1 === 0 ? val : val.toFixed(1)}</text>`;
+      }
+    }
+  }
+  
+  // X axis labels
+  for (let i = 0; i < n; i++) {
+    const x = pad.left + i * barGroupW + barGroupW / 2;
+    svg += `<text x="${x}" y="${H - pad.bottom + 15}" text-anchor="middle" class="chart-label" transform="rotate(-30 ${x} ${H - pad.bottom + 15})">${esc(labels[i])}</text>`;
+  }
+  
+  // Legend
+  if (numCols.length > 1) {
+    for (let si = 0; si < numCols.length; si++) {
+      const lx = pad.left + si * 120;
+      svg += `<rect x="${lx}" y="8" width="10" height="10" fill="${CHART_COLORS[si]}" rx="2"/>`;
+      svg += `<text x="${lx + 14}" y="17" class="chart-label">${esc(numCols[si])}</text>`;
+    }
+  }
+  
+  svg += '</svg></div>';
+  return svg;
+}
 
 function initDb() {
   db = new Database();
@@ -310,6 +408,7 @@ window.runQuery = function() {
       if (r.type === 'PLAN') { lastPlan = r.plan; html += renderPlan(r.plan); switchTab('plan'); }
       else if (r.type === 'OK') html += `<div class="result-ok">✓ ${esc(r.message)}</div>`;
       else if (r.rows) {
+        lastRows = r.rows;
         html += renderTable(r.rows);
         try { const p = db.execute('EXPLAIN ' + s); if (p.plan) lastPlan = p.plan; } catch(e) {}
       }
@@ -325,7 +424,9 @@ window.runQuery = function() {
 window.switchTab = function(tab) {
   activeTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  if (tab === 'plan' && lastPlan) document.getElementById('output').innerHTML = renderPlan(lastPlan);
+  const el = document.getElementById('output');
+  if (tab === 'plan' && lastPlan) el.innerHTML = renderPlan(lastPlan);
+  else if (tab === 'chart' && lastRows) el.innerHTML = renderChart(lastRows);
 };
 window.clearOutput = function() {
   document.getElementById('output').innerHTML = '<span class="result-info">Cleared.</span>';
