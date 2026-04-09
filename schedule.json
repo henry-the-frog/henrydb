@@ -4873,6 +4873,17 @@
       "completed": "2026-04-09T00:45:27.470Z",
       "duration_ms": 180000,
       "summary": "System catalog: pg_class, pg_attribute, pg_type, pg_index, pg_namespace, pg_database, pg_stat_user_tables, information_schema.tables, information_schema.columns. OID mapping, filtering. 15 tests."
+    },
+    {
+      "id": "T449",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection rate limiter: per-IP limits, token bucket algorithm, slowloris protection, connection queue with fairness",
+      "project": "henrydb",
+      "started": "2026-04-09T00:45:47.919Z",
+      "completed": "2026-04-09T00:46:57.426Z",
+      "duration_ms": 120000,
+      "summary": "Rate limiter: TokenBucket, SlidingWindowCounter, ConnectionRateLimiter with per-IP limits, QPS limiting, slowloris detection, global limits, activity tracking. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6636,6 +6647,10 @@
     {
       "time": "2026-04-09T00:44:13.638Z",
       "msg": "Added T448 (BUILD) after end: Build pg_catalog system tables: pg_class, pg_attribute, pg_type, pg_index, information_schema views"
+    },
+    {
+      "time": "2026-04-09T00:45:47.500Z",
+      "msg": "Added T449 (BUILD) after end: Build connection rate limiter: per-IP limits, token bucket algorithm, slowloris protection, connection queue with fairness"
     }
   ]
 }
