@@ -1979,16 +1979,52 @@
     {
       "id": "T187",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "COLA (Cache-Oblivious Lookahead Array): write-optimized structure",
       "project": "henrydb",
-      "started": "2026-04-09T22:45:42.388Z"
+      "started": "2026-04-09T22:45:42.388Z",
+      "completed": "2026-04-09T22:46:32.626Z",
+      "duration_ms": 180000,
+      "summary": "COLA: sorted array hierarchy with merge-cascade. O(log²N/B) writes. 5 tests."
     },
     {
       "id": "T188",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session wrap: README update, daily log, CURRENT.md, git push",
+      "started": "2026-04-09T22:46:41.588Z",
+      "completed": "2026-04-09T22:46:47.401Z",
+      "duration_ms": 10000,
+      "summary": "Quick maintain checkpoint."
+    },
+    {
+      "id": "T189",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Splay tree: self-adjusting BST that moves accessed nodes to root",
+      "project": "henrydb",
+      "started": "2026-04-09T22:46:47.662Z"
+    },
+    {
+      "id": "T190",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session wrap: README update, daily log, CURRENT.md, git push"
+      "task": "Red-black tree: classic balanced BST with color invariants",
+      "project": "henrydb"
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "AVL tree: strictly balanced BST with height tracking",
+      "project": "henrydb"
+    },
+    {
+      "id": "T192",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Xfast/Yfast trie: O(log log U) predecessor queries",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2744,6 +2780,22 @@
     {
       "time": "2026-04-09T22:43:56.756Z",
       "msg": "Added T188 (MAINTAIN) after end: Final session wrap: README update, daily log, CURRENT.md, git push"
+    },
+    {
+      "time": "2026-04-09T22:46:40.539Z",
+      "msg": "Added T189 (BUILD) after end: Splay tree: self-adjusting BST that moves accessed nodes to root"
+    },
+    {
+      "time": "2026-04-09T22:46:40.750Z",
+      "msg": "Added T190 (BUILD) after end: Red-black tree: classic balanced BST with color invariants"
+    },
+    {
+      "time": "2026-04-09T22:46:40.963Z",
+      "msg": "Added T191 (BUILD) after end: AVL tree: strictly balanced BST with height tracking"
+    },
+    {
+      "time": "2026-04-09T22:46:41.173Z",
+      "msg": "Added T192 (BUILD) after end: Xfast/Yfast trie: O(log log U) predecessor queries"
     }
   ]
 }
