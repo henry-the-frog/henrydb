@@ -5082,6 +5082,17 @@
       "completed": "2026-04-09T01:18:13.343Z",
       "duration_ms": 120000,
       "summary": "TLS handler: SSL negotiation, TLSConfig modes (disable/allow/prefer/require/verify-ca/verify-full), self-signed cert generation, certificate validation, stats. 14 tests."
+    },
+    {
+      "id": "T468",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build enum types: CREATE TYPE name AS ENUM, enum comparison, ordering, ALTER TYPE ADD VALUE",
+      "project": "henrydb",
+      "started": "2026-04-09T01:18:32.710Z",
+      "completed": "2026-04-09T01:19:23.774Z",
+      "duration_ms": 120000,
+      "summary": "Enum types: CREATE TYPE AS ENUM, ADD VALUE (BEFORE/AFTER/IF NOT EXISTS), RENAME VALUE, ordering/comparison, validation. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6921,6 +6932,10 @@
     {
       "time": "2026-04-09T01:17:15.007Z",
       "msg": "Added T467 (BUILD) after end: Build connection SSL/TLS handler: TLS negotiation, certificate validation, encrypted transport"
+    },
+    {
+      "time": "2026-04-09T01:18:32.293Z",
+      "msg": "Added T468 (BUILD) after end: Build enum types: CREATE TYPE name AS ENUM, enum comparison, ordering, ALTER TYPE ADD VALUE"
     }
   ]
 }
