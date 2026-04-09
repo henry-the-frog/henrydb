@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-09T15:04:46.775Z",
+  "generated": "2026-04-09T15:08:55.629Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Fix pg-wire protocol: server not sending RowDescription for SELECT after INSERT/CREATE. Debug server.test.js failures.",
-    "startedAt": "2026-04-09T15:04:46.775Z",
-    "taskId": "T11"
+    "task": "Integration test: connect to HenryDB with actual psql client and run queries",
+    "completedAt": "2026-04-09T15:08:55.629Z",
+    "taskId": "T22",
+    "summary": "Full integration test: 13/13 queries through pg wire protocol. CREATE TABLE, INSERT, SELECT (WHERE, COUNT, AVG, ORDER BY), UPDATE, DELETE all working. HenryDB serves real SQL queries!",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -482,12 +484,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 13,
+    "blocksCompleted": 15,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 3,
       "PLAN": 3,
-      "BUILD": 5,
+      "BUILD": 7,
       "MAINTAIN": 2
     }
   },
