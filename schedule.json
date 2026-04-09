@@ -4829,6 +4829,17 @@
       "completed": "2026-04-09T00:36:34.728Z",
       "duration_ms": 180000,
       "summary": "Logical replication: publisher/subscriber, CDC with INSERT/UPDATE/DELETE capture, replication slots, LSN tracking, lag monitoring, change log filtering, subscriber callbacks. 22 tests."
+    },
+    {
+      "id": "T445",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection-level query timeout and statement cancellation system",
+      "project": "henrydb",
+      "started": "2026-04-09T00:36:54.576Z",
+      "completed": "2026-04-09T00:37:58.911Z",
+      "duration_ms": 120000,
+      "summary": "Query timeout and cancellation: CancelToken (cooperative), TimeoutManager with per-query tracking, withTimeout async helper, QueryCancelledError/QueryTimeoutError, active query monitoring. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6576,6 +6587,10 @@
     {
       "time": "2026-04-09T00:35:11.126Z",
       "msg": "Added T444 (BUILD) after end: Build logical replication: publisher/subscriber model, change data capture (CDC), WAL-based event streaming"
+    },
+    {
+      "time": "2026-04-09T00:36:54.159Z",
+      "msg": "Added T445 (BUILD) after end: Build connection-level query timeout and statement cancellation system"
     }
   ]
 }

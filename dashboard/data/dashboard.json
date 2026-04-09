@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:36:34.798Z",
+  "generated": "2026-04-09T00:37:58.979Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build logical replication: publisher/subscriber model, change data capture (CDC), WAL-based event streaming",
-    "completedAt": "2026-04-09T00:36:34.798Z",
-    "taskId": "T444",
-    "summary": "Logical replication: publisher/subscriber, CDC with INSERT/UPDATE/DELETE capture, replication slots, LSN tracking, lag monitoring, change log filtering, subscriber callbacks. 22 tests.",
-    "durationMs": 180000
+    "task": "Build connection-level query timeout and statement cancellation system",
+    "completedAt": "2026-04-09T00:37:58.979Z",
+    "taskId": "T445",
+    "summary": "Query timeout and cancellation: CancelToken (cooperative), TimeoutManager with per-query tracking, withTimeout async helper, QueryCancelledError/QueryTimeoutError, active query monitoring. 16 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 442,
+    "blocksCompleted": 443,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 338,
+      "BUILD": 339,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
