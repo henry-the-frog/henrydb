@@ -1459,17 +1459,21 @@
     {
       "id": "T138",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Make BufferPoolManager accept replacer option (LRU or Clock), default to Clock",
       "project": "henrydb",
-      "started": "2026-04-09T21:07:56.754Z"
+      "started": "2026-04-09T21:07:56.754Z",
+      "completed": "2026-04-09T21:08:58.437Z",
+      "duration_ms": 120000,
+      "summary": "BufferPoolManager now accepts replacer option (lru/clock), defaults to Clock like PostgreSQL. No regressions."
     },
     {
       "id": "T139",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Benchmark: LRU vs Clock buffer pools under sequential flooding and working set patterns",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T21:08:58.727Z"
     },
     {
       "id": "T140",
