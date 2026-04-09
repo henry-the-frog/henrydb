@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T19:35:53.289Z",
+  "generated": "2026-04-09T19:42:21.681Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Comprehensive SQL feature coverage test: one test per major feature",
-    "completedAt": "2026-04-09T19:35:53.289Z",
-    "taskId": "T111",
-    "summary": "41 SQL feature coverage tests — all pass. Covers: SELECT, WHERE, ORDER BY, LIMIT, OFFSET, DISTINCT, all aggregates, GROUP BY, HAVING, LIKE, BETWEEN, IN, IS NULL, COALESCE, CASE WHEN, JOIN, LEFT JOIN, subquery, EXISTS, INSERT, UPDATE, DELETE, TRUNCATE, CREATE INDEX, EXPLAIN, VACUUM, ANALYZE, SHOW TABLES, DESCRIBE, BEGIN/COMMIT, UNION, CTE, WINDOW, RETURNING, CAST, arithmetic, concatenation, NULLIF.",
+    "task": "Quick: add simple benchmark script (bench.js) showing inserts/sec, selects/sec, joins/sec",
+    "completedAt": "2026-04-09T19:42:21.680Z",
+    "taskId": "T113",
+    "summary": "Benchmark script: INSERT 24K/s, PK lookup 30K/s, hash join 55/s (5K×1K), EXPLAIN 27K/s.",
     "durationMs": 300000
   },
   "schedule": {
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 107,
+    "blocksCompleted": 108,
     "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 10,
-      "BUILD": 62,
+      "BUILD": 63,
       "MAINTAIN": 19,
       "EXPLORE": 2
     }
