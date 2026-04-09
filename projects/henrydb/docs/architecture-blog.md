@@ -124,29 +124,28 @@ On a MacBook Pro (M-series), in-memory mode:
 
 | Operation | Result |
 |-----------|--------|
-| INSERT (1K rows, PK) | 3,647 rows/sec |
-| Point query (PK lookup) | 13,344 queries/sec |
+| INSERT (1K rows, PK) | 3,628 rows/sec |
+| Point query (PK lookup) | 13,986 queries/sec |
 | Full table scan (1K rows) | 16ms |
-| Range scan with filter | 6.8ms |
-| COUNT/AVG/MIN/MAX | 8.2ms |
-| GROUP BY (50 groups) | 8.0ms |
-| ORDER BY + LIMIT | 4.6ms |
-| JOIN (1K × 1K, nested loop) | 2,798ms |
+| Range scan with filter | 6.7ms |
+| COUNT/AVG/MIN/MAX | 5.8ms |
+| GROUP BY (50 groups) | 7.4ms |
+| ORDER BY + LIMIT | 8.2ms |
+| JOIN (1K × 1K, hash join) | 15ms |
+| UPDATE (WHERE filter) | 17ms |
+| DELETE (WHERE filter) | 11ms |
 
 ### What's Slow (and Why)
-
-**JOINs are the elephant in the room.** A nested loop join over two 1K-row tables takes 2.8 seconds. Real databases solve this with:
-- Hash joins (build a hash table on the smaller relation)
-- Sort-merge joins (sort both sides, merge)
-- Index nested loop joins (use an index to look up matching rows)
-
-HenryDB has a hash join implementation but the optimizer doesn't always pick it. This is the next optimization target.
 
 **INSERT gets slower with table size** because PK uniqueness checking scans existing rows. A proper B+Tree primary key index would make this O(log n) instead of O(n).
 
 ### What's Fast
 
-**Point queries are surprisingly fast** at 13K/sec — this is pure JavaScript, no native code. The secret is that small tables fit in the V8 JIT's fast path.
+**JOINs are now fast** thanks to hash join optimization. The optimizer detects equi-join conditions (e.g., `ON u.id = o.user_id`) and builds a hash table on the smaller relation. This turned a 2.8-second nested loop join into a 15ms hash join — a **186x speedup**.
+
+**UPDATE and DELETE are efficient** because we batch all WAL operations into a single transaction instead of committing per-row. This reduced UPDATE from 498ms to 17ms (29x) and DELETE from 1028ms to 11ms (96x).
+
+**Point queries are surprisingly fast** at 14K/sec — this is pure JavaScript, no native code. The secret is that small tables fit in the V8 JIT's fast path.
 
 **Aggregation is efficient** because it's a single scan with running accumulators — no intermediate materialization.
 
@@ -162,11 +161,11 @@ HenryDB has a hash join implementation but the optimizer doesn't always pick it.
 
 ## What's Next
 
-- **Hash join optimization** — bring the JOIN benchmark from 2.8s to <50ms
 - **File-backed storage** — persistent data across restarts
-- **Proper B+Tree primary keys** — O(log n) uniqueness checking
+- **Proper B+Tree primary keys** — O(log n) uniqueness checking and faster inserts
 - **MVCC isolation levels** — READ COMMITTED, REPEATABLE READ, SERIALIZABLE
 - **Connection pooling** — handle 100+ concurrent clients
+- **Prepared statements** — bytecode compilation for hot queries
 
 ---
 
