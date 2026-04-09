@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T20:49:03.037Z",
+  "generated": "2026-04-09T20:51:27.516Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Optimizer: eliminate ORDER BY sort when BTreeTable already provides PK ordering",
-    "startedAt": "2026-04-09T20:49:03.037Z",
-    "taskId": "T128"
+    "task": "Optimizer: use BTreeTable.findByPK for WHERE pk=value instead of full scan",
+    "startedAt": "2026-04-09T20:51:27.516Z",
+    "taskId": "T129"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1635,12 +1635,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 117,
+    "blocksCompleted": 118,
     "blocksTotal": 130,
     "modeDistribution": {
       "THINK": 16,
       "PLAN": 12,
-      "BUILD": 66,
+      "BUILD": 67,
       "MAINTAIN": 21,
       "EXPLORE": 2
     }

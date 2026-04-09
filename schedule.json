@@ -1312,16 +1312,20 @@
       "id": "T128",
       "mode": "BUILD",
       "task": "Optimizer: eliminate ORDER BY sort when BTreeTable already provides PK ordering",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T119",
-      "started": "2026-04-09T20:49:02.966Z"
+      "started": "2026-04-09T20:49:02.966Z",
+      "completed": "2026-04-09T20:51:21.383Z",
+      "duration_ms": 300000,
+      "summary": "ORDER BY sort elimination: _canEliminateSort detects BTreeTable PK ordering, skips sort for ASC queries. 2.2x speedup on 5K rows. 9 tests. DESC and non-PK still sort correctly."
     },
     {
       "id": "T129",
       "mode": "BUILD",
       "task": "Optimizer: use BTreeTable.findByPK for WHERE pk=value instead of full scan",
-      "status": "upcoming",
-      "plan_ref": "T119"
+      "status": "in-progress",
+      "plan_ref": "T119",
+      "started": "2026-04-09T20:51:27.451Z"
     },
     {
       "id": "T130",

@@ -2900,6 +2900,25 @@ export class Database {
   _tryIndexScan(table, where, tableAlias) {
     if (!where) return null;
 
+    // Fast path: BTreeTable PK equality lookup — O(log n) without secondary index
+    if (where.type === 'COMPARE' && where.op === 'EQ' && table.heap instanceof BTreeTable) {
+      const colRef = where.left.type === 'column_ref' ? where.left : (where.right.type === 'column_ref' ? where.right : null);
+      const literal = where.left.type === 'literal' ? where.left : (where.right.type === 'literal' ? where.right : null);
+      if (colRef && literal) {
+        const colName = colRef.name.includes('.') ? colRef.name.split('.').pop() : colRef.name;
+        const pkColNames = table.heap.pkIndices.map(i => table.schema[i]?.name);
+        if (pkColNames.length === 1 && pkColNames[0] === colName) {
+          // Direct B+tree lookup — no secondary index needed
+          const values = table.heap.findByPK(literal.value);
+          if (values) {
+            const row = this._valuesToRow(values, table.schema, tableAlias);
+            return { rows: [row], residual: null, btreeLookup: true };
+          }
+          return { rows: [], residual: null, btreeLookup: true };
+        }
+      }
+    }
+
     // Simple equality: col = literal where col is indexed
     if (where.type === 'COMPARE' && where.op === 'EQ') {
       const colRef = where.left.type === 'column_ref' ? where.left : (where.right.type === 'column_ref' ? where.right : null);
