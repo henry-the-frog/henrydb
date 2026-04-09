@@ -2142,16 +2142,45 @@
     {
       "id": "T202",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Bitwise trie: compact integer indexing using bit manipulation",
       "project": "henrydb",
-      "started": "2026-04-09T23:01:06.405Z"
+      "started": "2026-04-09T23:01:06.405Z",
+      "completed": "2026-04-09T23:01:48.916Z",
+      "duration_ms": 120000,
+      "summary": "BitwiseTrie: 5-bit partitioned integer trie. O(7) lookup. 4 tests."
     },
     {
       "id": "T203",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "FINAL: comprehensive README + run full test suite + data structure count",
+      "project": "henrydb",
+      "started": "2026-04-09T23:02:04.723Z",
+      "completed": "2026-04-09T23:02:05.024Z",
+      "duration_ms": 0,
+      "summary": "Deferred — building more structures first."
+    },
+    {
+      "id": "T204",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Deque: double-ended queue with O(1) push/pop from both ends",
+      "project": "henrydb",
+      "started": "2026-04-09T23:02:05.556Z"
+    },
+    {
+      "id": "T205",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Sparse table: O(1) range minimum/maximum query with O(n log n) preprocess",
+      "project": "henrydb"
+    },
+    {
+      "id": "T206",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Suffix array: sorted array of all suffixes for pattern matching",
       "project": "henrydb"
     }
   ],
@@ -2968,6 +2997,18 @@
     {
       "time": "2026-04-09T22:59:18.857Z",
       "msg": "Added T203 (BUILD) after end: FINAL: comprehensive README + run full test suite + data structure count"
+    },
+    {
+      "time": "2026-04-09T23:02:03.945Z",
+      "msg": "Added T204 (BUILD) after end: Deque: double-ended queue with O(1) push/pop from both ends"
+    },
+    {
+      "time": "2026-04-09T23:02:04.209Z",
+      "msg": "Added T205 (BUILD) after end: Sparse table: O(1) range minimum/maximum query with O(n log n) preprocess"
+    },
+    {
+      "time": "2026-04-09T23:02:04.468Z",
+      "msg": "Added T206 (BUILD) after end: Suffix array: sorted array of all suffixes for pattern matching"
     }
   ]
 }
