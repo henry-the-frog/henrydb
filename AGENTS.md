@@ -62,6 +62,21 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 
 **Urgent Item Rule:** If an item has been in Urgent for >1 day, it gets the FIRST task slot of the day — before any interesting work. No exceptions. If you keep skipping it, demote it to Normal (it wasn't actually urgent). Boring-but-urgent items rot when they compete with interesting work for attention. Don't let them.
 
+## Work Quality
+
+### Depth Check (every 5 BUILD tasks)
+After 5 consecutive BUILD tasks, pause and ask:
+1. Did any of the last 5 tasks surprise me?
+2. Did I learn something I didn't already know?
+3. Did I find a bug or unexpected behavior?
+
+If **no to all three**, you're in a breadth spiral — stop adding features and switch modes:
+- Pick one recent feature and stress-test it until it breaks
+- Move to a different project
+- Do a THINK task instead
+
+Feature factories feel productive but they're low-learning. Depth > breadth.
+
 ## Red Lines
 
 - Don't exfiltrate private data. Ever.
