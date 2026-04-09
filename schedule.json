@@ -641,23 +641,31 @@
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement EXPLAIN for HenryDB: show query plan with scan type, join strategy, estimated rows",
       "project": "henrydb",
-      "started": "2026-04-09T16:40:03.120Z"
+      "started": "2026-04-09T16:40:03.120Z",
+      "completed": "2026-04-09T16:45:19.646Z",
+      "duration_ms": 300000,
+      "summary": "Implemented PostgreSQL-style EXPLAIN: Seq Scan, Index Scan, Hash Join detection, row estimates from heap, Filter/Sort/Aggregate nodes. EXPLAIN ANALYZE with actual timing and row counts. 29/29 tests passing."
     },
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Test EXPLAIN with benchmark queries, compare plans",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T16:45:29.796Z",
+      "completed": "2026-04-09T16:45:30.045Z",
+      "duration_ms": 5000,
+      "summary": "Already tested in T60 — EXPLAIN works with scan, join, aggregate, sort queries."
     },
     {
       "id": "T62",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard sync"
+      "status": "in-progress",
+      "task": "Git push, dashboard sync",
+      "started": "2026-04-09T16:45:39.433Z"
     }
   ],
   "focusProjects": [
