@@ -1,93 +1,125 @@
-// count-min-sketch.js — Count-Min Sketch for approximate frequency estimation
-// A probabilistic data structure that uses multiple hash functions and a 2D array
-// of counters to estimate the frequency of elements in a stream.
-// Space: O(w * d) where w = width (determines error), d = depth (determines confidence)
-// Error: ε = e/w, Confidence: 1 - δ = 1 - e^(-d)
+// count-min-sketch.js — Approximate frequency counting
+//
+// A Count-Min Sketch (CMS) estimates the frequency of elements in a data stream
+// using sub-linear space. It overestimates (never underestimates) counts.
+//
+// Used in databases for:
+//   - Approximate GROUP BY without full hash table
+//   - Hot key detection
+//   - Selectivity estimation
+//   - Heavy hitter detection (top-k frequent values)
+//
+// Parameters:
+//   - width (w): number of counters per row
+//   - depth (d): number of hash functions/rows
+//   - ε (epsilon): additive error = 2*n/w where n = total count
+//   - δ (delta): probability of error > ε = e^(-d)
+
+function hashFn(key, seed) {
+  const str = typeof key === 'string' ? key : String(key);
+  let hash = seed;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash ^ str.charCodeAt(i)) * 0x5bd1e995) >>> 0;
+    hash ^= hash >>> 13;
+  }
+  return hash;
+}
 
 /**
- * CountMinSketch — approximate frequency estimation.
+ * CountMinSketch — Approximate frequency counter.
  */
 export class CountMinSketch {
+  /**
+   * @param {number} width - Counters per row (higher = more accurate)
+   * @param {number} depth - Number of hash functions (higher = more confident)
+   */
   constructor(width = 1024, depth = 5) {
     this.width = width;
     this.depth = depth;
-    this._table = [];
-    for (let d = 0; d < depth; d++) {
-      this._table.push(new Int32Array(width));
-    }
+    this._table = Array.from({ length: depth }, () => new Int32Array(width));
+    this._seeds = Array.from({ length: depth }, (_, i) => 0x811c9dc5 + i * 0x01000193);
     this._totalCount = 0;
-    this._seeds = Array.from({ length: depth }, (_, i) => i * 0x9e3779b9 + 0x12345);
   }
 
   /**
-   * Add an element (increment its count).
+   * Create with desired error bounds.
+   * @param {number} epsilon - Error bound: actual ≤ estimate ≤ actual + ε*n
+   * @param {number} delta - Probability of exceeding error bound
    */
-  add(element, count = 1) {
-    for (let d = 0; d < this.depth; d++) {
-      const pos = this._hash(element, d);
-      this._table[d][pos] += count;
+  static withErrorBounds(epsilon = 0.001, delta = 0.01) {
+    const width = Math.ceil(Math.E / epsilon);
+    const depth = Math.ceil(Math.log(1 / delta));
+    return new CountMinSketch(width, depth);
+  }
+
+  /**
+   * Increment the count for a key.
+   */
+  add(key, count = 1) {
+    for (let i = 0; i < this.depth; i++) {
+      const pos = ((hashFn(key, this._seeds[i]) >>> 0) % this.width);
+      this._table[i][pos] += count;
     }
     this._totalCount += count;
   }
 
   /**
-   * Estimate the count of an element.
-   * Returns the minimum across all hash functions (conservative estimate).
+   * Estimate the count for a key.
+   * Returns the minimum count across all hash functions (most accurate estimate).
+   * Guaranteed: actual_count ≤ estimate
    */
-  estimate(element) {
+  estimate(key) {
     let min = Infinity;
-    for (let d = 0; d < this.depth; d++) {
-      const pos = this._hash(element, d);
-      if (this._table[d][pos] < min) min = this._table[d][pos];
+    for (let i = 0; i < this.depth; i++) {
+      const pos = ((hashFn(key, this._seeds[i]) >>> 0) % this.width);
+      min = Math.min(min, this._table[i][pos]);
     }
     return min;
   }
 
   /**
-   * Merge another sketch into this one (additive).
-   * Useful for distributed counting.
-   */
-  merge(other) {
-    if (other.width !== this.width || other.depth !== this.depth) {
-      throw new Error('Sketches must have same dimensions to merge');
-    }
-    for (let d = 0; d < this.depth; d++) {
-      for (let i = 0; i < this.width; i++) {
-        this._table[d][i] += other._table[d][i];
-      }
-    }
-    this._totalCount += other._totalCount;
-  }
-
-  /**
-   * Point query: what fraction of the stream is element?
-   */
-  estimateFrequency(element) {
-    return this._totalCount > 0 ? this.estimate(element) / this._totalCount : 0;
-  }
-
-  /**
-   * Heavy hitters: find elements with estimated count above threshold.
-   * Requires maintaining a separate set of candidates.
+   * Total count of all elements added.
    */
   get totalCount() { return this._totalCount; }
 
-  _hash(element, depth) {
-    let h = this._seeds[depth];
-    const s = String(element);
-    for (let i = 0; i < s.length; i++) {
-      h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  /**
+   * Merge two sketches (add their counters).
+   * Both must have the same width and depth.
+   */
+  merge(other) {
+    if (this.width !== other.width || this.depth !== other.depth) {
+      throw new Error('Cannot merge sketches with different dimensions');
     }
-    h = ((h >>> 16) ^ h) * 0x45d9f3b;
-    return (((h >>> 16) ^ h) >>> 0) % this.width;
+    const merged = new CountMinSketch(this.width, this.depth);
+    for (let i = 0; i < this.depth; i++) {
+      for (let j = 0; j < this.width; j++) {
+        merged._table[i][j] = this._table[i][j] + other._table[i][j];
+      }
+    }
+    merged._totalCount = this._totalCount + other._totalCount;
+    merged._seeds = [...this._seeds]; // Same hash functions
+    return merged;
   }
 
+  /**
+   * Reset all counters.
+   */
+  clear() {
+    for (const row of this._table) row.fill(0);
+    this._totalCount = 0;
+  }
+
+  /**
+   * Get statistics.
+   */
   getStats() {
     return {
       width: this.width,
       depth: this.depth,
       totalCount: this._totalCount,
-      memoryBytes: this.width * this.depth * 4, // Int32 = 4 bytes
+      bytesUsed: this.width * this.depth * 4, // Int32Array
+      epsilon: 2 / this.width,     // Error bound per element
+      delta: Math.exp(-this.depth), // Error probability
     };
   }
 }
