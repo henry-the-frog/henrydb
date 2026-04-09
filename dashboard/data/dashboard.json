@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T00:24:48.425Z",
+  "generated": "2026-04-09T00:26:36.174Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build query rewriting engine: view expansion, subquery flattening, predicate pushdown as AST-to-AST transformations",
-    "completedAt": "2026-04-09T00:24:48.425Z",
-    "taskId": "T437",
-    "summary": "Query rewriter engine: 5 rules (view expansion, predicate pushdown, subquery flattening, constant folding, redundant elimination). AST-to-AST, immutable transforms. 17 tests.",
+    "task": "Build JSON path query support: JSON_PATH_QUERY, @>, @@, jsonpath syntax for querying JSONB columns",
+    "completedAt": "2026-04-09T00:26:36.174Z",
+    "taskId": "T438",
+    "summary": "JSONPath query engine: $, .key, [index], [*], .*, .., [?(@.x op val)], [start:end], contains (@>), exists, first. Full bookstore example. 28 tests.",
     "durationMs": 180000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 435,
+    "blocksCompleted": 436,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 331,
+      "BUILD": 332,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
