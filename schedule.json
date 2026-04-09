@@ -1783,10 +1783,21 @@
     {
       "id": "T169",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Robin Hood hash table: open-addressing hash map with probe distance balancing for database hash joins",
       "project": "henrydb",
-      "started": "2026-04-09T22:16:09.300Z"
+      "started": "2026-04-09T22:16:09.300Z",
+      "completed": "2026-04-09T22:17:40.276Z",
+      "duration_ms": 300000,
+      "summary": "Robin Hood hash: probe distance balancing, backward shift deletion, avg probe 0.73, max 8 at 61% load. 1.5µs insert, 0.5µs lookup. 11 tests."
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "LSM-tree memtable: in-memory sorted buffer using SkipList that flushes to immutable sorted runs",
+      "project": "henrydb",
+      "started": "2026-04-09T22:18:09.754Z"
     }
   ],
   "focusProjects": [
@@ -2466,6 +2477,10 @@
     {
       "time": "2026-04-09T22:16:08.888Z",
       "msg": "Added T169 (BUILD) after end: Robin Hood hash table: open-addressing hash map with probe distance balancing for database hash joins"
+    },
+    {
+      "time": "2026-04-09T22:18:09.345Z",
+      "msg": "Added T170 (BUILD) after end: LSM-tree memtable: in-memory sorted buffer using SkipList that flushes to immutable sorted runs"
     }
   ]
 }
