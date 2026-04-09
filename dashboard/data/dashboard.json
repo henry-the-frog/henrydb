@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T01:19:23.813Z",
+  "generated": "2026-04-09T01:22:25.763Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build enum types: CREATE TYPE name AS ENUM, enum comparison, ordering, ALTER TYPE ADD VALUE",
-    "completedAt": "2026-04-09T01:19:23.813Z",
-    "taskId": "T468",
-    "summary": "Enum types: CREATE TYPE AS ENUM, ADD VALUE (BEFORE/AFTER/IF NOT EXISTS), RENAME VALUE, ordering/comparison, validation. 16 tests.",
+    "task": "Build composite types: CREATE TYPE name AS (field type, ...), record types, row constructors",
+    "completedAt": "2026-04-09T01:22:25.763Z",
+    "taskId": "T469",
+    "summary": "Composite types: CREATE TYPE AS, row constructors, field access, compare, ALTER ADD/DROP ATTRIBUTE, ROW string format. 15 tests.",
     "durationMs": 120000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 466,
+    "blocksCompleted": 467,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 362,
+      "BUILD": 363,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }

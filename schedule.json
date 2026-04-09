@@ -5093,6 +5093,17 @@
       "completed": "2026-04-09T01:19:23.774Z",
       "duration_ms": 120000,
       "summary": "Enum types: CREATE TYPE AS ENUM, ADD VALUE (BEFORE/AFTER/IF NOT EXISTS), RENAME VALUE, ordering/comparison, validation. 16 tests."
+    },
+    {
+      "id": "T469",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build composite types: CREATE TYPE name AS (field type, ...), record types, row constructors",
+      "project": "henrydb",
+      "started": "2026-04-09T01:20:52.472Z",
+      "completed": "2026-04-09T01:22:25.694Z",
+      "duration_ms": 120000,
+      "summary": "Composite types: CREATE TYPE AS, row constructors, field access, compare, ALTER ADD/DROP ATTRIBUTE, ROW string format. 15 tests."
     }
   ],
   "focusProjects": [
@@ -6936,6 +6947,10 @@
     {
       "time": "2026-04-09T01:18:32.293Z",
       "msg": "Added T468 (BUILD) after end: Build enum types: CREATE TYPE name AS ENUM, enum comparison, ordering, ALTER TYPE ADD VALUE"
+    },
+    {
+      "time": "2026-04-09T01:20:52.052Z",
+      "msg": "Added T469 (BUILD) after end: Build composite types: CREATE TYPE name AS (field type, ...), record types, row constructors"
     }
   ]
 }
