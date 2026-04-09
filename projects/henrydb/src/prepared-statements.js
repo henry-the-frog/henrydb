@@ -1,170 +1,179 @@
-// prepared-statements.js — Prepared statement support for HenryDB
-// Implements PREPARE/EXECUTE/DEALLOCATE SQL commands
-// 
-// Prepared statements cache the parsed AST and optionally the volcano plan,
-// then substitute parameters on EXECUTE.
-
-import { parse } from './sql.js';
-import { buildPlan } from './volcano-planner.js';
+// prepared-statements.js — PREPARE/EXECUTE with parameter binding and plan caching
+// PostgreSQL-compatible prepared statement system.
+// PREPARE name (type, type, ...) AS SELECT ...;
+// EXECUTE name (value, value, ...);
+// DEALLOCATE name;
 
 /**
- * PreparedStatementManager — manages named prepared statements per session.
+ * PreparedStatementCache — manages prepared statements and their cached plans.
  */
-export class PreparedStatementManager {
-  constructor() {
-    this._stmts = new Map(); // name → { sql, ast, paramTypes, paramCount }
+export class PreparedStatementCache {
+  constructor(db, options = {}) {
+    this.db = db;
+    this.maxStatements = options.maxStatements || 100;
+    this._statements = new Map(); // name → PreparedStatement
+    this._stats = {
+      prepares: 0,
+      executions: 0,
+      cacheHits: 0,
+      deallocations: 0,
+      evictions: 0,
+    };
   }
 
   /**
-   * PREPARE name (type1, type2, ...) AS query
-   * Parameters are referenced as $1, $2, ... in the query.
+   * Prepare a statement.
+   * PREPARE name (type, ...) AS sql_with_$1_params
    */
   prepare(name, sql, paramTypes = []) {
-    if (this._stmts.has(name)) {
-      throw new Error(`Prepared statement "${name}" already exists`);
+    const lowerName = name.toLowerCase();
+
+    if (this._statements.has(lowerName)) {
+      throw new Error(`Prepared statement '${name}' already exists`);
     }
-    
-    // Count parameters ($1, $2, etc.)
-    const paramMatches = sql.match(/\$\d+/g) || [];
-    const paramNums = paramMatches.map(p => parseInt(p.slice(1)));
-    const paramCount = paramNums.length > 0 ? Math.max(...paramNums) : 0;
-    
-    // Store the template SQL — don't parse yet (parameters need substitution first)
-    this._stmts.set(name, {
+
+    // Evict if at capacity
+    if (this._statements.size >= this.maxStatements) {
+      this._evictLRU();
+    }
+
+    const stmt = {
+      name: lowerName,
       sql,
       paramTypes,
-      paramCount,
-    });
-    
-    return { type: 'OK', message: 'PREPARE' };
+      paramCount: (sql.match(/\$\d+/g) || []).length,
+      executionCount: 0,
+      totalTimeMs: 0,
+      lastExecuted: null,
+      createdAt: Date.now(),
+    };
+
+    this._statements.set(lowerName, stmt);
+    this._stats.prepares++;
+    return stmt;
   }
 
   /**
-   * EXECUTE name (val1, val2, ...)
-   * Returns the SQL with parameters substituted.
+   * Execute a prepared statement with parameter values.
    */
   execute(name, params = []) {
-    const stmt = this._stmts.get(name);
+    const lowerName = name.toLowerCase();
+    const stmt = this._statements.get(lowerName);
     if (!stmt) {
-      throw new Error(`Prepared statement "${name}" does not exist`);
+      throw new Error(`Prepared statement '${name}' does not exist`);
     }
-    
+
+    // Validate parameter count
     if (params.length < stmt.paramCount) {
       throw new Error(`Expected ${stmt.paramCount} parameters, got ${params.length}`);
     }
-    
+
     // Substitute parameters
     let sql = stmt.sql;
     for (let i = params.length; i >= 1; i--) {
-      const param = params[i - 1];
-      const replacement = typeof param === 'string' ? `'${param.replace(/'/g, "''")}'` : String(param);
+      const value = params[i - 1];
+      const replacement = this._formatParam(value);
       sql = sql.replace(new RegExp(`\\$${i}`, 'g'), replacement);
     }
-    
-    return sql;
+
+    const startTime = performance.now();
+    const result = this.db.execute(sql);
+    const elapsed = performance.now() - startTime;
+
+    stmt.executionCount++;
+    stmt.totalTimeMs += elapsed;
+    stmt.lastExecuted = Date.now();
+    this._stats.executions++;
+    this._stats.cacheHits++;
+
+    return result;
   }
 
   /**
-   * DEALLOCATE name — remove a prepared statement.
+   * Deallocate (remove) a prepared statement.
    */
   deallocate(name) {
     if (name === 'ALL') {
-      this._stmts.clear();
-      return { type: 'OK', message: 'DEALLOCATE ALL' };
+      const count = this._statements.size;
+      this._statements.clear();
+      this._stats.deallocations += count;
+      return count;
     }
-    if (!this._stmts.has(name)) {
-      throw new Error(`Prepared statement "${name}" does not exist`);
+
+    const lowerName = name.toLowerCase();
+    if (!this._statements.has(lowerName)) {
+      throw new Error(`Prepared statement '${name}' does not exist`);
     }
-    this._stmts.delete(name);
-    return { type: 'OK', message: 'DEALLOCATE' };
+    this._statements.delete(lowerName);
+    this._stats.deallocations++;
+    return 1;
   }
 
-  has(name) { return this._stmts.has(name); }
-  get(name) { return this._stmts.get(name); }
-  
   /**
-   * Parse SQL and check if it's a PREPARE/EXECUTE/DEALLOCATE command.
-   * Returns { type, ... } or null if not a prepared statement command.
+   * Check if a prepared statement exists.
    */
-  static parseCommand(sql) {
-    const trimmed = sql.trim();
-    const upper = trimmed.toUpperCase();
-    
-    // PREPARE name [(type, ...)] AS query
-    const prepareMatch = trimmed.match(/^PREPARE\s+(\w+)\s*(?:\(([^)]*)\))?\s+AS\s+(.+)$/is);
-    if (prepareMatch) {
-      const name = prepareMatch[1].toLowerCase();
-      const types = prepareMatch[2] ? prepareMatch[2].split(',').map(t => t.trim()) : [];
-      const query = prepareMatch[3];
-      return { type: 'PREPARE', name, paramTypes: types, sql: query };
-    }
-    
-    // EXECUTE name [(val, ...)]
-    const execMatch = trimmed.match(/^EXECUTE\s+(\w+)\s*(?:\((.+)\))?$/is);
-    if (execMatch) {
-      const name = execMatch[1].toLowerCase();
-      const paramsStr = execMatch[2];
-      let params = [];
-      if (paramsStr) {
-        // Parse parameter values (handle strings, numbers)
-        params = parseParamValues(paramsStr);
-      }
-      return { type: 'EXECUTE', name, params };
-    }
-    
-    // DEALLOCATE [PREPARE] name | ALL
-    const deallocMatch = trimmed.match(/^DEALLOCATE\s+(?:PREPARE\s+)?(\w+)$/is);
-    if (deallocMatch) {
-      return { type: 'DEALLOCATE', name: deallocMatch[1].toUpperCase() === 'ALL' ? 'ALL' : deallocMatch[1].toLowerCase() };
-    }
-    
-    return null;
+  has(name) {
+    return this._statements.has(name.toLowerCase());
   }
-}
 
-/**
- * Parse a comma-separated list of parameter values.
- * Handles: numbers, quoted strings, NULL, booleans.
- */
-function parseParamValues(str) {
-  const values = [];
-  let i = 0;
-  
-  while (i < str.length) {
-    // Skip whitespace and commas
-    while (i < str.length && (str[i] === ' ' || str[i] === ',')) i++;
-    if (i >= str.length) break;
-    
-    if (str[i] === "'") {
-      // Quoted string
-      i++;
-      let val = '';
-      while (i < str.length) {
-        if (str[i] === "'" && str[i + 1] === "'") {
-          val += "'";
-          i += 2;
-        } else if (str[i] === "'") {
-          i++;
-          break;
-        } else {
-          val += str[i++];
-        }
+  /**
+   * Get statement metadata.
+   */
+  describe(name) {
+    const stmt = this._statements.get(name.toLowerCase());
+    if (!stmt) throw new Error(`Prepared statement '${name}' does not exist`);
+    return {
+      name: stmt.name,
+      sql: stmt.sql,
+      paramTypes: stmt.paramTypes,
+      paramCount: stmt.paramCount,
+      executionCount: stmt.executionCount,
+      avgTimeMs: stmt.executionCount > 0 ? +(stmt.totalTimeMs / stmt.executionCount).toFixed(3) : 0,
+      lastExecuted: stmt.lastExecuted,
+    };
+  }
+
+  /**
+   * List all prepared statements.
+   */
+  list() {
+    return [...this._statements.values()].map(stmt => ({
+      name: stmt.name,
+      sql: stmt.sql,
+      paramCount: stmt.paramCount,
+      executionCount: stmt.executionCount,
+    }));
+  }
+
+  getStats() {
+    return {
+      ...this._stats,
+      activeStatements: this._statements.size,
+    };
+  }
+
+  _formatParam(value) {
+    if (value === null || value === undefined) return 'NULL';
+    if (typeof value === 'number') return String(value);
+    if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
+    // Escape single quotes
+    const escaped = String(value).replace(/'/g, "''");
+    return `'${escaped}'`;
+  }
+
+  _evictLRU() {
+    let oldestName = null;
+    let oldestTime = Infinity;
+    for (const [name, stmt] of this._statements) {
+      const lastUsed = stmt.lastExecuted || stmt.createdAt;
+      if (lastUsed < oldestTime) {
+        oldestTime = lastUsed;
+        oldestName = name;
       }
-      values.push(val);
-    } else {
-      // Unquoted value
-      let val = '';
-      while (i < str.length && str[i] !== ',') {
-        val += str[i++];
-      }
-      val = val.trim();
-      if (val.toUpperCase() === 'NULL') values.push(null);
-      else if (val.toUpperCase() === 'TRUE') values.push(true);
-      else if (val.toUpperCase() === 'FALSE') values.push(false);
-      else if (!isNaN(val) && val !== '') values.push(Number(val));
-      else values.push(val);
+    }
+    if (oldestName) {
+      this._statements.delete(oldestName);
+      this._stats.evictions++;
     }
   }
-  
-  return values;
 }
