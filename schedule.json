@@ -448,17 +448,21 @@
     {
       "id": "T42",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix file-wal.test.js and catalog.test.js remaining failures (BufferPool integration)",
       "project": "henrydb",
-      "started": "2026-04-09T15:42:29.444Z"
+      "started": "2026-04-09T15:42:29.444Z",
+      "completed": "2026-04-09T15:45:23.527Z",
+      "duration_ms": 180000,
+      "summary": "file-wal.test.js: 4→7/8 passing (added BufferPool.setEvictCallback). catalog.test.js: 20/28 stable. Last file-wal failure is idempotent recovery — deep file-backed persistence issue."
     },
     {
       "id": "T43",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Run broader test sweep: find and fix broken tests in batch (20 files at a time)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T15:45:32.264Z"
     },
     {
       "id": "T44",
