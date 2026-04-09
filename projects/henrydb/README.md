@@ -2,7 +2,7 @@
 
 A PostgreSQL-compatible relational database engine built from scratch in JavaScript. No database dependencies. No shortcuts. Every component—from the SQL parser to the B+Tree indexes to the write-ahead log—is hand-written.
 
-**50,000+ lines of source code | 441 test files | Full PostgreSQL wire protocol**
+**50,000+ lines of source code | 460+ test files | Full PostgreSQL wire protocol**
 
 ## Quick Start
 
@@ -72,6 +72,34 @@ Works with Knex, Sequelize, pg.js, and any PostgreSQL driver.
 - **CTEs**: WITH clauses, recursive CTEs
 - **Expressions**: CASE WHEN, COALESCE, NULLIF, CAST, LIKE, BETWEEN, IN
 - **Transactions**: BEGIN, COMMIT, ROLLBACK, SAVEPOINT
+
+### Data Structures Library
+
+HenryDB includes a comprehensive collection of database-focused data structures:
+
+**Tree Structures:**
+- **B+Tree** — Balanced tree for sorted data + range queries (order 64)
+- **BTreeTable** — Clustered B+tree storage engine (5,578x faster point lookups)
+- **Trie** — Prefix tree for O(k) string operations + autocomplete
+- **SkipList** — Probabilistic ordered list (Redis-style, P=0.25)
+- **LSM-Tree** — Log-Structured Merge Tree (LevelDB/RocksDB-style)
+
+**Hash Structures:**
+- **ExtendibleHashTable** — Dynamic hash with bucket splitting
+- **RobinHoodHashMap** — Open-addressing with probe distance balancing
+
+**Probabilistic Structures:**
+- **BloomFilter** — Set membership, no false negatives (9.6 bits/element)
+- **CuckooFilter** — Bloom alternative with deletion support
+- **HyperLogLog** — Cardinality estimation in 16KB (0.81% error)
+- **CountMinSketch** — Approximate frequency counting
+
+**Storage Structures:**
+- **LRUReplacer** — O(1) LRU page eviction
+- **ClockReplacer** — PostgreSQL-style usage count sweep
+- **BufferPoolManager** — Configurable LRU/Clock page caching
+- **DiskManager** — File-backed page I/O
+- **RingBuffer** — Fixed-size circular buffer for streaming
 
 ### Storage Engine
 - **Heap Files**: Slotted-page architecture with tuple-level storage
