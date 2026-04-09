@@ -11,4 +11,4 @@ fi
 export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
 cd "$(dirname "$0")"
-exec node server.js
+exec node server.cjs
