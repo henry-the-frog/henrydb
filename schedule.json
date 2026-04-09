@@ -5192,6 +5192,78 @@
       "completed": "2026-04-09T01:31:29.501Z",
       "duration_ms": 180000,
       "summary": "Extensions: CREATE/DROP EXTENSION, version tracking, dependencies, CASCADE, built-in catalog (uuid-ossp, pgcrypto, pg_trgm, hstore, postgis). 16 tests."
+    },
+    {
+      "id": "T478",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening direction: pick an exploration project for the next 2 hours",
+      "started": "2026-04-09T02:16:01.535Z",
+      "completed": "2026-04-09T02:16:50.313Z",
+      "duration_ms": 90000,
+      "summary": "Decided on evening direction: HenryDB integration/end-to-end testing. 209 modules built but need to verify they compose. Also considered web playground but integration depth is more valuable."
+    },
+    {
+      "id": "T479",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan evening exploration project",
+      "task": null,
+      "started": "2026-04-09T02:16:58.770Z",
+      "completed": "2026-04-09T02:18:09.284Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 integration test suites: e-commerce end-to-end, stress test (concurrency+recovery), feature showcase (window+CTE+JSON+FTS). Each exercises multiple subsystems together."
+    },
+    {
+      "id": "T482",
+      "mode": "BUILD",
+      "task": "Build HenryDB end-to-end integration test: e-commerce scenario (schema, data, complex queries, transactions, triggers, views)",
+      "status": "done",
+      "plan_ref": "T479",
+      "started": "2026-04-09T02:18:18.160Z",
+      "completed": "2026-04-09T02:31:47.021Z",
+      "duration_ms": 240000,
+      "summary": "Built e-commerce integration test suite: 34 tests covering schema setup, data population, basic queries, CTEs, window functions (ROW_NUMBER, RANK, DENSE_RANK), UNION, EXISTS, IN subqueries, CASE expressions, 4-table JOINs, views, transactions, analytics (GROUP BY, HAVING, LIKE, BETWEEN, LIMIT/OFFSET, NULL handling, COALESCE), batch UPDATE/DELETE, CREATE TABLE AS, EXPLAIN plans, stress tests (100 ops, 1000 rows). Also fixed PlanCache bug in db.js (.clear() -> .invalidateAll())."
+    },
+    {
+      "id": "T483",
+      "mode": "BUILD",
+      "task": "Build HenryDB stress test: concurrent transactions, deadlock detection, crash recovery cycle",
+      "status": "done",
+      "plan_ref": "T479",
+      "started": "2026-04-09T02:32:02.610Z",
+      "completed": "2026-04-09T02:38:33.692Z",
+      "duration_ms": 180000,
+      "summary": "Built stress/integration test suite: 26 tests covering MVCC (snapshot isolation, concurrent readers+writer, rollback, serial inserts, WAL, bank transfer, delete), deadlock detection (2-way/3-way cycles, acyclic, edge removal, 20-node chain, DeadlockDetector), ARIES crash recovery (redo, undo uncommitted, checkpoint, idempotent, 100 txns, multi-checkpoint), lock manager (X/S/IS locks, concurrency, releaseAll, stats, upgrade)."
+    },
+    {
+      "id": "T484",
+      "mode": "BUILD",
+      "task": "Build HenryDB feature showcase: window functions + CTEs + JSON + FTS in one complex query suite",
+      "status": "done",
+      "plan_ref": "T479",
+      "started": "2026-04-09T02:38:48.924Z",
+      "completed": "2026-04-09T02:41:16.632Z",
+      "duration_ms": 180000,
+      "summary": "Built feature showcase test suite: 25 tests covering JSON functions (EXTRACT, TYPE, ARRAY_LENGTH), full-text search (keyword, technical term, no-match), CTEs (author stats, category distribution), window functions (ROW_NUMBER, SUM OVER, DENSE_RANK), complex multi-feature queries (JOIN+GROUP+HAVING, subquery+CASE, 4-table join, UNION, nested EXISTS, IN subquery), views, CREATE TABLE AS, analytics patterns (BETWEEN, LIKE, COALESCE, pagination, COUNT DISTINCT)."
+    },
+    {
+      "id": "T480",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-09T02:41:34.798Z",
+      "completed": "2026-04-09T02:44:50.987Z",
+      "duration_ms": 240000,
+      "summary": "Built interactive SQL playground for HenryDB: browser-based demo with dark theme, 12 example queries, Ctrl+Enter execution. Bundle is 115KB minified via esbuild. Features: live SQL editor, result tables, EXPLAIN plan visualization, DB reset, multi-statement support. Includes demo tables (students, products, orders)."
+    },
+    {
+      "id": "T481",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git commit, push, dashboard health",
+      "started": "2026-04-09T02:45:07.094Z"
     }
   ],
   "focusProjects": [
@@ -7071,6 +7143,26 @@
     {
       "time": "2026-04-09T01:30:35.783Z",
       "msg": "Added T477 (BUILD) after end: Build extensions system: CREATE/DROP EXTENSION, extension catalog, version tracking, depends-on"
+    },
+    {
+      "time": "2026-04-09T02:15:32.548Z",
+      "msg": "Added T478 (THINK) after end: Evening direction: pick an exploration project for the next 2 hours"
+    },
+    {
+      "time": "2026-04-09T02:15:36.612Z",
+      "msg": "Added T479 (PLAN) after T478: Plan evening exploration project"
+    },
+    {
+      "time": "2026-04-09T02:15:48.926Z",
+      "msg": "Added T480 (BUILD) after T479: null"
+    },
+    {
+      "time": "2026-04-09T02:15:53.225Z",
+      "msg": "Added T481 (MAINTAIN) after T480: Housekeeping: git commit, push, dashboard health"
+    },
+    {
+      "time": "2026-04-09T02:18:02.004Z",
+      "msg": "PLAN T479 filled 3 BUILD tasks"
     }
   ]
 }

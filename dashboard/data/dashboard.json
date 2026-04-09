@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-09T01:31:29.567Z",
+  "generated": "2026-04-09T02:45:07.172Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Build extensions system: CREATE/DROP EXTENSION, extension catalog, version tracking, depends-on",
-    "completedAt": "2026-04-09T01:31:29.567Z",
-    "taskId": "T477",
-    "summary": "Extensions: CREATE/DROP EXTENSION, version tracking, dependencies, CASCADE, built-in catalog (uuid-ossp, pgcrypto, pg_trgm, hstore, postgis). 16 tests.",
-    "durationMs": 180000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Housekeeping: git commit, push, dashboard health",
+    "startedAt": "2026-04-09T02:45:07.172Z",
+    "taskId": "T481"
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4681,48 +4679,592 @@
       {
         "id": "T430",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Next HenryDB depth cycle",
         "task": null,
-        "started": "2026-04-08T23:57:49.107Z"
+        "started": "2026-04-08T23:57:49.107Z",
+        "completed": "2026-04-08T23:58:05.796Z",
+        "duration_ms": 60000,
+        "summary": "Planned stored procedures: 3 BUILD tasks — PL interpreter, CREATE FUNCTION/PROCEDURE, query execution inside procedures."
       },
       {
         "id": "T431",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Build PL/HenryDB interpreter: DECLARE, IF/ELSIF/ELSE, WHILE, FOR, RETURN, RAISE, variable scoping",
         "plan_ref": "T430",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-08T23:58:15.815Z",
+        "completed": "2026-04-09T00:12:04.771Z",
+        "duration_ms": 240000,
+        "summary": "PL/HenryDB interpreter: DECLARE, IF/ELSIF/ELSE, WHILE, FOR/REVERSE, RETURN, RAISE NOTICE/EXCEPTION, EXECUTE INTO, SELECT INTO, PERFORM, FOUND, exception handlers, variable scoping, string concat, infinite loop protection. 20 tests."
       },
       {
         "id": "T433",
         "mode": "BUILD",
         "task": "Build CREATE FUNCTION/PROCEDURE, CALL, SELECT fn(), stored routine catalog",
-        "status": "upcoming",
-        "plan_ref": "T430"
+        "status": "done",
+        "plan_ref": "T430",
+        "started": "2026-04-09T00:12:20.404Z",
+        "completed": "2026-04-09T00:14:04.984Z",
+        "duration_ms": 180000,
+        "summary": "CREATE FUNCTION/PROCEDURE, CALL, stored routine catalog, OR REPLACE, DROP, IF EXISTS, default params, IMMUTABLE/STABLE/VOLATILE, dollar-quoting, parseCreateRoutine, parseCall. 18 tests."
       },
       {
         "id": "T434",
         "mode": "BUILD",
         "task": "Build query execution inside procedures: EXECUTE, SELECT INTO, dynamic SQL, cursor support",
-        "status": "upcoming",
-        "plan_ref": "T430"
+        "status": "done",
+        "plan_ref": "T430",
+        "started": "2026-04-09T00:14:21.523Z",
+        "completed": "2026-04-09T00:17:54.770Z",
+        "duration_ms": 240000,
+        "summary": "Advanced PL/HenryDB: dynamic SQL via EXECUTE, SELECT INTO with var substitution, FOUND tracking, string-safe variable substitution, literal-safe expression eval. Fixed string concat vs arithmetic precedence. 13 advanced tests + all 51 PL tests pass."
       },
       {
         "id": "T432",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync",
+        "started": "2026-04-09T00:18:11.542Z",
+        "completed": "2026-04-09T00:18:39.845Z",
+        "duration_ms": 30000,
+        "summary": "Git push to origin. Dashboard sync skipped (not in local workspace)."
+      },
+      {
+        "id": "T435",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build trigger system: CREATE TRIGGER BEFORE/AFTER INSERT/UPDATE/DELETE, trigger execution engine, NEW/OLD row references",
+        "project": "henrydb",
+        "started": "2026-04-09T00:19:09.143Z",
+        "completed": "2026-04-09T00:20:58.624Z",
+        "duration_ms": 180000,
+        "summary": "Enhanced trigger system: BEFORE/AFTER, INSERT/UPDATE/DELETE, FOR EACH ROW/STATEMENT, WHEN conditions, NEW/OLD row refs, TG_ variables, enable/disable, PL/HenryDB execution. 16 tests."
+      },
+      {
+        "id": "T436",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build event notification system: LISTEN/NOTIFY for client-to-client messaging through the database",
+        "project": "henrydb",
+        "started": "2026-04-09T00:21:17.708Z",
+        "completed": "2026-04-09T00:22:24.883Z",
+        "duration_ms": 120000,
+        "summary": "LISTEN/NOTIFY event system: channel subscription, broadcast, sender exclusion, UNLISTEN/*, async waitForNotification, queue drain/peek, stats. 21 tests."
+      },
+      {
+        "id": "T437",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build query rewriting engine: view expansion, subquery flattening, predicate pushdown as AST-to-AST transformations",
+        "project": "henrydb",
+        "started": "2026-04-09T00:23:07.401Z",
+        "completed": "2026-04-09T00:24:48.359Z",
+        "duration_ms": 180000,
+        "summary": "Query rewriter engine: 5 rules (view expansion, predicate pushdown, subquery flattening, constant folding, redundant elimination). AST-to-AST, immutable transforms. 17 tests."
+      },
+      {
+        "id": "T438",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build JSON path query support: JSON_PATH_QUERY, @>, @@, jsonpath syntax for querying JSONB columns",
+        "project": "henrydb",
+        "started": "2026-04-09T00:25:03.717Z",
+        "completed": "2026-04-09T00:26:36.109Z",
+        "duration_ms": 180000,
+        "summary": "JSONPath query engine: $, .key, [index], [*], .*, .., [?(@.x op val)], [start:end], contains (@>), exists, first. Full bookstore example. 28 tests."
+      },
+      {
+        "id": "T439",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build query profiler: timing per plan node, I/O counters, memory tracking, EXPLAIN ANALYZE integration for real performance analysis",
+        "project": "henrydb",
+        "started": "2026-04-09T00:26:59.103Z",
+        "completed": "2026-04-09T00:28:21.953Z",
+        "duration_ms": 180000,
+        "summary": "Query profiler: per-node timing (self vs total), I/O counters (pages read/written, index lookups), memory tracking, loop counting, hot path analysis, estimate accuracy ratio, formatted reports. 15 tests."
+      },
+      {
+        "id": "T440",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build table partitioning: PARTITION BY RANGE/LIST/HASH, partition pruning during query, partition-wise joins",
+        "project": "henrydb",
+        "started": "2026-04-09T00:28:38.756Z",
+        "completed": "2026-04-09T00:30:03.930Z",
+        "duration_ms": 180000,
+        "summary": "Table partitioning: RANGE, LIST, HASH strategies. Partition pruning on =, >, <, >=, <=, IN, BETWEEN. Delete with pruning. Distribution stats. 16 tests."
+      },
+      {
+        "id": "T441",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build materialized view system: CREATE MATERIALIZED VIEW, REFRESH, incremental refresh tracking, stale detection",
+        "project": "henrydb",
+        "started": "2026-04-09T00:30:22.219Z",
+        "completed": "2026-04-09T00:31:29.846Z",
+        "duration_ms": 150000,
+        "summary": "Materialized views: CREATE/DROP, REFRESH, WITH NO DATA, stale detection, table dependency tracking, refreshAllStale, OR REPLACE, multi-table deps. 14 tests."
+      },
+      {
+        "id": "T442",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build prepared statement cache: PREPARE/EXECUTE with parameter binding, plan caching, cache eviction",
+        "project": "henrydb",
+        "started": "2026-04-09T00:31:47.511Z",
+        "completed": "2026-04-09T00:33:17.327Z",
+        "duration_ms": 120000,
+        "summary": "Prepared statements: PREPARE/EXECUTE/DEALLOCATE, $N parameter binding, plan caching, LRU eviction, describe metadata, stats. 16 tests."
+      },
+      {
+        "id": "T443",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build row-level security (RLS): CREATE POLICY, ENABLE RLS, per-user row filtering with security contexts",
+        "project": "henrydb",
+        "started": "2026-04-09T00:33:38.769Z",
+        "completed": "2026-04-09T00:34:53.339Z",
+        "duration_ms": 150000,
+        "summary": "Row-level security: CREATE POLICY, ENABLE/DISABLE RLS, FORCE, permissive+restrictive policies, owner/dept/role/tenant isolation, USING + WITH CHECK, superuser bypass, session vars. 16 tests."
+      },
+      {
+        "id": "T444",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build logical replication: publisher/subscriber model, change data capture (CDC), WAL-based event streaming",
+        "project": "henrydb",
+        "started": "2026-04-09T00:35:11.542Z",
+        "completed": "2026-04-09T00:36:34.728Z",
+        "duration_ms": 180000,
+        "summary": "Logical replication: publisher/subscriber, CDC with INSERT/UPDATE/DELETE capture, replication slots, LSN tracking, lag monitoring, change log filtering, subscriber callbacks. 22 tests."
+      },
+      {
+        "id": "T445",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection-level query timeout and statement cancellation system",
+        "project": "henrydb",
+        "started": "2026-04-09T00:36:54.576Z",
+        "completed": "2026-04-09T00:37:58.911Z",
+        "duration_ms": 120000,
+        "summary": "Query timeout and cancellation: CancelToken (cooperative), TimeoutManager with per-query tracking, withTimeout async helper, QueryCancelledError/QueryTimeoutError, active query monitoring. 16 tests."
+      },
+      {
+        "id": "T446",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build full-text search: tsvector/tsquery types, text search index, ts_rank scoring, to_tsvector/to_tsquery functions",
+        "project": "henrydb",
+        "started": "2026-04-09T00:38:23.564Z",
+        "completed": "2026-04-09T00:42:01.065Z",
+        "duration_ms": 240000,
+        "summary": "Full-text search: TSVector (fromText, concat, positions), TSQuery (AND/OR/NOT/phrase, parse, fromPlainText), stemming, stop words, ts_rank scoring, TextSearchIndex (inverted index, ranked search). 24 tests."
+      },
+      {
+        "id": "T447",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build table statistics collector: analyze command, histogram generation, distinct value estimation, null fraction tracking for query optimizer",
+        "project": "henrydb",
+        "started": "2026-04-09T00:42:25.554Z",
+        "completed": "2026-04-09T00:43:46.612Z",
+        "duration_ms": 180000,
+        "summary": "Table statistics: ANALYZE, histograms, MCV, distinct count, null fraction, min/max, avg width, correlation, selectivity estimation (=, <, >, <=, >=, BETWEEN, IS NULL), row count estimation, sampling mode. 16 tests."
+      },
+      {
+        "id": "T448",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build pg_catalog system tables: pg_class, pg_attribute, pg_type, pg_index, information_schema views",
+        "project": "henrydb",
+        "started": "2026-04-09T00:44:14.056Z",
+        "completed": "2026-04-09T00:45:27.470Z",
+        "duration_ms": 180000,
+        "summary": "System catalog: pg_class, pg_attribute, pg_type, pg_index, pg_namespace, pg_database, pg_stat_user_tables, information_schema.tables, information_schema.columns. OID mapping, filtering. 15 tests."
+      },
+      {
+        "id": "T449",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection rate limiter: per-IP limits, token bucket algorithm, slowloris protection, connection queue with fairness",
+        "project": "henrydb",
+        "started": "2026-04-09T00:45:47.919Z",
+        "completed": "2026-04-09T00:46:57.426Z",
+        "duration_ms": 120000,
+        "summary": "Rate limiter: TokenBucket, SlidingWindowCounter, ConnectionRateLimiter with per-IP limits, QPS limiting, slowloris detection, global limits, activity tracking. 16 tests."
+      },
+      {
+        "id": "T450",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build query plan cache: LRU plan cache keyed on normalized SQL, cache invalidation on DDL, hit rate tracking",
+        "project": "henrydb",
+        "started": "2026-04-09T00:47:17.780Z",
+        "completed": "2026-04-09T00:48:27.980Z",
+        "duration_ms": 120000,
+        "summary": "Plan cache: LRU eviction, DDL invalidation, SQL normalization, hit rate tracking, sorted entries. 14 tests."
+      },
+      {
+        "id": "T451",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build advisory locks: pg_advisory_lock, pg_try_advisory_lock, session-level and transaction-level locks",
+        "project": "henrydb",
+        "started": "2026-04-09T00:48:47.213Z",
+        "completed": "2026-04-09T00:49:56.955Z",
+        "duration_ms": 120000,
+        "summary": "Advisory locks: exclusive/shared modes, session/transaction levels, recursive locking, async blocking with timeout, array keys, session cleanup. 15 tests."
+      },
+      {
+        "id": "T452",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build query result streaming: cursor-based iteration, server-side cursors, FETCH FORWARD/BACKWARD, SCROLL cursors",
+        "project": "henrydb",
+        "started": "2026-04-09T00:50:21.436Z",
+        "completed": "2026-04-09T00:52:04.669Z",
+        "duration_ms": 120000,
+        "summary": "Server-side cursors: DECLARE, FETCH FORWARD/BACKWARD/FIRST/LAST/ABSOLUTE/RELATIVE/ALL, SCROLL, WITH HOLD, MOVE, CLOSE. 21 tests."
+      },
+      {
+        "id": "T453",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build query deadlock detector: wait-for graph, cycle detection, automatic victim selection",
+        "project": "henrydb",
+        "started": "2026-04-09T00:52:31.421Z",
+        "completed": "2026-04-09T00:53:48.598Z",
+        "duration_ms": 120000,
+        "summary": "Deadlock detector: wait-for graph, DFS cycle detection, victim selection by cost (statements, rows, priority), 3-way deadlock support. 16 tests."
+      },
+      {
+        "id": "T454",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build vacuum/analyze daemon: dead tuple tracking, VACUUM to reclaim space, auto-vacuum trigger, bloat estimation",
+        "project": "henrydb",
+        "started": "2026-04-09T00:54:32.302Z",
+        "completed": "2026-04-09T00:56:18.157Z",
+        "duration_ms": 120000,
+        "summary": "VACUUM system: dead tuple tracking (INSERT/UPDATE/DELETE), VACUUM/VACUUM ALL, auto-vacuum threshold with scale factor, bloat report, daemon mode. 13 tests."
+      },
+      {
+        "id": "T455",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build pg_stat_statements equivalent: normalized query tracking, execution counts, timing, mean/stddev, top queries by time/calls",
+        "project": "henrydb",
+        "started": "2026-04-09T00:56:44.204Z",
+        "completed": "2026-04-09T00:58:29.903Z",
+        "duration_ms": 120000,
+        "summary": "pg_stat_statements: normalized query tracking, calls/timing/rows/blocks stats, mean/stddev (Welford online), topN queries, reset, summary. 13 tests."
+      },
+      {
+        "id": "T456",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection pool warm-up and health checking: connection validation, idle timeout, health probes, pool sizing recommendations",
+        "project": "henrydb",
+        "started": "2026-04-09T00:59:02.218Z",
+        "completed": "2026-04-09T01:01:07.707Z",
+        "duration_ms": 150000,
+        "summary": "Pool health: warm-up, validation, idle/lifetime eviction, error eviction, health checks, pool sizing recommendations, exhaustion tracking. 14 tests."
+      },
+      {
+        "id": "T457",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build savepoint support: SAVEPOINT name, RELEASE SAVEPOINT, ROLLBACK TO SAVEPOINT with nested savepoint stacks",
+        "project": "henrydb",
+        "started": "2026-04-09T01:01:34.731Z",
+        "completed": "2026-04-09T01:03:10.936Z",
+        "duration_ms": 120000,
+        "summary": "Savepoints: SAVEPOINT, RELEASE, ROLLBACK TO with nested stacks, snapshot/restore, case-insensitive, replacement semantics. 15 tests."
+      },
+      {
+        "id": "T458",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build COPY TO/FROM: bulk data import/export in CSV/TSV/binary formats",
+        "project": "henrydb",
+        "started": "2026-04-09T01:04:06.322Z",
+        "completed": "2026-04-09T01:05:12.125Z",
+        "duration_ms": 120000,
+        "summary": "COPY TO/FROM: CSV/TSV with header, quoted fields, escaped quotes, NULL handling, auto type detection, custom delimiter, roundtrip. 18 tests."
+      },
+      {
+        "id": "T459",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build role-based access control: CREATE ROLE, GRANT, REVOKE, role hierarchies, privilege checking",
+        "project": "henrydb",
+        "started": "2026-04-09T01:05:33.917Z",
+        "completed": "2026-04-09T01:06:59.841Z",
+        "duration_ms": 150000,
+        "summary": "RBAC: CREATE/DROP/ALTER ROLE, GRANT/REVOKE privileges, role hierarchies with inheritance, circular membership detection, public role, WITH GRANT OPTION, superuser bypass. 21 tests."
+      },
+      {
+        "id": "T460",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build GiST (Generalized Search Tree) index: extensible index for geometric/range types, support for containment and overlap operators",
+        "project": "henrydb",
+        "started": "2026-04-09T01:07:20.724Z",
+        "completed": "2026-04-09T01:08:45.055Z",
+        "duration_ms": 180000,
+        "summary": "GiST index: extensible generalized search tree with range and 2D point operator classes. Containment, overlap, nearest-neighbor, split/merge. 12 tests."
+      },
+      {
+        "id": "T461",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection audit log: track all connections, authentications, DDL, and failed attempts with rotation",
+        "project": "henrydb",
+        "started": "2026-04-09T01:09:06.554Z",
+        "completed": "2026-04-09T01:10:13.180Z",
+        "duration_ms": 120000,
+        "summary": "Audit log: connection/auth/DDL/DML/error tracking, query filtering, log rotation, levels, exclude patterns, external sinks. 16 tests."
+      },
+      {
+        "id": "T462",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection multiplexing protocol: client authentication pooling, SCRAM-SHA-256 auth passthrough",
+        "project": "henrydb",
+        "started": "2026-04-09T01:10:51.729Z",
+        "completed": "2026-04-09T01:11:57.520Z",
+        "duration_ms": 180000,
+        "summary": "SCRAM-SHA-256 auth: full client/server handshake, hashPassword, PBKDF2, client proof verification, server signature, concurrent sessions, wrong password rejection. 7 tests."
+      },
+      {
+        "id": "T463",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build query result pagination: OFFSET/LIMIT optimization, keyset pagination, cursor-based pagination for APIs",
+        "project": "henrydb",
+        "started": "2026-04-09T01:12:19.447Z",
+        "completed": "2026-04-09T01:13:15.610Z",
+        "duration_ms": 120000,
+        "summary": "Pagination: offset/limit, keyset (seek), cursor-based (GraphQL-style edges/pageInfo). Full cursor traversal, asc/desc. 14 tests."
+      },
+      {
+        "id": "T464",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build sequence generator: CREATE SEQUENCE, nextval, currval, setval, SERIAL column type",
+        "project": "henrydb",
+        "started": "2026-04-09T01:13:33.568Z",
+        "completed": "2026-04-09T01:14:26.966Z",
+        "duration_ms": 120000,
+        "summary": "Sequences: CREATE/DROP SEQUENCE, nextval/currval/setval, CYCLE, restart, SERIAL, custom increment/start/min/max. 18 tests."
+      },
+      {
+        "id": "T465",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build table inheritance system: CREATE TABLE child INHERITS (parent), query routing, column inheritance",
+        "project": "henrydb",
+        "started": "2026-04-09T01:14:47.382Z",
+        "completed": "2026-04-09T01:15:39.274Z",
+        "duration_ms": 120000,
+        "summary": "Table inheritance: INHERITS, column inheritance, query targets, multi-level, inheritance chain, descendant check, noInherit, tree view. 13 tests."
+      },
+      {
+        "id": "T466",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build domain types: CREATE DOMAIN with CHECK constraints, NOT NULL, DEFAULT, for reusable column types",
+        "project": "henrydb",
+        "started": "2026-04-09T01:16:05.669Z",
+        "completed": "2026-04-09T01:16:55.973Z",
+        "duration_ms": 120000,
+        "summary": "Domain types: CREATE/ALTER/DROP DOMAIN, CHECK constraints, NOT NULL, DEFAULT, multiple constraints, constraint management. 16 tests."
+      },
+      {
+        "id": "T467",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection SSL/TLS handler: TLS negotiation, certificate validation, encrypted transport",
+        "project": "henrydb",
+        "started": "2026-04-09T01:17:15.429Z",
+        "completed": "2026-04-09T01:18:13.343Z",
+        "duration_ms": 120000,
+        "summary": "TLS handler: SSL negotiation, TLSConfig modes (disable/allow/prefer/require/verify-ca/verify-full), self-signed cert generation, certificate validation, stats. 14 tests."
+      },
+      {
+        "id": "T468",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build enum types: CREATE TYPE name AS ENUM, enum comparison, ordering, ALTER TYPE ADD VALUE",
+        "project": "henrydb",
+        "started": "2026-04-09T01:18:32.710Z",
+        "completed": "2026-04-09T01:19:23.774Z",
+        "duration_ms": 120000,
+        "summary": "Enum types: CREATE TYPE AS ENUM, ADD VALUE (BEFORE/AFTER/IF NOT EXISTS), RENAME VALUE, ordering/comparison, validation. 16 tests."
+      },
+      {
+        "id": "T469",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build composite types: CREATE TYPE name AS (field type, ...), record types, row constructors",
+        "project": "henrydb",
+        "started": "2026-04-09T01:20:52.472Z",
+        "completed": "2026-04-09T01:22:25.694Z",
+        "duration_ms": 120000,
+        "summary": "Composite types: CREATE TYPE AS, row constructors, field access, compare, ALTER ADD/DROP ATTRIBUTE, ROW string format. 15 tests."
+      },
+      {
+        "id": "T470",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build range types: int4range, numrange, tsrange, daterange, containment, overlap, intersection operators",
+        "project": "henrydb",
+        "started": "2026-04-09T01:22:36.758Z",
+        "completed": "2026-04-09T01:23:34.827Z",
+        "duration_ms": 120000,
+        "summary": "Range types: int4range/numrange/tsrange/daterange, contains, containsRange, overlaps, intersection, union, adjacent, parse/toString. 19 tests."
+      },
+      {
+        "id": "T471",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build connection session variables: SET/SHOW/RESET, session-scoped GUCs, search_path, client_encoding",
+        "project": "henrydb",
+        "started": "2026-04-09T01:23:46.007Z",
+        "completed": "2026-04-09T01:24:33.663Z",
+        "duration_ms": 120000,
+        "summary": "Session variables: SET/SHOW/RESET, SET LOCAL, GUC defaults, savepoints, typed getters (bool/int/float/memory), SHOW ALL. 16 tests."
+      },
+      {
+        "id": "T472",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build rule system: CREATE RULE, ON SELECT/INSERT/UPDATE/DELETE, INSTEAD/ALSO, updatable views via rules",
+        "project": "henrydb",
+        "started": "2026-04-09T01:24:54.873Z",
+        "completed": "2026-04-09T01:25:51.481Z",
+        "duration_ms": 120000,
+        "summary": "Rule system: CREATE/DROP RULE, INSTEAD/ALSO, conditional rules, ON SELECT/INSERT/UPDATE/DELETE, enable/disable, OR REPLACE. 14 tests."
+      },
+      {
+        "id": "T473",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build foreign data wrapper: CREATE FOREIGN TABLE, CREATE SERVER, remote table mapping, pushdown predicates",
+        "project": "henrydb",
+        "started": "2026-04-09T01:26:02.821Z",
+        "completed": "2026-04-09T01:27:02.066Z",
+        "duration_ms": 180000,
+        "summary": "Foreign data wrapper: CREATE WRAPPER/SERVER/FOREIGN TABLE, user mappings, predicate+limit pushdown, data providers, CASCADE drop, IMPORT SCHEMA. 14 tests."
+      },
+      {
+        "id": "T474",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build table spaces: CREATE TABLESPACE, SET TABLESPACE, storage location management",
+        "project": "henrydb",
+        "started": "2026-04-09T01:27:18.817Z",
+        "completed": "2026-04-09T01:28:05.837Z",
+        "duration_ms": 120000,
+        "summary": "Tablespaces: CREATE/DROP/ALTER TABLESPACE, SET TABLESPACE, built-in pg_default/pg_global, object tracking, size. 14 tests."
+      },
+      {
+        "id": "T475",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build event triggers: CREATE EVENT TRIGGER, ddl_command_start/end, table_rewrite, sql_drop events",
+        "project": "henrydb",
+        "started": "2026-04-09T01:28:16.627Z",
+        "completed": "2026-04-09T01:29:08.005Z",
+        "duration_ms": 120000,
+        "summary": "Event triggers: ddl_command_start/end, table_rewrite, sql_drop, tag filtering, abort on start, fire count tracking. 14 tests."
+      },
+      {
+        "id": "T476",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, object namespacing",
+        "project": "henrydb",
+        "started": "2026-04-09T01:29:25.002Z",
+        "completed": "2026-04-09T01:30:20.058Z",
+        "duration_ms": 180000,
+        "summary": "Schema management: CREATE/DROP/ALTER SCHEMA, search_path resolution, qualified names, pg_catalog priority, CASCADE, object namespacing. 19 tests."
+      },
+      {
+        "id": "T477",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Build extensions system: CREATE/DROP EXTENSION, extension catalog, version tracking, depends-on",
+        "project": "henrydb",
+        "started": "2026-04-09T01:30:36.022Z",
+        "completed": "2026-04-09T01:31:29.501Z",
+        "duration_ms": 180000,
+        "summary": "Extensions: CREATE/DROP EXTENSION, version tracking, dependencies, CASCADE, built-in catalog (uuid-ossp, pgcrypto, pg_trgm, hstore, postgis). 16 tests."
+      },
+      {
+        "id": "T478",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Evening direction: pick an exploration project for the next 2 hours",
+        "started": "2026-04-09T02:16:01.535Z",
+        "completed": "2026-04-09T02:16:50.313Z",
+        "duration_ms": 90000,
+        "summary": "Decided on evening direction: HenryDB integration/end-to-end testing. 209 modules built but need to verify they compose. Also considered web playground but integration depth is more valuable."
+      },
+      {
+        "id": "T479",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan evening exploration project",
+        "task": null,
+        "started": "2026-04-09T02:16:58.770Z"
+      },
+      {
+        "id": "T482",
+        "mode": "BUILD",
+        "task": "Build HenryDB end-to-end integration test: e-commerce scenario (schema, data, complex queries, transactions, triggers, views)",
         "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync"
+        "plan_ref": "T479"
+      },
+      {
+        "id": "T483",
+        "mode": "BUILD",
+        "task": "Build HenryDB stress test: concurrent transactions, deadlock detection, crash recovery cycle",
+        "status": "upcoming",
+        "plan_ref": "T479"
+      },
+      {
+        "id": "T484",
+        "mode": "BUILD",
+        "task": "Build HenryDB feature showcase: window functions + CTEs + JSON + FTS in one complex query suite",
+        "status": "upcoming",
+        "plan_ref": "T479"
+      },
+      {
+        "id": "T480",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T481",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git commit, push, dashboard health"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 475,
-    "blocksTotal": 434,
+    "blocksCompleted": 481,
+    "blocksTotal": 484,
     "modeDistribution": {
-      "THINK": 14,
-      "PLAN": 12,
-      "BUILD": 371,
+      "THINK": 15,
+      "PLAN": 13,
+      "BUILD": 375,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
