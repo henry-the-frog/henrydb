@@ -790,22 +790,28 @@
     {
       "id": "T74",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder, persistence work done via T80/T81"
     },
     {
       "id": "T76",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on persistence work. What else needs hardening?"
+      "status": "done",
+      "task": "Reflect on persistence work. What else needs hardening?",
+      "started": "2026-04-09T17:45:38.595Z",
+      "completed": "2026-04-09T17:45:54.376Z",
+      "duration_ms": 60000,
+      "summary": "Persistence fixes were critical bugs invisible at in-memory level. Still need: secondary index rebuild, WAL crash recovery test, full suite run. Priority: secondary indexes and crash recovery."
     },
     {
       "id": "T78",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder"
     },
     {
       "id": "T71",
@@ -818,22 +824,46 @@
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder"
     },
     {
       "id": "T75",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard sync"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard sync",
+      "started": "2026-04-09T17:46:02.991Z",
+      "completed": "2026-04-09T17:46:20.845Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, dashboard synced."
     },
     {
       "id": "T77",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB next depth target based on reflection",
-      "task": null
+      "task": null,
+      "started": "2026-04-09T17:46:33.082Z",
+      "completed": "2026-04-09T17:46:46.685Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 BUILD tasks: secondary index rebuild + crash recovery test, then full suite run."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "task": "Secondary index rebuild on reopen + WAL crash recovery test (uncommitted txn rollback)",
+      "status": "in-progress",
+      "plan_ref": "T77",
+      "started": "2026-04-09T17:46:56.035Z"
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "task": "Run full test suite, report updated pass count, fix any new failures from persistence changes",
+      "status": "upcoming",
+      "plan_ref": "T77"
     },
     {
       "id": "T79",
@@ -1167,6 +1197,22 @@
     {
       "time": "2026-04-09T17:34:48.697Z",
       "msg": "PLAN T72 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T17:45:19.082Z",
+      "msg": "Removed T74: Unfilled placeholder, persistence work done via T80/T81"
+    },
+    {
+      "time": "2026-04-09T17:45:31.950Z",
+      "msg": "Removed T73: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-09T17:45:32.156Z",
+      "msg": "Removed T78: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-09T17:46:41.154Z",
+      "msg": "PLAN T77 filled 2 BUILD tasks"
     }
   ]
 }

@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-09T17:44:52.673Z",
+  "generated": "2026-04-09T17:46:56.097Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Rebuild indexes on reopen + add crash recovery integration test",
-    "completedAt": "2026-04-09T17:44:52.673Z",
-    "taskId": "T81",
-    "summary": "Index rebuild on reopen working. FileBackedHeap now tracks rowCount. 3 new tests (PK lookup after reopen, multi-cycle persistence, DELETE persistence). 50/50 persistence tests passing. Zero regressions.",
-    "durationMs": 480000
+    "task": "Secondary index rebuild on reopen + WAL crash recovery test (uncommitted txn rollback)",
+    "startedAt": "2026-04-09T17:46:56.097Z",
+    "taskId": "T82"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1037,44 +1035,61 @@
       {
         "id": "T72",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB file-backed persistence: make data survive process restart",
         "task": null,
-        "started": "2026-04-09T17:32:29.452Z"
+        "started": "2026-04-09T17:32:29.452Z",
+        "completed": "2026-04-09T17:34:55.806Z",
+        "duration_ms": 120000,
+        "summary": "Diagnosed persistence failures: 1) bp.stats() is getStats() method vs stats property, 2) e2e tests work at PersistentDatabase level but fail at raw FileBackedHeap level (data types, evictions), 3) Need index rebuild on reopen. 2 BUILD tasks planned."
       },
       {
         "id": "T80",
         "mode": "BUILD",
         "task": "Fix persistence test failures: BufferPool.stats() alias, DiskManager {create:false}, mixed data types encoding",
-        "status": "upcoming",
-        "plan_ref": "T72"
+        "status": "done",
+        "plan_ref": "T72",
+        "started": "2026-04-09T17:35:06.122Z",
+        "completed": "2026-04-09T17:40:59.751Z",
+        "duration_ms": 600000,
+        "summary": "Fixed 3 critical persistence bugs: 1) BufferPool.fetchPage ignored disk read callback - pages loaded as zeros on reopen, 2) BufferPool.flushAll ignored evict callback - dirty pages never written to disk files, 3) BufferPool.stats was property not method. All 38 persistence tests now passing (was 17/38). File-backed persistence actually works now."
       },
       {
         "id": "T81",
         "mode": "BUILD",
         "task": "Rebuild indexes on reopen + add crash recovery integration test",
-        "status": "upcoming",
-        "plan_ref": "T72"
+        "status": "done",
+        "plan_ref": "T72",
+        "started": "2026-04-09T17:41:29.974Z",
+        "completed": "2026-04-09T17:44:52.610Z",
+        "duration_ms": 480000,
+        "summary": "Index rebuild on reopen working. FileBackedHeap now tracks rowCount. 3 new tests (PK lookup after reopen, multi-cycle persistence, DELETE persistence). 50/50 persistence tests passing. Zero regressions."
       },
       {
         "id": "T74",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder, persistence work done via T80/T81"
       },
       {
         "id": "T76",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on persistence work. What else needs hardening?"
+        "status": "done",
+        "task": "Reflect on persistence work. What else needs hardening?",
+        "started": "2026-04-09T17:45:38.595Z",
+        "completed": "2026-04-09T17:45:54.376Z",
+        "duration_ms": 60000,
+        "summary": "Persistence fixes were critical bugs invisible at in-memory level. Still need: secondary index rebuild, WAL crash recovery test, full suite run. Priority: secondary indexes and crash recovery."
       },
       {
         "id": "T78",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder"
       },
       {
         "id": "T71",
@@ -1087,22 +1102,42 @@
       {
         "id": "T73",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder"
       },
       {
         "id": "T75",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync",
+        "started": "2026-04-09T17:46:02.991Z",
+        "completed": "2026-04-09T17:46:20.845Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, dashboard synced."
       },
       {
         "id": "T77",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB next depth target based on reflection",
-        "task": null
+        "task": null,
+        "started": "2026-04-09T17:46:33.082Z"
+      },
+      {
+        "id": "T82",
+        "mode": "BUILD",
+        "task": "Secondary index rebuild on reopen + WAL crash recovery test (uncommitted txn rollback)",
+        "status": "upcoming",
+        "plan_ref": "T77"
+      },
+      {
+        "id": "T83",
+        "mode": "BUILD",
+        "task": "Run full test suite, report updated pass count, fix any new failures from persistence changes",
+        "status": "upcoming",
+        "plan_ref": "T77"
       },
       {
         "id": "T79",
@@ -1114,13 +1149,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 73,
-    "blocksTotal": 81,
+    "blocksCompleted": 76,
+    "blocksTotal": 83,
     "modeDistribution": {
-      "THINK": 9,
-      "PLAN": 6,
+      "THINK": 10,
+      "PLAN": 7,
       "BUILD": 40,
-      "MAINTAIN": 16,
+      "MAINTAIN": 17,
       "EXPLORE": 2
     }
   },

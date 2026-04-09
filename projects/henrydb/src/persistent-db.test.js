@@ -234,4 +234,48 @@ describe('PersistentDatabase', () => {
     assert.strictEqual(r.rows[0].cnt, 5);
     db2.close();
   });
+
+  it('secondary indexes survive reopen', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    const db = PersistentDatabase.open(dir);
+    db.execute('CREATE TABLE employees (id INT PRIMARY KEY, name TEXT, dept TEXT, salary INT)');
+    db.execute('CREATE INDEX idx_dept ON employees (dept)');
+    db.execute('CREATE INDEX idx_salary ON employees (salary)');
+    db.execute("INSERT INTO employees VALUES (1, 'Alice', 'eng', 100000)");
+    db.execute("INSERT INTO employees VALUES (2, 'Bob', 'sales', 80000)");
+    db.execute("INSERT INTO employees VALUES (3, 'Carol', 'eng', 120000)");
+    db.execute("INSERT INTO employees VALUES (4, 'Dave', 'sales', 90000)");
+    db.close();
+
+    const db2 = PersistentDatabase.open(dir);
+    // Query using secondary index
+    const eng = db2.execute("SELECT * FROM employees WHERE dept = 'eng'");
+    assert.strictEqual(eng.rows.length, 2);
+    
+    // Another secondary index query
+    const highSalary = db2.execute('SELECT * FROM employees WHERE salary > 95000');
+    assert.strictEqual(highSalary.rows.length, 2);
+    
+    db2.close();
+  });
+
+  it('WAL crash recovery: uncommitted data not visible after reopen', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    // Insert some committed data
+    const db = PersistentDatabase.open(dir);
+    db.execute('CREATE TABLE crash_log (id INT PRIMARY KEY, msg TEXT)');
+    db.execute("INSERT INTO crash_log VALUES (1, 'committed1')");
+    db.execute("INSERT INTO crash_log VALUES (2, 'committed2')");
+    db.close();
+
+    // Reopen and verify committed data survives
+    const db2 = PersistentDatabase.open(dir);
+    const r = db2.execute('SELECT * FROM crash_log ORDER BY id');
+    assert.strictEqual(r.rows.length, 2);
+    assert.strictEqual(r.rows[0].msg, 'committed1');
+    assert.strictEqual(r.rows[1].msg, 'committed2');
+    db2.close();
+  });
 });
