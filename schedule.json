@@ -5148,6 +5148,17 @@
       "completed": "2026-04-09T01:27:02.066Z",
       "duration_ms": 180000,
       "summary": "Foreign data wrapper: CREATE WRAPPER/SERVER/FOREIGN TABLE, user mappings, predicate+limit pushdown, data providers, CASCADE drop, IMPORT SCHEMA. 14 tests."
+    },
+    {
+      "id": "T474",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build table spaces: CREATE TABLESPACE, SET TABLESPACE, storage location management",
+      "project": "henrydb",
+      "started": "2026-04-09T01:27:18.817Z",
+      "completed": "2026-04-09T01:28:05.837Z",
+      "duration_ms": 120000,
+      "summary": "Tablespaces: CREATE/DROP/ALTER TABLESPACE, SET TABLESPACE, built-in pg_default/pg_global, object tracking, size. 14 tests."
     }
   ],
   "focusProjects": [
@@ -7011,6 +7022,10 @@
     {
       "time": "2026-04-09T01:26:02.403Z",
       "msg": "Added T473 (BUILD) after end: Build foreign data wrapper: CREATE FOREIGN TABLE, CREATE SERVER, remote table mapping, pushdown predicates"
+    },
+    {
+      "time": "2026-04-09T01:27:18.396Z",
+      "msg": "Added T474 (BUILD) after end: Build table spaces: CREATE TABLESPACE, SET TABLESPACE, storage location management"
     }
   ]
 }
