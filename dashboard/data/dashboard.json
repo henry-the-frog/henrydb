@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T00:43:46.684Z",
+  "generated": "2026-04-09T00:45:27.541Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build table statistics collector: analyze command, histogram generation, distinct value estimation, null fraction tracking for query optimizer",
-    "completedAt": "2026-04-09T00:43:46.684Z",
-    "taskId": "T447",
-    "summary": "Table statistics: ANALYZE, histograms, MCV, distinct count, null fraction, min/max, avg width, correlation, selectivity estimation (=, <, >, <=, >=, BETWEEN, IS NULL), row count estimation, sampling mode. 16 tests.",
+    "task": "Build pg_catalog system tables: pg_class, pg_attribute, pg_type, pg_index, information_schema views",
+    "completedAt": "2026-04-09T00:45:27.541Z",
+    "taskId": "T448",
+    "summary": "System catalog: pg_class, pg_attribute, pg_type, pg_index, pg_namespace, pg_database, pg_stat_user_tables, information_schema.tables, information_schema.columns. OID mapping, filtering. 15 tests.",
     "durationMs": 180000
   },
   "schedule": {
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 445,
+    "blocksCompleted": 446,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 341,
+      "BUILD": 342,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
