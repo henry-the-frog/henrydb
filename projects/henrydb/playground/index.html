@@ -214,6 +214,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <button onclick="runQuery()">▶ Run</button>
       <button class="secondary" onclick="clearOutput()">Clear</button>
       <button class="secondary" onclick="resetDb()">🔄 Reset</button>
+      <button class="secondary" onclick="formatQuery()">✨ Format</button>
       <span class="hint">⌘Enter to run</span>
     </div>
     <textarea id="editor" spellcheck="false" rows="4">SELECT name, score, grade FROM demo ORDER BY score DESC;</textarea>
@@ -235,6 +236,7 @@ footer a { color: var(--accent); text-decoration: none; }
 <footer>108K+ LOC · 4,295 tests · 209 modules · 115KB browser bundle · Built from scratch in JS</footer>
 <script type="module">
 import { Database } from './henrydb.bundle.js';
+import { parse, formatSQL } from './henrydb.bundle.js';
 import { tutorials, getLesson } from './tutorial.js';
 let db, queryHistory = [], lastPlan = null, lastRows = null, activeTab = 'results';
 let currentTutorial = null, currentLessonIdx = 0, lessonDb = null;
@@ -465,6 +467,16 @@ window.resetDb = function() {
   initDb(); queryHistory.length = 0;
   document.getElementById('history-list').innerHTML = '';
   document.getElementById('output').innerHTML = '<span class="result-ok">✓ Database reset.</span>';
+};
+window.formatQuery = function() {
+  const editor = document.getElementById('editor');
+  const sql = editor.value.trim();
+  if (!sql) return;
+  try {
+    const stmts = sql.split(';').map(s => s.trim()).filter(Boolean);
+    const formatted = stmts.map(s => { try { return formatSQL(parse(s)); } catch(e) { return s + ';'; } }).join('\n\n');
+    editor.value = formatted;
+  } catch(e) { /* leave as-is if format fails */ }
 };
 // Tutorials
 function initTutorials() {

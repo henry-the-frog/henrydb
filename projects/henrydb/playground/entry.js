@@ -1,4 +1,5 @@
 // playground/entry.js — Browser entry point for HenryDB playground
-// Re-exports Database with node:fs/path stubbed out
 
 export { Database } from '../src/db.js';
+export { parse } from '../src/sql.js';
+export { formatSQL, format } from '../src/sql-formatter.js';
