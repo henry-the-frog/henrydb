@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T14:20:46.095Z",
+  "generated": "2026-04-09T14:28:58.053Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard health, email/GitHub check",
-    "startedAt": "2026-04-09T14:20:46.095Z",
-    "taskId": "T4"
+    "mode": "BUILD",
+    "task": "Fix WAL exports: add WAL_TYPES and WALRecord aliases, fix 7 broken test files, run them all",
+    "startedAt": "2026-04-09T14:28:58.053Z",
+    "taskId": "T7"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -277,20 +277,188 @@
         "completedAt": ""
       }
     ],
-    "backlog": []
+    "backlog": [],
+    "queue": [
+      {
+        "id": "T1",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Orient: depth check after 468-task marathon. Review quality vs quantity. Send Jordan reflection message from TODO.",
+        "started": "2026-04-09T14:15:24.314Z",
+        "completed": "2026-04-09T14:16:11.123Z",
+        "duration_ms": 90000,
+        "summary": "Depth check confirmed breadth spiral. 468 tasks, minimal bugs found = insufficient testing depth. Queue is correct: dashboard fix then HenryDB hardening. No queue changes."
+      },
+      {
+        "id": "T2",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Fix dashboard API routes (archive-day, regenerate 404s) and verify end-to-end",
+        "task": null,
+        "started": "2026-04-09T14:16:26.780Z",
+        "completed": "2026-04-09T14:17:24.545Z",
+        "duration_ms": 60000,
+        "summary": "Planned: add archive-day alias + regenerate endpoint to server.js, test e2e. Root cause: route names dont exist, not a mismatch."
+      },
+      {
+        "id": "T3",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add /api/archive-day alias and /api/regenerate endpoint to server.js, test all routes end-to-end",
+        "plan_ref": "T2",
+        "project": "dashboard",
+        "started": "2026-04-09T14:17:33.581Z",
+        "completed": "2026-04-09T14:19:37.690Z",
+        "duration_ms": 180000,
+        "summary": "Fixed dashboard routes: renamed server.js→server.cjs (ESM compat), added /api/archive-day alias, added /api/regenerate endpoint (runs generate.cjs). Updated start-server.sh. All routes tested. LaunchAgent restarted."
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "task": "Verify dashboard frontend works with live server data",
+        "status": "done",
+        "plan_ref": "T2",
+        "started": "2026-04-09T14:20:04.001Z",
+        "completed": "2026-04-09T14:20:20.844Z",
+        "duration_ms": 30000,
+        "summary": "Dashboard API verified: /api/dashboard shows live schedule with task status, /api/rich serves 207 projects. All endpoints healthy."
+      },
+      {
+        "id": "T4",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard health, email/GitHub check",
+        "started": "2026-04-09T14:20:46.030Z",
+        "completed": "2026-04-09T14:21:13.872Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard synced (19 blocks/4 done), server healthy. No email config. No new GitHub activity."
+      },
+      {
+        "id": "T5",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB depth audit: what is fragile, untested, or half-baked? Which of 229 modules are real vs stubs?",
+        "started": "2026-04-09T14:21:28.683Z",
+        "completed": "2026-04-09T14:28:12.084Z",
+        "duration_ms": 120000,
+        "summary": "Found real bugs: 7 test files import WAL_TYPES/WALRecord which dont exist (wal.js exports RECORD_TYPES). 5 source files untested (db.js, server.js, volcano-planner.js, composite-key.js, cli.js). 646 modules, 418 test files, 113K LOC. Core modules: db.js 3K, server.js 1.8K, sql.js 1.2K."
+      },
+      {
+        "id": "T6",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB quality pass: pick 3-5 weakest modules and harden with edge-case tests, fix bugs",
+        "task": null,
+        "started": "2026-04-09T14:28:28.695Z"
+      },
+      {
+        "id": "T7",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Fix WAL exports: add WAL_TYPES and WALRecord aliases, fix 7 broken test files, run them all",
+        "plan_ref": "T6",
+        "project": "henrydb"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "Stress test WAL/transaction path: crash recovery, concurrent txns, edge cases",
+        "status": "upcoming",
+        "plan_ref": "T6"
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "Run full test suite, find and fix any other broken tests",
+        "status": "upcoming",
+        "plan_ref": "T6"
+      },
+      {
+        "id": "T8",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git push, dashboard sync, knowledge capture"
+      },
+      {
+        "id": "T9",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Reflect on HenryDB quality pass. What broke? What patterns emerged? Is the architecture sound?"
+      },
+      {
+        "id": "T10",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB integration depth: stress test the PostgreSQL wire protocol with real workloads",
+        "task": null
+      },
+      {
+        "id": "T11",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T10",
+        "project": "henrydb"
+      },
+      {
+        "id": "T12",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git push, dashboard sync"
+      },
+      {
+        "id": "T13",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Afternoon reflection: are we building something real or collecting test counts? What would make HenryDB impressive to a DB engineer?"
+      },
+      {
+        "id": "T14",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Blog post: technical deep-dive on HenryDB architecture for database engineers",
+        "task": null
+      },
+      {
+        "id": "T15",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T14",
+        "project": "henrydb"
+      },
+      {
+        "id": "T16",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git push, dashboard sync, knowledge capture"
+      },
+      {
+        "id": "T17",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Research: read a real database internals resource (Andy Pavlo lectures, CockroachDB design docs, or SQLite architecture)",
+        "project": "henrydb"
+      },
+      {
+        "id": "T18",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Evening exploration: consciousness research or new CS topic (follow curiosity)",
+        "project": "henrydb"
+      }
+    ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 4,
-    "blocksTotal": 19,
+    "blocksCompleted": 7,
+    "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 2,
-      "PLAN": 1,
-      "BUILD": 1
-    },
-    "totalMinutes": 3,
-    "totalMs": 150000,
-    "avgDurationMs": 75000
+      "PLAN": 2,
+      "BUILD": 2,
+      "MAINTAIN": 1
+    }
   },
   "artifacts": [
     {
