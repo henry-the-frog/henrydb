@@ -4950,6 +4950,17 @@
       "completed": "2026-04-09T00:58:29.903Z",
       "duration_ms": 120000,
       "summary": "pg_stat_statements: normalized query tracking, calls/timing/rows/blocks stats, mean/stddev (Welford online), topN queries, reset, summary. 13 tests."
+    },
+    {
+      "id": "T456",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build connection pool warm-up and health checking: connection validation, idle timeout, health probes, pool sizing recommendations",
+      "project": "henrydb",
+      "started": "2026-04-09T00:59:02.218Z",
+      "completed": "2026-04-09T01:01:07.707Z",
+      "duration_ms": 150000,
+      "summary": "Pool health: warm-up, validation, idle/lifetime eviction, error eviction, health checks, pool sizing recommendations, exhaustion tracking. 14 tests."
     }
   ],
   "focusProjects": [
@@ -6741,6 +6752,10 @@
     {
       "time": "2026-04-09T00:56:43.785Z",
       "msg": "Added T455 (BUILD) after end: Build pg_stat_statements equivalent: normalized query tracking, execution counts, timing, mean/stddev, top queries by time/calls"
+    },
+    {
+      "time": "2026-04-09T00:59:01.800Z",
+      "msg": "Added T456 (BUILD) after end: Build connection pool warm-up and health checking: connection validation, idle timeout, health probes, pool sizing recommendations"
     }
   ]
 }
