@@ -5049,6 +5049,17 @@
       "completed": "2026-04-09T01:14:26.966Z",
       "duration_ms": 120000,
       "summary": "Sequences: CREATE/DROP SEQUENCE, nextval/currval/setval, CYCLE, restart, SERIAL, custom increment/start/min/max. 18 tests."
+    },
+    {
+      "id": "T465",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build table inheritance system: CREATE TABLE child INHERITS (parent), query routing, column inheritance",
+      "project": "henrydb",
+      "started": "2026-04-09T01:14:47.382Z",
+      "completed": "2026-04-09T01:15:39.274Z",
+      "duration_ms": 120000,
+      "summary": "Table inheritance: INHERITS, column inheritance, query targets, multi-level, inheritance chain, descendant check, noInherit, tree view. 13 tests."
     }
   ],
   "focusProjects": [
@@ -6876,6 +6887,10 @@
     {
       "time": "2026-04-09T01:13:33.149Z",
       "msg": "Added T464 (BUILD) after end: Build sequence generator: CREATE SEQUENCE, nextval, currval, setval, SERIAL column type"
+    },
+    {
+      "time": "2026-04-09T01:14:46.965Z",
+      "msg": "Added T465 (BUILD) after end: Build table inheritance system: CREATE TABLE child INHERITS (parent), query routing, column inheritance"
     }
   ]
 }
