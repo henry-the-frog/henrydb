@@ -1254,9 +1254,12 @@
       "id": "T126",
       "mode": "BUILD",
       "task": "Benchmark: BTreeTable vs HeapFile for point lookups, range scans, and sequential inserts",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T123",
-      "started": "2026-04-09T20:46:07.972Z"
+      "started": "2026-04-09T20:46:07.972Z",
+      "completed": "2026-04-09T20:47:11.369Z",
+      "duration_ms": 300000,
+      "summary": "BTreeTable vs HeapFile benchmarks complete: 5,578x point lookup speedup, 6.4x range scan, 4.3x ORDER BY. Surprising: BTree also 2.9x faster on inserts due to simpler machinery vs HeapFile FSM. 8 benchmark tests."
     },
     {
       "id": "T115",
@@ -1269,15 +1272,17 @@
     {
       "id": "T116",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Empty placeholder — replacing with specific task"
     },
     {
       "id": "T117",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping"
+      "status": "in-progress",
+      "task": "Mid-session housekeeping",
+      "started": "2026-04-09T20:47:35.543Z"
     },
     {
       "id": "T118",
@@ -1310,6 +1315,13 @@
       "mode": "EXPLORE",
       "status": "upcoming",
       "task": "Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management",
+      "project": "henrydb"
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Query optimizer: detect BTreeTable for PK lookups (IndexScan plan node) and ORDER BY elimination when table is BTree-sorted",
       "project": "henrydb"
     }
   ],
@@ -1806,6 +1818,14 @@
     {
       "time": "2026-04-09T20:38:03.282Z",
       "msg": "PLAN T123 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T20:47:26.025Z",
+      "msg": "Removed T116: Empty placeholder — replacing with specific task"
+    },
+    {
+      "time": "2026-04-09T20:47:26.234Z",
+      "msg": "Added T127 (BUILD) after end: Query optimizer: detect BTreeTable for PK lookups (IndexScan plan node) and ORDER BY elimination when table is BTree-sorted"
     }
   ]
 }
