@@ -929,8 +929,51 @@
       "id": "T88",
       "mode": "BUILD",
       "task": "Integration test: CLI + transactions end-to-end",
+      "status": "done",
+      "plan_ref": "T85",
+      "started": "2026-04-09T18:22:25.529Z",
+      "completed": "2026-04-09T18:22:25.853Z",
+      "duration_ms": 10000,
+      "summary": "Already covered by T87 tests. 10/10 CLI tests include BEGIN/COMMIT/ROLLBACK + CRUD through wire protocol."
+    },
+    {
+      "id": "T89",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 5+ BUILD tasks done. What surprised me? What did I learn? Am I in a breadth spiral?",
+      "started": "2026-04-09T18:22:45.137Z",
+      "completed": "2026-04-09T18:23:01.036Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passed — persistence bugs were genuinely surprising. Not in breadth spiral. Next: stress-test persistence (chaos testing, crash simulation, large datasets)."
+    },
+    {
+      "id": "T90",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Persistence stress test: chaos testing, crash simulation, large datasets",
+      "task": null,
+      "started": "2026-04-09T18:23:08.965Z",
+      "completed": "2026-04-09T18:23:09.585Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 stress tests: persistence chaos + concurrent wire protocol."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "task": "Write persistence stress test: 10K rows, random crashes (kill mid-write), verify recovery",
+      "status": "done",
+      "plan_ref": "T90",
+      "started": "2026-04-09T18:23:14.870Z",
+      "completed": "2026-04-09T18:33:54.950Z",
+      "duration_ms": 600000,
+      "summary": "7 persistence stress tests passing: 1K row reopen, 10-cycle open/close, mixed INSERT/UPDATE/DELETE survival, multi-table persistence with joins, tiny buffer pool eviction, file growth, special characters. Found parser bug with single quotes (pre-existing)."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "task": "Wire protocol stress test: concurrent clients hammering the server with transactions",
       "status": "upcoming",
-      "plan_ref": "T85"
+      "plan_ref": "T90"
     }
   ],
   "focusProjects": [
@@ -1286,6 +1329,18 @@
     {
       "time": "2026-04-09T18:17:23.547Z",
       "msg": "PLAN T85 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-09T18:22:44.837Z",
+      "msg": "Added T89 (THINK) after end: Depth check: 5+ BUILD tasks done. What surprised me? What did I learn? Am I in a breadth spiral?"
+    },
+    {
+      "time": "2026-04-09T18:23:08.680Z",
+      "msg": "Added T90 (PLAN) after end: Persistence stress test: chaos testing, crash simulation, large datasets"
+    },
+    {
+      "time": "2026-04-09T18:23:09.250Z",
+      "msg": "PLAN T90 filled 2 BUILD tasks"
     }
   ]
 }

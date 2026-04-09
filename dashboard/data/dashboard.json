@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T18:22:05.170Z",
+  "generated": "2026-04-09T18:33:55.040Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add BEGIN/COMMIT/ROLLBACK support to pg wire protocol server",
-    "completedAt": "2026-04-09T18:22:05.170Z",
-    "taskId": "T87",
-    "summary": "BEGIN/COMMIT/ROLLBACK already supported in server. Added 4 new wire protocol tests (txn begin/commit, rollback, UPDATE, DELETE). 10/10 CLI tests.",
-    "durationMs": 300000
+    "task": "Write persistence stress test: 10K rows, random crashes (kill mid-write), verify recovery",
+    "completedAt": "2026-04-09T18:33:55.040Z",
+    "taskId": "T91",
+    "summary": "7 persistence stress tests passing: 1K row reopen, 10-cycle open/close, mixed INSERT/UPDATE/DELETE survival, multi-table persistence with joins, tiny buffer pool eviction, file growth, special characters. Found parser bug with single quotes (pre-existing).",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1175,42 +1175,89 @@
       {
         "id": "T85",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "CLI tool + wire protocol transactions for HenryDB",
         "task": null,
-        "started": "2026-04-09T18:17:23.113Z"
+        "started": "2026-04-09T18:17:23.113Z",
+        "completed": "2026-04-09T18:17:29.601Z",
+        "duration_ms": 30000,
+        "summary": "Planned 3 BUILD tasks: CLI REPL, wire txn support, integration test."
       },
       {
         "id": "T86",
         "mode": "BUILD",
         "task": "Build henrydb-cli: psql-like REPL that connects to HenryDB server via pg wire protocol",
-        "status": "upcoming",
-        "plan_ref": "T85"
+        "status": "done",
+        "plan_ref": "T85",
+        "started": "2026-04-09T18:17:35.030Z",
+        "completed": "2026-04-09T18:20:28.886Z",
+        "duration_ms": 600000,
+        "summary": "Built henrydb-cli: psql-like REPL with pg wire protocol. Features: multi-line SQL, table formatting, meta-commands (\\dt, \\di, \\d), error handling. 6 CLI tests passing. Added bin entries to package.json."
       },
       {
         "id": "T87",
         "mode": "BUILD",
         "task": "Add BEGIN/COMMIT/ROLLBACK support to pg wire protocol server",
-        "status": "upcoming",
-        "plan_ref": "T85"
+        "status": "done",
+        "plan_ref": "T85",
+        "started": "2026-04-09T18:20:56.068Z",
+        "completed": "2026-04-09T18:22:05.079Z",
+        "duration_ms": 300000,
+        "summary": "BEGIN/COMMIT/ROLLBACK already supported in server. Added 4 new wire protocol tests (txn begin/commit, rollback, UPDATE, DELETE). 10/10 CLI tests."
       },
       {
         "id": "T88",
         "mode": "BUILD",
         "task": "Integration test: CLI + transactions end-to-end",
+        "status": "done",
+        "plan_ref": "T85",
+        "started": "2026-04-09T18:22:25.529Z",
+        "completed": "2026-04-09T18:22:25.853Z",
+        "duration_ms": 10000,
+        "summary": "Already covered by T87 tests. 10/10 CLI tests include BEGIN/COMMIT/ROLLBACK + CRUD through wire protocol."
+      },
+      {
+        "id": "T89",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: 5+ BUILD tasks done. What surprised me? What did I learn? Am I in a breadth spiral?",
+        "started": "2026-04-09T18:22:45.137Z",
+        "completed": "2026-04-09T18:23:01.036Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passed — persistence bugs were genuinely surprising. Not in breadth spiral. Next: stress-test persistence (chaos testing, crash simulation, large datasets)."
+      },
+      {
+        "id": "T90",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Persistence stress test: chaos testing, crash simulation, large datasets",
+        "task": null,
+        "started": "2026-04-09T18:23:08.965Z"
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "task": "Write persistence stress test: 10K rows, random crashes (kill mid-write), verify recovery",
         "status": "upcoming",
-        "plan_ref": "T85"
+        "plan_ref": "T90"
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "task": "Wire protocol stress test: concurrent clients hammering the server with transactions",
+        "status": "upcoming",
+        "plan_ref": "T90"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 83,
-    "blocksTotal": 88,
+    "blocksCompleted": 87,
+    "blocksTotal": 92,
     "modeDistribution": {
-      "THINK": 11,
-      "PLAN": 8,
-      "BUILD": 44,
+      "THINK": 12,
+      "PLAN": 9,
+      "BUILD": 46,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }
