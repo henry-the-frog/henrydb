@@ -1098,6 +1098,17 @@
       "completed": "2026-04-09T19:14:56.351Z",
       "duration_ms": 120000,
       "summary": "ANALYZE command already existed and works great (per-column NDV, nulls, min/max, avg_width). Added 6 tests for it."
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add SHOW TABLES/SHOW COLUMNS and system catalog queries (information_schema)",
+      "project": "henrydb",
+      "started": "2026-04-09T19:15:19.304Z",
+      "completed": "2026-04-09T19:16:06.403Z",
+      "duration_ms": 120000,
+      "summary": "System catalog queries (SHOW TABLES, DESCRIBE, SHOW COLUMNS) all work. 6 tests added."
     }
   ],
   "focusProjects": [
@@ -1505,6 +1516,10 @@
     {
       "time": "2026-04-09T19:13:35.596Z",
       "msg": "Added T103 (BUILD) after end: Add ANALYZE command: collect table statistics (row count, distinct values, null fraction) for query optimizer"
+    },
+    {
+      "time": "2026-04-09T19:15:19.097Z",
+      "msg": "Added T104 (BUILD) after end: Add SHOW TABLES/SHOW COLUMNS and system catalog queries (information_schema)"
     }
   ]
 }

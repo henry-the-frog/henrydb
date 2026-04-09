@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T19:14:56.414Z",
+  "generated": "2026-04-09T19:16:06.468Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add ANALYZE command: collect table statistics (row count, distinct values, null fraction) for query optimizer",
-    "completedAt": "2026-04-09T19:14:56.414Z",
-    "taskId": "T103",
-    "summary": "ANALYZE command already existed and works great (per-column NDV, nulls, min/max, avg_width). Added 6 tests for it.",
+    "task": "Add SHOW TABLES/SHOW COLUMNS and system catalog queries (information_schema)",
+    "completedAt": "2026-04-09T19:16:06.468Z",
+    "taskId": "T104",
+    "summary": "System catalog queries (SHOW TABLES, DESCRIBE, SHOW COLUMNS) all work. 6 tests added.",
     "durationMs": 120000
   },
   "schedule": {
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 99,
+    "blocksCompleted": 100,
     "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 10,
-      "BUILD": 55,
+      "BUILD": 56,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }
