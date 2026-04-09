@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:20:58.690Z",
+  "generated": "2026-04-09T00:22:24.949Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build trigger system: CREATE TRIGGER BEFORE/AFTER INSERT/UPDATE/DELETE, trigger execution engine, NEW/OLD row references",
-    "completedAt": "2026-04-09T00:20:58.690Z",
-    "taskId": "T435",
-    "summary": "Enhanced trigger system: BEFORE/AFTER, INSERT/UPDATE/DELETE, FOR EACH ROW/STATEMENT, WHEN conditions, NEW/OLD row refs, TG_ variables, enable/disable, PL/HenryDB execution. 16 tests.",
-    "durationMs": 180000
+    "task": "Build event notification system: LISTEN/NOTIFY for client-to-client messaging through the database",
+    "completedAt": "2026-04-09T00:22:24.949Z",
+    "taskId": "T436",
+    "summary": "LISTEN/NOTIFY event system: channel subscription, broadcast, sender exclusion, UNLISTEN/*, async waitForNotification, queue drain/peek, stats. 21 tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 433,
+    "blocksCompleted": 434,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 329,
+      "BUILD": 330,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
