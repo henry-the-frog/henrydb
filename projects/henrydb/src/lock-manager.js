@@ -192,3 +192,25 @@ export { MODES, COMPATIBLE };
 // Alias for tests expecting LockMode
 const LockMode = { SHARED: 'S', EXCLUSIVE: 'X', INTENT_SHARED: 'IS', INTENT_EXCLUSIVE: 'IX', SHARED_INTENT_EXCLUSIVE: 'SIX', ...MODES };
 export { LockMode };
+
+// Add synchronous lock/unlock aliases to LockManager prototype
+LockManager.prototype.lock = function(txnId, resourceId, mode) {
+  if (!this._locks.has(resourceId)) {
+    this._locks.set(resourceId, { holders: new Map(), waitQueue: [] });
+  }
+  const lock = this._locks.get(resourceId);
+  if (lock.holders.has(txnId)) return true;
+  if (this._canGrant(lock, txnId, mode)) {
+    lock.holders.set(txnId, mode);
+    return true;
+  }
+  return false;
+};
+
+LockManager.prototype.unlock = function(txnId, resourceId) {
+  if (resourceId !== undefined) {
+    this.release(txnId, resourceId);
+  } else {
+    this.releaseAll(txnId);
+  }
+};

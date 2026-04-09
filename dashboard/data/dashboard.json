@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T18:46:16.219Z",
+  "generated": "2026-04-09T18:53:57.425Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Partial write recovery: insert batch, crash mid-batch, verify only committed prefix survives",
-    "completedAt": "2026-04-09T18:46:16.219Z",
-    "taskId": "T97",
-    "summary": "Added 2 more crash recovery tests: partial batch (20 committed survive, 5 uncommitted lost) and interleaved txns (only committed survive). 9/9 total crash recovery tests.",
-    "durationMs": 300000
+    "task": "Fix catalog.test.js failures (9 tests)",
+    "completedAt": "2026-04-09T18:53:57.425Z",
+    "taskId": "T99",
+    "summary": "Fixed all 9 catalog.test.js failures: SkipList (insert/find/range aliases), BitmapIndex (addRow/count + constructor), Trie (findByPrefix), RingBuffer (latest), WAL (isCommitted), LockManager (sync lock/unlock). 28/28 catalog tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 93,
+    "blocksCompleted": 95,
     "blocksTotal": 97,
     "modeDistribution": {
-      "THINK": 13,
+      "THINK": 14,
       "PLAN": 10,
-      "BUILD": 50,
+      "BUILD": 51,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }

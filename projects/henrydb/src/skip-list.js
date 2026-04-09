@@ -196,4 +196,29 @@ export class SkipList {
         : '0',
     };
   }
+
+  // Aliases for compatibility
+  insert(key, value) { return this.set(key, value); }
+  find(key) { return this.get(key); }
+  search(key) { return this.get(key); }
+
+  /**
+   * Range query: return all values with keys in [low, high] inclusive.
+   */
+  range(low, high) {
+    const results = [];
+    let node = this.header;
+    // Traverse to the first node >= low
+    for (let level = this.maxLevel - 1; level >= 0; level--) {
+      while (node.forward[level] && node.forward[level].key < low) {
+        node = node.forward[level];
+      }
+    }
+    node = node.forward[0];
+    while (node && node.key <= high) {
+      results.push(node.value);
+      node = node.forward[0];
+    }
+    return results;
+  }
 }

@@ -59,6 +59,8 @@ export class Trie {
   }
 
   get size() { return this._size; }
+
+  findByPrefix(prefix) { return this.prefixSearch(prefix); }
 }
 
 export class RingBuffer {
@@ -78,4 +80,9 @@ export class RingBuffer {
     return [...this.buffer.slice(this.head), ...this.buffer.slice(0, this.head)];
   }
   get length() { return this.size; }
+  latest() {
+    if (this.size === 0) return undefined;
+    const idx = (this.head - 1 + this.capacity) % this.capacity;
+    return this.buffer[idx];
+  }
 }

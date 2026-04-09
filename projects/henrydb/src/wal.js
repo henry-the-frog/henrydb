@@ -1016,6 +1016,24 @@ _proto.beginTransaction = function(txId) {
   return txId;
 };
 
+_proto.isCommitted = function(txId) {
+  // Check active transaction tracking
+  const tx = this._activeTxns && this._activeTxns.get(txId);
+  if (tx && tx.status === 'committed') return true;
+  // Check in-memory WAL buffer for COMMIT record
+  if (this._buffer) {
+    for (const rec of this._buffer) {
+      if ((rec.type === 'COMMIT' || rec.type === 5) && (rec.txId === txId || (rec.data && rec.data.txId === txId))) return true;
+    }
+  }
+  if (this._records) {
+    for (const rec of this._records) {
+      if ((rec.type === 'COMMIT' || rec.type === 5) && (rec.txId === txId || (rec.data && rec.data.txId === txId))) return true;
+    }
+  }
+  return false;
+};
+
 _proto.flush = function() {
   if (this._inMemory) {
     this._flushToStable();

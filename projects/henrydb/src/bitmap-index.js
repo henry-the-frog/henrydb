@@ -101,7 +101,9 @@ export class BitVector {
  * BitmapIndex — bitmap index for a single column.
  */
 export class BitmapIndex {
-  constructor() {
+  constructor(name, column) {
+    this.name = name || '';
+    this.column = column || '';
     this._bitmaps = new Map(); // value → BitVector
     this._rowCount = 0;
   }
@@ -166,5 +168,26 @@ export class BitmapIndex {
       distinctValues: this._bitmaps.size,
       memoryWords: [...this._bitmaps.values()].reduce((s, bv) => s + bv._words.length, 0),
     };
+  }
+
+  /**
+   * Add a single row to the index.
+   */
+  addRow(rowId, value) {
+    if (!this._bitmaps.has(value)) {
+      this._bitmaps.set(value, new BitVector(Math.max(this._rowCount, rowId + 1)));
+    }
+    // Ensure bitmap is large enough
+    const bm = this._bitmaps.get(value);
+    bm.set(rowId);
+    if (rowId >= this._rowCount) this._rowCount = rowId + 1;
+  }
+
+  /**
+   * Count rows matching a value.
+   */
+  count(value) {
+    const bm = this._bitmaps.get(value);
+    return bm ? bm.popcount() : 0;
   }
 }
