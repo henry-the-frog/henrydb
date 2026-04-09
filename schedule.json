@@ -1662,10 +1662,21 @@
     {
       "id": "T158",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Wire full-text search into SQL: CREATE FULLTEXT INDEX on table(column), SELECT ... WHERE MATCH(column) AGAINST(query)",
       "project": "henrydb",
-      "started": "2026-04-09T21:45:11.884Z"
+      "started": "2026-04-09T21:45:11.884Z",
+      "completed": "2026-04-09T21:49:14.539Z",
+      "duration_ms": 300000,
+      "summary": "Full-text search SQL: MATCH AGAINST works with stemmer. 12 integration tests on CRUD, COUNT, ORDER BY, BTreeTable, 1K-doc stress. 6ms avg search."
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB showcase: comprehensive demo that exercises ALL features with benchmarks, serving as both documentation and regression test",
+      "project": "henrydb",
+      "started": "2026-04-09T21:50:23.081Z"
     }
   ],
   "focusProjects": [
@@ -2301,6 +2312,10 @@
     {
       "time": "2026-04-09T21:45:11.461Z",
       "msg": "Added T158 (BUILD) after end: Wire full-text search into SQL: CREATE FULLTEXT INDEX on table(column), SELECT ... WHERE MATCH(column) AGAINST(query)"
+    },
+    {
+      "time": "2026-04-09T21:50:22.670Z",
+      "msg": "Added T159 (BUILD) after end: HenryDB showcase: comprehensive demo that exercises ALL features with benchmarks, serving as both documentation and regression test"
     }
   ]
 }
