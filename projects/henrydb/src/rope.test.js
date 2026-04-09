@@ -4,69 +4,61 @@ import assert from 'node:assert/strict';
 import { Rope } from './rope.js';
 
 describe('Rope', () => {
-  it('create from string', () => {
-    const r = new Rope('hello');
-    assert.equal(r.length, 5);
-    assert.equal(r.toString(), 'hello');
+  it('construct from string', () => {
+    const r = new Rope('hello world');
+    assert.equal(r.length, 11);
+    assert.equal(r.toString(), 'hello world');
   });
 
   it('charAt', () => {
-    const r = new Rope('abcde');
+    const r = new Rope('abcdef');
     assert.equal(r.charAt(0), 'a');
-    assert.equal(r.charAt(4), 'e');
-    assert.equal(r.charAt(5), undefined);
+    assert.equal(r.charAt(3), 'd');
+    assert.equal(r.charAt(5), 'f');
   });
 
-  it('concat', () => {
-    const a = new Rope('hello');
-    const b = new Rope(' world');
-    const c = Rope.concat(a, b);
-    assert.equal(c.toString(), 'hello world');
-    assert.equal(c.length, 11);
-  });
-
-  it('split', () => {
+  it('substring', () => {
     const r = new Rope('hello world');
-    const [left, right] = r.split(5);
-    assert.equal(left.toString(), 'hello');
-    assert.equal(right.toString(), ' world');
+    assert.equal(r.substring(0, 5), 'hello');
+    assert.equal(r.substring(6, 11), 'world');
   });
 
   it('insert', () => {
-    const r = new Rope('helloworld');
-    const result = r.insert(5, ' ');
-    assert.equal(result.toString(), 'hello world');
+    const r = new Rope('hello world');
+    r.insert(5, ' beautiful');
+    assert.equal(r.toString(), 'hello beautiful world');
   });
 
   it('delete', () => {
     const r = new Rope('hello beautiful world');
-    const result = r.delete(5, 15);
-    assert.equal(result.toString(), 'hello world');
+    r.delete(5, 15);
+    assert.equal(r.toString(), 'hello world');
   });
 
-  it('substring', () => {
-    const r = Rope.concat(new Rope('hello'), new Rope(' world'));
-    assert.equal(r.substring(3, 8), 'lo wo');
+  it('append', () => {
+    const r = new Rope('hello');
+    r.append(' world');
+    assert.equal(r.toString(), 'hello world');
   });
 
-  it('many concatenations', () => {
-    let r = new Rope('');
-    for (let i = 0; i < 100; i++) r = Rope.concat(r, new Rope(`${i} `));
-    assert.ok(r.length > 0);
-    assert.ok(r.toString().startsWith('0 1 2'));
+  it('large text: 100K characters', () => {
+    const bigText = 'x'.repeat(100000);
+    const r = new Rope(bigText);
+    assert.equal(r.length, 100000);
+    assert.equal(r.charAt(50000), 'x');
+    
+    r.insert(50000, 'INSERT');
+    assert.equal(r.length, 100006);
+    assert.equal(r.substring(49998, 50008), 'xxINSERTxx');
   });
 
-  it('depth after concatenations', () => {
-    let r = new Rope('a');
-    for (let i = 0; i < 20; i++) r = Rope.concat(r, new Rope('b'));
-    assert.ok(r.depth() <= 20);
-  });
-
-  it('benchmark: 10K inserts', () => {
-    let r = new Rope('');
-    const t0 = Date.now();
-    for (let i = 0; i < 10000; i++) r = Rope.concat(r, new Rope('x'));
-    console.log(`    Rope 10K concat: ${Date.now() - t0}ms, len=${r.length}`);
-    assert.equal(r.length, 10000);
+  it('performance: many inserts', () => {
+    const r = new Rope('');
+    const t0 = performance.now();
+    for (let i = 0; i < 1000; i++) {
+      r.insert(Math.floor(r.length / 2), `chunk${i}`);
+    }
+    const elapsed = performance.now() - t0;
+    console.log(`  1K middle-inserts: ${elapsed.toFixed(1)}ms, final length: ${r.length}`);
   });
 });

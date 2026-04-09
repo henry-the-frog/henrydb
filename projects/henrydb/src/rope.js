@@ -1,91 +1,123 @@
-// rope.js — Rope data structure for efficient string operations
-// Binary tree of string fragments; O(log n) concat, split, charAt.
+// rope.js — Rope data structure for efficient large string operations
+// Binary tree where leaves hold string chunks. O(log n) insert/delete
+// at any position. Used in text editors (Xi editor, Atom).
+
+class RopeNode {
+  constructor(text) {
+    this.text = text || null;  // Only for leaves
+    this.left = null;
+    this.right = null;
+    this.weight = text ? text.length : 0; // Length of left subtree
+    this.length = text ? text.length : 0;
+  }
+}
 
 export class Rope {
-  constructor(str) {
-    if (typeof str === 'string') {
-      this.left = null;
-      this.right = null;
-      this.str = str;
-      this.len = str.length;
-    } else {
-      // Internal node
-      this.left = str.left;
-      this.right = str.right;
-      this.str = null;
-      this.len = (str.left?.len || 0) + (str.right?.len || 0);
-    }
+  constructor(text = '') {
+    this._root = text.length > 0 ? this._build(text) : null;
   }
 
-  get length() { return this.len; }
+  get length() { return this._root ? this._root.length : 0; }
 
-  /** Concatenate two ropes */
-  static concat(a, b) {
-    if (!a) return b;
-    if (!b) return a;
-    return new Rope({ left: a, right: b });
+  /** Get character at index. O(log n). */
+  charAt(index) {
+    return this._charAt(this._root, index);
   }
 
-  /** Character at position */
-  charAt(idx) {
-    if (idx < 0 || idx >= this.len) return undefined;
-    if (this.str != null) return this.str[idx];
-    const leftLen = this.left?.len || 0;
-    if (idx < leftLen) return this.left.charAt(idx);
-    return this.right.charAt(idx - leftLen);
-  }
-
-  /** Split at position */
-  split(pos) {
-    if (pos <= 0) return [null, this];
-    if (pos >= this.len) return [this, null];
-    
-    if (this.str != null) {
-      return [new Rope(this.str.slice(0, pos)), new Rope(this.str.slice(pos))];
-    }
-    
-    const leftLen = this.left?.len || 0;
-    if (pos < leftLen) {
-      const [ll, lr] = this.left.split(pos);
-      return [ll, Rope.concat(lr, this.right)];
-    } else if (pos > leftLen) {
-      const [rl, rr] = this.right.split(pos - leftLen);
-      return [Rope.concat(this.left, rl), rr];
-    } else {
-      return [this.left, this.right];
-    }
-  }
-
-  /** Insert string at position */
-  insert(pos, str) {
-    const piece = new Rope(str);
-    const [left, right] = this.split(pos);
-    return Rope.concat(Rope.concat(left, piece), right);
-  }
-
-  /** Delete range [start, end) */
-  delete(start, end) {
-    const [left, rest] = this.split(start);
-    const [, right] = rest.split(end - start);
-    return Rope.concat(left, right);
-  }
-
-  /** Substring */
+  /** Get substring. O(log n + k). */
   substring(start, end) {
+    if (!this._root) return '';
     const chars = [];
-    for (let i = start; i < end && i < this.len; i++) chars.push(this.charAt(i));
+    this._substring(this._root, start, end, chars);
     return chars.join('');
   }
 
-  /** Convert to plain string */
-  toString() {
-    if (this.str != null) return this.str;
-    return (this.left?.toString() || '') + (this.right?.toString() || '');
+  /** Insert text at position. O(log n). */
+  insert(pos, text) {
+    const newNode = new RopeNode(text);
+    if (!this._root) { this._root = newNode; return; }
+    const [left, right] = this._split(this._root, pos);
+    this._root = this._concat(this._concat(left, newNode), right);
   }
 
-  /** Tree depth */
-  depth() {
-    if (this.str != null) return 0;
-    return 1 + Math.max(this.left?.depth() || 0, this.right?.depth() || 0);
+  /** Delete range [start, end). O(log n). */
+  delete(start, end) {
+    if (!this._root) return;
+    const [left, rest] = this._split(this._root, start);
+    const [_, right] = this._split(rest, end - start);
+    this._root = this._concat(left, right);
+  }
+
+  /** Concatenate another rope. O(log n). */
+  append(text) {
+    const newNode = typeof text === 'string' ? new RopeNode(text) : text._root;
+    this._root = this._concat(this._root, newNode);
+  }
+
+  /** Convert to string. O(n). */
+  toString() {
+    return this.substring(0, this.length);
+  }
+
+  // --- Internal ---
+
+  _build(text, chunkSize = 256) {
+    if (text.length <= chunkSize) return new RopeNode(text);
+    const mid = Math.floor(text.length / 2);
+    const node = new RopeNode();
+    node.left = this._build(text.slice(0, mid), chunkSize);
+    node.right = this._build(text.slice(mid), chunkSize);
+    node.weight = node.left.length;
+    node.length = node.left.length + node.right.length;
+    return node;
+  }
+
+  _charAt(node, index) {
+    if (!node) return '';
+    if (node.text) return node.text[index] || '';
+    if (index < node.weight) return this._charAt(node.left, index);
+    return this._charAt(node.right, index - node.weight);
+  }
+
+  _substring(node, start, end, chars) {
+    if (!node || start >= end) return;
+    if (node.text) {
+      const s = Math.max(0, start);
+      const e = Math.min(node.text.length, end);
+      if (s < e) chars.push(node.text.slice(s, e));
+      return;
+    }
+    if (start < node.weight) {
+      this._substring(node.left, start, Math.min(end, node.weight), chars);
+    }
+    if (end > node.weight) {
+      this._substring(node.right, Math.max(0, start - node.weight), end - node.weight, chars);
+    }
+  }
+
+  _split(node, pos) {
+    if (!node) return [null, null];
+    if (node.text) {
+      if (pos <= 0) return [null, node];
+      if (pos >= node.text.length) return [node, null];
+      return [new RopeNode(node.text.slice(0, pos)), new RopeNode(node.text.slice(pos))];
+    }
+    if (pos <= node.weight) {
+      const [ll, lr] = this._split(node.left, pos);
+      return [ll, this._concat(lr, node.right)];
+    }
+    const [rl, rr] = this._split(node.right, pos - node.weight);
+    return [this._concat(node.left, rl), rr];
+  }
+
+  _concat(left, right) {
+    if (!left) return right;
+    if (!right) return left;
+    const node = new RopeNode();
+    node.left = left;
+    node.right = right;
+    node.weight = left.length;
+    node.length = left.length + right.length;
+    return node;
   }
 }
