@@ -4807,6 +4807,17 @@
       "completed": "2026-04-09T00:33:17.327Z",
       "duration_ms": 120000,
       "summary": "Prepared statements: PREPARE/EXECUTE/DEALLOCATE, $N parameter binding, plan caching, LRU eviction, describe metadata, stats. 16 tests."
+    },
+    {
+      "id": "T443",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build row-level security (RLS): CREATE POLICY, ENABLE RLS, per-user row filtering with security contexts",
+      "project": "henrydb",
+      "started": "2026-04-09T00:33:38.769Z",
+      "completed": "2026-04-09T00:34:53.339Z",
+      "duration_ms": 150000,
+      "summary": "Row-level security: CREATE POLICY, ENABLE/DISABLE RLS, FORCE, permissive+restrictive policies, owner/dept/role/tenant isolation, USING + WITH CHECK, superuser bypass, session vars. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6546,6 +6557,10 @@
     {
       "time": "2026-04-09T00:31:47.093Z",
       "msg": "Added T442 (BUILD) after end: Build prepared statement cache: PREPARE/EXECUTE with parameter binding, plan caching, cache eviction"
+    },
+    {
+      "time": "2026-04-09T00:33:38.353Z",
+      "msg": "Added T443 (BUILD) after end: Build row-level security (RLS): CREATE POLICY, ENABLE RLS, per-user row filtering with security contexts"
     }
   ]
 }
