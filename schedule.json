@@ -4818,6 +4818,17 @@
       "completed": "2026-04-09T00:34:53.339Z",
       "duration_ms": 150000,
       "summary": "Row-level security: CREATE POLICY, ENABLE/DISABLE RLS, FORCE, permissive+restrictive policies, owner/dept/role/tenant isolation, USING + WITH CHECK, superuser bypass, session vars. 16 tests."
+    },
+    {
+      "id": "T444",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build logical replication: publisher/subscriber model, change data capture (CDC), WAL-based event streaming",
+      "project": "henrydb",
+      "started": "2026-04-09T00:35:11.542Z",
+      "completed": "2026-04-09T00:36:34.728Z",
+      "duration_ms": 180000,
+      "summary": "Logical replication: publisher/subscriber, CDC with INSERT/UPDATE/DELETE capture, replication slots, LSN tracking, lag monitoring, change log filtering, subscriber callbacks. 22 tests."
     }
   ],
   "focusProjects": [
@@ -6561,6 +6572,10 @@
     {
       "time": "2026-04-09T00:33:38.353Z",
       "msg": "Added T443 (BUILD) after end: Build row-level security (RLS): CREATE POLICY, ENABLE RLS, per-user row filtering with security contexts"
+    },
+    {
+      "time": "2026-04-09T00:35:11.126Z",
+      "msg": "Added T444 (BUILD) after end: Build logical replication: publisher/subscriber model, change data capture (CDC), WAL-based event streaming"
     }
   ]
 }

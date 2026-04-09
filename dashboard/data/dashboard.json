@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:34:53.405Z",
+  "generated": "2026-04-09T00:36:34.798Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build row-level security (RLS): CREATE POLICY, ENABLE RLS, per-user row filtering with security contexts",
-    "completedAt": "2026-04-09T00:34:53.405Z",
-    "taskId": "T443",
-    "summary": "Row-level security: CREATE POLICY, ENABLE/DISABLE RLS, FORCE, permissive+restrictive policies, owner/dept/role/tenant isolation, USING + WITH CHECK, superuser bypass, session vars. 16 tests.",
-    "durationMs": 150000
+    "task": "Build logical replication: publisher/subscriber model, change data capture (CDC), WAL-based event streaming",
+    "completedAt": "2026-04-09T00:36:34.798Z",
+    "taskId": "T444",
+    "summary": "Logical replication: publisher/subscriber, CDC with INSERT/UPDATE/DELETE capture, replication slots, LSN tracking, lag monitoring, change log filtering, subscriber callbacks. 22 tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 441,
+    "blocksCompleted": 442,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 337,
+      "BUILD": 338,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
