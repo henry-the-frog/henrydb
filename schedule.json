@@ -1152,6 +1152,17 @@
       "completed": "2026-04-09T19:29:31.711Z",
       "duration_ms": 600000,
       "summary": "Fixed NESTED_LOOP_JOIN → HASH_JOIN in more-functions.test.js. Batch 4 now 0 failures, batch 5 (201-250) 726/726 (100%!). Test quality significantly improved across the board."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add RETURNING clause to INSERT/UPDATE/DELETE",
+      "project": "henrydb",
+      "started": "2026-04-09T19:29:52.625Z",
+      "completed": "2026-04-09T19:30:59.602Z",
+      "duration_ms": 120000,
+      "summary": "RETURNING clause already implemented. Added 7 tests: INSERT/UPDATE/DELETE RETURNING * and specific columns, multi-row, ON CONFLICT. All pass."
     }
   ],
   "focusProjects": [
@@ -1579,6 +1590,10 @@
     {
       "time": "2026-04-09T19:20:37.233Z",
       "msg": "Added T108 (BUILD) after end: Fix remaining easy test wins: look at batches 4-7 for quick fixes"
+    },
+    {
+      "time": "2026-04-09T19:29:52.503Z",
+      "msg": "Added T109 (BUILD) after end: Add RETURNING clause to INSERT/UPDATE/DELETE"
     }
   ]
 }
