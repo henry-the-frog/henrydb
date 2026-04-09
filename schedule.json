@@ -523,23 +523,31 @@
     {
       "id": "T49",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix lru-cache.test.js failure (1)",
       "project": "henrydb",
-      "started": "2026-04-09T16:13:58.380Z"
+      "started": "2026-04-09T16:13:58.380Z",
+      "completed": "2026-04-09T16:17:17.592Z",
+      "duration_ms": 60000,
+      "summary": "Fixed PlanCache: monotonic counter for LRU (Date.now() resolution too coarse), numeric constructor arg support. lru-cache 2/2, plan-cache 14/14 passing."
     },
     {
       "id": "T50",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement index-based PK uniqueness checking: use B+Tree index for O(log n) duplicate detection during INSERT",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T16:17:29.477Z",
+      "completed": "2026-04-09T16:17:56.934Z",
+      "duration_ms": 30000,
+      "summary": "Unnecessary: after O(n²) WAL fix, PK vs no-PK is only 15% difference (143ms vs 124ms for 10K rows). B+Tree index insert is already O(log n). No optimization needed."
     },
     {
       "id": "T51",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard",
+      "started": "2026-04-09T16:18:06.383Z"
     }
   ],
   "focusProjects": [
