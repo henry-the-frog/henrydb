@@ -4972,6 +4972,17 @@
       "completed": "2026-04-09T01:03:10.936Z",
       "duration_ms": 120000,
       "summary": "Savepoints: SAVEPOINT, RELEASE, ROLLBACK TO with nested stacks, snapshot/restore, case-insensitive, replacement semantics. 15 tests."
+    },
+    {
+      "id": "T458",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build COPY TO/FROM: bulk data import/export in CSV/TSV/binary formats",
+      "project": "henrydb",
+      "started": "2026-04-09T01:04:06.322Z",
+      "completed": "2026-04-09T01:05:12.125Z",
+      "duration_ms": 120000,
+      "summary": "COPY TO/FROM: CSV/TSV with header, quoted fields, escaped quotes, NULL handling, auto type detection, custom delimiter, roundtrip. 18 tests."
     }
   ],
   "focusProjects": [
@@ -6771,6 +6782,10 @@
     {
       "time": "2026-04-09T01:01:34.350Z",
       "msg": "Added T457 (BUILD) after end: Build savepoint support: SAVEPOINT name, RELEASE SAVEPOINT, ROLLBACK TO SAVEPOINT with nested savepoint stacks"
+    },
+    {
+      "time": "2026-04-09T01:04:06.084Z",
+      "msg": "Added T458 (BUILD) after end: Build COPY TO/FROM: bulk data import/export in CSV/TSV/binary formats"
     }
   ]
 }
