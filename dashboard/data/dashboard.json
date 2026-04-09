@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T20:47:35.608Z",
+  "generated": "2026-04-09T20:49:03.037Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Mid-session housekeeping",
-    "startedAt": "2026-04-09T20:47:35.608Z",
-    "taskId": "T117"
+    "mode": "BUILD",
+    "task": "Optimizer: eliminate ORDER BY sort when BTreeTable already provides PK ordering",
+    "startedAt": "2026-04-09T20:49:03.037Z",
+    "taskId": "T128"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1510,22 +1510,34 @@
         "id": "T124",
         "mode": "BUILD",
         "task": "Implement BTreeTable: clustered B+tree where rows are stored in leaf nodes sorted by PK, replacing HeapFile for ordered access",
-        "status": "upcoming",
-        "plan_ref": "T123"
+        "status": "done",
+        "plan_ref": "T123",
+        "started": "2026-04-09T20:38:11.841Z",
+        "completed": "2026-04-09T20:41:54.496Z",
+        "duration_ms": 600000,
+        "summary": "BTreeTable implemented: clustered B+tree storage engine with HeapFile-compatible API. O(log n) point lookups, ordered range scans, composite PK, upsert. 21/21 tests including stress (500 rows) and benchmarks (10K rows). 1000 lookups in 10K rows < 100ms."
       },
       {
         "id": "T125",
         "mode": "BUILD",
         "task": "Wire BTreeTable into Database as alternative storage engine (heapFactory option), with CREATE TABLE ... USING BTREE",
-        "status": "upcoming",
-        "plan_ref": "T123"
+        "status": "done",
+        "plan_ref": "T123",
+        "started": "2026-04-09T20:42:04.773Z",
+        "completed": "2026-04-09T20:45:57.174Z",
+        "duration_ms": 600000,
+        "summary": "Wired BTreeTable into Database: USING keyword added to parser, CREATE TABLE ... USING BTREE creates clustered B+tree storage. Both engines coexist. 13 integration tests: CRUD, JOINs, aggregations, ORDER BY, TRUNCATE, 1000-row stress. No regressions."
       },
       {
         "id": "T126",
         "mode": "BUILD",
         "task": "Benchmark: BTreeTable vs HeapFile for point lookups, range scans, and sequential inserts",
-        "status": "upcoming",
-        "plan_ref": "T123"
+        "status": "done",
+        "plan_ref": "T123",
+        "started": "2026-04-09T20:46:07.972Z",
+        "completed": "2026-04-09T20:47:11.369Z",
+        "duration_ms": 300000,
+        "summary": "BTreeTable vs HeapFile benchmarks complete: 5,578x point lookup speedup, 6.4x range scan, 4.3x ORDER BY. Surprising: BTree also 2.9x faster on inserts due to simpler machinery vs HeapFile FSM. 8 benchmark tests."
       },
       {
         "id": "T115",
@@ -1538,28 +1550,59 @@
       {
         "id": "T116",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Empty placeholder — replacing with specific task"
       },
       {
         "id": "T117",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-session housekeeping"
+        "status": "done",
+        "task": "Mid-session housekeeping",
+        "started": "2026-04-09T20:47:35.543Z",
+        "completed": "2026-04-09T20:48:03.674Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, CURRENT.md updated, session tracking current. 42 new tests, 3 commits pushed."
       },
       {
         "id": "T118",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-session depth check: what did I learn? Quality assessment."
+        "status": "done",
+        "task": "Mid-session depth check: what did I learn? Quality assessment.",
+        "started": "2026-04-09T20:48:14.071Z",
+        "completed": "2026-04-09T20:48:30.350Z",
+        "duration_ms": 120000,
+        "summary": "Depth check passed: 3/3 surprise questions answered YES. BTree insert speed surprise (2.9x faster), synthetic rid impedance mismatch learned, KEYWORD set bug found. Not in breadth spiral. Next: optimizer integration."
       },
       {
         "id": "T119",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Second HenryDB depth cycle: address findings from first cycle",
-        "task": null
+        "task": null,
+        "started": "2026-04-09T20:48:40.755Z"
+      },
+      {
+        "id": "T128",
+        "mode": "BUILD",
+        "task": "Optimizer: eliminate ORDER BY sort when BTreeTable already provides PK ordering",
+        "status": "upcoming",
+        "plan_ref": "T119"
+      },
+      {
+        "id": "T129",
+        "mode": "BUILD",
+        "task": "Optimizer: use BTreeTable.findByPK for WHERE pk=value instead of full scan",
+        "status": "upcoming",
+        "plan_ref": "T119"
+      },
+      {
+        "id": "T130",
+        "mode": "BUILD",
+        "task": "EXPLAIN shows storage engine and sort elimination in query plan",
+        "status": "upcoming",
+        "plan_ref": "T119"
       },
       {
         "id": "T120",
@@ -1580,18 +1623,25 @@
         "status": "upcoming",
         "task": "Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management",
         "project": "henrydb"
+      },
+      {
+        "id": "T127",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Query optimizer: detect BTreeTable for PK lookups (IndexScan plan node) and ORDER BY elimination when table is BTree-sorted",
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 114,
-    "blocksTotal": 126,
+    "blocksCompleted": 117,
+    "blocksTotal": 130,
     "modeDistribution": {
-      "THINK": 15,
-      "PLAN": 11,
+      "THINK": 16,
+      "PLAN": 12,
       "BUILD": 66,
-      "MAINTAIN": 20,
+      "MAINTAIN": 21,
       "EXPLORE": 2
     }
   },

@@ -1096,9 +1096,49 @@ export class Database {
     }
   }
 
+  /**
+   * Check if ORDER BY sort can be eliminated because the table's storage engine
+   * already provides the required ordering (e.g., BTreeTable sorted by PK).
+   * Returns true if sort can be skipped.
+   */
+  _canEliminateSort(ast) {
+    if (!ast.orderBy || ast.orderBy.length === 0) return false;
+    
+    // Only works for single-table queries (no JOINs)
+    if (ast.joins && ast.joins.length > 0) return false;
+    
+    const tableName = ast.from?.table;
+    if (!tableName) return false;
+    
+    const tableInfo = this.tables.get(tableName);
+    if (!tableInfo) return false;
+    
+    // Check if storage engine is BTreeTable
+    if (!(tableInfo.heap instanceof BTreeTable)) return false;
+    
+    const btreeTable = tableInfo.heap;
+    const pkIndices = btreeTable.pkIndices;
+    
+    // Get PK column name(s)
+    const pkColNames = pkIndices.map(i => tableInfo.schema[i]?.name);
+    
+    // ORDER BY must match PK column(s) in order, and all ASC
+    // (BTreeTable stores in ascending PK order)
+    if (ast.orderBy.length !== pkColNames.length) return false;
+    
+    for (let i = 0; i < ast.orderBy.length; i++) {
+      const orderCol = ast.orderBy[i].column;
+      const dir = ast.orderBy[i].direction || 'ASC';
+      if (orderCol !== pkColNames[i]) return false;
+      if (dir !== 'ASC') return false;
+    }
+    
+    return true;
+  }
+
   _applySelectColumns(ast, rows) {
-    // Apply ORDER BY
-    if (ast.orderBy) {
+    // Apply ORDER BY (with sort elimination for BTree tables)
+    if (ast.orderBy && !this._canEliminateSort(ast)) {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
           const av = a[column], bv = b[column];
