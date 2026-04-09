@@ -1502,17 +1502,21 @@
     {
       "id": "T142",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement extendible hash table for HenryDB: dynamic hash index that splits buckets on overflow without full rehash",
       "project": "henrydb",
-      "started": "2026-04-09T21:12:15.690Z"
+      "started": "2026-04-09T21:12:15.690Z",
+      "completed": "2026-04-09T21:13:52.443Z",
+      "duration_ms": 600000,
+      "summary": "ExtendibleHashTable: FNV-1a hash, bucket splitting, directory doubling. Load factor 0.70. 0.315µs lookup, 1.816µs insert. 13 tests including 10K stress."
     },
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Wire extendible hash table as HASH index type: CREATE INDEX ... USING HASH",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-09T21:13:52.899Z"
     },
     {
       "id": "T144",

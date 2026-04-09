@@ -1132,6 +1132,13 @@ export function parse(sql) {
     const name = advance().value;
     expect('KEYWORD', 'ON');
     const table = advance().value;
+    // Optional: USING HASH | USING BTREE (default: BTREE)
+    let indexType = null;
+    if (isKeyword('USING')) {
+      advance(); // USING
+      const typeTok = advance();
+      indexType = (typeTok.originalValue || typeTok.value).toUpperCase();
+    }
     expect('(');
     const columns = [];
     do { columns.push(advance().value); } while (match(','));
@@ -1151,7 +1158,7 @@ export function parse(sql) {
       advance();
       where = parseExpr();
     }
-    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, ifNotExists };
+    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, ifNotExists, indexType };
   }
 
   function parseCreateView() {

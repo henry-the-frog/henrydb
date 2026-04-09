@@ -4,6 +4,7 @@
 import { HeapFile, encodeTuple, decodeTuple } from './page.js';
 import { BPlusTree } from './btree.js';
 import { BTreeTable } from './btree-table.js';
+import { ExtendibleHashTable } from './extendible-hash.js';
 import { optimizeSelect } from './decorrelate.js';
 import { QueryPlanner } from './planner.js';
 import { makeCompositeKey } from './composite-key.js';
@@ -665,7 +666,15 @@ export class Database {
     const isComposite = ast.columns.length > 1;
     const colIndices = ast.columns.map(c => table.schema.findIndex(s => s.name === c));
 
-    const index = new BPlusTree(32, { unique: ast.unique || false });
+    // Choose index type: HASH or BTREE (default)
+    const indexType = (ast.indexType || 'BTREE').toUpperCase();
+    let index;
+    if (indexType === 'HASH') {
+      index = new ExtendibleHashTable(16);
+      index._isHash = true; // Tag for query optimizer
+    } else {
+      index = new BPlusTree(32, { unique: ast.unique || false });
+    }
     const colIdx = colIndices[0];
 
     // Populate from existing data
@@ -683,8 +692,13 @@ export class Database {
       const key = isComposite
         ? makeCompositeKey(colIndices.map(i => values[i]))
         : values[colIdx];
-      if (ast.unique) {
+      if (ast.unique && !index._isHash) {
         const existing = index.search(key);
+        if (existing !== undefined) {
+          throw new Error(`Duplicate key ${key} violates unique constraint on index ${ast.name}`);
+        }
+      } else if (ast.unique && index._isHash) {
+        const existing = index.get(key);
         if (existing !== undefined) {
           throw new Error(`Duplicate key ${key} violates unique constraint on index ${ast.name}`);
         }
@@ -697,7 +711,19 @@ export class Database {
           rid.includedValues[table.schema[idx].name] = values[idx];
         }
       }
-      index.insert(key, rid);
+      if (index._isHash) {
+        // Hash indexes store arrays of rids for non-unique support
+        const existing = index.get(key);
+        if (existing !== undefined) {
+          const arr = Array.isArray(existing) ? existing : [existing];
+          arr.push(rid);
+          index.insert(key, arr);
+        } else {
+          index.insert(key, rid);
+        }
+      } else {
+        index.insert(key, rid);
+      }
     }
 
     table.indexes.set(colName, index);
@@ -709,6 +735,7 @@ export class Database {
       include: ast.include || [],
       unique: ast.unique || false,
       partial: ast.where || null,
+      indexType,
     });
     this.indexCatalog.set(ast.name, {
       table: ast.table,
@@ -1229,7 +1256,18 @@ export class Database {
     // Update indexes
     for (const [colName, index] of table.indexes) {
       const colIdx = table.schema.findIndex(c => c.name === colName);
-      index.insert(orderedValues[colIdx], rid);
+      if (index._isHash) {
+        const existing = index.get(orderedValues[colIdx]);
+        if (existing !== undefined) {
+          const arr = Array.isArray(existing) ? existing : [existing];
+          arr.push(rid);
+          index.insert(orderedValues[colIdx], arr);
+        } else {
+          index.insert(orderedValues[colIdx], rid);
+        }
+      } else {
+        index.insert(orderedValues[colIdx], rid);
+      }
     }
 
     // AFTER INSERT triggers
@@ -2942,7 +2980,21 @@ export class Database {
         const colName = colRef.name.includes('.') ? colRef.name.split('.').pop() : colRef.name;
         const index = table.indexes.get(colName);
         if (index) {
-          const entries = index.range(literal.value, literal.value);
+          // Hash index: use get() for equality lookup — may return array of rids
+          // B+tree index: use range() for equality
+          let entries;
+          if (index._isHash) {
+            const val = index.get(literal.value);
+            if (val !== undefined) {
+              // Hash index stores arrays of rids for non-unique indexes
+              const rids = Array.isArray(val) ? val : [val];
+              entries = rids.map(rid => ({ key: literal.value, value: rid }));
+            } else {
+              entries = [];
+            }
+          } else {
+            entries = index.range(literal.value, literal.value);
+          }
           const rows = [];
           for (const entry of entries) {
             const rid = entry.value;
