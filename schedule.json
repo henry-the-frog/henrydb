@@ -1848,10 +1848,21 @@
     {
       "id": "T175",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Union-Find (Disjoint Set): path compression + union by rank for graph connectivity queries",
       "project": "henrydb",
-      "started": "2026-04-09T22:26:04.144Z"
+      "started": "2026-04-09T22:26:04.144Z",
+      "completed": "2026-04-09T22:27:04.186Z",
+      "duration_ms": 120000,
+      "summary": "UnionFind: path compression + union by rank. 0.098µs/find. Join equivalence class demo. 9 tests."
+    },
+    {
+      "id": "T176",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Segment tree: O(log n) range sum/min/max queries with point updates",
+      "project": "henrydb",
+      "started": "2026-04-09T22:27:13.370Z"
     }
   ],
   "focusProjects": [
@@ -2555,6 +2566,10 @@
     {
       "time": "2026-04-09T22:26:03.737Z",
       "msg": "Added T175 (BUILD) after end: Union-Find (Disjoint Set): path compression + union by rank for graph connectivity queries"
+    },
+    {
+      "time": "2026-04-09T22:27:12.958Z",
+      "msg": "Added T176 (BUILD) after end: Segment tree: O(log n) range sum/min/max queries with point updates"
     }
   ]
 }
