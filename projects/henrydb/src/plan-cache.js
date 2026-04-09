@@ -127,8 +127,11 @@ export class PlanCache {
       entries: this._cache.size,
       hitRate: total > 0 ? +(this._stats.hits / total * 100).toFixed(1) : 0,
       tables: this._tableDeps.size,
+      size: this._cache.size,
     };
   }
+
+  stats() { return this.getStats(); }
 
   /**
    * Get detailed info about cached plans.
