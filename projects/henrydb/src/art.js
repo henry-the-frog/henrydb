@@ -1,373 +1,281 @@
-// art.js — Adaptive Radix Tree (ART) for HenryDB
-// Based on Leis et al., "The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases" (2013)
+// art.js — Adaptive Radix Tree (ART)
+// Space-efficient trie variant that adapts node size based on children count.
+// Used in: HyPer (TUM), DuckDB, ClickHouse for in-memory indexes.
 //
-// An ART is a radix tree that adapts its node size to occupancy:
-// - Node4:   2-4 children (small, linear search)
-// - Node16:  5-16 children (medium, SIMD-friendly linear search)
-// - Node48:  17-48 children (uses 256-byte index array → child pointer)
-// - Node256: 49-256 children (direct lookup, 256 child pointers)
+// Node types:
+//   Node4   (1-4 children)  — linear search
+//   Node16  (5-16 children) — SIMD-friendly linear search
+//   Node48  (17-48 children) — indirect array
+//   Node256 (49-256 children) — direct array
 //
-// For integer keys, this gives O(4) or O(8) lookup time with excellent cache behavior.
-// Superior to B+trees for in-memory point lookups.
+// Key insight: most trie nodes are sparse, so Node4/16 save massive memory.
 
-/**
- * ART Node types with adaptive sizing.
- */
 class Node4 {
-  constructor() {
-    this.type = 'Node4';
-    this.keys = new Array(4);
-    this.children = new Array(4);
-    this.count = 0;
-    this.value = undefined; // Leaf value (if this is a terminal node)
+  constructor() { this.keys = []; this.children = []; this.value = undefined; this.hasValue = false; }
+  get type() { return 4; }
+  get count() { return this.keys.length; }
+
+  find(byte) {
+    const idx = this.keys.indexOf(byte);
+    return idx >= 0 ? this.children[idx] : null;
   }
 
-  findChild(byte) {
-    for (let i = 0; i < this.count; i++) {
-      if (this.keys[i] === byte) return this.children[i];
-    }
-    return null;
+  insert(byte, child) {
+    this.keys.push(byte);
+    this.children.push(child);
   }
 
-  addChild(byte, child) {
-    if (this.count >= 4) return false; // Need to grow
-    this.keys[this.count] = byte;
-    this.children[this.count] = child;
-    this.count++;
-    return true;
-  }
+  isFull() { return this.keys.length >= 4; }
 
-  isFull() { return this.count >= 4; }
-  
   grow() {
-    const node = new Node16();
-    for (let i = 0; i < this.count; i++) {
-      node.keys[i] = this.keys[i];
-      node.children[i] = this.children[i];
+    const n16 = new Node16();
+    for (let i = 0; i < this.keys.length; i++) {
+      n16.keys.push(this.keys[i]);
+      n16.children.push(this.children[i]);
     }
-    node.count = this.count;
-    node.value = this.value;
-    return node;
+    n16.value = this.value;
+    n16.hasValue = this.hasValue;
+    return n16;
   }
 }
 
 class Node16 {
-  constructor() {
-    this.type = 'Node16';
-    this.keys = new Array(16);
-    this.children = new Array(16);
-    this.count = 0;
-    this.value = undefined;
+  constructor() { this.keys = []; this.children = []; this.value = undefined; this.hasValue = false; }
+  get type() { return 16; }
+  get count() { return this.keys.length; }
+
+  find(byte) {
+    const idx = this.keys.indexOf(byte);
+    return idx >= 0 ? this.children[idx] : null;
   }
 
-  findChild(byte) {
-    for (let i = 0; i < this.count; i++) {
-      if (this.keys[i] === byte) return this.children[i];
-    }
-    return null;
+  insert(byte, child) {
+    this.keys.push(byte);
+    this.children.push(child);
   }
 
-  addChild(byte, child) {
-    if (this.count >= 16) return false;
-    this.keys[this.count] = byte;
-    this.children[this.count] = child;
-    this.count++;
-    return true;
-  }
+  isFull() { return this.keys.length >= 16; }
 
-  isFull() { return this.count >= 16; }
-  
   grow() {
-    const node = new Node48();
-    for (let i = 0; i < this.count; i++) {
-      node.index[this.keys[i]] = i + 1; // 1-based (0 = empty)
-      node.children[i] = this.children[i];
+    const n48 = new Node48();
+    for (let i = 0; i < this.keys.length; i++) {
+      n48.index[this.keys[i]] = i;
+      n48.children[i] = this.children[i];
     }
-    node.count = this.count;
-    node.value = this.value;
-    return node;
+    n48._count = this.keys.length;
+    n48.value = this.value;
+    n48.hasValue = this.hasValue;
+    return n48;
   }
 }
 
 class Node48 {
   constructor() {
-    this.type = 'Node48';
-    this.index = new Uint8Array(256); // byte → child slot (1-based, 0 = empty)
-    this.children = new Array(48);
-    this.count = 0;
+    this.index = new Int8Array(256).fill(-1);
+    this.children = new Array(48).fill(null);
+    this._count = 0;
     this.value = undefined;
+    this.hasValue = false;
+  }
+  get type() { return 48; }
+  get count() { return this._count; }
+
+  find(byte) {
+    const idx = this.index[byte];
+    return idx >= 0 ? this.children[idx] : null;
   }
 
-  findChild(byte) {
-    const slot = this.index[byte];
-    return slot > 0 ? this.children[slot - 1] : null;
+  insert(byte, child) {
+    this.index[byte] = this._count;
+    this.children[this._count] = child;
+    this._count++;
   }
 
-  addChild(byte, child) {
-    if (this.count >= 48) return false;
-    this.index[byte] = this.count + 1;
-    this.children[this.count] = child;
-    this.count++;
-    return true;
-  }
+  isFull() { return this._count >= 48; }
 
-  isFull() { return this.count >= 48; }
-  
   grow() {
-    const node = new Node256();
+    const n256 = new Node256();
     for (let b = 0; b < 256; b++) {
-      const slot = this.index[b];
-      if (slot > 0) node.children[b] = this.children[slot - 1];
+      if (this.index[b] >= 0) n256.children[b] = this.children[this.index[b]];
     }
-    node.count = this.count;
-    node.value = this.value;
-    return node;
+    n256._count = this._count;
+    n256.value = this.value;
+    n256.hasValue = this.hasValue;
+    return n256;
   }
 }
 
 class Node256 {
   constructor() {
-    this.type = 'Node256';
     this.children = new Array(256).fill(null);
-    this.count = 0;
+    this._count = 0;
     this.value = undefined;
+    this.hasValue = false;
   }
+  get type() { return 256; }
+  get count() { return this._count; }
 
-  findChild(byte) {
-    return this.children[byte];
-  }
+  find(byte) { return this.children[byte]; }
 
-  addChild(byte, child) {
-    if (!this.children[byte]) this.count++;
+  insert(byte, child) {
+    if (!this.children[byte]) this._count++;
     this.children[byte] = child;
-    return true; // Node256 never needs to grow
   }
 
   isFull() { return false; } // Never full
-  grow() { return this; } // Already max size
+  grow() { return this; }
 }
 
-/**
- * Leaf node — stores a key-value pair.
- */
-class Leaf {
-  constructor(key, value) {
-    this.type = 'Leaf';
-    this.key = key;
-    this.value = value;
-  }
-}
-
-/**
- * AdaptiveRadixTree — the main ART data structure.
- * Supports: insert, search, delete, range scan.
- */
 export class AdaptiveRadixTree {
   constructor() {
-    this.root = null;
+    this._root = new Node4();
     this._size = 0;
   }
 
+  get size() { return this._size; }
+
   /**
-   * Convert a key to bytes for tree traversal.
-   * Supports integers (4 bytes big-endian) and strings (UTF-8 + null terminator).
+   * Insert a string key with value.
    */
-  _keyToBytes(key) {
-    if (typeof key === 'number') {
-      // Big-endian encoding preserves sort order
-      const n = key | 0;
-      // Offset to handle negatives (add 2^31)
-      const u = (n + 0x80000000) >>> 0;
-      return [
-        (u >>> 24) & 0xFF,
-        (u >>> 16) & 0xFF,
-        (u >>> 8) & 0xFF,
-        u & 0xFF,
-      ];
+  insert(key, value) {
+    const bytes = this._toBytes(key);
+    let node = this._root;
+    let parent = null;
+    let parentByte = -1;
+
+    for (let i = 0; i < bytes.length; i++) {
+      const byte = bytes[i];
+      let child = node.find(byte);
+
+      if (!child) {
+        child = new Node4();
+        if (node.isFull()) {
+          const grown = node.grow();
+          if (parent) {
+            // Replace in parent
+            this._replaceChild(parent, parentByte, grown);
+          } else {
+            this._root = grown;
+          }
+          node = grown;
+        }
+        node.insert(byte, child);
+      }
+
+      parent = node;
+      parentByte = byte;
+      node = child;
     }
-    // String: UTF-8 bytes + null terminator
+
+    if (!node.hasValue) this._size++;
+    node.value = value;
+    node.hasValue = true;
+  }
+
+  /**
+   * Get value for key.
+   */
+  get(key) {
+    const node = this._findNode(key);
+    return node && node.hasValue ? node.value : undefined;
+  }
+
+  /**
+   * Check if key exists.
+   */
+  has(key) {
+    const node = this._findNode(key);
+    return node ? node.hasValue : false;
+  }
+
+  /**
+   * Get all keys with given prefix.
+   */
+  prefixSearch(prefix) {
+    const bytes = this._toBytes(prefix);
+    let node = this._root;
+    for (const byte of bytes) {
+      node = node.find(byte);
+      if (!node) return [];
+    }
+    const results = [];
+    this._collect(node, prefix, results);
+    return results;
+  }
+
+  _findNode(key) {
+    const bytes = this._toBytes(key);
+    let node = this._root;
+    for (const byte of bytes) {
+      node = node.find(byte);
+      if (!node) return null;
+    }
+    return node;
+  }
+
+  _collect(node, prefix, results) {
+    if (node.hasValue) results.push({ key: prefix, value: node.value });
+
+    // Collect from children based on node type
+    if (node.keys) {
+      // Node4 or Node16
+      for (let i = 0; i < node.keys.length; i++) {
+        this._collect(node.children[i], prefix + String.fromCharCode(node.keys[i]), results);
+      }
+    } else if (node.index) {
+      // Node48
+      for (let b = 0; b < 256; b++) {
+        if (node.index[b] >= 0) {
+          this._collect(node.children[node.index[b]], prefix + String.fromCharCode(b), results);
+        }
+      }
+    } else if (node.children) {
+      // Node256
+      for (let b = 0; b < 256; b++) {
+        if (node.children[b]) {
+          this._collect(node.children[b], prefix + String.fromCharCode(b), results);
+        }
+      }
+    }
+  }
+
+  _replaceChild(parent, byte, newChild) {
+    if (parent.keys) {
+      const idx = parent.keys.indexOf(byte);
+      if (idx >= 0) parent.children[idx] = newChild;
+    } else if (parent.index) {
+      const idx = parent.index[byte];
+      if (idx >= 0) parent.children[idx] = newChild;
+    } else {
+      parent.children[byte] = newChild;
+    }
+  }
+
+  _toBytes(str) {
     const bytes = [];
-    for (let i = 0; i < key.length; i++) {
-      const c = key.charCodeAt(i);
-      if (c < 128) bytes.push(c);
-      else if (c < 2048) { bytes.push(0xC0 | (c >> 6)); bytes.push(0x80 | (c & 0x3F)); }
-      else { bytes.push(0xE0 | (c >> 12)); bytes.push(0x80 | ((c >> 6) & 0x3F)); bytes.push(0x80 | (c & 0x3F)); }
-    }
-    bytes.push(0); // Null terminator
+    for (let i = 0; i < str.length; i++) bytes.push(str.charCodeAt(i));
     return bytes;
   }
 
   /**
-   * Insert a key-value pair.
+   * Get node type distribution.
    */
-  insert(key, value) {
-    const bytes = this._keyToBytes(key);
-    
-    if (!this.root) {
-      this.root = new Leaf(key, value);
-      this._size++;
-      return;
-    }
-
-    this.root = this._insert(this.root, bytes, 0, key, value);
-  }
-
-  _insert(node, bytes, depth, key, value) {
-    if (!node) {
-      this._size++;
-      return new Leaf(key, value);
-    }
-
-    if (node instanceof Leaf) {
-      if (node.key === key) {
-        // Update existing
-        node.value = value;
-        return node;
-      }
-      // Split leaf into inner node
-      const existingBytes = this._keyToBytes(node.key);
-      const newNode = new Node4();
-      
-      // Find common prefix depth
-      let d = depth;
-      while (d < bytes.length && d < existingBytes.length && bytes[d] === existingBytes[d]) d++;
-
-      // Create inner nodes for common prefix
-      let current = newNode;
-      for (let i = depth; i < d; i++) {
-        const next = new Node4();
-        current.addChild(bytes[i], next);
-        current = next;
-      }
-
-      // Add both leaves at the divergent byte
-      if (d < bytes.length) current.addChild(bytes[d], new Leaf(key, value));
-      else current.value = value;
-
-      if (d < existingBytes.length) current.addChild(existingBytes[d], node);
-      else current.value = node.value;
-
-      this._size++;
-      return newNode;
-    }
-
-    // Inner node
-    if (depth >= bytes.length) {
-      if (node.value === undefined) this._size++;
-      node.value = value;
-      return node;
-    }
-
-    const byte = bytes[depth];
-    let child = node.findChild(byte);
-    
-    if (child) {
-      const newChild = this._insert(child, bytes, depth + 1, key, value);
-      // Replace child if it changed (shouldn't happen often with in-place mutation)
-      if (newChild !== child) {
-        // Rebuild: remove old, add new
-        // For simplicity, just update in place
-        for (let i = 0; i < node.count; i++) {
-          if (node.keys && node.keys[i] === byte) {
-            node.children[i] = newChild;
-            return node;
-          }
+  getStats() {
+    const counts = { node4: 0, node16: 0, node48: 0, node256: 0 };
+    const q = [this._root];
+    while (q.length > 0) {
+      const node = q.shift();
+      counts[`node${node.type}`]++;
+      if (node.keys) {
+        for (const c of node.children) if (c) q.push(c);
+      } else if (node.index) {
+        for (let b = 0; b < 256; b++) {
+          if (node.index[b] >= 0 && node.children[node.index[b]]) q.push(node.children[node.index[b]]);
         }
-        if (node.type === 'Node48') {
-          const slot = node.index[byte];
-          if (slot > 0) node.children[slot - 1] = newChild;
-        } else if (node.type === 'Node256') {
-          node.children[byte] = newChild;
-        }
+      } else if (node.children) {
+        for (const c of node.children) if (c) q.push(c);
       }
-      return node;
     }
-
-    // Need to add new child
-    const newLeaf = this._insert(null, bytes, depth + 1, key, value);
-    
-    if (node.isFull()) {
-      const grown = node.grow();
-      grown.addChild(byte, newLeaf);
-      return grown;
-    }
-    
-    node.addChild(byte, newLeaf);
-    return node;
-  }
-
-  /**
-   * Search for a key. Returns the value or undefined.
-   */
-  search(key) {
-    const bytes = this._keyToBytes(key);
-    let node = this.root;
-    let depth = 0;
-
-    while (node) {
-      if (node instanceof Leaf) {
-        return node.key === key ? node.value : undefined;
-      }
-
-      if (depth >= bytes.length) {
-        return node.value;
-      }
-
-      node = node.findChild(bytes[depth]);
-      depth++;
-    }
-
-    return undefined;
-  }
-
-  /**
-   * Check if a key exists.
-   */
-  has(key) {
-    return this.search(key) !== undefined;
-  }
-
-  /**
-   * Number of entries.
-   */
-  get size() { return this._size; }
-
-  /**
-   * Collect all entries in sorted order.
-   */
-  entries() {
-    const result = [];
-    this._collect(this.root, result);
-    return result;
-  }
-
-  _collect(node, result) {
-    if (!node) return;
-    if (node instanceof Leaf) {
-      result.push([node.key, node.value]);
-      return;
-    }
-    if (node.value !== undefined) {
-      result.push([null, node.value]); // Prefix match
-    }
-    // Collect children in order
-    if (node.type === 'Node256') {
-      for (let b = 0; b < 256; b++) {
-        if (node.children[b]) this._collect(node.children[b], result);
-      }
-    } else if (node.type === 'Node48') {
-      for (let b = 0; b < 256; b++) {
-        const slot = node.index[b];
-        if (slot > 0) this._collect(node.children[slot - 1], result);
-      }
-    } else {
-      // Node4/Node16: sort by key byte for ordered traversal
-      const pairs = [];
-      for (let i = 0; i < node.count; i++) {
-        pairs.push([node.keys[i], node.children[i]]);
-      }
-      pairs.sort((a, b) => a[0] - b[0]);
-      for (const [, child] of pairs) this._collect(child, result);
-    }
+    return { size: this._size, ...counts };
   }
 }

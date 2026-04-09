@@ -1903,16 +1903,45 @@
     {
       "id": "T180",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write-ahead log format: structured binary WAL with CRC checksums",
       "project": "henrydb",
-      "started": "2026-04-09T22:38:08.788Z"
+      "started": "2026-04-09T22:38:08.788Z",
+      "completed": "2026-04-09T22:39:06.038Z",
+      "duration_ms": 300000,
+      "summary": "WAL binary format: CRC32 checksums, corruption detection, multi-txn replay. 7 tests."
     },
     {
       "id": "T181",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End-of-session: final README update, daily log, comprehensive git push",
+      "started": "2026-04-09T22:39:15.987Z",
+      "completed": "2026-04-09T22:39:29.621Z",
+      "duration_ms": 30000,
+      "summary": "Mid-session maintain: 58 commits, 692 source files, 450 test files."
+    },
+    {
+      "id": "T182",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "ART (Adaptive Radix Tree): space-efficient trie with node types (4/16/48/256)",
+      "project": "henrydb",
+      "started": "2026-04-09T22:39:30.075Z"
+    },
+    {
+      "id": "T183",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "End-of-session: final README update, daily log, comprehensive git push"
+      "task": "B-epsilon tree: write-optimized B-tree with message buffers (Tokudb/BetrFS)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T184",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Sorted array with binary search: simplest possible index structure for baselines",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2640,6 +2669,18 @@
     {
       "time": "2026-04-09T22:34:20.137Z",
       "msg": "Added T181 (MAINTAIN) after end: End-of-session: final README update, daily log, comprehensive git push"
+    },
+    {
+      "time": "2026-04-09T22:39:15.155Z",
+      "msg": "Added T182 (BUILD) after end: ART (Adaptive Radix Tree): space-efficient trie with node types (4/16/48/256)"
+    },
+    {
+      "time": "2026-04-09T22:39:15.367Z",
+      "msg": "Added T183 (BUILD) after end: B-epsilon tree: write-optimized B-tree with message buffers (Tokudb/BetrFS)"
+    },
+    {
+      "time": "2026-04-09T22:39:15.576Z",
+      "msg": "Added T184 (BUILD) after end: Sorted array with binary search: simplest possible index structure for baselines"
     }
   ]
 }
