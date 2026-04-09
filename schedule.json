@@ -198,18 +198,22 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build HenryDB benchmark: INSERT 10K rows, SELECT all, SELECT with WHERE, COUNT, JOIN performance",
       "plan_ref": "T14",
       "project": "henrydb",
-      "started": "2026-04-09T15:10:44.376Z"
+      "started": "2026-04-09T15:10:44.376Z",
+      "completed": "2026-04-09T15:14:07.312Z",
+      "duration_ms": 180000,
+      "summary": "Benchmark: 3,647 inserts/sec (PK), 13,344 point queries/sec, full scan 16ms/1K rows, aggregation 8ms, JOIN 2.8s (nested loop bottleneck). ORDER BY 4.6ms. Real numbers showing both strengths (point queries) and weaknesses (JOINs)."
     },
     {
       "id": "T23",
       "mode": "BUILD",
       "task": "Write architecture blog post with benchmark results, WAL/MVCC design, and pg wire protocol details",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-09T15:14:29.245Z"
     },
     {
       "id": "T16",
