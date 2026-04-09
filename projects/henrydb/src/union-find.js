@@ -1,20 +1,43 @@
-// union-find.js — Disjoint-set (Union-Find) for HenryDB
-// Used for: connected components in graph queries, query equivalence classes.
+// union-find.js — Disjoint Set (Union-Find) with path compression + union by rank
+//
+// Provides near-O(1) operations for:
+//   - find(x): Which set does x belong to?
+//   - union(x, y): Merge the sets containing x and y
+//   - connected(x, y): Are x and y in the same set?
+//
+// Used in databases for:
+//   - Join equivalence class detection
+//   - Connected component analysis in graph queries
+//   - Partition merging in distributed queries
+//
+// Amortized time per operation: O(α(n)) ≈ O(1) where α is inverse Ackermann
 
-/**
- * Disjoint-Set with path compression and union by rank.
- * Near O(1) amortized operations (inverse Ackermann).
- */
 export class UnionFind {
-  constructor(size = 0) {
-    this._parent = new Array(size).fill(0).map((_, i) => i);
-    this._rank = new Array(size).fill(0);
-    this._size = new Array(size).fill(1); // Component sizes
-    this._count = size; // Number of components
+  constructor(n = 0) {
+    this._parent = new Array(n);
+    this._rank = new Array(n);
+    this._size = new Array(n);
+    this._count = n; // Number of disjoint sets
+    
+    for (let i = 0; i < n; i++) {
+      this._parent[i] = i;
+      this._rank[i] = 0;
+      this._size[i] = 1;
+    }
   }
 
   /**
-   * Add a new element. Returns its id.
+   * Number of elements.
+   */
+  get elements() { return this._parent.length; }
+
+  /**
+   * Number of disjoint sets.
+   */
+  get sets() { return this._count; }
+
+  /**
+   * Add a new element (returns its id).
    */
   makeSet() {
     const id = this._parent.length;
@@ -26,8 +49,8 @@ export class UnionFind {
   }
 
   /**
-   * Find the root (representative) of the set containing x.
-   * Uses path compression for O(α(n)) amortized.
+   * Find the representative of x's set. O(α(n)).
+   * Uses path compression.
    */
   find(x) {
     if (this._parent[x] !== x) {
@@ -37,25 +60,25 @@ export class UnionFind {
   }
 
   /**
-   * Union two sets. Uses union by rank.
-   * Returns true if they were in different sets.
+   * Merge the sets containing x and y. O(α(n)).
+   * Uses union by rank.
+   * Returns false if already in same set.
    */
   union(x, y) {
-    const rootX = this.find(x);
-    const rootY = this.find(y);
+    let rootX = this.find(x);
+    let rootY = this.find(y);
     
-    if (rootX === rootY) return false; // Already same set
+    if (rootX === rootY) return false; // Already connected
     
-    // Union by rank
+    // Union by rank: attach smaller tree to larger
     if (this._rank[rootX] < this._rank[rootY]) {
-      this._parent[rootX] = rootY;
-      this._size[rootY] += this._size[rootX];
-    } else if (this._rank[rootX] > this._rank[rootY]) {
-      this._parent[rootY] = rootX;
-      this._size[rootX] += this._size[rootY];
-    } else {
-      this._parent[rootY] = rootX;
-      this._size[rootX] += this._size[rootY];
+      [rootX, rootY] = [rootY, rootX];
+    }
+    
+    this._parent[rootY] = rootX;
+    this._size[rootX] += this._size[rootY];
+    
+    if (this._rank[rootX] === this._rank[rootY]) {
       this._rank[rootX]++;
     }
     
@@ -64,125 +87,29 @@ export class UnionFind {
   }
 
   /**
-   * Check if x and y are in the same set.
+   * Check if x and y are in the same set. O(α(n)).
    */
   connected(x, y) {
     return this.find(x) === this.find(y);
   }
 
   /**
-   * Get the size of the component containing x.
+   * Get the size of the set containing x.
    */
-  componentSize(x) {
+  setSize(x) {
     return this._size[this.find(x)];
   }
 
-  get componentCount() { return this._count; }
-
   /**
-   * Get all components as arrays of elements.
+   * Get all sets as arrays of elements.
    */
-  getComponents() {
-    const components = new Map();
+  getAllSets() {
+    const sets = new Map();
     for (let i = 0; i < this._parent.length; i++) {
       const root = this.find(i);
-      if (!components.has(root)) components.set(root, []);
-      components.get(root).push(i);
+      if (!sets.has(root)) sets.set(root, []);
+      sets.get(root).push(i);
     }
-    return [...components.values()];
+    return [...sets.values()];
   }
-}
-
-/**
- * Sorted Set with rank queries.
- * Supports: insert, delete, rank(value), kth(k), range.
- * Uses a sorted array with binary search (O(n) insert/delete, O(log n) search/rank).
- */
-export class SortedSet {
-  constructor(comparator = (a, b) => a < b ? -1 : a > b ? 1 : 0) {
-    this._data = [];
-    this._cmp = comparator;
-  }
-
-  /**
-   * Insert a value (maintains uniqueness).
-   */
-  insert(value) {
-    const pos = this._bisect(value);
-    if (pos < this._data.length && this._cmp(this._data[pos], value) === 0) return false;
-    this._data.splice(pos, 0, value);
-    return true;
-  }
-
-  /**
-   * Delete a value.
-   */
-  delete(value) {
-    const pos = this._bisect(value);
-    if (pos < this._data.length && this._cmp(this._data[pos], value) === 0) {
-      this._data.splice(pos, 1);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Check if value exists.
-   */
-  has(value) {
-    const pos = this._bisect(value);
-    return pos < this._data.length && this._cmp(this._data[pos], value) === 0;
-  }
-
-  /**
-   * Get the rank (0-indexed position) of a value.
-   */
-  rank(value) {
-    return this._bisect(value);
-  }
-
-  /**
-   * Get the k-th element (0-indexed).
-   */
-  kth(k) {
-    if (k < 0 || k >= this._data.length) return undefined;
-    return this._data[k];
-  }
-
-  /**
-   * Get the minimum element.
-   */
-  min() { return this._data[0]; }
-
-  /**
-   * Get the maximum element.
-   */
-  max() { return this._data[this._data.length - 1]; }
-
-  /**
-   * Range query: all elements in [low, high].
-   */
-  range(low, high) {
-    const start = this._bisect(low);
-    const results = [];
-    for (let i = start; i < this._data.length; i++) {
-      if (this._cmp(this._data[i], high) > 0) break;
-      results.push(this._data[i]);
-    }
-    return results;
-  }
-
-  get size() { return this._data.length; }
-
-  _bisect(value) {
-    let lo = 0, hi = this._data.length;
-    while (lo < hi) {
-      const mid = (lo + hi) >>> 1;
-      if (this._cmp(this._data[mid], value) < 0) lo = mid + 1;
-      else hi = mid;
-    }
-    return lo;
-  }
-
-  [Symbol.iterator]() { return this._data[Symbol.iterator](); }
 }
