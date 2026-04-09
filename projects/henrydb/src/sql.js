@@ -27,7 +27,7 @@ const KEYWORDS = new Set([
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'SEPARATOR',
   'CONFLICT', 'DO', 'NOTHING',
-  'ANALYZE', 'RETURNING',
+  'ANALYZE', 'RETURNING', 'USING',
   'MATERIALIZED', 'REFRESH',
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
   'IF', 'EXISTS',
@@ -1110,7 +1110,14 @@ export function parse(sql) {
       columns.push({ name, type: dataType, primaryKey, notNull, check, defaultValue: defaultVal, references });
     } while (match(','));
     expect(')');
-    return { type: 'CREATE_TABLE', table, columns, ifNotExists };
+    // Optional: USING BTREE | USING HEAP (default: HEAP)
+    let engine = null;
+    if (isKeyword('USING')) {
+      advance(); // USING
+      const engineTok = advance();
+      engine = (engineTok.originalValue || engineTok.value).toUpperCase();
+    }
+    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine };
   }
 
   function parseCreateIndex(unique) {

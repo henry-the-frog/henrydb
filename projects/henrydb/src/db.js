@@ -3,6 +3,7 @@
 
 import { HeapFile, encodeTuple, decodeTuple } from './page.js';
 import { BPlusTree } from './btree.js';
+import { BTreeTable } from './btree-table.js';
 import { optimizeSelect } from './decorrelate.js';
 import { QueryPlanner } from './planner.js';
 import { makeCompositeKey } from './composite-key.js';
@@ -507,11 +508,18 @@ export class Database {
       defaultValue: c.defaultValue ?? null,
       references: c.references || null,
     }));
-    const heap = this._heapFactory(ast.table);
+    // Choose storage engine: BTREE (clustered) or HEAP (default)
+    let heap;
+    const pkCol = schema.find(c => c.primaryKey);
+    if (ast.engine === 'BTREE' && pkCol) {
+      const pkIdx = schema.findIndex(c => c.primaryKey);
+      heap = new BTreeTable(ast.table, { pkIndices: [pkIdx] });
+    } else {
+      heap = this._heapFactory(ast.table);
+    }
     const indexes = new Map();
 
     // Create index for primary key
-    const pkCol = schema.find(c => c.primaryKey);
     if (pkCol) {
       indexes.set(pkCol.name, new BPlusTree(32));
     }

@@ -1200,9 +1200,113 @@
     {
       "id": "T112",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session wrap: update CURRENT.md, daily log, final git push",
-      "started": "2026-04-09T19:42:44.655Z"
+      "started": "2026-04-09T19:42:44.655Z",
+      "completed": "2026-04-09T19:43:47.811Z",
+      "duration_ms": 60000,
+      "summary": "Session wrapped. 44 tasks completed, ~200+ tests fixed/added. Final git push done."
+    },
+    {
+      "id": "T114",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B orientation: what deserves deep focus for the next 6 hours? Review TASKS.md backlog, TODO.md, recent work. Pick ONE project for depth.",
+      "started": "2026-04-09T20:15:56.991Z",
+      "completed": "2026-04-09T20:16:36.593Z",
+      "duration_ms": 90000,
+      "summary": "Chose Monkey WASM backend deepening: closures, GC, hash maps in linear memory. Genuinely hard CS work, connects to JIT knowledge. HenryDB had 44 tasks in Session A, switching projects for freshness."
+    },
+    {
+      "id": "T123",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB depth: fix remaining 1.1% failing tests, B-tree table storage or real MVCC integration, address autocommit txId=0 gap",
+      "task": null,
+      "started": "2026-04-09T20:17:31.603Z",
+      "completed": "2026-04-09T20:37:54.666Z",
+      "duration_ms": 180000,
+      "summary": "Surveyed test failures: very few real failures (adaptive-engine, example-app timing, some server hangs). 98.9%+ pass rate confirmed. Decided B-tree table storage is better depth work than chasing flaky tests. Planning B-tree clustered index implementation."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "task": "Implement BTreeTable: clustered B+tree where rows are stored in leaf nodes sorted by PK, replacing HeapFile for ordered access",
+      "status": "done",
+      "plan_ref": "T123",
+      "started": "2026-04-09T20:38:11.841Z",
+      "completed": "2026-04-09T20:41:54.496Z",
+      "duration_ms": 600000,
+      "summary": "BTreeTable implemented: clustered B+tree storage engine with HeapFile-compatible API. O(log n) point lookups, ordered range scans, composite PK, upsert. 21/21 tests including stress (500 rows) and benchmarks (10K rows). 1000 lookups in 10K rows < 100ms."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "task": "Wire BTreeTable into Database as alternative storage engine (heapFactory option), with CREATE TABLE ... USING BTREE",
+      "status": "in-progress",
+      "plan_ref": "T123",
+      "started": "2026-04-09T20:42:04.773Z"
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "task": "Benchmark: BTreeTable vs HeapFile for point lookups, range scans, and sequential inserts",
+      "status": "upcoming",
+      "plan_ref": "T123"
+    },
+    {
+      "id": "T115",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "Monkey WASM backend: closures (function table + environment capture), garbage collector (mark-sweep in linear memory), hash map implementation",
+      "task": null,
+      "skip_reason": "Changed focus to HenryDB depth (2-project limit)"
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T117",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session housekeeping"
+    },
+    {
+      "id": "T118",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-session depth check: what did I learn? Quality assessment."
+    },
+    {
+      "id": "T119",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Second HenryDB depth cycle: address findings from first cycle",
+      "task": null
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T121",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Late session housekeeping + git push"
+    },
+    {
+      "id": "T122",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1650,6 +1754,54 @@
     {
       "time": "2026-04-09T19:36:40.075Z",
       "msg": "Added T113 (BUILD) after T111: Quick: add simple benchmark script (bench.js) showing inserts/sec, selects/sec, joins/sec"
+    },
+    {
+      "time": "2026-04-09T20:15:48.488Z",
+      "msg": "Added T114 (THINK) after end: Session B orientation: what deserves deep focus for the next 6 hours? Review TASKS.md backlog, TODO.md, recent work. Pick ONE project for depth."
+    },
+    {
+      "time": "2026-04-09T20:16:41.923Z",
+      "msg": "Added T115 (PLAN) after end: Monkey WASM backend: closures (function table + environment capture), garbage collector (mark-sweep in linear memory), hash map implementation"
+    },
+    {
+      "time": "2026-04-09T20:17:09.443Z",
+      "msg": "Added T116 (BUILD) after T115: null"
+    },
+    {
+      "time": "2026-04-09T20:17:09.653Z",
+      "msg": "Added T117 (MAINTAIN) after end: Mid-session housekeeping"
+    },
+    {
+      "time": "2026-04-09T20:17:09.862Z",
+      "msg": "Added T118 (THINK) after end: Mid-session depth check: what did I learn? Quality assessment."
+    },
+    {
+      "time": "2026-04-09T20:17:10.071Z",
+      "msg": "Added T119 (PLAN) after end: Second HenryDB depth cycle: address findings from first cycle"
+    },
+    {
+      "time": "2026-04-09T20:17:16.057Z",
+      "msg": "Added T120 (BUILD) after T119: null"
+    },
+    {
+      "time": "2026-04-09T20:17:16.264Z",
+      "msg": "Added T121 (MAINTAIN) after end: Late session housekeeping + git push"
+    },
+    {
+      "time": "2026-04-09T20:17:16.472Z",
+      "msg": "Added T122 (EXPLORE) after end: Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management"
+    },
+    {
+      "time": "2026-04-09T20:17:27.227Z",
+      "msg": "Removed T115: Changed focus to HenryDB depth (2-project limit)"
+    },
+    {
+      "time": "2026-04-09T20:17:27.435Z",
+      "msg": "Added T123 (PLAN) after T114: HenryDB depth: fix remaining 1.1% failing tests, B-tree table storage or real MVCC integration, address autocommit txId=0 gap"
+    },
+    {
+      "time": "2026-04-09T20:38:03.282Z",
+      "msg": "PLAN T123 filled 3 BUILD tasks"
     }
   ]
 }

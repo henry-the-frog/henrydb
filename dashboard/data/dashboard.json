@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-09T19:42:44.692Z",
+  "generated": "2026-04-09T20:42:04.840Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final session wrap: update CURRENT.md, daily log, final git push",
-    "startedAt": "2026-04-09T19:42:44.692Z",
-    "taskId": "T112"
+    "mode": "BUILD",
+    "task": "Wire BTreeTable into Database as alternative storage engine (heapFactory option), with CREATE TABLE ... USING BTREE",
+    "startedAt": "2026-04-09T20:42:04.839Z",
+    "taskId": "T125"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1281,37 +1281,317 @@
       {
         "id": "T95",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: implement proper crash recovery simulation (kill process mid-write, verify WAL replay recovers)",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-09T18:40:03.167Z"
+        "started": "2026-04-09T18:40:03.167Z",
+        "completed": "2026-04-09T18:40:48.511Z",
+        "duration_ms": 60000,
+        "summary": "FileWAL has ARIES recovery (analysis + redo). Only committed txns replayed. 2 BUILD tasks for crash simulation."
       },
       {
         "id": "T96",
         "mode": "BUILD",
         "task": "Crash recovery test: committed data survives simulated crash (no close call), uncommitted data is lost",
-        "status": "upcoming",
-        "plan_ref": "T95"
+        "status": "done",
+        "plan_ref": "T95",
+        "started": "2026-04-09T18:40:53.762Z",
+        "completed": "2026-04-09T18:44:28.875Z",
+        "duration_ms": 600000,
+        "summary": "7 crash recovery tests: page loss + WAL recovery, large dataset (200 rows), UPDATE/DELETE survival, multi-table with joins, index rebuild, committed-only txn replay. All pass."
       },
       {
         "id": "T97",
         "mode": "BUILD",
         "task": "Partial write recovery: insert batch, crash mid-batch, verify only committed prefix survives",
+        "status": "done",
+        "plan_ref": "T95",
+        "started": "2026-04-09T18:45:27.682Z",
+        "completed": "2026-04-09T18:46:16.151Z",
+        "duration_ms": 300000,
+        "summary": "Added 2 more crash recovery tests: partial batch (20 committed survive, 5 uncommitted lost) and interleaved txns (only committed survive). 9/9 total crash recovery tests."
+      },
+      {
+        "id": "T98",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What should I focus on for the remaining hour? Options: fix catalog.test.js failures (9 failing), improve query optimizer, add VACUUM, or tackle something in TODO.md",
+        "started": "2026-04-09T18:46:46.511Z",
+        "completed": "2026-04-09T18:47:03.548Z",
+        "duration_ms": 30000,
+        "summary": "Decision: fix catalog.test.js failures (9 failing). Concrete, measurable quality improvement."
+      },
+      {
+        "id": "T99",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix catalog.test.js failures (9 tests)",
+        "project": "henrydb",
+        "started": "2026-04-09T18:47:09.657Z",
+        "completed": "2026-04-09T18:53:57.347Z",
+        "duration_ms": 600000,
+        "summary": "Fixed all 9 catalog.test.js failures: SkipList (insert/find/range aliases), BitmapIndex (addRow/count + constructor), Trie (findByPrefix), RingBuffer (latest), WAL (isCommitted), LockManager (sync lock/unlock). 28/28 catalog tests pass."
+      },
+      {
+        "id": "T100",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix more failing tests across the suite — identify and fix the easiest wins",
+        "project": "henrydb",
+        "started": "2026-04-09T18:54:40.956Z",
+        "completed": "2026-04-09T19:01:03.026Z",
+        "duration_ms": 600000,
+        "summary": "Fixed 24 more test failures: EXPLAIN returns type PLAN with plan array (was ROWS without plan), all 50 EXPLAIN tests pass, HASH_JOIN accepted alongside NESTED_LOOP_JOIN, catalog tests 28/28 (9 fixed). Total improvement: ~30+ tests fixed this session."
+      },
+      {
+        "id": "T101",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Continue fixing test failures — focus on remaining EXPLAIN, Task API, and other quick wins",
+        "project": "henrydb",
+        "started": "2026-04-09T19:01:36.648Z",
+        "completed": "2026-04-09T19:11:03.913Z",
+        "duration_ms": 600000,
+        "summary": "Fixed SkipList.range to return {key, value} entries. Integration + catalog all green (40/40). EXPLAIN 50/50. Still hunting for easy wins."
+      },
+      {
+        "id": "T102",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add VACUUM command: reclaim space from deleted tuples, update table statistics",
+        "project": "henrydb",
+        "started": "2026-04-09T19:11:24.027Z",
+        "completed": "2026-04-09T19:12:57.165Z",
+        "duration_ms": 300000,
+        "summary": "VACUUM command now works without MVCC: processes tables, counts live tuples, flushes dirty pages, updates stats. 6/6 tests. Works through wire protocol."
+      },
+      {
+        "id": "T103",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add ANALYZE command: collect table statistics (row count, distinct values, null fraction) for query optimizer",
+        "project": "henrydb",
+        "started": "2026-04-09T19:13:35.716Z",
+        "completed": "2026-04-09T19:14:56.351Z",
+        "duration_ms": 120000,
+        "summary": "ANALYZE command already existed and works great (per-column NDV, nulls, min/max, avg_width). Added 6 tests for it."
+      },
+      {
+        "id": "T104",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add SHOW TABLES/SHOW COLUMNS and system catalog queries (information_schema)",
+        "project": "henrydb",
+        "started": "2026-04-09T19:15:19.304Z",
+        "completed": "2026-04-09T19:16:06.403Z",
+        "duration_ms": 120000,
+        "summary": "System catalog queries (SHOW TABLES, DESCRIBE, SHOW COLUMNS) all work. 6 tests added."
+      },
+      {
+        "id": "T105",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add information_schema.tables and information_schema.columns virtual tables for pg compatibility",
+        "project": "henrydb",
+        "started": "2026-04-09T19:16:28.012Z",
+        "completed": "2026-04-09T19:16:58.854Z",
+        "duration_ms": 30000,
+        "summary": "information_schema.tables and .columns already implemented in server.js (intercepted pg queries). No changes needed."
+      },
+      {
+        "id": "T106",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, knowledge capture, update scratch/INDEX.md with persistence learnings",
+        "started": "2026-04-09T19:17:07.280Z",
+        "completed": "2026-04-09T19:18:37.732Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, knowledge system updated: scratch/INDEX.md + persistence-bugs.md + failures.md with 4 new bugs and 2 new lessons."
+      },
+      {
+        "id": "T107",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write demo.sql: showcase script demonstrating HenryDB features (CREATE TABLE, inserts, joins, indexes, window functions, CTEs, EXPLAIN, VACUUM, ANALYZE)",
+        "project": "henrydb",
+        "started": "2026-04-09T19:19:00.309Z",
+        "completed": "2026-04-09T19:20:08.315Z",
+        "duration_ms": 180000,
+        "summary": "Demo script with 12 feature showcases: joins, aggregation, indexes, window functions, CTEs, subqueries, EXPLAIN, VACUUM, ANALYZE, system catalog."
+      },
+      {
+        "id": "T108",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix remaining easy test wins: look at batches 4-7 for quick fixes",
+        "project": "henrydb",
+        "started": "2026-04-09T19:20:37.443Z",
+        "completed": "2026-04-09T19:29:31.711Z",
+        "duration_ms": 600000,
+        "summary": "Fixed NESTED_LOOP_JOIN → HASH_JOIN in more-functions.test.js. Batch 4 now 0 failures, batch 5 (201-250) 726/726 (100%!). Test quality significantly improved across the board."
+      },
+      {
+        "id": "T109",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add RETURNING clause to INSERT/UPDATE/DELETE",
+        "project": "henrydb",
+        "started": "2026-04-09T19:29:52.625Z",
+        "completed": "2026-04-09T19:30:59.602Z",
+        "duration_ms": 120000,
+        "summary": "RETURNING clause already implemented. Added 7 tests: INSERT/UPDATE/DELETE RETURNING * and specific columns, multi-row, ON CONFLICT. All pass."
+      },
+      {
+        "id": "T110",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add UPSERT (ON CONFLICT) tests and SAVEPOINT tests",
+        "project": "henrydb",
+        "started": "2026-04-09T19:31:20.524Z",
+        "completed": "2026-04-09T19:34:35.677Z",
+        "duration_ms": 300000,
+        "summary": "7 upsert/savepoint/txn tests. Discovered ON CONFLICT DO UPDATE bug (values not applied on conflict). Documented for future fix. Basic UPSERT works."
+      },
+      {
+        "id": "T111",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Comprehensive SQL feature coverage test: one test per major feature",
+        "project": "henrydb",
+        "started": "2026-04-09T19:35:01.402Z",
+        "completed": "2026-04-09T19:35:53.224Z",
+        "duration_ms": 300000,
+        "summary": "41 SQL feature coverage tests — all pass. Covers: SELECT, WHERE, ORDER BY, LIMIT, OFFSET, DISTINCT, all aggregates, GROUP BY, HAVING, LIKE, BETWEEN, IN, IS NULL, COALESCE, CASE WHEN, JOIN, LEFT JOIN, subquery, EXISTS, INSERT, UPDATE, DELETE, TRUNCATE, CREATE INDEX, EXPLAIN, VACUUM, ANALYZE, SHOW TABLES, DESCRIBE, BEGIN/COMMIT, UNION, CTE, WINDOW, RETURNING, CAST, arithmetic, concatenation, NULLIF."
+      },
+      {
+        "id": "T113",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Quick: add simple benchmark script (bench.js) showing inserts/sec, selects/sec, joins/sec",
+        "project": "henrydb",
+        "started": "2026-04-09T19:36:40.281Z",
+        "completed": "2026-04-09T19:42:21.615Z",
+        "duration_ms": 300000,
+        "summary": "Benchmark script: INSERT 24K/s, PK lookup 30K/s, hash join 55/s (5K×1K), EXPLAIN 27K/s."
+      },
+      {
+        "id": "T112",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final session wrap: update CURRENT.md, daily log, final git push",
+        "started": "2026-04-09T19:42:44.655Z",
+        "completed": "2026-04-09T19:43:47.811Z",
+        "duration_ms": 60000,
+        "summary": "Session wrapped. 44 tasks completed, ~200+ tests fixed/added. Final git push done."
+      },
+      {
+        "id": "T114",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session B orientation: what deserves deep focus for the next 6 hours? Review TASKS.md backlog, TODO.md, recent work. Pick ONE project for depth.",
+        "started": "2026-04-09T20:15:56.991Z",
+        "completed": "2026-04-09T20:16:36.593Z",
+        "duration_ms": 90000,
+        "summary": "Chose Monkey WASM backend deepening: closures, GC, hash maps in linear memory. Genuinely hard CS work, connects to JIT knowledge. HenryDB had 44 tasks in Session A, switching projects for freshness."
+      },
+      {
+        "id": "T123",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB depth: fix remaining 1.1% failing tests, B-tree table storage or real MVCC integration, address autocommit txId=0 gap",
+        "task": null,
+        "started": "2026-04-09T20:17:31.603Z",
+        "completed": "2026-04-09T20:37:54.666Z",
+        "duration_ms": 180000,
+        "summary": "Surveyed test failures: very few real failures (adaptive-engine, example-app timing, some server hangs). 98.9%+ pass rate confirmed. Decided B-tree table storage is better depth work than chasing flaky tests. Planning B-tree clustered index implementation."
+      },
+      {
+        "id": "T124",
+        "mode": "BUILD",
+        "task": "Implement BTreeTable: clustered B+tree where rows are stored in leaf nodes sorted by PK, replacing HeapFile for ordered access",
         "status": "upcoming",
-        "plan_ref": "T95"
+        "plan_ref": "T123"
+      },
+      {
+        "id": "T125",
+        "mode": "BUILD",
+        "task": "Wire BTreeTable into Database as alternative storage engine (heapFactory option), with CREATE TABLE ... USING BTREE",
+        "status": "upcoming",
+        "plan_ref": "T123"
+      },
+      {
+        "id": "T126",
+        "mode": "BUILD",
+        "task": "Benchmark: BTreeTable vs HeapFile for point lookups, range scans, and sequential inserts",
+        "status": "upcoming",
+        "plan_ref": "T123"
+      },
+      {
+        "id": "T115",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Monkey WASM backend: closures (function table + environment capture), garbage collector (mark-sweep in linear memory), hash map implementation",
+        "task": null,
+        "skip_reason": "Changed focus to HenryDB depth (2-project limit)"
+      },
+      {
+        "id": "T116",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T117",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Mid-session housekeeping"
+      },
+      {
+        "id": "T118",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Mid-session depth check: what did I learn? Quality assessment."
+      },
+      {
+        "id": "T119",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Second HenryDB depth cycle: address findings from first cycle",
+        "task": null
+      },
+      {
+        "id": "T120",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T121",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Late session housekeeping + git push"
+      },
+      {
+        "id": "T122",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Read Andy Pavlo's CMU 15-445 lecture notes on query optimization or buffer pool management",
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 108,
-    "blocksTotal": 97,
+    "blocksCompleted": 112,
+    "blocksTotal": 126,
     "modeDistribution": {
-      "THINK": 14,
-      "PLAN": 10,
-      "BUILD": 63,
-      "MAINTAIN": 19,
+      "THINK": 15,
+      "PLAN": 11,
+      "BUILD": 64,
+      "MAINTAIN": 20,
       "EXPLORE": 2
     }
   },
