@@ -1,227 +1,159 @@
 // disk-manager.js — File-backed page I/O for HenryDB
-// Manages a database file as a sequence of fixed-size pages.
-// Each page is PAGE_SIZE bytes, addressed by page ID (0-indexed).
+//
+// Manages page storage on disk using a single database file.
+// Pages are fixed-size and addressed by page ID.
+// Layout: [Page 0][Page 1][Page 2]...
+//
+// File format:
+//   Bytes 0..PAGE_SIZE-1: Page 0
+//   Bytes PAGE_SIZE..2*PAGE_SIZE-1: Page 1
+//   ...
+//
+// Design matches CMU 15-445 DiskManager interface.
 
-import { openSync, readSync, writeSync, ftruncateSync, fsyncSync, closeSync, statSync, existsSync } from 'node:fs';
+import { openSync, readSync, writeSync, closeSync, fstatSync, ftruncateSync, unlinkSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-export const PAGE_SIZE = 4096;
-
-// File header: stored in the first PAGE_SIZE bytes of the file
-// [4 bytes: magic "HNDB"]
-// [4 bytes: version (1)]
-// [4 bytes: page size]
-// [4 bytes: total page count (not including header page)]
-// [4 bytes: free list head (page ID of first free page, or -1)]
-// [rest: reserved]
-const MAGIC = 0x48_4E_44_42; // 'HNDB'
-const VERSION = 1;
-const HEADER_PAGE = 0;
-
+/**
+ * DiskManager — File-backed page storage.
+ * Each page is a fixed-size block at offset pageId * pageSize.
+ */
 export class DiskManager {
   /**
-   * @param {string} filePath — path to the database file
-   * @param {object} [options]
-   * @param {boolean} [options.create=true] — create file if it doesn't exist
-   * @param {boolean} [options.sync=false] — fsync after every write (slower, safer)
+   * @param {string} filePath - Path to the database file
+   * @param {number} pageSize - Size of each page in bytes (default: 4096)
    */
-  constructor(filePath, { create = true, sync = false } = {}) {
-    this._filePath = filePath;
-    this._sync = sync;
-    this._pageCount = 0;
-    this._freeListHead = -1;
-    this._lastAppliedLSN = 0;
-    this._fd = -1;
-
-    const exists = existsSync(filePath);
-    if (!exists && !create) {
-      throw new Error(`Database file not found: ${filePath}`);
-    }
-
-    // Open file (read+write, create if needed)
-    this._fd = openSync(filePath, exists ? 'r+' : 'w+');
-
-    if (exists) {
-      this._readHeader();
-    } else {
-      this._initHeader();
-    }
-  }
-
-  /** Total number of data pages (excluding the header page). */
-  get pageCount() { return this._pageCount; }
-
-  /** Last WAL LSN that was fully applied to this file. */
-  get lastAppliedLSN() { return this._lastAppliedLSN; }
-  set lastAppliedLSN(lsn) { 
-    this._lastAppliedLSN = lsn; 
-    this._writeHeader();
+  constructor(filePath, pageSize = 4096) {
+    this.filePath = filePath;
+    this.pageSize = pageSize;
+    this._fd = openSync(filePath, 'a+'); // Create if not exists, read+write
+    // Reopen with r+ for proper random access
+    closeSync(this._fd);
+    this._fd = openSync(filePath, existsSync(filePath) ? 'r+' : 'w+');
+    
+    const stat = fstatSync(this._fd);
+    this._fileSize = stat.size;
+    this._numPages = Math.ceil(this._fileSize / this.pageSize);
+    this._nextPageId = this._numPages;
+    
+    // Stats
+    this._readCount = 0;
+    this._writeCount = 0;
+    this._bytesRead = 0;
+    this._bytesWritten = 0;
   }
 
   /**
    * Allocate a new page. Returns the page ID.
-   * If there's a free page, reuse it. Otherwise, extend the file.
+   * The page is zero-filled on disk.
    */
   allocatePage() {
-    let pageId;
-
-    if (this._freeListHead >= 0) {
-      // Reuse a free page
-      pageId = this._freeListHead;
-      // Read the free page to get the next free pointer
-      const buf = this.readPage(pageId);
-      this._freeListHead = buf.readInt32LE(0);
-      this._writeHeader();
-    } else {
-      // Extend the file
-      pageId = this._pageCount;
-      this._pageCount++;
-      // Extend file to include the new page
-      const offset = this._pageOffset(pageId);
-      const zeroBuf = Buffer.alloc(PAGE_SIZE);
-      writeSync(this._fd, zeroBuf, 0, PAGE_SIZE, offset);
-      this._writeHeader();
-    }
-
+    const pageId = this._nextPageId++;
+    const zeros = Buffer.alloc(this.pageSize);
+    const offset = pageId * this.pageSize;
+    writeSync(this._fd, zeros, 0, this.pageSize, offset);
+    this._fileSize = Math.max(this._fileSize, offset + this.pageSize);
+    this._numPages = pageId + 1;
+    this._writeCount++;
+    this._bytesWritten += this.pageSize;
     return pageId;
   }
 
   /**
-   * Deallocate a page (add to free list).
-   */
-  deallocatePage(pageId) {
-    // Write the current free list head into the deallocated page
-    const buf = Buffer.alloc(PAGE_SIZE);
-    buf.writeInt32LE(this._freeListHead, 0);
-    this.writePage(pageId, buf);
-    this._freeListHead = pageId;
-    this._writeHeader();
-  }
-
-  /**
-   * Read a page from disk.
+   * Read a page from disk into a buffer.
    * @param {number} pageId
-   * @returns {Buffer} — PAGE_SIZE bytes
+   * @returns {Buffer} Page data
    */
   readPage(pageId) {
-    if (pageId < 0 || pageId >= this._pageCount) {
-      throw new Error(`Invalid page ID: ${pageId} (total: ${this._pageCount})`);
+    const offset = pageId * this.pageSize;
+    if (offset + this.pageSize > this._fileSize) {
+      throw new Error(`Page ${pageId} does not exist (offset ${offset} exceeds file size ${this._fileSize})`);
     }
-    const buf = Buffer.alloc(PAGE_SIZE);
-    const offset = this._pageOffset(pageId);
-    const bytesRead = readSync(this._fd, buf, 0, PAGE_SIZE, offset);
-    if (bytesRead < PAGE_SIZE) {
-      throw new Error(`Short read for page ${pageId}: got ${bytesRead} bytes`);
+    
+    const buf = Buffer.alloc(this.pageSize);
+    const bytesRead = readSync(this._fd, buf, 0, this.pageSize, offset);
+    if (bytesRead < this.pageSize) {
+      throw new Error(`Short read for page ${pageId}: got ${bytesRead} bytes, expected ${this.pageSize}`);
     }
+    
+    this._readCount++;
+    this._bytesRead += this.pageSize;
     return buf;
   }
 
   /**
    * Write a page to disk.
    * @param {number} pageId
-   * @param {Buffer} data — exactly PAGE_SIZE bytes
+   * @param {Buffer} data - Must be exactly pageSize bytes
    */
   writePage(pageId, data) {
-    if (data.length !== PAGE_SIZE) {
-      throw new Error(`Page data must be exactly ${PAGE_SIZE} bytes, got ${data.length}`);
+    if (!Buffer.isBuffer(data) || data.length !== this.pageSize) {
+      throw new Error(`Data must be a Buffer of exactly ${this.pageSize} bytes`);
     }
-    if (pageId < 0 || pageId >= this._pageCount) {
-      throw new Error(`Invalid page ID: ${pageId} (total: ${this._pageCount})`);
-    }
-    const offset = this._pageOffset(pageId);
-    writeSync(this._fd, data, 0, PAGE_SIZE, offset);
-    if (this._sync) fsyncSync(this._fd);
+    
+    const offset = pageId * this.pageSize;
+    writeSync(this._fd, data, 0, this.pageSize, offset);
+    this._fileSize = Math.max(this._fileSize, offset + this.pageSize);
+    
+    this._writeCount++;
+    this._bytesWritten += this.pageSize;
   }
 
   /**
-   * Force all pending writes to disk (fsync).
+   * Deallocate a page. In this simple implementation,
+   * we zero out the page but don't reclaim space.
    */
-  sync() {
-    fsyncSync(this._fd);
+  deallocatePage(pageId) {
+    const zeros = Buffer.alloc(this.pageSize);
+    const offset = pageId * this.pageSize;
+    if (offset < this._fileSize) {
+      writeSync(this._fd, zeros, 0, this.pageSize, offset);
+    }
   }
 
   /**
-   * Close the database file.
+   * Get the number of pages currently on disk.
+   */
+  get numPages() {
+    return this._numPages;
+  }
+
+  /**
+   * Get I/O statistics.
+   */
+  get stats() {
+    return {
+      totalPages: this._numPages,
+      fileSize: this._fileSize,
+      reads: this._readCount,
+      writes: this._writeCount,
+      bytesRead: this._bytesRead,
+      bytesWritten: this._bytesWritten,
+    };
+  }
+
+  /**
+   * Close the file descriptor.
    */
   close() {
-    if (this._fd >= 0) {
-      this._writeHeader();
-      fsyncSync(this._fd);
-      closeSync(this._fd);
-      this._fd = -1;
-    }
+    closeSync(this._fd);
+    this._fd = -1;
   }
 
-  // --- Internal ---
-
-  _pageOffset(pageId) {
-    // Page 0 is the header, data pages start at offset PAGE_SIZE
-    return (pageId + 1) * PAGE_SIZE;
+  /**
+   * Delete the database file.
+   */
+  destroy() {
+    if (this._fd >= 0) this.close();
+    try { unlinkSync(this.filePath); } catch (e) { /* ignore */ }
   }
 
-  _initHeader() {
-    const buf = Buffer.alloc(PAGE_SIZE);
-    buf.writeUInt32LE(MAGIC, 0);
-    buf.writeUInt32LE(VERSION, 4);
-    buf.writeUInt32LE(PAGE_SIZE, 8);
-    buf.writeUInt32LE(0, 12);  // page count
-    buf.writeInt32LE(-1, 16);  // free list head
-    // lastAppliedLSN: 8 bytes at offset 20 (as two 32-bit halves)
-    buf.writeUInt32LE(0, 20);  // LSN low
-    buf.writeUInt32LE(0, 24);  // LSN high
-    writeSync(this._fd, buf, 0, PAGE_SIZE, 0);
-    fsyncSync(this._fd);
-    this._pageCount = 0;
-    this._freeListHead = -1;
-    this._lastAppliedLSN = 0;
-  }
-
-  _readHeader() {
-    const buf = Buffer.alloc(PAGE_SIZE);
-    const bytesRead = readSync(this._fd, buf, 0, PAGE_SIZE, 0);
-    
-    if (bytesRead < 20) {
-      // File too small to be a valid database — reinitialize
-      this._initHeader();
-      return;
-    }
-
-    const magic = buf.readUInt32LE(0);
-    if (magic !== MAGIC) {
-      throw new Error(`Invalid database file: bad magic number (expected 0x${MAGIC.toString(16)}, got 0x${magic.toString(16)})`);
-    }
-
-    const version = buf.readUInt32LE(4);
-    if (version !== VERSION) {
-      throw new Error(`Unsupported database version: ${version}`);
-    }
-
-    const pageSize = buf.readUInt32LE(8);
-    if (pageSize !== PAGE_SIZE) {
-      throw new Error(`Page size mismatch: file has ${pageSize}, expected ${PAGE_SIZE}`);
-    }
-
-    this._pageCount = buf.readUInt32LE(12);
-    this._freeListHead = buf.readInt32LE(16);
-    
-    // Read lastAppliedLSN (8 bytes)
-    if (bytesRead >= 28) {
-      const lsnLow = buf.readUInt32LE(20);
-      const lsnHigh = buf.readUInt32LE(24);
-      this._lastAppliedLSN = lsnHigh * 0x100000000 + lsnLow;
-    } else {
-      this._lastAppliedLSN = 0;
-    }
-  }
-
-  _writeHeader() {
-    const buf = Buffer.alloc(PAGE_SIZE);
-    buf.writeUInt32LE(MAGIC, 0);
-    buf.writeUInt32LE(VERSION, 4);
-    buf.writeUInt32LE(PAGE_SIZE, 8);
-    buf.writeUInt32LE(this._pageCount, 12);
-    buf.writeInt32LE(this._freeListHead, 16);
-    buf.writeUInt32LE(this._lastAppliedLSN & 0xFFFFFFFF, 20);  // LSN low
-    buf.writeUInt32LE(Math.floor(this._lastAppliedLSN / 0x100000000), 24);  // LSN high
-    writeSync(this._fd, buf, 0, PAGE_SIZE, 0);
+  /**
+   * Create a temporary DiskManager for testing.
+   */
+  static createTemp(pageSize = 4096) {
+    const filePath = join(tmpdir(), `henrydb-test-${Date.now()}-${Math.random().toString(36).slice(2)}.db`);
+    return new DiskManager(filePath, pageSize);
   }
 }
