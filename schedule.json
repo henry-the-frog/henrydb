@@ -2406,10 +2406,35 @@
     {
       "id": "T226",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Page table: virtual-to-physical page mapping with TLB-like cache",
       "project": "henrydb",
-      "started": "2026-04-09T23:20:34.232Z"
+      "started": "2026-04-09T23:20:34.232Z",
+      "completed": "2026-04-09T23:21:28.986Z",
+      "duration_ms": 180000,
+      "summary": "PageTable: virtual-to-physical with TLB cache. 5 tests."
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Lock manager: 2PL with deadlock detection",
+      "project": "henrydb",
+      "started": "2026-04-09T23:21:45.996Z"
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Timestamp ordering: concurrency control via timestamps",
+      "project": "henrydb"
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Column store: columnar storage layout for analytics",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3317,6 +3342,18 @@
     {
       "time": "2026-04-09T23:19:13.051Z",
       "msg": "Added T226 (BUILD) after end: Page table: virtual-to-physical page mapping with TLB-like cache"
+    },
+    {
+      "time": "2026-04-09T23:21:45.196Z",
+      "msg": "Added T227 (BUILD) after end: Lock manager: 2PL with deadlock detection"
+    },
+    {
+      "time": "2026-04-09T23:21:45.368Z",
+      "msg": "Added T228 (BUILD) after end: Timestamp ordering: concurrency control via timestamps"
+    },
+    {
+      "time": "2026-04-09T23:21:45.578Z",
+      "msg": "Added T229 (BUILD) after end: Column store: columnar storage layout for analytics"
     }
   ]
 }

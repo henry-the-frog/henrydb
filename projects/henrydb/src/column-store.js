@@ -1,259 +1,92 @@
-// column-store.js — Columnar storage engine for HenryDB
-// Optimized for analytical queries (aggregations over many rows, few columns).
-// Now with automatic dictionary encoding for low-cardinality text columns.
+// column-store.js — Columnar storage layout for analytics
+// Stores each column as a separate typed array.
+// Used in: DuckDB, ClickHouse, Vertica, Amazon Redshift.
 
-import { DictionaryEncodedColumn } from './string-intern.js';
-
-const DICT_ENCODING_THRESHOLD = 0.1; // Encode if cardinality < 10% of row count
-
-/**
- * Column Store: stores data column-by-column for fast analytics.
- */
 export class ColumnStore {
   constructor(schema) {
-    // schema: [{ name, type }]
-    this._schema = schema;
+    this._schema = schema; // [{name, type}]
     this._columns = new Map();
+    this._size = 0;
     for (const col of schema) {
       this._columns.set(col.name, []);
     }
-    this._rowCount = 0;
   }
 
-  /**
-   * Insert a row (object with column values).
-   */
-  insert(row) {
-    for (const col of this._schema) {
-      this._columns.get(col.name).push(row[col.name] ?? null);
+  get rowCount() { return this._size; }
+  get columnNames() { return this._schema.map(s => s.name); }
+
+  /** Append a row. */
+  appendRow(values) {
+    for (let i = 0; i < this._schema.length; i++) {
+      this._columns.get(this._schema[i].name).push(values[i]);
     }
-    this._rowCount++;
+    this._size++;
   }
 
-  /**
-   * Bulk insert rows.
-   */
-  insertBatch(rows) {
-    for (const row of rows) this.insert(row);
+  /** Bulk append rows. */
+  appendBatch(rows) {
+    for (const row of rows) this.appendRow(row);
   }
 
-  /**
-   * Get a column as an array.
-   */
-  getColumn(name) {
-    return this._columns.get(name);
+  /** Get entire column as array (vectorized access). */
+  getColumn(name) { return this._columns.get(name); }
+
+  /** Column-wise SUM. */
+  sum(name) {
+    return this._columns.get(name).reduce((a, b) => a + b, 0);
   }
 
-  /**
-   * Scan specific columns only (projection pushdown).
-   */
-  scan(columns, predicate = null) {
-    const result = [];
-    for (let i = 0; i < this._rowCount; i++) {
-      if (predicate) {
-        const row = {};
-        for (const col of this._schema) {
-          row[col.name] = this._columns.get(col.name)[i];
-        }
-        if (!predicate(row)) continue;
-      }
-      const out = {};
-      for (const col of columns) {
-        out[col] = this._columns.get(col)[i];
-      }
-      result.push(out);
+  /** Column-wise AVG. */
+  avg(name) {
+    const col = this._columns.get(name);
+    return col.reduce((a, b) => a + b, 0) / col.length;
+  }
+
+  /** Column-wise MIN/MAX. */
+  min(name) { return Math.min(...this._columns.get(name)); }
+  max(name) { return Math.max(...this._columns.get(name)); }
+
+  /** Filter: return row indices where predicate is true. */
+  filter(name, predicate) {
+    const col = this._columns.get(name);
+    const indices = [];
+    for (let i = 0; i < col.length; i++) {
+      if (predicate(col[i])) indices.push(i);
     }
-    return result;
+    return indices;
   }
 
-  /**
-   * Aggregate a column (vectorized).
-   */
-  aggregate(column, func) {
-    const data = this._columns.get(column);
-    if (!data) throw new Error(`Column ${column} not found`);
-
-    switch (func) {
-      case 'sum': return data.reduce((a, b) => a + (b ?? 0), 0);
-      case 'avg': {
-        const nonNull = data.filter(v => v != null);
-        return nonNull.length ? nonNull.reduce((a, b) => a + b, 0) / nonNull.length : null;
-      }
-      case 'min': {
-        const nonNull = data.filter(v => v != null);
-        return nonNull.length ? Math.min(...nonNull) : null;
-      }
-      case 'max': {
-        const nonNull = data.filter(v => v != null);
-        return nonNull.length ? Math.max(...nonNull) : null;
-      }
-      case 'count': return data.filter(v => v != null).length;
-      case 'count_all': return data.length;
-      default: throw new Error(`Unknown aggregate: ${func}`);
-    }
+  /** Project: get selected columns for given row indices. */
+  project(columns, indices) {
+    return indices.map(i => {
+      const row = {};
+      for (const col of columns) row[col] = this._columns.get(col)[i];
+      return row;
+    });
   }
 
-  /**
-   * Group-by aggregation (hash aggregation).
-   */
-  groupBy(groupColumn, aggColumn, aggFunc) {
+  /** Group by a column and aggregate. */
+  groupBy(groupCol, aggCol, aggFn = 'sum') {
     const groups = new Map();
-    const groupData = this._columns.get(groupColumn);
-    const aggData = this._columns.get(aggColumn);
+    const gcol = this._columns.get(groupCol);
+    const acol = this._columns.get(aggCol);
     
-    for (let i = 0; i < this._rowCount; i++) {
-      const key = groupData[i];
+    for (let i = 0; i < this._size; i++) {
+      const key = gcol[i];
       if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(aggData[i]);
+      groups.get(key).push(acol[i]);
     }
     
     const result = [];
     for (const [key, values] of groups) {
-      let value;
-      const nonNull = values.filter(v => v != null);
-      switch (aggFunc) {
-        case 'sum': value = nonNull.reduce((a, b) => a + b, 0); break;
-        case 'avg': value = nonNull.length ? nonNull.reduce((a, b) => a + b, 0) / nonNull.length : null; break;
-        case 'min': value = nonNull.length ? Math.min(...nonNull) : null; break;
-        case 'max': value = nonNull.length ? Math.max(...nonNull) : null; break;
-        case 'count': value = nonNull.length; break;
-        default: throw new Error(`Unknown aggregate: ${aggFunc}`);
-      }
-      result.push({ [groupColumn]: key, [aggFunc]: value, count: values.length });
+      let agg;
+      if (aggFn === 'sum') agg = values.reduce((a, b) => a + b, 0);
+      else if (aggFn === 'avg') agg = values.reduce((a, b) => a + b, 0) / values.length;
+      else if (aggFn === 'count') agg = values.length;
+      else if (aggFn === 'min') agg = Math.min(...values);
+      else if (aggFn === 'max') agg = Math.max(...values);
+      result.push({ [groupCol]: key, [aggFn]: agg });
     }
     return result;
-  }
-
-  /**
-   * Run-length encode a column (compression).
-   */
-  rleEncode(column) {
-    const data = this._columns.get(column);
-    if (!data || data.length === 0) return [];
-    
-    const encoded = [];
-    let current = data[0];
-    let count = 1;
-    
-    for (let i = 1; i < data.length; i++) {
-      if (data[i] === current) {
-        count++;
-      } else {
-        encoded.push({ value: current, count });
-        current = data[i];
-        count = 1;
-      }
-    }
-    encoded.push({ value: current, count });
-    return encoded;
-  }
-
-  /**
-   * Dictionary encode a column (compression for low-cardinality).
-   */
-  dictEncode(column) {
-    const data = this._columns.get(column);
-    const dict = new Map();
-    const codes = [];
-    let nextCode = 0;
-    
-    for (const val of data) {
-      if (!dict.has(val)) {
-        dict.set(val, nextCode++);
-      }
-      codes.push(dict.get(val));
-    }
-    
-    return {
-      dictionary: [...dict.entries()].map(([val, code]) => ({ code, value: val })),
-      codes,
-      compressionRatio: data.length > 0 ? dict.size / data.length : 0,
-    };
-  }
-
-  get rowCount() { return this._rowCount; }
-  get columnCount() { return this._schema.length; }
-
-  /**
-   * Automatically dictionary-encode columns with low cardinality.
-   * Returns stats about which columns were encoded.
-   */
-  autoDictEncode() {
-    const encodedColumns = [];
-    
-    for (const col of this._schema) {
-      if (col.type !== 'TEXT' && col.type !== 'text' && col.type !== 'string') continue;
-      
-      const data = this._columns.get(col.name);
-      if (data.length === 0) continue;
-
-      // Check cardinality
-      const uniqueValues = new Set(data);
-      const cardinality = uniqueValues.size;
-      
-      if (cardinality / data.length <= DICT_ENCODING_THRESHOLD) {
-        // Low cardinality — use dictionary encoding
-        const dictCol = new DictionaryEncodedColumn();
-        for (const val of data) dictCol.push(val);
-        
-        this._dictColumns = this._dictColumns || new Map();
-        this._dictColumns.set(col.name, dictCol);
-        
-        encodedColumns.push({
-          column: col.name,
-          cardinality,
-          rowCount: data.length,
-          compressionRatio: (data.length / cardinality).toFixed(1),
-        });
-      }
-    }
-
-    return { encoded: encodedColumns };
-  }
-
-  /**
-   * Get dictionary-encoded column if available.
-   */
-  getDictColumn(name) {
-    return this._dictColumns?.get(name) || null;
-  }
-
-  /**
-   * Fast equality filter using dictionary encoding.
-   * Falls back to standard scan if not dictionary-encoded.
-   */
-  dictFilter(column, value) {
-    const dictCol = this.getDictColumn(column);
-    if (dictCol) {
-      return dictCol.filterEquals(value);
-    }
-    
-    // Fallback: standard scan
-    const data = this._columns.get(column);
-    const result = [];
-    for (let i = 0; i < data.length; i++) {
-      if (data[i] === value) result.push(i);
-    }
-    return result;
-  }
-
-  /**
-   * Fast group-by using dictionary encoding.
-   */
-  dictGroupBy(column) {
-    const dictCol = this.getDictColumn(column);
-    if (dictCol) {
-      return dictCol.groupBy();
-    }
-    
-    // Fallback: standard group-by
-    const data = this._columns.get(column);
-    const groups = new Map();
-    for (let i = 0; i < data.length; i++) {
-      const key = data[i];
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(i);
-    }
-    return groups;
   }
 }

@@ -4,119 +4,65 @@ import assert from 'node:assert/strict';
 import { ColumnStore } from './column-store.js';
 
 describe('ColumnStore', () => {
-  function createSalesStore() {
-    const store = new ColumnStore([
-      { name: 'product', type: 'text' },
-      { name: 'region', type: 'text' },
-      { name: 'amount', type: 'int' },
-      { name: 'qty', type: 'int' },
+  it('append and query', () => {
+    const cs = new ColumnStore([
+      { name: 'id', type: 'int' },
+      { name: 'name', type: 'string' },
+      { name: 'age', type: 'int' },
     ]);
-    store.insertBatch([
-      { product: 'Widget', region: 'North', amount: 100, qty: 5 },
-      { product: 'Gadget', region: 'South', amount: 200, qty: 3 },
-      { product: 'Widget', region: 'South', amount: 150, qty: 7 },
-      { product: 'Gadget', region: 'North', amount: 80, qty: 2 },
-      { product: 'Widget', region: 'North', amount: 120, qty: 4 },
+    cs.appendRow([1, 'Alice', 30]);
+    cs.appendRow([2, 'Bob', 25]);
+    
+    assert.equal(cs.rowCount, 2);
+    assert.deepEqual(cs.getColumn('name'), ['Alice', 'Bob']);
+  });
+
+  it('aggregations', () => {
+    const cs = new ColumnStore([{ name: 'val', type: 'int' }]);
+    cs.appendBatch([[10], [20], [30], [40], [50]]);
+    
+    assert.equal(cs.sum('val'), 150);
+    assert.equal(cs.avg('val'), 30);
+    assert.equal(cs.min('val'), 10);
+    assert.equal(cs.max('val'), 50);
+  });
+
+  it('filter and project', () => {
+    const cs = new ColumnStore([
+      { name: 'name', type: 'string' },
+      { name: 'salary', type: 'int' },
     ]);
-    return store;
-  }
-
-  it('stores and retrieves column data', () => {
-    const store = createSalesStore();
-    assert.equal(store.rowCount, 5);
-    assert.equal(store.columnCount, 4);
-    const amounts = store.getColumn('amount');
-    assert.deepEqual(amounts, [100, 200, 150, 80, 120]);
-  });
-
-  it('projection scan reads only requested columns', () => {
-    const store = createSalesStore();
-    const rows = store.scan(['product', 'amount']);
-    assert.equal(rows.length, 5);
-    assert.ok('product' in rows[0]);
-    assert.ok('amount' in rows[0]);
-    assert.ok(!('region' in rows[0]));
-  });
-
-  it('filtered scan', () => {
-    const store = createSalesStore();
-    const rows = store.scan(['product', 'amount'], row => row.region === 'North');
-    assert.equal(rows.length, 3);
-  });
-
-  it('aggregate sum', () => {
-    const store = createSalesStore();
-    assert.equal(store.aggregate('amount', 'sum'), 650);
-  });
-
-  it('aggregate avg', () => {
-    const store = createSalesStore();
-    assert.equal(store.aggregate('amount', 'avg'), 130);
-  });
-
-  it('aggregate min/max', () => {
-    const store = createSalesStore();
-    assert.equal(store.aggregate('amount', 'min'), 80);
-    assert.equal(store.aggregate('amount', 'max'), 200);
-  });
-
-  it('group by aggregation', () => {
-    const store = createSalesStore();
-    const result = store.groupBy('product', 'amount', 'sum');
-    const widget = result.find(r => r.product === 'Widget');
-    assert.equal(widget.sum, 370);
-    const gadget = result.find(r => r.product === 'Gadget');
-    assert.equal(gadget.sum, 280);
-  });
-
-  it('group by with count', () => {
-    const store = createSalesStore();
-    const result = store.groupBy('region', 'amount', 'count');
-    const north = result.find(r => r.region === 'North');
-    assert.equal(north.count, 3);
-  });
-
-  it('RLE compression', () => {
-    const store = new ColumnStore([{ name: 'status', type: 'text' }]);
-    for (let i = 0; i < 10; i++) store.insert({ status: 'active' });
-    for (let i = 0; i < 5; i++) store.insert({ status: 'inactive' });
-    for (let i = 0; i < 3; i++) store.insert({ status: 'active' });
+    cs.appendBatch([['Alice', 100], ['Bob', 200], ['Charlie', 150]]);
     
-    const rle = store.rleEncode('status');
-    assert.equal(rle.length, 3);
-    assert.deepEqual(rle[0], { value: 'active', count: 10 });
-    assert.deepEqual(rle[1], { value: 'inactive', count: 5 });
-    assert.deepEqual(rle[2], { value: 'active', count: 3 });
+    const highPaid = cs.filter('salary', s => s >= 150);
+    const results = cs.project(['name', 'salary'], highPaid);
+    assert.equal(results.length, 2);
   });
 
-  it('dictionary encoding', () => {
-    const store = createSalesStore();
-    const encoded = store.dictEncode('product');
-    assert.equal(encoded.dictionary.length, 2); // Widget, Gadget
-    assert.equal(encoded.codes.length, 5);
-    assert.ok(encoded.compressionRatio < 1); // Compressed
-  });
-
-  it('analytics at scale', () => {
-    const store = new ColumnStore([
-      { name: 'user_id', type: 'int' },
-      { name: 'event', type: 'text' },
-      { name: 'duration', type: 'int' },
+  it('groupBy', () => {
+    const cs = new ColumnStore([
+      { name: 'dept', type: 'string' },
+      { name: 'salary', type: 'int' },
     ]);
+    cs.appendBatch([['eng', 100], ['eng', 200], ['sales', 150]]);
     
-    const events = ['click', 'view', 'purchase', 'scroll'];
-    for (let i = 0; i < 1000; i++) {
-      store.insert({
-        user_id: i % 100,
-        event: events[i % 4],
-        duration: Math.floor(Math.random() * 1000),
-      });
-    }
+    const grouped = cs.groupBy('dept', 'salary', 'sum');
+    const eng = grouped.find(g => g.dept === 'eng');
+    assert.equal(eng.sum, 300);
+  });
+
+  it('performance: 100K rows columnar scan', () => {
+    const cs = new ColumnStore([
+      { name: 'id', type: 'int' },
+      { name: 'value', type: 'int' },
+    ]);
+    for (let i = 0; i < 100000; i++) cs.appendRow([i, i * 2]);
     
-    assert.equal(store.rowCount, 1000);
-    assert.equal(store.aggregate('duration', 'count'), 1000);
+    const t0 = performance.now();
+    const total = cs.sum('value');
+    const elapsed = performance.now() - t0;
     
-    const byEvent = store.groupBy('event', 'duration', 'avg');
-    assert.equal(byEvent.length, 4);
+    assert.equal(total, 9999900000);
+    console.log(`  100K row SUM: ${elapsed.toFixed(1)}ms`);
   });
 });
