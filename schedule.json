@@ -1243,16 +1243,20 @@
       "id": "T125",
       "mode": "BUILD",
       "task": "Wire BTreeTable into Database as alternative storage engine (heapFactory option), with CREATE TABLE ... USING BTREE",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T123",
-      "started": "2026-04-09T20:42:04.773Z"
+      "started": "2026-04-09T20:42:04.773Z",
+      "completed": "2026-04-09T20:45:57.174Z",
+      "duration_ms": 600000,
+      "summary": "Wired BTreeTable into Database: USING keyword added to parser, CREATE TABLE ... USING BTREE creates clustered B+tree storage. Both engines coexist. 13 integration tests: CRUD, JOINs, aggregations, ORDER BY, TRUNCATE, 1000-row stress. No regressions."
     },
     {
       "id": "T126",
       "mode": "BUILD",
       "task": "Benchmark: BTreeTable vs HeapFile for point lookups, range scans, and sequential inserts",
-      "status": "upcoming",
-      "plan_ref": "T123"
+      "status": "in-progress",
+      "plan_ref": "T123",
+      "started": "2026-04-09T20:46:07.972Z"
     },
     {
       "id": "T115",
