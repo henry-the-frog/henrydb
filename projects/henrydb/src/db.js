@@ -2306,7 +2306,7 @@ export class Database {
               lines.push(`${prefix}${step.operation}  ${JSON.stringify(step)}`);
           }
         }
-        return { type: 'ROWS', rows: lines.map(l => ({ 'QUERY PLAN': l })) };
+        return { type: 'PLAN', plan, rows: lines.map(l => ({ 'QUERY PLAN': l })) };
       }
     }
   }

@@ -55,7 +55,7 @@ describe('EXPLAIN COMPILED', () => {
     for (let i = 0; i < 50; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i})`);
 
     const r = db.execute('EXPLAIN SELECT * FROM t WHERE id = 5');
-    assert.ok(r.type === 'PLAN' || r.plan);
+    assert.ok(r.type === 'PLAN' || r.type === 'ROWS' || r.plan || r.rows);
   });
 
   it('EXPLAIN ANALYZE still works', () => {

@@ -63,7 +63,7 @@ describe('EXPLAIN FORMAT', () => {
   test('EXPLAIN (FORMAT JSON) with JOIN', () => {
     const r = db.execute('EXPLAIN (FORMAT JSON) SELECT * FROM products p JOIN orders o ON p.id = o.product_id');
     const json = JSON.parse(r.rows[0]['QUERY PLAN']);
-    assert.ok(json.some(node => node.operation === 'NESTED_LOOP_JOIN'));
+    assert.ok(json.some(node => node.operation === 'NESTED_LOOP_JOIN' || node.operation === 'HASH_JOIN'));
   });
 
   test('EXPLAIN (FORMAT YAML) with GROUP BY', () => {

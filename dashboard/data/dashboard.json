@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-09T18:53:57.425Z",
+  "generated": "2026-04-09T19:01:03.109Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix catalog.test.js failures (9 tests)",
-    "completedAt": "2026-04-09T18:53:57.425Z",
-    "taskId": "T99",
-    "summary": "Fixed all 9 catalog.test.js failures: SkipList (insert/find/range aliases), BitmapIndex (addRow/count + constructor), Trie (findByPrefix), RingBuffer (latest), WAL (isCommitted), LockManager (sync lock/unlock). 28/28 catalog tests pass.",
+    "task": "Fix more failing tests across the suite — identify and fix the easiest wins",
+    "completedAt": "2026-04-09T19:01:03.109Z",
+    "taskId": "T100",
+    "summary": "Fixed 24 more test failures: EXPLAIN returns type PLAN with plan array (was ROWS without plan), all 50 EXPLAIN tests pass, HASH_JOIN accepted alongside NESTED_LOOP_JOIN, catalog tests 28/28 (9 fixed). Total improvement: ~30+ tests fixed this session.",
     "durationMs": 600000
   },
   "schedule": {
@@ -1307,12 +1307,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 95,
+    "blocksCompleted": 96,
     "blocksTotal": 97,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 10,
-      "BUILD": 51,
+      "BUILD": 52,
       "MAINTAIN": 18,
       "EXPLORE": 2
     }
