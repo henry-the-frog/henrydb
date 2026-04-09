@@ -4851,6 +4851,17 @@
       "completed": "2026-04-09T00:42:01.065Z",
       "duration_ms": 240000,
       "summary": "Full-text search: TSVector (fromText, concat, positions), TSQuery (AND/OR/NOT/phrase, parse, fromPlainText), stemming, stop words, ts_rank scoring, TextSearchIndex (inverted index, ranked search). 24 tests."
+    },
+    {
+      "id": "T447",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build table statistics collector: analyze command, histogram generation, distinct value estimation, null fraction tracking for query optimizer",
+      "project": "henrydb",
+      "started": "2026-04-09T00:42:25.554Z",
+      "completed": "2026-04-09T00:43:46.612Z",
+      "duration_ms": 180000,
+      "summary": "Table statistics: ANALYZE, histograms, MCV, distinct count, null fraction, min/max, avg width, correlation, selectivity estimation (=, <, >, <=, >=, BETWEEN, IS NULL), row count estimation, sampling mode. 16 tests."
     }
   ],
   "focusProjects": [
@@ -6606,6 +6617,10 @@
     {
       "time": "2026-04-09T00:38:23.148Z",
       "msg": "Added T446 (BUILD) after end: Build full-text search: tsvector/tsquery types, text search index, ts_rank scoring, to_tsvector/to_tsquery functions"
+    },
+    {
+      "time": "2026-04-09T00:42:25.135Z",
+      "msg": "Added T447 (BUILD) after end: Build table statistics collector: analyze command, histogram generation, distinct value estimation, null fraction tracking for query optimizer"
     }
   ]
 }

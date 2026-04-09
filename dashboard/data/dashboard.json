@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T00:42:01.131Z",
+  "generated": "2026-04-09T00:43:46.684Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build full-text search: tsvector/tsquery types, text search index, ts_rank scoring, to_tsvector/to_tsquery functions",
-    "completedAt": "2026-04-09T00:42:01.131Z",
-    "taskId": "T446",
-    "summary": "Full-text search: TSVector (fromText, concat, positions), TSQuery (AND/OR/NOT/phrase, parse, fromPlainText), stemming, stop words, ts_rank scoring, TextSearchIndex (inverted index, ranked search). 24 tests.",
-    "durationMs": 240000
+    "task": "Build table statistics collector: analyze command, histogram generation, distinct value estimation, null fraction tracking for query optimizer",
+    "completedAt": "2026-04-09T00:43:46.684Z",
+    "taskId": "T447",
+    "summary": "Table statistics: ANALYZE, histograms, MCV, distinct count, null fraction, min/max, avg width, correlation, selectivity estimation (=, <, >, <=, >=, BETWEEN, IS NULL), row count estimation, sampling mode. 16 tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-08",
@@ -4717,12 +4717,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 444,
+    "blocksCompleted": 445,
     "blocksTotal": 434,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 12,
-      "BUILD": 340,
+      "BUILD": 341,
       "MAINTAIN": 76,
       "EXPLORE": 2
     }
