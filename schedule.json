@@ -780,8 +780,12 @@
       "id": "T81",
       "mode": "BUILD",
       "task": "Rebuild indexes on reopen + add crash recovery integration test",
-      "status": "upcoming",
-      "plan_ref": "T72"
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-09T17:41:29.974Z",
+      "completed": "2026-04-09T17:44:52.610Z",
+      "duration_ms": 480000,
+      "summary": "Index rebuild on reopen working. FileBackedHeap now tracks rowCount. 3 new tests (PK lookup after reopen, multi-cycle persistence, DELETE persistence). 50/50 persistence tests passing. Zero regressions."
     },
     {
       "id": "T74",

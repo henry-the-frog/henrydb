@@ -165,4 +165,73 @@ describe('PersistentDatabase', () => {
     
     db.close();
   });
+
+  it('index rebuild: PK lookups work after reopen', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    const db = PersistentDatabase.open(dir);
+    db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT, age INT)');
+    db.execute("INSERT INTO users VALUES (1, 'Alice', 30)");
+    db.execute("INSERT INTO users VALUES (2, 'Bob', 25)");
+    db.execute("INSERT INTO users VALUES (3, 'Carol', 35)");
+    db.close();
+
+    // Reopen — indexes should be rebuilt from heap data
+    const db2 = PersistentDatabase.open(dir);
+    const r = db2.execute('SELECT * FROM users WHERE id = 2');
+    assert.strictEqual(r.rows.length, 1);
+    assert.strictEqual(r.rows[0].name, 'Bob');
+    
+    // COUNT should work
+    const count = db2.execute('SELECT COUNT(*) as cnt FROM users');
+    assert.strictEqual(count.rows[0].cnt, 3);
+    
+    // INSERT after reopen should work (no PK conflict)
+    db2.execute("INSERT INTO users VALUES (4, 'Dave', 28)");
+    const all = db2.execute('SELECT * FROM users');
+    assert.strictEqual(all.rows.length, 4);
+    
+    db2.close();
+  });
+
+  it('data survives multiple close/reopen cycles', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    // Cycle 1: create and insert
+    let db = PersistentDatabase.open(dir);
+    db.execute('CREATE TABLE counters (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO counters VALUES (1, 100)');
+    db.close();
+
+    // Cycle 2: update
+    db = PersistentDatabase.open(dir);
+    db.execute('UPDATE counters SET val = 200 WHERE id = 1');
+    db.execute('INSERT INTO counters VALUES (2, 300)');
+    db.close();
+
+    // Cycle 3: verify
+    db = PersistentDatabase.open(dir);
+    const r = db.execute('SELECT * FROM counters ORDER BY id');
+    assert.strictEqual(r.rows.length, 2);
+    assert.strictEqual(r.rows[0].val, 200);
+    assert.strictEqual(r.rows[1].val, 300);
+    db.close();
+  });
+
+  it('DELETE persists across restarts', () => {
+    const dir = testDir();
+    dirs.push(dir);
+    const db = PersistentDatabase.open(dir);
+    db.execute('CREATE TABLE items (id INT PRIMARY KEY, name TEXT)');
+    for (let i = 1; i <= 10; i++) {
+      db.execute(`INSERT INTO items VALUES (${i}, 'item${i}')`);
+    }
+    db.execute('DELETE FROM items WHERE id > 5');
+    db.close();
+
+    const db2 = PersistentDatabase.open(dir);
+    const r = db2.execute('SELECT COUNT(*) as cnt FROM items');
+    assert.strictEqual(r.rows[0].cnt, 5);
+    db2.close();
+  });
 });

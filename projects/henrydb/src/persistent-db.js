@@ -85,6 +85,9 @@ export class PersistentDatabase {
           recoverFromFileWAL(heap, wal);
         }
       }
+      
+      // Rebuild indexes from heap data (indexes are in-memory only)
+      pdb._rebuildIndexes();
     }
 
     return pdb;
@@ -200,6 +203,37 @@ export class PersistentDatabase {
       writeFileSync(this._statsPath, JSON.stringify(statsObj, null, 2), 'utf8');
     } catch (e) {
       // Stats save is best-effort
+    }
+  }
+
+  /**
+   * Rebuild in-memory indexes by scanning heap data.
+   * Called on database open after recovery.
+   */
+  _rebuildIndexes() {
+    for (const [tableName, tableObj] of this._db.tables) {
+      const { heap, schema, indexes } = tableObj;
+      if (!indexes || indexes.size === 0) continue;
+      
+      // Find which column index maps to which index
+      const pkCol = schema.find(c => c.primaryKey);
+      if (!pkCol) continue;
+      
+      const pkIndex = indexes.get(pkCol.name);
+      if (!pkIndex) continue;
+      
+      const pkColIdx = schema.findIndex(c => c.name === pkCol.name);
+      
+      // Scan heap and populate index
+      for (const { pageId, slotIdx, values } of heap.scan()) {
+        if (values && values.length > pkColIdx) {
+          try {
+            pkIndex.insert(values[pkColIdx], { pageId, slotIdx });
+          } catch (e) {
+            // Duplicate key on rebuild — skip (data integrity issue)
+          }
+        }
+      }
     }
   }
 

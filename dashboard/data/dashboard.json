@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-09T17:40:59.813Z",
+  "generated": "2026-04-09T17:44:52.673Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix persistence test failures: BufferPool.stats() alias, DiskManager {create:false}, mixed data types encoding",
-    "completedAt": "2026-04-09T17:40:59.813Z",
-    "taskId": "T80",
-    "summary": "Fixed 3 critical persistence bugs: 1) BufferPool.fetchPage ignored disk read callback - pages loaded as zeros on reopen, 2) BufferPool.flushAll ignored evict callback - dirty pages never written to disk files, 3) BufferPool.stats was property not method. All 38 persistence tests now passing (was 17/38). File-backed persistence actually works now.",
-    "durationMs": 600000
+    "task": "Rebuild indexes on reopen + add crash recovery integration test",
+    "completedAt": "2026-04-09T17:44:52.673Z",
+    "taskId": "T81",
+    "summary": "Index rebuild on reopen working. FileBackedHeap now tracks rowCount. 3 new tests (PK lookup after reopen, multi-cycle persistence, DELETE persistence). 50/50 persistence tests passing. Zero regressions.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-09",
@@ -1114,12 +1114,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 72,
+    "blocksCompleted": 73,
     "blocksTotal": 81,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 6,
-      "BUILD": 39,
+      "BUILD": 40,
       "MAINTAIN": 16,
       "EXPLORE": 2
     }

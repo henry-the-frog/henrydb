@@ -122,12 +122,18 @@ export class FileBackedHeap {
     });
     
     // Initialize FSM from existing pages
+    this._rowCount = 0;
     for (let i = 0; i < diskManager.pageCount; i++) {
       const page = this._fetchPage(i);
       this._fsm.update(i, page.freeSpace());
+      // Count existing tuples for rowCount
+      for (const _ of page.scanTuples()) this._rowCount++;
       this._unpinPage(i, false);
     }
   }
+
+  /** Number of live tuples. */
+  get rowCount() { return this._rowCount; }
 
   /** Insert a tuple (array of JS values). Returns { pageId, slotIdx }. */
   insert(values) {
@@ -146,6 +152,7 @@ export class FileBackedHeap {
           this.setPageLSN(targetPageId, lsn);
         }
         this._unpinPage(targetPageId, true);
+        this._rowCount++;
         return { pageId: targetPageId, slotIdx };
       }
       this._unpinPage(targetPageId, false);
@@ -162,7 +169,7 @@ export class FileBackedHeap {
           this.setPageLSN(i, lsn);
         }
         this._unpinPage(i, true);
-        return { pageId: i, slotIdx };
+        this._rowCount++; return { pageId: i, slotIdx };
       }
       this._unpinPage(i, false);
     }
@@ -178,7 +185,7 @@ export class FileBackedHeap {
       this.setPageLSN(pageId, lsn);
     }
     this._unpinPage(pageId, true);
-    return { pageId, slotIdx };
+    this._rowCount++; return { pageId, slotIdx };
   }
 
   /** Get a tuple by page/slot. Returns decoded values array or null. */
@@ -206,6 +213,7 @@ export class FileBackedHeap {
     const page = this._fetchPage(pageId);
     const result = page.deleteTuple(slotIdx);
     this._unpinPage(pageId, result);
+    if (result) this._rowCount--;
     return result;
   }
 
