@@ -15,15 +15,23 @@ export class MVCCTransaction {
     this.manager = manager;       // Back-reference to MVCCManager
     this.committed = false;
     this.commitTxId = 0;          // The "commit timestamp" (nextTx at commit time)
+    this.isolationLevel = 'REPEATABLE READ'; // Default like PostgreSQL
     // PostgreSQL-style snapshot: {xmin, xmax, activeSet}
-    // xmin: lowest active txid (all below are committed/aborted)
-    // xmax: first unassigned txid (all at/above haven't started)
-    // activeSet: Set of active txids between xmin and xmax
     this.snapshot = snapshot || { xmin: txId, xmax: txId, activeSet: new Set() };
   }
 
   commit() { this.manager.commit(this); }
   rollback() { this.manager.rollback(this); }
+  
+  /**
+   * Refresh snapshot for READ COMMITTED isolation.
+   * Takes a new snapshot reflecting the current state of transactions.
+   * In REPEATABLE READ, this is a no-op (snapshot is frozen at BEGIN).
+   */
+  refreshSnapshot() {
+    if (this.isolationLevel !== 'READ COMMITTED') return;
+    this.snapshot = this.manager._takeSnapshot(this.txId);
+  }
 }
 
 /**
@@ -42,26 +50,30 @@ export class MVCCManager {
   get nextTxId() { return this._nextTx; }
   set nextTxId(v) { this._nextTx = v; }
 
-  /** Begin a new transaction. Returns MVCCTransaction object with PostgreSQL-style snapshot. */
-  begin() {
+  /** Begin a new transaction. Returns MVCCTransaction with snapshot. Options: {isolationLevel} */
+  begin(options = {}) {
     const txId = this._nextTx++;
-    
-    // Build snapshot: capture current state of active transactions
-    // Like PostgreSQL's xmin:xmax:xip_list
+    const snapshot = this._takeSnapshot(txId);
+    const tx = new MVCCTransaction(txId, this, snapshot);
+    if (options.isolationLevel) tx.isolationLevel = options.isolationLevel;
+    this.activeTxns.set(txId, tx);
+    this.wal.push({ type: 'begin', txId });
+    return tx;
+  }
+
+  /** Take a snapshot of current active transactions (PostgreSQL-style xmin:xmax:xip_list). */
+  _takeSnapshot(myTxId) {
     const activeSet = new Set();
-    let xmin = txId; // If no active txns, xmin = our own txId
+    const xmax = this._nextTx; // First unassigned txid
+    let xmin = xmax;
     for (const [id, otherTx] of this.activeTxns) {
+      if (id === myTxId) continue;
       if (!otherTx.committed) {
         activeSet.add(id);
         if (id < xmin) xmin = id;
       }
     }
-    const snapshot = { xmin, xmax: txId, activeSet };
-    
-    const tx = new MVCCTransaction(txId, this, snapshot);
-    this.activeTxns.set(txId, tx);
-    this.wal.push({ type: 'begin', txId });
-    return tx;
+    return { xmin, xmax, activeSet };
   }
 
   /** Read a key at a transaction's snapshot. Accepts txId (number) or MVCCTransaction. */

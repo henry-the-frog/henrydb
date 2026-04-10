@@ -441,10 +441,10 @@ describe('PostgreSQL-style Snapshot', () => {
     const tx1 = mgr.begin(); // txId=1
     const tx2 = mgr.begin(); // txId=2
     tx1.commit();
-    const tx3 = mgr.begin(); // txId=3, snapshot should have xmin=2, xmax=3, activeSet={2}
+    const tx3 = mgr.begin(); // txId=3, snapshot should have xmin=2, xmax=4 (next unassigned), activeSet={2}
     
     assert.equal(tx3.snapshot.xmin, 2);
-    assert.equal(tx3.snapshot.xmax, 3);
+    assert.equal(tx3.snapshot.xmax, 4); // _nextTx after tx3 is assigned
     assert.ok(tx3.snapshot.activeSet.has(2));
     assert.equal(tx3.snapshot.activeSet.size, 1);
     
@@ -497,6 +497,92 @@ describe('Hint Bits Performance', () => {
     assert.equal(count1, 10000);
     assert.equal(count2, 10000);
     assert.equal(count3, 10000);
+    
+    reader.commit();
+  });
+});
+
+describe('READ COMMITTED Isolation', () => {
+  it('sees changes committed by other transactions between statements', () => {
+    const mgr = new MVCCManager();
+    const heap = new MVCCHeap(new HeapFile('rc'));
+    
+    // tx1 begins with READ COMMITTED
+    const tx1 = mgr.begin({ isolationLevel: 'READ COMMITTED' });
+    assert.equal(tx1.isolationLevel, 'READ COMMITTED');
+    
+    // Initial scan: nothing
+    let rows = [...heap.scan(tx1)];
+    assert.equal(rows.length, 0);
+    
+    // tx2 inserts and commits
+    const tx2 = mgr.begin();
+    heap.insert([1, 'hello'], tx2);
+    tx2.commit();
+    
+    // tx1 refreshes snapshot (simulates new statement in READ COMMITTED)
+    tx1.refreshSnapshot();
+    
+    // Now tx1 should see tx2's committed row
+    rows = [...heap.scan(tx1)];
+    assert.equal(rows.length, 1, 'READ COMMITTED sees newly committed row after refresh');
+    assert.deepEqual(rows[0].values, [1, 'hello']);
+    
+    tx1.commit();
+  });
+
+  it('REPEATABLE READ does NOT see changes after begin', () => {
+    const mgr = new MVCCManager();
+    const heap = new MVCCHeap(new HeapFile('rr'));
+    
+    // tx1 begins with REPEATABLE READ (default)
+    const tx1 = mgr.begin();
+    assert.equal(tx1.isolationLevel, 'REPEATABLE READ');
+    
+    // tx2 inserts and commits
+    const tx2 = mgr.begin();
+    heap.insert([1, 'invisible'], tx2);
+    tx2.commit();
+    
+    // tx1 tries to refresh (no-op for REPEATABLE READ)
+    tx1.refreshSnapshot();
+    
+    // tx1 should NOT see tx2's row
+    const rows = [...heap.scan(tx1)];
+    assert.equal(rows.length, 0, 'REPEATABLE READ does not see post-begin commits');
+    
+    tx1.commit();
+  });
+
+  it('READ COMMITTED: multiple refreshes track sequential commits', () => {
+    const mgr = new MVCCManager();
+    const heap = new MVCCHeap(new HeapFile('rc2'));
+    
+    const reader = mgr.begin({ isolationLevel: 'READ COMMITTED' });
+    
+    // First insert
+    const w1 = mgr.begin();
+    heap.insert([1, 'first'], w1);
+    w1.commit();
+    reader.refreshSnapshot();
+    assert.equal([...heap.scan(reader)].length, 1);
+    
+    // Second insert
+    const w2 = mgr.begin();
+    heap.insert([2, 'second'], w2);
+    w2.commit();
+    reader.refreshSnapshot();
+    assert.equal([...heap.scan(reader)].length, 2);
+    
+    // Third insert (uncommitted — should NOT be visible)
+    const w3 = mgr.begin();
+    heap.insert([3, 'uncommitted'], w3);
+    reader.refreshSnapshot();
+    assert.equal([...heap.scan(reader)].length, 2, 'uncommitted row not visible');
+    
+    w3.commit();
+    reader.refreshSnapshot();
+    assert.equal([...heap.scan(reader)].length, 3, 'now visible after commit');
     
     reader.commit();
   });
