@@ -6,6 +6,7 @@ import net from 'node:net';
 import http from 'node:http';
 import crypto from 'node:crypto';
 import { Database } from './db.js';
+import { PersistentDatabase } from './persistent-db.js';
 import { AdaptiveQueryEngine } from './adaptive-engine.js';
 import { parse } from './sql.js';
 import { QueryCache } from './query-cache.js';
@@ -31,7 +32,18 @@ export class HenryDBServer {
   constructor(options = {}) {
     this.port = options.port || DEFAULT_PORT;
     this.host = options.host || '127.0.0.1';
-    this.db = options.db || new Database();
+    // If dataDir is provided, use PersistentDatabase for durable storage
+    if (options.dataDir) {
+      this._persistent = true;
+      this._dataDir = options.dataDir;
+      this.db = options.db || PersistentDatabase.open(options.dataDir, {
+        poolSize: options.poolSize || 64,
+        recover: options.recover !== false,
+      });
+    } else {
+      this._persistent = false;
+      this.db = options.db || new Database();
+    }
     // User authentication: { username → { password } }
     // If empty, authentication is disabled (accept all connections)
     this._users = options.users || new Map();
@@ -123,6 +135,16 @@ export class HenryDBServer {
       if (this._healthServer) {
         this._healthServer.close();
         this._healthServer = null;
+      }
+      // Flush persistent database before closing
+      if (this._persistent && this.db && typeof this.db.close === 'function') {
+        try {
+          this.db.close();
+          this.db = null; // prevent double-close
+        } catch (e) {
+          // Best effort — log but don't block shutdown
+          if (this._verbose) console.error('Error closing persistent db:', e.message);
+        }
       }
       if (this.server) {
         this.server.close(() => resolve());
@@ -1828,8 +1850,32 @@ export class HenryDBServer {
 
 // CLI entry point
 if (process.argv[1] && (process.argv[1].endsWith('server.js') || process.argv[1].endsWith('server'))) {
-  const port = parseInt(process.argv[2]) || DEFAULT_PORT;
-  const server = new HenryDBServer({ port, verbose: true });
+  const args = process.argv.slice(2);
+  let port = DEFAULT_PORT;
+  let dataDir = null;
+  let verbose = true;
+  
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--data-dir' && args[i + 1]) {
+      dataDir = args[++i];
+    } else if (args[i] === '--port' && args[i + 1]) {
+      port = parseInt(args[++i]);
+    } else if (args[i] === '--quiet') {
+      verbose = false;
+    } else if (!args[i].startsWith('-')) {
+      port = parseInt(args[i]) || port;
+    }
+  }
+  
+  const opts = { port, verbose };
+  if (dataDir) {
+    opts.dataDir = dataDir;
+    console.log(`Using persistent storage: ${dataDir}`);
+  } else {
+    console.log('Running in-memory mode (data lost on restart). Use --data-dir <path> for persistence.');
+  }
+  
+  const server = new HenryDBServer(opts);
   server.start().then(() => {
     console.log(`HenryDB ready. Connect with: psql -h 127.0.0.1 -p ${port}`);
     console.log('Press Ctrl+C to stop.');

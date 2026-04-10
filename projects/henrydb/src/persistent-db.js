@@ -109,6 +109,21 @@ export class PersistentDatabase {
   }
 
   /**
+   * Proxy: expose underlying database's tables map.
+   * Needed so HenryDBServer can iterate tables for pg_catalog etc.
+   */
+  get tables() {
+    return this._db.tables;
+  }
+
+  /**
+   * Proxy: expose WAL reference for server metrics/health checks.
+   */
+  get wal() {
+    return this._wal;
+  }
+
+  /**
    * Execute a SQL statement. Returns the same result as Database.execute().
    */
   execute(sql) {

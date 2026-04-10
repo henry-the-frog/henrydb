@@ -853,6 +853,64 @@
       "completed": "2026-04-10T19:56:48.864Z",
       "duration_ms": 10000,
       "summary": "TODO.md clean — no stale items."
+    },
+    {
+      "id": "T80",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB depth: whats the hardest unsolved problem? Review remaining test failures, architectural gaps, and what would make this production-worthy.",
+      "started": "2026-04-10T20:16:12.555Z",
+      "completed": "2026-04-10T20:19:14.141Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB is at 5567+ tests, 100% pass. Persistence works (PersistentDatabase with crash recovery). HARDEST GAP: server uses in-memory Database only — wiring PersistentDatabase to the TCP server so data survives process restarts. This is the single biggest production gap. Secondary: compiled query engine lacks DISTINCT/HAVING/subqueries."
+    },
+    {
+      "id": "T81",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Address the hardest HenryDB gap identified in THINK",
+      "task": null,
+      "started": "2026-04-10T20:19:22.384Z",
+      "completed": "2026-04-10T20:19:38.073Z",
+      "duration_ms": 60000,
+      "summary": "Plan: 3 BUILD tasks to wire PersistentDatabase into server. (1) Add --data-dir, persistent mode, graceful shutdown. (2) Test restart cycle. (3) E2E psql client test."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire PersistentDatabase to HenryDBServer: add --data-dir option, persistent mode, graceful shutdown flushes WAL",
+      "plan_ref": "T81",
+      "project": "henrydb",
+      "started": "2026-04-10T20:19:46.646Z",
+      "completed": "2026-04-10T20:21:33.125Z",
+      "duration_ms": 240000,
+      "summary": "Wired PersistentDatabase to HenryDBServer: added --data-dir CLI option, persistent mode in constructor, graceful shutdown flushes WAL and closes disk managers. Added tables/wal proxy getters to PersistentDatabase. All 14 existing server tests pass."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "task": "Write server-persistent.test.js: start/stop/restart cycle, crash recovery, data survives process restart",
+      "status": "done",
+      "plan_ref": "T81",
+      "started": "2026-04-10T20:21:41.901Z",
+      "completed": "2026-04-10T20:25:54.699Z",
+      "duration_ms": 300000,
+      "summary": "server-persistent.test.js: 7/7 pass. Tests: data survives restart, multiple tables, chain restart (3 sessions), in-memory mode, dir creation, concurrent connections + restart, various SELECTs after reopen. Found SQL keyword bug: LOG is a keyword causing table name case mismatch."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "task": "End-to-end test: psql-style client connects, creates table, inserts data, server restarts, client reconnects and reads data back",
+      "status": "in-progress",
+      "plan_ref": "T81",
+      "started": "2026-04-10T20:26:05.115Z"
+    },
+    {
+      "id": "T83",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard sync"
     }
   ],
   "focusProjects": [
@@ -1172,6 +1230,26 @@
     {
       "time": "2026-04-10T19:56:34.713Z",
       "msg": "Added T79 (MAINTAIN) after end: TODO.md cleanup"
+    },
+    {
+      "time": "2026-04-10T20:15:45.423Z",
+      "msg": "Added T80 (THINK) after end: HenryDB depth: whats the hardest unsolved problem? Review remaining test failures, architectural gaps, and what would make this production-worthy."
+    },
+    {
+      "time": "2026-04-10T20:15:50.777Z",
+      "msg": "Added T81 (PLAN) after T80: null"
+    },
+    {
+      "time": "2026-04-10T20:16:00.268Z",
+      "msg": "Added T82 (BUILD) after T81: null"
+    },
+    {
+      "time": "2026-04-10T20:16:04.547Z",
+      "msg": "Added T83 (MAINTAIN) after T82: Housekeeping: git push, dashboard sync"
+    },
+    {
+      "time": "2026-04-10T20:19:32.410Z",
+      "msg": "PLAN T81 filled 3 BUILD tasks"
     }
   ]
 }
