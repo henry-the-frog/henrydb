@@ -2771,17 +2771,21 @@
     {
       "id": "T258",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Read a real database paper or codebase: LevelDB/RocksDB source, or Andy Pavlo lecture on MVCC",
       "project": "henrydb",
-      "started": "2026-04-10T02:25:55.741Z"
+      "started": "2026-04-10T02:25:55.741Z",
+      "completed": "2026-04-10T02:29:03.280Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into PostgreSQL MVCC internals (interdb.jp Ch.5). Implemented PG-style snapshots (xmin:xmax:xip_list) — correctly handles out-of-order commits. Wrote study notes comparing PG vs HenryDB. 3 new tests for snapshot behavior. Key insight: PG tracks exact active txids at snapshot time, not just a timestamp."
     },
     {
       "id": "T259",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Evening curiosity: explore something interesting in HenryDB (query compilation, vectorized execution, or columnar storage)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T02:29:08.216Z"
     },
     {
       "id": "T260",
