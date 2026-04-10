@@ -3176,16 +3176,28 @@
     {
       "id": "T302",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement a Merkle tree for efficient data synchronization (detect divergence between replicas)",
       "project": "henrydb",
-      "started": "2026-04-10T03:32:42.427Z"
+      "started": "2026-04-10T03:32:42.427Z",
+      "completed": "2026-04-10T03:34:54.155Z",
+      "duration_ms": 300000,
+      "summary": "Built Merkle tree: binary hash tree for data sync. Build from data, proof generation/verification, efficient diff (5 changes in 10K found in 2.9ms). 12/12 tests."
     },
     {
       "id": "T303",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final: git push, daily log, CURRENT.md, test count"
+      "status": "skipped",
+      "task": "Final: git push, daily log, CURRENT.md, test count",
+      "skip_reason": "more work to do"
+    },
+    {
+      "id": "T304",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Build a write-ahead log with group commit optimization (batch fsync for throughput)",
+      "project": "henrydb",
+      "started": "2026-04-10T03:35:18.929Z"
     }
   ],
   "focusProjects": [
@@ -4465,6 +4477,14 @@
     {
       "time": "2026-04-10T03:32:42.215Z",
       "msg": "Removed T301: dup"
+    },
+    {
+      "time": "2026-04-10T03:35:12.362Z",
+      "msg": "Added T304 (EXPLORE) after end: Build a write-ahead log with group commit optimization (batch fsync for throughput)"
+    },
+    {
+      "time": "2026-04-10T03:35:18.720Z",
+      "msg": "Removed T303: more work to do"
     }
   ]
 }
