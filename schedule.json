@@ -2603,9 +2603,36 @@
     {
       "id": "T244",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping: git push, daily log, CURRENT.md",
-      "started": "2026-04-10T01:03:59.595Z"
+      "started": "2026-04-10T01:03:59.595Z",
+      "completed": "2026-04-10T01:04:58.615Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, daily log updated, CURRENT.md updated, failures.md updated."
+    },
+    {
+      "id": "T245",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Deep dive: map the exact API contract FileBackedHeap expects from BufferPool vs what BufferPoolManager provides. Design the fix.",
+      "started": "2026-04-10T01:05:21.168Z",
+      "completed": "2026-04-10T01:05:39.822Z",
+      "duration_ms": 60000,
+      "summary": "API mismatch mapped. BufferPool needs: flushAll(writeFn) callback support. DiskManager needs: pageCount property, lastAppliedLSN property. Both small fixes."
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix BufferPool/FileBackedHeap API mismatch so persistent-db and file-wal crash recovery work",
+      "project": "henrydb",
+      "started": "2026-04-10T01:05:46.628Z"
+    },
+    {
+      "id": "T247",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Verify persistent-db tests, git push, session end"
     }
   ],
   "focusProjects": [
@@ -3593,6 +3620,18 @@
     {
       "time": "2026-04-10T00:49:35.248Z",
       "msg": "PLAN T241 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T01:05:12.962Z",
+      "msg": "Added T245 (THINK) after end: Deep dive: map the exact API contract FileBackedHeap expects from BufferPool vs what BufferPoolManager provides. Design the fix."
+    },
+    {
+      "time": "2026-04-10T01:05:13.276Z",
+      "msg": "Added T246 (BUILD) after end: Fix BufferPool/FileBackedHeap API mismatch so persistent-db and file-wal crash recovery work"
+    },
+    {
+      "time": "2026-04-10T01:05:13.522Z",
+      "msg": "Added T247 (MAINTAIN) after end: Verify persistent-db tests, git push, session end"
     }
   ]
 }

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T01:03:59.676Z",
+  "generated": "2026-04-10T01:05:46.707Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final housekeeping: git push, daily log, CURRENT.md",
-    "startedAt": "2026-04-10T01:03:59.676Z",
-    "taskId": "T244"
+    "mode": "BUILD",
+    "task": "Fix BufferPool/FileBackedHeap API mismatch so persistent-db and file-wal crash recovery work",
+    "startedAt": "2026-04-10T01:05:46.707Z",
+    "taskId": "T246"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -2877,13 +2877,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 230,
+    "blocksCompleted": 232,
     "blocksTotal": 244,
     "modeDistribution": {
-      "THINK": 20,
+      "THINK": 21,
       "PLAN": 15,
       "BUILD": 163,
-      "MAINTAIN": 29,
+      "MAINTAIN": 30,
       "EXPLORE": 3
     }
   },

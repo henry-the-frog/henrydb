@@ -98,7 +98,7 @@ export class BufferPoolManager {
    */
   constructor(poolSize, diskManager, options = {}) {
     this.poolSize = poolSize;
-    this.disk = diskManager;
+    this.disk = diskManager || null;
     
     const replacerType = (options.replacer || 'clock').toLowerCase();
     if (replacerType === 'lru') {
@@ -164,7 +164,7 @@ export class BufferPoolManager {
     // Load page from disk (use callback if provided)
     const frame = this._frames[frameId];
     try {
-      frame.data = readFn ? readFn(pageId) : this.disk.readPage(pageId);
+      frame.data = readFn ? readFn(pageId) : (this.disk ? this.disk.readPage(pageId) : null);
     } catch (e) {
       // Page doesn't exist on disk
       this._freeList.push(frameId);
@@ -230,12 +230,13 @@ export class BufferPoolManager {
    * Allocate a new page. Returns {pageId, data} or null if pool is full.
    */
   newPage() {
+    if (!this.disk) return null; // Can't allocate without disk manager
     const frameId = this._getFrame();
     if (frameId === -1) return null;
     
     const pageId = this.disk.allocatePage();
     const frame = this._frames[frameId];
-    frame.data = Buffer.alloc(this.disk.pageSize);
+    frame.data = Buffer.alloc(this.disk.pageSize || 4096);
     frame.pageId = pageId;
     frame.pinCount = 1;
     frame.dirty = true; // New page needs to be written
@@ -264,18 +265,22 @@ export class BufferPoolManager {
       this._freeList.push(frameId);
     }
     
-    this.disk.deallocatePage(pageId);
+    if (this.disk) this.disk.deallocatePage(pageId);
     return true;
   }
 
   /**
    * Flush all dirty pages to disk.
    */
-  flushAll() {
+  flushAll(writeFn) {
     for (const [pageId, frameId] of this._pageTable) {
       const frame = this._frames[frameId];
       if (frame.dirty) {
-        this.disk.writePage(pageId, frame.data);
+        if (writeFn) {
+          writeFn(pageId, frame.data);
+        } else if (this.disk) {
+          this.disk.writePage(pageId, frame.data);
+        }
         frame.dirty = false;
       }
     }
@@ -306,7 +311,7 @@ export class BufferPoolManager {
       hitRate: this._hits + this._misses > 0
         ? (this._hits / (this._hits + this._misses) * 100).toFixed(1) + '%'
         : 'N/A',
-      disk: this.disk.stats,
+      disk: this.disk ? this.disk.stats : null,
     };
   }
 
@@ -333,7 +338,9 @@ export class BufferPoolManager {
       if (this._evictCallback) {
         this._evictCallback(frame.pageId, frame.data);
       }
-      this.disk.writePage(frame.pageId, frame.data);
+      if (this.disk) {
+        this.disk.writePage(frame.pageId, frame.data);
+      }
       frame.dirty = false;
     }
     
@@ -341,8 +348,11 @@ export class BufferPoolManager {
     this._pageTable.delete(frame.pageId);
     frame.reset();
     
-    return victimFrameId;
+        return victimFrameId;
   }
+
+  /** Alias: stats() as method (for compatibility with code calling bp.stats()) */
+  getStats() { return this.stats; }
 }
 
 export { BufferPoolManager as BufferPool };

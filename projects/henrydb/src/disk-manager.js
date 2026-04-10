@@ -48,7 +48,11 @@ export class DiskManager {
     // Compatibility: page count and free list head for file-wal recovery
     this._pageCount = this._numPages;
     this._freeListHead = -1;
+    this.lastAppliedLSN = 0;
   }
+
+  /** Number of allocated pages */
+  get pageCount() { return this._numPages; }
 
   /**
    * Write header metadata (page count and free list).

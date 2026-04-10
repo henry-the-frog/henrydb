@@ -179,7 +179,7 @@ export class PersistentDatabase {
    * Get buffer pool statistics.
    */
   stats() {
-    return this._bp.stats();
+    return typeof this._bp.stats === 'function' ? this._bp.stats() : this._bp.stats;
   }
 
   // --- Internal ---
