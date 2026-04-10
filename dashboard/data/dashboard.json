@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-10T21:24:44.747Z",
+  "generated": "2026-04-10T21:29:36.466Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Implement connection-level transactions in wire protocol: BEGIN/COMMIT/ROLLBACK, per-connection TransactionalDatabase sessions, txStatus tracking (I/T/E), error handling in transaction blocks",
-    "completedAt": "2026-04-10T21:24:44.747Z",
-    "taskId": "T109",
-    "summary": "Connection-level transactions in wire protocol: 7/7 tests pass. BEGIN/COMMIT/ROLLBACK work through TCP. Transactional mode uses TransactionalDatabase with per-connection sessions. Known limitation: UPDATE rollback not supported (MVCC in-place mutation). INSERT rollback works. Transfer atomicity verified (total preserved).",
-    "durationMs": 600000
+    "task": "HenryDB: add query batching test — send multiple queries in a single TCP packet to measure pipelining throughput",
+    "startedAt": "2026-04-10T21:29:36.466Z",
+    "taskId": "T113"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1132,12 +1130,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 104,
+    "blocksCompleted": 107,
     "blocksTotal": 105,
     "modeDistribution": {
-      "THINK": 18,
+      "THINK": 19,
       "PLAN": 9,
-      "BUILD": 66,
+      "BUILD": 68,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

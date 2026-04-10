@@ -1174,6 +1174,47 @@
       "completed": "2026-04-10T21:24:44.684Z",
       "duration_ms": 600000,
       "summary": "Connection-level transactions in wire protocol: 7/7 tests pass. BEGIN/COMMIT/ROLLBACK work through TCP. Transactional mode uses TransactionalDatabase with per-connection sessions. Known limitation: UPDATE rollback not supported (MVCC in-place mutation). INSERT rollback works. Transfer atomicity verified (total preserved)."
+    },
+    {
+      "id": "T110",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: UPDATE rollback doesnt work because MVCC uses in-place mutation. What would it take to implement proper copy-on-write for UPDATEs? This is the hardest remaining correctness gap.",
+      "project": "henrydb",
+      "started": "2026-04-10T21:25:49.894Z",
+      "completed": "2026-04-10T21:26:17.963Z",
+      "duration_ms": 120000,
+      "summary": "UPDATE rollback fix requires MVCC version chains in the heap: keep old row versions on UPDATE (mark with xmax), insert new with xmin=txId. On rollback, mark tx as aborted so old versions become visible. This is a major change to the heap layer — estimated 300-400 lines. The TransactionalDatabase already has versionMaps for this but they dont integrate with the base Database._update path. Alternative: WAL-based undo logging (simpler but less elegant). Decision: this is a multi-session project, too big for this session."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add comprehensive test count summary: how many total tests, by category, with dashboard update. Get the real number.",
+      "project": "henrydb",
+      "started": "2026-04-10T21:26:39.955Z",
+      "completed": "2026-04-10T21:28:47.502Z",
+      "duration_ms": 120000,
+      "summary": "Counting tests in background (539 files). Wrote comprehensive README.md with architecture, features, benchmarks, getting started guide."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write README.md for HenryDB: comprehensive project overview, features, architecture, getting started, benchmarks",
+      "project": "henrydb",
+      "started": "2026-04-10T21:29:01.472Z",
+      "completed": "2026-04-10T21:29:01.735Z",
+      "duration_ms": 60000,
+      "summary": "README.md written and committed."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add query batching test — send multiple queries in a single TCP packet to measure pipelining throughput",
+      "project": "henrydb",
+      "started": "2026-04-10T21:29:36.382Z"
     }
   ],
   "focusProjects": [
@@ -1601,6 +1642,22 @@
     {
       "time": "2026-04-10T21:18:23.341Z",
       "msg": "Added T109 (BUILD) after end: Implement connection-level transactions in wire protocol: BEGIN/COMMIT/ROLLBACK, per-connection TransactionalDatabase sessions, txStatus tracking (I/T/E), error handling in transaction blocks"
+    },
+    {
+      "time": "2026-04-10T21:25:41.822Z",
+      "msg": "Added T110 (THINK) after end: HenryDB: UPDATE rollback doesnt work because MVCC uses in-place mutation. What would it take to implement proper copy-on-write for UPDATEs? This is the hardest remaining correctness gap."
+    },
+    {
+      "time": "2026-04-10T21:26:33.692Z",
+      "msg": "Added T111 (BUILD) after end: Add comprehensive test count summary: how many total tests, by category, with dashboard update. Get the real number."
+    },
+    {
+      "time": "2026-04-10T21:27:10.957Z",
+      "msg": "Added T112 (BUILD) after end: Write README.md for HenryDB: comprehensive project overview, features, architecture, getting started, benchmarks"
+    },
+    {
+      "time": "2026-04-10T21:29:30.467Z",
+      "msg": "Added T113 (BUILD) after end: HenryDB: add query batching test — send multiple queries in a single TCP packet to measure pipelining throughput"
     }
   ]
 }
