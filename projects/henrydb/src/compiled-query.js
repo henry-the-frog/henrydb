@@ -679,6 +679,25 @@ export class CompiledQueryEngine {
   }
 
   _applyProjectAndLimit(rows, ast) {
+    // Apply ORDER BY first (before projection to access all columns)
+    if (ast.orderBy) {
+      rows.sort((a, b) => {
+        for (const ob of ast.orderBy) {
+          const col = ob.column || ob.name;
+          const dir = ob.direction === 'DESC' ? -1 : 1;
+          const av = a[col], bv = b[col];
+          const aNull = av === null || av === undefined;
+          const bNull = bv === null || bv === undefined;
+          if (aNull && bNull) continue;
+          if (aNull) return -dir;
+          if (bNull) return dir;
+          if (av < bv) return -dir;
+          if (av > bv) return dir;
+        }
+        return 0;
+      });
+    }
+
     // Apply projection
     if (ast.columns && !ast.columns.some(c => c === '*' || c.name === '*' || c.type === 'star')) {
       rows = rows.map(row => {
@@ -690,6 +709,26 @@ export class CompiledQueryEngine {
         }
         return out;
       });
+    }
+
+    // Apply DISTINCT — hash-based deduplication using JSON key
+    if (ast.distinct) {
+      const seen = new Set();
+      const deduped = [];
+      for (const row of rows) {
+        const key = JSON.stringify(row);
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduped.push(row);
+        }
+      }
+      rows = deduped;
+    }
+
+    // Apply OFFSET
+    if (ast.offset) {
+      const offsetVal = typeof ast.offset === 'number' ? ast.offset : ast.offset.value;
+      if (offsetVal) rows = rows.slice(offsetVal);
     }
 
     // Apply LIMIT

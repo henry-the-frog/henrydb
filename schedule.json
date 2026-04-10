@@ -959,17 +959,21 @@
     {
       "id": "T90",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix SQL parser identifier/keyword resolution so table names like LOG work consistently across CREATE TABLE, INSERT, SELECT, UPDATE, DELETE",
       "project": "henrydb",
-      "started": "2026-04-10T20:36:06.276Z"
+      "started": "2026-04-10T20:36:06.276Z",
+      "completed": "2026-04-10T20:47:15.186Z",
+      "duration_ms": 300000,
+      "summary": "Fixed SQL parser keyword/identifier case consistency. Table names like LOG, LEFT, RIGHT, POWER that collide with SQL keywords now resolve consistently across CREATE TABLE, INSERT, SELECT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, RENAME. Root cause: tokenizer uppercased keywords but CREATE TABLE used originalValue. Fix: use (tok.originalValue || tok.value) at 11 locations. All tests pass, chain restart with keyword table names works."
     },
     {
       "id": "T91",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Add DISTINCT support to compiled query engine: hash-based deduplication in the compiled pipeline",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T20:47:26.075Z"
     },
     {
       "id": "T92",
