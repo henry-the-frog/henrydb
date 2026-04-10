@@ -216,18 +216,79 @@ export class MVCCManager {
     return false;
   }
 
-  /** Garbage collect: remove old versions not needed by any active transaction. */
+  /** Garbage collect: remove old versions not needed by any active transaction.
+   * Keeps the latest version of each key and any version visible to active transactions.
+   * Returns { cleaned, remaining } stats.
+   */
   gc() {
-    const activeIds = [...this.activeTxns.keys()];
-    if (activeIds.length === 0) return 0;
-    const minActive = Math.min(...activeIds);
+    // Find minimum txId among uncommitted active transactions
+    let minActive = Infinity;
+    for (const tx of this.activeTxns.values()) {
+      if (!tx.committed && tx.txId < minActive) minActive = tx.txId;
+    }
     let cleaned = 0;
+    let remaining = 0;
+    
     for (const [key, versions] of this._versions) {
-      const visible = versions.filter(v => v.txId >= minActive || v.txId === versions[versions.length - 1].txId);
+      if (versions.length <= 1) {
+        remaining += versions.length;
+        continue; // Nothing to clean if only 0-1 versions
+      }
+      
+      // Keep: (1) latest version, (2) any version visible to active transactions
+      const latest = versions[versions.length - 1];
+      const visible = versions.filter((v, i) => {
+        // Always keep the latest version
+        if (i === versions.length - 1) return true;
+        // Keep if visible to any active transaction (txId >= v.txId and v.txId >= minActive)
+        if (v.txId >= minActive) return true;
+        // Keep if it's the most recent version before minActive
+        // (the "floor" version that active transactions would see)
+        const nextVersion = versions[i + 1];
+        if (nextVersion && nextVersion.txId >= minActive) return true;
+        return false;
+      });
+      
       cleaned += versions.length - visible.length;
+      remaining += visible.length;
       this._versions.set(key, visible);
     }
-    return cleaned;
+    
+    return { cleaned, remaining };
+  }
+
+  /**
+   * Full vacuum: remove all old versions. Only safe when no active transactions.
+   * Returns { cleaned, keysRemoved } stats.
+   */
+  vacuum() {
+    // Check for truly active (uncommitted) transactions
+    for (const tx of this.activeTxns.values()) {
+      if (!tx.committed) {
+        throw new Error('VACUUM cannot run while transactions are active');
+      }
+    }
+    
+    let cleaned = 0;
+    let keysRemoved = 0;
+    
+    for (const [key, versions] of this._versions) {
+      if (versions.length > 1) {
+        cleaned += versions.length - 1;
+        // Keep only the latest version
+        this._versions.set(key, [versions[versions.length - 1]]);
+      }
+      
+      // Remove keys where the latest version is a delete
+      const latest = versions[versions.length - 1];
+      if (latest && latest.deleted) {
+        this._versions.delete(key);
+        keysRemoved++;
+        cleaned++; // Also count the deleted marker
+      }
+    }
+    
+    return { cleaned, keysRemoved };
   }
 
   getStats() {
