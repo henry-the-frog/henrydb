@@ -84,6 +84,8 @@ export class HyperLogLog {
   /**
    * Estimate the number of distinct elements.
    */
+  estimate() { return this.count(); }
+
   count() {
     // Harmonic mean of 2^(-register[i])
     let sum = 0;
@@ -121,6 +123,19 @@ export class HyperLogLog {
         this._registers[i] = other._registers[i];
       }
     }
+    return this;
+  }
+
+  /**
+   * Create a new HLL that is the union of this and other (non-mutating).
+   */
+  mergeNew(other) {
+    if (this._p !== other._p) throw new Error('Cannot merge HLLs with different precision');
+    const result = new HyperLogLog(this._p);
+    for (let i = 0; i < this._m; i++) {
+      result._registers[i] = Math.max(this._registers[i], other._registers[i]);
+    }
+    return result;
   }
 
   /**
