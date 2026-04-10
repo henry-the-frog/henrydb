@@ -1,6 +1,6 @@
 # CURRENT.md — Work Session Status
 
-## Status: session-ending
+## Status: session-ended
 
 ## Session C Summary (Thu Apr 9 evening, 8:15-10:15 PM MDT)
 
