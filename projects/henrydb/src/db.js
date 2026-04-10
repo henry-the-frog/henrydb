@@ -3569,6 +3569,26 @@ export class Database {
         }
         return null;
       }
+      case 'EXTRACT': {
+        const field = String(this._evalValue(args[0], row)).toUpperCase();
+        const dateStr = String(this._evalValue(args[1], row));
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return null;
+        switch (field) {
+          case 'YEAR': return d.getUTCFullYear();
+          case 'MONTH': return d.getUTCMonth() + 1;
+          case 'DAY': return d.getUTCDate();
+          case 'HOUR': return d.getUTCHours();
+          case 'MINUTE': return d.getUTCMinutes();
+          case 'SECOND': return d.getUTCSeconds();
+          case 'DOW': return d.getUTCDay();
+          case 'DOY': { const start = new Date(Date.UTC(d.getUTCFullYear(), 0, 0)); return Math.floor((d - start) / 86400000); }
+          case 'EPOCH': return Math.floor(d.getTime() / 1000);
+          case 'QUARTER': return Math.ceil((d.getMonth() + 1) / 3);
+          case 'WEEK': { const start = new Date(d.getFullYear(), 0, 1); return Math.ceil(((d - start) / 86400000 + start.getDay() + 1) / 7); }
+          default: return null;
+        }
+      }
       case 'NULLIF': {
         const a = this._evalValue(args[0], row);
         const b = this._evalValue(args[1], row);

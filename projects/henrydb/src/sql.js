@@ -34,6 +34,7 @@ const KEYWORDS = new Set([
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
+  'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM',
 ]);
 
 export function tokenize(sql) {
@@ -514,6 +515,44 @@ export function parse(sql) {
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'window', func, arg, offset, defaultValue, over, alias };
+    }
+
+    // EXTRACT(field FROM expr)
+    if (isKeyword('EXTRACT')) {
+      advance(); expect('(');
+      const field = advance().value.toUpperCase(); // YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
+      if (!isKeyword('FROM')) throw new Error('Expected FROM in EXTRACT');
+      advance(); // consume FROM
+      const expr = parseExpr();
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      let node = { type: 'function', func: 'EXTRACT', args: [{ type: 'literal', value: field }, expr], alias };
+      // Handle arithmetic after EXTRACT
+      while (peek() && ['+', '-', '*', '/', '%'].includes(peek().value)) {
+        const op = advance().value;
+        const right = parseExpr();
+        node = { type: 'binary', op, left: node, right };
+      }
+      return node;
+    }
+
+    // DATE_PART('field', expr)
+    if (isKeyword('DATE_PART')) {
+      advance(); expect('(');
+      const field = parseExpr();
+      expect(',');
+      const expr = parseExpr();
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      let node = { type: 'function', func: 'EXTRACT', args: [field, expr], alias };
+      while (peek() && ['+', '-', '*', '/', '%'].includes(peek().value)) {
+        const op = advance().value;
+        const right = parseExpr();
+        node = { type: 'binary', op, left: node, right };
+      }
+      return node;
     }
 
     // String functions in SELECT
