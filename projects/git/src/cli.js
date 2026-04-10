@@ -9,6 +9,7 @@ import { checkoutNewBranch, checkout } from './checkout.js';
 import { merge } from './merge.js';
 import { clone } from './clone.js';
 import { stashSave, stashApply, stashPop, stashList, stashDrop } from './stash.js';
+import { createLightweightTag, createAnnotatedTag, listTags, deleteTag } from './tag.js';
 import { diffLines, formatUnifiedDiff } from './diff.js';
 import { readObject, hashObject } from './objects.js';
 import { getCurrentBranch, listBranches, resolveHead, resolveRef } from './refs.js';
@@ -199,6 +200,27 @@ try {
       mkdirSync(dest, { recursive: true });
       const result = clone(src, dest);
       console.log(`Cloned into '${dest}': ${result.objects} objects, ${result.branches} branches`);
+      break;
+    }
+    
+    case 'tag': {
+      const gitDir = findGitDir(cwd);
+      if (!gitDir) { console.error('Not a git repository'); process.exit(1); }
+      if (args[1] === '-d') {
+        deleteTag(gitDir, args[2]);
+        console.log(`Deleted tag '${args[2]}'`);
+      } else if (args[1] === '-a') {
+        const name = args[2];
+        const msgIdx = args.indexOf('-m');
+        const msg = msgIdx >= 0 ? args[msgIdx + 1] : name;
+        createAnnotatedTag(gitDir, name, msg);
+        console.log(`Created annotated tag '${name}'`);
+      } else if (args[1]) {
+        createLightweightTag(gitDir, args[1]);
+        console.log(`Created tag '${args[1]}'`);
+      } else {
+        for (const tag of listTags(gitDir)) console.log(tag);
+      }
       break;
     }
     
