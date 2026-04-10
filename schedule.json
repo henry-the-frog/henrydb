@@ -2901,17 +2901,21 @@
     {
       "id": "T273",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix column-store-dict.test.js (6 failures)",
       "project": "henrydb",
-      "started": "2026-04-10T02:51:27.902Z"
+      "started": "2026-04-10T02:51:27.902Z",
+      "completed": "2026-04-10T02:53:19.520Z",
+      "duration_ms": 180000,
+      "summary": "Added ColumnStore insert(obj)/scan()/autoDictEncode()/dictFilter()/dictGroupBy()/getDictColumn(). Dictionary encoding with Uint16Array codes for low-cardinality TEXT columns. 6/6 column-store-dict tests fixed."
     },
     {
       "id": "T274",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Fix benchmarks.test.js (2 failures)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T02:53:24.983Z"
     },
     {
       "id": "T275",

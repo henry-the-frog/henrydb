@@ -98,7 +98,12 @@ export class BufferPoolManager {
    */
   constructor(poolSize, diskManager, options = {}) {
     this.poolSize = poolSize;
-    this.disk = diskManager || null;
+    // Accept a number as diskManager → create an in-memory disk manager
+    if (typeof diskManager === 'number' || !diskManager) {
+      this.disk = new InMemoryDiskManager();
+    } else {
+      this.disk = diskManager;
+    }
     
     const replacerType = (options.replacer || 'clock').toLowerCase();
     if (replacerType === 'lru') {

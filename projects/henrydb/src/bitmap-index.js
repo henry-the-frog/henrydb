@@ -125,5 +125,77 @@ export class BitmapIndex {
       bytesUsed: this._bitmaps.size * this._wordCount * 4,
     };
   }
+
+  /** Bulk build from an array of values (one value per row). */
+  build(values) {
+    for (let i = 0; i < values.length; i++) {
+      this.set(i, values[i]);
+    }
+  }
+
+  /** Get a bitmap result for equality check. Returns a BitmapResult. */
+  eq(value) {
+    const bm = this._bitmaps.get(value);
+    return new BitmapResult(bm ? bm.slice() : new Uint32Array(this._wordCount), this._wordCount, this._size);
+  }
 }
+
+/** Chainable bitmap result for AND/OR/NOT operations. */
+class BitmapResult {
+  constructor(bitmap, wordCount, size) {
+    this._bitmap = bitmap;
+    this._wordCount = wordCount;
+    this._size = size;
+  }
+
+  and(other) {
+    const result = new Uint32Array(this._wordCount);
+    for (let i = 0; i < this._wordCount; i++) {
+      result[i] = this._bitmap[i] & other._bitmap[i];
+    }
+    return new BitmapResult(result, this._wordCount, this._size);
+  }
+
+  or(other) {
+    const result = new Uint32Array(this._wordCount);
+    for (let i = 0; i < this._wordCount; i++) {
+      result[i] = this._bitmap[i] | other._bitmap[i];
+    }
+    return new BitmapResult(result, this._wordCount, this._size);
+  }
+
+  not() {
+    const result = new Uint32Array(this._wordCount);
+    for (let i = 0; i < this._wordCount; i++) {
+      result[i] = ~this._bitmap[i];
+    }
+    return new BitmapResult(result, this._wordCount, this._size);
+  }
+
+  count() {
+    let count = 0;
+    for (let i = 0; i < this._wordCount; i++) {
+      let v = this._bitmap[i];
+      v = v - ((v >> 1) & 0x55555555);
+      v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+      count += ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+    }
+    return count;
+  }
+
+  toRows() {
+    const rows = [];
+    for (let w = 0; w < this._wordCount; w++) {
+      let word = this._bitmap[w];
+      while (word) {
+        const bit = word & (-word);
+        const bitIdx = 31 - Math.clz32(bit);
+        rows.push(w * 32 + bitIdx);
+        word ^= bit;
+      }
+    }
+    return rows;
+  }
+}
+
 export { BitVector } from './bit-vector.js';
