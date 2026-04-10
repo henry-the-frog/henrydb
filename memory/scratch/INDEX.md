@@ -9,3 +9,13 @@
 - **algorithm-w.md** — Hindley-Milner type inference, unification, generalization (uses: 1, created: 2026-04-07)
 - **forth-compilation.md** — Forth compile vs interpret mode, IMMEDIATE words, threaded code (uses: 1, created: 2026-04-07)
 - **riscv-architecture.md** — RISC-V instruction encoding, pipeline hazards, branch prediction, cache behavior, Sv32 page tables, Tomasulo OoO (uses: 1, created: 2026-04-07)
+
+
+## Git Implementation (tiny-git) — 2026-04-10
+- **Location:** projects/git/
+- **Architecture:** Content-addressable store → Index → Refs → Commits (DAG)
+- **Key files:** objects.js, index.js, refs.js, commands.js, diff.js, checkout.js, merge.js, pack.js, clone.js
+- **Test count:** 132 (objects 24, index 18, commands 13, diff 16, checkout 10, merge 7, stress 14, pack 9, clone 5, compat-forward 9, compat-reverse 7)
+- **Real git compatible:** Bidirectional — our repos readable by git, git repos readable by us
+- **Key learnings:** Tree mode 40000 (not 040000 with leading zero), commit messages have trailing newline, Myers diff O(ND), three-way merge needs merge base
+
