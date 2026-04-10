@@ -183,6 +183,74 @@ class SQLFuzzer {
     return `SELECT COUNT(*) AS cnt FROM ${table.name} WHERE ${col.name} ${check}`;
   }
 
+  // ---- HAVING SELECT Generation ----
+
+  generateHavingSelect() {
+    const table = this._pick(this._tables);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    
+    if (intCols.length < 2) return this.generateGroupBySelect();
+
+    const groupCol = this._pick(table.cols);
+    const aggCol = this._pick(intCols);
+    const func = this._pick(['COUNT', 'SUM', 'MIN', 'MAX']);
+    const threshold = this._randInt(1, 5);
+    const op = this._pick(['>', '>=', '<']);
+    
+    let agg, having;
+    if (func === 'COUNT') {
+      agg = 'COUNT(*) AS cnt';
+      having = `HAVING COUNT(*) ${op} ${threshold}`;
+    } else {
+      agg = `${func}(${aggCol.name}) AS agg`;
+      having = `HAVING ${func}(${aggCol.name}) ${op} ${threshold}`;
+    }
+
+    return `SELECT ${groupCol.name}, ${agg} FROM ${table.name} GROUP BY ${groupCol.name} ${having} ORDER BY ${groupCol.name}`;
+  }
+
+  // ---- Multi-column GROUP BY ----
+
+  generateMultiGroupBySelect() {
+    const table = this._pick(this._tables);
+    if (table.cols.length < 3) return this.generateGroupBySelect();
+
+    const cols = this._pickN(table.cols, 2);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    if (intCols.length === 0) return this.generateGroupBySelect();
+
+    return `SELECT ${cols[0].name}, ${cols[1].name}, COUNT(*) AS cnt FROM ${table.name} GROUP BY ${cols[0].name}, ${cols[1].name} ORDER BY ${cols[0].name}, ${cols[1].name}`;
+  }
+
+  // ---- IN clause ----
+
+  generateInSelect() {
+    const table = this._pick(this._tables);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    if (intCols.length === 0) return this.generateSelect();
+
+    const col = this._pick(intCols);
+    const n = this._randInt(2, 5);
+    const vals = [];
+    for (let i = 0; i < n; i++) vals.push(this._randInt(-20, 20));
+    
+    return `SELECT * FROM ${table.name} WHERE ${col.name} IN (${vals.join(', ')}) ORDER BY id`;
+  }
+
+  // ---- BETWEEN clause ----
+
+  generateBetweenSelect() {
+    const table = this._pick(this._tables);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    if (intCols.length === 0) return this.generateSelect();
+
+    const col = this._pick(intCols);
+    const lo = this._randInt(-50, 0);
+    const hi = this._randInt(0, 50);
+    
+    return `SELECT * FROM ${table.name} WHERE ${col.name} BETWEEN ${lo} AND ${hi} ORDER BY id`;
+  }
+
   // ---- Aggregate SELECT Generation ----
 
   generateAggregateSelect() {
@@ -287,14 +355,18 @@ class SQLFuzzer {
 
   generateQuery() {
     const r = this._rand();
-    if (r < 0.20) return this.generateSelect();
-    if (r < 0.35) return this.generateAggregateSelect();
-    if (r < 0.50) return this.generateGroupBySelect();
-    if (r < 0.60) return this.generateJoinSelect();
-    if (r < 0.70) return this.generateCompoundWhereSelect();
-    if (r < 0.80) return this.generateDistinctSelect();
-    if (r < 0.90) return this.generateExpressionSelect();
-    return this.generateNullSelect();
+    if (r < 0.15) return this.generateSelect();
+    if (r < 0.25) return this.generateAggregateSelect();
+    if (r < 0.35) return this.generateGroupBySelect();
+    if (r < 0.43) return this.generateJoinSelect();
+    if (r < 0.50) return this.generateCompoundWhereSelect();
+    if (r < 0.57) return this.generateDistinctSelect();
+    if (r < 0.64) return this.generateExpressionSelect();
+    if (r < 0.70) return this.generateNullSelect();
+    if (r < 0.78) return this.generateHavingSelect();
+    if (r < 0.85) return this.generateMultiGroupBySelect();
+    if (r < 0.92) return this.generateInSelect();
+    return this.generateBetweenSelect();
   }
 }
 
@@ -594,13 +666,13 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
     assert.ok(passRate >= 0.75, `Pass rate ${(passRate * 100).toFixed(1)}% below 75% threshold`);
   });
 
-  it('2000 queries with JOINs, compound WHERE, DISTINCT, expressions, NULLs (seed 77777)', () => {
+  it('5000 queries with JOINs, compound WHERE, DISTINCT, expressions, NULLs (seed 77777)', () => {
     setupBoth(77777, 3, 50);
     let passed = 0;
     let errorsMatched = 0;
     let mismatches = [];
 
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 5000; i++) {
       const sql = fuzzer.generateQuery();
       const h = executeHenryDB(sql);
       const s = executeSQLite(sql);
@@ -644,8 +716,8 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
     }
 
     const total = passed + errorsMatched;
-    const mismatchCount = 2000 - total;
-    console.log(`    Passed: ${passed}/2000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
+    const mismatchCount = 5000 - total;
+    console.log(`    Passed: ${passed}/5000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
     
     if (mismatches.length > 0) {
       console.log('    Sample mismatches:');
@@ -656,7 +728,7 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
       }
     }
 
-    const passRate = total / 2000;
+    const passRate = total / 5000;
     assert.ok(passRate >= 0.80, `Pass rate ${(passRate * 100).toFixed(1)}% below 80% threshold`);
   });
 });

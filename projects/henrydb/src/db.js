@@ -3422,6 +3422,8 @@ export class Database {
         const val = this._evalValue(expr.left, row);
         const low = this._evalValue(expr.low, row);
         const high = this._evalValue(expr.high, row);
+        // SQL NULL semantics: BETWEEN with NULL always returns false
+        if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return false;
         return val >= low && val <= high;
       }
       case 'COMPARE': {

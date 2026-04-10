@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:31:35.866Z",
+  "generated": "2026-04-10T19:35:04.157Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Full test sweep — count all passing tests after today's fixes",
-    "completedAt": "2026-04-10T19:31:35.866Z",
-    "taskId": "T65",
-    "summary": "Full test sweep: 5567 pass, 0 fail. Fixed 2 test expectations for SUM on empty set (now correctly returns NULL per SQL standard).",
-    "durationMs": 180000
+    "task": "Push fuzzer harder: add HAVING queries, multi-column GROUP BY, ORDER BY with expressions, nested conditions. Target 5000 total fuzzer queries.",
+    "completedAt": "2026-04-10T19:35:04.157Z",
+    "taskId": "T66",
+    "summary": "Expanded fuzzer: HAVING, multi-column GROUP BY, IN, BETWEEN. Now 5800 fuzzer queries (100% match). Found and fixed BETWEEN with NULL bug — JS null coercion made null act as 0 in comparisons. Now correctly returns false for NULL BETWEEN x AND y.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 62,
+    "blocksCompleted": 63,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 38,
+      "BUILD": 39,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
