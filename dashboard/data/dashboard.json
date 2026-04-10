@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T14:22:28.310Z",
+  "generated": "2026-04-10T14:28:24.705Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Review yesterday 306-task marathon. Depth check: what is actually solid vs papering over issues? Check HenryDB MVCC integration status.",
-    "completedAt": "2026-04-10T14:22:28.309Z",
-    "taskId": "T1",
-    "summary": "ACID/MVCC tests all pass (90/91). Standup was wrong about broken tests - stale info from old src/ copy. Only issue: HLL sketch integration test (undefined .estimate). HenryDB core is solid.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "Run broader test sweep: 50+ test files across HenryDB to find any other failures",
+    "completedAt": "2026-04-10T14:28:24.705Z",
+    "taskId": "T16",
+    "summary": "Full test sweep: 5550 tests, 5492 pass, 58 fail (99.0%). Main failure areas: SSI SQL integration (4), server/wire protocol (8), file-backed persistence (WAL/ARIES/BufferPool), Raft edge cases. Core ACID/MVCC solid.",
+    "durationMs": 360000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -17,23 +17,35 @@
       {
         "id": "T1",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Review yesterday 306-task marathon. Depth check: what is actually solid vs papering over issues? Check HenryDB MVCC integration status."
+        "status": "done",
+        "task": "Review yesterday 306-task marathon. Depth check: what is actually solid vs papering over issues? Check HenryDB MVCC integration status.",
+        "started": "2026-04-10T14:15:22.141Z",
+        "completed": "2026-04-10T14:22:28.241Z",
+        "duration_ms": 300000,
+        "summary": "ACID/MVCC tests all pass (90/91). Standup was wrong about broken tests - stale info from old src/ copy. Only issue: HLL sketch integration test (undefined .estimate). HenryDB core is solid."
       },
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB ACID compliance: fix transactional-db/MVCC interface mismatch, make acid-compliance and bank-transfer tests pass",
-        "task": null
+        "task": null,
+        "started": "2026-04-10T14:22:50.405Z"
       },
       {
         "id": "T3",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix HLL: add estimate() alias for count(), make merge() return new HLL (or this). Fix integration test to pass.",
         "plan_ref": "T2",
         "project": "henrydb"
+      },
+      {
+        "id": "T16",
+        "mode": "BUILD",
+        "task": "Run broader test sweep: 50+ test files across HenryDB to find any other failures",
+        "status": "upcoming",
+        "plan_ref": "T2"
       },
       {
         "id": "T4",
@@ -118,10 +130,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 1,
-    "blocksTotal": 15,
+    "blocksCompleted": 4,
+    "blocksTotal": 16,
     "modeDistribution": {
-      "THINK": 1
+      "THINK": 1,
+      "PLAN": 1,
+      "BUILD": 2
     }
   }
 }

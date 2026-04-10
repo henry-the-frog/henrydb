@@ -14,17 +14,36 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB ACID compliance: fix transactional-db/MVCC interface mismatch, make acid-compliance and bank-transfer tests pass",
-      "task": null
+      "task": null,
+      "started": "2026-04-10T14:22:50.405Z",
+      "completed": "2026-04-10T14:23:38.279Z",
+      "duration_ms": 120000,
+      "summary": "ACID tests already pass. Redirected PLAN to real gaps: HLL estimate/merge API mismatch in integration test, broader test sweep."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix HLL: add estimate() alias for count(), make merge() return new HLL (or this). Fix integration test to pass.",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T14:23:58.123Z",
+      "completed": "2026-04-10T14:25:07.665Z",
+      "duration_ms": 180000,
+      "summary": "Fixed HLL: added estimate() alias for count(), merge() now returns this for chainability + added mergeNew() for non-mutating merge. Integration test 13/13, HLL test 8/8."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "task": "Run broader test sweep: 50+ test files across HenryDB to find any other failures",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-10T14:25:22.984Z",
+      "completed": "2026-04-10T14:28:24.638Z",
+      "duration_ms": 360000,
+      "summary": "Full test sweep: 5550 tests, 5492 pass, 58 fail (99.0%). Main failure areas: SSI SQL integration (4), server/wire protocol (8), file-backed persistence (WAL/ARIES/BufferPool), Raft edge cases. Core ACID/MVCC solid."
     },
     {
       "id": "T4",
@@ -176,6 +195,10 @@
     {
       "time": "2026-04-10T14:02:07.813Z",
       "msg": "Added T15 (EXPLORE) after T14: Research: CockroachDB serializable isolation implementation - how do they handle write skew at scale"
+    },
+    {
+      "time": "2026-04-10T14:23:32.759Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }
