@@ -2832,17 +2832,21 @@
     {
       "id": "T266",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add READ COMMITTED isolation level to TransactionalDatabase (new snapshot per statement, PG default)",
       "project": "henrydb",
-      "started": "2026-04-10T02:39:23.203Z"
+      "started": "2026-04-10T02:39:23.203Z",
+      "completed": "2026-04-10T02:41:27.153Z",
+      "duration_ms": 300000,
+      "summary": "Added READ COMMITTED isolation level. begin({isolationLevel}) option, refreshSnapshot() takes new snapshot per statement. Extracted _takeSnapshot() with proper xmax=_nextTx. 3 new tests: RC sees commits between statements, RR doesnt, sequential commit tracking. 21/21 mvcc-stress. PG default isolation level now supported."
     },
     {
       "id": "T267",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Wire vectorized execution into HenryDB query engine as alternative path for aggregate queries",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T02:41:34.416Z"
     },
     {
       "id": "T268",
