@@ -1036,9 +1036,12 @@
       "id": "T97",
       "mode": "BUILD",
       "task": "Run TPC-B benchmark, find and fix any concurrency bugs until ACID holds under load",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T94",
-      "started": "2026-04-10T20:57:16.488Z"
+      "started": "2026-04-10T20:57:16.488Z",
+      "completed": "2026-04-10T20:58:31.318Z",
+      "duration_ms": 300000,
+      "summary": "Stress-tested TPC-B under high contention: 500/500 committed, 0 aborted, ACID verified with 5 accounts and 10 workers (38 TPS serializable). SSI correctly prevents write skew anomaly — T2 aborted with serialization failure when both txns tried to drain accounts based on stale read. No bugs found under stress."
     }
   ],
   "focusProjects": [
