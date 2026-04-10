@@ -575,8 +575,12 @@
       "id": "T55",
       "mode": "BUILD",
       "task": "Fix server-slow-query (3 failures), server-etl (2), server-migrations (2) — deeper server issues",
-      "status": "upcoming",
-      "plan_ref": "T52"
+      "status": "done",
+      "plan_ref": "T52",
+      "started": "2026-04-10T18:46:10.200Z",
+      "completed": "2026-04-10T18:48:57.939Z",
+      "duration_ms": 120000,
+      "summary": "Fixed: added QueryCache.getStats(), added query log for pg_stat_slow_queries, fixed pg_stat_server. server-slow-query 3/3, server-etl 5/5, server-migrations 5/5, plus cascading fixes: server-stress 5/5, example-app 11/11."
     },
     {
       "id": "T56",

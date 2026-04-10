@@ -64,4 +64,7 @@ export class QueryCache {
   clear() { this._cache.clear(); }
   get hitRate() { return this._hits / (this._hits + this._misses) || 0; }
   get size() { return this._cache.size; }
+  getStats() {
+    return { hits: this._hits, misses: this._misses, hitRate: this.hitRate, size: this.size, entries: this.size };
+  }
 }

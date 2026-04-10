@@ -73,6 +73,9 @@ export class HenryDBServer {
     this._slowQueryThresholdMs = options.slowQueryThresholdMs || 100;
     // pg_stat_statements: query pattern tracking
     this._queryStats = new Map(); // normalized SQL → { calls, totalTime, minTime, maxTime, rows } // sql → { result: pre-computed result, hits: number, lastUsed: number }
+    // Slow query log — stores all executed queries with timing
+    this._queryLog = []; // [{query, duration_ms, timestamp, pid, rows}]
+    this._queryLogMaxSize = 10000;
   }
 
   start() {
@@ -519,6 +522,19 @@ export class HenryDBServer {
       this._metrics.queryLatencySum += duration;
       this._metrics.queryLatencyCount++;
       
+      // Log all queries for pg_stat_slow_queries
+      this._queryLog.push({
+        pid: conn.pid,
+        user: conn.user || 'unknown',
+        query: conn.currentQuery.sql.substring(0, 500),
+        duration_ms: duration,
+        timestamp: new Date().toISOString(),
+        rows: 0,
+      });
+      if (this._queryLog.length > this._queryLogMaxSize) {
+        this._queryLog.shift();
+      }
+
       if (duration >= this._slowQueryThresholdMs) {
         this._slowQueries.push({
           pid: conn.pid,
@@ -1114,7 +1130,7 @@ export class HenryDBServer {
 
     // Slow query log
     if (upper.includes('PG_STAT_SLOW') || upper.includes('SLOW_QUERIES')) {
-      this._sendResult(conn, sql, { type: 'ROWS', rows: [...this._slowQueries].reverse() });
+      this._sendResult(conn, sql, { type: 'ROWS', rows: [...this._queryLog].reverse() });
       return true;
     }
 
