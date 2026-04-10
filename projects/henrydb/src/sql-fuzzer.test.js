@@ -719,13 +719,13 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
     assert.ok(passRate >= 0.75, `Pass rate ${(passRate * 100).toFixed(1)}% below 75% threshold`);
   });
 
-  it('5000 queries with JOINs, compound WHERE, DISTINCT, expressions, NULLs (seed 77777)', () => {
+  it('10000 queries with JOINs, compound WHERE, DISTINCT, expressions, NULLs (seed 77777)', () => {
     setupBoth(77777, 3, 50);
     let passed = 0;
     let errorsMatched = 0;
     let mismatches = [];
 
-    for (let i = 0; i < 5000; i++) {
+    for (let i = 0; i < 10000; i++) {
       const sql = fuzzer.generateQuery();
       const h = executeHenryDB(sql);
       const s = executeSQLite(sql);
@@ -769,8 +769,8 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
     }
 
     const total = passed + errorsMatched;
-    const mismatchCount = 5000 - total;
-    console.log(`    Passed: ${passed}/5000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
+    const mismatchCount = 10000 - total;
+    console.log(`    Passed: ${passed}/10000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
     
     if (mismatches.length > 0) {
       console.log('    Sample mismatches:');
@@ -781,7 +781,7 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
       }
     }
 
-    const passRate = total / 5000;
+    const passRate = total / 10000;
     assert.ok(passRate >= 0.80, `Pass rate ${(passRate * 100).toFixed(1)}% below 80% threshold`);
   });
 });
