@@ -1783,7 +1783,8 @@ export class HenryDBServer {
 
   _hasSubquery(expr) {
     if (!expr || typeof expr !== 'object') return false;
-    if (expr.type === 'subquery' || expr.type === 'exists' || expr.type === 'in_subquery') return true;
+    const t = (expr.type || '').toLowerCase();
+    if (t === 'subquery' || t === 'exists' || t === 'in_subquery') return true;
     for (const key of Object.keys(expr)) {
       const val = expr[key];
       if (typeof val === 'object' && val !== null) {
