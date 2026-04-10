@@ -1857,10 +1857,21 @@
     {
       "id": "T172",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write a realistic time-series analytics test — stock prices with LAG/LEAD/moving averages",
       "project": "henrydb",
-      "started": "2026-04-10T23:27:57.693Z"
+      "started": "2026-04-10T23:27:57.693Z",
+      "completed": "2026-04-10T23:28:51.777Z",
+      "duration_ms": 120000,
+      "summary": "8 time-series analytics tests pass: LAG for returns, SUM OVER for cumulative, RANK for comparisons, LEAD for predictions, ROW_NUMBER for pagination."
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add SUBSTRING(str FROM pos FOR len) PostgreSQL syntax",
+      "project": "henrydb",
+      "started": "2026-04-10T23:29:03.946Z"
     }
   ],
   "focusProjects": [
@@ -2544,6 +2555,10 @@
     {
       "time": "2026-04-10T23:27:57.457Z",
       "msg": "Added T172 (BUILD) after end: HenryDB: write a realistic time-series analytics test — stock prices with LAG/LEAD/moving averages"
+    },
+    {
+      "time": "2026-04-10T23:29:03.709Z",
+      "msg": "Added T173 (BUILD) after end: HenryDB: add SUBSTRING(str FROM pos FOR len) PostgreSQL syntax"
     }
   ]
 }

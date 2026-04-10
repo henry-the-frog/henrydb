@@ -34,7 +34,7 @@ const KEYWORDS = new Set([
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
-  'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD',
+  'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
 ]);
 
 export function tokenize(sql) {
@@ -564,6 +564,36 @@ export function parse(sql) {
         node = { type: 'binary', op, left: node, right };
       }
       return node;
+    }
+
+    // SUBSTRING with FROM...FOR syntax: SUBSTRING(str FROM pos FOR len)
+    if (isKeyword('SUBSTRING')) {
+      const savedPos = pos;
+      advance(); // SUBSTRING
+      expect('(');
+      const str = parseExpr();
+      if (isKeyword('FROM')) {
+        advance(); // FROM
+        const fromPos = parseExpr();
+        let forLen = null;
+        if (isKeyword('FOR')) {
+          advance(); // FOR
+          forLen = parseExpr();
+        }
+        expect(')');
+        const args = forLen ? [str, fromPos, forLen] : [str, fromPos];
+        let alias = null;
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        let node = { type: 'function', func: 'SUBSTRING', args, alias };
+        while (peek() && ['+', '-', '*', '/', '%'].includes(peek().value)) {
+          const op = advance().value;
+          const right = parseExpr();
+          node = { type: 'binary', op, left: node, right };
+        }
+        return node;
+      }
+      // Not FROM syntax — backtrack to regular function parsing
+      pos = savedPos;
     }
 
     // String functions in SELECT
