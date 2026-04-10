@@ -665,7 +665,7 @@ export class CompiledQueryEngine {
 
   _applyProjectAndLimit(rows, ast) {
     // Apply projection
-    if (ast.columns && !ast.columns.some(c => c === '*' || c.name === '*')) {
+    if (ast.columns && !ast.columns.some(c => c === '*' || c.name === '*' || c.type === 'star')) {
       rows = rows.map(row => {
         const out = {};
         for (const col of ast.columns) {
