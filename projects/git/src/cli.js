@@ -10,6 +10,7 @@ import { merge } from './merge.js';
 import { clone } from './clone.js';
 import { stashSave, stashApply, stashPop, stashList, stashDrop } from './stash.js';
 import { createLightweightTag, createAnnotatedTag, listTags, deleteTag } from './tag.js';
+import { reset } from './reset.js';
 import { diffLines, formatUnifiedDiff } from './diff.js';
 import { readObject, hashObject } from './objects.js';
 import { getCurrentBranch, listBranches, resolveHead, resolveRef } from './refs.js';
@@ -200,6 +201,23 @@ try {
       mkdirSync(dest, { recursive: true });
       const result = clone(src, dest);
       console.log(`Cloned into '${dest}': ${result.objects} objects, ${result.branches} branches`);
+      break;
+    }
+    
+    case 'reset': {
+      const gitDir = findGitDir(cwd);
+      if (!gitDir) { console.error('Not a git repository'); process.exit(1); }
+      const workDir = resolve(gitDir, '..');
+      let mode = 'mixed';
+      let target = 'HEAD~1';
+      for (const arg of args.slice(1)) {
+        if (arg === '--soft') mode = 'soft';
+        else if (arg === '--hard') mode = 'hard';
+        else if (arg === '--mixed') mode = 'mixed';
+        else target = arg;
+      }
+      const result = reset(gitDir, workDir, target, mode);
+      console.log(`HEAD is now at ${result.hash.slice(0, 7)} (${mode} reset)`);
       break;
     }
     
