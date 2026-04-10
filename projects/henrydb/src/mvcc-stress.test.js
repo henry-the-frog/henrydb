@@ -452,3 +452,52 @@ describe('PostgreSQL-style Snapshot', () => {
     tx3.commit();
   });
 });
+
+describe('Hint Bits Performance', () => {
+  it('benchmark: repeated scans benefit from hint bits', () => {
+    const mgr = new MVCCManager();
+    const heap = new MVCCHeap(new HeapFile('hintbench'));
+    
+    // Insert 10,000 rows across 100 transactions
+    for (let t = 0; t < 100; t++) {
+      const tx = mgr.begin();
+      for (let i = 0; i < 100; i++) {
+        heap.insert([t * 100 + i, `row_${t * 100 + i}`], tx);
+      }
+      tx.commit();
+    }
+    
+    // Create a reader transaction
+    const reader = mgr.begin();
+    
+    // First scan (cold — no hint bits set)
+    const t0 = performance.now();
+    let count1 = 0;
+    for (const _row of heap.scan(reader)) count1++;
+    const firstScanMs = performance.now() - t0;
+    
+    // Second scan (warm — hint bits should be set from first scan)
+    const t1 = performance.now();
+    let count2 = 0;
+    for (const _row of heap.scan(reader)) count2++;
+    const secondScanMs = performance.now() - t1;
+    
+    // Third scan
+    const t2 = performance.now();
+    let count3 = 0;
+    for (const _row of heap.scan(reader)) count3++;
+    const thirdScanMs = performance.now() - t2;
+    
+    console.log(`    10K rows, 100 txns:`);
+    console.log(`    First scan (cold):  ${firstScanMs.toFixed(1)}ms (${count1} rows)`);
+    console.log(`    Second scan (warm): ${secondScanMs.toFixed(1)}ms (${count2} rows)`);
+    console.log(`    Third scan (warm):  ${thirdScanMs.toFixed(1)}ms (${count3} rows)`);
+    console.log(`    Speedup: ${(firstScanMs / thirdScanMs).toFixed(1)}x`);
+    
+    assert.equal(count1, 10000);
+    assert.equal(count2, 10000);
+    assert.equal(count3, 10000);
+    
+    reader.commit();
+  });
+});

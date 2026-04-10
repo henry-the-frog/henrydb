@@ -245,7 +245,8 @@ export class MVCCHeap {
   insert(values, tx) {
     const { pageId, slotIdx } = this._heap.insert(values);
     const key = `${pageId}:${slotIdx}`;
-    this._versions.set(key, { xmin: tx.txId, xmax: 0 });
+    // Hint bits: xminCommitted/xmaxCommitted cache commit status to avoid repeated lookups
+    this._versions.set(key, { xmin: tx.txId, xmax: 0, xminCommitted: false, xmaxCommitted: false });
     tx.writeSet.add(key);
     if (tx.manager) tx.manager.wal.push({ type: 'heap-insert', txId: tx.txId, key, values });
     return { pageId, slotIdx };
@@ -258,8 +259,8 @@ export class MVCCHeap {
       const ver = this._versions.get(key);
       if (!ver) { yield row; continue; }
 
-      const created = this._isVisible(ver.xmin, tx);
-      const deleted = ver.xmax !== 0 && this._isVisible(ver.xmax, tx);
+      const created = this._isVisibleWithHints(ver, 'xmin', tx);
+      const deleted = ver.xmax !== 0 && this._isVisibleWithHints(ver, 'xmax', tx);
 
       if (created && !deleted) {
         yield row;
@@ -335,14 +336,65 @@ export class MVCCHeap {
     return { deadTuplesRemoved };
   }
 
-  /** Visibility check for snapshot isolation. */
+  /**
+   * Visibility check with hint bit optimization.
+   * If the hint bit is set, skip the expensive isVisible() lookup.
+   * Sets the hint bit on first determination (lazy — like PostgreSQL).
+   * @param {object} ver - Version entry with hint bits
+   * @param {'xmin'|'xmax'} field - Which field to check
+   * @param {MVCCTransaction} tx - The reading transaction
+   */
+  _isVisibleWithHints(ver, field, tx) {
+    const txId = ver[field];
+    if (txId === 0) return false;
+    if (txId === tx.txId) return true;
+    
+    const hintKey = field + 'Committed';
+    
+    // Fast path: hint bit already set → txId is definitely committed
+    if (ver[hintKey]) {
+      // Still need to check snapshot — committed doesn't mean visible
+      return this._isVisibleToSnapshot(txId, tx);
+    }
+    
+    // Slow path: check commit status
+    const mgr = tx.manager;
+    if (!mgr) return txId < tx.startTx; // fallback
+    
+    const result = mgr.isVisible(txId, tx);
+    
+    // Set hint bit if we determined the txId is committed
+    // (Only set if it's actually committed, not just visible-to-this-snapshot)
+    if (mgr.committedTxns.has(txId)) {
+      ver[hintKey] = true;
+    } else {
+      const writerTx = mgr.activeTxns.get(txId);
+      if (writerTx && writerTx.committed) {
+        ver[hintKey] = true;
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Check if a committed txId is visible to this transaction's snapshot.
+   * Used by hint-bit fast path (already know it's committed).
+   */
+  _isVisibleToSnapshot(txId, tx) {
+    const snap = tx.snapshot;
+    if (txId < snap.xmin) return true; // committed before any active txn
+    if (txId >= snap.xmax) return false; // started after snapshot
+    if (snap.activeSet.has(txId)) return false; // was in-progress at snapshot time
+    return true; // committed between xmin and xmax, not in active set
+  }
+
+  /** Visibility check for snapshot isolation (no hint bits). */
   _isVisible(txId, tx) {
     if (txId === 0) return false;
     if (txId === tx.txId) return true;
-    // Check if txId's transaction is committed and committed before tx started
     const mgr = tx.manager;
     if (mgr) return mgr.isVisible(txId, tx);
-    // Fallback: txId < startTx means it was around before us
     return txId < tx.startTx;
   }
 }

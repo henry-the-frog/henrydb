@@ -2810,17 +2810,21 @@
     {
       "id": "T264",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix remaining 2 integration-stress test failures (WAL records, lock manager stats)",
       "project": "henrydb",
-      "started": "2026-04-10T02:32:59.294Z"
+      "started": "2026-04-10T02:32:59.294Z",
+      "completed": "2026-04-10T02:37:40.084Z",
+      "duration_ms": 300000,
+      "summary": "Fixed both remaining integration-stress failures: 1) Added WAL logging to MVCCManager + MVCCHeap. 2) Added stats tracking + intention lock compatibility matrix (IS/IX/S/SIX/X) + lock upgrade + per-resource release to LockManager. 26/26 integration-stress, 91/91 total across 6 files."
     },
     {
       "id": "T265",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Implement hint bits in MVCCManager — cache commit status on version entries for faster visibility checks",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T02:37:47.808Z"
     },
     {
       "id": "T266",

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T02:32:59.359Z",
+  "generated": "2026-04-10T02:37:47.873Z",
   "current": {
     "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Fix remaining 2 integration-stress test failures (WAL records, lock manager stats)",
-    "startedAt": "2026-04-10T02:32:59.359Z",
-    "taskId": "T264"
+    "mode": "EXPLORE",
+    "task": "Implement hint bits in MVCCManager — cache commit status on version entries for faster visibility checks",
+    "startedAt": "2026-04-10T02:37:47.873Z",
+    "taskId": "T265"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -3057,12 +3057,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 248,
+    "blocksCompleted": 249,
     "blocksTotal": 263,
     "modeDistribution": {
       "THINK": 23,
       "PLAN": 16,
-      "BUILD": 172,
+      "BUILD": 173,
       "MAINTAIN": 32,
       "EXPLORE": 5
     }
