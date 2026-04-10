@@ -48,14 +48,22 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, check PRs"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard health, check PRs",
+      "started": "2026-04-10T14:28:39.048Z",
+      "completed": "2026-04-10T14:29:11.466Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed. Dashboard healthy (live API + regenerated). No open PRs found."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess HenryDB quality: run full test suite, identify remaining failures, decide whether to fix vs move on"
+      "status": "done",
+      "task": "Assess HenryDB quality: run full test suite, identify remaining failures, decide whether to fix vs move on",
+      "started": "2026-04-10T14:29:27.114Z",
+      "completed": "2026-04-10T14:29:41.778Z",
+      "duration_ms": 120000,
+      "summary": "Decision: fix SSI SQL integration (4 tests) and server wire protocol issues (8 tests) — user-facing and high-value. Skip Raft edge cases and file-backed persistence (deeper architectural work). Blog fix still owed to Daniel."
     },
     {
       "id": "T6",
