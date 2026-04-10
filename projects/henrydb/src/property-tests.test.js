@@ -7,7 +7,7 @@ import { SkipList } from './skip-list.js';
 import { Treap } from './probabilistic-filters.js';
 import { SplayTree } from './more-trees.js';
 import { CuckooHashTable } from './cuckoo-hash.js';
-import { RobinHoodHashTable } from './robin-hood-hash.js';
+import { RobinHoodHashMap } from './robin-hood-hash.js';
 import { RingBuffer } from './ring-buffer.js';
 import { FenwickTree } from './advanced-ds.js';
 import { BinaryHeap } from './more-trees.js';
@@ -42,7 +42,7 @@ describe('Property: Sorted iteration invariant', () => {
 describe('Property: Hash tables agree with Map', () => {
   for (const [name, createHT] of [
     ['Cuckoo', () => new CuckooHashTable(512)],
-    ['Robin Hood', () => new RobinHoodHashTable(512)],
+    ['Robin Hood', () => new RobinHoodHashMap(512)],
   ]) {
     it(`${name}: random ops match Map`, () => {
       const ht = createHT();
@@ -76,8 +76,8 @@ describe('Property: Ring buffer preserves last K items', () => {
   it('oldest item is always n-capacity', () => {
     const rb = new RingBuffer(10);
     for (let i = 0; i < 100; i++) rb.push(i);
-    assert.equal(rb.peekOldest(), 90);
-    assert.equal(rb.peek(), 99);
+    assert.equal(rb.peekFront(), 90);
+    assert.equal(rb.peekBack(), 99);
   });
 });
 
@@ -145,7 +145,7 @@ describe('Property: String keys work in all sorted structures', () => {
   it('Skip list with random strings', () => {
     const sl = new SkipList();
     const entries = Array.from({ length: 100 }, () => [randomStr(8), randomInt(1000)]);
-    for (const [k, v] of entries) sl.set(k, v);
+    for (const [k, v] of entries) sl.insert(k, v);
     for (const [k, v] of entries) assert.equal(sl.get(k), v);
   });
 });
@@ -184,7 +184,7 @@ describe('Property: Large scale random operations', () => {
       
       if (op === 0) { // Insert
         const val = randomInt(10000);
-        sl.set(key, val);
+        sl.insert(key, val);
         ref.set(key, val);
       } else { // Lookup
         const expected = ref.get(key);

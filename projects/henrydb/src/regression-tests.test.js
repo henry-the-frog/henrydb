@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { BPlusTree } from './bplus-tree.js';
 import { SkipList } from './skip-list.js';
 import { CuckooHashTable } from './cuckoo-hash.js';
-import { RobinHoodHashTable } from './robin-hood-hash.js';
+import { RobinHoodHashMap } from './robin-hood-hash.js';
 import { DoubleHashTable } from './advanced-ds.js';
 import { LinearHashTable } from './linear-hashing.js';
 import { ExtendibleHashTable } from './extendible-hashing.js';
@@ -52,7 +52,7 @@ describe('Cross-validation: All sorted structures agree', () => {
   
   it('B+ tree and Skip list have same elements', () => {
     const bpt = new BPlusTree(4); const sl = new SkipList();
-    for (const k of keys) { bpt.insert(k, k); sl.set(k, k); }
+    for (const k of keys) { bpt.insert(k, k); sl.insert(k, k); }
     for (const k of keys) { assert.equal(bpt.get(k), sl.get(k)); }
   });
   it('Treap and Splay tree have same elements', () => {
@@ -67,7 +67,7 @@ describe('Cross-validation: All hash tables agree', () => {
   
   for (const [name, create] of [
     ['Cuckoo', () => new CuckooHashTable(256)],
-    ['Robin Hood', () => new RobinHoodHashTable(256)],
+    ['Robin Hood', () => new RobinHoodHashMap(256)],
     ['Double Hash', () => new DoubleHashTable(256)],
     ['Linear Hash', () => new LinearHashTable()],
     ['Extendible Hash', () => new ExtendibleHashTable(8)],
