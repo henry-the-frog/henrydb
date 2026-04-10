@@ -68,7 +68,7 @@ const result = await client.query('SELECT * FROM users');
 - **Prepared statements** — Parse/Bind/Execute/Describe/Close
 - **Parameterized queries** — `$1`, `$2` placeholders
 - **Connection pooling** — multiple concurrent clients
-- **COPY protocol** — bulk data import
+- **COPY protocol** — bulk data import/export via pg-copy-streams
 - **LISTEN/NOTIFY** — pub/sub messaging
 
 ### Data Structures
@@ -113,7 +113,7 @@ TPC-B-style benchmark results (single-threaded, macOS, NVMe SSD):
 | Mode | Throughput | Notes |
 |------|-----------|-------|
 | In-memory (direct) | ~478 TPS | No persistence overhead |
-| Persistent (direct) | ~3,704 TPS | Group commit, batch fsync |
+| Persistent (direct) | ~3,704 TPS | Group commit (batch fsync every 5ms) |
 | Persistent (wire protocol) | ~53 TPS | pg client over TCP |
 | Persistent (immediate fsync) | ~53 TPS | fsync per commit |
 
@@ -153,7 +153,7 @@ node src/server.js [options]
 
 ## Testing
 
-539 test files with **5,572 individual tests** covering:
+543+ test files with **5,600+ individual tests** covering:
 - SQL parsing and execution
 - Query optimization
 - Transaction isolation (MVCC, SSI)

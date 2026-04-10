@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-10T22:13:32.427Z",
+  "generated": "2026-04-10T22:15:52.061Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: stress test the persistent server with COPY + normal queries interleaved, then crash and recover",
-    "startedAt": "2026-04-10T22:13:32.427Z",
-    "taskId": "T130"
+    "task": "HenryDB: add COPY TO STDOUT support — allow exporting table data via pg-copy-streams",
+    "completedAt": "2026-04-10T22:15:52.061Z",
+    "taskId": "T131",
+    "summary": "COPY TO STDOUT already works! Tested: 10-row export, full round-trip (export 100 rows → import into new table → data matches, SUM verified). Both COPY FROM STDIN and COPY TO STDOUT work via pg-copy-streams.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1132,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 123,
+    "blocksCompleted": 125,
     "blocksTotal": 105,
     "modeDistribution": {
       "THINK": 21,
       "PLAN": 9,
-      "BUILD": 82,
+      "BUILD": 84,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

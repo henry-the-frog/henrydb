@@ -1395,10 +1395,24 @@
     {
       "id": "T130",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: stress test the persistent server with COPY + normal queries interleaved, then crash and recover",
       "project": "henrydb",
-      "started": "2026-04-10T22:13:32.363Z"
+      "started": "2026-04-10T22:13:32.363Z",
+      "completed": "2026-04-10T22:14:27.970Z",
+      "duration_ms": 180000,
+      "summary": "4/4 COPY persistent tests pass: data survives restart, interleaved COPY+INSERT, 5000-row bulk import, multiple COPY batches. All verified with aggregate queries."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add COPY TO STDOUT support — allow exporting table data via pg-copy-streams",
+      "project": "henrydb",
+      "started": "2026-04-10T22:14:59.054Z",
+      "completed": "2026-04-10T22:15:51.997Z",
+      "duration_ms": 60000,
+      "summary": "COPY TO STDOUT already works! Tested: 10-row export, full round-trip (export 100 rows → import into new table → data matches, SUM verified). Both COPY FROM STDIN and COPY TO STDOUT work via pg-copy-streams."
     }
   ],
   "focusProjects": [
@@ -1914,6 +1928,10 @@
     {
       "time": "2026-04-10T22:13:25.964Z",
       "msg": "Added T130 (BUILD) after end: HenryDB: stress test the persistent server with COPY + normal queries interleaved, then crash and recover"
+    },
+    {
+      "time": "2026-04-10T22:14:52.125Z",
+      "msg": "Added T131 (BUILD) after end: HenryDB: add COPY TO STDOUT support — allow exporting table data via pg-copy-streams"
     }
   ]
 }
