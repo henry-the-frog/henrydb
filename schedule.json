@@ -1285,10 +1285,21 @@
     {
       "id": "T120",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix recursive CTE parsing (UNION ALL inside CTE body)",
       "project": "henrydb",
-      "started": "2026-04-10T21:42:36.900Z"
+      "started": "2026-04-10T21:42:36.900Z",
+      "completed": "2026-04-10T21:46:14.059Z",
+      "duration_ms": 300000,
+      "summary": "Fixed recursive CTE parsing: added column alias support (cnt(x)), fixed UNION ALL in CTE body (parser was calling expect(\")\") before union check). Basic recursive CTEs work (counting 1..N, hierarchy traversal). Known limitations: multi-column CTEs with duplicate values, depth propagation."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB bug hunt: test more edge cases — NULL in JOINs, empty GROUP BY, DELETE with subquery, UPDATE with expression, LIKE patterns, BETWEEN, COALESCE, CAST",
+      "project": "henrydb",
+      "started": "2026-04-10T21:46:53.833Z"
     }
   ],
   "focusProjects": [
@@ -1764,6 +1775,10 @@
     {
       "time": "2026-04-10T21:42:29.882Z",
       "msg": "Added T120 (BUILD) after end: HenryDB: fix recursive CTE parsing (UNION ALL inside CTE body)"
+    },
+    {
+      "time": "2026-04-10T21:46:39.299Z",
+      "msg": "Added T121 (BUILD) after end: HenryDB bug hunt: test more edge cases — NULL in JOINs, empty GROUP BY, DELETE with subquery, UPDATE with expression, LIKE patterns, BETWEEN, COALESCE, CAST"
     }
   ]
 }

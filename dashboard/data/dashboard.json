@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T21:42:36.937Z",
+  "generated": "2026-04-10T21:46:53.870Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: fix recursive CTE parsing (UNION ALL inside CTE body)",
-    "startedAt": "2026-04-10T21:42:36.937Z",
-    "taskId": "T120"
+    "task": "HenryDB bug hunt: test more edge cases — NULL in JOINs, empty GROUP BY, DELETE with subquery, UPDATE with expression, LIKE patterns, BETWEEN, COALESCE, CAST",
+    "startedAt": "2026-04-10T21:46:53.870Z",
+    "taskId": "T121"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1130,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 113,
+    "blocksCompleted": 114,
     "blocksTotal": 105,
     "modeDistribution": {
       "THINK": 20,
       "PLAN": 9,
-      "BUILD": 73,
+      "BUILD": 74,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

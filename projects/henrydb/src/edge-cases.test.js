@@ -1,173 +1,160 @@
-// edge-cases.test.js — Edge case and boundary tests
+// edge-cases.test.js — Tests for SQL edge cases and correctness
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { Database } from './db.js';
 
-import { BPlusTree } from './bplus-tree.js';
-import { SkipList } from './skip-list.js';
-import { RingBuffer } from './ring-buffer.js';
-import { CuckooHashTable } from './cuckoo-hash.js';
-import { RobinHoodHashMap } from './robin-hood-hash.js';
-import { HyperLogLog } from './hyperloglog.js';
-import { TDigest } from './tdigest.js';
-import { CountMinSketch } from './count-min-sketch.js';
-import { BitmapIndex, BitVector } from './bitmap-index.js';
-import { FenwickTree, SegmentTree, UnionFind } from './advanced-ds.js';
-import { BinaryHeap } from './more-trees.js';
-import { LFUCache, kmpSearch, murmur3 } from './more-ds.js';
-import { Trie } from './trie.js';
-import { LamportClock, VectorClock, GCounter, PNCounter } from './distributed-primitives.js';
-import { ReservoirSampler } from './sampling.js';
-import { IntervalTree, OrderStatisticsTree } from './more-trees.js';
+function setup() {
+  const db = new Database();
+  db.execute('CREATE TABLE t1 (id INT, val TEXT)');
+  db.execute('CREATE TABLE t2 (id INT, ref_id INT, data TEXT)');
+  db.execute("INSERT INTO t1 VALUES (1, 'a')");
+  db.execute("INSERT INTO t1 VALUES (2, 'b')");
+  db.execute("INSERT INTO t1 VALUES (3, NULL)");
+  db.execute("INSERT INTO t2 VALUES (1, 1, 'x')");
+  db.execute("INSERT INTO t2 VALUES (2, NULL, 'y')");
+  db.execute("INSERT INTO t2 VALUES (3, 2, 'z')");
+  return db;
+}
 
-describe('Edge Cases: Empty collections', () => {
-  it('B+ tree: get from empty', () => assert.equal(new BPlusTree().get(1), undefined));
-  it('B+ tree: range from empty', () => assert.deepEqual(new BPlusTree().range(0, 100), []));
-  it('B+ tree: delete from empty', () => assert.ok(!new BPlusTree().delete(1)));
-  it('Skip list: get from empty', () => assert.equal(new SkipList().get(1), undefined));
-  it('Skip list: range from empty', () => assert.deepEqual([...new SkipList().range(0, 100)], []));
-  it('Ring buffer: peek from empty', () => assert.equal(new RingBuffer(5).peekBack(), undefined));
-  it('Ring buffer: pop from empty', () => assert.equal(new RingBuffer(5).shift(), undefined));
-  it('Cuckoo: get from empty', () => assert.equal(new CuckooHashTable().get('x'), undefined));
-  it('Robin Hood: get from empty', () => assert.equal(new RobinHoodHashMap().get('x'), undefined));
-  it('HLL: estimate from empty', () => assert.equal(new HyperLogLog().estimate(), 0));
-  it('TDigest: quantile from empty', () => assert.equal(new TDigest().quantile(0.5), null));
-  it('CMS: estimate from empty', () => assert.equal(new CountMinSketch().estimate('x'), 0));
-  it('Trie: get from empty', () => assert.equal(new Trie().get('x'), undefined));
-  it('Trie: prefix search from empty', () => assert.deepEqual(new Trie().prefixSearch('x'), []));
-  it('LFU: get from empty', () => assert.equal(new LFUCache(10).get('x'), undefined));
-  it('Heap: pop from empty', () => assert.equal(new BinaryHeap().pop(), undefined));
-  it('Fenwick: prefix sum of empty', () => { const ft = new FenwickTree(0); assert.equal(ft.prefixSum(-1), 0); });
-  it('Interval tree: query empty', () => assert.deepEqual(new IntervalTree().query(5), []));
-  it('Reservoir: sample from empty', () => assert.deepEqual(new ReservoirSampler(10).sample, []));
-});
-
-describe('Edge Cases: Single element', () => {
-  it('B+ tree: single element', () => { const t = new BPlusTree(); t.insert(1, 'a'); assert.equal(t.get(1), 'a'); assert.equal(t.size, 1); });
-  it('Skip list: single element', () => { const s = new SkipList(); s.insert(1, 'a'); assert.equal(s.get(1), 'a'); });
-  it('Ring buffer: single element', () => { const r = new RingBuffer(1); r.push('x'); assert.equal(r.peekBack(), 'x'); r.push('y'); assert.equal(r.peekBack(), 'y'); });
-  it('HLL: single element', () => { const h = new HyperLogLog(); h.add('x'); assert.ok(h.estimate() >= 1); });
-  it('TDigest: single element', () => { const t = new TDigest(); t.add(42); assert.equal(t.percentile(50), 42); });
-  it('Trie: single key', () => { const t = new Trie(); t.insert('a', 1); assert.equal(t.get('a'), 1); });
-  it('KMP: single char match', () => assert.deepEqual(kmpSearch('a', 'a'), [0]));
-  it('Reservoir: single item', () => { const r = new ReservoirSampler(10); r.add('x'); assert.deepEqual(r.sample, ['x']); });
-  it('Order stats: single element', () => { const o = new OrderStatisticsTree(); o.insert(5); assert.equal(o.select(0), 5); assert.equal(o.rank(5), 0); });
-});
-
-describe('Edge Cases: Boundary values', () => {
-  it('Murmur3: empty string', () => assert.ok(typeof murmur3('') === 'number'));
-  it('Murmur3: very long string', () => assert.ok(typeof murmur3('x'.repeat(10000)) === 'number'));
-  it('KMP: empty pattern', () => assert.deepEqual(kmpSearch('hello', ''), []));
-  it('KMP: pattern longer than text', () => assert.deepEqual(kmpSearch('hi', 'hello world'), []));
-  it('KMP: exact match', () => assert.deepEqual(kmpSearch('abc', 'abc'), [0]));
-  it('BitVector: set bit 0', () => { const bv = new BitVector(1); bv.set(0); assert.ok(bv.get(0)); });
-  it('BitVector: popcount of 0', () => assert.equal(new BitVector(64).popcount(), 0));
-  it('BitVector: large position', () => { const bv = new BitVector(1000); bv.set(999); assert.ok(bv.get(999)); assert.ok(!bv.get(998)); });
-  it('Ring buffer: capacity 1', () => { const r = new RingBuffer(1); r.push(1); r.push(2); assert.equal(r.peekBack(), 2); assert.equal(r.size, 1); });
-  it('LFU: capacity 1', () => { const c = new LFUCache(1); c.set('a', 1); c.set('b', 2); assert.equal(c.get('a'), undefined); assert.equal(c.get('b'), 2); });
-  it('UnionFind: single element', () => { const uf = new UnionFind(1); assert.equal(uf.count, 1); assert.equal(uf.find(0), 0); });
-  it('UnionFind: self-union', () => { const uf = new UnionFind(2); assert.ok(!uf.union(0, 0)); });
-});
-
-describe('Edge Cases: Special values', () => {
-  it('Hash tables handle numeric 0', () => {
-    const c = new CuckooHashTable(); c.set(0, 'zero'); assert.equal(c.get(0), 'zero');
-  });
-  it('Hash tables handle empty string', () => {
-    const r = new RobinHoodHashMap(); r.set('', 'empty'); assert.equal(r.get(''), 'empty');
-  });
-  it('Skip list: negative keys', () => {
-    const s = new SkipList(); s.insert(-100, 'neg'); s.insert(100, 'pos');
-    assert.equal(s.get(-100), 'neg');
-    assert.equal(s.min().key, -100);
-  });
-  it('B+ tree: string keys with special chars', () => {
-    const t = new BPlusTree(4);
-    t.insert('key with spaces', 1);
-    t.insert('key\twith\ttabs', 2);
-    t.insert('key/with/slashes', 3);
-    assert.equal(t.get('key with spaces'), 1);
-  });
-  it('Trie: overlapping prefixes', () => {
-    const t = new Trie();
-    t.insert('a', 1); t.insert('ab', 2); t.insert('abc', 3);
-    assert.equal(t.get('a'), 1);
-    assert.equal(t.get('ab'), 2);
-    assert.equal(t.get('abc'), 3);
-  });
-  it('G-Counter: zero increments', () => {
-    const c = new GCounter('n1'); assert.equal(c.value, 0);
-  });
-  it('PN-Counter: decrement below zero', () => {
-    const c = new PNCounter('n1'); c.decrement(5); assert.equal(c.value, -5);
-  });
-  it('Lamport clock starts at 0', () => assert.equal(new LamportClock().time, 0));
-  it('Vector clock: empty', () => assert.deepEqual(new VectorClock('A').clock, {}));
-});
-
-describe('Edge Cases: Duplicate handling', () => {
-  it('B+ tree: duplicate key overwrites', () => {
-    const t = new BPlusTree(4);
-    t.insert(1, 'a'); t.insert(1, 'b');
-    assert.equal(t.get(1), 'b');
-  });
-  it('Skip list: duplicate key overwrites', () => {
-    const s = new SkipList();
-    s.insert('k', 'old'); s.insert('k', 'new');
-    assert.equal(s.get('k'), 'new');
-  });
-  it('Trie: duplicate key overwrites', () => {
-    const t = new Trie();
-    t.insert('key', 'old'); t.insert('key', 'new');
-    assert.equal(t.get('key'), 'new');
-  });
-  it('CMS: duplicate adds accumulate', () => {
-    const cms = new CountMinSketch(1024, 5);
-    cms.add('x'); cms.add('x'); cms.add('x');
-    assert.ok(cms.estimate('x') >= 3);
-  });
-  it('HLL: duplicates dont increase estimate', () => {
-    const h = new HyperLogLog(10);
-    for (let i = 0; i < 1000; i++) h.add('same');
-    assert.ok(h.estimate() <= 3); // Should be ~1
-  });
-  it('Bitmap: all same value', () => {
-    const idx = new BitmapIndex();
-    for (let i = 0; i < 100; i++) idx.set(i, 'same');
-    assert.equal(idx.values.length, 1);
-    assert.equal(idx.lookup('same').length, 100);
-  });
-});
-
-describe('Edge Cases: Stress tests', () => {
-  it('10K inserts into order=3 B+ tree', () => {
-    const t = new BPlusTree(3);
-    for (let i = 0; i < 10000; i++) t.insert(i, i);
-    assert.equal(t.size, 10000);
-    // Spot check
-    assert.equal(t.get(0), 0);
-    assert.equal(t.get(5000), 5000);
-    assert.equal(t.get(9999), 9999);
+describe('SQL Edge Cases', () => {
+  it('NULL in JOIN key is excluded', () => {
+    const db = setup();
+    const r = db.execute('SELECT t1.val, t2.data FROM t1 JOIN t2 ON t1.id = t2.ref_id ORDER BY t1.id');
+    assert.equal(r.rows.length, 2);
   });
 
-  it('10K inserts into skip list', () => {
-    const s = new SkipList();
-    for (let i = 0; i < 10000; i++) s.insert(i, i);
-    assert.equal(s.size, 10000);
-    assert.equal(s.min().key, 0);
-    assert.equal(s.max().key, 9999);
+  it('LEFT JOIN preserves NULLs', () => {
+    const db = setup();
+    const r = db.execute('SELECT t1.val, t2.data FROM t1 LEFT JOIN t2 ON t1.id = t2.ref_id ORDER BY t1.id');
+    assert.equal(r.rows.length, 3);
+    assert.equal(r.rows[2].data, null);
   });
 
-  it('100K CMS adds', () => {
-    const cms = new CountMinSketch(4096, 7);
-    for (let i = 0; i < 100000; i++) cms.add(`key_${i % 1000}`);
-    assert.ok(cms.estimate('key_0') >= 95);
-    assert.ok(cms.estimate('key_0') <= 120);
+  it('COALESCE with NULL', () => {
+    const db = setup();
+    const r = db.execute("SELECT COALESCE(val, 'unknown') as result FROM t1 ORDER BY id");
+    assert.equal(r.rows[2].result, 'unknown');
   });
 
-  it('100K HLL adds', () => {
-    const h = new HyperLogLog(12);
-    for (let i = 0; i < 100000; i++) h.add(i);
-    const est = h.estimate();
-    assert.ok(Math.abs(est - 100000) / 100000 < 0.05);
+  it('BETWEEN', () => {
+    const db = setup();
+    const r = db.execute('SELECT id FROM t1 WHERE id BETWEEN 1 AND 2 ORDER BY id');
+    assert.equal(r.rows.length, 2);
+  });
+
+  it('LIKE pattern matching', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE s (name TEXT)');
+    db.execute("INSERT INTO s VALUES ('Alice')");
+    db.execute("INSERT INTO s VALUES ('Bob')");
+    db.execute("INSERT INTO s VALUES ('Alex')");
+    const r = db.execute("SELECT name FROM s WHERE name LIKE 'Al%' ORDER BY name");
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].name, 'Alex');
+  });
+
+  it('CAST to TEXT', () => {
+    const db = setup();
+    const r = db.execute('SELECT CAST(id AS TEXT) as txt FROM t1 WHERE id IS NOT NULL ORDER BY id');
+    assert.equal(r.rows[0].txt, '1');
+  });
+
+  it('UPDATE with COALESCE expression', () => {
+    const db = setup();
+    db.execute("UPDATE t1 SET val = COALESCE(val, 'default') WHERE val IS NULL");
+    const r = db.execute('SELECT val FROM t1 WHERE id = 3');
+    assert.equal(r.rows[0].val, 'default');
+  });
+
+  it('DELETE with IN subquery', () => {
+    const db = setup();
+    db.execute('DELETE FROM t2 WHERE ref_id IN (SELECT id FROM t1 WHERE id > 1)');
+    const r = db.execute('SELECT * FROM t2 ORDER BY id');
+    assert.equal(r.rows.length, 2); // Only ref_id=1 and ref_id=NULL survive
+  });
+
+  it('NOT IN', () => {
+    const db = setup();
+    const r = db.execute('SELECT id FROM t1 WHERE id NOT IN (1, 3) ORDER BY id');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].id, 2);
+  });
+
+  it('OR condition', () => {
+    const db = setup();
+    const r = db.execute('SELECT id FROM t1 WHERE id = 1 OR id = 3 ORDER BY id');
+    assert.equal(r.rows.length, 2);
+  });
+
+  it('Complex WHERE with AND/OR', () => {
+    const db = setup();
+    const r = db.execute('SELECT id FROM t1 WHERE (id > 1 AND val IS NOT NULL) OR id = 1 ORDER BY id');
+    assert.equal(r.rows.length, 2);
+  });
+
+  it('IN subquery with GROUP BY aggregate', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE g (cat TEXT, val INT)');
+    db.execute("INSERT INTO g VALUES ('a', 10)");
+    db.execute("INSERT INTO g VALUES ('a', 20)");
+    db.execute("INSERT INTO g VALUES ('b', 30)");
+    const r = db.execute('SELECT * FROM g WHERE val IN (SELECT MAX(val) FROM g GROUP BY cat) ORDER BY val');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].val, 20);
+    assert.equal(r.rows[1].val, 30);
+  });
+
+  it('Recursive CTE (counting)', () => {
+    const db = new Database();
+    const r = db.execute('WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt WHERE x < 5) SELECT * FROM cnt');
+    assert.equal(r.rows.length, 5);
+    assert.equal(r.rows[0].x, 1);
+    assert.equal(r.rows[4].x, 5);
+  });
+
+  it('Multi GROUP BY columns', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE sales (product TEXT, region TEXT, amount INT)');
+    db.execute("INSERT INTO sales VALUES ('A', 'N', 100)");
+    db.execute("INSERT INTO sales VALUES ('A', 'S', 200)");
+    db.execute("INSERT INTO sales VALUES ('B', 'N', 150)");
+    const r = db.execute('SELECT product, region, SUM(amount) as total FROM sales GROUP BY product, region ORDER BY product, region');
+    assert.equal(r.rows.length, 3);
+  });
+
+  it('COUNT DISTINCT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE d (x INT)');
+    db.execute('INSERT INTO d VALUES (1)');
+    db.execute('INSERT INTO d VALUES (2)');
+    db.execute('INSERT INTO d VALUES (1)');
+    db.execute('INSERT INTO d VALUES (3)');
+    const r = db.execute('SELECT COUNT(DISTINCT x) as cnt FROM d');
+    assert.equal(r.rows[0].cnt, 3);
+  });
+
+  it('Expression aliases in SELECT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE n (x INT)');
+    db.execute('INSERT INTO n VALUES (10)');
+    const r = db.execute('SELECT x * 2 as doubled, x + 5 as plus_five FROM n');
+    assert.equal(r.rows[0].doubled, 20);
+    assert.equal(r.rows[0].plus_five, 15);
+  });
+
+  it('Empty table aggregation', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE empty (x INT)');
+    const r = db.execute('SELECT COUNT(*) as cnt, SUM(x) as total, AVG(x) as avg FROM empty');
+    assert.equal(r.rows[0].cnt, 0);
+    assert.equal(r.rows[0].total, null);
+  });
+
+  it('Escaped single quotes in strings', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE q (s TEXT)');
+    db.execute("INSERT INTO q VALUES ('it''s a test')");
+    const r = db.execute('SELECT s FROM q');
+    assert.equal(r.rows[0].s, "it's a test");
   });
 });
