@@ -3194,10 +3194,27 @@
     {
       "id": "T304",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build a write-ahead log with group commit optimization (batch fsync for throughput)",
       "project": "henrydb",
-      "started": "2026-04-10T03:35:18.929Z"
+      "started": "2026-04-10T03:35:18.929Z",
+      "completed": "2026-04-10T03:36:37.769Z",
+      "duration_ms": 300000,
+      "summary": "Built group commit WAL: batch multiple txn fsyncs into one. 87.5% fewer fsyncs with batch=32 (1250 vs 10000). 391K TPS. Batch size comparison shows diminishing returns past 128. 7/7 tests."
+    },
+    {
+      "id": "T305",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Build a simple inverted index for full-text search (tokenize, index, boolean queries)",
+      "project": "henrydb",
+      "started": "2026-04-10T03:36:58.080Z"
+    },
+    {
+      "id": "T306",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session C: git push, daily log, CURRENT.md, test count"
     }
   ],
   "focusProjects": [
@@ -4485,6 +4502,14 @@
     {
       "time": "2026-04-10T03:35:18.720Z",
       "msg": "Removed T303: more work to do"
+    },
+    {
+      "time": "2026-04-10T03:36:49.874Z",
+      "msg": "Added T305 (EXPLORE) after end: Build a simple inverted index for full-text search (tokenize, index, boolean queries)"
+    },
+    {
+      "time": "2026-04-10T03:36:50.088Z",
+      "msg": "Added T306 (MAINTAIN) after end: Final session C: git push, daily log, CURRENT.md, test count"
     }
   ]
 }

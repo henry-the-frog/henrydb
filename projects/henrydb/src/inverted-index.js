@@ -1,147 +1,189 @@
-// inverted-index.js — Inverted index with TF-IDF scoring
-// Maps terms → list of (docId, positions). Enables full-text search.
-// TF-IDF: Term Frequency * Inverse Document Frequency.
+// inverted-index.js — Inverted Index for Full-Text Search
+//
+// Maps terms → list of document IDs containing that term.
+// Supports boolean queries (AND, OR, NOT) and TF-IDF ranking.
+//
+// Used in: Elasticsearch, Lucene, PostgreSQL full-text search, SQLite FTS5.
 
+/**
+ * Simple tokenizer: lowercase, split on non-alphanumeric, filter stopwords.
+ */
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+  'should', 'may', 'might', 'shall', 'can', 'need', 'dare', 'ought',
+  'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as',
+  'into', 'through', 'during', 'before', 'after', 'above', 'below',
+  'and', 'but', 'or', 'nor', 'not', 'so', 'yet', 'both', 'either',
+  'it', 'its', 'this', 'that', 'these', 'those', 'i', 'me', 'my',
+  'he', 'she', 'they', 'we', 'you', 'who', 'which', 'what', 'where',
+]);
+
+export function tokenize(text) {
+  return text.toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(t => t.length > 1 && !STOP_WORDS.has(t));
+}
+
+/**
+ * InvertedIndex — full-text search index.
+ */
 export class InvertedIndex {
   constructor() {
-    this._index = new Map(); // term → Map<docId, {count, positions}>
-    this._docs = new Map(); // docId → { length, fieldLengthSum }
-    this._docCount = 0;
-    this._avgDocLength = 0;
+    this._index = new Map();       // term → Map<docId, termFreq>
+    this._docs = new Map();        // docId → {text, termCount}
+    this._totalDocs = 0;
   }
 
+  get docCount() { return this._totalDocs; }
+
   /**
-   * Index a document.
+   * Add a document to the index.
    */
   addDocument(docId, text) {
-    const tokens = this._tokenize(text);
-    this._docs.set(docId, { length: tokens.length });
-    this._docCount++;
-
-    for (let pos = 0; pos < tokens.length; pos++) {
-      const term = tokens[pos];
+    const tokens = tokenize(text);
+    this._docs.set(docId, { text, termCount: tokens.length });
+    this._totalDocs++;
+    
+    // Count term frequencies
+    const tf = new Map();
+    for (const token of tokens) {
+      tf.set(token, (tf.get(token) || 0) + 1);
+    }
+    
+    // Update inverted index
+    for (const [term, freq] of tf) {
       if (!this._index.has(term)) this._index.set(term, new Map());
-      const postings = this._index.get(term);
-      if (!postings.has(docId)) postings.set(docId, { count: 0, positions: [] });
-      const entry = postings.get(docId);
-      entry.count++;
-      entry.positions.push(pos);
+      this._index.get(term).set(docId, freq);
     }
-
-    // Update avg doc length
-    let totalLength = 0;
-    for (const doc of this._docs.values()) totalLength += doc.length;
-    this._avgDocLength = totalLength / this._docCount;
   }
 
   /**
-   * Search for documents matching a query.
-   * Returns results sorted by TF-IDF score.
+   * Remove a document from the index.
    */
-  search(query, limit = 10) {
-    const queryTerms = this._tokenize(query);
-    const scores = new Map(); // docId → score
-
-    for (const term of queryTerms) {
-      const postings = this._index.get(term);
-      if (!postings) continue;
-
-      const df = postings.size; // Document frequency
-      const idf = Math.log((this._docCount - df + 0.5) / (df + 0.5) + 1); // BM25 IDF
-
-      for (const [docId, entry] of postings) {
-        const tf = entry.count;
-        const docLength = this._docs.get(docId).length;
-        
-        // BM25 scoring
-        const k1 = 1.2, b = 0.75;
-        const tfNorm = (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * docLength / this._avgDocLength));
-        const score = idf * tfNorm;
-
-        scores.set(docId, (scores.get(docId) || 0) + score);
+  removeDocument(docId) {
+    const doc = this._docs.get(docId);
+    if (!doc) return;
+    
+    const tokens = tokenize(doc.text);
+    for (const token of new Set(tokens)) {
+      const postings = this._index.get(token);
+      if (postings) {
+        postings.delete(docId);
+        if (postings.size === 0) this._index.delete(token);
       }
     }
-
-    return [...scores.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, limit)
-      .map(([docId, score]) => ({ docId, score: Math.round(score * 1000) / 1000 }));
+    this._docs.delete(docId);
+    this._totalDocs--;
   }
 
   /**
-   * Boolean AND search: documents containing ALL terms.
+   * Search for a single term. Returns array of {docId, score}.
    */
-  searchAnd(query) {
-    const terms = this._tokenize(query);
-    if (terms.length === 0) return [];
-
-    let result = null;
-    for (const term of terms) {
-      const postings = this._index.get(term);
-      if (!postings) return [];
-      const docIds = new Set(postings.keys());
-      result = result ? new Set([...result].filter(id => docIds.has(id))) : docIds;
-    }
-
-    return [...(result || [])];
-  }
-
-  /**
-   * Phrase search: documents containing exact phrase.
-   */
-  searchPhrase(phrase) {
-    const terms = this._tokenize(phrase);
-    if (terms.length === 0) return [];
-
-    // Get posting lists for all terms
-    const postingLists = terms.map(t => this._index.get(t));
-    if (postingLists.some(p => !p)) return [];
-
-    // Find docs that have all terms
-    const candidates = this.searchAnd(phrase);
+  searchTerm(term) {
+    const t = term.toLowerCase();
+    const postings = this._index.get(t);
+    if (!postings) return [];
+    
     const results = [];
+    for (const [docId, tf] of postings) {
+      const idf = Math.log(this._totalDocs / postings.size);
+      const doc = this._docs.get(docId);
+      const normalizedTf = tf / (doc?.termCount || 1);
+      results.push({ docId, score: normalizedTf * idf });
+    }
+    
+    return results.sort((a, b) => b.score - a.score);
+  }
 
-    for (const docId of candidates) {
-      const positions = postingLists.map(p => p.get(docId)?.positions || []);
-      // Check if terms appear consecutively
-      for (const startPos of positions[0]) {
-        let match = true;
-        for (let i = 1; i < positions.length; i++) {
-          if (!positions[i].includes(startPos + i)) { match = false; break; }
-        }
-        if (match) { results.push(docId); break; }
+  /**
+   * Boolean query: supports AND, OR, NOT operators.
+   * Input: string like "database AND indexing" or "search OR query"
+   */
+  search(query) {
+    const tokens = query.toLowerCase().split(/\s+/);
+    
+    // Parse simple boolean expressions
+    if (tokens.includes('and')) {
+      const terms = tokens.filter(t => t !== 'and');
+      return this._intersect(terms);
+    }
+    
+    if (tokens.includes('or')) {
+      const terms = tokens.filter(t => t !== 'or');
+      return this._union(terms);
+    }
+    
+    if (tokens[0] === 'not' && tokens.length === 2) {
+      return this._not(tokens[1]);
+    }
+    
+    // Single term or phrase
+    const terms = tokens.filter(t => !STOP_WORDS.has(t) && t.length > 1);
+    if (terms.length === 1) return this.searchTerm(terms[0]);
+    return this._intersect(terms); // Default: AND for multi-word
+  }
+
+  _intersect(terms) {
+    if (terms.length === 0) return [];
+    
+    let result = new Set(this._getDocIds(terms[0]));
+    for (let i = 1; i < terms.length; i++) {
+      const other = new Set(this._getDocIds(terms[i]));
+      result = new Set([...result].filter(id => other.has(id)));
+    }
+    
+    return this._scoreResults([...result], terms);
+  }
+
+  _union(terms) {
+    const allDocs = new Set();
+    for (const term of terms) {
+      for (const id of this._getDocIds(term)) allDocs.add(id);
+    }
+    return this._scoreResults([...allDocs], terms);
+  }
+
+  _not(term) {
+    const matching = new Set(this._getDocIds(term));
+    const results = [];
+    for (const docId of this._docs.keys()) {
+      if (!matching.has(docId)) {
+        results.push({ docId, score: 1 });
       }
     }
-
     return results;
   }
 
-  /**
-   * Get term frequency across all documents.
-   */
-  getTermInfo(term) {
-    const t = term.toLowerCase();
-    const postings = this._index.get(t);
-    if (!postings) return null;
-    return {
-      term: t,
-      documentFrequency: postings.size,
-      totalOccurrences: [...postings.values()].reduce((s, e) => s + e.count, 0),
-    };
+  _getDocIds(term) {
+    const postings = this._index.get(term);
+    return postings ? [...postings.keys()] : [];
   }
 
-  _tokenize(text) {
-    return text.toLowerCase().split(/\W+/).filter(t => t.length > 0);
+  _scoreResults(docIds, terms) {
+    return docIds.map(docId => {
+      let score = 0;
+      for (const term of terms) {
+        const postings = this._index.get(term);
+        if (postings?.has(docId)) {
+          const tf = postings.get(docId);
+          const idf = Math.log(this._totalDocs / postings.size);
+          const doc = this._docs.get(docId);
+          score += (tf / (doc?.termCount || 1)) * idf;
+        }
+      }
+      return { docId, score };
+    }).sort((a, b) => b.score - a.score);
   }
 
-  get termCount() { return this._index.size; }
-  get documentCount() { return this._docCount; }
-
+  /** Get index statistics. */
   getStats() {
     return {
+      documents: this._totalDocs,
       terms: this._index.size,
-      documents: this._docCount,
-      avgDocLength: this._avgDocLength.toFixed(1),
+      avgDocLength: this._totalDocs > 0
+        ? [...this._docs.values()].reduce((s, d) => s + d.termCount, 0) / this._totalDocs
+        : 0,
     };
   }
 }
