@@ -68,17 +68,25 @@
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix blog broken links (Daniel reported Apr 8) and GitHub Pages deployment failures",
-      "task": null
+      "task": null,
+      "started": "2026-04-10T14:30:04.523Z",
+      "completed": "2026-04-10T14:31:31.599Z",
+      "duration_ms": 120000,
+      "summary": "Blog already fixed - all project links return 200, Pages builds passing since Apr 8. Redirected BUILD to new blog post: HenryDB architecture deep dive."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Blog is fixed - links all returning 200, Pages builds passing. Write new blog post: HenryDB architecture deep dive with benchmark data and honest assessment",
       "plan_ref": "T6",
-      "project": "blog"
+      "project": "blog",
+      "started": "2026-04-10T14:31:50.059Z",
+      "completed": "2026-04-10T14:32:50.187Z",
+      "duration_ms": 600000,
+      "summary": "Wrote and published blog post: What 5500 Tests Dont Tell You. Honest analysis of 58 failures across 5 categories (SSI integration, wire protocol, persistence, Raft, misc). Pushed to henry-the-frog.github.io."
     },
     {
       "id": "T8",
@@ -207,6 +215,10 @@
     {
       "time": "2026-04-10T14:23:32.759Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T14:31:25.137Z",
+      "msg": "PLAN T6 filled 1 BUILD tasks"
     }
   ]
 }

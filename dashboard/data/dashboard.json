@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T14:29:41.817Z",
+  "generated": "2026-04-10T14:32:50.223Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Assess HenryDB quality: run full test suite, identify remaining failures, decide whether to fix vs move on",
-    "completedAt": "2026-04-10T14:29:41.817Z",
-    "taskId": "T5",
-    "summary": "Decision: fix SSI SQL integration (4 tests) and server wire protocol issues (8 tests) — user-facing and high-value. Skip Raft edge cases and file-backed persistence (deeper architectural work). Blog fix still owed to Daniel.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "Blog is fixed - links all returning 200, Pages builds passing. Write new blog post: HenryDB architecture deep dive with benchmark data and honest assessment",
+    "completedAt": "2026-04-10T14:32:50.223Z",
+    "taskId": "T7",
+    "summary": "Wrote and published blog post: What 5500 Tests Dont Tell You. Honest analysis of 58 failures across 5 categories (SSI integration, wire protocol, persistence, Raft, misc). Pushed to henry-the-frog.github.io.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -27,50 +27,70 @@
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB ACID compliance: fix transactional-db/MVCC interface mismatch, make acid-compliance and bank-transfer tests pass",
         "task": null,
-        "started": "2026-04-10T14:22:50.405Z"
+        "started": "2026-04-10T14:22:50.405Z",
+        "completed": "2026-04-10T14:23:38.279Z",
+        "duration_ms": 120000,
+        "summary": "ACID tests already pass. Redirected PLAN to real gaps: HLL estimate/merge API mismatch in integration test, broader test sweep."
       },
       {
         "id": "T3",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix HLL: add estimate() alias for count(), make merge() return new HLL (or this). Fix integration test to pass.",
         "plan_ref": "T2",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T14:23:58.123Z",
+        "completed": "2026-04-10T14:25:07.665Z",
+        "duration_ms": 180000,
+        "summary": "Fixed HLL: added estimate() alias for count(), merge() now returns this for chainability + added mergeNew() for non-mutating merge. Integration test 13/13, HLL test 8/8."
       },
       {
         "id": "T16",
         "mode": "BUILD",
         "task": "Run broader test sweep: 50+ test files across HenryDB to find any other failures",
-        "status": "upcoming",
-        "plan_ref": "T2"
+        "status": "done",
+        "plan_ref": "T2",
+        "started": "2026-04-10T14:25:22.984Z",
+        "completed": "2026-04-10T14:28:24.638Z",
+        "duration_ms": 360000,
+        "summary": "Full test sweep: 5550 tests, 5492 pass, 58 fail (99.0%). Main failure areas: SSI SQL integration (4), server/wire protocol (8), file-backed persistence (WAL/ARIES/BufferPool), Raft edge cases. Core ACID/MVCC solid."
       },
       {
         "id": "T4",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard health, check PRs"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard health, check PRs",
+        "started": "2026-04-10T14:28:39.048Z",
+        "completed": "2026-04-10T14:29:11.466Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed. Dashboard healthy (live API + regenerated). No open PRs found."
       },
       {
         "id": "T5",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Assess HenryDB quality: run full test suite, identify remaining failures, decide whether to fix vs move on"
+        "status": "done",
+        "task": "Assess HenryDB quality: run full test suite, identify remaining failures, decide whether to fix vs move on",
+        "started": "2026-04-10T14:29:27.114Z",
+        "completed": "2026-04-10T14:29:41.778Z",
+        "duration_ms": 120000,
+        "summary": "Decision: fix SSI SQL integration (4 tests) and server wire protocol issues (8 tests) — user-facing and high-value. Skip Raft edge cases and file-backed persistence (deeper architectural work). Blog fix still owed to Daniel."
       },
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Fix blog broken links (Daniel reported Apr 8) and GitHub Pages deployment failures",
-        "task": null
+        "task": null,
+        "started": "2026-04-10T14:30:04.523Z"
       },
       {
         "id": "T7",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Blog is fixed - links all returning 200, Pages builds passing. Write new blog post: HenryDB architecture deep dive with benchmark data and honest assessment",
         "plan_ref": "T6",
         "project": "blog"
       },
@@ -130,12 +150,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 6,
+    "blocksCompleted": 8,
     "blocksTotal": 16,
     "modeDistribution": {
       "THINK": 2,
-      "PLAN": 1,
-      "BUILD": 2,
+      "PLAN": 2,
+      "BUILD": 3,
       "MAINTAIN": 1
     }
   }
