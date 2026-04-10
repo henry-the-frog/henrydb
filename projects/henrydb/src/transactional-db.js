@@ -8,6 +8,7 @@
 import { Database } from './db.js';
 import { DiskManager } from './disk-manager.js';
 import { BufferPool } from './buffer-pool.js';
+import { TableVisibilityMap } from './visibility-map.js';
 import { FileWAL, recoverFromFileWAL } from './file-wal.js';
 import { FileBackedHeap } from './file-backed-heap.js';
 import { MVCCManager, MVCCHeap, MVCCTransaction } from './mvcc.js';
@@ -113,6 +114,7 @@ export class TransactionalDatabase {
     this._dirPath = dirPath;
     this._wal = wal;
     this._mvcc = mvcc;
+    this._visibilityMap = new TableVisibilityMap();
     this._diskManagers = diskManagers;
     this._heaps = heaps;
     this._versionMaps = versionMaps;
@@ -308,6 +310,27 @@ export class TransactionalDatabase {
         removed++;
       }
       results[name] = { deadTuplesRemoved: removed, xminHorizon: horizon };
+
+      // Update visibility map: mark pages as all-visible if no remaining dead tuples
+      const dirtyPages = new Set();
+      for (const [key, ver] of vm) {
+        if (ver.xmax !== 0) {
+          const [pid] = key.split(':').map(Number);
+          dirtyPages.add(pid);
+        }
+      }
+      // All pages NOT in dirtyPages are all-visible
+      const tableObj2 = this._db.tables.get(name);
+      if (tableObj2?.heap?._origScan || tableObj2?.heap?.scan) {
+        const scan = tableObj2.heap._origScan || tableObj2.heap.scan.bind(tableObj2.heap);
+        const allPages = new Set();
+        for (const { pageId } of scan()) allPages.add(pageId);
+        for (const pid of allPages) {
+          if (!dirtyPages.has(pid)) {
+            this._visibilityMap.setAllVisible(name, pid);
+          }
+        }
+      }
     }
     return results;
   }
@@ -345,8 +368,21 @@ export class TransactionalDatabase {
         }
         
         const vm = tdb._versionMaps.get(name);
+        const visMap = tdb._visibilityMap;
         for (const row of origScan()) {
           if (!vm) { yield row; continue; }
+          
+          // Visibility map optimization: if page is all-visible, skip MVCC check
+          if (visMap.isAllVisible(name, row.pageId)) {
+            // Page is known to be all-visible — yield directly
+            // Still record read for SSI tracking
+            if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
+              const key = `${row.pageId}:${row.slotIdx}`;
+              tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, 0);
+            }
+            yield row;
+            continue;
+          }
           
           const key = `${row.pageId}:${row.slotIdx}`;
           const ver = vm.get(key);
@@ -399,6 +435,8 @@ export class TransactionalDatabase {
             const oldXmax = ver.xmax;
             ver.xmax = tx.txId;
             tx.writeSet.add(`${name}:${key}:del`);
+            // Invalidate visibility map for this page
+            tdb._visibilityMap.onPageModified(name, pageId);
             // SSI tracking: record the write for serializable isolation
             if (tdb._mvcc.recordWrite) {
               tdb._mvcc.recordWrite(tx.txId, `${name}:${key}`);
@@ -431,6 +469,8 @@ export class TransactionalDatabase {
           // New row — created by this transaction
           vm.set(key, { xmin: tx.txId, xmax: 0 });
           tx.writeSet.add(`${tableName}:${key}`);
+          // Invalidate visibility map for this page
+          this._visibilityMap.onPageModified(tableName, pageId);
           // SSI tracking
           if (this._mvcc.recordWrite) {
             this._mvcc.recordWrite(tx.txId, `${tableName}:${key}`);
