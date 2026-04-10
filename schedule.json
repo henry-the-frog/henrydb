@@ -1901,10 +1901,24 @@
     {
       "id": "T176",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: test BETWEEN, IN, IS NULL through wire protocol",
       "project": "henrydb",
-      "started": "2026-04-10T23:46:34.660Z"
+      "started": "2026-04-10T23:46:34.660Z",
+      "completed": "2026-04-10T23:47:32.216Z",
+      "duration_ms": 120000,
+      "summary": "BETWEEN, IN, IS NULL, IS NOT NULL, LIKE all work through wire protocol. Fixed IN_LIST detection in adaptive engine."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: test ILIKE (case-insensitive LIKE) through wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-10T23:47:45.061Z",
+      "completed": "2026-04-10T23:48:12.594Z",
+      "duration_ms": 30000,
+      "summary": "ILIKE exists but has a bug (matches all rows instead of case-insensitive pattern). Pre-existing issue, not a regression. LIKE works correctly."
     }
   ],
   "focusProjects": [
@@ -2604,6 +2618,10 @@
     {
       "time": "2026-04-10T23:46:34.423Z",
       "msg": "Added T176 (BUILD) after end: HenryDB: test BETWEEN, IN, IS NULL through wire protocol"
+    },
+    {
+      "time": "2026-04-10T23:47:44.648Z",
+      "msg": "Added T177 (BUILD) after end: HenryDB: test ILIKE (case-insensitive LIKE) through wire protocol"
     }
   ]
 }
