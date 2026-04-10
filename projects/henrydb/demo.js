@@ -123,6 +123,38 @@ run("CREATE VIEW engineering_team AS SELECT name, salary, hire_year FROM employe
 console.log('\n  Engineering team (via view):');
 run('SELECT * FROM engineering_team ORDER BY salary DESC');
 
+// ===== 12. String Concatenation =====
+console.log('\n▸ 12. String Concatenation (||)');
+console.log('─────────────────────────────────────');
+run("SELECT name || ' earns $' || CAST(salary AS TEXT) || '/yr' as info FROM employees ORDER BY salary DESC LIMIT 3");
+
+// ===== 13. UPSERT =====
+console.log('\n▸ 13. UPSERT (INSERT ON CONFLICT)');
+console.log('─────────────────────────────────────');
+run('CREATE TABLE config (key TEXT PRIMARY KEY, value TEXT)');
+run("INSERT INTO config VALUES ('theme', 'dark')");
+run("INSERT INTO config VALUES ('theme', 'light') ON CONFLICT (key) DO UPDATE SET value = 'light'");
+console.log('\n  Config after upsert:');
+run('SELECT * FROM config');
+
+// ===== 14. RETURNING =====
+console.log('\n▸ 14. INSERT/UPDATE RETURNING');
+console.log('─────────────────────────────────────');
+run('CREATE TABLE log (id SERIAL PRIMARY KEY, action TEXT, ts TEXT)');
+console.log('\n  Insert with RETURNING:');
+run("INSERT INTO log (action, ts) VALUES ('login', '2024-01-01') RETURNING *");
+run("INSERT INTO log (action, ts) VALUES ('logout', '2024-01-02') RETURNING id");
+
+// ===== 15. Recursive CTE =====
+console.log('\n▸ 15. Recursive CTE (counting 1-10)');
+console.log('─────────────────────────────────────');
+run('WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt WHERE x < 10) SELECT * FROM cnt');
+
+// ===== 16. GENERATE_SERIES =====
+console.log('\n▸ 16. GENERATE_SERIES');
+console.log('─────────────────────────────────────');
+run('SELECT * FROM GENERATE_SERIES(0, 50, 10)');
+
 // ===== Summary =====
 console.log('\n═══════════════════════════════════════════════════════');
 console.log('  Features demonstrated:');
@@ -134,7 +166,11 @@ console.log('  ✓ GROUP BY / HAVING');
 console.log('  ✓ JOINs: INNER, LEFT');
 console.log('  ✓ Subqueries');
 console.log('  ✓ Window Functions: ROW_NUMBER, PARTITION BY');
-console.log('  ✓ CTEs: WITH clause');
-console.log('  ✓ Expressions: CASE WHEN, arithmetic');
+console.log('  ✓ CTEs: WITH clause, recursive');
+console.log('  ✓ Expressions: CASE WHEN, arithmetic, || concat');
 console.log('  ✓ Views');
+console.log('  ✓ UPSERT: INSERT ON CONFLICT');
+console.log('  ✓ RETURNING: INSERT/UPDATE RETURNING');
+console.log('  ✓ SERIAL: Auto-incrementing IDs');
+console.log('  ✓ GENERATE_SERIES: Table functions');
 console.log('═══════════════════════════════════════════════════════');
