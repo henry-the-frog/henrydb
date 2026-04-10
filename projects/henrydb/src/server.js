@@ -1989,7 +1989,8 @@ export class HenryDBServer {
   _hasComplexPredicate(node) {
     if (!node) return false;
     if (node.type === 'LIKE' || node.type === 'NOT_LIKE' || node.type === 'IN' || 
-        node.type === 'NOT_IN' || node.type === 'EXISTS' || node.type === 'BETWEEN' ||
+        node.type === 'NOT_IN' || node.type === 'IN_LIST' || node.type === 'NOT_IN_LIST' ||
+        node.type === 'EXISTS' || node.type === 'BETWEEN' ||
         node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' || node.type === 'SUBQUERY') return true;
     if (node.left && this._hasComplexPredicate(node.left)) return true;
     if (node.right && this._hasComplexPredicate(node.right)) return true;

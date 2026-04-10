@@ -1890,10 +1890,21 @@
     {
       "id": "T175",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add LIKE pattern matching through wire protocol",
       "project": "henrydb",
-      "started": "2026-04-10T23:44:25.707Z"
+      "started": "2026-04-10T23:44:25.707Z",
+      "completed": "2026-04-10T23:46:17.404Z",
+      "duration_ms": 120000,
+      "summary": "LIKE pattern matching works through wire protocol. Fixed adaptive engine to detect complex predicates (LIKE, IN, EXISTS, BETWEEN, IS NULL). Also fixed NOT LIKE partially."
+    },
+    {
+      "id": "T176",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: test BETWEEN, IN, IS NULL through wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-10T23:46:34.660Z"
     }
   ],
   "focusProjects": [
@@ -2589,6 +2600,10 @@
     {
       "time": "2026-04-10T23:44:25.294Z",
       "msg": "Added T175 (BUILD) after end: HenryDB: add LIKE pattern matching through wire protocol"
+    },
+    {
+      "time": "2026-04-10T23:46:34.423Z",
+      "msg": "Added T176 (BUILD) after end: HenryDB: test BETWEEN, IN, IS NULL through wire protocol"
     }
   ]
 }
