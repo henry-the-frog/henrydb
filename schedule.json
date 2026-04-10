@@ -1263,10 +1263,21 @@
     {
       "id": "T118",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write a comprehensive demo script that showcases all features — SQL, persistence, transactions, indexes, window functions, CTEs, full-text search",
       "project": "henrydb",
-      "started": "2026-04-10T21:36:11.321Z"
+      "started": "2026-04-10T21:36:11.321Z",
+      "completed": "2026-04-10T21:37:14.145Z",
+      "duration_ms": 120000,
+      "summary": "Demo script: showcases DDL, DML, aggregations (COUNT/SUM/AVG/MIN/MAX), GROUP BY/HAVING, JOINs (INNER/LEFT), subqueries, window functions (ROW_NUMBER), CTEs, expressions (CASE WHEN), DISTINCT, ALTER TABLE, views. Beautiful formatted output."
+    },
+    {
+      "id": "T119",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "HenryDB: whats the single hardest bug or correctness issue remaining? Go look for something thats actually broken, not just unimplemented. Try unusual SQL patterns, edge cases, concurrent access patterns.",
+      "project": "henrydb",
+      "started": "2026-04-10T21:37:54.814Z"
     }
   ],
   "focusProjects": [
@@ -1734,6 +1745,10 @@
     {
       "time": "2026-04-10T21:36:01.557Z",
       "msg": "Added T118 (BUILD) after end: HenryDB: write a comprehensive demo script that showcases all features — SQL, persistence, transactions, indexes, window functions, CTEs, full-text search"
+    },
+    {
+      "time": "2026-04-10T21:37:46.270Z",
+      "msg": "Added T119 (THINK) after end: HenryDB: whats the single hardest bug or correctness issue remaining? Go look for something thats actually broken, not just unimplemented. Try unusual SQL patterns, edge cases, concurrent access patterns."
     }
   ]
 }

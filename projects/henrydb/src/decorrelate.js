@@ -85,8 +85,26 @@ export function decorrelateExpr(expr, outerTables, db) {
       const result = db._select(expr.subquery);
       const values = new Set();
       for (const row of result.rows) {
-        const vals = Object.values(row);
-        if (vals.length > 0) values.add(vals[0]);
+        const keys = Object.keys(row);
+        // Use the first column from the SELECT list (the projected column)
+        // For "SELECT MAX(val) FROM g GROUP BY cat", this should be MAX(val),
+        // but Object.keys may put GROUP BY column first.
+        // Find the first column that matches the subquery's SELECT columns.
+        const selectCols = expr.subquery.columns;
+        let targetCol = keys[0]; // default: first column
+        if (selectCols && selectCols.length > 0) {
+          const firstSelect = selectCols[0];
+          const selectName = firstSelect.alias || 
+            (firstSelect.type === 'aggregate' ? `${firstSelect.func}(${firstSelect.arg})` : firstSelect.name);
+          // Look for a matching key
+          for (const k of keys) {
+            if (k === selectName || k.toUpperCase() === selectName.toUpperCase()) {
+              targetCol = k;
+              break;
+            }
+          }
+        }
+        values.add(row[targetCol]);
       }
       return {
         type: 'IN_HASHSET',
