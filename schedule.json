@@ -1211,10 +1211,29 @@
     {
       "id": "T113",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add query batching test — send multiple queries in a single TCP packet to measure pipelining throughput",
       "project": "henrydb",
-      "started": "2026-04-10T21:29:36.382Z"
+      "started": "2026-04-10T21:29:36.382Z",
+      "completed": "2026-04-10T21:30:41.887Z",
+      "duration_ms": 120000,
+      "summary": "Query pipelining test: batched (10/call) gives 2.4x speedup over individual queries. TCP round-trip ~3-4ms dominates. Multi-statement via semicolons works correctly. 2/2 tests pass."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "HenryDB: create a test-runner script that counts total tests across all files efficiently",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: wire VACUUM command through the server — allow psql users to run VACUUM to compact heap files and reclaim space",
+      "project": "henrydb",
+      "started": "2026-04-10T21:31:07.837Z"
     }
   ],
   "focusProjects": [
@@ -1658,6 +1677,18 @@
     {
       "time": "2026-04-10T21:29:30.467Z",
       "msg": "Added T113 (BUILD) after end: HenryDB: add query batching test — send multiple queries in a single TCP packet to measure pipelining throughput"
+    },
+    {
+      "time": "2026-04-10T21:30:54.624Z",
+      "msg": "Added T114 (BUILD) after end: HenryDB: create a test-runner script that counts total tests across all files efficiently"
+    },
+    {
+      "time": "2026-04-10T21:31:02.055Z",
+      "msg": "Removed T114: "
+    },
+    {
+      "time": "2026-04-10T21:31:02.303Z",
+      "msg": "Added T115 (BUILD) after end: HenryDB: wire VACUUM command through the server — allow psql users to run VACUUM to compact heap files and reclaim space"
     }
   ]
 }

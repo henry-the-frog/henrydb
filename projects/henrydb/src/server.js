@@ -1421,22 +1421,24 @@ export class HenryDBServer {
 
     // VACUUM [ANALYZE] [table_name]
     if (upper.startsWith('VACUUM')) {
-      const analyzeFlag = upper.includes('ANALYZE');
-      const tableMatch = sql.match(/VACUUM\s+(?:FULL\s+)?(?:ANALYZE\s+)?(\w+)/i);
-      const tableName = tableMatch?.[1]?.toUpperCase() !== 'ANALYZE' ? tableMatch?.[1] : null;
-      
-      const tables = tableName ? [tableName] : [...this.db.tables.keys()];
-      let totalReclaimed = 0;
-      
-      for (const t of tables) {
-        const table = this.db.tables.get(t);
-        if (!table) continue;
-        // Simulate vacuum: count and "reclaim" dead rows
-        // In our in-memory engine, there aren't really dead rows, but we can still report
-        totalReclaimed += 0; // placeholder
+      try {
+        const result = this.db.execute(sql);
+        if (result && result.type === 'ROWS' && result.rows) {
+          this._sendResult(conn, sql, result);
+        } else {
+          conn.socket.write(writeCommandComplete('VACUUM'));
+        }
+      } catch (e) {
+        // Fallback: manual vacuum
+        const tables = [...this.db.tables.keys()];
+        for (const t of tables) {
+          const table = this.db.tables.get(t);
+          if (table && table.heap && typeof table.heap.compact === 'function') {
+            try { table.heap.compact(); } catch (_) {}
+          }
+        }
+        conn.socket.write(writeCommandComplete('VACUUM'));
       }
-      
-      conn.socket.write(writeCommandComplete('VACUUM'));
       return true;
     }
 
