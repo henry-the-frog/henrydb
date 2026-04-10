@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T16:28:58.549Z",
+  "generated": "2026-04-10T16:30:47.127Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add VACUUM to SQL interface: parse VACUUM command, wire to MVCC gc/vacuum, add stats reporting via VACUUM VERBOSE.",
-    "completedAt": "2026-04-10T16:28:58.549Z",
-    "taskId": "T43",
-    "summary": "Wired VACUUM to SQL interface: SQL VACUUM now calls MVCC gc() for version chain cleanup + existing heap-level dead tuple removal. TransactionalDatabase.vacuum() also calls gc(). 39/39 tests pass.",
-    "durationMs": 180000
+    "task": "Implement visibility map for HenryDB: bitmap per table tracking pages where all tuples are all-visible. Updated by VACUUM. Enables skipping MVCC checks for known-clean pages.",
+    "completedAt": "2026-04-10T16:30:47.127Z",
+    "taskId": "T44",
+    "summary": "Visibility map: bitmap per table tracking all-visible pages. Checked by scan interceptor to skip MVCC checks. Invalidated on modification, set by VACUUM. Per-table management, hit/miss stats. 11/11 tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -353,12 +353,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 42,
+    "blocksCompleted": 43,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 25,
+      "BUILD": 26,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

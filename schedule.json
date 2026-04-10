@@ -467,6 +467,17 @@
       "completed": "2026-04-10T16:28:58.486Z",
       "duration_ms": 180000,
       "summary": "Wired VACUUM to SQL interface: SQL VACUUM now calls MVCC gc() for version chain cleanup + existing heap-level dead tuple removal. TransactionalDatabase.vacuum() also calls gc(). 39/39 tests pass."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement visibility map for HenryDB: bitmap per table tracking pages where all tuples are all-visible. Updated by VACUUM. Enables skipping MVCC checks for known-clean pages.",
+      "project": "henrydb",
+      "started": "2026-04-10T16:29:38.991Z",
+      "completed": "2026-04-10T16:30:47.065Z",
+      "duration_ms": 300000,
+      "summary": "Visibility map: bitmap per table tracking all-visible pages. Checked by scan interceptor to skip MVCC checks. Invalidated on modification, set by VACUUM. Per-table management, hit/miss stats. 11/11 tests."
     }
   ],
   "focusProjects": [
@@ -634,6 +645,10 @@
     {
       "time": "2026-04-10T16:27:04.796Z",
       "msg": "Added T43 (BUILD) after end: Add VACUUM to SQL interface: parse VACUUM command, wire to MVCC gc/vacuum, add stats reporting via VACUUM VERBOSE."
+    },
+    {
+      "time": "2026-04-10T16:29:30.283Z",
+      "msg": "Added T44 (BUILD) after end: Implement visibility map for HenryDB: bitmap per table tracking pages where all tuples are all-visible. Updated by VACUUM. Enables skipping MVCC checks for known-clean pages."
     }
   ]
 }
