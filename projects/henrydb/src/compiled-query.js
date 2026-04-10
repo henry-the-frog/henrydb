@@ -21,8 +21,17 @@ export class CompiledQueryEngine {
    * Execute a SELECT using planned + compiled execution.
    * Falls back to standard execution if compilation isn't beneficial.
    */
-  executeSelect(ast) {
+  executeSelect(ast, _skipAggCheck = false) {
     const startTime = Date.now();
+    
+    // Check for aggregates/GROUP BY — use specialized path
+    if (!_skipAggCheck) {
+      const hasAggregates = ast.columns?.some(c => c.type === 'aggregate' || c.func);
+      const hasGroupBy = ast.groupBy && ast.groupBy.length > 0;
+      if (hasAggregates || hasGroupBy) {
+        return this.executeSelectWithAggregation(ast);
+      }
+    }
     
     // 1. Plan the query
     const plan = this.planner.plan(ast);
@@ -575,7 +584,7 @@ export class CompiledQueryEngine {
     const aggInfo = this._extractAggregation(ast);
     if (!aggInfo) {
       // No aggregation — use standard compiled path
-      return this.executeSelect(ast);
+      return this.executeSelect(ast, true);
     }
 
     // Run the scan/join phase (get raw rows before aggregation)
@@ -608,7 +617,7 @@ export class CompiledQueryEngine {
         const filtered = aggregated.filter(havingFn);
         this.stats.queriesCompiled++;
         this.stats.totalCompileTimeMs += Date.now() - startTime;
-        return { rows: ast.limit?.value ? filtered.slice(0, ast.limit.value) : filtered };
+        return { rows: ast.limit ? filtered.slice(0, typeof ast.limit === "number" ? ast.limit : ast.limit.value) : filtered };
       }
     }
 
@@ -628,7 +637,7 @@ export class CompiledQueryEngine {
 
     this.stats.queriesCompiled++;
     this.stats.totalCompileTimeMs += Date.now() - startTime;
-    return { rows: ast.limit?.value ? aggregated.slice(0, ast.limit.value) : aggregated };
+    return { rows: ast.limit ? aggregated.slice(0, typeof ast.limit === "number" ? ast.limit : ast.limit.value) : aggregated };
   }
 
   /**
@@ -642,9 +651,9 @@ export class CompiledQueryEngine {
     const groupBy = ast.groupBy || [];
 
     for (const col of ast.columns) {
-      if (col.aggregate || col.fn) {
-        const fn = (col.aggregate || col.fn).toUpperCase();
-        const column = col.args?.[0]?.name || col.column || col.args?.[0] || '*';
+      if (col.type === 'aggregate' || col.aggregate || col.fn || col.func) {
+        const fn = (col.func || col.aggregate || col.fn || '').toUpperCase();
+        const column = col.arg || col.args?.[0]?.name || col.column || col.args?.[0] || '*';
         const alias = col.alias || `${fn.toLowerCase()}_${column}`;
         aggregates.push({ fn, column, alias });
       }
@@ -653,7 +662,7 @@ export class CompiledQueryEngine {
     if (aggregates.length === 0) return null;
 
     return {
-      groupBy: groupBy.map(g => typeof g === 'string' ? g : g.name),
+      groupBy: groupBy.map(g => typeof g === 'string' ? g : (g.column || g.name || g)),
       aggregates,
       having: ast.having || null,
     };

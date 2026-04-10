@@ -799,6 +799,17 @@
       "completed": "2026-04-10T19:47:37.978Z",
       "duration_ms": 60000,
       "summary": "Tested compiled engine: handles basic SELECT with WHERE/ORDER BY correctly, but fails on aggregates (COUNT/SUM/GROUP BY/DISTINCT). The adaptive engine validation correctly catches these and falls back to Volcano. No fixes needed — the system works as designed."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add COUNT(*) support to compiled query engine — the simplest aggregate to implement",
+      "project": "henrydb",
+      "started": "2026-04-10T19:48:08.002Z",
+      "completed": "2026-04-10T19:51:32.345Z",
+      "duration_ms": 180000,
+      "summary": "Fixed compiled query engine aggregate support: _extractAggregation now recognizes AST nodes (type=aggregate, func, arg). Fixed LIMIT handling (ast.limit is number, not object). Compiled engine now handles COUNT, SUM, MIN, MAX, GROUP BY with ORDER BY and LIMIT correctly."
     }
   ],
   "focusProjects": [
@@ -1098,6 +1109,10 @@
     {
       "time": "2026-04-10T19:47:06.140Z",
       "msg": "Added T74 (BUILD) after end: Stress-test the compiled query engine: run fuzzer queries through compiled path and compare with Volcano results"
+    },
+    {
+      "time": "2026-04-10T19:48:02.298Z",
+      "msg": "Added T75 (BUILD) after end: Add COUNT(*) support to compiled query engine — the simplest aggregate to implement"
     }
   ]
 }
