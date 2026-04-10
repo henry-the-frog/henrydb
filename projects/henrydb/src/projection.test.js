@@ -64,7 +64,7 @@ describe('Query with empty results', () => {
     const db = new Database();
     db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
     const r = db.execute('SELECT SUM(val) AS total FROM t');
-    assert.equal(r.rows[0].total, 0);
+    assert.equal(r.rows[0].total, null); // SQL standard: SUM of empty set is NULL
   });
 
   it('ORDER BY on empty result', () => {

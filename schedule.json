@@ -690,6 +690,17 @@
       "completed": "2026-04-10T19:22:02.452Z",
       "duration_ms": 300000,
       "summary": "Expanded fuzzer: DISTINCT, expressions, NULL handling (5% NULL inserts). Fixed NULL ordering in 4 ORDER BY paths — SQLite treats NULL as smallest. Fixed one path that had inverted null comparison. Now 2800/2800 queries pass differential testing (100%)."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Full test sweep — count all passing tests after today's fixes",
+      "project": "henrydb",
+      "started": "2026-04-10T19:22:36.682Z",
+      "completed": "2026-04-10T19:31:35.804Z",
+      "duration_ms": 180000,
+      "summary": "Full test sweep: 5567 pass, 0 fail. Fixed 2 test expectations for SUM on empty set (now correctly returns NULL per SQL standard)."
     }
   ],
   "focusProjects": [
@@ -949,6 +960,10 @@
     {
       "time": "2026-04-10T19:18:12.656Z",
       "msg": "Added T64 (BUILD) after end: Expand fuzzer: add DISTINCT, expressions in SELECT (a+b), negative numbers, NULL handling, CASE WHEN. Run 2000+ queries and fix any new bugs found."
+    },
+    {
+      "time": "2026-04-10T19:22:29.693Z",
+      "msg": "Added T65 (BUILD) after end: Full test sweep — count all passing tests after today's fixes"
     }
   ]
 }

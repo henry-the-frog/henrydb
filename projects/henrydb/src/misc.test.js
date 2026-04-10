@@ -91,7 +91,7 @@ describe('Edge cases', () => {
   it('SUM on empty table', () => {
     db.execute('CREATE TABLE empty (id INT PRIMARY KEY, val INT)');
     const result = db.execute('SELECT SUM(val) AS total FROM empty');
-    assert.equal(result.rows[0].total, 0);
+    assert.equal(result.rows[0].total, null); // SQL standard: SUM of empty set is NULL
   });
 
   it('ORDER BY on single row', () => {
