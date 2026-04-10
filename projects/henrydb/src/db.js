@@ -2718,7 +2718,21 @@ export class Database {
 
     // Step 1: Execute base query
     const baseResult = this._select(baseQuery);
-    const columnNames = Object.keys(baseResult.rows[0] || {});
+    let columnNames = Object.keys(baseResult.rows[0] || {});
+    
+    // Apply CTE column aliases if provided: WITH RECURSIVE cnt(x) AS (...)
+    if (cte.columns && cte.columns.length > 0) {
+      const aliasedRows = baseResult.rows.map(row => {
+        const aliased = {};
+        const rowKeys = Object.keys(row);
+        for (let i = 0; i < cte.columns.length && i < rowKeys.length; i++) {
+          aliased[cte.columns[i]] = row[rowKeys[i]];
+        }
+        return aliased;
+      });
+      baseResult.rows = aliasedRows;
+      columnNames = cte.columns.slice(0, columnNames.length);
+    }
     let allRows = [...baseResult.rows];
     let workingSet = [...baseResult.rows];
 

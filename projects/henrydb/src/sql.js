@@ -299,19 +299,44 @@ export function parse(sql) {
     do {
       const cteTok = advance();
       const name = cteTok.originalValue || cteTok.value;
+      // Optional column aliases: cte_name(col1, col2, ...) AS (...)
+      let cteColumns = null;
+      if (peek() && peek().type === '(' && !isKeyword('AS')) {
+        // Check if this is column aliases (identifiers) or the body (SELECT)
+        // Peek ahead to see if after ( we get an identifier, not SELECT/WITH
+        const saved = pos;
+        advance(); // consume (
+        if (!isKeyword('SELECT') && !isKeyword('WITH')) {
+          // Column aliases
+          cteColumns = [];
+          do {
+            const colTok = advance();
+            cteColumns.push(colTok.originalValue || colTok.value);
+          } while (match(','));
+          expect(')');
+        } else {
+          // Not column aliases — go back
+          pos = saved;
+        }
+      }
       if (isKeyword('AS')) advance(); // optional AS
       expect('(');
-      const baseQuery = parseSelect();
-      // Check for UNION ALL (recursive CTEs)
+      let baseQuery = parseSelect();
+      // Check for UNION ALL (recursive CTEs) — parseSelect may or may not consume this
       let unionQuery = null;
-      if (isKeyword('UNION')) {
+      if (baseQuery.type === 'UNION') {
+        // parseSelect already parsed the UNION ALL
+        unionQuery = baseQuery.right;
+        unionQuery.unionAll = baseQuery.all;
+        baseQuery = baseQuery.left;
+      } else if (isKeyword('UNION')) {
         advance(); // UNION
         const all = isKeyword('ALL') ? (advance(), true) : false;
         unionQuery = parseSelect();
         unionQuery.unionAll = all;
       }
       expect(')');
-      ctes.push({ name, query: baseQuery, unionQuery, recursive });
+      ctes.push({ name, query: baseQuery, unionQuery, recursive, columns: cteColumns });
     } while (match(','));
 
     // Main query

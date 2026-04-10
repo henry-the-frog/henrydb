@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T21:37:54.880Z",
+  "generated": "2026-04-10T21:42:36.937Z",
   "current": {
     "status": "in-progress",
-    "mode": "THINK",
-    "task": "HenryDB: whats the single hardest bug or correctness issue remaining? Go look for something thats actually broken, not just unimplemented. Try unusual SQL patterns, edge cases, concurrent access patterns.",
-    "startedAt": "2026-04-10T21:37:54.880Z",
-    "taskId": "T119"
+    "mode": "BUILD",
+    "task": "HenryDB: fix recursive CTE parsing (UNION ALL inside CTE body)",
+    "startedAt": "2026-04-10T21:42:36.937Z",
+    "taskId": "T120"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,10 +1130,10 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 112,
+    "blocksCompleted": 113,
     "blocksTotal": 105,
     "modeDistribution": {
-      "THINK": 19,
+      "THINK": 20,
       "PLAN": 9,
       "BUILD": 73,
       "MAINTAIN": 9,

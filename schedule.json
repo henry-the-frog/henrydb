@@ -1274,10 +1274,21 @@
     {
       "id": "T119",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: whats the single hardest bug or correctness issue remaining? Go look for something thats actually broken, not just unimplemented. Try unusual SQL patterns, edge cases, concurrent access patterns.",
       "project": "henrydb",
-      "started": "2026-04-10T21:37:54.814Z"
+      "started": "2026-04-10T21:37:54.814Z",
+      "completed": "2026-04-10T21:42:07.554Z",
+      "duration_ms": 300000,
+      "summary": "Found and fixed IN subquery bug: decorrelator extracted wrong column (GROUP BY cat instead of MAX(val)) for IN_HASHSET optimization. Root cause: Object.values(row)[0] grabbed first key which was GROUP BY column, not the SELECT aggregate. Also found recursive CTE parsing limitation (UNION ALL in CTE body not supported). Fixed IN subquery, all tests pass."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix recursive CTE parsing (UNION ALL inside CTE body)",
+      "project": "henrydb",
+      "started": "2026-04-10T21:42:36.900Z"
     }
   ],
   "focusProjects": [
@@ -1749,6 +1760,10 @@
     {
       "time": "2026-04-10T21:37:46.270Z",
       "msg": "Added T119 (THINK) after end: HenryDB: whats the single hardest bug or correctness issue remaining? Go look for something thats actually broken, not just unimplemented. Try unusual SQL patterns, edge cases, concurrent access patterns."
+    },
+    {
+      "time": "2026-04-10T21:42:29.882Z",
+      "msg": "Added T120 (BUILD) after end: HenryDB: fix recursive CTE parsing (UNION ALL inside CTE body)"
     }
   ]
 }
