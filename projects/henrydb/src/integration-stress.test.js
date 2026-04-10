@@ -326,7 +326,7 @@ describe('Lock Manager', () => {
     for (let i = 0; i < 10; i++) {
       await lm.acquire('tx1', `r_${i}`, 'X');
     }
-    lm.releaseAll('tx1');
+    lm.release('tx1');
   });
 
   it('stats track grants and releases', async () => {
@@ -343,8 +343,8 @@ describe('Lock Manager', () => {
     const lm = new LockManager();
     await lm.acquire('tx1', 'table', 'IS');
     await lm.acquire('tx2', 'table', 'S');
-    lm.releaseAll('tx1');
-    lm.releaseAll('tx2');
+    lm.release('tx1');
+    lm.release('tx2');
   });
 
   it('lock upgrade from S to X', async () => {

@@ -2666,10 +2666,21 @@
     {
       "id": "T250",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix query-rewriter simplifyPredicate missing and tdigest test hang",
       "project": "henrydb",
-      "started": "2026-04-10T01:34:18.479Z"
+      "started": "2026-04-10T01:34:18.479Z",
+      "completed": "2026-04-10T01:41:33.966Z",
+      "duration_ms": 600000,
+      "summary": "TDigest: 94x perf improvement (O(n^2)→O(n log n) compression, 100K values: 13s→142ms). Went from hanging test to 8/8 in 0.7s. Also added QueryRewriter.simplifyPredicate, regression-tests 33/33."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Quick fixes: integration-stress.test.js (16/26) and remaining import breaks",
+      "project": "henrydb",
+      "started": "2026-04-10T01:41:54.454Z"
     }
   ],
   "focusProjects": [
@@ -3681,6 +3692,10 @@
     {
       "time": "2026-04-10T01:34:12.968Z",
       "msg": "Added T250 (BUILD) after end: Fix query-rewriter simplifyPredicate missing and tdigest test hang"
+    },
+    {
+      "time": "2026-04-10T01:41:47.226Z",
+      "msg": "Added T251 (BUILD) after end: Quick fixes: integration-stress.test.js (16/26) and remaining import breaks"
     }
   ]
 }
