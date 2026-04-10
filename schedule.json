@@ -1230,10 +1230,32 @@
     {
       "id": "T115",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: wire VACUUM command through the server — allow psql users to run VACUUM to compact heap files and reclaim space",
       "project": "henrydb",
-      "started": "2026-04-10T21:31:07.837Z"
+      "started": "2026-04-10T21:31:07.837Z",
+      "completed": "2026-04-10T21:32:10.687Z",
+      "duration_ms": 60000,
+      "summary": "Wired VACUUM to actual db.execute() instead of stub. Now runs real heap compaction through wire protocol. Also falls back to manual table.heap.compact() if execute fails."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add EXPLAIN ANALYZE through wire protocol — time actual execution and show plan with real costs",
+      "project": "henrydb",
+      "started": "2026-04-10T21:32:42.056Z",
+      "completed": "2026-04-10T21:33:17.255Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN ANALYZE already works through wire protocol. Shows plan (TABLE_SCAN, HASH_JOIN, FILTER), timing, row counts, and engine choice. Tested with simple queries and JOINs."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: comprehensive psql compatibility test — connect with psql, run typical DBA workflow (create tables, insert, query, explain, vacuum, etc)",
+      "project": "henrydb",
+      "started": "2026-04-10T21:33:37.087Z"
     }
   ],
   "focusProjects": [
@@ -1689,6 +1711,14 @@
     {
       "time": "2026-04-10T21:31:02.303Z",
       "msg": "Added T115 (BUILD) after end: HenryDB: wire VACUUM command through the server — allow psql users to run VACUUM to compact heap files and reclaim space"
+    },
+    {
+      "time": "2026-04-10T21:32:36.247Z",
+      "msg": "Added T116 (BUILD) after end: HenryDB: add EXPLAIN ANALYZE through wire protocol — time actual execution and show plan with real costs"
+    },
+    {
+      "time": "2026-04-10T21:33:31.418Z",
+      "msg": "Added T117 (BUILD) after end: HenryDB: comprehensive psql compatibility test — connect with psql, run typical DBA workflow (create tables, insert, query, explain, vacuum, etc)"
     }
   ]
 }
