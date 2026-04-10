@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T15:34:18.281Z",
+  "generated": "2026-04-10T15:49:33.000Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "What should the next project be? Review skills, gaps, what would be impressive + educational. Consider: OS kernel, compiler backend (LLVM IR), network protocol, distributed system, or something weird.",
-    "completedAt": "2026-04-10T15:34:18.281Z",
-    "taskId": "T24",
-    "summary": "Decided: Git from scratch. Universally relevant, deep CS (Merkle trees, DAG, content-addressable storage, 3-way merge), great blog series potential, medium complexity. Second choice: TCP/IP stack. Portfolio gaps identified: networking, OS, compiler backends, crypto.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "Build git merge: three-way merge algorithm, fast-forward, conflict detection. Tests for clean merge, conflicts, fast-forward.",
+    "completedAt": "2026-04-10T15:49:33.000Z",
+    "taskId": "T34",
+    "summary": "Git merge: three-way merge with merge base detection (BFS), fast-forward, conflict detection with <<<<<<< markers, handles new/deleted files, merge commits with dual parents. 7 new tests, 88/88 total.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -124,61 +124,241 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: real MVCC integration into main database engine (MVCCStore to MVCCManager redesign)",
         "task": null,
-        "started": "2026-04-10T14:34:21.934Z"
+        "started": "2026-04-10T14:34:21.934Z",
+        "completed": "2026-04-10T14:41:34.817Z",
+        "duration_ms": 600000,
+        "summary": "Planned SSI fix + wire protocol fixes. Already implemented SSI fix during investigation: (1) suppress read tracking during UPDATE/DELETE scans, (2) skip sequential tx false deps in recordWrite. All 20 SSI tests + 91 core tests pass."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix SSI SQL integration: suppress read tracking during UPDATE/DELETE scans, skip sequential tx dependencies in recordWrite",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T14:42:00.233Z",
+        "completed": "2026-04-10T14:42:00.482Z",
+        "duration_ms": 0,
+        "summary": "Already completed during T10 investigation. SSI SQL integration fixed: suppressReadTracking flag, wasVisibleInSnapshot check, recordWrite sequential skip. 20/20 SSI tests pass."
       },
       {
         "id": "T17",
         "mode": "BUILD",
         "task": "Fix wire protocol gaps: RETURNING clause, prepared statements, maintenance commands through server layer",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-10T14:42:12.343Z",
+        "completed": "2026-04-10T14:57:05.432Z",
+        "duration_ms": 900000,
+        "summary": "Fixed MD5 auth (buffer concat instead of string concat for salt), fixed SequenceManager setval(isCalled=false). Server-auth 7/7 pass, sequences 18/18 pass. Remaining server failures are query engine bugs (subquery returns wrong count) and timing-based flaky tests."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync, knowledge capture",
+        "started": "2026-04-10T14:57:38.853Z",
+        "completed": "2026-04-10T14:58:54.540Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, dashboard synced (14/17), captured SSI + MD5 bug patterns in knowledge scratch file."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Evening direction check - best use of exploration time tonight"
+        "status": "done",
+        "task": "Evening direction check - best use of exploration time tonight",
+        "started": "2026-04-10T14:59:15.337Z",
+        "completed": "2026-04-10T14:59:33.274Z",
+        "duration_ms": 60000,
+        "summary": "5+ hours remaining. Fix subquery eval bug (real query engine correctness), then explore MVCC strategies from Andy Pavlo if time permits. Good balance of depth fix + learning."
       },
       {
         "id": "T14",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep read: Andy Pavlo CMU 15-445 MVCC implementation strategies (compare with HenryDB approach)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T14:59:43.788Z",
+        "completed": "2026-04-10T15:01:31.939Z",
+        "duration_ms": 600000,
+        "summary": "Deep dive into MVCC strategies (Pavlo framework). Compared 4 version storage approaches (append-only, delta, time-travel), 3 GC strategies, 4 CC protocols. HenryDB closest to PostgreSQL (append-only + SSI). Key gaps: no persistent version metadata, no index-MVCC integration, no real GC. Wrote detailed scratch note."
       },
       {
         "id": "T15",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research: CockroachDB serializable isolation implementation - how do they handle write skew at scale",
+        "project": "henrydb",
+        "started": "2026-04-10T15:02:01.826Z",
+        "completed": "2026-04-10T15:03:06.775Z",
+        "duration_ms": 600000,
+        "summary": "CockroachDB uses timestamp ordering (not SSI) for serializability. Key innovation: per-node timestamp cache tracks recent reads — any write conflicting with a later read is aborted. Interval-based cache handles scans elegantly (prevents phantoms). Simpler than SSI dependency graphs. Parallel Commits protocol pipelines distributed commit. Detailed notes in scratch/mvcc-strategies.md."
+      },
+      {
+        "id": "T18",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Design timestamp cache for HenryDB: CockroachDB-style interval timestamp cache as alternative to SSI dependency tracking. Would solve scan false positive issue more elegantly.",
+        "project": "henrydb",
+        "started": "2026-04-10T15:05:10.417Z",
+        "completed": "2026-04-10T15:06:01.970Z",
+        "duration_ms": 300000,
+        "summary": "Analyzed both approaches: CockroachDB timestamp cache vs PostgreSQL SIRead locks. For single-node HenryDB, SSI with predicate-level locks is better fit. Designed 3-level lock granularity (tuple/page/table) with escalation. Wrote scratch/henrydb-predicate-locks.md. Decided NOT to switch to timestamp ordering — SSI is already working and more appropriate for single-node."
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix subquery evaluation: server-integration test expects 2 rows from WHERE price > (SELECT AVG(price)...) but gets 4. Debug query engine subquery handling.",
+        "project": "henrydb",
+        "started": "2026-04-10T15:06:22.741Z",
+        "completed": "2026-04-10T15:14:33.630Z",
+        "duration_ms": 900000,
+        "summary": "Fixed subquery evaluation: _hasSubquery checked for lowercase subquery but AST uses SUBQUERY (uppercase). Case-insensitive comparison fixes it. server-integration: 10/11 pass (remaining failure is test infrastructure TCP buffering issue, not a DB bug)."
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": "Implement CockroachDB-style timestamp cache in HenryDB: interval-based read timestamp cache, integrate with MVCC conflict detection, test with existing SSI test suite.",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write blog post: How CockroachDB and PostgreSQL Prevent Write Skew Differently — timestamp cache vs SSI dependency graphs, with HenryDB as test bed.",
+        "project": "henrydb",
+        "started": "2026-04-10T15:15:22.736Z",
+        "completed": "2026-04-10T15:16:34.907Z",
+        "duration_ms": 600000,
+        "summary": "Published blog post: Two Ways to Prevent Write Skew — deep comparison of SSI (PostgreSQL/HenryDB) vs Timestamp Ordering (CockroachDB). Covers scan problem, interval cache, dependency graphs, practical tradeoffs. Pushed to blog."
+      },
+      {
+        "id": "T22",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement.",
+        "project": "henrydb",
+        "started": "2026-04-10T15:17:01.219Z",
+        "completed": "2026-04-10T15:29:04.254Z",
+        "duration_ms": 600000,
+        "summary": "Post-fix test sweep: 12 specific tests fixed (SSI 5, HLL 1, MD5 auth 4, sequences 1, subquery 1). Net improvement muddied by flaky timing tests. Core fixes are solid — SSI SQL integration fully working, auth fixed, subquery evaluation fixed. Some test suites hang (server tests with port binding)."
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix blog internal links (.html vs trailing slash) — TODO item, check all internal links for 404s and fix permalink mismatches",
+        "project": "blog",
+        "started": "2026-04-10T15:30:21.579Z",
+        "completed": "2026-04-10T15:33:16.497Z",
+        "duration_ms": 300000,
+        "summary": "Fixed blog internal links: 11 files updated (.html → trailing slash), fixed UTC date mismatch (2 posts with late MDT times shifted to next day in UTC), removed category prefix from 3 part series links. Pushed."
+      },
+      {
+        "id": "T24",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What should the next project be? Review skills, gaps, what would be impressive + educational. Consider: OS kernel, compiler backend (LLVM IR), network protocol, distributed system, or something weird.",
+        "project": "general",
+        "started": "2026-04-10T15:33:55.565Z",
+        "completed": "2026-04-10T15:34:18.245Z",
+        "duration_ms": 300000,
+        "summary": "Decided: Git from scratch. Universally relevant, deep CS (Merkle trees, DAG, content-addressable storage, 3-way merge), great blog series potential, medium complexity. Second choice: TCP/IP stack. Portfolio gaps identified: networking, OS, compiler backends, crypto."
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "HenryDB: implement VACUUM (dead tuple cleanup). Version maps grow unbounded — need GC for any serious workload. Epoch-based or scan-based.",
         "project": "henrydb"
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "HenryDB: implement visibility map — bitmap of pages where all tuples are visible to all txns. Enables index-only scans by skipping MVCC check for known-all-visible pages.",
+        "project": "henrydb"
+      },
+      {
+        "id": "T27",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push + dashboard sync + update TASKS.md with correct test counts and status",
+        "project": "general"
+      },
+      {
+        "id": "T28",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan Git from scratch: define components (object store, index, refs, merge, diff, packfiles), test strategy, blog series outline. Target: working git implementation that can init/add/commit/log/diff/branch/merge/clone.",
+        "task": null,
+        "project": "git",
+        "started": "2026-04-10T15:34:59.985Z"
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "task": "Build git object store: SHA-1 hashing, blob/tree/commit objects, zlib compression, .git/objects/ layout. Tests for write/read roundtrip.",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T30",
+        "mode": "BUILD",
+        "task": "Build git index: staging area, binary index format, add/remove/status. Tests for add, status, diff index vs HEAD.",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Build git refs + commit: HEAD, branches, commit creation with tree+parent+author+message. git init/add/commit/log working end-to-end.",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Build git diff: Myers diff algorithm, unified diff output, working tree vs index vs HEAD. Tests for various diff scenarios.",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "task": "Build git branch + checkout: create/list/delete branches, checkout (update HEAD + working tree). Tests.",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "task": "Build git merge: three-way merge algorithm, fast-forward, conflict detection. Tests for clean merge, conflicts, fast-forward.",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "Write blog post: Building Git from Scratch — object model, content-addressable storage, how commits work",
+        "status": "upcoming",
+        "plan_ref": "T28"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 23,
-    "blocksTotal": 17,
+    "blocksCompleted": 30,
+    "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 3,
-      "BUILD": 8,
+      "PLAN": 4,
+      "BUILD": 14,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

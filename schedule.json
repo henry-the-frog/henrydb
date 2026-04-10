@@ -282,10 +282,87 @@
     {
       "id": "T28",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan Git from scratch: define components (object store, index, refs, merge, diff, packfiles), test strategy, blog series outline. Target: working git implementation that can init/add/commit/log/diff/branch/merge/clone.",
       "task": null,
-      "project": "git"
+      "project": "git",
+      "started": "2026-04-10T15:34:59.985Z",
+      "completed": "2026-04-10T15:35:26.641Z",
+      "duration_ms": 180000,
+      "summary": "Planned 7 BUILD tasks: object store, index, refs+commit, diff (Myers), branch+checkout, merge (3-way), blog post. Architecture: 6 core modules + CLI. Phase 1 = init/add/commit/log/status/diff, Phase 2 = branch/checkout/merge, Phase 3 = remote/clone (stretch)."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Build git object store: SHA-1 hashing, blob/tree/commit objects, zlib compression, .git/objects/ layout. Tests for write/read roundtrip.",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-10T15:36:01.017Z",
+      "completed": "2026-04-10T15:38:32.602Z",
+      "duration_ms": 600000,
+      "summary": "Git object store: SHA-1 hashing, blob/tree/commit/tag objects, zlib compression, .git/objects/ layout. 24/24 tests pass including git-compatibility checks (empty blob + tree hashes match real git)."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Build git index: staging area, binary index format, add/remove/status. Tests for add, status, diff index vs HEAD.",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-10T15:38:49.935Z",
+      "completed": "2026-04-10T15:40:42.091Z",
+      "duration_ms": 420000,
+      "summary": "Git index/staging area: read/write index, add/remove files, recursive directory add, status (staged/modified/untracked/deleted), build tree from index. 18/18 tests pass."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Build git refs + commit: HEAD, branches, commit creation with tree+parent+author+message. git init/add/commit/log working end-to-end.",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-10T15:40:51.883Z",
+      "completed": "2026-04-10T15:43:02.434Z",
+      "duration_ms": 480000,
+      "summary": "Git refs + commands: HEAD/branches, init, commit (tree+parent+author), log with parent traversal, formatLog. Full init→add→commit→log workflow tested. 13/13 tests."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Build git diff: Myers diff algorithm, unified diff output, working tree vs index vs HEAD. Tests for various diff scenarios.",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-10T15:43:10.150Z",
+      "completed": "2026-04-10T15:44:44.854Z",
+      "duration_ms": 360000,
+      "summary": "Myers diff algorithm: O(ND) shortest edit script with backtracking, line-level diffing, unified diff format with context lines. 16 new tests, 71/71 total."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Build git branch + checkout: create/list/delete branches, checkout (update HEAD + working tree). Tests.",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-10T15:44:58.509Z",
+      "completed": "2026-04-10T15:47:35.946Z",
+      "duration_ms": 420000,
+      "summary": "Git branch + checkout: create branches, switch between them (updates HEAD, index, working tree), detached HEAD support, nested directory handling. 10 new tests, 81/81 total."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Build git merge: three-way merge algorithm, fast-forward, conflict detection. Tests for clean merge, conflicts, fast-forward.",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-10T15:47:44.437Z",
+      "completed": "2026-04-10T15:49:32.937Z",
+      "duration_ms": 600000,
+      "summary": "Git merge: three-way merge with merge base detection (BFS), fast-forward, conflict detection with <<<<<<< markers, handles new/deleted files, merge commits with dual parents. 7 new tests, 88/88 total."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Write blog post: Building Git from Scratch — object model, content-addressable storage, how commits work",
+      "status": "upcoming",
+      "plan_ref": "T28"
     }
   ],
   "focusProjects": [
@@ -417,6 +494,10 @@
     {
       "time": "2026-04-10T15:34:27.897Z",
       "msg": "Added T28 (PLAN) after end: Plan Git from scratch: define components (object store, index, refs, merge, diff, packfiles), test strategy, blog series outline. Target: working git implementation that can init/add/commit/log/diff/branch/merge/clone."
+    },
+    {
+      "time": "2026-04-10T15:35:18.777Z",
+      "msg": "PLAN T28 filled 7 BUILD tasks"
     }
   ]
 }
