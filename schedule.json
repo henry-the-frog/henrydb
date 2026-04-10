@@ -2912,17 +2912,21 @@
     {
       "id": "T274",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix benchmarks.test.js (2 failures)",
       "project": "henrydb",
-      "started": "2026-04-10T02:53:24.983Z"
+      "started": "2026-04-10T02:53:24.983Z",
+      "completed": "2026-04-10T02:57:03.806Z",
+      "duration_ms": 180000,
+      "summary": "Fixed 2 benchmark failures: 1) BitmapIndex.build()+eq() chainable API with BitmapResult class (and/or/not/count/toRows). 2) BufferPoolManager auto-creates InMemoryDiskManager when number passed. 38/38 benchmarks, no regressions."
     },
     {
       "id": "T275",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Something genuinely new: implement a Bw-tree (lock-free B-tree) or a skip list with MVCC",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T02:57:11.363Z"
     },
     {
       "id": "T276",
