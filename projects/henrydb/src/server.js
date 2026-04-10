@@ -1082,6 +1082,8 @@ export class HenryDBServer {
     if (ast.type !== 'SELECT') return false;
     // No aggregates, window functions, or expressions
     if (ast.columns?.some(c => c.type === 'aggregate' || c.type === 'function_call' || c.type === 'window' || c.type === 'expression' || c.type === 'function')) return false;
+    // Only use adaptive for simple WHERE conditions (no LIKE, IN subquery, etc.)
+    if (ast.where && this._hasComplexPredicate(ast.where)) return false;
     // No GROUP BY
     if (ast.groupBy && ast.groupBy.length > 0) return false;
     // No HAVING
@@ -1982,6 +1984,16 @@ export class HenryDBServer {
     addNode(plan.Plan, null);
     lines.push('}');
     return lines.join('\n');
+  }
+
+  _hasComplexPredicate(node) {
+    if (!node) return false;
+    if (node.type === 'LIKE' || node.type === 'NOT_LIKE' || node.type === 'IN' || 
+        node.type === 'NOT_IN' || node.type === 'EXISTS' || node.type === 'BETWEEN' ||
+        node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' || node.type === 'SUBQUERY') return true;
+    if (node.left && this._hasComplexPredicate(node.left)) return true;
+    if (node.right && this._hasComplexPredicate(node.right)) return true;
+    return false;
   }
 
   _hasSubquery(expr) {
