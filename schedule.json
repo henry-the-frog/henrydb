@@ -456,6 +456,17 @@
       "completed": "2026-04-10T16:26:19.664Z",
       "duration_ms": 600000,
       "summary": "Implemented VACUUM: removes all old MVCC versions when no active txns, deletes dead key markers. Improved GC: correctly identifies uncommitted txns (not just activeTxns size), preserves floor versions for active snapshots. 10/10 new tests, 81/81 core tests pass. Version map now manageable."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add VACUUM to SQL interface: parse VACUUM command, wire to MVCC gc/vacuum, add stats reporting via VACUUM VERBOSE.",
+      "project": "henrydb",
+      "started": "2026-04-10T16:27:14.272Z",
+      "completed": "2026-04-10T16:28:58.486Z",
+      "duration_ms": 180000,
+      "summary": "Wired VACUUM to SQL interface: SQL VACUUM now calls MVCC gc() for version chain cleanup + existing heap-level dead tuple removal. TransactionalDatabase.vacuum() also calls gc(). 39/39 tests pass."
     }
   ],
   "focusProjects": [
@@ -619,6 +630,10 @@
     {
       "time": "2026-04-10T16:22:41.644Z",
       "msg": "Added T42 (BUILD) after end: Implement basic VACUUM for HenryDB MVCC: remove dead versions (xmax < oldest active txn), maintain version chain integrity, add test suite."
+    },
+    {
+      "time": "2026-04-10T16:27:04.796Z",
+      "msg": "Added T43 (BUILD) after end: Add VACUUM to SQL interface: parse VACUUM command, wire to MVCC gc/vacuum, add stats reporting via VACUUM VERBOSE."
     }
   ]
 }
