@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T16:07:09.247Z",
+  "generated": "2026-04-10T16:10:33.368Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix HenryDB QueryRewriter: stale API assumptions. Check which API changed and update the rewriter.",
-    "completedAt": "2026-04-10T16:07:09.247Z",
-    "taskId": "T38",
-    "summary": "Already fixed in T37 — duplicate method override was the root cause. 17/17 query-rewriter tests pass.",
-    "durationMs": 0
+    "task": "Make tiny-git repos readable by real git: ensure object format is compatible, test with git log/git status on a tiny-git repo. This validates the implementation against the real specification.",
+    "completedAt": "2026-04-10T16:10:33.368Z",
+    "taskId": "T39",
+    "summary": "Real git compatibility verified! 9 tests prove: git log reads our commits, git cat-file reads objects/trees/blobs, git diff works between our commits, git branch reads our refs, git reads merge commits. Our object format is fully compatible with the real git spec. 111/111 total tests.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -353,12 +353,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 37,
+    "blocksCompleted": 38,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
