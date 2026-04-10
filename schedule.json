@@ -1014,16 +1014,20 @@
       "id": "T95",
       "mode": "BUILD",
       "task": "Build TPC-B schema, data loader, and transaction profile for HenryDB",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T94",
-      "started": "2026-04-10T20:51:11.705Z"
+      "started": "2026-04-10T20:51:11.705Z",
+      "completed": "2026-04-10T20:55:43.383Z",
+      "duration_ms": 600000,
+      "summary": "TPC-B benchmark built and passing: 8/8 tests. Schema (branches/tellers/accounts/history), configurable scale factor, transaction profile, ACID verification (sum invariant). Sequential ~478 TPS. Transactional tests use explicit sessions with begin/commit/rollback. Wire protocol test verifies ACID through TCP. All ACID invariants hold."
     },
     {
       "id": "T96",
       "mode": "BUILD",
       "task": "Build concurrent benchmark runner with TPS measurement and ACID verification",
-      "status": "upcoming",
-      "plan_ref": "T94"
+      "status": "in-progress",
+      "plan_ref": "T94",
+      "started": "2026-04-10T20:55:55.949Z"
     },
     {
       "id": "T97",
