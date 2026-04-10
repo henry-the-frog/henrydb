@@ -7,7 +7,7 @@
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
 ## Projects Summary (as of 2026-04-07)
-- **HenryDB** — 4,475 tests, 112K LOC, 222 modules. Full PostgreSQL-compatible server: wire protocol (simple+extended), pg/Knex/Sequelize ORM support, WAL crash recovery, streaming replication, LISTEN/NOTIFY, COPY protocol, PL/HenryDB stored procedures, triggers, RLS, 50+ PG features. Interactive browser playground with tutorials. 5 query engines (Volcano, compiled 2062x, vectorized 220x, codegen 143x, adaptive).
+- **HenryDB** — 530+ test files, 814 source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL. Key benchmarks: 29.5K inserts/sec, 5578x BTree point lookup speedup, 138x hash join speedup. 306 tasks on Apr 9 depth day.
 - **Monkey Lang** — 1297 tests, 5 execution backends (eval, VM, tracing JIT, JS transpiler, WASM), 50+ language features, interactive playground
 - **RISC-V Emulator** — 208 tests, 3800 LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO. Built in one evening session.
 - **Ray Tracer** — 116 tests, 8 geometry types, BVH, interactive browser renderer
