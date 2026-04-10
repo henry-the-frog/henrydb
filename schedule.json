@@ -970,17 +970,67 @@
     {
       "id": "T91",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add DISTINCT support to compiled query engine: hash-based deduplication in the compiled pipeline",
       "project": "henrydb",
-      "started": "2026-04-10T20:47:26.075Z"
+      "started": "2026-04-10T20:47:26.075Z",
+      "completed": "2026-04-10T20:48:52.566Z",
+      "duration_ms": 180000,
+      "summary": "Added DISTINCT to compiled query engine: hash-based deduplication using JSON.stringify + Set for O(1) lookups. Also added ORDER BY and OFFSET handling in _applyProjectAndLimit. Works for single-table and join queries with 100+ rows. 17/17 compiled-query tests, 10/10 adaptive-engine tests pass."
     },
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write blog post: Making HenryDB Persistent — the journey from in-memory to surviving restarts",
-      "project": "blog"
+      "project": "blog",
+      "started": "2026-04-10T20:49:04.227Z",
+      "completed": "2026-04-10T20:50:06.934Z",
+      "duration_ms": 180000,
+      "summary": "Published blog post: Making HenryDB Persistent. Covers architecture (PersistentDatabase wrapping Database), WAL integration, graceful shutdown, the LOG keyword case bug, E2E testing with pg client. Pushed to blog."
+    },
+    {
+      "id": "T93",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB depth: whats the next hardest engineering challenge? Options: (1) subquery support in compiled engine, (2) concurrent transaction stress test that breaks MVCC, (3) real benchmark harness (TPC-B or similar), (4) fix compiled engine to handle JOINs properly",
+      "started": "2026-04-10T20:50:25.390Z",
+      "completed": "2026-04-10T20:50:37.371Z",
+      "duration_ms": 60000,
+      "summary": "DECISION: Build TPC-B-style benchmark. Gold standard for transaction processing testing. Tests concurrent transactions, crash recovery, ACID under load. Will combine correctness verification (no money created/destroyed) with performance measurement. More valuable than compiled engine optimization because it stresses correctness of the full stack."
+    },
+    {
+      "id": "T94",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "TPC-B-style benchmark for HenryDB: concurrent transactions, ACID verification, performance measurement",
+      "task": null,
+      "started": "2026-04-10T20:50:49.244Z",
+      "completed": "2026-04-10T20:51:06.577Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 3 BUILD tasks for TPC-B benchmark. (1) Schema + loader, (2) Concurrent runner with TPS + ACID verification, (3) Run and fix bugs."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "task": "Build TPC-B schema, data loader, and transaction profile for HenryDB",
+      "status": "in-progress",
+      "plan_ref": "T94",
+      "started": "2026-04-10T20:51:11.705Z"
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "task": "Build concurrent benchmark runner with TPS measurement and ACID verification",
+      "status": "upcoming",
+      "plan_ref": "T94"
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "task": "Run TPC-B benchmark, find and fix any concurrency bugs until ACID holds under load",
+      "status": "upcoming",
+      "plan_ref": "T94"
     }
   ],
   "focusProjects": [
@@ -1356,6 +1406,18 @@
     {
       "time": "2026-04-10T20:34:21.396Z",
       "msg": "Added T92 (BUILD) after T91: Write blog post: Making HenryDB Persistent — the journey from in-memory to surviving restarts"
+    },
+    {
+      "time": "2026-04-10T20:50:19.638Z",
+      "msg": "Added T93 (THINK) after end: HenryDB depth: whats the next hardest engineering challenge? Options: (1) subquery support in compiled engine, (2) concurrent transaction stress test that breaks MVCC, (3) real benchmark harness (TPC-B or similar), (4) fix compiled engine to handle JOINs properly"
+    },
+    {
+      "time": "2026-04-10T20:50:44.110Z",
+      "msg": "Added T94 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-10T20:50:59.870Z",
+      "msg": "PLAN T94 filled 3 BUILD tasks"
     }
   ]
 }

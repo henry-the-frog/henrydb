@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T20:47:26.138Z",
+  "generated": "2026-04-10T20:51:11.769Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Add DISTINCT support to compiled query engine: hash-based deduplication in the compiled pipeline",
-    "startedAt": "2026-04-10T20:47:26.138Z",
-    "taskId": "T91"
+    "task": "Build TPC-B schema, data loader, and transaction profile for HenryDB",
+    "startedAt": "2026-04-10T20:51:11.769Z",
+    "taskId": "T95"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -878,48 +878,176 @@
       {
         "id": "T81",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Address the hardest HenryDB gap identified in THINK",
         "task": null,
-        "started": "2026-04-10T20:19:22.384Z"
+        "started": "2026-04-10T20:19:22.384Z",
+        "completed": "2026-04-10T20:19:38.073Z",
+        "duration_ms": 60000,
+        "summary": "Plan: 3 BUILD tasks to wire PersistentDatabase into server. (1) Add --data-dir, persistent mode, graceful shutdown. (2) Test restart cycle. (3) E2E psql client test."
       },
       {
         "id": "T82",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Wire PersistentDatabase to HenryDBServer: add --data-dir option, persistent mode, graceful shutdown flushes WAL",
         "plan_ref": "T81",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T20:19:46.646Z",
+        "completed": "2026-04-10T20:21:33.125Z",
+        "duration_ms": 240000,
+        "summary": "Wired PersistentDatabase to HenryDBServer: added --data-dir CLI option, persistent mode in constructor, graceful shutdown flushes WAL and closes disk managers. Added tables/wal proxy getters to PersistentDatabase. All 14 existing server tests pass."
       },
       {
         "id": "T84",
         "mode": "BUILD",
         "task": "Write server-persistent.test.js: start/stop/restart cycle, crash recovery, data survives process restart",
-        "status": "upcoming",
-        "plan_ref": "T81"
+        "status": "done",
+        "plan_ref": "T81",
+        "started": "2026-04-10T20:21:41.901Z",
+        "completed": "2026-04-10T20:25:54.699Z",
+        "duration_ms": 300000,
+        "summary": "server-persistent.test.js: 7/7 pass. Tests: data survives restart, multiple tables, chain restart (3 sessions), in-memory mode, dir creation, concurrent connections + restart, various SELECTs after reopen. Found SQL keyword bug: LOG is a keyword causing table name case mismatch."
       },
       {
         "id": "T85",
         "mode": "BUILD",
         "task": "End-to-end test: psql-style client connects, creates table, inserts data, server restarts, client reconnects and reads data back",
-        "status": "upcoming",
-        "plan_ref": "T81"
+        "status": "done",
+        "plan_ref": "T81",
+        "started": "2026-04-10T20:26:05.115Z",
+        "completed": "2026-04-10T20:31:28.672Z",
+        "duration_ms": 360000,
+        "summary": "E2E persistent server tests with real pg client: 4/4 pass. Full lifecycle (create→insert→restart→reconnect→verify), UPDATE/DELETE persistence, multi-table JOINs after restart, 100-row dataset recovery. Also 7/7 wire protocol tests. Total: 11 new persistence tests."
       },
       {
         "id": "T83",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard sync",
+        "started": "2026-04-10T20:31:38.011Z",
+        "completed": "2026-04-10T20:32:03.949Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, dashboard synced. All tests passing."
+      },
+      {
+        "id": "T86",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: whats the hardest gap in the compiled query engine? DISTINCT and HAVING dont work. What else is broken?",
+        "started": "2026-04-10T20:32:38.528Z",
+        "completed": "2026-04-10T20:33:48.769Z",
+        "duration_ms": 120000,
+        "summary": "Compiled engine analysis: handles aggregation (COUNT/SUM/MIN/MAX), GROUP BY, HAVING, ORDER BY for tables >= 50 rows. Returns null (fallback to Volcano) for small tables and subqueries. Missing: DISTINCT, JOIN compilation (only basic plans). But this is optimization, not correctness. More impactful: SQL keyword case sensitivity bug (LOG becomes LOG vs log), or fixing the persistence to handle schema changes/migrations across restarts."
+      },
+      {
+        "id": "T88",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "T86",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T87",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Fix compiled engine gaps identified in THINK",
+        "task": null,
+        "skip_reason": ""
+      },
+      {
+        "id": "T89",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB SQL parser: identifiers that collide with function names (LOG, LEFT, RIGHT, REPEAT, REVERSE, POWER, SQRT, RANDOM) are uppercased differently in CREATE TABLE vs INSERT/SELECT. This is the root cause of the chain-restart bug with table named log. Whats the right fix?",
+        "started": "2026-04-10T20:34:31.993Z",
+        "completed": "2026-04-10T20:35:56.120Z",
+        "duration_ms": 120000,
+        "summary": "Root cause: tokenizer uppercases all identifiers that match keyword list (LOG, LEFT, RIGHT, etc). CREATE TABLE uses tableTok.originalValue (correct), but INSERT/UPDATE/DELETE/SELECT FROM/JOIN all use advance().value (gets uppercase). Fix: use (tok.originalValue || tok.value) in all table name extraction points. About 6 locations to fix."
+      },
+      {
+        "id": "T90",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix SQL parser identifier/keyword resolution so table names like LOG work consistently across CREATE TABLE, INSERT, SELECT, UPDATE, DELETE",
+        "project": "henrydb",
+        "started": "2026-04-10T20:36:06.276Z",
+        "completed": "2026-04-10T20:47:15.186Z",
+        "duration_ms": 300000,
+        "summary": "Fixed SQL parser keyword/identifier case consistency. Table names like LOG, LEFT, RIGHT, POWER that collide with SQL keywords now resolve consistently across CREATE TABLE, INSERT, SELECT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, RENAME. Root cause: tokenizer uppercased keywords but CREATE TABLE used originalValue. Fix: use (tok.originalValue || tok.value) at 11 locations. All tests pass, chain restart with keyword table names works."
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add DISTINCT support to compiled query engine: hash-based deduplication in the compiled pipeline",
+        "project": "henrydb",
+        "started": "2026-04-10T20:47:26.075Z",
+        "completed": "2026-04-10T20:48:52.566Z",
+        "duration_ms": 180000,
+        "summary": "Added DISTINCT to compiled query engine: hash-based deduplication using JSON.stringify + Set for O(1) lookups. Also added ORDER BY and OFFSET handling in _applyProjectAndLimit. Works for single-table and join queries with 100+ rows. 17/17 compiled-query tests, 10/10 adaptive-engine tests pass."
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write blog post: Making HenryDB Persistent — the journey from in-memory to surviving restarts",
+        "project": "blog",
+        "started": "2026-04-10T20:49:04.227Z",
+        "completed": "2026-04-10T20:50:06.934Z",
+        "duration_ms": 180000,
+        "summary": "Published blog post: Making HenryDB Persistent. Covers architecture (PersistentDatabase wrapping Database), WAL integration, graceful shutdown, the LOG keyword case bug, E2E testing with pg client. Pushed to blog."
+      },
+      {
+        "id": "T93",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB depth: whats the next hardest engineering challenge? Options: (1) subquery support in compiled engine, (2) concurrent transaction stress test that breaks MVCC, (3) real benchmark harness (TPC-B or similar), (4) fix compiled engine to handle JOINs properly",
+        "started": "2026-04-10T20:50:25.390Z",
+        "completed": "2026-04-10T20:50:37.371Z",
+        "duration_ms": 60000,
+        "summary": "DECISION: Build TPC-B-style benchmark. Gold standard for transaction processing testing. Tests concurrent transactions, crash recovery, ACID under load. Will combine correctness verification (no money created/destroyed) with performance measurement. More valuable than compiled engine optimization because it stresses correctness of the full stack."
+      },
+      {
+        "id": "T94",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "TPC-B-style benchmark for HenryDB: concurrent transactions, ACID verification, performance measurement",
+        "task": null,
+        "started": "2026-04-10T20:50:49.244Z"
+      },
+      {
+        "id": "T95",
+        "mode": "BUILD",
+        "task": "Build TPC-B schema, data loader, and transaction profile for HenryDB",
         "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard sync"
+        "plan_ref": "T94"
+      },
+      {
+        "id": "T96",
+        "mode": "BUILD",
+        "task": "Build concurrent benchmark runner with TPS measurement and ACID verification",
+        "status": "upcoming",
+        "plan_ref": "T94"
+      },
+      {
+        "id": "T97",
+        "mode": "BUILD",
+        "task": "Run TPC-B benchmark, find and fix any concurrency bugs until ACID holds under load",
+        "status": "upcoming",
+        "plan_ref": "T94"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 85,
-    "blocksTotal": 85,
+    "blocksCompleted": 89,
+    "blocksTotal": 97,
     "modeDistribution": {
-      "THINK": 13,
-      "PLAN": 7,
-      "BUILD": 54,
+      "THINK": 14,
+      "PLAN": 8,
+      "BUILD": 56,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }
