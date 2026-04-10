@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:35:04.157Z",
+  "generated": "2026-04-10T19:36:44.765Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Push fuzzer harder: add HAVING queries, multi-column GROUP BY, ORDER BY with expressions, nested conditions. Target 5000 total fuzzer queries.",
-    "completedAt": "2026-04-10T19:35:04.157Z",
-    "taskId": "T66",
-    "summary": "Expanded fuzzer: HAVING, multi-column GROUP BY, IN, BETWEEN. Now 5800 fuzzer queries (100% match). Found and fixed BETWEEN with NULL bug — JS null coercion made null act as 0 in comparisons. Now correctly returns false for NULL BETWEEN x AND y.",
-    "durationMs": 300000
+    "task": "Add subquery support to fuzzer: WHERE EXISTS, WHERE col IN (SELECT ...), scalar subqueries. Find and fix bugs.",
+    "completedAt": "2026-04-10T19:36:44.765Z",
+    "taskId": "T67",
+    "summary": "Added subquery support to fuzzer: WHERE IN (SELECT ...), WHERE EXISTS, scalar subqueries. All 5800 queries still pass 100% — HenryDB handles subqueries correctly.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 63,
+    "blocksCompleted": 64,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 39,
+      "BUILD": 40,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

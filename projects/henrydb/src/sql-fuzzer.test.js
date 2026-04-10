@@ -251,6 +251,40 @@ class SQLFuzzer {
     return `SELECT * FROM ${table.name} WHERE ${col.name} BETWEEN ${lo} AND ${hi} ORDER BY id`;
   }
 
+  // ---- WHERE IN subquery ----
+
+  generateInSubquerySelect() {
+    if (this._tables.length < 2) return this.generateSelect();
+    
+    const [outer, inner] = this._pickN(this._tables, 2);
+    return `SELECT * FROM ${outer.name} WHERE id IN (SELECT id FROM ${inner.name}) ORDER BY id`;
+  }
+
+  // ---- WHERE EXISTS subquery ----
+
+  generateExistsSelect() {
+    if (this._tables.length < 2) return this.generateSelect();
+    
+    const [outer, inner] = this._pickN(this._tables, 2);
+    return `SELECT * FROM ${outer.name} WHERE EXISTS (SELECT 1 FROM ${inner.name} WHERE ${inner.name}.id = ${outer.name}.id) ORDER BY id`;
+  }
+
+  // ---- Scalar subquery ----
+
+  generateScalarSubquerySelect() {
+    if (this._tables.length < 2) return this.generateSelect();
+    
+    const [outer, inner] = this._pickN(this._tables, 2);
+    const intCols = inner.cols.filter(c => c.type === 'INTEGER');
+    if (intCols.length === 0) return this.generateSelect();
+    
+    const aggCol = this._pick(intCols);
+    const func = this._pick(['MAX', 'MIN', 'COUNT']);
+    const agg = func === 'COUNT' ? 'COUNT(*)' : `${func}(${aggCol.name})`;
+    
+    return `SELECT id, (SELECT ${agg} FROM ${inner.name}) AS sub_val FROM ${outer.name} ORDER BY id LIMIT 10`;
+  }
+
   // ---- Aggregate SELECT Generation ----
 
   generateAggregateSelect() {
@@ -355,18 +389,21 @@ class SQLFuzzer {
 
   generateQuery() {
     const r = this._rand();
-    if (r < 0.15) return this.generateSelect();
-    if (r < 0.25) return this.generateAggregateSelect();
-    if (r < 0.35) return this.generateGroupBySelect();
-    if (r < 0.43) return this.generateJoinSelect();
-    if (r < 0.50) return this.generateCompoundWhereSelect();
-    if (r < 0.57) return this.generateDistinctSelect();
-    if (r < 0.64) return this.generateExpressionSelect();
-    if (r < 0.70) return this.generateNullSelect();
-    if (r < 0.78) return this.generateHavingSelect();
-    if (r < 0.85) return this.generateMultiGroupBySelect();
-    if (r < 0.92) return this.generateInSelect();
-    return this.generateBetweenSelect();
+    if (r < 0.12) return this.generateSelect();
+    if (r < 0.22) return this.generateAggregateSelect();
+    if (r < 0.30) return this.generateGroupBySelect();
+    if (r < 0.37) return this.generateJoinSelect();
+    if (r < 0.43) return this.generateCompoundWhereSelect();
+    if (r < 0.49) return this.generateDistinctSelect();
+    if (r < 0.55) return this.generateExpressionSelect();
+    if (r < 0.60) return this.generateNullSelect();
+    if (r < 0.66) return this.generateHavingSelect();
+    if (r < 0.72) return this.generateMultiGroupBySelect();
+    if (r < 0.78) return this.generateInSelect();
+    if (r < 0.84) return this.generateBetweenSelect();
+    if (r < 0.89) return this.generateInSubquerySelect();
+    if (r < 0.94) return this.generateExistsSelect();
+    return this.generateScalarSubquerySelect();
   }
 }
 

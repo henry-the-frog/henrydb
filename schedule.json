@@ -712,6 +712,17 @@
       "completed": "2026-04-10T19:35:04.095Z",
       "duration_ms": 300000,
       "summary": "Expanded fuzzer: HAVING, multi-column GROUP BY, IN, BETWEEN. Now 5800 fuzzer queries (100% match). Found and fixed BETWEEN with NULL bug — JS null coercion made null act as 0 in comparisons. Now correctly returns false for NULL BETWEEN x AND y."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add subquery support to fuzzer: WHERE EXISTS, WHERE col IN (SELECT ...), scalar subqueries. Find and fix bugs.",
+      "project": "henrydb",
+      "started": "2026-04-10T19:35:45.446Z",
+      "completed": "2026-04-10T19:36:44.700Z",
+      "duration_ms": 120000,
+      "summary": "Added subquery support to fuzzer: WHERE IN (SELECT ...), WHERE EXISTS, scalar subqueries. All 5800 queries still pass 100% — HenryDB handles subqueries correctly."
     }
   ],
   "focusProjects": [
@@ -979,6 +990,10 @@
     {
       "time": "2026-04-10T19:31:57.267Z",
       "msg": "Added T66 (BUILD) after end: Push fuzzer harder: add HAVING queries, multi-column GROUP BY, ORDER BY with expressions, nested conditions. Target 5000 total fuzzer queries."
+    },
+    {
+      "time": "2026-04-10T19:35:39.632Z",
+      "msg": "Added T67 (BUILD) after end: Add subquery support to fuzzer: WHERE EXISTS, WHERE col IN (SELECT ...), scalar subqueries. Find and fix bugs."
     }
   ]
 }
