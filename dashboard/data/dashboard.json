@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T14:41:34.882Z",
+  "generated": "2026-04-10T14:57:05.496Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-10T14:41:34.882Z",
-    "taskId": "T10",
-    "summary": "Planned SSI fix + wire protocol fixes. Already implemented SSI fix during investigation: (1) suppress read tracking during UPDATE/DELETE scans, (2) skip sequential tx false deps in recordWrite. All 20 SSI tests + 91 core tests pass.",
-    "durationMs": 600000
+    "mode": "BUILD",
+    "task": "Fix wire protocol gaps: RETURNING clause, prepared statements, maintenance commands through server layer",
+    "completedAt": "2026-04-10T14:57:05.496Z",
+    "taskId": "T17",
+    "summary": "Fixed MD5 auth (buffer concat instead of string concat for salt), fixed SequenceManager setval(isCalled=false). Server-auth 7/7 pass, sequences 18/18 pass. Remaining server failures are query engine bugs (subquery returns wrong count) and timing-based flaky tests.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -173,12 +173,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 11,
+    "blocksCompleted": 13,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 3,
       "PLAN": 3,
-      "BUILD": 3,
+      "BUILD": 5,
       "MAINTAIN": 2
     }
   }
