@@ -1124,9 +1124,31 @@
       "id": "T105",
       "mode": "BUILD",
       "task": "Write tests: pg client with prepared statements, parameterized queries, pipelining",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T102",
-      "started": "2026-04-10T21:12:51.750Z"
+      "started": "2026-04-10T21:12:51.750Z",
+      "completed": "2026-04-10T21:15:09.202Z",
+      "duration_ms": 300000,
+      "summary": "14/14 Extended Query Protocol tests pass. Covers parameterized queries, named prepared statements, connection pool, special characters. Fixed SQL parser escaped quotes bug (dead code in lexer). Also found + fixed the O Reilly apostrophe bug."
+    },
+    {
+      "id": "T106",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: whats the hardest thing that could still be broken? Options: (1) crash during mid-transaction WAL write — does ARIES recovery actually work? (2) concurrent persistent server with TransactionalDatabase, (3) VACUUM integration with persistent storage, (4) index rebuild correctness after crash",
+      "project": "henrydb",
+      "started": "2026-04-10T21:15:41.920Z",
+      "completed": "2026-04-10T21:16:02.329Z",
+      "duration_ms": 60000,
+      "summary": "DECISION: Crash injection testing for FileWAL + PersistentDatabase. Simulate: (1) crash mid-transaction (WAL has uncommitted records), (2) crash with partial WAL record (truncated write), (3) crash after COMMIT logged but before page flush. This tests real ARIES recovery correctness. Existing tests only cover in-memory WAL and clean restarts."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Crash injection tests for PersistentDatabase: simulate mid-transaction crash (uncommitted WAL records), partial WAL write (truncated record), and commit-logged-but-unflushed scenarios. Verify ARIES recovery correctness.",
+      "project": "henrydb",
+      "started": "2026-04-10T21:16:18.410Z"
     }
   ],
   "focusProjects": [
@@ -1538,6 +1560,14 @@
     {
       "time": "2026-04-10T21:10:54.377Z",
       "msg": "PLAN T102 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T21:15:36.694Z",
+      "msg": "Added T106 (THINK) after end: HenryDB: whats the hardest thing that could still be broken? Options: (1) crash during mid-transaction WAL write — does ARIES recovery actually work? (2) concurrent persistent server with TransactionalDatabase, (3) VACUUM integration with persistent storage, (4) index rebuild correctness after crash"
+    },
+    {
+      "time": "2026-04-10T21:16:10.758Z",
+      "msg": "Added T107 (BUILD) after end: Crash injection tests for PersistentDatabase: simulate mid-transaction crash (uncommitted WAL records), partial WAL write (truncated record), and commit-logged-but-unflushed scenarios. Verify ARIES recovery correctness."
     }
   ]
 }

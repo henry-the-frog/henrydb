@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T21:12:51.814Z",
+  "generated": "2026-04-10T21:16:18.473Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Write tests: pg client with prepared statements, parameterized queries, pipelining",
-    "startedAt": "2026-04-10T21:12:51.814Z",
-    "taskId": "T105"
+    "task": "Crash injection tests for PersistentDatabase: simulate mid-transaction crash (uncommitted WAL records), partial WAL write (truncated record), and commit-logged-but-unflushed scenarios. Verify ARIES recovery correctness.",
+    "startedAt": "2026-04-10T21:16:18.473Z",
+    "taskId": "T107"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1130,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 99,
+    "blocksCompleted": 101,
     "blocksTotal": 105,
     "modeDistribution": {
-      "THINK": 16,
+      "THINK": 17,
       "PLAN": 9,
-      "BUILD": 63,
+      "BUILD": 64,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }
