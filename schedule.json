@@ -235,6 +235,45 @@
       "completed": "2026-04-10T15:29:04.254Z",
       "duration_ms": 600000,
       "summary": "Post-fix test sweep: 12 specific tests fixed (SSI 5, HLL 1, MD5 auth 4, sequences 1, subquery 1). Net improvement muddied by flaky timing tests. Core fixes are solid — SSI SQL integration fully working, auth fixed, subquery evaluation fixed. Some test suites hang (server tests with port binding)."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix blog internal links (.html vs trailing slash) — TODO item, check all internal links for 404s and fix permalink mismatches",
+      "project": "blog",
+      "started": "2026-04-10T15:30:21.579Z",
+      "completed": "2026-04-10T15:33:16.497Z",
+      "duration_ms": 300000,
+      "summary": "Fixed blog internal links: 11 files updated (.html → trailing slash), fixed UTC date mismatch (2 posts with late MDT times shifted to next day in UTC), removed category prefix from 3 part series links. Pushed."
+    },
+    {
+      "id": "T24",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What should the next project be? Review skills, gaps, what would be impressive + educational. Consider: OS kernel, compiler backend (LLVM IR), network protocol, distributed system, or something weird.",
+      "project": "general"
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: implement VACUUM (dead tuple cleanup). Version maps grow unbounded — need GC for any serious workload. Epoch-based or scan-based.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: implement visibility map — bitmap of pages where all tuples are visible to all txns. Enables index-only scans by skipping MVCC check for known-all-visible pages.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T27",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push + dashboard sync + update TASKS.md with correct test counts and status",
+      "project": "general"
     }
   ],
   "focusProjects": [
@@ -342,6 +381,26 @@
     {
       "time": "2026-04-10T15:15:08.530Z",
       "msg": "Removed T20: "
+    },
+    {
+      "time": "2026-04-10T15:29:35.789Z",
+      "msg": "Added T23 (BUILD) after end: Fix blog internal links (.html vs trailing slash) — TODO item, check all internal links for 404s and fix permalink mismatches"
+    },
+    {
+      "time": "2026-04-10T15:29:42.627Z",
+      "msg": "Added T24 (THINK) after end: What should the next project be? Review skills, gaps, what would be impressive + educational. Consider: OS kernel, compiler backend (LLVM IR), network protocol, distributed system, or something weird."
+    },
+    {
+      "time": "2026-04-10T15:29:52.812Z",
+      "msg": "Added T25 (BUILD) after end: HenryDB: implement VACUUM (dead tuple cleanup). Version maps grow unbounded — need GC for any serious workload. Epoch-based or scan-based."
+    },
+    {
+      "time": "2026-04-10T15:30:01.783Z",
+      "msg": "Added T26 (BUILD) after end: HenryDB: implement visibility map — bitmap of pages where all tuples are visible to all txns. Enables index-only scans by skipping MVCC check for known-all-visible pages."
+    },
+    {
+      "time": "2026-04-10T15:30:08.945Z",
+      "msg": "Added T27 (MAINTAIN) after end: Git push + dashboard sync + update TASKS.md with correct test counts and status"
     }
   ]
 }

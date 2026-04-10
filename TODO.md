@@ -12,7 +12,6 @@ Items get removed (not checked off) once they enter the queue or are completed.
 
 
 ## Normal
-- [ ] Fix blog internal links (.html vs trailing slash)
 - [ ] Write more technical content for Daniel/CPython devs (Ken Jin got the JIT post!)
 - [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)
 

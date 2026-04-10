@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T15:29:04.321Z",
+  "generated": "2026-04-10T15:33:16.533Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement.",
-    "completedAt": "2026-04-10T15:29:04.321Z",
-    "taskId": "T22",
-    "summary": "Post-fix test sweep: 12 specific tests fixed (SSI 5, HLL 1, MD5 auth 4, sequences 1, subquery 1). Net improvement muddied by flaky timing tests. Core fixes are solid — SSI SQL integration fully working, auth fixed, subquery evaluation fixed. Some test suites hang (server tests with port binding).",
-    "durationMs": 600000
+    "mode": "BUILD",
+    "task": "Fix blog internal links (.html vs trailing slash) — TODO item, check all internal links for 404s and fix permalink mismatches",
+    "completedAt": "2026-04-10T15:33:16.533Z",
+    "taskId": "T23",
+    "summary": "Fixed blog internal links: 11 files updated (.html → trailing slash), fixed UTC date mismatch (2 posts with late MDT times shifted to next day in UTC), removed category prefix from 3 part series links. Pushed.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -173,12 +173,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 21,
+    "blocksCompleted": 22,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 3,
-      "BUILD": 7,
+      "BUILD": 8,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
