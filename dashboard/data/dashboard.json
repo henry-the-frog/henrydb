@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-10T21:57:03.575Z",
+  "generated": "2026-04-10T21:59:08.487Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: optimize scalar subqueries — uncorrelated scalar subqueries should be evaluated once, not per-row. SELECT AVG(x) should compute once and compare.",
-    "startedAt": "2026-04-10T21:57:03.575Z",
-    "taskId": "T123"
+    "completedAt": "2026-04-10T21:59:08.487Z",
+    "taskId": "T123",
+    "summary": "Hoisted uncorrelated scalar subqueries: 362x improvement. WHERE val > (SELECT AVG(x) FROM t) was O(n*m), now O(n+m). Decorrelator evaluates uncorrelated SUBQUERY once, replaces with literal. 2.9s → 8ms per query. All tests pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1132,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 116,
+    "blocksCompleted": 117,
     "blocksTotal": 105,
     "modeDistribution": {
       "THINK": 20,
       "PLAN": 9,
-      "BUILD": 76,
+      "BUILD": 77,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

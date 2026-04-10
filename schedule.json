@@ -1318,10 +1318,13 @@
     {
       "id": "T123",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: optimize scalar subqueries — uncorrelated scalar subqueries should be evaluated once, not per-row. SELECT AVG(x) should compute once and compare.",
       "project": "henrydb",
-      "started": "2026-04-10T21:57:03.509Z"
+      "started": "2026-04-10T21:57:03.509Z",
+      "completed": "2026-04-10T21:59:08.422Z",
+      "duration_ms": 180000,
+      "summary": "Hoisted uncorrelated scalar subqueries: 362x improvement. WHERE val > (SELECT AVG(x) FROM t) was O(n*m), now O(n+m). Decorrelator evaluates uncorrelated SUBQUERY once, replaces with literal. 2.9s → 8ms per query. All tests pass."
     }
   ],
   "focusProjects": [

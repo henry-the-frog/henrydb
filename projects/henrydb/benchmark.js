@@ -126,11 +126,11 @@ console.log('──────────────────────�
 
 bench('Scalar subquery', () => {
   db.execute('SELECT * FROM bench_select WHERE val > (SELECT AVG(val) FROM bench_select) LIMIT 10');
-}, 20);
+}, 200);
 
 bench('IN subquery', () => {
   db.execute('SELECT * FROM bench_select WHERE cat IN (SELECT DISTINCT cat FROM bench_select WHERE val > 5000) LIMIT 10');
-}, 20);
+}, 200);
 
 // ===== Parser Benchmarks =====
 console.log('\n▸ Parser');
