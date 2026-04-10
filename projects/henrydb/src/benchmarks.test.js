@@ -33,7 +33,7 @@ const N = 10000;
 describe('Benchmark: Sorted structures (10K ops)', () => {
   for (const [name, create, insert, get] of [
     ['B+ Tree (order=64)', () => new BPlusTree(64), (t, k, v) => t.insert(k, v), (t, k) => t.get(k)],
-    ['Skip List', () => new SkipList(), (t, k, v) => t.set(k, v), (t, k) => t.get(k)],
+    ['Skip List', () => new SkipList(), (t, k, v) => t.insert(k, v), (t, k) => t.get(k)],
     ['Treap', () => new Treap(), (t, k, v) => t.insert(k, v), (t, k) => t.get(k)],
   ]) {
     it(`${name}: insert ${N}`, () => {

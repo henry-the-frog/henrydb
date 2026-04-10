@@ -227,4 +227,9 @@ export class SkipList {
       memoryEstimate: this._size * 64 + levelCounts.reduce((s, c) => s + c * 8, 0), // rough estimate
     };
   }
+
+  // Aliases for API compatibility
+  set(key, value) { return this.insert(key, value); }
+  first() { return this.min(); }
+  last() { return this.max(); }
 }

@@ -123,4 +123,9 @@ export class RingBuffer {
       fillRatio: this._size / this.capacity,
     };
   }
+
+  // Aliases for API compatibility
+  peek() { return this.peekBack(); }
+  peekOldest() { return this.peekFront(); }
+  pop() { return this.shift(); }
 }
