@@ -296,15 +296,17 @@ export class HenryDBServer {
           const totalLen = 1 + len;
           if (conn.buffer.length < totalLen) return;
 
-          const msgBody = conn.buffer.subarray(1, totalLen);
+          const msgBody = conn.buffer.subarray(5, totalLen);
           conn.buffer = conn.buffer.subarray(totalLen);
 
           const password = parsePasswordMessage(msgBody);
 
           // Verify MD5: md5(md5(password + user) + salt)
           const inner = crypto.createHash('md5').update(conn.authPassword + conn.user).digest('hex');
-          const expected = 'md5' + crypto.createHash('md5').update(inner + conn.authSalt.toString('binary')).digest('hex');
-
+          const outerHash = crypto.createHash('md5');
+          outerHash.update(inner);
+          outerHash.update(conn.authSalt);
+          const expected = 'md5' + outerHash.digest('hex');
           if (password === expected) {
             this._sendStartupComplete(conn);
           } else {

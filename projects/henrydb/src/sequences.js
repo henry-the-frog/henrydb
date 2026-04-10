@@ -23,6 +23,13 @@ class Sequence {
    * Get next value.
    */
   nextval() {
+    // If setval was called with isCalled=false, return current value without incrementing
+    if (this._setvalPending) {
+      this._setvalPending = false;
+      this.isCalled = true;
+      return this.currentValue;
+    }
+
     const next = this.currentValue + this.increment;
 
     if (this.increment > 0 && next > this.maxValue) {
@@ -64,6 +71,7 @@ class Sequence {
     }
     this.currentValue = value;
     this.isCalled = isCalled;
+    if (!isCalled) this._setvalPending = true;
     return value;
   }
 
