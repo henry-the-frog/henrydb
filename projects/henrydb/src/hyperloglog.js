@@ -154,4 +154,13 @@ export class HyperLogLog {
     if (m === 64) return 0.709;
     return 0.7213 / (1 + 1.079 / m);
   }
+
+  getStats() {
+    return {
+      precision: this._p,
+      registers: this._m,
+      bytesUsed: this._registers.byteLength,
+      estimate: this.count()
+    };
+  }
 }
