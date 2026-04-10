@@ -478,6 +478,17 @@
       "completed": "2026-04-10T16:30:47.065Z",
       "duration_ms": 300000,
       "summary": "Visibility map: bitmap per table tracking all-visible pages. Checked by scan interceptor to skip MVCC checks. Invalidated on modification, set by VACUUM. Per-table management, hit/miss stats. 11/11 tests."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Integrate visibility map with MVCC scan interceptor: check vm before MVCC version checks, invalidate on write, set during VACUUM. Benchmark the improvement.",
+      "project": "henrydb",
+      "started": "2026-04-10T16:31:39.812Z",
+      "completed": "2026-04-10T16:34:52.886Z",
+      "duration_ms": 360000,
+      "summary": "Integrated visibility map: scan interceptor checks VM before MVCC version lookup (fast path for clean pages), INSERT/DELETE invalidate page bits, VACUUM marks clean pages. 39/39 tests pass. This is a real production optimization."
     }
   ],
   "focusProjects": [
@@ -649,6 +660,10 @@
     {
       "time": "2026-04-10T16:29:30.283Z",
       "msg": "Added T44 (BUILD) after end: Implement visibility map for HenryDB: bitmap per table tracking pages where all tuples are all-visible. Updated by VACUUM. Enables skipping MVCC checks for known-clean pages."
+    },
+    {
+      "time": "2026-04-10T16:31:31.491Z",
+      "msg": "Added T45 (BUILD) after end: Integrate visibility map with MVCC scan interceptor: check vm before MVCC version checks, invalidate on write, set during VACUUM. Benchmark the improvement."
     }
   ]
 }

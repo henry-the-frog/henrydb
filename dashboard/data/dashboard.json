@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T16:30:47.127Z",
+  "generated": "2026-04-10T16:34:52.949Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Implement visibility map for HenryDB: bitmap per table tracking pages where all tuples are all-visible. Updated by VACUUM. Enables skipping MVCC checks for known-clean pages.",
-    "completedAt": "2026-04-10T16:30:47.127Z",
-    "taskId": "T44",
-    "summary": "Visibility map: bitmap per table tracking all-visible pages. Checked by scan interceptor to skip MVCC checks. Invalidated on modification, set by VACUUM. Per-table management, hit/miss stats. 11/11 tests.",
-    "durationMs": 300000
+    "task": "Integrate visibility map with MVCC scan interceptor: check vm before MVCC version checks, invalidate on write, set during VACUUM. Benchmark the improvement.",
+    "completedAt": "2026-04-10T16:34:52.949Z",
+    "taskId": "T45",
+    "summary": "Integrated visibility map: scan interceptor checks VM before MVCC version lookup (fast path for clean pages), INSERT/DELETE invalidate page bits, VACUUM marks clean pages. 39/39 tests pass. This is a real production optimization.",
+    "durationMs": 360000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -353,12 +353,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 43,
+    "blocksCompleted": 44,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 26,
+      "BUILD": 27,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
