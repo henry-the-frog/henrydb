@@ -630,11 +630,14 @@ export function parse(sql) {
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
     }
-    const col = advance().value;
+    const colTok = advance();
+    const col = colTok.value;
     // Check for || concatenation or arithmetic operators
     const nextType = peek().type;
     if (nextType === 'CONCAT_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
-      let left = { type: 'column_ref', name: col };
+      let left = colTok.type === 'STRING' || colTok.type === 'NUMBER'
+        ? { type: 'literal', value: col }
+        : { type: 'column_ref', name: col };
       while (true) {
         const t = peek().type;
         if (t === 'CONCAT_OP') {
