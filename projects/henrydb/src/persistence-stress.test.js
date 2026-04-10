@@ -172,7 +172,7 @@ describe('Persistence Stress Tests', () => {
     }
     
     heap.flush();
-    const stats = bp.stats();
+    const stats = bp.stats;
     assert.ok(stats.evictions > 0, 'Should have evictions with pool size 2');
     
     // Verify all data accessible

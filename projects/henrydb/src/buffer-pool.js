@@ -123,6 +123,7 @@ export class BufferPoolManager {
     // Stats
     this._hits = 0;
     this._misses = 0;
+    this._evictions = 0;
     this._evictCallback = null;
   }
 
@@ -308,6 +309,7 @@ export class BufferPoolManager {
       evictable: this.replacer.size(),
       hits: this._hits,
       misses: this._misses,
+      evictions: this._evictions,
       hitRate: this._hits + this._misses > 0
         ? (this._hits / (this._hits + this._misses) * 100).toFixed(1) + '%'
         : 'N/A',
@@ -330,6 +332,7 @@ export class BufferPoolManager {
     // No free frames — evict LRU
     const victimFrameId = this.replacer.evict();
     if (victimFrameId === -1) return -1; // All frames pinned
+    this._evictions++;
     
     const frame = this._frames[victimFrameId];
     

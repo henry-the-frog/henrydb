@@ -2623,16 +2623,31 @@
     {
       "id": "T246",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix BufferPool/FileBackedHeap API mismatch so persistent-db and file-wal crash recovery work",
       "project": "henrydb",
-      "started": "2026-04-10T01:05:46.628Z"
+      "started": "2026-04-10T01:05:46.628Z",
+      "completed": "2026-04-10T01:11:29.509Z",
+      "duration_ms": 600000,
+      "summary": "MAJOR FIX: BufferPool/FileBackedHeap API fully bridged. BufferPool: null-disk guards, flushAll(writeFn), fetchPage(readFn). DiskManager: pageCount, lastAppliedLSN, _writeHeader. persistent-db 0→11/11, persistence-stress 0→6/7. file-wal crash recovery still 4/8 (deeper WAL replay issue)."
     },
     {
       "id": "T247",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Verify persistent-db tests, git push, session end"
+      "status": "done",
+      "task": "Verify persistent-db tests, git push, session end",
+      "started": "2026-04-10T01:11:36.339Z",
+      "completed": "2026-04-10T01:11:53.254Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. All persistence fixes deployed."
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix file-wal crash recovery: the 4 failing Crash Recovery tests",
+      "project": "henrydb",
+      "started": "2026-04-10T01:12:11.273Z"
     }
   ],
   "focusProjects": [
@@ -3632,6 +3647,10 @@
     {
       "time": "2026-04-10T01:05:13.522Z",
       "msg": "Added T247 (MAINTAIN) after end: Verify persistent-db tests, git push, session end"
+    },
+    {
+      "time": "2026-04-10T01:12:05.749Z",
+      "msg": "Added T248 (BUILD) after end: Fix file-wal crash recovery: the 4 failing Crash Recovery tests"
     }
   ]
 }

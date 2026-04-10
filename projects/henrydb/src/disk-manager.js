@@ -26,9 +26,14 @@ export class DiskManager {
    * @param {string} filePath - Path to the database file
    * @param {number} pageSize - Size of each page in bytes (default: 4096)
    */
-  constructor(filePath, pageSize = 4096) {
+  constructor(filePath, pageSizeOrOpts = 4096) {
     this.filePath = filePath;
-    this.pageSize = pageSize;
+    // Accept either a number (pageSize) or options object
+    if (typeof pageSizeOrOpts === 'object' && pageSizeOrOpts !== null) {
+      this.pageSize = pageSizeOrOpts.pageSize ?? 4096;
+    } else {
+      this.pageSize = pageSizeOrOpts ?? 4096;
+    }
     this._fd = openSync(filePath, 'a+'); // Create if not exists, read+write
     // Reopen with r+ for proper random access
     closeSync(this._fd);
