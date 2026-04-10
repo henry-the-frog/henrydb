@@ -155,15 +155,23 @@
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening direction check - best use of exploration time tonight"
+      "status": "done",
+      "task": "Evening direction check - best use of exploration time tonight",
+      "started": "2026-04-10T14:59:15.337Z",
+      "completed": "2026-04-10T14:59:33.274Z",
+      "duration_ms": 60000,
+      "summary": "5+ hours remaining. Fix subquery eval bug (real query engine correctness), then explore MVCC strategies from Andy Pavlo if time permits. Good balance of depth fix + learning."
     },
     {
       "id": "T14",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep read: Andy Pavlo CMU 15-445 MVCC implementation strategies (compare with HenryDB approach)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T14:59:43.788Z",
+      "completed": "2026-04-10T15:01:31.939Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into MVCC strategies (Pavlo framework). Compared 4 version storage approaches (append-only, delta, time-travel), 3 GC strategies, 4 CC protocols. HenryDB closest to PostgreSQL (append-only + SSI). Key gaps: no persistent version metadata, no index-MVCC integration, no real GC. Wrote detailed scratch note."
     },
     {
       "id": "T15",
