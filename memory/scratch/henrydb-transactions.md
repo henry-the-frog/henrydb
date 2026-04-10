@@ -202,6 +202,24 @@ xmin=0 as always-visible (bootstrap rows).
 3. The bottleneck was NOT where expected (PK check was O(1), WAL was O(n²))
 4. Direct heap insert: 7ms. SQL INSERT: 1323ms. The gap is the hot path.
 
+## SSI Bug Fixes (2026-04-10)
+
+### 5. Scan Interceptor Records Reads Too Broadly
+**Problem:** MVCC scan interceptor records reads for ALL visible rows during UPDATE/DELETE, not just rows matching WHERE. This creates false SSI dependencies between transactions that work on disjoint data.
+**Fix:** Added `suppressReadTracking` flag on MVCCTransaction. Session.execute() suppresses reads during UPDATE/DELETE scans, then only records reads for actually modified rows (via writeSet).
+
+### 6. Sequential Transactions Create False rw-Dependencies
+**Problem:** `recordWrite()` checks `readSets` which includes committed transactions' read sets. For sequential txns (T1 commits before T2 starts), T1's reads in readSets create spurious T1→rw→T2 dependencies.
+**Fix:** In `recordWrite()`, skip dependency creation if `otherTx` was visible in the current transaction's snapshot (meaning it committed before our snapshot).
+
+### 7. Snapshot Visibility Check Used Wrong API
+**Problem:** Code called `snapshot.has(txId)` but snapshot is `{xmin, xmax, activeSet}`, not a Set.
+**Fix:** Added `_wasVisibleInSnapshot(txId, snapshot)` method that correctly implements PostgreSQL-style snapshot visibility.
+
+### 8. MD5 Auth Salt Concatenation
+**Problem:** Server used `inner + salt.toString('binary')` (string concatenation), but pg client uses buffer concatenation `hash.update(inner); hash.update(salt_buffer)`.
+**Fix:** Changed to `hash.update(inner); hash.update(salt)` using Buffer directly.
+
 ### Current Benchmark (10K rows)
 - INSERT: 29,514 rows/sec
 - Point queries: 9,005/sec
