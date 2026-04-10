@@ -3499,7 +3499,7 @@ export class Database {
       const firstRow = result[0];
       return Object.values(firstRow)[0];
     }
-    if (node.type === 'function_call') {
+    if (node.type === 'function_call' || node.type === 'function') {
       return this._evalFunction(node.func, node.args, row);
     }
     if (node.type === 'cast') {
@@ -3521,10 +3521,20 @@ export class Database {
       }
       return node.elseResult ? this._evalValue(node.elseResult, row) : null;
     }
+    if (node.type === 'interval') {
+      return { __interval: true, value: node.value };
+    }
     if (node.type === 'arith') {
       const left = this._evalValue(node.left, row);
       const right = this._evalValue(node.right, row);
       if (left == null || right == null) return null;
+      // Date arithmetic with INTERVAL
+      if (right && right.__interval && (node.op === '+' || node.op === '-')) {
+        return this._dateArith(left, right.value, node.op);
+      }
+      if (left && left.__interval && node.op === '+') {
+        return this._dateArith(right, left.value, '+');
+      }
       switch (node.op) {
         case '+': return left + right;
         case '-': return left - right;
@@ -3554,6 +3564,25 @@ export class Database {
       return null;
     }
     return null;
+  }
+
+  _dateArith(dateStr, intervalStr, op) {
+    const d = new Date(String(dateStr));
+    if (isNaN(d.getTime())) return null;
+    const match = String(intervalStr).match(/^(\d+)\s*(year|month|day|hour|minute|second|week)s?$/i);
+    if (!match) return null;
+    const n = parseInt(match[1]) * (op === '-' ? -1 : 1);
+    const unit = match[2].toLowerCase();
+    switch (unit) {
+      case 'year': d.setUTCFullYear(d.getUTCFullYear() + n); break;
+      case 'month': d.setUTCMonth(d.getUTCMonth() + n); break;
+      case 'day': d.setUTCDate(d.getUTCDate() + n); break;
+      case 'week': d.setUTCDate(d.getUTCDate() + n * 7); break;
+      case 'hour': d.setUTCHours(d.getUTCHours() + n); break;
+      case 'minute': d.setUTCMinutes(d.getUTCMinutes() + n); break;
+      case 'second': d.setUTCSeconds(d.getUTCSeconds() + n); break;
+    }
+    return d.toISOString();
   }
 
   _evalFunction(func, args, row) {

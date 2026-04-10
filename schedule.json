@@ -1703,17 +1703,60 @@
     {
       "id": "T158",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix EXTRACT and DATE_PART functions — EXTRACT(YEAR FROM date)",
       "project": "henrydb",
-      "started": "2026-04-10T23:08:43.388Z"
+      "started": "2026-04-10T23:08:43.388Z",
+      "completed": "2026-04-10T23:12:33.484Z",
+      "duration_ms": 180000,
+      "summary": "EXTRACT and DATE_PART working. YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, DOW, DOY, EPOCH, QUARTER, WEEK all supported. UTC-consistent. Works through wire protocol."
     },
     {
       "id": "T159",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: add ALTER TABLE DROP COLUMN support",
+      "project": "henrydb",
+      "started": "2026-04-10T23:12:39.628Z",
+      "completed": "2026-04-10T23:13:07.209Z",
+      "duration_ms": 30000,
+      "summary": "ALTER TABLE DROP COLUMN already works. Drops from schema and all rows. Prevents dropping PK. New inserts work after drop. Tested through wire protocol."
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement INTERVAL type and date arithmetic — DATE + INTERVAL '1 day', timestamp subtraction",
+      "project": "henrydb",
+      "started": "2026-04-10T23:13:27.167Z"
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add GREATEST and LEAST functions",
       "project": "henrydb"
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add MOD function (modulo)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: write date/time functions test suite — EXTRACT, NOW, CURRENT_DATE, date arithmetic",
+      "project": "henrydb"
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: write a comprehensive blog post about the session B achievements",
+      "project": "blog"
     }
   ],
   "focusProjects": [
@@ -2345,6 +2388,26 @@
     {
       "time": "2026-04-10T23:06:13.489Z",
       "msg": "Added T159 (BUILD) after end: HenryDB: add ALTER TABLE DROP COLUMN support"
+    },
+    {
+      "time": "2026-04-10T23:13:21.239Z",
+      "msg": "Added T160 (BUILD) after end: HenryDB: implement INTERVAL type and date arithmetic — DATE + INTERVAL '1 day', timestamp subtraction"
+    },
+    {
+      "time": "2026-04-10T23:13:21.448Z",
+      "msg": "Added T161 (BUILD) after end: HenryDB: add GREATEST and LEAST functions"
+    },
+    {
+      "time": "2026-04-10T23:13:21.657Z",
+      "msg": "Added T162 (BUILD) after end: HenryDB: add MOD function (modulo)"
+    },
+    {
+      "time": "2026-04-10T23:13:21.867Z",
+      "msg": "Added T163 (BUILD) after end: HenryDB: write date/time functions test suite — EXTRACT, NOW, CURRENT_DATE, date arithmetic"
+    },
+    {
+      "time": "2026-04-10T23:13:22.077Z",
+      "msg": "Added T164 (BUILD) after end: HenryDB: write a comprehensive blog post about the session B achievements"
     }
   ]
 }

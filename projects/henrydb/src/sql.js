@@ -34,7 +34,7 @@ const KEYWORDS = new Set([
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
-  'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM',
+  'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL',
 ]);
 
 export function tokenize(sql) {
@@ -417,9 +417,20 @@ export function parse(sql) {
     // CURRENT_TIMESTAMP, CURRENT_DATE (no parens)
     if (peek().type === 'KEYWORD' && (peek().value === 'CURRENT_TIMESTAMP' || peek().value === 'CURRENT_DATE')) {
       const func = advance().value;
+      // Check for arithmetic after (e.g., CURRENT_DATE + INTERVAL '1 day')
+      let node = { type: 'function', func, args: [] };
+      while (['PLUS', 'MINUS'].includes(peek().type)) {
+        const op = peek().type === 'PLUS' ? '+' : '-';
+        advance();
+        const right = parsePrimary();
+        node = { type: 'arith', op, left: node, right };
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'function', func, args: [], alias: alias || func };
+      if (node.type === 'arith') {
+        return { type: 'expression', expr: node, alias };
+      }
+      return { ...node, alias: alias || func };
     }
 
     // Check for CAST expression in SELECT
@@ -842,6 +853,16 @@ export function parse(sql) {
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
+    // INTERVAL 'N unit'
+    if (t.type === 'KEYWORD' && t.value === 'INTERVAL') {
+      advance(); // consume INTERVAL
+      const strTok = peek();
+      if (strTok.type === 'STRING') {
+        advance();
+        return { type: 'interval', value: strTok.value };
+      }
+      throw new Error('INTERVAL requires a string literal');
+    }
     // Parenthesized expression
     if (t.type === '(') {
       advance(); // consume '('
