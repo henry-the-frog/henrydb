@@ -1,10 +1,14 @@
 # CURRENT.md — Work Session Status
 
-## Status: session-ended
+## Status: done
 
-mode: WORK SESSION A (8:15 AM - 2:15 PM MDT)
-started: 2026-04-10T14:15:00Z
+mode: THINK
+task: HenryDB investigation — fixed ARIES, recovery, WAL, Raft bugs
+current_position: T51
+started: 2026-04-10T18:17:00Z
+completed: 2026-04-10T18:36:00Z
 session_boundary: 2026-04-10T20:15:00Z
+tasks_completed_this_session: 1
 
 ## Session Summary
 

@@ -113,15 +113,134 @@ export class WriteAheadLog {
  */
 export class ARIESRecovery {
   constructor(wal, pageStore) {
-    this.wal = wal;
-    this.pageStore = pageStore; // {getPageLsn(pageId), applyRedo(pageId, after), applyUndo(pageId, before)}
+    if (!wal && !pageStore) {
+      // Self-contained mode: create internal WAL and page store
+      this.wal = new WriteAheadLog();
+      this.pageStore = new InMemoryPageStore();
+      this._data = new Map(); // High-level key→value store for convenience API
+      this._txnWrites = new Map(); // txId → [{key, before, after}]
+      this._selfContained = true;
+    } else {
+      this.wal = wal;
+      this.pageStore = pageStore;
+      this._selfContained = false;
+    }
     
     // Recovery state
     this.activeTxnTable = new Map();  // txId → {status, lastLsn}
     this.dirtyPageTable = new Map();  // pageId → recLsn (first LSN that dirtied this page)
     
     // Recovery stats
-    this.stats = { analysisRecords: 0, redoRecords: 0, undoRecords: 0, clrsWritten: 0 };
+    this.stats = { analysisRecords: 0, redoRecords: 0, undoRecords: 0, clrsWritten: 0, redone: 0, undone: 0 };
+  }
+
+  // ============================================================
+  // Convenience API (self-contained mode)
+  // ============================================================
+
+  /** Begin a transaction */
+  begin(txId) {
+    this.wal.append({ type: LOG_TYPE.BEGIN, txId });
+    this._txnWrites.set(txId, []);
+  }
+
+  /** Write a key-value pair within a transaction */
+  write(txId, key, value) {
+    const before = this._data.has(key) ? this._data.get(key) : null;
+    this._data.set(key, value);
+    const writes = this._txnWrites.get(txId) || [];
+    writes.push({ key, before, after: value });
+    this._txnWrites.set(txId, writes);
+    this.wal.append({
+      type: LOG_TYPE.UPDATE,
+      txId,
+      pageId: key,
+      before,
+      after: value,
+    });
+  }
+
+  /** Commit a transaction */
+  commit(txId) {
+    this.wal.append({ type: LOG_TYPE.COMMIT, txId });
+    this.wal.append({ type: LOG_TYPE.END, txId });
+    this._txnWrites.delete(txId);
+  }
+
+  /** Write a checkpoint */
+  checkpoint() {
+    // In self-contained mode, "flush" all current data to the page store
+    // This simulates dirty pages being written to disk before/during checkpoint
+    for (const [key, value] of this._data) {
+      // Find the latest LSN for this key
+      let latestLsn = 0;
+      for (const rec of this.wal.records) {
+        if (rec.type === LOG_TYPE.UPDATE && rec.pageId === key) {
+          latestLsn = Math.max(latestLsn, rec.lsn);
+        }
+      }
+      this.pageStore.applyRedo(key, value, latestLsn);
+    }
+    
+    const activeTxns = new Map();
+    // Track which transactions haven't been committed
+    const begun = new Set();
+    const ended = new Set();
+    for (const rec of this.wal.records) {
+      if (rec.type === LOG_TYPE.BEGIN) begun.add(rec.txId);
+      if (rec.type === LOG_TYPE.COMMIT || rec.type === LOG_TYPE.ABORT || rec.type === LOG_TYPE.END) ended.add(rec.txId);
+    }
+    for (const txId of begun) {
+      if (!ended.has(txId)) {
+        // Find last LSN for this txn
+        let lastLsn = 0;
+        for (const rec of this.wal.records) {
+          if (rec.txId === txId) lastLsn = rec.lsn;
+        }
+        activeTxns.set(txId, { status: 'active', lastLsn });
+      }
+    }
+    
+    this.wal.append({
+      type: LOG_TYPE.CHECKPOINT,
+      activeTxns,
+      dirtyPages: new Map(), // No dirty pages after flush
+    });
+  }
+
+  /** Simulate crash and run ARIES recovery */
+  crashAndRecover() {
+    // Reset recovery state
+    this.activeTxnTable = new Map();
+    this.dirtyPageTable = new Map();
+    this.stats = { analysisRecords: 0, redoRecords: 0, undoRecords: 0, clrsWritten: 0, redone: 0, undone: 0 };
+
+    // Simulate crash: pages written to disk (via checkpoint) survive
+    // Pages only in buffer pool (written after last checkpoint) are lost
+    const lastCkpt = this.wal.lastCheckpoint();
+    if (!lastCkpt) {
+      // No checkpoint — all pages lost (nothing was flushed to disk)
+      this.pageStore = new InMemoryPageStore();
+    }
+    // If checkpoint exists, pageStore already has the flushed state from checkpoint()
+    
+    // Clear in-memory data — will be rebuilt from pageStore after recovery
+    this._data = new Map();
+
+    // Run ARIES recovery
+    this._analysis();
+    this._redo();
+    this._undo();
+
+    // Sync _data from pageStore
+    for (const [pageId, page] of this.pageStore._pages) {
+      if (page.data !== null) {
+        this._data.set(pageId, page.data);
+      }
+    }
+
+    this.stats.redone = this.stats.redoRecords;
+    this.stats.undone = this.stats.undoRecords;
   }
 
   /**
@@ -350,4 +469,4 @@ export class InMemoryPageStore {
     return this._pages.get(pageId)?.data ?? null;
   }
 }
-export { ARIESRecoveryManager as AriesRecoveryManager };
+export { ARIESRecovery as AriesRecoveryManager };

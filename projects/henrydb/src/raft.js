@@ -299,10 +299,13 @@ export class RaftCluster {
   getNodeIds() { return [...this.nodes.keys()]; }
   getNode(id) { return this.nodes.get(id); }
   getLeader() {
+    let best = null;
     for (const node of this.nodes.values()) {
-      if (node.state === STATE.LEADER) return node;
+      if (node.state === STATE.LEADER) {
+        if (!best || node.currentTerm > best.currentTerm) best = node;
+      }
     }
-    return null;
+    return best;
   }
 
   /** Partition a node (can't send or receive) */

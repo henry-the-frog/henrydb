@@ -135,7 +135,7 @@ describe('WAL Integration', () => {
     
     // Verify WAL has all records
     const walRecords = wal.readFromStable();
-    const commits = walRecords.filter(r => r.type === 4); // WAL_TYPES.COMMIT = 4
+    const commits = walRecords.filter(r => r.type === 5); // WAL_TYPES.COMMIT = 5
     assert.strictEqual(commits.length, 10);
     
     heap.flush();
