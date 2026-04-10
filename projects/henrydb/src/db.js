@@ -3148,7 +3148,7 @@ export class Database {
           result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator });
           // Also store under canonical key for HAVING resolution
           const canonKey = `${col.func}(${col.arg})`;
-          if (name !== canonKey) result[canonKey] = result[name];
+          if (name !== canonKey) result[`__agg_${canonKey}`] = result[name];
         } else if (col.type === 'column') {
           const baseName = col.name.includes('.') ? col.name.split('.').pop() : col.name;
           const name = col.alias || baseName;
@@ -3161,8 +3161,8 @@ export class Database {
         this._collectAggregateExprs(ast.having).forEach(agg => {
           const argStr = typeof agg.arg === 'string' ? agg.arg : (agg.arg?.name || '*');
           const key = `${agg.func}(${argStr})`;
-          if (!(key in result)) {
-            result[key] = computeAgg(agg.func, argStr, agg.distinct);
+          if (!(key in result) && !(`__agg_${key}` in result)) {
+            result[`__agg_${key}`] = computeAgg(agg.func, argStr, agg.distinct);
           }
         });
       }
@@ -3191,6 +3191,15 @@ export class Database {
     // LIMIT
     if (ast.offset) resultRows = resultRows.slice(ast.offset);
     if (ast.limit) resultRows = resultRows.slice(0, ast.limit);
+
+    // Strip internal __agg_ keys before returning
+    resultRows = resultRows.map(row => {
+      const clean = {};
+      for (const [k, v] of Object.entries(row)) {
+        if (!k.startsWith('__agg_')) clean[k] = v;
+      }
+      return clean;
+    });
 
     return { type: 'ROWS', rows: resultRows };
   }
@@ -3475,6 +3484,9 @@ export class Database {
       const argStr = typeof node.arg === 'string' ? node.arg : (node.arg?.name || '*');
       const key = `${node.func}(${argStr})`;
       if (key in row) return row[key];
+      // Check prefixed aggregate keys (used for HAVING resolution)
+      const prefixedKey = `__agg_${key}`;
+      if (prefixedKey in row) return row[prefixedKey];
       // Try to find it with any alias pattern
       for (const k of Object.keys(row)) {
         if (k.toUpperCase().includes(node.func) && k.includes(argStr)) return row[k];
