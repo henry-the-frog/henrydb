@@ -250,9 +250,13 @@
     {
       "id": "T24",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "What should the next project be? Review skills, gaps, what would be impressive + educational. Consider: OS kernel, compiler backend (LLVM IR), network protocol, distributed system, or something weird.",
-      "project": "general"
+      "project": "general",
+      "started": "2026-04-10T15:33:55.565Z",
+      "completed": "2026-04-10T15:34:18.245Z",
+      "duration_ms": 300000,
+      "summary": "Decided: Git from scratch. Universally relevant, deep CS (Merkle trees, DAG, content-addressable storage, 3-way merge), great blog series potential, medium complexity. Second choice: TCP/IP stack. Portfolio gaps identified: networking, OS, compiler backends, crypto."
     },
     {
       "id": "T25",
@@ -274,6 +278,14 @@
       "status": "upcoming",
       "task": "Git push + dashboard sync + update TASKS.md with correct test counts and status",
       "project": "general"
+    },
+    {
+      "id": "T28",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan Git from scratch: define components (object store, index, refs, merge, diff, packfiles), test strategy, blog series outline. Target: working git implementation that can init/add/commit/log/diff/branch/merge/clone.",
+      "task": null,
+      "project": "git"
     }
   ],
   "focusProjects": [
@@ -401,6 +413,10 @@
     {
       "time": "2026-04-10T15:30:08.945Z",
       "msg": "Added T27 (MAINTAIN) after end: Git push + dashboard sync + update TASKS.md with correct test counts and status"
+    },
+    {
+      "time": "2026-04-10T15:34:27.897Z",
+      "msg": "Added T28 (PLAN) after end: Plan Git from scratch: define components (object store, index, refs, merge, diff, packfiles), test strategy, blog series outline. Target: working git implementation that can init/add/commit/log/diff/branch/merge/clone."
     }
   ]
 }
