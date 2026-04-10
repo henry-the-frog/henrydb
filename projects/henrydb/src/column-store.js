@@ -89,4 +89,128 @@ export class ColumnStore {
     }
     return result;
   }
+
+  // ============================================================
+  // Object-based API (key-value insert)
+  // ============================================================
+
+  /** Insert a row from an object {colName: value}. */
+  insert(obj) {
+    for (const col of this._schema) {
+      this._columns.get(col.name).push(obj[col.name] ?? null);
+    }
+    this._size++;
+  }
+
+  /** Scan all rows, yielding objects. */
+  *scan() {
+    for (let i = 0; i < this._size; i++) {
+      const row = {};
+      for (const col of this._schema) {
+        row[col.name] = this._columns.get(col.name)[i];
+      }
+      yield row;
+    }
+  }
+
+  // ============================================================
+  // Dictionary Encoding
+  // ============================================================
+
+  /**
+   * Auto-detect low-cardinality TEXT columns and dictionary-encode them.
+   * Returns {encoded: [{column, cardinality, compressionRatio}]}
+   */
+  autoDictEncode(cardinalityThreshold = 0.1) {
+    const encoded = [];
+    for (const col of this._schema) {
+      if (col.type !== 'TEXT') continue;
+      const data = this._columns.get(col.name);
+      if (data.length === 0) continue;
+      
+      const unique = new Set(data);
+      const cardinality = unique.size;
+      const ratio = cardinality / data.length;
+      
+      if (ratio <= cardinalityThreshold) {
+        // Build dictionary
+        const dict = [...unique];
+        const dictMap = new Map(dict.map((v, i) => [v, i]));
+        const codes = new Uint16Array(data.length);
+        for (let i = 0; i < data.length; i++) {
+          codes[i] = dictMap.get(data[i]);
+        }
+        
+        // Store encoded version
+        if (!this._dictionaries) this._dictionaries = new Map();
+        this._dictionaries.set(col.name, { dict, dictMap, codes });
+        
+        const compressionRatio = data.length > 0 
+          ? (data.reduce((s, v) => s + (v ? v.length : 0), 0)) / (codes.byteLength + dict.join('').length)
+          : 1;
+        
+        encoded.push({ column: col.name, cardinality, compressionRatio: Math.round(compressionRatio * 10) / 10 });
+      }
+    }
+    return { encoded };
+  }
+
+  /**
+   * Filter using dictionary encoding (fast equality filter on encoded column).
+   * Returns row indices matching the value.
+   */
+  dictFilter(colName, value) {
+    if (this._dictionaries && this._dictionaries.has(colName)) {
+      const { dictMap, codes } = this._dictionaries.get(colName);
+      const code = dictMap.get(value);
+      if (code === undefined) return [];
+      const indices = [];
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i] === code) indices.push(i);
+      }
+      return indices;
+    }
+    // Fallback: scan raw column
+    return this.filter(colName, v => v === value);
+  }
+
+  /**
+   * Get dictionary for a column (if encoded).
+   */
+  getDictionary(colName) {
+    return this._dictionaries?.get(colName) || null;
+  }
+
+  /** Alias for getDictionary */
+  getDictColumn(colName) {
+    return this._dictionaries?.get(colName) || null;
+  }
+
+  /**
+   * Group by a dictionary-encoded column.
+   * Returns Map<groupKey, array of row indices>.
+   * Much faster than scanning raw data for low-cardinality columns.
+   */
+  dictGroupBy(colName) {
+    const dictEntry = this._dictionaries?.get(colName);
+    if (dictEntry) {
+      // Fast path: use encoded codes
+      const { dict, codes } = dictEntry;
+      const groups = new Map();
+      for (const val of dict) groups.set(val, []);
+      for (let i = 0; i < codes.length; i++) {
+        groups.get(dict[codes[i]]).push(i);
+      }
+      return groups;
+    }
+    // Fallback: scan raw column
+    const col = this._columns.get(colName);
+    const groups = new Map();
+    for (let i = 0; i < col.length; i++) {
+      const key = col[i];
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(i);
+    }
+    return groups;
+  }
 }

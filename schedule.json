@@ -2890,17 +2890,21 @@
     {
       "id": "T272",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix cuckoo-filter.test.js (3 failures)",
       "project": "henrydb",
-      "started": "2026-04-10T02:49:56.705Z"
+      "started": "2026-04-10T02:49:56.705Z",
+      "completed": "2026-04-10T02:51:22.496Z",
+      "duration_ms": 180000,
+      "summary": "Fixed CuckooFilter: FPR from 61% to 1.35%. Root cause was weak/correlated hash functions. New MurmurHash-style mixer with independent seeds, bitmask indexing. 11/11 tests."
     },
     {
       "id": "T273",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Fix column-store-dict.test.js (6 failures)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T02:51:27.902Z"
     },
     {
       "id": "T274",
