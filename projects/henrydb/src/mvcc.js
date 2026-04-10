@@ -7,7 +7,7 @@
  * This is the object returned by MVCCManager.begin().
  */
 export class MVCCTransaction {
-  constructor(txId, manager) {
+  constructor(txId, manager, snapshot) {
     this.txId = txId;
     this.startTx = txId;
     this.writeSet = new Set();    // Track written keys (for rollback/WAL)
@@ -15,6 +15,11 @@ export class MVCCTransaction {
     this.manager = manager;       // Back-reference to MVCCManager
     this.committed = false;
     this.commitTxId = 0;          // The "commit timestamp" (nextTx at commit time)
+    // PostgreSQL-style snapshot: {xmin, xmax, activeSet}
+    // xmin: lowest active txid (all below are committed/aborted)
+    // xmax: first unassigned txid (all at/above haven't started)
+    // activeSet: Set of active txids between xmin and xmax
+    this.snapshot = snapshot || { xmin: txId, xmax: txId, activeSet: new Set() };
   }
 
   commit() { this.manager.commit(this); }
@@ -36,10 +41,23 @@ export class MVCCManager {
   get nextTxId() { return this._nextTx; }
   set nextTxId(v) { this._nextTx = v; }
 
-  /** Begin a new transaction. Returns MVCCTransaction object. */
+  /** Begin a new transaction. Returns MVCCTransaction object with PostgreSQL-style snapshot. */
   begin() {
     const txId = this._nextTx++;
-    const tx = new MVCCTransaction(txId, this);
+    
+    // Build snapshot: capture current state of active transactions
+    // Like PostgreSQL's xmin:xmax:xip_list
+    const activeSet = new Set();
+    let xmin = txId; // If no active txns, xmin = our own txId
+    for (const [id, otherTx] of this.activeTxns) {
+      if (!otherTx.committed) {
+        activeSet.add(id);
+        if (id < xmin) xmin = id;
+      }
+    }
+    const snapshot = { xmin, xmax: txId, activeSet };
+    
+    const tx = new MVCCTransaction(txId, this, snapshot);
     this.activeTxns.set(txId, tx);
     return tx;
   }
@@ -137,25 +155,44 @@ export class MVCCManager {
 
   /**
    * Check if a transaction's writes are visible to the given transaction.
-   * Snapshot isolation rules:
-   * - Own writes are always visible (txId === tx.txId)
-   * - A committed txn is visible only if it committed BEFORE tx started
-   *   (commitTxId <= tx.startTx)
+   * Uses PostgreSQL-style snapshot for proper visibility:
+   * - Own writes are always visible
+   * - txId < snapshot.xmin: always visible (committed before any active txn)
+   * - txId >= snapshot.xmax: always invisible (started after our snapshot)
+   * - txId in snapshot.activeSet: invisible (was in-progress at snapshot time)
+   * - Otherwise: visible (committed between xmin and xmax, not in activeSet)
    */
   isVisible(txId, tx) {
     if (txId === 0) return false;
     if (txId === tx.txId) return true;
     
-    // Look up the writing transaction
-    const writerTx = this.activeTxns.get(txId);
-    if (writerTx) {
-      // Must be committed AND committed before our snapshot
-      return writerTx.committed && writerTx.commitTxId <= tx.startTx;
+    const snap = tx.snapshot;
+    
+    // Below xmin: was committed (or aborted) before our snapshot
+    if (txId < snap.xmin) {
+      // But check it wasn't aborted
+      if (this.committedTxns.has(txId)) return true;
+      const writerTx = this.activeTxns.get(txId);
+      if (writerTx && writerTx.committed) return true;
+      // txId < xmin but not committed = was aborted
+      return false;
     }
     
-    // Transaction already cleaned up — if in committedTxns, it committed before us
-    // (we only clean up txns that all active snapshots have passed)
-    if (this.committedTxns.has(txId) && txId < tx.startTx) return true;
+    // At or above xmax: started after our snapshot, invisible
+    if (txId >= snap.xmax) return false;
+    
+    // Between xmin and xmax: check if it was active at snapshot time
+    if (snap.activeSet.has(txId)) {
+      // Was in-progress when we took our snapshot → invisible
+      // Even if it has since committed
+      return false;
+    }
+    
+    // Between xmin and xmax but NOT in activeSet → was committed at snapshot time
+    // Verify it's actually committed (not aborted)
+    if (this.committedTxns.has(txId)) return true;
+    const writerTx = this.activeTxns.get(txId);
+    if (writerTx && writerTx.committed) return true;
     
     return false;
   }

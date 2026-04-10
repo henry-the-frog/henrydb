@@ -370,3 +370,85 @@ describe('MVCC Stress Tests', () => {
     });
   });
 });
+
+describe('PostgreSQL-style Snapshot', () => {
+  it('handles out-of-order commits correctly', () => {
+    const mgr = new MVCCManager();
+    const heap = new MVCCHeap(new HeapFile('ooo'));
+    
+    // tx1 starts, inserts row
+    const tx1 = mgr.begin(); // txId=1
+    heap.insert([1, 'from_tx1'], tx1);
+    
+    // tx2 starts, inserts row
+    const tx2 = mgr.begin(); // txId=2
+    heap.insert([2, 'from_tx2'], tx2);
+    
+    // tx3 starts — snapshot captures tx1 and tx2 as active
+    const tx3 = mgr.begin(); // txId=3
+    
+    // tx2 commits BEFORE tx1 (out of order!)
+    tx2.commit();
+    
+    // tx3 should NOT see tx2's row (tx2 was active in tx3's snapshot)
+    const rows = [...heap.scan(tx3)].map(r => r.values);
+    assert.equal(rows.length, 0, 'tx3 should see no rows (both tx1 and tx2 were active at snapshot time)');
+    
+    // Now tx1 commits
+    tx1.commit();
+    
+    // tx3 still shouldn't see either row (snapshot was taken before both committed)
+    const rows2 = [...heap.scan(tx3)].map(r => r.values);
+    assert.equal(rows2.length, 0, 'tx3 still sees no rows after tx1 commits');
+    
+    tx3.commit();
+    
+    // tx4 starts fresh — should see both committed rows
+    const tx4 = mgr.begin();
+    const rows3 = [...heap.scan(tx4)].map(r => r.values);
+    assert.equal(rows3.length, 2, 'tx4 sees both committed rows');
+    tx4.commit();
+  });
+
+  it('snapshot xip_list only affects txids in [xmin, xmax) range', () => {
+    const mgr = new MVCCManager();
+    const heap = new MVCCHeap(new HeapFile('xip'));
+    
+    // Setup: committed data
+    const setup = mgr.begin(); // txId=1
+    heap.insert([1, 'committed'], setup);
+    setup.commit();
+    
+    // tx2 starts but doesn't commit yet
+    const tx2 = mgr.begin(); // txId=2
+    heap.insert([2, 'uncommitted'], tx2);
+    
+    // tx3 starts — snapshot: xmin=2, xmax=3, activeSet={2}
+    const tx3 = mgr.begin(); // txId=3
+    
+    // tx3 should see committed row (txId=1 < xmin=2, so always visible)
+    const rows = [...heap.scan(tx3)].map(r => r.values);
+    assert.equal(rows.length, 1);
+    assert.deepEqual(rows[0], [1, 'committed']);
+    
+    tx2.commit();
+    tx3.commit();
+  });
+
+  it('snapshot representation matches PostgreSQL format', () => {
+    const mgr = new MVCCManager();
+    
+    const tx1 = mgr.begin(); // txId=1
+    const tx2 = mgr.begin(); // txId=2
+    tx1.commit();
+    const tx3 = mgr.begin(); // txId=3, snapshot should have xmin=2, xmax=3, activeSet={2}
+    
+    assert.equal(tx3.snapshot.xmin, 2);
+    assert.equal(tx3.snapshot.xmax, 3);
+    assert.ok(tx3.snapshot.activeSet.has(2));
+    assert.equal(tx3.snapshot.activeSet.size, 1);
+    
+    tx2.commit();
+    tx3.commit();
+  });
+});
