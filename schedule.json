@@ -390,6 +390,28 @@
       "completed": "2026-04-10T15:56:44.501Z",
       "duration_ms": 480000,
       "summary": "Stress tests: 14 new tests all pass. 100 files, 10 levels nesting, 50 commits, binary content, 1MB files, Unicode, spaces in filenames, branch workflows, 100 commits in <2s perf test. Total: 102/102 tests."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB Trie: missing method causing test failure. Check what method is missing and implement it.",
+      "project": "henrydb",
+      "started": "2026-04-10T15:57:40.096Z",
+      "completed": "2026-04-10T16:06:58.189Z",
+      "duration_ms": 600000,
+      "summary": "Fixed Trie test (assertion wrong: prefix matches 100 words not 10, limit 20 gives 20 results). Fixed QueryRewriter: duplicate _eliminateRedundant method at line 358 overrode the real one at line 261 — the second had no EQUALS tautology check. Merged into single method."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB QueryRewriter: stale API assumptions. Check which API changed and update the rewriter.",
+      "project": "henrydb",
+      "started": "2026-04-10T16:07:08.938Z",
+      "completed": "2026-04-10T16:07:09.185Z",
+      "duration_ms": 0,
+      "summary": "Already fixed in T37 — duplicate method override was the root cause. 17/17 query-rewriter tests pass."
     }
   ],
   "focusProjects": [
@@ -529,6 +551,14 @@
     {
       "time": "2026-04-10T15:55:11.245Z",
       "msg": "Added T36 (BUILD) after end: Stress test tiny-git: large repos (1000 files, deep nesting), many commits (100+), large files, edge cases (empty commits, binary files, unicode filenames). Find and fix bugs."
+    },
+    {
+      "time": "2026-04-10T15:57:15.595Z",
+      "msg": "Added T37 (BUILD) after end: Fix HenryDB Trie: missing method causing test failure. Check what method is missing and implement it."
+    },
+    {
+      "time": "2026-04-10T15:57:23.062Z",
+      "msg": "Added T38 (BUILD) after end: Fix HenryDB QueryRewriter: stale API assumptions. Check which API changed and update the rewriter."
     }
   ]
 }
