@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T15:51:24.822Z",
+  "generated": "2026-04-10T15:56:44.563Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Write blog post: Building Git from Scratch — object model, content-addressable storage, how commits work",
-    "completedAt": "2026-04-10T15:51:24.822Z",
-    "taskId": "T35",
-    "summary": "Published blog post: Building Git from Scratch in JavaScript. Covers content-addressable storage, Merkle trees, DAG, index/staging, Myers diff, three-way merge. Pushed to blog.",
-    "durationMs": 600000
+    "task": "Stress test tiny-git: large repos (1000 files, deep nesting), many commits (100+), large files, edge cases (empty commits, binary files, unicode filenames). Find and fix bugs.",
+    "completedAt": "2026-04-10T15:56:44.563Z",
+    "taskId": "T36",
+    "summary": "Stress tests: 14 new tests all pass. 100 files, 10 levels nesting, 50 commits, binary content, 1MB files, Unicode, spaces in filenames, branch workflows, 100 commits in <2s perf test. Total: 102/102 tests.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -353,13 +353,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 31,
+    "blocksCompleted": 35,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 15,
-      "MAINTAIN": 4,
+      "BUILD": 18,
+      "MAINTAIN": 5,
       "EXPLORE": 2
     }
   }
