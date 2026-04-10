@@ -16,32 +16,37 @@
 
 const MAX_KICKS = 500;
 
-function fingerprint(key, fpBits) {
-  let h = 0x811c9dc5;
+function _hash(key, seed) {
+  let h = seed;
   const str = typeof key === 'string' ? key : String(key);
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
-    h = (h * 0x01000193) >>> 0;
+    h = Math.imul(h, 0x5bd1e995);
+    h ^= h >>> 13;
+    h = Math.imul(h, 0x5bd1e995);
+    h ^= h >>> 15;
   }
-  // Ensure fingerprint is non-zero
-  const fp = (h % ((1 << fpBits) - 1)) + 1;
+  return h >>> 0;
+}
+
+function fingerprint(key, fpBits) {
+  const h = _hash(key, 0x811c9dc5);
+  // Ensure fingerprint is non-zero (0 means empty slot)
+  const mask = (1 << fpBits) - 1;
+  const fp = (h & mask) || 1;
   return fp;
 }
 
 function hashIndex(key, numBuckets) {
-  let h = 0x01000193;
-  const str = typeof key === 'string' ? key : String(key);
-  for (let i = 0; i < str.length; i++) {
-    h = ((h ^ str.charCodeAt(i)) * 0x5bd1e995) >>> 0;
-  }
-  return h % numBuckets;
+  const h = _hash(key, 0x01000193);
+  return h & (numBuckets - 1); // numBuckets is power of 2
 }
 
 function altIndex(index, fp, numBuckets) {
   // i2 = i1 ⊕ hash(fingerprint)
-  let h = fp * 0x5bd1e995;
-  h = (h >>> 0) % numBuckets;
-  return (index ^ h) % numBuckets;
+  // Since numBuckets is power of 2, XOR preserves the range
+  const h = _hash(String(fp), 0x9e3779b9);
+  return ((index ^ h) & (numBuckets - 1));
 }
 
 /**

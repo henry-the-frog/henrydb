@@ -2872,13 +2872,52 @@
     {
       "id": "T270",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build a simple query compiler: translate SQL AST to a stack-based bytecode VM. Execute queries as bytecode instead of tree walking.",
       "project": "henrydb",
-      "started": "2026-04-10T02:46:02.049Z"
+      "started": "2026-04-10T02:46:02.049Z",
+      "completed": "2026-04-10T02:49:03.419Z",
+      "duration_ms": 600000,
+      "summary": "Built SQLite VDBE-inspired query bytecode VM: 32 opcodes (control/data/table/math/compare/aggregate/hash/output), QueryCompiler (SELECT/WHERE/scalar agg/GROUP BY), Program.toString() for debugging. 14 tests. VM is 75x slower than direct JS (expected for interpreter; real value is portability, optimization passes, and debugging)."
     },
     {
       "id": "T271",
+      "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final session C: git push, daily log, CURRENT.md, test count snapshot",
+      "skip_reason": "Over 1 hour remaining"
+    },
+    {
+      "id": "T272",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix cuckoo-filter.test.js (3 failures)",
+      "project": "henrydb",
+      "started": "2026-04-10T02:49:56.705Z"
+    },
+    {
+      "id": "T273",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix column-store-dict.test.js (6 failures)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T274",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix benchmarks.test.js (2 failures)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T275",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Something genuinely new: implement a Bw-tree (lock-free B-tree) or a skip list with MVCC",
+      "project": "henrydb"
+    },
+    {
+      "id": "T276",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final session C: git push, daily log, CURRENT.md, test count snapshot"
@@ -3985,6 +4024,30 @@
     {
       "time": "2026-04-10T02:45:29.259Z",
       "msg": "Added T271 (MAINTAIN) after end: Final session C: git push, daily log, CURRENT.md, test count snapshot"
+    },
+    {
+      "time": "2026-04-10T02:49:16.648Z",
+      "msg": "Removed T271: Over 1 hour remaining"
+    },
+    {
+      "time": "2026-04-10T02:49:50.313Z",
+      "msg": "Added T272 (BUILD) after end: Fix cuckoo-filter.test.js (3 failures)"
+    },
+    {
+      "time": "2026-04-10T02:49:50.541Z",
+      "msg": "Added T273 (BUILD) after end: Fix column-store-dict.test.js (6 failures)"
+    },
+    {
+      "time": "2026-04-10T02:49:50.802Z",
+      "msg": "Added T274 (BUILD) after end: Fix benchmarks.test.js (2 failures)"
+    },
+    {
+      "time": "2026-04-10T02:49:51.046Z",
+      "msg": "Added T275 (EXPLORE) after end: Something genuinely new: implement a Bw-tree (lock-free B-tree) or a skip list with MVCC"
+    },
+    {
+      "time": "2026-04-10T02:49:51.292Z",
+      "msg": "Added T276 (MAINTAIN) after end: Final session C: git push, daily log, CURRENT.md, test count snapshot"
     }
   ]
 }
