@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:36:44.765Z",
+  "generated": "2026-04-10T19:38:32.815Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add subquery support to fuzzer: WHERE EXISTS, WHERE col IN (SELECT ...), scalar subqueries. Find and fix bugs.",
-    "completedAt": "2026-04-10T19:36:44.765Z",
-    "taskId": "T67",
-    "summary": "Added subquery support to fuzzer: WHERE IN (SELECT ...), WHERE EXISTS, scalar subqueries. All 5800 queries still pass 100% — HenryDB handles subqueries correctly.",
-    "durationMs": 120000
+    "task": "Fuzzer edge cases: empty strings, large numbers, negative IDs, COALESCE, CASE WHEN. Also try LEFT JOIN with NULLs. Target: find at least one more bug.",
+    "completedAt": "2026-04-10T19:38:32.815Z",
+    "taskId": "T68",
+    "summary": "Tested edge cases: empty strings, large numbers, COALESCE, CASE WHEN, LEFT JOIN with NULLs, correlated subqueries, self-joins, ORDER BY non-select columns — ALL match SQLite. Found UNION column naming issue (uses second SELECT cols instead of first) — documented as known limitation. HenryDB is remarkably solid across all tested patterns.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 64,
+    "blocksCompleted": 65,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 40,
+      "BUILD": 41,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
