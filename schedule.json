@@ -1542,6 +1542,20 @@
       "completed": "2026-04-10T22:43:48.244Z",
       "duration_ms": 30000,
       "summary": "TRUNCATE TABLE works via wire protocol. Tested: 100 rows → TRUNCATE → 0 rows → INSERT again works."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add SERIAL data type (auto-incrementing primary key)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: write a comprehensive 'modern SQL' test — upsert, RETURNING, SERIAL, CTE, window functions, subqueries in SELECT",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2121,6 +2135,14 @@
     {
       "time": "2026-04-10T22:43:22.773Z",
       "msg": "Added T146 (BUILD) after end: HenryDB: add RETURNING support to INSERT ON CONFLICT"
+    },
+    {
+      "time": "2026-04-10T22:44:30.570Z",
+      "msg": "Added T147 (BUILD) after end: HenryDB: add SERIAL data type (auto-incrementing primary key)"
+    },
+    {
+      "time": "2026-04-10T22:45:19.054Z",
+      "msg": "Added T148 (BUILD) after end: HenryDB: write a comprehensive 'modern SQL' test — upsert, RETURNING, SERIAL, CTE, window functions, subqueries in SELECT"
     }
   ]
 }
