@@ -11,6 +11,7 @@ import { clone } from './clone.js';
 import { stashSave, stashApply, stashPop, stashList, stashDrop } from './stash.js';
 import { createLightweightTag, createAnnotatedTag, listTags, deleteTag } from './tag.js';
 import { reset } from './reset.js';
+import { cherryPick } from './cherry-pick.js';
 import { diffLines, formatUnifiedDiff } from './diff.js';
 import { readObject, hashObject } from './objects.js';
 import { getCurrentBranch, listBranches, resolveHead, resolveRef } from './refs.js';
@@ -271,6 +272,68 @@ try {
       break;
     }
     
+    case 'cherry-pick': {
+      const gitDir = findGitDir(cwd);
+      if (!gitDir) { console.error('Not a git repository'); process.exit(1); }
+      const workDir = resolve(gitDir, '..');
+      const result = cherryPick(gitDir, workDir, args[1]);
+      if (result.type === 'conflict') {
+        console.error(`CONFLICT in: ${result.conflicts.join(', ')}`);
+        process.exit(1);
+      }
+      console.log(`[${result.hash.slice(0, 7)}] ${result.message}`);
+      break;
+    }
+
+    case 'show': {
+      const gitDir = findGitDir(cwd);
+      if (!gitDir) { console.error('Not a git repository'); process.exit(1); }
+      const target = args[1] || 'HEAD';
+      let hash;
+      if (target === 'HEAD') hash = resolveHead(gitDir);
+      else if (target.length === 40) hash = target;
+      else hash = resolveRef(gitDir, `refs/heads/${target}`) || resolveRef(gitDir, `refs/tags/${target}`);
+      
+      if (!hash) { console.error(`Unknown ref: ${target}`); process.exit(1); }
+      
+      const { readObject: ro, parseCommit: pc } = await import('./objects.js');
+      const { flattenTree: ft } = await import('./checkout.js');
+      const obj = ro(gitDir, hash);
+      
+      if (obj.type === 'commit') {
+        const c = pc(obj.content);
+        console.log(`commit ${hash}`);
+        if (c.parents.length > 1) console.log(`Merge: ${c.parents.map(p => p.slice(0, 7)).join(' ')}`);
+        console.log(`Author: ${c.author}`);
+        console.log('');
+        console.log(`    ${c.message}`);
+        console.log('');
+        
+        // Show diff from parent
+        if (c.parents.length === 1) {
+          const parentCommit = pc(ro(gitDir, c.parents[0]).content);
+          const parentFiles = new Map(ft(gitDir, parentCommit.tree).map(f => [f.path, f]));
+          const currentFiles = new Map(ft(gitDir, c.tree).map(f => [f.path, f]));
+          
+          const allPaths = new Set([...parentFiles.keys(), ...currentFiles.keys()]);
+          for (const path of [...allPaths].sort()) {
+            const p = parentFiles.get(path);
+            const cur = currentFiles.get(path);
+            if (p?.hash === cur?.hash) continue;
+            
+            const old = p ? ro(gitDir, p.hash).content.toString() : '';
+            const _new = cur ? ro(gitDir, cur.hash).content.toString() : '';
+            const ops = diffLines(old, _new);
+            const output = formatUnifiedDiff(p ? path : '/dev/null', cur ? path : '/dev/null', ops);
+            if (output) console.log(output);
+          }
+        }
+      } else {
+        console.log(obj.content.toString());
+      }
+      break;
+    }
+
     case 'hash-object': {
       const file = args[1];
       const { readFileSync } = await import('fs');
