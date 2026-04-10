@@ -2369,19 +2369,7 @@ export class Database {
     
     // Remap right result's columns to match left result's column names
     const leftCols = leftResult.rows.length > 0 ? Object.keys(leftResult.rows[0]) : [];
-    const rightCols = rightResult.rows.length > 0 ? Object.keys(rightResult.rows[0]) : [];
-    
-    let rightRows = rightResult.rows;
-    if (leftCols.length > 0 && rightCols.length > 0 && leftCols.join() !== rightCols.join()) {
-      rightRows = rightResult.rows.map(row => {
-        const mapped = {};
-        const vals = Object.values(row);
-        for (let i = 0; i < leftCols.length && i < vals.length; i++) {
-          mapped[leftCols[i]] = vals[i];
-        }
-        return mapped;
-      });
-    }
+    const rightRows = this._remapUnionColumns(rightResult.rows, leftCols);
     
     let rows = [...leftResult.rows, ...rightRows];
 
@@ -2403,7 +2391,11 @@ export class Database {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
     
-    const rightKeys = new Set(rightResult.rows.map(r => JSON.stringify(r)));
+    // Remap right columns to left column names for consistent comparison
+    const leftCols = leftResult.rows.length > 0 ? Object.keys(leftResult.rows[0]) : [];
+    const rightRemapped = this._remapUnionColumns(rightResult.rows, leftCols);
+    
+    const rightKeys = new Set(rightRemapped.map(r => JSON.stringify(r)));
     const seen = new Set();
     const rows = leftResult.rows.filter(row => {
       const key = JSON.stringify(row);
@@ -2421,7 +2413,11 @@ export class Database {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
     
-    const rightKeys = new Set(rightResult.rows.map(r => JSON.stringify(r)));
+    // Remap right columns to left column names for consistent comparison
+    const leftCols = leftResult.rows.length > 0 ? Object.keys(leftResult.rows[0]) : [];
+    const rightRemapped = this._remapUnionColumns(rightResult.rows, leftCols);
+    
+    const rightKeys = new Set(rightRemapped.map(r => JSON.stringify(r)));
     const seen = new Set();
     const rows = leftResult.rows.filter(row => {
       const key = JSON.stringify(row);
@@ -2433,6 +2429,21 @@ export class Database {
     });
     
     return { type: 'ROWS', rows };
+  }
+  
+  /** Remap rows' column names to match target column names (for UNION/INTERSECT/EXCEPT) */
+  _remapUnionColumns(rows, targetCols) {
+    if (rows.length === 0 || targetCols.length === 0) return rows;
+    const srcCols = Object.keys(rows[0]);
+    if (srcCols.join() === targetCols.join()) return rows;
+    return rows.map(row => {
+      const mapped = {};
+      const vals = Object.values(row);
+      for (let i = 0; i < targetCols.length && i < vals.length; i++) {
+        mapped[targetCols[i]] = vals[i];
+      }
+      return mapped;
+    });
   }
 
   _explain(ast) {
