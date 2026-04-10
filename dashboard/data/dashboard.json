@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-10T18:48:58.001Z",
+  "generated": "2026-04-10T18:51:26.590Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix server-slow-query (3 failures), server-etl (2), server-migrations (2) — deeper server issues",
-    "completedAt": "2026-04-10T18:48:58.001Z",
-    "taskId": "T55",
-    "summary": "Fixed: added QueryCache.getStats(), added query log for pg_stat_slow_queries, fixed pg_stat_server. server-slow-query 3/3, server-etl 5/5, server-migrations 5/5, plus cascading fixes: server-stress 5/5, example-app 11/11.",
+    "task": "Fix regression-tests 2 remaining failures",
+    "completedAt": "2026-04-10T18:51:26.590Z",
+    "taskId": "T56",
+    "summary": "Fixed regression tests: added public RaftNode.startElection(), made _startElection resilient to missing cluster, added return value to crashAndRecover(). 33/33 regression tests pass.",
     "durationMs": 120000
   },
   "schedule": {
@@ -600,12 +600,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 51,
+    "blocksCompleted": 52,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 5,
-      "BUILD": 31,
+      "BUILD": 32,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

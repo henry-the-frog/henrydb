@@ -241,6 +241,13 @@ export class ARIESRecovery {
 
     this.stats.redone = this.stats.redoRecords;
     this.stats.undone = this.stats.undoRecords;
+    
+    // Return recovery result
+    return {
+      ...this.stats,
+      activeTxns: [...this.activeTxnTable.keys()],
+      dirtyPages: [...this.dirtyPageTable.keys()],
+    };
   }
 
   /**

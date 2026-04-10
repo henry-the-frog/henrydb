@@ -162,6 +162,9 @@ export class RaftNode {
   // Internal methods
   // ============================================================
 
+  /** Public API for triggering election */
+  startElection() { return this._startElection(); }
+
   _startElection() {
     this.state = STATE.CANDIDATE;
     this.currentTerm++;
@@ -174,7 +177,9 @@ export class RaftNode {
     const lastLogTerm = lastLogIndex >= 0 ? this.log[lastLogIndex].term : 0;
     
     // Request votes from all other nodes
-    for (const nodeId of this.cluster.getNodeIds()) {
+    if (!this.cluster?.getNodeIds) return; // No cluster — stay candidate
+    const nodeIds = this.cluster.getNodeIds();
+    for (const nodeId of nodeIds) {
       if (nodeId === this.id) continue;
       const response = this.cluster.sendRequestVote(
         nodeId, this.id, this.currentTerm, lastLogIndex, lastLogTerm
@@ -191,7 +196,7 @@ export class RaftNode {
     }
     
     // Check if we won
-    if (this.votesReceived.size > this.cluster.getNodeIds().length / 2) {
+    if (this.votesReceived.size > nodeIds.length / 2) {
       this._becomeLeader();
     }
   }

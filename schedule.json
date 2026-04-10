@@ -586,8 +586,12 @@
       "id": "T56",
       "mode": "BUILD",
       "task": "Fix regression-tests 2 remaining failures",
-      "status": "upcoming",
-      "plan_ref": "T52"
+      "status": "done",
+      "plan_ref": "T52",
+      "started": "2026-04-10T18:49:21.418Z",
+      "completed": "2026-04-10T18:51:26.553Z",
+      "duration_ms": 120000,
+      "summary": "Fixed regression tests: added public RaftNode.startElection(), made _startElection resilient to missing cluster, added return value to crashAndRecover(). 33/33 regression tests pass."
     },
     {
       "id": "T54",
