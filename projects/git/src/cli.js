@@ -10,7 +10,7 @@ import { merge } from './merge.js';
 import { clone } from './clone.js';
 import { diffLines, formatUnifiedDiff } from './diff.js';
 import { readObject, hashObject } from './objects.js';
-import { getCurrentBranch, listBranches, resolveHead } from './refs.js';
+import { getCurrentBranch, listBranches, resolveHead, resolveRef } from './refs.js';
 
 const args = process.argv.slice(2);
 const cmd = args[0];
@@ -142,6 +142,56 @@ try {
       break;
     }
     
+    case 'diff': {
+      const gitDir = findGitDir(cwd);
+      if (!gitDir) { console.error('Not a git repository'); process.exit(1); }
+      const workDir = resolve(gitDir, '..');
+      
+      if (args.length > 2) {
+        // diff <commit1> <commit2>
+        const { readObject: ro, parseCommit: pc, parseTree: pt } = await import('./objects.js');
+        const { flattenTree: ft } = await import('./checkout.js');
+        
+        const hash1 = args[1].length === 40 ? args[1] : resolveRef(gitDir, `refs/heads/${args[1]}`);
+        const hash2 = args[2].length === 40 ? args[2] : resolveRef(gitDir, `refs/heads/${args[2]}`);
+        
+        const c1 = pc(ro(gitDir, hash1).content);
+        const c2 = pc(ro(gitDir, hash2).content);
+        const files1 = new Map(ft(gitDir, c1.tree).map(f => [f.path, f]));
+        const files2 = new Map(ft(gitDir, c2.tree).map(f => [f.path, f]));
+        
+        const allPaths = new Set([...files1.keys(), ...files2.keys()]);
+        for (const path of [...allPaths].sort()) {
+          const f1 = files1.get(path);
+          const f2 = files2.get(path);
+          if (f1?.hash === f2?.hash) continue;
+          
+          const old = f1 ? ro(gitDir, f1.hash).content.toString() : '';
+          const _new = f2 ? ro(gitDir, f2.hash).content.toString() : '';
+          const ops = diffLines(old, _new);
+          const output = formatUnifiedDiff(f1 ? path : '/dev/null', f2 ? path : '/dev/null', ops);
+          if (output) console.log(output);
+        }
+      } else {
+        // diff (working tree vs index)
+        const { readIndex: ri } = await import('./index.js');
+        const { readFileSync: rfs } = await import('fs');
+        const index = ri(gitDir);
+        for (const entry of index) {
+          const fp = join(workDir, entry.path);
+          if (!existsSync(fp)) continue;
+          const current = rfs(fp, 'utf8');
+          const { readObject: ro } = await import('./objects.js');
+          const staged = ro(gitDir, entry.hash).content.toString();
+          if (current === staged) continue;
+          const ops = diffLines(staged, current);
+          const output = formatUnifiedDiff(entry.path, entry.path, ops);
+          if (output) console.log(output);
+        }
+      }
+      break;
+    }
+
     case 'clone': {
       const src = args[1];
       const dest = args[2] || src.split('/').pop();
