@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-10T23:29:03.982Z",
+  "generated": "2026-04-10T23:30:40.367Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: add SUBSTRING(str FROM pos FOR len) PostgreSQL syntax",
-    "startedAt": "2026-04-10T23:29:03.982Z",
-    "taskId": "T173"
+    "completedAt": "2026-04-10T23:30:40.367Z",
+    "taskId": "T173",
+    "summary": "SUBSTRING now supports PostgreSQL FROM...FOR syntax. SUBSTRING(str FROM pos FOR len), SUBSTRING(str FROM pos), SUBSTRING(str, pos, len) all work.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1132,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 166,
+    "blocksCompleted": 167,
     "blocksTotal": 105,
     "modeDistribution": {
       "THINK": 23,
       "PLAN": 9,
-      "BUILD": 123,
+      "BUILD": 124,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

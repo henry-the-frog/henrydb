@@ -1868,10 +1868,13 @@
     {
       "id": "T173",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add SUBSTRING(str FROM pos FOR len) PostgreSQL syntax",
       "project": "henrydb",
-      "started": "2026-04-10T23:29:03.946Z"
+      "started": "2026-04-10T23:29:03.946Z",
+      "completed": "2026-04-10T23:30:40.303Z",
+      "duration_ms": 120000,
+      "summary": "SUBSTRING now supports PostgreSQL FROM...FOR syntax. SUBSTRING(str FROM pos FOR len), SUBSTRING(str FROM pos), SUBSTRING(str, pos, len) all work."
     }
   ],
   "focusProjects": [

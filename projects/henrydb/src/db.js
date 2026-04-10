@@ -1087,13 +1087,15 @@ export class Database {
         }
       }
       
-      this._insertRow(table, ast.columns, values);
+      const rid = this._insertRow(table, ast.columns, values);
       inserted++;
       
       if (ast.returning) {
-        const orderedValues = this._orderValues(table, ast.columns, values);
+        // Read actual inserted values (including SERIAL-assigned IDs)
+        const lastTuple = [...table.heap.scan()].pop();
+        const actualValues = lastTuple?.values || lastTuple || [];
         const retRow = {};
-        table.schema.forEach((c, i) => { retRow[c.name] = orderedValues[i]; });
+        table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
         returnedRows.push(retRow);
       }
     }
@@ -1305,6 +1307,24 @@ export class Database {
       }
     } else {
       orderedValues = values;
+    }
+
+    // SERIAL auto-increment: assign next value for SERIAL columns with null value
+    for (let i = 0; i < table.schema.length; i++) {
+      if (table.schema[i].type === 'SERIAL' && (orderedValues[i] === null || orderedValues[i] === undefined)) {
+        if (!table._serialCounters) table._serialCounters = {};
+        if (!table._serialCounters[i]) {
+          // Find max existing value
+          let max = 0;
+          for (const tuple of table.heap.scan()) {
+            const v = tuple.values ? tuple.values[i] : tuple[i];
+            if (typeof v === 'number' && v > max) max = v;
+          }
+          table._serialCounters[i] = max;
+        }
+        table._serialCounters[i]++;
+        orderedValues[i] = table._serialCounters[i];
+      }
     }
 
     // Validate constraints
