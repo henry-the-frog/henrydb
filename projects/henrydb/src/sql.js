@@ -49,9 +49,17 @@ export function tokenize(sql) {
     if (src[i] === "'") {
       i++;
       let str = '';
-      while (i < src.length && src[i] !== "'") {
-        if (src[i] === "'" && src[i + 1] === "'") { str += "'"; i += 2; continue; }
-        str += src[i++];
+      while (i < src.length) {
+        if (src[i] === "'" && i + 1 < src.length && src[i + 1] === "'") {
+          // Escaped single quote ('')
+          str += "'";
+          i += 2;
+        } else if (src[i] === "'") {
+          // End of string
+          break;
+        } else {
+          str += src[i++];
+        }
       }
       if (i >= src.length) throw new Error('Unterminated string literal');
       i++; // closing quote

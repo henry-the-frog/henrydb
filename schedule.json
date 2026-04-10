@@ -1056,10 +1056,77 @@
     {
       "id": "T99",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement group commit in FileWAL: batch multiple transaction commits into a single fsync. Target: 10x persistent TPC-B throughput improvement.",
       "project": "henrydb",
-      "started": "2026-04-10T21:04:49.685Z"
+      "started": "2026-04-10T21:04:49.685Z",
+      "completed": "2026-04-10T21:08:27.491Z",
+      "duration_ms": 600000,
+      "summary": "Group commit: 70x persistent throughput improvement. immediate: 53 TPS, batch: 3704 TPS, none: 4348 TPS. Server defaults to batch (5ms sync interval). Wire protocol TPC-B: 13→53 TPS (4x). All 43 persistence tests pass. Same technique as PostgreSQL synchronous_commit=off."
+    },
+    {
+      "id": "T100",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 10 BUILDs done this session. What surprised me? fsync 77x bottleneck, SSI works, keyword bug. Whats hardest remaining in HenryDB? Wire protocol is now the bottleneck. Options: prepared statements, VACUUM with persistence, query plan caching through wire protocol.",
+      "project": "henrydb",
+      "started": "2026-04-10T21:09:08.519Z",
+      "completed": "2026-04-10T21:09:24.979Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passes: surprised by fsync bottleneck (77x), SSI write skew, keyword case bug. Next: blog post about profiling discovery, then prepared statements in wire protocol."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Blog post: The 77x fsync tax — profiling HenryDB persistent performance",
+      "project": "blog",
+      "started": "2026-04-10T21:09:39.731Z",
+      "completed": "2026-04-10T21:10:35.697Z",
+      "duration_ms": 180000,
+      "summary": "Published blog post: The 77x fsync Tax. Covers profiling methodology (parser, executor, buffer pool, WAL), the fsync discovery, group commit fix, and performance numbers. Pushed to blog."
+    },
+    {
+      "id": "T102",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PostgreSQL Extended Query Protocol: prepared statements and pipelining in HenryDB",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-10T21:10:42.882Z",
+      "completed": "2026-04-10T21:11:04.670Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 3 BUILD tasks for Extended Query Protocol. (1) Parse/Bind/Execute/Sync handlers, (2) prepared statement cache, (3) tests with pg client prepared statements and pipelining."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "task": "Implement Parse/Bind/Execute/Sync message handlers in the wire protocol server",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-04-10T21:11:11.786Z",
+      "completed": "2026-04-10T21:12:10.363Z",
+      "duration_ms": 120000,
+      "summary": "Extended Query Protocol (Parse/Bind/Execute/Sync) is ALREADY IMPLEMENTED in server.js. Tested: parameterized queries ($1 placeholders), named prepared statements, reused prepared statements — all work via pg client. No new code needed."
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "task": "Add prepared statement cache: parse SQL once, reuse across Bind/Execute cycles",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-04-10T21:12:17.887Z",
+      "completed": "2026-04-10T21:12:45.031Z",
+      "duration_ms": 60000,
+      "summary": "Prepared statement cache already exists (conn.preparedStatements Map). Benchmark: simple query 522ms vs prepared 530ms for 100 ops — no difference because parsing is only 0.016ms per query. TCP round-trip dominates. Cache works correctly for named prepared statements."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "task": "Write tests: pg client with prepared statements, parameterized queries, pipelining",
+      "status": "in-progress",
+      "plan_ref": "T102",
+      "started": "2026-04-10T21:12:51.750Z"
     }
   ],
   "focusProjects": [
@@ -1455,6 +1522,22 @@
     {
       "time": "2026-04-10T21:04:42.480Z",
       "msg": "Added T99 (BUILD) after end: Implement group commit in FileWAL: batch multiple transaction commits into a single fsync. Target: 10x persistent TPC-B throughput improvement."
+    },
+    {
+      "time": "2026-04-10T21:08:59.540Z",
+      "msg": "Added T100 (THINK) after end: Depth check: 10 BUILDs done this session. What surprised me? fsync 77x bottleneck, SSI works, keyword bug. Whats hardest remaining in HenryDB? Wire protocol is now the bottleneck. Options: prepared statements, VACUUM with persistence, query plan caching through wire protocol."
+    },
+    {
+      "time": "2026-04-10T21:09:32.959Z",
+      "msg": "Added T101 (BUILD) after end: Blog post: The 77x fsync tax — profiling HenryDB persistent performance"
+    },
+    {
+      "time": "2026-04-10T21:09:33.176Z",
+      "msg": "Added T102 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-10T21:10:54.377Z",
+      "msg": "PLAN T102 filled 3 BUILD tasks"
     }
   ]
 }
