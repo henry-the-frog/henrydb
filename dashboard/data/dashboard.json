@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T16:20:57.788Z",
+  "generated": "2026-04-10T16:26:19.726Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix more HenryDB test failures: scan c-e, f-l, m-r batches for remaining failures, prioritize quick fixes.",
-    "completedAt": "2026-04-10T16:20:57.788Z",
-    "taskId": "T41",
-    "summary": "Fixed HLL getStats() method (missing), HLL merge test precision (p=10→p=14, bound 10%→15%). data-structures-showcase 16/16, milestone-3000 24/24. Total fixes today: ~19 tests.",
-    "durationMs": 300000
+    "task": "Implement basic VACUUM for HenryDB MVCC: remove dead versions (xmax < oldest active txn), maintain version chain integrity, add test suite.",
+    "completedAt": "2026-04-10T16:26:19.726Z",
+    "taskId": "T42",
+    "summary": "Implemented VACUUM: removes all old MVCC versions when no active txns, deletes dead key markers. Improved GC: correctly identifies uncommitted txns (not just activeTxns size), preserves floor versions for active snapshots. 10/10 new tests, 81/81 core tests pass. Version map now manageable.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -353,12 +353,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 40,
+    "blocksCompleted": 41,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 23,
+      "BUILD": 24,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

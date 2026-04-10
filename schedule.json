@@ -445,6 +445,17 @@
       "completed": "2026-04-10T16:20:57.726Z",
       "duration_ms": 300000,
       "summary": "Fixed HLL getStats() method (missing), HLL merge test precision (p=10→p=14, bound 10%→15%). data-structures-showcase 16/16, milestone-3000 24/24. Total fixes today: ~19 tests."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement basic VACUUM for HenryDB MVCC: remove dead versions (xmax < oldest active txn), maintain version chain integrity, add test suite.",
+      "project": "henrydb",
+      "started": "2026-04-10T16:22:49.946Z",
+      "completed": "2026-04-10T16:26:19.664Z",
+      "duration_ms": 600000,
+      "summary": "Implemented VACUUM: removes all old MVCC versions when no active txns, deletes dead key markers. Improved GC: correctly identifies uncommitted txns (not just activeTxns size), preserves floor versions for active snapshots. 10/10 new tests, 81/81 core tests pass. Version map now manageable."
     }
   ],
   "focusProjects": [
@@ -604,6 +615,10 @@
     {
       "time": "2026-04-10T16:15:17.575Z",
       "msg": "Added T41 (BUILD) after end: Fix more HenryDB test failures: scan c-e, f-l, m-r batches for remaining failures, prioritize quick fixes."
+    },
+    {
+      "time": "2026-04-10T16:22:41.644Z",
+      "msg": "Added T42 (BUILD) after end: Implement basic VACUUM for HenryDB MVCC: remove dead versions (xmax < oldest active txn), maintain version chain integrity, add test suite."
     }
   ]
 }
