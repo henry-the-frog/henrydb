@@ -1413,6 +1413,25 @@
       "completed": "2026-04-10T22:15:51.997Z",
       "duration_ms": 60000,
       "summary": "COPY TO STDOUT already works! Tested: 10-row export, full round-trip (export 100 rows → import into new table → data matches, SUM verified). Both COPY FROM STDIN and COPY TO STDOUT work via pg-copy-streams."
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add COPY benchmark — compare bulk import speed via COPY vs individual INSERT",
+      "project": "henrydb",
+      "started": "2026-04-10T22:17:08.636Z",
+      "completed": "2026-04-10T22:17:37.451Z",
+      "duration_ms": 60000,
+      "summary": "COPY benchmark: 4.5x faster than individual INSERT (10K rows/s vs 2.2K rows/s for 1000 rows). COPY avoids per-statement TCP round-trip. Data verified (SUM matches)."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: create a LISTEN/NOTIFY integration test — pub/sub through wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-10T22:18:18.243Z"
     }
   ],
   "focusProjects": [
@@ -1932,6 +1951,14 @@
     {
       "time": "2026-04-10T22:14:52.125Z",
       "msg": "Added T131 (BUILD) after end: HenryDB: add COPY TO STDOUT support — allow exporting table data via pg-copy-streams"
+    },
+    {
+      "time": "2026-04-10T22:17:01.853Z",
+      "msg": "Added T132 (BUILD) after end: HenryDB: add COPY benchmark — compare bulk import speed via COPY vs individual INSERT"
+    },
+    {
+      "time": "2026-04-10T22:18:12.259Z",
+      "msg": "Added T133 (BUILD) after end: HenryDB: create a LISTEN/NOTIFY integration test — pub/sub through wire protocol"
     }
   ]
 }
