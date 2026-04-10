@@ -1,212 +1,345 @@
-// raft.js — Raft consensus algorithm (simplified)
-// Leader election + log replication. Each node is follower/candidate/leader.
-// Leader sends heartbeats. Followers promote to candidate on timeout.
-// Majority vote wins election. Log entries replicated through AppendEntries.
+// raft.js — Raft Consensus Protocol
+//
+// Implements the core Raft protocol for distributed consensus:
+// - Leader election with randomized timeouts
+// - Log replication (AppendEntries)
+// - Safety guarantees (election restriction, commit rules)
+//
+// This is a simulation — no real networking. Nodes communicate via message passing.
+//
+// Reference: Ongaro & Ousterhout, "In Search of an Understandable Consensus Algorithm" (2014)
 
+const STATE = { FOLLOWER: 'follower', CANDIDATE: 'candidate', LEADER: 'leader' };
+
+/**
+ * Log entry.
+ */
+class LogEntry {
+  constructor(term, command) {
+    this.term = term;
+    this.command = command;
+  }
+}
+
+/**
+ * Raft node — a single participant in the consensus cluster.
+ */
 export class RaftNode {
-  constructor(id, peers = []) {
+  constructor(id, cluster) {
     this.id = id;
-    this.peers = peers;
-    this.state = 'follower'; // follower | candidate | leader
+    this.cluster = cluster; // Reference to the RaftCluster for message passing
+    
+    // Persistent state
     this.currentTerm = 0;
     this.votedFor = null;
-    this.log = []; // [{term, command}]
-    this.commitIndex = -1;
-    this.lastApplied = -1;
-    // Leader state
-    this.nextIndex = {}; // peerId → next log index to send
-    this.matchIndex = {}; // peerId → highest replicated index
+    this.log = []; // Array of LogEntry (1-indexed conceptually, 0-indexed in array)
+    
+    // Volatile state
+    this.state = STATE.FOLLOWER;
+    this.commitIndex = -1;    // Highest committed log index
+    this.lastApplied = -1;    // Highest applied log index
+    this.appliedCommands = []; // Applied commands (state machine)
+    
+    // Leader-only state
+    this.nextIndex = {};   // nodeId → next log index to send
+    this.matchIndex = {};  // nodeId → highest replicated index
+    
+    // Election state
     this.votesReceived = new Set();
-    this.stats = { elections: 0, appendEntries: 0, commits: 0 };
+    this.electionTimeout = 0;
+    this._resetElectionTimeout();
+    
+    // Stats
+    this.stats = { elections: 0, votesGranted: 0, entriesReplicated: 0, heartbeats: 0 };
   }
 
   /**
-   * Start election (follower → candidate).
+   * Process a timer tick. Handles election timeouts and heartbeats.
    */
-  startElection() {
-    this.state = 'candidate';
+  tick() {
+    this.electionTimeout--;
+    
+    if (this.state === STATE.LEADER) {
+      // Send heartbeats
+      this._sendHeartbeats();
+    } else if (this.electionTimeout <= 0) {
+      // Start election
+      this._startElection();
+    }
+  }
+
+  /**
+   * Client request: propose a command to the cluster.
+   * Only the leader can accept client requests.
+   */
+  propose(command) {
+    if (this.state !== STATE.LEADER) return false;
+    this.log.push(new LogEntry(this.currentTerm, command));
+    // Replicate to followers
+    this._replicateEntries();
+    return true;
+  }
+
+  // ============================================================
+  // RPC Handlers
+  // ============================================================
+
+  /**
+   * Handle RequestVote RPC.
+   */
+  handleRequestVote(candidateId, term, lastLogIndex, lastLogTerm) {
+    let voteGranted = false;
+    
+    if (term > this.currentTerm) {
+      this.currentTerm = term;
+      this.state = STATE.FOLLOWER;
+      this.votedFor = null;
+    }
+    
+    if (term >= this.currentTerm &&
+        (this.votedFor === null || this.votedFor === candidateId) &&
+        this._isLogUpToDate(lastLogIndex, lastLogTerm)) {
+      voteGranted = true;
+      this.votedFor = candidateId;
+      this._resetElectionTimeout();
+      this.stats.votesGranted++;
+    }
+    
+    return { term: this.currentTerm, voteGranted };
+  }
+
+  /**
+   * Handle AppendEntries RPC (heartbeat + log replication).
+   */
+  handleAppendEntries(leaderId, term, prevLogIndex, prevLogTerm, entries, leaderCommit) {
+    if (term < this.currentTerm) {
+      return { term: this.currentTerm, success: false };
+    }
+    
+    if (term > this.currentTerm) {
+      this.currentTerm = term;
+      this.votedFor = null;
+    }
+    
+    this.state = STATE.FOLLOWER;
+    this._resetElectionTimeout();
+    
+    // Check log consistency
+    if (prevLogIndex >= 0) {
+      if (prevLogIndex >= this.log.length) {
+        return { term: this.currentTerm, success: false };
+      }
+      if (this.log[prevLogIndex].term !== prevLogTerm) {
+        // Delete conflicting entries
+        this.log.splice(prevLogIndex);
+        return { term: this.currentTerm, success: false };
+      }
+    }
+    
+    // Append new entries
+    for (let i = 0; i < entries.length; i++) {
+      const logIdx = prevLogIndex + 1 + i;
+      if (logIdx < this.log.length) {
+        if (this.log[logIdx].term !== entries[i].term) {
+          this.log.splice(logIdx);
+          this.log.push(entries[i]);
+        }
+      } else {
+        this.log.push(entries[i]);
+      }
+    }
+    
+    // Update commit index
+    if (leaderCommit > this.commitIndex) {
+      this.commitIndex = Math.min(leaderCommit, this.log.length - 1);
+      this._applyCommitted();
+    }
+    
+    return { term: this.currentTerm, success: true };
+  }
+
+  // ============================================================
+  // Internal methods
+  // ============================================================
+
+  _startElection() {
+    this.state = STATE.CANDIDATE;
     this.currentTerm++;
     this.votedFor = this.id;
     this.votesReceived = new Set([this.id]);
     this.stats.elections++;
-
-    return {
-      type: 'RequestVote',
-      term: this.currentTerm,
-      candidateId: this.id,
-      lastLogIndex: this.log.length - 1,
-      lastLogTerm: this.log.length > 0 ? this.log[this.log.length - 1].term : 0,
-    };
-  }
-
-  /**
-   * Handle a RequestVote RPC.
-   */
-  handleRequestVote(request) {
-    if (request.term < this.currentTerm) {
-      return { term: this.currentTerm, voteGranted: false };
+    this._resetElectionTimeout();
+    
+    const lastLogIndex = this.log.length - 1;
+    const lastLogTerm = lastLogIndex >= 0 ? this.log[lastLogIndex].term : 0;
+    
+    // Request votes from all other nodes
+    for (const nodeId of this.cluster.getNodeIds()) {
+      if (nodeId === this.id) continue;
+      const response = this.cluster.sendRequestVote(
+        nodeId, this.id, this.currentTerm, lastLogIndex, lastLogTerm
+      );
+      if (response && response.voteGranted) {
+        this.votesReceived.add(nodeId);
+      }
+      if (response && response.term > this.currentTerm) {
+        this.currentTerm = response.term;
+        this.state = STATE.FOLLOWER;
+        this.votedFor = null;
+        return;
+      }
     }
-
-    if (request.term > this.currentTerm) {
-      this.currentTerm = request.term;
-      this.state = 'follower';
-      this.votedFor = null;
-    }
-
-    const logOk = request.lastLogTerm > this._lastLogTerm() ||
-      (request.lastLogTerm === this._lastLogTerm() && request.lastLogIndex >= this.log.length - 1);
-
-    if ((this.votedFor === null || this.votedFor === request.candidateId) && logOk) {
-      this.votedFor = request.candidateId;
-      return { term: this.currentTerm, voteGranted: true };
-    }
-
-    return { term: this.currentTerm, voteGranted: false };
-  }
-
-  /**
-   * Handle vote response (as candidate).
-   */
-  handleVoteResponse(response) {
-    if (response.term > this.currentTerm) {
-      this.currentTerm = response.term;
-      this.state = 'follower';
-      return;
-    }
-
-    if (this.state !== 'candidate') return;
-
-    if (response.voteGranted) {
-      this.votesReceived.add(response.from || `peer_${this.votesReceived.size}`);
-    }
-
-    // Check majority
-    const majority = Math.floor((this.peers.length + 1) / 2) + 1;
-    if (this.votesReceived.size >= majority) {
+    
+    // Check if we won
+    if (this.votesReceived.size > this.cluster.getNodeIds().length / 2) {
       this._becomeLeader();
     }
   }
 
   _becomeLeader() {
-    this.state = 'leader';
-    for (const peer of this.peers) {
-      this.nextIndex[peer] = this.log.length;
-      this.matchIndex[peer] = -1;
+    this.state = STATE.LEADER;
+    // Initialize nextIndex and matchIndex for all followers
+    for (const nodeId of this.cluster.getNodeIds()) {
+      if (nodeId === this.id) continue;
+      this.nextIndex[nodeId] = this.log.length;
+      this.matchIndex[nodeId] = -1;
     }
   }
 
-  /**
-   * Client request: append command to log (leader only).
-   */
-  clientRequest(command) {
-    if (this.state !== 'leader') return { ok: false, reason: 'not leader' };
-    this.log.push({ term: this.currentTerm, command });
-    return { ok: true, index: this.log.length - 1 };
+  _sendHeartbeats() {
+    this.stats.heartbeats++;
+    this._replicateEntries();
   }
 
-  /**
-   * Create AppendEntries RPC for a peer.
-   */
-  createAppendEntries(peerId) {
-    const nextIdx = this.nextIndex[peerId] || 0;
-    const prevLogIndex = nextIdx - 1;
-    const prevLogTerm = prevLogIndex >= 0 ? this.log[prevLogIndex].term : 0;
-
-    return {
-      type: 'AppendEntries',
-      term: this.currentTerm,
-      leaderId: this.id,
-      prevLogIndex,
-      prevLogTerm,
-      entries: this.log.slice(nextIdx),
-      leaderCommit: this.commitIndex,
-    };
-  }
-
-  /**
-   * Handle AppendEntries RPC (as follower).
-   */
-  handleAppendEntries(request) {
-    if (request.term < this.currentTerm) {
-      return { term: this.currentTerm, success: false };
-    }
-
-    this.currentTerm = request.term;
-    this.state = 'follower';
-
-    // Check log consistency
-    if (request.prevLogIndex >= 0) {
-      if (request.prevLogIndex >= this.log.length || 
-          this.log[request.prevLogIndex].term !== request.prevLogTerm) {
-        return { term: this.currentTerm, success: false };
+  _replicateEntries() {
+    for (const nodeId of this.cluster.getNodeIds()) {
+      if (nodeId === this.id) continue;
+      
+      const nextIdx = this.nextIndex[nodeId] || 0;
+      const prevLogIndex = nextIdx - 1;
+      const prevLogTerm = prevLogIndex >= 0 && prevLogIndex < this.log.length
+        ? this.log[prevLogIndex].term : 0;
+      const entries = this.log.slice(nextIdx);
+      
+      const response = this.cluster.sendAppendEntries(
+        nodeId, this.id, this.currentTerm,
+        prevLogIndex, prevLogTerm, entries, this.commitIndex
+      );
+      
+      if (response && response.success) {
+        this.nextIndex[nodeId] = this.log.length;
+        this.matchIndex[nodeId] = this.log.length - 1;
+        this.stats.entriesReplicated += entries.length;
+      } else if (response && !response.success) {
+        // Decrement nextIndex and retry
+        if (this.nextIndex[nodeId] > 0) this.nextIndex[nodeId]--;
+      }
+      
+      if (response && response.term > this.currentTerm) {
+        this.currentTerm = response.term;
+        this.state = STATE.FOLLOWER;
+        this.votedFor = null;
+        return;
       }
     }
-
-    // Append new entries
-    for (let i = 0; i < request.entries.length; i++) {
-      const idx = request.prevLogIndex + 1 + i;
-      if (idx < this.log.length) {
-        this.log[idx] = request.entries[i]; // Overwrite conflicting
-      } else {
-        this.log.push(request.entries[i]);
-      }
-    }
-
-    if (request.leaderCommit > this.commitIndex) {
-      this.commitIndex = Math.min(request.leaderCommit, this.log.length - 1);
-    }
-
-    this.stats.appendEntries++;
-    return { term: this.currentTerm, success: true, matchIndex: this.log.length - 1 };
+    
+    // Update commit index: find N such that majority has matchIndex >= N
+    this._updateCommitIndex();
   }
 
-  /**
-   * Handle AppendEntries response (as leader).
-   */
-  handleAppendResponse(peerId, response) {
-    if (response.success) {
-      this.nextIndex[peerId] = (response.matchIndex || 0) + 1;
-      this.matchIndex[peerId] = response.matchIndex || 0;
-      this._advanceCommitIndex();
-    } else {
-      this.nextIndex[peerId] = Math.max(0, (this.nextIndex[peerId] || 1) - 1);
-    }
-  }
-
-  _advanceCommitIndex() {
+  _updateCommitIndex() {
     for (let n = this.log.length - 1; n > this.commitIndex; n--) {
       if (this.log[n].term !== this.currentTerm) continue;
-      let count = 1; // Self
-      for (const peer of this.peers) {
-        if ((this.matchIndex[peer] || -1) >= n) count++;
+      let count = 1; // Count self
+      for (const nodeId of this.cluster.getNodeIds()) {
+        if (nodeId === this.id) continue;
+        if ((this.matchIndex[nodeId] || -1) >= n) count++;
       }
-      if (count > (this.peers.length + 1) / 2) {
+      if (count > this.cluster.getNodeIds().length / 2) {
         this.commitIndex = n;
-        this.stats.commits++;
+        this._applyCommitted();
         break;
       }
     }
   }
 
-  _lastLogTerm() {
-    return this.log.length > 0 ? this.log[this.log.length - 1].term : 0;
+  _applyCommitted() {
+    while (this.lastApplied < this.commitIndex) {
+      this.lastApplied++;
+      this.appliedCommands.push(this.log[this.lastApplied].command);
+    }
+  }
+
+  _isLogUpToDate(lastLogIndex, lastLogTerm) {
+    const myLastIndex = this.log.length - 1;
+    const myLastTerm = myLastIndex >= 0 ? this.log[myLastIndex].term : 0;
+    if (lastLogTerm !== myLastTerm) return lastLogTerm >= myLastTerm;
+    return lastLogIndex >= myLastIndex;
+  }
+
+  _resetElectionTimeout() {
+    this.electionTimeout = 5 + Math.floor(Math.random() * 10); // 5-14 ticks
   }
 }
 
+/**
+ * RaftCluster — simulated cluster for synchronous message passing.
+ */
 export class RaftCluster {
-  constructor(size) {
-    this.nodes = Array.from({ length: size }, (_, i) => new RaftNode(i, size));
-    // Connect nodes
-    for (const node of this.nodes) {
-      node.peers = this.nodes.filter(n => n.id !== node.id);
+  constructor(nodeCount) {
+    this.nodes = new Map();
+    this._partitioned = new Set(); // Set of node IDs that can't communicate
+    
+    for (let i = 0; i < nodeCount; i++) {
+      const node = new RaftNode(i, this);
+      this.nodes.set(i, node);
     }
   }
-  getLeader() { return this.nodes.find(n => n.state === 'leader'); }
-  electLeader() {
-    // Simple election: first node becomes leader
-    const candidate = this.nodes[0];
-    candidate.state = 'leader';
-    candidate.term++;
-    return candidate;
+
+  getNodeIds() { return [...this.nodes.keys()]; }
+  getNode(id) { return this.nodes.get(id); }
+  getLeader() {
+    for (const node of this.nodes.values()) {
+      if (node.state === STATE.LEADER) return node;
+    }
+    return null;
+  }
+
+  /** Partition a node (can't send or receive) */
+  partition(nodeId) { this._partitioned.add(nodeId); }
+  /** Heal partition */
+  heal(nodeId) { this._partitioned.delete(nodeId); }
+
+  /** Tick all nodes */
+  tick() {
+    for (const node of this.nodes.values()) {
+      node.tick();
+    }
+  }
+
+  /** Run multiple ticks until a leader is elected */
+  electLeader(maxTicks = 100) {
+    for (let i = 0; i < maxTicks; i++) {
+      this.tick();
+      const leader = this.getLeader();
+      if (leader) return leader;
+    }
+    return null;
+  }
+
+  sendRequestVote(targetId, candidateId, term, lastLogIndex, lastLogTerm) {
+    if (this._partitioned.has(targetId) || this._partitioned.has(candidateId)) return null;
+    const target = this.nodes.get(targetId);
+    if (!target) return null;
+    return target.handleRequestVote(candidateId, term, lastLogIndex, lastLogTerm);
+  }
+
+  sendAppendEntries(targetId, leaderId, term, prevLogIndex, prevLogTerm, entries, leaderCommit) {
+    if (this._partitioned.has(targetId) || this._partitioned.has(leaderId)) return null;
+    const target = this.nodes.get(targetId);
+    if (!target) return null;
+    return target.handleAppendEntries(leaderId, term, prevLogIndex, prevLogTerm, entries, leaderCommit);
   }
 }
+
+export { STATE };
