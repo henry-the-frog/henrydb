@@ -2981,17 +2981,21 @@
     {
       "id": "T281",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement a Bloom filter with counting (CBF) — supports deletion unlike standard Bloom, used in network routers and caches",
       "project": "henrydb",
-      "started": "2026-04-10T03:09:26.054Z"
+      "started": "2026-04-10T03:09:26.054Z",
+      "completed": "2026-04-10T03:12:04.201Z",
+      "duration_ms": 300000,
+      "summary": "Built Counting Bloom Filter: Bloom filter with deletion support via counter arrays. O(k) insert/delete/contains. 1.1M inserts/sec, 1.3M lookups/sec. FPR 4.79% (target 5%), ghost rate 0.00% after deleting 50K of 100K items. 11/11 tests."
     },
     {
       "id": "T282",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Build a simple columnar compression library: RLE, delta encoding, dictionary encoding, bit-packing",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T03:12:13.177Z"
     },
     {
       "id": "T283",
