@@ -80,12 +80,16 @@ export class TransactionalDatabase {
           recoverFromFileWAL(heap, wal);
         }
         // Rebuild version maps: all recovered rows are always-visible
+        // Use xmin=1 (a "bootstrap" txId that's always committed)
         for (const [name, heap] of heaps) {
           const vm = versionMaps.get(name);
           for (const { pageId, slotIdx } of heap.scan()) {
-            vm.set(`${pageId}:${slotIdx}`, { xmin: 0, xmax: 0 });
+            vm.set(`${pageId}:${slotIdx}`, { xmin: 1, xmax: 0 });
           }
         }
+        // Mark txId=1 as committed so recovered rows are visible
+        mvcc.committedTxns.add(1);
+        if (mvcc._nextTx <= 1) mvcc._nextTx = 2;
       }
     }
 

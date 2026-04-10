@@ -2,32 +2,63 @@
 // Each row maintains a version chain. Transactions see a snapshot.
 // Used in PostgreSQL, MySQL InnoDB, Oracle.
 
-export class MVCCStore {
-  constructor() {
-    this._versions = new Map(); // key → [{value, txId, deleted}]
-    this._nextTx = 1;
-    this._activeTxns = new Map(); // txId → {startTx, writes}
+/**
+ * MVCCTransaction — represents an active transaction with its state.
+ * This is the object returned by MVCCManager.begin().
+ */
+export class MVCCTransaction {
+  constructor(txId, manager) {
+    this.txId = txId;
+    this.startTx = txId;
+    this.writeSet = new Set();    // Track written keys (for rollback/WAL)
+    this.undoLog = [];            // Undo functions for rollback
+    this.manager = manager;       // Back-reference to MVCCManager
+    this.committed = false;
+    this.commitTxId = 0;          // The "commit timestamp" (nextTx at commit time)
   }
 
-  /** Begin a new transaction. Returns txId. */
+  commit() { this.manager.commit(this); }
+  rollback() { this.manager.rollback(this); }
+}
+
+/**
+ * MVCCManager — manages multi-version concurrency control.
+ * begin() returns MVCCTransaction objects (not raw numbers).
+ */
+export class MVCCManager {
+  constructor() {
+    this._versions = new Map();   // key → [{value, txId, deleted}]
+    this._nextTx = 1;
+    this.activeTxns = new Map();  // txId → MVCCTransaction
+    this.committedTxns = new Set(); // Track committed txIds for vacuum
+  }
+
+  get nextTxId() { return this._nextTx; }
+  set nextTxId(v) { this._nextTx = v; }
+
+  /** Begin a new transaction. Returns MVCCTransaction object. */
   begin() {
     const txId = this._nextTx++;
-    this._activeTxns.set(txId, { startTx: txId, writes: [], committed: false });
-    return txId;
+    const tx = new MVCCTransaction(txId, this);
+    this.activeTxns.set(txId, tx);
+    return tx;
   }
 
-  /** Read a key at a transaction's snapshot. */
-  read(txId, key) {
+  /** Read a key at a transaction's snapshot. Accepts txId (number) or MVCCTransaction. */
+  read(txIdOrTx, key) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
+    const tx = this.activeTxns.get(txId);
+    if (!tx) return undefined;
+
     const versions = this._versions.get(key);
     if (!versions) return undefined;
-    
-    const tx = this._activeTxns.get(txId);
+
     // Find the latest version visible to this transaction
     for (let i = versions.length - 1; i >= 0; i--) {
       const v = versions[i];
       if (v.txId < tx.startTx || v.txId === txId) {
         // Check if the writing transaction committed
-        const writerTx = this._activeTxns.get(v.txId);
+        const writerTx = this.activeTxns.get(v.txId);
         if (v.txId === txId || !writerTx || writerTx.committed) {
           return v.deleted ? undefined : v.value;
         }
@@ -36,42 +67,104 @@ export class MVCCStore {
     return undefined;
   }
 
-  /** Write a key in a transaction. */
-  write(txId, key, value) {
+  /** Write a key in a transaction. Accepts txId or MVCCTransaction. */
+  write(txIdOrTx, key, value) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
     if (!this._versions.has(key)) this._versions.set(key, []);
     this._versions.get(key).push({ value, txId, deleted: false });
-    this._activeTxns.get(txId).writes.push(key);
+    const tx = this.activeTxns.get(txId);
+    if (tx) tx.writeSet.add(key);
   }
 
-  /** Delete a key in a transaction. */
-  delete(txId, key) {
+  /** Delete a key in a transaction. Accepts txId or MVCCTransaction. */
+  delete(txIdOrTx, key) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
     if (!this._versions.has(key)) this._versions.set(key, []);
     this._versions.get(key).push({ value: undefined, txId, deleted: true });
-    this._activeTxns.get(txId).writes.push(key);
+    const tx = this.activeTxns.get(txId);
+    if (tx) tx.writeSet.add(key);
   }
 
-  /** Commit a transaction. */
-  commit(txId) {
-    const tx = this._activeTxns.get(txId);
-    tx.committed = true;
+  /** Commit a transaction. Accepts txId or MVCCTransaction. */
+  commit(txIdOrTx) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
+    const tx = this.activeTxns.get(txId);
+    if (tx) {
+      tx.committed = true;
+      tx.commitTxId = this._nextTx; // Record commit "timestamp"
+    }
+    this.committedTxns.add(txId);
+  }
+
+  /** Compute the minimum xmin horizon — the lowest startTx of any active transaction. */
+  computeXminHorizon() {
+    if (this.activeTxns.size === 0) return this._nextTx;
+    let min = Infinity;
+    for (const tx of this.activeTxns.values()) {
+      if (!tx.committed && tx.startTx < min) min = tx.startTx;
+    }
+    return min === Infinity ? this._nextTx : min;
   }
 
   /** Rollback: remove all versions written by this transaction. */
-  rollback(txId) {
-    const tx = this._activeTxns.get(txId);
-    for (const key of tx.writes) {
+  rollback(txIdOrTx) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
+    const tx = this.activeTxns.get(txId);
+    if (!tx) return;
+    for (const key of tx.writeSet) {
       const versions = this._versions.get(key);
       if (versions) {
         const filtered = versions.filter(v => v.txId !== txId);
         this._versions.set(key, filtered);
       }
     }
-    this._activeTxns.delete(txId);
+    // Also run undo log
+    for (let i = tx.undoLog.length - 1; i >= 0; i--) {
+      try { tx.undoLog[i](); } catch (e) { /* ignore */ }
+    }
+    this.activeTxns.delete(txId);
+  }
+
+  /** Record a read (for SSI — no-op in basic MVCC). */
+  recordRead(txId, key, readVersion) {
+    // No-op in snapshot isolation. SSIManager overrides this.
+  }
+
+  /** Record a write (for SSI — no-op in basic MVCC). */
+  recordWrite(txId, key) {
+    // No-op in snapshot isolation. SSIManager overrides this.
+  }
+
+  /**
+   * Check if a transaction's writes are visible to the given transaction.
+   * Snapshot isolation rules:
+   * - Own writes are always visible (txId === tx.txId)
+   * - A committed txn is visible only if it committed BEFORE tx started
+   *   (commitTxId <= tx.startTx)
+   */
+  isVisible(txId, tx) {
+    if (txId === 0) return false;
+    if (txId === tx.txId) return true;
+    
+    // Look up the writing transaction
+    const writerTx = this.activeTxns.get(txId);
+    if (writerTx) {
+      // Must be committed AND committed before our snapshot
+      return writerTx.committed && writerTx.commitTxId <= tx.startTx;
+    }
+    
+    // Transaction already cleaned up — if in committedTxns, it committed before us
+    // (we only clean up txns that all active snapshots have passed)
+    if (this.committedTxns.has(txId) && txId < tx.startTx) return true;
+    
+    return false;
   }
 
   /** Garbage collect: remove old versions not needed by any active transaction. */
   gc() {
-    const minActive = Math.min(...[...this._activeTxns.keys()]);
+    const activeIds = [...this.activeTxns.keys()];
+    if (activeIds.length === 0) return 0;
+    const minActive = Math.min(...activeIds);
     let cleaned = 0;
     for (const [key, versions] of this._versions) {
       const visible = versions.filter(v => v.txId >= minActive || v.txId === versions[versions.length - 1].txId);
@@ -87,12 +180,125 @@ export class MVCCStore {
     return {
       keys: this._versions.size,
       totalVersions,
-      activeTxns: this._activeTxns.size,
+      activeTxns: this.activeTxns.size,
     };
   }
 }
 
-// Compatibility aliases
-export { MVCCStore as MVCCManager };
-export { MVCCStore as MVCCHeap };
-export { MVCCStore as MVCCTransaction };
+// Backward compatibility aliases
+export { MVCCManager as MVCCStore };
+
+/**
+ * MVCCHeap — wraps a HeapFile with MVCC visibility rules.
+ * Each row gets version metadata (xmin, xmax) for snapshot isolation.
+ */
+export class MVCCHeap {
+  constructor(heap) {
+    this._heap = heap;
+    this._versions = new Map(); // "pageId:slotIdx" → {xmin, xmax}
+  }
+
+  /** Insert a row, tracked by the given transaction. */
+  insert(values, tx) {
+    const { pageId, slotIdx } = this._heap.insert(values);
+    const key = `${pageId}:${slotIdx}`;
+    this._versions.set(key, { xmin: tx.txId, xmax: 0 });
+    tx.writeSet.add(key);
+    return { pageId, slotIdx };
+  }
+
+  /** Scan rows visible to the given transaction (snapshot isolation). */
+  *scan(tx) {
+    for (const row of this._heap.scan()) {
+      const key = `${row.pageId}:${row.slotIdx}`;
+      const ver = this._versions.get(key);
+      if (!ver) { yield row; continue; }
+
+      const created = this._isVisible(ver.xmin, tx);
+      const deleted = ver.xmax !== 0 && this._isVisible(ver.xmax, tx);
+
+      if (created && !deleted) {
+        yield row;
+      }
+    }
+  }
+
+  /** Update a row: mark old as deleted, insert new. Detects write-write conflicts. */
+  update(pageId, slotIdx, newValues, tx) {
+    const key = `${pageId}:${slotIdx}`;
+    const ver = this._versions.get(key);
+    if (ver) {
+      // Write-write conflict: another uncommitted txn already modified this row
+      if (ver.xmax !== 0 && ver.xmax !== tx.txId) {
+        const otherTx = tx.manager && tx.manager.activeTxns.get(ver.xmax);
+        if (otherTx && !otherTx.committed) {
+          throw new Error(`Write-write conflict: row ${key} already modified by tx ${ver.xmax}`);
+        }
+      }
+      ver.xmax = tx.txId;
+      tx.writeSet.add(`${key}:del`);
+    }
+    return this.insert(newValues, tx);
+  }
+
+  /** Delete a row: set xmax. Detects write-write conflicts. */
+  delete(pageId, slotIdx, tx) {
+    const key = `${pageId}:${slotIdx}`;
+    const ver = this._versions.get(key);
+    if (ver) {
+      // Write-write conflict detection
+      if (ver.xmax !== 0 && ver.xmax !== tx.txId) {
+        const otherTx = tx.manager && tx.manager.activeTxns.get(ver.xmax);
+        if (otherTx && !otherTx.committed) {
+          throw new Error(`Write-write conflict: row ${key} already deleted by tx ${ver.xmax}`);
+        }
+      }
+      ver.xmax = tx.txId;
+      tx.writeSet.add(`${key}:del`);
+    }
+  }
+
+  /**
+   * VACUUM: remove dead tuples not needed by any active transaction.
+   * A tuple is dead if xmax is set and committed and below the xmin horizon.
+   */
+  vacuum(mgr) {
+    const horizon = mgr.computeXminHorizon();
+    let deadTuplesRemoved = 0;
+    const toRemove = [];
+
+    for (const [key, ver] of this._versions) {
+      if (ver.xmax === 0) continue;
+      // Only reclaim if the deleting txn committed
+      if (!mgr.committedTxns.has(ver.xmax)) {
+        const delTx = mgr.activeTxns.get(ver.xmax);
+        if (!delTx || !delTx.committed) continue;
+      }
+      // Only reclaim if no active snapshot can see this version
+      if (ver.xmax < horizon) {
+        toRemove.push(key);
+        deadTuplesRemoved++;
+      }
+    }
+
+    for (const key of toRemove) {
+      this._versions.delete(key);
+      // Optionally: physically delete from heap
+      const [pageId, slotIdx] = key.split(':').map(Number);
+      try { this._heap.delete(pageId, slotIdx); } catch (e) { /* ignore */ }
+    }
+
+    return { deadTuplesRemoved };
+  }
+
+  /** Visibility check for snapshot isolation. */
+  _isVisible(txId, tx) {
+    if (txId === 0) return false;
+    if (txId === tx.txId) return true;
+    // Check if txId's transaction is committed and committed before tx started
+    const mgr = tx.manager;
+    if (mgr) return mgr.isVisible(txId, tx);
+    // Fallback: txId < startTx means it was around before us
+    return txId < tx.startTx;
+  }
+}

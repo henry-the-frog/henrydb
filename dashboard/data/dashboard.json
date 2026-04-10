@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-10T01:46:23.379Z",
+  "generated": "2026-04-10T02:18:31.363Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Scan remaining test files 301-518 for import errors and fix",
-    "completedAt": "2026-04-10T01:46:23.379Z",
-    "taskId": "T252",
-    "summary": "Fixed milestone-3000 19→24/24, data-structures-showcase 16/16. Systematic fix of SkipList (set→insert, first→min, last→max, range→generator), HLL/CMS merge return values, BitVector re-export. All pushed.",
-    "durationMs": 300000
+    "task": "Rewrite MVCCManager to return proper transaction objects with writeSet/undoLog/manager. Fix all 13 transactional-db tests.",
+    "startedAt": "2026-04-10T02:18:31.363Z",
+    "taskId": "T262"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -2848,42 +2846,222 @@
       {
         "id": "T241",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Harden the most critical HenryDB integration paths found in THINK",
         "task": null,
-        "started": "2026-04-10T00:49:28.993Z"
+        "started": "2026-04-10T00:49:28.993Z",
+        "completed": "2026-04-10T00:49:40.424Z",
+        "duration_ms": 30000,
+        "summary": "Planned 2 BUILD tasks: fix integration.test.js + disk-manager.js exports, then broader test sweep."
       },
       {
         "id": "T243",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix RobinHoodHashTable→RobinHoodHashMap in integration.test.js + add PAGE_SIZE export to disk-manager.js, verify all affected tests pass",
         "plan_ref": "T241",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T00:49:49.315Z",
+        "completed": "2026-04-10T00:59:43.383Z",
+        "duration_ms": 300000,
+        "summary": "Fixed 8 ghost export/API mismatches: RobinHoodHashMap, BufferPool alias, BitmapIndex set/lookup, RingBuffer peekBack/peekFront, SkipList insert/range generator, HLL merge return, PAGE_SIZE export, setEvictCallback, fetchPage readFn callback. Integration 12/12 (was 6/12). File-wal 4/8 (crash recovery needs deeper work)."
       },
       {
         "id": "T242",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Run broader test sweep on 20 critical test files to find any other import/export breaks",
         "plan_ref": "T241",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T00:59:54.712Z",
+        "completed": "2026-04-10T01:03:39.556Z",
+        "duration_ms": 300000,
+        "summary": "Test sweep: 20 critical files. Findings: integration 12/12 (fixed), LSM 14/14 (fixed set→insert), server 14/14, SQL 46/46, adaptive 10/10, buffer-pool 14/14, BTree 21/21, explain 15/15. Remaining: persistent-db 0/11 + file-wal 4/8 = same BufferPool fetchPage API mismatch root cause. tdigest test hangs."
       },
       {
         "id": "T244",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final housekeeping: git push, daily log, CURRENT.md",
+        "started": "2026-04-10T01:03:59.595Z",
+        "completed": "2026-04-10T01:04:58.615Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, daily log updated, CURRENT.md updated, failures.md updated."
+      },
+      {
+        "id": "T245",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Deep dive: map the exact API contract FileBackedHeap expects from BufferPool vs what BufferPoolManager provides. Design the fix.",
+        "started": "2026-04-10T01:05:21.168Z",
+        "completed": "2026-04-10T01:05:39.822Z",
+        "duration_ms": 60000,
+        "summary": "API mismatch mapped. BufferPool needs: flushAll(writeFn) callback support. DiskManager needs: pageCount property, lastAppliedLSN property. Both small fixes."
+      },
+      {
+        "id": "T246",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix BufferPool/FileBackedHeap API mismatch so persistent-db and file-wal crash recovery work",
+        "project": "henrydb",
+        "started": "2026-04-10T01:05:46.628Z",
+        "completed": "2026-04-10T01:11:29.509Z",
+        "duration_ms": 600000,
+        "summary": "MAJOR FIX: BufferPool/FileBackedHeap API fully bridged. BufferPool: null-disk guards, flushAll(writeFn), fetchPage(readFn). DiskManager: pageCount, lastAppliedLSN, _writeHeader. persistent-db 0→11/11, persistence-stress 0→6/7. file-wal crash recovery still 4/8 (deeper WAL replay issue)."
+      },
+      {
+        "id": "T247",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Verify persistent-db tests, git push, session end",
+        "started": "2026-04-10T01:11:36.339Z",
+        "completed": "2026-04-10T01:11:53.254Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed. All persistence fixes deployed."
+      },
+      {
+        "id": "T248",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix file-wal crash recovery: the 4 failing Crash Recovery tests",
+        "project": "henrydb",
+        "started": "2026-04-10T01:12:11.273Z",
+        "completed": "2026-04-10T01:17:56.091Z",
+        "duration_ms": 600000,
+        "summary": "COMPLETE FIX: DiskManager constructor accepts options object, eviction counter added to BufferPool stats. file-wal 0→8/8, crash-recovery 0→9/9, persistence-stress 0→7/7. Root cause was DiskManager({create:false}) parsed as pageSize=NaN. 82/82 tests passing across 7 critical test files."
+      },
+      {
+        "id": "T249",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Continue test sweep: find and fix more broken tests in HenryDB",
+        "project": "henrydb",
+        "started": "2026-04-10T01:18:13.359Z",
+        "completed": "2026-04-10T01:34:00.578Z",
+        "duration_ms": 600000,
+        "summary": "Fixed 4 more test files: edge-cases 0→59/59, property-tests 14→17/17, regression-tests 31→32/33. Remaining failures are deeper (transactional-db needs real MVCC interface work, query rewriter simplifyPredicate missing). Pushed 94d8375d."
+      },
+      {
+        "id": "T250",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix query-rewriter simplifyPredicate missing and tdigest test hang",
+        "project": "henrydb",
+        "started": "2026-04-10T01:34:18.479Z",
+        "completed": "2026-04-10T01:41:33.966Z",
+        "duration_ms": 600000,
+        "summary": "TDigest: 94x perf improvement (O(n^2)→O(n log n) compression, 100K values: 13s→142ms). Went from hanging test to 8/8 in 0.7s. Also added QueryRewriter.simplifyPredicate, regression-tests 33/33."
+      },
+      {
+        "id": "T251",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Quick fixes: integration-stress.test.js (16/26) and remaining import breaks",
+        "project": "henrydb",
+        "started": "2026-04-10T01:41:54.454Z",
+        "completed": "2026-04-10T01:42:53.001Z",
+        "duration_ms": 180000,
+        "summary": "integration-stress 16→18/26 (remaining 8 failures are MVCCStore vs MVCCHeap interface mismatch - needs real MVCC redesign). All quick fixes committed and pushed."
+      },
+      {
+        "id": "T252",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Scan remaining test files 301-518 for import errors and fix",
+        "project": "henrydb",
+        "started": "2026-04-10T01:43:34.488Z",
+        "completed": "2026-04-10T01:46:23.309Z",
+        "duration_ms": 300000,
+        "summary": "Fixed milestone-3000 19→24/24, data-structures-showcase 16/16. Systematic fix of SkipList (set→insert, first→min, last→max, range→generator), HLL/CMS merge return values, BitVector re-export. All pushed."
+      },
+      {
+        "id": "T253",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session C orientation: 2hrs evening time. What deserves curiosity-driven exploration? Review TODO urgents, project gaps, new ideas. Evening = EXPLORE bias.",
+        "started": "2026-04-10T02:15:39.979Z",
+        "completed": "2026-04-10T02:16:06.640Z",
+        "duration_ms": 60000,
+        "summary": "Evening plan: 1) Fix blog broken links (Daniel reported, TODO Normal), 2) EXPLORE something fresh — Monkey WASM closures or a new curiosity rabbit hole. HenryDB had 252 tasks today, switching projects for freshness."
+      },
+      {
+        "id": "T254",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Fix blog broken links (Daniel reported 5 broken pages)",
+        "task": null,
+        "skip_reason": "Cannot add blog project - 2 project limit"
+      },
+      {
+        "id": "T255",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB evening: wire MVCC into the real database (transactional-db tests broken, MVCCStore!=MVCCManager)",
+        "task": null,
+        "started": "2026-04-10T02:16:40.767Z"
+      },
+      {
+        "id": "T262",
+        "mode": "BUILD",
+        "task": "Rewrite MVCCManager to return proper transaction objects with writeSet/undoLog/manager. Fix all 13 transactional-db tests.",
         "status": "upcoming",
-        "task": "Final housekeeping: git push, daily log, CURRENT.md"
+        "plan_ref": "T255"
+      },
+      {
+        "id": "T263",
+        "mode": "BUILD",
+        "task": "Run integration-stress and mvcc-stress tests to verify no regressions",
+        "status": "upcoming",
+        "plan_ref": "T255"
+      },
+      {
+        "id": "T256",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "henrydb"
+      },
+      {
+        "id": "T257",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, dashboard sync"
+      },
+      {
+        "id": "T258",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Read a real database paper or codebase: LevelDB/RocksDB source, or Andy Pavlo lecture on MVCC",
+        "project": "henrydb"
+      },
+      {
+        "id": "T259",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Evening curiosity: explore something interesting in HenryDB (query compilation, vectorized execution, or columnar storage)",
+        "project": "henrydb"
+      },
+      {
+        "id": "T260",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Reflect on evening explorations. What was surprising?"
+      },
+      {
+        "id": "T261",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final session: git push, daily log, CURRENT.md"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 239,
-    "blocksTotal": 244,
+    "blocksCompleted": 241,
+    "blocksTotal": 263,
     "modeDistribution": {
-      "THINK": 21,
-      "PLAN": 15,
+      "THINK": 22,
+      "PLAN": 16,
       "BUILD": 169,
       "MAINTAIN": 31,
       "EXPLORE": 3
