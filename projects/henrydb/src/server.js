@@ -1342,6 +1342,41 @@ export class HenryDBServer {
 
     // pg_catalog queries (introspection)
     if (upper.includes('PG_CATALOG') || upper.includes('PG_TYPE') || upper.includes('PG_ATTRIBUTE') || upper.includes('PG_CLASS') || upper.includes('PG_NAMESPACE')) {
+      // Try to detect \d tablename pattern (pg_attribute + relname)
+      const relMatch = sql.match(/relname\s*=\s*'([^']+)'/i) || sql.match(/c\.relname\s*=\s*\$\d/i);
+      if (upper.includes('PG_ATTRIBUTE') && relMatch) {
+        // \d tablename — return column info from our schema
+        const tableName = relMatch[1];
+        const table = this.db.tables.get(tableName);
+        if (table && table.schema) {
+          const rows = table.schema.map((col, idx) => ({
+            attname: col.name,
+            format_type: col.type || 'text',
+            attnotnull: col.notNull ? true : false,
+            atthasdef: col.default !== undefined && col.default !== null,
+            attnum: idx + 1,
+            atttypid: 25, // text OID
+            atttypmod: -1,
+            attlen: -1,
+            attidentity: '',
+            attgenerated: '',
+            attisdropped: false,
+          }));
+          this._sendResult(conn, sql, { type: 'ROWS', rows });
+          return true;
+        }
+      }
+      
+      // pg_tables query
+      if (upper.includes('PG_TABLES') || (upper.includes('PG_CLASS') && upper.includes('RELKIND'))) {
+        const rows = [];
+        for (const [name] of this.db.tables) {
+          rows.push({ tablename: name, schemaname: 'public', tableowner: 'henrydb', tablespace: null });
+        }
+        this._sendResult(conn, sql, { type: 'ROWS', rows });
+        return true;
+      }
+      
       // Return empty result set for catalog queries we can't fully handle
       this._sendResult(conn, sql, { type: 'ROWS', rows: [], columns: [] });
       return true;
