@@ -1391,6 +1391,14 @@
       "completed": "2026-04-10T22:12:52.185Z",
       "duration_ms": 300000,
       "summary": "Fixed COPY FROM STDIN: server was sending ReadyForQuery after CopyInResponse, confusing pg-copy-streams. Suppressed ReadyForQuery during COPY mode. 10K row bulk import works. Also added COPY detection in Extended Query path. All 81 server tests pass."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: stress test the persistent server with COPY + normal queries interleaved, then crash and recover",
+      "project": "henrydb",
+      "started": "2026-04-10T22:13:32.363Z"
     }
   ],
   "focusProjects": [
@@ -1902,6 +1910,10 @@
     {
       "time": "2026-04-10T22:08:17.720Z",
       "msg": "Added T129 (BUILD) after end: HenryDB: fix the COPY FROM STDIN wire protocol issue — debug why CopyInResponse is not being sent"
+    },
+    {
+      "time": "2026-04-10T22:13:25.964Z",
+      "msg": "Added T130 (BUILD) after end: HenryDB: stress test the persistent server with COPY + normal queries interleaved, then crash and recover"
     }
   ]
 }
