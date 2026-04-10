@@ -100,7 +100,7 @@ describe('Trie', () => {
     
     // Prefix search
     const r = t.prefixSearch('word_000', 20);
-    assert.equal(r.length, 10); // word_00000 through word_00009
+    assert.equal(r.length, 20); // word_00000 through word_00099 (100 matches), limited to 20
     
     console.log(`  10K words, prefix 'word_000': ${r.length} results`);
   });

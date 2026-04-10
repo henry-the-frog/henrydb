@@ -260,28 +260,33 @@ export class QueryRewriter {
   _eliminateRedundant(expr) {
     if (!expr || typeof expr !== 'object') return expr;
 
-    // 1 = 1, TRUE = TRUE, etc.
-    if (expr.type === 'EQUALS' || expr.type === 'comparison') {
-      if (this._isEqual(expr.left, expr.right)) {
+    // 1 = 1, TRUE = TRUE, x = x etc.
+    if ((expr.type === 'EQUALS' || expr.type === 'comparison') && expr.left && expr.right) {
+      const eq = this._isEqual(expr.left, expr.right);
+      if (eq) {
         this._stats.redundantEliminations++;
         return { type: 'literal', value: true };
       }
     }
 
-    // AND with TRUE → other side
+    // AND simplification
     if (expr.type === 'AND') {
       expr.left = this._eliminateRedundant(expr.left);
       expr.right = this._eliminateRedundant(expr.right);
       if (expr.left?.type === 'literal' && expr.left.value === true) return expr.right;
       if (expr.right?.type === 'literal' && expr.right.value === true) return expr.left;
+      if (expr.left?.type === 'literal' && expr.left.value === false) return expr.left;
+      if (expr.right?.type === 'literal' && expr.right.value === false) return expr.right;
     }
 
-    // OR with TRUE → TRUE
+    // OR simplification
     if (expr.type === 'OR') {
       expr.left = this._eliminateRedundant(expr.left);
       expr.right = this._eliminateRedundant(expr.right);
       if (expr.left?.type === 'literal' && expr.left.value === true) return expr.left;
       if (expr.right?.type === 'literal' && expr.right.value === true) return expr.right;
+      if (expr.left?.type === 'literal' && expr.left.value === false) return expr.right;
+      if (expr.right?.type === 'literal' && expr.right.value === false) return expr.left;
     }
 
     return expr;
@@ -352,19 +357,7 @@ export class QueryRewriter {
     return expr;
   }
 
-  _eliminateRedundant(expr) {
-    if (!expr || typeof expr !== 'object') return expr;
-    // TRUE AND x → x, FALSE OR x → x
-    if (expr.type === 'AND') {
-      if (expr.left?.type === 'literal' && expr.left.value === true) return expr.right;
-      if (expr.right?.type === 'literal' && expr.right.value === true) return expr.left;
-    }
-    if (expr.type === 'OR') {
-      if (expr.left?.type === 'literal' && expr.left.value === false) return expr.right;
-      if (expr.right?.type === 'literal' && expr.right.value === false) return expr.left;
-    }
-    return expr;
-  }
+  // (simplified version merged into main _eliminateRedundant above)
 
   _deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
