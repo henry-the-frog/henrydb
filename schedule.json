@@ -183,6 +183,45 @@
       "completed": "2026-04-10T15:03:06.775Z",
       "duration_ms": 600000,
       "summary": "CockroachDB uses timestamp ordering (not SSI) for serializability. Key innovation: per-node timestamp cache tracks recent reads — any write conflicting with a later read is aborted. Interval-based cache handles scans elegantly (prevents phantoms). Simpler than SSI dependency graphs. Parallel Commits protocol pipelines distributed commit. Detailed notes in scratch/mvcc-strategies.md."
+    },
+    {
+      "id": "T18",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design timestamp cache for HenryDB: CockroachDB-style interval timestamp cache as alternative to SSI dependency tracking. Would solve scan false positive issue more elegantly.",
+      "project": "henrydb",
+      "started": "2026-04-10T15:05:10.417Z",
+      "completed": "2026-04-10T15:06:01.970Z",
+      "duration_ms": 300000,
+      "summary": "Analyzed both approaches: CockroachDB timestamp cache vs PostgreSQL SIRead locks. For single-node HenryDB, SSI with predicate-level locks is better fit. Designed 3-level lock granularity (tuple/page/table) with escalation. Wrote scratch/henrydb-predicate-locks.md. Decided NOT to switch to timestamp ordering — SSI is already working and more appropriate for single-node."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix subquery evaluation: server-integration test expects 2 rows from WHERE price > (SELECT AVG(price)...) but gets 4. Debug query engine subquery handling.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement CockroachDB-style timestamp cache in HenryDB: interval-based read timestamp cache, integrate with MVCC conflict detection, test with existing SSI test suite.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write blog post: How CockroachDB and PostgreSQL Prevent Write Skew Differently — timestamp cache vs SSI dependency graphs, with HenryDB as test bed.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T22",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement.",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -266,6 +305,26 @@
     {
       "time": "2026-04-10T14:41:26.778Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T15:04:16.500Z",
+      "msg": "Added T18 (THINK) after end: Design timestamp cache for HenryDB: CockroachDB-style interval timestamp cache as alternative to SSI dependency tracking. Would solve scan false positive issue more elegantly."
+    },
+    {
+      "time": "2026-04-10T15:04:27.883Z",
+      "msg": "Added T19 (BUILD) after end: Fix subquery evaluation: server-integration test expects 2 rows from WHERE price > (SELECT AVG(price)...) but gets 4. Debug query engine subquery handling."
+    },
+    {
+      "time": "2026-04-10T15:04:35.618Z",
+      "msg": "Added T20 (BUILD) after end: Implement CockroachDB-style timestamp cache in HenryDB: interval-based read timestamp cache, integrate with MVCC conflict detection, test with existing SSI test suite."
+    },
+    {
+      "time": "2026-04-10T15:04:48.827Z",
+      "msg": "Added T21 (BUILD) after end: Write blog post: How CockroachDB and PostgreSQL Prevent Write Skew Differently — timestamp cache vs SSI dependency graphs, with HenryDB as test bed."
+    },
+    {
+      "time": "2026-04-10T15:04:56.335Z",
+      "msg": "Added T22 (MAINTAIN) after end: Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement."
     }
   ]
 }
