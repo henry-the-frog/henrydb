@@ -1813,24 +1813,32 @@
     {
       "id": "T168",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write window functions test suite through wire protocol — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER",
       "project": "henrydb",
-      "started": "2026-04-10T23:23:45.542Z"
+      "started": "2026-04-10T23:23:45.542Z",
+      "completed": "2026-04-10T23:25:41.955Z",
+      "duration_ms": 120000,
+      "summary": "8 window function wire protocol tests pass: ROW_NUMBER, PARTITION BY, RANK with ties, SUM/AVG/COUNT OVER, WHERE filter, multiple windows."
     },
     {
       "id": "T169",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: add DENSE_RANK and NTILE through wire protocol",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T23:25:48.607Z",
+      "completed": "2026-04-10T23:26:09.100Z",
+      "duration_ms": 30000,
+      "summary": "DENSE_RANK and NTILE already work through wire protocol. DENSE_RANK handles ties correctly (no gaps). NTILE(4) distributes rows into quartiles."
     },
     {
       "id": "T170",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: update README with session B feature list",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T23:26:13.991Z"
     }
   ],
   "focusProjects": [

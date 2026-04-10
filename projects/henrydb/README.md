@@ -4,7 +4,7 @@ A SQL database written from scratch in JavaScript. PostgreSQL wire protocol comp
 
 ## What Is This?
 
-HenryDB is a complete relational database engine implemented in ~63,000 lines of JavaScript. It speaks the PostgreSQL wire protocol, so you can connect with `psql`, `pg` npm module, or any PostgreSQL client library.
+HenryDB is a complete relational database engine implemented in ~140,000 lines of JavaScript (core + tests). It speaks the PostgreSQL wire protocol, so you can connect with `psql`, `pg` npm module, or any PostgreSQL client library.
 
 ```bash
 # Start the server
@@ -33,7 +33,8 @@ const result = await client.query('SELECT * FROM users');
 - **CTEs** — WITH clauses, recursive CTEs
 - **Set operations** — UNION, INTERSECT, EXCEPT
 - **DISTINCT, ORDER BY, LIMIT, OFFSET**
-- **Expressions** — arithmetic, string functions (UPPER, LOWER, LENGTH, TRIM, REPLACE, LEFT, RIGHT, REPEAT, REVERSE, LTRIM, RTRIM), math functions (ABS, FLOOR, CEIL, ROUND, POWER, SQRT, MOD), CASE WHEN, COALESCE, NULLIF, CAST, GREATEST, LEAST, string concatenation (||)
+- **Expressions** — arithmetic, string functions (UPPER, LOWER, LENGTH, TRIM, REPLACE, LEFT, RIGHT, REPEAT, REVERSE, LTRIM, RTRIM), math functions (ABS, FLOOR, CEIL, ROUND, POWER, SQRT, MOD, GREATEST, LEAST), CASE WHEN, COALESCE, NULLIF, CAST, string concatenation (||)
+- **Date/Time** — NOW(), CURRENT_TIMESTAMP, CURRENT_DATE, EXTRACT(YEAR/MONTH/DAY/HOUR/QUARTER/EPOCH FROM ...), DATE_PART(), INTERVAL arithmetic
 - **Constraints** — PRIMARY KEY, UNIQUE, NOT NULL, CHECK, FOREIGN KEY
 - **SERIAL** — auto-incrementing primary keys
 - **RETURNING** — INSERT/UPDATE/DELETE RETURNING for affected rows
