@@ -551,17 +551,39 @@
     {
       "id": "T52",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix HenryDB deepest remaining issues based on THINK analysis",
-      "task": null
+      "task": null,
+      "started": "2026-04-10T18:36:52.826Z",
+      "completed": "2026-04-10T18:38:23.276Z",
+      "duration_ms": 60000,
+      "summary": "PLAN: 20 remaining failures across server tests. Split into 3 BUILD tasks: quick wins (4 tests), deeper server issues (7 tests), regression fixes (2 tests). Plus original T53 placeholder."
     },
     {
       "id": "T53",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix server-integration, server-index, server-knex, server-prepared-cache failures (4 tests across 4 files — likely related)",
       "plan_ref": "T52",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T18:38:33.282Z",
+      "completed": "2026-04-10T18:45:46.255Z",
+      "duration_ms": 180000,
+      "summary": "Fixed adaptive engine returning undefined columns (validated row keys), fixed query cache returning wrapper object instead of result, added cache invalidation in extended query path. server-integration 11/11, server-index 5/5, server-knex 13/13, server-prepared-cache 6/6."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "task": "Fix server-slow-query (3 failures), server-etl (2), server-migrations (2) — deeper server issues",
+      "status": "upcoming",
+      "plan_ref": "T52"
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "task": "Fix regression-tests 2 remaining failures",
+      "status": "upcoming",
+      "plan_ref": "T52"
     },
     {
       "id": "T54",
@@ -787,6 +809,10 @@
     {
       "time": "2026-04-10T18:17:14.151Z",
       "msg": "Added T54 (MAINTAIN) after T53: Housekeeping: git push, dashboard sync, final test sweep"
+    },
+    {
+      "time": "2026-04-10T18:38:16.317Z",
+      "msg": "PLAN T52 filled 3 BUILD tasks"
     }
   ]
 }

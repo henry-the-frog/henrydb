@@ -462,7 +462,7 @@ export class HenryDBServer {
         if (isSelect) {
           const cached = this._queryCache.get(stmt);
           if (cached) {
-            this._sendResult(conn, stmt, cached);
+            this._sendResult(conn, stmt, cached.result);
             continue;
           }
         }
@@ -475,7 +475,8 @@ export class HenryDBServer {
             if (ast.type === 'SELECT' && this._isAdaptiveEligible(ast)) {
               const adaptive = this.adaptiveEngine.executeSelect(ast);
               // Validate that adaptive engine returned meaningful results
-              if (adaptive.rows && adaptive.rows.length > 0 && Object.keys(adaptive.rows[0]).length > 0) {
+              const firstRowKeys = Object.keys(adaptive.rows[0]);
+              if (adaptive.rows && adaptive.rows.length > 0 && firstRowKeys.length > 0 && !firstRowKeys.includes('undefined')) {
                 result = { type: 'ROWS', rows: adaptive.rows, _engine: adaptive.engine, _timeMs: adaptive.timeMs };
               } else {
                 // Adaptive engine returned empty-keyed rows; fall back to Volcano
@@ -758,6 +759,14 @@ export class HenryDBServer {
           result = { type: 'OK', message: 'DEALLOCATE' };
         } else {
           result = this.db.execute(sql);
+          // Invalidate cache on mutations (same logic as simple query path)
+          const isSelectExt = /^\s*SELECT/i.test(sql);
+          if (!isSelectExt) {
+            const tableMatchExt = sql.match(/(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM|DROP\s+TABLE|ALTER\s+TABLE|TRUNCATE)\s+(\w+)/i);
+            if (tableMatchExt) {
+              this._queryCache.invalidate(tableMatchExt[1]);
+            }
+          }
         }
       }
 
