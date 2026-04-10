@@ -92,7 +92,7 @@ export function flattenTree(gitDir, treeHash, prefix = '') {
   for (const entry of entries) {
     const fullPath = prefix ? `${prefix}/${entry.name}` : entry.name;
     
-    if (entry.mode === '040000') {
+    if (entry.mode === '040000' || entry.mode === '40000') {
       // Recurse into subtree
       result.push(...flattenTree(gitDir, entry.hash, fullPath));
     } else {

@@ -187,8 +187,8 @@ export function parseCommit(content) {
   // Skip blank line
   if (i < lines.length && lines[i] === '') i++;
   
-  // Rest is message
-  commit.message = lines.slice(i).join('\n');
+  // Rest is message (trim trailing newline)
+  commit.message = lines.slice(i).join('\n').replace(/\n$/, '');
   
   return commit;
 }
