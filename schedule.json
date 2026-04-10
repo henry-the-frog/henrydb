@@ -1362,10 +1362,32 @@
     {
       "id": "T127",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write a real-world application test — e-commerce-style app with users, products, orders, reviews. Full CRUD through pg client.",
       "project": "henrydb",
-      "started": "2026-04-10T22:04:24.852Z"
+      "started": "2026-04-10T22:04:24.852Z",
+      "completed": "2026-04-10T22:05:50.151Z",
+      "duration_ms": 180000,
+      "summary": "E-commerce app test: 14/14 pass. Full lifecycle: users, products, orders, reviews, complex analytics queries (CLV report, category dashboard, revenue analysis). All through pg client with parameterized queries. 164ms total execution."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write blog post: Building a SQL Database from Scratch in JavaScript — the HenryDB story",
+      "project": "blog",
+      "started": "2026-04-10T22:06:32.061Z",
+      "completed": "2026-04-10T22:07:44.808Z",
+      "duration_ms": 180000,
+      "summary": "Published blog post: Building a SQL Database from Scratch in JavaScript. Covers architecture, hardest parts (parser, optimizer, persistence, fsync), what works, performance numbers, lessons learned. Pushed to blog."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix the COPY FROM STDIN wire protocol issue — debug why CopyInResponse is not being sent",
+      "project": "henrydb",
+      "started": "2026-04-10T22:08:24.935Z"
     }
   ],
   "focusProjects": [
@@ -1869,6 +1891,14 @@
     {
       "time": "2026-04-10T22:04:16.600Z",
       "msg": "Added T127 (BUILD) after end: HenryDB: write a real-world application test — e-commerce-style app with users, products, orders, reviews. Full CRUD through pg client."
+    },
+    {
+      "time": "2026-04-10T22:06:24.281Z",
+      "msg": "Added T128 (BUILD) after end: Write blog post: Building a SQL Database from Scratch in JavaScript — the HenryDB story"
+    },
+    {
+      "time": "2026-04-10T22:08:17.720Z",
+      "msg": "Added T129 (BUILD) after end: HenryDB: fix the COPY FROM STDIN wire protocol issue — debug why CopyInResponse is not being sent"
     }
   ]
 }

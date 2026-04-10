@@ -619,7 +619,10 @@ export class HenryDBServer {
       }
     }
     conn.currentQuery = null;
-    conn.socket.write(writeReadyForQuery(conn.txStatus));
+    // Don't send ReadyForQuery during COPY — the client is in COPY mode
+    if (!conn.copyState) {
+      conn.socket.write(writeReadyForQuery(conn.txStatus));
+    }
   }
 
   _sendResult(conn, sql, result) {
@@ -825,6 +828,23 @@ export class HenryDBServer {
           result = { type: 'OK', message: 'SET' };
         } else if (upper.startsWith('DEALLOCATE')) {
           result = { type: 'OK', message: 'DEALLOCATE' };
+        } else if (upper.startsWith('COPY ') && upper.includes('FROM STDIN')) {
+          // COPY FROM STDIN through Extended Query — handle specially
+          const match = sql.match(/COPY\s+(\w+)\s*(?:\(([^)]+)\))?\s+FROM\s+STDIN/i);
+          if (match) {
+            const table = match[1];
+            const tableObj = this.db.tables.get(table);
+            if (tableObj) {
+              const columns = match[2]
+                ? match[2].split(',').map(c => c.trim())
+                : tableObj.schema.map(c => c.name);
+              conn.copyState = { table, columns, buffer: '', rowCount: 0 };
+              // Don't store result — we'll send CopyInResponse in Execute
+              result = { type: 'COPY_IN', columnCount: columns.length };
+            } else {
+              result = { type: 'ERROR', message: `Table "${table}" not found` };
+            }
+          }
         } else {
           result = this._connExecute(conn, sql);
           // Invalidate cache on mutations (same logic as simple query path)
@@ -950,6 +970,21 @@ export class HenryDBServer {
       const result = portal.result;
       if (!result) {
         conn.socket.write(writeEmptyQueryResponse());
+        return;
+      }
+
+      // COPY FROM STDIN: send CopyInResponse instead of normal result
+      if (result.type === 'COPY_IN') {
+        const numCols = result.columnCount;
+        const buf = Buffer.alloc(1 + 4 + 1 + 2 + numCols * 2);
+        buf[0] = 0x47; // 'G' CopyInResponse
+        buf.writeInt32BE(4 + 1 + 2 + numCols * 2, 1);
+        buf[5] = 0; // text format
+        buf.writeInt16BE(numCols, 6);
+        for (let i = 0; i < numCols; i++) {
+          buf.writeInt16BE(0, 8 + i * 2); // text format for each column
+        }
+        conn.socket.write(buf);
         return;
       }
 
