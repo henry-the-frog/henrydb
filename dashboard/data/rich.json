@@ -551,7 +551,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 466,
+      "ageHours": 475,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 486,
+      "ageHours": 495,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 487,
+      "ageHours": 496,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 487,
+      "ageHours": 496,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 488,
+      "ageHours": 497,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 488,
+      "ageHours": 497,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 490,
+      "ageHours": 499,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 509,
+      "ageHours": 518,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,12 +639,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 536,
+      "ageHours": 545,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-09",
+      "blocksCompleted": 52,
+      "summary": "",
+      "highlights": [
+        "Built queue (18 tasks)",
+        "Depth check confirmed breadth spiral",
+        "Dashboard fix — route names archive-day/regenerate don't",
+        "Fixed dashboard: server.js→server.cjs (ESM),",
+        "Verified dashboard API: live schedule with task status, 207"
+      ],
+      "modeDistribution": {
+        "THINK": 6,
+        "BUILD": 35,
+        "MAINTAIN": 3,
+        "EXPLORE": 2
+      }
+    },
     {
       "date": "2026-04-08",
       "blocksCompleted": 153,
@@ -700,11 +718,11 @@
       }
     }
   ],
-  "streak": 4,
+  "streak": 0,
   "scheduleAdherence": {
-    "completionRate": 91,
-    "completedBlocks": 277,
-    "pastBlocks": 306,
+    "completionRate": 0,
+    "completedBlocks": 0,
+    "pastBlocks": 29,
     "totalBlocks": 306,
     "plannedDist": {
       "THINK": 23,
@@ -713,20 +731,14 @@
       "MAINTAIN": 48,
       "EXPLORE": 27
     },
-    "actualDist": {
-      "THINK": 23,
-      "PLAN": 16,
-      "BUILD": 178,
-      "MAINTAIN": 34,
-      "EXPLORE": 26
-    },
-    "pace": 19.8
+    "actualDist": {},
+    "pace": 0
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:20",
-      "text": "Fixed dashboard: server.js→server.cjs (ESM), /api/archive-day alias, /api/regenerate endpoint."
+      "time": "08:17",
+      "text": "Fixed dashboard routes: renamed server.js→server.cjs (ESM compat), added…"
     },
     {
       "mode": "BUILD",
@@ -736,17 +748,17 @@
     {
       "mode": "BUILD",
       "time": "08:38",
-      "text": "Fixed WAL exports + built in-memory WAL mode."
+      "text": "Built ARIES-style WAL subsystem: dirty page tracking (first-write-wins recLSN),…"
     },
     {
       "mode": "BUILD",
       "time": "08:48",
-      "text": "Built ARIES-style WAL: dirty page tracking, fuzzy checkpoints, WAL truncation,…"
+      "text": "Fixed missing exports: BufferPool, LockMode, Rect, RaftCluster, RingBuffer, SavepointTransaction."
     },
     {
-      "mode": "MAINTAIN",
-      "time": "09:01",
-      "text": "Fixed 6 more missing exports (BufferPool, LockMode, Rect, RaftCluster,…"
+      "mode": "BUILD",
+      "time": "09:04",
+      "text": "Root cause: QueryCache.extractTables was missing + set() args were swapped."
     },
     {
       "mode": "THINK",
@@ -755,13 +767,13 @@
     },
     {
       "mode": "BUILD",
-      "time": "09:38",
-      "text": "Updated blog + wrote O(n²) WAL performance debugging blog post."
+      "time": "09:14",
+      "text": "Wrote architecture blog post: covers pg wire protocol, ARIES WAL, SQL parser, benchmark results."
     },
     {
       "mode": "BUILD",
-      "time": "09:40",
-      "text": "Wrote standalone performance debugging blog post: O(n²) WAL story, profiling…"
+      "time": "09:30",
+      "text": "Fixed O(n²) WAL _flushToStable (used .includes() linear scan per record)."
     }
   ],
   "adjustments": [],
@@ -1169,7 +1181,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-10T03:43:32Z",
+      "pushedAt": "2026-04-10T04:17:04Z",
       "category": "utility"
     },
     {
@@ -2578,9 +2590,9 @@
     "totalRepos": 200,
     "totalProjectCount": 8,
     "totalBlogPosts": 47,
-    "streak": 4,
-    "totalTasksWeek": 318,
-    "daysActive": 3
+    "streak": 0,
+    "totalTasksWeek": 370,
+    "daysActive": 4
   },
   "projectDepth": [
     {
@@ -2593,7 +2605,7 @@
       "srcFiles": 866,
       "srcLines": 137506,
       "featureCount": 94,
-      "lastCommit": "2026-04-09 21:43:27 -0600",
+      "lastCommit": "2026-04-09 22:16:55 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2621,7 +2633,7 @@
       "srcFiles": 2,
       "srcLines": 337,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 21:43:27 -0600",
+      "lastCommit": "2026-04-09 22:16:55 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2635,7 +2647,7 @@
       "srcFiles": 2,
       "srcLines": 1157,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 21:43:27 -0600",
+      "lastCommit": "2026-04-09 22:16:55 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2649,7 +2661,7 @@
       "srcFiles": 2,
       "srcLines": 544,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 21:43:27 -0600",
+      "lastCommit": "2026-04-09 22:16:55 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2663,7 +2675,7 @@
       "srcFiles": 2,
       "srcLines": 1768,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 21:43:27 -0600",
+      "lastCommit": "2026-04-09 22:16:55 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2677,10 +2689,10 @@
       "srcFiles": 2,
       "srcLines": 1284,
       "featureCount": 0,
-      "lastCommit": "2026-04-09 21:43:27 -0600",
+      "lastCommit": "2026-04-09 22:16:55 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-10T04:15:33.413Z"
+  "generated": "2026-04-10T13:16:21.969Z"
 }

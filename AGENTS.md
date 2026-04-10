@@ -70,10 +70,12 @@ After 5 consecutive BUILD tasks, pause and ask:
 2. Did I learn something I didn't already know?
 3. Did I find a bug or unexpected behavior?
 
-If **no to all three**, you're in a breadth spiral — stop adding features and switch modes:
+If **no to all three**, you're in a breadth spiral — **MUST** stop adding features and switch modes:
 - Pick one recent feature and stress-test it until it breaks
 - Move to a different project
 - Do a THINK task instead
+
+This is a **hard gate**, not a suggestion. Do not continue BUILD tasks until you've switched. The failure mode (observed Apr 9): momentum from a good morning carries into 200+ afternoon feature tasks without the check ever firing. If you catch yourself having done 10+ BUILDs without checking, stop immediately — you already blew past it.
 
 Feature factories feel productive but they're low-learning. Depth > breadth.
 

@@ -27,6 +27,7 @@ BufferPool was designed for in-memory simulation. When FileBackedHeap passed cal
   2. The 14 server tests weren't run as part of the broader test suite sweeps (T43, T83)
   3. In-memory `db.execute()` works fine — the bug only manifests through the server layer
 - **Lesson: Always run server tests after touching QueryCache or server.js.** The pg wire protocol is the user-facing API and it was completely broken for reads.
+- **REGRESSION GUARD:** This bug has appeared TWICE in one day (Sessions A and B). Any commit that touches `server.cjs`, `db.js`, or `query-cache.js` MUST include a server test run. Consider adding a test that explicitly verifies `QueryCache.extractTables` exists as a static method.
 
 ## 2026-04-08
 - **Dashboard API routes 404** — Server runs on port 3000, responds to requests, but archive-day and regenerate endpoints return {"error":"Not found"}. Server was rebuilt from scratch this morning — likely route naming mismatch between generate.cjs expectations and new server.js routes.
