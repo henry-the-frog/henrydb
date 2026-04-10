@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-10T22:28:27.208Z",
+  "generated": "2026-04-10T22:30:42.970Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "HenryDB: what is the hardest, deepest correctness test I can write? Something that would break a real database. Think about serializability anomalies, phantom reads, lost updates under concurrent load.",
-    "completedAt": "2026-04-10T22:28:27.208Z",
-    "taskId": "T135",
-    "summary": "Phantom read anomaly confirmed: both T1 (counts engineers) and T2 (inserts new engineer) commit, causing T1 to act on stale predicate result. HenryDB SSI detects write skew (row-level) but NOT phantoms (predicate-level). Would need predicate locks (SIReadLock) to fix. This is the same limitation many databases have — only PostgreSQL fully prevents phantoms in SSI.",
-    "durationMs": 120000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "HenryDB: implement a storage stats command — SHOW TABLE STATUS showing row counts, heap file sizes, index info",
+    "startedAt": "2026-04-10T22:30:42.970Z",
+    "taskId": "T136"
   },
   "schedule": {
     "date": "2026-04-10",
