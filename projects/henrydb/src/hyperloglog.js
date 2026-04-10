@@ -1,154 +1,142 @@
-// hyperloglog.js — Cardinality estimation using HyperLogLog
+// hyperloglog.js — HyperLogLog Probabilistic Cardinality Estimation
 //
-// HyperLogLog (HLL) estimates the number of distinct elements in a multiset
-// using only O(log log n) space. With 2^14 (16384) registers, it achieves
-// ~0.81% standard error while using only 12KB of memory.
+// Estimates COUNT(DISTINCT) using only O(m) bytes where m = 2^p registers.
+// Standard error: 1.04/sqrt(m)
 //
-// Used in databases for:
-//   - Approximate COUNT(DISTINCT col) without building full hash set
-//   - Cardinality estimation for query planning
-//   - Network monitoring (distinct IPs, users)
+// With p=14 (16384 registers): ~1.5KB memory, ~0.81% error.
+// Used in: Redis PFCOUNT, PostgreSQL, Google BigQuery, Apache Flink.
 //
-// Algorithm:
-//   1. Hash each element
-//   2. Use first p bits to select a register (bucket)
-//   3. Count leading zeros in remaining bits
-//   4. Store max(leading zeros + 1) in each register
-//   5. Harmonic mean of 2^(-register) gives cardinality estimate
+// Reference: Flajolet et al., "HyperLogLog: the analysis of a near-optimal
+// cardinality estimation algorithm" (2007)
 
-function hash32(key) {
-  const str = typeof key === 'string' ? key : String(key);
+function fnv1a(str) {
   let h = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
-    h = (h * 0x01000193) >>> 0;
+    h = Math.imul(h, 0x01000193);
   }
-  // Additional mixing
-  h ^= h >>> 16;
-  h = (h * 0x85ebca6b) >>> 0;
-  h ^= h >>> 13;
-  h = (h * 0xc2b2ae35) >>> 0;
-  h ^= h >>> 16;
-  return h;
+  return h >>> 0;
 }
 
-function countLeadingZeros32(x) {
-  if (x === 0) return 32;
-  let n = 0;
-  if ((x & 0xFFFF0000) === 0) { n += 16; x <<= 16; }
-  if ((x & 0xFF000000) === 0) { n += 8; x <<= 8; }
-  if ((x & 0xF0000000) === 0) { n += 4; x <<= 4; }
-  if ((x & 0xC0000000) === 0) { n += 2; x <<= 2; }
-  if ((x & 0x80000000) === 0) { n += 1; }
-  return n;
+// Second hash for 64-bit simulation (better distribution)
+function hash64(key) {
+  const str = typeof key === 'string' ? key : String(key);
+  const h1 = fnv1a(str);
+  const h2 = fnv1a(str + '\x00');
+  return [h1, h2]; // Simulated 64-bit hash as two 32-bit halves
 }
 
 /**
- * HyperLogLog — Probabilistic cardinality estimator.
+ * Count leading zeros of the lower bits after taking p bits for bucket.
+ */
+function countLeadingZeros(hash, p) {
+  // Use the bits after the p prefix bits
+  const w = hash >>> p; // Remaining bits
+  if (w === 0) return 32 - p;
+  let zeros = 0;
+  let v = w;
+  while ((v & 1) === 0 && zeros < (32 - p)) {
+    zeros++;
+    v >>>= 1;
+  }
+  return zeros + 1; // +1 because we count the position of the first 1
+}
+
+/**
+ * HyperLogLog — probabilistic distinct count estimator.
  */
 export class HyperLogLog {
   /**
-   * @param {number} precision - Number of bits for register addressing (4-18, default 14)
-   *                             2^precision registers, using ~(2^precision * 6 bits) memory
+   * @param {number} p - Precision (4-18). Number of registers = 2^p.
+   *   p=14 → 16384 registers, ~0.81% error, 16KB memory
+   *   p=10 → 1024 registers, ~3.25% error, 1KB memory
    */
-  constructor(precision = 14) {
-    this.p = precision;
-    this.m = 1 << precision;        // Number of registers
-    this._registers = new Uint8Array(this.m); // Max value per register
-    
-    // Bias correction constant (depends on m)
-    if (this.m === 16) this._alpha = 0.673;
-    else if (this.m === 32) this._alpha = 0.697;
-    else if (this.m === 64) this._alpha = 0.709;
-    else this._alpha = 0.7213 / (1 + 1.079 / this.m);
+  constructor(p = 14) {
+    if (p < 4 || p > 18) throw new Error('Precision must be between 4 and 18');
+    this._p = p;
+    this._m = 1 << p;            // Number of registers
+    this._registers = new Uint8Array(this._m); // Max value: 64 - p + 1
+    this._alpha = this._getAlpha(this._m);
   }
 
+  get precision() { return this._p; }
+  get registerCount() { return this._m; }
+  get memoryBytes() { return this._registers.byteLength; }
+
   /**
-   * Add an element to the estimator.
+   * Add an element to the set.
    */
-  add(key) {
-    const h = hash32(key);
+  add(element) {
+    const str = typeof element === 'string' ? element : String(element);
+    const hash = fnv1a(str);
     
-    // First p bits → register index
-    const registerIdx = h >>> (32 - this.p);
+    // Use first p bits to select register
+    const idx = hash >>> (32 - this._p);
+    // Count leading zeros of remaining bits + 1
+    const rank = countLeadingZeros(hash << this._p >>> this._p, 0);
     
-    // Remaining bits → count leading zeros + 1
-    const w = (h << this.p) >>> 0; // Shift out the register bits
-    const rho = countLeadingZeros32(w) + 1;
-    
-    // Store maximum rho for this register
-    if (rho > this._registers[registerIdx]) {
-      this._registers[registerIdx] = rho;
+    // Update register with max
+    if (rank > this._registers[idx]) {
+      this._registers[idx] = rank;
     }
   }
 
   /**
-   * Estimate the cardinality (number of distinct elements).
+   * Estimate the number of distinct elements.
    */
-  estimate() {
-    // Raw HLL estimate: alpha * m^2 * (sum of 2^(-register))^(-1)
+  count() {
+    // Harmonic mean of 2^(-register[i])
     let sum = 0;
-    let zeros = 0;
+    let zeroRegisters = 0;
     
-    for (let i = 0; i < this.m; i++) {
+    for (let i = 0; i < this._m; i++) {
       sum += Math.pow(2, -this._registers[i]);
-      if (this._registers[i] === 0) zeros++;
+      if (this._registers[i] === 0) zeroRegisters++;
     }
     
-    let estimate = this._alpha * this.m * this.m / sum;
+    let estimate = this._alpha * this._m * this._m / sum;
     
-    // Small range correction (Linear Counting)
-    if (estimate <= 2.5 * this.m && zeros > 0) {
-      estimate = this.m * Math.log(this.m / zeros);
+    // Small range correction (linear counting)
+    if (estimate <= 2.5 * this._m && zeroRegisters > 0) {
+      estimate = this._m * Math.log(this._m / zeroRegisters);
     }
     
-    // Large range correction (for 32-bit hash)
-    const TWO_32 = 4294967296; // 2^32
-    if (estimate > TWO_32 / 30) {
-      estimate = -TWO_32 * Math.log(1 - estimate / TWO_32);
+    // Large range correction (for 32-bit hashes)
+    const twoTo32 = 4294967296;
+    if (estimate > twoTo32 / 30) {
+      estimate = -twoTo32 * Math.log(1 - estimate / twoTo32);
     }
     
     return Math.round(estimate);
   }
 
   /**
-   * Merge with another HyperLogLog (union of sets).
-   * Both must have the same precision.
+   * Merge another HLL into this one (for distributed counting).
+   * Takes the max of each register.
    */
   merge(other) {
-    if (this.p !== other.p) throw new Error('Precision mismatch');
-    const merged = new HyperLogLog(this.p);
-    for (let i = 0; i < this.m; i++) {
-      merged._registers[i] = Math.max(this._registers[i], other._registers[i]);
+    if (this._p !== other._p) throw new Error('Cannot merge HLLs with different precision');
+    for (let i = 0; i < this._m; i++) {
+      if (other._registers[i] > this._registers[i]) {
+        this._registers[i] = other._registers[i];
+      }
     }
-    return merged;
   }
 
   /**
-   * Reset all registers.
+   * Standard error of the estimate.
    */
-  clear() {
-    this._registers.fill(0);
+  standardError() {
+    return 1.04 / Math.sqrt(this._m);
   }
 
   /**
-   * Get the relative standard error.
+   * Get the alpha correction constant.
    */
-  get standardError() {
-    return 1.04 / Math.sqrt(this.m);
-  }
-
-  /**
-   * Get statistics.
-   */
-  getStats() {
-    return {
-      precision: this.p,
-      registers: this.m,
-      bytesUsed: this._registers.byteLength,
-      standardError: parseFloat((this.standardError * 100).toFixed(2)) + '%',
-      emptyRegisters: this._registers.filter(r => r === 0).length,
-      maxRegister: Math.max(...this._registers),
-    };
+  _getAlpha(m) {
+    if (m === 16) return 0.673;
+    if (m === 32) return 0.697;
+    if (m === 64) return 0.709;
+    return 0.7213 / (1 + 1.079 / m);
   }
 }

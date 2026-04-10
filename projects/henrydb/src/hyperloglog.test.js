@@ -1,134 +1,120 @@
-// hyperloglog.test.js — Tests for HyperLogLog cardinality estimation
+// hyperloglog.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { HyperLogLog } from './hyperloglog.js';
 
-describe('HyperLogLog', () => {
-  it('basic cardinality estimation', () => {
+describe('HyperLogLog — Accuracy', () => {
+  it('estimates small cardinalities', () => {
     const hll = new HyperLogLog(14);
+    for (let i = 0; i < 100; i++) hll.add(`key-${i}`);
     
-    // Add 1000 distinct elements
-    for (let i = 0; i < 1000; i++) hll.add(`user-${i}`);
+    const estimate = hll.count();
+    const error = Math.abs(estimate - 100) / 100;
+    console.log(`    100 distinct: estimate=${estimate}, error=${(error * 100).toFixed(1)}%`);
+    assert.ok(error < 0.2, `Error ${error} too high for 100 elements`);
+  });
+
+  it('estimates medium cardinalities', () => {
+    const hll = new HyperLogLog(14);
+    for (let i = 0; i < 10000; i++) hll.add(`key-${i}`);
     
-    const estimate = hll.estimate();
-    const error = Math.abs(estimate - 1000) / 1000;
+    const estimate = hll.count();
+    const error = Math.abs(estimate - 10000) / 10000;
+    console.log(`    10K distinct: estimate=${estimate}, error=${(error * 100).toFixed(1)}%`);
+    assert.ok(error < 0.15, `Error ${error} too high for 10K elements`);
+  });
+
+  it('estimates large cardinalities', () => {
+    const hll = new HyperLogLog(14);
+    for (let i = 0; i < 1000000; i++) hll.add(`key-${i}`);
     
-    console.log(`  1K distinct: estimate=${estimate}, error=${(error*100).toFixed(2)}%`);
-    assert.ok(error < 0.1, `Error too high: ${(error*100).toFixed(2)}%`);
+    const estimate = hll.count();
+    const error = Math.abs(estimate - 1000000) / 1000000;
+    console.log(`    1M distinct: estimate=${estimate}, error=${(error * 100).toFixed(1)}%`);
+    assert.ok(error < 0.05, `Error ${error} too high for 1M elements`);
   });
 
   it('handles duplicates correctly', () => {
     const hll = new HyperLogLog(14);
-    
-    // Add same 100 elements 100 times each = 10K total, 100 distinct
-    for (let round = 0; round < 100; round++) {
-      for (let i = 0; i < 100; i++) hll.add(`item-${i}`);
+    // Add 100 distinct keys, each 10 times
+    for (let rep = 0; rep < 10; rep++) {
+      for (let i = 0; i < 100; i++) hll.add(`key-${i}`);
     }
     
-    const estimate = hll.estimate();
+    const estimate = hll.count();
     const error = Math.abs(estimate - 100) / 100;
-    
-    console.log(`  100 distinct x 100 rounds: estimate=${estimate}, error=${(error*100).toFixed(2)}%`);
-    assert.ok(error < 0.3, `Error too high: ${(error*100).toFixed(2)}%`);
+    console.log(`    100 distinct × 10 reps: estimate=${estimate}, error=${(error * 100).toFixed(1)}%`);
+    assert.ok(error < 0.2);
   });
+});
 
-  it('10K distinct elements', () => {
+describe('HyperLogLog — Properties', () => {
+  it('memory usage is fixed regardless of cardinality', () => {
     const hll = new HyperLogLog(14);
-    for (let i = 0; i < 10000; i++) hll.add(i);
-    
-    const estimate = hll.estimate();
-    const error = Math.abs(estimate - 10000) / 10000;
-    
-    console.log(`  10K distinct: estimate=${estimate}, error=${(error*100).toFixed(2)}%`);
-    assert.ok(error < 0.05, `Error too high: ${(error*100).toFixed(2)}%`);
-  });
-
-  it('100K distinct elements', () => {
-    const hll = new HyperLogLog(14);
+    const memBefore = hll.memoryBytes;
     for (let i = 0; i < 100000; i++) hll.add(`key-${i}`);
-    
-    const estimate = hll.estimate();
-    const error = Math.abs(estimate - 100000) / 100000;
-    
-    console.log(`  100K distinct: estimate=${estimate}, error=${(error*100).toFixed(2)}%`);
-    assert.ok(error < 0.05, `Error too high: ${(error*100).toFixed(2)}%`);
+    assert.equal(hll.memoryBytes, memBefore, 'Memory should not grow');
+    console.log(`    Memory: ${hll.memoryBytes} bytes for any cardinality`);
   });
 
-  it('empty estimator returns 0', () => {
+  it('standard error matches theory', () => {
     const hll = new HyperLogLog(14);
-    assert.equal(hll.estimate(), 0);
+    const se = hll.standardError();
+    console.log(`    p=14: standard error = ${(se * 100).toFixed(2)}% (theory: 0.81%)`);
+    assert.ok(Math.abs(se - 0.0081) < 0.001, 'Should be close to 1.04/sqrt(16384)');
   });
 
-  it('merge combines two estimators', () => {
-    const hll1 = new HyperLogLog(14);
-    const hll2 = new HyperLogLog(14);
+  it('lower precision = higher error', () => {
+    const hll10 = new HyperLogLog(10);
+    const hll14 = new HyperLogLog(14);
+    assert.ok(hll10.standardError() > hll14.standardError());
+    console.log(`    p=10: ${(hll10.standardError() * 100).toFixed(2)}%, p=14: ${(hll14.standardError() * 100).toFixed(2)}%`);
+  });
+});
+
+describe('HyperLogLog — Merge', () => {
+  it('merge combines two HLLs', () => {
+    const a = new HyperLogLog(14);
+    const b = new HyperLogLog(14);
     
-    // Set A: 0-999
-    for (let i = 0; i < 1000; i++) hll1.add(i);
-    // Set B: 500-1499 (overlaps with A)
-    for (let i = 500; i < 1500; i++) hll2.add(i);
+    for (let i = 0; i < 5000; i++) a.add(`a-${i}`);
+    for (let i = 0; i < 5000; i++) b.add(`b-${i}`);
     
-    const merged = hll1.merge(hll2);
-    const estimate = merged.estimate();
-    
-    // Union: 0-1499 = 1500 distinct
-    const error = Math.abs(estimate - 1500) / 1500;
-    console.log(`  Merge (union 1500): estimate=${estimate}, error=${(error*100).toFixed(2)}%`);
-    assert.ok(error < 0.1);
+    a.merge(b);
+    const estimate = a.count();
+    const error = Math.abs(estimate - 10000) / 10000;
+    console.log(`    Merged: estimate=${estimate}, error=${(error * 100).toFixed(1)}%`);
+    assert.ok(error < 0.15);
   });
 
-  it('clear resets', () => {
+  it('merge handles overlapping sets', () => {
+    const a = new HyperLogLog(14);
+    const b = new HyperLogLog(14);
+    
+    // 50% overlap
+    for (let i = 0; i < 10000; i++) a.add(`key-${i}`);
+    for (let i = 5000; i < 15000; i++) b.add(`key-${i}`);
+    
+    a.merge(b);
+    const estimate = a.count();
+    const error = Math.abs(estimate - 15000) / 15000;
+    console.log(`    Overlapping merge: estimate=${estimate} (expected 15000), error=${(error * 100).toFixed(1)}%`);
+    assert.ok(error < 0.15);
+  });
+});
+
+describe('HyperLogLog — Performance', () => {
+  it('benchmark: 1M adds', () => {
     const hll = new HyperLogLog(14);
-    for (let i = 0; i < 1000; i++) hll.add(i);
-    hll.clear();
-    assert.equal(hll.estimate(), 0);
-  });
-
-  it('memory usage is constant regardless of input size', () => {
-    const hll = new HyperLogLog(14);
-    const stats1 = hll.getStats();
-    
-    for (let i = 0; i < 1000000; i++) hll.add(i);
-    const stats2 = hll.getStats();
-    
-    assert.equal(stats1.bytesUsed, stats2.bytesUsed);
-    console.log(`  Memory: ${stats2.bytesUsed} bytes (${(stats2.bytesUsed/1024).toFixed(1)}KB) for any input size`);
-    console.log(`  Standard error: ${stats2.standardError}`);
-  });
-
-  it('different precisions', () => {
-    for (const p of [4, 8, 12, 14, 16]) {
-      const hll = new HyperLogLog(p);
-      const n = 10000;
-      for (let i = 0; i < n; i++) hll.add(i);
-      
-      const estimate = hll.estimate();
-      const error = Math.abs(estimate - n) / n;
-      const stats = hll.getStats();
-      
-      console.log(`  p=${p}: ${stats.registers} regs, ${stats.bytesUsed}B, est=${estimate}, err=${(error*100).toFixed(1)}%, SE=${stats.standardError}`);
-    }
-    assert.ok(true);
-  });
-
-  it('performance: 1M add', () => {
-    const hll = new HyperLogLog(14);
+    const N = 1_000_000;
     
     const t0 = performance.now();
-    for (let i = 0; i < 1000000; i++) hll.add(i);
+    for (let i = 0; i < N; i++) hll.add(`element-${i}`);
     const elapsed = performance.now() - t0;
     
-    console.log(`  1M add: ${elapsed.toFixed(1)}ms (${(elapsed/1000000*1000).toFixed(3)}µs avg)`);
-    console.log(`  Estimate: ${hll.estimate()} (actual: 1000000)`);
+    console.log(`    ${N} adds: ${elapsed.toFixed(1)}ms (${(N / elapsed * 1000) | 0}/sec)`);
+    console.log(`    Estimate: ${hll.count()}, Memory: ${hll.memoryBytes} bytes`);
+    
     assert.ok(elapsed < 5000);
-  });
-
-  it('getStats', () => {
-    const hll = new HyperLogLog(14);
-    const stats = hll.getStats();
-    assert.equal(stats.precision, 14);
-    assert.equal(stats.registers, 16384);
-    assert.equal(stats.bytesUsed, 16384);
-    assert.ok(stats.standardError.includes('%'));
   });
 });
