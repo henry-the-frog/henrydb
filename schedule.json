@@ -511,6 +511,17 @@
       "completed": "2026-04-10T16:54:05.062Z",
       "duration_ms": 900000,
       "summary": "WAL integration: added forceToLsn() + flushedLsn to WAL, write-ahead enforcement in BufferPool eviction (force WAL before dirty page write), shared DiskManager between BufferPool and FileBackedHeap. 3/4 WAL tests pass (was 0/4). Remaining test has DM pageCount issue to investigate."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix more HenryDB test failures: target getting under 40 total failures. Focus on files with 1-2 failures (easy wins).",
+      "project": "henrydb",
+      "started": "2026-04-10T16:59:23.102Z",
+      "completed": "2026-04-10T17:10:16.360Z",
+      "duration_ms": 600000,
+      "summary": "Fixed regression-tests (31/33, +3). Added crashAndRecover() to Database. Scanned remaining failures: server tests hang on port binding, Raft tests need deep fix, most non-server tests now pass. Total fix count today: ~22 tests."
     }
   ],
   "focusProjects": [
@@ -694,6 +705,10 @@
     {
       "time": "2026-04-10T16:38:01.411Z",
       "msg": "Added T47 (BUILD) after end: Fix BufferPool persistence: fetchPage and flushAll callbacks are silently ignored. Need actual disk read/write integration. This blocks the full recovery pipeline."
+    },
+    {
+      "time": "2026-04-10T16:59:13.577Z",
+      "msg": "Added T48 (BUILD) after end: Fix more HenryDB test failures: target getting under 40 total failures. Focus on files with 1-2 failures (easy wins)."
     }
   ]
 }
