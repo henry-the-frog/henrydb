@@ -1080,8 +1080,8 @@ export class HenryDBServer {
   _isAdaptiveEligible(ast) {
     // Must be a simple SELECT
     if (ast.type !== 'SELECT') return false;
-    // No aggregates or window functions
-    if (ast.columns?.some(c => c.type === 'aggregate' || c.type === 'function_call' || c.type === 'window')) return false;
+    // No aggregates, window functions, or expressions
+    if (ast.columns?.some(c => c.type === 'aggregate' || c.type === 'function_call' || c.type === 'window' || c.type === 'expression' || c.type === 'function')) return false;
     // No GROUP BY
     if (ast.groupBy && ast.groupBy.length > 0) return false;
     // No HAVING

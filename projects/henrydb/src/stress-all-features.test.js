@@ -142,6 +142,7 @@ describe('Feature Stress Test', () => {
     assert.ok(parseInt(String(persistedOrders.rows[0].cnt)) >= 1);
     
     await c2.end();
+    await new Promise(r => setTimeout(r, 50)); // Let cleanup finish
   });
 });
 
