@@ -2548,9 +2548,56 @@
     {
       "id": "T239",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard update",
-      "started": "2026-04-10T00:46:05.361Z"
+      "started": "2026-04-10T00:46:05.361Z",
+      "completed": "2026-04-10T00:47:09.972Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated (239 blocks/225 done), failure logged in failures.md (QueryCache regression)."
+    },
+    {
+      "id": "T240",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: after fixing server regression, what other integration paths are broken? Test the full stack: CLI → server → db.execute → storage engine",
+      "started": "2026-04-10T00:47:39.595Z",
+      "completed": "2026-04-10T00:49:20.057Z",
+      "duration_ms": 120000,
+      "summary": "Found 2 more integration breaks: (1) integration.test.js imports RobinHoodHashTable but export is RobinHoodHashMap, (2) file-wal.js imports PAGE_SIZE from disk-manager.js which doesnt export it — breaks crash-recovery, persistence-stress, file-wal tests. Server 14/14, SQL 46/46, adaptive 10/10, hash-index 9/9 all green."
+    },
+    {
+      "id": "T241",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Harden the most critical HenryDB integration paths found in THINK",
+      "task": null,
+      "started": "2026-04-10T00:49:28.993Z",
+      "completed": "2026-04-10T00:49:40.424Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 BUILD tasks: fix integration.test.js + disk-manager.js exports, then broader test sweep."
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix RobinHoodHashTable→RobinHoodHashMap in integration.test.js + add PAGE_SIZE export to disk-manager.js, verify all affected tests pass",
+      "plan_ref": "T241",
+      "project": "henrydb",
+      "started": "2026-04-10T00:49:49.315Z"
+    },
+    {
+      "id": "T242",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Run broader test sweep on 20 critical test files to find any other import/export breaks",
+      "plan_ref": "T241",
+      "project": "henrydb"
+    },
+    {
+      "id": "T244",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping: git push, daily log, CURRENT.md"
     }
   ],
   "focusProjects": [
@@ -3514,6 +3561,30 @@
     {
       "time": "2026-04-10T00:45:13.601Z",
       "msg": "PLAN T237 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T00:47:21.819Z",
+      "msg": "Added T240 (THINK) after end: HenryDB: after fixing server regression, what other integration paths are broken? Test the full stack: CLI → server → db.execute → storage engine"
+    },
+    {
+      "time": "2026-04-10T00:47:27.495Z",
+      "msg": "Added T241 (PLAN) after T240: Harden the most critical HenryDB integration paths found in THINK"
+    },
+    {
+      "time": "2026-04-10T00:47:33.970Z",
+      "msg": "Added T242 (BUILD) after T241: null"
+    },
+    {
+      "time": "2026-04-10T00:47:34.181Z",
+      "msg": "Added T243 (BUILD) after T241: null"
+    },
+    {
+      "time": "2026-04-10T00:47:34.389Z",
+      "msg": "Added T244 (MAINTAIN) after end: Final housekeeping: git push, daily log, CURRENT.md"
+    },
+    {
+      "time": "2026-04-10T00:49:35.248Z",
+      "msg": "PLAN T241 filled 2 BUILD tasks"
     }
   ]
 }

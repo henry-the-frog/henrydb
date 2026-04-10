@@ -123,6 +123,15 @@ export class BufferPoolManager {
     // Stats
     this._hits = 0;
     this._misses = 0;
+    this._evictCallback = null;
+  }
+
+  /**
+   * Set a callback invoked when a dirty page is evicted.
+   * @param {Function} cb - (pageId, data) => void
+   */
+  setEvictCallback(cb) {
+    this._evictCallback = cb;
   }
 
   /**
@@ -131,9 +140,10 @@ export class BufferPoolManager {
    * If not, loads from disk and potentially evicts an LRU page.
    * 
    * @param {number} pageId
+   * @param {Function} [readFn] - Optional callback (pageId) => Buffer to read page from disk
    * @returns {Buffer|null} Page data, or null if fetch failed
    */
-  fetchPage(pageId) {
+  fetchPage(pageId, readFn) {
     // Check if page is already in the pool
     if (this._pageTable.has(pageId)) {
       const frameId = this._pageTable.get(pageId);
@@ -141,7 +151,7 @@ export class BufferPoolManager {
       frame.pinCount++;
       this.replacer.pin(frameId);
       this._hits++;
-      return frame.data;
+      return readFn ? frame : frame.data;
     }
     
     // Page not in pool — need to load from disk
@@ -151,10 +161,10 @@ export class BufferPoolManager {
     const frameId = this._getFrame();
     if (frameId === -1) return null; // No available frames (all pinned)
     
-    // Load page from disk
+    // Load page from disk (use callback if provided)
     const frame = this._frames[frameId];
     try {
-      frame.data = this.disk.readPage(pageId);
+      frame.data = readFn ? readFn(pageId) : this.disk.readPage(pageId);
     } catch (e) {
       // Page doesn't exist on disk
       this._freeList.push(frameId);
@@ -167,7 +177,7 @@ export class BufferPoolManager {
     this._pageTable.set(pageId, frameId);
     this.replacer.pin(frameId); // Pinned (active use)
     
-    return frame.data;
+    return readFn ? frame : frame.data;
   }
 
   /**
@@ -320,6 +330,9 @@ export class BufferPoolManager {
     
     // Flush dirty page before eviction
     if (frame.dirty) {
+      if (this._evictCallback) {
+        this._evictCallback(frame.pageId, frame.data);
+      }
       this.disk.writePage(frame.pageId, frame.data);
       frame.dirty = false;
     }
@@ -331,3 +344,5 @@ export class BufferPoolManager {
     return victimFrameId;
   }
 }
+
+export { BufferPoolManager as BufferPool };

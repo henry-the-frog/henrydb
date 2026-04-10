@@ -15,6 +15,8 @@ import { openSync, readSync, writeSync, closeSync, fstatSync, ftruncateSync, unl
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+export const PAGE_SIZE = 4096;
+
 /**
  * DiskManager — File-backed page storage.
  * Each page is a fixed-size block at offset pageId * pageSize.
@@ -42,6 +44,27 @@ export class DiskManager {
     this._writeCount = 0;
     this._bytesRead = 0;
     this._bytesWritten = 0;
+    
+    // Compatibility: page count and free list head for file-wal recovery
+    this._pageCount = this._numPages;
+    this._freeListHead = -1;
+  }
+
+  /**
+   * Write header metadata (page count and free list).
+   * Called by crash recovery after resetting pages.
+   */
+  _writeHeader() {
+    // In our current flat-file format, the header is implicit (file size = page count * page size).
+    // We just truncate the file to match _pageCount.
+    const pc = this._pageCount || 0;
+    const newSize = pc * this.pageSize;
+    if (Number.isFinite(newSize) && newSize >= 0) {
+      ftruncateSync(this._fd, newSize);
+      this._fileSize = newSize;
+      this._numPages = pc;
+      this._nextPageId = pc;
+    }
   }
 
   /**

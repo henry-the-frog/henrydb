@@ -21,6 +21,13 @@ BufferPool was designed for in-memory simulation. When FileBackedHeap passed cal
 ### Lesson: Test the Reopen Path
 3000+ tests passed but ZERO tested the close → reopen → read-back cycle with file-backed pages. The entire persistence layer was non-functional. **Always test the full lifecycle, not just individual operations.**
 
+## 2026-04-09 (Session B evening)
+- **QueryCache.extractTables REGRESSION** — Same exact bug fixed in Session A (T11) was broken again in Session B. Root cause: `QueryCache.extractTables` is a static method that was never actually added to the class, and `cache.set()` was called with wrong argument order. This means ALL SELECT queries through pg wire protocol silently errored. The bug survived because:
+  1. Session A's "fix" in T11 was lost (possibly a different code path or the fix wasn't complete)
+  2. The 14 server tests weren't run as part of the broader test suite sweeps (T43, T83)
+  3. In-memory `db.execute()` works fine — the bug only manifests through the server layer
+- **Lesson: Always run server tests after touching QueryCache or server.js.** The pg wire protocol is the user-facing API and it was completely broken for reads.
+
 ## 2026-04-08
 - **Dashboard API routes 404** — Server runs on port 3000, responds to requests, but archive-day and regenerate endpoints return {"error":"Not found"}. Server was rebuilt from scratch this morning — likely route naming mismatch between generate.cjs expectations and new server.js routes.
 - **Knowledge system underutilized** — 468 BUILD tasks today but only 1 reference to lessons/failures in daily log. THINK/PLAN tasks didn't consult failures.md. Pattern: high-velocity build sessions skip knowledge feedback loops.

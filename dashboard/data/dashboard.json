@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T00:46:05.432Z",
+  "generated": "2026-04-10T00:49:49.380Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard update",
-    "startedAt": "2026-04-10T00:46:05.432Z",
-    "taskId": "T239"
+    "mode": "BUILD",
+    "task": "Fix RobinHoodHashTable→RobinHoodHashMap in integration.test.js + add PAGE_SIZE export to disk-manager.js, verify all affected tests pass",
+    "startedAt": "2026-04-10T00:49:49.380Z",
+    "taskId": "T243"
   },
   "schedule": {
     "date": "2026-04-09",
@@ -2814,28 +2814,76 @@
       {
         "id": "T238",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix QueryCache.extractTables + server.js cache set args, get 14/14 server tests passing",
         "plan_ref": "T237",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-10T00:45:22.854Z",
+        "completed": "2026-04-10T00:45:55.226Z",
+        "duration_ms": 180000,
+        "summary": "CRITICAL BUG FIX: Added QueryCache.extractTables static method, fixed cache.set args in server.js. ALL SELECT queries through pg wire protocol were returning ErrorResponse. 14/14 server tests now passing (was 6/14)."
       },
       {
         "id": "T239",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard update",
+        "started": "2026-04-10T00:46:05.361Z",
+        "completed": "2026-04-10T00:47:09.972Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard regenerated (239 blocks/225 done), failure logged in failures.md (QueryCache regression)."
+      },
+      {
+        "id": "T240",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: after fixing server regression, what other integration paths are broken? Test the full stack: CLI → server → db.execute → storage engine",
+        "started": "2026-04-10T00:47:39.595Z",
+        "completed": "2026-04-10T00:49:20.057Z",
+        "duration_ms": 120000,
+        "summary": "Found 2 more integration breaks: (1) integration.test.js imports RobinHoodHashTable but export is RobinHoodHashMap, (2) file-wal.js imports PAGE_SIZE from disk-manager.js which doesnt export it — breaks crash-recovery, persistence-stress, file-wal tests. Server 14/14, SQL 46/46, adaptive 10/10, hash-index 9/9 all green."
+      },
+      {
+        "id": "T241",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Harden the most critical HenryDB integration paths found in THINK",
+        "task": null,
+        "started": "2026-04-10T00:49:28.993Z"
+      },
+      {
+        "id": "T243",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard update"
+        "task": "Fix RobinHoodHashTable→RobinHoodHashMap in integration.test.js + add PAGE_SIZE export to disk-manager.js, verify all affected tests pass",
+        "plan_ref": "T241",
+        "project": "henrydb"
+      },
+      {
+        "id": "T242",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Run broader test sweep on 20 critical test files to find any other import/export breaks",
+        "plan_ref": "T241",
+        "project": "henrydb"
+      },
+      {
+        "id": "T244",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final housekeeping: git push, daily log, CURRENT.md"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 225,
-    "blocksTotal": 239,
+    "blocksCompleted": 228,
+    "blocksTotal": 244,
     "modeDistribution": {
-      "THINK": 19,
-      "PLAN": 14,
+      "THINK": 20,
+      "PLAN": 15,
       "BUILD": 161,
-      "MAINTAIN": 28,
+      "MAINTAIN": 29,
       "EXPLORE": 3
     }
   },
