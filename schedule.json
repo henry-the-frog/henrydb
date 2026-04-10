@@ -500,6 +500,17 @@
       "completed": "2026-04-10T16:37:31.945Z",
       "duration_ms": 300000,
       "summary": "Wrote depth reflection: 7 lessons learned (integration bugs, duplicate methods, SSI vs timestamp ordering, content-addressable storage, Myers diff, three-way merge, VACUUM lifecycle). Identified tomorrow priorities: BufferPool persistence, git remote clone, blog update."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix BufferPool persistence: fetchPage and flushAll callbacks are silently ignored. Need actual disk read/write integration. This blocks the full recovery pipeline.",
+      "project": "henrydb",
+      "started": "2026-04-10T16:38:07.697Z",
+      "completed": "2026-04-10T16:54:05.062Z",
+      "duration_ms": 900000,
+      "summary": "WAL integration: added forceToLsn() + flushedLsn to WAL, write-ahead enforcement in BufferPool eviction (force WAL before dirty page write), shared DiskManager between BufferPool and FileBackedHeap. 3/4 WAL tests pass (was 0/4). Remaining test has DM pageCount issue to investigate."
     }
   ],
   "focusProjects": [
@@ -679,6 +690,10 @@
     {
       "time": "2026-04-10T16:36:35.269Z",
       "msg": "Added T46 (THINK) after end: Depth reflection: 45 tasks done today. What did I learn? What patterns emerged? What should tomorrow focus on? Write reflections file."
+    },
+    {
+      "time": "2026-04-10T16:38:01.411Z",
+      "msg": "Added T47 (BUILD) after end: Fix BufferPool persistence: fetchPage and flushAll callbacks are silently ignored. Need actual disk read/write integration. This blocks the full recovery pipeline."
     }
   ]
 }
