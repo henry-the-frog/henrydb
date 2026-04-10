@@ -130,6 +130,17 @@ export class Database {
    * @param {object} options — Additional options
    * @returns {Database} A recovered Database instance
    */
+  /**
+   * Simulate crash and recover — convenience method for testing.
+   */
+  crashAndRecover() {
+    if (!this.dataDir) throw new Error('Cannot crash and recover without dataDir');
+    // Flush WAL before "crash"
+    if (this.wal) this.wal.flush();
+    // Create a new database from the same directory, replaying WAL
+    return Database.recover(this.dataDir);
+  }
+
   static recover(dataDir, options = {}) {
     // Import here to avoid circular dependency at module level
     // WALReplayEngine is loaded dynamically
