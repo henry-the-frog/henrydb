@@ -2963,16 +2963,41 @@
     {
       "id": "T279",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement Write-Ahead Log recovery with ARIES protocol: analysis, redo, undo phases",
       "project": "henrydb",
-      "started": "2026-04-10T03:06:48.224Z"
+      "started": "2026-04-10T03:06:48.224Z",
+      "completed": "2026-04-10T03:09:07.625Z",
+      "duration_ms": 600000,
+      "summary": "Implemented ARIES recovery protocol: analysis (ATT+DPT reconstruction), redo (idempotent from earliest recLsn), undo (backward walk with CLR records). Handles checkpoints, multi-update transactions, double-crash safety. 12/12 tests first try."
     },
     {
       "id": "T280",
       "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final session C: git push, daily log, CURRENT.md",
+      "skip_reason": "51 min remaining"
+    },
+    {
+      "id": "T281",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Implement a Bloom filter with counting (CBF) — supports deletion unlike standard Bloom, used in network routers and caches",
+      "project": "henrydb",
+      "started": "2026-04-10T03:09:26.054Z"
+    },
+    {
+      "id": "T282",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Final session C: git push, daily log, CURRENT.md"
+      "task": "Build a simple columnar compression library: RLE, delta encoding, dictionary encoding, bit-packing",
+      "project": "henrydb"
+    },
+    {
+      "id": "T283",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session C: git push, daily log, CURRENT.md, test count"
     }
   ],
   "focusProjects": [
@@ -4120,6 +4145,22 @@
     {
       "time": "2026-04-10T02:59:46.548Z",
       "msg": "Added T280 (MAINTAIN) after end: Final session C: git push, daily log, CURRENT.md"
+    },
+    {
+      "time": "2026-04-10T03:09:19.373Z",
+      "msg": "Removed T280: 51 min remaining"
+    },
+    {
+      "time": "2026-04-10T03:09:19.589Z",
+      "msg": "Added T281 (EXPLORE) after end: Implement a Bloom filter with counting (CBF) — supports deletion unlike standard Bloom, used in network routers and caches"
+    },
+    {
+      "time": "2026-04-10T03:09:19.802Z",
+      "msg": "Added T282 (EXPLORE) after end: Build a simple columnar compression library: RLE, delta encoding, dictionary encoding, bit-packing"
+    },
+    {
+      "time": "2026-04-10T03:09:20.015Z",
+      "msg": "Added T283 (MAINTAIN) after end: Final session C: git push, daily log, CURRENT.md, test count"
     }
   ]
 }
