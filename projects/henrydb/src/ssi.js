@@ -9,7 +9,7 @@
 // where two consecutive rw-antidependency edges form a cycle.
 // SSI tracks these dependencies and aborts one transaction when detected.
 
-import { MVCCManager } from './mvcc.js';
+import { MVCCStore } from './mvcc.js';
 
 /**
  * rw-antidependency: T1 reads data that T2 later writes.
@@ -34,7 +34,7 @@ class RWDependency {
  * Dangerous structure: tx has both inConflict and outConflict with different transactions.
  * This means T_in →rw→ tx →rw→ T_out, which is the pattern that causes anomalies.
  */
-export class SSIManager extends MVCCManager {
+export class SSIManager extends MVCCStore {
   constructor() {
     super();
     

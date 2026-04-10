@@ -91,3 +91,8 @@ export class MVCCStore {
     };
   }
 }
+
+// Compatibility aliases
+export { MVCCStore as MVCCManager };
+export { MVCCStore as MVCCHeap };
+export { MVCCStore as MVCCTransaction };

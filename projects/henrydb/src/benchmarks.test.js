@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { BPlusTree } from './bplus-tree.js';
 import { SkipList } from './skip-list.js';
 import { CuckooHashTable } from './cuckoo-hash.js';
-import { RobinHoodHashTable } from './robin-hood-hash.js';
+import { RobinHoodHashMap } from './robin-hood-hash.js';
 import { Trie } from './trie.js';
 import { BinaryHeap, Quadtree } from './more-trees.js';
 import { Treap, CuckooFilter } from './probabilistic-filters.js';
@@ -56,7 +56,7 @@ describe('Benchmark: Sorted structures (10K ops)', () => {
 describe('Benchmark: Hash tables (10K ops)', () => {
   for (const [name, create] of [
     ['Cuckoo', () => new CuckooHashTable(N * 2)],
-    ['Robin Hood', () => new RobinHoodHashTable(N * 2)],
+    ['Robin Hood', () => new RobinHoodHashMap(N * 2)],
     ['Double Hash', () => new DoubleHashTable(N * 2)],
     ['Linear Hash', () => new LinearHashTable()],
     ['Extendible Hash', () => new ExtendibleHashTable(8)],

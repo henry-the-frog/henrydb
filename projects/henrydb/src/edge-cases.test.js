@@ -6,7 +6,7 @@ import { BPlusTree } from './bplus-tree.js';
 import { SkipList } from './skip-list.js';
 import { RingBuffer } from './ring-buffer.js';
 import { CuckooHashTable } from './cuckoo-hash.js';
-import { RobinHoodHashTable } from './robin-hood-hash.js';
+import { RobinHoodHashMap } from './robin-hood-hash.js';
 import { HyperLogLog } from './hyperloglog.js';
 import { TDigest } from './tdigest.js';
 import { CountMinSketch } from './count-min-sketch.js';
@@ -24,11 +24,11 @@ describe('Edge Cases: Empty collections', () => {
   it('B+ tree: range from empty', () => assert.deepEqual(new BPlusTree().range(0, 100), []));
   it('B+ tree: delete from empty', () => assert.ok(!new BPlusTree().delete(1)));
   it('Skip list: get from empty', () => assert.equal(new SkipList().get(1), undefined));
-  it('Skip list: range from empty', () => assert.deepEqual(new SkipList().range(0, 100), []));
-  it('Ring buffer: peek from empty', () => assert.equal(new RingBuffer(5).peek(), undefined));
-  it('Ring buffer: pop from empty', () => assert.equal(new RingBuffer(5).pop(), undefined));
+  it('Skip list: range from empty', () => assert.deepEqual([...new SkipList().range(0, 100)], []));
+  it('Ring buffer: peek from empty', () => assert.equal(new RingBuffer(5).peekBack(), undefined));
+  it('Ring buffer: pop from empty', () => assert.equal(new RingBuffer(5).shift(), undefined));
   it('Cuckoo: get from empty', () => assert.equal(new CuckooHashTable().get('x'), undefined));
-  it('Robin Hood: get from empty', () => assert.equal(new RobinHoodHashTable().get('x'), undefined));
+  it('Robin Hood: get from empty', () => assert.equal(new RobinHoodHashMap().get('x'), undefined));
   it('HLL: estimate from empty', () => assert.equal(new HyperLogLog().estimate(), 0));
   it('TDigest: quantile from empty', () => assert.equal(new TDigest().quantile(0.5), null));
   it('CMS: estimate from empty', () => assert.equal(new CountMinSketch().estimate('x'), 0));
@@ -43,8 +43,8 @@ describe('Edge Cases: Empty collections', () => {
 
 describe('Edge Cases: Single element', () => {
   it('B+ tree: single element', () => { const t = new BPlusTree(); t.insert(1, 'a'); assert.equal(t.get(1), 'a'); assert.equal(t.size, 1); });
-  it('Skip list: single element', () => { const s = new SkipList(); s.set(1, 'a'); assert.equal(s.get(1), 'a'); });
-  it('Ring buffer: single element', () => { const r = new RingBuffer(1); r.push('x'); assert.equal(r.peek(), 'x'); r.push('y'); assert.equal(r.peek(), 'y'); });
+  it('Skip list: single element', () => { const s = new SkipList(); s.insert(1, 'a'); assert.equal(s.get(1), 'a'); });
+  it('Ring buffer: single element', () => { const r = new RingBuffer(1); r.push('x'); assert.equal(r.peekBack(), 'x'); r.push('y'); assert.equal(r.peekBack(), 'y'); });
   it('HLL: single element', () => { const h = new HyperLogLog(); h.add('x'); assert.ok(h.estimate() >= 1); });
   it('TDigest: single element', () => { const t = new TDigest(); t.add(42); assert.equal(t.percentile(50), 42); });
   it('Trie: single key', () => { const t = new Trie(); t.insert('a', 1); assert.equal(t.get('a'), 1); });
@@ -62,7 +62,7 @@ describe('Edge Cases: Boundary values', () => {
   it('BitVector: set bit 0', () => { const bv = new BitVector(1); bv.set(0); assert.ok(bv.get(0)); });
   it('BitVector: popcount of 0', () => assert.equal(new BitVector(64).popcount(), 0));
   it('BitVector: large position', () => { const bv = new BitVector(1000); bv.set(999); assert.ok(bv.get(999)); assert.ok(!bv.get(998)); });
-  it('Ring buffer: capacity 1', () => { const r = new RingBuffer(1); r.push(1); r.push(2); assert.equal(r.peek(), 2); assert.equal(r.size, 1); });
+  it('Ring buffer: capacity 1', () => { const r = new RingBuffer(1); r.push(1); r.push(2); assert.equal(r.peekBack(), 2); assert.equal(r.size, 1); });
   it('LFU: capacity 1', () => { const c = new LFUCache(1); c.set('a', 1); c.set('b', 2); assert.equal(c.get('a'), undefined); assert.equal(c.get('b'), 2); });
   it('UnionFind: single element', () => { const uf = new UnionFind(1); assert.equal(uf.count, 1); assert.equal(uf.find(0), 0); });
   it('UnionFind: self-union', () => { const uf = new UnionFind(2); assert.ok(!uf.union(0, 0)); });
@@ -73,12 +73,12 @@ describe('Edge Cases: Special values', () => {
     const c = new CuckooHashTable(); c.set(0, 'zero'); assert.equal(c.get(0), 'zero');
   });
   it('Hash tables handle empty string', () => {
-    const r = new RobinHoodHashTable(); r.set('', 'empty'); assert.equal(r.get(''), 'empty');
+    const r = new RobinHoodHashMap(); r.set('', 'empty'); assert.equal(r.get(''), 'empty');
   });
   it('Skip list: negative keys', () => {
-    const s = new SkipList(); s.set(-100, 'neg'); s.set(100, 'pos');
+    const s = new SkipList(); s.insert(-100, 'neg'); s.insert(100, 'pos');
     assert.equal(s.get(-100), 'neg');
-    assert.equal(s.first().key, -100);
+    assert.equal(s.min().key, -100);
   });
   it('B+ tree: string keys with special chars', () => {
     const t = new BPlusTree(4);
@@ -112,7 +112,7 @@ describe('Edge Cases: Duplicate handling', () => {
   });
   it('Skip list: duplicate key overwrites', () => {
     const s = new SkipList();
-    s.set('k', 'old'); s.set('k', 'new');
+    s.insert('k', 'old'); s.insert('k', 'new');
     assert.equal(s.get('k'), 'new');
   });
   it('Trie: duplicate key overwrites', () => {
@@ -132,9 +132,9 @@ describe('Edge Cases: Duplicate handling', () => {
   });
   it('Bitmap: all same value', () => {
     const idx = new BitmapIndex();
-    idx.build(Array(100).fill('same'));
-    assert.equal(idx.cardinality, 1);
-    assert.equal(idx.getRows('same').length, 100);
+    for (let i = 0; i < 100; i++) idx.set(i, 'same');
+    assert.equal(idx.values.length, 1);
+    assert.equal(idx.lookup('same').length, 100);
   });
 });
 
@@ -151,10 +151,10 @@ describe('Edge Cases: Stress tests', () => {
 
   it('10K inserts into skip list', () => {
     const s = new SkipList();
-    for (let i = 0; i < 10000; i++) s.set(i, i);
+    for (let i = 0; i < 10000; i++) s.insert(i, i);
     assert.equal(s.size, 10000);
-    assert.equal(s.first().key, 0);
-    assert.equal(s.last().key, 9999);
+    assert.equal(s.min().key, 0);
+    assert.equal(s.max().key, 9999);
   });
 
   it('100K CMS adds', () => {

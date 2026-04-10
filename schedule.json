@@ -2644,10 +2644,21 @@
     {
       "id": "T248",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix file-wal crash recovery: the 4 failing Crash Recovery tests",
       "project": "henrydb",
-      "started": "2026-04-10T01:12:11.273Z"
+      "started": "2026-04-10T01:12:11.273Z",
+      "completed": "2026-04-10T01:17:56.091Z",
+      "duration_ms": 600000,
+      "summary": "COMPLETE FIX: DiskManager constructor accepts options object, eviction counter added to BufferPool stats. file-wal 0→8/8, crash-recovery 0→9/9, persistence-stress 0→7/7. Root cause was DiskManager({create:false}) parsed as pageSize=NaN. 82/82 tests passing across 7 critical test files."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Continue test sweep: find and fix more broken tests in HenryDB",
+      "project": "henrydb",
+      "started": "2026-04-10T01:18:13.359Z"
     }
   ],
   "focusProjects": [
@@ -3651,6 +3662,10 @@
     {
       "time": "2026-04-10T01:12:05.749Z",
       "msg": "Added T248 (BUILD) after end: Fix file-wal crash recovery: the 4 failing Crash Recovery tests"
+    },
+    {
+      "time": "2026-04-10T01:18:07.494Z",
+      "msg": "Added T249 (BUILD) after end: Continue test sweep: find and fix more broken tests in HenryDB"
     }
   ]
 }

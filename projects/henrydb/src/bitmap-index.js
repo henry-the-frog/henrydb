@@ -126,3 +126,4 @@ export class BitmapIndex {
     };
   }
 }
+export { BitVector } from './bit-vector.js';
