@@ -1234,6 +1234,12 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
           const av = a[column], bv = b[column];
+          // NULL handling: NULL is smaller than any value (SQLite behavior)
+          const aNull = av === null || av === undefined;
+          const bNull = bv === null || bv === undefined;
+          if (aNull && bNull) continue;
+          if (aNull) return direction === 'DESC' ? 1 : -1; // null is smallest
+          if (bNull) return direction === 'DESC' ? -1 : 1;
           if (av < bv) return direction === 'DESC' ? 1 : -1;
           if (av > bv) return direction === 'DESC' ? -1 : 1;
         }
@@ -1495,6 +1501,11 @@ export class Database {
           for (const { column, direction } of ast.orderBy) {
             const av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
             const bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+            const aNull = av === null || av === undefined;
+            const bNull = bv === null || bv === undefined;
+            if (aNull && bNull) continue;
+            if (aNull) return direction === 'DESC' ? 1 : -1;
+            if (bNull) return direction === 'DESC' ? -1 : 1;
             const cmp = av < bv ? -1 : av > bv ? 1 : 0;
             if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
           }
@@ -1634,7 +1645,7 @@ export class Database {
             av = this._resolveColumn(column, a);
             bv = this._resolveColumn(column, b);
           }
-          const cmp = av == null && bv == null ? 0 : av == null ? 1 : bv == null ? -1 : av < bv ? -1 : av > bv ? 1 : 0;
+          const cmp = av == null && bv == null ? 0 : av == null ? -1 : bv == null ? 1 : av < bv ? -1 : av > bv ? 1 : 0;
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;
@@ -3181,6 +3192,11 @@ export class Database {
         for (const { column, direction } of ast.orderBy) {
           const av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
           const bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+          const aNull = av === null || av === undefined;
+          const bNull = bv === null || bv === undefined;
+          if (aNull && bNull) continue;
+          if (aNull) return direction === 'DESC' ? 1 : -1;
+          if (bNull) return direction === 'DESC' ? -1 : 1;
           const cmp = av < bv ? -1 : av > bv ? 1 : 0;
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }

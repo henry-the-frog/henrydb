@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:17:43.252Z",
+  "generated": "2026-04-10T19:22:02.514Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Investigate the 2 SUM mismatch failures in fuzzer seed 42. Determine if this is a real bug in HenryDB SUM computation or a normalization issue.",
-    "completedAt": "2026-04-10T19:17:43.252Z",
-    "taskId": "T63",
-    "summary": "Found real SQL semantics bug: SUM() over empty set returned 0 instead of NULL (SQL standard). Fixed in 2 locations. Now 1800/1800 fuzzer queries match SQLite exactly — 100% differential correctness.",
-    "durationMs": 120000
+    "task": "Expand fuzzer: add DISTINCT, expressions in SELECT (a+b), negative numbers, NULL handling, CASE WHEN. Run 2000+ queries and fix any new bugs found.",
+    "completedAt": "2026-04-10T19:22:02.514Z",
+    "taskId": "T64",
+    "summary": "Expanded fuzzer: DISTINCT, expressions, NULL handling (5% NULL inserts). Fixed NULL ordering in 4 ORDER BY paths — SQLite treats NULL as smallest. Fixed one path that had inverted null comparison. Now 2800/2800 queries pass differential testing (100%).",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 60,
+    "blocksCompleted": 61,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 36,
+      "BUILD": 37,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

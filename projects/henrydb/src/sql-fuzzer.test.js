@@ -76,6 +76,8 @@ class SQLFuzzer {
       for (let i = 0; i < rowsPerTable; i++) {
         const vals = table.cols.map(col => {
           if (col.name === 'id') return i;
+          // 5% chance of NULL for non-id columns
+          if (this._rand() < 0.05) return 'NULL';
           if (col.type === 'INTEGER') return this._randInt(-100, 100);
           // TEXT: short strings, some with special chars
           const words = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta'];
@@ -134,6 +136,51 @@ class SQLFuzzer {
     }
 
     return `SELECT ${selectCols} FROM ${table.name}${where}${orderBy}${limit}`;
+  }
+
+  // ---- DISTINCT SELECT Generation ----
+
+  generateDistinctSelect() {
+    const table = this._pick(this._tables);
+    const col = this._pick(table.cols);
+    
+    let where = '';
+    if (this._rand() < 0.3) {
+      const intCols = table.cols.filter(c => c.type === 'INTEGER');
+      if (intCols.length > 0) {
+        const wCol = this._pick(intCols);
+        where = ` WHERE ${wCol.name} > ${this._randInt(-50, 50)}`;
+      }
+    }
+    
+    return `SELECT DISTINCT ${col.name} FROM ${table.name}${where} ORDER BY ${col.name}`;
+  }
+
+  // ---- Expression SELECT Generation (arithmetic) ----
+
+  generateExpressionSelect() {
+    const table = this._pick(this._tables);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    
+    if (intCols.length < 2) return this.generateSelect();
+
+    const col1 = intCols[0];
+    const col2 = intCols[1] || intCols[0];
+    const op = this._pick(['+', '-', '*']);
+    
+    return `SELECT ${col1.name} ${op} ${col2.name} AS result FROM ${table.name} ORDER BY id LIMIT 10`;
+  }
+
+  // ---- NULL-aware SELECT Generation ----
+
+  generateNullSelect() {
+    const table = this._pick(this._tables);
+    const col = this._pick(table.cols);
+    
+    // IS NULL / IS NOT NULL
+    const isNull = this._rand() < 0.5;
+    const check = isNull ? 'IS NULL' : 'IS NOT NULL';
+    return `SELECT COUNT(*) AS cnt FROM ${table.name} WHERE ${col.name} ${check}`;
   }
 
   // ---- Aggregate SELECT Generation ----
@@ -240,11 +287,14 @@ class SQLFuzzer {
 
   generateQuery() {
     const r = this._rand();
-    if (r < 0.30) return this.generateSelect();
-    if (r < 0.50) return this.generateAggregateSelect();
-    if (r < 0.70) return this.generateGroupBySelect();
-    if (r < 0.85) return this.generateJoinSelect();
-    return this.generateCompoundWhereSelect();
+    if (r < 0.20) return this.generateSelect();
+    if (r < 0.35) return this.generateAggregateSelect();
+    if (r < 0.50) return this.generateGroupBySelect();
+    if (r < 0.60) return this.generateJoinSelect();
+    if (r < 0.70) return this.generateCompoundWhereSelect();
+    if (r < 0.80) return this.generateDistinctSelect();
+    if (r < 0.90) return this.generateExpressionSelect();
+    return this.generateNullSelect();
   }
 }
 
@@ -544,13 +594,13 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
     assert.ok(passRate >= 0.75, `Pass rate ${(passRate * 100).toFixed(1)}% below 75% threshold`);
   });
 
-  it('1000 queries with JOINs, compound WHERE, seed 77777', () => {
+  it('2000 queries with JOINs, compound WHERE, DISTINCT, expressions, NULLs (seed 77777)', () => {
     setupBoth(77777, 3, 50);
     let passed = 0;
     let errorsMatched = 0;
     let mismatches = [];
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 2000; i++) {
       const sql = fuzzer.generateQuery();
       const h = executeHenryDB(sql);
       const s = executeSQLite(sql);
@@ -594,8 +644,8 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
     }
 
     const total = passed + errorsMatched;
-    const mismatchCount = 1000 - total;
-    console.log(`    Passed: ${passed}/1000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
+    const mismatchCount = 2000 - total;
+    console.log(`    Passed: ${passed}/2000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
     
     if (mismatches.length > 0) {
       console.log('    Sample mismatches:');
@@ -606,7 +656,7 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
       }
     }
 
-    const passRate = total / 1000;
+    const passRate = total / 2000;
     assert.ok(passRate >= 0.80, `Pass rate ${(passRate * 100).toFixed(1)}% below 80% threshold`);
   });
 });

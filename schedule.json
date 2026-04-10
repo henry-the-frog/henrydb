@@ -679,6 +679,17 @@
       "completed": "2026-04-10T19:17:43.190Z",
       "duration_ms": 120000,
       "summary": "Found real SQL semantics bug: SUM() over empty set returned 0 instead of NULL (SQL standard). Fixed in 2 locations. Now 1800/1800 fuzzer queries match SQLite exactly — 100% differential correctness."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Expand fuzzer: add DISTINCT, expressions in SELECT (a+b), negative numbers, NULL handling, CASE WHEN. Run 2000+ queries and fix any new bugs found.",
+      "project": "henrydb",
+      "started": "2026-04-10T19:18:18.309Z",
+      "completed": "2026-04-10T19:22:02.452Z",
+      "duration_ms": 300000,
+      "summary": "Expanded fuzzer: DISTINCT, expressions, NULL handling (5% NULL inserts). Fixed NULL ordering in 4 ORDER BY paths — SQLite treats NULL as smallest. Fixed one path that had inverted null comparison. Now 2800/2800 queries pass differential testing (100%)."
     }
   ],
   "focusProjects": [
@@ -934,6 +945,10 @@
     {
       "time": "2026-04-10T19:16:12.237Z",
       "msg": "Added T63 (BUILD) after end: Investigate the 2 SUM mismatch failures in fuzzer seed 42. Determine if this is a real bug in HenryDB SUM computation or a normalization issue."
+    },
+    {
+      "time": "2026-04-10T19:18:12.656Z",
+      "msg": "Added T64 (BUILD) after end: Expand fuzzer: add DISTINCT, expressions in SELECT (a+b), negative numbers, NULL handling, CASE WHEN. Run 2000+ queries and fix any new bugs found."
     }
   ]
 }
