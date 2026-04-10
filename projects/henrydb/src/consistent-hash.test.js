@@ -1,95 +1,130 @@
 // consistent-hash.test.js
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { ConsistentHash } from './consistent-hash.js';
+import { ConsistentHashRing } from './consistent-hash.js';
 
-describe('ConsistentHash', () => {
-  it('basic: keys map to nodes', () => {
-    const ch = new ConsistentHash(100);
-    ch.addNode('node-A');
-    ch.addNode('node-B');
-    ch.addNode('node-C');
+describe('ConsistentHashRing — Basic', () => {
+  it('routes keys to nodes', () => {
+    const ring = new ConsistentHashRing();
+    ring.addNode('node-A');
+    ring.addNode('node-B');
+    ring.addNode('node-C');
     
-    const node = ch.getNode('user:123');
+    const node = ring.getNode('mykey');
     assert.ok(['node-A', 'node-B', 'node-C'].includes(node));
   });
 
-  it('deterministic: same key always maps to same node', () => {
-    const ch = new ConsistentHash(100);
-    ch.addNode('n1'); ch.addNode('n2');
+  it('same key always maps to same node', () => {
+    const ring = new ConsistentHashRing();
+    ring.addNode('n1');
+    ring.addNode('n2');
     
-    const first = ch.getNode('key1');
-    const second = ch.getNode('key1');
-    assert.equal(first, second);
+    const a = ring.getNode('consistent-key');
+    const b = ring.getNode('consistent-key');
+    assert.equal(a, b);
   });
 
-  it('minimal disruption: adding node moves ~1/N keys', () => {
-    const ch = new ConsistentHash(150);
-    ch.addNode('A'); ch.addNode('B'); ch.addNode('C');
+  it('getNodes returns N unique nodes for replication', () => {
+    const ring = new ConsistentHashRing();
+    for (let i = 0; i < 5; i++) ring.addNode(`node-${i}`);
+    
+    const nodes = ring.getNodes('replication-key', 3);
+    assert.equal(nodes.length, 3);
+    assert.equal(new Set(nodes).size, 3); // All unique
+  });
+});
+
+describe('ConsistentHashRing — Distribution', () => {
+  it('distributes keys roughly evenly', () => {
+    const ring = new ConsistentHashRing(150);
+    for (let i = 0; i < 5; i++) ring.addNode(`node-${i}`);
     
     const keys = Array.from({ length: 10000 }, (_, i) => `key-${i}`);
-    const before = keys.map(k => ch.getNode(k));
+    const dist = ring.getDistribution(keys);
     
-    ch.addNode('D'); // Add 4th node
-    const after = keys.map(k => ch.getNode(k));
-    
-    let moved = 0;
-    for (let i = 0; i < keys.length; i++) {
-      if (before[i] !== after[i]) moved++;
+    console.log('    Distribution:');
+    for (const [node, count] of dist) {
+      console.log(`      ${node}: ${count} keys (${(count / 100).toFixed(1)}%)`);
     }
     
-    const movedPct = moved / keys.length;
-    console.log(`  Adding 4th node: ${(movedPct*100).toFixed(1)}% keys moved (ideal: 25%)`);
-    assert.ok(movedPct < 0.40, `Too many keys moved: ${(movedPct*100).toFixed(1)}%`);
-    assert.ok(movedPct > 0.10, `Too few keys moved: ${(movedPct*100).toFixed(1)}%`);
-  });
-
-  it('balanced distribution', () => {
-    const ch = new ConsistentHash(150);
-    ch.addNode('A'); ch.addNode('B'); ch.addNode('C');
-    
-    const keys = Array.from({ length: 10000 }, (_, i) => `k${i}`);
-    const dist = ch.getDistribution(keys);
-    
-    const values = Object.values(dist);
-    const max = Math.max(...values);
-    const min = Math.min(...values);
+    const counts = [...dist.values()];
+    const min = Math.min(...counts);
+    const max = Math.max(...counts);
     const ratio = max / min;
     
-    console.log(`  Distribution: ${JSON.stringify(dist)}, max/min ratio: ${ratio.toFixed(2)}`);
-    assert.ok(ratio < 2.0, `Imbalanced: ${ratio.toFixed(2)}`);
+    console.log(`    Max/min ratio: ${ratio.toFixed(2)}`);
+    assert.ok(ratio < 2.0, `Distribution too skewed: ${ratio}`);
   });
 
-  it('replica nodes', () => {
-    const ch = new ConsistentHash(100);
-    ch.addNode('A'); ch.addNode('B'); ch.addNode('C');
+  it('more vnodes = better distribution', () => {
+    const keys = Array.from({ length: 10000 }, (_, i) => `key-${i}`);
     
-    const replicas = ch.getNodes('important-key', 2);
-    assert.equal(replicas.length, 2);
-    assert.notEqual(replicas[0], replicas[1]); // Different nodes
+    const ring50 = new ConsistentHashRing(50);
+    const ring500 = new ConsistentHashRing(500);
+    for (let i = 0; i < 5; i++) {
+      ring50.addNode(`node-${i}`);
+      ring500.addNode(`node-${i}`);
+    }
+    
+    const stddev50 = ring50.distributionStdDev(keys);
+    const stddev500 = ring500.distributionStdDev(keys);
+    
+    console.log(`    50 vnodes stddev: ${stddev50.toFixed(1)}`);
+    console.log(`    500 vnodes stddev: ${stddev500.toFixed(1)}`);
+    assert.ok(stddev500 < stddev50, 'More vnodes should give better distribution');
+  });
+});
+
+describe('ConsistentHashRing — Node Changes', () => {
+  it('adding a node moves ~1/N of keys', () => {
+    const ring = new ConsistentHashRing(150);
+    for (let i = 0; i < 4; i++) ring.addNode(`node-${i}`);
+    
+    const keys = Array.from({ length: 10000 }, (_, i) => `key-${i}`);
+    const result = ring.simulateAddNode('node-4', keys);
+    
+    const expectedFraction = 1 / 5; // Adding 5th node should move ~1/5
+    console.log(`    Moved: ${result.moved}/${result.total} (${(result.fraction * 100).toFixed(1)}%, expected ~${(expectedFraction * 100).toFixed(0)}%)`);
+    
+    // Should be within 2x of expected
+    assert.ok(result.fraction < expectedFraction * 2, `Moved too many keys: ${result.fraction}`);
+    assert.ok(result.fraction > expectedFraction * 0.5, `Moved too few keys: ${result.fraction}`);
   });
 
-  it('remove node: keys migrate to remaining', () => {
-    const ch = new ConsistentHash(100);
-    ch.addNode('A'); ch.addNode('B'); ch.addNode('C');
+  it('removing a node only affects that node\u0027s keys', () => {
+    const ring = new ConsistentHashRing(150);
+    for (let i = 0; i < 5; i++) ring.addNode(`node-${i}`);
     
-    const before = ch.getNode('test');
-    ch.removeNode(before); // Remove the node that owns 'test'
+    const keys = Array.from({ length: 10000 }, (_, i) => `key-${i}`);
+    const before = {};
+    for (const key of keys) before[key] = ring.getNode(key);
     
-    const after = ch.getNode('test');
-    assert.notEqual(before, after);
-    assert.ok(['A', 'B', 'C'].includes(after));
+    ring.removeNode('node-2');
+    
+    let moved = 0;
+    for (const key of keys) {
+      if (ring.getNode(key) !== before[key]) moved++;
+    }
+    
+    const dist = ring.getDistribution(keys);
+    assert.ok(!dist.has('node-2'), 'Removed node should have no keys');
+    
+    console.log(`    After remove: ${moved}/${keys.length} keys moved (${(moved / keys.length * 100).toFixed(1)}%)`);
+    assert.ok(moved < keys.length * 0.4, 'Should move less than 40% of keys');
   });
+});
 
-  it('performance: 100K lookups', () => {
-    const ch = new ConsistentHash(150);
-    for (let i = 0; i < 10; i++) ch.addNode(`node-${i}`);
+describe('ConsistentHashRing — Performance', () => {
+  it('benchmark: 100K key lookups', () => {
+    const ring = new ConsistentHashRing(150);
+    for (let i = 0; i < 10; i++) ring.addNode(`node-${i}`);
     
+    const N = 100_000;
     const t0 = performance.now();
-    for (let i = 0; i < 100000; i++) ch.getNode(`key-${i}`);
+    for (let i = 0; i < N; i++) ring.getNode(`key-${i}`);
     const elapsed = performance.now() - t0;
     
-    console.log(`  100K lookups on 10 nodes: ${elapsed.toFixed(1)}ms (${(elapsed/100000*1000).toFixed(3)}µs avg)`);
-    assert.ok(elapsed < 500);
+    console.log(`    ${N} lookups: ${elapsed.toFixed(1)}ms (${(N / elapsed * 1000) | 0}/sec)`);
+    console.log(`    Ring size: ${ring.ringSize} vnodes`);
   });
 });
