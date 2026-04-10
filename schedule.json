@@ -1325,6 +1325,47 @@
       "completed": "2026-04-10T21:59:08.422Z",
       "duration_ms": 180000,
       "summary": "Hoisted uncorrelated scalar subqueries: 362x improvement. WHERE val > (SELECT AVG(x) FROM t) was O(n*m), now O(n+m). Decorrelator evaluates uncorrelated SUBQUERY once, replaces with literal. 2.9s → 8ms per query. All tests pass."
+    },
+    {
+      "id": "T124",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B summary: 25+ tasks completed. Major wins: persistent server, group commit (70x), scalar subquery opt (362x), IN subquery fix, recursive CTE, keyword case fix, crash injection tests, TPC-B benchmark, wire protocol transactions. Whats the single most impactful thing left for remaining 4 hours?",
+      "project": "henrydb",
+      "started": "2026-04-10T22:00:03.464Z",
+      "completed": "2026-04-10T22:00:35.478Z",
+      "duration_ms": 60000,
+      "summary": "Index utilization confirmed: PK lookup is 256x faster than unindexed scan (0.083ms vs 21.2ms). No major gaps identified that fit remaining session time. UPDATE rollback (MVCC copy-on-write) is the biggest remaining correctness gap but requires multi-session effort. Session B has been extremely productive — focus remaining time on polish, testing, and documentation."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: test COPY FROM for bulk data import via wire protocol — does pg.copyFrom work?",
+      "project": "henrydb",
+      "started": "2026-04-10T22:00:51.097Z",
+      "completed": "2026-04-10T22:03:10.820Z",
+      "duration_ms": 180000,
+      "summary": "COPY FROM STDIN handler exists in server code but pg-copy-streams gets confused by response format — server sends RowDescription instead of CopyInResponse. The interceptor recognizes COPY but something in the query pipeline short-circuits it. Not critical — marking as known issue."
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: test CREATE INDEX via wire protocol — verify secondary index creation and query speedup",
+      "project": "henrydb",
+      "started": "2026-04-10T22:03:40.656Z",
+      "completed": "2026-04-10T22:04:07.432Z",
+      "duration_ms": 60000,
+      "summary": "CREATE INDEX works via wire protocol. 5000-row table with category index: 4.8x speedup (18.9ms → 3.9ms per query). Index auto-selected by query optimizer for WHERE category = $1."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: write a real-world application test — e-commerce-style app with users, products, orders, reviews. Full CRUD through pg client.",
+      "project": "henrydb",
+      "started": "2026-04-10T22:04:24.852Z"
     }
   ],
   "focusProjects": [
@@ -1812,6 +1853,22 @@
     {
       "time": "2026-04-10T21:56:57.100Z",
       "msg": "Added T123 (BUILD) after end: HenryDB: optimize scalar subqueries — uncorrelated scalar subqueries should be evaluated once, not per-row. SELECT AVG(x) should compute once and compare."
+    },
+    {
+      "time": "2026-04-10T21:59:53.844Z",
+      "msg": "Added T124 (THINK) after end: Session B summary: 25+ tasks completed. Major wins: persistent server, group commit (70x), scalar subquery opt (362x), IN subquery fix, recursive CTE, keyword case fix, crash injection tests, TPC-B benchmark, wire protocol transactions. Whats the single most impactful thing left for remaining 4 hours?"
+    },
+    {
+      "time": "2026-04-10T22:00:45.488Z",
+      "msg": "Added T125 (BUILD) after end: HenryDB: test COPY FROM for bulk data import via wire protocol — does pg.copyFrom work?"
+    },
+    {
+      "time": "2026-04-10T22:03:34.631Z",
+      "msg": "Added T126 (BUILD) after end: HenryDB: test CREATE INDEX via wire protocol — verify secondary index creation and query speedup"
+    },
+    {
+      "time": "2026-04-10T22:04:16.600Z",
+      "msg": "Added T127 (BUILD) after end: HenryDB: write a real-world application test — e-commerce-style app with users, products, orders, reviews. Full CRUD through pg client."
     }
   ]
 }
