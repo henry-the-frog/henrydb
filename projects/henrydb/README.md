@@ -33,8 +33,12 @@ const result = await client.query('SELECT * FROM users');
 - **CTEs** — WITH clauses, recursive CTEs
 - **Set operations** — UNION, INTERSECT, EXCEPT
 - **DISTINCT, ORDER BY, LIMIT, OFFSET**
-- **Expressions** — arithmetic, string functions, date functions, CASE WHEN, COALESCE, CAST
+- **Expressions** — arithmetic, string functions (UPPER, LOWER, LENGTH, TRIM, REPLACE, LEFT, RIGHT, REPEAT, REVERSE, LTRIM, RTRIM), math functions (ABS, FLOOR, CEIL, ROUND, POWER, SQRT, MOD), CASE WHEN, COALESCE, NULLIF, CAST, GREATEST, LEAST, string concatenation (||)
 - **Constraints** — PRIMARY KEY, UNIQUE, NOT NULL, CHECK, FOREIGN KEY
+- **SERIAL** — auto-incrementing primary keys
+- **RETURNING** — INSERT/UPDATE/DELETE RETURNING for affected rows
+- **UPSERT** — INSERT ON CONFLICT DO UPDATE/DO NOTHING
+- **GENERATE_SERIES** — table function for generating number sequences
 - **Views and materialized views**
 - **Full-text search** with inverted indexes
 - **JSON support** — JSON column type, jsonpath queries
