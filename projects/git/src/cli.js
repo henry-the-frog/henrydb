@@ -8,6 +8,7 @@ import { addToIndex, getStatus } from './index.js';
 import { checkoutNewBranch, checkout } from './checkout.js';
 import { merge } from './merge.js';
 import { clone } from './clone.js';
+import { stashSave, stashApply, stashPop, stashList, stashDrop } from './stash.js';
 import { diffLines, formatUnifiedDiff } from './diff.js';
 import { readObject, hashObject } from './objects.js';
 import { getCurrentBranch, listBranches, resolveHead, resolveRef } from './refs.js';
@@ -198,6 +199,35 @@ try {
       mkdirSync(dest, { recursive: true });
       const result = clone(src, dest);
       console.log(`Cloned into '${dest}': ${result.objects} objects, ${result.branches} branches`);
+      break;
+    }
+    
+    case 'stash': {
+      const gitDir = findGitDir(cwd);
+      if (!gitDir) { console.error('Not a git repository'); process.exit(1); }
+      const workDir = resolve(gitDir, '..');
+      const subcmd = args[1] || 'save';
+      
+      if (subcmd === 'save' || subcmd === 'push') {
+        const msg = args.slice(2).join(' ') || 'WIP';
+        stashSave(gitDir, workDir, msg);
+        console.log(`Saved working directory to stash: ${msg}`);
+      } else if (subcmd === 'apply') {
+        const idx = parseInt(args[2] || '0');
+        stashApply(gitDir, workDir, idx);
+        console.log('Applied stash');
+      } else if (subcmd === 'pop') {
+        const idx = parseInt(args[2] || '0');
+        stashPop(gitDir, workDir, idx);
+        console.log('Popped stash');
+      } else if (subcmd === 'list') {
+        const list = stashList(gitDir);
+        list.forEach((s, i) => console.log(`stash@{${i}}: ${s.message}`));
+      } else if (subcmd === 'drop') {
+        const idx = parseInt(args[2] || '0');
+        stashDrop(gitDir, idx);
+        console.log(`Dropped stash@{${idx}}`);
+      }
       break;
     }
     
