@@ -118,7 +118,7 @@ export class LSMTree {
    * Put a key-value pair. O(log n) for memtable.
    */
   put(key, value) {
-    this._memtable.set(key, value);
+    this._memtable.insert(key, value);
     this._writeCount++;
     
     // Flush memtable to SSTable when full
