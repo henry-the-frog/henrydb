@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-10T22:31:06.615Z",
+  "generated": "2026-04-10T22:43:48.307Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: implement a storage stats command — SHOW TABLE STATUS showing row counts, heap file sizes, index info",
-    "completedAt": "2026-04-10T22:31:06.615Z",
-    "taskId": "T136",
-    "summary": "Housekeeping done: CURRENT.md updated, workspace pushed, henrydb pushed.",
+    "task": "HenryDB: add RETURNING support to INSERT ON CONFLICT",
+    "completedAt": "2026-04-10T22:43:48.307Z",
+    "taskId": "T146",
+    "summary": "TRUNCATE TABLE works via wire protocol. Tested: 100 rows → TRUNCATE → 0 rows → INSERT again works.",
     "durationMs": 30000
   },
   "schedule": {
@@ -1132,12 +1132,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 130,
+    "blocksCompleted": 131,
     "blocksTotal": 105,
     "modeDistribution": {
       "THINK": 22,
       "PLAN": 9,
-      "BUILD": 88,
+      "BUILD": 89,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

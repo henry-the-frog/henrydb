@@ -1517,6 +1517,31 @@
       "status": "upcoming",
       "task": "HenryDB: implement UPDATE ... RETURNING and DELETE ... RETURNING",
       "project": "henrydb"
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: test INSERT ... SELECT (insert from query result)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: test TRUNCATE TABLE through wire protocol",
+      "project": "henrydb"
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add RETURNING support to INSERT ON CONFLICT",
+      "project": "henrydb",
+      "started": "2026-04-10T22:43:30.841Z",
+      "completed": "2026-04-10T22:43:48.244Z",
+      "duration_ms": 30000,
+      "summary": "TRUNCATE TABLE works via wire protocol. Tested: 100 rows → TRUNCATE → 0 rows → INSERT again works."
     }
   ],
   "focusProjects": [
@@ -2084,6 +2109,18 @@
     {
       "time": "2026-04-10T22:40:30.462Z",
       "msg": "Added T143 (BUILD) after end: HenryDB: implement UPDATE ... RETURNING and DELETE ... RETURNING"
+    },
+    {
+      "time": "2026-04-10T22:42:22.711Z",
+      "msg": "Added T144 (BUILD) after end: HenryDB: test INSERT ... SELECT (insert from query result)"
+    },
+    {
+      "time": "2026-04-10T22:43:22.564Z",
+      "msg": "Added T145 (BUILD) after end: HenryDB: test TRUNCATE TABLE through wire protocol"
+    },
+    {
+      "time": "2026-04-10T22:43:22.773Z",
+      "msg": "Added T146 (BUILD) after end: HenryDB: add RETURNING support to INSERT ON CONFLICT"
     }
   ]
 }
