@@ -350,3 +350,4 @@ export class InMemoryPageStore {
     return this._pages.get(pageId)?.data ?? null;
   }
 }
+export { ARIESRecoveryManager as AriesRecoveryManager };
