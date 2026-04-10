@@ -152,7 +152,7 @@ describe('BufferPoolManager', () => {
     
     assert.equal(bpm.stats.hits, 3);
     assert.equal(bpm.stats.misses, 0); // All pages were in pool
-    assert.equal(bpm.stats.hitRate, '100.0%');
+    assert.equal(bpm.stats.hitRateStr, '100.0%');
   });
 
   it('LRU eviction order is correct', () => {
