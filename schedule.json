@@ -228,9 +228,13 @@
     {
       "id": "T22",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "done",
       "task": "Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T15:17:01.219Z",
+      "completed": "2026-04-10T15:29:04.254Z",
+      "duration_ms": 600000,
+      "summary": "Post-fix test sweep: 12 specific tests fixed (SSI 5, HLL 1, MD5 auth 4, sequences 1, subquery 1). Net improvement muddied by flaky timing tests. Core fixes are solid — SSI SQL integration fully working, auth fixed, subquery evaluation fixed. Some test suites hang (server tests with port binding)."
     }
   ],
   "focusProjects": [

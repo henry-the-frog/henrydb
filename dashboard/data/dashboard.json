@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-10T15:16:34.972Z",
+  "generated": "2026-04-10T15:29:04.321Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Write blog post: How CockroachDB and PostgreSQL Prevent Write Skew Differently — timestamp cache vs SSI dependency graphs, with HenryDB as test bed.",
-    "completedAt": "2026-04-10T15:16:34.972Z",
-    "taskId": "T21",
-    "summary": "Published blog post: Two Ways to Prevent Write Skew — deep comparison of SSI (PostgreSQL/HenryDB) vs Timestamp Ordering (CockroachDB). Covers scan problem, interval cache, dependency graphs, practical tradeoffs. Pushed to blog.",
+    "mode": "MAINTAIN",
+    "task": "Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement.",
+    "completedAt": "2026-04-10T15:29:04.321Z",
+    "taskId": "T22",
+    "summary": "Post-fix test sweep: 12 specific tests fixed (SSI 5, HLL 1, MD5 auth 4, sequences 1, subquery 1). Net improvement muddied by flaky timing tests. Core fixes are solid — SSI SQL integration fully working, auth fixed, subquery evaluation fixed. Some test suites hang (server tests with port binding).",
     "durationMs": 600000
   },
   "schedule": {
@@ -173,13 +173,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 20,
+    "blocksCompleted": 21,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 3,
       "BUILD": 7,
-      "MAINTAIN": 3,
+      "MAINTAIN": 4,
       "EXPLORE": 2
     }
   }
