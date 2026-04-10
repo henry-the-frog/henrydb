@@ -39,6 +39,8 @@ export class HenryDBServer {
       this.db = options.db || PersistentDatabase.open(options.dataDir, {
         poolSize: options.poolSize || 64,
         recover: options.recover !== false,
+        walSync: options.walSync || 'batch',
+        walBatchMs: options.walBatchMs || 5,
       });
     } else {
       this._persistent = false;

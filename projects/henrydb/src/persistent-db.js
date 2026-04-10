@@ -30,8 +30,10 @@ export class PersistentDatabase {
    * @param {object} [options]
    * @param {number} [options.poolSize=64] — buffer pool size in pages
    * @param {boolean} [options.recover=true] — run crash recovery on open
+   * @param {'immediate'|'batch'|'none'} [options.walSync='immediate'] — WAL sync mode
+   * @param {number} [options.walBatchMs=5] — batch sync interval for group commit
    */
-  static open(dirPath, { poolSize = 64, recover = true } = {}) {
+  static open(dirPath, { poolSize = 64, recover = true, walSync = 'immediate', walBatchMs = 5 } = {}) {
     // Ensure directory exists
     if (!existsSync(dirPath)) {
       mkdirSync(dirPath, { recursive: true });
@@ -42,7 +44,10 @@ export class PersistentDatabase {
 
     // Create shared buffer pool and WAL
     const bp = new BufferPool(poolSize);
-    const wal = new FileWAL(walPath);
+    const wal = new FileWAL(walPath, {
+      syncMode: walSync || 'immediate',
+      batchIntervalMs: walBatchMs || 5,
+    });
     
     // Track disk managers for each table (one file per table)
     const diskManagers = new Map();

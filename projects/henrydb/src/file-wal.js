@@ -10,14 +10,26 @@ import { PAGE_SIZE } from './disk-manager.js';
 export class FileWAL {
   /**
    * @param {string} filePath — path to the WAL file
+   * @param {object} options
+   * @param {'immediate'|'batch'|'none'} options.syncMode — fsync strategy
+   *   - 'immediate': fsync on every commit (safe, slow, default)
+   *   - 'batch': fsync every batchIntervalMs (group commit, fast)
+   *   - 'none': no fsync (fastest, data at risk on power loss)
+   * @param {number} options.batchIntervalMs — batch fsync interval (default: 5ms)
    */
-  constructor(filePath) {
+  constructor(filePath, options = {}) {
     this._filePath = filePath;
     this._nextLsn = 1;
     this._nextTxId = 1;
     this._flushedLsn = 0;
     this._writeBuffer = [];  // Records buffered before flush
     this._lastCheckpointLsn = 0;
+    
+    // Group commit settings
+    this._syncMode = options.syncMode || 'immediate';
+    this._batchIntervalMs = options.batchIntervalMs || 5;
+    this._batchTimer = null;
+    this._pendingSync = false; // true if writes happened since last fsync
     
     const exists = existsSync(filePath);
     if (exists) {
@@ -73,8 +85,19 @@ export class FileWAL {
     const lsn = this._nextLsn++;
     const record = new WALRecord(lsn, txId, WAL_TYPES.COMMIT);
     this._writeBuffer.push(record);
-    // COMMIT forces flush to stable storage
-    this.flush();
+    
+    // Write to file (always — ensures data reaches OS page cache)
+    this._flushToFile();
+    
+    // Sync strategy
+    if (this._syncMode === 'immediate') {
+      fsyncSync(this._fd);
+    } else if (this._syncMode === 'batch') {
+      this._pendingSync = true;
+      this._ensureBatchTimer();
+    }
+    // 'none': no sync at all
+    
     return lsn;
   }
 
@@ -96,6 +119,16 @@ export class FileWAL {
 
   /** Flush buffered records to the file. */
   flush() {
+    this._flushToFile();
+    // Always fsync on explicit flush
+    if (this._fd !== null && this._fd !== undefined) {
+      fsyncSync(this._fd);
+      this._pendingSync = false;
+    }
+  }
+
+  /** Write buffered records to file without fsync. */
+  _flushToFile() {
     if (this._writeBuffer.length === 0) return;
     
     const buffers = this._writeBuffer.map(r => r.serialize());
@@ -108,11 +141,30 @@ export class FileWAL {
     }
     
     writeSync(this._fd, combined, 0, combined.length, this._fileSize);
-    fsyncSync(this._fd);
     
     this._fileSize += totalSize;
     this._flushedLsn = this._writeBuffer[this._writeBuffer.length - 1].lsn;
     this._writeBuffer = [];
+  }
+
+  /** Start batch timer for group commit. */
+  _ensureBatchTimer() {
+    if (this._batchTimer) return;
+    this._batchTimer = setInterval(() => {
+      if (this._pendingSync && this._fd !== null && this._fd !== undefined) {
+        fsyncSync(this._fd);
+        this._pendingSync = false;
+      }
+    }, this._batchIntervalMs);
+    if (this._batchTimer.unref) this._batchTimer.unref();
+  }
+
+  /** Stop batch timer. */
+  _stopBatchTimer() {
+    if (this._batchTimer) {
+      clearInterval(this._batchTimer);
+      this._batchTimer = null;
+    }
   }
 
   /** Force flush up to a specific LSN. */
@@ -131,7 +183,13 @@ export class FileWAL {
 
   /** Close the WAL file. */
   close() {
+    this._stopBatchTimer();
     if (this._writeBuffer.length > 0) this.flush();
+    // Final fsync to ensure all data is on disk
+    if (this._pendingSync && this._fd >= 0) {
+      fsyncSync(this._fd);
+      this._pendingSync = false;
+    }
     if (this._fd >= 0) {
       closeSync(this._fd);
       this._fd = -1;
