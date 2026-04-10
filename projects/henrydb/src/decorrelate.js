@@ -56,8 +56,43 @@ function isCorrelated(subqueryAst, outerTables) {
  * For uncorrelated subqueries: execute once, build a Set, return optimized node.
  * For correlated: leave as-is (future: convert to semi-join).
  */
+/**
+ * If expr is an uncorrelated scalar subquery, evaluate it once and return a literal.
+ * Otherwise return the expr unchanged.
+ */
+function hoistScalarSubquery(expr, outerTables, db) {
+  if (!expr || expr.type !== 'SUBQUERY') return expr;
+  
+  // Check if the subquery references any outer tables
+  if (isCorrelated(expr.subquery, outerTables)) return expr;
+  
+  // Uncorrelated: evaluate once and replace with literal
+  try {
+    const result = db._select(expr.subquery);
+    if (result.rows.length === 0) {
+      return { type: 'literal', value: null };
+    }
+    const firstRow = result.rows[0];
+    const value = Object.values(firstRow)[0];
+    return { type: 'literal', value: value ?? null };
+  } catch (e) {
+    // If evaluation fails, leave the subquery in place
+    return expr;
+  }
+}
+
 export function decorrelateExpr(expr, outerTables, db) {
   if (!expr) return expr;
+
+  // Hoist uncorrelated scalar subqueries to literal values
+  // This covers: WHERE val > (SELECT AVG(x) FROM t)
+  if (expr.type === 'COMPARE') {
+    const left = hoistScalarSubquery(expr.left, outerTables, db);
+    const right = hoistScalarSubquery(expr.right, outerTables, db);
+    if (left !== expr.left || right !== expr.right) {
+      expr = { ...expr, left, right };
+    }
+  }
 
   // Recurse into AND/OR
   if (expr.type === 'AND') {

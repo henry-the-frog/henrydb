@@ -1307,10 +1307,21 @@
     {
       "id": "T122",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add a performance benchmark suite — measure and track SQL execution speed for common operations (SELECT, JOIN, GROUP BY, INSERT bulk, etc)",
       "project": "henrydb",
-      "started": "2026-04-10T21:49:03.310Z"
+      "started": "2026-04-10T21:49:03.310Z",
+      "completed": "2026-04-10T21:56:39.161Z",
+      "duration_ms": 300000,
+      "summary": "Benchmark suite created. Key results: INSERT 25K/s, point lookup 53K/s, full scan 235/s, JOIN 309/s, GROUP BY 294/s, UPDATE 756/s, parse 93K/s. Scalar subquery is pathologically slow (2.9s) — decorrelator doesnt optimize scalar subqueries. IN subquery fast (6ms) due to hash set optimization."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: optimize scalar subqueries — uncorrelated scalar subqueries should be evaluated once, not per-row. SELECT AVG(x) should compute once and compare.",
+      "project": "henrydb",
+      "started": "2026-04-10T21:57:03.509Z"
     }
   ],
   "focusProjects": [
@@ -1794,6 +1805,10 @@
     {
       "time": "2026-04-10T21:48:55.348Z",
       "msg": "Added T122 (BUILD) after end: HenryDB: add a performance benchmark suite — measure and track SQL execution speed for common operations (SELECT, JOIN, GROUP BY, INSERT bulk, etc)"
+    },
+    {
+      "time": "2026-04-10T21:56:57.100Z",
+      "msg": "Added T123 (BUILD) after end: HenryDB: optimize scalar subqueries — uncorrelated scalar subqueries should be evaluated once, not per-row. SELECT AVG(x) should compute once and compare."
     }
   ]
 }
