@@ -326,6 +326,46 @@ export class QueryRewriter {
     return JSON.stringify(a) === JSON.stringify(b);
   }
 
+  /**
+   * Simplify a predicate expression.
+   * Returns null for null input, folds constants and eliminates redundancies.
+   */
+  simplifyPredicate(pred) {
+    if (pred === null || pred === undefined) return null;
+    // Use constant folding and redundant elimination
+    let result = this._foldConstantsExpr(pred);
+    result = this._eliminateRedundant(result);
+    return result;
+  }
+
+  _foldConstantsExpr(expr) {
+    if (!expr || typeof expr !== 'object') return expr;
+    // Recursively fold
+    if (expr.left) expr.left = this._foldConstantsExpr(expr.left);
+    if (expr.right) expr.right = this._foldConstantsExpr(expr.right);
+    // Fold literal comparisons
+    if (expr.type === 'COMPARE' && expr.left?.type === 'literal' && expr.right?.type === 'literal') {
+      const l = expr.left.value, r = expr.right.value;
+      const ops = { '=': l === r, '!=': l !== r, '<': l < r, '>': l > r, '<=': l <= r, '>=': l >= r };
+      if (expr.op in ops) return { type: 'literal', value: ops[expr.op] };
+    }
+    return expr;
+  }
+
+  _eliminateRedundant(expr) {
+    if (!expr || typeof expr !== 'object') return expr;
+    // TRUE AND x → x, FALSE OR x → x
+    if (expr.type === 'AND') {
+      if (expr.left?.type === 'literal' && expr.left.value === true) return expr.right;
+      if (expr.right?.type === 'literal' && expr.right.value === true) return expr.left;
+    }
+    if (expr.type === 'OR') {
+      if (expr.left?.type === 'literal' && expr.left.value === false) return expr.right;
+      if (expr.right?.type === 'literal' && expr.right.value === false) return expr.left;
+    }
+    return expr;
+  }
+
   _deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
   }

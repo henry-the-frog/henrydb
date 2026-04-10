@@ -2655,10 +2655,21 @@
     {
       "id": "T249",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Continue test sweep: find and fix more broken tests in HenryDB",
       "project": "henrydb",
-      "started": "2026-04-10T01:18:13.359Z"
+      "started": "2026-04-10T01:18:13.359Z",
+      "completed": "2026-04-10T01:34:00.578Z",
+      "duration_ms": 600000,
+      "summary": "Fixed 4 more test files: edge-cases 0→59/59, property-tests 14→17/17, regression-tests 31→32/33. Remaining failures are deeper (transactional-db needs real MVCC interface work, query rewriter simplifyPredicate missing). Pushed 94d8375d."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix query-rewriter simplifyPredicate missing and tdigest test hang",
+      "project": "henrydb",
+      "started": "2026-04-10T01:34:18.479Z"
     }
   ],
   "focusProjects": [
@@ -3666,6 +3677,10 @@
     {
       "time": "2026-04-10T01:18:07.494Z",
       "msg": "Added T249 (BUILD) after end: Continue test sweep: find and fix more broken tests in HenryDB"
+    },
+    {
+      "time": "2026-04-10T01:34:12.968Z",
+      "msg": "Added T250 (BUILD) after end: Fix query-rewriter simplifyPredicate missing and tdigest test hang"
     }
   ]
 }

@@ -27,7 +27,7 @@ export class TDigest {
     this._needsSort = true;
 
     // Compress periodically
-    if (this._centroids.length > this.compression * 3) {
+    if (this._centroids.length > this.compression * 10) {
       this._compress();
     }
   }
@@ -94,6 +94,7 @@ export class TDigest {
 
     const compressed = [];
     let i = 0;
+    let cumCount = 0; // Track cumulative count incrementally
 
     while (i < this._centroids.length) {
       let merged = { ...this._centroids[i] };
@@ -105,7 +106,7 @@ export class TDigest {
         const newCount = merged.count + next.count;
         
         // Size limit: centroids near the tails should be small
-        const qEstimate = this._cumCountBefore(compressed, merged) / this._totalCount;
+        const qEstimate = (cumCount + merged.count / 2) / this._totalCount;
         const maxSize = this._maxCentroidSize(qEstimate);
         
         if (newCount <= maxSize) {
@@ -118,6 +119,7 @@ export class TDigest {
         }
       }
 
+      cumCount += merged.count;
       compressed.push(merged);
     }
 
