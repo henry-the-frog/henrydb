@@ -3756,6 +3756,11 @@ export class Database {
       case 'SQRT': return Math.sqrt(this._evalValue(args[0], row));
       case 'LOG': return args.length > 1 ? Math.log(this._evalValue(args[1], row)) / Math.log(this._evalValue(args[0], row)) : Math.log(this._evalValue(args[0], row));
       case 'RANDOM': return Math.random();
+      case 'GREATEST': { const vals = args.map(a => this._evalValue(a, row)).filter(v => v != null); return vals.length ? Math.max(...vals.map(Number)) : null; }
+      case 'LEAST': { const vals = args.map(a => this._evalValue(a, row)).filter(v => v != null); return vals.length ? Math.min(...vals.map(Number)) : null; }
+      case 'MOD': { const a = Number(this._evalValue(args[0], row)); const b = Number(this._evalValue(args[1], row)); return b === 0 ? null : a % b; }
+      case 'LTRIM': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).trimStart(); }
+      case 'RTRIM': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).trimEnd(); }
       
       // Date/time functions
       case 'CURRENT_TIMESTAMP': case 'NOW': return new Date().toISOString();
