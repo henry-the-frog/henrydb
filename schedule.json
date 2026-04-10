@@ -1934,10 +1934,21 @@
     {
       "id": "T179",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add ILIKE support in parser and executor",
       "project": "henrydb",
-      "started": "2026-04-10T23:51:12.350Z"
+      "started": "2026-04-10T23:51:12.350Z",
+      "completed": "2026-04-10T23:52:58.761Z",
+      "duration_ms": 120000,
+      "summary": "ILIKE implemented. Fixed LIKE to be case-sensitive (was incorrectly case-insensitive). ILIKE added with case-insensitive matching. Both work through wire protocol."
+    },
+    {
+      "id": "T180",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add POSITION function — POSITION('lo' IN 'hello')",
+      "project": "henrydb",
+      "started": "2026-04-10T23:53:11.895Z"
     }
   ],
   "focusProjects": [
@@ -2649,6 +2660,10 @@
     {
       "time": "2026-04-10T23:51:11.937Z",
       "msg": "Added T179 (BUILD) after end: HenryDB: add ILIKE support in parser and executor"
+    },
+    {
+      "time": "2026-04-10T23:53:11.653Z",
+      "msg": "Added T180 (BUILD) after end: HenryDB: add POSITION function — POSITION('lo' IN 'hello')"
     }
   ]
 }

@@ -3621,6 +3621,12 @@ export class Database {
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
       case 'LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
+      case 'POSITION': {
+        const substr = String(this._evalValue(args[0], row));
+        const str = String(this._evalValue(args[1], row));
+        const idx = str.indexOf(substr);
+        return idx === -1 ? 0 : idx + 1;
+      }
       case 'CONCAT': return args.map(a => { const v = this._evalValue(a, row); return v != null ? String(v) : ''; }).join('');
       case 'COALESCE': {
         for (const arg of args) {

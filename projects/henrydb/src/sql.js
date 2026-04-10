@@ -9,7 +9,7 @@ const KEYWORDS = new Set([
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
+  'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
@@ -594,6 +594,19 @@ export function parse(sql) {
       }
       // Not FROM syntax — backtrack to regular function parsing
       pos = savedPos;
+    }
+
+    // POSITION(substr IN str)
+    if (isKeyword('POSITION')) {
+      advance(); expect('(');
+      const substr = parsePrimary();
+      if (!isKeyword('IN')) throw new Error('Expected IN in POSITION');
+      advance(); // consume IN
+      const str = parsePrimary();
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'function', func: 'POSITION', args: [substr, str], alias };
     }
 
     // String functions in SELECT
