@@ -1446,6 +1446,24 @@
       "completed": "2026-04-10T22:26:46.921Z",
       "duration_ms": 600000,
       "summary": "Window functions work at database level and through Simple Query wire protocol (raw bytes confirmed 3 columns including rank). Extended Query Protocol (pg client) drops window columns — likely column mapping issue between Describe RowDescription and Execute DataRow. Known issue, needs deeper investigation. All existing server tests still pass."
+    },
+    {
+      "id": "T135",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: what is the hardest, deepest correctness test I can write? Something that would break a real database. Think about serializability anomalies, phantom reads, lost updates under concurrent load.",
+      "project": "henrydb",
+      "started": "2026-04-10T22:27:53.661Z",
+      "completed": "2026-04-10T22:28:27.145Z",
+      "duration_ms": 120000,
+      "summary": "Phantom read anomaly confirmed: both T1 (counts engineers) and T2 (inserts new engineer) commit, causing T1 to act on stale predicate result. HenryDB SSI detects write skew (row-level) but NOT phantoms (predicate-level). Would need predicate locks (SIReadLock) to fix. This is the same limitation many databases have — only PostgreSQL fully prevents phantoms in SSI."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: implement a storage stats command — SHOW TABLE STATUS showing row counts, heap file sizes, index info",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1977,6 +1995,14 @@
     {
       "time": "2026-04-10T22:20:01.907Z",
       "msg": "Added T134 (BUILD) after end: HenryDB: window function test through wire protocol — ROW_NUMBER, RANK, LAG, LEAD via pg client"
+    },
+    {
+      "time": "2026-04-10T22:27:45.894Z",
+      "msg": "Added T135 (THINK) after end: HenryDB: what is the hardest, deepest correctness test I can write? Something that would break a real database. Think about serializability anomalies, phantom reads, lost updates under concurrent load."
+    },
+    {
+      "time": "2026-04-10T22:28:53.481Z",
+      "msg": "Added T136 (BUILD) after end: HenryDB: implement a storage stats command — SHOW TABLE STATUS showing row counts, heap file sizes, index info"
     }
   ]
 }
