@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T15:06:02.007Z",
+  "generated": "2026-04-10T15:14:33.694Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Design timestamp cache for HenryDB: CockroachDB-style interval timestamp cache as alternative to SSI dependency tracking. Would solve scan false positive issue more elegantly.",
-    "completedAt": "2026-04-10T15:06:02.007Z",
-    "taskId": "T18",
-    "summary": "Analyzed both approaches: CockroachDB timestamp cache vs PostgreSQL SIRead locks. For single-node HenryDB, SSI with predicate-level locks is better fit. Designed 3-level lock granularity (tuple/page/table) with escalation. Wrote scratch/henrydb-predicate-locks.md. Decided NOT to switch to timestamp ordering — SSI is already working and more appropriate for single-node.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "Fix subquery evaluation: server-integration test expects 2 rows from WHERE price > (SELECT AVG(price)...) but gets 4. Debug query engine subquery handling.",
+    "completedAt": "2026-04-10T15:14:33.694Z",
+    "taskId": "T19",
+    "summary": "Fixed subquery evaluation: _hasSubquery checked for lowercase subquery but AST uses SUBQUERY (uppercase). Case-insensitive comparison fixes it. server-integration: 10/11 pass (remaining failure is test infrastructure TCP buffering issue, not a DB bug).",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -173,12 +173,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 18,
+    "blocksCompleted": 19,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 3,
-      "BUILD": 5,
+      "BUILD": 6,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

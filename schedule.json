@@ -198,9 +198,13 @@
     {
       "id": "T19",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix subquery evaluation: server-integration test expects 2 rows from WHERE price > (SELECT AVG(price)...) but gets 4. Debug query engine subquery handling.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T15:06:22.741Z",
+      "completed": "2026-04-10T15:14:33.630Z",
+      "duration_ms": 900000,
+      "summary": "Fixed subquery evaluation: _hasSubquery checked for lowercase subquery but AST uses SUBQUERY (uppercase). Case-insensitive comparison fixes it. server-integration: 10/11 pass (remaining failure is test infrastructure TCP buffering issue, not a DB bug)."
     },
     {
       "id": "T20",
