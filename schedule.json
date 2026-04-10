@@ -1835,10 +1835,32 @@
     {
       "id": "T170",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: update README with session B feature list",
       "project": "henrydb",
-      "started": "2026-04-10T23:26:13.991Z"
+      "started": "2026-04-10T23:26:13.991Z",
+      "completed": "2026-04-10T23:27:15.763Z",
+      "duration_ms": 60000,
+      "summary": "README updated with EXTRACT, DATE_PART, INTERVAL, GREATEST, LEAST, 140K LOC."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: test LAG and LEAD window functions through wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-10T23:27:29.086Z",
+      "completed": "2026-04-10T23:27:51.142Z",
+      "duration_ms": 30000,
+      "summary": "LAG and LEAD window functions work through wire protocol. LAG(col) for previous value, LEAD(col) for next, LAG(col, offset, default) with custom offset and default."
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: write a realistic time-series analytics test — stock prices with LAG/LEAD/moving averages",
+      "project": "henrydb",
+      "started": "2026-04-10T23:27:57.693Z"
     }
   ],
   "focusProjects": [
@@ -2514,6 +2536,14 @@
     {
       "time": "2026-04-10T23:23:38.930Z",
       "msg": "Added T170 (BUILD) after end: HenryDB: update README with session B feature list"
+    },
+    {
+      "time": "2026-04-10T23:27:28.665Z",
+      "msg": "Added T171 (BUILD) after end: HenryDB: test LAG and LEAD window functions through wire protocol"
+    },
+    {
+      "time": "2026-04-10T23:27:57.457Z",
+      "msg": "Added T172 (BUILD) after end: HenryDB: write a realistic time-series analytics test — stock prices with LAG/LEAD/moving averages"
     }
   ]
 }
