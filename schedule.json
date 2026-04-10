@@ -1461,10 +1461,27 @@
     {
       "id": "T136",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement a storage stats command — SHOW TABLE STATUS showing row counts, heap file sizes, index info",
       "project": "henrydb",
-      "started": "2026-04-10T22:30:42.907Z"
+      "started": "2026-04-10T22:30:42.907Z",
+      "completed": "2026-04-10T22:31:06.551Z",
+      "duration_ms": 30000,
+      "summary": "Housekeeping done: CURRENT.md updated, workspace pushed, henrydb pushed."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add \\\\d tablename support through wire protocol — show column details for a specific table",
+      "project": "henrydb"
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: test CREATE TABLE AS SELECT — create a table from a query result",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2004,6 +2021,14 @@
     {
       "time": "2026-04-10T22:28:53.481Z",
       "msg": "Added T136 (BUILD) after end: HenryDB: implement a storage stats command — SHOW TABLE STATUS showing row counts, heap file sizes, index info"
+    },
+    {
+      "time": "2026-04-10T22:31:13.901Z",
+      "msg": "Added T137 (BUILD) after end: HenryDB: add \\\\d tablename support through wire protocol — show column details for a specific table"
+    },
+    {
+      "time": "2026-04-10T22:31:47.570Z",
+      "msg": "Added T138 (BUILD) after end: HenryDB: test CREATE TABLE AS SELECT — create a table from a query result"
     }
   ]
 }
