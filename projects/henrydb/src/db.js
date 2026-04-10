@@ -3129,7 +3129,7 @@ export class Database {
             if (distinct && arg !== '*') return new Set(values).size;
             return arg === '*' ? groupRows.length : values.length;
           }
-          case 'SUM': return values.reduce((s, v) => s + v, 0);
+          case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
           case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
           case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
@@ -3701,7 +3701,7 @@ export class Database {
           }
           break;
         }
-        case 'SUM': result[name] = values.reduce((s, v) => s + v, 0); break;
+        case 'SUM': result[name] = values.length ? values.reduce((s, v) => s + v, 0) : null; break;
         case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + v, 0) / values.length : null; break;
         case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
         case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;

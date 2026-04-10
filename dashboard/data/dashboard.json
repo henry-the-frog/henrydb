@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:15:49.652Z",
+  "generated": "2026-04-10T19:17:43.252Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Run fuzzer, find bugs, fix them — iterate until 1000+ random queries pass differential testing",
-    "completedAt": "2026-04-10T19:15:49.652Z",
-    "taskId": "T62",
-    "summary": "Expanded fuzzer with JOIN generation, compound WHERE clauses. Now 4 test suites: 100 + 200 + 500 + 1000 queries = 1800 random queries total, all pass differential testing vs SQLite (98%+ exact match). Found that SUM edge cases with specific seeds can differ slightly.",
-    "durationMs": 180000
+    "task": "Investigate the 2 SUM mismatch failures in fuzzer seed 42. Determine if this is a real bug in HenryDB SUM computation or a normalization issue.",
+    "completedAt": "2026-04-10T19:17:43.252Z",
+    "taskId": "T63",
+    "summary": "Found real SQL semantics bug: SUM() over empty set returned 0 instead of NULL (SQL standard). Fixed in 2 locations. Now 1800/1800 fuzzer queries match SQLite exactly — 100% differential correctness.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 59,
+    "blocksCompleted": 60,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 35,
+      "BUILD": 36,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

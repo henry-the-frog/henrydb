@@ -668,6 +668,17 @@
       "completed": "2026-04-10T19:15:49.590Z",
       "duration_ms": 180000,
       "summary": "Expanded fuzzer with JOIN generation, compound WHERE clauses. Now 4 test suites: 100 + 200 + 500 + 1000 queries = 1800 random queries total, all pass differential testing vs SQLite (98%+ exact match). Found that SUM edge cases with specific seeds can differ slightly."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Investigate the 2 SUM mismatch failures in fuzzer seed 42. Determine if this is a real bug in HenryDB SUM computation or a normalization issue.",
+      "project": "henrydb",
+      "started": "2026-04-10T19:16:17.899Z",
+      "completed": "2026-04-10T19:17:43.190Z",
+      "duration_ms": 120000,
+      "summary": "Found real SQL semantics bug: SUM() over empty set returned 0 instead of NULL (SQL standard). Fixed in 2 locations. Now 1800/1800 fuzzer queries match SQLite exactly — 100% differential correctness."
     }
   ],
   "focusProjects": [
@@ -919,6 +930,10 @@
     {
       "time": "2026-04-10T19:09:41.904Z",
       "msg": "PLAN T60 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T19:16:12.237Z",
+      "msg": "Added T63 (BUILD) after end: Investigate the 2 SUM mismatch failures in fuzzer seed 42. Determine if this is a real bug in HenryDB SUM computation or a normalization issue."
     }
   ]
 }
