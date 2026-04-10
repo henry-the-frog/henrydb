@@ -212,20 +212,20 @@ export function parse(sql) {
   }
   if (isKeyword('TRUNCATE')) {
     advance(); if (isKeyword('TABLE')) advance();
-    return { type: 'TRUNCATE_TABLE', table: advance().value };
+    return { type: 'TRUNCATE_TABLE', table: (function(){ const t = advance(); return t.originalValue || t.value; })() };
   }
   if (isKeyword('RENAME')) {
     advance(); expect('KEYWORD', 'TABLE');
-    const from = advance().value;
+    const _renFrom = advance(); const from = _renFrom.originalValue || _renFrom.value;
     expect('KEYWORD', 'TO');
-    const to = advance().value;
+    const _renTo = advance(); const to = _renTo.originalValue || _renTo.value;
     return { type: 'RENAME_TABLE', from, to };
   }
   if (isKeyword('DESCRIBE')) {
     advance();
     return { type: 'SHOW_COLUMNS', table: advance().value };
   }
-  if (isKeyword('TRUNCATE')) { advance(); if (isKeyword('TABLE')) advance(); return { type: 'TRUNCATE', table: advance().value }; }
+  if (isKeyword('TRUNCATE')) { advance(); if (isKeyword('TABLE')) advance(); const _tt = advance(); return { type: 'TRUNCATE', table: _tt.originalValue || _tt.value }; }
   if (isKeyword('SHOW')) { advance(); expect('KEYWORD', 'TABLES'); return { type: 'SHOW_TABLES' }; }
   if (isKeyword('DESCRIBE')) { advance(); return { type: 'DESCRIBE', table: advance().value }; }
   if (isKeyword('BEGIN')) { advance(); if (isKeyword('TRANSACTION')) advance(); return { type: 'BEGIN' }; }
@@ -570,7 +570,8 @@ export function parse(sql) {
       else if (peek().type === 'IDENT') alias = advance().value;
       return { table: '__subquery', alias, subquery };
     }
-    const table = advance().value;
+    const fromTok = advance();
+    const table = fromTok.originalValue || fromTok.value;
     let alias = null;
     if (peek().type === 'IDENT') alias = advance().value;
     else if (isKeyword('AS')) { advance(); alias = readAlias(); }
@@ -584,7 +585,8 @@ export function parse(sql) {
     else if (isKeyword('CROSS')) { joinType = 'CROSS'; advance(); }
     else if (isKeyword('INNER')) { advance(); }
     expect('KEYWORD', 'JOIN');
-    const table = advance().value;
+    const joinTok = advance();
+    const table = joinTok.originalValue || joinTok.value;
     let alias = null;
     if (peek().type === 'IDENT' && !isKeyword('ON')) alias = advance().value;
     let on = null;
@@ -922,7 +924,8 @@ export function parse(sql) {
   function parseInsert() {
     advance(); // INSERT
     expect('KEYWORD', 'INTO');
-    const table = advance().value;
+    const tableTok = advance();
+    const table = tableTok.originalValue || tableTok.value;
 
     let columns = null;
     if (match('(')) {
@@ -995,7 +998,8 @@ export function parse(sql) {
 
   function parseUpdate() {
     advance(); // UPDATE
-    const table = advance().value;
+    const updateTok = advance();
+    const table = updateTok.originalValue || updateTok.value;
     expect('KEYWORD', 'SET');
     const assignments = [];
     do {
@@ -1018,7 +1022,8 @@ export function parse(sql) {
   function parseDelete() {
     advance(); // DELETE
     expect('KEYWORD', 'FROM');
-    const table = advance().value;
+    const delTok = advance();
+    const table = delTok.originalValue || delTok.value;
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     let returning = null;
@@ -1033,7 +1038,7 @@ export function parse(sql) {
   function parseAlter() {
     advance(); // ALTER
     expect('KEYWORD', 'TABLE');
-    const table = advance().value;
+    const _altTok1 = advance(); const table = _altTok1.originalValue || _altTok1.value;
     
     if (isKeyword('ADD')) {
       advance(); // ADD
@@ -1260,14 +1265,16 @@ export function parse(sql) {
     expect('KEYWORD', 'TABLE');
     let ifExists = false;
     if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
-    const table = advance().value;
+    const _dropTok = advance();
+    const table = _dropTok.originalValue || _dropTok.value;
     return { type: 'DROP_TABLE', table, ifExists };
   }
 
   function parseAlter() {
     advance(); // ALTER
     expect('KEYWORD', 'TABLE');
-    const table = advance().value;
+    const _altTok2 = advance();
+    const table = _altTok2.originalValue || _altTok2.value;
 
     if (isKeyword('ADD')) {
       advance(); // ADD

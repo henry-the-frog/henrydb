@@ -912,9 +912,71 @@
     {
       "id": "T83",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard sync",
-      "started": "2026-04-10T20:31:38.011Z"
+      "started": "2026-04-10T20:31:38.011Z",
+      "completed": "2026-04-10T20:32:03.949Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, dashboard synced. All tests passing."
+    },
+    {
+      "id": "T86",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: whats the hardest gap in the compiled query engine? DISTINCT and HAVING dont work. What else is broken?",
+      "started": "2026-04-10T20:32:38.528Z",
+      "completed": "2026-04-10T20:33:48.769Z",
+      "duration_ms": 120000,
+      "summary": "Compiled engine analysis: handles aggregation (COUNT/SUM/MIN/MAX), GROUP BY, HAVING, ORDER BY for tables >= 50 rows. Returns null (fallback to Volcano) for small tables and subqueries. Missing: DISTINCT, JOIN compilation (only basic plans). But this is optimization, not correctness. More impactful: SQL keyword case sensitivity bug (LOG becomes LOG vs log), or fixing the persistence to handle schema changes/migrations across restarts."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "plan_ref": "T86",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T87",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "Fix compiled engine gaps identified in THINK",
+      "task": null,
+      "skip_reason": ""
+    },
+    {
+      "id": "T89",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB SQL parser: identifiers that collide with function names (LOG, LEFT, RIGHT, REPEAT, REVERSE, POWER, SQRT, RANDOM) are uppercased differently in CREATE TABLE vs INSERT/SELECT. This is the root cause of the chain-restart bug with table named log. Whats the right fix?",
+      "started": "2026-04-10T20:34:31.993Z",
+      "completed": "2026-04-10T20:35:56.120Z",
+      "duration_ms": 120000,
+      "summary": "Root cause: tokenizer uppercases all identifiers that match keyword list (LOG, LEFT, RIGHT, etc). CREATE TABLE uses tableTok.originalValue (correct), but INSERT/UPDATE/DELETE/SELECT FROM/JOIN all use advance().value (gets uppercase). Fix: use (tok.originalValue || tok.value) in all table name extraction points. About 6 locations to fix."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix SQL parser identifier/keyword resolution so table names like LOG work consistently across CREATE TABLE, INSERT, SELECT, UPDATE, DELETE",
+      "project": "henrydb",
+      "started": "2026-04-10T20:36:06.276Z"
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add DISTINCT support to compiled query engine: hash-based deduplication in the compiled pipeline",
+      "project": "henrydb"
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write blog post: Making HenryDB Persistent — the journey from in-memory to surviving restarts",
+      "project": "blog"
     }
   ],
   "focusProjects": [
@@ -1254,6 +1316,42 @@
     {
       "time": "2026-04-10T20:19:32.410Z",
       "msg": "PLAN T81 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T20:32:22.621Z",
+      "msg": "Added T86 (THINK) after end: HenryDB: whats the hardest gap in the compiled query engine? DISTINCT and HAVING dont work. What else is broken?"
+    },
+    {
+      "time": "2026-04-10T20:32:28.752Z",
+      "msg": "Added T87 (PLAN) after T86: null"
+    },
+    {
+      "time": "2026-04-10T20:32:28.958Z",
+      "msg": "Added T88 (BUILD) after T86: null"
+    },
+    {
+      "time": "2026-04-10T20:33:59.111Z",
+      "msg": "Removed T87: "
+    },
+    {
+      "time": "2026-04-10T20:33:59.317Z",
+      "msg": "Removed T88: "
+    },
+    {
+      "time": "2026-04-10T20:34:05.945Z",
+      "msg": "Added T89 (THINK) after end: HenryDB SQL parser: identifiers that collide with function names (LOG, LEFT, RIGHT, REPEAT, REVERSE, POWER, SQRT, RANDOM) are uppercased differently in CREATE TABLE vs INSERT/SELECT. This is the root cause of the chain-restart bug with table named log. Whats the right fix?"
+    },
+    {
+      "time": "2026-04-10T20:34:11.708Z",
+      "msg": "Added T90 (BUILD) after T89: Fix SQL parser identifier/keyword resolution so table names like LOG work consistently across CREATE TABLE, INSERT, SELECT, UPDATE, DELETE"
+    },
+    {
+      "time": "2026-04-10T20:34:16.524Z",
+      "msg": "Added T91 (BUILD) after T90: Add DISTINCT support to compiled query engine: hash-based deduplication in the compiled pipeline"
+    },
+    {
+      "time": "2026-04-10T20:34:21.396Z",
+      "msg": "Added T92 (BUILD) after T91: Write blog post: Making HenryDB Persistent — the journey from in-memory to surviving restarts"
     }
   ]
 }
