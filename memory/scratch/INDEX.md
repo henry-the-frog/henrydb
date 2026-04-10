@@ -11,6 +11,19 @@
 - **riscv-architecture.md** — RISC-V instruction encoding, pipeline hazards, branch prediction, cache behavior, Sv32 page tables, Tomasulo OoO (uses: 1, created: 2026-04-07)
 
 
+## HenryDB SQL Correctness — 2026-04-10
+- **SQL Fuzzer:** Differential testing against SQLite, 10,800 random queries, 17 SQL patterns
+- **Key bugs found by fuzzer:**
+  - SUM() over empty set returned 0 instead of NULL (SQL standard)
+  - BETWEEN with NULL: JS coerces null to 0 (`null >= -10` → true), bypassing SQL NULL semantics
+  - NULL ordering: SQLite treats NULL as smallest value (first in ASC, last in DESC)
+  - Adaptive engine SELECT * failed because `_applyProjectAndLimit` didn't check `c.type === 'star'`
+  - Query cache `get()` returned wrapper `{result, timestamp}` instead of just result
+  - Extended query protocol (Bind) didn't invalidate query cache after mutations
+  - UNION/INTERSECT/EXCEPT didn't remap right SELECT's column names to left's
+- **JS null comparison trap:** `null >= -10` is `true` because JS coerces null to 0. Any comparison with null needs explicit null checks first.
+- **Compiled engine:** Fixed `_extractAggregation` to recognize AST nodes (`col.type === 'aggregate'`, `col.func`). Fixed LIMIT handling (`ast.limit` is a number, not `{value: n}`).
+
 ## Git Implementation (tiny-git) — 2026-04-10
 - **Location:** projects/git/
 - **Architecture:** Content-addressable store → Index → Refs → Commits (DAG)
