@@ -153,7 +153,7 @@ node src/server.js [options]
 
 ## Testing
 
-539 test files with 5,000+ individual tests covering:
+539 test files with **5,572 individual tests** covering:
 - SQL parsing and execution
 - Query optimization
 - Transaction isolation (MVCC, SSI)

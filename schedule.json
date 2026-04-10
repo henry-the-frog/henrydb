@@ -1252,10 +1252,13 @@
     {
       "id": "T117",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: comprehensive psql compatibility test — connect with psql, run typical DBA workflow (create tables, insert, query, explain, vacuum, etc)",
       "project": "henrydb",
-      "started": "2026-04-10T21:33:37.087Z"
+      "started": "2026-04-10T21:33:37.087Z",
+      "completed": "2026-04-10T21:34:37.307Z",
+      "duration_ms": 120000,
+      "summary": "psql compatibility: 14/14 tests pass. Full DBA workflow: version, create table, CRUD, aggregations, joins, GROUP BY/HAVING, EXPLAIN, VACUUM, ALTER TABLE, DROP TABLE, error recovery, 100 rapid queries."
     }
   ],
   "focusProjects": [
