@@ -2,11 +2,12 @@
 // cli.js — tiny-git command-line interface
 
 import { join, resolve } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import { init, commit, log, formatLog } from './commands.js';
 import { addToIndex, getStatus } from './index.js';
 import { checkoutNewBranch, checkout } from './checkout.js';
 import { merge } from './merge.js';
+import { clone } from './clone.js';
 import { diffLines, formatUnifiedDiff } from './diff.js';
 import { readObject, hashObject } from './objects.js';
 import { getCurrentBranch, listBranches, resolveHead } from './refs.js';
@@ -138,6 +139,15 @@ try {
       } else {
         console.log('Already up to date.');
       }
+      break;
+    }
+    
+    case 'clone': {
+      const src = args[1];
+      const dest = args[2] || src.split('/').pop();
+      mkdirSync(dest, { recursive: true });
+      const result = clone(src, dest);
+      console.log(`Cloned into '${dest}': ${result.objects} objects, ${result.branches} branches`);
       break;
     }
     
