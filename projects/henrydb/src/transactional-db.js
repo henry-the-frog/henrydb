@@ -358,7 +358,7 @@ export class TransactionalDatabase {
           
           if (created && !deleted) {
             // SSI tracking: record the read for serializable isolation
-            if (tdb._mvcc.recordRead) {
+            if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
               tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, ver.xmin);
             }
             yield row;
@@ -583,10 +583,22 @@ export class TransactionSession {
       const prevTx = this._tdb._activeTx;
       this._tdb._activeTx = this._tx;
       this._tdb._setHeapTxId(this._tx.txId);
+      // For UPDATE/DELETE, suppress read tracking during scan (WHERE filter
+      // causes false SSI dependencies on rows that don't match)
+      const isModify = trimmed.startsWith('UPDATE') || trimmed.startsWith('DELETE');
+      if (isModify) this._tx.suppressReadTracking = true;
       try {
         const result = this._tdb._db.execute(sql);
         // Track new rows immediately
         this._tdb._trackNewRows(this._tx);
+        // For UPDATE/DELETE, record reads only for actually modified rows
+        if (isModify && this._tdb._mvcc.recordRead) {
+          this._tx.suppressReadTracking = false;
+          // Record reads for any keys in the write set that were added during this statement
+          for (const key of this._tx.writeSet) {
+            this._tdb._mvcc.recordRead(this._tx.txId, key, this._tx.txId);
+          }
+        }
         return result;
       } finally {
         this._tdb._activeTx = prevTx;

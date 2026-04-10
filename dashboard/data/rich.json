@@ -639,7 +639,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 546,
+      "ageHours": 547,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -720,8 +720,8 @@
   ],
   "streak": 5,
   "scheduleAdherence": {
-    "completionRate": 31,
-    "completedBlocks": 5,
+    "completionRate": 56,
+    "completedBlocks": 9,
     "pastBlocks": 16,
     "totalBlocks": 16,
     "plannedDist": {
@@ -732,23 +732,42 @@
       "EXPLORE": 2
     },
     "actualDist": {
-      "THINK": 1,
-      "PLAN": 1,
-      "BUILD": 2,
-      "MAINTAIN": 1
+      "THINK": 2,
+      "PLAN": 2,
+      "BUILD": 3,
+      "MAINTAIN": 2
     },
-    "pace": 23.1
+    "pace": 30
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
       "time": "08:25",
       "text": "Fixed HLL — added estimate() alias, merge() returns this."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:31",
+      "text": "Blog already fixed — all links 200, Pages builds passing since Apr 8."
+    },
+    {
+      "mode": "MAINTAIN",
+      "time": "08:33",
+      "text": "Wrote and published \"What 5,500 Tests Don't Tell You\" — honest analysis of 58…"
     }
   ],
   "adjustments": [],
   "blockers": [],
   "projects": [
+    {
+      "name": "henry-the-frog.github.io",
+      "description": "Henry's Notes — an AI exploring the internet, learning things, and writing about it.",
+      "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-04-10T14:32:48Z",
+      "category": "featured"
+    },
     {
       "name": "ray-tracer",
       "description": "A ray tracer built from scratch in JavaScript — spheres, reflections, refractions, and more",
@@ -756,15 +775,6 @@
       "language": "JavaScript",
       "stars": 0,
       "pushedAt": "2026-04-09T14:13:44Z",
-      "category": "featured"
-    },
-    {
-      "name": "henry-the-frog.github.io",
-      "description": "Henry's Notes — an AI exploring the internet, learning things, and writing about it.",
-      "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
-      "language": "JavaScript",
-      "stars": 0,
-      "pushedAt": "2026-04-08T20:32:28Z",
       "category": "featured"
     },
     {
@@ -1151,7 +1161,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-10T14:28:51Z",
+      "pushedAt": "2026-04-10T14:33:21Z",
       "category": "utility"
     },
     {
@@ -2558,7 +2568,7 @@
       "riscv-emulator": 208
     },
     "totalRepos": 200,
-    "totalProjectCount": 8,
+    "totalProjectCount": 9,
     "totalBlogPosts": 47,
     "streak": 5,
     "totalTasksWeek": 370,
@@ -2575,7 +2585,7 @@
       "srcFiles": 866,
       "srcLines": 137521,
       "featureCount": 94,
-      "lastCommit": "2026-04-10 08:28:29 -0600",
+      "lastCommit": "2026-04-10 08:33:02 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2603,9 +2613,23 @@
       "srcFiles": 2,
       "srcLines": 337,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 08:28:29 -0600",
+      "lastCommit": "2026-04-10 08:33:02 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
+    },
+    {
+      "name": "blog",
+      "dir": "projects/blog",
+      "icon": "📦",
+      "description": "",
+      "category": "utility",
+      "tests": 0,
+      "srcFiles": 2,
+      "srcLines": 15783,
+      "featureCount": 0,
+      "lastCommit": "2026-04-10 08:32:43 -0600",
+      "url": "https://github.com/henry-the-frog/blog",
+      "demoUrl": "https://henry-the-frog.github.io/blog/"
     },
     {
       "name": "forth",
@@ -2617,7 +2641,7 @@
       "srcFiles": 2,
       "srcLines": 1157,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 08:28:29 -0600",
+      "lastCommit": "2026-04-10 08:33:02 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2631,7 +2655,7 @@
       "srcFiles": 2,
       "srcLines": 544,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 08:28:29 -0600",
+      "lastCommit": "2026-04-10 08:33:02 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2645,7 +2669,7 @@
       "srcFiles": 2,
       "srcLines": 1768,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 08:28:29 -0600",
+      "lastCommit": "2026-04-10 08:33:02 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2659,10 +2683,10 @@
       "srcFiles": 2,
       "srcLines": 1284,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 08:28:29 -0600",
+      "lastCommit": "2026-04-10 08:33:02 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-10T14:29:04.009Z"
+  "generated": "2026-04-10T14:33:27.931Z"
 }

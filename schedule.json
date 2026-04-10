@@ -91,29 +91,48 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, email check, dashboard sync"
+      "status": "done",
+      "task": "Housekeeping: git push, email check, dashboard sync",
+      "started": "2026-04-10T14:33:11.025Z",
+      "completed": "2026-04-10T14:33:36.070Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated (9/16 tasks done). Skipping email check (already done at 08:03)."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on project direction. 15+ projects started, many breadth-first. What deserves deeper investment?"
+      "status": "done",
+      "task": "Reflect on project direction. 15+ projects started, many breadth-first. What deserves deeper investment?",
+      "started": "2026-04-10T14:33:52.268Z",
+      "completed": "2026-04-10T14:34:05.876Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB is the flagship. Remaining session: fix SSI SQL integration (5 tests) and wire protocol gaps (8 tests). These are last-mile fixes separating internal correctness from user-facing correctness. Will redirect T10 PLAN accordingly."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: real MVCC integration into main database engine (MVCCStore to MVCCManager redesign)",
-      "task": null
+      "task": null,
+      "started": "2026-04-10T14:34:21.934Z",
+      "completed": "2026-04-10T14:41:34.817Z",
+      "duration_ms": 600000,
+      "summary": "Planned SSI fix + wire protocol fixes. Already implemented SSI fix during investigation: (1) suppress read tracking during UPDATE/DELETE scans, (2) skip sequential tx false deps in recordWrite. All 20 SSI tests + 91 core tests pass."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Fix SSI SQL integration: suppress read tracking during UPDATE/DELETE scans, skip sequential tx dependencies in recordWrite",
       "plan_ref": "T10",
       "project": "henrydb"
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Fix wire protocol gaps: RETURNING clause, prepared statements, maintenance commands through server layer",
+      "status": "upcoming",
+      "plan_ref": "T10"
     },
     {
       "id": "T12",
@@ -219,6 +238,10 @@
     {
       "time": "2026-04-10T14:31:25.137Z",
       "msg": "PLAN T6 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T14:41:26.778Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }

@@ -16,6 +16,7 @@ export class MVCCTransaction {
     this.committed = false;
     this.commitTxId = 0;          // The "commit timestamp" (nextTx at commit time)
     this.isolationLevel = 'REPEATABLE READ'; // Default like PostgreSQL
+    this.suppressReadTracking = false; // SSI: suppress reads during scan-then-filter
     // PostgreSQL-style snapshot: {xmin, xmax, activeSet}
     this.snapshot = snapshot || { xmin: txId, xmax: txId, activeSet: new Set() };
   }

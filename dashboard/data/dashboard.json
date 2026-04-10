@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-10T14:32:50.223Z",
+  "generated": "2026-04-10T14:41:34.882Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Blog is fixed - links all returning 200, Pages builds passing. Write new blog post: HenryDB architecture deep dive with benchmark data and honest assessment",
-    "completedAt": "2026-04-10T14:32:50.223Z",
-    "taskId": "T7",
-    "summary": "Wrote and published blog post: What 5500 Tests Dont Tell You. Honest analysis of 58 failures across 5 categories (SSI integration, wire protocol, persistence, Raft, misc). Pushed to henry-the-frog.github.io.",
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-10T14:41:34.882Z",
+    "taskId": "T10",
+    "summary": "Planned SSI fix + wire protocol fixes. Already implemented SSI fix during investigation: (1) suppress read tracking during UPDATE/DELETE scans, (2) skip sequential tx false deps in recordWrite. All 20 SSI tests + 91 core tests pass.",
     "durationMs": 600000
   },
   "schedule": {
@@ -81,45 +81,68 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix blog broken links (Daniel reported Apr 8) and GitHub Pages deployment failures",
         "task": null,
-        "started": "2026-04-10T14:30:04.523Z"
+        "started": "2026-04-10T14:30:04.523Z",
+        "completed": "2026-04-10T14:31:31.599Z",
+        "duration_ms": 120000,
+        "summary": "Blog already fixed - all project links return 200, Pages builds passing since Apr 8. Redirected BUILD to new blog post: HenryDB architecture deep dive."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Blog is fixed - links all returning 200, Pages builds passing. Write new blog post: HenryDB architecture deep dive with benchmark data and honest assessment",
         "plan_ref": "T6",
-        "project": "blog"
+        "project": "blog",
+        "started": "2026-04-10T14:31:50.059Z",
+        "completed": "2026-04-10T14:32:50.187Z",
+        "duration_ms": 600000,
+        "summary": "Wrote and published blog post: What 5500 Tests Dont Tell You. Honest analysis of 58 failures across 5 categories (SSI integration, wire protocol, persistence, Raft, misc). Pushed to henry-the-frog.github.io."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, email check, dashboard sync"
+        "status": "done",
+        "task": "Housekeeping: git push, email check, dashboard sync",
+        "started": "2026-04-10T14:33:11.025Z",
+        "completed": "2026-04-10T14:33:36.070Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard regenerated (9/16 tasks done). Skipping email check (already done at 08:03)."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on project direction. 15+ projects started, many breadth-first. What deserves deeper investment?"
+        "status": "done",
+        "task": "Reflect on project direction. 15+ projects started, many breadth-first. What deserves deeper investment?",
+        "started": "2026-04-10T14:33:52.268Z",
+        "completed": "2026-04-10T14:34:05.876Z",
+        "duration_ms": 120000,
+        "summary": "HenryDB is the flagship. Remaining session: fix SSI SQL integration (5 tests) and wire protocol gaps (8 tests). These are last-mile fixes separating internal correctness from user-facing correctness. Will redirect T10 PLAN accordingly."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: real MVCC integration into main database engine (MVCCStore to MVCCManager redesign)",
-        "task": null
+        "task": null,
+        "started": "2026-04-10T14:34:21.934Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix SSI SQL integration: suppress read tracking during UPDATE/DELETE scans, skip sequential tx dependencies in recordWrite",
         "plan_ref": "T10",
         "project": "henrydb"
+      },
+      {
+        "id": "T17",
+        "mode": "BUILD",
+        "task": "Fix wire protocol gaps: RETURNING clause, prepared statements, maintenance commands through server layer",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -150,13 +173,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 8,
-    "blocksTotal": 16,
+    "blocksCompleted": 11,
+    "blocksTotal": 17,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
+      "THINK": 3,
+      "PLAN": 3,
       "BUILD": 3,
-      "MAINTAIN": 1
+      "MAINTAIN": 2
     }
   }
 }

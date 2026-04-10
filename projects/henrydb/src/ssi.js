@@ -72,7 +72,7 @@ export class SSIManager extends MVCCStore {
     
     // Check if any committed transaction wrote to this key
     for (const [committedTxId, info] of this.committedInfo) {
-      if (info.writeSet.has(key) && !this.activeTxns.get(txId)?.snapshot.has(committedTxId)) {
+      if (info.writeSet.has(key) && !this._wasVisibleInSnapshot(committedTxId, this.activeTxns.get(txId)?.snapshot)) {
         this._addRWDependency(txId, committedTxId);
       }
     }
@@ -92,16 +92,40 @@ export class SSIManager extends MVCCStore {
    * Called when a transaction writes to a key.
    */
   recordWrite(txId, key) {
-    // Check if any active or recently committed transaction read this key
+    // Check if any active or recently committed (but overlapping) transaction read this key
     // If so, they have an rw-antidependency: them →rw→ us
+    const currentTx = this.activeTxns.get(txId);
     for (const [otherTxId, readSet] of this.readSets) {
       if (otherTxId === txId) continue;
       if (readSet.has(key)) {
+        // Only create dependency if otherTx was concurrent with us
+        // (i.e., otherTx started before our snapshot or was active when we began)
+        // Skip if otherTx committed before we started (truly sequential)
+        if (currentTx && this._wasVisibleInSnapshot(otherTxId, currentTx.snapshot)) {
+          continue; // otherTx committed before our snapshot — no conflict possible
+        }
         // otherTx read this key, and we're writing it
         // rw-antidependency: otherTx →rw→ us
         this._addRWDependency(otherTxId, txId);
       }
     }
+  }
+
+  /**
+   * Check if a transaction was visible in a snapshot.
+   * A txId is visible if it was committed before the snapshot was taken.
+   */
+  _wasVisibleInSnapshot(txId, snapshot) {
+    if (!snapshot) return false;
+    // Below xmin: was committed before our snapshot (visible)
+    if (txId < snapshot.xmin) return true;
+    // At or above xmax: started after our snapshot (invisible)
+    if (txId >= snapshot.xmax) return false;
+    // Between xmin and xmax: was it active at snapshot time?
+    // If in activeSet, it was in-progress → invisible
+    if (snapshot.activeSet && snapshot.activeSet.has(txId)) return false;
+    // Between xmin and xmax but not active → was committed → visible
+    return true;
   }
 
   /**
