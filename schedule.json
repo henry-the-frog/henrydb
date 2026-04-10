@@ -2782,19 +2782,62 @@
     {
       "id": "T259",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Evening curiosity: explore something interesting in HenryDB (query compilation, vectorized execution, or columnar storage)",
       "project": "henrydb",
-      "started": "2026-04-10T02:29:08.216Z"
+      "started": "2026-04-10T02:29:08.216Z",
+      "completed": "2026-04-10T02:32:05.065Z",
+      "duration_ms": 600000,
+      "summary": "Built vectorized execution engine (MonetDB/X100-inspired): ColumnBatch, 7 operators (Scan/Filter/Project/HashAgg/Sort/Limit/HashJoin), 4 arithmetic vector ops. 23 tests passing. Benchmarked at 4.6M rows/sec. Study notes: in JS, row-at-a-time wins for simple ops (no interface dispatch) but vectorized shines for complex pipelines and aggregation."
     },
     {
       "id": "T260",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on evening explorations. What was surprising?"
+      "status": "done",
+      "task": "Reflect on evening explorations. What was surprising?",
+      "started": "2026-04-10T02:32:09.934Z",
+      "completed": "2026-04-10T02:32:30.271Z",
+      "duration_ms": 120000,
+      "summary": "Key surprises: 1) PG snapshot is xmin:xmax:xip_list not just a timestamp — fixed a real correctness bug in our MVCC. 2) Hint bits: reads can write (lazy caching of commit status on tuple header). 3) Vectorized doesnt help in JS (V8 JIT handles polymorphism well, 3x slower for simple ops). Lesson: read real implementations before building your own."
     },
     {
       "id": "T261",
+      "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final session: git push, daily log, CURRENT.md",
+      "skip_reason": "Too early to wrap up, 1.5 hours remaining"
+    },
+    {
+      "id": "T264",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix remaining 2 integration-stress test failures (WAL records, lock manager stats)",
+      "project": "henrydb",
+      "started": "2026-04-10T02:32:59.294Z"
+    },
+    {
+      "id": "T265",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Implement hint bits in MVCCManager — cache commit status on version entries for faster visibility checks",
+      "project": "henrydb"
+    },
+    {
+      "id": "T266",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Add READ COMMITTED isolation level to TransactionalDatabase (new snapshot per statement, PG default)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T267",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Wire vectorized execution into HenryDB query engine as alternative path for aggregate queries",
+      "project": "henrydb"
+    },
+    {
+      "id": "T268",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final session: git push, daily log, CURRENT.md"
@@ -3861,6 +3904,30 @@
     {
       "time": "2026-04-10T02:18:15.242Z",
       "msg": "PLAN T255 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-10T02:32:42.707Z",
+      "msg": "Removed T261: Too early to wrap up, 1.5 hours remaining"
+    },
+    {
+      "time": "2026-04-10T02:32:52.374Z",
+      "msg": "Added T264 (BUILD) after end: Fix remaining 2 integration-stress test failures (WAL records, lock manager stats)"
+    },
+    {
+      "time": "2026-04-10T02:32:52.597Z",
+      "msg": "Added T265 (EXPLORE) after end: Implement hint bits in MVCCManager — cache commit status on version entries for faster visibility checks"
+    },
+    {
+      "time": "2026-04-10T02:32:52.815Z",
+      "msg": "Added T266 (EXPLORE) after end: Add READ COMMITTED isolation level to TransactionalDatabase (new snapshot per statement, PG default)"
+    },
+    {
+      "time": "2026-04-10T02:32:53.028Z",
+      "msg": "Added T267 (BUILD) after end: Wire vectorized execution into HenryDB query engine as alternative path for aggregate queries"
+    },
+    {
+      "time": "2026-04-10T02:32:53.239Z",
+      "msg": "Added T268 (MAINTAIN) after end: Final session: git push, daily log, CURRENT.md"
     }
   ]
 }

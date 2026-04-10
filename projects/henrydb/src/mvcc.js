@@ -36,6 +36,7 @@ export class MVCCManager {
     this._nextTx = 1;
     this.activeTxns = new Map();  // txId → MVCCTransaction
     this.committedTxns = new Set(); // Track committed txIds for vacuum
+    this.wal = [];                // Write-ahead log entries
   }
 
   get nextTxId() { return this._nextTx; }
@@ -59,6 +60,7 @@ export class MVCCManager {
     
     const tx = new MVCCTransaction(txId, this, snapshot);
     this.activeTxns.set(txId, tx);
+    this.wal.push({ type: 'begin', txId });
     return tx;
   }
 
@@ -92,6 +94,7 @@ export class MVCCManager {
     this._versions.get(key).push({ value, txId, deleted: false });
     const tx = this.activeTxns.get(txId);
     if (tx) tx.writeSet.add(key);
+    this.wal.push({ type: 'write', txId, key, value });
   }
 
   /** Delete a key in a transaction. Accepts txId or MVCCTransaction. */
@@ -101,6 +104,7 @@ export class MVCCManager {
     this._versions.get(key).push({ value: undefined, txId, deleted: true });
     const tx = this.activeTxns.get(txId);
     if (tx) tx.writeSet.add(key);
+    this.wal.push({ type: 'delete', txId, key });
   }
 
   /** Commit a transaction. Accepts txId or MVCCTransaction. */
@@ -112,6 +116,7 @@ export class MVCCManager {
       tx.commitTxId = this._nextTx; // Record commit "timestamp"
     }
     this.committedTxns.add(txId);
+    this.wal.push({ type: 'commit', txId });
   }
 
   /** Compute the minimum xmin horizon — the lowest startTx of any active transaction. */
@@ -141,6 +146,7 @@ export class MVCCManager {
       try { tx.undoLog[i](); } catch (e) { /* ignore */ }
     }
     this.activeTxns.delete(txId);
+    this.wal.push({ type: 'rollback', txId });
   }
 
   /** Record a read (for SSI — no-op in basic MVCC). */
@@ -241,6 +247,7 @@ export class MVCCHeap {
     const key = `${pageId}:${slotIdx}`;
     this._versions.set(key, { xmin: tx.txId, xmax: 0 });
     tx.writeSet.add(key);
+    if (tx.manager) tx.manager.wal.push({ type: 'heap-insert', txId: tx.txId, key, values });
     return { pageId, slotIdx };
   }
 
