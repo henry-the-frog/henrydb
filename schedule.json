@@ -2677,10 +2677,21 @@
     {
       "id": "T251",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Quick fixes: integration-stress.test.js (16/26) and remaining import breaks",
       "project": "henrydb",
-      "started": "2026-04-10T01:41:54.454Z"
+      "started": "2026-04-10T01:41:54.454Z",
+      "completed": "2026-04-10T01:42:53.001Z",
+      "duration_ms": 180000,
+      "summary": "integration-stress 16→18/26 (remaining 8 failures are MVCCStore vs MVCCHeap interface mismatch - needs real MVCC redesign). All quick fixes committed and pushed."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Scan remaining test files 301-518 for import errors and fix",
+      "project": "henrydb",
+      "started": "2026-04-10T01:43:34.488Z"
     }
   ],
   "focusProjects": [
@@ -3696,6 +3707,10 @@
     {
       "time": "2026-04-10T01:41:47.226Z",
       "msg": "Added T251 (BUILD) after end: Quick fixes: integration-stress.test.js (16/26) and remaining import breaks"
+    },
+    {
+      "time": "2026-04-10T01:43:28.122Z",
+      "msg": "Added T252 (BUILD) after end: Scan remaining test files 301-518 for import errors and fix"
     }
   ]
 }

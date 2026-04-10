@@ -25,14 +25,14 @@ describe('🎯 Milestone: 3000 Tests - Data Structure Properties', () => {
 
   it('Skip list first() is always the minimum', () => {
     const sl = new SkipList();
-    for (let i = 100; i >= 0; i--) sl.set(i, i);
-    assert.equal(sl.first().key, 0);
+    for (let i = 100; i >= 0; i--) sl.insert(i, i);
+    assert.equal(sl.min().key, 0);
   });
 
   it('Skip list last() is always the maximum', () => {
     const sl = new SkipList();
-    for (let i = 0; i < 100; i++) sl.set(i, i);
-    assert.equal(sl.last().key, 99);
+    for (let i = 0; i < 100; i++) sl.insert(i, i);
+    assert.equal(sl.max().key, 99);
   });
 
   it('Trie size matches unique keys', () => {
@@ -166,8 +166,8 @@ describe('🎯 Milestone: 3000 Tests - Final Verification', () => {
 
   it('Skip list range scan returns sorted results', () => {
     const sl = new SkipList();
-    for (let i = 99; i >= 0; i--) sl.set(i, i);
-    const range = sl.range(40, 60);
+    for (let i = 99; i >= 0; i--) sl.insert(i, i);
+    const range = [...sl.range(40, 60)];
     assert.equal(range.length, 21);
     for (let i = 1; i < range.length; i++) assert.ok(range[i].key >= range[i-1].key);
   });
@@ -176,8 +176,8 @@ describe('🎯 Milestone: 3000 Tests - Final Verification', () => {
     const a = new HyperLogLog(10), b = new HyperLogLog(10);
     for (let i = 0; i < 1000; i++) a.add(i);
     for (let i = 1000; i < 2000; i++) b.add(i);
-    a.merge(b);
-    const est = a.estimate();
+    const merged = a.merge(b);
+    const est = merged.estimate();
     assert.ok(Math.abs(est - 2000) / 2000 < 0.1);
   });
 
@@ -207,8 +207,8 @@ describe('🎯 Milestone: 3000 Tests - Final Verification', () => {
   it('Count-Min Sketch merge preserves counts', () => {
     const a = new CountMinSketch(1024, 5), b = new CountMinSketch(1024, 5);
     a.add('x', 10); b.add('x', 20);
-    a.merge(b);
-    assert.ok(a.estimate('x') >= 30);
+    const merged = a.merge(b);
+    assert.ok(merged.estimate('x') >= 30);
   });
 
   it('TDigest handles bimodal distribution', () => {
