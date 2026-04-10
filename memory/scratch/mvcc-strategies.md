@@ -110,7 +110,69 @@ How to detect and resolve conflicts?
 - **Strength:** Correct SSI implementation with proper snapshot visibility
 - **Weakness:** Read tracking at row level during scans (can be coarse-grained)
 
-## Key Insights from Comparison
+## CockroachDB Serializable Isolation (researched 2026-04-10)
+
+CockroachDB uses a fundamentally different approach than PostgreSQL/HenryDB for serializability:
+
+### Timestamp Ordering (not SSI!)
+- Every transaction gets a HLC (Hybrid Logical Clock) timestamp at begin
+- Serializability enforced by ensuring the serializability graph is acyclic
+- Key rule: **operations can only conflict with EARLIER timestamps**
+- If a conflict with a LATER timestamp is detected → abort and restart with new timestamp
+
+### Three Conflict Types (handled differently)
+
+**Write-Read (WR) — MVCC Snapshots**
+- Keys store multiple timestamped versions
+- Reads return the most recent version with timestamp < operation timestamp
+- Result: reads always see a "snapshot" — can't read future values
+- Same as PostgreSQL/HenryDB
+
+**Read-Write (RW) — Timestamp Cache**
+- Each node has an in-memory timestamp cache: key → most recent read timestamp
+- Before writing, check cache: if key was read at a LATER timestamp → abort
+- **This is how they detect write skew!** No need for rw-dependency tracking
+- Cache stores key RANGES (interval cache) — handles predicate reads/scans
+- Size-limited LRU with a "low water mark" (oldest timestamp still in cache)
+
+**Write-Write (WW) — Latest version check**
+- Can't write to key that already has a version with a later timestamp
+- Simply check MVCC chain: if newer version exists → abort
+
+### Key Differences from HenryDB
+
+| Aspect | HenryDB | CockroachDB |
+|--------|---------|-------------|
+| Conflict detection | SSI (dependency graph) | Timestamp ordering |
+| Write skew | Track rw-dependencies, detect cycles | Timestamp cache aborts stale writes |
+| Abort target | Tx with dangerous structure | Always abort the "earlier" tx |
+| Distribution | Single node | Distributed (each node has local cache) |
+| False positives | Possible (scan-level reads) | Possible (interval cache, LRU eviction) |
+| Restart strategy | Client retries | Automatic restart with new timestamp |
+
+### The Timestamp Cache is Brilliant
+- Solves the exact problem we had with scan-level false deps
+- Instead of tracking which rows each tx read, track which keys have been read recently
+- Any write that would create a RW conflict with a later read → abort
+- Interval-based: scan over range [a, z] puts the RANGE in the cache, not each key
+- This means even phantom-level anomalies are prevented!
+
+### What HenryDB Could Learn
+1. **Timestamp cache approach** is simpler than SSI dependency graphs
+2. **Interval cache for scans** prevents false positives from individual row tracking
+3. **Automatic restart** is better UX than "abort and let client retry"
+4. But: SSI is more nuanced and can allow more concurrency in some cases (both approaches have tradeoffs)
+
+### Parallel Commits
+CockroachDB's distributed commit protocol:
+1. Write intents (provisional MVCC values with tx record pointer) via Raft
+2. Set tx record to STAGING
+3. Verify all write intents were replicated
+4. Respond to client (committed!)
+5. Async cleanup: move tx record to COMMITTED, resolve intents to regular MVCC values
+6. Write intents can be resolved by ANY future reader (not just the committing tx)
+
+This is more sophisticated than HenryDB's 2PC — pipelining writes with validation makes commits much faster for distributed txns.
 
 1. **HenryDB is closest to PostgreSQL** in architecture: append-only versions, xmin/xmax metadata, SSI for serializability, VACUUM-style GC (minimal)
 2. **The main gap is persistence:** PostgreSQL writes version metadata to heap pages; HenryDB keeps it in memory maps and rebuilds from WAL

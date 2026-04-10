@@ -176,9 +176,13 @@
     {
       "id": "T15",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research: CockroachDB serializable isolation implementation - how do they handle write skew at scale",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T15:02:01.826Z",
+      "completed": "2026-04-10T15:03:06.775Z",
+      "duration_ms": 600000,
+      "summary": "CockroachDB uses timestamp ordering (not SSI) for serializability. Key innovation: per-node timestamp cache tracks recent reads — any write conflicting with a later read is aborted. Interval-based cache handles scans elegantly (prevents phantoms). Simpler than SSI dependency graphs. Parallel Commits protocol pipelines distributed commit. Detailed notes in scratch/mvcc-strategies.md."
     }
   ],
   "focusProjects": [

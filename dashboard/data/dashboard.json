@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-10T15:01:32.003Z",
+  "generated": "2026-04-10T15:03:06.839Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Deep read: Andy Pavlo CMU 15-445 MVCC implementation strategies (compare with HenryDB approach)",
-    "completedAt": "2026-04-10T15:01:32.003Z",
-    "taskId": "T14",
-    "summary": "Deep dive into MVCC strategies (Pavlo framework). Compared 4 version storage approaches (append-only, delta, time-travel), 3 GC strategies, 4 CC protocols. HenryDB closest to PostgreSQL (append-only + SSI). Key gaps: no persistent version metadata, no index-MVCC integration, no real GC. Wrote detailed scratch note.",
+    "task": "Research: CockroachDB serializable isolation implementation - how do they handle write skew at scale",
+    "completedAt": "2026-04-10T15:03:06.839Z",
+    "taskId": "T15",
+    "summary": "CockroachDB uses timestamp ordering (not SSI) for serializability. Key innovation: per-node timestamp cache tracks recent reads — any write conflicting with a later read is aborted. Interval-based cache handles scans elegantly (prevents phantoms). Simpler than SSI dependency graphs. Parallel Commits protocol pipelines distributed commit. Detailed notes in scratch/mvcc-strategies.md.",
     "durationMs": 600000
   },
   "schedule": {
@@ -173,14 +173,14 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 16,
+    "blocksCompleted": 17,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 3,
       "BUILD": 5,
       "MAINTAIN": 3,
-      "EXPLORE": 1
+      "EXPLORE": 2
     }
   }
 }
