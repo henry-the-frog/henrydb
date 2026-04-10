@@ -1956,10 +1956,13 @@
     {
       "id": "T181",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add LPAD and RPAD string functions through wire protocol",
       "project": "henrydb",
-      "started": "2026-04-10T23:55:14.382Z"
+      "started": "2026-04-10T23:55:14.382Z",
+      "completed": "2026-04-10T23:56:10.529Z",
+      "duration_ms": 60000,
+      "summary": "LPAD/RPAD work through wire protocol. Fixed truncation when string exceeds target length. LPAD(42, 5, 0) → 00042."
     }
   ],
   "focusProjects": [
