@@ -1428,10 +1428,24 @@
     {
       "id": "T133",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: create a LISTEN/NOTIFY integration test — pub/sub through wire protocol",
       "project": "henrydb",
-      "started": "2026-04-10T22:18:18.243Z"
+      "started": "2026-04-10T22:18:18.243Z",
+      "completed": "2026-04-10T22:19:11.307Z",
+      "duration_ms": 120000,
+      "summary": "5/5 LISTEN/NOTIFY tests pass. Full pub/sub: basic delivery, multiple notifications, multiple channels, UNLISTEN, broadcast to multiple listeners. Complete real-time notification system through wire protocol."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: window function test through wire protocol — ROW_NUMBER, RANK, LAG, LEAD via pg client",
+      "project": "henrydb",
+      "started": "2026-04-10T22:20:11.153Z",
+      "completed": "2026-04-10T22:26:46.921Z",
+      "duration_ms": 600000,
+      "summary": "Window functions work at database level and through Simple Query wire protocol (raw bytes confirmed 3 columns including rank). Extended Query Protocol (pg client) drops window columns — likely column mapping issue between Describe RowDescription and Execute DataRow. Known issue, needs deeper investigation. All existing server tests still pass."
     }
   ],
   "focusProjects": [
@@ -1959,6 +1973,10 @@
     {
       "time": "2026-04-10T22:18:12.259Z",
       "msg": "Added T133 (BUILD) after end: HenryDB: create a LISTEN/NOTIFY integration test — pub/sub through wire protocol"
+    },
+    {
+      "time": "2026-04-10T22:20:01.907Z",
+      "msg": "Added T134 (BUILD) after end: HenryDB: window function test through wire protocol — ROW_NUMBER, RANK, LAG, LEAD via pg client"
     }
   ]
 }

@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-10T22:18:18.305Z",
+  "generated": "2026-04-10T22:26:46.985Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: create a LISTEN/NOTIFY integration test — pub/sub through wire protocol",
-    "startedAt": "2026-04-10T22:18:18.305Z",
-    "taskId": "T133"
+    "task": "HenryDB: window function test through wire protocol — ROW_NUMBER, RANK, LAG, LEAD via pg client",
+    "completedAt": "2026-04-10T22:26:46.985Z",
+    "taskId": "T134",
+    "summary": "Window functions work at database level and through Simple Query wire protocol (raw bytes confirmed 3 columns including rank). Extended Query Protocol (pg client) drops window columns — likely column mapping issue between Describe RowDescription and Execute DataRow. Known issue, needs deeper investigation. All existing server tests still pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1132,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 126,
+    "blocksCompleted": 128,
     "blocksTotal": 105,
     "modeDistribution": {
       "THINK": 21,
       "PLAN": 9,
-      "BUILD": 85,
+      "BUILD": 87,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

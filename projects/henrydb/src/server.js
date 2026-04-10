@@ -625,7 +625,7 @@ export class HenryDBServer {
     }
   }
 
-  _sendResult(conn, sql, result) {
+  _sendResult(conn, sql, result, options = {}) {
     if (!result) {
       conn.socket.write(writeCommandComplete('OK'));
       return;
@@ -680,13 +680,15 @@ export class HenryDBServer {
       const columnNames = Object.keys(rows[0]);
       const sampleValues = Object.values(rows[0]);
 
-      // Send RowDescription
-      const colDescs = columnNames.map((name, i) => ({
-        name,
-        typeOid: inferTypeOid(sampleValues[i]),
-        typeSize: -1,
-      }));
-      conn.socket.write(writeRowDescription(colDescs));
+      // Send RowDescription (skip for Extended Query — Describe already sent it)
+      if (!options.skipRowDescription) {
+        const colDescs = columnNames.map((name, i) => ({
+          name,
+          typeOid: inferTypeOid(sampleValues[i]),
+          typeSize: -1,
+        }));
+        conn.socket.write(writeRowDescription(colDescs));
+      }
 
       // Send DataRows
       for (const row of rows) {
