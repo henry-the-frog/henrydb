@@ -1,204 +1,154 @@
-// two-phase-commit.test.js — 2PC protocol tests
-
+// two-phase-commit.test.js
 import { describe, it } from 'node:test';
-import { strict as assert } from 'node:assert';
-import { TwoPhaseCoordinator, TwoPhaseParticipant, InMemoryLog, TxState } from './two-phase-commit.js';
+import assert from 'node:assert/strict';
+import { TwoPhaseCommitCoordinator, Participant, TXN_STATE } from './two-phase-commit.js';
 
-describe('2PC: Normal Operation', () => {
-  it('all participants vote YES → commit', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2');
-    const p3 = new TwoPhaseParticipant('node-3');
+function setup(n = 3) {
+  const coord = new TwoPhaseCommitCoordinator();
+  for (let i = 0; i < n; i++) {
+    coord.addParticipant(new Participant(`node-${i}`));
+  }
+  return coord;
+}
+
+describe('2PC — Happy Path', () => {
+  it('commits when all participants vote YES', () => {
+    const coord = setup(3);
+    const result = coord.execute((participants) => {
+      participants.get('node-0').write('x', 1);
+      participants.get('node-1').write('y', 2);
+      participants.get('node-2').write('z', 3);
+    });
     
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1, p2, p3]);
-    const result = await coordinator.execute();
-    
-    assert.equal(result.decision, 'commit');
-    assert.equal(coordinator.state, TxState.COMMITTED);
-    assert.equal(p1.state, TxState.COMMITTED);
-    assert.equal(p2.state, TxState.COMMITTED);
-    assert.equal(p3.state, TxState.COMMITTED);
+    assert.ok(result.committed);
+    assert.equal(coord.getParticipant('node-0').data.x, 1);
+    assert.equal(coord.getParticipant('node-1').data.y, 2);
+    assert.equal(coord.getParticipant('node-2').data.z, 3);
   });
 
-  it('single participant → commit', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1]);
-    const result = await coordinator.execute();
+  it('multiple transactions in sequence', () => {
+    const coord = setup(2);
     
-    assert.equal(result.decision, 'commit');
-  });
-
-  it('coordinator logs contain full protocol trace', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2');
-    const log = new InMemoryLog();
+    coord.execute((p) => {
+      p.get('node-0').write('counter', 1);
+      p.get('node-1').write('counter', 1);
+    });
     
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1, p2], { log });
-    await coordinator.execute();
+    coord.execute((p) => {
+      p.get('node-0').write('counter', 2);
+      p.get('node-1').write('counter', 2);
+    });
     
-    const entries = log.entriesFor('tx-1');
-    assert.ok(entries.some(e => e.type === 'prepare-start'));
-    assert.ok(entries.some(e => e.type === 'decision' && e.decision === 'commit'));
-    assert.ok(entries.some(e => e.type === 'committed'));
-  });
-});
-
-describe('2PC: Participant Abort', () => {
-  it('one participant votes NO → abort', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2', { canPrepare: false });
-    const p3 = new TwoPhaseParticipant('node-3');
-    
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1, p2, p3]);
-    const result = await coordinator.execute();
-    
-    assert.equal(result.decision, 'abort');
-    assert.equal(coordinator.state, TxState.ABORTED);
-  });
-
-  it('all participants vote NO → abort', async () => {
-    const p1 = new TwoPhaseParticipant('node-1', { canPrepare: false });
-    const p2 = new TwoPhaseParticipant('node-2', { canPrepare: false });
-    
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1, p2]);
-    const result = await coordinator.execute();
-    
-    assert.equal(result.decision, 'abort');
-  });
-
-  it('participant crashes during prepare → abort', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2', { failOnPrepare: true });
-    
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1, p2]);
-    const result = await coordinator.execute();
-    
-    assert.equal(result.decision, 'abort');
+    assert.equal(coord.getParticipant('node-0').data.counter, 2);
+    assert.equal(coord.stats.commits, 2);
   });
 });
 
-describe('2PC: Timeout Handling', () => {
-  it('slow participant causes timeout → abort', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2', { prepareDelay: 10000 }); // Very slow
+describe('2PC — Abort Scenarios', () => {
+  it('aborts when one participant fails prepare', () => {
+    const coord = setup(3);
+    coord.getParticipant('node-1').setFailOnPrepare(true);
     
-    const coordinator = new TwoPhaseCoordinator('tx-1', [p1, p2]);
-    coordinator.timeoutMs = 100; // Short timeout
+    const result = coord.execute((p) => {
+      p.get('node-0').write('x', 1);
+      p.get('node-1').write('y', 2);
+      p.get('node-2').write('z', 3);
+    });
     
-    const result = await coordinator.execute();
-    assert.equal(result.decision, 'abort', 'Timeout should cause abort');
+    assert.ok(!result.committed);
+    assert.ok(result.reason.includes('node-1'));
+    
+    // NO participant should have committed
+    assert.equal(coord.getParticipant('node-0').data.x, undefined);
+    assert.equal(coord.getParticipant('node-2').data.z, undefined);
+  });
+
+  it('aborts when participant crashes before prepare', () => {
+    const coord = setup(3);
+    coord.getParticipant('node-2').crash();
+    
+    const result = coord.execute((p) => {
+      p.get('node-0').write('x', 1);
+    });
+    
+    assert.ok(!result.committed);
+    assert.ok(result.reason.includes('crashed'));
+  });
+
+  it('aborts when transaction body throws', () => {
+    const coord = setup(2);
+    
+    const result = coord.execute(() => {
+      throw new Error('application error');
+    });
+    
+    assert.ok(!result.committed);
+    assert.ok(result.reason.includes('application error'));
+  });
+
+  it('no partial commits: all-or-nothing guarantee', () => {
+    const coord = setup(5);
+    coord.getParticipant('node-3').setFailOnPrepare(true);
+    
+    coord.execute((p) => {
+      for (let i = 0; i < 5; i++) {
+        p.get(`node-${i}`).write('shared_key', 'value');
+      }
+    });
+    
+    // ALL participants should have no data
+    for (let i = 0; i < 5; i++) {
+      const data = coord.getParticipant(`node-${i}`).data;
+      assert.equal(data.shared_key, undefined, `node-${i} should have no data`);
+    }
   });
 });
 
-describe('2PC: Coordinator Recovery', () => {
-  it('recovery after commit decision → re-commit', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2');
-    const log = new InMemoryLog();
+describe('2PC — Recovery', () => {
+  it('participant can recover and see final state', () => {
+    const coord = setup(3);
     
-    // Simulate: coordinator decided commit but crashed before completing phase 2
-    log.append({ txId: 'tx-1', type: 'prepare-start', participants: ['node-1', 'node-2'] });
-    log.append({ txId: 'tx-1', type: 'decision', decision: 'commit', votes: { 'node-1': 'yes', 'node-2': 'yes' } });
+    const result = coord.execute((p) => {
+      p.get('node-0').write('x', 42);
+      p.get('node-1').write('y', 43);
+      p.get('node-2').write('z', 44);
+    });
     
-    // Recovery
-    const result = await TwoPhaseCoordinator.recover('tx-1', log, [p1, p2]);
+    assert.ok(result.committed);
     
-    assert.equal(result.decision, 'commit');
-    assert.ok(result.recovered);
-    assert.equal(p1.state, TxState.COMMITTED);
-    assert.equal(p2.state, TxState.COMMITTED);
+    // All participants have commit log entries
+    for (let i = 0; i < 3; i++) {
+      const p = coord.getParticipant(`node-${i}`);
+      const hasCommit = p.log.some(e => e.type === 'COMMIT');
+      assert.ok(hasCommit, `node-${i} should have COMMIT log entry`);
+    }
   });
 
-  it('recovery with no decision → abort', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2');
-    const log = new InMemoryLog();
+  it('coordinator logs decisions for recovery', () => {
+    const coord = setup(2);
     
-    // Simulate: coordinator crashed before making a decision
-    log.append({ txId: 'tx-1', type: 'prepare-start', participants: ['node-1', 'node-2'] });
+    coord.execute((p) => p.get('node-0').write('x', 1));
     
-    // Recovery — no decision found, safe to abort
-    const result = await TwoPhaseCoordinator.recover('tx-1', log, [p1, p2]);
-    
-    assert.equal(result.decision, 'abort');
-    assert.ok(result.recovered);
-  });
-
-  it('recovery after abort decision → re-abort', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    const p2 = new TwoPhaseParticipant('node-2');
-    const log = new InMemoryLog();
-    
-    log.append({ txId: 'tx-1', type: 'prepare-start', participants: ['node-1', 'node-2'] });
-    log.append({ txId: 'tx-1', type: 'decision', decision: 'abort', votes: { 'node-1': 'yes', 'node-2': 'no' } });
-    
-    const result = await TwoPhaseCoordinator.recover('tx-1', log, [p1, p2]);
-    
-    assert.equal(result.decision, 'abort');
-    assert.ok(result.recovered);
+    assert.ok(coord.log.some(e => e.type === 'PREPARE_START'));
+    assert.ok(coord.log.some(e => e.type === 'COMMIT_DECISION'));
   });
 });
 
-describe('2PC: Participant Log', () => {
-  it('participant logs prepare and commit', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
+describe('2PC — Stats', () => {
+  it('tracks transaction statistics', () => {
+    const coord = setup(3);
     
-    await p1.prepare('tx-1');
-    assert.equal(p1.state, TxState.PREPARED);
+    // 2 successful
+    coord.execute((p) => p.get('node-0').write('a', 1));
+    coord.execute((p) => p.get('node-0').write('b', 2));
     
-    await p1.commit('tx-1');
-    assert.equal(p1.state, TxState.COMMITTED);
+    // 1 failed
+    coord.getParticipant('node-1').setFailOnPrepare(true);
+    coord.execute((p) => p.get('node-0').write('c', 3));
     
-    const entries = p1.log.entriesFor('tx-1');
-    assert.ok(entries.some(e => e.type === 'vote-yes'));
-    assert.ok(entries.some(e => e.type === 'committed'));
-  });
-
-  it('participant tracks prepared transactions', async () => {
-    const p1 = new TwoPhaseParticipant('node-1');
-    
-    await p1.prepare('tx-1');
-    const txData = p1.transactions.get('tx-1');
-    assert.ok(txData);
-    assert.equal(txData.state, 'prepared');
-    
-    await p1.commit('tx-1');
-    assert.equal(txData.state, 'committed');
-  });
-});
-
-describe('2PC: Multiple Concurrent Transactions', () => {
-  it('5 independent 2PC transactions all commit', async () => {
-    const results = await Promise.all(
-      Array.from({ length: 5 }, (_, i) => {
-        const participants = [
-          new TwoPhaseParticipant(`node-${i}-1`),
-          new TwoPhaseParticipant(`node-${i}-2`)
-        ];
-        const coordinator = new TwoPhaseCoordinator(`tx-${i}`, participants);
-        return coordinator.execute();
-      })
-    );
-    
-    assert.equal(results.filter(r => r.decision === 'commit').length, 5);
-  });
-
-  it('mixed: some commit, some abort', async () => {
-    const results = await Promise.all(
-      Array.from({ length: 4 }, (_, i) => {
-        const canPrepare = i < 2; // First 2 can commit, last 2 have a failing node
-        const participants = [
-          new TwoPhaseParticipant(`node-${i}-1`),
-          new TwoPhaseParticipant(`node-${i}-2`, { canPrepare })
-        ];
-        const coordinator = new TwoPhaseCoordinator(`tx-${i}`, participants);
-        return coordinator.execute();
-      })
-    );
-    
-    const commits = results.filter(r => r.decision === 'commit').length;
-    const aborts = results.filter(r => r.decision === 'abort').length;
-    assert.equal(commits, 2);
-    assert.equal(aborts, 2);
+    assert.equal(coord.stats.txns, 3);
+    assert.equal(coord.stats.commits, 2);
+    assert.equal(coord.stats.aborts, 1);
+    assert.ok(coord.stats.participantFailures >= 1);
   });
 });

@@ -1,280 +1,191 @@
-// two-phase-commit.js — Two-Phase Commit (2PC) protocol for distributed transactions
+// two-phase-commit.js — Two-Phase Commit (2PC) for Distributed Transactions
 //
-// The classic distributed transaction coordination protocol.
-// Ensures all-or-nothing atomicity across multiple database nodes.
+// Ensures atomicity across multiple nodes: either ALL commit or ALL abort.
+// Phase 1 (Prepare): Coordinator asks all participants to vote YES/NO
+// Phase 2 (Commit/Abort): If all vote YES → commit. If any vote NO → abort.
 //
-// Phase 1 (PREPARE): Coordinator asks all participants if they can commit.
-//   - Each participant either votes YES (prepared) or NO (abort)
-//   - Prepared state is durable — survives participant crash
+// Failure scenarios handled:
+// - Participant failure before vote
+// - Participant failure after vote
+// - Coordinator failure (blocking problem — 2PC's Achilles heel)
 //
-// Phase 2 (COMMIT/ABORT): Coordinator decides based on votes.
-//   - All YES → COMMIT (coordinator logs decision, tells all to commit)
-//   - Any NO → ABORT (coordinator tells all to abort)
-//   - Decision is durable — survives coordinator crash
-//
-// Recovery: After coordinator crash, participants in PREPARED state
-// must wait for the coordinator to recover and re-send the decision.
-// This is the fundamental weakness of 2PC (blocking protocol).
+// Used in: distributed databases, XA transactions, microservice sagas
 
-/**
- * Transaction states in 2PC
- */
-export const TxState = {
-  INITIAL: 'initial',     // Transaction started, work in progress
-  PREPARING: 'preparing', // Coordinator sent PREPARE
-  PREPARED: 'prepared',   // Participant voted YES
-  COMMITTING: 'committing', // Coordinator decided COMMIT
-  COMMITTED: 'committed', // Final state: committed
-  ABORTING: 'aborting',   // Coordinator decided ABORT (or participant voted NO)
-  ABORTED: 'aborted'      // Final state: aborted
+const TXN_STATE = {
+  INIT: 'init',
+  PREPARING: 'preparing',
+  PREPARED: 'prepared',
+  COMMITTING: 'committing',
+  COMMITTED: 'committed',
+  ABORTING: 'aborting',
+  ABORTED: 'aborted',
 };
 
 /**
- * Two-Phase Commit Coordinator
- * 
- * Coordinates a distributed transaction across multiple participants.
- * The coordinator is the single point of decision — if it crashes,
- * prepared participants must wait for recovery.
+ * Participant — represents a node that participates in distributed transactions.
  */
-export class TwoPhaseCoordinator {
-  constructor(txId, participants, { log } = {}) {
-    this.txId = txId;
-    this.participants = participants; // Array of Participant instances
-    this.state = TxState.INITIAL;
-    this.votes = new Map();           // participantId → 'yes'|'no'
-    this.log = log || new InMemoryLog(); // WAL for coordinator decisions
-    this.decision = null;             // 'commit' or 'abort'
-    this.startTime = Date.now();
-    this.timeoutMs = 5000;            // Timeout for participant responses
-  }
-
-  /**
-   * Execute the full 2PC protocol.
-   * Returns { decision: 'commit'|'abort', txId }
-   */
-  async execute() {
-    try {
-      // Phase 1: PREPARE
-      const allPrepared = await this.prepare();
-      
-      if (allPrepared) {
-        // Phase 2: COMMIT
-        await this.commit();
-        return { decision: 'commit', txId: this.txId };
-      } else {
-        // Phase 2: ABORT
-        await this.abort();
-        return { decision: 'abort', txId: this.txId };
-      }
-    } catch (e) {
-      // Any error → abort
-      await this.abort();
-      return { decision: 'abort', txId: this.txId, error: e.message };
-    }
-  }
-
-  /**
-   * Phase 1: Send PREPARE to all participants, collect votes.
-   * Returns true if all voted YES.
-   */
-  async prepare() {
-    this.state = TxState.PREPARING;
-    this.log.append({ txId: this.txId, type: 'prepare-start', participants: this.participants.map(p => p.id) });
-    
-    const votePromises = this.participants.map(async (participant) => {
-      try {
-        const vote = await Promise.race([
-          participant.prepare(this.txId),
-          this._timeout(this.timeoutMs)
-        ]);
-        this.votes.set(participant.id, vote);
-        return vote;
-      } catch (e) {
-        // Timeout or error → treat as NO
-        this.votes.set(participant.id, 'no');
-        return 'no';
-      }
-    });
-    
-    const votes = await Promise.all(votePromises);
-    const allYes = votes.every(v => v === 'yes');
-    
-    // Log the decision BEFORE sending phase 2 messages
-    // This is the critical WAL write — the decision must be durable
-    this.decision = allYes ? 'commit' : 'abort';
-    this.log.append({ txId: this.txId, type: 'decision', decision: this.decision, votes: Object.fromEntries(this.votes) });
-    
-    return allYes;
-  }
-
-  /**
-   * Phase 2: COMMIT — tell all participants to commit.
-   */
-  async commit() {
-    this.state = TxState.COMMITTING;
-    
-    const commitPromises = this.participants.map(async (participant) => {
-      try {
-        await participant.commit(this.txId);
-      } catch (e) {
-        // Participant will need to recover later
-        this.log.append({ txId: this.txId, type: 'commit-retry-needed', participantId: participant.id });
-      }
-    });
-    
-    await Promise.all(commitPromises);
-    this.state = TxState.COMMITTED;
-    this.log.append({ txId: this.txId, type: 'committed' });
-  }
-
-  /**
-   * Phase 2: ABORT — tell all participants to abort.
-   */
-  async abort() {
-    this.state = TxState.ABORTING;
-    
-    const abortPromises = this.participants.map(async (participant) => {
-      try {
-        await participant.abort(this.txId);
-      } catch (e) {
-        // Best effort — participant will timeout and abort on its own
-      }
-    });
-    
-    await Promise.all(abortPromises);
-    this.state = TxState.ABORTED;
-    this.log.append({ txId: this.txId, type: 'aborted' });
-  }
-
-  _timeout(ms) {
-    return new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
-  }
-
-  /**
-   * Recover from coordinator crash.
-   * Reads the WAL to find the last decision and re-sends it.
-   */
-  static async recover(txId, log, participants) {
-    const entries = log.entriesFor(txId);
-    const decisionEntry = entries.find(e => e.type === 'decision');
-    
-    if (!decisionEntry) {
-      // No decision was made — safe to abort
-      const coordinator = new TwoPhaseCoordinator(txId, participants, { log });
-      await coordinator.abort();
-      return { decision: 'abort', recovered: true };
-    }
-    
-    if (decisionEntry.decision === 'commit') {
-      // Re-send commit to all participants
-      const commitPromises = participants.map(p => p.commit(txId).catch(() => {}));
-      await Promise.all(commitPromises);
-      log.append({ txId, type: 'committed' });
-      return { decision: 'commit', recovered: true };
-    } else {
-      // Re-send abort
-      const abortPromises = participants.map(p => p.abort(txId).catch(() => {}));
-      await Promise.all(abortPromises);
-      log.append({ txId, type: 'aborted' });
-      return { decision: 'abort', recovered: true };
-    }
-  }
-}
-
-/**
- * Two-Phase Commit Participant
- * 
- * Represents a database node participating in a distributed transaction.
- * Participants vote YES/NO during prepare, then follow the coordinator's decision.
- */
-export class TwoPhaseParticipant {
-  constructor(id, { canPrepare = true, prepareDelay = 0, commitDelay = 0, failOnPrepare = false, failOnCommit = false } = {}) {
+export class Participant {
+  constructor(id) {
     this.id = id;
-    this.state = TxState.INITIAL;
-    this.transactions = new Map(); // txId → { state, data }
-    this._canPrepare = canPrepare;
-    this._prepareDelay = prepareDelay;
-    this._commitDelay = commitDelay;
-    this._failOnPrepare = failOnPrepare;
-    this._failOnCommit = failOnCommit;
-    this.log = new InMemoryLog();
+    this.state = TXN_STATE.INIT;
+    this.log = [];        // Durability log
+    this.data = {};       // Simple key-value state
+    this._pendingWrites = {}; // Buffered writes for current txn
+    this._crashed = false;
+    this._prepareDelay = 0;
+    this._failOnPrepare = false;
   }
 
-  /**
-   * Phase 1: Receive PREPARE request from coordinator.
-   * Returns 'yes' if the participant can commit, 'no' otherwise.
-   */
-  async prepare(txId) {
-    if (this._prepareDelay > 0) {
-      await new Promise(r => setTimeout(r, this._prepareDelay));
-    }
-    
-    if (this._failOnPrepare) {
-      throw new Error(`Participant ${this.id} failed during prepare`);
-    }
-    
-    if (!this._canPrepare) {
-      this.state = TxState.ABORTED;
-      this.log.append({ txId, type: 'vote-no', participantId: this.id });
-      return 'no';
-    }
-    
-    // Prepare: make the transaction durable (but not committed)
-    // In a real implementation, this would flush WAL records
-    this.state = TxState.PREPARED;
-    this.log.append({ txId, type: 'vote-yes', participantId: this.id });
-    this.transactions.set(txId, { state: 'prepared', preparedAt: Date.now() });
-    return 'yes';
+  /** Simulate crash */
+  crash() { this._crashed = true; }
+  recover() { this._crashed = false; }
+  setFailOnPrepare(fail) { this._failOnPrepare = fail; }
+
+  /** Buffer a write for the current transaction */
+  write(key, value) {
+    if (this._crashed) throw new Error(`${this.id} is crashed`);
+    this._pendingWrites[key] = value;
   }
 
-  /**
-   * Phase 2: Receive COMMIT from coordinator.
-   */
-  async commit(txId) {
-    if (this._commitDelay > 0) {
-      await new Promise(r => setTimeout(r, this._commitDelay));
-    }
+  /** Phase 1: Prepare — vote YES or NO */
+  prepare() {
+    if (this._crashed) return { vote: 'NO', reason: 'crashed' };
+    if (this._failOnPrepare) return { vote: 'NO', reason: 'forced failure' };
     
-    if (this._failOnCommit) {
-      throw new Error(`Participant ${this.id} failed during commit`);
-    }
+    // Log the prepare decision (for crash recovery)
+    this.log.push({ type: 'PREPARE', writes: { ...this._pendingWrites } });
+    this.state = TXN_STATE.PREPARED;
+    return { vote: 'YES' };
+  }
+
+  /** Phase 2: Commit — apply pending writes */
+  commit() {
+    if (this._crashed) return false;
     
-    this.state = TxState.COMMITTED;
-    this.log.append({ txId, type: 'committed', participantId: this.id });
-    const txData = this.transactions.get(txId);
-    if (txData) txData.state = 'committed';
+    // Apply buffered writes
+    for (const [key, value] of Object.entries(this._pendingWrites)) {
+      this.data[key] = value;
+    }
+    this._pendingWrites = {};
+    this.log.push({ type: 'COMMIT' });
+    this.state = TXN_STATE.COMMITTED;
     return true;
   }
 
-  /**
-   * Phase 2: Receive ABORT from coordinator.
-   */
-  async abort(txId) {
-    this.state = TxState.ABORTED;
-    this.log.append({ txId, type: 'aborted', participantId: this.id });
-    const txData = this.transactions.get(txId);
-    if (txData) txData.state = 'aborted';
+  /** Phase 2: Abort — discard pending writes */
+  abort() {
+    if (this._crashed) return false;
+    this._pendingWrites = {};
+    this.log.push({ type: 'ABORT' });
+    this.state = TXN_STATE.ABORTED;
     return true;
+  }
+
+  /** Reset for next transaction */
+  reset() {
+    this.state = TXN_STATE.INIT;
+    this._pendingWrites = {};
   }
 }
 
 /**
- * Simple in-memory WAL for 2PC coordinator/participant logs.
+ * TwoPhaseCommitCoordinator — orchestrates distributed transactions.
  */
-export class InMemoryLog {
+export class TwoPhaseCommitCoordinator {
   constructor() {
-    this.entries = [];
+    this._participants = new Map();
+    this.log = [];          // Coordinator's durability log
+    this.stats = { txns: 0, commits: 0, aborts: 0, participantFailures: 0 };
   }
 
-  append(entry) {
-    this.entries.push({ ...entry, timestamp: Date.now() });
+  /** Register a participant */
+  addParticipant(participant) {
+    this._participants.set(participant.id, participant);
   }
 
-  entriesFor(txId) {
-    return this.entries.filter(e => e.txId === txId);
+  /** Get a participant */
+  getParticipant(id) {
+    return this._participants.get(id);
   }
 
-  lastEntry() {
-    return this.entries[this.entries.length - 1] || null;
+  /**
+   * Execute a distributed transaction.
+   * @param {Function} txnFn - (participants) => void — the transaction body
+   * @returns {Object} {committed: boolean, votes: Map, reason: string}
+   */
+  execute(txnFn) {
+    this.stats.txns++;
+    
+    // Reset all participants
+    for (const p of this._participants.values()) p.reset();
+    
+    // Execute transaction body (writes are buffered)
+    try {
+      txnFn(this._participants);
+    } catch (e) {
+      this.stats.aborts++;
+      return { committed: false, reason: `Transaction body error: ${e.message}` };
+    }
+    
+    // ============================================
+    // Phase 1: PREPARE
+    // ============================================
+    this.log.push({ type: 'PREPARE_START', time: Date.now() });
+    const votes = new Map();
+    let allYes = true;
+    
+    for (const [id, participant] of this._participants) {
+      try {
+        const response = participant.prepare();
+        votes.set(id, response);
+        if (response.vote !== 'YES') {
+          allYes = false;
+          this.stats.participantFailures++;
+        }
+      } catch (e) {
+        votes.set(id, { vote: 'NO', reason: e.message });
+        allYes = false;
+        this.stats.participantFailures++;
+      }
+    }
+    
+    // ============================================
+    // Phase 2: COMMIT or ABORT
+    // ============================================
+    if (allYes) {
+      this.log.push({ type: 'COMMIT_DECISION', time: Date.now() });
+      
+      for (const participant of this._participants.values()) {
+        try {
+          participant.commit();
+        } catch (e) {
+          // Participant crashed during commit — in real 2PC, we'd retry
+          this.stats.participantFailures++;
+        }
+      }
+      
+      this.stats.commits++;
+      return { committed: true, votes };
+    } else {
+      this.log.push({ type: 'ABORT_DECISION', time: Date.now() });
+      
+      for (const participant of this._participants.values()) {
+        try {
+          participant.abort();
+        } catch (e) {
+          // Ignore — participant may already be crashed
+        }
+      }
+      
+      this.stats.aborts++;
+      const failedVoters = [...votes.entries()].filter(([_, v]) => v.vote !== 'YES');
+      return {
+        committed: false,
+        votes,
+        reason: `Abort: ${failedVoters.map(([id, v]) => `${id}=${v.reason || 'NO'}`).join(', ')}`,
+      };
+    }
   }
 }
+
+export { TXN_STATE };

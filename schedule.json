@@ -3075,16 +3075,46 @@
     {
       "id": "T291",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement HyperLogLog — probabilistic cardinality estimation (COUNT DISTINCT)",
       "project": "henrydb",
-      "started": "2026-04-10T03:22:34.636Z"
+      "started": "2026-04-10T03:22:34.636Z",
+      "completed": "2026-04-10T03:24:42.048Z",
+      "duration_ms": 300000,
+      "summary": "Built HyperLogLog: COUNT(DISTINCT) in 16KB memory. 4M adds/sec. 1M elements → ~1% error. Merge for distributed counting. Standard error 0.81% (theoretical). 10/10 tests."
     },
     {
       "id": "T292",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session C: git push, daily log, CURRENT.md"
+      "status": "skipped",
+      "task": "Final session C: git push, daily log, CURRENT.md",
+      "skip_reason": "36 min"
+    },
+    {
+      "id": "T293",
+      "mode": "EXPLORE",
+      "status": "skipped",
+      "task": "Build a simple Paxos consensus protocol (simpler/older alternative to Raft, used by Google Chubby)",
+      "project": "henrydb",
+      "skip_reason": "Switching to 2PC"
+    },
+    {
+      "id": "T294",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final C: push, log, test count",
+      "started": "2026-04-10T03:25:07.978Z",
+      "completed": "2026-04-10T03:25:15.014Z",
+      "duration_ms": 0,
+      "summary": "Premature — rescheduling"
+    },
+    {
+      "id": "T295",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Build a Two-Phase Commit (2PC) coordinator for distributed transactions + test failure scenarios",
+      "project": "henrydb",
+      "started": "2026-04-10T03:25:15.269Z"
     }
   ],
   "focusProjects": [
@@ -4300,6 +4330,26 @@
     {
       "time": "2026-04-10T03:22:26.172Z",
       "msg": "Added T292 (MAINTAIN) after end: Final session C: git push, daily log, CURRENT.md"
+    },
+    {
+      "time": "2026-04-10T03:24:53.274Z",
+      "msg": "Removed T292: 36 min"
+    },
+    {
+      "time": "2026-04-10T03:24:53.486Z",
+      "msg": "Added T293 (EXPLORE) after end: Build a simple Paxos consensus protocol (simpler/older alternative to Raft, used by Google Chubby)"
+    },
+    {
+      "time": "2026-04-10T03:24:53.699Z",
+      "msg": "Added T294 (MAINTAIN) after end: Final C: push, log, test count"
+    },
+    {
+      "time": "2026-04-10T03:25:01.693Z",
+      "msg": "Removed T293: Switching to 2PC"
+    },
+    {
+      "time": "2026-04-10T03:25:01.906Z",
+      "msg": "Added T295 (EXPLORE) after end: Build a Two-Phase Commit (2PC) coordinator for distributed transactions + test failure scenarios"
     }
   ]
 }
