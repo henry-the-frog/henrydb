@@ -2139,16 +2139,30 @@ export class Database {
                              : [...this.tables.values()];
     let totalDead = 0, totalBytes = 0, totalPages = 0, totalTables = 0;
 
+    // MVCC-level vacuum (clean old versions across all keys)
+    if (this._mvccManager) {
+      try {
+        const gcResult = this._mvccManager.gc();
+        totalDead += gcResult.cleaned;
+      } catch (e) {
+        // GC is best-effort
+      }
+    }
+
     for (const table of tables) {
       if (!table) continue;
       totalTables++;
       
-      // MVCC vacuum
+      // Table-level MVCC vacuum
       if (table.mvccHeap && this._mvccManager) {
-        const result = table.mvccHeap.vacuum(this._mvccManager);
-        totalDead += result.deadTuplesRemoved;
-        totalBytes += result.bytesFreed;
-        totalPages += result.pagesCompacted;
+        try {
+          const result = table.mvccHeap.vacuum(this._mvccManager);
+          totalDead += result.deadTuplesRemoved || 0;
+          totalBytes += result.bytesFreed || 0;
+          totalPages += result.pagesCompacted || 0;
+        } catch (e) {
+          // Table-level vacuum not supported, skip
+        }
         continue;
       }
       

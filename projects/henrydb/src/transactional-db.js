@@ -273,6 +273,9 @@ export class TransactionalDatabase {
   }
 
   vacuum() {
+    // First, run MVCC garbage collection on version chains
+    const gcResult = this._mvcc.gc();
+    
     const horizon = this._mvcc.computeXminHorizon();
     const results = {};
     for (const [name, vm] of this._versionMaps) {
