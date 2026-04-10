@@ -26,7 +26,7 @@ export class TableHeap {
     const data = JSON.stringify(row);
     this._rowCount++;
     // Simple: just append to last page or create new one
-    if (this._pages.length === 0 || this._pages[this._pages.length - 1].data.length > this._pageSize * 0.9) {
+    if (this._pages.length === 0 || this._pages[this._pages.length - 1].rows.length > this._pageSize * 0.9) {
       this._pages.push({ rows: [] });
     }
     this._pages[this._pages.length - 1].rows.push(row);

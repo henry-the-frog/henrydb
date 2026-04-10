@@ -161,7 +161,7 @@ describe('HenryDB vs SQLite: 10K rows', () => {
       return sqlite.prepare("SELECT COUNT(*) AS c FROM data WHERE category = 'alpha'").get();
     }, iter);
     
-    assert.equal(h.result[0].c, s.c);
+    assert.equal(h.result[0].c, s.result.c);
     
     const ratio = h.avgMs / s.avgMs;
     console.log(`    String equality filter (${iter} iter):`);
