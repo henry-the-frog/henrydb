@@ -1,104 +1,151 @@
-// HenryDB Benchmark Suite
-// Tests raw database performance (no network overhead)
+#!/usr/bin/env node
+// benchmark.js — HenryDB Performance Benchmark Suite
+// Run: node benchmark.js
 import { Database } from './src/db.js';
 
-function formatNum(n) { return n.toLocaleString(); }
-function formatRate(count, ms) { return formatNum(Math.round(count / (ms / 1000))); }
+function bench(name, fn, iterations = 1000) {
+  // Warmup
+  for (let i = 0; i < 10; i++) fn();
+  
+  const start = Date.now();
+  for (let i = 0; i < iterations; i++) fn();
+  const elapsed = Date.now() - start;
+  const opsPerSec = (iterations / elapsed * 1000).toFixed(0);
+  const usPerOp = (elapsed / iterations * 1000).toFixed(1);
+  console.log(`  ${name.padEnd(40)} ${opsPerSec.padStart(8)} ops/s  ${usPerOp.padStart(8)} µs/op  (${iterations} ops in ${elapsed}ms)`);
+}
 
-console.log('=== HenryDB Benchmark Suite ===\n');
+console.log('═══════════════════════════════════════════════════════════════════');
+console.log('                    HenryDB Performance Benchmarks');
+console.log('═══════════════════════════════════════════════════════════════════\n');
 
+// ===== Setup =====
 const db = new Database();
 
-// 1. Schema creation
-let t0 = performance.now();
-db.execute('CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER)');
-db.execute('CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER, amount REAL, status TEXT)');
-let t1 = performance.now();
-console.log(`Schema creation: ${(t1 - t0).toFixed(1)}ms`);
+// ===== INSERT Benchmarks =====
+console.log('▸ INSERT');
+console.log('─────────────────────────────────────────────────────────────────');
 
-// 2. Single-row INSERT
-const N = 10000;
-t0 = performance.now();
-for (let i = 1; i <= N; i++) {
-  db.execute(`INSERT INTO users VALUES (${i}, 'User_${i}', 'user${i}@example.com', ${20 + (i % 50)})`);
+db.execute('CREATE TABLE bench_insert (id INT PRIMARY KEY, name TEXT, val INT)');
+let insertId = 1;
+bench('Single INSERT', () => {
+  db.execute(`INSERT INTO bench_insert VALUES (${insertId++}, 'name', ${insertId})`);
+}, 5000);
+
+db.execute('CREATE TABLE bench_insert_noindex (name TEXT, val INT)');
+let insertId2 = 1;
+bench('INSERT (no PK index)', () => {
+  db.execute(`INSERT INTO bench_insert_noindex VALUES ('name-${insertId2++}', ${insertId2})`);
+}, 5000);
+
+// ===== SELECT Benchmarks =====
+console.log('\n▸ SELECT');
+console.log('─────────────────────────────────────────────────────────────────');
+
+db.execute('CREATE TABLE bench_select (id INT PRIMARY KEY, name TEXT, val INT, cat TEXT)');
+for (let i = 1; i <= 1000; i++) {
+  db.execute(`INSERT INTO bench_select VALUES (${i}, 'name-${i}', ${i * 10}, 'cat-${i % 10}')`);
 }
-t1 = performance.now();
-const insertMs = t1 - t0;
-console.log(`INSERT ${formatNum(N)} rows: ${insertMs.toFixed(0)}ms (${formatRate(N, insertMs)} rows/sec)`);
 
-// 3. Bulk INSERT for orders
-t0 = performance.now();
-for (let i = 1; i <= N; i++) {
-  const userId = (i % N) + 1;
-  const amount = Math.round(Math.random() * 10000) / 100;
-  const status = ['pending', 'shipped', 'delivered'][i % 3];
-  db.execute(`INSERT INTO orders VALUES (${i}, ${userId}, ${amount}, '${status}')`);
+bench('SELECT * (1000 rows)', () => {
+  db.execute('SELECT * FROM bench_select');
+}, 500);
+
+bench('SELECT with WHERE (point lookup)', () => {
+  db.execute('SELECT * FROM bench_select WHERE id = 500');
+}, 2000);
+
+bench('SELECT with range WHERE', () => {
+  db.execute('SELECT * FROM bench_select WHERE val > 5000 AND val < 6000');
+}, 1000);
+
+bench('SELECT COUNT(*)', () => {
+  db.execute('SELECT COUNT(*) FROM bench_select');
+}, 2000);
+
+bench('SELECT with ORDER BY', () => {
+  db.execute('SELECT * FROM bench_select ORDER BY val DESC LIMIT 10');
+}, 500);
+
+// ===== Aggregation Benchmarks =====
+console.log('\n▸ Aggregation');
+console.log('─────────────────────────────────────────────────────────────────');
+
+bench('GROUP BY (10 groups)', () => {
+  db.execute('SELECT cat, COUNT(*), SUM(val), AVG(val) FROM bench_select GROUP BY cat');
+}, 500);
+
+bench('GROUP BY with HAVING', () => {
+  db.execute('SELECT cat, SUM(val) as total FROM bench_select GROUP BY cat HAVING SUM(val) > 50000');
+}, 500);
+
+bench('DISTINCT', () => {
+  db.execute('SELECT DISTINCT cat FROM bench_select');
+}, 1000);
+
+// ===== JOIN Benchmarks =====
+console.log('\n▸ JOIN');
+console.log('─────────────────────────────────────────────────────────────────');
+
+db.execute('CREATE TABLE bench_left (id INT PRIMARY KEY, left_val TEXT)');
+db.execute('CREATE TABLE bench_right (id INT PRIMARY KEY, left_id INT, right_val TEXT)');
+for (let i = 1; i <= 500; i++) {
+  db.execute(`INSERT INTO bench_left VALUES (${i}, 'L-${i}')`);
 }
-t1 = performance.now();
-const orderInsertMs = t1 - t0;
-console.log(`INSERT ${formatNum(N)} orders: ${orderInsertMs.toFixed(0)}ms (${formatRate(N, orderInsertMs)} rows/sec)`);
-
-// 4. Full table scan
-t0 = performance.now();
-const allUsers = db.execute('SELECT * FROM users');
-t1 = performance.now();
-console.log(`SELECT * FROM users (${formatNum(allUsers.rows.length)} rows): ${(t1 - t0).toFixed(1)}ms`);
-
-// 5. Point query (PK lookup)
-t0 = performance.now();
-for (let i = 0; i < 1000; i++) {
-  db.execute(`SELECT * FROM users WHERE id = ${(i % N) + 1}`);
+for (let i = 1; i <= 1000; i++) {
+  db.execute(`INSERT INTO bench_right VALUES (${i}, ${1 + (i % 500)}, 'R-${i}')`);
 }
-t1 = performance.now();
-const pointMs = t1 - t0;
-console.log(`Point queries (1000x): ${pointMs.toFixed(0)}ms (${formatRate(1000, pointMs)} queries/sec)`);
 
-// 6. Range scan with filter
-t0 = performance.now();
-const filtered = db.execute('SELECT name, age FROM users WHERE age > 40');
-t1 = performance.now();
-console.log(`Range scan WHERE age > 40 (${formatNum(filtered.rows.length)} rows): ${(t1 - t0).toFixed(1)}ms`);
+bench('INNER JOIN (500 × 1000)', () => {
+  db.execute('SELECT l.left_val, r.right_val FROM bench_left l JOIN bench_right r ON l.id = r.left_id LIMIT 100');
+}, 200);
 
-// 7. Aggregation
-t0 = performance.now();
-const agg = db.execute('SELECT COUNT(*) AS cnt, AVG(age) AS avg_age, MIN(age) AS min_age, MAX(age) AS max_age FROM users');
-t1 = performance.now();
-console.log(`Aggregation (COUNT, AVG, MIN, MAX): ${(t1 - t0).toFixed(1)}ms → ${JSON.stringify(agg.rows[0])}`);
+bench('LEFT JOIN (500 × 1000)', () => {
+  db.execute('SELECT l.left_val, r.right_val FROM bench_left l LEFT JOIN bench_right r ON l.id = r.left_id LIMIT 100');
+}, 200);
 
-// 8. GROUP BY
-t0 = performance.now();
-const grouped = db.execute('SELECT age, COUNT(*) AS cnt FROM users GROUP BY age ORDER BY cnt DESC');
-t1 = performance.now();
-console.log(`GROUP BY age (${grouped.rows.length} groups): ${(t1 - t0).toFixed(1)}ms`);
+// ===== UPDATE/DELETE Benchmarks =====
+console.log('\n▸ UPDATE/DELETE');
+console.log('─────────────────────────────────────────────────────────────────');
 
-// 9. JOIN (users × orders)
-t0 = performance.now();
-const joined = db.execute('SELECT u.name, o.amount, o.status FROM users u JOIN orders o ON u.id = o.user_id WHERE o.status = \'delivered\' LIMIT 100');
-t1 = performance.now();
-console.log(`JOIN users×orders WHERE status='delivered' LIMIT 100: ${(t1 - t0).toFixed(1)}ms (${joined.rows.length} rows)`);
+db.execute('CREATE TABLE bench_upd (id INT PRIMARY KEY, val INT)');
+for (let i = 1; i <= 1000; i++) db.execute(`INSERT INTO bench_upd VALUES (${i}, 0)`);
 
-// 10. UPDATE
-t0 = performance.now();
-db.execute("UPDATE users SET age = age + 1 WHERE age < 30");
-t1 = performance.now();
-const updatedCount = db.execute('SELECT COUNT(*) AS cnt FROM users WHERE age <= 30').rows[0].cnt;
-console.log(`UPDATE WHERE age < 30: ${(t1 - t0).toFixed(1)}ms`);
+bench('UPDATE single row by PK', () => {
+  const id = 1 + Math.floor(Math.random() * 1000);
+  db.execute(`UPDATE bench_upd SET val = val + 1 WHERE id = ${id}`);
+}, 2000);
 
-// 11. DELETE
-t0 = performance.now();
-db.execute("DELETE FROM orders WHERE status = 'pending'");
-t1 = performance.now();
-const remaining = db.execute('SELECT COUNT(*) AS cnt FROM orders').rows[0].cnt;
-console.log(`DELETE WHERE status='pending': ${(t1 - t0).toFixed(1)}ms (${formatNum(remaining)} remaining)`);
+bench('UPDATE bulk (100 rows)', () => {
+  db.execute('UPDATE bench_upd SET val = val + 1 WHERE id <= 100');
+}, 200);
 
-// 12. ORDER BY
-t0 = performance.now();
-const sorted = db.execute('SELECT name, age FROM users ORDER BY age DESC, name ASC LIMIT 20');
-t1 = performance.now();
-console.log(`ORDER BY age DESC, name ASC LIMIT 20: ${(t1 - t0).toFixed(1)}ms`);
+// ===== Subquery Benchmarks =====
+console.log('\n▸ Subqueries');
+console.log('─────────────────────────────────────────────────────────────────');
 
-// Summary
-console.log('\n=== Summary ===');
-console.log(`Total rows inserted: ${formatNum(N * 2)}`);
-console.log(`Insert rate: ${formatRate(N * 2, insertMs + orderInsertMs)} rows/sec`);
-console.log(`Point query rate: ${formatRate(1000, pointMs)} queries/sec`);
+bench('Scalar subquery', () => {
+  db.execute('SELECT * FROM bench_select WHERE val > (SELECT AVG(val) FROM bench_select) LIMIT 10');
+}, 20);
+
+bench('IN subquery', () => {
+  db.execute('SELECT * FROM bench_select WHERE cat IN (SELECT DISTINCT cat FROM bench_select WHERE val > 5000) LIMIT 10');
+}, 20);
+
+// ===== Parser Benchmarks =====
+console.log('\n▸ Parser');
+console.log('─────────────────────────────────────────────────────────────────');
+
+import { parse } from './src/sql.js';
+
+bench('Parse simple SELECT', () => {
+  parse('SELECT id, name, val FROM bench WHERE id = 42');
+}, 10000);
+
+bench('Parse complex SELECT', () => {
+  parse('SELECT a.id, b.val, SUM(c.amount) FROM orders a JOIN users b ON a.user_id = b.id LEFT JOIN items c ON a.id = c.order_id WHERE a.status = 1 AND b.active = 1 GROUP BY a.id, b.val HAVING SUM(c.amount) > 100 ORDER BY a.id DESC LIMIT 50');
+}, 5000);
+
+console.log('\n═══════════════════════════════════════════════════════════════════');
+console.log('  Benchmark complete. Numbers reflect single-threaded performance.');
+console.log('═══════════════════════════════════════════════════════════════════');

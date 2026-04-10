@@ -1296,10 +1296,21 @@
     {
       "id": "T121",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB bug hunt: test more edge cases — NULL in JOINs, empty GROUP BY, DELETE with subquery, UPDATE with expression, LIKE patterns, BETWEEN, COALESCE, CAST",
       "project": "henrydb",
-      "started": "2026-04-10T21:46:53.833Z"
+      "started": "2026-04-10T21:46:53.833Z",
+      "completed": "2026-04-10T21:48:27.387Z",
+      "duration_ms": 300000,
+      "summary": "18/18 edge case tests pass. Tested: NULL in JOINs, LEFT JOIN, COALESCE, BETWEEN, LIKE, CAST, UPDATE with expression, DELETE with subquery, NOT IN, NOT LIKE, OR/AND, IN subquery with GROUP BY aggregate, recursive CTE, multi GROUP BY, COUNT DISTINCT, expression aliases, empty aggregation, escaped quotes. No new bugs found — existing code handles all edge cases correctly."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add a performance benchmark suite — measure and track SQL execution speed for common operations (SELECT, JOIN, GROUP BY, INSERT bulk, etc)",
+      "project": "henrydb",
+      "started": "2026-04-10T21:49:03.310Z"
     }
   ],
   "focusProjects": [
@@ -1779,6 +1790,10 @@
     {
       "time": "2026-04-10T21:46:39.299Z",
       "msg": "Added T121 (BUILD) after end: HenryDB bug hunt: test more edge cases — NULL in JOINs, empty GROUP BY, DELETE with subquery, UPDATE with expression, LIKE patterns, BETWEEN, COALESCE, CAST"
+    },
+    {
+      "time": "2026-04-10T21:48:55.348Z",
+      "msg": "Added T122 (BUILD) after end: HenryDB: add a performance benchmark suite — measure and track SQL execution speed for common operations (SELECT, JOIN, GROUP BY, INSERT bulk, etc)"
     }
   ]
 }
