@@ -1145,10 +1145,32 @@
     {
       "id": "T107",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Crash injection tests for PersistentDatabase: simulate mid-transaction crash (uncommitted WAL records), partial WAL write (truncated record), and commit-logged-but-unflushed scenarios. Verify ARIES recovery correctness.",
       "project": "henrydb",
-      "started": "2026-04-10T21:16:18.410Z"
+      "started": "2026-04-10T21:16:18.410Z",
+      "completed": "2026-04-10T21:17:42.183Z",
+      "duration_ms": 300000,
+      "summary": "10/10 crash injection tests pass. ARIES recovery verified: uncommitted data invisible after crash, committed data survives, truncated WAL handled, 5 consecutive crash-restart cycles, UPDATE/DELETE survive crash, 100-row recovery, multi-table catalog recovery. No bugs found."
+    },
+    {
+      "id": "T108",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: persistent server works, group commit done, crash recovery verified, extended query protocol tested. Whats the hardest remaining gap? (1) Real concurrent stress test with actual async workers (not sequential), (2) VACUUM compacting dead tuples from heap files, (3) Connection-level transactions (BEGIN/COMMIT through wire protocol), (4) pg_dump compatibility",
+      "project": "henrydb",
+      "started": "2026-04-10T21:18:04.502Z",
+      "completed": "2026-04-10T21:18:17.591Z",
+      "duration_ms": 60000,
+      "summary": "DECISION: Connection-level transactions through wire protocol (BEGIN/COMMIT/ROLLBACK). Most impactful gap — required for real-world use. Needs per-connection TransactionalDatabase sessions, transaction state tracking, error handling in transaction blocks."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement connection-level transactions in wire protocol: BEGIN/COMMIT/ROLLBACK, per-connection TransactionalDatabase sessions, txStatus tracking (I/T/E), error handling in transaction blocks",
+      "project": "henrydb",
+      "started": "2026-04-10T21:18:28.773Z"
     }
   ],
   "focusProjects": [
@@ -1568,6 +1590,14 @@
     {
       "time": "2026-04-10T21:16:10.758Z",
       "msg": "Added T107 (BUILD) after end: Crash injection tests for PersistentDatabase: simulate mid-transaction crash (uncommitted WAL records), partial WAL write (truncated record), and commit-logged-but-unflushed scenarios. Verify ARIES recovery correctness."
+    },
+    {
+      "time": "2026-04-10T21:17:56.157Z",
+      "msg": "Added T108 (THINK) after end: HenryDB: persistent server works, group commit done, crash recovery verified, extended query protocol tested. Whats the hardest remaining gap? (1) Real concurrent stress test with actual async workers (not sequential), (2) VACUUM compacting dead tuples from heap files, (3) Connection-level transactions (BEGIN/COMMIT through wire protocol), (4) pg_dump compatibility"
+    },
+    {
+      "time": "2026-04-10T21:18:23.341Z",
+      "msg": "Added T109 (BUILD) after end: Implement connection-level transactions in wire protocol: BEGIN/COMMIT/ROLLBACK, per-connection TransactionalDatabase sessions, txStatus tracking (I/T/E), error handling in transaction blocks"
     }
   ]
 }

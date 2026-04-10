@@ -7,6 +7,7 @@ import http from 'node:http';
 import crypto from 'node:crypto';
 import { Database } from './db.js';
 import { PersistentDatabase } from './persistent-db.js';
+import { TransactionalDatabase } from './transactional-db.js';
 import { AdaptiveQueryEngine } from './adaptive-engine.js';
 import { parse } from './sql.js';
 import { QueryCache } from './query-cache.js';
@@ -36,12 +37,26 @@ export class HenryDBServer {
     if (options.dataDir) {
       this._persistent = true;
       this._dataDir = options.dataDir;
-      this.db = options.db || PersistentDatabase.open(options.dataDir, {
-        poolSize: options.poolSize || 64,
-        recover: options.recover !== false,
-        walSync: options.walSync || 'batch',
-        walBatchMs: options.walBatchMs || 5,
-      });
+      if (options.transactional) {
+        // TransactionalDatabase for full ACID with BEGIN/COMMIT/ROLLBACK
+        this._txDb = options.db || TransactionalDatabase.open(options.dataDir, {
+          poolSize: options.poolSize || 64,
+          recover: options.recover !== false,
+          isolationLevel: options.isolationLevel || 'snapshot',
+        });
+        this.db = this._txDb; // For compatibility (system queries, catalog, etc.)
+      } else {
+        this.db = options.db || PersistentDatabase.open(options.dataDir, {
+          poolSize: options.poolSize || 64,
+          recover: options.recover !== false,
+          walSync: options.walSync || 'batch',
+          walBatchMs: options.walBatchMs || 5,
+        });
+      }
+    } else if (options.transactional && options.txDb) {
+      this._persistent = false;
+      this._txDb = options.txDb;
+      this.db = this._txDb;
     } else {
       this._persistent = false;
       this.db = options.db || new Database();
@@ -215,6 +230,18 @@ export class HenryDBServer {
     ].join('\n');
   }
 
+  /**
+   * Execute SQL for a connection, routing through transaction session if in-transaction.
+   */
+  _connExecute(conn, sql) {
+    // If connection has an active transaction session, route through it
+    if (conn._session && conn.txStatus === 'T') {
+      return conn._session.execute(sql);
+    }
+    // Otherwise, use the default database
+    return this.db.execute(sql);
+  }
+
   _handleConnection(socket) {
     const conn = {
       socket,
@@ -233,6 +260,7 @@ export class HenryDBServer {
       connectTime: Date.now(),
       queryCount: 0,
       tempTables: new Set(), // Temp tables created by this connection
+      _session: this._txDb ? this._txDb.session() : null, // TransactionSession for BEGIN/COMMIT
       params: new Map([
         ['server_version', '15.0'],
         ['server_encoding', 'UTF8'],
@@ -507,17 +535,17 @@ export class HenryDBServer {
                 result = { type: 'ROWS', rows: adaptive.rows, _engine: adaptive.engine, _timeMs: adaptive.timeMs };
               } else {
                 // Adaptive engine returned empty-keyed rows; fall back to Volcano
-                result = this.db.execute(stmt);
+                result = this._connExecute(conn, stmt);
               }
             } else {
-              result = this.db.execute(stmt);
+              result = this._connExecute(conn, stmt);
             }
           } catch (e) {
             // Fallback to standard execution if adaptive fails
-            result = this.db.execute(stmt);
+            result = this._connExecute(conn, stmt);
           }
         } else {
-          result = this.db.execute(stmt);
+          result = this._connExecute(conn, stmt);
         }
         // Cache SELECT results
         if (isSelect && result && result.type === 'ROWS') {
@@ -798,7 +826,7 @@ export class HenryDBServer {
         } else if (upper.startsWith('DEALLOCATE')) {
           result = { type: 'OK', message: 'DEALLOCATE' };
         } else {
-          result = this.db.execute(sql);
+          result = this._connExecute(conn, sql);
           // Invalidate cache on mutations (same logic as simple query path)
           const isSelectExt = /^\s*SELECT/i.test(sql);
           if (!isSelectExt) {
@@ -1037,6 +1065,58 @@ export class HenryDBServer {
   _interceptSystemQuery(conn, sql) {
     const upper = sql.toUpperCase().trim();
     
+    // Transaction control: BEGIN/COMMIT/ROLLBACK
+    if (upper === 'BEGIN' || upper === 'BEGIN TRANSACTION' || upper === 'START TRANSACTION') {
+      if (conn._session) {
+        try {
+          conn._session.begin();
+          conn.txStatus = 'T';
+          this._sendResult(conn, sql, { type: 'OK', message: 'BEGIN' });
+        } catch (e) {
+          conn.txStatus = 'E';
+          conn.socket.write(writeErrorResponse('ERROR', '25001', e.message));
+        }
+      } else {
+        // No TransactionalDatabase — fake BEGIN (just set status)
+        conn.txStatus = 'T';
+        conn._txBuffer = []; // Buffer statements for "best effort" transaction
+        this._sendResult(conn, sql, { type: 'OK', message: 'BEGIN' });
+      }
+      return true;
+    }
+    
+    if (upper === 'COMMIT' || upper === 'END') {
+      if (conn._session) {
+        try {
+          conn._session.commit();
+          conn.txStatus = 'I';
+          this._sendResult(conn, sql, { type: 'OK', message: 'COMMIT' });
+        } catch (e) {
+          conn.txStatus = 'E';
+          conn.socket.write(writeErrorResponse('ERROR', '40001', e.message));
+        }
+      } else {
+        conn.txStatus = 'I';
+        conn._txBuffer = null;
+        this._sendResult(conn, sql, { type: 'OK', message: 'COMMIT' });
+      }
+      return true;
+    }
+    
+    if (upper === 'ROLLBACK' || upper === 'ABORT') {
+      if (conn._session) {
+        try {
+          conn._session.rollback();
+        } catch (e) {
+          // Rollback shouldn't fail, but if it does, ignore
+        }
+      }
+      conn.txStatus = 'I';
+      conn._txBuffer = null;
+      this._sendResult(conn, sql, { type: 'OK', message: 'ROLLBACK' });
+      return true;
+    }
+
     // version() — Knex, Prisma, etc. call this on connect
     if (upper === 'SELECT VERSION()' || upper === 'SELECT VERSION ()') {
       const versionResult = {

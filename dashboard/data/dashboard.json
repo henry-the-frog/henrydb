@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-10T21:16:18.473Z",
+  "generated": "2026-04-10T21:18:28.837Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Crash injection tests for PersistentDatabase: simulate mid-transaction crash (uncommitted WAL records), partial WAL write (truncated record), and commit-logged-but-unflushed scenarios. Verify ARIES recovery correctness.",
-    "startedAt": "2026-04-10T21:16:18.473Z",
-    "taskId": "T107"
+    "task": "Implement connection-level transactions in wire protocol: BEGIN/COMMIT/ROLLBACK, per-connection TransactionalDatabase sessions, txStatus tracking (I/T/E), error handling in transaction blocks",
+    "startedAt": "2026-04-10T21:18:28.837Z",
+    "taskId": "T109"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -1130,12 +1130,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 101,
+    "blocksCompleted": 103,
     "blocksTotal": 105,
     "modeDistribution": {
-      "THINK": 17,
+      "THINK": 18,
       "PLAN": 9,
-      "BUILD": 64,
+      "BUILD": 65,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }
