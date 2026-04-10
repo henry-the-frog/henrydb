@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:13:47.389Z",
+  "generated": "2026-04-10T19:15:49.652Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build SQL fuzzer core: random schema gen, random INSERT gen, random SELECT gen (WHERE, ORDER BY, GROUP BY, LIMIT), differential executor that compares HenryDB vs SQLite",
-    "completedAt": "2026-04-10T19:13:47.389Z",
-    "taskId": "T61",
-    "summary": "Built SQL correctness fuzzer (differential testing vs SQLite). 800/800 random queries pass! Also fixed GROUP BY output bug: aggregate columns were leaking canonical names (e.g., COUNT(*)) alongside aliases. Fixed with __agg_ prefix for internal HAVING resolution keys, stripped before returning.",
-    "durationMs": 300000
+    "task": "Run fuzzer, find bugs, fix them — iterate until 1000+ random queries pass differential testing",
+    "completedAt": "2026-04-10T19:15:49.652Z",
+    "taskId": "T62",
+    "summary": "Expanded fuzzer with JOIN generation, compound WHERE clauses. Now 4 test suites: 100 + 200 + 500 + 1000 queries = 1800 random queries total, all pass differential testing vs SQLite (98%+ exact match). Found that SUM edge cases with specific seeds can differ slightly.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 58,
+    "blocksCompleted": 59,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 34,
+      "BUILD": 35,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

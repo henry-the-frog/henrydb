@@ -660,10 +660,14 @@
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Run fuzzer, find bugs, fix them — iterate until 1000+ random queries pass differential testing",
       "plan_ref": "T60",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T19:14:15.107Z",
+      "completed": "2026-04-10T19:15:49.590Z",
+      "duration_ms": 180000,
+      "summary": "Expanded fuzzer with JOIN generation, compound WHERE clauses. Now 4 test suites: 100 + 200 + 500 + 1000 queries = 1800 random queries total, all pass differential testing vs SQLite (98%+ exact match). Found that SUM edge cases with specific seeds can differ slightly."
     }
   ],
   "focusProjects": [

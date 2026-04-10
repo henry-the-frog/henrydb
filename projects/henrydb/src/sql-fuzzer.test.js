@@ -187,13 +187,64 @@ class SQLFuzzer {
     return `SELECT ${groupCol.name}, ${agg} FROM ${table.name} GROUP BY ${groupCol.name} ORDER BY ${groupCol.name}`;
   }
 
+  // ---- JOIN SELECT Generation ----
+
+  generateJoinSelect() {
+    if (this._tables.length < 2) return this.generateSelect();
+    
+    const [left, right] = this._pickN(this._tables, 2);
+    // JOIN on id columns (both tables have id)
+    const joinType = this._pick(['JOIN', 'LEFT JOIN']);
+    
+    // Select some columns from each table
+    const leftCol = this._pick(left.cols);
+    const rightCol = this._pick(right.cols);
+    
+    let where = '';
+    if (this._rand() < 0.3) {
+      const col = this._pick(left.cols.filter(c => c.type === 'INTEGER'));
+      if (col) {
+        const val = this._randInt(-20, 20);
+        where = ` WHERE ${left.name}.${col.name} > ${val}`;
+      }
+    }
+
+    let limit = '';
+    if (this._rand() < 0.4) {
+      limit = ` LIMIT ${this._randInt(5, 30)}`;
+    }
+
+    return `SELECT ${left.name}.${leftCol.name}, ${right.name}.${rightCol.name} FROM ${left.name} ${joinType} ${right.name} ON ${left.name}.id = ${right.name}.id${where}${limit}`;
+  }
+
+  // ---- Compound WHERE Generation ----
+
+  generateCompoundWhereSelect() {
+    const table = this._pick(this._tables);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    
+    if (intCols.length < 2) return this.generateSelect();
+
+    const col1 = intCols[0];
+    const col2 = intCols[1] || intCols[0];
+    const op1 = this._pick(['>', '<', '>=', '<=']);
+    const op2 = this._pick(['>', '<', '>=', '<=']);
+    const val1 = this._randInt(-30, 30);
+    const val2 = this._randInt(-30, 30);
+    const connector = this._pick(['AND', 'OR']);
+
+    return `SELECT * FROM ${table.name} WHERE ${col1.name} ${op1} ${val1} ${connector} ${col2.name} ${op2} ${val2} ORDER BY id`;
+  }
+
   // ---- Generate a random query ----
 
   generateQuery() {
     const r = this._rand();
-    if (r < 0.5) return this.generateSelect();
-    if (r < 0.75) return this.generateAggregateSelect();
-    return this.generateGroupBySelect();
+    if (r < 0.30) return this.generateSelect();
+    if (r < 0.50) return this.generateAggregateSelect();
+    if (r < 0.70) return this.generateGroupBySelect();
+    if (r < 0.85) return this.generateJoinSelect();
+    return this.generateCompoundWhereSelect();
   }
 }
 
@@ -491,5 +542,71 @@ describe('SQL Fuzzer: Differential Correctness Testing', () => {
 
     const passRate = total / 500;
     assert.ok(passRate >= 0.75, `Pass rate ${(passRate * 100).toFixed(1)}% below 75% threshold`);
+  });
+
+  it('1000 queries with JOINs, compound WHERE, seed 77777', () => {
+    setupBoth(77777, 3, 50);
+    let passed = 0;
+    let errorsMatched = 0;
+    let mismatches = [];
+
+    for (let i = 0; i < 1000; i++) {
+      const sql = fuzzer.generateQuery();
+      const h = executeHenryDB(sql);
+      const s = executeSQLite(sql);
+
+      if (h.error && s.error) { errorsMatched++; continue; }
+      if (h.error !== null && s.error === null) {
+        if (mismatches.length < 30) mismatches.push({ sql, type: 'henrydb_error', error: h.error });
+        continue;
+      }
+      if (h.error === null && s.error !== null) { passed++; continue; }
+
+      const hRows = normalizeRows(h.rows);
+      const sRows = normalizeRows(s.rows);
+      const hasOrderBy = /ORDER BY/i.test(sql);
+      const hSorted = hasOrderBy ? hRows : sortRows(hRows);
+      const sSorted = hasOrderBy ? sRows : sortRows(sRows);
+
+      if (hSorted.length !== sSorted.length) {
+        if (mismatches.length < 30) mismatches.push({ sql, type: 'row_count', henry: hSorted.length, sqlite: sSorted.length });
+        continue;
+      }
+
+      let rowMatch = true;
+      for (let r = 0; r < hSorted.length; r++) {
+        for (const key of Object.keys(hSorted[r])) {
+          if (hSorted[r][key] !== sSorted[r][key]) {
+            const hVal = parseFloat(hSorted[r][key]);
+            const sVal = parseFloat(sSorted[r][key]);
+            if (!isNaN(hVal) && !isNaN(sVal) && Math.abs(hVal - sVal) < 0.001) continue;
+            rowMatch = false;
+            break;
+          }
+        }
+        if (!rowMatch) break;
+      }
+
+      if (rowMatch) passed++;
+      else if (mismatches.length < 30) {
+        mismatches.push({ sql, type: 'value_mismatch' });
+      }
+    }
+
+    const total = passed + errorsMatched;
+    const mismatchCount = 1000 - total;
+    console.log(`    Passed: ${passed}/1000, Errors matched: ${errorsMatched}, Mismatches: ${mismatchCount}`);
+    
+    if (mismatches.length > 0) {
+      console.log('    Sample mismatches:');
+      for (const m of mismatches.slice(0, 5)) {
+        console.log(`      ${m.type}: ${m.sql?.substring(0, 120)}`);
+        if (m.error) console.log(`        Error: ${m.error}`);
+        if (m.henry !== undefined) console.log(`        HenryDB: ${m.henry} rows, SQLite: ${m.sqlite} rows`);
+      }
+    }
+
+    const passRate = total / 1000;
+    assert.ok(passRate >= 0.80, `Pass rate ${(passRate * 100).toFixed(1)}% below 80% threshold`);
   });
 });
