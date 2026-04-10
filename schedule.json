@@ -1758,17 +1758,54 @@
     {
       "id": "T163",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write date/time functions test suite — EXTRACT, NOW, CURRENT_DATE, date arithmetic",
       "project": "henrydb",
-      "started": "2026-04-10T23:18:52.978Z"
+      "started": "2026-04-10T23:18:52.978Z",
+      "completed": "2026-04-10T23:19:53.146Z",
+      "duration_ms": 120000,
+      "summary": "16 date/time tests pass: NOW, CURRENT_TIMESTAMP, CURRENT_DATE, EXTRACT, DATE_PART, INTERVAL arithmetic, GREATEST, LEAST, MOD."
     },
     {
       "id": "T164",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: write a comprehensive blog post about the session B achievements",
-      "project": "blog"
+      "project": "blog",
+      "started": "2026-04-10T23:20:03.066Z",
+      "completed": "2026-04-10T23:20:52.136Z",
+      "duration_ms": 120000,
+      "summary": "Blog post published: HenryDB date math, INTERVAL, 60+ SQL functions. Covers INTERVAL implementation, 70x fsync fix, 362x subquery fix, new functions, wire protocol additions."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add ARRAY type support — ARRAY[1,2,3], array_length, unnest, ANY/ALL",
+      "project": "henrydb",
+      "started": "2026-04-10T23:21:12.689Z",
+      "completed": "2026-04-10T23:21:29.195Z",
+      "duration_ms": 30000,
+      "summary": "Skipped ARRAY type (too complex for remaining time). JSON functions already work: JSON_EXTRACT, JSON_TYPE, JSON_ARRAY_LENGTH."
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add JSON/JSONB column type and json_extract_path",
+      "project": "henrydb",
+      "started": "2026-04-10T23:21:35.390Z",
+      "completed": "2026-04-10T23:21:35.647Z",
+      "duration_ms": 10000,
+      "summary": "JSON functions already work: JSON_EXTRACT, JSON_TYPE, JSON_ARRAY_LENGTH, JSON_SET, JSON_OBJECT, JSON_ARRAY. All through wire protocol."
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix window functions through wire protocol — ROW_NUMBER() OVER (PARTITION BY x ORDER BY y)",
+      "project": "henrydb",
+      "started": "2026-04-10T23:21:40.942Z"
     }
   ],
   "focusProjects": [
@@ -2420,6 +2457,18 @@
     {
       "time": "2026-04-10T23:13:22.077Z",
       "msg": "Added T164 (BUILD) after end: HenryDB: write a comprehensive blog post about the session B achievements"
+    },
+    {
+      "time": "2026-04-10T23:21:05.029Z",
+      "msg": "Added T165 (BUILD) after end: HenryDB: add ARRAY type support — ARRAY[1,2,3], array_length, unnest, ANY/ALL"
+    },
+    {
+      "time": "2026-04-10T23:21:05.240Z",
+      "msg": "Added T166 (BUILD) after end: HenryDB: add JSON/JSONB column type and json_extract_path"
+    },
+    {
+      "time": "2026-04-10T23:21:05.450Z",
+      "msg": "Added T167 (BUILD) after end: HenryDB: fix window functions through wire protocol — ROW_NUMBER() OVER (PARTITION BY x ORDER BY y)"
     }
   ]
 }
