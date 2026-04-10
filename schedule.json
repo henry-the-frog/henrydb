@@ -810,6 +810,17 @@
       "completed": "2026-04-10T19:51:32.345Z",
       "duration_ms": 180000,
       "summary": "Fixed compiled query engine aggregate support: _extractAggregation now recognizes AST nodes (type=aggregate, func, arg). Fixed LIMIT handling (ast.limit is number, not object). Compiled engine now handles COUNT, SUM, MIN, MAX, GROUP BY with ORDER BY and LIMIT correctly."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add NULL ordering fix to compiled engine ORDER BY",
+      "project": "henrydb",
+      "started": "2026-04-10T19:52:06.863Z",
+      "completed": "2026-04-10T19:53:30.512Z",
+      "duration_ms": 60000,
+      "summary": "Added NULL ordering to compiled engine ORDER BY, fixed LIMIT handling in _applyProjectAndLimit. Compiled engine now correctly handles NULL sorting and LIMIT."
     }
   ],
   "focusProjects": [
@@ -1113,6 +1124,10 @@
     {
       "time": "2026-04-10T19:48:02.298Z",
       "msg": "Added T75 (BUILD) after end: Add COUNT(*) support to compiled query engine — the simplest aggregate to implement"
+    },
+    {
+      "time": "2026-04-10T19:52:06.454Z",
+      "msg": "Added T76 (BUILD) after end: Add NULL ordering fix to compiled engine ORDER BY"
     }
   ]
 }

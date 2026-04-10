@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:51:32.407Z",
+  "generated": "2026-04-10T19:53:30.574Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add COUNT(*) support to compiled query engine — the simplest aggregate to implement",
-    "completedAt": "2026-04-10T19:51:32.407Z",
-    "taskId": "T75",
-    "summary": "Fixed compiled query engine aggregate support: _extractAggregation now recognizes AST nodes (type=aggregate, func, arg). Fixed LIMIT handling (ast.limit is number, not object). Compiled engine now handles COUNT, SUM, MIN, MAX, GROUP BY with ORDER BY and LIMIT correctly.",
-    "durationMs": 180000
+    "task": "Add NULL ordering fix to compiled engine ORDER BY",
+    "completedAt": "2026-04-10T19:53:30.574Z",
+    "taskId": "T76",
+    "summary": "Added NULL ordering to compiled engine ORDER BY, fixed LIMIT handling in _applyProjectAndLimit. Compiled engine now correctly handles NULL sorting and LIMIT.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 72,
+    "blocksCompleted": 73,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 47,
+      "BUILD": 48,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }

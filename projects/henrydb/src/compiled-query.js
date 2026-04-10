@@ -628,6 +628,12 @@ export class CompiledQueryEngine {
           const col = ob.column || ob.name;
           const dir = ob.direction === 'DESC' ? -1 : 1;
           const av = a[col], bv = b[col];
+          // NULL handling: NULL is smallest (SQLite behavior)
+          const aNull = av === null || av === undefined;
+          const bNull = bv === null || bv === undefined;
+          if (aNull && bNull) continue;
+          if (aNull) return -dir; // null is smallest → first in ASC, last in DESC
+          if (bNull) return dir;
           if (av < bv) return -dir;
           if (av > bv) return dir;
         }
@@ -687,8 +693,9 @@ export class CompiledQueryEngine {
     }
 
     // Apply LIMIT
-    if (ast.limit?.value) {
-      rows = rows.slice(0, ast.limit.value);
+    if (ast.limit) {
+      const limitVal = typeof ast.limit === 'number' ? ast.limit : ast.limit.value;
+      if (limitVal) rows = rows.slice(0, limitVal);
     }
 
     return rows;
