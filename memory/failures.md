@@ -35,3 +35,32 @@ BufferPool was designed for in-memory simulation. When FileBackedHeap passed cal
 
 ## 2026-04-07
 - **Dashboard server down** — port 3000 unreachable during both MAINTAIN tasks (T4 and evening review). Archive-day and regenerate both failed. Cause unknown — server may not have been restarted after last reboot. This is 2nd occurrence (also failed during Session C part 2 MAINTAIN). Pattern: dashboard server doesn't auto-start.
+
+## JS Null Coercion in Database Comparisons (2026-04-10)
+**Pattern:** Using `>=`, `<=`, `>`, `<` with null values in JavaScript
+**What happened:** `null >= -10` evaluates to `true` because JS coerces null to 0 for numeric comparisons. This caused:
+1. BETWEEN with NULL: `null BETWEEN -10 AND 15` returned true (null → 0, 0 is between -10 and 15)
+2. ORDER BY with NULL: null compared as 0, sorting it among real values instead of first/last
+
+**Root cause:** JavaScript's abstract relational comparison coerces null to 0.
+- `null > 5` → `false` (0 > 5)
+- `null >= -10` → `true` (0 >= -10)  
+- `null == 0` → `false` (== uses different rules than >/<)
+
+**Fix:** Always check for null/undefined BEFORE any comparison:
+```javascript
+if (val === null || val === undefined) return false; // for BETWEEN
+if (av == null) return -1; // for ORDER BY (null is smallest)
+```
+
+**Prevention:** When writing comparison logic for database values:
+1. ALWAYS add null guards before `>`, `<`, `>=`, `<=`
+2. Use `=== null` checks, not `== null` (catches undefined too)
+3. SQL standard: any comparison with NULL returns NULL (false)
+4. Use differential fuzzer against SQLite to catch these
+
+## Query Cache Wrapper Bug (2026-04-10)
+**Pattern:** Cache returning wrapper object instead of cached value
+**What happened:** `QueryCache.get()` returned `{result, timestamp}` but caller expected just `result`. 
+**Fix:** Access `cached.result` instead of `cached` directly.
+**Prevention:** When adding caching, test the cache hit path separately from cache miss.
