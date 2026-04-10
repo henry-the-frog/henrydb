@@ -300,6 +300,25 @@ class SQLFuzzer {
     return `SELECT ${col.name} FROM ${table.name} WHERE ${col.name} > ${val1} ${op} SELECT ${col.name} FROM ${table.name} WHERE ${col.name} < ${val2}`;
   }
 
+  // ---- LIKE queries ----
+
+  generateLikeSelect() {
+    const table = this._pick(this._tables);
+    const textCols = table.cols.filter(c => c.type === 'TEXT');
+    if (textCols.length === 0) return this.generateSelect();
+
+    const col = this._pick(textCols);
+    const words = ['alpha', 'beta', 'gamma', 'delta'];
+    const word = this._pick(words);
+    const pattern = this._pick([
+      `'${word}%'`,          // starts with
+      `'%${word}%'`,         // contains  
+      `'${word.charAt(0)}%'`, // starts with first char
+    ]);
+
+    return `SELECT COUNT(*) AS cnt FROM ${table.name} WHERE ${col.name} LIKE ${pattern}`;
+  }
+
   // ---- Aggregate SELECT Generation ----
 
   generateAggregateSelect() {
@@ -418,8 +437,9 @@ class SQLFuzzer {
     if (r < 0.84) return this.generateBetweenSelect();
     if (r < 0.89) return this.generateInSubquerySelect();
     if (r < 0.93) return this.generateExistsSelect();
-    if (r < 0.97) return this.generateScalarSubquerySelect();
-    return this.generateSetOpSelect();
+    if (r < 0.96) return this.generateScalarSubquerySelect();
+    if (r < 0.98) return this.generateSetOpSelect();
+    return this.generateLikeSelect();
   }
 }
 
