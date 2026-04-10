@@ -902,15 +902,19 @@
       "id": "T85",
       "mode": "BUILD",
       "task": "End-to-end test: psql-style client connects, creates table, inserts data, server restarts, client reconnects and reads data back",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T81",
-      "started": "2026-04-10T20:26:05.115Z"
+      "started": "2026-04-10T20:26:05.115Z",
+      "completed": "2026-04-10T20:31:28.672Z",
+      "duration_ms": 360000,
+      "summary": "E2E persistent server tests with real pg client: 4/4 pass. Full lifecycle (create→insert→restart→reconnect→verify), UPDATE/DELETE persistence, multi-table JOINs after restart, 100-row dataset recovery. Also 7/7 wire protocol tests. Total: 11 new persistence tests."
     },
     {
       "id": "T83",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard sync"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard sync",
+      "started": "2026-04-10T20:31:38.011Z"
     }
   ],
   "focusProjects": [
