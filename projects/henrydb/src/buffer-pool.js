@@ -293,33 +293,14 @@ export class BufferPoolManager {
   }
 
   /**
-   * Get buffer pool statistics.
+   * Get buffer pool statistics. Callable as property or method.
    */
   get stats() {
-    let pinned = 0, dirty = 0, used = 0;
-    for (const frame of this._frames) {
-      if (frame.pageId !== -1) {
-        used++;
-        if (frame.pinCount > 0) pinned++;
-        if (frame.dirty) dirty++;
-      }
-    }
-    return {
-      poolSize: this.poolSize,
-      replacer: this.replacerType,
-      used,
-      free: this._freeList.length,
-      pinned,
-      dirty,
-      evictable: this.replacer.size(),
-      hits: this._hits,
-      misses: this._misses,
-      evictions: this._evictions,
-      hitRate: this._hits + this._misses > 0
-        ? (this._hits / (this._hits + this._misses) * 100).toFixed(1) + '%'
-        : 'N/A',
-      disk: this.disk ? this.disk.stats : null,
-    };
+    const obj = this._getStatsObj();
+    // Make it callable as stats() too
+    const fn = () => obj;
+    Object.assign(fn, obj);
+    return fn;
   }
 
   // --- Internal ---
@@ -360,7 +341,36 @@ export class BufferPoolManager {
   }
 
   /** Alias: stats() as method (for compatibility with code calling bp.stats()) */
-  getStats() { return this.stats; }
+  getStats() { return this._getStatsObj(); }
+
+  _getStatsObj() {
+    let pinned = 0, dirty = 0, used = 0;
+    for (const frame of this._frames) {
+      if (frame.pageId !== -1) {
+        used++;
+        if (frame.pinCount > 0) pinned++;
+        if (frame.dirty) dirty++;
+      }
+    }
+    const total = this._hits + this._misses;
+    return {
+      poolSize: this.poolSize,
+      replacer: this.replacerType,
+      used,
+      free: this._freeList.length,
+      pinned,
+      dirty,
+      evictable: this.replacer.size(),
+      hits: this._hits,
+      misses: this._misses,
+      evictions: this._evictions,
+      hitRate: total > 0 ? this._hits / total : 0,
+      hitRateStr: total > 0
+        ? (this._hits / total * 100).toFixed(1) + '%'
+        : 'N/A',
+      disk: this.disk ? this.disk.stats : null,
+    };
+  }
 }
 
 export { BufferPoolManager as BufferPool };

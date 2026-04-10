@@ -31,7 +31,7 @@ export class PerfectHash {
     for (const [bucketIdx, indices] of order) {
       if (indices.length === 0) continue;
       // Try different seeds until no collision
-      for (let seed = 1; seed < 100; seed++) {
+      for (let seed = 1; seed < 10000; seed++) {
         const positions = indices.map(i => this._hash(this._keys[i], seed) % this._n);
         const valid = positions.every(p => this._table[p] === -1) &&
                       new Set(positions).size === positions.length;

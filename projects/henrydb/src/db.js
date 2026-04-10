@@ -2286,7 +2286,9 @@ export class Database {
     return {
       name,
       execute(...params) {
-        const bound = db._bindParams(JSON.parse(JSON.stringify(ast)), params);
+        // Accept either execute([...params]) or execute(p1, p2, ...)
+        const flatParams = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
+        const bound = db._bindParams(JSON.parse(JSON.stringify(ast)), flatParams);
         return db.execute_ast(bound);
       },
       close() {
