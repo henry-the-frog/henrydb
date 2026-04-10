@@ -3478,6 +3478,17 @@ export class Database {
           .replace(/%/g, '.*')
           .replace(/_/g, '.')
           + '$';
+        return new RegExp(regex).test(String(val));
+      }
+      case 'ILIKE': {
+        const val = this._evalValue(expr.left, row);
+        const pattern = this._evalValue(expr.pattern, row);
+        if (val == null || pattern == null) return false;
+        const regex = '^' + String(pattern)
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          .replace(/%/g, '.*')
+          .replace(/_/g, '.')
+          + '$';
         return new RegExp(regex, 'i').test(String(val));
       }
       case 'BETWEEN': {

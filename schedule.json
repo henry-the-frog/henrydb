@@ -1919,6 +1919,25 @@
       "completed": "2026-04-10T23:48:12.594Z",
       "duration_ms": 30000,
       "summary": "ILIKE exists but has a bug (matches all rows instead of case-insensitive pattern). Pre-existing issue, not a regression. LIKE works correctly."
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: final session run — verify all core tests still pass",
+      "project": "henrydb",
+      "started": "2026-04-10T23:50:16.623Z",
+      "completed": "2026-04-10T23:50:59.216Z",
+      "duration_ms": 120000,
+      "summary": "FINAL TEST RUN: 193 pass, 0 fail across 16 test suites. All green!"
+    },
+    {
+      "id": "T179",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add ILIKE support in parser and executor",
+      "project": "henrydb",
+      "started": "2026-04-10T23:51:12.350Z"
     }
   ],
   "focusProjects": [
@@ -2622,6 +2641,14 @@
     {
       "time": "2026-04-10T23:47:44.648Z",
       "msg": "Added T177 (BUILD) after end: HenryDB: test ILIKE (case-insensitive LIKE) through wire protocol"
+    },
+    {
+      "time": "2026-04-10T23:50:16.209Z",
+      "msg": "Added T178 (BUILD) after end: HenryDB: final session run — verify all core tests still pass"
+    },
+    {
+      "time": "2026-04-10T23:51:11.937Z",
+      "msg": "Added T179 (BUILD) after end: HenryDB: add ILIKE support in parser and executor"
     }
   ]
 }

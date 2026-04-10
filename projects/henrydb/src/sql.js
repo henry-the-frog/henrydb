@@ -9,7 +9,7 @@ const KEYWORDS = new Set([
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
+  'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
@@ -806,6 +806,12 @@ export function parse(sql) {
       advance();
       const pattern = parsePrimary();
       return { type: 'LIKE', left, pattern };
+    }
+
+    if (isKeyword('ILIKE')) {
+      advance();
+      const pattern = parsePrimary();
+      return { type: 'ILIKE', left, pattern };
     }
 
     if (isKeyword('IS')) {
