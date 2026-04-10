@@ -1384,10 +1384,13 @@
     {
       "id": "T129",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix the COPY FROM STDIN wire protocol issue — debug why CopyInResponse is not being sent",
       "project": "henrydb",
-      "started": "2026-04-10T22:08:24.935Z"
+      "started": "2026-04-10T22:08:24.935Z",
+      "completed": "2026-04-10T22:12:52.185Z",
+      "duration_ms": 300000,
+      "summary": "Fixed COPY FROM STDIN: server was sending ReadyForQuery after CopyInResponse, confusing pg-copy-streams. Suppressed ReadyForQuery during COPY mode. 10K row bulk import works. Also added COPY detection in Extended Query path. All 81 server tests pass."
     }
   ],
   "focusProjects": [
