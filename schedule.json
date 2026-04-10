@@ -751,6 +751,17 @@
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final session wrap: update CURRENT.md, push, update daily log with session summary"
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add UNION/INTERSECT/EXCEPT to fuzzer. Verify set operations match SQLite.",
+      "project": "henrydb",
+      "started": "2026-04-10T19:41:42.225Z",
+      "completed": "2026-04-10T19:42:25.274Z",
+      "duration_ms": 60000,
+      "summary": "Added UNION/INTERSECT/EXCEPT/UNION ALL to fuzzer. 5800/5800 still pass 100%. Set operations work correctly with column remapping."
     }
   ],
   "focusProjects": [
@@ -1034,6 +1045,10 @@
     {
       "time": "2026-04-10T19:40:30.124Z",
       "msg": "Added T70 (MAINTAIN) after end: Final session wrap: update CURRENT.md, push, update daily log with session summary"
+    },
+    {
+      "time": "2026-04-10T19:41:36.014Z",
+      "msg": "Added T71 (BUILD) after end: Add UNION/INTERSECT/EXCEPT to fuzzer. Verify set operations match SQLite."
     }
   ]
 }

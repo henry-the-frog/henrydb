@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:40:09.123Z",
+  "generated": "2026-04-10T19:42:25.335Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix UNION column naming: should use first SELECT's column names for the combined result",
-    "completedAt": "2026-04-10T19:40:09.123Z",
-    "taskId": "T69",
-    "summary": "Fixed UNION column naming: right side now remapped to left sides column names. Set operations (UNION/INTERSECT/EXCEPT) now SQL-standard compliant.",
-    "durationMs": 120000
+    "task": "Add UNION/INTERSECT/EXCEPT to fuzzer. Verify set operations match SQLite.",
+    "completedAt": "2026-04-10T19:42:25.335Z",
+    "taskId": "T71",
+    "summary": "Added UNION/INTERSECT/EXCEPT/UNION ALL to fuzzer. 5800/5800 still pass 100%. Set operations work correctly with column remapping.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 66,
+    "blocksCompleted": 67,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 42,
+      "BUILD": 43,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

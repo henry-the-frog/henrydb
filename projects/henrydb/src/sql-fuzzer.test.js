@@ -285,6 +285,21 @@ class SQLFuzzer {
     return `SELECT id, (SELECT ${agg} FROM ${inner.name}) AS sub_val FROM ${outer.name} ORDER BY id LIMIT 10`;
   }
 
+  // ---- UNION/INTERSECT/EXCEPT ----
+
+  generateSetOpSelect() {
+    const table = this._pick(this._tables);
+    const intCols = table.cols.filter(c => c.type === 'INTEGER');
+    if (intCols.length === 0) return this.generateSelect();
+
+    const col = this._pick(intCols);
+    const op = this._pick(['UNION', 'UNION ALL', 'INTERSECT', 'EXCEPT']);
+    const val1 = this._randInt(-30, 30);
+    const val2 = this._randInt(-30, 30);
+
+    return `SELECT ${col.name} FROM ${table.name} WHERE ${col.name} > ${val1} ${op} SELECT ${col.name} FROM ${table.name} WHERE ${col.name} < ${val2}`;
+  }
+
   // ---- Aggregate SELECT Generation ----
 
   generateAggregateSelect() {
@@ -402,8 +417,9 @@ class SQLFuzzer {
     if (r < 0.78) return this.generateInSelect();
     if (r < 0.84) return this.generateBetweenSelect();
     if (r < 0.89) return this.generateInSubquerySelect();
-    if (r < 0.94) return this.generateExistsSelect();
-    return this.generateScalarSubquerySelect();
+    if (r < 0.93) return this.generateExistsSelect();
+    if (r < 0.97) return this.generateScalarSubquerySelect();
+    return this.generateSetOpSelect();
   }
 }
 
