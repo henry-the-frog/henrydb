@@ -3620,7 +3620,7 @@ export class Database {
     switch (func) {
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
-      case 'LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
+      case 'LENGTH': case 'CHAR_LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
       case 'POSITION': {
         const substr = String(this._evalValue(args[0], row));
         const str = String(this._evalValue(args[1], row));

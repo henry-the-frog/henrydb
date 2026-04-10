@@ -1963,6 +1963,14 @@
       "completed": "2026-04-10T23:56:10.529Z",
       "duration_ms": 60000,
       "summary": "LPAD/RPAD work through wire protocol. Fixed truncation when string exceeds target length. LPAD(42, 5, 0) → 00042."
+    },
+    {
+      "id": "T182",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add CHAR_LENGTH as alias for LENGTH",
+      "project": "henrydb",
+      "started": "2026-04-10T23:57:04.455Z"
     }
   ],
   "focusProjects": [
@@ -2682,6 +2690,10 @@
     {
       "time": "2026-04-10T23:55:13.968Z",
       "msg": "Added T181 (BUILD) after end: HenryDB: add LPAD and RPAD string functions through wire protocol"
+    },
+    {
+      "time": "2026-04-10T23:57:04.042Z",
+      "msg": "Added T182 (BUILD) after end: HenryDB: add CHAR_LENGTH as alias for LENGTH"
     }
   ]
 }
