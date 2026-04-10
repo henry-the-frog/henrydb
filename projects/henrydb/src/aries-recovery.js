@@ -1,141 +1,352 @@
-// aries-recovery.js — ARIES-style recovery with undo/redo logging
-// Algorithm for Recovery and Isolation Exploiting Semantics
-// Three phases: (1) Analysis, (2) Redo, (3) Undo
-// Each log entry records before/after images for undo/redo.
+// aries-recovery.js — ARIES Write-Ahead Log Recovery Protocol
+//
+// ARIES: Algorithm for Recovery and Isolation Exploiting Semantics
+// The standard crash recovery protocol used by IBM DB2, SQL Server, PostgreSQL, etc.
+//
+// Three-phase recovery:
+//   1. ANALYSIS — Determine dirty pages and active transactions at crash
+//   2. REDO — Replay all changes (idempotent, from earliest dirty page LSN)
+//   3. UNDO — Rollback incomplete transactions (backward, with CLRs)
+//
+// Key invariants:
+//   - WAL: Changes to data pages are logged BEFORE the page is written to disk
+//   - Force at commit: All log records for a txn are flushed before commit ack
+//   - Steal: Dirty pages can be flushed before txn commits (hence need undo)
+//
+// References:
+//   - Mohan et al., "ARIES: A Transaction Recovery Method" (1992)
+//   - CMU 15-445 Lecture 20: Database Recovery
 
-export class ARIESRecovery {
+/**
+ * Log record types.
+ */
+export const LOG_TYPE = {
+  UPDATE:     'UPDATE',      // Data modification
+  COMMIT:     'COMMIT',      // Transaction committed
+  ABORT:      'ABORT',       // Transaction aborted
+  BEGIN:      'BEGIN',        // Transaction started
+  END:        'END',          // Transaction ended (cleanup done)
+  CHECKPOINT: 'CHECKPOINT',  // Fuzzy checkpoint
+  CLR:        'CLR',          // Compensation Log Record (undo of an update)
+};
+
+/**
+ * A single WAL log record.
+ */
+export class LogRecord {
+  constructor(options) {
+    this.lsn = options.lsn;             // Log Sequence Number (monotonically increasing)
+    this.type = options.type;            // LOG_TYPE
+    this.txId = options.txId || null;    // Transaction ID
+    this.pageId = options.pageId || null; // Page that was modified
+    this.prevLsn = options.prevLsn || null; // Previous LSN for this txn (for undo chain)
+    this.undoNextLsn = options.undoNextLsn || null; // For CLR: next record to undo
+    this.before = options.before || null; // Before-image of data (for undo)
+    this.after = options.after || null;   // After-image of data (for redo)
+    
+    // Checkpoint-specific
+    this.activeTxns = options.activeTxns || null;  // ATT at checkpoint time
+    this.dirtyPages = options.dirtyPages || null;   // DPT at checkpoint time
+  }
+}
+
+/**
+ * Write-Ahead Log — append-only log with sequential LSNs.
+ */
+export class WriteAheadLog {
   constructor() {
-    this._log = []; // [{lsn, txnId, type, table, key, before, after}]
-    this._nextLSN = 1;
-    this._txnTable = new Map(); // txnId → { status, lastLSN }
-    this._dirtyPages = new Map(); // pageId → recoveryLSN (first dirty LSN)
-    this._data = new Map(); // key → value (simulated database)
-    this._checkpoints = []; // [{lsn, txnTable, dirtyPages}]
-    this.stats = { redone: 0, undone: 0, analysisOps: 0 };
+    this._records = [];
+    this._nextLsn = 1;
+    this._flushedLsn = 0;   // Highest LSN flushed to disk
+    this._txLastLsn = new Map(); // txId → last LSN for this txn
   }
 
-  begin(txnId) {
-    this._txnTable.set(txnId, { status: 'active', lastLSN: 0 });
-    this._appendLog(txnId, 'BEGIN', null, null, null, null);
-  }
+  get nextLsn() { return this._nextLsn; }
+  get records() { return this._records; }
 
-  write(txnId, key, newValue) {
-    const oldValue = this._data.get(key) ?? null;
-    const lsn = this._appendLog(txnId, 'UPDATE', null, key, oldValue, newValue);
-    this._data.set(key, newValue);
-    this._dirtyPages.set(key, Math.min(this._dirtyPages.get(key) || lsn, lsn));
+  /**
+   * Append a log record. Returns the assigned LSN.
+   */
+  append(options) {
+    const lsn = this._nextLsn++;
+    const prevLsn = this._txLastLsn.get(options.txId) || null;
+    const record = new LogRecord({ ...options, lsn, prevLsn });
+    this._records.push(record);
+    if (options.txId) this._txLastLsn.set(options.txId, lsn);
     return lsn;
-  }
-
-  commit(txnId) {
-    this._appendLog(txnId, 'COMMIT', null, null, null, null);
-    const txn = this._txnTable.get(txnId);
-    if (txn) txn.status = 'committed';
-  }
-
-  abort(txnId) {
-    // Undo all writes by this txn
-    this._undoTransaction(txnId);
-    this._appendLog(txnId, 'ABORT', null, null, null, null);
-    const txn = this._txnTable.get(txnId);
-    if (txn) txn.status = 'aborted';
-  }
-
-  checkpoint() {
-    const cp = {
-      lsn: this._nextLSN - 1,
-      txnTable: new Map(this._txnTable),
-      dirtyPages: new Map(this._dirtyPages),
-    };
-    this._checkpoints.push(cp);
-    this._appendLog(null, 'CHECKPOINT', null, null, null, null);
-    return cp.lsn;
   }
 
   /**
-   * Simulate a crash and recovery.
-   * Clears in-memory state and recovers from log.
+   * Flush log records up to the given LSN.
    */
-  crashAndRecover() {
-    // Save log (persistent) but clear volatile state
-    const savedLog = [...this._log];
-    this._data.clear();
-    this._txnTable.clear();
-    this._dirtyPages.clear();
+  flush(lsn) {
+    this._flushedLsn = Math.max(this._flushedLsn, lsn);
+  }
 
-    // Find last checkpoint
-    const lastCheckpoint = this._checkpoints.length > 0
-      ? this._checkpoints[this._checkpoints.length - 1]
-      : null;
+  /**
+   * Get records from a starting LSN (inclusive).
+   */
+  recordsFrom(startLsn) {
+    return this._records.filter(r => r.lsn >= startLsn);
+  }
 
-    // Phase 1: Analysis
-    const activeTxns = new Set();
-    const startLSN = lastCheckpoint ? lastCheckpoint.lsn : 0;
+  /**
+   * Get records in reverse order from a starting LSN (inclusive).
+   */
+  recordsReverse(fromLsn) {
+    return this._records.filter(r => r.lsn <= fromLsn).reverse();
+  }
+
+  /**
+   * Find the last checkpoint record.
+   */
+  lastCheckpoint() {
+    for (let i = this._records.length - 1; i >= 0; i--) {
+      if (this._records[i].type === LOG_TYPE.CHECKPOINT) return this._records[i];
+    }
+    return null;
+  }
+}
+
+/**
+ * ARIES Recovery Manager — implements the three-phase recovery protocol.
+ */
+export class ARIESRecovery {
+  constructor(wal, pageStore) {
+    this.wal = wal;
+    this.pageStore = pageStore; // {getPageLsn(pageId), applyRedo(pageId, after), applyUndo(pageId, before)}
     
-    if (lastCheckpoint) {
-      for (const [txnId, info] of lastCheckpoint.txnTable) {
-        if (info.status === 'active') activeTxns.add(txnId);
-        this._txnTable.set(txnId, { ...info });
-      }
-      for (const [key, lsn] of lastCheckpoint.dirtyPages) {
-        this._dirtyPages.set(key, lsn);
-      }
-    }
+    // Recovery state
+    this.activeTxnTable = new Map();  // txId → {status, lastLsn}
+    this.dirtyPageTable = new Map();  // pageId → recLsn (first LSN that dirtied this page)
+    
+    // Recovery stats
+    this.stats = { analysisRecords: 0, redoRecords: 0, undoRecords: 0, clrsWritten: 0 };
+  }
 
-    for (const entry of savedLog) {
-      if (entry.lsn <= startLSN) continue;
-      this.stats.analysisOps++;
-      
-      if (entry.type === 'BEGIN') activeTxns.add(entry.txnId);
-      if (entry.type === 'COMMIT' || entry.type === 'ABORT') activeTxns.delete(entry.txnId);
-      if (entry.txnId) {
-        this._txnTable.set(entry.txnId, { status: 'active', lastLSN: entry.lsn });
-      }
-    }
+  /**
+   * Run full ARIES recovery. Returns recovery statistics.
+   */
+  recover() {
+    this._analysis();
+    this._redo();
+    this._undo();
+    return this.stats;
+  }
 
-    // Phase 2: Redo (replay all updates from log)
-    for (const entry of savedLog) {
-      if (entry.type === 'UPDATE' && entry.key !== null) {
-        this._data.set(entry.key, entry.after);
-        this.stats.redone++;
+  // ============================================================
+  // Phase 1: ANALYSIS
+  // ============================================================
+  
+  /**
+   * Scan log forward from last checkpoint.
+   * Reconstruct the Active Transaction Table (ATT) and Dirty Page Table (DPT).
+   */
+  _analysis() {
+    const checkpoint = this.wal.lastCheckpoint();
+    let startLsn = 1;
+    
+    if (checkpoint) {
+      startLsn = checkpoint.lsn;
+      // Restore ATT and DPT from checkpoint
+      if (checkpoint.activeTxns) {
+        for (const [txId, info] of checkpoint.activeTxns) {
+          this.activeTxnTable.set(txId, { ...info });
+        }
       }
-    }
-
-    // Phase 3: Undo (rollback uncommitted transactions)
-    for (const txnId of activeTxns) {
-      for (let i = savedLog.length - 1; i >= 0; i--) {
-        const entry = savedLog[i];
-        if (entry.txnId === txnId && entry.type === 'UPDATE') {
-          this._data.set(entry.key, entry.before);
-          this.stats.undone++;
+      if (checkpoint.dirtyPages) {
+        for (const [pageId, recLsn] of checkpoint.dirtyPages) {
+          this.dirtyPageTable.set(pageId, recLsn);
         }
       }
     }
-
-    this._log = savedLog;
-    return { activeTxns: [...activeTxns], redone: this.stats.redone, undone: this.stats.undone };
-  }
-
-  _undoTransaction(txnId) {
-    for (let i = this._log.length - 1; i >= 0; i--) {
-      const entry = this._log[i];
-      if (entry.txnId === txnId && entry.type === 'UPDATE') {
-        this._data.set(entry.key, entry.before);
-        this._appendLog(txnId, 'CLR', null, entry.key, null, entry.before); // Compensation
+    
+    const records = this.wal.recordsFrom(startLsn);
+    
+    for (const rec of records) {
+      this.stats.analysisRecords++;
+      
+      switch (rec.type) {
+        case LOG_TYPE.BEGIN:
+          this.activeTxnTable.set(rec.txId, { status: 'active', lastLsn: rec.lsn });
+          break;
+          
+        case LOG_TYPE.UPDATE:
+        case LOG_TYPE.CLR:
+          // Update ATT
+          if (this.activeTxnTable.has(rec.txId)) {
+            this.activeTxnTable.get(rec.txId).lastLsn = rec.lsn;
+          } else {
+            this.activeTxnTable.set(rec.txId, { status: 'active', lastLsn: rec.lsn });
+          }
+          // Update DPT: if page not already dirty, add it
+          if (rec.pageId !== null && !this.dirtyPageTable.has(rec.pageId)) {
+            this.dirtyPageTable.set(rec.pageId, rec.lsn);
+          }
+          break;
+          
+        case LOG_TYPE.COMMIT:
+          if (this.activeTxnTable.has(rec.txId)) {
+            this.activeTxnTable.get(rec.txId).status = 'committed';
+          }
+          break;
+          
+        case LOG_TYPE.ABORT:
+          if (this.activeTxnTable.has(rec.txId)) {
+            this.activeTxnTable.get(rec.txId).status = 'aborting';
+          }
+          break;
+          
+        case LOG_TYPE.END:
+          this.activeTxnTable.delete(rec.txId);
+          break;
       }
     }
   }
 
-  _appendLog(txnId, type, table, key, before, after) {
-    const lsn = this._nextLSN++;
-    this._log.push({ lsn, txnId, type, table, key, before, after });
-    if (txnId && this._txnTable.has(txnId)) {
-      this._txnTable.get(txnId).lastLSN = lsn;
+  // ============================================================
+  // Phase 2: REDO
+  // ============================================================
+  
+  /**
+   * Redo all changes from the earliest recLsn in the DPT.
+   * Idempotent: safe to redo an already-applied change.
+   */
+  _redo() {
+    if (this.dirtyPageTable.size === 0) return;
+    
+    // Find the smallest recLsn in DPT
+    let minRecLsn = Infinity;
+    for (const recLsn of this.dirtyPageTable.values()) {
+      if (recLsn < minRecLsn) minRecLsn = recLsn;
     }
-    return lsn;
+    
+    const records = this.wal.recordsFrom(minRecLsn);
+    
+    for (const rec of records) {
+      if (rec.type !== LOG_TYPE.UPDATE && rec.type !== LOG_TYPE.CLR) continue;
+      if (rec.pageId === null) continue;
+      
+      // Skip if page not in DPT
+      if (!this.dirtyPageTable.has(rec.pageId)) continue;
+      
+      // Skip if record is older than when page became dirty
+      const recLsn = this.dirtyPageTable.get(rec.pageId);
+      if (rec.lsn < recLsn) continue;
+      
+      // Skip if page already has this change (pageLSN >= rec.lsn)
+      const pageLsn = this.pageStore.getPageLsn(rec.pageId);
+      if (pageLsn >= rec.lsn) continue;
+      
+      // Apply redo
+      this.pageStore.applyRedo(rec.pageId, rec.after, rec.lsn);
+      this.stats.redoRecords++;
+    }
   }
 
-  getValue(key) { return this._data.get(key); }
-  getLog() { return [...this._log]; }
-  getStats() { return { ...this.stats, logSize: this._log.length }; }
+  // ============================================================
+  // Phase 3: UNDO
+  // ============================================================
+  
+  /**
+   * Undo all changes by transactions that were active at crash time.
+   * Writes CLR (Compensation Log Records) to prevent re-undoing on a second crash.
+   */
+  _undo() {
+    // Collect all active (uncommitted) transactions
+    const toUndo = [];
+    for (const [txId, info] of this.activeTxnTable) {
+      if (info.status === 'active' || info.status === 'aborting') {
+        toUndo.push({ txId, lastLsn: info.lastLsn });
+      }
+    }
+    
+    if (toUndo.length === 0) return;
+    
+    // Build a priority queue of LSNs to undo (process highest LSN first)
+    // Use a simple sorted array since N is typically small
+    let undoList = toUndo.map(t => ({ txId: t.txId, lsn: t.lastLsn }));
+    
+    while (undoList.length > 0) {
+      // Pick the highest LSN to undo
+      undoList.sort((a, b) => b.lsn - a.lsn);
+      const { txId, lsn } = undoList.shift();
+      
+      // Find this log record
+      const rec = this.wal.records.find(r => r.lsn === lsn);
+      if (!rec) continue;
+      
+      if (rec.type === LOG_TYPE.UPDATE) {
+        // Undo this update
+        if (rec.pageId !== null && rec.before !== null) {
+          this.pageStore.applyUndo(rec.pageId, rec.before);
+        }
+        
+        // Write CLR (compensation log record)
+        const clrLsn = this.wal.append({
+          type: LOG_TYPE.CLR,
+          txId,
+          pageId: rec.pageId,
+          after: rec.before,  // The CLR's "after" is the undo (before-image)
+          undoNextLsn: rec.prevLsn, // Skip to the previous record in undo chain
+        });
+        this.stats.clrsWritten++;
+        this.stats.undoRecords++;
+        
+        // Continue undoing: next record is prevLsn
+        if (rec.prevLsn) {
+          undoList.push({ txId, lsn: rec.prevLsn });
+        } else {
+          // No more records to undo — write END record
+          this.wal.append({ type: LOG_TYPE.END, txId });
+          this.activeTxnTable.delete(txId);
+        }
+      } else if (rec.type === LOG_TYPE.CLR) {
+        // CLR: skip to undoNextLsn
+        if (rec.undoNextLsn) {
+          undoList.push({ txId, lsn: rec.undoNextLsn });
+        } else {
+          this.wal.append({ type: LOG_TYPE.END, txId });
+          this.activeTxnTable.delete(txId);
+        }
+      } else if (rec.type === LOG_TYPE.BEGIN) {
+        // Nothing to undo — write END
+        this.wal.append({ type: LOG_TYPE.END, txId });
+        this.activeTxnTable.delete(txId);
+      } else {
+        // Skip non-undoable records, continue with prevLsn
+        if (rec.prevLsn) {
+          undoList.push({ txId, lsn: rec.prevLsn });
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Simple in-memory page store for testing.
+ */
+export class InMemoryPageStore {
+  constructor() {
+    this._pages = new Map(); // pageId → {data, lsn}
+  }
+
+  getPageLsn(pageId) {
+    const page = this._pages.get(pageId);
+    return page ? page.lsn : 0;
+  }
+
+  applyRedo(pageId, afterImage, lsn) {
+    this._pages.set(pageId, { data: afterImage, lsn });
+  }
+
+  applyUndo(pageId, beforeImage) {
+    const page = this._pages.get(pageId);
+    if (page) page.data = beforeImage;
+    else this._pages.set(pageId, { data: beforeImage, lsn: 0 });
+  }
+
+  getData(pageId) {
+    return this._pages.get(pageId)?.data ?? null;
+  }
 }

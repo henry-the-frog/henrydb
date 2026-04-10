@@ -2952,17 +2952,21 @@
     {
       "id": "T278",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build a query plan optimizer with cost estimation: compare nested loop vs hash join vs merge join costs",
       "project": "henrydb",
-      "started": "2026-04-10T03:04:24.125Z"
+      "started": "2026-04-10T03:04:24.125Z",
+      "completed": "2026-04-10T03:06:25.902Z",
+      "duration_ms": 600000,
+      "summary": "Built cost-based join optimizer: NLJ/Hash/Sort-Merge cost estimation, Selinger-style DP for multi-table join ordering. Correctly picks Hash Join for large equi-joins, Sort-Merge for pre-sorted inputs, optimal join order for star schema and chain joins. 13/13 tests."
     },
     {
       "id": "T279",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Implement Write-Ahead Log recovery with ARIES protocol: analysis, redo, undo phases",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T03:06:48.224Z"
     },
     {
       "id": "T280",
