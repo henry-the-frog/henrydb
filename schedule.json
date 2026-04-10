@@ -209,16 +209,21 @@
     {
       "id": "T20",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "Implement CockroachDB-style timestamp cache in HenryDB: interval-based read timestamp cache, integrate with MVCC conflict detection, test with existing SSI test suite.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": ""
     },
     {
       "id": "T21",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write blog post: How CockroachDB and PostgreSQL Prevent Write Skew Differently — timestamp cache vs SSI dependency graphs, with HenryDB as test bed.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T15:15:22.736Z",
+      "completed": "2026-04-10T15:16:34.907Z",
+      "duration_ms": 600000,
+      "summary": "Published blog post: Two Ways to Prevent Write Skew — deep comparison of SSI (PostgreSQL/HenryDB) vs Timestamp Ordering (CockroachDB). Covers scan problem, interval cache, dependency graphs, practical tradeoffs. Pushed to blog."
     },
     {
       "id": "T22",
@@ -329,6 +334,10 @@
     {
       "time": "2026-04-10T15:04:56.335Z",
       "msg": "Added T22 (MAINTAIN) after end: Full test sweep after all fixes — run all 530 test files, compare with baseline (58 failures). Document improvement."
+    },
+    {
+      "time": "2026-04-10T15:15:08.530Z",
+      "msg": "Removed T20: "
     }
   ]
 }

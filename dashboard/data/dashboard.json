@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T15:14:33.694Z",
+  "generated": "2026-04-10T15:16:34.972Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix subquery evaluation: server-integration test expects 2 rows from WHERE price > (SELECT AVG(price)...) but gets 4. Debug query engine subquery handling.",
-    "completedAt": "2026-04-10T15:14:33.694Z",
-    "taskId": "T19",
-    "summary": "Fixed subquery evaluation: _hasSubquery checked for lowercase subquery but AST uses SUBQUERY (uppercase). Case-insensitive comparison fixes it. server-integration: 10/11 pass (remaining failure is test infrastructure TCP buffering issue, not a DB bug).",
-    "durationMs": 900000
+    "task": "Write blog post: How CockroachDB and PostgreSQL Prevent Write Skew Differently — timestamp cache vs SSI dependency graphs, with HenryDB as test bed.",
+    "completedAt": "2026-04-10T15:16:34.972Z",
+    "taskId": "T21",
+    "summary": "Published blog post: Two Ways to Prevent Write Skew — deep comparison of SSI (PostgreSQL/HenryDB) vs Timestamp Ordering (CockroachDB). Covers scan problem, interval cache, dependency graphs, practical tradeoffs. Pushed to blog.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -173,12 +173,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 19,
+    "blocksCompleted": 20,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 3,
-      "BUILD": 6,
+      "BUILD": 7,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
