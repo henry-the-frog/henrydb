@@ -1,13 +1,20 @@
-# Current Status
+# CURRENT.md — Work Session Status
 
-## status: session-ended
-## task: Session B — EPIC COMPLETE 🏆
-## project: henrydb
-## timestamp: 2026-04-09T20:00 MDT
+## Status: in-progress (Session B evening)
 
-### 🏆🏆🏆 Session B Final Statistics 🏆🏆🏆
-- **138 commits** in 6 hours
-- **826 total source files**
-- **80+ distinct data structures and database components**
-- All tests passing ✅
-- Everything pushed to GitHub
+## Current Task
+T244 — MAINTAIN: Final housekeeping
+
+## Session Stats
+- Tasks completed: T231-T244 (14 tasks)
+- Critical fix: QueryCache.extractTables regression (all SELECTs broken)
+- New modules: LZ77, connection pool (upgraded), rate limiters (5 algorithms), thread pool (work-stealing)
+- Integration fixes: 8+ ghost export/API mismatches resolved
+- Test improvements: integration 6→12/12, LSM 5→14/14
+
+## Known Issues
+- persistent-db 0/11 and file-wal crash recovery 0/4: BufferPool.fetchPage API incompatible with FileBackedHeap (needs readFn callback plumbing in the entire persistence stack)
+- tdigest.test.js hangs (known)
+
+## Queue Status
+Empty — need to generate new work for remaining time

@@ -2591,17 +2591,21 @@
     {
       "id": "T242",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Run broader test sweep on 20 critical test files to find any other import/export breaks",
       "plan_ref": "T241",
       "project": "henrydb",
-      "started": "2026-04-10T00:59:54.712Z"
+      "started": "2026-04-10T00:59:54.712Z",
+      "completed": "2026-04-10T01:03:39.556Z",
+      "duration_ms": 300000,
+      "summary": "Test sweep: 20 critical files. Findings: integration 12/12 (fixed), LSM 14/14 (fixed set→insert), server 14/14, SQL 46/46, adaptive 10/10, buffer-pool 14/14, BTree 21/21, explain 15/15. Remaining: persistent-db 0/11 + file-wal 4/8 = same BufferPool fetchPage API mismatch root cause. tdigest test hangs."
     },
     {
       "id": "T244",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping: git push, daily log, CURRENT.md"
+      "status": "in-progress",
+      "task": "Final housekeeping: git push, daily log, CURRENT.md",
+      "started": "2026-04-10T01:03:59.595Z"
     }
   ],
   "focusProjects": [
