@@ -2366,7 +2366,24 @@ export class Database {
   _union(ast) {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
-    let rows = [...leftResult.rows, ...rightResult.rows];
+    
+    // Remap right result's columns to match left result's column names
+    const leftCols = leftResult.rows.length > 0 ? Object.keys(leftResult.rows[0]) : [];
+    const rightCols = rightResult.rows.length > 0 ? Object.keys(rightResult.rows[0]) : [];
+    
+    let rightRows = rightResult.rows;
+    if (leftCols.length > 0 && rightCols.length > 0 && leftCols.join() !== rightCols.join()) {
+      rightRows = rightResult.rows.map(row => {
+        const mapped = {};
+        const vals = Object.values(row);
+        for (let i = 0; i < leftCols.length && i < vals.length; i++) {
+          mapped[leftCols[i]] = vals[i];
+        }
+        return mapped;
+      });
+    }
+    
+    let rows = [...leftResult.rows, ...rightRows];
 
     if (!ast.all) {
       // UNION (not ALL) — remove duplicates

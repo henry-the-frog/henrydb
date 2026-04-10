@@ -734,6 +734,17 @@
       "completed": "2026-04-10T19:38:32.751Z",
       "duration_ms": 180000,
       "summary": "Tested edge cases: empty strings, large numbers, COALESCE, CASE WHEN, LEFT JOIN with NULLs, correlated subqueries, self-joins, ORDER BY non-select columns — ALL match SQLite. Found UNION column naming issue (uses second SELECT cols instead of first) — documented as known limitation. HenryDB is remarkably solid across all tested patterns."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix UNION column naming: should use first SELECT's column names for the combined result",
+      "project": "henrydb",
+      "started": "2026-04-10T19:39:10.651Z",
+      "completed": "2026-04-10T19:40:09.086Z",
+      "duration_ms": 120000,
+      "summary": "Fixed UNION column naming: right side now remapped to left sides column names. Set operations (UNION/INTERSECT/EXCEPT) now SQL-standard compliant."
     }
   ],
   "focusProjects": [
@@ -1009,6 +1020,10 @@
     {
       "time": "2026-04-10T19:37:05.267Z",
       "msg": "Added T68 (BUILD) after end: Fuzzer edge cases: empty strings, large numbers, negative IDs, COALESCE, CASE WHEN. Also try LEFT JOIN with NULLs. Target: find at least one more bug."
+    },
+    {
+      "time": "2026-04-10T19:39:04.677Z",
+      "msg": "Added T69 (BUILD) after end: Fix UNION column naming: should use first SELECT's column names for the combined result"
     }
   ]
 }

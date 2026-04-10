@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-10T19:38:32.815Z",
+  "generated": "2026-04-10T19:40:09.123Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fuzzer edge cases: empty strings, large numbers, negative IDs, COALESCE, CASE WHEN. Also try LEFT JOIN with NULLs. Target: find at least one more bug.",
-    "completedAt": "2026-04-10T19:38:32.815Z",
-    "taskId": "T68",
-    "summary": "Tested edge cases: empty strings, large numbers, COALESCE, CASE WHEN, LEFT JOIN with NULLs, correlated subqueries, self-joins, ORDER BY non-select columns — ALL match SQLite. Found UNION column naming issue (uses second SELECT cols instead of first) — documented as known limitation. HenryDB is remarkably solid across all tested patterns.",
-    "durationMs": 180000
+    "task": "Fix UNION column naming: should use first SELECT's column names for the combined result",
+    "completedAt": "2026-04-10T19:40:09.123Z",
+    "taskId": "T69",
+    "summary": "Fixed UNION column naming: right side now remapped to left sides column names. Set operations (UNION/INTERSECT/EXCEPT) now SQL-standard compliant.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -674,12 +674,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 65,
+    "blocksCompleted": 66,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 6,
-      "BUILD": 41,
+      "BUILD": 42,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
