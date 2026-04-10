@@ -130,6 +130,8 @@ export class BufferPoolManager {
     this._misses = 0;
     this._evictions = 0;
     this._evictCallback = null;
+    this._walForcer = null; // (pageLsn) => force WAL stable up to pageLsn before evicting page
+    this._pageLsns = new Map(); // pageId → LSN (for write-ahead enforcement)
   }
 
   /**
@@ -138,6 +140,28 @@ export class BufferPoolManager {
    */
   setEvictCallback(cb) {
     this._evictCallback = cb;
+  }
+
+  /**
+   * Set WAL forcer for write-ahead enforcement.
+   * @param {Function} fn - (pageLsn) => void, forces WAL stable before dirty page write
+   */
+  setWalForcer(fn) {
+    this._walForcer = fn;
+  }
+
+  /**
+   * Set the LSN for a page (tracks the most recent WAL record for this page).
+   */
+  setPageLSN(pageId, lsn) {
+    this._pageLsns.set(pageId, lsn);
+  }
+
+  /**
+   * Get the LSN for a page.
+   */
+  getPageLSN(pageId) {
+    return this._pageLsns.get(pageId) || 0;
   }
 
   /**
@@ -322,8 +346,13 @@ export class BufferPoolManager {
     
     const frame = this._frames[victimFrameId];
     
-    // Flush dirty page before eviction
+    // Flush dirty page before eviction — enforce write-ahead constraint
     if (frame.dirty) {
+      // WAL must be forced BEFORE writing the page to disk
+      if (this._walForcer) {
+        const pageLsn = this._pageLsns.get(frame.pageId) || 0;
+        if (pageLsn > 0) this._walForcer(pageLsn);
+      }
       if (this._evictCallback) {
         this._evictCallback(frame.pageId, frame.data);
       }

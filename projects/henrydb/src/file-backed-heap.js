@@ -219,8 +219,11 @@ export class FileBackedHeap {
 
   /** Scan all live tuples. Yields { pageId, slotIdx, values }. */
   *scan() {
-    for (let i = 0; i < this._dm.pageCount; i++) {
+    // Scan all pages known to the disk manager (may include in-buffer-pool pages)
+    const pageCount = this._dm.pageCount || 0;
+    for (let i = 0; i < pageCount; i++) {
       const page = this._fetchPage(i);
+      if (!page) continue;
       for (const { slotIdx, data } of page.scanTuples()) {
         yield { pageId: i, slotIdx, values: decodeTuple(data) };
       }

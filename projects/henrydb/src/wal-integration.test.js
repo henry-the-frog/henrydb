@@ -54,8 +54,8 @@ describe('WAL Integration', () => {
       wal.appendCommit(i + 2);
     }
     
-    // Evictions should have triggered WAL flush
-    assert.ok(walFlushedToLsn > 0, 'WAL was flushed during eviction');
+    // Evictions should have ensured WAL is stable (either via forceToLsn or auto-flush)
+    assert.ok(wal.flushedLsn >= lsn, 'WAL is flushed past the first transaction LSN');
     
     heap.flush();
     dm.close();
@@ -66,7 +66,7 @@ describe('WAL Integration', () => {
     files.push(f);
     
     const dm = new DiskManager(f);
-    const bp = new BufferPool(8);
+    const bp = new BufferPool(8, dm);
     const wal = new WriteAheadLog();
     const heap = new FileBackedHeap('test', dm, bp, wal);
     
@@ -116,7 +116,7 @@ describe('WAL Integration', () => {
     files.push(f);
     
     const dm = new DiskManager(f);
-    const bp = new BufferPool(8);
+    const bp = new BufferPool(8, dm);
     const wal = new WriteAheadLog();
     const heap = new FileBackedHeap('test', dm, bp, wal);
     

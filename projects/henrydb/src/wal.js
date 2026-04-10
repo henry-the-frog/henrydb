@@ -406,6 +406,7 @@ export class WALManager {
     this._autoCheckpointByCommits = false;
     this._checkpointCallback = null;
     this._lastFlushedIdx = 0; // Track last flushed index for O(1) flush
+    this._flushedLsn = 0; // Highest LSN that has been flushed to stable storage
 
     if (!walDir) {
       this._noop = false;
@@ -512,6 +513,9 @@ export class WALManager {
     // Append only new records since last flush — O(delta) not O(n²)
     for (let i = this._lastFlushedIdx; i < this._memRecords.length; i++) {
       this._stableRecords.push(this._memRecords[i]);
+      // Track the highest flushed LSN
+      const rec = this._memRecords[i];
+      if (rec.lsn > this._flushedLsn) this._flushedLsn = rec.lsn;
     }
     this._lastFlushedIdx = this._memRecords.length;
   }
@@ -1041,6 +1045,22 @@ _proto.flush = function() {
   }
   if (this.writer.sync) this.writer.sync();
 };
+
+_proto.forceToLsn = function(lsn) {
+  // Force WAL to be stable up to the given LSN
+  this.flush();
+  // Track the forced LSN
+  this._lastForcedLsn = Math.max(this._lastForcedLsn || 0, lsn);
+  this._flushedLsn = Math.max(this._flushedLsn || 0, lsn);
+};
+
+_proto.getLastForcedLsn = function() {
+  return this._lastForcedLsn || 0;
+};
+
+Object.defineProperty(_proto, 'flushedLsn', {
+  get() { return this._flushedLsn || 0; }
+});
 
 _proto.setAutoCheckpoint = function(threshold, callback) {
   if (threshold <= 0) {
