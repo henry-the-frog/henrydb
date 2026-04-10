@@ -1945,10 +1945,21 @@
     {
       "id": "T180",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add POSITION function — POSITION('lo' IN 'hello')",
       "project": "henrydb",
-      "started": "2026-04-10T23:53:11.895Z"
+      "started": "2026-04-10T23:53:11.895Z",
+      "completed": "2026-04-10T23:54:54.781Z",
+      "duration_ms": 120000,
+      "summary": "POSITION function implemented. POSITION(substr IN str) returns 1-based index. Works through wire protocol."
+    },
+    {
+      "id": "T181",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add LPAD and RPAD string functions through wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-10T23:55:14.382Z"
     }
   ],
   "focusProjects": [
@@ -2664,6 +2675,10 @@
     {
       "time": "2026-04-10T23:53:11.653Z",
       "msg": "Added T180 (BUILD) after end: HenryDB: add POSITION function — POSITION('lo' IN 'hello')"
+    },
+    {
+      "time": "2026-04-10T23:55:13.968Z",
+      "msg": "Added T181 (BUILD) after end: HenryDB: add LPAD and RPAD string functions through wire protocol"
     }
   ]
 }

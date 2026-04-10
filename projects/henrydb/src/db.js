@@ -3777,13 +3777,13 @@ export class Database {
         const str = String(this._evalValue(args[0], row) || '');
         const len = this._evalValue(args[1], row) || 0;
         const pad = args[2] ? String(this._evalValue(args[2], row)) : ' ';
-        return str.padStart(len, pad);
+        return str.length > len ? str.slice(0, len) : str.padStart(len, pad);
       }
       case 'RPAD': {
         const str = String(this._evalValue(args[0], row) || '');
         const len = this._evalValue(args[1], row) || 0;
         const pad = args[2] ? String(this._evalValue(args[2], row)) : ' ';
-        return str.padEnd(len, pad);
+        return str.length > len ? str.slice(0, len) : str.padEnd(len, pad);
       }
       case 'REVERSE': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).split('').reverse().join(''); }
       case 'REPEAT': { const v = this._evalValue(args[0], row); const n = this._evalValue(args[1], row); return v == null ? null : String(v).repeat(n || 0); }
