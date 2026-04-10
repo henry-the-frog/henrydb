@@ -3010,17 +3010,21 @@
     {
       "id": "T284",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement a simple SQL parser that generates AST for the query VM — parse SELECT/WHERE/GROUP BY/ORDER BY",
       "project": "henrydb",
-      "started": "2026-04-10T03:14:26.866Z"
+      "started": "2026-04-10T03:14:26.866Z",
+      "completed": "2026-04-10T03:16:02.411Z",
+      "duration_ms": 300000,
+      "summary": "Built mini SQL parser: tokenizer + recursive descent parser → AST for QueryVM. Full pipeline: SQL string → tokens → AST → bytecode → execution → results. Supports SELECT/WHERE/GROUP BY/ORDER BY/LIMIT/aggregates/aliases. 15/15 tests including end-to-end SQL→results."
     },
     {
       "id": "T285",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Build a page-level B+tree with concurrent access (latch crabbing protocol)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-10T03:16:13.452Z"
     },
     {
       "id": "T286",
