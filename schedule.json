@@ -1802,10 +1802,35 @@
     {
       "id": "T167",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix window functions through wire protocol — ROW_NUMBER() OVER (PARTITION BY x ORDER BY y)",
       "project": "henrydb",
-      "started": "2026-04-10T23:21:40.942Z"
+      "started": "2026-04-10T23:21:40.942Z",
+      "completed": "2026-04-10T23:23:24.802Z",
+      "duration_ms": 180000,
+      "summary": "Fixed window functions through wire protocol! ROW_NUMBER, RANK, SUM OVER PARTITION BY all work correctly. Root cause: adaptive engine was incorrectly routing window queries (it doesnt support them). One-line fix: exclude window columns from adaptive eligibility."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: write window functions test suite through wire protocol — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER",
+      "project": "henrydb",
+      "started": "2026-04-10T23:23:45.542Z"
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add DENSE_RANK and NTILE through wire protocol",
+      "project": "henrydb"
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: update README with session B feature list",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2469,6 +2494,18 @@
     {
       "time": "2026-04-10T23:21:05.450Z",
       "msg": "Added T167 (BUILD) after end: HenryDB: fix window functions through wire protocol — ROW_NUMBER() OVER (PARTITION BY x ORDER BY y)"
+    },
+    {
+      "time": "2026-04-10T23:23:38.511Z",
+      "msg": "Added T168 (BUILD) after end: HenryDB: write window functions test suite through wire protocol — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER"
+    },
+    {
+      "time": "2026-04-10T23:23:38.722Z",
+      "msg": "Added T169 (BUILD) after end: HenryDB: add DENSE_RANK and NTILE through wire protocol"
+    },
+    {
+      "time": "2026-04-10T23:23:38.930Z",
+      "msg": "Added T170 (BUILD) after end: HenryDB: update README with session B feature list"
     }
   ]
 }
