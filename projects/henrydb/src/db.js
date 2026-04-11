@@ -1671,7 +1671,7 @@ export class Database {
       }
 
       if (ast.offset) rows = rows.slice(ast.offset);
-      if (ast.limit) rows = rows.slice(0, ast.limit);
+      if (ast.limit != null) rows = rows.slice(0, ast.limit);
 
       // Project if not star
       if (ast.columns[0]?.type !== 'star') {
@@ -1826,7 +1826,7 @@ export class Database {
     if (ast.offset && !ast.distinct) rows = rows.slice(ast.offset);
 
     // LIMIT (only apply before projection if no DISTINCT)
-    if (ast.limit && !ast.distinct) rows = rows.slice(0, ast.limit);
+    if (ast.limit != null && !ast.distinct) rows = rows.slice(0, ast.limit);
 
     // Project columns
     const projected = rows.map(row => {
@@ -1876,7 +1876,7 @@ export class Database {
       });
       // Apply OFFSET and LIMIT after DISTINCT
       if (ast.offset) finalRows = finalRows.slice(ast.offset);
-      if (ast.limit) finalRows = finalRows.slice(0, ast.limit);
+      if (ast.limit != null) finalRows = finalRows.slice(0, ast.limit);
     }
 
     return { type: 'ROWS', rows: finalRows };
@@ -3513,7 +3513,7 @@ export class Database {
 
     // LIMIT
     if (ast.offset) resultRows = resultRows.slice(ast.offset);
-    if (ast.limit) resultRows = resultRows.slice(0, ast.limit);
+    if (ast.limit != null) resultRows = resultRows.slice(0, ast.limit);
 
     // Strip internal __agg_ keys before returning
     resultRows = resultRows.map(row => {

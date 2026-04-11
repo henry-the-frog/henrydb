@@ -297,10 +297,21 @@
     {
       "id": "T28",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix GENERATE_SERIES GROUP BY expression key bug (serializes AST JSON instead of evaluated value)",
       "project": "henrydb",
-      "started": "2026-04-11T15:44:16.258Z"
+      "started": "2026-04-11T15:44:16.258Z",
+      "completed": "2026-04-11T15:45:32.994Z",
+      "duration_ms": 180000,
+      "summary": "Fixed GROUP BY expression key serialization. Expression GROUP BY keys now use SELECT column aliases instead of JSON AST fragments."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write SQL correctness test: 50+ queries covering edge cases (NULLs, empty tables, self-joins, correlated subqueries, CASE, COALESCE, aggregate edge cases)",
+      "project": "henrydb",
+      "started": "2026-04-11T15:45:50.613Z"
     }
   ],
   "focusProjects": [
@@ -420,6 +431,10 @@
     {
       "time": "2026-04-11T15:44:15.853Z",
       "msg": "Added T28 (BUILD) after end: Fix GENERATE_SERIES GROUP BY expression key bug (serializes AST JSON instead of evaluated value)"
+    },
+    {
+      "time": "2026-04-11T15:45:50.205Z",
+      "msg": "Added T29 (BUILD) after end: Write SQL correctness test: 50+ queries covering edge cases (NULLs, empty tables, self-joins, correlated subqueries, CASE, COALESCE, aggregate edge cases)"
     }
   ]
 }
