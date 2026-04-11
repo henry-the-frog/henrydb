@@ -4103,6 +4103,16 @@ export class Database {
           result[name] = values.map(String).join(sep);
           break;
         }
+        case 'JSON_AGG':
+        case 'JSONB_AGG': {
+          const vals = col.distinct ? [...new Set(values)] : values;
+          result[name] = JSON.stringify(vals);
+          break;
+        }
+        case 'ARRAY_AGG': {
+          result[name] = col.distinct ? [...new Set(values)] : values;
+          break;
+        }
       }
     }
     return result;

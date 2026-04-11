@@ -2596,10 +2596,21 @@
     {
       "id": "T241",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: final test count verification and README update with evening session features",
       "project": "henrydb",
-      "started": "2026-04-11T03:41:54.888Z"
+      "started": "2026-04-11T03:41:54.888Z",
+      "completed": "2026-04-11T03:43:17.625Z",
+      "duration_ms": 120000,
+      "summary": "README updated with evening session features: advisory locks, SELECT FOR UPDATE, table change CDC, auto-checkpoint, VACUUM, ORM compatibility stubs, EXPLAIN ANALYZE, cursors. LOC count updated to 148K."
+    },
+    {
+      "id": "T242",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add json_agg and array_agg as proper aggregate functions that work without GROUP BY. Fix: when used without GROUP BY, aggregate all rows into a single result.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:43:39.830Z"
     }
   ],
   "focusProjects": [
@@ -3559,6 +3570,10 @@
     {
       "time": "2026-04-11T03:41:54.471Z",
       "msg": "Added T241 (BUILD) after end: HenryDB: final test count verification and README update with evening session features"
+    },
+    {
+      "time": "2026-04-11T03:43:39.409Z",
+      "msg": "Added T242 (BUILD) after end: HenryDB: add json_agg and array_agg as proper aggregate functions that work without GROUP BY. Fix: when used without GROUP BY, aggregate all rows into a single result."
     }
   ]
 }

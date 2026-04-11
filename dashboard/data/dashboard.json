@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T03:41:54.952Z",
+  "generated": "2026-04-11T03:43:39.893Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: final test count verification and README update with evening session features",
-    "startedAt": "2026-04-11T03:41:54.952Z",
-    "taskId": "T241"
+    "task": "HenryDB: add json_agg and array_agg as proper aggregate functions that work without GROUP BY. Fix: when used without GROUP BY, aggregate all rows into a single result.",
+    "startedAt": "2026-04-11T03:43:39.893Z",
+    "taskId": "T242"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2382,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 230,
+    "blocksCompleted": 231,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 173,
+      "BUILD": 174,
       "MAINTAIN": 13,
       "EXPLORE": 6
     }
