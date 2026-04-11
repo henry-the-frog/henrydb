@@ -21,6 +21,7 @@ export class IndexAdvisor {
     this.db = db;
     this._columnAccess = new Map(); // "table.column" → { filters: N, joins: N, orderBy: N, groupBy: N }
     this._compositeAccess = new Map(); // "table:col1,col2" → count
+    this._sampleQueries = new Map(); // "table.column" → [sql strings]
     this._queryCount = 0;
     this._existingIndexes = this._collectExistingIndexes();
   }
@@ -55,14 +56,14 @@ export class IndexAdvisor {
 
     // Analyze WHERE clause
     if (ast.where) {
-      this._analyzeWhere(ast.where, tableName, 'filter', aliasMap);
+      this._analyzeWhere(ast.where, tableName, 'filter', aliasMap, sql);
     }
 
     // Analyze JOIN conditions
     for (const join of ast.joins || []) {
       const joinTable = typeof join.table === 'string' ? join.table : join.table?.table;
       if (join.on) {
-        this._analyzeJoinCondition(join.on, tableName, joinTable, aliasMap);
+        this._analyzeJoinCondition(join.on, tableName, joinTable, aliasMap, sql);
       }
     }
 
@@ -72,7 +73,7 @@ export class IndexAdvisor {
         const col = sort.column || sort.expr?.column;
         if (col) {
           const { table, column } = this._resolveColumn(col, tableName, aliasMap);
-          this._recordAccess(table, column, 'orderBy');
+          this._recordAccess(table, column, 'orderBy', sql);
         }
       }
     }
@@ -84,7 +85,7 @@ export class IndexAdvisor {
         const col = typeof g === 'string' ? g : g.column || g;
         if (col) {
           const { table, column } = this._resolveColumn(col, tableName, aliasMap);
-          this._recordAccess(table, column, 'groupBy');
+          this._recordAccess(table, column, 'groupBy', sql);
           groupCols.push(`${table}.${column}`);
         }
       }
@@ -152,6 +153,17 @@ export class IndexAdvisor {
       const level = impact > 100 ? 'high' : impact > 30 ? 'medium' : 'low';
       const indexName = `idx_${table}_${column}`;
 
+      // Try hypothetical cost comparison with a sample query
+      let costReduction = null;
+      const sampleKey = `${table}.${column}`;
+      const samples = this._sampleQueries.get(sampleKey) || [];
+      if (samples.length > 0) {
+        try {
+          const comparison = this.compareWithIndex(samples[0], { table, columns: [column], name: indexName });
+          if (comparison) costReduction = comparison.costReduction;
+        } catch (e) { /* non-fatal */ }
+      }
+
       recommendations.push({
         table,
         columns: [column],
@@ -161,6 +173,7 @@ export class IndexAdvisor {
         sql: `CREATE INDEX ${indexName} ON ${table} (${column})`,
         tableRows,
         accessCount: totalAccess,
+        costReduction,
       });
     }
 
@@ -224,14 +237,14 @@ export class IndexAdvisor {
 
   // ===== Helpers =====
 
-  _analyzeWhere(expr, defaultTable, type, aliasMap) {
+  _analyzeWhere(expr, defaultTable, type, aliasMap, sql) {
     if (!expr) return;
 
     if (expr.type === 'COMPARE' || expr.type === 'binary') {
       const cols = this._extractColumns(expr);
       for (const col of cols) {
         const { table, column } = this._resolveColumn(col, defaultTable, aliasMap);
-        this._recordAccess(table, column, type);
+        this._recordAccess(table, column, type, sql);
       }
       if (cols.length > 1) {
         const resolved = cols.map(c => this._resolveColumn(c, defaultTable, aliasMap));
@@ -245,8 +258,8 @@ export class IndexAdvisor {
     }
 
     if (expr.type === 'AND' || expr.type === 'OR') {
-      this._analyzeWhere(expr.left, defaultTable, type, aliasMap);
-      this._analyzeWhere(expr.right, defaultTable, type, aliasMap);
+      this._analyzeWhere(expr.left, defaultTable, type, aliasMap, sql);
+      this._analyzeWhere(expr.right, defaultTable, type, aliasMap, sql);
       
       if (expr.type === 'AND') {
         const leftCols = this._extractAllColumns(expr.left, defaultTable, aliasMap);
@@ -265,23 +278,23 @@ export class IndexAdvisor {
       const col = expr.column?.name || expr.column?.column;
       if (col) {
         const { table, column } = this._resolveColumn(col, defaultTable, aliasMap);
-        this._recordAccess(table, column, type);
+        this._recordAccess(table, column, type, sql);
       }
     }
   }
 
-  _analyzeJoinCondition(expr, leftTable, rightTable, aliasMap) {
+  _analyzeJoinCondition(expr, leftTable, rightTable, aliasMap, sql) {
     if ((expr.type === 'COMPARE' && expr.op === 'EQ') || (expr.type === 'binary' && expr.operator === '=')) {
       const leftCol = expr.left?.name || expr.left?.column;
       const rightCol = expr.right?.name || expr.right?.column;
       
       if (leftCol) {
         const { table, column } = this._resolveColumn(leftCol, leftTable, aliasMap);
-        this._recordAccess(table, column, 'join');
+        this._recordAccess(table, column, 'join', sql);
       }
       if (rightCol) {
         const { table, column } = this._resolveColumn(rightCol, rightTable, aliasMap);
-        this._recordAccess(table, column, 'join');
+        this._recordAccess(table, column, 'join', sql);
       }
     }
   }
@@ -313,7 +326,7 @@ export class IndexAdvisor {
     return { table: defaultTable, column: col };
   }
 
-  _recordAccess(table, column, type) {
+  _recordAccess(table, column, type, sql) {
     const key = `${table}.${column}`;
     if (!this._columnAccess.has(key)) {
       this._columnAccess.set(key, { filter: 0, join: 0, orderBy: 0, groupBy: 0 });
@@ -323,6 +336,13 @@ export class IndexAdvisor {
     else if (type === 'join') stats.join++;
     else if (type === 'orderBy') stats.orderBy++;
     else if (type === 'groupBy') stats.groupBy++;
+    
+    // Store sample query
+    if (sql && type === 'filter') {
+      if (!this._sampleQueries.has(key)) this._sampleQueries.set(key, []);
+      const samples = this._sampleQueries.get(key);
+      if (samples.length < 3 && !samples.includes(sql)) samples.push(sql);
+    }
   }
 
   _collectExistingIndexes() {

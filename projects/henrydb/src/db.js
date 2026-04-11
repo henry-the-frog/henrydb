@@ -321,6 +321,7 @@ export class Database {
         columns: r.columns.join(', '),
         impact: r.level,
         score: r.impact,
+        costReduction: r.costReduction != null ? `${r.costReduction}%` : null,
         reason: r.reason,
         sql: r.sql,
       })),

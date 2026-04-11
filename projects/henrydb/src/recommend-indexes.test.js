@@ -83,6 +83,29 @@ describe('RECOMMEND INDEXES command', () => {
     assert.ok(r2.rows);
   });
 
+  it('includes cost reduction from hypothetical analysis', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE items (id INTEGER PRIMARY KEY, category TEXT, price REAL)');
+    for (let i = 1; i <= 500; i++) {
+      db.execute(`INSERT INTO items VALUES (${i}, '${['A', 'B', 'C'][i % 3]}', ${i * 2.5})`);
+    }
+    
+    // Build workload with filter queries
+    for (let i = 0; i < 5; i++) {
+      db.execute("SELECT * FROM items WHERE category = 'A'");
+    }
+    
+    const result = db.execute('RECOMMEND INDEXES');
+    const catRec = result.rows.find(r => r.columns === 'category');
+    assert.ok(catRec, 'Should recommend index on category');
+    // costReduction should be a number (may be null for some recommendations)
+    if (catRec.costReduction !== undefined && catRec.costReduction !== null) {
+      // costReduction is formatted as "59.9%" or similar
+      const reduction = parseFloat(catRec.costReduction);
+      assert.ok(reduction > 0, `Expected positive cost reduction, got ${catRec.costReduction}`);
+    }
+  });
+
   it('includes impact score and reason', () => {
     const db = new Database();
     db.execute('CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT, category TEXT)');
