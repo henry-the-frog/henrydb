@@ -3429,9 +3429,28 @@ export class Database {
   }
 
   _selectWithGroupBy(ast, rows) {
+    // Build alias→expression map from SELECT columns
+    const aliasMap = new Map();
+    for (const col of ast.columns) {
+      if (col.alias) {
+        if (col.type === 'expression' && col.expr) aliasMap.set(col.alias, col.expr);
+        else if (col.type === 'function') aliasMap.set(col.alias, col);
+        else if (col.type === 'case') aliasMap.set(col.alias, col);
+      }
+    }
+    
     // Helper: resolve GROUP BY column (string or expression)
+    // If string matches a SELECT alias, use that expression instead
     const resolveGroupKey = (col, row) => {
-      if (typeof col === 'string') return this._resolveColumn(col, row);
+      if (typeof col === 'string') {
+        if (aliasMap.has(col)) {
+          const expr = aliasMap.get(col);
+          if (expr.type === 'function') return this._evalFunction(expr.func, expr.args, row);
+          if (expr.type === 'case') return this._evalCase(expr, row);
+          return this._evalValue(expr, row);
+        }
+        return this._resolveColumn(col, row);
+      }
       return this._evalValue(col, row); // Expression
     };
 
@@ -3451,9 +3470,19 @@ export class Database {
       // Add GROUP BY columns
       for (const col of ast.groupBy) {
         if (typeof col === 'string') {
-          const val = this._resolveColumn(col, groupRows[0]);
-          result[col] = val;
-          if (col.includes('.')) result[col.split('.').pop()] = val;
+          if (aliasMap.has(col)) {
+            // Alias refers to a SELECT expression — evaluate and use alias as key
+            const expr = aliasMap.get(col);
+            let val;
+            if (expr.type === 'function') val = this._evalFunction(expr.func, expr.args, groupRows[0]);
+            else if (expr.type === 'case') val = this._evalCase(expr, groupRows[0]);
+            else val = this._evalValue(expr, groupRows[0]);
+            result[col] = val;
+          } else {
+            const val = this._resolveColumn(col, groupRows[0]);
+            result[col] = val;
+            if (col.includes('.')) result[col.split('.').pop()] = val;
+          }
         } else {
           // Expression group key — evaluate and use the matching SELECT column alias
           const val = this._evalValue(col, groupRows[0]);

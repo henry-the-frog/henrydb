@@ -304,6 +304,10 @@ check('SELECT+', 'Aggregate in WHERE subquery', () => db.execute('SELECT * FROM 
 check('SELECT+', 'COUNT(*) on empty result', () => db.execute("SELECT COUNT(*) as c FROM t1 WHERE 1 = 0").rows[0].c === 0);
 check('SELECT+', 'Column alias in ORDER BY', () => { const r = db.execute('SELECT name as n FROM t1 ORDER BY n'); return r.rows.length > 0; });
 check('AGG+', 'MIN/MAX on TEXT', () => { const r = db.execute('SELECT MIN(name) as mn, MAX(name) as mx FROM t1'); return typeof r.rows[0].mn === 'string'; });
+check('AGG+', 'GROUP BY alias', () => {
+  const r = db.execute("SELECT CASE WHEN age > 25 THEN 'senior' ELSE 'junior' END as group_name, COUNT(*) as cnt FROM t1 GROUP BY group_name");
+  return r.rows.length >= 1 && r.rows[0].group_name !== undefined;
+});
 check('TYPE', 'Float literal', () => db.execute('SELECT 3.14 as r').rows[0].r === 3.14);
 check('STRING', 'SUBSTR', () => db.execute("SELECT SUBSTR('hello', 2, 3) as r").rows[0].r === 'ell');
 check('TYPE', 'Negative number', () => db.execute('SELECT -42 as r').rows[0].r === -42);

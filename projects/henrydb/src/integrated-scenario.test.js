@@ -165,14 +165,11 @@ describe('Integrated Scenario: E-Commerce Analytics', () => {
         END as classification,
         COUNT(*) as count
       FROM orders
-      GROUP BY CASE 
-          WHEN status = 'delivered' THEN 'completed'
-          WHEN status = 'shipped' THEN 'in_transit'
-          ELSE 'other'
-        END
+      GROUP BY classification
       ORDER BY count DESC
     `);
     assert.ok(r.rows.length >= 2);
+    assert.ok(r.rows[0].classification !== undefined);
   });
 
   it('HAVING with aggregate expression', () => {
@@ -208,14 +205,11 @@ describe('Integrated Scenario: E-Commerce Analytics', () => {
     assert.ok(r.rows.every(row => row.disc === 0));
   });
 
-  it('monthly revenue with CTE workaround', () => {
+  it('monthly revenue using GROUP BY alias', () => {
     const r = db.execute(`
-      WITH monthly AS (
-        SELECT SUBSTR(order_date, 6, 2) as month, total
-        FROM orders WHERE status != 'cancelled'
-      )
-      SELECT month, SUM(total) as revenue
-      FROM monthly
+      SELECT SUBSTR(order_date, 6, 2) as month, SUM(total) as revenue
+      FROM orders 
+      WHERE status != 'cancelled'
       GROUP BY month
       ORDER BY month
     `);
