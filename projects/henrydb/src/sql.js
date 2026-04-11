@@ -9,7 +9,7 @@ const KEYWORDS = new Set([
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'POSITION',
+  'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
@@ -857,7 +857,16 @@ export function parse(sql) {
     let alias = null;
     if (peek().type === 'IDENT') alias = advance().value;
     else if (isKeyword('AS')) { advance(); alias = readAlias(); }
-    return { table, alias };
+    let tablesample = null;
+    if (isKeyword('TABLESAMPLE')) {
+      advance(); // TABLESAMPLE
+      const method = advance().value; // BERNOULLI or SYSTEM
+      expect('(');
+      const pct = advance().value;
+      expect(')');
+      tablesample = { method, percentage: pct };
+    }
+    return { table, alias, tablesample };
   }
 
   function parseJoin() {

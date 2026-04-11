@@ -1851,6 +1851,12 @@ export class Database {
       }
     }
 
+    // Apply TABLESAMPLE (random row sampling)
+    if (ast.from.tablesample) {
+      const pct = ast.from.tablesample.percentage / 100;
+      rows = rows.filter(() => Math.random() < pct);
+    }
+
     // Handle JOINs (using the potentially modified AST with pushed filters)
     for (const join of workingAst.joins || []) {
       rows = this._executeJoin(rows, join, workingAst.from.alias || workingAst.from.table);
