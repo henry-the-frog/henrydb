@@ -49,6 +49,9 @@ export function reset(gitDir, workDir, target, mode = 'mixed') {
   const commit = parseCommit(readObject(gitDir, targetHash).content);
   const files = flattenTree(gitDir, commit.tree);
   
+  // Read current index BEFORE overwriting (needed for hard reset to know what to remove)
+  const currentIndex = (mode === 'hard') ? readIndex(gitDir) : null;
+  
   writeIndex(gitDir, files.map(f => ({
     path: f.path, mode: f.mode, hash: f.hash, size: 0, mtime: Date.now()
   })));
@@ -57,7 +60,6 @@ export function reset(gitDir, workDir, target, mode = 'mixed') {
   
   // Hard reset: update working tree
   // Remove files not in target
-  const currentIndex = readIndex(gitDir);
   const newPaths = new Set(files.map(f => f.path));
   
   for (const entry of currentIndex) {
