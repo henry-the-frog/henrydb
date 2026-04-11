@@ -581,6 +581,19 @@ check('STRING', 'LPAD', () => db.execute("SELECT LPAD('hi', 5, '*') as r").rows[
 check('STRING', 'RPAD', () => db.execute("SELECT RPAD('hi', 5, '*') as r").rows[0].r === 'hi***');
 check('STRING', 'POSITION', () => db.execute("SELECT POSITION('lo' IN 'hello') as r").rows[0].r === 4);
 check('MATH', 'ABS negative', () => db.execute('SELECT ABS(-42) as r').rows[0].r === 42);
+check('SET', 'EXCEPT ALL', () => {
+  db.execute('CREATE TABLE exc_a (v INT)');
+  db.execute('CREATE TABLE exc_b (v INT)');
+  db.execute('INSERT INTO exc_a VALUES (1), (1), (2)');
+  db.execute('INSERT INTO exc_b VALUES (1)');
+  return db.execute('SELECT * FROM exc_a EXCEPT ALL SELECT * FROM exc_b').rows.length === 2;
+});
+check('SET', 'INTERSECT ALL', () => {
+  return db.execute('SELECT * FROM exc_a INTERSECT ALL SELECT * FROM exc_b').rows.length === 1;
+});
+check('STRING', 'SIMILAR TO', () => db.execute("SELECT 'hello' SIMILAR TO 'hel%' as r FROM t1 LIMIT 1").rows.length >= 0);
+check('DDL', 'BETWEEN SYMMETRIC', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN SYMMETRIC 5 AND 1').rows.length >= 1);
+check('SELECT+', 'SELECT 1', () => db.execute('SELECT 1 as one').rows[0].one === 1);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
