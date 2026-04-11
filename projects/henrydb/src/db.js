@@ -3620,6 +3620,7 @@ export class Database {
     switch (func) {
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
+      case 'INITCAP': { const v = this._evalValue(args[0], row); return v != null ? String(v).replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()) : null; }
       case 'LENGTH': case 'CHAR_LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
       case 'POSITION': {
         const substr = String(this._evalValue(args[0], row));

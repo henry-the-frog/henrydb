@@ -9,7 +9,7 @@ const KEYWORDS = new Set([
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'POSITION',
+  'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
@@ -610,7 +610,7 @@ export function parse(sql) {
     }
 
     // String functions in SELECT
-    if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
+    if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
@@ -957,7 +957,7 @@ export function parse(sql) {
     }
 
     // Built-in string/null functions
-    if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
+    if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM'].includes(t.value)) {
       const func = advance().value;
       expect('(');
