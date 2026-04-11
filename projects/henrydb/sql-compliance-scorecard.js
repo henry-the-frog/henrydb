@@ -145,6 +145,8 @@ check('GEN', 'with window', () => db.execute('SELECT value, ROW_NUMBER() OVER (O
 // --- Set Operations ---
 check('SET', 'UNION', () => db.execute('SELECT id FROM t1 WHERE id <= 2 UNION SELECT id FROM t1 WHERE id >= 2').rows.length === 3);
 check('SET', 'UNION ALL', () => db.execute('SELECT id FROM t1 WHERE id <= 2 UNION ALL SELECT id FROM t1 WHERE id >= 2').rows.length > 3);
+check('SET', 'INTERSECT', () => db.execute('SELECT id FROM t1 WHERE id <= 2 INTERSECT SELECT id FROM t1 WHERE id >= 2').rows.length >= 1);
+check('SET', 'EXCEPT', () => db.execute('SELECT id FROM t1 WHERE id <= 2 EXCEPT SELECT id FROM t1 WHERE id >= 2').rows.length >= 1);
 
 // --- Other ---
 check('OTHER', 'EXPLAIN', () => db.execute('EXPLAIN SELECT * FROM t1').rows.length > 0);
