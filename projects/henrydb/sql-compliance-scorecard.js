@@ -79,10 +79,22 @@ check('JOIN', 'RIGHT JOIN', () => db.execute('SELECT * FROM t2 RIGHT JOIN t1 ON 
 check('JOIN', 'CROSS JOIN', () => db.execute('SELECT * FROM t1 CROSS JOIN t2').rows.length > 0);
 check('JOIN', 'Self-join', () => db.execute('SELECT a.name, b.name FROM t1 a JOIN t1 b ON a.age = b.age AND a.id < b.id').rows.length >= 0);
 check('JOIN', 'FULL OUTER JOIN', () => {
-  db.execute('CREATE TABLE join_a (id INT)'); db.execute('INSERT INTO join_a VALUES (1)'); db.execute('INSERT INTO join_a VALUES (2)');
-  db.execute('CREATE TABLE join_b (id INT)'); db.execute('INSERT INTO join_b VALUES (2)'); db.execute('INSERT INTO join_b VALUES (3)');
+  db.execute('CREATE TABLE IF NOT EXISTS join_a (id INT)'); db.execute('INSERT INTO join_a VALUES (1)'); db.execute('INSERT INTO join_a VALUES (2)');
+  db.execute('CREATE TABLE IF NOT EXISTS join_b (id INT)'); db.execute('INSERT INTO join_b VALUES (2)'); db.execute('INSERT INTO join_b VALUES (3)');
   const r = db.execute('SELECT join_a.id as a_id, join_b.id as b_id FROM join_a FULL OUTER JOIN join_b ON join_a.id = join_b.id');
-  return r.rows.length === 3; // 1/null, 2/2, null/3
+  return r.rows.length === 3;
+});
+check('JOIN', 'NATURAL JOIN', () => {
+  db.execute('CREATE TABLE IF NOT EXISTS nj_dept (dept_id INT, dept_name TEXT)');
+  db.execute("INSERT INTO nj_dept VALUES (1, 'Eng')");
+  db.execute('CREATE TABLE IF NOT EXISTS nj_emp (id INT, name TEXT, dept_id INT)');
+  db.execute("INSERT INTO nj_emp VALUES (1, 'Alice', 1)");
+  const r = db.execute('SELECT nj_emp.name, nj_dept.dept_name FROM nj_emp NATURAL JOIN nj_dept');
+  return r.rows.length >= 1;
+});
+check('JOIN', 'JOIN USING', () => {
+  const r = db.execute('SELECT nj_emp.name, nj_dept.dept_name FROM nj_emp JOIN nj_dept USING (dept_id)');
+  return r.rows.length >= 1;
 });
 
 // --- Aggregates ---

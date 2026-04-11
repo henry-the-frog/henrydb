@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T16:47:05.700Z",
+  "generated": "2026-04-11T16:48:47.628Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: implement NATURAL JOIN (auto-join on columns with same name)",
-    "startedAt": "2026-04-11T16:47:05.700Z",
-    "taskId": "T52"
+    "completedAt": "2026-04-11T16:48:47.628Z",
+    "taskId": "T52",
+    "summary": "Implemented NATURAL JOIN and JOIN USING. Auto-detects common columns. Parser + executor. Both work correctly.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 51,
+    "blocksCompleted": 52,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 2,
-      "BUILD": 37,
+      "BUILD": 38,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
