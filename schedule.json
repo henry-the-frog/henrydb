@@ -363,10 +363,13 @@
     {
       "id": "T34",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write operator precedence test suite + fix parenthesized expressions returning undefined",
       "project": "henrydb",
-      "started": "2026-04-11T16:02:57.215Z"
+      "started": "2026-04-11T16:02:57.215Z",
+      "completed": "2026-04-11T16:05:02.046Z",
+      "duration_ms": 300000,
+      "summary": "Parenthesized expressions fixed + 17 operator precedence tests. (2+3)*4=20, all complex expressions correct. Parser now has proper mul/div > add/sub precedence chain."
     }
   ],
   "focusProjects": [
