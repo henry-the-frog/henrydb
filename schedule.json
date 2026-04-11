@@ -1446,6 +1446,20 @@
       "completed": "2026-04-11T19:39:48.706Z",
       "duration_ms": 180000,
       "summary": "Recursive CTE with JOIN: CTE works but joining its result with another table has column resolution issues. Known limitation in CTE-to-table JOIN path."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement RETURNING for multi-row INSERT",
+      "project": "henrydb"
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Test persistence of recursive CTE-created data through wire protocol restart",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1981,6 +1995,14 @@
     {
       "time": "2026-04-11T19:38:49.348Z",
       "msg": "Added T132 (BUILD) after end: Stress test: recursive CTE with JOIN (tree + table join in single recursive query)"
+    },
+    {
+      "time": "2026-04-11T19:41:02.704Z",
+      "msg": "Added T133 (BUILD) after end: Implement RETURNING for multi-row INSERT"
+    },
+    {
+      "time": "2026-04-11T19:41:26.706Z",
+      "msg": "Added T134 (BUILD) after end: Test persistence of recursive CTE-created data through wire protocol restart"
     }
   ]
 }
