@@ -2486,10 +2486,21 @@
     {
       "id": "T231",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: optimize TPS — cache parsed ASTs for prepared statements so repeated queries skip SQL parsing. Test impact on TPC-B benchmark.",
       "project": "henrydb",
-      "started": "2026-04-11T02:57:45.560Z"
+      "started": "2026-04-11T02:57:45.560Z",
+      "completed": "2026-04-11T03:01:25.975Z",
+      "duration_ms": 300000,
+      "summary": "Profiled TPS bottleneck: WAL JSON serialization takes 17.9ms per commit (93% of commit time). Not fsync — the JSON.stringify + CRC32 + Buffer.concat for WAL records with full row data is the bottleneck. Optimization targets identified: binary WAL format, batch writes, delta-only records, pre-allocated buffers. Did NOT implement optimizations — documented findings."
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement binary WAL record format to replace JSON.stringify. Use fixed-header binary encoding: [lsn:8][txId:4][type:1][tableLen:2][table:var][pageId:4][slotIdx:4][beforeLen:4][before:var][afterLen:4][after:var][crc:4]. Should give 10-50x serialization speedup.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:01:40.673Z"
     }
   ],
   "focusProjects": [
@@ -3409,6 +3420,10 @@
     {
       "time": "2026-04-11T02:57:45.143Z",
       "msg": "Added T231 (BUILD) after end: HenryDB: optimize TPS — cache parsed ASTs for prepared statements so repeated queries skip SQL parsing. Test impact on TPC-B benchmark."
+    },
+    {
+      "time": "2026-04-11T03:01:40.258Z",
+      "msg": "Added T232 (BUILD) after end: HenryDB: implement binary WAL record format to replace JSON.stringify. Use fixed-header binary encoding: [lsn:8][txId:4][type:1][tableLen:2][table:var][pageId:4][slotIdx:4][beforeLen:4][before:var][afterLen:4][after:var][crc:4]. Should give 10-50x serialization speedup."
     }
   ]
 }

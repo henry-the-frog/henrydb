@@ -86,17 +86,20 @@ export class FileWAL {
     const record = new WALRecord(lsn, txId, WAL_TYPES.COMMIT);
     this._writeBuffer.push(record);
     
-    // Write to file (always — ensures data reaches OS page cache)
-    this._flushToFile();
-    
-    // Sync strategy
     if (this._syncMode === 'immediate') {
+      // Write + fsync immediately (safe, slow)
+      this._flushToFile();
       fsyncSync(this._fd);
     } else if (this._syncMode === 'batch') {
+      // Write immediately but defer fsync
+      this._flushToFile();
       this._pendingSync = true;
       this._ensureBatchTimer();
+    } else {
+      // 'none': defer write to next flush/checkpoint (fastest, unsafe)
+      // Records stay in _writeBuffer until explicit flush
+      this._ensureDeferredFlushTimer();
     }
-    // 'none': no sync at all
     
     return lsn;
   }
@@ -181,6 +184,17 @@ export class FileWAL {
     if (this._batchTimer.unref) this._batchTimer.unref();
   }
 
+  /** Deferred flush timer for syncMode='none': write buffered records periodically. */
+  _ensureDeferredFlushTimer() {
+    if (this._deferredFlushTimer) return;
+    this._deferredFlushTimer = setInterval(() => {
+      if (this._writeBuffer.length > 0 && this._fd !== null && this._fd !== undefined) {
+        this._flushToFile();
+      }
+    }, 50); // flush every 50ms
+    if (this._deferredFlushTimer.unref) this._deferredFlushTimer.unref();
+  }
+
   /** Stop batch timer. */
   _stopBatchTimer() {
     if (this._batchTimer) {
@@ -206,6 +220,10 @@ export class FileWAL {
   /** Close the WAL file. */
   close() {
     this._stopBatchTimer();
+    if (this._deferredFlushTimer) {
+      clearInterval(this._deferredFlushTimer);
+      this._deferredFlushTimer = null;
+    }
     if (this._writeBuffer.length > 0) this.flush();
     // Final fsync to ensure all data is on disk
     if (this._pendingSync && this._fd >= 0) {

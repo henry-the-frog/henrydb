@@ -34,7 +34,7 @@ import { join } from 'node:path';
  *   s1.commit();
  */
 export class TransactionalDatabase {
-  static open(dirPath, { poolSize = 64, recover = true, isolationLevel = 'snapshot' } = {}) {
+  static open(dirPath, { poolSize = 64, recover = true, isolationLevel = 'snapshot', syncMode } = {}) {
     if (!existsSync(dirPath)) {
       mkdirSync(dirPath, { recursive: true });
     }
@@ -43,7 +43,8 @@ export class TransactionalDatabase {
     const walPath = join(dirPath, 'wal.log');
     const mvccStatePath = join(dirPath, 'mvcc-state.json');
 
-    const wal = new FileWAL(walPath);
+    const walOpts = syncMode ? { syncMode } : {};
+    const wal = new FileWAL(walPath, walOpts);
     const mvcc = isolationLevel === 'serializable' ? new SSIManager() : new MVCCManager();
     const diskManagers = new Map();
     const heaps = new Map();       // tableName → FileBackedHeap
