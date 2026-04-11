@@ -929,6 +929,14 @@
       "completed": "2026-04-11T18:28:49.978Z",
       "duration_ms": 180000,
       "summary": "Verified complex SQL patterns all work: nested subqueries, correlated subqueries with aggregates, multi-level CTEs, UPDATE with subquery. All correct."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement LIMIT ALL (PostgreSQL compatibility)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:29:06.096Z"
     }
   ],
   "focusProjects": [
@@ -1276,6 +1284,10 @@
     {
       "time": "2026-04-11T18:28:25.366Z",
       "msg": "Added T85 (BUILD) after end: Test and verify complex SQL patterns: nested subqueries, multi-level CTEs, correlated updates"
+    },
+    {
+      "time": "2026-04-11T18:29:05.861Z",
+      "msg": "Added T86 (BUILD) after end: Implement LIMIT ALL (PostgreSQL compatibility)"
     }
   ]
 }

@@ -387,7 +387,7 @@ export function parse(sql) {
     if (isKeyword('GROUP')) { advance(); expect('KEYWORD', 'BY'); groupBy = parseGroupBy(); }
     if (isKeyword('HAVING')) { advance(); having = parseExpr(); }
     if (isKeyword('ORDER')) { advance(); expect('KEYWORD', 'BY'); orderBy = parseOrderBy(); }
-    if (isKeyword('LIMIT')) { advance(); limit = advance().value; }
+    if (isKeyword('LIMIT')) { advance(); if (isKeyword('ALL')) { advance(); } else { limit = advance().value; } }
     if (isKeyword('OFFSET')) { advance(); offset = advance().value; }
 
     // FOR UPDATE / FOR SHARE / FOR NO KEY UPDATE / FOR KEY SHARE
