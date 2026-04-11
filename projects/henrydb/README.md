@@ -24,7 +24,7 @@ const result = await client.query('SELECT * FROM users');
 
 ## SQL Compliance Scorecard
 
-153/156 checks passing across 20+ categories:
+200/200 checks passing across 25+ categories:
 
 | Category | Score | Features |
 |----------|-------|----------|
@@ -48,7 +48,7 @@ const result = await client.query('SELECT * FROM users');
 | Conditionals | 4/4 | NULLIF, GREATEST, LEAST |
 | Error Handling | 4/4 | Table not found, syntax errors |
 | Full-text | 2/2 | FTS indexing, phrase search |
-| **Total** | **156/156** | **100%** |
+| **Total** | **200/200** | **100%** |
 
 Run `node sql-compliance-scorecard.js` to verify.
 
