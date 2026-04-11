@@ -1,7 +1,5 @@
 // regex-engine/test.js — Comprehensive test suite
-'use strict';
-
-const { Regex, parse, astToNfa, nfaToDfa, minimizeDfa, nfaMatch, Parser } = require('./regex.js');
+import { Regex, parse, astToNfa, nfaToDfa, minimizeDfa, nfaMatch, Parser } from './regex.js';
 
 let passed = 0, failed = 0, total = 0;
 

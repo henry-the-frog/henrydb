@@ -1,6 +1,4 @@
 // huffman/huffman.js — Huffman coding from scratch
-'use strict';
-
 // ─── Priority Queue (min-heap) ───
 class MinHeap {
   constructor() { this.data = []; }
@@ -185,16 +183,5 @@ function decompress({ bits, treeSerialized }) {
   return decode(bits, tree);
 }
 
-module.exports = {
-  MinHeap,
-  buildFrequencyTable,
-  buildTree,
-  generateCodes,
-  encode,
-  decode,
-  serializeTree,
-  deserializeTree,
-  compressionRatio,
-  compress,
-  decompress,
-};
+export { MinHeap, buildFrequencyTable, buildTree, generateCodes, encode, decode,
+         serializeTree, deserializeTree, compressionRatio, compress, decompress };

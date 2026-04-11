@@ -1,7 +1,5 @@
 // regex-engine/regex.js — A regex engine from scratch
 // Thompson's NFA construction, subset construction (NFA→DFA), Hopcroft minimization
-'use strict';
-
 // ─── AST Node Types ───
 // { type: 'lit', ch }           — match single character
 // { type: 'dot' }               — match any character (except \n)
@@ -818,15 +816,5 @@ class Regex {
   }
 }
 
-module.exports = {
-  Regex,
-  parse,
-  astToNfa,
-  nfaToDfa,
-  minimizeDfa,
-  nfaMatch,
-  nfaMatchCaptures,
-  dfaMatch,
-  epsilonClosure,
-  Parser,
-};
+export { Regex, Parser, parse, astToNfa, nfaToDfa, minimizeDfa, nfaMatch, dfaMatch,
+         newState, resetStateId, epsilonClosure, nfaMatchCaptures, nfaMatchAnchored };

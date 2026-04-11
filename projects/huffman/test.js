@@ -1,9 +1,7 @@
 // huffman/test.js — Comprehensive test suite
-'use strict';
-
-const { MinHeap, buildFrequencyTable, buildTree, generateCodes,
+import { MinHeap, buildFrequencyTable, buildTree, generateCodes,
         encode, decode, serializeTree, deserializeTree,
-        compressionRatio, compress, decompress } = require('./huffman.js');
+        compressionRatio, compress, decompress } from './huffman.js';
 
 let passed = 0, failed = 0, total = 0;
 

@@ -1,7 +1,5 @@
 // type-inference/types.js — Hindley-Milner type inference
 // Algorithm W with Robinson unification
-'use strict';
-
 // ─── Types ───
 // TVar(name)           — type variable: α, β, γ
 // TCon(name)           — type constant: Int, Bool, String
@@ -636,23 +634,7 @@ function typeOf(src) {
   return type.toString();
 }
 
-module.exports = {
-  // Types
-  TVar, TCon, TFun, TList, TPair,
-  tInt, tBool, tString, tUnit,
-  // Type schemes
-  Scheme,
-  // Substitution
-  Subst,
-  // Environment
-  TypeEnv,
-  // Core algorithms
-  unify, generalize, instantiate, freeTypeVars, occurs,
-  freshVar, resetFresh,
-  // Inference
-  infer, algorithmW, defaultEnv,
-  // Parser
-  Parser, tokenize,
-  // Convenience
-  typeOf,
-};
+export { typeOf, TVar, TCon, TFun, TList, TPair, tInt, tBool, tString, tUnit,
+         Scheme, Subst, TypeEnv, unify, generalize, instantiate,
+         freeTypeVars, occurs, freshVar, resetFresh, infer, Parser,
+         resolveType, algorithmW, defaultEnv, tokenize };

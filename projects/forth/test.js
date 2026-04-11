@@ -1,7 +1,5 @@
 // forth/test.js — Comprehensive test suite
-'use strict';
-
-const { Forth } = require('./forth.js');
+import { Forth } from './forth.js';
 
 let passed = 0, failed = 0, total = 0;
 

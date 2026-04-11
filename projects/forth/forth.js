@@ -1,6 +1,4 @@
 // forth/forth.js — A Forth interpreter from scratch
-'use strict';
-
 class Forth {
   constructor() {
     this.stack = [];          // Data stack
@@ -524,4 +522,4 @@ class Forth {
   reset() { this.stack = []; this.rstack = []; this.output = []; }
 }
 
-module.exports = { Forth };
+export { Forth };

@@ -1,9 +1,7 @@
 // type-inference/test.js — Comprehensive test suite
-'use strict';
-
-const { typeOf, TVar, TCon, TFun, TList, TPair, tInt, tBool, tString,
+import { typeOf, TVar, TCon, TFun, TList, TPair, tInt, tBool, tString,
         Scheme, Subst, TypeEnv, unify, generalize, instantiate, 
-        freeTypeVars, occurs, freshVar, resetFresh, infer, Parser } = require('./types.js');
+        freeTypeVars, occurs, freshVar, resetFresh, infer, Parser } from './types.js';
 
 let passed = 0, failed = 0, total = 0;
 
