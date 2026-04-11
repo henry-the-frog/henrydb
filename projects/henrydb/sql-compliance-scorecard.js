@@ -559,6 +559,12 @@ check('DDL', 'NOT NULL constraint', () => {
   db.execute("INSERT INTO nn_test VALUES (1, 'ok')");
   try { db.execute('INSERT INTO nn_test VALUES (2, NULL)'); return false; } catch { return true; }
 });
+check('DDL', 'DEFAULT value', () => {
+  db.execute("CREATE TABLE def_test (id INT PRIMARY KEY, status TEXT DEFAULT 'active', count INT DEFAULT 0)");
+  db.execute('INSERT INTO def_test (id) VALUES (1)');
+  const r = db.execute('SELECT * FROM def_test WHERE id = 1');
+  return r.rows[0].status === 'active' && r.rows[0].count === 0;
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
