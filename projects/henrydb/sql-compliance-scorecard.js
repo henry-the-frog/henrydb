@@ -577,6 +577,14 @@ check('DDL', 'FOREIGN KEY constraint', () => {
   db.execute('INSERT INTO fk_child VALUES (1, 1)');
   try { db.execute('INSERT INTO fk_child VALUES (2, 999)'); return false; } catch { return true; }
 });
+check('DDL', 'ON DELETE CASCADE', () => {
+  db.execute('CREATE TABLE cascade_p (id INT PRIMARY KEY)');
+  db.execute('CREATE TABLE cascade_c (id INT PRIMARY KEY, pid INT REFERENCES cascade_p(id) ON DELETE CASCADE)');
+  db.execute('INSERT INTO cascade_p VALUES (1), (2)');
+  db.execute('INSERT INTO cascade_c VALUES (1, 1), (2, 1), (3, 2)');
+  db.execute('DELETE FROM cascade_p WHERE id = 1');
+  return db.execute('SELECT COUNT(*) as c FROM cascade_c').rows[0].c === 1;
+});
 check('STRING', 'LPAD', () => db.execute("SELECT LPAD('hi', 5, '*') as r").rows[0].r === '***hi');
 check('STRING', 'RPAD', () => db.execute("SELECT RPAD('hi', 5, '*') as r").rows[0].r === 'hi***');
 check('STRING', 'POSITION', () => db.execute("SELECT POSITION('lo' IN 'hello') as r").rows[0].r === 4);

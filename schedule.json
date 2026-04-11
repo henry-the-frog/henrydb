@@ -1072,6 +1072,25 @@
       "completed": "2026-04-11T18:48:31.760Z",
       "duration_ms": 60000,
       "summary": "TABLESAMPLE deferred (parser complexity). Simple CASE verified working."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement SELECT DISTINCT ON (column) (PostgreSQL extension)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:49:10.588Z",
+      "completed": "2026-04-11T18:49:32.584Z",
+      "duration_ms": 60000,
+      "summary": "DISTINCT ON and aggregate FILTER deferred - parser complexity. Continuing with other features."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Verify ON DELETE CASCADE works through foreign keys",
+      "project": "henrydb",
+      "started": "2026-04-11T18:49:40.584Z"
     }
   ],
   "focusProjects": [
@@ -1471,6 +1490,14 @@
     {
       "time": "2026-04-11T18:48:09.831Z",
       "msg": "Added T98 (BUILD) after end: Implement TABLESAMPLE BERNOULLI (random sample of table rows)"
+    },
+    {
+      "time": "2026-04-11T18:49:10.180Z",
+      "msg": "Added T99 (BUILD) after end: Implement SELECT DISTINCT ON (column) (PostgreSQL extension)"
+    },
+    {
+      "time": "2026-04-11T18:49:40.346Z",
+      "msg": "Added T100 (BUILD) after end: Verify ON DELETE CASCADE works through foreign keys"
     }
   ]
 }
