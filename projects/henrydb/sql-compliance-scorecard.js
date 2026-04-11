@@ -384,6 +384,8 @@ check('META', 'EXPLAIN ANALYZE', () => {
 });
 check('SELECT+', 'NOT IN', () => db.execute('SELECT * FROM t1 WHERE id NOT IN (1, 2)').rows.length >= 1);
 check('SELECT+', 'ILIKE', () => db.execute("SELECT * FROM t1 WHERE name ILIKE '%A%'").rows.length >= 0);
+check('SELECT+', 'NOT LIKE', () => db.execute("SELECT * FROM t1 WHERE name NOT LIKE '%zzzz%'").rows.length >= 1);
+check('SELECT+', 'LIKE underscore', () => db.execute("SELECT 'ab' LIKE '__' as r").rows[0].r !== false);
 check('STRING', 'LEFT', () => db.execute("SELECT LEFT('hello', 3) as r").rows[0].r === 'hel');
 check('STRING', 'RIGHT', () => db.execute("SELECT RIGHT('hello', 3) as r").rows[0].r === 'llo');
 check('STRING', 'REPEAT', () => db.execute("SELECT REPEAT('ab', 3) as r").rows[0].r === 'ababab');
