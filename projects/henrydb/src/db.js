@@ -3406,6 +3406,13 @@ export class Database {
             const strs = (distinct ? [...new Set(values)] : values).map(String);
             return strs.join(sep);
           }
+          case 'JSON_AGG':
+          case 'JSONB_AGG': {
+            return JSON.stringify(distinct ? [...new Set(values)] : values);
+          }
+          case 'ARRAY_AGG': {
+            return (distinct ? [...new Set(values)] : values);
+          }
         }
       };
 
@@ -3971,6 +3978,39 @@ export class Database {
           if (typeof val === 'object') return 'object';
           return typeof val;
         } catch { return 'text'; }
+      }
+      // json_build_object(key1, val1, key2, val2, ...) → JSON string
+      case 'JSON_BUILD_OBJECT': {
+        const obj = {};
+        for (let i = 0; i < args.length; i += 2) {
+          const key = this._evalValue(args[i], row);
+          const val = i + 1 < args.length ? this._evalValue(args[i + 1], row) : null;
+          obj[key] = val;
+        }
+        return JSON.stringify(obj);
+      }
+      // json_build_array(val1, val2, ...) → JSON array string
+      case 'JSON_BUILD_ARRAY': {
+        const arr = args.map(a => this._evalValue(a, row));
+        return JSON.stringify(arr);
+      }
+      // row_to_json(row) — we return the entire row as JSON
+      case 'ROW_TO_JSON': {
+        return JSON.stringify(row);
+      }
+      // to_json(value) — convert value to JSON
+      case 'TO_JSON': {
+        const v = this._evalValue(args[0], row);
+        return JSON.stringify(v);
+      }
+      // json_object_keys(json) — for aggregate context
+      case 'JSON_OBJECT_KEYS': {
+        const json = this._evalValue(args[0], row);
+        if (json == null) return null;
+        try {
+          const obj = typeof json === 'string' ? JSON.parse(json) : json;
+          return JSON.stringify(Object.keys(obj));
+        } catch { return null; }
       }
       // String functions
       case 'LEFT': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).substring(0, this._evalValue(args[1], row)); }

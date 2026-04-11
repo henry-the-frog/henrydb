@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T03:20:26.796Z",
+  "generated": "2026-04-11T03:27:51.885Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: implement advisory locks — pg_advisory_lock(key), pg_advisory_unlock(key), pg_try_advisory_lock(key). Session-level locks for application coordination. Store in server-global lock map.",
-    "startedAt": "2026-04-11T03:20:26.796Z",
-    "taskId": "T236"
+    "task": "HenryDB: implement JSON functions — json_build_object(key, val, ...), json_agg(), row_to_json(). These are commonly used in modern PostgreSQL APIs and essential for JSON API servers.",
+    "startedAt": "2026-04-11T03:27:51.885Z",
+    "taskId": "T237"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2382,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 225,
+    "blocksCompleted": 226,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 169,
+      "BUILD": 170,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }

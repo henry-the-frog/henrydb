@@ -2541,10 +2541,21 @@
     {
       "id": "T236",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement advisory locks — pg_advisory_lock(key), pg_advisory_unlock(key), pg_try_advisory_lock(key). Session-level locks for application coordination. Store in server-global lock map.",
       "project": "henrydb",
-      "started": "2026-04-11T03:20:26.725Z"
+      "started": "2026-04-11T03:20:26.725Z",
+      "completed": "2026-04-11T03:27:29.378Z",
+      "duration_ms": 600000,
+      "summary": "Advisory locks implemented: pg_advisory_lock, pg_try_advisory_lock, pg_advisory_unlock. Session-level, auto-release on disconnect, same-connection re-acquire. 6/6 tests. Regex matching was tricky — pg_advisory_lock substring matched inside pg_try_advisory_lock."
+    },
+    {
+      "id": "T237",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement JSON functions — json_build_object(key, val, ...), json_agg(), row_to_json(). These are commonly used in modern PostgreSQL APIs and essential for JSON API servers.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:27:51.822Z"
     }
   ],
   "focusProjects": [
@@ -3484,6 +3495,10 @@
     {
       "time": "2026-04-11T03:20:26.311Z",
       "msg": "Added T236 (BUILD) after end: HenryDB: implement advisory locks — pg_advisory_lock(key), pg_advisory_unlock(key), pg_try_advisory_lock(key). Session-level locks for application coordination. Store in server-global lock map."
+    },
+    {
+      "time": "2026-04-11T03:27:51.290Z",
+      "msg": "Added T237 (BUILD) after end: HenryDB: implement JSON functions — json_build_object(key, val, ...), json_agg(), row_to_json(). These are commonly used in modern PostgreSQL APIs and essential for JSON API servers."
     }
   ]
 }
