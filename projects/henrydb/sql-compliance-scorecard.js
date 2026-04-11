@@ -647,6 +647,9 @@ check('CTE', 'Recursive CTE fibonacci', () => {
 });
 check('EXPR', 'LIKE pattern with %', () => db.execute("SELECT 'hello' LIKE '%ell%' as r FROM t1 LIMIT 1").rows.length >= 0);
 check('SELECT+', 'VALUES clause', () => db.execute("VALUES (1, 'a'), (2, 'b')").rows.length === 2);
+check('EXPR', 'CAST TEXT to INT', () => db.execute("SELECT CAST('42' AS INT) as r").rows[0].r === 42);
+check('EXPR', 'CAST TEXT to FLOAT', () => db.execute("SELECT CAST('3.14' AS FLOAT) as r").rows[0].r === 3.14);
+check('EXPR', 'CAST FLOAT to INT', () => db.execute('SELECT CAST(3.14 AS INT) as r').rows[0].r === 3);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

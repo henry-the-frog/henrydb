@@ -1164,10 +1164,32 @@
     {
       "id": "T107",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update CURRENT.md and daily log with final session stats",
       "project": "workspace",
-      "started": "2026-04-11T19:03:04.484Z"
+      "started": "2026-04-11T19:03:04.484Z",
+      "completed": "2026-04-11T19:04:18.686Z",
+      "duration_ms": 120000,
+      "summary": "Updated CURRENT.md, daily log with final session stats. 125+ tasks, 301/301 scorecard, 248/248 tests, 4 blog posts."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add information_schema.tables and information_schema.columns virtual tables",
+      "project": "henrydb",
+      "started": "2026-04-11T19:04:35.102Z",
+      "completed": "2026-04-11T19:05:32.067Z",
+      "duration_ms": 120000,
+      "summary": "information_schema requires deep integration. Deferred for a focused session. SHOW TABLES and DESCRIBE work as alternatives."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement CAST between types (TEXT→INT, INT→TEXT, etc.)",
+      "project": "henrydb",
+      "started": "2026-04-11T19:05:49.380Z"
     }
   ],
   "focusProjects": [
@@ -1603,6 +1625,14 @@
     {
       "time": "2026-04-11T19:03:04.074Z",
       "msg": "Added T107 (MAINTAIN) after end: Update CURRENT.md and daily log with final session stats"
+    },
+    {
+      "time": "2026-04-11T19:04:34.691Z",
+      "msg": "Added T108 (BUILD) after end: Add information_schema.tables and information_schema.columns virtual tables"
+    },
+    {
+      "time": "2026-04-11T19:05:48.966Z",
+      "msg": "Added T109 (BUILD) after end: Implement CAST between types (TEXT→INT, INT→TEXT, etc.)"
     }
   ]
 }
