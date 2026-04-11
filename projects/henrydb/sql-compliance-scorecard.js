@@ -585,6 +585,20 @@ check('DDL', 'ON DELETE CASCADE', () => {
   db.execute('DELETE FROM cascade_p WHERE id = 1');
   return db.execute('SELECT COUNT(*) as c FROM cascade_c').rows[0].c === 1;
 });
+check('DDL', 'ON DELETE SET NULL', () => {
+  db.execute('CREATE TABLE setnull_p (id INT PRIMARY KEY)');
+  db.execute('CREATE TABLE setnull_c (id INT PRIMARY KEY, pid INT REFERENCES setnull_p(id) ON DELETE SET NULL)');
+  db.execute('INSERT INTO setnull_p VALUES (1)');
+  db.execute('INSERT INTO setnull_c VALUES (1, 1)');
+  db.execute('DELETE FROM setnull_p WHERE id = 1');
+  return db.execute('SELECT pid FROM setnull_c WHERE id = 1').rows[0].pid === null;
+});
+check('DDL', 'TABLESAMPLE BERNOULLI', () => {
+  db.execute('CREATE TABLE sample_test (id INT)');
+  for (let i = 1; i <= 100; i++) db.execute(`INSERT INTO sample_test VALUES (${i})`);
+  const r = db.execute('SELECT COUNT(*) as c FROM sample_test TABLESAMPLE BERNOULLI(50)');
+  return r.rows[0].c >= 10 && r.rows[0].c <= 90; // Should be roughly 50
+});
 check('DML', 'INSERT RETURNING', () => {
   db.execute('CREATE TABLE ins_ret (id INT PRIMARY KEY, val TEXT)');
   const r = db.execute("INSERT INTO ins_ret VALUES (1, 'test') RETURNING *");

@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T19:21:30.785Z",
+  "generated": "2026-04-11T19:25:13.566Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Implement ON UPDATE CASCADE for foreign key constraints",
-    "startedAt": "2026-04-11T19:21:30.785Z",
-    "taskId": "T120"
+    "task": "Implement ON DELETE SET NULL for foreign key constraints",
+    "completedAt": "2026-04-11T19:25:13.566Z",
+    "taskId": "T121",
+    "summary": "ON DELETE SET NULL already works. Verified: children get NULL FK when parent deleted.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 119,
+    "blocksCompleted": 121,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 2,
-      "BUILD": 100,
+      "BUILD": 102,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

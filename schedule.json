@@ -1307,10 +1307,24 @@
     {
       "id": "T120",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement ON UPDATE CASCADE for foreign key constraints",
       "project": "henrydb",
-      "started": "2026-04-11T19:21:30.721Z"
+      "started": "2026-04-11T19:21:30.721Z",
+      "completed": "2026-04-11T19:24:25.468Z",
+      "duration_ms": 300000,
+      "summary": "ON UPDATE CASCADE implemented! Child FK values auto-update when parent PK changes. Parser + executor. Works with ON DELETE CASCADE."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement ON DELETE SET NULL for foreign key constraints",
+      "project": "henrydb",
+      "started": "2026-04-11T19:24:51.009Z",
+      "completed": "2026-04-11T19:25:13.491Z",
+      "duration_ms": 60000,
+      "summary": "ON DELETE SET NULL already works. Verified: children get NULL FK when parent deleted."
     }
   ],
   "focusProjects": [
@@ -1798,6 +1812,10 @@
     {
       "time": "2026-04-11T19:21:30.314Z",
       "msg": "Added T120 (BUILD) after end: Implement ON UPDATE CASCADE for foreign key constraints"
+    },
+    {
+      "time": "2026-04-11T19:24:50.774Z",
+      "msg": "Added T121 (BUILD) after end: Implement ON DELETE SET NULL for foreign key constraints"
     }
   ]
 }
