@@ -515,6 +515,19 @@ check('CTE', 'Multiple CTEs chained', () => {
   return r.rows.length === 1 && r.rows[0].y === 2;
 });
 check('TYPE', 'Empty string', () => db.execute("SELECT '' as r").rows[0].r === '');
+check('NULL', 'NULL + arithmetic', () => db.execute('SELECT NULL + 1 as r').rows[0].r === null);
+check('NULL', 'COUNT(*) includes NULLs', () => {
+  db.execute('CREATE TABLE null_test (id INT, val INT)');
+  db.execute('INSERT INTO null_test VALUES (1, 10), (2, NULL), (3, 30)');
+  return db.execute('SELECT COUNT(*) as c FROM null_test').rows[0].c === 3;
+});
+check('NULL', 'COUNT(col) skips NULLs', () => db.execute('SELECT COUNT(val) as c FROM null_test').rows[0].c === 2);
+check('NULL', 'SUM skips NULLs', () => db.execute('SELECT SUM(val) as s FROM null_test').rows[0].s === 40);
+check('NULL', 'COALESCE with NULL', () => db.execute('SELECT COALESCE(NULL, NULL, 42) as r').rows[0].r === 42);
+check('NULL', 'GROUP BY NULL', () => {
+  const r = db.execute('SELECT val, COUNT(*) as cnt FROM null_test GROUP BY val');
+  return r.rows.some(r => r.val === null);
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

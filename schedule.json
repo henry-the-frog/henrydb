@@ -878,10 +878,21 @@
     {
       "id": "T81",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Wire protocol end-to-end: test every SQL feature through psql-compatible client",
       "project": "henrydb",
-      "started": "2026-04-11T18:21:36.743Z"
+      "started": "2026-04-11T18:21:36.743Z",
+      "completed": "2026-04-11T18:22:07.678Z",
+      "duration_ms": 180000,
+      "summary": "Every SQL feature verified through wire protocol: params, aggregates, windows, CTEs, recursive CTEs, CASE+alias, subqueries, EXPLAIN. All pass via pg client."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Stress test NULL handling across all SQL operations",
+      "project": "henrydb",
+      "started": "2026-04-11T18:22:27.051Z"
     }
   ],
   "focusProjects": [
@@ -1213,6 +1224,10 @@
     {
       "time": "2026-04-11T18:21:36.508Z",
       "msg": "Added T81 (BUILD) after end: Wire protocol end-to-end: test every SQL feature through psql-compatible client"
+    },
+    {
+      "time": "2026-04-11T18:22:26.818Z",
+      "msg": "Added T82 (BUILD) after end: Stress test NULL handling across all SQL operations"
     }
   ]
 }
