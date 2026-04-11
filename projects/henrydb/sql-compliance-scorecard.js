@@ -308,6 +308,14 @@ check('AGG+', 'GROUP BY alias', () => {
   const r = db.execute("SELECT CASE WHEN age > 25 THEN 'senior' ELSE 'junior' END as group_name, COUNT(*) as cnt FROM t1 GROUP BY group_name");
   return r.rows.length >= 1 && r.rows[0].group_name !== undefined;
 });
+check('CTE', 'WITH RECURSIVE counter', () => {
+  const r = db.execute('WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt WHERE x < 5) SELECT * FROM cnt');
+  return r.rows.length === 5;
+});
+check('CTE', 'WITH RECURSIVE factorial', () => {
+  const r = db.execute('WITH RECURSIVE fact(n, f) AS (SELECT 1 as n, 1 as f UNION ALL SELECT n + 1, f * (n + 1) FROM fact WHERE n < 10) SELECT * FROM fact');
+  return r.rows.length === 10 && r.rows[9].f === 3628800;
+});
 check('TYPE', 'Float literal', () => db.execute('SELECT 3.14 as r').rows[0].r === 3.14);
 check('STRING', 'SUBSTR', () => db.execute("SELECT SUBSTR('hello', 2, 3) as r").rows[0].r === 'ell');
 check('TYPE', 'Negative number', () => db.execute('SELECT -42 as r').rows[0].r === -42);

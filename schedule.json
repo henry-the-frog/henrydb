@@ -702,10 +702,13 @@
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement WITH RECURSIVE (recursive CTEs) — factorial, fibonacci, tree traversal",
       "project": "henrydb",
-      "started": "2026-04-11T17:36:12.438Z"
+      "started": "2026-04-11T17:36:12.438Z",
+      "completed": "2026-04-11T17:41:48.569Z",
+      "duration_ms": 900000,
+      "summary": "Fixed recursive CTEs! 3 bugs: literal parsing, duplicate expr names, column loss in recursion. Factorial, fibonacci, tree traversal, graph reachability all work. 8 new tests."
     }
   ],
   "focusProjects": [

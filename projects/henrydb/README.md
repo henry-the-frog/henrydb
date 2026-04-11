@@ -24,7 +24,7 @@ const result = await client.query('SELECT * FROM users');
 
 ## SQL Compliance Scorecard
 
-153/153 checks passing across 20+ categories:
+153/156 checks passing across 20+ categories:
 
 | Category | Score | Features |
 |----------|-------|----------|
@@ -36,7 +36,7 @@ const result = await client.query('SELECT * FROM users');
 | Aggregates | 10/10 | COUNT, SUM, AVG, MIN, MAX, GROUP BY, HAVING, COUNT DISTINCT, STRING_AGG |
 | Windows | 5/5 | ROW_NUMBER, RANK, SUM OVER, running totals, PARTITION BY |
 | Subqueries | 3/3 | Scalar, FROM, IN |
-| CTEs | 2/2 | WITH, multiple CTEs |
+| CTEs | 4/4 | WITH, multiple CTEs, WITH RECURSIVE (factorial, fibonacci, tree traversal) |
 | Expressions | 5/5 | Arithmetic (with precedence), \|\|, CASE, COALESCE, CAST |
 | GENERATE_SERIES | 4/4 | Basic, aggregate, GROUP BY, window |
 | Set Ops | 2/2 | UNION, UNION ALL |
@@ -48,7 +48,7 @@ const result = await client.query('SELECT * FROM users');
 | Conditionals | 4/4 | NULLIF, GREATEST, LEAST |
 | Error Handling | 4/4 | Table not found, syntax errors |
 | Full-text | 2/2 | FTS indexing, phrase search |
-| **Total** | **153/153** | **100%** |
+| **Total** | **156/156** | **100%** |
 
 Run `node sql-compliance-scorecard.js` to verify.
 
@@ -85,6 +85,23 @@ WHERE EXISTS (SELECT 1 FROM orders WHERE product_id = p.id);
 -- Generate series with window function
 SELECT value, SUM(value) OVER (ORDER BY value) as running_total
 FROM GENERATE_SERIES(1, 10);
+
+-- Recursive CTE: fibonacci sequence
+WITH RECURSIVE fib(n, a, b) AS (
+  SELECT 1, 0, 1
+  UNION ALL
+  SELECT n + 1, b, a + b FROM fib WHERE n < 15
+)
+SELECT n, a as fibonacci FROM fib;
+
+-- Recursive CTE: org chart traversal
+WITH RECURSIVE org(id, name, level, path) AS (
+  SELECT id, name, 0, name FROM employees WHERE manager_id IS NULL
+  UNION ALL
+  SELECT e.id, e.name, org.level + 1, org.path || ' > ' || e.name
+  FROM employees e JOIN org ON e.manager_id = org.id
+)
+SELECT * FROM org ORDER BY path;
 
 -- Parameterized queries (via wire protocol)
 SELECT * FROM users WHERE age > $1 AND region = $2;
