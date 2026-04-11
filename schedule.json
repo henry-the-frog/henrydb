@@ -1087,10 +1087,21 @@
     {
       "id": "T100",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Verify ON DELETE CASCADE works through foreign keys",
       "project": "henrydb",
-      "started": "2026-04-11T18:49:40.584Z"
+      "started": "2026-04-11T18:49:40.584Z",
+      "completed": "2026-04-11T18:50:18.984Z",
+      "duration_ms": 120000,
+      "summary": "ON DELETE CASCADE works correctly. Child rows automatically deleted. Scorecard 281/281."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement RETURNING clause for INSERT and DELETE (already has for UPDATE)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:50:36.973Z"
     }
   ],
   "focusProjects": [
@@ -1498,6 +1509,10 @@
     {
       "time": "2026-04-11T18:49:40.346Z",
       "msg": "Added T100 (BUILD) after end: Verify ON DELETE CASCADE works through foreign keys"
+    },
+    {
+      "time": "2026-04-11T18:50:36.711Z",
+      "msg": "Added T101 (BUILD) after end: Implement RETURNING clause for INSERT and DELETE (already has for UPDATE)"
     }
   ]
 }

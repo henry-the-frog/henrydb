@@ -585,6 +585,11 @@ check('DDL', 'ON DELETE CASCADE', () => {
   db.execute('DELETE FROM cascade_p WHERE id = 1');
   return db.execute('SELECT COUNT(*) as c FROM cascade_c').rows[0].c === 1;
 });
+check('DML', 'INSERT RETURNING', () => {
+  db.execute('CREATE TABLE ins_ret (id INT PRIMARY KEY, val TEXT)');
+  const r = db.execute("INSERT INTO ins_ret VALUES (1, 'test') RETURNING *");
+  return r.rows.length === 1 && r.rows[0].val === 'test';
+});
 check('STRING', 'LPAD', () => db.execute("SELECT LPAD('hi', 5, '*') as r").rows[0].r === '***hi');
 check('STRING', 'RPAD', () => db.execute("SELECT RPAD('hi', 5, '*') as r").rows[0].r === 'hi***');
 check('STRING', 'POSITION', () => db.execute("SELECT POSITION('lo' IN 'hello') as r").rows[0].r === 4);
