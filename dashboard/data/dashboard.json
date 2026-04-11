@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T16:22:19.382Z",
+  "generated": "2026-04-11T16:25:07.223Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: implement STRING_AGG aggregate function (GROUP_CONCAT equivalent)",
-    "startedAt": "2026-04-11T16:22:19.382Z",
-    "taskId": "T42"
+    "completedAt": "2026-04-11T16:25:07.223Z",
+    "taskId": "T42",
+    "summary": "Implemented STRING_AGG aggregate (PostgreSQL compatible). Custom delimiter, DISTINCT, GROUP BY, virtual sources all work. Also fixed GROUP_CONCAT DISTINCT.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 41,
+    "blocksCompleted": 42,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 2,
-      "BUILD": 29,
+      "BUILD": 30,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

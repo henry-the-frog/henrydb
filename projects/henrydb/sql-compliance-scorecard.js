@@ -90,6 +90,8 @@ check('AGG', 'MAX', () => typeof db.execute('SELECT MAX(age) as m FROM t1').rows
 check('AGG', 'GROUP BY', () => db.execute('SELECT age, COUNT(*) FROM t1 GROUP BY age').rows.length > 0);
 check('AGG', 'HAVING', () => db.execute('SELECT age, COUNT(*) as c FROM t1 GROUP BY age HAVING COUNT(*) > 0').rows.length > 0);
 
+check('AGG', 'STRING_AGG', () => db.execute("SELECT STRING_AGG(name, ', ') as names FROM t1 WHERE score IS NOT NULL").rows[0].names.includes('Alice'));
+
 // --- Window Functions ---
 check('WINDOW', 'ROW_NUMBER', () => { const r = db.execute('SELECT ROW_NUMBER() OVER (ORDER BY id) as rn FROM t1'); return r.rows.some(row => row.rn === 1); });
 check('WINDOW', 'RANK', () => db.execute('SELECT RANK() OVER (ORDER BY age) as r FROM t1 WHERE age IS NOT NULL').rows.length > 0);

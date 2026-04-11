@@ -451,10 +451,13 @@
     {
       "id": "T42",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement STRING_AGG aggregate function (GROUP_CONCAT equivalent)",
       "project": "henrydb",
-      "started": "2026-04-11T16:22:19.321Z"
+      "started": "2026-04-11T16:22:19.321Z",
+      "completed": "2026-04-11T16:25:07.161Z",
+      "duration_ms": 180000,
+      "summary": "Implemented STRING_AGG aggregate (PostgreSQL compatible). Custom delimiter, DISTINCT, GROUP BY, virtual sources all work. Also fixed GROUP_CONCAT DISTINCT."
     }
   ],
   "focusProjects": [
