@@ -4,7 +4,7 @@ A SQL database written from scratch in JavaScript. PostgreSQL wire protocol comp
 
 ## What Is This?
 
-HenryDB is a complete relational database engine implemented in ~140,000 lines of JavaScript (core + tests). It speaks the PostgreSQL wire protocol, so you can connect with `psql`, `pg` npm module, or any PostgreSQL client library.
+HenryDB is a complete relational database engine implemented in ~148,000 lines of JavaScript (core + tests). It speaks the PostgreSQL wire protocol, so you can connect with `psql`, `pg` npm module, or any PostgreSQL client library.
 
 ```bash
 # Start the server
@@ -59,13 +59,17 @@ const result = await client.query('SELECT * FROM users');
 - **Buffer pool** — LRU page management with clock-sweep replacement
 - **File-backed heaps** — slotted page format
 - **Group commit** — batch fsync for 70x throughput improvement
-- **Checkpointing** — periodic WAL truncation
+- **Checkpointing** — WAL truncation after flushing dirty pages
+- **Auto-checkpoint** — configurable threshold (default 16MB)
+- **VACUUM** — dead tuple reclamation after UPDATE/DELETE
 
 ### Transactions
 - **MVCC** — Multi-Version Concurrency Control with snapshot isolation
 - **SSI** — Serializable Snapshot Isolation (prevents write skew)
 - **BEGIN/COMMIT/ROLLBACK** through wire protocol
 - **Savepoints** — SAVEPOINT, RELEASE, ROLLBACK TO
+- **SELECT FOR UPDATE / FOR SHARE** — row-level locking
+- **Advisory locks** — pg_advisory_lock, pg_try_advisory_lock, pg_advisory_unlock
 - **Auto-commit** mode for individual statements
 
 ### Wire Protocol
@@ -73,8 +77,13 @@ const result = await client.query('SELECT * FROM users');
 - **Prepared statements** — Parse/Bind/Execute/Describe/Close
 - **Parameterized queries** — `$1`, `$2` placeholders
 - **Connection pooling** — multiple concurrent clients
-- **COPY protocol** — bulk data import/export via pg-copy-streams
+- **COPY protocol** — bulk data import/export (37x faster than INSERT)
 - **LISTEN/NOTIFY** — pub/sub messaging
+- **Table change notifications** — automatic CDC via LISTEN table_changes
+- **Advisory locks** — application-level coordination
+- **EXPLAIN ANALYZE** — query plan with actual execution statistics
+- **Cursors** — DECLARE, FETCH, CLOSE
+- **ORM compatibility** — CREATE EXTENSION, COMMENT ON, GRANT/REVOKE stubs
 
 ### Data Structures
 The codebase includes implementations of 50+ data structures:

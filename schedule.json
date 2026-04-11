@@ -2585,10 +2585,21 @@
     {
       "id": "T240",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement CREATE EXTENSION IF NOT EXISTS — stub that accepts common PostgreSQL extensions (uuid-ossp, pgcrypto, etc) without error. Essential for ORM migration compatibility.",
       "project": "henrydb",
-      "started": "2026-04-11T03:39:52.254Z"
+      "started": "2026-04-11T03:39:52.254Z",
+      "completed": "2026-04-11T03:41:18.878Z",
+      "duration_ms": 120000,
+      "summary": "ORM compatibility stubs: CREATE/DROP EXTENSION, SCHEMA, COMMENT ON, GRANT/REVOKE, ALTER ROLE — all return OK without error. 7/7 tests including a Prisma-style migration sequence with JOINs."
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: final test count verification and README update with evening session features",
+      "project": "henrydb",
+      "started": "2026-04-11T03:41:54.888Z"
     }
   ],
   "focusProjects": [
@@ -3544,6 +3555,10 @@
     {
       "time": "2026-04-11T03:39:51.838Z",
       "msg": "Added T240 (BUILD) after end: HenryDB: implement CREATE EXTENSION IF NOT EXISTS — stub that accepts common PostgreSQL extensions (uuid-ossp, pgcrypto, etc) without error. Essential for ORM migration compatibility."
+    },
+    {
+      "time": "2026-04-11T03:41:54.471Z",
+      "msg": "Added T241 (BUILD) after end: HenryDB: final test count verification and README update with evening session features"
     }
   ]
 }
