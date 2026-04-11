@@ -257,7 +257,7 @@ export class VM {
         }
           
         case OP.RET: {
-          if (this._callStack.length === 0) return this._peek() ?? null;
+          if (this._callStack.length === 0) return this._stack.length > 0 ? this._stack.at(-1) : null;
           const frame = this._callStack.pop();
           this._ip = frame.returnAddr;
           this._fp = frame.savedFp;
@@ -269,14 +269,14 @@ export class VM {
           break;
           
         case OP.HALT:
-          return this._peek() ?? null;
+          return this._stack.length > 0 ? this._stack.at(-1) : null;
           
         default:
           throw new Error(`Unknown opcode: 0x${op.toString(16)} at ip=${this._ip - 1}`);
       }
     }
     
-    return this._peek() ?? null;
+    return this._stack.length > 0 ? this._stack.at(-1) : null;
   }
 
   /**
