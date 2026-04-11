@@ -24,43 +24,84 @@ const result = await client.query('SELECT * FROM users');
 
 ## SQL Compliance Scorecard
 
-105/105 checks passing across 17 categories:
+153/153 checks passing across 20+ categories:
 
 | Category | Score | Features |
 |----------|-------|----------|
-| DDL | 7/7 | CREATE TABLE/INDEX/VIEW, ALTER, DROP, IF NOT EXISTS |
-| DML | 6/6 | INSERT, INSERT RETURNING, UPDATE, DELETE, UPSERT, TRUNCATE |
+| DDL | 9/9 | CREATE TABLE/INDEX/VIEW, ALTER, DROP, IF NOT EXISTS, CTAS, RENAME |
+| DML | 7/7 | INSERT, INSERT RETURNING, UPDATE, DELETE, UPSERT, TRUNCATE, INSERT INTO SELECT |
 | SELECT | 21/21 | WHERE (=, !=, <, >, LIKE, BETWEEN, IN, EXISTS), DISTINCT, ORDER BY, LIMIT, OFFSET |
-| JOIN | 5/5 | INNER, LEFT, RIGHT, CROSS, self-join |
+| SELECT+ | 6/6 | Correlated subqueries, nested CASE, IN list, aggregate WHERE subquery |
+| JOIN | 7/7 | INNER, LEFT, RIGHT, FULL OUTER, CROSS, NATURAL, USING |
 | Aggregates | 10/10 | COUNT, SUM, AVG, MIN, MAX, GROUP BY, HAVING, COUNT DISTINCT, STRING_AGG |
 | Windows | 5/5 | ROW_NUMBER, RANK, SUM OVER, running totals, PARTITION BY |
 | Subqueries | 3/3 | Scalar, FROM, IN |
 | CTEs | 2/2 | WITH, multiple CTEs |
-| Expressions | 5/5 | Arithmetic (with precedence), ||, CASE, COALESCE, CAST |
+| Expressions | 5/5 | Arithmetic (with precedence), \|\|, CASE, COALESCE, CAST |
 | GENERATE_SERIES | 4/4 | Basic, aggregate, GROUP BY, window |
 | Set Ops | 2/2 | UNION, UNION ALL |
-| Types | 7/7 | INT, TEXT, NULL, BOOLEAN, CAST |
-| Strings | 7/7 | UPPER, LOWER, LENGTH, TRIM, SUBSTRING, REPLACE, CONCAT |
-| Math | 6/6 | ABS, CEIL, FLOOR, ROUND, MOD, POWER |
+| Types | 4/4 | INT, TEXT, NULL, BOOLEAN, float literal, negative numbers |
+| Strings | 8/8 | UPPER, LOWER, LENGTH, TRIM, SUBSTRING, SUBSTR, REPLACE, CONCAT |
+| Math | 7/7 | ABS, CEIL, FLOOR, ROUND, MOD, POWER, EXP |
 | Date/Time | 2/2 | NOW(), CURRENT_DATE |
+| JSON | 2/2 | JSON_EXTRACT, nested objects |
 | Conditionals | 4/4 | NULLIF, GREATEST, LEAST |
 | Error Handling | 4/4 | Table not found, syntax errors |
-| **Total** | **105/105** | **100%** |
+| Full-text | 2/2 | FTS indexing, phrase search |
+| **Total** | **153/153** | **100%** |
 
 Run `node sql-compliance-scorecard.js` to verify.
+
+## Feature Showcase
+
+```sql
+-- Window functions with CTEs
+WITH ranked AS (
+  SELECT name, department, salary,
+    RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank
+  FROM employees
+)
+SELECT * FROM ranked WHERE dept_rank <= 3;
+
+-- STRING_AGG with GROUP BY
+SELECT department, STRING_AGG(name, ', ') as team_members
+FROM employees GROUP BY department;
+
+-- FULL OUTER JOIN
+SELECT a.id, a.name, b.order_id
+FROM customers a FULL OUTER JOIN orders b ON a.id = b.customer_id;
+
+-- NATURAL JOIN
+SELECT * FROM orders NATURAL JOIN customers;
+
+-- CREATE TABLE AS SELECT
+CREATE TABLE top_earners AS
+SELECT name, salary FROM employees WHERE salary > 100000;
+
+-- Correlated subquery with EXISTS
+SELECT name FROM products p
+WHERE EXISTS (SELECT 1 FROM orders WHERE product_id = p.id);
+
+-- Generate series with window function
+SELECT value, SUM(value) OVER (ORDER BY value) as running_total
+FROM GENERATE_SERIES(1, 10);
+
+-- Parameterized queries (via wire protocol)
+SELECT * FROM users WHERE age > $1 AND region = $2;
+```
 
 ## Features
 
 ### SQL Engine
 - **Full SQL parser** — SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, ALTER TABLE, DROP TABLE
-- **JOINs** — INNER, LEFT, RIGHT, FULL OUTER, CROSS, with multiple join algorithms (nested loop, hash join, merge join, Grace hash join, sort-merge)
+- **JOINs** — INNER, LEFT, RIGHT, FULL OUTER, CROSS, NATURAL, USING, with multiple join algorithms (nested loop, hash join, merge join, Grace hash join, sort-merge)
 - **Aggregations** — COUNT, SUM, AVG, MIN, MAX, STRING_AGG, GROUP_CONCAT, GROUP BY, HAVING
 - **Window functions** — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER
 - **Subqueries** — scalar, correlated, EXISTS, IN, ANY/ALL
 - **CTEs** — WITH clauses, recursive CTEs
 - **Set operations** — UNION, INTERSECT, EXCEPT
 - **DISTINCT, ORDER BY, LIMIT, OFFSET**
-- **Expressions** — arithmetic with proper operator precedence (* / % > + -), string functions (UPPER, LOWER, LENGTH, TRIM, REPLACE, LEFT, RIGHT, REPEAT, REVERSE, LTRIM, RTRIM), math functions (ABS, FLOOR, CEIL, ROUND, POWER, SQRT, MOD, GREATEST, LEAST), CASE WHEN, COALESCE, NULLIF, CAST, string concatenation (||)
+- **Expressions** — arithmetic with proper operator precedence (* / % > + -), string functions (UPPER, LOWER, LENGTH, TRIM, REPLACE, LEFT, RIGHT, REPEAT, REVERSE, LTRIM, RTRIM, SUBSTR), math functions (ABS, FLOOR, CEIL, ROUND, POWER, SQRT, EXP, LOG, MOD, GREATEST, LEAST), CASE WHEN, COALESCE, NULLIF, CAST, string concatenation (||)
 - **Date/Time** — NOW(), CURRENT_TIMESTAMP, CURRENT_DATE, EXTRACT(YEAR/MONTH/DAY/HOUR/QUARTER/EPOCH FROM ...), DATE_PART(), INTERVAL arithmetic
 - **Constraints** — PRIMARY KEY, UNIQUE, NOT NULL, CHECK, FOREIGN KEY
 - **SERIAL** — auto-incrementing primary keys
