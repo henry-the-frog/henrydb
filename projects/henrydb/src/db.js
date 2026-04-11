@@ -1592,6 +1592,16 @@ export class Database {
       }
       // Apply WHERE
       if (ast.where) rows = rows.filter(row => this._evalExpr(ast.where, row));
+      
+      // Handle aggregates / GROUP BY on GENERATE_SERIES results
+      const gsHasAggregates = ast.columns.some(c => c.type === 'aggregate');
+      if (ast.groupBy) {
+        return this._selectWithGroupBy(ast, rows);
+      }
+      if (gsHasAggregates) {
+        return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      }
+      
       // Apply columns
       return this._applySelectColumns(ast, rows);
     }

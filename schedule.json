@@ -200,10 +200,21 @@
     {
       "id": "T19",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix UPSERT via wire protocol bug (stress-all-features test failure)",
       "project": "henrydb",
-      "started": "2026-04-11T15:19:08.306Z"
+      "started": "2026-04-11T15:19:08.306Z",
+      "completed": "2026-04-11T15:22:44.099Z",
+      "duration_ms": 600000,
+      "summary": "Fixed UPSERT crash with TransactionalDatabase (heap.pages doesnt exist on FileBackedHeap). Remaining stress test failure is a core engine bug: GENERATE_SERIES + aggregate returns per-row nulls instead of aggregated result."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix GENERATE_SERIES + aggregate bug (COUNT/SUM over GENERATE_SERIES returns per-row nulls)",
+      "project": "henrydb",
+      "started": "2026-04-11T15:23:01.165Z"
     }
   ],
   "focusProjects": [
@@ -287,6 +298,10 @@
     {
       "time": "2026-04-11T15:19:07.865Z",
       "msg": "Added T19 (BUILD) after end: Fix UPSERT via wire protocol bug (stress-all-features test failure)"
+    },
+    {
+      "time": "2026-04-11T15:22:51.860Z",
+      "msg": "Added T20 (BUILD) after end: Fix GENERATE_SERIES + aggregate bug (COUNT/SUM over GENERATE_SERIES returns per-row nulls)"
     }
   ]
 }

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T15:19:08.369Z",
+  "generated": "2026-04-11T15:23:01.228Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix UPSERT via wire protocol bug (stress-all-features test failure)",
-    "startedAt": "2026-04-11T15:19:08.369Z",
-    "taskId": "T19"
+    "task": "Fix GENERATE_SERIES + aggregate bug (COUNT/SUM over GENERATE_SERIES returns per-row nulls)",
+    "startedAt": "2026-04-11T15:23:01.228Z",
+    "taskId": "T20"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 18,
+    "blocksCompleted": 19,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 2,
-      "BUILD": 8,
+      "BUILD": 9,
       "MAINTAIN": 2,
       "EXPLORE": 2
     }
