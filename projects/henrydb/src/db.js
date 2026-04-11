@@ -653,6 +653,7 @@ export class Database {
       case 'INSERT': return this._insert(ast);
       case 'INSERT_SELECT': return this._insertSelect(ast);
       case 'SELECT': return this._select(ast);
+      case 'VALUES': return this._values(ast);
       case 'UNION': return this._union(ast);
       case 'INTERSECT': return this._intersect(ast);
       case 'EXCEPT': return this._except(ast);
@@ -722,6 +723,20 @@ export class Database {
     }
     
     return { type: 'OK', message: `Table ${ast.table} created` };
+  }
+
+  _values(ast) {
+    const rows = [];
+    const numCols = ast.tuples[0]?.length || 0;
+    const colNames = Array.from({ length: numCols }, (_, i) => `column${i + 1}`);
+    for (const tuple of ast.tuples) {
+      const row = {};
+      for (let i = 0; i < colNames.length; i++) {
+        row[colNames[i]] = tuple[i]?.value ?? this._evalValue(tuple[i], {});
+      }
+      rows.push(row);
+    }
+    return { type: 'ROWS', rows };
   }
 
   _createTableAs(ast) {

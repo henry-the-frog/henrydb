@@ -198,6 +198,7 @@ export function parse(sql) {
   // SELECT or WITH
   if (isKeyword('WITH')) return parseWith();
   if (isKeyword('SELECT')) return parseSelect();
+  if (isKeyword('VALUES')) return parseValuesClause();
   if (isKeyword('INSERT')) return parseInsert();
   if (isKeyword('UPDATE')) return parseUpdate();
   if (isKeyword('DELETE')) return parseDelete();
@@ -352,6 +353,21 @@ export function parse(sql) {
     const mainQuery = parseSelect();
     mainQuery.ctes = ctes;
     return mainQuery;
+  }
+
+  function parseValuesClause() {
+    advance(); // VALUES
+    const tuples = [];
+    do {
+      expect('(');
+      const values = [];
+      do {
+        values.push(parsePrimary());
+      } while (match(','));
+      expect(')');
+      tuples.push(values);
+    } while (match(','));
+    return { type: 'VALUES', tuples };
   }
 
   function parseSelect() {
