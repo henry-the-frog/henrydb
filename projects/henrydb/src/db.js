@@ -15,6 +15,7 @@ import { InvertedIndex, tokenize } from './fulltext.js';
 import { PlanCache } from './plan-cache.js';
 import { PlanBuilder, PlanFormatter } from './query-plan.js';
 import { pushdownPredicates } from './pushdown.js';
+import { planToHTML } from './plan-html.js';
 
 export class Database {
   constructor(options = {}) {
@@ -2506,12 +2507,16 @@ export class Database {
     }
 
     // Tree-structured plan (new system) — use for SELECT statements
-    if (stmt.type === 'SELECT' && (format === 'tree' || format === 'json-tree')) {
+    if (stmt.type === 'SELECT' && (format === 'tree' || format === 'json-tree' || format === 'html')) {
       const builder = new PlanBuilder(this);
       const planTree = builder.buildPlan(stmt);
       if (format === 'json-tree') {
         const json = PlanFormatter.toJSON(planTree);
         return { type: 'PLAN', rows: [{ 'QUERY PLAN': JSON.stringify([json], null, 2) }] };
+      }
+      if (format === 'html') {
+        const html = planToHTML(planTree);
+        return { type: 'PLAN', rows: [{ 'QUERY PLAN': html }], html };
       }
       const lines = PlanFormatter.format(planTree);
       return { type: 'PLAN', rows: lines.map(l => ({ 'QUERY PLAN': l })) };

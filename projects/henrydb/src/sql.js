@@ -169,7 +169,7 @@ export function parse(sql) {
           advance();
           const fmtToken = peek();
           const fmt = (fmtToken.value || '').toUpperCase();
-          if (['JSON', 'YAML', 'DOT', 'TEXT', 'TREE'].includes(fmt)) {
+          if (['JSON', 'YAML', 'DOT', 'TEXT', 'TREE', 'HTML'].includes(fmt)) {
             format = fmt.toLowerCase();
             advance();
           }
