@@ -126,6 +126,12 @@ export class HenryDBServer {
             const metrics = this._getPrometheusMetrics();
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end(metrics);
+          } else if (req.url === '/explain' && req.method === 'POST') {
+            this._handleExplainEndpoint(req, res);
+          } else if (req.url === '/explain' && req.method === 'GET') {
+            this._serveExplainUI(req, res);
+          } else if (req.url === '/query' && req.method === 'POST') {
+            this._handleQueryEndpoint(req, res);
           } else {
             res.writeHead(404);
             res.end('Not found');
@@ -228,6 +234,137 @@ export class HenryDBServer {
       `henrydb_cache_entries ${c.entries}`,
       `henrydb_tables_count ${this.db.tables?.size || 0}`,
     ].join('\n');
+  }
+
+  // ===== HTTP API Endpoints =====
+
+  _handleExplainEndpoint(req, res) {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const { query, analyze } = JSON.parse(body);
+        if (!query) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing "query" field' }));
+          return;
+        }
+        
+        const explainSQL = analyze 
+          ? `EXPLAIN ANALYZE ${query}`
+          : `EXPLAIN (FORMAT HTML) ${query}`;
+        
+        const result = this.db.execute(explainSQL);
+        
+        if (result.html) {
+          res.writeHead(200, { 'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*' });
+          res.end(result.html);
+        } else if (result.planTreeText) {
+          // EXPLAIN ANALYZE: return the tree plan text + HTML
+          const { PlanBuilder } = require('./query-plan.js');
+          const { planToHTML } = require('./plan-html.js');
+          const { parse: parseSql } = require('./sql.js');
+          
+          try {
+            const builder = new PlanBuilder(this.db);
+            const ast = parseSql(query);
+            const planTree = builder.buildPlan(ast);
+            // Fill in actuals from the analyze result
+            planTree.setActuals(result.actual_rows, result.execution_time_ms);
+            const html = planToHTML(planTree, { analyze: true });
+            res.writeHead(200, { 'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*' });
+            res.end(html);
+          } catch (e) {
+            // Fallback: return text plan
+            res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+            res.end(result.planTreeText.join('\n'));
+          }
+        } else {
+          res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify(result));
+        }
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+  }
+
+  _handleQueryEndpoint(req, res) {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const { query } = JSON.parse(body);
+        if (!query) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing "query" field' }));
+          return;
+        }
+        const result = this.db.execute(query);
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify(result));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+  }
+
+  _serveExplainUI(req, res) {
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HenryDB — EXPLAIN Visualizer</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #FAFAFA; color: #333; }
+    h1 { color: #1565C0; }
+    textarea { width: 100%; height: 120px; font-family: 'SF Mono', monospace; font-size: 14px; padding: 12px; border: 2px solid #E0E0E0; border-radius: 8px; resize: vertical; }
+    textarea:focus { border-color: #1565C0; outline: none; }
+    .btn { background: #1565C0; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 8px 4px 8px 0; }
+    .btn:hover { background: #0D47A1; }
+    .btn-analyze { background: #2E7D32; }
+    .btn-analyze:hover { background: #1B5E20; }
+    #result { margin-top: 20px; }
+    .error { color: #C62828; background: #FFEBEE; padding: 12px; border-radius: 8px; }
+    .info { color: #666; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>🔍 HenryDB EXPLAIN Visualizer</h1>
+  <p class="info">Enter a SELECT query to see its execution plan as an interactive SVG tree.</p>
+  <textarea id="query" placeholder="SELECT * FROM orders o JOIN users u ON o.user_id = u.id WHERE u.active = 1 ORDER BY o.total DESC LIMIT 10">SELECT * FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.total DESC LIMIT 10</textarea>
+  <br>
+  <button class="btn" onclick="explain(false)">EXPLAIN</button>
+  <button class="btn btn-analyze" onclick="explain(true)">EXPLAIN ANALYZE</button>
+  <div id="result"></div>
+  <script>
+    async function explain(analyze) {
+      const query = document.getElementById('query').value.trim();
+      if (!query) return;
+      const res = await fetch('/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, analyze })
+      });
+      const el = document.getElementById('result');
+      if (res.headers.get('content-type')?.includes('text/html')) {
+        el.innerHTML = await res.text();
+      } else {
+        const data = await res.json();
+        if (data.error) {
+          el.innerHTML = '<div class="error">' + data.error + '</div>';
+        } else {
+          el.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+      }
+    }
+  </script>
+</body>
+</html>`;
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(html);
   }
 
   /**
