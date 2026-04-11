@@ -1,21 +1,48 @@
-## Status: session-ended
+## Status: in-progress
 
-session: A (morning → afternoon)
+session: B (afternoon → evening)
 date: 2026-04-11
-current_position: T136
-mode: COMPLETE
-task: Session ended
-started: 2026-04-11T14:15:26Z
-completed: 2026-04-11T20:01:00Z
-tasks_completed_this_session: 156
+current_position: T171 (mid-session checkpoint)
+mode: MAINTAIN
+project: henrydb
+started: 2026-04-11T20:15:23Z
+tasks_completed_this_session: 44
 
-### Session A FINAL Stats (RECORD SESSION — 156 TASKS)
-- **Tasks:** 156
-- **New tests:** 248+ (8 test suites, zero failures)
-- **Bugs found:** ~35+ (5 data-loss, 3 parser, 3 column mapping, 2 NULL handling)
-- **Compliance:** 323/323 (100%) 🎉🎉🎉
-- **Blog posts:** 4 (published to GitHub Pages)
-- **TPC-H:** 8 analytical queries, all pass (111ms total)
-- **ACID:** Verified with concurrent clients through wire protocol
-- **Features implemented:** STRING_AGG, FULL OUTER JOIN, NATURAL JOIN, USING, CTAS, recursive CTEs, GROUP BY alias, table.*, SUBSTR/EXP, SIMILAR TO, BETWEEN SYMMETRIC, EXCEPT ALL, INTERSECT ALL, LIMIT ALL, FETCH FIRST, NULLS FIRST/LAST, UNIQUE constraint, VALUES clause, ON DELETE/UPDATE CASCADE, ON DELETE SET NULL, TABLESAMPLE BERNOULLI, CREATE OR REPLACE VIEW, interactive CLI
-- **Architecture:** pageLSN, _compactDeadRows, WAL compensation, PK index rebuild, duplicate expr fix, literal parsing fix, INSERT INTO SELECT fix
+### Session B Summary (so far)
+
+**Major accomplishments:**
+1. Fixed BufferPoolManager persistence (was completely broken — 6 missing methods)
+2. Fixed git reset --hard bug (read-after-write ordering)
+3. Fixed 3 regex engine bugs + DFA alphabet refinement
+4. Found and fixed Merkle tree second preimage vulnerability (RFC 6962)
+5. Found and fixed LSM tree compaction ordering bug
+
+**New modules built (11 total):**
+- MVCC snapshot isolation (version chains, PostgreSQL-style snapshots)
+- SHA-256 + HMAC-SHA256 from scratch (FIPS 180-4)
+- Merkle tree with proofs and efficient diff
+- Bloom filter (FPR=0.97% at 1% target)
+- Consistent hashing ring
+- Distributed KV store (integrates all 5 data structures)
+- HTTP API server
+- Interactive REPL
+- LSM tree (memtable → SSTable → compaction)
+- JSON parser + stringify from scratch (RFC 8259)
+
+**Fuzzers built (8 total):**
+- HenryDB persistence (100 seeds × 5 cycles)
+- SAT solver (1100 formulas)
+- Regex engine (33K comparisons)
+- Type inference (5000 expressions)
+- Forth interpreter (5000 programs)
+- Huffman coding (3000 roundtrips)
+- HenryDB query optimizer (1000 random queries)
+- MVCC (1000+ transactions)
+
+**Projects fixed:**
+- RISC-V emulator (CJS→ESM, 208 tests)
+- Type inference (ESM, 120 tests)
+- Regex engine (ESM + 3 bugs, 325 tests)
+- Huffman (ESM, 38 tests)
+- Forth (ESM + builtins, 74 tests)
+- Git (reset --hard bug, 153 tests)
