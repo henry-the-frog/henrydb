@@ -2431,10 +2431,21 @@
     {
       "id": "T226",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement COPY FROM STDIN — bulk data loading via PostgreSQL COPY protocol. Parse CSV data from client, insert rows efficiently (batch insert, bypass per-row overhead). This is how real apps bulk-load data.",
       "project": "henrydb",
-      "started": "2026-04-11T02:45:54.784Z"
+      "started": "2026-04-11T02:45:54.784Z",
+      "completed": "2026-04-11T02:49:47.128Z",
+      "duration_ms": 600000,
+      "summary": "COPY FROM STDIN already existed but was slow (19ms/row via SQL INSERT per row). Optimized with direct heap insertion — 37x speedup (0.08ms/row). Type coercion based on schema, NULL handling via backslash-N. 4/4 tests pass including 5000-row bulk load. Falls back to SQL if table object unavailable."
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement COPY TO STDOUT — export query results as TSV. Complements COPY FROM. Wire protocol sends CopyOutResponse then CopyData messages then CopyDone.",
+      "project": "henrydb",
+      "started": "2026-04-11T02:50:04.731Z"
     }
   ],
   "focusProjects": [
@@ -3334,6 +3345,10 @@
     {
       "time": "2026-04-11T02:45:54.366Z",
       "msg": "Added T226 (BUILD) after end: HenryDB: implement COPY FROM STDIN — bulk data loading via PostgreSQL COPY protocol. Parse CSV data from client, insert rows efficiently (batch insert, bypass per-row overhead). This is how real apps bulk-load data."
+    },
+    {
+      "time": "2026-04-11T02:50:04.291Z",
+      "msg": "Added T227 (BUILD) after end: HenryDB: implement COPY TO STDOUT — export query results as TSV. Complements COPY FROM. Wire protocol sends CopyOutResponse then CopyData messages then CopyDone."
     }
   ]
 }

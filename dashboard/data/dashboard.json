@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T02:45:54.848Z",
+  "generated": "2026-04-11T02:50:04.799Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: implement COPY FROM STDIN — bulk data loading via PostgreSQL COPY protocol. Parse CSV data from client, insert rows efficiently (batch insert, bypass per-row overhead). This is how real apps bulk-load data.",
-    "startedAt": "2026-04-11T02:45:54.848Z",
-    "taskId": "T226"
+    "task": "HenryDB: implement COPY TO STDOUT — export query results as TSV. Complements COPY FROM. Wire protocol sends CopyOutResponse then CopyData messages then CopyDone.",
+    "startedAt": "2026-04-11T02:50:04.799Z",
+    "taskId": "T227"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2382,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 215,
+    "blocksCompleted": 216,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 159,
+      "BUILD": 160,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }
