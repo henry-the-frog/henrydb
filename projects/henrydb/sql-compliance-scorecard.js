@@ -113,6 +113,7 @@ check('SUBQUERY', 'IN subquery', () => db.execute('SELECT * FROM t1 WHERE id IN 
 // --- CTEs ---
 check('CTE', 'WITH clause', () => db.execute('WITH cte AS (SELECT * FROM t1) SELECT COUNT(*) as c FROM cte').rows[0].c > 0);
 check('CTE', 'Multiple CTEs', () => db.execute('WITH a AS (SELECT * FROM t1), b AS (SELECT * FROM t2) SELECT COUNT(*) as c FROM a').rows[0].c > 0);
+check('CTE', 'Recursive CTE', () => db.execute('WITH RECURSIVE cnt(x) AS (VALUES(1) UNION ALL SELECT x+1 FROM cnt WHERE x<5) SELECT COUNT(*) as c FROM cnt').rows[0].c === 5);
 
 // --- Expressions ---
 check('EXPR', 'Arithmetic (+, -, *, /)', () => db.execute('SELECT 2 + 3 as result').rows[0].result === 5);
@@ -200,6 +201,10 @@ check('ERROR', 'Syntax error', () => {
   try { db.execute('SELEC * FRM t1'); return false; } catch { return true; }
 });
 
+check('SET', 'INTERSECT', () => db.execute('SELECT id FROM t1 WHERE id <= 2 INTERSECT SELECT id FROM t1 WHERE id >= 2').rows.length === 1);
+check('SET', 'EXCEPT', () => db.execute('SELECT id FROM t1 WHERE id <= 2 EXCEPT SELECT id FROM t1 WHERE id >= 2').rows.length === 1);
+check('WINDOW', 'NTILE', () => db.execute('SELECT NTILE(2) OVER (ORDER BY id) as bucket FROM t1 LIMIT 1').rows[0].bucket === 1);
+check('WINDOW', 'LAG', () => db.execute('SELECT LAG(id) OVER (ORDER BY id) as prev FROM t1 ORDER BY id LIMIT 2').rows[1].prev === 1);
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
 
