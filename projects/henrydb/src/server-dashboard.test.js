@@ -60,6 +60,14 @@ describe('HTTP /dashboard endpoint', () => {
     assert.ok(html.includes('CREATE INDEX') || html.includes('No recommendations'));
   });
 
+  it('shows slow queries section', async () => {
+    const res = await fetch(`http://127.0.0.1:${HTTP_PORT}/dashboard`);
+    const html = await res.text();
+    assert.ok(html.includes('Slowest Queries'));
+    // After running queries in setup, should have query stats
+    assert.ok(html.includes('total calls') || html.includes('No query statistics'));
+  });
+
   it('has navigation links', async () => {
     const res = await fetch(`http://127.0.0.1:${HTTP_PORT}/dashboard`);
     const html = await res.text();

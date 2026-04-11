@@ -373,6 +373,8 @@ export class HenryDBServer {
     const health = this._getHealthStatus();
     const cacheStats = this.db._planCache ? this.db._planCache.stats() : {};
     const indexRecs = this.db._indexAdvisor ? this.db._indexAdvisor.recommend() : [];
+    const slowQueries = this.db._queryStats ? this.db._queryStats.getSlowest(10) : [];
+    const queryStatsSummary = this.db._queryStats ? this.db._queryStats.summary() : {};
     const tableCount = this.db.tables?.size || 0;
     const indexCount = this.db.indexCatalog?.size || 0;
 
@@ -441,9 +443,9 @@ export class HenryDBServer {
       <div class="sub">Peak: ${health.connections?.peak || 0}</div>
     </div>
     <div class="card">
-      <h3>Total Queries</h3>
-      <div class="value">${health.queries?.total || 0}</div>
-      <div class="sub">Errors: ${health.queries?.errors || 0}</div>
+      <h3>Unique Queries</h3>
+      <div class="value">${queryStatsSummary.uniqueQueries || 0}</div>
+      <div class="sub">${queryStatsSummary.totalCalls || 0} total calls</div>
     </div>
   </div>
 
@@ -463,6 +465,25 @@ export class HenryDBServer {
         </tr>`).join('')}
       </tbody>
     </table>`}
+  </div>
+
+  <div class="section">
+    <h2>🐌 Slowest Queries</h2>
+    ${slowQueries.length === 0 ? '<p class="empty">No query statistics yet.</p>' : `
+    <table>
+      <thead><tr><th>Query</th><th>Calls</th><th>Mean Time</th><th>Total Time</th><th>Mean Rows</th><th>Errors</th></tr></thead>
+      <tbody>
+        ${slowQueries.map(q => `<tr>
+          <td><code>${esc(q.query.substring(0, 80))}${q.query.length > 80 ? '…' : ''}</code></td>
+          <td>${q.calls}</td>
+          <td>${q.mean_time_ms.toFixed(3)}ms</td>
+          <td>${q.total_time_ms.toFixed(1)}ms</td>
+          <td>${q.mean_rows}</td>
+          <td>${q.errors || 0}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <p class="empty">Total: ${queryStatsSummary.uniqueQueries || 0} unique queries, ${queryStatsSummary.totalCalls || 0} calls, ${(queryStatsSummary.totalTimeMs || 0).toFixed(1)}ms total</p>`}
   </div>
 
   <div class="section">
