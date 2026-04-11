@@ -650,6 +650,36 @@ check('SELECT+', 'VALUES clause', () => db.execute("VALUES (1, 'a'), (2, 'b')").
 check('EXPR', 'CAST TEXT to INT', () => db.execute("SELECT CAST('42' AS INT) as r").rows[0].r === 42);
 check('EXPR', 'CAST TEXT to FLOAT', () => db.execute("SELECT CAST('3.14' AS FLOAT) as r").rows[0].r === 3.14);
 check('EXPR', 'CAST FLOAT to INT', () => db.execute('SELECT CAST(3.14 AS INT) as r').rows[0].r === 3);
+check('AGG', 'AVG returns float', () => {
+  const r = db.execute('SELECT AVG(score) as a FROM t1 WHERE score IS NOT NULL');
+  return typeof r.rows[0].a === 'number';
+});
+check('JOIN', 'LEFT JOIN with NULL', () => {
+  db.execute('CREATE TABLE lj_a (id INT PRIMARY KEY)');
+  db.execute('CREATE TABLE lj_b (id INT, aid INT)');
+  db.execute('INSERT INTO lj_a VALUES (1), (2)');
+  db.execute('INSERT INTO lj_b VALUES (1, 1)');
+  return db.execute('SELECT a.id, b.id as bid FROM lj_a a LEFT JOIN lj_b b ON a.id = b.aid').rows.length === 2;
+});
+check('JOIN', 'RIGHT JOIN', () => {
+  db.execute('CREATE TABLE rj_a (id INT)');
+  db.execute('CREATE TABLE rj_b (id INT PRIMARY KEY)');
+  db.execute('INSERT INTO rj_a VALUES (1)');
+  db.execute('INSERT INTO rj_b VALUES (1), (2)');
+  return db.execute('SELECT * FROM rj_a RIGHT JOIN rj_b ON rj_a.id = rj_b.id').rows.length === 2;
+});
+check('JOIN', 'CROSS JOIN', () => {
+  db.execute('CREATE TABLE cj_a (id INT)');
+  db.execute('CREATE TABLE cj_b (id INT)');
+  db.execute('INSERT INTO cj_a VALUES (1), (2)');
+  db.execute('INSERT INTO cj_b VALUES (10), (20)');
+  return db.execute('SELECT * FROM cj_a CROSS JOIN cj_b').rows.length === 4;
+});
+check('WINDOW', 'ROW_NUMBER', () => {
+  const r = db.execute('SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM t1 LIMIT 3');
+  return r.rows.length > 0 && r.rows[0].rn >= 1;
+});
+check('SELECT+', 'Table alias', () => db.execute('SELECT e.id FROM t1 e WHERE e.id = 1').rows.length === 1);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

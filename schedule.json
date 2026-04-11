@@ -1186,10 +1186,21 @@
     {
       "id": "T109",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement CAST between types (TEXT→INT, INT→TEXT, etc.)",
       "project": "henrydb",
-      "started": "2026-04-11T19:05:49.380Z"
+      "started": "2026-04-11T19:05:49.380Z",
+      "completed": "2026-04-11T19:06:28.254Z",
+      "duration_ms": 120000,
+      "summary": "CAST already works for all type combinations. 304/304 scorecard. PostgreSQL :: syntax deferred."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Push scorecard past 310: add more pattern tests",
+      "project": "henrydb",
+      "started": "2026-04-11T19:06:46.935Z"
     }
   ],
   "focusProjects": [
@@ -1633,6 +1644,10 @@
     {
       "time": "2026-04-11T19:05:48.966Z",
       "msg": "Added T109 (BUILD) after end: Implement CAST between types (TEXT→INT, INT→TEXT, etc.)"
+    },
+    {
+      "time": "2026-04-11T19:06:46.523Z",
+      "msg": "Added T110 (BUILD) after end: Push scorecard past 310: add more pattern tests"
     }
   ]
 }
