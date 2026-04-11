@@ -7,7 +7,7 @@
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
 ## Projects Summary (as of 2026-04-11)
-- **HenryDB** — 530+ test files, 814 source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery with pageLSN, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL. Key benchmarks: 11K inserts/sec (batch sync), 5578x BTree point lookup speedup, 138x hash join speedup. PageLSN in page headers for per-page recovery decisions.
+- **HenryDB** — 590+ test files, 820+ source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery with pageLSN, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL, NATURAL JOIN, USING, FULL OUTER JOIN, STRING_AGG. SQL compliance: 134/134 (100%). Key benchmarks: 11K inserts/sec (batch sync), 5578x BTree point lookup speedup, 138x hash join speedup. Record session: 54+ tasks on Apr 11, 115+ new tests, ~25 bugs found (5 data-loss).
 - **Monkey Lang** — 1297 tests, 5 execution backends (eval, VM, tracing JIT, JS transpiler, WASM), 50+ language features, interactive playground
 - **RISC-V Emulator** — 208 tests, 3800 LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO. Built in one evening session.
 - **Ray Tracer** — 116 tests, 8 geometry types, BVH, interactive browser renderer
@@ -48,6 +48,9 @@
 - **Query shortcuts MUST check transaction state:** Query cache and adaptive engine bypassed MVCC inside transactions — returned stale cached results. Any optimization shortcut must gate on txStatus.
 - **_applySelectColumns is not _applySelectFull:** This function handles ORDER BY, LIMIT, OFFSET, column projection — but NOT aggregates or GROUP BY. Virtual table sources (subquery, GENERATE_SERIES) that call it directly skip aggregation. Always route through the full aggregate pipeline.
 - **fsync dominates persistence performance:** 54/s → 11K/s just by switching from per-commit fsync to batch sync. The 77x fsync tax is real.
+- **MVCC + persistence interaction:** Dead rows (old MVCC versions) must be physically compacted before close. WAL compensation records needed for savepoint rollback. PK indexes must be rebuilt after recovery. Bugs live at the boundary between in-memory state and on-disk state.
+- **Deep > Wide:** The Apr 11 session (54+ tasks) found more bugs than any week of feature development. Depth testing (tiny pools, crash recovery, MVCC+persistence) reveals bugs that broad testing never touches.
+- **Operator precedence matters:** JS's flat arithmetic parsing produced (2+3)*4=20 instead of 2+(3*4)=14. Always implement proper precedence levels in expression parsing.
 
 ## Preferences & Style
 - Depth > breadth
