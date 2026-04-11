@@ -1502,6 +1502,28 @@ export class HenryDBServer {
       }
     }
     
+    // ORM/migration compatibility stubs (no-ops that prevent errors)
+    if (upper.startsWith('CREATE EXTENSION') || upper.startsWith('DROP EXTENSION')) {
+      this._sendResult(conn, sql, { type: 'OK', message: upper.startsWith('CREATE') ? 'CREATE EXTENSION' : 'DROP EXTENSION' });
+      return true;
+    }
+    if (upper.startsWith('CREATE SCHEMA') || upper.startsWith('DROP SCHEMA')) {
+      this._sendResult(conn, sql, { type: 'OK', message: upper.startsWith('CREATE') ? 'CREATE SCHEMA' : 'DROP SCHEMA' });
+      return true;
+    }
+    if (upper.startsWith('COMMENT ON')) {
+      this._sendResult(conn, sql, { type: 'OK', message: 'COMMENT' });
+      return true;
+    }
+    if (upper.startsWith('GRANT ') || upper.startsWith('REVOKE ')) {
+      this._sendResult(conn, sql, { type: 'OK', message: upper.startsWith('GRANT') ? 'GRANT' : 'REVOKE' });
+      return true;
+    }
+    if (upper.startsWith('ALTER DEFAULT PRIVILEGES') || upper.startsWith('ALTER ROLE') || upper.startsWith('CREATE ROLE') || upper.startsWith('DROP ROLE')) {
+      this._sendResult(conn, sql, { type: 'OK', message: 'OK' });
+      return true;
+    }
+    
     // Transaction control: BEGIN/COMMIT/ROLLBACK
     if (upper === 'BEGIN' || upper === 'BEGIN TRANSACTION' || upper === 'START TRANSACTION') {
       if (conn._session) {

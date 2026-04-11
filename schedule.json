@@ -2574,10 +2574,21 @@
     {
       "id": "T239",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: test with a real Node.js web app — create a minimal Express API that uses HenryDB through the wire protocol (pg client). CRUD endpoints for a todo list. Validate that a real app can use HenryDB as its database.",
       "project": "henrydb",
-      "started": "2026-04-11T03:38:23.434Z"
+      "started": "2026-04-11T03:38:23.434Z",
+      "completed": "2026-04-11T03:39:27.904Z",
+      "duration_ms": 300000,
+      "summary": "Real app integration test: 11/11 pass. Created a complete Todo List API exercising HenryDB through pg Pool with CRUD, parameterized queries, connection pooling (5 connections, 10 concurrent reads), many-to-many JOINs, LIKE search, CASE aggregates, transaction rollback. HenryDB is a real database."
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement CREATE EXTENSION IF NOT EXISTS — stub that accepts common PostgreSQL extensions (uuid-ossp, pgcrypto, etc) without error. Essential for ORM migration compatibility.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:39:52.254Z"
     }
   ],
   "focusProjects": [
@@ -3529,6 +3540,10 @@
     {
       "time": "2026-04-11T03:38:23.015Z",
       "msg": "Added T239 (EXPLORE) after end: HenryDB: test with a real Node.js web app — create a minimal Express API that uses HenryDB through the wire protocol (pg client). CRUD endpoints for a todo list. Validate that a real app can use HenryDB as its database."
+    },
+    {
+      "time": "2026-04-11T03:39:51.838Z",
+      "msg": "Added T240 (BUILD) after end: HenryDB: implement CREATE EXTENSION IF NOT EXISTS — stub that accepts common PostgreSQL extensions (uuid-ossp, pgcrypto, etc) without error. Essential for ORM migration compatibility."
     }
   ]
 }
