@@ -1,1 +1,39 @@
-{"name":"henrydb","version":"1.0.0","description":"HenryDB — relational database engine from scratch","type":"module","bin":{"henrydb":"src/server.js","henrydb-cli":"src/cli.js"},"scripts":{"test":"node --test src/**/*.test.js","start":"node src/server.js"},"dependencies":{"better-sqlite3":"^12.8.0","express":"^5.2.1","knex":"^3.2.9","pg":"^8.20.0","pg-copy-streams":"^7.0.0","sequelize":"^6.37.8"}}
+{
+  "name": "henrydb",
+  "version": "1.0.0",
+  "description": "HenryDB — relational database engine from scratch",
+  "type": "module",
+  "bin": {
+    "henrydb": "./henrydb-cli.js",
+    "henrydb-server": "./src/server.js"
+  },
+  "scripts": {
+    "test": "node --test src/**/*.test.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "express": "^5.2.1",
+    "knex": "^3.2.9",
+    "pg": "^8.20.0",
+    "pg-copy-streams": "^7.0.0",
+    "sequelize": "^6.37.8"
+  },
+  "main": "./src/db.js",
+  "exports": {
+    ".": "./src/db.js",
+    "./server": "./src/server.js"
+  },
+  "keywords": [
+    "database",
+    "sql",
+    "postgresql",
+    "javascript",
+    "from-scratch"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/henry-the-frog/henrydb.git"
+  }
+}
