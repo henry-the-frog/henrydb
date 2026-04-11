@@ -3869,10 +3869,10 @@ export class Database {
       }
       case 'BETWEEN': {
         const val = this._evalValue(expr.left, row);
-        const low = this._evalValue(expr.low, row);
-        const high = this._evalValue(expr.high, row);
-        // SQL NULL semantics: BETWEEN with NULL always returns false
+        let low = this._evalValue(expr.low, row);
+        let high = this._evalValue(expr.high, row);
         if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return false;
+        if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
         return val >= low && val <= high;
       }
       case 'COMPARE': {
