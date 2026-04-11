@@ -131,6 +131,11 @@ export class TransactionalDatabase {
     // This is set by session.execute() to provide MVCC context during heap scans
     this._activeTx = null;
     
+    // Auto-checkpoint: trigger when WAL exceeds this size (bytes)
+    // Default: 16MB. Set to 0 to disable.
+    this._autoCheckpointBytes = 16 * 1024 * 1024;
+    this._checkpointInProgress = false;
+    
     // Monkey-patch each table's heap scan to apply MVCC visibility
     this._installScanInterceptors();
   }
@@ -226,6 +231,28 @@ export class TransactionalDatabase {
     this._wal.truncate();
     
     return { walSizeBefore: walSize };
+  }
+
+  _maybeAutoCheckpoint() {
+    if (!this._autoCheckpointBytes || this._checkpointInProgress) return;
+    try {
+      const walSize = this._wal.fileSize;
+      if (walSize >= this._autoCheckpointBytes) {
+        // Check no other sessions have active transactions
+        for (const [, session] of this._sessions) {
+          if (session._tx) return; // Can't checkpoint now
+        }
+        this._checkpointInProgress = true;
+        try {
+          this.checkpoint();
+        } finally {
+          this._checkpointInProgress = false;
+        }
+      }
+    } catch (e) {
+      // Auto-checkpoint failures are non-fatal
+      this._checkpointInProgress = false;
+    }
   }
 
   close() {
@@ -692,6 +719,10 @@ export class TransactionSession {
     // Physicalize committed deletes (no additional WAL)
     this._tdb._physicalizeDeletesNoWal(this._tx);
     this._tx = null;
+    
+    // Auto-checkpoint if WAL exceeds threshold
+    this._tdb._maybeAutoCheckpoint();
+    
     return { type: 'OK', message: 'COMMIT' };
   }
 
