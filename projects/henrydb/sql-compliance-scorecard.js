@@ -62,6 +62,8 @@ check('SELECT', 'WHERE IN', () => db.execute('SELECT * FROM t1 WHERE id IN (1, 2
 check('SELECT', 'WHERE NOT IN', () => db.execute('SELECT * FROM t1 WHERE id NOT IN (1, 2)').rows.length > 0);
 check('SELECT', 'WHERE BETWEEN', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN 1 AND 2').rows.length === 2);
 check('SELECT', 'WHERE LIKE', () => db.execute("SELECT * FROM t1 WHERE name LIKE 'A%'").rows.length >= 1);
+check('SELECT', 'WHERE ILIKE', () => db.execute("SELECT * FROM t1 WHERE name ILIKE 'alice'").rows.length >= 1);
+check('SELECT', 'WHERE NOT BETWEEN', () => db.execute('SELECT * FROM t1 WHERE id NOT BETWEEN 1 AND 1').rows.length >= 1);
 check('SELECT', 'WHERE IS NULL', () => db.execute('SELECT * FROM t1 WHERE age IS NULL').rows.length >= 1);
 check('SELECT', 'WHERE IS NOT NULL', () => db.execute('SELECT * FROM t1 WHERE age IS NOT NULL').rows.length >= 1);
 check('SELECT', 'WHERE EXISTS', () => db.execute('SELECT * FROM t1 WHERE EXISTS (SELECT 1 FROM t2 WHERE t1_id = t1.id)').rows.length > 0);
@@ -168,6 +170,13 @@ check('STRING', 'TRIM', () => db.execute("SELECT TRIM('  hi  ') as r").rows[0].r
 check('STRING', 'SUBSTRING', () => db.execute("SELECT SUBSTRING('hello' FROM 2 FOR 3) as r").rows[0].r === 'ell');
 check('STRING', 'REPLACE', () => db.execute("SELECT REPLACE('hello', 'l', 'r') as r").rows[0].r === 'herro');
 check('STRING', 'CONCAT', () => db.execute("SELECT CONCAT('a', 'b', 'c') as r").rows[0].r === 'abc');
+check('STRING', 'LEFT', () => db.execute("SELECT LEFT('hello', 3) as r").rows[0].r === 'hel');
+check('STRING', 'RIGHT', () => db.execute("SELECT RIGHT('hello', 3) as r").rows[0].r === 'llo');
+check('STRING', 'REPEAT', () => db.execute("SELECT REPEAT('ab', 3) as r").rows[0].r === 'ababab');
+check('STRING', 'REVERSE', () => db.execute("SELECT REVERSE('hello') as r").rows[0].r === 'olleh');
+check('STRING', 'LPAD', () => db.execute("SELECT LPAD('hi', 5, '*') as r").rows[0].r === '***hi');
+check('STRING', 'RPAD', () => db.execute("SELECT RPAD('hi', 5, '-') as r").rows[0].r === 'hi---');
+check('STRING', 'POSITION', () => db.execute("SELECT POSITION('ll' IN 'hello') as r").rows[0].r === 3);
 
 // --- Math Functions ---
 check('MATH', 'ABS', () => db.execute('SELECT ABS(-5) as r').rows[0].r === 5);
