@@ -1259,6 +1259,14 @@
       "completed": "2026-04-11T19:15:04.758Z",
       "duration_ms": 120000,
       "summary": "Empty table operations all correct: COUNT(*)=0, SUM=null, GROUP BY=no groups, JOIN=empty, LEFT JOIN=NULLs, DISTINCT=empty, UNION=non-empty side."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Test and verify cascading DELETE across multiple tables (3-level FK chain)",
+      "project": "henrydb",
+      "started": "2026-04-11T19:15:58.540Z"
     }
   ],
   "focusProjects": [
@@ -1726,6 +1734,10 @@
     {
       "time": "2026-04-11T19:14:27.919Z",
       "msg": "Added T115 (BUILD) after end: Test edge case: empty table operations (GROUP BY, JOIN, window, CTE on empty)"
+    },
+    {
+      "time": "2026-04-11T19:15:58.305Z",
+      "msg": "Added T116 (BUILD) after end: Test and verify cascading DELETE across multiple tables (3-level FK chain)"
     }
   ]
 }
