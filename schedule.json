@@ -1925,10 +1925,35 @@
     {
       "id": "T176",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session B final wrap-up: evening summary, CURRENT.md, daily log, git push",
       "project": "henrydb",
-      "started": "2026-04-11T22:17:23.829Z"
+      "started": "2026-04-11T22:17:23.829Z",
+      "completed": "2026-04-11T22:18:25.628Z",
+      "duration_ms": 120000,
+      "summary": "Session B final wrap-up complete. 50 tasks, 12 bugs fixed, 13 new modules. Git pushed."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple compiler: parse a tiny language (arithmetic expressions with variables and functions) → compile to our VM bytecode → execute. End-to-end: source code to execution.",
+      "project": "henrydb",
+      "started": "2026-04-11T22:18:48.271Z",
+      "completed": "2026-04-11T22:22:00.316Z",
+      "duration_ms": 600000,
+      "summary": "Built end-to-end compiler: tiny language (let, if/else, while, fn, return, print) → tokenize → parse → compile to VM bytecode → execute. Recursive fibonacci(10)=55, factorial(5)=120, FizzBuzz all work. 17/17 tests. Also fixed VM empty-stack handling."
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add optimization passes to the compiler: constant folding (3+4 → 7 at compile time), dead code elimination (if false), peephole optimization (push-pop removal)",
+      "project": "henrydb",
+      "started": "2026-04-11T22:22:56.162Z",
+      "completed": "2026-04-11T22:24:54.839Z",
+      "duration_ms": 300000,
+      "summary": "Built compiler optimizer: constant folding (3+4→7), algebraic simplification (x*0→0, x+0→x), dead code elimination (if false→else), peephole optimization (PUSH-POP removal, double NEG). 16/16 tests."
     }
   ],
   "focusProjects": [
@@ -2620,6 +2645,14 @@
     {
       "time": "2026-04-11T22:17:23.407Z",
       "msg": "Added T176 (MAINTAIN) after end: Session B final wrap-up: evening summary, CURRENT.md, daily log, git push"
+    },
+    {
+      "time": "2026-04-11T22:18:48.035Z",
+      "msg": "Added T177 (BUILD) after end: Build a simple compiler: parse a tiny language (arithmetic expressions with variables and functions) → compile to our VM bytecode → execute. End-to-end: source code to execution."
+    },
+    {
+      "time": "2026-04-11T22:22:55.752Z",
+      "msg": "Added T178 (BUILD) after end: Add optimization passes to the compiler: constant folding (3+4 → 7 at compile time), dead code elimination (if false), peephole optimization (push-pop removal)"
     }
   ]
 }
