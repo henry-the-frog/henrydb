@@ -2409,10 +2409,21 @@
     {
       "id": "T224",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement real prepared statements with parameter binding (parameterized queries). The server already has Parse/Bind/Execute handling for the extended query protocol — explore what works and what's missing. Test with pg client using parameterized queries ($1, $2).",
       "project": "henrydb",
-      "started": "2026-04-11T02:43:10.938Z"
+      "started": "2026-04-11T02:43:10.938Z",
+      "completed": "2026-04-11T02:44:07.553Z",
+      "duration_ms": 300000,
+      "summary": "Prepared statements already work through the extended query protocol! String substitution approach handles all common cases: multi-parameter, special characters, NULL, all DML types, within transactions. 8/8 tests pass. No implementation needed — just validation and test coverage."
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement LISTEN/NOTIFY — in-database pub/sub channels. LISTEN channel_name registers interest, NOTIFY channel_name sends to all listeners. Wire protocol sends NotificationResponse (B) async message to connected clients.",
+      "project": "henrydb",
+      "started": "2026-04-11T02:44:21.999Z"
     }
   ],
   "focusProjects": [
@@ -3304,6 +3315,10 @@
     {
       "time": "2026-04-11T02:43:04.387Z",
       "msg": "Added T224 (EXPLORE) after end: HenryDB: implement real prepared statements with parameter binding (parameterized queries). The server already has Parse/Bind/Execute handling for the extended query protocol — explore what works and what's missing. Test with pg client using parameterized queries ($1, $2)."
+    },
+    {
+      "time": "2026-04-11T02:44:21.582Z",
+      "msg": "Added T225 (BUILD) after end: HenryDB: implement LISTEN/NOTIFY — in-database pub/sub channels. LISTEN channel_name registers interest, NOTIFY channel_name sends to all listeners. Wire protocol sends NotificationResponse (B) async message to connected clients."
     }
   ]
 }
