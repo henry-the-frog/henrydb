@@ -3396,9 +3396,30 @@ export class Database {
           result[col] = val;
           if (col.includes('.')) result[col.split('.').pop()] = val;
         } else {
-          // Expression group key — evaluate and use alias or stringify
+          // Expression group key — evaluate and use the matching SELECT column alias
           const val = this._evalValue(col, groupRows[0]);
-          const key = col.alias || JSON.stringify(col).slice(0, 20);
+          // Find matching SELECT column alias for this expression
+          let key;
+          for (const selCol of ast.columns) {
+            if (selCol.alias && selCol.type === 'expression') {
+              // Check if the expressions match (by comparing stringified AST)
+              const selExpr = selCol.expr || selCol;
+              if (JSON.stringify(selExpr) === JSON.stringify(col)) {
+                key = selCol.alias;
+                break;
+              }
+            }
+          }
+          if (!key) {
+            // No alias found — try to generate a readable name
+            if (col.type === 'arith') {
+              const left = typeof col.left === 'string' ? col.left : (col.left?.name || '?');
+              const right = typeof col.right === 'object' ? (col.right?.value ?? '?') : col.right;
+              key = `${left} ${col.op} ${right}`;
+            } else {
+              key = col.alias || `expr_${ast.groupBy.indexOf(col)}`;
+            }
+          }
           result[key] = val;
         }
       }

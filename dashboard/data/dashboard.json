@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T15:41:58.412Z",
+  "generated": "2026-04-11T15:44:16.320Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Update TASKS.md with today's HenryDB progress, update MEMORY.md with key insights",
-    "startedAt": "2026-04-11T15:41:58.412Z",
-    "taskId": "T26"
+    "mode": "BUILD",
+    "task": "Fix GENERATE_SERIES GROUP BY expression key bug (serializes AST JSON instead of evaluated value)",
+    "startedAt": "2026-04-11T15:44:16.320Z",
+    "taskId": "T28"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,13 +3594,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 25,
+    "blocksCompleted": 27,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 2,
-      "BUILD": 14,
-      "MAINTAIN": 2,
+      "BUILD": 15,
+      "MAINTAIN": 3,
       "EXPLORE": 2
     }
   },
