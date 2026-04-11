@@ -243,10 +243,21 @@
     {
       "id": "T23",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Make stress-all-features.test.js pass: fix SHOW TABLE STATUS count and any remaining issues",
       "project": "henrydb",
-      "started": "2026-04-11T15:28:34.549Z"
+      "started": "2026-04-11T15:28:34.549Z",
+      "completed": "2026-04-11T15:30:23.968Z",
+      "duration_ms": 300000,
+      "summary": "stress-all-features.test.js now passes! Fixed: (1) SHOW TABLE STATUS implementation (was returning unknown), (2) UPSERT was already fixed, (3) GENERATE_SERIES aggregate was already fixed. Complete lifecycle test covering 20 features is green."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write a comprehensive persistence benchmark: measure insert throughput, close/reopen time, WAL replay speed, large dataset query perf",
+      "project": "henrydb",
+      "started": "2026-04-11T15:30:57.864Z"
     }
   ],
   "focusProjects": [
@@ -346,6 +357,10 @@
     {
       "time": "2026-04-11T15:28:34.142Z",
       "msg": "Added T23 (BUILD) after end: Make stress-all-features.test.js pass: fix SHOW TABLE STATUS count and any remaining issues"
+    },
+    {
+      "time": "2026-04-11T15:30:57.526Z",
+      "msg": "Added T24 (BUILD) after end: Write a comprehensive persistence benchmark: measure insert throughput, close/reopen time, WAL replay speed, large dataset query perf"
     }
   ]
 }
