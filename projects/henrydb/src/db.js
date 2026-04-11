@@ -717,6 +717,54 @@ export class Database {
   }
 
   _createTableAs(ast) {
+    // Execute the SELECT query
+    const result = this._select(ast.select);
+    const rows = result.rows || [];
+    
+    if (rows.length === 0 && !ast.ifNotExists) {
+      // Need at least one row to infer schema, or use the SELECT column names
+      const cols = ast.select.columns || [];
+      const schema = cols.map(c => ({
+        name: c.alias || c.name || c.value || 'column',
+        type: 'TEXT'
+      }));
+      this._createTable({
+        type: 'CREATE_TABLE',
+        name: ast.name,
+        ifNotExists: ast.ifNotExists,
+        columns: schema
+      });
+      return { type: 'OK', count: 0 };
+    }
+    
+    if (rows.length > 0) {
+      // Infer schema from first row
+      const schema = Object.keys(rows[0]).map(key => {
+        const val = rows[0][key];
+        let type = 'TEXT';
+        if (typeof val === 'number') type = Number.isInteger(val) ? 'INT' : 'FLOAT';
+        return { name: key, type };
+      });
+      
+      this._createTable({
+        type: 'CREATE_TABLE',
+        name: ast.name,
+        ifNotExists: ast.ifNotExists,
+        columns: schema
+      });
+      
+      // Insert all rows
+      const table = this.tables.get(ast.name);
+      for (const row of rows) {
+        const values = schema.map(col => row[col.name]);
+        table.heap.insert(values);
+      }
+    }
+    
+    return { type: 'OK', count: rows.length };
+  }
+
+
     // Execute the query first
     const result = this._select(ast.query);
     if (!result.rows || result.rows.length === 0) {

@@ -40,6 +40,10 @@ check('DDL', 'CREATE INDEX', () => { db.execute('CREATE INDEX idx_name ON t1 (na
 check('DDL', 'CREATE VIEW', () => { db.execute('CREATE VIEW v1 AS SELECT * FROM t1 WHERE age > 20'); return true; });
 check('DDL', 'ALTER TABLE ADD COLUMN', () => { db.execute('ALTER TABLE t1 ADD COLUMN email TEXT'); return true; });
 check('DDL', 'ALTER TABLE DROP COLUMN', () => { db.execute('ALTER TABLE t1 DROP COLUMN email'); return true; });
+check('DDL', 'CREATE TABLE AS SELECT', () => {
+  db.execute('CREATE TABLE ctas_test AS SELECT id, name FROM t1 WHERE id <= 2');
+  return db.execute('SELECT COUNT(*) as c FROM ctas_test').rows[0].c >= 1;
+});
 
 // --- DML ---
 check('DML', 'INSERT', () => db.execute('INSERT INTO t1 VALUES (99, \'Test\', 20, 50)').count >= 0);
