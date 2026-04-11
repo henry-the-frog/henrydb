@@ -17,6 +17,7 @@ import { PlanBuilder, PlanFormatter } from './query-plan.js';
 import { pushdownPredicates } from './pushdown.js';
 import { planToHTML } from './plan-html.js';
 import { IndexAdvisor } from './index-advisor.js';
+import { QueryStatsCollector } from './query-stats.js';
 
 export class Database {
   constructor(options = {}) {
@@ -45,13 +46,24 @@ export class Database {
     this._currentTxId = 0;  // 0 = auto-commit mode
     this._planCache = new PlanCache(256);
     this._indexAdvisor = new IndexAdvisor(this);
+    this._queryStats = new QueryStatsCollector();
   }
 
   execute(sql) {
-    // Handle RECOMMEND INDEXES command
+    // Handle special commands
     const trimmed = sql.trim().toUpperCase();
     if (trimmed === 'RECOMMEND INDEXES' || trimmed === 'RECOMMEND INDEXES;') {
       return this._recommendIndexes();
+    }
+    if (trimmed === 'SHOW QUERY STATS' || trimmed === 'SHOW QUERY STATS;') {
+      return { type: 'ROWS', rows: this._queryStats.getAll({ limit: 50 }) };
+    }
+    if (trimmed === 'SHOW SLOW QUERIES' || trimmed === 'SHOW SLOW QUERIES;') {
+      return { type: 'ROWS', rows: this._queryStats.getSlowest(20) };
+    }
+    if (trimmed === 'RESET QUERY STATS' || trimmed === 'RESET QUERY STATS;') {
+      this._queryStats.reset();
+      return { type: 'OK', message: 'Query statistics reset' };
     }
 
     // Check plan cache first (only for SELECT)
@@ -69,7 +81,20 @@ export class Database {
       try { this._indexAdvisor.analyze(sql); } catch (e) { /* advisory, don't fail */ }
     }
     
-    return this.execute_ast(ast);
+    // Execute with timing for statistics
+    const startTime = performance.now();
+    let result;
+    try {
+      result = this.execute_ast(ast);
+    } catch (e) {
+      this._queryStats.recordError(sql);
+      throw e;
+    }
+    const elapsed = performance.now() - startTime;
+    const rowCount = result?.rows?.length || 0;
+    this._queryStats.record(sql, elapsed, rowCount);
+    
+    return result;
   }
 
   /**
