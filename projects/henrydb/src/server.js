@@ -1408,6 +1408,8 @@ export class HenryDBServer {
         try {
           conn._session.commit();
           conn.txStatus = 'I';
+          // Invalidate query cache — committed changes may affect cached results
+          this._queryCache.invalidateAll();
           this._sendResult(conn, sql, { type: 'OK', message: 'COMMIT' });
         } catch (e) {
           conn.txStatus = 'E';
@@ -1431,6 +1433,8 @@ export class HenryDBServer {
       }
       conn.txStatus = 'I';
       conn._txBuffer = null;
+      // Invalidate query cache — rolled-back mutations may have polluted cached results
+      this._queryCache.invalidateAll();
       this._sendResult(conn, sql, { type: 'OK', message: 'ROLLBACK' });
       return true;
     }

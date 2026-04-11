@@ -28,6 +28,10 @@ export class QueryCache {
     }
   }
 
+  invalidateAll() {
+    this._cache.clear();
+  }
+
   /**
    * Extract table names from a SQL statement for cache invalidation.
    * @param {string} sql
