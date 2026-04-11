@@ -14,6 +14,7 @@ import { CompiledQueryEngine } from './compiled-query.js';
 import { InvertedIndex, tokenize } from './fulltext.js';
 import { PlanCache } from './plan-cache.js';
 import { PlanBuilder, PlanFormatter } from './query-plan.js';
+import { pushdownPredicates } from './pushdown.js';
 
 export class Database {
   constructor(options = {}) {
@@ -1577,6 +1578,15 @@ export class Database {
     let rows = [];
     const hasJoins = ast.joins && ast.joins.length > 0;
 
+    // Apply predicate pushdown for joins: push WHERE filters to individual table scans
+    let workingAst = ast;
+    if (hasJoins && ast.where) {
+      const { ast: pushedAst, pushed } = pushdownPredicates(ast);
+      if (pushed > 0) {
+        workingAst = pushedAst;
+      }
+    }
+
     // Try index scan for simple equality WHERE clauses (only when no JOINs)
     if (!hasJoins) {
       // Set requested columns for index-only scan detection
@@ -1605,21 +1615,25 @@ export class Database {
         }
       }
     } else {
-      // With JOINs: full scan, apply WHERE after JOINs
+      // With JOINs: scan FROM table, apply pushed filter if available
       for (const { pageId, slotIdx, values } of table.heap.scan()) {
-        const row = this._valuesToRow(values, table.schema, ast.from.alias || ast.from.table);
+        const row = this._valuesToRow(values, table.schema, workingAst.from.alias || workingAst.from.table);
         rows.push(row);
+      }
+      // Apply pushed-down filter for the FROM table
+      if (workingAst.from.filter) {
+        rows = rows.filter(row => this._evalExpr(workingAst.from.filter, row));
       }
     }
 
-    // Handle JOINs
-    for (const join of ast.joins || []) {
-      rows = this._executeJoin(rows, join, ast.from.alias || ast.from.table);
+    // Handle JOINs (using the potentially modified AST with pushed filters)
+    for (const join of workingAst.joins || []) {
+      rows = this._executeJoin(rows, join, workingAst.from.alias || workingAst.from.table);
     }
 
-    // WHERE filter after JOINs
-    if (hasJoins && ast.where) {
-      rows = rows.filter(row => this._evalExpr(ast.where, row));
+    // WHERE filter after JOINs (only remaining predicates)
+    if (hasJoins && workingAst.where) {
+      rows = rows.filter(row => this._evalExpr(workingAst.where, row));
     }
 
     // Aggregates / GROUP BY / Window functions
@@ -1774,6 +1788,7 @@ export class Database {
       for (const leftRow of leftRows) {
         for (const { values } of rightTable.heap.scan()) {
           const rightRow = this._valuesToRow(values, rightTable.schema, rightAlias);
+          if (join.filter && !this._evalExpr(join.filter, rightRow)) continue;
           result.push({ ...leftRow, ...rightRow });
         }
       }
@@ -1785,7 +1800,9 @@ export class Database {
       const rightMatchedSet = new Set();
       const rightRows = [];
       for (const { values } of rightTable.heap.scan()) {
-        rightRows.push(this._valuesToRow(values, rightTable.schema, rightAlias));
+        const row = this._valuesToRow(values, rightTable.schema, rightAlias);
+        if (join.filter && !this._evalExpr(join.filter, row)) continue;
+        rightRows.push(row);
       }
 
       for (const leftRow of leftRows) {
@@ -1814,7 +1831,7 @@ export class Database {
     // Try hash join for equi-join conditions
     const equiJoinKey = this._extractEquiJoinKey(join.on, leftAlias, rightAlias);
     if (equiJoinKey) {
-      const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType);
+      const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType, join.filter);
       if (hashResult) return hashResult;
     }
 
@@ -1823,6 +1840,8 @@ export class Database {
       let matched = false;
       for (const { values } of rightTable.heap.scan()) {
         const rightRow = this._valuesToRow(values, rightTable.schema, rightAlias);
+        // Apply pushed-down filter on right side
+        if (join.filter && !this._evalExpr(join.filter, rightRow)) continue;
         const combined = { ...leftRow, ...rightRow };
         if (this._evalExpr(join.on, combined)) {
           result.push(combined);
@@ -1888,7 +1907,7 @@ export class Database {
    * Hash join: build hash table on right table, probe with left rows.
    * O(n + m) instead of O(n * m).
    */
-  _hashJoin(leftRows, rightTable, keys, rightAlias, joinType) {
+  _hashJoin(leftRows, rightTable, keys, rightAlias, joinType, pushdownFilter) {
     const { leftKey, rightKey } = keys;
 
     // Build phase: hash the right table by join key
@@ -1900,6 +1919,11 @@ export class Database {
     }
 
     for (const { values } of rightTable.heap.scan()) {
+      // Apply pushed-down filter during build phase
+      if (pushdownFilter) {
+        const rightRow = this._valuesToRow(values, rightTable.schema, rightAlias);
+        if (!this._evalExpr(pushdownFilter, rightRow)) continue;
+      }
       const keyVal = values[rightKeyIdx];
       const keyStr = String(keyVal);
       if (!hashMap.has(keyStr)) hashMap.set(keyStr, []);

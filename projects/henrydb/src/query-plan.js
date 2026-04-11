@@ -12,6 +12,8 @@
 //     ->  Hash
 //           ->  Seq Scan on users  (cost=0.00..25.00 rows=500) (actual rows=500 time=1.2ms)
 
+import { pushdownPredicates } from './pushdown.js';
+
 /**
  * Base plan node. All operator nodes extend this.
  */
@@ -207,14 +209,33 @@ export class PlanBuilder {
       return new PlanNode('Result', { estimatedRows: 1 });
     }
 
-    let node = this._buildScanNode(ast);
-    node = this._addJoins(node, ast);
-    node = this._addFilter(node, ast);
-    node = this._addGroupBy(node, ast);
-    node = this._addWindowFunctions(node, ast);
-    node = this._addSort(node, ast);
-    node = this._addDistinct(node, ast);
-    node = this._addLimit(node, ast);
+    // Try predicate pushdown for joins
+    let workingAst = ast;
+    let pushedCount = 0;
+    if (ast.joins?.length && ast.where) {
+      try {
+        const { ast: pushedAst, pushed } = pushdownPredicates(ast);
+        if (pushed > 0) {
+          workingAst = pushedAst;
+          pushedCount = pushed;
+        }
+      } catch (e) {
+        // Pushdown failed — continue with original AST
+      }
+    }
+
+    let node = this._buildScanNode(workingAst);
+    node = this._addJoins(node, workingAst);
+    node = this._addFilter(node, workingAst);
+    node = this._addGroupBy(node, workingAst);
+    node = this._addWindowFunctions(node, workingAst);
+    node = this._addSort(node, workingAst);
+    node = this._addDistinct(node, workingAst);
+    node = this._addLimit(node, workingAst);
+
+    if (pushedCount > 0) {
+      node.setProp('predicatesPushed', pushedCount);
+    }
 
     return node;
   }
@@ -249,6 +270,14 @@ export class PlanBuilder {
       engine,
     });
     scan.alias = ast.from?.alias || null;
+
+    // Show pushed-down filter from predicate pushdown
+    if (ast.from?.filter) {
+      scan.filter = this._conditionToString(ast.from.filter);
+      const selectivity = this._estimateSelectivity(ast.from.filter);
+      scan.estimatedRows = Math.max(1, Math.ceil(rowCount * selectivity));
+    }
+
     return scan;
   }
 
@@ -321,6 +350,12 @@ export class PlanBuilder {
         engine: rightEngine,
       });
       rightScan.alias = join.alias || null;
+      // Show pushed-down filter on right side
+      if (join.filter) {
+        rightScan.filter = this._conditionToString(join.filter);
+        const sel = this._estimateSelectivity(join.filter);
+        rightScan.estimatedRows = Math.max(1, Math.ceil(rightRows * sel));
+      }
 
       // Detect equi-join for hash join
       const equiKey = join.on ? this._extractEquiJoinKey(join.on) : null;

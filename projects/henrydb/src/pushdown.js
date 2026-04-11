@@ -76,6 +76,19 @@ export function pushdownPredicates(ast) {
     tables.set(alias, join.table);
   }
 
+  // Collect outer join restrictions: don't push right-side predicates below LEFT JOIN
+  // or left-side predicates below RIGHT JOIN
+  const outerSideAliases = new Set();
+  for (const join of ast.joins) {
+    const jt = (join.joinType || join.type || 'INNER').toUpperCase();
+    const alias = join.alias || join.table;
+    if (jt === 'LEFT' || jt === 'LEFT JOIN') {
+      outerSideAliases.add(alias); // right side of LEFT JOIN
+    } else if (jt === 'RIGHT' || jt === 'RIGHT JOIN') {
+      outerSideAliases.add(fromName); // left side of RIGHT JOIN
+    }
+  }
+
   // Split WHERE into conjuncts
   const conjuncts = splitConjuncts(ast.where);
   
@@ -89,7 +102,8 @@ export function pushdownPredicates(ast) {
     // Can push down if it references exactly one table
     if (refs.size === 1) {
       const tableRef = [...refs][0];
-      if (tables.has(tableRef)) {
+      // Don't push if this is the outer (nullable) side of an outer join
+      if (tables.has(tableRef) && !outerSideAliases.has(tableRef)) {
         if (!tablePushdowns.has(tableRef)) tablePushdowns.set(tableRef, []);
         tablePushdowns.get(tableRef).push(conj);
         pushed++;
