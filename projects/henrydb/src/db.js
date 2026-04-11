@@ -1384,6 +1384,9 @@ export class Database {
             result[alias] = this._evalValue(col.expr || col, row);
           } else if (col.type === 'function_call') {
             result[alias] = this._evalValue(col, row);
+          } else if (col.type === 'window') {
+            // Window function values are pre-computed by _computeWindowFunctions
+            result[alias] = row[`__window_${alias}`];
           } else {
             result[alias] = this._evalValue(col, row);
           }
@@ -1595,11 +1598,15 @@ export class Database {
       
       // Handle aggregates / GROUP BY on GENERATE_SERIES results
       const gsHasAggregates = ast.columns.some(c => c.type === 'aggregate');
+      const gsHasWindow = ast.columns.some(c => c.type === 'window');
       if (ast.groupBy) {
         return this._selectWithGroupBy(ast, rows);
       }
       if (gsHasAggregates) {
         return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      }
+      if (gsHasWindow) {
+        rows = this._computeWindowFunctions(ast.columns, rows);
       }
       
       // Apply columns
@@ -1616,11 +1623,15 @@ export class Database {
       }
       // Handle aggregates / GROUP BY on subquery results
       const sqHasAggregates = ast.columns.some(c => c.type === 'aggregate');
+      const sqHasWindow = ast.columns.some(c => c.type === 'window');
       if (ast.groupBy) {
         return this._selectWithGroupBy(ast, rows);
       }
       if (sqHasAggregates) {
         return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      }
+      if (sqHasWindow) {
+        rows = this._computeWindowFunctions(ast.columns, rows);
       }
       return this._applySelectColumns(ast, rows);
     }

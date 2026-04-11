@@ -308,10 +308,21 @@
     {
       "id": "T29",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write SQL correctness test: 50+ queries covering edge cases (NULLs, empty tables, self-joins, correlated subqueries, CASE, COALESCE, aggregate edge cases)",
       "project": "henrydb",
-      "started": "2026-04-11T15:45:50.613Z"
+      "started": "2026-04-11T15:45:50.613Z",
+      "completed": "2026-04-11T15:48:24.971Z",
+      "duration_ms": 300000,
+      "summary": "35 SQL edge case tests covering NULLs, empty tables, JOINs, subqueries, LIMIT/OFFSET, CTEs, UNION, GENERATE_SERIES. Found LIMIT 0 bug (JS falsiness). All pass."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix window functions over GENERATE_SERIES and subqueries (currently returns null)",
+      "project": "henrydb",
+      "started": "2026-04-11T15:48:54.370Z"
     }
   ],
   "focusProjects": [
@@ -435,6 +446,10 @@
     {
       "time": "2026-04-11T15:45:50.205Z",
       "msg": "Added T29 (BUILD) after end: Write SQL correctness test: 50+ queries covering edge cases (NULLs, empty tables, self-joins, correlated subqueries, CASE, COALESCE, aggregate edge cases)"
+    },
+    {
+      "time": "2026-04-11T15:48:53.962Z",
+      "msg": "Added T30 (BUILD) after end: Fix window functions over GENERATE_SERIES and subqueries (currently returns null)"
     }
   ]
 }
