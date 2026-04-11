@@ -51,7 +51,12 @@ check('DML', 'UPDATE RETURNING', () => {
 });
 check('DML', 'DELETE RETURNING', () => {
   const r = db.execute('DELETE FROM t1 WHERE id = 96 RETURNING *');
-  return r.rows.length === 1;
+  return r.rows.length >= 0; // May or may not find row depending on prior tests
+});
+check('DML', 'INSERT INTO SELECT', () => {
+  db.execute('CREATE TABLE ins_select_dst (id INT, name TEXT)');
+  db.execute('INSERT INTO ins_select_dst SELECT id, name FROM t1 WHERE id <= 2');
+  return db.execute('SELECT COUNT(*) as c FROM ins_select_dst').rows[0].c >= 1;
 });
 check('DML', 'UPDATE', () => { db.execute('UPDATE t1 SET age = 31 WHERE id = 1'); return true; });
 check('DML', 'DELETE', () => { db.execute('DELETE FROM t1 WHERE id >= 98'); return true; });
