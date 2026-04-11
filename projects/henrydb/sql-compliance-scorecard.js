@@ -617,6 +617,10 @@ check('META', 'Simple CASE', () => {
 });
 check('META', 'SHOW COLUMNS', () => db.execute('SHOW COLUMNS FROM t1').rows.length > 0);
 check('META', 'DESCRIBE TABLE', () => db.execute('DESCRIBE t1').rows.length > 0);
+check('DATE', 'CURRENT_TIMESTAMP', () => db.execute('SELECT CURRENT_TIMESTAMP as ts').rows[0].ts !== null);
+check('GEN', 'GENERATE_SERIES float step', () => db.execute('SELECT * FROM GENERATE_SERIES(0, 1, 0.25)').rows.length === 5);
+check('GEN', 'GENERATE_SERIES large', () => db.execute('SELECT COUNT(*) as c FROM GENERATE_SERIES(1, 100)').rows[0].c === 100);
+check('SELECT+', 'Subquery in FROM', () => db.execute('SELECT * FROM (SELECT 1 as x, 2 as y) sub').rows[0].x === 1);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
