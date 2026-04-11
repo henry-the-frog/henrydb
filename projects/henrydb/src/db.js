@@ -16,6 +16,7 @@ import { PlanCache } from './plan-cache.js';
 import { PlanBuilder, PlanFormatter } from './query-plan.js';
 import { pushdownPredicates } from './pushdown.js';
 import { planToHTML } from './plan-html.js';
+import { IndexAdvisor } from './index-advisor.js';
 
 export class Database {
   constructor(options = {}) {
@@ -43,9 +44,16 @@ export class Database {
     this._nextTxId = 1;
     this._currentTxId = 0;  // 0 = auto-commit mode
     this._planCache = new PlanCache(256);
+    this._indexAdvisor = new IndexAdvisor(this);
   }
 
   execute(sql) {
+    // Handle RECOMMEND INDEXES command
+    const trimmed = sql.trim().toUpperCase();
+    if (trimmed === 'RECOMMEND INDEXES' || trimmed === 'RECOMMEND INDEXES;') {
+      return this._recommendIndexes();
+    }
+
     // Check plan cache first (only for SELECT)
     let ast = this._planCache.get(sql);
     if (!ast) {
@@ -55,6 +63,12 @@ export class Database {
         this._planCache.put(sql, ast);
       }
     }
+    
+    // Feed SELECTs to the index advisor
+    if (ast.type === 'SELECT') {
+      try { this._indexAdvisor.analyze(sql); } catch (e) { /* advisory, don't fail */ }
+    }
+    
     return this.execute_ast(ast);
   }
 
@@ -265,6 +279,27 @@ export class Database {
 
   planCacheStats() {
     return this._planCache.stats();
+  }
+
+  _recommendIndexes() {
+    const recs = this._indexAdvisor.recommend();
+    if (recs.length === 0) {
+      return {
+        type: 'ROWS',
+        rows: [{ recommendation: 'No index recommendations. Run more queries to build workload profile.', impact: '', sql: '' }],
+      };
+    }
+    return {
+      type: 'ROWS',
+      rows: recs.map(r => ({
+        table: r.table,
+        columns: r.columns.join(', '),
+        impact: r.level,
+        score: r.impact,
+        reason: r.reason,
+        sql: r.sql,
+      })),
+    };
   }
 
   /**
