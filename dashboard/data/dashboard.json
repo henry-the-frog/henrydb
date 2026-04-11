@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T14:50:31.147Z",
+  "generated": "2026-04-11T14:58:43.927Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Implement pageLSN: add LSN to page headers, per-page redo decisions, eliminate lastAppliedLSN hack",
-    "startedAt": "2026-04-11T14:50:31.147Z",
-    "taskId": "T16"
+    "completedAt": "2026-04-11T14:58:43.927Z",
+    "taskId": "T16",
+    "summary": "Implemented pageLSN: 4-byte LSN in every page header, per-page recovery decisions, backward compatible. Recovery now ARIES-style — skip up-to-date pages, only replay stale ones. Falls back to full redo for uncommitted txns. 5 new tests, 58/58 persistence tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3527,12 +3529,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
+    "blocksCompleted": 16,
     "blocksTotal": 13,
     "modeDistribution": {
       "THINK": 3,
       "PLAN": 2,
-      "BUILD": 6,
+      "BUILD": 7,
       "MAINTAIN": 2,
       "EXPLORE": 2
     }
