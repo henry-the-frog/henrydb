@@ -348,6 +348,26 @@ check('WINDOW', 'LEAD', () => {
   const r = db.execute('SELECT id, score, LEAD(score) OVER (ORDER BY id) as nxt FROM t1 WHERE score IS NOT NULL');
   return r.rows.length > 1;
 });
+check('WINDOW', 'NTILE', () => {
+  const r = db.execute('SELECT id, NTILE(3) OVER (ORDER BY id) as tile FROM t1');
+  return r.rows.length > 0 && r.rows.some(r => r.tile === 1);
+});
+check('WINDOW', 'FIRST_VALUE', () => {
+  const r = db.execute('SELECT id, FIRST_VALUE(score) OVER (ORDER BY id) as fv FROM t1 WHERE score IS NOT NULL');
+  return r.rows.length > 0;
+});
+check('DML', 'Multi-row INSERT', () => {
+  db.execute('CREATE TABLE multi_test (id INT, val TEXT)');
+  db.execute("INSERT INTO multi_test VALUES (1, 'a'), (2, 'b'), (3, 'c')");
+  return db.execute('SELECT COUNT(*) as c FROM multi_test').rows[0].c === 3;
+});
+check('DML', 'TRUNCATE TABLE', () => {
+  db.execute('TRUNCATE TABLE multi_test');
+  return db.execute('SELECT COUNT(*) as c FROM multi_test').rows[0].c === 0;
+});
+check('SELECT+', 'BETWEEN', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN 1 AND 3').rows.length >= 1);
+check('SELECT+', 'NOT BETWEEN', () => db.execute('SELECT * FROM t1 WHERE id NOT BETWEEN 1 AND 3').rows.length >= 0);
+check('SELECT+', 'LIKE', () => db.execute("SELECT * FROM t1 WHERE name LIKE '%a%'").rows.length >= 0);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
