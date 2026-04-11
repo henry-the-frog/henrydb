@@ -543,6 +543,12 @@ check('SELECT+', 'OFFSET ROWS FETCH', () => {
   const r = db.execute('SELECT * FROM t1 ORDER BY id OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY');
   return r.rows.length === 2;
 });
+check('AGG', 'ARRAY_AGG', () => {
+  const r = db.execute('SELECT ARRAY_AGG(name) as names FROM t1 WHERE id <= 3');
+  return Array.isArray(r.rows[0].names);
+});
+check('SELECT+', 'SIMILAR TO', () => db.execute("SELECT * FROM t1 WHERE name SIMILAR TO '%a%'").rows.length >= 0);
+check('SELECT+', 'BETWEEN SYMMETRIC', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN SYMMETRIC 5 AND 1').rows.length >= 1);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

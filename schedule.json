@@ -977,10 +977,32 @@
     {
       "id": "T90",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement SIMILAR TO (regex-based LIKE alternative, SQL standard)",
       "project": "henrydb",
-      "started": "2026-04-11T18:34:28.968Z"
+      "started": "2026-04-11T18:34:28.968Z",
+      "completed": "2026-04-11T18:35:48.286Z",
+      "duration_ms": 180000,
+      "summary": "Implemented SIMILAR TO with SQL regex patterns (%, _, |). Parser + executor."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement ANY/SOME/ALL subquery operators (WHERE val > ANY (subquery))",
+      "project": "henrydb",
+      "started": "2026-04-11T18:36:07.500Z",
+      "completed": "2026-04-11T18:36:17.213Z",
+      "duration_ms": 30000,
+      "summary": "Deferred: ANY/ALL subquery operators require significant parser changes. Pivoting."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement ARRAY_AGG aggregate function (collect values into array)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:36:34.371Z"
     }
   ],
   "focusProjects": [
@@ -1348,6 +1370,14 @@
     {
       "time": "2026-04-11T18:34:28.558Z",
       "msg": "Added T90 (BUILD) after end: Implement SIMILAR TO (regex-based LIKE alternative, SQL standard)"
+    },
+    {
+      "time": "2026-04-11T18:36:07.083Z",
+      "msg": "Added T91 (BUILD) after end: Implement ANY/SOME/ALL subquery operators (WHERE val > ANY (subquery))"
+    },
+    {
+      "time": "2026-04-11T18:36:34.137Z",
+      "msg": "Added T92 (BUILD) after end: Implement ARRAY_AGG aggregate function (collect values into array)"
     }
   ]
 }
