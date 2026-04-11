@@ -1855,7 +1855,7 @@ export class Database {
     // ORDER BY
     if (ast.orderBy) {
       rows.sort((a, b) => {
-        for (const { column, direction } of ast.orderBy) {
+        for (const { column, direction, nulls } of ast.orderBy) {
           let av, bv;
           if (aliasExprs.has(column)) {
             const expr = aliasExprs.get(column);
@@ -1870,7 +1870,13 @@ export class Database {
             av = this._resolveColumn(column, a);
             bv = this._resolveColumn(column, b);
           }
-          const cmp = av == null && bv == null ? 0 : av == null ? -1 : bv == null ? 1 : av < bv ? -1 : av > bv ? 1 : 0;
+          // NULLS FIRST: nulls sort before non-nulls; NULLS LAST: nulls sort after
+          // Default: NULLS FIRST for ASC, NULLS LAST for DESC (PostgreSQL convention)
+          const nullsFirst = nulls === 'FIRST' || (nulls == null && direction !== 'DESC');
+          if (av == null && bv == null) continue;
+          if (av == null) return nullsFirst ? -1 : 1;
+          if (bv == null) return nullsFirst ? 1 : -1;
+          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;

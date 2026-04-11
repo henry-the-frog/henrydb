@@ -1176,7 +1176,16 @@ export function parse(sql) {
       let dir = 'ASC';
       if (isKeyword('DESC')) { dir = 'DESC'; advance(); }
       else if (isKeyword('ASC')) { advance(); }
-      cols.push({ column: col, direction: dir });
+      let nulls = null; // null = default, 'FIRST' or 'LAST'
+      if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'NULLS') {
+        advance(); // consume NULLS
+        if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'FIRST') {
+          nulls = 'FIRST'; advance();
+        } else if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'LAST') {
+          nulls = 'LAST'; advance();
+        }
+      }
+      cols.push({ column: col, direction: dir, nulls });
     } while (match(','));
     return cols;
   }

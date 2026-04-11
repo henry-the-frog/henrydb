@@ -528,6 +528,15 @@ check('NULL', 'GROUP BY NULL', () => {
   const r = db.execute('SELECT val, COUNT(*) as cnt FROM null_test GROUP BY val');
   return r.rows.some(r => r.val === null);
 });
+check('NULL', 'ORDER BY NULLS LAST', () => {
+  const r = db.execute('SELECT val FROM null_test ORDER BY val NULLS LAST');
+  const vals = r.rows.map(r => r.val);
+  return vals[vals.length - 1] === null && vals[0] !== null;
+});
+check('NULL', 'ORDER BY NULLS FIRST', () => {
+  const r = db.execute('SELECT val FROM null_test ORDER BY val NULLS FIRST');
+  return r.rows[0].val === null;
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
