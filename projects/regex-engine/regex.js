@@ -587,6 +587,52 @@ function nfaToDfa(nfaStart) {
       }
     }
 
+    // === Alphabet refinement for overlapping transitions ===
+    // DOT matches any char (except \n), so it overlaps with all other transitions.
+    // Character classes may overlap with literals and other classes.
+    // We need to compute: for each "refined" transition, the union of all NFA target
+    // states from transitions that match.
+    
+    // Step 1: Find DOT entry (if any)
+    const dotEntry = transMap.get('DOT');
+    const dotStates = dotEntry ? dotEntry.states : [];
+    
+    // Step 2: For each specific transition (literal/class), add DOT targets to it
+    // This ensures that for a char matching both literal 'a' and DOT, the DFA target
+    // includes NFA states from both paths.
+    for (const [key, entry] of transMap) {
+      if (key !== 'DOT' && dotStates.length > 0) {
+        entry.states = [...entry.states, ...dotStates];
+      }
+    }
+    
+    // Step 3: Handle class ↔ literal overlaps
+    // For a literal 'a' that falls within a char class range, merge their states
+    const classEntries = [...transMap.entries()].filter(([k]) => k.startsWith('class:'));
+    const litEntries = [...transMap.entries()].filter(([k]) => k.startsWith('lit:'));
+    
+    for (const [classKey, classEntry] of classEntries) {
+      for (const [litKey, litEntry] of litEntries) {
+        // Check if the literal char matches the class
+        const litCh = litKey.slice(4); // remove 'lit:' prefix
+        if (matchesTransition(classEntry.on, litCh, 0, 1)) {
+          // Merge: literal should include class targets, class should include literal targets
+          const origLitStates = [...litEntry.states];
+          const origClassStates = [...classEntry.states];
+          for (const s of origClassStates) {
+            if (!litEntry.states.includes(s)) litEntry.states.push(s);
+          }
+          for (const s of origLitStates) {
+            if (!classEntry.states.includes(s)) classEntry.states.push(s);
+          }
+        }
+      }
+    }
+    
+    // Step 4: DOT should NOT include specific-only targets (it handles chars not matched
+    // by any specific transition). Keep DOT's original states only.
+    // This is already correct since we only modified specific entries above.
+
     for (const [, { on, states }] of transMap) {
       const closure = epsilonClosure(states);
       const closureKey = stateSetKey(closure);
@@ -626,22 +672,23 @@ function dfaMatch(dfaStart, input) {
   let current = dfaStart;
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
-    // Check all matching transitions (DOT can overlap with literals/classes)
-    let matchedTransitions = [];
+    let nextState = null;
+    // Prefer specific transitions (literal/class) over DOT
+    // DOT is the fallback for chars not matched by any specific transition
+    let dotTarget = null;
     for (const { on, to } of current.transitions) {
+      if (on === 'DOT') {
+        dotTarget = to;
+        continue;
+      }
       if (matchesTransition(on, ch, i, input.length)) {
-        matchedTransitions.push(to);
+        nextState = to;
+        break;
       }
     }
-    if (matchedTransitions.length === 0) return false;
-    if (matchedTransitions.length === 1) {
-      current = matchedTransitions[0];
-    } else {
-      // Multiple transitions match (DOT + literal overlap) — this shouldn't happen
-      // in a correct DFA, but we handle it by checking all paths
-      // Take the first match (prefer specifics over DOT by ordering)
-      current = matchedTransitions[0];
-    }
+    if (!nextState) nextState = (dotTarget && ch !== '\n') ? dotTarget : null;
+    if (!nextState) return false;
+    current = nextState;
   }
   return current.accepting;
 }
@@ -742,8 +789,8 @@ class Regex {
     this._hasEndAnchor = pattern.endsWith('$');
     this._hasDot = pattern.includes('.');
     this._hasCharClass = pattern.includes('[');
-    // Build DFA only for simple patterns (no anchors, dots, or char classes that may overlap)
-    if (!this._hasAnchors && !this._hasDot && !this._hasCharClass) {
+    // Build DFA for all non-anchor patterns (alphabet refinement handles overlaps)
+    if (!this._hasAnchors) {
       const dfa = nfaToDfa(this._nfa);
       this._dfa = minimizeDfa(dfa);
     }
