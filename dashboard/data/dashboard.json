@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T16:38:19.373Z",
+  "generated": "2026-04-11T16:44:12.542Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix FULL OUTER JOIN — returns undefined for all columns instead of actual values",
-    "completedAt": "2026-04-11T16:38:19.373Z",
-    "taskId": "T48",
-    "summary": "Implemented FULL OUTER JOIN — parser + executor. Tracks matched rows on both sides, adds unmatched rows with NULL columns. No regressions.",
-    "durationMs": 300000
+    "task": "Push compliance scorecard to 120+ checks: add JSON, recursive CTE, LATERAL, advanced window, RETURNING",
+    "startedAt": "2026-04-11T16:44:12.542Z",
+    "taskId": "T50"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3596,12 +3594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 48,
+    "blocksCompleted": 49,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 2,
-      "BUILD": 35,
+      "BUILD": 36,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

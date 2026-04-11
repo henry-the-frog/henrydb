@@ -205,6 +205,39 @@ check('SET', 'INTERSECT', () => db.execute('SELECT id FROM t1 WHERE id <= 2 INTE
 check('SET', 'EXCEPT', () => db.execute('SELECT id FROM t1 WHERE id <= 2 EXCEPT SELECT id FROM t1 WHERE id >= 2').rows.length === 1);
 check('WINDOW', 'NTILE', () => db.execute('SELECT NTILE(2) OVER (ORDER BY id) as bucket FROM t1 LIMIT 1').rows[0].bucket === 1);
 check('WINDOW', 'LAG', () => db.execute('SELECT LAG(id) OVER (ORDER BY id) as prev FROM t1 ORDER BY id LIMIT 2').rows[1].prev === 1);
+
+// --- JSON ---
+check('JSON', 'JSON_EXTRACT', () => {
+  db.execute("CREATE TABLE IF NOT EXISTS jcheck (id INT, data TEXT)");
+  db.execute("INSERT INTO jcheck VALUES (1, '{\"name\":\"test\",\"val\":42}')");
+  const r = db.execute("SELECT JSON_EXTRACT(data, '$.name') as name FROM jcheck WHERE id = 1");
+  return r.rows[0].name === 'test';
+});
+
+// --- Advanced Window ---
+check('WINDOW+', 'LEAD', () => {
+  const r = db.execute('SELECT id, LEAD(score) OVER (ORDER BY id) as next_score FROM t1 WHERE score IS NOT NULL ORDER BY id');
+  return r.rows.length >= 2;
+});
+check('WINDOW+', 'FIRST_VALUE', () => {
+  const r = db.execute('SELECT id, FIRST_VALUE(name) OVER (ORDER BY id) as first FROM t1 ORDER BY id');
+  return r.rows[0].first === 'Alice';
+});
+check('WINDOW+', 'DENSE_RANK', () => {
+  const r = db.execute('SELECT name, DENSE_RANK() OVER (ORDER BY age) as dr FROM t1 WHERE age IS NOT NULL ORDER BY age');
+  return r.rows.length > 0;
+});
+
+// --- Advanced SELECT ---
+check('SELECT+', 'Aliased subquery in FROM', () => {
+  const r = db.execute('SELECT cnt FROM (SELECT COUNT(*) as cnt FROM t1) sq');
+  return r.rows[0].cnt > 0;
+});
+check('SELECT+', 'Correlated subquery', () => {
+  const r = db.execute('SELECT name, (SELECT SUM(amount) FROM t2 WHERE t1_id = t1.id) as total FROM t1 WHERE id = 1');
+  return r.rows[0].total === 300;
+});
+
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
 
