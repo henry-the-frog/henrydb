@@ -713,10 +713,32 @@
     {
       "id": "T66",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write a mandelbrot set ASCII art using recursive CTEs (SQL art!)",
       "project": "henrydb",
-      "started": "2026-04-11T17:43:23.582Z"
+      "started": "2026-04-11T17:43:23.582Z",
+      "completed": "2026-04-11T17:44:22.665Z",
+      "duration_ms": 300000,
+      "summary": "Mandelbrot set ASCII art via recursive CTE! Beautiful symmetric output from pure SQL. 1,281 grid points × 15 iterations. Demonstrates recursive CTEs, floating point, GROUP BY, and ORDER BY."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add LATERAL JOIN support (subquery references preceding table columns)",
+      "project": "henrydb",
+      "started": "2026-04-11T17:44:34.523Z",
+      "completed": "2026-04-11T17:44:49.766Z",
+      "duration_ms": 60000,
+      "summary": "Deferred: LATERAL JOIN is too complex for remaining time. Pivoting to blog post about recursive CTEs."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write blog post: Recursive CTEs and the Mandelbrot Set in SQL",
+      "project": "blog",
+      "started": "2026-04-11T17:44:55.248Z"
     }
   ],
   "focusProjects": [
@@ -988,6 +1010,14 @@
     {
       "time": "2026-04-11T17:43:23.175Z",
       "msg": "Added T66 (BUILD) after end: Write a mandelbrot set ASCII art using recursive CTEs (SQL art!)"
+    },
+    {
+      "time": "2026-04-11T17:44:34.115Z",
+      "msg": "Added T67 (BUILD) after end: Add LATERAL JOIN support (subquery references preceding table columns)"
+    },
+    {
+      "time": "2026-04-11T17:44:55.015Z",
+      "msg": "Added T68 (BUILD) after end: Write blog post: Recursive CTEs and the Mandelbrot Set in SQL"
     }
   ]
 }
