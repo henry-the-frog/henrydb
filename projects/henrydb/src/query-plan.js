@@ -195,8 +195,10 @@ export class AppendNode extends PlanNode {
  * Build a plan tree from an AST and table metadata.
  */
 export class PlanBuilder {
-  constructor(database) {
+  constructor(database, options = {}) {
     this.db = database;
+    // Hypothetical indexes: [{table, columns, name}]
+    this.hypotheticalIndexes = options.hypotheticalIndexes || [];
   }
 
   /**
@@ -298,7 +300,25 @@ export class PlanBuilder {
     if (colName && colName.includes('.')) colName = colName.split('.').pop();
     if (!colName) return null;
 
-    // Check if this column has an index
+    // Check real indexes from indexCatalog
+    if (this.db.indexCatalog) {
+      for (const [idxName, meta] of this.db.indexCatalog) {
+        if (meta.table !== tableName) continue;
+        const idxCols = meta.columns || [meta.column];
+        if (idxCols[0] === colName) {
+          const selectivity = 1.0 / Math.max(1, this._getRowCount(table));
+          const estRows = Math.max(1, Math.ceil(this._getRowCount(table) * selectivity));
+          const cost = 4.0 + estRows * 0.01;
+          return new IndexScanNode(tableName, idxName, {
+            estimatedRows: estRows,
+            estimatedCost: cost,
+            indexCond: `${colName} = <value>`,
+          });
+        }
+      }
+    }
+
+    // Check legacy _indexes
     const indexes = this.db._indexes?.get(tableName);
     if (indexes) {
       for (const [idxName, idx] of indexes) {
@@ -325,6 +345,22 @@ export class PlanBuilder {
           estimatedRows: 1,
           estimatedCost: treeHeight * 0.5,
         });
+      }
+    }
+
+    // Check hypothetical indexes
+    for (const hyp of this.hypotheticalIndexes) {
+      if (hyp.table === tableName && hyp.columns[0] === colName) {
+        const selectivity = 1.0 / Math.max(1, this._getRowCount(table));
+        const estRows = Math.max(1, Math.ceil(this._getRowCount(table) * selectivity));
+        const cost = 4.0 + estRows * 0.01;
+        const node = new IndexScanNode(tableName, hyp.name || `hyp_${tableName}_${colName}`, {
+          estimatedRows: estRows,
+          estimatedCost: cost,
+          indexCond: `${colName} = <value>`,
+        });
+        node.setProp('hypothetical', true);
+        return node;
       }
     }
 

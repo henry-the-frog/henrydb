@@ -11,6 +11,7 @@
 //   // → [{ table: 'orders', columns: ['status'], improvement: 'high', sql: 'CREATE INDEX ...' }]
 
 import { parse } from './sql.js';
+import { PlanBuilder, PlanFormatter } from './query-plan.js';
 
 /**
  * IndexAdvisor — analyzes queries and recommends indexes.
@@ -366,5 +367,51 @@ export class IndexAdvisor {
     const t = this.db.tables.get(table);
     if (!t) return 0;
     return t.heap?._rowCount || t.heap?.tupleCount || 0;
+  }
+
+  /**
+   * Compare query plan with and without a hypothetical index.
+   * @param {string} sql - Query to analyze
+   * @param {Object} index - { table, columns, name }
+   * @returns {{ before: Object, after: Object, improvement: number }}
+   */
+  compareWithIndex(sql, index) {
+    let ast;
+    try {
+      ast = parse(sql);
+    } catch (e) {
+      return null;
+    }
+
+    // Plan without the hypothetical index
+    const builderBefore = new PlanBuilder(this.db);
+    const planBefore = builderBefore.buildPlan(ast);
+
+    // Plan with the hypothetical index
+    const builderAfter = new PlanBuilder(this.db, {
+      hypotheticalIndexes: [{ table: index.table, columns: index.columns, name: index.name || `hyp_idx` }],
+    });
+    const planAfter = builderAfter.buildPlan(ast);
+
+    const costBefore = planBefore.estimatedCost || 0;
+    const costAfter = planAfter.estimatedCost || 0;
+    const improvement = costBefore > 0 ? ((costBefore - costAfter) / costBefore * 100) : 0;
+
+    return {
+      before: {
+        plan: PlanFormatter.format(planBefore).join('\n'),
+        cost: Math.round(costBefore * 100) / 100,
+        rows: planBefore.estimatedRows,
+        type: planBefore.type,
+      },
+      after: {
+        plan: PlanFormatter.format(planAfter).join('\n'),
+        cost: Math.round(costAfter * 100) / 100,
+        rows: planAfter.estimatedRows,
+        type: planAfter.type,
+      },
+      costReduction: Math.round(improvement * 10) / 10,
+      sql: `CREATE INDEX ${index.name || `idx_${index.table}_${index.columns.join('_')}`} ON ${index.table} (${index.columns.join(', ')})`,
+    };
   }
 }
