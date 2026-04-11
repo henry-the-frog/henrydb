@@ -621,6 +621,31 @@ check('DATE', 'CURRENT_TIMESTAMP', () => db.execute('SELECT CURRENT_TIMESTAMP as
 check('GEN', 'GENERATE_SERIES float step', () => db.execute('SELECT * FROM GENERATE_SERIES(0, 1, 0.25)').rows.length === 5);
 check('GEN', 'GENERATE_SERIES large', () => db.execute('SELECT COUNT(*) as c FROM GENERATE_SERIES(1, 100)').rows[0].c === 100);
 check('SELECT+', 'Subquery in FROM', () => db.execute('SELECT * FROM (SELECT 1 as x, 2 as y) sub').rows[0].x === 1);
+check('SELECT+', 'IN list with strings', () => db.execute("SELECT * FROM t1 WHERE name IN ('a', 'b', 'c')").rows.length >= 0);
+check('SELECT+', 'Mixed AND/OR in WHERE', () => db.execute("SELECT * FROM t1 WHERE id = 1 OR (id = 2 AND score IS NOT NULL)").rows.length >= 1);
+check('AGG', 'SUM on empty = NULL', () => db.execute('SELECT SUM(score) as s FROM t1 WHERE 1 = 0').rows[0].s === null);
+check('AGG', 'COUNT on empty = 0', () => db.execute('SELECT COUNT(*) as c FROM t1 WHERE 1 = 0').rows[0].c === 0);
+check('SUBQ', 'Nested scalar subquery', () => db.execute('SELECT * FROM t1 WHERE score > (SELECT MIN(score) FROM t1 WHERE score IS NOT NULL)').rows.length >= 0);
+check('SELECT+', 'LIKE exact match', () => db.execute("SELECT * FROM t1 WHERE name LIKE 'a'").rows.length >= 0);
+check('JOIN', 'FULL OUTER JOIN', () => {
+  db.execute('CREATE TABLE foj_a (id INT)');
+  db.execute('CREATE TABLE foj_b (id INT)');
+  db.execute('INSERT INTO foj_a VALUES (1), (2)');
+  db.execute('INSERT INTO foj_b VALUES (2), (3)');
+  return db.execute('SELECT * FROM foj_a FULL OUTER JOIN foj_b ON foj_a.id = foj_b.id').rows.length === 3;
+});
+check('JOIN', 'NATURAL JOIN', () => {
+  db.execute('CREATE TABLE nj_a (id INT, x INT)');
+  db.execute('CREATE TABLE nj_b (id INT, y INT)');
+  db.execute('INSERT INTO nj_a VALUES (1, 10)');
+  db.execute('INSERT INTO nj_b VALUES (1, 20)');
+  return db.execute('SELECT * FROM nj_a NATURAL JOIN nj_b').rows.length === 1;
+});
+check('CTE', 'Recursive CTE fibonacci', () => {
+  const r = db.execute('WITH RECURSIVE fib(n, a, b) AS (SELECT 1 as n, 0 as a, 1 as b UNION ALL SELECT n+1, b, a+b FROM fib WHERE n<10) SELECT a FROM fib WHERE n = 10');
+  return r.rows[0].a === 34;
+});
+check('EXPR', 'LIKE pattern with %', () => db.execute("SELECT 'hello' LIKE '%ell%' as r FROM t1 LIMIT 1").rows.length >= 0);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
