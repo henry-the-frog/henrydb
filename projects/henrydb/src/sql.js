@@ -1471,10 +1471,11 @@ export function parse(sql) {
     const tableTok = advance();
     const table = tableTok.originalValue || tableTok.value;
     
-    // CREATE TABLE ... AS SELECT (CTAS)
+    // CREATE TABLE ... AS SELECT/WITH (CTAS)
     if (isKeyword('AS')) {
       advance(); // AS
-      const query = parseSelect();
+      // Support both SELECT and WITH (for CTEs)
+      const query = isKeyword('WITH') ? parseWith() : parseSelect();
       return { type: 'CREATE_TABLE_AS', table, query };
     }
     

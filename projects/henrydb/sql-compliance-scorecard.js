@@ -646,6 +646,10 @@ check('CTE', 'Recursive CTE fibonacci', () => {
   return r.rows[0].a === 34;
 });
 check('EXPR', 'LIKE pattern with %', () => db.execute("SELECT 'hello' LIKE '%ell%' as r FROM t1 LIMIT 1").rows.length >= 0);
+check('DDL', 'CTAS with recursive CTE', () => {
+  db.execute('CREATE TABLE ctas_rcte_test AS WITH RECURSIVE cnt(x) AS (SELECT 1 as x UNION ALL SELECT x + 1 FROM cnt WHERE x < 3) SELECT * FROM cnt');
+  return db.execute('SELECT COUNT(*) as c FROM ctas_rcte_test').rows[0].c === 3;
+});
 check('SELECT+', 'VALUES clause', () => db.execute("VALUES (1, 'a'), (2, 'b')").rows.length === 2);
 check('EXPR', 'CAST TEXT to INT', () => db.execute("SELECT CAST('42' AS INT) as r").rows[0].r === 42);
 check('EXPR', 'CAST TEXT to FLOAT', () => db.execute("SELECT CAST('3.14' AS FLOAT) as r").rows[0].r === 3.14);
