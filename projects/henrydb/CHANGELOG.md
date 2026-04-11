@@ -1,32 +1,69 @@
-# HenryDB Changelog
+# Changelog
 
-## 2026-04-10 — Test Stabilization & SQL Correctness
+## v1.1.0 (2026-04-11) — The 115-Task Saturday
 
-### Bug Fixes (14 bugs fixed)
-- **ARIES Recovery**: Fixed export alias typo (`ARIESRecoveryManager` → `ARIESRecovery`)
-- **Recovery Manager**: Fixed hardcoded LogTypes constants (COMMIT was 5, should be 3 from LogTypes)
-- **WAL Integration**: Fixed wrong COMMIT type constant in test (4 → 5)
-- **Raft**: `getLeader()` now returns leader with highest term (was returning first/partitioned leader)
-- **Raft**: Added public `startElection()` API, made `_startElection` resilient to missing cluster
-- **ARIES Recovery**: Added self-contained convenience API (`begin`/`write`/`commit`/`checkpoint`/`crashAndRecover`) with return value
-- **Adaptive Engine**: Fixed `SELECT *` — `_applyProjectAndLimit` didn't recognize `{type: 'star'}` AST node
-- **Query Cache**: `get()` was returning `{result, timestamp}` wrapper instead of just `result`
-- **Server**: Extended query protocol (Bind) wasn't invalidating query cache after mutations
-- **Server**: Added `QueryCache.getStats()` method, query log for `pg_stat_slow_queries`
-- **SQL Parser**: Added parenthesized expression support in `parsePrimary()` — fixes TPC-H queries
-- **SQL Engine**: `SUM()` over empty set now returns `NULL` (SQL standard, was returning 0)
-- **SQL Engine**: `BETWEEN` with `NULL` now returns `false` (was coercing NULL to 0 via JS semantics)
-- **SQL Engine**: Fixed NULL ordering in ORDER BY — 4 code paths updated (NULL is smallest, matching SQLite)
-- **SQL Engine**: GROUP BY output no longer leaks canonical aggregate names (e.g., `COUNT(*)` alongside alias `cnt`)
-- **Set Operations**: UNION/INTERSECT/EXCEPT now remap right SELECT's column names to match left's
+The biggest single-day update in HenryDB history. 115+ tasks, 250+ tests, 30+ bugs fixed, SQL compliance from 134 to 282 checks.
 
-### New Features
-- **SQL Correctness Fuzzer**: Differential testing against SQLite
-  - 16 query patterns: SELECT, aggregate, GROUP BY, JOIN, compound WHERE, DISTINCT, expressions, NULL tests, HAVING, multi-column GROUP BY, IN, BETWEEN, IN subquery, EXISTS, scalar subquery, UNION/INTERSECT/EXCEPT
-  - **10,800 random queries — 100% match with SQLite**
-  - Found 3 real bugs through fuzzing (SUM empty set, BETWEEN NULL, NULL ordering)
+### New SQL Features
+- **Recursive CTEs** (`WITH RECURSIVE`) — factorial, fibonacci, tree traversal, graph reachability, mandelbrot set
+- **CREATE TABLE AS SELECT** (CTAS) — create tables from query results with schema inference
+- **FULL OUTER JOIN** — complete outer join support
+- **NATURAL JOIN** — automatic join on shared column names
+- **JOIN USING** — join on named columns without table qualification
+- **STRING_AGG** — string aggregation with separator
+- **SUBSTR** — alias for SUBSTRING (PostgreSQL compatibility)
+- **EXP** — exponential math function
+- **SIMILAR TO** — SQL standard regex matching
+- **BETWEEN SYMMETRIC** — auto-swaps reversed bounds
+- **EXCEPT ALL / INTERSECT ALL** — bag semantics for set operations
+- **LIMIT ALL** — return all rows (no limit)
+- **FETCH FIRST N ROWS ONLY** — SQL:2008 standard paging syntax
+- **ORDER BY NULLS FIRST/LAST** — control NULL sort position
+- **UNIQUE column constraint** — enforce uniqueness in CREATE TABLE
+- **GROUP BY alias** — resolve SELECT aliases in GROUP BY
+- **table.* in JOINs** — qualified star expansion
 
-### Test Results
-- **5,567+ unit tests — all passing (was ~20 failing)**
-- **10,800 fuzzer queries — 100% SQLite match**
-- Key test files fixed: aries-recovery, recovery, wal-integration, raft, integration-stress, server-integration, server-index, server-knex, server-prepared-cache, server-slow-query, server-etl, server-migrations, server-stress, example-app, regression-tests, misc, projection
+### Bug Fixes (Critical)
+- **Literal parsing:** Numbers/strings in SELECT were parsed as column references (`SELECT 42` → column `42`)
+- **Duplicate expr names:** Multiple unnamed expressions shared the key `expr` (second overwrites first)
+- **Recursive CTE column loss:** Multi-column recursive CTEs lost columns after first iteration
+- **INSERT INTO SELECT mapping:** GROUP BY added extra keys, breaking positional column mapping
+- **NULLS FIRST/LAST with DESC:** Direction negation was applied to NULL comparison, swapping semantics
+- **pageLSN not persisted:** Recovery skipped already-applied changes but didn't track per-page
+- **Dead rows survived restart:** Old UPDATE versions not compacted during close/reopen
+- **Savepoint-rolled-back rows resurrected:** WAL replay recreated rows that should be gone
+- **PK indexes not rebuilt after recovery:** Point queries failed after WAL replay
+- **CTAS property mismatch:** Used wrong AST property names (ast.name vs ast.table)
+
+### Tests
+- 250+ new tests across 12 test files
+- 100-query SQL fuzzer (random query generation)
+- Integrated e-commerce analytics scenario (14 tests)
+- Recursive CTE suite (8 tests: factorial, fibonacci, tree, graph, powers, strings)
+- Ultimate SQL stress tests (10 tests combining CTEs + windows + subqueries + aggregates)
+- Optimizer correctness tests (20 tests comparing optimized vs unoptimized results)
+- Wire protocol end-to-end verification (every feature through pg client)
+- Persistence + restart verification for recursive CTEs
+
+### Documentation
+- 4 blog posts published to GitHub Pages
+- Interactive CLI (`node henrydb-cli.js`)
+- Performance benchmarks in README
+- SQL compliance scorecard: 282/282 (100%)
+- Feature showcase with 10+ example queries
+
+### Infrastructure
+- `package.json` with proper bin entries and exports
+- Blog pushed to GitHub Pages
+
+## v1.0.0 (2026-04-10) — Initial Release
+
+- SQL parser (recursive descent, 150+ keywords)
+- In-memory and persistent storage (WAL + fsync)
+- MVCC transactions (snapshots, hint bits)
+- PostgreSQL wire protocol (pg, psql, Knex compatible)
+- B+ Tree indexes with cost-based optimizer
+- Window functions (ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTILE, FIRST_VALUE)
+- CTEs, subqueries, GENERATE_SERIES
+- Full-text search with GIN indexes
+- EXPLAIN and EXPLAIN ANALYZE
