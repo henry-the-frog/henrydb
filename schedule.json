@@ -414,6 +414,14 @@
       "completed": "2026-04-11T16:16:18.348Z",
       "duration_ms": 300000,
       "summary": "Fixed 2 MVCC+persistence bugs: (1) dead rows survived reopen — added _compactDeadRows on close, (2) savepoint-rolledback rows resurrected — added compensating WAL DELETE records (simplified CLR). 7/7 transactional persistence tests pass."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write wire protocol persistence test: pg client + TransactionalDB + close/reopen + verify data",
+      "project": "henrydb",
+      "started": "2026-04-11T16:16:57.594Z"
     }
   ],
   "focusProjects": [
@@ -573,6 +581,10 @@
     {
       "time": "2026-04-11T16:12:11.087Z",
       "msg": "Added T38 (BUILD) after end: Fix MVCC UPDATE version counting bug: SUM counts both old and new versions after UPDATE in TransactionalDatabase"
+    },
+    {
+      "time": "2026-04-11T16:16:57.116Z",
+      "msg": "Added T39 (BUILD) after end: Write wire protocol persistence test: pg client + TransactionalDB + close/reopen + verify data"
     }
   ]
 }
