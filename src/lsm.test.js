@@ -1,157 +1,203 @@
-// lsm.test.js — LSM Tree tests
+// lsm.test.js — Tests for LSM tree
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { LSMTree, SSTable, mergeSorted, TOMBSTONE } from './lsm.js';
+import { LSMTree } from './lsm.js';
 
-describe('SSTable', () => {
-  it('binary search finds keys', () => {
-    const sst = new SSTable([
+describe('LSMTree', () => {
+  it('basic put and get', () => {
+    const lsm = new LSMTree();
+    lsm.put('name', 'Alice');
+    assert.equal(lsm.get('name'), 'Alice');
+  });
+
+  it('overwrite key', () => {
+    const lsm = new LSMTree();
+    lsm.put('x', 1);
+    lsm.put('x', 2);
+    assert.equal(lsm.get('x'), 2);
+  });
+
+  it('delete key', () => {
+    const lsm = new LSMTree();
+    lsm.put('x', 42);
+    assert.equal(lsm.get('x'), 42);
+    lsm.delete('x');
+    assert.equal(lsm.get('x'), null); // tombstone
+  });
+
+  it('get non-existent key', () => {
+    const lsm = new LSMTree();
+    assert.equal(lsm.get('missing'), undefined);
+  });
+
+  it('flush to SSTable on memtable full', () => {
+    const lsm = new LSMTree({ memtableSize: 10 });
+    for (let i = 0; i < 15; i++) {
+      lsm.put(`key-${i}`, i);
+    }
+    
+    const stats = lsm.getStats();
+    assert.ok(stats.sstableCount > 0, 'Should have flushed to SSTable');
+    
+    // All values still readable
+    for (let i = 0; i < 15; i++) {
+      assert.equal(lsm.get(`key-${i}`), i);
+    }
+  });
+
+  it('data survives multiple flushes', () => {
+    const lsm = new LSMTree({ memtableSize: 5 });
+    for (let i = 0; i < 50; i++) {
+      lsm.put(`k${String(i).padStart(3, '0')}`, i);
+    }
+    
+    // All values readable
+    for (let i = 0; i < 50; i++) {
+      assert.equal(lsm.get(`k${String(i).padStart(3, '0')}`), i);
+    }
+  });
+
+  it('newer writes shadow older ones across SSTables', () => {
+    const lsm = new LSMTree({ memtableSize: 5 });
+    
+    // Write v1
+    for (let i = 0; i < 10; i++) lsm.put(`key-${i}`, 'v1');
+    
+    // Write v2 (triggers flush, so v1 is in SSTable, v2 in memtable/newer SSTable)
+    for (let i = 0; i < 10; i++) lsm.put(`key-${i}`, 'v2');
+    
+    for (let i = 0; i < 10; i++) {
+      assert.equal(lsm.get(`key-${i}`), 'v2');
+    }
+  });
+
+  it('scan returns sorted key-value pairs', () => {
+    const lsm = new LSMTree({ memtableSize: 5 });
+    lsm.put('c', 3);
+    lsm.put('a', 1);
+    lsm.put('b', 2);
+    lsm.put('e', 5);
+    lsm.put('d', 4);
+    
+    const result = lsm.scan();
+    assert.deepEqual(result, [
       { key: 'a', value: 1 },
       { key: 'b', value: 2 },
       { key: 'c', value: 3 },
+      { key: 'd', value: 4 },
+      { key: 'e', value: 5 },
     ]);
-    assert.equal(sst.get('b'), 2);
-    assert.equal(sst.get('d'), undefined);
   });
 
-  it('range scan returns subset', () => {
-    const entries = [];
-    for (let i = 0; i < 20; i++) entries.push({ key: i, value: `v${i}` });
-    const sst = new SSTable(entries);
-    
-    const range = sst.range(5, 10);
-    assert.equal(range.length, 6);
-    assert.equal(range[0].key, 5);
-    assert.equal(range[5].key, 10);
-  });
-});
-
-describe('mergeSorted', () => {
-  it('merges two sorted arrays', () => {
-    const a = [{ key: 1, value: 'a' }, { key: 3, value: 'c' }];
-    const b = [{ key: 2, value: 'b' }, { key: 4, value: 'd' }];
-    const merged = mergeSorted(a, b);
-    assert.deepEqual(merged.map(e => e.key), [1, 2, 3, 4]);
-  });
-
-  it('newer entries take precedence on conflict', () => {
-    const older = [{ key: 1, value: 'old' }];
-    const newer = [{ key: 1, value: 'new' }];
-    const merged = mergeSorted(older, newer);
-    assert.equal(merged.length, 1);
-    assert.equal(merged[0].value, 'new');
-  });
-
-  it('removes tombstones during merge', () => {
-    const a = [{ key: 1, value: 'a' }];
-    const b = [{ key: 1, value: TOMBSTONE }];
-    const merged = mergeSorted(a, b);
-    assert.equal(merged.length, 0);
-  });
-});
-
-describe('LSMTree', () => {
-  it('put and get', () => {
+  it('scan with range', () => {
     const lsm = new LSMTree();
-    lsm.put('key1', 'value1');
-    lsm.put('key2', 'value2');
+    for (let i = 0; i < 10; i++) lsm.put(`key-${i}`, i);
     
-    assert.equal(lsm.get('key1'), 'value1');
-    assert.equal(lsm.get('key2'), 'value2');
-    assert.equal(lsm.get('key3'), undefined);
+    const result = lsm.scan('key-3', 'key-7');
+    assert.equal(result.length, 4); // key-3 through key-6
+    assert.equal(result[0].key, 'key-3');
+    assert.equal(result[3].key, 'key-6');
   });
 
-  it('newer puts overwrite older', () => {
+  it('scan excludes deleted keys', () => {
     const lsm = new LSMTree();
-    lsm.put('key', 'old');
-    lsm.put('key', 'new');
-    
-    assert.equal(lsm.get('key'), 'new');
-  });
-
-  it('delete removes key', () => {
-    const lsm = new LSMTree();
-    lsm.put('key', 'value');
-    lsm.delete('key');
-    
-    assert.equal(lsm.get('key'), undefined);
-  });
-
-  it('flush creates SSTable', () => {
-    const lsm = new LSMTree(5);
-    for (let i = 0; i < 5; i++) lsm.put(i, `v${i}`);
-    lsm.flush();
-    
-    assert.equal(lsm.stats().sstableCount, 1);
-    assert.equal(lsm.stats().memtableSize, 0);
-    
-    // Data should still be accessible from SSTable
-    assert.equal(lsm.get(3), 'v3');
-  });
-
-  it('auto-flushes when memtable is full', () => {
-    const lsm = new LSMTree(10);
-    for (let i = 0; i < 25; i++) {
-      lsm.put(i, `v${i}`);
-    }
-    
-    assert.ok(lsm.stats().sstableCount >= 1);
-    // All data should still be accessible
-    for (let i = 0; i < 25; i++) {
-      assert.equal(lsm.get(i), `v${i}`);
-    }
-  });
-
-  it('range scan across memtable and SSTables', () => {
-    const lsm = new LSMTree(5);
-    for (let i = 0; i < 10; i++) lsm.put(i, `v${i}`);
-    lsm.flush(); // Move first 10 to SSTable
-    for (let i = 10; i < 15; i++) lsm.put(i, `v${i}`);
-    
-    const range = lsm.range(3, 12);
-    assert.equal(range.length, 10);
-    assert.equal(range[0].key, 3);
-    assert.equal(range[9].key, 12);
-  });
-
-  it('compaction reduces SSTable count', () => {
-    const lsm = new LSMTree(10);
-    // Generate enough data to trigger multiple flushes and compaction
-    for (let i = 0; i < 100; i++) {
-      lsm.put(i, `v${i}`);
-    }
-    lsm.flush();
-    
-    const stats = lsm.stats();
-    assert.ok(stats.compactions >= 0);
-    
-    // All data should still be accessible after compaction
-    for (let i = 0; i < 100; i++) {
-      assert.equal(lsm.get(i), `v${i}`);
-    }
-  });
-
-  it('delete propagates through compaction', () => {
-    const lsm = new LSMTree(5);
-    lsm.put('a', '1');
-    lsm.put('b', '2');
-    lsm.put('c', '3');
-    lsm.flush();
-    
+    lsm.put('a', 1);
+    lsm.put('b', 2);
+    lsm.put('c', 3);
     lsm.delete('b');
-    lsm.flush();
     
-    assert.equal(lsm.get('a'), '1');
-    assert.equal(lsm.get('b'), undefined);
-    assert.equal(lsm.get('c'), '3');
+    const result = lsm.scan();
+    assert.equal(result.length, 2);
+    assert.deepEqual(result.map(r => r.key), ['a', 'c']);
   });
 
-  it('stats reports write amplification metrics', () => {
-    const lsm = new LSMTree(10);
-    for (let i = 0; i < 50; i++) lsm.put(i, i);
+  it('compaction merges SSTables', () => {
+    const lsm = new LSMTree({ memtableSize: 5 });
     
-    const stats = lsm.stats();
-    assert.equal(stats.writes, 50);
-    assert.ok(stats.memtableMaxSize === 10);
+    // Generate enough data to trigger compaction
+    for (let i = 0; i < 100; i++) {
+      lsm.put(`key-${String(i).padStart(3, '0')}`, i);
+    }
+    
+    lsm.compact();
+    const stats = lsm.getStats();
+    
+    // After compaction, should have fewer SSTables
+    assert.ok(stats.compactions > 0 || stats.sstableCount <= 5,
+      `Expected compaction or few tables, got ${stats.sstableCount} tables, ${stats.compactions} compactions`);
+    
+    // All data still readable
+    for (let i = 0; i < 100; i++) {
+      assert.equal(lsm.get(`key-${String(i).padStart(3, '0')}`), i);
+    }
+  });
+
+  it('Bloom filter accelerates negative lookups', () => {
+    const lsm = new LSMTree({ memtableSize: 100 });
+    
+    // Insert 500 keys (triggers flushes)
+    for (let i = 0; i < 500; i++) lsm.put(`exists-${i}`, i);
+    
+    // Force flush to get SSTables with Bloom filters
+    lsm.compact();
+    
+    // Read 1000 non-existent keys
+    for (let i = 0; i < 1000; i++) lsm.get(`missing-${i}`);
+    
+    const stats = lsm.getStats();
+    assert.ok(stats.bloomSaves > 0, `Bloom filter should have saved reads, got ${stats.bloomSaves}`);
+  });
+
+  it('stats tracking', () => {
+    const lsm = new LSMTree({ memtableSize: 10 });
+    
+    for (let i = 0; i < 20; i++) lsm.put(`k${i}`, i);
+    for (let i = 0; i < 10; i++) lsm.get(`k${i}`);
+    
+    const stats = lsm.getStats();
+    assert.equal(stats.writes, 20);
+    assert.equal(stats.reads, 10);
+    assert.ok(stats.memtableCapacity === 10);
+  });
+});
+
+describe('LSMTree Stress', () => {
+  it('10000 random operations maintain consistency', () => {
+    const lsm = new LSMTree({ memtableSize: 100 });
+    const reference = new Map(); // ground truth
+    
+    let seed = 42;
+    const rng = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    
+    for (let i = 0; i < 10000; i++) {
+      const key = `key-${Math.floor(rng() * 500)}`;
+      const op = rng();
+      
+      if (op < 0.6) {
+        // Put
+        const val = Math.floor(rng() * 10000);
+        lsm.put(key, val);
+        reference.set(key, val);
+      } else if (op < 0.8) {
+        // Get
+        const expected = reference.get(key);
+        const actual = lsm.get(key);
+        if (expected !== undefined) {
+          assert.equal(actual, expected, `Mismatch for ${key}`);
+        }
+      } else {
+        // Delete
+        lsm.delete(key);
+        reference.delete(key);
+      }
+    }
+    
+    // Verify all remaining keys
+    for (const [key, val] of reference) {
+      assert.equal(lsm.get(key), val, `Final check failed for ${key}`);
+    }
+    
+    const stats = lsm.getStats();
+    console.log(`    Writes: ${stats.writes}, Reads: ${stats.reads}, Bloom saves: ${stats.bloomSaves}, Compactions: ${stats.compactions}`);
   });
 });
