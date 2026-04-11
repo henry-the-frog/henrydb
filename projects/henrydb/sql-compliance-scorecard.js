@@ -44,6 +44,15 @@ check('DDL', 'ALTER TABLE DROP COLUMN', () => { db.execute('ALTER TABLE t1 DROP 
 // --- DML ---
 check('DML', 'INSERT', () => db.execute('INSERT INTO t1 VALUES (99, \'Test\', 20, 50)').count >= 0);
 check('DML', 'INSERT RETURNING', () => db.execute("INSERT INTO t1 VALUES (98, 'Ret', 21, 51) RETURNING *").rows.length === 1);
+check('DML', 'UPDATE RETURNING', () => {
+  db.execute("INSERT INTO t1 VALUES (96, 'UpdRet', 22, 52)");
+  const r = db.execute('UPDATE t1 SET age = 99 WHERE id = 96 RETURNING *');
+  return r.rows.length === 1 && r.rows[0].age === 99;
+});
+check('DML', 'DELETE RETURNING', () => {
+  const r = db.execute('DELETE FROM t1 WHERE id = 96 RETURNING *');
+  return r.rows.length === 1;
+});
 check('DML', 'UPDATE', () => { db.execute('UPDATE t1 SET age = 31 WHERE id = 1'); return true; });
 check('DML', 'DELETE', () => { db.execute('DELETE FROM t1 WHERE id >= 98'); return true; });
 check('DML', 'UPSERT (ON CONFLICT)', () => { db.execute("INSERT INTO t1 VALUES (1, 'Alice', 30, 90) ON CONFLICT (id) DO UPDATE SET age = 30"); return true; });
