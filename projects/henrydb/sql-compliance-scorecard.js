@@ -258,6 +258,14 @@ check('SELECT+', 'Correlated subquery', () => {
   const r = db.execute('SELECT name, (SELECT SUM(amount) FROM t2 WHERE t1_id = t1.id) as total FROM t1 WHERE id = 1');
   return r.rows[0].total === 300;
 });
+check('SELECT+', 'Multi-column ORDER BY', () => {
+  const r = db.execute('SELECT * FROM t1 ORDER BY age DESC, name ASC');
+  return r.rows.length > 0;
+});
+check('SELECT+', 'Nested CASE', () => {
+  const r = db.execute("SELECT CASE WHEN age IS NULL THEN 'unknown' ELSE CASE WHEN age > 25 THEN 'senior' ELSE 'junior' END END as level FROM t1 ORDER BY id LIMIT 3");
+  return r.rows.length === 3;
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
