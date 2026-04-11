@@ -615,6 +615,8 @@ check('META', 'Simple CASE', () => {
   const r = db.execute("SELECT CASE id WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'other' END as val FROM t1 LIMIT 1");
   return r.rows.length === 1;
 });
+check('META', 'SHOW COLUMNS', () => db.execute('SHOW COLUMNS FROM t1').rows.length > 0);
+check('META', 'DESCRIBE TABLE', () => db.execute('DESCRIBE t1').rows.length > 0);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
