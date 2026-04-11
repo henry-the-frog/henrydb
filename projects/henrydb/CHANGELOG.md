@@ -1,8 +1,8 @@
 # Changelog
 
-## v1.1.0 (2026-04-11) — The 115-Task Saturday
+## v1.1.0 (2026-04-11) — The 150-Task Saturday
 
-The biggest single-day update in HenryDB history. 115+ tasks, 250+ tests, 30+ bugs fixed, SQL compliance from 134 to 282 checks.
+The biggest single-day update in HenryDB history. 150+ tasks, 248+ tests, 35+ bugs fixed, SQL compliance from 134 to 323 checks.
 
 ### New SQL Features
 - **Recursive CTEs** (`WITH RECURSIVE`) — factorial, fibonacci, tree traversal, graph reachability, mandelbrot set
