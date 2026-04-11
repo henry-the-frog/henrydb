@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T02:50:04.799Z",
+  "generated": "2026-04-11T02:51:01.235Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: implement COPY TO STDOUT — export query results as TSV. Complements COPY FROM. Wire protocol sends CopyOutResponse then CopyData messages then CopyDone.",
-    "startedAt": "2026-04-11T02:50:04.799Z",
-    "taskId": "T227"
+    "completedAt": "2026-04-11T02:51:01.235Z",
+    "taskId": "T227",
+    "summary": "COPY TO STDOUT already implemented. Validated with 4 tests: TSV export, round-trip (COPY TO then FROM preserves data), column selection, performance (0.081ms/row). The full COPY pipeline works end-to-end.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2384,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 216,
+    "blocksCompleted": 217,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 160,
+      "BUILD": 161,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }
