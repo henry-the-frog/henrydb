@@ -44,6 +44,12 @@ check('DDL', 'CREATE TABLE AS SELECT', () => {
   db.execute('CREATE TABLE ctas_test AS SELECT id, name FROM t1 WHERE id <= 2');
   return db.execute('SELECT COUNT(*) as c FROM ctas_test').rows[0].c >= 1;
 });
+check('DDL', 'ALTER TABLE RENAME', () => {
+  db.execute('CREATE TABLE rename_src (id INT)');
+  db.execute('INSERT INTO rename_src VALUES (1)');
+  db.execute('ALTER TABLE rename_src RENAME TO rename_dst');
+  return db.execute('SELECT COUNT(*) as c FROM rename_dst').rows[0].c === 1;
+});
 
 // --- DML ---
 check('DML', 'INSERT', () => db.execute('INSERT INTO t1 VALUES (99, \'Test\', 20, 50)').count >= 0);
