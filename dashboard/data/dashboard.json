@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T15:18:10.813Z",
+  "generated": "2026-04-11T15:19:08.369Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Investigate and fix the 18 pre-existing test failures across 9 suites",
-    "completedAt": "2026-04-11T15:18:10.813Z",
-    "taskId": "T18",
-    "summary": "Fixed 14 of 18 test failures. Root causes: (1) query cache + adaptive engine bypassed MVCC in transactions — 8 tests fixed, (2) adaptive engine too broadly eligible (DISTINCT, OFFSET, NOT IN) — 3 tests, (3) EXPLAIN FORMAT naming mismatch — 3 tests. 4 pre-existing remain (UPSERT wire bug, concurrency).",
-    "durationMs": 900000
+    "task": "Fix UPSERT via wire protocol bug (stress-all-features test failure)",
+    "startedAt": "2026-04-11T15:19:08.369Z",
+    "taskId": "T19"
   },
   "schedule": {
     "date": "2026-04-11",

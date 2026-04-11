@@ -84,3 +84,16 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 
 **Root insight:** Each component worked correctly in isolation. Bugs lived in handoffs — where one subsystem assumed another's state. Integration testing > unit testing for databases.
 **Prevention:** ARIES recovery requires persistent LSN tracking. Always test the scary scenarios: tiny buffer pools, crash without close(), checkpoint+truncate+reopen.
+
+## 2026-04-11: Query Cache + Adaptive Engine Bypass MVCC
+
+**Bug:** Wire protocol server's query cache and adaptive engine served results that bypassed MVCC:
+- Query cache returned stale cached results inside BEGIN...COMMIT blocks (ignoring uncommitted changes)
+- Adaptive engine executed SELECTs without transaction context (no session.execute routing)
+- Together, these made UPDATE invisible to subsequent SELECT within the same transaction
+
+**Fix:** Skip cache and adaptive engine when `conn.txStatus === 'T'` (in-transaction)
+
+**Related:** Adaptive engine too broadly eligible — accepted DISTINCT, OFFSET, NOT IN queries but didn't implement them. Fix: exclusion checks in `_isAdaptiveEligible()`
+
+**Prevention:** Any query shortcut (cache, adaptive engine, query rewriter) must check transaction state. If in a transaction, MUST route through the session's MVCC layer.

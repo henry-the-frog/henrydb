@@ -196,6 +196,14 @@
       "completed": "2026-04-11T15:18:10.773Z",
       "duration_ms": 900000,
       "summary": "Fixed 14 of 18 test failures. Root causes: (1) query cache + adaptive engine bypassed MVCC in transactions — 8 tests fixed, (2) adaptive engine too broadly eligible (DISTINCT, OFFSET, NOT IN) — 3 tests, (3) EXPLAIN FORMAT naming mismatch — 3 tests. 4 pre-existing remain (UPSERT wire bug, concurrency)."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix UPSERT via wire protocol bug (stress-all-features test failure)",
+      "project": "henrydb",
+      "started": "2026-04-11T15:19:08.306Z"
     }
   ],
   "focusProjects": [
@@ -275,6 +283,10 @@
     {
       "time": "2026-04-11T14:59:46.243Z",
       "msg": "PLAN T17 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T15:19:07.865Z",
+      "msg": "Added T19 (BUILD) after end: Fix UPSERT via wire protocol bug (stress-all-features test failure)"
     }
   ]
 }

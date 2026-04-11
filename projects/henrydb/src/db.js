@@ -1182,11 +1182,15 @@ export class Database {
                 }
               }
               
-              // Write back to heap
+              // Write back to heap: delete old row, insert new one
               if (existingRid) {
-                const page = table.heap.pages[existingRid.pageId];
-                if (page && page.updateTuple) {
-                  page.updateTuple(existingRid.slotIdx, encodeTuple(newValues));
+                table.heap.delete(existingRid.pageId, existingRid.slotIdx);
+                const newRid = table.heap.insert(newValues);
+                
+                // Update primary key index
+                if (pkIdx >= 0 && table.indexes.has(table.schema[pkIdx].name)) {
+                  const idx = table.indexes.get(table.schema[pkIdx].name);
+                  idx.insert(newValues[pkIdx], newRid);
                 }
               }
               
