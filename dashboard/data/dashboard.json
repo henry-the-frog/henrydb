@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T14:59:58.801Z",
+  "generated": "2026-04-11T15:18:10.813Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Investigate and fix the 18 pre-existing test failures across 9 suites",
-    "startedAt": "2026-04-11T14:59:58.801Z",
-    "taskId": "T18"
+    "completedAt": "2026-04-11T15:18:10.813Z",
+    "taskId": "T18",
+    "summary": "Fixed 14 of 18 test failures. Root causes: (1) query cache + adaptive engine bypassed MVCC in transactions — 8 tests fixed, (2) adaptive engine too broadly eligible (DISTINCT, OFFSET, NOT IN) — 3 tests, (3) EXPLAIN FORMAT naming mismatch — 3 tests. 4 pre-existing remain (UPSERT wire bug, concurrency).",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 17,
+    "blocksCompleted": 18,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 2,
-      "BUILD": 7,
+      "BUILD": 8,
       "MAINTAIN": 2,
       "EXPLORE": 2
     }
