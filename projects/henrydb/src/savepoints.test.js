@@ -1,182 +1,294 @@
-// savepoints.test.js
-import { describe, test, beforeEach } from 'node:test';
+// savepoints.test.js — Tests for SAVEPOINT, ROLLBACK TO SAVEPOINT, RELEASE SAVEPOINT
+import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { SavepointManager } from './savepoints.js';
+import pg from 'pg';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { TransactionalDatabase } from './transactional-db.js';
+import { HenryDBServer } from './server.js';
 
-let spm;
-let state;
+const { Client } = pg;
 
-describe('SavepointManager', () => {
-  beforeEach(() => {
-    state = { counter: 0, items: [] };
-    spm = new SavepointManager({
-      snapshotFn: () => ({ counter: state.counter, items: [...state.items] }),
-      restoreFn: (snapshot) => {
-        state.counter = snapshot.counter;
-        state.items = [...snapshot.items];
-      },
+function getPort() {
+  return 24000 + Math.floor(Math.random() * 10000);
+}
+
+function freshDb() {
+  const dir = mkdtempSync(join(tmpdir(), 'henrydb-sp-'));
+  const db = TransactionalDatabase.open(dir);
+  db.execute("CREATE TABLE t (id INT, val INT)");
+  db.execute("INSERT INTO t VALUES (1, 10)");
+  db.execute("INSERT INTO t VALUES (2, 20)");
+  return { db, dir };
+}
+
+describe('Savepoints', () => {
+
+  describe('TransactionalDatabase API', () => {
+
+    it('basic SAVEPOINT and ROLLBACK TO', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("UPDATE t SET val = 100 WHERE id = 1");
+      s.execute("SAVEPOINT sp1");
+      s.execute("UPDATE t SET val = 200 WHERE id = 1");
+      
+      const during = s.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(during.rows[0].val, 200);
+      
+      s.execute("ROLLBACK TO SAVEPOINT sp1");
+      
+      const afterRollbackTo = s.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(afterRollbackTo.rows[0].val, 100, 'Should be at savepoint value, not original');
+      
+      s.commit();
+      
+      const afterCommit = db.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(afterCommit.rows[0].val, 100, 'Committed value should be savepoint value');
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
+    });
+
+    it('ROLLBACK TO preserves work before savepoint', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("UPDATE t SET val = 50 WHERE id = 2"); // Before savepoint
+      s.execute("SAVEPOINT sp1");
+      s.execute("UPDATE t SET val = 999 WHERE id = 2"); // After savepoint
+      s.execute("ROLLBACK TO SAVEPOINT sp1");
+      
+      const result = s.execute("SELECT val FROM t WHERE id = 2");
+      assert.equal(result.rows[0].val, 50, 'Pre-savepoint work should survive');
+      
+      s.commit();
+      const final = db.execute("SELECT val FROM t WHERE id = 2");
+      assert.equal(final.rows[0].val, 50);
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
+    });
+
+    it('nested savepoints', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("SAVEPOINT sp1");
+      s.execute("UPDATE t SET val = 100 WHERE id = 1");
+      
+      s.execute("SAVEPOINT sp2");
+      s.execute("UPDATE t SET val = 200 WHERE id = 1");
+      
+      s.execute("SAVEPOINT sp3");
+      s.execute("INSERT INTO t VALUES (3, 300)");
+      
+      // Rollback sp3 (removes INSERT)
+      s.execute("ROLLBACK TO SAVEPOINT sp3");
+      const r1 = s.execute("SELECT * FROM t WHERE id = 3");
+      assert.equal(r1.rows.length, 0, 'INSERT after sp3 should be undone');
+      
+      // Rollback sp2 (undoes val=200)
+      s.execute("ROLLBACK TO SAVEPOINT sp2");
+      const r2 = s.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(r2.rows[0].val, 100, 'Should be at sp2 value');
+      
+      // Rollback sp1 (undoes val=100)
+      s.execute("ROLLBACK TO SAVEPOINT sp1");
+      const r3 = s.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(r3.rows[0].val, 10, 'Should be at original value');
+      
+      s.commit();
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
+    });
+
+    it('RELEASE SAVEPOINT', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("SAVEPOINT sp1");
+      s.execute("UPDATE t SET val = 100 WHERE id = 1");
+      s.execute("RELEASE SAVEPOINT sp1");
+      
+      // Can't rollback to released savepoint
+      assert.throws(() => {
+        s.execute("ROLLBACK TO SAVEPOINT sp1");
+      }, /does not exist/);
+      
+      s.commit();
+      const final = db.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(final.rows[0].val, 100);
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
+    });
+
+    it('ROLLBACK TO then continue working', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("SAVEPOINT sp1");
+      s.execute("UPDATE t SET val = 999 WHERE id = 1");
+      s.execute("ROLLBACK TO SAVEPOINT sp1");
+      
+      // Continue with new work after rollback
+      s.execute("UPDATE t SET val = 42 WHERE id = 1");
+      s.commit();
+      
+      const final = db.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(final.rows[0].val, 42);
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
+    });
+
+    it('full transaction rollback undoes everything including savepoint work', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("SAVEPOINT sp1");
+      s.execute("UPDATE t SET val = 100 WHERE id = 1");
+      s.execute("RELEASE SAVEPOINT sp1"); // Released but still in tx
+      
+      s.rollback(); // Full rollback
+      
+      const final = db.execute("SELECT val FROM t WHERE id = 1");
+      assert.equal(final.rows[0].val, 10, 'Full rollback undoes even released savepoint work');
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
+    });
+
+    it('savepoint with INSERT then rollback', () => {
+      const { db, dir } = freshDb();
+      const s = db.session();
+      s.begin();
+      
+      s.execute("INSERT INTO t VALUES (3, 30)");
+      s.execute("SAVEPOINT sp1");
+      s.execute("INSERT INTO t VALUES (4, 40)");
+      s.execute("INSERT INTO t VALUES (5, 50)");
+      
+      s.execute("ROLLBACK TO SAVEPOINT sp1");
+      
+      const result = s.execute("SELECT * FROM t ORDER BY id");
+      assert.equal(result.rows.length, 3, 'Should have 3 rows (2 original + 1 before savepoint)');
+      
+      s.commit();
+      const final = db.execute("SELECT * FROM t ORDER BY id");
+      assert.equal(final.rows.length, 3);
+      assert.equal(final.rows[2].id, 3);
+      s.close();
+      db.close();
+      rmSync(dir, { recursive: true });
     });
   });
 
-  test('SAVEPOINT creates a savepoint', () => {
-    const result = spm.savepoint('sp1');
-    assert.equal(result.name, 'sp1');
-    assert.equal(result.depth, 1);
-    assert.ok(spm.has('sp1'));
-  });
-
-  test('nested savepoints increase depth', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    spm.savepoint('sp3');
-    assert.equal(spm.depth, 3);
-  });
-
-  test('ROLLBACK TO restores state', () => {
-    state.counter = 10;
-    state.items = ['a', 'b'];
-    spm.savepoint('sp1');
+  describe('Wire Protocol', () => {
+    let server, port, dir;
     
-    state.counter = 99;
-    state.items = ['a', 'b', 'c', 'd'];
+    before(async () => {
+      port = getPort();
+      dir = mkdtempSync(join(tmpdir(), 'henrydb-sp-wire-'));
+      server = new HenryDBServer({ port, dataDir: dir, transactional: true });
+      await server.start();
+      
+      const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+      await client.connect();
+      await client.query("CREATE TABLE t (id INT, val INT)");
+      await client.query("INSERT INTO t VALUES (1, 10)");
+      await client.query("INSERT INTO t VALUES (2, 20)");
+      await client.end();
+    });
     
-    spm.rollbackTo('sp1');
-    assert.equal(state.counter, 10);
-    assert.deepEqual(state.items, ['a', 'b']);
-  });
+    after(async () => {
+      if (server) await server.stop();
+      if (dir) rmSync(dir, { recursive: true });
+    });
 
-  test('ROLLBACK TO removes newer savepoints', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    spm.savepoint('sp3');
-    
-    spm.rollbackTo('sp1');
-    assert.equal(spm.depth, 1);
-    assert.ok(spm.has('sp1'));
-    assert.ok(!spm.has('sp2'));
-    assert.ok(!spm.has('sp3'));
-  });
+    it('SAVEPOINT + ROLLBACK TO through wire protocol', async () => {
+      const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+      await client.connect();
+      
+      await client.query('BEGIN');
+      await client.query('UPDATE t SET val = 100 WHERE id = 1');
+      await client.query('SAVEPOINT sp1');
+      await client.query('UPDATE t SET val = 200 WHERE id = 1');
+      await client.query('ROLLBACK TO SAVEPOINT sp1');
+      await client.query('COMMIT');
+      
+      const result = await client.query('SELECT val FROM t WHERE id = 1');
+      assert.equal(String(result.rows[0].val), '100');
+      
+      // Restore
+      await client.query('BEGIN');
+      await client.query('UPDATE t SET val = 10 WHERE id = 1');
+      await client.query('COMMIT');
+      await client.end();
+    });
 
-  test('ROLLBACK TO keeps the target savepoint', () => {
-    state.counter = 5;
-    spm.savepoint('sp1');
-    state.counter = 20;
-    
-    spm.rollbackTo('sp1');
-    assert.equal(state.counter, 5);
-    
-    // Can rollback to sp1 again
-    state.counter = 30;
-    spm.rollbackTo('sp1');
-    assert.equal(state.counter, 5);
-  });
+    it('nested savepoints through wire protocol', async () => {
+      const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+      await client.connect();
+      
+      await client.query('BEGIN');
+      await client.query('SAVEPOINT a');
+      await client.query('UPDATE t SET val = 100 WHERE id = 1');
+      await client.query('SAVEPOINT b');
+      await client.query('UPDATE t SET val = 200 WHERE id = 1');
+      
+      // Rollback to b
+      await client.query('ROLLBACK TO SAVEPOINT b');
+      const r1 = await client.query('SELECT val FROM t WHERE id = 1');
+      assert.equal(String(r1.rows[0].val), '100');
+      
+      // Rollback to a
+      await client.query('ROLLBACK TO SAVEPOINT a');
+      const r2 = await client.query('SELECT val FROM t WHERE id = 1');
+      assert.equal(String(r2.rows[0].val), '10');
+      
+      await client.query('COMMIT');
+      await client.end();
+    });
 
-  test('RELEASE SAVEPOINT removes it and newer', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    spm.savepoint('sp3');
-    
-    spm.release('sp2');
-    assert.equal(spm.depth, 1);
-    assert.ok(spm.has('sp1'));
-    assert.ok(!spm.has('sp2'));
-    assert.ok(!spm.has('sp3'));
-  });
-
-  test('RELEASE keeps older savepoints', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    
-    spm.release('sp2');
-    assert.ok(spm.has('sp1'));
-    assert.equal(spm.depth, 1);
-  });
-
-  test('duplicate savepoint name replaces', () => {
-    state.counter = 1;
-    spm.savepoint('sp1');
-    
-    state.counter = 2;
-    spm.savepoint('sp1'); // Replace
-    
-    state.counter = 3;
-    spm.rollbackTo('sp1');
-    assert.equal(state.counter, 2); // Restored to second savepoint
-  });
-
-  test('non-existent savepoint throws on ROLLBACK TO', () => {
-    assert.throws(() => spm.rollbackTo('nonexistent'), /does not exist/);
-  });
-
-  test('non-existent savepoint throws on RELEASE', () => {
-    assert.throws(() => spm.release('nonexistent'), /does not exist/);
-  });
-
-  test('clear removes all savepoints', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    const count = spm.clear();
-    assert.equal(count, 2);
-    assert.equal(spm.depth, 0);
-  });
-
-  test('list returns all active savepoints', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    
-    const list = spm.list();
-    assert.equal(list.length, 2);
-    assert.equal(list[0].name, 'sp1');
-    assert.equal(list[0].depth, 1);
-    assert.equal(list[1].name, 'sp2');
-    assert.equal(list[1].depth, 2);
-  });
-
-  test('case-insensitive names', () => {
-    spm.savepoint('MyPoint');
-    assert.ok(spm.has('mypoint'));
-    spm.rollbackTo('MYPOINT');
-  });
-
-  test('complex nested scenario', () => {
-    state.counter = 0;
-    state.items = [];
-
-    spm.savepoint('a');
-    state.counter = 1;
-    state.items.push('x');
-
-    spm.savepoint('b');
-    state.counter = 2;
-    state.items.push('y');
-
-    spm.savepoint('c');
-    state.counter = 3;
-    state.items.push('z');
-
-    // Rollback to b: should restore to state when b was created
-    // At b creation: counter=1, items=['x']
-    spm.rollbackTo('b');
-    assert.equal(state.counter, 1);
-    assert.deepEqual(state.items, ['x']);
-    assert.equal(spm.depth, 2); // a and b remain
-
-    // Now rollback to a
-    spm.rollbackTo('a');
-    assert.equal(state.counter, 0); // Original state at savepoint a
-    assert.deepEqual(state.items, []);
-    assert.equal(spm.depth, 1);
-  });
-
-  test('stats tracking', () => {
-    spm.savepoint('sp1');
-    spm.savepoint('sp2');
-    spm.rollbackTo('sp1');
-    spm.release('sp1');
-    
-    const stats = spm.getStats();
-    assert.equal(stats.created, 2);
-    assert.equal(stats.rolledBack, 1);
-    assert.equal(stats.released, 1);
+    it('error recovery with savepoints', async () => {
+      // PostgreSQL pattern: use savepoints for error recovery
+      const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+      await client.connect();
+      
+      await client.query('BEGIN');
+      await client.query('UPDATE t SET val = 50 WHERE id = 1');
+      await client.query('SAVEPOINT before_risky');
+      
+      // Simulate a risky operation that might fail
+      try {
+        await client.query('INSERT INTO nonexistent_table VALUES (1)');
+      } catch (e) {
+        // Expected error — rollback to savepoint
+        await client.query('ROLLBACK TO SAVEPOINT before_risky');
+      }
+      
+      // Continue with the transaction — the UPDATE should still be there
+      await client.query('COMMIT');
+      
+      const result = await client.query('SELECT val FROM t WHERE id = 1');
+      assert.equal(String(result.rows[0].val), '50');
+      
+      // Restore
+      await client.query('BEGIN');
+      await client.query('UPDATE t SET val = 10 WHERE id = 1');
+      await client.query('COMMIT');
+      await client.end();
+    });
   });
 });

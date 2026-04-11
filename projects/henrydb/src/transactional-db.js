@@ -574,7 +574,76 @@ export class TransactionSession {
   begin() {
     if (this._tx) throw new Error('Transaction already in progress');
     this._tx = this._tdb._mvcc.begin();
+    this._savepoints = new Map(); // name → { undoLogLen, writeSetSnapshot }
     return { type: 'OK', message: 'BEGIN' };
+  }
+
+  savepoint(name) {
+    if (!this._tx) throw new Error('No transaction in progress');
+    this._savepoints.set(name, {
+      undoLogLen: this._tx.undoLog.length,
+      writeSetSnapshot: new Set(this._tx.writeSet),
+    });
+    return { type: 'OK', message: `SAVEPOINT ${name}` };
+  }
+
+  rollbackToSavepoint(name) {
+    if (!this._tx) throw new Error('No transaction in progress');
+    const sp = this._savepoints.get(name);
+    if (!sp) throw new Error(`Savepoint "${name}" does not exist`);
+    
+    // Replay undo log from current position back to savepoint
+    for (let i = this._tx.undoLog.length - 1; i >= sp.undoLogLen; i--) {
+      try { this._tx.undoLog[i](); } catch (e) { /* ignore */ }
+    }
+    this._tx.undoLog.length = sp.undoLogLen;
+    
+    // Physically remove rows added after savepoint (new inserts/updates)
+    const addedKeys = new Set();
+    for (const key of this._tx.writeSet) {
+      if (!sp.writeSetSnapshot.has(key) && !key.endsWith(':del')) {
+        addedKeys.add(key);
+      }
+    }
+    for (const key of addedKeys) {
+      const parts = key.split(':');
+      const tableName = parts[0];
+      const pageId = parseInt(parts[1]);
+      const slotIdx = parseInt(parts[2]);
+      if (isNaN(pageId) || isNaN(slotIdx)) continue;
+      
+      const vm = this._tdb._versionMaps.get(tableName);
+      if (vm) {
+        const ver = vm.get(`${pageId}:${slotIdx}`);
+        if (ver && ver.xmin === this._tx.txId) {
+          const tableObj = this._tdb._db.tables.get(tableName);
+          if (tableObj && tableObj.heap._origDelete) {
+            try { tableObj.heap._origDelete(pageId, slotIdx); } catch (e) { /* ignore */ }
+          }
+          vm.delete(`${pageId}:${slotIdx}`);
+        }
+      }
+    }
+    
+    // Restore writeSet to savepoint state
+    this._tx.writeSet = new Set(sp.writeSetSnapshot);
+    
+    // Remove any savepoints created after this one
+    const names = [...this._savepoints.keys()];
+    let found = false;
+    for (const n of names) {
+      if (n === name) { found = true; continue; }
+      if (found) this._savepoints.delete(n);
+    }
+    
+    return { type: 'OK', message: `ROLLBACK TO SAVEPOINT ${name}` };
+  }
+
+  releaseSavepoint(name) {
+    if (!this._tx) throw new Error('No transaction in progress');
+    if (!this._savepoints.has(name)) throw new Error(`Savepoint "${name}" does not exist`);
+    this._savepoints.delete(name);
+    return { type: 'OK', message: `RELEASE SAVEPOINT ${name}` };
   }
 
   commit() {
@@ -609,6 +678,20 @@ export class TransactionSession {
     }
     if (trimmed === 'COMMIT') return this.commit();
     if (trimmed === 'ROLLBACK' || trimmed === 'ABORT') return this.rollback();
+    
+    // Savepoint support
+    if (trimmed.startsWith('SAVEPOINT ')) {
+      const name = sql.trim().replace(/^SAVEPOINT\s+/i, '').replace(/;$/, '').trim();
+      return this.savepoint(name);
+    }
+    if (trimmed.startsWith('ROLLBACK TO SAVEPOINT ') || trimmed.startsWith('ROLLBACK TO ')) {
+      const name = sql.trim().replace(/^ROLLBACK\s+TO\s+(?:SAVEPOINT\s+)?/i, '').replace(/;$/, '').trim();
+      return this.rollbackToSavepoint(name);
+    }
+    if (trimmed.startsWith('RELEASE SAVEPOINT ') || trimmed.startsWith('RELEASE ')) {
+      const name = sql.trim().replace(/^RELEASE\s+(?:SAVEPOINT\s+)?/i, '').replace(/;$/, '').trim();
+      return this.releaseSavepoint(name);
+    }
     
     // DDL: bypass MVCC
     if (this._tdb._isDDL(trimmed)) {
