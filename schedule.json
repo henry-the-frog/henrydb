@@ -1043,10 +1043,21 @@
     {
       "id": "T96",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push scorecard past 275: add FOREIGN KEY, transactional checks, more patterns",
       "project": "henrydb",
-      "started": "2026-04-11T18:43:51.900Z"
+      "started": "2026-04-11T18:43:51.900Z",
+      "completed": "2026-04-11T18:44:28.727Z",
+      "duration_ms": 120000,
+      "summary": "275/275 scorecard! Added FOREIGN KEY constraint, LPAD, RPAD, POSITION, ABS checks. All pass."
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement EXCEPT ALL and INTERSECT ALL (bag semantics vs set semantics)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:44:55.257Z"
     }
   ],
   "focusProjects": [
@@ -1438,6 +1449,10 @@
     {
       "time": "2026-04-11T18:43:51.490Z",
       "msg": "Added T96 (BUILD) after end: Push scorecard past 275: add FOREIGN KEY, transactional checks, more patterns"
+    },
+    {
+      "time": "2026-04-11T18:44:54.850Z",
+      "msg": "Added T97 (BUILD) after end: Implement EXCEPT ALL and INTERSECT ALL (bag semantics vs set semantics)"
     }
   ]
 }

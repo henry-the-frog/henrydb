@@ -440,12 +440,14 @@ export function parse(sql) {
       result = { type: 'UNION', left: result, right, all };
     } else if (isKeyword('INTERSECT')) {
       advance();
+      const all = isKeyword('ALL') ? (advance(), true) : false;
       const right = parseSelect();
-      result = { type: 'INTERSECT', left: result, right };
+      result = { type: 'INTERSECT', left: result, right, all };
     } else if (isKeyword('EXCEPT')) {
       advance();
+      const all = isKeyword('ALL') ? (advance(), true) : false;
       const right = parseSelect();
-      result = { type: 'EXCEPT', left: result, right };
+      result = { type: 'EXCEPT', left: result, right, all };
     }
 
     return result;

@@ -2685,10 +2685,26 @@ export class Database {
   _intersect(ast) {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
-    
-    // Remap right columns to left column names for consistent comparison
     const leftCols = leftResult.rows.length > 0 ? Object.keys(leftResult.rows[0]) : [];
     const rightRemapped = this._remapUnionColumns(rightResult.rows, leftCols);
+    
+    if (ast.all) {
+      // Bag semantics: count occurrences, take min
+      const rightCounts = new Map();
+      for (const row of rightRemapped) {
+        const key = JSON.stringify(row);
+        rightCounts.set(key, (rightCounts.get(key) || 0) + 1);
+      }
+      const rows = [];
+      for (const row of leftResult.rows) {
+        const key = JSON.stringify(row);
+        if ((rightCounts.get(key) || 0) > 0) {
+          rows.push(row);
+          rightCounts.set(key, rightCounts.get(key) - 1);
+        }
+      }
+      return { type: 'ROWS', rows };
+    }
     
     const rightKeys = new Set(rightRemapped.map(r => JSON.stringify(r)));
     const seen = new Set();
@@ -2700,17 +2716,33 @@ export class Database {
       }
       return false;
     });
-    
     return { type: 'ROWS', rows };
   }
 
   _except(ast) {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
-    
-    // Remap right columns to left column names for consistent comparison
     const leftCols = leftResult.rows.length > 0 ? Object.keys(leftResult.rows[0]) : [];
     const rightRemapped = this._remapUnionColumns(rightResult.rows, leftCols);
+    
+    if (ast.all) {
+      // Bag semantics: remove one copy per right row
+      const rightCounts = new Map();
+      for (const row of rightRemapped) {
+        const key = JSON.stringify(row);
+        rightCounts.set(key, (rightCounts.get(key) || 0) + 1);
+      }
+      const rows = [];
+      for (const row of leftResult.rows) {
+        const key = JSON.stringify(row);
+        if ((rightCounts.get(key) || 0) > 0) {
+          rightCounts.set(key, rightCounts.get(key) - 1);
+        } else {
+          rows.push(row);
+        }
+      }
+      return { type: 'ROWS', rows };
+    }
     
     const rightKeys = new Set(rightRemapped.map(r => JSON.stringify(r)));
     const seen = new Set();
