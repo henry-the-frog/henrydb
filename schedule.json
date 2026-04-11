@@ -1406,10 +1406,21 @@
     {
       "id": "T129",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add 5 more scorecard checks to hit 323",
       "project": "henrydb",
-      "started": "2026-04-11T19:35:58.351Z"
+      "started": "2026-04-11T19:35:58.351Z",
+      "completed": "2026-04-11T19:37:01.012Z",
+      "duration_ms": 120000,
+      "summary": "323/323 scorecard! Added ON CONFLICT DO NOTHING, COALESCE GROUP BY alias, derived table, COUNT(*) without GROUP BY, PARTITION BY."
+    },
+    {
+      "id": "T130",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push, update README to 323/323, update CURRENT.md to 150 tasks",
+      "project": "workspace",
+      "started": "2026-04-11T19:37:16.766Z"
     }
   ],
   "focusProjects": [
@@ -1933,6 +1944,10 @@
     {
       "time": "2026-04-11T19:35:58.116Z",
       "msg": "Added T129 (BUILD) after end: Add 5 more scorecard checks to hit 323"
+    },
+    {
+      "time": "2026-04-11T19:37:16.354Z",
+      "msg": "Added T130 (MAINTAIN) after end: Final git push, update README to 323/323, update CURRENT.md to 150 tasks"
     }
   ]
 }
