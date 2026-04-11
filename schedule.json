@@ -2464,10 +2464,21 @@
     {
       "id": "T229",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement a TPC-B-like benchmark — standard database transaction processing benchmark. Setup: branches, tellers, accounts tables. Workload: random account updates with balance transfer. Measure TPS (transactions per second) through wire protocol. This tells us the real-world performance of our MVCC + WAL + wire protocol stack.",
       "project": "henrydb",
-      "started": "2026-04-11T02:55:09.388Z"
+      "started": "2026-04-11T02:55:09.388Z",
+      "completed": "2026-04-11T02:56:21.144Z",
+      "duration_ms": 300000,
+      "summary": "TPC-B benchmark: 36 TPS through wire protocol with full MVCC+WAL+transactions. P50=22ms, P90=23ms. 100% success rate, perfect ACID consistency (branch balance = sum of account balances). Read QPS: 48.9. First real-world transaction benchmark for HenryDB."
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Blog post: HenryDB Performance — First Real-World Benchmark",
+      "project": "henrydb",
+      "started": "2026-04-11T02:56:35.757Z"
     }
   ],
   "focusProjects": [
@@ -3379,6 +3390,10 @@
     {
       "time": "2026-04-11T02:55:08.972Z",
       "msg": "Added T229 (BUILD) after end: HenryDB: implement a TPC-B-like benchmark — standard database transaction processing benchmark. Setup: branches, tellers, accounts tables. Workload: random account updates with balance transfer. Measure TPS (transactions per second) through wire protocol. This tells us the real-world performance of our MVCC + WAL + wire protocol stack."
+    },
+    {
+      "time": "2026-04-11T02:56:35.343Z",
+      "msg": "Added T230 (BUILD) after end: Blog post: HenryDB Performance — First Real-World Benchmark"
     }
   ]
 }
