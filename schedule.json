@@ -2515,6 +2515,14 @@
       "completed": "2026-04-11T03:10:06.806Z",
       "duration_ms": 120000,
       "summary": "pg_stat_activity, pg_stat_statements, pg_stat_user_tables, pg_stat_bgwriter all already implemented. Quick test confirmed: shows connection PIDs, state, current query, statement call counts. No new code needed."
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement row-level locking — SELECT FOR UPDATE and SELECT FOR SHARE. FOR UPDATE locks rows so other transactions cant modify them until commit. Essential for pessimistic concurrency control patterns.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:13:15.745Z"
     }
   ],
   "focusProjects": [
@@ -3442,6 +3450,10 @@
     {
       "time": "2026-04-11T03:09:29.060Z",
       "msg": "Added T233 (BUILD) after end: HenryDB: implement pg_stat_activity — query SELECT * FROM pg_stat_activity returns info about all active connections: pid, state (idle/active/idle in transaction), query, backend_start, query_start, tx_start. Useful for monitoring and debugging."
+    },
+    {
+      "time": "2026-04-11T03:13:15.507Z",
+      "msg": "Added T234 (BUILD) after end: HenryDB: implement row-level locking — SELECT FOR UPDATE and SELECT FOR SHARE. FOR UPDATE locks rows so other transactions cant modify them until commit. Essential for pessimistic concurrency control patterns."
     }
   ]
 }

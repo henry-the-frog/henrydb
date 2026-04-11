@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T03:10:06.846Z",
+  "generated": "2026-04-11T03:13:15.781Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: implement pg_stat_activity — query SELECT * FROM pg_stat_activity returns info about all active connections: pid, state (idle/active/idle in transaction), query, backend_start, query_start, tx_start. Useful for monitoring and debugging.",
-    "completedAt": "2026-04-11T03:10:06.846Z",
-    "taskId": "T233",
-    "summary": "pg_stat_activity, pg_stat_statements, pg_stat_user_tables, pg_stat_bgwriter all already implemented. Quick test confirmed: shows connection PIDs, state, current query, statement call counts. No new code needed.",
-    "durationMs": 120000
+    "task": "HenryDB: implement row-level locking — SELECT FOR UPDATE and SELECT FOR SHARE. FOR UPDATE locks rows so other transactions cant modify them until commit. Essential for pessimistic concurrency control patterns.",
+    "startedAt": "2026-04-11T03:13:15.781Z",
+    "taskId": "T234"
   },
   "schedule": {
     "date": "2026-04-10",

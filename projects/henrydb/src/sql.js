@@ -382,7 +382,37 @@ export function parse(sql) {
     if (isKeyword('LIMIT')) { advance(); limit = advance().value; }
     if (isKeyword('OFFSET')) { advance(); offset = advance().value; }
 
-    let result = { type: 'SELECT', distinct, columns, from, joins, where, groupBy, having, orderBy, limit, offset };
+    // FOR UPDATE / FOR SHARE / FOR NO KEY UPDATE / FOR KEY SHARE
+    let forUpdate = null;
+    if (isKeyword('FOR')) {
+      advance(); // FOR
+      const lockToken = advance();
+      const lockMode = lockToken.value.toUpperCase();
+      if (lockMode === 'UPDATE') {
+        forUpdate = 'UPDATE';
+      } else if (lockMode === 'SHARE') {
+        forUpdate = 'SHARE';
+      } else if (lockMode === 'NO') {
+        // FOR NO KEY UPDATE
+        advance(); // KEY
+        advance(); // UPDATE
+        forUpdate = 'NO KEY UPDATE';
+      } else if (lockMode === 'KEY') {
+        advance(); // SHARE
+        forUpdate = 'KEY SHARE';
+      }
+      // Optional: NOWAIT / SKIP LOCKED
+      if (isKeyword('NOWAIT')) {
+        advance();
+        forUpdate += ' NOWAIT';
+      } else if (isKeyword('SKIP')) {
+        advance(); // SKIP
+        advance(); // LOCKED
+        forUpdate += ' SKIP LOCKED';
+      }
+    }
+
+    let result = { type: 'SELECT', distinct, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate };
 
     // UNION / UNION ALL / INTERSECT / EXCEPT
     if (isKeyword('UNION')) {

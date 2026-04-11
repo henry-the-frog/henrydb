@@ -775,6 +775,9 @@ export class TransactionSession {
     
     // DML with transaction context
     if (this._tx) {
+      // FOR UPDATE: mark selected rows in writeSet
+      const isForUpdate = trimmed.includes('FOR UPDATE') || trimmed.includes('FOR SHARE');
+      
       // Use explicit transaction
       const prevTx = this._tdb._activeTx;
       this._tdb._activeTx = this._tx;
@@ -795,6 +798,43 @@ export class TransactionSession {
             this._tdb._mvcc.recordRead(this._tx.txId, key, this._tx.txId);
           }
         }
+        // Check for row lock conflicts: if this tx modified rows locked by another tx
+        if (isModify) {
+          for (const [, otherSession] of this._tdb._sessions) {
+            if (otherSession._tx && otherSession._tx !== this._tx && otherSession._tx.rowLocks) {
+              for (const [lockKey] of otherSession._tx.rowLocks) {
+                const baseKey = lockKey;
+                if (this._tx.writeSet.has(baseKey) || this._tx.writeSet.has(baseKey + ':del')) {
+                  throw new Error(`Write-write conflict on ${baseKey} (row locked by another transaction)`);
+                }
+              }
+            }
+          }
+        }
+        // FOR UPDATE: lock selected rows to prevent concurrent modification
+        if (isForUpdate && result && result.rows) {
+          const tableName = this._extractTableName(sql);
+          if (tableName) {
+            const vm = this._tdb._versionMaps.get(tableName);
+            if (vm) {
+              // Use a separate lock table (not xmax) to avoid visibility issues
+              if (!this._tx.rowLocks) this._tx.rowLocks = new Map();
+              for (const [key, ver] of vm) {
+                if (ver.xmax === 0) {
+                  const lockKey = `${tableName}:${key}`;
+                  // Check if another transaction already locked this row
+                  for (const [, otherSession] of this._tdb._sessions) {
+                    if (otherSession._tx && otherSession._tx !== this._tx && otherSession._tx.rowLocks?.has(lockKey)) {
+                      throw new Error(`Row lock conflict on ${lockKey}`);
+                    }
+                  }
+                  this._tx.rowLocks.set(lockKey, this._tx.txId);
+                  this._tx.writeSet.add(lockKey);
+                }
+              }
+            }
+          }
+        }
         return result;
       } finally {
         this._tdb._activeTx = prevTx;
@@ -810,5 +850,10 @@ export class TransactionSession {
     if (this._tx) try { this.rollback(); } catch (e) { /* ignore */ }
     this._tdb._sessions.delete(this.id);
     this._closed = true;
+  }
+
+  _extractTableName(sql) {
+    const match = sql.match(/FROM\s+(\w+)/i);
+    return match ? match[1].toLowerCase() : null;
   }
 }
