@@ -2453,10 +2453,21 @@
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement pg_notify trigger simulation — when LISTEN table_changes is active and a row is modified, automatically send a NOTIFY with JSON payload containing the changed data. Like a poor-mans logical replication.",
       "project": "henrydb",
-      "started": "2026-04-11T02:52:13.497Z"
+      "started": "2026-04-11T02:52:13.497Z",
+      "completed": "2026-04-11T02:53:47.036Z",
+      "duration_ms": 300000,
+      "summary": "Implemented automatic table change notifications. LISTEN table_changes receives JSON payloads for INSERT/UPDATE/DELETE with action, table name, count, timestamp. Self-exclusion prevents writer from getting its own notifications. 5/5 tests pass. Real-time CDC in ~35 lines of code."
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement a TPC-B-like benchmark — standard database transaction processing benchmark. Setup: branches, tellers, accounts tables. Workload: random account updates with balance transfer. Measure TPS (transactions per second) through wire protocol. This tells us the real-world performance of our MVCC + WAL + wire protocol stack.",
+      "project": "henrydb",
+      "started": "2026-04-11T02:55:09.388Z"
     }
   ],
   "focusProjects": [
@@ -3364,6 +3375,10 @@
     {
       "time": "2026-04-11T02:52:13.082Z",
       "msg": "Added T228 (BUILD) after end: HenryDB: implement pg_notify trigger simulation — when LISTEN table_changes is active and a row is modified, automatically send a NOTIFY with JSON payload containing the changed data. Like a poor-mans logical replication."
+    },
+    {
+      "time": "2026-04-11T02:55:08.972Z",
+      "msg": "Added T229 (BUILD) after end: HenryDB: implement a TPC-B-like benchmark — standard database transaction processing benchmark. Setup: branches, tellers, accounts tables. Workload: random account updates with balance transfer. Measure TPS (transactions per second) through wire protocol. This tells us the real-world performance of our MVCC + WAL + wire protocol stack."
     }
   ]
 }

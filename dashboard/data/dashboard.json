@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T02:52:13.560Z",
+  "generated": "2026-04-11T02:55:09.450Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: implement pg_notify trigger simulation — when LISTEN table_changes is active and a row is modified, automatically send a NOTIFY with JSON payload containing the changed data. Like a poor-mans logical replication.",
-    "startedAt": "2026-04-11T02:52:13.560Z",
-    "taskId": "T228"
+    "task": "HenryDB: implement a TPC-B-like benchmark — standard database transaction processing benchmark. Setup: branches, tellers, accounts tables. Workload: random account updates with balance transfer. Measure TPS (transactions per second) through wire protocol. This tells us the real-world performance of our MVCC + WAL + wire protocol stack.",
+    "startedAt": "2026-04-11T02:55:09.450Z",
+    "taskId": "T229"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2382,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 217,
+    "blocksCompleted": 218,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 161,
+      "BUILD": 162,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }
