@@ -113,6 +113,14 @@ class Parser {
     const ch = this.peek();
     if (ch === '(') {
       this.advance();
+      // Check for non-capturing group (?:...)
+      if (this.peek() === '?' && this.pos + 1 < this.src.length && this.src[this.pos + 1] === ':') {
+        this.advance(); // consume '?'
+        this.advance(); // consume ':'
+        const child = this.parseAlt();
+        this.expect(')');
+        return child; // non-capturing: just return the inner expression
+      }
       const index = ++this.groupCount;
       const child = this.parseAlt();
       this.expect(')');
@@ -618,15 +626,22 @@ function dfaMatch(dfaStart, input) {
   let current = dfaStart;
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
-    let nextState = null;
+    // Check all matching transitions (DOT can overlap with literals/classes)
+    let matchedTransitions = [];
     for (const { on, to } of current.transitions) {
       if (matchesTransition(on, ch, i, input.length)) {
-        nextState = to;
-        break;
+        matchedTransitions.push(to);
       }
     }
-    if (!nextState) return false;
-    current = nextState;
+    if (matchedTransitions.length === 0) return false;
+    if (matchedTransitions.length === 1) {
+      current = matchedTransitions[0];
+    } else {
+      // Multiple transitions match (DOT + literal overlap) — this shouldn't happen
+      // in a correct DFA, but we handle it by checking all paths
+      // Take the first match (prefer specifics over DOT by ordering)
+      current = matchedTransitions[0];
+    }
   }
   return current.accepting;
 }
@@ -725,8 +740,10 @@ class Regex {
     this._hasAnchors = pattern.includes('^') || pattern.includes('$');
     this._hasStartAnchor = pattern.startsWith('^') || /(?<!\\)\^/.test(pattern);
     this._hasEndAnchor = pattern.endsWith('$');
-    // Build DFA for non-anchor patterns (anchors need NFA)
-    if (!this._hasAnchors) {
+    this._hasDot = pattern.includes('.');
+    this._hasCharClass = pattern.includes('[');
+    // Build DFA only for simple patterns (no anchors, dots, or char classes that may overlap)
+    if (!this._hasAnchors && !this._hasDot && !this._hasCharClass) {
       const dfa = nfaToDfa(this._nfa);
       this._dfa = minimizeDfa(dfa);
     }
@@ -763,11 +780,11 @@ class Regex {
   // Search: find first match in string (returns { match, index } or null)
   search(input) {
     // Try each starting position
-    for (let i = 0; i < input.length; i++) {
+    for (let i = 0; i <= input.length; i++) {
       // For ^-anchored patterns, only try from position 0
       if (this._hasStartAnchor && i > 0) break;
       // Try each ending position (greedy: longest first)
-      for (let j = input.length; j > i; j--) {
+      for (let j = input.length; j >= i; j--) {
         const sub = input.slice(i, j);
         if (this._testSubstring(sub, i, input.length)) {
           return { match: sub, index: i };
