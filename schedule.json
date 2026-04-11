@@ -808,6 +808,14 @@
       "completed": "2026-04-11T18:10:36.324Z",
       "duration_ms": 180000,
       "summary": "Scorecard expanded to 208/208. Added GENERATE_SERIES step, JSON nested, UPSERT, CONCAT, MOD, modulo operator, integer division."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Verify indexes are used: EXPLAIN shows index scan vs seq scan",
+      "project": "henrydb",
+      "started": "2026-04-11T18:13:33.287Z"
     }
   ],
   "focusProjects": [
@@ -1111,6 +1119,10 @@
     {
       "time": "2026-04-11T18:09:20.098Z",
       "msg": "Added T74 (BUILD) after end: Expand scorecard categories: test JSON, GENERATE_SERIES, FTS, views, indexes"
+    },
+    {
+      "time": "2026-04-11T18:13:32.878Z",
+      "msg": "Added T75 (BUILD) after end: Verify indexes are used: EXPLAIN shows index scan vs seq scan"
     }
   ]
 }
