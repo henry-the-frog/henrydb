@@ -791,6 +791,10 @@ export function parse(sql) {
     }
     let alias = null;
     if (isKeyword('AS')) { advance(); alias = readAlias(); }
+    // NUMBER and STRING tokens without operators should be literals, not column refs
+    if (colTok.type === 'NUMBER' || colTok.type === 'STRING') {
+      return { type: 'expression', expr: { type: 'literal', value: col }, alias };
+    }
     return { type: 'column', name: col, alias };
   }
 

@@ -1589,9 +1589,10 @@ export class Database {
     // Handle SELECT without FROM (e.g., SELECT 1 AS n)
     if (!ast.from) {
       const row = {};
+      let noFromExprIdx = 0;
       for (const col of ast.columns) {
         if (col.type === 'expression') {
-          const name = col.alias || 'expr';
+          const name = col.alias || `expr_${noFromExprIdx++}`;
           row[name] = this._evalValue(col.expr, {});
         } else if (col.type === 'scalar_subquery') {
           const name = col.alias || 'subquery';
@@ -1723,12 +1724,13 @@ export class Database {
       if (ast.columns[0]?.type !== 'star') {
         rows = rows.map(row => {
           const result = {};
+          let viewExprIdx = 0;
           for (const col of ast.columns) {
             if (col.type === 'function') {
               const name = col.alias || `${col.func}(...)`;
               result[name] = this._evalFunction(col.func, col.args, row);
             } else if (col.type === 'expression') {
-              const name = col.alias || 'expr';
+              const name = col.alias || `expr_${viewExprIdx++}`;
               result[name] = this._evalValue(col.expr, row);
             } else if (col.type === 'window') {
               const name = col.alias || `${col.func}(${col.arg || ''})`;
@@ -1888,12 +1890,13 @@ export class Database {
         return clean;
       }
       const result = {};
+      let exprIdx = 0;
       for (const col of ast.columns) {
         if (col.type === 'function') {
           const name = col.alias || `${col.func}(...)`;
           result[name] = this._evalFunction(col.func, col.args, row);
         } else if (col.type === 'expression') {
-          const name = col.alias || 'expr';
+          const name = col.alias || `expr_${exprIdx++}`;
           result[name] = this._evalValue(col.expr, row);
         } else if (col.type === 'scalar_subquery') {
           const name = col.alias || 'subquery';

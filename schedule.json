@@ -680,10 +680,32 @@
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix table.* expansion in JOIN queries (fuzzer-found crash)",
       "project": "henrydb",
-      "started": "2026-04-11T17:33:28.627Z"
+      "started": "2026-04-11T17:33:28.627Z",
+      "completed": "2026-04-11T17:35:35.569Z",
+      "duration_ms": 600000,
+      "summary": "Implemented table.* (qualified star) in SELECT for JOINs. New QUALIFIED_STAR tokenizer, parser, and executor support. Before: parsed as multiplication. After: properly expands to table columns."
+    },
+    {
+      "id": "T64",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess HenryDB from a user's perspective: what's the best next investment?",
+      "project": "henrydb",
+      "started": "2026-04-11T17:35:53.873Z",
+      "completed": "2026-04-11T17:36:07.281Z",
+      "duration_ms": 120000,
+      "summary": "Best investment: recursive CTEs (WITH RECURSIVE). High-impact SQL feature that demonstrates advanced query semantics. Also: npm package for easy demo (npx henrydb)."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement WITH RECURSIVE (recursive CTEs) — factorial, fibonacci, tree traversal",
+      "project": "henrydb",
+      "started": "2026-04-11T17:36:12.438Z"
     }
   ],
   "focusProjects": [
@@ -943,6 +965,14 @@
     {
       "time": "2026-04-11T17:33:28.221Z",
       "msg": "Added T63 (BUILD) after end: Fix table.* expansion in JOIN queries (fuzzer-found crash)"
+    },
+    {
+      "time": "2026-04-11T17:35:53.468Z",
+      "msg": "Added T64 (THINK) after end: Assess HenryDB from a user's perspective: what's the best next investment?"
+    },
+    {
+      "time": "2026-04-11T17:36:12.205Z",
+      "msg": "Added T65 (BUILD) after end: Implement WITH RECURSIVE (recursive CTEs) — factorial, fibonacci, tree traversal"
     }
   ]
 }
