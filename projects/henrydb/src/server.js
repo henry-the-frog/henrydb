@@ -1295,22 +1295,55 @@ export class HenryDBServer {
     try {
       // Parse TSV (PostgreSQL default COPY format)
       const lines = buffer.split('\n').filter(l => l.length > 0 && l !== '\\.');
-      for (const line of lines) {
-        const values = line.split('\t').map(v => {
-          if (v === '\\N') return null;
-          return v;
-        });
+      
+      // Fast path: get table object and insert directly into heap
+      const tableObj = this.db.tables?.get(table) || (this.db._db && this.db._db.tables.get(table));
+      const schema = tableObj?.schema;
+      
+      if (tableObj && schema) {
+        // Direct heap insertion — bypass SQL parsing
+        for (const line of lines) {
+          const rawValues = line.split('\t');
+          const row = {};
+          for (let i = 0; i < columns.length && i < rawValues.length; i++) {
+            const v = rawValues[i];
+            if (v === '\\N') {
+              row[columns[i]] = null;
+            } else {
+              // Type coercion based on schema
+              const col = schema.find(c => c.name.toUpperCase() === columns[i].toUpperCase());
+              if (col && (col.type === 'INT' || col.type === 'INTEGER' || col.type === 'BIGINT' || col.type === 'FLOAT' || col.type === 'REAL' || col.type === 'DOUBLE' || col.type === 'NUMERIC' || col.type === 'DECIMAL')) {
+                row[columns[i]] = Number(v);
+              } else if (col && col.type === 'BOOLEAN') {
+                row[columns[i]] = v === 't' || v === 'true' || v === '1';
+              } else {
+                row[columns[i]] = v;
+              }
+            }
+          }
+          tableObj.heap.insert(Object.values(row));
+          rowCount++;
+        }
+        
+        // Invalidate query cache since we inserted data
+        this._queryCache.invalidateAll();
+      } else {
+        // Fallback: SQL INSERT per row
+        for (const line of lines) {
+          const values = line.split('\t').map(v => {
+            if (v === '\\N') return null;
+            return v;
+          });
 
-        // Build INSERT SQL
-        const vals = values.map((v, i) => {
-          if (v === null) return 'NULL';
-          // Try to detect numbers
-          if (/^-?\d+(\.\d+)?$/.test(v)) return v;
-          return `'${v.replace(/'/g, "''")}'`;
-        });
+          const vals = values.map((v, i) => {
+            if (v === null) return 'NULL';
+            if (/^-?\d+(\.\d+)?$/.test(v)) return v;
+            return `'${v.replace(/'/g, "''")}'`;
+          });
 
-        this.db.execute(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${vals.join(', ')})`);
-        rowCount++;
+          this.db.execute(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${vals.join(', ')})`);
+          rowCount++;
+        }
       }
 
       conn.copyState = null;

@@ -2420,10 +2420,21 @@
     {
       "id": "T225",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement LISTEN/NOTIFY — in-database pub/sub channels. LISTEN channel_name registers interest, NOTIFY channel_name sends to all listeners. Wire protocol sends NotificationResponse (B) async message to connected clients.",
       "project": "henrydb",
-      "started": "2026-04-11T02:44:21.999Z"
+      "started": "2026-04-11T02:44:21.999Z",
+      "completed": "2026-04-11T02:45:35.771Z",
+      "duration_ms": 180000,
+      "summary": "LISTEN/NOTIFY already implemented! Validated through wire protocol. All 5 tests pass: basic pub/sub, multi-listener broadcast, UNLISTEN, empty payload, multi-channel. The server has a full channel registry with proper cleanup on connection close. No new code needed."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement COPY FROM STDIN — bulk data loading via PostgreSQL COPY protocol. Parse CSV data from client, insert rows efficiently (batch insert, bypass per-row overhead). This is how real apps bulk-load data.",
+      "project": "henrydb",
+      "started": "2026-04-11T02:45:54.784Z"
     }
   ],
   "focusProjects": [
@@ -3319,6 +3330,10 @@
     {
       "time": "2026-04-11T02:44:21.582Z",
       "msg": "Added T225 (BUILD) after end: HenryDB: implement LISTEN/NOTIFY — in-database pub/sub channels. LISTEN channel_name registers interest, NOTIFY channel_name sends to all listeners. Wire protocol sends NotificationResponse (B) async message to connected clients."
+    },
+    {
+      "time": "2026-04-11T02:45:54.366Z",
+      "msg": "Added T226 (BUILD) after end: HenryDB: implement COPY FROM STDIN — bulk data loading via PostgreSQL COPY protocol. Parse CSV data from client, insert rows efficiently (batch insert, bypass per-row overhead). This is how real apps bulk-load data."
     }
   ]
 }
