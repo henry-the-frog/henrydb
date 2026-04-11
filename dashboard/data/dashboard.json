@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T18:01:22.136Z",
+  "generated": "2026-04-11T18:04:55.436Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Write the ultimate SQL stress test: recursive CTE + window + GROUP BY alias + CASE + JOIN",
-    "startedAt": "2026-04-11T18:01:22.136Z",
-    "taskId": "T72"
+    "completedAt": "2026-04-11T18:04:55.436Z",
+    "taskId": "T72",
+    "summary": "10 ultimate SQL tests, all pass. Fixed INSERT INTO SELECT positional mapping bug. 185 tests across 6 suites, zero failures.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 71,
+    "blocksCompleted": 72,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 2,
-      "BUILD": 55,
+      "BUILD": 56,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

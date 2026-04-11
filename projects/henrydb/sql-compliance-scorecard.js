@@ -368,6 +368,16 @@ check('DML', 'TRUNCATE TABLE', () => {
 check('SELECT+', 'BETWEEN', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN 1 AND 3').rows.length >= 1);
 check('SELECT+', 'NOT BETWEEN', () => db.execute('SELECT * FROM t1 WHERE id NOT BETWEEN 1 AND 3').rows.length >= 0);
 check('SELECT+', 'LIKE', () => db.execute("SELECT * FROM t1 WHERE name LIKE '%a%'").rows.length >= 0);
+check('SELECT+', 'IS NULL', () => db.execute('SELECT * FROM t1 WHERE score IS NULL').rows.length >= 0);
+check('SELECT+', 'IS NOT NULL', () => db.execute('SELECT * FROM t1 WHERE score IS NOT NULL').rows.length >= 0);
+check('DML', 'UPDATE RETURNING', () => {
+  db.execute('CREATE TABLE upd_ret_test (id INT PRIMARY KEY, val INT)');
+  db.execute('INSERT INTO upd_ret_test VALUES (1, 10)');
+  const r = db.execute('UPDATE upd_ret_test SET val = 20 WHERE id = 1 RETURNING *');
+  return r.rows.length === 1 && r.rows[0].val === 20;
+});
+check('DDL', 'DROP TABLE IF EXISTS', () => { db.execute('DROP TABLE IF EXISTS nonexistent_xyz_123'); return true; });
+check('EXPR', 'String concatenation ||', () => db.execute("SELECT 'hello' || ' ' || 'world' as r").rows[0].r === 'hello world');
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
