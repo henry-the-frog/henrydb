@@ -685,6 +685,7 @@ export class Database {
       type: c.type,
       primaryKey: c.primaryKey || false,
       notNull: c.notNull || false,
+      unique: c.unique || false,
       check: c.check || null,
       defaultValue: c.defaultValue ?? null,
       references: c.references || null,
@@ -703,6 +704,13 @@ export class Database {
     // Create index for primary key
     if (pkCol) {
       indexes.set(pkCol.name, new BPlusTree(32));
+    }
+    
+    // Create unique indexes
+    for (const col of schema) {
+      if (col.unique && !col.primaryKey) {
+        indexes.set(`unique_${col.name}`, new BPlusTree(32));
+      }
     }
 
     this.tables.set(ast.table, { heap, schema, indexes });
@@ -1215,6 +1223,18 @@ export class Database {
               }
               inserted++;
               continue;
+            }
+          }
+        }
+      }
+      
+      // Check UNIQUE constraints
+      for (let ci = 0; ci < table.schema.length; ci++) {
+        if (table.schema[ci].unique && values[ci] != null) {
+          for (const tuple of table.heap.scan()) {
+            const tv = tuple.values || tuple;
+            if (tv[ci] === values[ci]) {
+              throw new Error(`UNIQUE constraint violated on column ${table.schema[ci].name}: duplicate value '${values[ci]}'`);
             }
           }
         }

@@ -565,6 +565,11 @@ check('DDL', 'DEFAULT value', () => {
   const r = db.execute('SELECT * FROM def_test WHERE id = 1');
   return r.rows[0].status === 'active' && r.rows[0].count === 0;
 });
+check('DDL', 'UNIQUE column constraint', () => {
+  db.execute('CREATE TABLE uniq_test (id INT PRIMARY KEY, email TEXT UNIQUE)');
+  db.execute("INSERT INTO uniq_test VALUES (1, 'a@b.com')");
+  try { db.execute("INSERT INTO uniq_test VALUES (2, 'a@b.com')"); return false; } catch { return true; }
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

@@ -1021,10 +1021,21 @@
     {
       "id": "T94",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement DEFAULT values in CREATE TABLE and INSERT",
       "project": "henrydb",
-      "started": "2026-04-11T18:38:37.230Z"
+      "started": "2026-04-11T18:38:37.230Z",
+      "completed": "2026-04-11T18:39:47.330Z",
+      "duration_ms": 120000,
+      "summary": "DEFAULT values, CHECK, NOT NULL constraints all work. Scorecard 269/269. UNIQUE column constraint deferred (parser needs work)."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement UNIQUE column constraint in CREATE TABLE parser",
+      "project": "henrydb",
+      "started": "2026-04-11T18:40:02.313Z"
     }
   ],
   "focusProjects": [
@@ -1408,6 +1419,10 @@
     {
       "time": "2026-04-11T18:38:36.818Z",
       "msg": "Added T94 (BUILD) after end: Implement DEFAULT values in CREATE TABLE and INSERT"
+    },
+    {
+      "time": "2026-04-11T18:40:01.885Z",
+      "msg": "Added T95 (BUILD) after end: Implement UNIQUE column constraint in CREATE TABLE parser"
     }
   ]
 }

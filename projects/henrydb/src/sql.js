@@ -1467,12 +1467,14 @@ export function parse(sql) {
       const dataType = advance().value;
       let primaryKey = false;
       let notNull = false;
+      let unique = false;
       let check = null;
       let defaultVal = null;
       let references = null;
       // Parse column constraints
       while (true) {
         if (isKeyword('PRIMARY')) { advance(); expect('KEYWORD', 'KEY'); primaryKey = true; }
+        else if (isKeyword('UNIQUE')) { advance(); unique = true; }
         else if (isKeyword('NOT')) { advance(); expect('KEYWORD', 'NULL'); notNull = true; }
         else if (isKeyword('CHECK')) {
           advance();
@@ -1505,7 +1507,7 @@ export function parse(sql) {
         }
         else break;
       }
-      columns.push({ name, type: dataType, primaryKey, notNull, check, defaultValue: defaultVal, references });
+      columns.push({ name, type: dataType, primaryKey, notNull, unique, check, defaultValue: defaultVal, references });
     } while (match(','));
     expect(')');
     // Optional: USING BTREE | USING HEAP (default: HEAP)
