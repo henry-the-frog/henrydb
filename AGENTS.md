@@ -79,6 +79,19 @@ This is a **hard gate**, not a suggestion. Do not continue BUILD tasks until you
 
 Feature factories feel productive but they're low-learning. Depth > breadth.
 
+### Daily Log Convention
+Daily logs (`memory/YYYY-MM-DD.md`) can be as verbose as needed during real-time work. But every log **MUST** end with a structured summary:
+
+```markdown
+## Evening Summary
+**Key accomplishments:** (3-5 bullets, what shipped)
+**Bugs found:** (list with root causes)
+**Things learned:** (genuine insights, not "I built X")
+**Tomorrow's focus:** (1-2 priorities)
+```
+
+Max 20 lines. This is what reflections and future sessions actually read — the raw log above is write-only archival. If you're reading a past daily log, start from `## Evening Summary`.
+
 ## Red Lines
 
 - Don't exfiltrate private data. Ever.
