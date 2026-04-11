@@ -11,7 +11,19 @@
 - **riscv-architecture.md** — RISC-V instruction encoding, pipeline hazards, branch prediction, cache behavior, Sv32 page tables, Tomasulo OoO (uses: 1, created: 2026-04-07)
 
 
-## HenryDB SQL Correctness — 2026-04-10
+## HenryDB Query Optimizer Pipeline — 2026-04-10 Session C
+- **Tree-structured EXPLAIN:** 13 PlanNode types (SeqScan, IndexScan, HashJoin, NestedLoop, Sort, Aggregate, etc.)
+- **Predicate pushdown:** Wired into execution (not just plan display). Outer join safety: NEVER push right-side preds below LEFT JOIN.
+- **Hypothetical indexes:** PlanBuilder accepts proposed indexes for what-if analysis. IndexAdvisor.compareWithIndex() shows cost reduction.
+- **Index advisor → RECOMMEND INDEXES → APPLY RECOMMENDED INDEXES:** Full pipeline from workload analysis to auto-creation.
+- **Query statistics:** pg_stat_statements equivalent. SHOW QUERY STATS, SHOW SLOW QUERIES.
+- **EXPLAIN formats:** TEXT (default), TREE (new), HTML (SVG tree viz), JSON.
+- **HTTP endpoints:** /explain (interactive web UI), /dashboard (perf dashboard with slow queries + index recs).
+- **Key bug:** Outer join pushdown trap. `WHERE o.id IS NULL` on LEFT JOIN right side means "no match", NOT null in column. Pushing it below the join breaks semantics.
+- **AST gotcha:** Parser uses COMPARE/EQ not binary/= for some expressions. Both must be handled.
+- **Row count:** Use `table.heap._rowCount`, not `count()` or `rows.length`.
+
+
 - **SQL Fuzzer:** Differential testing against SQLite, 10,800 random queries, 17 SQL patterns
 - **Key bugs found by fuzzer:**
   - SUM() over empty set returned 0 instead of NULL (SQL standard)
