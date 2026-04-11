@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T02:24:52.156Z",
+  "generated": "2026-04-11T02:25:16.804Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Implement UPDATE rollback in TransactionalDatabase: before delete+insert in _update, save old row data in tx.undoLog. On rollback, restore old rows. Test with BEGIN/UPDATE/ROLLBACK cycle.",
-    "completedAt": "2026-04-11T02:24:52.156Z",
-    "taskId": "T220",
-    "summary": "Fixed UPDATE rollback through wire protocol. Root cause: query cache was not invalidated on ROLLBACK or COMMIT, so cached SELECT results from during a transaction persisted after rollback. Fix: (1) Added invalidateAll() to QueryCache, (2) Call invalidateAll() on both COMMIT and ROLLBACK in server interceptor. Also validated that TransactionalDatabase MVCC already handles UPDATE rollback correctly via xmax marking + undoLog. 13 new tests (7 API + 6 wire protocol) all pass. Zero regressions.",
-    "durationMs": 600000
+    "task": "Stress test UPDATE rollback: concurrent UPDATEs, partial rollback, mixed INSERT+UPDATE+DELETE rollback, bank transfer with intentional rollback",
+    "startedAt": "2026-04-11T02:25:16.804Z",
+    "taskId": "T221"
   },
   "schedule": {
     "date": "2026-04-10",
