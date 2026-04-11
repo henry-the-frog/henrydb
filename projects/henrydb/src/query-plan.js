@@ -805,6 +805,43 @@ export class PlanFormatter {
     return PlanFormatter._nodeToJSON(root);
   }
 
+  /**
+   * Format as YAML.
+   */
+  static toYAML(root) {
+    return PlanFormatter._nodeToYAML(root, 0);
+  }
+
+  static _nodeToYAML(node, indent) {
+    const pad = '  '.repeat(indent);
+    const lines = [];
+    lines.push(`${pad}- Node Type: ${PlanFormatter._nodeLabel(node)}`);
+    if (node.estimatedCost != null) {
+      lines.push(`${pad}  Startup Cost: ${node.startupCost || 0}`);
+      lines.push(`${pad}  Total Cost: ${node.estimatedCost.toFixed(2)}`);
+    }
+    if (node.estimatedRows != null) lines.push(`${pad}  Plan Rows: ${node.estimatedRows}`);
+    if (node.table) lines.push(`${pad}  Relation Name: ${node.table}`);
+    if (node.alias) lines.push(`${pad}  Alias: ${node.alias}`);
+    if (node.indexName) lines.push(`${pad}  Index Name: ${node.indexName}`);
+    if (node.hashCond) lines.push(`${pad}  Hash Cond: "${node.hashCond}"`);
+    if (node.filter) lines.push(`${pad}  Filter: "${node.filter}"`);
+    if (node.indexCond) lines.push(`${pad}  Index Cond: "${node.indexCond}"`);
+    if (node.sortKeys?.length) lines.push(`${pad}  Sort Key: [${node.sortKeys.map(k => `"${k.column} ${k.direction}"`).join(', ')}]`);
+    if (node.groupKeys?.length) lines.push(`${pad}  Group Key: [${node.groupKeys.map(k => `"${k}"`).join(', ')}]`);
+    if (node.actualRows != null) {
+      lines.push(`${pad}  Actual Rows: ${node.actualRows}`);
+      if (node.actualTime != null) lines.push(`${pad}  Actual Total Time: ${node.actualTime.toFixed(3)}`);
+    }
+    if (node.children.length > 0) {
+      lines.push(`${pad}  Plans:`);
+      for (const child of node.children) {
+        lines.push(PlanFormatter._nodeToYAML(child, indent + 2));
+      }
+    }
+    return lines.join('\n');
+  }
+
   static _nodeToJSON(node) {
     const result = {
       'Node Type': node.type,

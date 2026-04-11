@@ -537,3 +537,25 @@ describe('PlanFormatter - DOT output', () => {
     assert.ok(dot.includes('age > 21'));
   });
 });
+
+describe('PlanFormatter - YAML output', () => {
+  it('generates valid YAML', () => {
+    const scan = new SeqScanNode('users', { estimatedRows: 100, estimatedCost: 10 });
+    scan.filter = 'active = 1';
+    const yaml = PlanFormatter.toYAML(scan);
+    assert.ok(yaml.includes('Node Type:'));
+    assert.ok(yaml.includes('Seq Scan on users'));
+    assert.ok(yaml.includes('Plan Rows: 100'));
+    assert.ok(yaml.includes('Filter: "active = 1"'));
+  });
+
+  it('nests children under Plans:', () => {
+    const scan = new SeqScanNode('t', { estimatedRows: 50 });
+    const sort = new SortNode([{ column: 'id', direction: 'ASC' }], { estimatedRows: 50 });
+    sort.addChild(scan);
+    const yaml = PlanFormatter.toYAML(sort);
+    assert.ok(yaml.includes('Plans:'));
+    assert.ok(yaml.includes('Sort Key:'));
+    assert.ok(yaml.includes('Seq Scan'));
+  });
+});
