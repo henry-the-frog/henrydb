@@ -319,10 +319,21 @@
     {
       "id": "T30",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix window functions over GENERATE_SERIES and subqueries (currently returns null)",
       "project": "henrydb",
-      "started": "2026-04-11T15:48:54.370Z"
+      "started": "2026-04-11T15:48:54.370Z",
+      "completed": "2026-04-11T15:51:28.088Z",
+      "duration_ms": 240000,
+      "summary": "Fixed window functions over GENERATE_SERIES and subqueries. Two bugs: (1) _applySelectColumns didnt handle window type, (2) virtual source paths didnt call _computeWindowFunctions. 57/57 tests pass."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write comprehensive virtual source query test: verify all query features work with GENERATE_SERIES and subqueries",
+      "project": "henrydb",
+      "started": "2026-04-11T15:51:44.196Z"
     }
   ],
   "focusProjects": [
@@ -450,6 +461,10 @@
     {
       "time": "2026-04-11T15:48:53.962Z",
       "msg": "Added T30 (BUILD) after end: Fix window functions over GENERATE_SERIES and subqueries (currently returns null)"
+    },
+    {
+      "time": "2026-04-11T15:51:43.788Z",
+      "msg": "Added T31 (BUILD) after end: Write comprehensive virtual source query test: verify all query features work with GENERATE_SERIES and subqueries"
     }
   ]
 }
