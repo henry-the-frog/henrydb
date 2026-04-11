@@ -429,10 +429,21 @@
     {
       "id": "T40",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Count new tests added today. Update scratch notes with MVCC+persistence lesson.",
       "project": "henrydb",
-      "started": "2026-04-11T16:18:52.356Z"
+      "started": "2026-04-11T16:18:52.356Z",
+      "completed": "2026-04-11T16:19:43.754Z",
+      "duration_ms": 120000,
+      "summary": "113 new tests today. Wrote mvcc-persistence-lessons.md documenting 3 interaction bugs at boundary between in-memory MVCC state and on-disk persistence."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Wire protocol torture test: 100 inserts, updates, deletes across 5 restart cycles via pg client",
+      "project": "henrydb",
+      "started": "2026-04-11T16:20:11.050Z"
     }
   ],
   "focusProjects": [
@@ -600,6 +611,10 @@
     {
       "time": "2026-04-11T16:18:51.945Z",
       "msg": "Added T40 (BUILD) after end: Count new tests added today. Update scratch notes with MVCC+persistence lesson."
+    },
+    {
+      "time": "2026-04-11T16:20:10.642Z",
+      "msg": "Added T41 (BUILD) after end: Wire protocol torture test: 100 inserts, updates, deletes across 5 restart cycles via pg client"
     }
   ]
 }
