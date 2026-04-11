@@ -1655,12 +1655,15 @@ export class Database {
 
       // Handle aggregates / GROUP BY on view results
       const hasAggregates = ast.columns.some(c => c.type === 'aggregate');
+      const hasWindow = ast.columns.some(c => c.type === 'window');
       if (ast.groupBy) {
-        // Re-use groupby logic but with view rows
         return this._selectWithGroupBy(ast, rows);
       }
       if (hasAggregates) {
         return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      }
+      if (hasWindow) {
+        rows = this._computeWindowFunctions(ast.columns, rows);
       }
 
       // ORDER BY
@@ -1695,6 +1698,9 @@ export class Database {
             } else if (col.type === 'expression') {
               const name = col.alias || 'expr';
               result[name] = this._evalValue(col.expr, row);
+            } else if (col.type === 'window') {
+              const name = col.alias || `${col.func}(${col.arg || ''})`;
+              result[name] = row[`__window_${name}`];
             } else {
               const name = col.alias || col.name;
               result[name] = row[col.name] !== undefined ? row[col.name] : row[name];
