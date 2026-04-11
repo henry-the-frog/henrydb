@@ -33,9 +33,9 @@ db.execute('INSERT INTO t2 VALUES (2, 1, 200)');
 db.execute('INSERT INTO t2 VALUES (3, 2, 150)');
 
 // --- DDL ---
-check('DDL', 'CREATE TABLE', () => { db.execute('CREATE TABLE ddl_test (id INT PRIMARY KEY)'); return true; });
-check('DDL', 'CREATE TABLE IF NOT EXISTS', () => { db.execute('CREATE TABLE IF NOT EXISTS ddl_test (id INT)'); return true; });
-check('DDL', 'DROP TABLE', () => { db.execute('DROP TABLE ddl_test'); return true; });
+check('DDL', 'CREATE TABLE', () => { db.execute('CREATE TABLE ddl_test_1 (id INT PRIMARY KEY)'); return true; });
+check('DDL', 'CREATE TABLE IF NOT EXISTS', () => { db.execute('CREATE TABLE IF NOT EXISTS ddl_test_1 (id INT)'); return true; });
+check('DDL', 'DROP TABLE', () => { db.execute('DROP TABLE ddl_test_1'); return true; });
 check('DDL', 'CREATE INDEX', () => { db.execute('CREATE INDEX idx_name ON t1 (name)'); return true; });
 check('DDL', 'CREATE VIEW', () => { db.execute('CREATE VIEW v1 AS SELECT * FROM t1 WHERE age > 20'); return true; });
 check('DDL', 'ALTER TABLE ADD COLUMN', () => { db.execute('ALTER TABLE t1 ADD COLUMN email TEXT'); return true; });
@@ -246,8 +246,8 @@ check('WINDOW', 'LAG', () => db.execute('SELECT LAG(id) OVER (ORDER BY id) as pr
 
 // --- JSON ---
 check('JSON', 'JSON_EXTRACT', () => {
-  db.execute("CREATE TABLE IF NOT EXISTS jcheck (id INT, data TEXT)");
-  db.execute("INSERT INTO jcheck VALUES (1, '{\"name\":\"test\",\"val\":42}')");
+  db.execute("CREATE TABLE IF NOT EXISTS jcheck (id INT PRIMARY KEY, data TEXT)");
+  try { db.execute("INSERT INTO jcheck VALUES (1, '{\"name\":\"test\",\"val\":42}')"); } catch {}
   const r = db.execute("SELECT JSON_EXTRACT(data, '$.name') as name FROM jcheck WHERE id = 1");
   return r.rows[0].name === 'test';
 });
