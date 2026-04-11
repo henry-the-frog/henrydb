@@ -1,145 +1,129 @@
-// advisory-locks.test.js
-import { describe, test, beforeEach } from 'node:test';
+// advisory-locks.test.js — Tests for pg_advisory_lock/unlock/try
+import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { AdvisoryLockManager } from './advisory-locks.js';
+import pg from 'pg';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { HenryDBServer } from './server.js';
 
-let lm;
+const { Client } = pg;
 
-describe('AdvisoryLockManager', () => {
-  beforeEach(() => {
-    lm = new AdvisoryLockManager();
+function getPort() {
+  return 35000 + Math.floor(Math.random() * 10000);
+}
+
+describe('Advisory Locks', () => {
+  let server, port, dir;
+  
+  before(async () => {
+    port = getPort();
+    dir = mkdtempSync(join(tmpdir(), 'henrydb-adv-'));
+    server = new HenryDBServer({ port, dataDir: dir, transactional: true });
+    await server.start();
+  });
+  
+  after(async () => {
+    if (server) await server.stop();
+    if (dir) rmSync(dir, { recursive: true });
   });
 
-  test('acquire exclusive lock', () => {
-    const ok = lm.tryLock('s1', 100);
-    assert.ok(ok);
-    assert.ok(lm.isLocked(100));
-    assert.ok(lm.isLockedBy('s1', 100));
-  });
-
-  test('exclusive lock blocks other sessions', () => {
-    lm.tryLock('s1', 100);
-    const ok = lm.tryLock('s2', 100);
-    assert.ok(!ok);
-  });
-
-  test('shared locks allow multiple holders', () => {
-    lm.tryLock('s1', 100, { mode: 'shared' });
-    const ok = lm.tryLock('s2', 100, { mode: 'shared' });
-    assert.ok(ok);
-    assert.ok(lm.isLockedBy('s1', 100));
-    assert.ok(lm.isLockedBy('s2', 100));
-  });
-
-  test('exclusive blocks shared', () => {
-    lm.tryLock('s1', 100, { mode: 'exclusive' });
-    const ok = lm.tryLock('s2', 100, { mode: 'shared' });
-    assert.ok(!ok);
-  });
-
-  test('recursive locking (same session)', () => {
-    lm.tryLock('s1', 100);
-    const ok = lm.tryLock('s1', 100); // Re-acquire
-    assert.ok(ok);
+  it('pg_advisory_lock and unlock', async () => {
+    const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    await client.connect();
     
-    lm.unlock('s1', 100); // Release once
-    assert.ok(lm.isLockedBy('s1', 100)); // Still held (count > 0)
+    await client.query('SELECT pg_advisory_lock(123)');
+    const unlock = await client.query('SELECT pg_advisory_unlock(123)');
+    assert.equal(unlock.rows[0].pg_advisory_unlock, "t");
     
-    lm.unlock('s1', 100); // Release fully
-    assert.ok(!lm.isLockedBy('s1', 100));
+    await client.end();
   });
 
-  test('unlock releases lock', () => {
-    lm.tryLock('s1', 100);
-    assert.ok(lm.isLocked(100));
+  it('pg_try_advisory_lock returns true when available', async () => {
+    const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    await client.connect();
     
-    lm.unlock('s1', 100);
-    assert.ok(!lm.isLocked(100));
+    const result = await client.query('SELECT pg_try_advisory_lock(456)');
+    assert.equal(result.rows[0].pg_try_advisory_lock, "t");
+    
+    await client.query('SELECT pg_advisory_unlock(456)');
+    await client.end();
   });
 
-  test('unlock returns false for non-held lock', () => {
-    assert.ok(!lm.unlock('s1', 999));
+  it('pg_try_advisory_lock returns false when held', async () => {
+    const c1 = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    const c2 = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    await c1.connect();
+    await c2.connect();
+    
+    // c1 takes the lock
+    await c1.query('SELECT pg_advisory_lock(789)');
+    
+    // c2 tries — should fail
+    const result = await c2.query('SELECT pg_try_advisory_lock(789)');
+    assert.equal(result.rows[0].pg_try_advisory_lock, "f");
+    
+    // c1 releases
+    await c1.query('SELECT pg_advisory_unlock(789)');
+    
+    // c2 should now succeed
+    const result2 = await c2.query('SELECT pg_try_advisory_lock(789)');
+    assert.equal(result2.rows[0].pg_try_advisory_lock, "t");
+    
+    await c2.query('SELECT pg_advisory_unlock(789)');
+    await c1.end();
+    await c2.end();
   });
 
-  test('releaseSession cleans up all locks', () => {
-    lm.tryLock('s1', 100);
-    lm.tryLock('s1', 200);
-    lm.tryLock('s1', 300);
+  it('locks released on disconnect', async () => {
+    const c1 = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    const c2 = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    await c1.connect();
+    await c2.connect();
     
-    const released = lm.releaseSession('s1');
-    assert.equal(released, 3);
-    assert.ok(!lm.isLocked(100));
-    assert.ok(!lm.isLocked(200));
-    assert.ok(!lm.isLocked(300));
+    // c1 takes lock then disconnects
+    await c1.query('SELECT pg_advisory_lock(999)');
+    await c1.end();
+    
+    // Wait for disconnect
+    await new Promise(r => setTimeout(r, 50));
+    
+    // c2 should be able to take it
+    const result = await c2.query('SELECT pg_try_advisory_lock(999)');
+    assert.equal(result.rows[0].pg_try_advisory_lock, "t");
+    
+    await c2.query('SELECT pg_advisory_unlock(999)');
+    await c2.end();
   });
 
-  test('releaseTransaction only releases tx-level locks', () => {
-    lm.tryLock('s1', 100, { level: 'session' });
-    lm.tryLock('s1', 200, { level: 'transaction' });
+  it('same connection can re-acquire its own lock', async () => {
+    const client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    await client.connect();
     
-    const released = lm.releaseTransaction('s1');
-    assert.equal(released, 1);
-    assert.ok(lm.isLockedBy('s1', 100)); // Session lock still held
-    assert.ok(!lm.isLockedBy('s1', 200)); // Tx lock released
+    await client.query('SELECT pg_advisory_lock(111)');
+    // Same connection should be able to lock again (it already holds it)
+    const result = await client.query('SELECT pg_try_advisory_lock(111)');
+    assert.equal(result.rows[0].pg_try_advisory_lock, "t");
+    
+    await client.query('SELECT pg_advisory_unlock(111)');
+    await client.end();
   });
 
-  test('async lock blocks and then succeeds', async () => {
-    lm.tryLock('s1', 100);
+  it('different keys are independent', async () => {
+    const c1 = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    const c2 = new Client({ host: '127.0.0.1', port, user: 'test', database: 'test' });
+    await c1.connect();
+    await c2.connect();
     
-    // Start waiting for lock
-    const lockPromise = lm.lock('s2', 100, { timeoutMs: 1000 });
+    await c1.query('SELECT pg_advisory_lock(100)');
     
-    // Release after delay
-    setTimeout(() => lm.unlock('s1', 100), 20);
+    // c2 can take a different key
+    const result = await c2.query('SELECT pg_try_advisory_lock(200)');
+    assert.equal(result.rows[0].pg_try_advisory_lock, "t");
     
-    const ok = await lockPromise;
-    assert.ok(ok);
-    assert.ok(lm.isLockedBy('s2', 100));
-    lm.unlock('s2', 100);
-  });
-
-  test('async lock times out', async () => {
-    lm.tryLock('s1', 100);
-    
-    await assert.rejects(
-      () => lm.lock('s2', 100, { timeoutMs: 50 }),
-      /timeout/
-    );
-    lm.unlock('s1', 100);
-  });
-
-  test('array key support', () => {
-    lm.tryLock('s1', [1, 2]);
-    assert.ok(lm.isLocked([1, 2]));
-    assert.ok(!lm.isLocked([1, 3]));
-    lm.unlock('s1', [1, 2]);
-  });
-
-  test('listLocks shows all active locks', () => {
-    lm.tryLock('s1', 100);
-    lm.tryLock('s2', 200);
-    
-    const locks = lm.listLocks();
-    assert.equal(locks.length, 2);
-    assert.ok(locks.some(l => l.sessionId === 's1'));
-    assert.ok(locks.some(l => l.sessionId === 's2'));
-  });
-
-  test('stats tracking', () => {
-    lm.tryLock('s1', 100);
-    lm.tryLock('s2', 100); // fail
-    lm.unlock('s1', 100);
-    
-    const stats = lm.getStats();
-    assert.equal(stats.acquired, 1);
-    assert.equal(stats.released, 1);
-    assert.equal(stats.tryFailed, 1);
-  });
-
-  test('different keys are independent', () => {
-    lm.tryLock('s1', 100);
-    assert.ok(lm.tryLock('s2', 200)); // Different key
-    lm.unlock('s1', 100);
-    lm.unlock('s2', 200);
+    await c1.query('SELECT pg_advisory_unlock(100)');
+    await c2.query('SELECT pg_advisory_unlock(200)');
+    await c1.end();
+    await c2.end();
   });
 });

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T03:13:15.781Z",
+  "generated": "2026-04-11T03:20:26.796Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: implement row-level locking — SELECT FOR UPDATE and SELECT FOR SHARE. FOR UPDATE locks rows so other transactions cant modify them until commit. Essential for pessimistic concurrency control patterns.",
-    "startedAt": "2026-04-11T03:13:15.781Z",
-    "taskId": "T234"
+    "task": "HenryDB: implement advisory locks — pg_advisory_lock(key), pg_advisory_unlock(key), pg_try_advisory_lock(key). Session-level locks for application coordination. Store in server-global lock map.",
+    "startedAt": "2026-04-11T03:20:26.796Z",
+    "taskId": "T236"
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2382,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 223,
+    "blocksCompleted": 225,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 167,
+      "BUILD": 169,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }

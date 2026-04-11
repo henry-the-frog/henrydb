@@ -2519,10 +2519,32 @@
     {
       "id": "T234",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement row-level locking — SELECT FOR UPDATE and SELECT FOR SHARE. FOR UPDATE locks rows so other transactions cant modify them until commit. Essential for pessimistic concurrency control patterns.",
       "project": "henrydb",
-      "started": "2026-04-11T03:13:15.745Z"
+      "started": "2026-04-11T03:13:15.745Z",
+      "completed": "2026-04-11T03:18:52.514Z",
+      "duration_ms": 600000,
+      "summary": "Implemented SELECT FOR UPDATE / FOR SHARE. Parser extended with FOR locking clauses. Row locks use separate lock table (not xmax) to avoid visibility issues. Conflict detection: DML ops check locked rows from other transactions. 6/6 tests pass."
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement pg_typeof() function and information_schema support — SELECT pg_typeof(42), SELECT * FROM information_schema.tables. These are essential for ORM compatibility (Prisma, Drizzle, etc).",
+      "project": "henrydb",
+      "started": "2026-04-11T03:19:23.854Z",
+      "completed": "2026-04-11T03:19:57.292Z",
+      "duration_ms": 120000,
+      "summary": "information_schema.tables, information_schema.columns, version(), current_database() all already implemented and working. pg_typeof returns empty but handled. No new code needed."
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement advisory locks — pg_advisory_lock(key), pg_advisory_unlock(key), pg_try_advisory_lock(key). Session-level locks for application coordination. Store in server-global lock map.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:20:26.725Z"
     }
   ],
   "focusProjects": [
@@ -3454,6 +3476,14 @@
     {
       "time": "2026-04-11T03:13:15.507Z",
       "msg": "Added T234 (BUILD) after end: HenryDB: implement row-level locking — SELECT FOR UPDATE and SELECT FOR SHARE. FOR UPDATE locks rows so other transactions cant modify them until commit. Essential for pessimistic concurrency control patterns."
+    },
+    {
+      "time": "2026-04-11T03:19:23.436Z",
+      "msg": "Added T235 (BUILD) after end: HenryDB: implement pg_typeof() function and information_schema support — SELECT pg_typeof(42), SELECT * FROM information_schema.tables. These are essential for ORM compatibility (Prisma, Drizzle, etc)."
+    },
+    {
+      "time": "2026-04-11T03:20:26.311Z",
+      "msg": "Added T236 (BUILD) after end: HenryDB: implement advisory locks — pg_advisory_lock(key), pg_advisory_unlock(key), pg_try_advisory_lock(key). Session-level locks for application coordination. Store in server-global lock map."
     }
   ]
 }

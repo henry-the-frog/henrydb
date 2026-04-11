@@ -80,6 +80,8 @@ export class HenryDBServer {
     this._planCache = new Map();
     // LISTEN/NOTIFY channel registry: channel → Set<conn>
     this._channels = new Map();
+    // Advisory locks: key → Set<connPid>
+    this._advisoryLocks = new Map();
     // Query result cache
     this._queryCache = new QueryCache({
       maxSize: options.cacheSize || 500,
@@ -593,6 +595,11 @@ export class HenryDBServer {
         }
       }
       conn.listeningChannels.clear();
+      // Release all advisory locks held by this connection
+      for (const [key, holders] of this._advisoryLocks) {
+        holders.delete(conn.pid);
+        if (holders.size === 0) this._advisoryLocks.delete(key);
+      }
       this.connections.delete(conn);
       if (this._verbose) console.log(`[${conn.pid}] Client disconnected`);
     });
@@ -1454,6 +1461,46 @@ export class HenryDBServer {
    */
   _interceptSystemQuery(conn, sql) {
     const upper = sql.toUpperCase().trim();
+    
+    // Advisory lock functions (order matters: most specific first)
+    const tryAdvisoryMatch = sql.match(/pg_try_advisory_lock\s*\(\s*(\d+)\s*\)/i);
+    const unlockAdvisoryMatch = !tryAdvisoryMatch && sql.match(/pg_advisory_unlock\s*\(\s*(\d+)\s*\)/i);
+    const lockAdvisoryMatch = !tryAdvisoryMatch && !unlockAdvisoryMatch && sql.match(/(?<![_a-z])pg_advisory_lock\s*\(\s*(\d+)\s*\)/i);
+    const advisoryMatch = tryAdvisoryMatch || unlockAdvisoryMatch || lockAdvisoryMatch;
+    if (advisoryMatch) {
+      const key = parseInt(advisoryMatch[1]);
+      if (lockAdvisoryMatch) {
+        // pg_advisory_lock: blocking lock
+        const holders = this._advisoryLocks.get(key);
+        if (holders && holders.size > 0 && !holders.has(conn.pid)) {
+          conn.socket.write(writeErrorResponse('ERROR', '55P03', `Advisory lock ${key} is held by another session`));
+          return true;
+        }
+        if (!this._advisoryLocks.has(key)) this._advisoryLocks.set(key, new Set());
+        this._advisoryLocks.get(key).add(conn.pid);
+        this._sendResult(conn, sql, { type: 'ROWS', columns: ['pg_advisory_lock'], rows: [{ pg_advisory_lock: '' }] });
+        return true;
+      }
+      if (tryAdvisoryMatch) {
+        // pg_try_advisory_lock: non-blocking, returns true/false
+        const holders = this._advisoryLocks.get(key);
+        if (holders && holders.size > 0 && !holders.has(conn.pid)) {
+          this._sendResult(conn, sql, { type: 'ROWS', columns: ['pg_try_advisory_lock'], rows: [{ pg_try_advisory_lock: 'f' }] });
+        } else {
+          if (!this._advisoryLocks.has(key)) this._advisoryLocks.set(key, new Set());
+          this._advisoryLocks.get(key).add(conn.pid);
+          this._sendResult(conn, sql, { type: 'ROWS', columns: ['pg_try_advisory_lock'], rows: [{ pg_try_advisory_lock: 't' }] });
+        }
+        return true;
+      }
+      if (unlockAdvisoryMatch) {
+        const holders = this._advisoryLocks.get(key);
+        const released = holders && holders.delete(conn.pid);
+        if (holders && holders.size === 0) this._advisoryLocks.delete(key);
+        this._sendResult(conn, sql, { type: 'ROWS', columns: ['pg_advisory_unlock'], rows: [{ pg_advisory_unlock: released ? 't' : 'f' }] });
+        return true;
+      }
+    }
     
     // Transaction control: BEGIN/COMMIT/ROLLBACK
     if (upper === 'BEGIN' || upper === 'BEGIN TRANSACTION' || upper === 'START TRANSACTION') {
