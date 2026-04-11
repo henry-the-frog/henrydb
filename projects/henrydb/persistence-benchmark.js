@@ -42,14 +42,30 @@ function formatRate(count, ms) {
 
 console.log('=== HenryDB Persistence Benchmark ===\n');
 
-// ---------- Insert Throughput ----------
+// ---------- Insert Throughput Comparison ----------
 const N = 1000;
-console.log(`--- Insert Throughput (${N} rows) ---`);
+console.log(`--- Insert Throughput Comparison (${N} rows) ---`);
 
-const d1 = testDir('insert');
+for (const mode of ['immediate', 'batch', 'none']) {
+  const d = testDir(`insert-${mode}`);
+  const { elapsed } = bench(`${mode} sync`, () => {
+    const db = PersistentDatabase.open(d, { poolSize: 32, walSync: mode });
+    db.execute('CREATE TABLE bench (id INT PRIMARY KEY, name TEXT, value INT, data TEXT)');
+    for (let i = 0; i < N; i++) {
+      db.execute(`INSERT INTO bench VALUES (${i}, 'user_${i}', ${i * 7}, '${'x'.repeat(40)}')`);
+    }
+    db.close();
+  });
+  const size = dirSize(d);
+  console.log(`  ${mode.padEnd(9)}: ${formatMs(elapsed).padStart(8)} (${formatRate(N, elapsed).padStart(10)}) — ${(size / 1024).toFixed(0)}KB`);
+  rmSync(d, { recursive: true });
+}
+
+// Use batch for remaining benchmarks (realistic default)
+const d1 = testDir('main');
 {
   const { elapsed } = bench('Sequential INSERT', () => {
-    const db = PersistentDatabase.open(d1, { poolSize: 32 });
+    const db = PersistentDatabase.open(d1, { poolSize: 32, walSync: 'batch' });
     db.execute('CREATE TABLE bench (id INT PRIMARY KEY, name TEXT, value INT, data TEXT)');
     for (let i = 0; i < N; i++) {
       db.execute(`INSERT INTO bench VALUES (${i}, 'user_${i}', ${i * 7}, '${'x'.repeat(40)}')`);
@@ -65,7 +81,7 @@ const d1 = testDir('insert');
 console.log(`\n--- Close/Reopen Speed ---`);
 {
   const { elapsed: reopenElapsed } = bench('Reopen', () => {
-    const db = PersistentDatabase.open(d1, { poolSize: 32 });
+    const db = PersistentDatabase.open(d1, { poolSize: 32, walSync: "batch" });
     const r = db.execute('SELECT COUNT(*) as cnt FROM bench');
     db.close();
     return r.rows[0].cnt;
@@ -77,7 +93,7 @@ console.log(`\n--- Close/Reopen Speed ---`);
 console.log(`\n--- WAL Replay Speed ---`);
 const d2 = testDir('wal-replay');
 {
-  const db = PersistentDatabase.open(d2, { poolSize: 16 });
+  const db = PersistentDatabase.open(d2, { poolSize: 16, walSync: "batch" });
   db.execute('CREATE TABLE wal_bench (id INT PRIMARY KEY, val TEXT)');
   for (let i = 0; i < 1000; i++) {
     db.execute(`INSERT INTO wal_bench VALUES (${i}, 'data_${i}')`);
@@ -88,7 +104,7 @@ const d2 = testDir('wal-replay');
   // Don't call close() — force WAL replay on next open
   
   const { elapsed: replayElapsed } = bench('WAL Recovery', () => {
-    const db2 = PersistentDatabase.open(d2, { poolSize: 16 });
+    const db2 = PersistentDatabase.open(d2, { poolSize: 16, walSync: "batch" });
     const r = db2.execute('SELECT COUNT(*) as cnt FROM wal_bench');
     db2.close();
     return r.rows[0].cnt;
@@ -100,7 +116,7 @@ const d2 = testDir('wal-replay');
 console.log(`\n--- Checkpoint + Truncation ---`);
 const d3 = testDir('checkpoint');
 {
-  const db = PersistentDatabase.open(d3, { poolSize: 32 });
+  const db = PersistentDatabase.open(d3, { poolSize: 32, walSync: "batch" });
   db.execute('CREATE TABLE cp_bench (id INT PRIMARY KEY, val INT)');
   for (let i = 0; i < 2000; i++) {
     db.execute(`INSERT INTO cp_bench VALUES (${i}, ${i})`);
@@ -120,7 +136,7 @@ const d3 = testDir('checkpoint');
   
   // Verify data survives
   db.close();
-  const db2 = PersistentDatabase.open(d3, { poolSize: 32 });
+  const db2 = PersistentDatabase.open(d3, { poolSize: 32, walSync: "batch" });
   const cnt = db2.execute('SELECT COUNT(*) as cnt FROM cp_bench').rows[0].cnt;
   console.log(`  Data survived: ${cnt === 2000 ? '✓' : '✗'} (${cnt} rows)`);
   db2.close();
@@ -130,14 +146,14 @@ const d3 = testDir('checkpoint');
 console.log(`\n--- Multi-Cycle Persistence (20 cycles) ---`);
 const d4 = testDir('multi-cycle');
 {
-  let db = PersistentDatabase.open(d4, { poolSize: 16 });
+  let db = PersistentDatabase.open(d4, { poolSize: 16, walSync: "batch" });
   db.execute('CREATE TABLE cycle_bench (id INT PRIMARY KEY, cycle INT, val INT)');
   db.close();
   
   const { elapsed: cycleElapsed } = bench('20 open/insert/close cycles', () => {
     let totalInserted = 0;
     for (let cycle = 0; cycle < 20; cycle++) {
-      db = PersistentDatabase.open(d4, { poolSize: 16 });
+      db = PersistentDatabase.open(d4, { poolSize: 16, walSync: "batch" });
       for (let i = 0; i < 50; i++) {
         const id = cycle * 50 + i;
         db.execute(`INSERT INTO cycle_bench VALUES (${id}, ${cycle}, ${id * 3})`);
@@ -148,7 +164,7 @@ const d4 = testDir('multi-cycle');
     return totalInserted;
   });
   
-  db = PersistentDatabase.open(d4, { poolSize: 16 });
+  db = PersistentDatabase.open(d4, { poolSize: 16, walSync: "batch" });
   const cnt = db.execute('SELECT COUNT(*) as cnt FROM cycle_bench').rows[0].cnt;
   db.close();
   
@@ -159,7 +175,7 @@ const d4 = testDir('multi-cycle');
 // ---------- Query Performance on Persisted Data ----------
 console.log(`\n--- Query Performance (persisted ${N} rows) ---`);
 {
-  const db = PersistentDatabase.open(d1, { poolSize: 32 });
+  const db = PersistentDatabase.open(d1, { poolSize: 32, walSync: "batch" });
   
   const { elapsed: scanElapsed } = bench('Full scan', () => {
     return db.execute('SELECT COUNT(*) as cnt FROM bench').rows[0].cnt;
@@ -189,7 +205,7 @@ console.log(`\n--- Tiny Buffer Pool (4 pages, ${N} rows) ---`);
 const d5 = testDir('tiny-pool');
 {
   const { elapsed: tinyElapsed } = bench('Tiny pool insert', () => {
-    const db = PersistentDatabase.open(d5, { poolSize: 4 });
+    const db = PersistentDatabase.open(d5, { poolSize: 4, walSync: "batch" });
     db.execute('CREATE TABLE tiny (id INT PRIMARY KEY, val TEXT)');
     for (let i = 0; i < 500; i++) {
       db.execute(`INSERT INTO tiny VALUES (${i}, 'data_${i}_${'y'.repeat(50)}')`);
@@ -199,7 +215,7 @@ const d5 = testDir('tiny-pool');
   console.log(`  500 inserts (poolSize=4): ${formatMs(tinyElapsed)} (${formatRate(500, tinyElapsed)})`);
   
   const { elapsed: tinyReopen } = bench('Tiny pool reopen', () => {
-    const db = PersistentDatabase.open(d5, { poolSize: 4 });
+    const db = PersistentDatabase.open(d5, { poolSize: 4, walSync: "batch" });
     const r = db.execute('SELECT COUNT(*) as cnt FROM tiny');
     db.close();
     return r.rows[0].cnt;

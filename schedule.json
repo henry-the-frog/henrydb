@@ -254,10 +254,21 @@
     {
       "id": "T24",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write a comprehensive persistence benchmark: measure insert throughput, close/reopen time, WAL replay speed, large dataset query perf",
       "project": "henrydb",
-      "started": "2026-04-11T15:30:57.864Z"
+      "started": "2026-04-11T15:30:57.864Z",
+      "completed": "2026-04-11T15:38:01.384Z",
+      "duration_ms": 300000,
+      "summary": "Persistence benchmark: 54/s inserts (SQL parsing dominated), 53ms reopen, 38ms WAL recovery, 4ms full scan, 911us point query. Checkpoint saves 93% disk. All data integrity checks pass."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: profile and optimize persistent INSERT throughput (currently 54/s)",
+      "project": "henrydb",
+      "started": "2026-04-11T15:38:23.610Z"
     }
   ],
   "focusProjects": [
@@ -361,6 +372,10 @@
     {
       "time": "2026-04-11T15:30:57.526Z",
       "msg": "Added T24 (BUILD) after end: Write a comprehensive persistence benchmark: measure insert throughput, close/reopen time, WAL replay speed, large dataset query perf"
+    },
+    {
+      "time": "2026-04-11T15:38:23.194Z",
+      "msg": "Added T25 (BUILD) after end: HenryDB: profile and optimize persistent INSERT throughput (currently 54/s)"
     }
   ]
 }
