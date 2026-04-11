@@ -377,7 +377,11 @@ check('DML', 'UPDATE RETURNING', () => {
   return r.rows.length === 1 && r.rows[0].val === 20;
 });
 check('DDL', 'DROP TABLE IF EXISTS', () => { db.execute('DROP TABLE IF EXISTS nonexistent_xyz_123'); return true; });
-check('EXPR', 'String concatenation ||', () => db.execute("SELECT 'hello' || ' ' || 'world' as r").rows[0].r === 'hello world');
+check('META', 'EXPLAIN', () => db.execute('EXPLAIN SELECT * FROM t1').rows.length > 0);
+check('META', 'EXPLAIN ANALYZE', () => {
+  const r = db.execute('EXPLAIN ANALYZE SELECT * FROM t1');
+  return r.rows.some(r => r['QUERY PLAN']?.includes('Time'));
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
