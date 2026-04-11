@@ -681,20 +681,45 @@ export function parse(sql) {
     // Check for || concatenation or arithmetic operators
     const nextType = peek().type;
     if (nextType === 'CONCAT_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
-      let left = colTok.type === 'STRING' || colTok.type === 'NUMBER'
+      let seed = colTok.type === 'STRING' || colTok.type === 'NUMBER'
         ? { type: 'literal', value: col }
         : { type: 'column_ref', name: col };
+      // Parse with correct operator precedence
+      // First, consume mul/div/mod that directly follow the seed
+      let left = seed;
       while (true) {
         const t = peek().type;
-        if (t === 'CONCAT_OP') {
+        if (t === '*' && tokens[pos+1]?.type !== ')') {
+          advance(); const right = parsePrimary(); left = { type: 'arith', op: '*', left, right };
+        } else if (t === 'SLASH') {
+          advance(); const right = parsePrimary(); left = { type: 'arith', op: '/', left, right };
+        } else if (t === 'MOD') {
+          advance(); const right = parsePrimary(); left = { type: 'arith', op: '%', left, right };
+        } else break;
+      }
+      // Then, consume add/sub (lower precedence)
+      while (true) {
+        const t = peek().type;
+        if (t === 'PLUS' || t === 'MINUS') {
+          const op = t === 'PLUS' ? '+' : '-';
+          advance();
+          // Parse right side as mul/div chain
+          let right = parsePrimary();
+          while (true) {
+            const rt = peek().type;
+            if (rt === '*' && tokens[pos+1]?.type !== ')') {
+              advance(); const rr = parsePrimary(); right = { type: 'arith', op: '*', left: right, right: rr };
+            } else if (rt === 'SLASH') {
+              advance(); const rr = parsePrimary(); right = { type: 'arith', op: '/', left: right, right: rr };
+            } else if (rt === 'MOD') {
+              advance(); const rr = parsePrimary(); right = { type: 'arith', op: '%', left: right, right: rr };
+            } else break;
+          }
+          left = { type: 'arith', op, left, right };
+        } else if (t === 'CONCAT_OP') {
           advance();
           const right = parsePrimary();
           left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
-        } else if (['PLUS', 'MINUS', 'SLASH', 'MOD'].includes(t) || (t === '*' && tokens[pos+1]?.type !== ')')) {
-          const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
-          advance();
-          const right = parsePrimary();
-          left = { type: 'arith', op, left, right };
         } else break;
       }
       let alias = null;
@@ -901,22 +926,40 @@ export function parse(sql) {
   }
 
   function parsePrimaryWithConcat() {
-    let left = parsePrimary();
+    let left = parseAddSub();
     while (true) {
       const t = peek().type;
       if (t === 'CONCAT_OP') {
         advance();
-        const right = parsePrimary();
+        const right = parseAddSub();
         left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
-      } else if (t === 'PLUS') {
+      } else break;
+    }
+    return left;
+  }
+
+  function parseAddSub() {
+    let left = parseMulDivMod();
+    while (true) {
+      const t = peek().type;
+      if (t === 'PLUS') {
         advance();
-        const right = parsePrimary();
+        const right = parseMulDivMod();
         left = { type: 'arith', op: '+', left, right };
       } else if (t === 'MINUS') {
         advance();
-        const right = parsePrimary();
+        const right = parseMulDivMod();
         left = { type: 'arith', op: '-', left, right };
-      } else if (t === '*') {
+      } else break;
+    }
+    return left;
+  }
+
+  function parseMulDivMod() {
+    let left = parsePrimary();
+    while (true) {
+      const t = peek().type;
+      if (t === '*') {
         advance();
         const right = parsePrimary();
         left = { type: 'arith', op: '*', left, right };

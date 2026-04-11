@@ -341,10 +341,21 @@
     {
       "id": "T32",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write a SQL compliance score card — count how many PostgreSQL SQL features work correctly",
       "project": "henrydb",
-      "started": "2026-04-11T15:54:09.505Z"
+      "started": "2026-04-11T15:54:09.505Z",
+      "completed": "2026-04-11T15:57:47.693Z",
+      "duration_ms": 300000,
+      "summary": "SQL compliance scorecard: 74/74 (100%) across 12 categories. DDL, DML, SELECT, JOINs, aggregates, window functions, subqueries, CTEs, expressions, GENERATE_SERIES, set ops, and utilities all pass."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix operator precedence in SQL parser (2+3*4 should be 14, not 20)",
+      "project": "henrydb",
+      "started": "2026-04-11T15:58:19.606Z"
     }
   ],
   "focusProjects": [
@@ -480,6 +491,10 @@
     {
       "time": "2026-04-11T15:54:09.271Z",
       "msg": "Added T32 (BUILD) after end: HenryDB: write a SQL compliance score card — count how many PostgreSQL SQL features work correctly"
+    },
+    {
+      "time": "2026-04-11T15:58:19.199Z",
+      "msg": "Added T33 (BUILD) after end: Fix operator precedence in SQL parser (2+3*4 should be 14, not 20)"
     }
   ]
 }
