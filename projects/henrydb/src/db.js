@@ -2304,6 +2304,9 @@ export class Database {
         index.insert(newValues[colIdx], newRid);
       }
 
+      // Handle ON UPDATE CASCADE for foreign keys
+      this._handleForeignKeyUpdate(ast.table, table, item.values, newValues);
+
       if (ast.returning) {
         const cleanRow = {};
         for (let i = 0; i < table.schema.length; i++) {
@@ -2368,6 +2371,50 @@ export class Database {
               if (values[childColIdx] === parentValue) {
                 throw new Error(`Cannot delete: row is referenced by ${childTableName}(${col.name})`);
               }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Handle foreign key actions when a parent row's PK is updated
+  _handleForeignKeyUpdate(parentTableName, parentTable, oldValues, newValues) {
+    for (const [childTableName, childTable] of this.tables) {
+      for (const col of childTable.schema) {
+        if (col.references && col.references.table === parentTableName) {
+          const parentColIdx = parentTable.schema.findIndex(c => c.name === col.references.column);
+          const oldValue = oldValues[parentColIdx];
+          const newValue = newValues[parentColIdx];
+          if (oldValue === newValue) continue;
+          
+          const childColIdx = childTable.schema.findIndex(c => c.name === col.name);
+          
+          if (col.references.onUpdate === 'CASCADE') {
+            const toUpdate = [];
+            for (const { pageId, slotIdx, values: childValues } of childTable.heap.scan()) {
+              if (childValues[childColIdx] === oldValue) {
+                toUpdate.push({ pageId, slotIdx, values: childValues });
+              }
+            }
+            for (const { pageId, slotIdx, values: childValues } of toUpdate) {
+              const updated = [...childValues];
+              updated[childColIdx] = newValue;
+              childTable.heap.delete(pageId, slotIdx);
+              childTable.heap.insert(updated);
+            }
+          } else if (col.references.onUpdate === 'SET NULL') {
+            const toUpdate = [];
+            for (const { pageId, slotIdx, values: childValues } of childTable.heap.scan()) {
+              if (childValues[childColIdx] === oldValue) {
+                toUpdate.push({ pageId, slotIdx, values: childValues });
+              }
+            }
+            for (const { pageId, slotIdx, values: childValues } of toUpdate) {
+              const updated = [...childValues];
+              updated[childColIdx] = null;
+              childTable.heap.delete(pageId, slotIdx);
+              childTable.heap.insert(updated);
             }
           }
         }

@@ -1523,16 +1523,25 @@ export function parse(sql) {
           const refColumn = advance().value;
           expect(')');
           let onDelete = 'RESTRICT';
-          if (isKeyword('ON')) {
-            advance();
-            if (isKeyword('DELETE')) {
+          let onUpdate = 'RESTRICT';
+          // Parse ON DELETE and ON UPDATE in any order
+          for (let k = 0; k < 2; k++) {
+            if (isKeyword('ON')) {
               advance();
-              if (isKeyword('CASCADE')) { advance(); onDelete = 'CASCADE'; }
-              else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onDelete = 'SET NULL'; }
-              else if (isKeyword('RESTRICT')) { advance(); onDelete = 'RESTRICT'; }
+              if (isKeyword('DELETE')) {
+                advance();
+                if (isKeyword('CASCADE')) { advance(); onDelete = 'CASCADE'; }
+                else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onDelete = 'SET NULL'; }
+                else if (isKeyword('RESTRICT')) { advance(); onDelete = 'RESTRICT'; }
+              } else if (isKeyword('UPDATE')) {
+                advance();
+                if (isKeyword('CASCADE')) { advance(); onUpdate = 'CASCADE'; }
+                else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onUpdate = 'SET NULL'; }
+                else if (isKeyword('RESTRICT')) { advance(); onUpdate = 'RESTRICT'; }
+              }
             }
           }
-          references = { table: refTable, column: refColumn, onDelete };
+          references = { table: refTable, column: refColumn, onDelete, onUpdate };
         }
         else break;
       }
