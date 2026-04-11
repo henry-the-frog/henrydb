@@ -7,7 +7,7 @@
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
 ## Projects Summary (as of 2026-04-11)
-- **HenryDB** — 590+ test files, 820+ source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery with pageLSN, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL, NATURAL JOIN, USING, FULL OUTER JOIN, STRING_AGG. SQL compliance: 134/134 (100%). Key benchmarks: 11K inserts/sec (batch sync), 5578x BTree point lookup speedup, 138x hash join speedup. Record session: 54+ tasks on Apr 11, 115+ new tests, ~25 bugs found (5 data-loss).
+- **HenryDB** — 590+ test files, 820+ source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery with pageLSN, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL, NATURAL JOIN, USING, FULL OUTER JOIN, STRING_AGG, recursive CTEs, CTAS, GROUP BY alias resolution, table.* in JOINs. SQL compliance: 258/258 (100%). Key benchmarks: 23.6K inserts/sec, 6.7K point queries/sec, 11K batch sync. Record session: 94+ tasks on Apr 11, 195+ new tests, ~32+ bugs found (5 data-loss, 3 parser, 2 column mapping), 4 blog posts published, interactive CLI.
 - **Monkey Lang** — 1297 tests, 5 execution backends (eval, VM, tracing JIT, JS transpiler, WASM), 50+ language features, interactive playground
 - **RISC-V Emulator** — 208 tests, 3800 LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO. Built in one evening session.
 - **Ray Tracer** — 116 tests, 8 geometry types, BVH, interactive browser renderer
@@ -49,8 +49,13 @@
 - **_applySelectColumns is not _applySelectFull:** This function handles ORDER BY, LIMIT, OFFSET, column projection — but NOT aggregates or GROUP BY. Virtual table sources (subquery, GENERATE_SERIES) that call it directly skip aggregation. Always route through the full aggregate pipeline.
 - **fsync dominates persistence performance:** 54/s → 11K/s just by switching from per-commit fsync to batch sync. The 77x fsync tax is real.
 - **MVCC + persistence interaction:** Dead rows (old MVCC versions) must be physically compacted before close. WAL compensation records needed for savepoint rollback. PK indexes must be rebuilt after recovery. Bugs live at the boundary between in-memory state and on-disk state.
-- **Deep > Wide:** The Apr 11 session (54+ tasks) found more bugs than any week of feature development. Depth testing (tiny pools, crash recovery, MVCC+persistence) reveals bugs that broad testing never touches.
-- **Operator precedence matters:** JS's flat arithmetic parsing produced (2+3)*4=20 instead of 2+(3*4)=14. Always implement proper precedence levels in expression parsing.
+- **Literal parsing bug:** `SELECT 42 as b FROM table` parsed `42` as a column reference, not a literal. Numbers and strings in the SELECT list MUST be checked at parse time and emitted as expression literals, not column refs. The difference is invisible without a FROM clause (the resolver returns the literal as-is) but breaks with any real table source.
+- **Duplicate expression column names:** Multiple unnamed expressions (`SELECT a+1, b+1`) all got the key `'expr'` — JS object key uniqueness means the second overwrites the first. Every expression needs a unique key (`expr_0`, `expr_1`). This breaks recursive CTEs silently.
+- **GROUP BY alias resolution:** `GROUP BY classification` must resolve to the CASE/function expression in the SELECT list with that alias. Not just look it up as a column reference. This is PostgreSQL-standard behavior.
+- **INSERT INTO SELECT mapping:** GROUP BY adds both qualified (`d.name`) and unqualified (`name`) keys to result rows. Positional mapping via `Object.values()` picks up extra entries. Fix: count actual SELECT columns and use the last N values.
+- **Recursive CTEs need all three bugs fixed simultaneously.** The literal, duplicate expr, and column normalization bugs compound — fixing just one doesn't restore recursive CTE functionality. Multi-column recursive CTEs require all three.
+- **Deep > Wide (reinforced):** The Apr 11 session (94+ tasks) produced more bugs and insights than any prior week. The recursive CTE fix chain (3 interdependent bugs) would never have been found by broad feature testing.
+- **Scorecard as coverage tool:** The compliance scorecard (258 checks) is more useful than test counts as a metric. It verifies capabilities, not implementations. New features get discovered by trying checks and seeing what already works.
 
 ## Preferences & Style
 - Depth > breadth
