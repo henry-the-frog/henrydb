@@ -64,3 +64,11 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 **What happened:** `QueryCache.get()` returned `{result, timestamp}` but caller expected just `result`. 
 **Fix:** Access `cached.result` instead of `cached` directly.
 **Prevention:** When adding caching, test the cache hit path separately from cache miss.
+
+## Query Cache Stale After ROLLBACK (2026-04-10 Session C)
+**Pattern:** Query cache not invalidated on transaction state changes
+**What happened:** After BEGIN → UPDATE → SELECT (cached) → ROLLBACK, the next SELECT returned the cached (rolled-back) value instead of the original.
+**Root cause:** Server's QueryCache was invalidated on DML (UPDATE invalidates "accounts") but NOT on ROLLBACK or COMMIT. The SELECT during the transaction cached {balance: 50}, then ROLLBACK properly undid the MVCC change but the cache still held the stale result.
+**Fix:** Call `this._queryCache.invalidateAll()` on both COMMIT and ROLLBACK in `_interceptSystemQuery`.
+**Key insight:** The MVCC engine, heap storage, and scan interceptors were all correct. The bug was in a completely different subsystem (query cache). When debugging multi-layer systems, check caches early.
+**Prevention:** Any transaction state change (COMMIT, ROLLBACK, ROLLBACK TO SAVEPOINT) must invalidate the query cache.

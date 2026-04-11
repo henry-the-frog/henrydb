@@ -2366,23 +2366,31 @@
     {
       "id": "T217",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB BUILD placeholder",
       "project": "henrydb",
-      "started": "2026-04-11T02:28:10.011Z"
+      "started": "2026-04-11T02:28:10.011Z",
+      "completed": "2026-04-11T02:32:56.213Z",
+      "duration_ms": 600000,
+      "summary": "Implemented proper savepoints in TransactionalDatabase. SAVEPOINT saves undo log position + writeSet snapshot. ROLLBACK TO replays undo log to snapshot, physically removes new rows added after savepoint. Nested savepoints supported. Wire protocol routing fixed to use session methods instead of db.execute(). 10/10 tests pass (7 API + 3 wire protocol). Also invalidates query cache on ROLLBACK TO."
     },
     {
       "id": "T218",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping"
+      "status": "done",
+      "task": "Housekeeping",
+      "started": "2026-04-11T02:33:06.394Z",
+      "completed": "2026-04-11T02:34:03.131Z",
+      "duration_ms": 120000,
+      "summary": "Housekeeping: git push, daily log updated, failures.md updated with query cache rollback bug pattern, all 51 transaction tests verified passing."
     },
     {
       "id": "T219",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB deep exploration",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-11T02:34:17.318Z"
     }
   ],
   "focusProjects": [
