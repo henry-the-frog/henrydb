@@ -2475,10 +2475,21 @@
     {
       "id": "T230",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Blog post: HenryDB Performance — First Real-World Benchmark",
       "project": "henrydb",
-      "started": "2026-04-11T02:56:35.757Z"
+      "started": "2026-04-11T02:56:35.757Z",
+      "completed": "2026-04-11T02:57:28.675Z",
+      "duration_ms": 180000,
+      "summary": "Blog post: 36 TPS — How Fast is a Database Written in JavaScript? Analyzed TPC-B results in context: 30-80x slower than PostgreSQL, but with perfect ACID consistency. Key insight: engine is fast, bottleneck is per-query wire protocol overhead (20ms). COPY FROM shows 12K rows/sec when bypassing protocol."
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: optimize TPS — cache parsed ASTs for prepared statements so repeated queries skip SQL parsing. Test impact on TPC-B benchmark.",
+      "project": "henrydb",
+      "started": "2026-04-11T02:57:45.560Z"
     }
   ],
   "focusProjects": [
@@ -3394,6 +3405,10 @@
     {
       "time": "2026-04-11T02:56:35.343Z",
       "msg": "Added T230 (BUILD) after end: Blog post: HenryDB Performance — First Real-World Benchmark"
+    },
+    {
+      "time": "2026-04-11T02:57:45.143Z",
+      "msg": "Added T231 (BUILD) after end: HenryDB: optimize TPS — cache parsed ASTs for prepared statements so repeated queries skip SQL parsing. Test impact on TPC-B benchmark."
     }
   ]
 }
