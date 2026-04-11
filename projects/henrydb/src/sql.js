@@ -85,6 +85,7 @@ export function tokenize(sql) {
     if (src[i] === '!' && src[i + 1] === '=') { tokens.push({ type: 'NE' }); i += 2; continue; }
     if (src[i] === '<' && src[i + 1] === '>') { tokens.push({ type: 'NE' }); i += 2; continue; }
     if (src[i] === '|' && src[i + 1] === '|') { tokens.push({ type: 'CONCAT_OP' }); i += 2; continue; }
+    if (src[i] === ':' && src[i + 1] === ':') { tokens.push({ type: 'CAST_OP' }); i += 2; continue; }
     if (src[i] === '=') { tokens.push({ type: 'EQ' }); i++; continue; }
     if (src[i] === '<') { tokens.push({ type: 'LT' }); i++; continue; }
     if (src[i] === '>') { tokens.push({ type: 'GT' }); i++; continue; }

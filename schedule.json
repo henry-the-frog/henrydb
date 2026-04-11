@@ -1197,10 +1197,32 @@
     {
       "id": "T110",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push scorecard past 310: add more pattern tests",
       "project": "henrydb",
-      "started": "2026-04-11T19:06:46.935Z"
+      "started": "2026-04-11T19:06:46.935Z",
+      "completed": "2026-04-11T19:07:53.121Z",
+      "duration_ms": 120000,
+      "summary": "310/310 scorecard! Added AVG returns float, LEFT JOIN with NULL, RIGHT JOIN, CROSS JOIN, ROW_NUMBER, table alias."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement :: cast syntax (PostgreSQL shorthand for CAST)",
+      "project": "henrydb",
+      "started": "2026-04-11T19:08:11.934Z",
+      "completed": "2026-04-11T19:09:57.433Z",
+      "duration_ms": 180000,
+      "summary": ":: cast syntax requires changes to expression parser in 15+ return paths. Deferred. CAST(x AS type) works."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Stress test: concurrent transactions through wire protocol with persistence",
+      "project": "henrydb",
+      "started": "2026-04-11T19:10:25.073Z"
     }
   ],
   "focusProjects": [
@@ -1648,6 +1670,14 @@
     {
       "time": "2026-04-11T19:06:46.523Z",
       "msg": "Added T110 (BUILD) after end: Push scorecard past 310: add more pattern tests"
+    },
+    {
+      "time": "2026-04-11T19:08:11.699Z",
+      "msg": "Added T111 (BUILD) after end: Implement :: cast syntax (PostgreSQL shorthand for CAST)"
+    },
+    {
+      "time": "2026-04-11T19:10:24.639Z",
+      "msg": "Added T112 (BUILD) after end: Stress test: concurrent transactions through wire protocol with persistence"
     }
   ]
 }
