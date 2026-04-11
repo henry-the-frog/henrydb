@@ -222,10 +222,31 @@
     {
       "id": "T21",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: stress-test aggregates over virtual sources (subqueries, CTEs, GENERATE_SERIES). Fix any bugs found.",
       "project": "henrydb",
-      "started": "2026-04-11T15:26:25.994Z"
+      "started": "2026-04-11T15:26:25.994Z",
+      "completed": "2026-04-11T15:27:40.719Z",
+      "duration_ms": 300000,
+      "summary": "Fixed aggregates over subqueries — same _applySelectColumns bypass bug as GENERATE_SERIES. COUNT, SUM, GROUP BY, HAVING, nested aggregates all now work over subquery results. Also found GENERATE_SERIES GROUP BY key serialization bug (AST JSON instead of evaluated value) — needs separate fix."
+    },
+    {
+      "id": "T22",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: what non-HenryDB work is most impactful for the remaining 5 hours?",
+      "started": "2026-04-11T15:28:06.214Z",
+      "completed": "2026-04-11T15:28:24.994Z",
+      "duration_ms": 60000,
+      "summary": "Stay on HenryDB — shift to making stress-all-features test pass completely. Each bug is in a different subsystem. Genuine depth."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Make stress-all-features.test.js pass: fix SHOW TABLE STATUS count and any remaining issues",
+      "project": "henrydb",
+      "started": "2026-04-11T15:28:34.549Z"
     }
   ],
   "focusProjects": [
@@ -317,6 +338,14 @@
     {
       "time": "2026-04-11T15:26:25.583Z",
       "msg": "Added T21 (BUILD) after end: HenryDB: stress-test aggregates over virtual sources (subqueries, CTEs, GENERATE_SERIES). Fix any bugs found."
+    },
+    {
+      "time": "2026-04-11T15:28:05.805Z",
+      "msg": "Added T22 (THINK) after end: Direction: what non-HenryDB work is most impactful for the remaining 5 hours?"
+    },
+    {
+      "time": "2026-04-11T15:28:34.142Z",
+      "msg": "Added T23 (BUILD) after end: Make stress-all-features.test.js pass: fix SHOW TABLE STATUS count and any remaining issues"
     }
   ]
 }

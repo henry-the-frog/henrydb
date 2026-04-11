@@ -1871,7 +1871,32 @@ export class HenryDBServer {
     }
 
     // SHOW (e.g., SHOW server_version)
-    if (upper.startsWith('SHOW ') && !upper.startsWith('SHOW TABLES')) {
+    // SHOW TABLE STATUS — list tables with row counts and metadata
+    if (upper.startsWith('SHOW TABLE STATUS')) {
+      const rows = [];
+      const db = conn.txStatus === 'T' && conn._session ? conn._session._db || this.db._db : this.db._db || this.db;
+      if (db && db.tables) {
+        for (const [name, table] of db.tables) {
+          let rowCount = 0;
+          try {
+            if (table.heap && table.heap.scan) {
+              for (const _ of table.heap.scan()) rowCount++;
+            }
+          } catch {}
+          rows.push({
+            Name: name,
+            Engine: 'HenryDB',
+            Rows: rowCount,
+            Columns: table.schema ? table.schema.length : 0,
+            Indexes: table.indexes ? table.indexes.size : 0,
+          });
+        }
+      }
+      this._sendResult(conn, sql, { type: 'ROWS', rows });
+      return true;
+    }
+
+    if (upper.startsWith('SHOW ') && !upper.startsWith('SHOW TABLES') && !upper.startsWith('SHOW TABLE STATUS')) {
       const param = sql.substring(5).trim().toLowerCase().replace(/;$/, '');
       if (param === 'all') {
         // SHOW ALL — return all parameters
