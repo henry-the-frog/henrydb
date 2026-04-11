@@ -3,12 +3,20 @@
 
 import { sha256 } from './sha256.js';
 
+// Domain separation prefixes to prevent second preimage attacks
+// Without these, an attacker could construct a single-leaf tree whose leaf
+// content is the concatenation of two hashes, producing the same root.
+const LEAF_PREFIX = '\x00';
+const INTERNAL_PREFIX = '\x01';
+
 /**
  * MerkleTree — binary hash tree for efficient integrity proofs.
  * 
- * Each leaf is the hash of a data block. Internal nodes are the hash
- * of their two children concatenated. If the number of leaves is odd,
- * the last leaf is duplicated.
+ * Uses domain separation: leaf hashes use prefix 0x00, internal nodes use 0x01.
+ * This prevents second preimage attacks (RFC 6962, Certificate Transparency).
+ * 
+ * Each leaf is H(0x00 || data). Internal nodes are H(0x01 || left || right).
+ * If the number of leaves is odd, the last leaf is duplicated.
  * 
  * Used in: Bitcoin, Git, IPFS, database page checksum verification.
  */
@@ -20,9 +28,9 @@ export class MerkleTree {
   constructor(blocks) {
     if (blocks.length === 0) throw new Error('Cannot build Merkle tree from empty data');
     
-    // Hash each block to create leaves
+    // Hash each block to create leaves (with domain separation)
     this._leaves = blocks.map((b, i) => ({
-      hash: sha256(b),
+      hash: sha256(LEAF_PREFIX + b),
       data: b,
       index: i,
     }));
@@ -36,7 +44,7 @@ export class MerkleTree {
       for (let i = 0; i < current.length; i += 2) {
         const left = current[i];
         const right = i + 1 < current.length ? current[i + 1] : current[i]; // duplicate if odd
-        next.push(sha256(left + right));
+        next.push(sha256(INTERNAL_PREFIX + left + right));
       }
       this._layers.push(next);
       current = next;
@@ -96,13 +104,13 @@ export class MerkleTree {
    * @returns {boolean}
    */
   static verify(leafData, proof, root) {
-    let hash = sha256(leafData);
+    let hash = sha256(LEAF_PREFIX + leafData);
     
     for (const step of proof) {
       if (step.direction === 'left') {
-        hash = sha256(step.hash + hash);
+        hash = sha256(INTERNAL_PREFIX + step.hash + hash);
       } else {
-        hash = sha256(hash + step.hash);
+        hash = sha256(INTERNAL_PREFIX + hash + step.hash);
       }
     }
     

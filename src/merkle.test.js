@@ -7,32 +7,32 @@ import { sha256 } from './sha256.js';
 describe('MerkleTree', () => {
   it('single block tree', () => {
     const tree = new MerkleTree(['hello']);
-    assert.equal(tree.root, sha256('hello'));
+    assert.equal(tree.root, sha256('\x00hello')); // leaf prefix
     assert.equal(tree.leafCount, 1);
   });
 
   it('two blocks', () => {
     const tree = new MerkleTree(['a', 'b']);
-    const ha = sha256('a');
-    const hb = sha256('b');
-    assert.equal(tree.root, sha256(ha + hb));
+    const ha = sha256('\x00a');
+    const hb = sha256('\x00b');
+    assert.equal(tree.root, sha256('\x01' + ha + hb)); // internal prefix
   });
 
   it('four blocks (perfect binary tree)', () => {
     const tree = new MerkleTree(['a', 'b', 'c', 'd']);
-    const ha = sha256('a'), hb = sha256('b');
-    const hc = sha256('c'), hd = sha256('d');
-    const hab = sha256(ha + hb);
-    const hcd = sha256(hc + hd);
-    assert.equal(tree.root, sha256(hab + hcd));
+    const ha = sha256('\x00a'), hb = sha256('\x00b');
+    const hc = sha256('\x00c'), hd = sha256('\x00d');
+    const hab = sha256('\x01' + ha + hb);
+    const hcd = sha256('\x01' + hc + hd);
+    assert.equal(tree.root, sha256('\x01' + hab + hcd));
   });
 
   it('odd number of blocks (last duplicated)', () => {
     const tree = new MerkleTree(['a', 'b', 'c']);
-    const ha = sha256('a'), hb = sha256('b'), hc = sha256('c');
-    const hab = sha256(ha + hb);
-    const hcc = sha256(hc + hc); // duplicated
-    assert.equal(tree.root, sha256(hab + hcc));
+    const ha = sha256('\x00a'), hb = sha256('\x00b'), hc = sha256('\x00c');
+    const hab = sha256('\x01' + ha + hb);
+    const hcc = sha256('\x01' + hc + hc); // duplicated
+    assert.equal(tree.root, sha256('\x01' + hab + hcc));
   });
 
   it('deterministic: same data → same root', () => {
@@ -140,6 +140,19 @@ describe('Merkle Diff', () => {
 });
 
 describe('Merkle Fuzzer', () => {
+  it('second preimage attack prevented (domain separation)', () => {
+    // Without domain separation, a 2-leaf tree and a 1-leaf tree with
+    // the concatenated hashes would have the same root.
+    const t = new MerkleTree(['hello', 'world']);
+    const h1 = sha256('\x00hello');
+    const h2 = sha256('\x00world');
+    
+    // Try the attack: single-leaf tree where leaf = h1 + h2
+    const attackTree = new MerkleTree([h1 + h2]);
+    assert.notEqual(t.root, attackTree.root, 
+      'Second preimage attack should be prevented by domain separation');
+  });
+
   it('1000 random trees: all proofs verify', () => {
     let seed = 42;
     const rng = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
