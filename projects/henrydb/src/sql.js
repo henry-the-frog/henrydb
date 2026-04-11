@@ -25,7 +25,7 @@ const KEYWORDS = new Set([
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
-  'GROUP_CONCAT', 'SEPARATOR',
+  'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
   'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG',
   'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS',
   'CONFLICT', 'DO', 'NOTHING',
@@ -529,7 +529,7 @@ export function parse(sql) {
     }
 
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
-    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
+    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
       expect('(');
       let distinct = false;
@@ -543,16 +543,20 @@ export function parse(sql) {
         if (argExpr.type === 'column_ref') arg = argExpr.name;
         else arg = argExpr; // store the full expression node
       }
-      // Optional SEPARATOR for GROUP_CONCAT
+      // Optional SEPARATOR for GROUP_CONCAT / STRING_AGG
       let separator = ',';
       if (isKeyword('SEPARATOR')) {
         advance();
         separator = advance().value; // STRING literal
+      } else if (func === 'STRING_AGG' && peek().type === ',') {
+        // PostgreSQL STRING_AGG(expr, delimiter) syntax
+        advance(); // skip comma
+        separator = advance().value; // STRING literal
       }
       expect(')');
 
-      // Add separator info for GROUP_CONCAT
-      const aggExtra = func === 'GROUP_CONCAT' ? { separator } : {};
+      // Add separator info for GROUP_CONCAT / STRING_AGG
+      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator } : {};
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();

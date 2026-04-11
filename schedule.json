@@ -440,10 +440,21 @@
     {
       "id": "T41",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Wire protocol torture test: 100 inserts, updates, deletes across 5 restart cycles via pg client",
       "project": "henrydb",
-      "started": "2026-04-11T16:20:11.050Z"
+      "started": "2026-04-11T16:20:11.050Z",
+      "completed": "2026-04-11T16:21:23.372Z",
+      "duration_ms": 300000,
+      "summary": "Wire protocol torture tests: 100 ops across 5 restarts + 10-cycle bank transfer invariant. Both pass. Full stack validated under intensive workload."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement STRING_AGG aggregate function (GROUP_CONCAT equivalent)",
+      "project": "henrydb",
+      "started": "2026-04-11T16:22:19.321Z"
     }
   ],
   "focusProjects": [
@@ -615,6 +626,10 @@
     {
       "time": "2026-04-11T16:20:10.642Z",
       "msg": "Added T41 (BUILD) after end: Wire protocol torture test: 100 inserts, updates, deletes across 5 restart cycles via pg client"
+    },
+    {
+      "time": "2026-04-11T16:22:18.912Z",
+      "msg": "Added T42 (BUILD) after end: HenryDB: implement STRING_AGG aggregate function (GROUP_CONCAT equivalent)"
     }
   ]
 }

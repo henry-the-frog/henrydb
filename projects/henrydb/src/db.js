@@ -3461,10 +3461,11 @@ export class Database {
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
           case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
           case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
-          case 'GROUP_CONCAT': {
+          case 'GROUP_CONCAT':
+          case 'STRING_AGG': {
             const sep = extra.separator || ',';
             const strs = (distinct ? [...new Set(values)] : values).map(String);
-            return strs.join(sep);
+            return strs.length ? strs.join(sep) : null;
           }
           case 'JSON_AGG':
           case 'JSONB_AGG': {
@@ -4158,9 +4159,11 @@ export class Database {
         case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + v, 0) / values.length : null; break;
         case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
         case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;
-        case 'GROUP_CONCAT': {
+        case 'GROUP_CONCAT':
+        case 'STRING_AGG': {
           const sep = col.separator || ',';
-          result[name] = values.map(String).join(sep);
+          const dedupValues = col.distinct ? [...new Set(values)] : values;
+          result[name] = dedupValues.length ? dedupValues.map(String).join(sep) : null;
           break;
         }
         case 'JSON_AGG':
