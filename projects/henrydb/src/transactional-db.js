@@ -140,6 +140,9 @@ export class TransactionalDatabase {
     this._installScanInterceptors();
   }
 
+  /** Expose inner Database's tables map for EXPLAIN, server introspection, etc. */
+  get tables() { return this._db.tables; }
+
   /**
    * Execute SQL in auto-commit mode.
    */
