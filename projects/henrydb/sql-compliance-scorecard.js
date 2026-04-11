@@ -275,14 +275,14 @@ check('SELECT+', 'Correlated subquery', () => {
   const r = db.execute('SELECT name, (SELECT SUM(amount) FROM t2 WHERE t1_id = t1.id) as total FROM t1 WHERE id = 1');
   return r.rows[0].total === 300;
 });
-check('SELECT+', 'Multi-column ORDER BY', () => {
-  const r = db.execute('SELECT * FROM t1 ORDER BY age DESC, name ASC');
-  return r.rows.length > 0;
-});
-check('SELECT+', 'Nested CASE', () => {
-  const r = db.execute("SELECT CASE WHEN age IS NULL THEN 'unknown' ELSE CASE WHEN age > 25 THEN 'senior' ELSE 'junior' END END as level FROM t1 ORDER BY id LIMIT 3");
-  return r.rows.length === 3;
-});
+check('SELECT+', 'Multi-column ORDER BY', () => db.execute('SELECT * FROM t1 ORDER BY age DESC, name ASC').rows.length > 0);
+check('SELECT+', 'Nested CASE', () => db.execute("SELECT CASE WHEN age IS NULL THEN 'unknown' ELSE CASE WHEN age > 25 THEN 'senior' ELSE 'junior' END END as level FROM t1 ORDER BY id LIMIT 3").rows.length === 3);
+check('SELECT+', 'IN list', () => db.execute('SELECT * FROM t1 WHERE id IN (1, 2, 3)').rows.length >= 2);
+check('SELECT+', 'Aggregate in WHERE subquery', () => db.execute('SELECT * FROM t1 WHERE score > (SELECT AVG(score) FROM t1 WHERE score IS NOT NULL)').rows.length >= 1);
+check('SELECT+', 'COUNT(*) on empty result', () => db.execute("SELECT COUNT(*) as c FROM t1 WHERE 1 = 0").rows[0].c === 0);
+check('SELECT+', 'Column alias in ORDER BY', () => { const r = db.execute('SELECT name as n FROM t1 ORDER BY n'); return r.rows.length > 0; });
+check('AGG+', 'MIN/MAX on TEXT', () => { const r = db.execute('SELECT MIN(name) as mn, MAX(name) as mx FROM t1'); return typeof r.rows[0].mn === 'string'; });
+check('TYPE', 'Float literal', () => db.execute('SELECT 3.14 as r').rows[0].r === 3.14);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
