@@ -187,6 +187,10 @@ check('STRING', 'REPEAT', () => db.execute("SELECT REPEAT('ab', 3) as r").rows[0
 check('STRING', 'REVERSE', () => db.execute("SELECT REVERSE('hello') as r").rows[0].r === 'olleh');
 check('STRING', 'LPAD', () => db.execute("SELECT LPAD('hi', 5, '*') as r").rows[0].r === '***hi');
 check('STRING', 'RPAD', () => db.execute("SELECT RPAD('hi', 5, '-') as r").rows[0].r === 'hi---');
+check('STRING', 'LTRIM', () => db.execute("SELECT LTRIM('  hi') as r").rows[0].r === 'hi');
+check('STRING', 'RTRIM', () => db.execute("SELECT RTRIM('hi  ') as r").rows[0].r === 'hi');
+check('STRING', 'SUBSTR', () => db.execute("SELECT SUBSTR('hello', 2, 3) as r").rows[0].r === 'ell');
+check('STRING', 'CHAR_LENGTH', () => db.execute("SELECT CHAR_LENGTH('hello') as r").rows[0].r === 5);
 check('STRING', 'POSITION', () => db.execute("SELECT POSITION('ll' IN 'hello') as r").rows[0].r === 3);
 
 // --- Math Functions ---
@@ -196,6 +200,8 @@ check('MATH', 'FLOOR', () => db.execute('SELECT FLOOR(4.8) as r').rows[0].r === 
 check('MATH', 'ROUND', () => db.execute('SELECT ROUND(4.5) as r').rows[0].r === 5);
 check('MATH', 'MOD', () => db.execute('SELECT MOD(10, 3) as r').rows[0].r === 1);
 check('MATH', 'POWER', () => db.execute('SELECT POWER(2, 3) as r').rows[0].r === 8);
+check('MATH', 'SQRT', () => db.execute('SELECT SQRT(16) as r').rows[0].r === 4);
+check('MATH', 'EXP', () => db.execute('SELECT EXP(0) as r').rows[0].r === 1);
 
 // --- Date/Time ---
 check('DATE', 'NOW() or CURRENT_TIMESTAMP', () => {
