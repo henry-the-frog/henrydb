@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T03:43:39.893Z",
+  "generated": "2026-04-11T03:45:18.421Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: add json_agg and array_agg as proper aggregate functions that work without GROUP BY. Fix: when used without GROUP BY, aggregate all rows into a single result.",
-    "startedAt": "2026-04-11T03:43:39.893Z",
-    "taskId": "T242"
+    "completedAt": "2026-04-11T03:45:18.421Z",
+    "taskId": "T242",
+    "summary": "Fixed json_agg and array_agg without GROUP BY. _computeAggregates was missing these cases. Now SELECT json_agg(name) FROM items returns all names as JSON array.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2384,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 231,
+    "blocksCompleted": 232,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 174,
+      "BUILD": 175,
       "MAINTAIN": 13,
       "EXPLORE": 6
     }
