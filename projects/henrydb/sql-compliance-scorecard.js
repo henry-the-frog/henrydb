@@ -607,6 +607,14 @@ check('SET', 'INTERSECT ALL', () => {
 check('STRING', 'SIMILAR TO', () => db.execute("SELECT 'hello' SIMILAR TO 'hel%' as r FROM t1 LIMIT 1").rows.length >= 0);
 check('DDL', 'BETWEEN SYMMETRIC', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN SYMMETRIC 5 AND 1').rows.length >= 1);
 check('SELECT+', 'SELECT 1', () => db.execute('SELECT 1 as one').rows[0].one === 1);
+check('META', 'EXPLAIN FORMAT JSON', () => {
+  const r = db.execute('EXPLAIN (FORMAT JSON) SELECT * FROM t1');
+  return r.rows[0]['QUERY PLAN'].includes('"operation"');
+});
+check('META', 'Simple CASE', () => {
+  const r = db.execute("SELECT CASE id WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'other' END as val FROM t1 LIMIT 1");
+  return r.rows.length === 1;
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
