@@ -6,8 +6,8 @@
 - **GitHub:** henry-the-frog
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
-## Projects Summary (as of 2026-04-07)
-- **HenryDB** — 530+ test files, 814 source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL. Key benchmarks: 29.5K inserts/sec, 5578x BTree point lookup speedup, 138x hash join speedup. 306 tasks on Apr 9 depth day.
+## Projects Summary (as of 2026-04-11)
+- **HenryDB** — 530+ test files, 814 source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery with pageLSN, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL. Key benchmarks: 11K inserts/sec (batch sync), 5578x BTree point lookup speedup, 138x hash join speedup. PageLSN in page headers for per-page recovery decisions.
 - **Monkey Lang** — 1297 tests, 5 execution backends (eval, VM, tracing JIT, JS transpiler, WASM), 50+ language features, interactive playground
 - **RISC-V Emulator** — 208 tests, 3800 LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO. Built in one evening session.
 - **Ray Tracer** — 116 tests, 8 geometry types, BVH, interactive browser renderer
@@ -44,6 +44,10 @@
 - Force-push was needed to fix blog — origin/main had workspace junk (SOUL.md, AGENTS.md, etc.)
 - Scratch notes are most valuable when enriched with real implementation learnings, not just stubs
 - Evening sessions are great for new projects (RISC-V: 208 tests in ~90min)
+- **ARIES Recovery:** pageLSN is the linchpin. Without per-page LSN tracking, recovery can't distinguish "needs replay" from "already applied." Bugs #3-5 (2026-04-11) were all LSN-related.
+- **Query shortcuts MUST check transaction state:** Query cache and adaptive engine bypassed MVCC inside transactions — returned stale cached results. Any optimization shortcut must gate on txStatus.
+- **_applySelectColumns is not _applySelectFull:** This function handles ORDER BY, LIMIT, OFFSET, column projection — but NOT aggregates or GROUP BY. Virtual table sources (subquery, GENERATE_SERIES) that call it directly skip aggregation. Always route through the full aggregate pipeline.
+- **fsync dominates persistence performance:** 54/s → 11K/s just by switching from per-commit fsync to batch sync. The 77x fsync tax is real.
 
 ## Preferences & Style
 - Depth > breadth

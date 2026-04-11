@@ -12,13 +12,15 @@
   - ACID: MVCC, Snapshot Isolation, SSI (Serializable), 2PC, VACUUM
   - **ARIES Checkpointing**: fuzzy checkpoint, dirty page table, WAL truncation
   - **Point-in-Time Recovery (PITR)**: recover to any historical timestamp
+  - **PageLSN**: per-page LSN tracking in page headers, ARIES-style per-page recovery decisions
+  - **Persistence Depth**: 58 persistence tests, 5 production bugs found (3 data-loss), pageLSN eliminates lastAppliedLSN hack
   - **Hash Join**: equi-join detection from AST, 186x faster than nested loop
   - **Batched WAL**: UPDATE 29x faster, DELETE 96x faster
   - **O(n²) WAL flush fix**: INSERT 8.2x faster (29.5K rows/sec)
   - Pipeline JIT: push-based query compilation (17x on LIMIT queries)
   - Bloom filters in LSM SSTables, property-based testing
   - PostgreSQL wire protocol (14/14 server tests), cost-based optimizer, histogram stats
-  - Benchmark (10K): 29.5K inserts/sec, 9K point queries/sec, JOIN 86ms, all ops <100ms
+  - Benchmark (10K): 11K inserts/sec (batch sync), 9K point queries/sec, JOIN 86ms, all ops <100ms
   - **Test suite: 3,068+ tests, 98.9% pass rate across 240 files**
   - **Architecture blog + performance debugging blog**
   - Remaining: file-backed persistence, real MVCC integration, query optimizer
