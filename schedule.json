@@ -1241,10 +1241,24 @@
     {
       "id": "T114",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix CTAS parser to handle AS WITH RECURSIVE (CTE subquery)",
       "project": "henrydb",
-      "started": "2026-04-11T19:12:20.462Z"
+      "started": "2026-04-11T19:12:20.462Z",
+      "completed": "2026-04-11T19:14:07.989Z",
+      "duration_ms": 180000,
+      "summary": "Fixed CTAS parser to handle WITH/WITH RECURSIVE. CTAS + recursive CTE now works (fibonacci → persistent table). 311/311."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Test edge case: empty table operations (GROUP BY, JOIN, window, CTE on empty)",
+      "project": "henrydb",
+      "started": "2026-04-11T19:14:28.330Z",
+      "completed": "2026-04-11T19:15:04.758Z",
+      "duration_ms": 120000,
+      "summary": "Empty table operations all correct: COUNT(*)=0, SUM=null, GROUP BY=no groups, JOIN=empty, LEFT JOIN=NULLs, DISTINCT=empty, UNION=non-empty side."
     }
   ],
   "focusProjects": [
@@ -1708,6 +1722,10 @@
     {
       "time": "2026-04-11T19:12:20.022Z",
       "msg": "Added T114 (BUILD) after end: Fix CTAS parser to handle AS WITH RECURSIVE (CTE subquery)"
+    },
+    {
+      "time": "2026-04-11T19:14:27.919Z",
+      "msg": "Added T115 (BUILD) after end: Test edge case: empty table operations (GROUP BY, JOIN, window, CTE on empty)"
     }
   ]
 }

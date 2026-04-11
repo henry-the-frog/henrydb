@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T19:12:20.527Z",
+  "generated": "2026-04-11T19:15:04.796Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Fix CTAS parser to handle AS WITH RECURSIVE (CTE subquery)",
-    "startedAt": "2026-04-11T19:12:20.527Z",
-    "taskId": "T114"
+    "task": "Test edge case: empty table operations (GROUP BY, JOIN, window, CTE on empty)",
+    "completedAt": "2026-04-11T19:15:04.796Z",
+    "taskId": "T115",
+    "summary": "Empty table operations all correct: COUNT(*)=0, SUM=null, GROUP BY=no groups, JOIN=empty, LEFT JOIN=NULLs, DISTINCT=empty, UNION=non-empty side.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 113,
+    "blocksCompleted": 115,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 2,
-      "BUILD": 95,
+      "BUILD": 97,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }
