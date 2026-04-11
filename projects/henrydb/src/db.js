@@ -2619,7 +2619,7 @@ export class Database {
     }
 
     // Tree-structured plan (new system) — use for SELECT statements
-    if (stmt.type === 'SELECT' && (format === 'tree' || format === 'json-tree' || format === 'html')) {
+    if (stmt.type === 'SELECT' && (format === 'tree' || format === 'json-tree' || format === 'html' || format === 'dot')) {
       const builder = new PlanBuilder(this);
       const planTree = builder.buildPlan(stmt);
       if (format === 'json-tree') {
@@ -2629,6 +2629,10 @@ export class Database {
       if (format === 'html') {
         const html = planToHTML(planTree);
         return { type: 'PLAN', rows: [{ 'QUERY PLAN': html }], html };
+      }
+      if (format === 'dot') {
+        const dot = PlanFormatter.toDOT(planTree);
+        return { type: 'PLAN', rows: [{ 'QUERY PLAN': dot }], dot };
       }
       const lines = PlanFormatter.format(planTree);
       return { type: 'PLAN', rows: lines.map(l => ({ 'QUERY PLAN': l })) };

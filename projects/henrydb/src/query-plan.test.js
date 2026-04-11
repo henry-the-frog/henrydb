@@ -503,3 +503,37 @@ describe('PlanBuilder - cost model sanity', () => {
     assert.ok(planAnd.estimatedRows < planSingle.estimatedRows);
   });
 });
+
+describe('PlanFormatter - DOT output', () => {
+  it('generates valid DOT graph', () => {
+    const scan = new SeqScanNode('users', { estimatedRows: 100, estimatedCost: 10 });
+    const dot = PlanFormatter.toDOT(scan);
+    assert.ok(dot.includes('digraph QueryPlan'));
+    assert.ok(dot.includes('Seq Scan on users'));
+    assert.ok(dot.includes('rows=100'));
+  });
+
+  it('generates edges for join tree', () => {
+    const left = new SeqScanNode('orders', { estimatedRows: 500 });
+    const right = new SeqScanNode('users', { estimatedRows: 100 });
+    const hash = new HashNode({ estimatedRows: 100 });
+    hash.addChild(right);
+    const join = new HashJoinNode('INNER', 'orders.user_id = users.id', { estimatedRows: 500 });
+    join.addChild(left);
+    join.addChild(hash);
+    
+    const dot = PlanFormatter.toDOT(join);
+    assert.ok(dot.includes('->'), 'Should have edges');
+    assert.ok(dot.includes('Hash Join'));
+    assert.ok(dot.includes('orders'));
+    assert.ok(dot.includes('users'));
+    assert.ok(dot.includes('fillcolor'));
+  });
+
+  it('shows filter in DOT label', () => {
+    const scan = new SeqScanNode('t', { estimatedRows: 50 });
+    scan.filter = 'age > 21';
+    const dot = PlanFormatter.toDOT(scan);
+    assert.ok(dot.includes('age > 21'));
+  });
+});

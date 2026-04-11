@@ -761,8 +761,46 @@ export class PlanFormatter {
   }
 
   /**
-   * Format as JSON (for EXPLAIN FORMAT JSON).
+   * Format as Graphviz DOT graph.
    */
+  static toDOT(root) {
+    const lines = ['digraph QueryPlan {', '  rankdir=TB;', '  node [shape=box, style=filled, fontname="Helvetica"];'];
+    let id = 0;
+    const nodeIds = new Map();
+
+    function visit(node) {
+      const nodeId = `n${id++}`;
+      nodeIds.set(node, nodeId);
+
+      const label = PlanFormatter._nodeLabel(node);
+      const rows = node.estimatedRows != null ? `\\nrows=${node.estimatedRows}` : '';
+      const cost = node.estimatedCost != null ? `\\ncost=${node.estimatedCost.toFixed(2)}` : '';
+      const filter = node.filter ? `\\n⚡${node.filter}` : '';
+      const color = PlanFormatter._dotColor(node.type);
+      
+      lines.push(`  ${nodeId} [label="${label}${rows}${cost}${filter}", fillcolor="${color}"];`);
+
+      for (const child of node.children) {
+        visit(child);
+        lines.push(`  ${nodeId} -> ${nodeIds.get(child)};`);
+      }
+    }
+
+    visit(root);
+    lines.push('}');
+    return lines.join('\n');
+  }
+
+  static _dotColor(type) {
+    if (type.includes('Scan')) return '#FFE0B2';
+    if (type.includes('Join') || type.includes('Loop')) return '#F8BBD0';
+    if (type.includes('Hash')) return '#E1BEE7';
+    if (type.includes('Sort')) return '#D1C4E9';
+    if (type.includes('Aggregate')) return '#B3E5FC';
+    if (type.includes('Limit')) return '#D7CCC8';
+    if (type.includes('Window')) return '#FFF9C4';
+    return '#F5F5F5';
+  }
   static toJSON(root) {
     return PlanFormatter._nodeToJSON(root);
   }
