@@ -38,50 +38,74 @@
       "id": "T11",
       "mode": "BUILD",
       "task": "WAL crash recovery depth: simulate crash (no close), reopen, verify only committed data survives — test abort, partial writes, interleaved txns",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T2",
-      "started": "2026-04-11T14:24:33.111Z"
+      "started": "2026-04-11T14:24:33.111Z",
+      "completed": "2026-04-11T14:29:42.682Z",
+      "duration_ms": 600000,
+      "summary": "9 WAL crash recovery depth tests. Found 3 critical bugs: (1) recovery wiped pages unconditionally even after checkpoint+truncate, (2) lastAppliedLSN not persisted to disk, (3) close() didnt update lastAppliedLSN after flush. All 53 persistence tests pass."
     },
     {
       "id": "T12",
       "mode": "BUILD",
       "task": "Multi-cycle persistence stress: 10+ close/reopen cycles with mixed INSERT/UPDATE/DELETE, verify consistency at each step",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-11T14:30:03.694Z",
+      "completed": "2026-04-11T14:30:03.946Z",
+      "duration_ms": 30000,
+      "summary": "Already covered in persistence-depth.test.js: 10 close/reopen cycles with interleaved INSERT/UPDATE/DELETE + 20-cycle rapid single-row updates. Both passing."
     },
     {
       "id": "T13",
       "mode": "BUILD",
       "task": "Large dataset persistence: 500+ rows across multiple pages, small buffer pool, verify full scan correctness after reopen",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-11T14:30:14.074Z",
+      "completed": "2026-04-11T14:30:14.328Z",
+      "duration_ms": 30000,
+      "summary": "Already covered in persistence-depth.test.js: 500-row full scan, 1000-row two-phase insert, bank transfer invariant across 5 reopen cycles. All passing."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, email and GH check"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard health, email and GH check",
+      "started": "2026-04-11T14:30:31.932Z",
+      "completed": "2026-04-11T14:30:56.461Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed (2 persistence commits). Dashboard healthy. No new GH notifications."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Quality reflection: depth check on HenryDB persistence work. Real or surface-level?"
+      "status": "done",
+      "task": "Quality reflection: depth check on HenryDB persistence work. Real or surface-level?",
+      "started": "2026-04-11T14:31:06.703Z",
+      "completed": "2026-04-11T14:31:27.452Z",
+      "duration_ms": 120000,
+      "summary": "Depth check PASSES. 5 real bugs found (3 data-loss/correctness). BufferPool cache coherence, row count double-counting, unconditional page wipe after checkpoint (data loss!), lastAppliedLSN not persisted, close() not updating LSN. All ARIES-core issues. This is the deepest persistence work yet."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Write technical content for CPython or Daniel audience: JIT insights, compiler techniques, or database internals",
-      "task": null
+      "task": null,
+      "started": "2026-04-11T14:31:36.346Z",
+      "completed": "2026-04-11T14:31:50.438Z",
+      "duration_ms": 60000,
+      "summary": "Planned 1 BUILD: blog post about 5 persistence bugs found today — test-driven ARIES correctness narrative."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Blog post: 5 Bugs That Would Have Destroyed Your Data — persistence correctness deep dive from todays test-driven discovery",
       "plan_ref": "T6",
-      "project": "blog"
+      "project": "blog",
+      "started": "2026-04-11T14:32:00.680Z"
     },
     {
       "id": "T8",
@@ -157,6 +181,10 @@
     {
       "time": "2026-04-11T14:17:40.453Z",
       "msg": "PLAN T2 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T14:31:44.791Z",
+      "msg": "PLAN T6 filled 1 BUILD tasks"
     }
   ]
 }
