@@ -13,43 +13,45 @@ import { ConsistentHashRing } from './consistent-hash.js';
 import { BloomFilter } from './bloom.js';
 import { MerkleTree } from './merkle.js';
 import { MVCCManager } from './mvcc.js';
+import { LSMTree } from './lsm.js';
 
 /**
  * Partition — a single shard in the distributed KV store.
- * Has its own MVCC manager, Bloom filter, and Merkle tree.
+ * Uses LSM tree for storage, Bloom filter (built into LSM), MVCC for transactions.
  */
 class Partition {
-  constructor(id) {
+  constructor(id, options = {}) {
     this.id = id;
-    this._data = new Map();         // key → value (latest committed)
+    this._lsm = new LSMTree({ memtableSize: options.memtableSize ?? 100 });
     this._mvcc = new MVCCManager();  // Transaction management
-    this._bloom = new BloomFilter(10000, 0.01); // Existence filter
-    this._merkleData = [];           // Data blocks for Merkle tree
     this._merkle = null;             // Rebuilt on demand
     this._dirty = true;              // Merkle tree needs rebuild
+    this._keySet = new Set();        // Track keys for Merkle tree
   }
 
-  /** Get a value by key (auto-commit read). */
+  /** Get a value by key (reads through LSM tree). */
   get(key) {
-    return this._data.get(key) ?? null;
+    const val = this._lsm.get(key);
+    return val === undefined || val === null ? null : val;
   }
 
-  /** Set a key-value pair (auto-commit write). */
+  /** Set a key-value pair. */
   set(key, value) {
-    this._data.set(key, value);
-    this._bloom.add(key);
+    this._lsm.put(key, value);
+    this._keySet.add(key);
     this._dirty = true;
   }
 
   /** Delete a key. */
   delete(key) {
-    this._data.delete(key);
+    this._lsm.delete(key);
+    this._keySet.delete(key);
     this._dirty = true;
   }
 
-  /** Check if key might exist (Bloom filter — fast, no false negatives). */
+  /** Check if key might exist (uses LSM's built-in Bloom filters). */
   mightContain(key) {
-    return this._bloom.test(key);
+    return this._keySet.has(key); // Use key set for now (Bloom is internal to LSM)
   }
 
   /** Get the Merkle root for anti-entropy comparison. */
@@ -65,7 +67,7 @@ class Partition {
     if (!this._merkle || !other._merkle) return [];
     if (this._merkle.leafCount !== other._merkle.leafCount) {
       // Different number of keys — full sync needed
-      return [...new Set([...this._data.keys(), ...other._data.keys()])];
+      return [...new Set([...this._keySet, ...other._keySet])];
     }
     return this._merkle.diff(other._merkle);
   }
@@ -77,11 +79,9 @@ class Partition {
 
   /** Read within a transaction. */
   txGet(tx, key) {
-    // Check MVCC first (for in-flight changes)
     const mvccVal = this._mvcc.read(tx, key);
     if (mvccVal !== undefined) return mvccVal;
-    // Fall back to committed data
-    return this._data.get(key) ?? null;
+    return this.get(key);
   }
 
   /** Write within a transaction. */
@@ -95,8 +95,8 @@ class Partition {
     for (const key of tx.writeSet) {
       const val = this._mvcc.read(tx, key);
       if (val !== undefined) {
-        this._data.set(key, val);
-        this._bloom.add(key);
+        this._lsm.put(key, val);
+        this._keySet.add(key);
       }
     }
     this._mvcc.commit(tx);
@@ -112,19 +112,19 @@ class Partition {
   getStats() {
     return {
       id: this.id,
-      keys: this._data.size,
-      bloomFPR: this._bloom.estimateFPR().toFixed(4),
+      keys: this._keySet.size,
+      bloomFPR: 'N/A (LSM internal)',
       merkleRoot: this.getMerkleRoot().slice(0, 16) + '...',
       mvccStats: this._mvcc.getStats(),
+      lsmStats: this._lsm.getStats(),
     };
   }
 
   // Rebuild Merkle tree from current data
   _rebuildMerkle() {
     if (!this._dirty) return;
-    const entries = [...this._data.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => `${k}=${JSON.stringify(v)}`);
+    const entries = this._lsm.scan()
+      .map(({ key, value }) => `${key}=${JSON.stringify(value)}`);
     
     if (entries.length === 0) {
       this._merkle = null;
@@ -225,15 +225,15 @@ export class DistributedKV {
     
     // Find differences and sync
     let synced = 0;
-    for (const [key, val] of a._data) {
-      if (b.get(key) !== val) {
-        b.set(key, val);
+    for (const { key, value } of a._lsm.scan()) {
+      if (b.get(key) !== value) {
+        b.set(key, value);
         synced++;
       }
     }
-    for (const [key, val] of b._data) {
-      if (a.get(key) !== val) {
-        a.set(key, val);
+    for (const { key, value } of b._lsm.scan()) {
+      if (a.get(key) !== value) {
+        a.set(key, value);
         synced++;
       }
     }
