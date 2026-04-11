@@ -72,6 +72,18 @@ export class VM {
   get output() { return [...this._output]; }
   get stepCount() { return this._stepCount; }
 
+  /** Pop from stack with bounds check. */
+  _pop() {
+    if (this._stack.length === 0) throw new Error('Stack underflow');
+    return this._stack.pop();
+  }
+
+  /** Peek top of stack with bounds check. */
+  _peek() {
+    if (this._stack.length === 0) throw new Error('Stack underflow (empty peek)');
+    return this._stack.at(-1);
+  }
+
   /**
    * Execute a bytecode program.
    * @param {number[]} bytecode — array of opcodes and operands
@@ -99,119 +111,130 @@ export class VM {
           break;
           
         case OP.POP:
-          this._stack.pop();
+          this._pop();
           break;
           
         case OP.DUP:
-          this._stack.push(this._stack[this._stack.length - 1]);
+          this._stack.push(this._peek());
           break;
           
         case OP.SWAP: {
-          const a = this._stack.pop();
-          const b = this._stack.pop();
+          const a = this._pop();
+          const b = this._pop();
           this._stack.push(a, b);
           break;
         }
           
         case OP.ADD: {
-          const b = this._stack.pop();
-          const a = this._stack.pop();
+          const b = this._pop();
+          const a = this._pop();
           this._stack.push(a + b);
           break;
         }
         case OP.SUB: {
-          const b = this._stack.pop();
-          const a = this._stack.pop();
+          const b = this._pop();
+          const a = this._pop();
           this._stack.push(a - b);
           break;
         }
         case OP.MUL: {
-          const b = this._stack.pop();
-          const a = this._stack.pop();
+          const b = this._pop();
+          const a = this._pop();
           this._stack.push(a * b);
           break;
         }
         case OP.DIV: {
-          const b = this._stack.pop();
-          const a = this._stack.pop();
+          const b = this._pop();
+          const a = this._pop();
           if (b === 0) throw new Error('Division by zero');
           this._stack.push(Math.trunc(a / b));
           break;
         }
         case OP.MOD: {
-          const b = this._stack.pop();
-          const a = this._stack.pop();
+          const b = this._pop();
+          const a = this._pop();
           this._stack.push(a % b);
           break;
         }
         case OP.NEG:
-          this._stack.push(-this._stack.pop());
+          this._stack.push(-this._pop());
           break;
           
         case OP.EQ: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a === b ? 1 : 0);
           break;
         }
         case OP.NEQ: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a !== b ? 1 : 0);
           break;
         }
         case OP.LT: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a < b ? 1 : 0);
           break;
         }
         case OP.GT: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a > b ? 1 : 0);
           break;
         }
         case OP.LTE: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a <= b ? 1 : 0);
           break;
         }
         case OP.GTE: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a >= b ? 1 : 0);
           break;
         }
           
         case OP.AND: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a && b ? 1 : 0);
           break;
         }
         case OP.OR: {
-          const b = this._stack.pop(), a = this._stack.pop();
+          const b = this._pop(), a = this._pop();
           this._stack.push(a || b ? 1 : 0);
           break;
         }
         case OP.NOT:
-          this._stack.push(this._stack.pop() ? 0 : 1);
+          this._stack.push(this._pop() ? 0 : 1);
           break;
           
-        case OP.JMP:
-          this._ip = bytecode[this._ip];
+        case OP.JMP: {
+          const addr = bytecode[this._ip];
+          if (addr < 0 || addr >= bytecode.length) throw new Error(`Jump to invalid address: ${addr}`);
+          this._ip = addr;
           break;
+        }
           
-        case OP.JZ:
-          if (this._stack.pop() === 0) {
-            this._ip = bytecode[this._ip];
+        case OP.JZ: {
+          const val = this._pop();
+          const addr = bytecode[this._ip];
+          if (val === 0) {
+            if (addr < 0 || addr >= bytecode.length) throw new Error(`Jump to invalid address: ${addr}`);
+            this._ip = addr;
           } else {
             this._ip++;
           }
           break;
+        }
           
-        case OP.JNZ:
-          if (this._stack.pop() !== 0) {
-            this._ip = bytecode[this._ip];
+        case OP.JNZ: {
+          const val = this._pop();
+          const addr = bytecode[this._ip];
+          if (val !== 0) {
+            if (addr < 0 || addr >= bytecode.length) throw new Error(`Jump to invalid address: ${addr}`);
+            this._ip = addr;
           } else {
             this._ip++;
           }
           break;
+        }
           
         case OP.LOAD: {
           const slot = bytecode[this._ip++];
@@ -221,7 +244,7 @@ export class VM {
           
         case OP.STORE: {
           const slot = bytecode[this._ip++];
-          this._locals[this._fp + slot] = this._stack.pop();
+          this._locals[this._fp + slot] = this._pop();
           break;
         }
           
@@ -234,7 +257,7 @@ export class VM {
         }
           
         case OP.RET: {
-          if (this._callStack.length === 0) return this._stack[this._stack.length - 1] ?? null;
+          if (this._callStack.length === 0) return this._peek() ?? null;
           const frame = this._callStack.pop();
           this._ip = frame.returnAddr;
           this._fp = frame.savedFp;
@@ -242,18 +265,18 @@ export class VM {
         }
           
         case OP.PRINT:
-          this._output.push(this._stack[this._stack.length - 1]);
+          this._output.push(this._peek());
           break;
           
         case OP.HALT:
-          return this._stack[this._stack.length - 1] ?? null;
+          return this._peek() ?? null;
           
         default:
           throw new Error(`Unknown opcode: 0x${op.toString(16)} at ip=${this._ip - 1}`);
       }
     }
     
-    return this._stack[this._stack.length - 1] ?? null;
+    return this._peek() ?? null;
   }
 
   /**
