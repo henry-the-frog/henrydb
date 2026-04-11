@@ -537,6 +537,12 @@ check('NULL', 'ORDER BY NULLS FIRST', () => {
   const r = db.execute('SELECT val FROM null_test ORDER BY val NULLS FIRST');
   return r.rows[0].val === null;
 });
+check('SELECT+', 'FETCH FIRST N ROWS ONLY', () => db.execute('SELECT * FROM t1 FETCH FIRST 2 ROWS ONLY').rows.length === 2);
+check('SELECT+', 'LIMIT ALL', () => db.execute('SELECT * FROM t1 LIMIT ALL').rows.length > 0);
+check('SELECT+', 'OFFSET ROWS FETCH', () => {
+  const r = db.execute('SELECT * FROM t1 ORDER BY id OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY');
+  return r.rows.length === 2;
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

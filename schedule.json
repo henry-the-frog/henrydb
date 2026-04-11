@@ -944,10 +944,21 @@
     {
       "id": "T87",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add FETCH FIRST N ROWS ONLY (SQL standard alternative to LIMIT)",
       "project": "henrydb",
-      "started": "2026-04-11T18:29:58.323Z"
+      "started": "2026-04-11T18:29:58.323Z",
+      "completed": "2026-04-11T18:30:48.443Z",
+      "duration_ms": 120000,
+      "summary": "Implemented FETCH FIRST N ROWS ONLY (SQL:2008 standard). Works with OFFSET ROWS. Scorecard compatible."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement table column comments (COMMENT ON COLUMN) + add FETCH FIRST to scorecard",
+      "project": "henrydb",
+      "started": "2026-04-11T18:30:58.422Z"
     }
   ],
   "focusProjects": [
@@ -1303,6 +1314,10 @@
     {
       "time": "2026-04-11T18:29:57.914Z",
       "msg": "Added T87 (BUILD) after end: Add FETCH FIRST N ROWS ONLY (SQL standard alternative to LIMIT)"
+    },
+    {
+      "time": "2026-04-11T18:30:58.179Z",
+      "msg": "Added T88 (BUILD) after end: Implement table column comments (COMMENT ON COLUMN) + add FETCH FIRST to scorecard"
     }
   ]
 }
