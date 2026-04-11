@@ -717,81 +717,47 @@ export class Database {
   }
 
   _createTableAs(ast) {
-    // Execute the SELECT query
-    const result = this._select(ast.select);
+    const result = this._select(ast.query);
     const rows = result.rows || [];
     
-    if (rows.length === 0 && !ast.ifNotExists) {
-      // Need at least one row to infer schema, or use the SELECT column names
-      const cols = ast.select.columns || [];
+    if (rows.length === 0) {
+      const cols = ast.query.columns || [];
       const schema = cols.map(c => ({
         name: c.alias || c.name || c.value || 'column',
         type: 'TEXT'
       }));
       this._createTable({
         type: 'CREATE_TABLE',
-        name: ast.name,
-        ifNotExists: ast.ifNotExists,
-        columns: schema
+        table: ast.table,
+        ifNotExists: false,
+        columns: schema.length > 0 ? schema : [{ name: 'empty', type: 'TEXT' }]
       });
       return { type: 'OK', count: 0 };
     }
     
-    if (rows.length > 0) {
-      // Infer schema from first row
-      const schema = Object.keys(rows[0]).map(key => {
-        const val = rows[0][key];
-        let type = 'TEXT';
-        if (typeof val === 'number') type = Number.isInteger(val) ? 'INT' : 'FLOAT';
-        return { name: key, type };
-      });
-      
-      this._createTable({
-        type: 'CREATE_TABLE',
-        name: ast.name,
-        ifNotExists: ast.ifNotExists,
-        columns: schema
-      });
-      
-      // Insert all rows
-      const table = this.tables.get(ast.name);
-      for (const row of rows) {
-        const values = schema.map(col => row[col.name]);
-        table.heap.insert(values);
-      }
+    // Infer schema from first row
+    const schema = Object.keys(rows[0]).map(key => {
+      const val = rows[0][key];
+      let type = 'TEXT';
+      if (typeof val === 'number') type = Number.isInteger(val) ? 'INT' : 'FLOAT';
+      return { name: key, type };
+    });
+    
+    this._createTable({
+      type: 'CREATE_TABLE',
+      table: ast.table,
+      ifNotExists: false,
+      columns: schema
+    });
+    
+    // Insert all rows
+    const table = this.tables.get(ast.table);
+    for (const row of rows) {
+      const values = schema.map(col => row[col.name]);
+      table.heap.insert(values);
     }
     
     return { type: 'OK', count: rows.length };
-  }
-
-
-    // Execute the query first
-    const result = this._select(ast.query);
-    if (!result.rows || result.rows.length === 0) {
-      this.tables.set(ast.table, { schema: [], heap: this._heapFactory(ast.table), indexes: new Map() });
-      return { type: 'OK', message: `Table ${ast.table} created (empty)` };
-    }
-
-    // Infer schema from first row
-    const firstRow = result.rows[0];
-    const schema = Object.keys(firstRow).filter(k => !k.includes('.')).map(name => ({
-      name,
-      type: typeof firstRow[name] === 'number' ? 'INT' : 'TEXT',
-      primaryKey: false,
-    }));
-
-    const heap = this._heapFactory(ast.table);
-    const indexes = new Map();
-    const tableObj = { schema, heap, indexes };
-    this.tables.set(ast.table, tableObj);
-
-    // Insert all rows
-    for (const row of result.rows) {
-      const values = schema.map(col => row[col.name]);
-      this._insertRow(tableObj, null, values);
-    }
-
-    return { type: 'OK', message: `Table ${ast.table} created with ${result.rows.length} rows` };
   }
 
   _alterTable(ast) {
@@ -4006,6 +3972,7 @@ export class Database {
         const b = this._evalValue(args[1], row);
         return a === b ? null : a;
       }
+      case 'SUBSTR':
       case 'SUBSTRING': {
         const str = this._evalValue(args[0], row);
         if (str == null) return null;
@@ -4171,6 +4138,7 @@ export class Database {
       case 'POWER': return Math.pow(this._evalValue(args[0], row), this._evalValue(args[1], row));
       case 'SQRT': return Math.sqrt(this._evalValue(args[0], row));
       case 'LOG': return args.length > 1 ? Math.log(this._evalValue(args[1], row)) / Math.log(this._evalValue(args[0], row)) : Math.log(this._evalValue(args[0], row));
+      case 'EXP': return Math.exp(this._evalValue(args[0], row));
       case 'RANDOM': return Math.random();
       case 'GREATEST': { const vals = args.map(a => this._evalValue(a, row)).filter(v => v != null); return vals.length ? Math.max(...vals.map(Number)) : null; }
       case 'LEAST': { const vals = args.map(a => this._evalValue(a, row)).filter(v => v != null); return vals.length ? Math.min(...vals.map(Number)) : null; }
