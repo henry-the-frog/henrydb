@@ -933,10 +933,21 @@
     {
       "id": "T86",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement LIMIT ALL (PostgreSQL compatibility)",
       "project": "henrydb",
-      "started": "2026-04-11T18:29:06.096Z"
+      "started": "2026-04-11T18:29:06.096Z",
+      "completed": "2026-04-11T18:29:49.109Z",
+      "duration_ms": 60000,
+      "summary": "LIMIT ALL implemented. Returns all rows (no limit). PostgreSQL compatibility."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add FETCH FIRST N ROWS ONLY (SQL standard alternative to LIMIT)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:29:58.323Z"
     }
   ],
   "focusProjects": [
@@ -1288,6 +1299,10 @@
     {
       "time": "2026-04-11T18:29:05.861Z",
       "msg": "Added T86 (BUILD) after end: Implement LIMIT ALL (PostgreSQL compatibility)"
+    },
+    {
+      "time": "2026-04-11T18:29:57.914Z",
+      "msg": "Added T87 (BUILD) after end: Add FETCH FIRST N ROWS ONLY (SQL standard alternative to LIMIT)"
     }
   ]
 }

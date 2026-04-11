@@ -4,7 +4,7 @@
 const KEYWORDS = new Set([
   'SELECT', 'FROM', 'WHERE', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET',
   'DELETE', 'CREATE', 'TABLE', 'DROP', 'AND', 'OR', 'NOT', 'NULL', 'TRUE',
-  'FALSE', 'ORDER', 'BY', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'AS',
+  'FALSE', 'ORDER', 'BY', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'FETCH', 'FIRST', 'NEXT', 'ROWS', 'ROW', 'ONLY', 'AS',
   'INT', 'INTEGER', 'TEXT', 'VARCHAR', 'FLOAT', 'BOOL', 'BOOLEAN',
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
@@ -388,7 +388,16 @@ export function parse(sql) {
     if (isKeyword('HAVING')) { advance(); having = parseExpr(); }
     if (isKeyword('ORDER')) { advance(); expect('KEYWORD', 'BY'); orderBy = parseOrderBy(); }
     if (isKeyword('LIMIT')) { advance(); if (isKeyword('ALL')) { advance(); } else { limit = advance().value; } }
-    if (isKeyword('OFFSET')) { advance(); offset = advance().value; }
+    if (isKeyword('OFFSET')) { advance(); offset = advance().value; if (isKeyword('ROWS') || isKeyword('ROW')) advance(); }
+    // SQL standard: FETCH FIRST N ROWS ONLY
+    if (isKeyword('FETCH')) {
+      advance(); // FETCH
+      if (isKeyword('FIRST') || isKeyword('NEXT')) advance();
+      if (peek().type === 'NUMBER') limit = advance().value;
+      else limit = 1; // FETCH FIRST ROW ONLY = 1
+      if (isKeyword('ROWS') || isKeyword('ROW')) advance();
+      if (isKeyword('ONLY')) advance();
+    }
 
     // FOR UPDATE / FOR SHARE / FOR NO KEY UPDATE / FOR KEY SHARE
     let forUpdate = null;
