@@ -2552,10 +2552,24 @@
     {
       "id": "T237",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: implement JSON functions — json_build_object(key, val, ...), json_agg(), row_to_json(). These are commonly used in modern PostgreSQL APIs and essential for JSON API servers.",
       "project": "henrydb",
-      "started": "2026-04-11T03:27:51.822Z"
+      "started": "2026-04-11T03:27:51.822Z",
+      "completed": "2026-04-11T03:33:16.158Z",
+      "duration_ms": 300000,
+      "summary": "Implemented JSON functions: json_build_object, json_build_array, row_to_json, to_json, json_object_keys, json_agg (aggregate), array_agg. Parser had duplicate function lists for SELECT-item vs expression context — added to both. json_agg with GROUP BY works perfectly."
+    },
+    {
+      "id": "T238",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement GENERATE_SERIES table function — SELECT * FROM generate_series(1, 10). Useful for test data generation and range queries.",
+      "project": "henrydb",
+      "started": "2026-04-11T03:34:01.198Z",
+      "completed": "2026-04-11T03:34:31.952Z",
+      "duration_ms": 60000,
+      "summary": "generate_series already implemented. Works for basic ranges and steps. Column naming issue: rows use value key but queries reference generate_series."
     }
   ],
   "focusProjects": [
@@ -3499,6 +3513,10 @@
     {
       "time": "2026-04-11T03:27:51.290Z",
       "msg": "Added T237 (BUILD) after end: HenryDB: implement JSON functions — json_build_object(key, val, ...), json_agg(), row_to_json(). These are commonly used in modern PostgreSQL APIs and essential for JSON API servers."
+    },
+    {
+      "time": "2026-04-11T03:34:00.782Z",
+      "msg": "Added T238 (BUILD) after end: HenryDB: implement GENERATE_SERIES table function — SELECT * FROM generate_series(1, 10). Useful for test data generation and range queries."
     }
   ]
 }

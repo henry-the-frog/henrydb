@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T03:27:51.885Z",
+  "generated": "2026-04-11T03:34:32.017Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: implement JSON functions — json_build_object(key, val, ...), json_agg(), row_to_json(). These are commonly used in modern PostgreSQL APIs and essential for JSON API servers.",
-    "startedAt": "2026-04-11T03:27:51.885Z",
-    "taskId": "T237"
+    "task": "HenryDB: implement GENERATE_SERIES table function — SELECT * FROM generate_series(1, 10). Useful for test data generation and range queries.",
+    "completedAt": "2026-04-11T03:34:32.016Z",
+    "taskId": "T238",
+    "summary": "generate_series already implemented. Works for basic ranges and steps. Column naming issue: rows use value key but queries reference generate_series.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2384,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 226,
+    "blocksCompleted": 228,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 170,
+      "BUILD": 172,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }
