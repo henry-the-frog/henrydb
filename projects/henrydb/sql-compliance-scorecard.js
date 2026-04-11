@@ -382,6 +382,36 @@ check('META', 'EXPLAIN ANALYZE', () => {
   const r = db.execute('EXPLAIN ANALYZE SELECT * FROM t1');
   return r.rows.some(r => r['QUERY PLAN']?.includes('Time'));
 });
+check('SELECT+', 'NOT IN', () => db.execute('SELECT * FROM t1 WHERE id NOT IN (1, 2)').rows.length >= 1);
+check('SELECT+', 'ILIKE', () => db.execute("SELECT * FROM t1 WHERE name ILIKE '%A%'").rows.length >= 0);
+check('STRING', 'LEFT', () => db.execute("SELECT LEFT('hello', 3) as r").rows[0].r === 'hel');
+check('STRING', 'RIGHT', () => db.execute("SELECT RIGHT('hello', 3) as r").rows[0].r === 'llo');
+check('STRING', 'REPEAT', () => db.execute("SELECT REPEAT('ab', 3) as r").rows[0].r === 'ababab');
+check('STRING', 'REVERSE', () => db.execute("SELECT REVERSE('hello') as r").rows[0].r === 'olleh');
+check('STRING', 'INITCAP', () => db.execute("SELECT INITCAP('hello world') as r").rows[0].r === 'Hello World');
+check('STRING', 'CHAR_LENGTH', () => db.execute("SELECT CHAR_LENGTH('hello') as r").rows[0].r === 5);
+check('STRING', 'LTRIM', () => db.execute("SELECT LTRIM('  hi') as r").rows[0].r === 'hi');
+check('STRING', 'RTRIM', () => db.execute("SELECT RTRIM('hi  ') as r").rows[0].r === 'hi');
+check('MATH', 'SQRT', () => db.execute('SELECT SQRT(16) as r').rows[0].r === 4);
+check('MATH', 'LOG', () => db.execute('SELECT LOG(100) as r').rows[0].r > 4);
+check('MATH', 'RANDOM', () => {
+  const r = db.execute('SELECT RANDOM() as r').rows[0].r;
+  return r >= 0 && r <= 1;
+});
+check('DATE', 'STRFTIME', () => {
+  try { return db.execute("SELECT STRFTIME('%Y', '2024-01-15') as r").rows[0].r === '2024'; }
+  catch { return false; }
+});
+check('COND', 'IIF', () => db.execute('SELECT IIF(1 > 0, 10, 20) as r').rows[0].r === 10);
+check('TYPE', 'TYPEOF', () => db.execute('SELECT TYPEOF(42) as r').rows[0].r === 'integer');
+check('AGG', 'COUNT DISTINCT', () => db.execute('SELECT COUNT(DISTINCT name) as c FROM t1').rows[0].c >= 1);
+check('VIEW', 'CREATE VIEW', () => { db.execute('CREATE VIEW v_test AS SELECT * FROM t1 WHERE score IS NOT NULL'); return true; });
+check('VIEW', 'SELECT from VIEW', () => db.execute('SELECT * FROM v_test').rows.length >= 0);
+check('META', 'SHOW TABLES', () => db.execute('SHOW TABLES').rows.length > 0);
+check('INDEX', 'CREATE INDEX', () => { db.execute('CREATE INDEX idx_score ON t1 (score)'); return true; });
+check('INDEX', 'CREATE UNIQUE INDEX', () => { db.execute('CREATE UNIQUE INDEX idx_uniq ON t1 (id)'); return true; });
+check('EXPR', 'CAST INT to TEXT', () => db.execute("SELECT CAST(42 AS TEXT) as r").rows[0].r === '42');
+check('AGG', 'GROUP_CONCAT', () => db.execute("SELECT GROUP_CONCAT(name) as r FROM t1 WHERE id <= 3").rows[0].r.includes(','));
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
