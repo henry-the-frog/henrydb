@@ -7,6 +7,7 @@
 /**
  * BufferPoolManager — LRU page cache with pin/unpin semantics.
  */
+export { BufferPoolManager as BufferPool };
 export class BufferPoolManager {
   constructor(poolSize = 64, pageSize = 4096) {
     this.poolSize = poolSize;
@@ -32,15 +33,50 @@ export class BufferPoolManager {
     // Disk storage simulation
     this._disk = new Map(); // pageId → Buffer
 
+    // External callbacks for file-backed usage
+    this._evictCallback = null; // (pageId, data) => void
+    this._diskReadFn = null;    // (pageId) => Buffer
+
     // Stats
-    this.stats = { hits: 0, misses: 0, evictions: 0, dirtyEvictions: 0, fetches: 0, flushes: 0 };
+    this._statsData = { hits: 0, misses: 0, evictions: 0, dirtyEvictions: 0, fetches: 0, flushes: 0 };
+  }
+
+  /**
+   * Set a callback invoked when a dirty page is evicted.
+   * @param {function(pageId, data)} fn
+   */
+  setEvictCallback(fn) {
+    this._evictCallback = fn;
+  }
+
+  /**
+   * Invalidate all pages (drop from pool without flushing).
+   * Used after crash recovery to clear stale cached data.
+   */
+  invalidateAll() {
+    for (let i = 0; i < this.poolSize; i++) {
+      const frame = this._frames[i];
+      if (frame.pageId !== null) {
+        this._pageTable.delete(frame.pageId);
+        frame.pageId = null;
+        frame.data = null;
+        frame.pinCount = 0;
+        frame.dirty = false;
+        frame.refBit = false;
+        this._freeList.push(i);
+      }
+    }
+    this._lruOrder = [];
+    this._lruSet.clear();
   }
 
   /**
    * Fetch a page into the buffer pool and pin it.
    * Returns the frame with the page data.
+   * @param {number} pageId
+   * @param {function} [diskReadFn] — optional callback to read page from disk
    */
-  fetchPage(pageId) {
+  fetchPage(pageId, diskReadFn) {
     // Check if page is already in buffer pool
     if (this._pageTable.has(pageId)) {
       const frameId = this._pageTable.get(pageId);
@@ -48,26 +84,27 @@ export class BufferPoolManager {
       frame.pinCount++;
       frame.refBit = true;
       this._removeLru(frameId); // Pinned pages aren't in LRU
-      this.stats.hits++;
+      this._statsData.hits++;
       return { frameId, data: frame.data, pageId };
     }
 
     // Page not in pool — need to fetch from "disk"
-    this.stats.misses++;
+    this._statsData.misses++;
     const frameId = this._getFrame();
     if (frameId === null) return null; // All frames pinned
 
     const frame = this._frames[frameId];
     
-    // Load page data
+    // Load page data (use provided diskReadFn, or fallback to internal disk simulation)
     frame.pageId = pageId;
-    frame.data = this._readFromDisk(pageId);
+    const reader = diskReadFn || this._diskReadFn;
+    frame.data = reader ? reader(pageId) : this._readFromDisk(pageId);
     frame.pinCount = 1;
     frame.dirty = false;
     frame.refBit = true;
 
     this._pageTable.set(pageId, frameId);
-    this.stats.fetches++;
+    this._statsData.fetches++;
 
     return { frameId, data: frame.data, pageId };
   }
@@ -122,20 +159,27 @@ export class BufferPoolManager {
 
     this._writeToDisk(frame.pageId, frame.data);
     frame.dirty = false;
-    this.stats.flushes++;
+    this._statsData.flushes++;
     return true;
   }
 
   /**
    * Flush all dirty pages.
+   * @param {function} [writeFn] — optional (pageId, data) => void callback
    */
-  flushAll() {
+  flushAll(writeFn) {
     for (let i = 0; i < this.poolSize; i++) {
       const frame = this._frames[i];
       if (frame.pageId !== null && frame.dirty) {
-        this._writeToDisk(frame.pageId, frame.data);
+        if (writeFn) {
+          writeFn(frame.pageId, frame.data);
+        } else if (this._evictCallback) {
+          this._evictCallback(frame.pageId, frame.data);
+        } else {
+          this._writeToDisk(frame.pageId, frame.data);
+        }
         frame.dirty = false;
-        this.stats.flushes++;
+        this._statsData.flushes++;
       }
     }
   }
@@ -178,14 +222,18 @@ export class BufferPoolManager {
 
       if (frame.pinCount > 0) continue; // Skip pinned (shouldn't happen in LRU)
 
-      // Write dirty page back
+      // Write dirty page back (use evict callback if set, else internal disk)
       if (frame.dirty) {
-        this._writeToDisk(frame.pageId, frame.data);
-        this.stats.dirtyEvictions++;
+        if (this._evictCallback) {
+          this._evictCallback(frame.pageId, frame.data);
+        } else {
+          this._writeToDisk(frame.pageId, frame.data);
+        }
+        this._statsData.dirtyEvictions++;
       }
 
       this._pageTable.delete(frame.pageId);
-      this.stats.evictions++;
+      this._statsData.evictions++;
       return frameId;
     }
 
@@ -226,17 +274,22 @@ export class BufferPoolManager {
     const inUse = this._frames.filter(f => f.pageId !== null).length;
     const pinned = this._frames.filter(f => f.pinCount > 0).length;
     const dirty = this._frames.filter(f => f.dirty).length;
-    return {
-      ...this.stats,
+    const result = {
+      ...this._statsData,
       poolSize: this.poolSize,
       inUse,
+      used: inUse,
       pinned,
       dirty,
       freeFrames: this._freeList.length,
       lruSize: this._lruOrder.length,
-      hitRate: this.stats.hits + this.stats.misses > 0
-        ? ((this.stats.hits / (this.stats.hits + this.stats.misses)) * 100).toFixed(1) + '%'
+      hitRate: this._statsData.hits + this._statsData.misses > 0
+        ? ((this._statsData.hits / (this._statsData.hits + this._statsData.misses)) * 100).toFixed(1) + '%'
         : '0%',
     };
+    return result;
   }
+
+  /** Alias for getStats() */
+  stats() { return this.getStats(); }
 }

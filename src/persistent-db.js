@@ -176,7 +176,10 @@ export class PersistentDatabase {
    * Get buffer pool statistics.
    */
   stats() {
-    return this._bp.stats();
+    const raw = typeof this._bp.stats === 'function' ? this._bp.stats() : (this._bp.getStats ? this._bp.getStats() : this._bp.stats);
+    // Normalize: ensure 'used' is available (alias for inUse)
+    if (raw && raw.inUse !== undefined && raw.used === undefined) raw.used = raw.inUse;
+    return raw;
   }
 
   // --- Internal ---

@@ -169,7 +169,7 @@ describe('Persistence End-to-End', () => {
     assert.ok(stats.misses > 0, 'Had cache misses');
     // With pool size 4 and many pages, should have evictions
     assert.ok(stats.evictions > 0, 'Had evictions');
-    assert.ok(stats.hitRate >= 0 && stats.hitRate <= 1, 'Hit rate between 0 and 1');
+    assert.ok(typeof stats.hitRate === 'string' && stats.hitRate.includes('%'), 'Hit rate is a percentage string');
     
     heap.flush();
     dm.close();
