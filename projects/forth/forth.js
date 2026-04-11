@@ -42,6 +42,10 @@ class Forth {
     d['/'] = { immediate: false, fn() { const b = self.pop(), a = self.pop(); self.push(Math.trunc(a / b)); } };
     d['mod'] = { immediate: false, fn() { const b = self.pop(), a = self.pop(); self.push(a % b); } };
     d['negate'] = { immediate: false, fn() { self.push(-self.pop()); } };
+    d['1+'] = { immediate: false, fn() { self.push(self.pop() + 1); } };
+    d['1-'] = { immediate: false, fn() { self.push(self.pop() - 1); } };
+    d['2*'] = { immediate: false, fn() { self.push(self.pop() * 2); } };
+    d['2/'] = { immediate: false, fn() { self.push(Math.trunc(self.pop() / 2)); } };
     d['abs'] = { immediate: false, fn() { self.push(Math.abs(self.pop())); } };
     d['min'] = { immediate: false, fn() { const b = self.pop(), a = self.pop(); self.push(Math.min(a, b)); } };
     d['max'] = { immediate: false, fn() { const b = self.pop(), a = self.pop(); self.push(Math.max(a, b)); } };
