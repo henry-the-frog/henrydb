@@ -72,3 +72,15 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 **Fix:** Call `this._queryCache.invalidateAll()` on both COMMIT and ROLLBACK in `_interceptSystemQuery`.
 **Key insight:** The MVCC engine, heap storage, and scan interceptors were all correct. The bug was in a completely different subsystem (query cache). When debugging multi-layer systems, check caches early.
 **Prevention:** Any transaction state change (COMMIT, ROLLBACK, ROLLBACK TO SAVEPOINT) must invalidate the query cache.
+
+## 2026-04-11: Persistence Recovery Data Loss Bugs
+
+**Bug pattern: State transitions at boundaries**
+- BufferPool had no invalidateAll() — recovery cleared disk pages but cache served stale data
+- heap._rowCount not reset before recovery replay → double-counting
+- recoverFromFileWAL wiped ALL pages even after checkpoint+truncate → DATA LOSS (50 rows destroyed to replay 1)
+- lastAppliedLSN was in-memory only, never persisted → recovery couldn't distinguish "needs replay" from "already applied"  
+- close() didn't update lastAppliedLSN after flush → next reopen replayed already-flushed records
+
+**Root insight:** Each component worked correctly in isolation. Bugs lived in handoffs — where one subsystem assumed another's state. Integration testing > unit testing for databases.
+**Prevention:** ARIES recovery requires persistent LSN tracking. Always test the scary scenarios: tiny buffer pools, crash without close(), checkpoint+truncate+reopen.
