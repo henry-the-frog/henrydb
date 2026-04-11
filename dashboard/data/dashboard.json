@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T03:01:40.737Z",
+  "generated": "2026-04-11T03:10:06.846Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: implement binary WAL record format to replace JSON.stringify. Use fixed-header binary encoding: [lsn:8][txId:4][type:1][tableLen:2][table:var][pageId:4][slotIdx:4][beforeLen:4][before:var][afterLen:4][after:var][crc:4]. Should give 10-50x serialization speedup.",
-    "startedAt": "2026-04-11T03:01:40.737Z",
-    "taskId": "T232"
+    "task": "HenryDB: implement pg_stat_activity — query SELECT * FROM pg_stat_activity returns info about all active connections: pid, state (idle/active/idle in transaction), query, backend_start, query_start, tx_start. Useful for monitoring and debugging.",
+    "completedAt": "2026-04-11T03:10:06.846Z",
+    "taskId": "T233",
+    "summary": "pg_stat_activity, pg_stat_statements, pg_stat_user_tables, pg_stat_bgwriter all already implemented. Quick test confirmed: shows connection PIDs, state, current query, statement call counts. No new code needed.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-10",
@@ -2382,12 +2384,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 221,
+    "blocksCompleted": 223,
     "blocksTotal": 222,
     "modeDistribution": {
       "THINK": 27,
       "PLAN": 11,
-      "BUILD": 165,
+      "BUILD": 167,
       "MAINTAIN": 13,
       "EXPLORE": 5
     }

@@ -3591,9 +3591,15 @@ export class Database {
 
   _resolveColumn(name, row) {
     if (name in row) return row[name];
+    // Case-insensitive lookup
+    const lowerName = name.toLowerCase();
+    for (const key of Object.keys(row)) {
+      if (key.toLowerCase() === lowerName) return row[key];
+    }
     // Try without table prefix
     for (const key of Object.keys(row)) {
       if (key.endsWith(`.${name}`)) return row[key];
+      if (key.toLowerCase().endsWith(`.${lowerName}`)) return row[key];
     }
     // For correlated subqueries: check outer row
     if (this._outerRow) {
