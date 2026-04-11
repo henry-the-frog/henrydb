@@ -753,6 +753,14 @@
       "completed": "2026-04-11T17:47:06.245Z",
       "duration_ms": 240000,
       "summary": "Recursive CTEs verified through full stack: wire protocol → parser → CTE executor → WAL → restart. Org chart (4 levels), fibonacci (10 terms) all pass via pg client."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement WINDOW clause (WINDOW w AS (...)) for named window definitions",
+      "project": "henrydb",
+      "started": "2026-04-11T17:56:12.665Z"
     }
   ],
   "focusProjects": [
@@ -1036,6 +1044,10 @@
     {
       "time": "2026-04-11T17:46:28.112Z",
       "msg": "Added T69 (BUILD) after end: Test recursive CTEs through wire protocol with persistence"
+    },
+    {
+      "time": "2026-04-11T17:56:12.254Z",
+      "msg": "Added T70 (BUILD) after end: Implement WINDOW clause (WINDOW w AS (...)) for named window definitions"
     }
   ]
 }

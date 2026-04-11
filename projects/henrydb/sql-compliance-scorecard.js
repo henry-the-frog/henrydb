@@ -336,6 +336,18 @@ check('TYPE', 'Negative number', () => db.execute('SELECT -42 as r').rows[0].r =
 check('TYPE', 'String with special chars', () => db.execute("SELECT 'hello world' as r").rows[0].r === 'hello world');
 check('EXPR', 'Unary minus', () => db.execute('SELECT -1 * 2 as r').rows[0].r === -2);
 check('EXPR', 'Boolean comparison in WHERE', () => db.execute('SELECT * FROM t1 WHERE 1 = 1 LIMIT 1').rows.length === 1);
+check('WINDOW', 'DENSE_RANK', () => {
+  const r = db.execute('SELECT id, DENSE_RANK() OVER (ORDER BY score DESC) as dr FROM t1 WHERE score IS NOT NULL');
+  return r.rows.length > 0 && r.rows.some(r => r.dr === 1);
+});
+check('WINDOW', 'LAG', () => {
+  const r = db.execute('SELECT id, score, LAG(score) OVER (ORDER BY id) as prev FROM t1 WHERE score IS NOT NULL');
+  return r.rows.length > 1;
+});
+check('WINDOW', 'LEAD', () => {
+  const r = db.execute('SELECT id, score, LEAD(score) OVER (ORDER BY id) as nxt FROM t1 WHERE score IS NOT NULL');
+  return r.rows.length > 1;
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
