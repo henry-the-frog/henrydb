@@ -297,9 +297,12 @@ export function recoverFromFileWAL(heap, wal) {
   const dm = heap._dm;
   const bp = heap._bp;
   
-  // Evict all pages from buffer pool first
+  // Evict all pages from buffer pool first, then invalidate cache
   if (bp && bp.flushAll) {
     bp.flushAll((pid, data) => dm.writePage(pid, data));
+  }
+  if (bp && bp.invalidateAll) {
+    bp.invalidateAll();
   }
   
   // Clear all data pages (write zeroed pages)
@@ -314,6 +317,8 @@ export function recoverFromFileWAL(heap, wal) {
   
   // Re-initialize FSM
   heap._fsm = new FreeSpaceMap();
+  // Reset row count — recovery will rebuild it
+  heap._rowCount = 0;
   
   // Phase 3: Redo — replay committed operations for this heap's table only
   let redone = 0;

@@ -317,6 +317,20 @@ export class BufferPoolManager {
   }
 
   /**
+   * Invalidate all cached pages. Discards all frames without flushing.
+   * Used by crash recovery to clear stale buffer pool state.
+   */
+  invalidateAll() {
+    for (const [pageId, frameId] of this._pageTable) {
+      const frame = this._frames[frameId];
+      this.replacer.remove(frameId);
+      frame.reset();
+      this._freeList.push(frameId);
+    }
+    this._pageTable.clear();
+  }
+
+  /**
    * Get buffer pool statistics. Callable as property or method.
    */
   get stats() {

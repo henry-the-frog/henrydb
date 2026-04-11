@@ -4,23 +4,53 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review the week — what shipped, what is deep, what is shallow. Set Saturday direction."
+      "status": "done",
+      "task": "Review the week — what shipped, what is deep, what is shallow. Set Saturday direction.",
+      "started": "2026-04-11T14:15:26.371Z",
+      "completed": "2026-04-11T14:16:05.750Z",
+      "duration_ms": 90000,
+      "summary": "Week review: massive breadth (5500+ tests, fuzzer, git, optimizer) but persistence layer is deepest gap. BufferPool file I/O, WAL recovery, close-reopen lifecycle untested end-to-end. Queue direction confirmed — persistence depth is the real Saturday work."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB persistence depth: BufferPool real file I/O, WAL to recovery end-to-end pipeline, close reopen lifecycle",
-      "task": null
+      "task": null,
+      "started": "2026-04-11T14:16:26.165Z",
+      "completed": "2026-04-11T14:17:46.668Z",
+      "duration_ms": 120000,
+      "summary": "Planned 4 BUILD tasks for HenryDB persistence depth: (1) BufferPool eviction stress with tiny pool, (2) WAL crash recovery without clean shutdown, (3) multi-cycle close/reopen stress, (4) large dataset exceeding buffer pool."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "BufferPool eviction stress: tiny pool (4 pages) with file I/O, force eviction cascades, verify data integrity after reopen",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-11T14:18:04.589Z"
+    },
+    {
+      "id": "T11",
+      "mode": "BUILD",
+      "task": "WAL crash recovery depth: simulate crash (no close), reopen, verify only committed data survives — test abort, partial writes, interleaved txns",
+      "status": "upcoming",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T12",
+      "mode": "BUILD",
+      "task": "Multi-cycle persistence stress: 10+ close/reopen cycles with mixed INSERT/UPDATE/DELETE, verify consistency at each step",
+      "status": "upcoming",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T13",
+      "mode": "BUILD",
+      "task": "Large dataset persistence: 500+ rows across multiple pages, small buffer pool, verify full scan correctness after reopen",
+      "status": "upcoming",
+      "plan_ref": "T2"
     },
     {
       "id": "T4",
@@ -119,6 +149,10 @@
     {
       "time": "2026-04-11T14:01:36.119Z",
       "msg": "Added T10 (EXPLORE) after T9: Follow rabbit holes from first EXPLORE, write scratch notes on anything non-obvious"
+    },
+    {
+      "time": "2026-04-11T14:17:40.453Z",
+      "msg": "PLAN T2 filled 4 BUILD tasks"
     }
   ]
 }

@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T14:02:07.986Z",
+  "generated": "2026-04-11T14:18:04.625Z",
   "current": {
-    "status": "idle",
-    "mode": "THINK",
-    "task": "",
-    "context": "",
-    "next": "",
-    "startedAt": "2026-04-11T04:15:28.125Z",
-    "estimatedBlocks": 0
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "BufferPool eviction stress: tiny pool (4 pages) with file I/O, force eviction cascades, verify data integrity after reopen",
+    "startedAt": "2026-04-11T14:18:04.625Z",
+    "taskId": "T3"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3406,23 +3404,49 @@
       {
         "id": "T1",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Review the week — what shipped, what is deep, what is shallow. Set Saturday direction."
+        "status": "done",
+        "task": "Review the week — what shipped, what is deep, what is shallow. Set Saturday direction.",
+        "started": "2026-04-11T14:15:26.371Z",
+        "completed": "2026-04-11T14:16:05.750Z",
+        "duration_ms": 90000,
+        "summary": "Week review: massive breadth (5500+ tests, fuzzer, git, optimizer) but persistence layer is deepest gap. BufferPool file I/O, WAL recovery, close-reopen lifecycle untested end-to-end. Queue direction confirmed — persistence depth is the real Saturday work."
       },
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB persistence depth: BufferPool real file I/O, WAL to recovery end-to-end pipeline, close reopen lifecycle",
-        "task": null
+        "task": null,
+        "started": "2026-04-11T14:16:26.165Z"
       },
       {
         "id": "T3",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "BufferPool eviction stress: tiny pool (4 pages) with file I/O, force eviction cascades, verify data integrity after reopen",
         "plan_ref": "T2",
         "project": "henrydb"
+      },
+      {
+        "id": "T11",
+        "mode": "BUILD",
+        "task": "WAL crash recovery depth: simulate crash (no close), reopen, verify only committed data survives — test abort, partial writes, interleaved txns",
+        "status": "upcoming",
+        "plan_ref": "T2"
+      },
+      {
+        "id": "T12",
+        "mode": "BUILD",
+        "task": "Multi-cycle persistence stress: 10+ close/reopen cycles with mixed INSERT/UPDATE/DELETE, verify consistency at each step",
+        "status": "upcoming",
+        "plan_ref": "T2"
+      },
+      {
+        "id": "T13",
+        "mode": "BUILD",
+        "task": "Large dataset persistence: 500+ rows across multiple pages, small buffer pool, verify full scan correctness after reopen",
+        "status": "upcoming",
+        "plan_ref": "T2"
       },
       {
         "id": "T4",
@@ -3475,9 +3499,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 0,
-    "blocksTotal": 10,
-    "modeDistribution": {}
+    "blocksCompleted": 2,
+    "blocksTotal": 13,
+    "modeDistribution": {
+      "THINK": 1,
+      "PLAN": 1
+    }
   },
   "artifacts": [
     {
