@@ -1250,18 +1250,22 @@ export class Database {
 
     const result = this.execute_ast(ast.query);
     let inserted = 0;
+    
+    // Determine how many SELECT columns we expect
+    const selectCols = ast.query?.columns?.length || table.schema.length;
+    
     for (const row of result.rows) {
-      // Extract values matching target table schema
       const values = [];
       if (ast.columns) {
-        // Map by column names
         for (const col of ast.columns) {
           values.push(row[col] !== undefined ? row[col] : null);
         }
       } else {
-        // Map by target schema column names
-        for (const col of table.schema) {
-          values.push(row[col.name] !== undefined ? row[col.name] : null);
+        // Map by position, using only the last N values (skip qualified duplicates)
+        const rowValues = Object.values(row);
+        const offset = Math.max(0, rowValues.length - selectCols);
+        for (let i = 0; i < table.schema.length; i++) {
+          values.push(i + offset < rowValues.length ? rowValues[i + offset] : null);
         }
       }
       this._insertRow(table, null, values);
