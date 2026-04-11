@@ -412,6 +412,26 @@ check('INDEX', 'CREATE INDEX', () => { db.execute('CREATE INDEX idx_score ON t1 
 check('INDEX', 'CREATE UNIQUE INDEX', () => { db.execute('CREATE UNIQUE INDEX idx_uniq ON t1 (id)'); return true; });
 check('EXPR', 'CAST INT to TEXT', () => db.execute("SELECT CAST(42 AS TEXT) as r").rows[0].r === '42');
 check('AGG', 'GROUP_CONCAT', () => db.execute("SELECT GROUP_CONCAT(name) as r FROM t1 WHERE id <= 3").rows[0].r.includes(','));
+check('GEN', 'GENERATE_SERIES step', () => db.execute('SELECT * FROM GENERATE_SERIES(0, 10, 2)').rows.length === 6);
+check('GEN', 'GENERATE_SERIES in subquery', () => {
+  const r = db.execute('SELECT * FROM (SELECT value FROM GENERATE_SERIES(1, 3)) sub');
+  return r.rows.length === 3;
+});
+check('JSON', 'JSON nested access', () => {
+  db.execute("CREATE TABLE jnested (id INT, data TEXT)");
+  db.execute("INSERT INTO jnested VALUES (1, '{\"a\":{\"b\":42}}')");
+  return db.execute("SELECT JSON_EXTRACT(data, '$.a.b') as r FROM jnested").rows[0].r === 42;
+});
+check('DML', 'UPSERT ON CONFLICT', () => {
+  db.execute('CREATE TABLE upsert_test (id INT PRIMARY KEY, val INT)');
+  db.execute('INSERT INTO upsert_test VALUES (1, 10)');
+  db.execute('INSERT INTO upsert_test VALUES (1, 20) ON CONFLICT (id) DO UPDATE SET val = EXCLUDED.val');
+  return db.execute('SELECT val FROM upsert_test WHERE id = 1').rows[0].val === 20;
+});
+check('STRING', 'CONCAT function', () => db.execute("SELECT CONCAT('hello', ' ', 'world') as r").rows[0].r === 'hello world');
+check('MATH', 'MOD function', () => db.execute('SELECT MOD(10, 3) as r').rows[0].r === 1);
+check('EXPR', 'Modulo operator %', () => db.execute('SELECT 10 % 3 as r FROM t1 LIMIT 1').rows[0].r === 1);
+check('EXPR', 'Integer division', () => db.execute('SELECT 10 / 3 as r FROM t1 LIMIT 1').rows[0].r === 3);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
