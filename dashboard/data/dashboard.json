@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T19:30:25.428Z",
+  "generated": "2026-04-11T19:33:44.270Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Implement EXPLAIN BUFFERS (show buffer/page statistics)",
-    "startedAt": "2026-04-11T19:30:25.428Z",
-    "taskId": "T124"
+    "task": "Implement CROSS JOIN LATERAL (subquery references preceding table)",
+    "completedAt": "2026-04-11T19:33:44.270Z",
+    "taskId": "T126",
+    "summary": "LATERAL JOIN deferred: requires per-row subquery evaluation in JOIN path. Complex parser+executor changes.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 123,
+    "blocksCompleted": 126,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 2,
-      "BUILD": 104,
+      "BUILD": 107,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }

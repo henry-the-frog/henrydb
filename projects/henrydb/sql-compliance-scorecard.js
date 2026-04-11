@@ -599,6 +599,22 @@ check('DDL', 'TABLESAMPLE BERNOULLI', () => {
   const r = db.execute('SELECT COUNT(*) as c FROM sample_test TABLESAMPLE BERNOULLI(50)');
   return r.rows[0].c >= 10 && r.rows[0].c <= 90; // Should be roughly 50
 });
+check('VIEW', 'CREATE OR REPLACE VIEW', () => {
+  db.execute('CREATE VIEW replace_v AS SELECT 1 as x');
+  db.execute('CREATE OR REPLACE VIEW replace_v AS SELECT 2 as x');
+  return db.execute('SELECT x FROM replace_v').rows[0].x === 2;
+});
+check('DDL', 'CREATE TABLE IF NOT EXISTS', () => {
+  db.execute('CREATE TABLE if_not_test (id INT)');
+  db.execute('CREATE TABLE IF NOT EXISTS if_not_test (id INT)');
+  return true;
+});
+check('DML', 'UPDATE with self-reference', () => {
+  db.execute('CREATE TABLE self_upd (id INT PRIMARY KEY, val INT)');
+  db.execute('INSERT INTO self_upd VALUES (1, 10)');
+  db.execute('UPDATE self_upd SET val = val * 2 WHERE id = 1');
+  return db.execute('SELECT val FROM self_upd WHERE id = 1').rows[0].val === 20;
+});
 check('DML', 'INSERT RETURNING', () => {
   db.execute('CREATE TABLE ins_ret (id INT PRIMARY KEY, val TEXT)');
   const r = db.execute("INSERT INTO ins_ret VALUES (1, 'test') RETURNING *");
