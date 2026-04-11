@@ -130,6 +130,8 @@ export class HenryDBServer {
             this._handleExplainEndpoint(req, res);
           } else if (req.url === '/explain' && req.method === 'GET') {
             this._serveExplainUI(req, res);
+          } else if (req.url === '/dashboard' && req.method === 'GET') {
+            this._serveDashboard(req, res);
           } else if (req.url === '/query' && req.method === 'POST') {
             this._handleQueryEndpoint(req, res);
           } else {
@@ -363,6 +365,125 @@ export class HenryDBServer {
   </script>
 </body>
 </html>`;
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(html);
+  }
+
+  _serveDashboard(req, res) {
+    const health = this._getHealthStatus();
+    const cacheStats = this.db._planCache ? this.db._planCache.stats() : {};
+    const indexRecs = this.db._indexAdvisor ? this.db._indexAdvisor.recommend() : [];
+    const tableCount = this.db.tables?.size || 0;
+    const indexCount = this.db.indexCatalog?.size || 0;
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HenryDB — Performance Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #F5F5F5; color: #333; }
+    h1 { color: #1565C0; margin-bottom: 4px; }
+    .subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .card h3 { margin: 0 0 4px 0; font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card .value { font-size: 32px; font-weight: bold; color: #1565C0; }
+    .card .sub { font-size: 12px; color: #999; margin-top: 4px; }
+    .section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px; }
+    .section h2 { margin: 0 0 12px 0; color: #333; font-size: 18px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #E0E0E0; font-size: 12px; text-transform: uppercase; color: #666; }
+    td { padding: 8px 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    .badge-high { background: #FFCDD2; color: #C62828; }
+    .badge-medium { background: #FFE0B2; color: #E65100; }
+    .badge-low { background: #C8E6C9; color: #2E7D32; }
+    code { background: #ECEFF1; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    .nav { display: flex; gap: 12px; margin-bottom: 20px; }
+    .nav a { color: #1565C0; text-decoration: none; font-size: 14px; }
+    .nav a:hover { text-decoration: underline; }
+    .empty { color: #999; font-style: italic; padding: 12px 0; }
+  </style>
+</head>
+<body>
+  <h1>📊 HenryDB Performance Dashboard</h1>
+  <p class="subtitle">Real-time database health, query plan cache, and index recommendations</p>
+  
+  <div class="nav">
+    <a href="/explain">🔍 EXPLAIN Visualizer</a>
+    <a href="/health">❤️ Health Check</a>
+    <a href="/metrics">📈 Prometheus Metrics</a>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Tables</h3>
+      <div class="value">${tableCount}</div>
+    </div>
+    <div class="card">
+      <h3>Indexes</h3>
+      <div class="value">${indexCount}</div>
+    </div>
+    <div class="card">
+      <h3>Plan Cache</h3>
+      <div class="value">${cacheStats.entries || 0}</div>
+      <div class="sub">Hit rate: ${cacheStats.hitRate || 0}%</div>
+    </div>
+    <div class="card">
+      <h3>Cache Hits / Misses</h3>
+      <div class="value">${cacheStats.hits || 0} / ${cacheStats.misses || 0}</div>
+    </div>
+    <div class="card">
+      <h3>Connections</h3>
+      <div class="value">${health.connections?.active || 0}</div>
+      <div class="sub">Peak: ${health.connections?.peak || 0}</div>
+    </div>
+    <div class="card">
+      <h3>Total Queries</h3>
+      <div class="value">${health.queries?.total || 0}</div>
+      <div class="sub">Errors: ${health.queries?.errors || 0}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🎯 Index Recommendations</h2>
+    ${indexRecs.length === 0 ? '<p class="empty">No recommendations yet. Run more queries to build workload profile.</p>' : `
+    <table>
+      <thead><tr><th>Table</th><th>Columns</th><th>Impact</th><th>Score</th><th>Reason</th><th>SQL</th></tr></thead>
+      <tbody>
+        ${indexRecs.slice(0, 10).map(r => `<tr>
+          <td>${esc(r.table)}</td>
+          <td>${esc(r.columns.join(', '))}</td>
+          <td><span class="badge badge-${r.level}">${r.level}</span></td>
+          <td>${r.impact}</td>
+          <td>${esc(r.reason)}</td>
+          <td><code>${esc(r.sql)}</code></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`}
+  </div>
+
+  <div class="section">
+    <h2>📋 Tables</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Columns</th><th>Rows</th><th>Engine</th></tr></thead>
+      <tbody>
+        ${[...this.db.tables.entries()].map(([name, table]) => {
+          const cols = table.schema?.length || table.columns?.length || 0;
+          const rows = table.heap?._rowCount || table.heap?.tupleCount || 0;
+          const engine = table.heap?.constructor?.name || 'heap';
+          return `<tr><td>${esc(name)}</td><td>${cols}</td><td>${rows}</td><td>${engine}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>`;
+
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(html);
   }
