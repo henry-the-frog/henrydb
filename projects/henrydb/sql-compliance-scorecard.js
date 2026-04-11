@@ -50,6 +50,13 @@ check('DDL', 'ALTER TABLE RENAME', () => {
   db.execute('ALTER TABLE rename_src RENAME TO rename_dst');
   return db.execute('SELECT COUNT(*) as c FROM rename_dst').rows[0].c === 1;
 });
+check('DDL', 'ALTER TABLE RENAME COLUMN', () => {
+  db.execute('CREATE TABLE rename_col_test (id INT, old_col TEXT)');
+  db.execute("INSERT INTO rename_col_test VALUES (1, 'test')");
+  db.execute('ALTER TABLE rename_col_test RENAME COLUMN old_col TO new_col');
+  const r = db.execute('SELECT new_col FROM rename_col_test WHERE id = 1');
+  return r.rows[0].new_col === 'test';
+});
 
 // --- DML ---
 check('DML', 'INSERT', () => db.execute('INSERT INTO t1 VALUES (99, \'Test\', 20, 50)').count >= 0);
