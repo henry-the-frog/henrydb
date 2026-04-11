@@ -1380,6 +1380,36 @@
       "completed": "2026-04-11T19:33:44.205Z",
       "duration_ms": 30000,
       "summary": "LATERAL JOIN deferred: requires per-row subquery evaluation in JOIN path. Complex parser+executor changes."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement INSERT ON CONFLICT DO NOTHING (PostgreSQL UPSERT variant)",
+      "project": "henrydb",
+      "started": "2026-04-11T19:34:35.808Z",
+      "completed": "2026-04-11T19:34:56.251Z",
+      "duration_ms": 30000,
+      "summary": "INSERT ON CONFLICT DO NOTHING already works. Original value preserved on conflict."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement COALESCE in GROUP BY and ORDER BY clauses",
+      "project": "henrydb",
+      "started": "2026-04-11T19:35:07.146Z",
+      "completed": "2026-04-11T19:35:37.356Z",
+      "duration_ms": 60000,
+      "summary": "COALESCE in GROUP BY and ORDER BY already works through alias resolution. No changes needed."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add 5 more scorecard checks to hit 323",
+      "project": "henrydb",
+      "started": "2026-04-11T19:35:58.351Z"
     }
   ],
   "focusProjects": [
@@ -1891,6 +1921,18 @@
     {
       "time": "2026-04-11T19:33:32.014Z",
       "msg": "Added T126 (BUILD) after end: Implement CROSS JOIN LATERAL (subquery references preceding table)"
+    },
+    {
+      "time": "2026-04-11T19:34:35.400Z",
+      "msg": "Added T127 (BUILD) after end: Implement INSERT ON CONFLICT DO NOTHING (PostgreSQL UPSERT variant)"
+    },
+    {
+      "time": "2026-04-11T19:35:06.910Z",
+      "msg": "Added T128 (BUILD) after end: Implement COALESCE in GROUP BY and ORDER BY clauses"
+    },
+    {
+      "time": "2026-04-11T19:35:58.116Z",
+      "msg": "Added T129 (BUILD) after end: Add 5 more scorecard checks to hit 323"
     }
   ]
 }

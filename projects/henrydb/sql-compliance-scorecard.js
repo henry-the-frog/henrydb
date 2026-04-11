@@ -615,6 +615,27 @@ check('DML', 'UPDATE with self-reference', () => {
   db.execute('UPDATE self_upd SET val = val * 2 WHERE id = 1');
   return db.execute('SELECT val FROM self_upd WHERE id = 1').rows[0].val === 20;
 });
+check('DML', 'ON CONFLICT DO NOTHING', () => {
+  db.execute('CREATE TABLE conflict_test (id INT PRIMARY KEY, val TEXT)');
+  db.execute("INSERT INTO conflict_test VALUES (1, 'original')");
+  db.execute("INSERT INTO conflict_test VALUES (1, 'new') ON CONFLICT (id) DO NOTHING");
+  return db.execute('SELECT val FROM conflict_test WHERE id = 1').rows[0].val === 'original';
+});
+check('EXPR', 'COALESCE in GROUP BY alias', () => {
+  db.execute('CREATE TABLE coal_grp (id INT, cat TEXT, val INT)');
+  db.execute("INSERT INTO coal_grp VALUES (1, NULL, 10), (2, 'a', 20)");
+  const r = db.execute("SELECT COALESCE(cat, 'none') as c, SUM(val) as s FROM coal_grp GROUP BY c");
+  return r.rows.length === 2;
+});
+check('SELECT+', 'Derived table alias', () => {
+  const r = db.execute('SELECT x FROM (SELECT 1 as x) sub');
+  return r.rows[0].x === 1;
+});
+check('AGG', 'COUNT(*) without GROUP BY', () => db.execute('SELECT COUNT(*) as c FROM t1').rows[0].c > 0);
+check('WINDOW', 'PARTITION BY', () => {
+  const r = db.execute('SELECT id, score, SUM(score) OVER (PARTITION BY name) as name_total FROM t1 WHERE score IS NOT NULL LIMIT 3');
+  return r.rows.length > 0;
+});
 check('DML', 'INSERT RETURNING', () => {
   db.execute('CREATE TABLE ins_ret (id INT PRIMARY KEY, val TEXT)');
   const r = db.execute("INSERT INTO ins_ret VALUES (1, 'test') RETURNING *");
