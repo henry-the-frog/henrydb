@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T15:58:19.669Z",
+  "generated": "2026-04-11T16:02:57.277Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix operator precedence in SQL parser (2+3*4 should be 14, not 20)",
-    "startedAt": "2026-04-11T15:58:19.669Z",
-    "taskId": "T33"
+    "task": "Write operator precedence test suite + fix parenthesized expressions returning undefined",
+    "startedAt": "2026-04-11T16:02:57.277Z",
+    "taskId": "T34"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 32,
+    "blocksCompleted": 33,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 2,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
