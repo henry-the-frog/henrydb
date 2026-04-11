@@ -374,10 +374,32 @@
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB blog post update: add scorecard table and operator precedence fix to todays post",
       "project": "blog",
-      "started": "2026-04-11T16:06:23.555Z"
+      "started": "2026-04-11T16:06:23.555Z",
+      "completed": "2026-04-11T16:07:10.563Z",
+      "duration_ms": 120000,
+      "summary": "Updated blog post with postscript: pageLSN, 14 more bug fixes, 74/74 scorecard, 102 new tests, operator precedence fix. Good narrative conclusion."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add GROUP CONCAT aggregate function (useful, simple, tests SQL extension)",
+      "project": "henrydb",
+      "started": "2026-04-11T16:07:28.074Z",
+      "completed": "2026-04-11T16:07:39.728Z",
+      "duration_ms": 30000,
+      "summary": "Reconsidered — depth over breadth. Switching to stress-test the persistence + MVCC together."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write transactional persistence stress test: PersistentDatabase + TransactionalDatabase combined, multi-session concurrent operations with close/reopen cycles",
+      "project": "henrydb",
+      "started": "2026-04-11T16:07:49.244Z"
     }
   ],
   "focusProjects": [
@@ -525,6 +547,14 @@
     {
       "time": "2026-04-11T16:06:23.142Z",
       "msg": "Added T35 (BUILD) after end: HenryDB blog post update: add scorecard table and operator precedence fix to todays post"
+    },
+    {
+      "time": "2026-04-11T16:07:27.665Z",
+      "msg": "Added T36 (BUILD) after end: HenryDB: add GROUP CONCAT aggregate function (useful, simple, tests SQL extension)"
+    },
+    {
+      "time": "2026-04-11T16:07:48.828Z",
+      "msg": "Added T37 (BUILD) after end: Write transactional persistence stress test: PersistentDatabase + TransactionalDatabase combined, multi-session concurrent operations with close/reopen cycles"
     }
   ]
 }

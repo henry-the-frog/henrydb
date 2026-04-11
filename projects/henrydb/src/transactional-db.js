@@ -92,6 +92,22 @@ export class TransactionalDatabase {
         // Mark txId=1 as committed so recovered rows are visible
         mvcc.committedTxns.add(1);
         if (mvcc._nextTx <= 1) mvcc._nextTx = 2;
+        
+        // Rebuild primary key indexes from heap data
+        for (const [tableName, tableObj] of db.tables) {
+          const { heap, schema, indexes } = tableObj;
+          if (!indexes || indexes.size === 0) continue;
+          const pkCol = schema.find(c => c.primaryKey);
+          if (!pkCol) continue;
+          const pkIndex = indexes.get(pkCol.name);
+          if (!pkIndex) continue;
+          const pkColIdx = schema.findIndex(c => c.name === pkCol.name);
+          for (const { pageId, slotIdx, values } of heap.scan()) {
+            if (values && values.length > pkColIdx) {
+              try { pkIndex.insert(values[pkColIdx], { pageId, slotIdx }); } catch {}
+            }
+          }
+        }
       }
     }
 
