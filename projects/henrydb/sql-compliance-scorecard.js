@@ -570,6 +570,17 @@ check('DDL', 'UNIQUE column constraint', () => {
   db.execute("INSERT INTO uniq_test VALUES (1, 'a@b.com')");
   try { db.execute("INSERT INTO uniq_test VALUES (2, 'a@b.com')"); return false; } catch { return true; }
 });
+check('DDL', 'FOREIGN KEY constraint', () => {
+  db.execute('CREATE TABLE fk_parent (id INT PRIMARY KEY)');
+  db.execute('INSERT INTO fk_parent VALUES (1)');
+  db.execute('CREATE TABLE fk_child (id INT PRIMARY KEY, pid INT REFERENCES fk_parent(id))');
+  db.execute('INSERT INTO fk_child VALUES (1, 1)');
+  try { db.execute('INSERT INTO fk_child VALUES (2, 999)'); return false; } catch { return true; }
+});
+check('STRING', 'LPAD', () => db.execute("SELECT LPAD('hi', 5, '*') as r").rows[0].r === '***hi');
+check('STRING', 'RPAD', () => db.execute("SELECT RPAD('hi', 5, '*') as r").rows[0].r === 'hi***');
+check('STRING', 'POSITION', () => db.execute("SELECT POSITION('lo' IN 'hello') as r").rows[0].r === 4);
+check('MATH', 'ABS negative', () => db.execute('SELECT ABS(-42) as r').rows[0].r === 42);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');

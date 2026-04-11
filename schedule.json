@@ -1032,10 +1032,21 @@
     {
       "id": "T95",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement UNIQUE column constraint in CREATE TABLE parser",
       "project": "henrydb",
-      "started": "2026-04-11T18:40:02.313Z"
+      "started": "2026-04-11T18:40:02.313Z",
+      "completed": "2026-04-11T18:43:20.730Z",
+      "duration_ms": 180000,
+      "summary": "UNIQUE column constraint implemented. Parser + executor + INSERT check. Scorecard 270/270."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Push scorecard past 275: add FOREIGN KEY, transactional checks, more patterns",
+      "project": "henrydb",
+      "started": "2026-04-11T18:43:51.900Z"
     }
   ],
   "focusProjects": [
@@ -1423,6 +1434,10 @@
     {
       "time": "2026-04-11T18:40:01.885Z",
       "msg": "Added T95 (BUILD) after end: Implement UNIQUE column constraint in CREATE TABLE parser"
+    },
+    {
+      "time": "2026-04-11T18:43:51.490Z",
+      "msg": "Added T96 (BUILD) after end: Push scorecard past 275: add FOREIGN KEY, transactional checks, more patterns"
     }
   ]
 }
