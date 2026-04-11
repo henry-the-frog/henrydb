@@ -396,10 +396,21 @@
     {
       "id": "T37",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write transactional persistence stress test: PersistentDatabase + TransactionalDatabase combined, multi-session concurrent operations with close/reopen cycles",
       "project": "henrydb",
-      "started": "2026-04-11T16:07:49.244Z"
+      "started": "2026-04-11T16:07:49.244Z",
+      "completed": "2026-04-11T16:11:51.871Z",
+      "duration_ms": 600000,
+      "summary": "7 transactional persistence stress tests. Found PK index rebuild bug (WHERE failed after reopen). 5/7 pass, 2 remaining are deep MVCC bugs (savepoint undo + UPDATE version counting)."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix MVCC UPDATE version counting bug: SUM counts both old and new versions after UPDATE in TransactionalDatabase",
+      "project": "henrydb",
+      "started": "2026-04-11T16:12:11.321Z"
     }
   ],
   "focusProjects": [
@@ -555,6 +566,10 @@
     {
       "time": "2026-04-11T16:07:48.828Z",
       "msg": "Added T37 (BUILD) after end: Write transactional persistence stress test: PersistentDatabase + TransactionalDatabase combined, multi-session concurrent operations with close/reopen cycles"
+    },
+    {
+      "time": "2026-04-11T16:12:11.087Z",
+      "msg": "Added T38 (BUILD) after end: Fix MVCC UPDATE version counting bug: SUM counts both old and new versions after UPDATE in TransactionalDatabase"
     }
   ]
 }

@@ -279,11 +279,54 @@ export class TransactionalDatabase {
     for (const [id, session] of this._sessions) {
       if (session._tx) try { session.rollback(); } catch (e) { /* ignore */ }
     }
+    
+    // Clean up dead rows before persisting — remove old MVCC versions
+    // that have been superseded by committed updates/deletes
+    this._compactDeadRows();
+    
     this._saveCatalog();
     this._saveMvccState();
+    
+    // Update lastAppliedLSN after flush
     this.flush();
+    const maxLSN = this._wal._flushedLsn || 0;
+    for (const dm of this._diskManagers.values()) {
+      if (maxLSN > dm.lastAppliedLSN) {
+        dm.lastAppliedLSN = maxLSN;
+      }
+    }
+    this._saveCatalog(); // Re-save with updated LSNs
+    
     this._wal.close();
     for (const dm of this._diskManagers.values()) dm.close();
+  }
+  
+  _compactDeadRows() {
+    const committedTxns = this._mvcc.committedTxns || new Set();
+    
+    for (const [tableName, vm] of this._versionMaps) {
+      const heap = this._heaps.get(tableName);
+      if (!heap) continue;
+      
+      const deadSlots = [];
+      for (const [key, ver] of vm) {
+        // A row is dead if its xmax is committed (it was deleted or superseded)
+        if (ver.xmax > 0 && committedTxns.has(ver.xmax)) {
+          const [pageId, slotIdx] = key.split(':').map(Number);
+          deadSlots.push({ pageId, slotIdx });
+        }
+      }
+      
+      // Delete dead rows from heap
+      for (const { pageId, slotIdx } of deadSlots) {
+        try {
+          heap.delete(pageId, slotIdx);
+          vm.delete(`${pageId}:${slotIdx}`);
+        } catch {
+          // Slot might already be empty
+        }
+      }
+    }
   }
 
   _setHeapTxId(txId) {
@@ -700,7 +743,16 @@ export class TransactionSession {
         if (ver && ver.xmin === this._tx.txId) {
           const tableObj = this._tdb._db.tables.get(tableName);
           if (tableObj && tableObj.heap._origDelete) {
-            try { tableObj.heap._origDelete(pageId, slotIdx); } catch (e) { /* ignore */ }
+            try {
+              tableObj.heap._origDelete(pageId, slotIdx);
+              // Write a WAL DELETE record so recovery doesn't replay the INSERT
+              if (this._tdb._wal) {
+                const walTxId = this._tdb._wal.allocateTxId();
+                this._tdb._wal.beginTransaction(walTxId);
+                this._tdb._wal.appendDelete(walTxId, tableName, pageId, slotIdx);
+                this._tdb._wal.appendCommit(walTxId);
+              }
+            } catch (e) { /* ignore */ }
           }
           vm.delete(`${pageId}:${slotIdx}`);
         }
