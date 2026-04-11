@@ -1,7 +1,5 @@
-'use strict';
-
-const { CPU } = require('./cpu');
-const { Disassembler } = require('./disassembler');
+import { CPU } from './cpu.js';
+import { Disassembler } from './disassembler.js';
 
 /**
  * Out-of-Order Execution Simulator — Tomasulo's Algorithm
@@ -494,4 +492,4 @@ class TomasuloCPU {
   }
 }
 
-module.exports = { TomasuloCPU, classifyToFU, FU_ALU, FU_MUL, FU_LOAD, FU_STORE, FU_BRANCH, LATENCY };
+export { TomasuloCPU, classifyToFU, FU_ALU, FU_MUL, FU_LOAD, FU_STORE, FU_BRANCH, LATENCY };

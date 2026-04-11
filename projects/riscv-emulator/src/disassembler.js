@@ -1,7 +1,5 @@
-'use strict';
-
-const { REG_NAMES } = require('./registers');
-const { CPU } = require('./cpu');
+import { REG_NAMES } from './registers.js';
+import { CPU } from './cpu.js';
 
 /**
  * RISC-V RV32I Disassembler
@@ -185,4 +183,4 @@ class Tracer {
   }
 }
 
-module.exports = { Disassembler, Tracer };
+export { Disassembler, Tracer };

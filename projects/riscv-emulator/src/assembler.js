@@ -1,6 +1,4 @@
-'use strict';
-
-const { REG_NUMBERS } = require('./registers');
+import { REG_NUMBERS } from './registers.js';
 
 /**
  * RISC-V RV32I Assembler
@@ -471,4 +469,4 @@ class Assembler {
   }
 }
 
-module.exports = { Assembler };
+export { Assembler };

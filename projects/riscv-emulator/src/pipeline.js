@@ -1,7 +1,5 @@
-'use strict';
-
-const { CPU } = require('./cpu');
-const { Disassembler } = require('./disassembler');
+import { CPU } from './cpu.js';
+import { Disassembler } from './disassembler.js';
 
 /**
  * RISC-V 5-Stage Pipeline Simulator
@@ -398,4 +396,4 @@ class PipelineCPU {
   }
 }
 
-module.exports = { PipelineCPU, classifyInst, STAGES };
+export { PipelineCPU, classifyInst, STAGES };
