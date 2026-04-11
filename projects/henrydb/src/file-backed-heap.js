@@ -7,7 +7,7 @@ import { BufferPool } from './buffer-pool.js';
 import { encodeTuple, decodeTuple, FreeSpaceMap } from './page.js';
 
 // Page layout constants (must match page.js)
-const HEADER_SIZE = 8;   // [4 bytes: pageId] [2 bytes: numSlots] [2 bytes: freeSpaceEnd]
+const HEADER_SIZE = 12;  // [4 bytes: pageId] [2 bytes: numSlots] [2 bytes: freeSpaceEnd] [4 bytes: pageLSN]
 const SLOT_SIZE = 4;     // [2 bytes: offset] [2 bytes: length]
 
 /**
@@ -26,6 +26,9 @@ class BufferedPage {
   
   freeSpaceEnd() { return this._view.getUint16(6, true); }
   setFreeSpaceEnd(v) { this._view.setUint16(6, v, true); }
+
+  getPageLSN() { return this._view.getUint32(8, true); }
+  setPageLSN(lsn) { this._view.setUint32(8, lsn >>> 0, true); }
   
   slotsEnd() { return HEADER_SIZE + this.getNumSlots() * SLOT_SIZE; }
 
@@ -38,6 +41,7 @@ class BufferedPage {
     this._view.setUint32(0, this.id, true);    // pageId
     this._view.setUint16(4, 0, true);          // numSlots = 0
     this._view.setUint16(6, PAGE_SIZE, true);  // freeSpaceEnd = PAGE_SIZE
+    this._view.setUint32(8, 0, true);          // pageLSN = 0
   }
 
   insertTuple(data) {
@@ -241,14 +245,32 @@ export class FileBackedHeap {
     return count;
   }
 
-  /** Track the LSN of the latest modification to a page. */
+  /** Track the LSN of the latest modification to a page (in-memory + page header). */
   setPageLSN(pageId, lsn) {
     this._pageLSNs.set(pageId, lsn);
+    // Also write to the on-disk page header via buffer pool
+    try {
+      const page = this._fetchPage(pageId);
+      page.setPageLSN(lsn);
+      this._unpinPage(pageId, true); // mark dirty so it gets flushed
+    } catch {
+      // Page might not be in buffer pool yet, that's ok
+    }
   }
 
   /** Get the LSN of the latest modification to a page. */
   getPageLSN(pageId) {
-    return this._pageLSNs.get(pageId) || 0;
+    // Try in-memory first (most recent), fall back to page header
+    const memLSN = this._pageLSNs.get(pageId);
+    if (memLSN !== undefined) return memLSN;
+    try {
+      const page = this._fetchPage(pageId);
+      const diskLSN = page.getPageLSN();
+      this._unpinPage(pageId, false);
+      return diskLSN;
+    } catch {
+      return 0;
+    }
   }
 
   // --- Internal ---

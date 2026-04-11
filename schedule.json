@@ -134,10 +134,43 @@
     {
       "id": "T10",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Follow rabbit holes from first EXPLORE, write scratch notes on anything non-obvious",
       "project": "henrydb",
-      "started": "2026-04-11T14:36:17.069Z"
+      "started": "2026-04-11T14:36:17.069Z",
+      "completed": "2026-04-11T14:37:05.775Z",
+      "duration_ms": 180000,
+      "summary": "PageLSN implementation path: ~50-80 lines, eliminates lastAppliedLSN hack entirely, makes recovery idempotent by construction, enables parallel recovery. Wrote pagelsn-implementation.md."
+    },
+    {
+      "id": "T14",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess: should we implement pageLSN now? Or is there something more impactful from the TODO/backlog?",
+      "project": "henrydb",
+      "started": "2026-04-11T14:37:41.646Z",
+      "completed": "2026-04-11T14:37:53.223Z",
+      "duration_ms": 60000,
+      "summary": "Decision: run full HenryDB test suite first (changed fundamental recovery code), then implement pageLSN if green. Responsible sequence: verify → improve."
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run full HenryDB test suite, fix any regressions from recovery changes",
+      "project": "henrydb",
+      "started": "2026-04-11T14:38:09.745Z",
+      "completed": "2026-04-11T14:50:11.318Z",
+      "duration_ms": 360000,
+      "summary": "Full test suite: 18 failures, ALL pre-existing (same count before and after our changes). Zero regressions from recovery code changes. 53 new persistence tests all pass."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement pageLSN: add LSN to page headers, per-page redo decisions, eliminate lastAppliedLSN hack",
+      "project": "henrydb",
+      "started": "2026-04-11T14:50:31.110Z"
     }
   ],
   "focusProjects": [
@@ -197,6 +230,18 @@
     {
       "time": "2026-04-11T14:31:44.791Z",
       "msg": "PLAN T6 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T14:37:37.152Z",
+      "msg": "Added T14 (THINK) after end: Assess: should we implement pageLSN now? Or is there something more impactful from the TODO/backlog?"
+    },
+    {
+      "time": "2026-04-11T14:37:59.723Z",
+      "msg": "Added T15 (BUILD) after end: Run full HenryDB test suite, fix any regressions from recovery changes"
+    },
+    {
+      "time": "2026-04-11T14:37:59.928Z",
+      "msg": "Added T16 (BUILD) after end: Implement pageLSN: add LSN to page headers, per-page redo decisions, eliminate lastAppliedLSN hack"
     }
   ]
 }

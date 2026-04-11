@@ -270,33 +270,21 @@ export class FileWAL {
  * @returns {{ redone: number, skipped: number }}
  */
 export function recoverFromFileWAL(heap, wal) {
-  // Check last applied LSN — skip recovery if data is up to date
-  const lastAppliedLSN = heap._dm ? heap._dm.lastAppliedLSN : 0;
-  
   const allRecords = wal.readFromStable(0);
   if (allRecords.length === 0) return { redone: 0, skipped: 0, committedTxns: 0 };
-  
-  const maxWalLSN = allRecords[allRecords.length - 1].lsn;
-  
-  // If all WAL records are already applied, skip recovery
-  if (lastAppliedLSN >= maxWalLSN) {
-    return { redone: 0, skipped: 0, committedTxns: 0 };
-  }
   
   // Phase 1: Analysis — identify committed transactions
   const committedTxns = new Set();
   const abortedTxns = new Set();
-  let lastCheckpointLsn = 0;
   for (const r of allRecords) {
     if (r.type === WAL_TYPES.COMMIT) committedTxns.add(r.txId);
     if (r.type === WAL_TYPES.ABORT) abortedTxns.add(r.txId);
-    if (r.type === WAL_TYPES.CHECKPOINT) lastCheckpointLsn = r.lsn;
   }
   
   const dm = heap._dm;
   const bp = heap._bp;
   
-  // Evict all pages from buffer pool first, then invalidate cache
+  // Flush all dirty pages to disk, then invalidate buffer pool cache
   if (bp && bp.flushAll) {
     bp.flushAll((pid, data) => dm.writePage(pid, data));
   }
@@ -304,37 +292,48 @@ export function recoverFromFileWAL(heap, wal) {
     bp.invalidateAll();
   }
   
-  // Determine recovery strategy:
-  // - If WAL has records from before the last checkpoint (or no checkpoint at all),
-  //   we need to wipe pages and replay from scratch (full redo).
-  // - If all WAL records are AFTER a checkpoint, page files have the pre-checkpoint
-  //   data and we only need to replay the new records on top.
-  const hasPreCheckpointData = lastCheckpointLsn === 0 || 
-    allRecords.some(r => r.lsn < lastCheckpointLsn && 
-      (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE));
-  
-  // Only records after lastAppliedLSN need replay
-  const recordsToReplay = allRecords.filter(r => r.lsn > lastAppliedLSN);
-  
-  if (hasPreCheckpointData && lastAppliedLSN === 0) {
-    // Full redo: WAL contains full history, clear pages and replay everything
-    // Clear all data pages (write zeroed pages)
-    for (let i = 0; i < dm.pageCount; i++) {
-      const zeroBuf = Buffer.alloc(PAGE_SIZE);
-      dm.writePage(i, zeroBuf);
+  // Phase 2: Build page LSN map from on-disk pages
+  // Read each page header to get its pageLSN (the LSN of the last applied record)
+  const pageLSNMap = new Map();
+  for (let i = 0; i < dm.pageCount; i++) {
+    try {
+      const buf = dm.readPage(i);
+      const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+      // pageLSN at offset 8 (4 bytes, uint32)
+      const pageLSN = buf.length >= 12 ? view.getUint32(8, true) : 0;
+      pageLSNMap.set(i, pageLSN);
+    } catch {
+      pageLSNMap.set(i, 0);
     }
-    // Reset page count to 0
-    dm._pageCount = 0;
-    dm._freeListHead = -1;
-    dm._writeHeader();
-    
-    // Re-initialize FSM and row count
-    heap._fsm = new FreeSpaceMap();
-    heap._rowCount = 0;
-  } else {
-    // Incremental redo: page files have data from prior checkpoint/flush.
-    // Just replay WAL records that haven't been applied yet.
-    // Re-initialize FSM from current pages (they have valid data)
+  }
+  
+  // Check if ANY committed record needs replay (per-page LSN check)
+  // A record needs replay if it targets a page whose pageLSN < record.lsn
+  // For INSERT records that allocate new pages, pageLSN will be 0
+  let needsReplay = false;
+  for (const r of allRecords) {
+    if (!committedTxns.has(r.txId)) continue;
+    if (r.tableName && r.tableName !== heap.name) continue;
+    if (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE) {
+      const pageLSN = pageLSNMap.get(r.pageId) || 0;
+      if (r.lsn > pageLSN) {
+        needsReplay = true;
+        break;
+      }
+    }
+  }
+  
+  // Check if there are any uncommitted/aborted transactions that touched pages.
+  // If so, pages may contain uncommitted data — we must do full redo.
+  const allTxIds = new Set();
+  for (const r of allRecords) {
+    if (r.txId !== undefined) allTxIds.add(r.txId);
+  }
+  const hasUncommitted = [...allTxIds].some(txId => !committedTxns.has(txId) && !abortedTxns.has(txId)) ||
+    abortedTxns.size > 0;
+  
+  if (!needsReplay && !hasUncommitted) {
+    // All committed records already applied to pages — just rebuild FSM and rowCount
     heap._fsm = new FreeSpaceMap();
     heap._rowCount = 0;
     for (let i = 0; i < dm.pageCount; i++) {
@@ -343,68 +342,181 @@ export function recoverFromFileWAL(heap, wal) {
         heap._fsm.update(i, page.freeSpace());
         for (const _ of page.scanTuples()) heap._rowCount++;
         heap._unpinPage(i, false);
-      } catch (e) {
-        // Page may not exist, skip
+      } catch { /* skip */ }
+    }
+    return { redone: 0, skipped: allRecords.length, committedTxns: committedTxns.size };
+  }
+  
+  // Phase 3: Determine if we need full redo or incremental
+  // If there are uncommitted/aborted transactions, pages may contain dirty data.
+  // In that case, we must do full redo (clear + replay committed only).
+  if (hasUncommitted) {
+    // Full redo: clear all pages and replay only committed records
+    for (let i = 0; i < dm.pageCount; i++) {
+      dm.writePage(i, Buffer.alloc(PAGE_SIZE));
+    }
+    dm._pageCount = 0;
+    dm._freeListHead = -1;
+    dm._writeHeader();
+    heap._fsm = new FreeSpaceMap();
+    heap._rowCount = 0;
+    return _replayRecords(heap, allRecords, committedTxns, allRecords, dm);
+  }
+  
+  // Check the minimum pageLSN across all pages. If 0 for all pages and WAL
+  // has committed inserts, we're in "full redo from scratch" mode (first boot or old format).
+  // Otherwise, use per-page LSN for incremental redo.
+  const allPagesHaveLSN = [...pageLSNMap.values()].some(lsn => lsn > 0);
+  
+  if (!allPagesHaveLSN && dm.pageCount > 0) {
+    // Pages exist but have no LSNs — could be old format or needs full redo
+    // Check if lastAppliedLSN is set (backward compat with pre-pageLSN code)
+    const lastAppliedLSN = dm.lastAppliedLSN || 0;
+    if (lastAppliedLSN > 0) {
+      // Old-style recovery: rebuild from existing pages + replay only new records
+      heap._fsm = new FreeSpaceMap();
+      heap._rowCount = 0;
+      for (let i = 0; i < dm.pageCount; i++) {
+        try {
+          const page = heap._fetchPage(i);
+          heap._fsm.update(i, page.freeSpace());
+          for (const _ of page.scanTuples()) heap._rowCount++;
+          heap._unpinPage(i, false);
+        } catch { /* skip */ }
       }
+      // Only replay records after lastAppliedLSN
+      const replaySet = allRecords.filter(r => r.lsn > lastAppliedLSN);
+      return _replayRecords(heap, replaySet, committedTxns, allRecords, dm);
+    }
+    
+    // Full redo from scratch: clear pages, replay all committed records
+    for (let i = 0; i < dm.pageCount; i++) {
+      dm.writePage(i, Buffer.alloc(PAGE_SIZE));
+    }
+    dm._pageCount = 0;
+    dm._freeListHead = -1;
+    dm._writeHeader();
+    heap._fsm = new FreeSpaceMap();
+    heap._rowCount = 0;
+    return _replayRecords(heap, allRecords, committedTxns, allRecords, dm);
+  }
+  
+  // Per-page LSN recovery: rebuild state from existing pages, then replay only needed records
+  heap._fsm = new FreeSpaceMap();
+  heap._rowCount = 0;
+  
+  // Find the minimum pageLSN — we need to replay all records after this
+  let minPageLSN = Infinity;
+  for (const lsn of pageLSNMap.values()) {
+    if (lsn < minPageLSN) minPageLSN = lsn;
+  }
+  if (minPageLSN === Infinity) minPageLSN = 0;
+  
+  // For pages that already have correct data (pageLSN >= all targeting records), keep them
+  // For pages that are stale, we'll need to either:
+  // a) Clear and replay from scratch (if the page has pageLSN=0 but WAL has inserts for it)
+  // b) Apply only the missing records (pageLSN > 0 but < max record LSN for that page)
+  
+  // Group WAL records by page
+  const recordsByPage = new Map();
+  for (const r of allRecords) {
+    if (!committedTxns.has(r.txId)) continue;
+    if (r.tableName && r.tableName !== heap.name) continue;
+    if (r.type !== WAL_TYPES.INSERT && r.type !== WAL_TYPES.UPDATE && r.type !== WAL_TYPES.DELETE) continue;
+    
+    if (!recordsByPage.has(r.pageId)) recordsByPage.set(r.pageId, []);
+    recordsByPage.get(r.pageId).push(r);
+  }
+  
+  // For each page, decide: skip (all applied) or clear+replay (some need replay)
+  // Since inserts pick the first available page, we can't incrementally add inserts
+  // to existing pages without risking slot conflicts. So for any page that needs 
+  // replay, we clear it and replay all its committed records.
+  for (const [pageId, records] of recordsByPage) {
+    const pageLSN = pageLSNMap.get(pageId) || 0;
+    const maxRecordLSN = Math.max(...records.map(r => r.lsn));
+    
+    if (pageLSN >= maxRecordLSN) {
+      continue; // All records for this page already applied
+    }
+    
+    // Clear this page and replay its records
+    if (pageId < dm.pageCount) {
+      dm.writePage(pageId, Buffer.alloc(PAGE_SIZE));
     }
   }
   
-  // Phase 3: Redo — replay committed operations for this heap's table only
+  // Rebuild state from surviving pages
+  for (let i = 0; i < dm.pageCount; i++) {
+    try {
+      const page = heap._fetchPage(i);
+      heap._fsm.update(i, page.freeSpace());
+      for (const _ of page.scanTuples()) heap._rowCount++;
+      heap._unpinPage(i, false);
+    } catch { /* skip */ }
+  }
+  
+  // Replay records for stale pages
   let redone = 0;
   let skipped = 0;
-  
-  // Disable WAL on heap during recovery to avoid recursive logging
   const savedWal = heap._wal;
   heap._wal = null;
   
-  const replaySet = hasPreCheckpointData && lastAppliedLSN === 0 ? allRecords : recordsToReplay;
-  
-  for (const r of replaySet) {
-    if (!committedTxns.has(r.txId)) {
-      skipped++;
+  for (const [pageId, records] of recordsByPage) {
+    const pageLSN = pageLSNMap.get(pageId) || 0;
+    const maxRecordLSN = Math.max(...records.map(r => r.lsn));
+    
+    if (pageLSN >= maxRecordLSN) {
+      skipped += records.length;
       continue;
     }
     
-    // Only replay records matching this heap's table name
-    if (r.tableName && r.tableName !== heap.name) {
-      skipped++;
-      continue;
-    }
-    
-    if (r.type === WAL_TYPES.INSERT && r.after) {
-      try {
-        heap.insert(r.after);
-        redone++;
-      } catch (e) {
-        skipped++;
-      }
-    } else if (r.type === WAL_TYPES.DELETE && r.pageId !== undefined) {
-      try {
-        heap.delete(r.pageId, r.slotIdx);
-        redone++;
-      } catch (e) {
-        skipped++;
-      }
-    } else if (r.type === WAL_TYPES.UPDATE && r.after) {
-      try {
-        heap.delete(r.pageId, r.slotIdx);
-        heap.insert(r.after);
-        redone++;
-      } catch (e) {
-        skipped++;
+    for (const r of records) {
+      if (r.type === WAL_TYPES.INSERT && r.after) {
+        try { heap.insert(r.after); redone++; } catch { skipped++; }
+      } else if (r.type === WAL_TYPES.DELETE && r.pageId !== undefined) {
+        try { heap.delete(r.pageId, r.slotIdx); redone++; } catch { skipped++; }
+      } else if (r.type === WAL_TYPES.UPDATE && r.after) {
+        try { heap.delete(r.pageId, r.slotIdx); heap.insert(r.after); redone++; } catch { skipped++; }
       }
     }
   }
   
-  // Restore WAL reference
   heap._wal = savedWal;
-  
   heap.flush();
   
-  // Update lastAppliedLSN
-  if (dm) {
-    dm.lastAppliedLSN = maxWalLSN;
+  // Update pageLSNs on all pages
+  const maxWalLSN = allRecords[allRecords.length - 1].lsn;
+  if (dm) dm.lastAppliedLSN = maxWalLSN;
+  
+  return { redone, skipped, committedTxns: committedTxns.size };
+}
+
+/** Helper: replay WAL records onto heap */
+function _replayRecords(heap, replaySet, committedTxns, allRecords, dm) {
+  let redone = 0;
+  let skipped = 0;
+  const savedWal = heap._wal;
+  heap._wal = null;
+  
+  for (const r of replaySet) {
+    if (!committedTxns.has(r.txId)) { skipped++; continue; }
+    if (r.tableName && r.tableName !== heap.name) { skipped++; continue; }
+    
+    if (r.type === WAL_TYPES.INSERT && r.after) {
+      try { heap.insert(r.after); redone++; } catch { skipped++; }
+    } else if (r.type === WAL_TYPES.DELETE && r.pageId !== undefined) {
+      try { heap.delete(r.pageId, r.slotIdx); redone++; } catch { skipped++; }
+    } else if (r.type === WAL_TYPES.UPDATE && r.after) {
+      try { heap.delete(r.pageId, r.slotIdx); heap.insert(r.after); redone++; } catch { skipped++; }
+    }
   }
+  
+  heap._wal = savedWal;
+  heap.flush();
+  
+  const maxWalLSN = allRecords[allRecords.length - 1].lsn;
+  if (dm) dm.lastAppliedLSN = maxWalLSN;
   
   return { redone, skipped, committedTxns: committedTxns.size };
 }
