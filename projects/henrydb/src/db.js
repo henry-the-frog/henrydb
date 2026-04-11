@@ -13,6 +13,7 @@ import { WriteAheadLog } from './wal.js';
 import { CompiledQueryEngine } from './compiled-query.js';
 import { InvertedIndex, tokenize } from './fulltext.js';
 import { PlanCache } from './plan-cache.js';
+import { PlanBuilder, PlanFormatter } from './query-plan.js';
 
 export class Database {
   constructor(options = {}) {
@@ -2480,6 +2481,18 @@ export class Database {
       return this._explainAnalyze(stmt);
     }
 
+    // Tree-structured plan (new system) — use for SELECT statements
+    if (stmt.type === 'SELECT' && (format === 'tree' || format === 'json-tree')) {
+      const builder = new PlanBuilder(this);
+      const planTree = builder.buildPlan(stmt);
+      if (format === 'json-tree') {
+        const json = PlanFormatter.toJSON(planTree);
+        return { type: 'PLAN', rows: [{ 'QUERY PLAN': JSON.stringify([json], null, 2) }] };
+      }
+      const lines = PlanFormatter.format(planTree);
+      return { type: 'PLAN', rows: lines.map(l => ({ 'QUERY PLAN': l })) };
+    }
+
     const plan = [];
 
     if (stmt.type !== 'SELECT') {
@@ -2831,7 +2844,16 @@ export class Database {
   }
 
   _explainAnalyze(stmt) {
-    // Get planner estimates
+    // Build tree-structured plan with estimates
+    let planTree = null;
+    try {
+      const builder = new PlanBuilder(this);
+      planTree = builder.buildPlan(stmt);
+    } catch (e) {
+      // Plan builder may fail — fall through to legacy
+    }
+
+    // Get planner estimates (legacy)
     let plannerEstimate = null;
     try {
       const planner = new QueryPlanner(this);
@@ -2845,6 +2867,14 @@ export class Database {
     const result = this._select(stmt);
     const executionTime = performance.now() - startTime;
     const actualRows = result.rows.length;
+
+    // Fill in actuals on the tree plan
+    if (planTree) {
+      // Set actuals on root node
+      planTree.setActuals(actualRows, executionTime);
+      // Propagate scan-level actuals
+      this._fillScanActuals(planTree, stmt, actualRows);
+    }
 
     // Build analyze output
     const analysis = [];
@@ -2926,8 +2956,24 @@ export class Database {
       analysis,
       execution_time_ms: parseFloat(executionTime.toFixed(3)),
       actual_rows: actualRows,
+      planTree: planTree || null,
+      planTreeText: planTree ? PlanFormatter.format(planTree, { analyze: true }) : null,
     };
     return analyzeResult;
+  }
+
+  _fillScanActuals(node, stmt, totalActualRows) {
+    // Walk the tree and fill in scan-level actuals where we can
+    if (node.type === 'Seq Scan' && node.table) {
+      const table = this.tables.get(node.table);
+      if (table) {
+        const tableRows = table.heap?._rowCount || table.heap?.tupleCount || 0;
+        node.setActuals(tableRows, 0); // Scan reads all rows
+      }
+    }
+    for (const child of node.children) {
+      this._fillScanActuals(child, stmt, totalActualRows);
+    }
   }
 
   _findIndexedColumn(where) {
