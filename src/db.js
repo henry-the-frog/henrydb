@@ -11,6 +11,7 @@ import { WriteAheadLog } from './wal.js';
 import { CompiledQueryEngine } from './compiled-query.js';
 import { InvertedIndex, tokenize } from './fulltext.js';
 import { PlanCache } from './plan-cache.js';
+import { MVCCManager } from './mvcc.js';
 
 export class Database {
   constructor(options = {}) {
@@ -27,6 +28,11 @@ export class Database {
     this._nextTxId = 1;
     this._currentTxId = 0;  // 0 = auto-commit mode
     this._planCache = new PlanCache(256);
+    
+    // MVCC support (opt-in)
+    this._mvccEnabled = !!options.mvcc;
+    this._mvcc = this._mvccEnabled ? new MVCCManager() : null;
+    this._currentTx = null;  // Current MVCC transaction
   }
 
   execute(sql) {
@@ -337,9 +343,29 @@ export class Database {
       case 'SHOW_TABLES': return this._showTables();
       case 'DESCRIBE': return this._describe(ast);
       case 'EXPLAIN': return this._explain(ast);
-      case 'BEGIN': this._inTransaction = true; return { type: 'OK', message: 'BEGIN' };
-      case 'COMMIT': this._inTransaction = false; return { type: 'OK', message: 'COMMIT' };
-      case 'ROLLBACK': this._inTransaction = false; return { type: 'OK', message: 'ROLLBACK' };
+      case 'BEGIN': 
+        this._inTransaction = true;
+        if (this._mvccEnabled) {
+          this._currentTx = this._mvcc.begin(ast.options || {});
+          this._currentTxId = this._currentTx.txId;
+        }
+        return { type: 'OK', message: 'BEGIN' };
+      case 'COMMIT': 
+        this._inTransaction = false;
+        if (this._currentTx) {
+          this._currentTx.commit();
+          this._currentTx = null;
+          this._currentTxId = 0;
+        }
+        return { type: 'OK', message: 'COMMIT' };
+      case 'ROLLBACK': 
+        this._inTransaction = false;
+        if (this._currentTx) {
+          this._currentTx.rollback();
+          this._currentTx = null;
+          this._currentTxId = 0;
+        }
+        return { type: 'OK', message: 'ROLLBACK' };
       case 'VACUUM': return this._vacuum(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
