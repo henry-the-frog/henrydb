@@ -265,10 +265,13 @@
     {
       "id": "T25",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: profile and optimize persistent INSERT throughput (currently 54/s)",
       "project": "henrydb",
-      "started": "2026-04-11T15:38:23.610Z"
+      "started": "2026-04-11T15:38:23.610Z",
+      "completed": "2026-04-11T15:41:22.981Z",
+      "duration_ms": 300000,
+      "summary": "Profiled INSERT bottleneck: fsync-per-commit (17ms/op). Batch sync: 11K/s (200x faster). Benchmark now shows all three sync modes. Key insight: the 54/s rate was entirely fsync overhead, not SQL parsing or WAL encoding."
     }
   ],
   "focusProjects": [
