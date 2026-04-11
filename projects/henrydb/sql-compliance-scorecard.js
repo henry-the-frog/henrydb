@@ -549,6 +549,16 @@ check('AGG', 'ARRAY_AGG', () => {
 });
 check('SELECT+', 'SIMILAR TO', () => db.execute("SELECT * FROM t1 WHERE name SIMILAR TO '%a%'").rows.length >= 0);
 check('SELECT+', 'BETWEEN SYMMETRIC', () => db.execute('SELECT * FROM t1 WHERE id BETWEEN SYMMETRIC 5 AND 1').rows.length >= 1);
+check('DDL', 'CHECK constraint', () => {
+  db.execute('CREATE TABLE check_test (id INT PRIMARY KEY, val INT CHECK (val > 0))');
+  db.execute('INSERT INTO check_test VALUES (1, 10)');
+  try { db.execute('INSERT INTO check_test VALUES (2, -1)'); return false; } catch { return true; }
+});
+check('DDL', 'NOT NULL constraint', () => {
+  db.execute('CREATE TABLE nn_test (id INT PRIMARY KEY, name TEXT NOT NULL)');
+  db.execute("INSERT INTO nn_test VALUES (1, 'ok')");
+  try { db.execute('INSERT INTO nn_test VALUES (2, NULL)'); return false; } catch { return true; }
+});
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
