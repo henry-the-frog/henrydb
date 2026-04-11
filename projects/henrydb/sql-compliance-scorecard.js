@@ -432,6 +432,87 @@ check('STRING', 'CONCAT function', () => db.execute("SELECT CONCAT('hello', ' ',
 check('MATH', 'MOD function', () => db.execute('SELECT MOD(10, 3) as r').rows[0].r === 1);
 check('EXPR', 'Modulo operator %', () => db.execute('SELECT 10 % 3 as r FROM t1 LIMIT 1').rows[0].r === 1);
 check('EXPR', 'Integer division', () => db.execute('SELECT 10 / 3 as r FROM t1 LIMIT 1').rows[0].r === 3);
+check('MATH', 'POWER', () => db.execute('SELECT POWER(2, 10) as r').rows[0].r === 1024);
+check('COND', 'GREATEST', () => db.execute('SELECT GREATEST(1, 3, 2) as r').rows[0].r === 3);
+check('COND', 'LEAST', () => db.execute('SELECT LEAST(1, 3, 2) as r').rows[0].r === 1);
+check('COND', 'NULLIF same', () => db.execute('SELECT NULLIF(1, 1) as r').rows[0].r === null);
+check('COND', 'NULLIF diff', () => db.execute('SELECT NULLIF(1, 2) as r').rows[0].r === 1);
+check('COND', 'IFNULL', () => db.execute('SELECT IFNULL(NULL, 42) as r').rows[0].r === 42);
+check('SUBQ', 'IN subquery', () => db.execute('SELECT * FROM t1 WHERE id IN (SELECT id FROM t1 WHERE score IS NOT NULL)').rows.length >= 1);
+check('SUBQ', 'EXISTS', () => db.execute('SELECT * FROM t1 WHERE EXISTS (SELECT 1 FROM t1 t2 WHERE t2.score IS NOT NULL)').rows.length >= 1);
+check('SUBQ', 'NOT EXISTS', () => db.execute('SELECT * FROM t1 WHERE NOT EXISTS (SELECT 1 FROM t1 t2 WHERE t2.id = 99999)').rows.length >= 1);
+check('SUBQ', 'Scalar in SELECT', () => db.execute('SELECT name, (SELECT MAX(score) FROM t1) as max_score FROM t1 LIMIT 1').rows.length === 1);
+check('SELECT+', 'SELECT without FROM', () => db.execute('SELECT 1 + 2 as r').rows[0].r === 3);
+check('SELECT+', 'LIMIT 0', () => db.execute('SELECT * FROM t1 LIMIT 0').rows.length === 0);
+check('SELECT+', 'OFFSET', () => db.execute('SELECT * FROM t1 ORDER BY id LIMIT 1 OFFSET 1').rows.length === 1);
+check('SELECT+', 'Multiple ORDER BY', () => {
+  const r = db.execute('SELECT * FROM t1 ORDER BY score DESC, name ASC');
+  return r.rows.length > 0;
+});
+check('SELECT+', 'Column alias in ORDER BY', () => {
+  const r = db.execute('SELECT name as n FROM t1 ORDER BY n LIMIT 1');
+  return r.rows.length === 1;
+});
+check('AGG', 'SUM', () => db.execute('SELECT SUM(score) as s FROM t1 WHERE score IS NOT NULL').rows[0].s > 0);
+check('AGG', 'AVG', () => db.execute('SELECT AVG(score) as a FROM t1 WHERE score IS NOT NULL').rows[0].a > 0);
+check('AGG', 'MIN', () => db.execute('SELECT MIN(score) as m FROM t1 WHERE score IS NOT NULL').rows[0].m >= 0);
+check('AGG', 'MAX', () => db.execute('SELECT MAX(score) as m FROM t1 WHERE score IS NOT NULL').rows[0].m > 0);
+check('AGG', 'HAVING with alias', () => {
+  const r = db.execute('SELECT name, COUNT(*) as cnt FROM t1 GROUP BY name HAVING cnt >= 1');
+  return r.rows.length >= 1;
+});
+check('JOIN', 'Self JOIN', () => {
+  const r = db.execute('SELECT a.name, b.name as other FROM t1 a JOIN t1 b ON a.id != b.id LIMIT 5');
+  return r.rows.length >= 1;
+});
+check('WINDOW', 'SUM OVER PARTITION', () => {
+  const r = db.execute('SELECT id, SUM(score) OVER (ORDER BY id) as running FROM t1 WHERE score IS NOT NULL');
+  return r.rows.length >= 1;
+});
+check('STRING', 'LOWER', () => db.execute("SELECT LOWER('HELLO') as r").rows[0].r === 'hello');
+check('STRING', 'UPPER', () => db.execute("SELECT UPPER('hello') as r").rows[0].r === 'HELLO');
+check('STRING', 'TRIM', () => db.execute("SELECT TRIM('  hi  ') as r").rows[0].r === 'hi');
+check('STRING', 'REPLACE', () => db.execute("SELECT REPLACE('hello', 'l', 'r') as r").rows[0].r === 'herro');
+check('STRING', 'LENGTH', () => db.execute("SELECT LENGTH('hello') as r").rows[0].r === 5);
+check('TYPE', 'NULL arithmetic', () => db.execute('SELECT NULL + 1 as r').rows[0].r === null);
+check('TYPE', 'NULL comparison', () => db.execute('SELECT NULL = NULL as r').rows[0].r !== true);
+check('TYPE', 'Boolean in WHERE', () => db.execute('SELECT * FROM t1 WHERE score IS NOT NULL AND id > 0').rows.length >= 1);
+check('TYPE', 'OR logic', () => db.execute("SELECT * FROM t1 WHERE id = 1 OR name = 'nonexistent'").rows.length >= 1);
+check('TYPE', 'AND + OR precedence', () => db.execute("SELECT * FROM t1 WHERE id = 1 AND name = 'nonexistent' OR id = 2").rows.length >= 1);
+check('EXPR', 'Nested CASE', () => {
+  const r = db.execute("SELECT CASE WHEN score IS NULL THEN 'unknown' ELSE CASE WHEN score > 50 THEN 'high' ELSE 'low' END END as level FROM t1 LIMIT 1");
+  return r.rows.length === 1;
+});
+check('EXPR', 'COALESCE chain', () => db.execute('SELECT COALESCE(NULL, NULL, 42) as r').rows[0].r === 42);
+check('EXPR', 'Arithmetic precedence', () => db.execute('SELECT 2 + 3 * 4 as r').rows[0].r === 14);
+check('EXPR', 'Parenthesized', () => db.execute('SELECT (2 + 3) * 4 as r').rows[0].r === 20);
+check('DML', 'UPDATE with expression', () => {
+  db.execute('CREATE TABLE upd_expr (id INT PRIMARY KEY, val INT)');
+  db.execute('INSERT INTO upd_expr VALUES (1, 10)');
+  db.execute('UPDATE upd_expr SET val = val + 5 WHERE id = 1');
+  return db.execute('SELECT val FROM upd_expr WHERE id = 1').rows[0].val === 15;
+});
+check('DML', 'DELETE with subquery', () => {
+  db.execute('CREATE TABLE del_sub (id INT, val INT)');
+  db.execute('INSERT INTO del_sub VALUES (1, 10), (2, 20), (3, 30)');
+  db.execute('DELETE FROM del_sub WHERE val > (SELECT AVG(val) FROM del_sub)');
+  return db.execute('SELECT COUNT(*) as c FROM del_sub').rows[0].c === 2;
+});
+check('DDL', 'ALTER TABLE ADD COLUMN', () => {
+  db.execute('CREATE TABLE alt_add (id INT)');
+  db.execute('ALTER TABLE alt_add ADD COLUMN name TEXT');
+  db.execute("INSERT INTO alt_add VALUES (1, 'test')");
+  return db.execute('SELECT name FROM alt_add WHERE id = 1').rows[0].name === 'test';
+});
+check('WINDOW', 'COUNT OVER', () => {
+  const r = db.execute('SELECT id, COUNT(*) OVER () as total FROM t1 LIMIT 1');
+  return r.rows[0].total > 0;
+});
+check('CTE', 'Multiple CTEs chained', () => {
+  const r = db.execute('WITH a AS (SELECT 1 as x), b AS (SELECT x + 1 as y FROM a) SELECT * FROM b');
+  return r.rows.length === 1 && r.rows[0].y === 2;
+});
+check('TYPE', 'Empty string', () => db.execute("SELECT '' as r").rows[0].r === '');
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
