@@ -418,10 +418,21 @@
     {
       "id": "T39",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write wire protocol persistence test: pg client + TransactionalDB + close/reopen + verify data",
       "project": "henrydb",
-      "started": "2026-04-11T16:16:57.594Z"
+      "started": "2026-04-11T16:16:57.594Z",
+      "completed": "2026-04-11T16:18:26.015Z",
+      "duration_ms": 300000,
+      "summary": "4 wire protocol persistence E2E tests — full stack validation: pg client → wire → TransactionalDB → disk → restart → verify. All pass. Covers commit, rollback, multi-cycle."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Count new tests added today. Update scratch notes with MVCC+persistence lesson.",
+      "project": "henrydb",
+      "started": "2026-04-11T16:18:52.356Z"
     }
   ],
   "focusProjects": [
@@ -585,6 +596,10 @@
     {
       "time": "2026-04-11T16:16:57.116Z",
       "msg": "Added T39 (BUILD) after end: Write wire protocol persistence test: pg client + TransactionalDB + close/reopen + verify data"
+    },
+    {
+      "time": "2026-04-11T16:18:51.945Z",
+      "msg": "Added T40 (BUILD) after end: Count new tests added today. Update scratch notes with MVCC+persistence lesson."
     }
   ]
 }
