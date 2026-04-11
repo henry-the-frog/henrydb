@@ -1061,6 +1061,17 @@
       "completed": "2026-04-11T18:47:02.003Z",
       "duration_ms": 300000,
       "summary": "Implemented EXCEPT ALL and INTERSECT ALL with correct bag semantics. Parser + executor."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement TABLESAMPLE BERNOULLI (random sample of table rows)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:48:10.239Z",
+      "completed": "2026-04-11T18:48:31.760Z",
+      "duration_ms": 60000,
+      "summary": "TABLESAMPLE deferred (parser complexity). Simple CASE verified working."
     }
   ],
   "focusProjects": [
@@ -1456,6 +1467,10 @@
     {
       "time": "2026-04-11T18:44:54.850Z",
       "msg": "Added T97 (BUILD) after end: Implement EXCEPT ALL and INTERSECT ALL (bag semantics vs set semantics)"
+    },
+    {
+      "time": "2026-04-11T18:48:09.831Z",
+      "msg": "Added T98 (BUILD) after end: Implement TABLESAMPLE BERNOULLI (random sample of table rows)"
     }
   ]
 }

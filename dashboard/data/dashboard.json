@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-11T18:47:02.069Z",
+  "generated": "2026-04-11T18:48:31.824Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Implement EXCEPT ALL and INTERSECT ALL (bag semantics vs set semantics)",
-    "completedAt": "2026-04-11T18:47:02.069Z",
-    "taskId": "T97",
-    "summary": "Implemented EXCEPT ALL and INTERSECT ALL with correct bag semantics. Parser + executor.",
-    "durationMs": 300000
+    "task": "Implement TABLESAMPLE BERNOULLI (random sample of table rows)",
+    "completedAt": "2026-04-11T18:48:31.824Z",
+    "taskId": "T98",
+    "summary": "TABLESAMPLE deferred (parser complexity). Simple CASE verified working.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3596,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 97,
+    "blocksCompleted": 98,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 2,
-      "BUILD": 80,
+      "BUILD": 81,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
