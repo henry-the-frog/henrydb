@@ -1441,7 +1441,9 @@ export function parse(sql) {
       return { type: 'CREATE_FULLTEXT_INDEX', name, table, column };
     }
     if (isKeyword('INDEX')) return parseCreateIndex(unique);
-    if (isKeyword('VIEW')) return parseCreateView();
+    let orReplace = false;
+    if (isKeyword('OR')) { advance(); expect('KEYWORD', 'REPLACE'); orReplace = true; }
+    if (isKeyword('VIEW')) return parseCreateView(orReplace);
     if (isKeyword('TRIGGER')) {
       advance(); // TRIGGER
       const name = advance().value;
@@ -1599,12 +1601,12 @@ export function parse(sql) {
     return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, ifNotExists, indexType };
   }
 
-  function parseCreateView() {
+  function parseCreateView(orReplace = false) {
     advance(); // VIEW
     const name = advance().value;
     if (isKeyword('AS')) advance(); // optional AS
-    const query = parseSelect();
-    return { type: 'CREATE_VIEW', name, query };
+    const query = isKeyword('WITH') ? parseWith() : parseSelect();
+    return { type: 'CREATE_VIEW', name, query, orReplace };
   }
 
   function parseDrop() {

@@ -985,9 +985,9 @@ export class Database {
   }
 
   _createView(ast) {
-    if (this.views.has(ast.name)) throw new Error(`View ${ast.name} already exists`);
+    if (this.views.has(ast.name) && !ast.orReplace) throw new Error(`View ${ast.name} already exists`);
     this.views.set(ast.name, { query: ast.query });
-    return { type: 'OK', message: `View ${ast.name} created` };
+    return { type: 'OK', message: `View ${ast.name} ${ast.orReplace ? 'replaced' : 'created'}` };
   }
 
   _createMatView(ast) {
