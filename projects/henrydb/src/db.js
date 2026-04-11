@@ -1614,6 +1614,14 @@ export class Database {
       for (const join of ast.joins || []) {
         rows = this._executeJoin(rows, join, ast.from.alias || '__subquery');
       }
+      // Handle aggregates / GROUP BY on subquery results
+      const sqHasAggregates = ast.columns.some(c => c.type === 'aggregate');
+      if (ast.groupBy) {
+        return this._selectWithGroupBy(ast, rows);
+      }
+      if (sqHasAggregates) {
+        return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      }
       return this._applySelectColumns(ast, rows);
     }
 

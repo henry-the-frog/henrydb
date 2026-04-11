@@ -211,10 +211,21 @@
     {
       "id": "T20",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix GENERATE_SERIES + aggregate bug (COUNT/SUM over GENERATE_SERIES returns per-row nulls)",
       "project": "henrydb",
-      "started": "2026-04-11T15:23:01.165Z"
+      "started": "2026-04-11T15:23:01.165Z",
+      "completed": "2026-04-11T15:25:03.556Z",
+      "duration_ms": 300000,
+      "summary": "Fixed GENERATE_SERIES + aggregate bug. COUNT/SUM over GENERATE_SERIES returned per-row nulls instead of aggregated result. Root cause: early return via _applySelectColumns bypassed aggregate pipeline."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: stress-test aggregates over virtual sources (subqueries, CTEs, GENERATE_SERIES). Fix any bugs found.",
+      "project": "henrydb",
+      "started": "2026-04-11T15:26:25.994Z"
     }
   ],
   "focusProjects": [
@@ -302,6 +313,10 @@
     {
       "time": "2026-04-11T15:22:51.860Z",
       "msg": "Added T20 (BUILD) after end: Fix GENERATE_SERIES + aggregate bug (COUNT/SUM over GENERATE_SERIES returns per-row nulls)"
+    },
+    {
+      "time": "2026-04-11T15:26:25.583Z",
+      "msg": "Added T21 (BUILD) after end: HenryDB: stress-test aggregates over virtual sources (subqueries, CTEs, GENERATE_SERIES). Fix any bugs found."
     }
   ]
 }

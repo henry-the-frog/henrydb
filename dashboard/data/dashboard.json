@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T15:23:01.228Z",
+  "generated": "2026-04-11T15:26:26.057Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix GENERATE_SERIES + aggregate bug (COUNT/SUM over GENERATE_SERIES returns per-row nulls)",
-    "startedAt": "2026-04-11T15:23:01.228Z",
-    "taskId": "T20"
+    "task": "HenryDB: stress-test aggregates over virtual sources (subqueries, CTEs, GENERATE_SERIES). Fix any bugs found.",
+    "startedAt": "2026-04-11T15:26:26.057Z",
+    "taskId": "T21"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 19,
+    "blocksCompleted": 20,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 2,
-      "BUILD": 9,
+      "BUILD": 10,
       "MAINTAIN": 2,
       "EXPLORE": 2
     }
