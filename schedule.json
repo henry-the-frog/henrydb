@@ -2345,16 +2345,20 @@
       "id": "T221",
       "mode": "BUILD",
       "task": "Stress test UPDATE rollback: concurrent UPDATEs, partial rollback, mixed INSERT+UPDATE+DELETE rollback, bank transfer with intentional rollback",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T216",
-      "started": "2026-04-11T02:25:16.740Z"
+      "started": "2026-04-11T02:25:16.740Z",
+      "completed": "2026-04-11T02:26:40.038Z",
+      "duration_ms": 300000,
+      "summary": "8 stress tests for UPDATE rollback: 10-cycle sequential rollback, alternating commit/rollback, 100-row batch rollback, computed expression rollback, rapid wire protocol rollback, concurrent isolation, bulk rollback, bank transfer error simulation. All pass. Fixed reserved word (COUNT→cnt)."
     },
     {
       "id": "T222",
       "mode": "BUILD",
       "task": "Blog post: How UPDATE Rollback Actually Works in a Database",
-      "status": "upcoming",
-      "plan_ref": "T216"
+      "status": "in-progress",
+      "plan_ref": "T216",
+      "started": "2026-04-11T02:26:49.320Z"
     },
     {
       "id": "T217",
