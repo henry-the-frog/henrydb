@@ -174,6 +174,25 @@
       "completed": "2026-04-11T14:58:43.886Z",
       "duration_ms": 600000,
       "summary": "Implemented pageLSN: 4-byte LSN in every page header, per-page recovery decisions, backward compatible. Recovery now ARIES-style — skip up-to-date pages, only replay stale ones. Falls back to full redo for uncommitted txns. 5 new tests, 58/58 persistence tests pass."
+    },
+    {
+      "id": "T17",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction check: fix pre-existing test failures (18 across 9 suites) or start something new?",
+      "project": "henrydb",
+      "started": "2026-04-11T14:59:34.793Z",
+      "completed": "2026-04-11T14:59:46.496Z",
+      "duration_ms": 60000,
+      "summary": "Decision: fix the 18 pre-existing test failures. These are real bugs across MVCC, wire protocol, and SQL features."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Investigate and fix the 18 pre-existing test failures across 9 suites",
+      "status": "in-progress",
+      "plan_ref": "T17",
+      "started": "2026-04-11T14:59:58.738Z"
     }
   ],
   "focusProjects": [
@@ -245,6 +264,14 @@
     {
       "time": "2026-04-11T14:37:59.928Z",
       "msg": "Added T16 (BUILD) after end: Implement pageLSN: add LSN to page headers, per-page redo decisions, eliminate lastAppliedLSN hack"
+    },
+    {
+      "time": "2026-04-11T14:59:28.685Z",
+      "msg": "Added T17 (THINK) after end: Direction check: fix pre-existing test failures (18 across 9 suites) or start something new?"
+    },
+    {
+      "time": "2026-04-11T14:59:46.243Z",
+      "msg": "PLAN T17 filled 1 BUILD tasks"
     }
   ]
 }

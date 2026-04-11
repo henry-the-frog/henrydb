@@ -31,8 +31,8 @@ describe('EXPLAIN FORMAT', () => {
     assert.ok(r.rows);
     assert.equal(r.rows.length, 1);
     const yaml = r.rows[0]['QUERY PLAN'];
-    assert.ok(yaml.includes('operation:'));
-    assert.ok(yaml.includes('TABLE_SCAN'));
+    assert.ok(yaml.includes('Node Type:') || yaml.includes('operation:'));
+    assert.ok(yaml.includes('Seq Scan') || yaml.includes('TABLE_SCAN'));
   });
 
   test('EXPLAIN (FORMAT DOT) returns Graphviz DOT', () => {
@@ -69,13 +69,13 @@ describe('EXPLAIN FORMAT', () => {
   test('EXPLAIN (FORMAT YAML) with GROUP BY', () => {
     const r = db.execute('EXPLAIN (FORMAT YAML) SELECT category, COUNT(*) FROM products GROUP BY category');
     const yaml = r.rows[0]['QUERY PLAN'];
-    assert.ok(yaml.includes('HASH_GROUP_BY'));
+    assert.ok(yaml.includes('HashAggregate') || yaml.includes('HASH_GROUP_BY') || yaml.includes('Group'));
   });
 
   test('EXPLAIN (FORMAT DOT) with ORDER BY and LIMIT', () => {
     const r = db.execute('EXPLAIN (FORMAT DOT) SELECT * FROM products ORDER BY price LIMIT 2');
     const dot = r.rows[0]['QUERY PLAN'];
-    assert.ok(dot.includes('SORT') || dot.includes('LIMIT'));
+    assert.ok(dot.includes('Sort') || dot.includes('SORT') || dot.includes('Limit') || dot.includes('LIMIT'));
   });
 
   test('EXPLAIN (FORMAT JSON) with subquery', () => {

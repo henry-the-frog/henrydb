@@ -800,7 +800,8 @@ export class HenryDBServer {
 
         // Check query cache for SELECT queries
         const isSelect = /^\s*SELECT/i.test(stmt);
-        if (isSelect) {
+        // Query cache: only use outside transactions (cache doesn't reflect uncommitted changes)
+        if (isSelect && conn.txStatus !== 'T') {
           const cached = this._queryCache.get(stmt);
           if (cached) {
             this._sendResult(conn, stmt, cached.result);
@@ -808,9 +809,9 @@ export class HenryDBServer {
           }
         }
 
-        // Try adaptive engine for SELECT queries
+        // Try adaptive engine for SELECT queries (only outside transactions — adaptive bypasses MVCC)
         let result;
-        if (this.adaptiveEngine && conn.useAdaptive && /^\s*SELECT/i.test(stmt)) {
+        if (this.adaptiveEngine && conn.useAdaptive && /^\s*SELECT/i.test(stmt) && conn.txStatus !== 'T') {
           try {
             const ast = parse(stmt);
             if (ast.type === 'SELECT' && this._isAdaptiveEligible(ast)) {
@@ -1452,6 +1453,12 @@ export class HenryDBServer {
     if (ast.where && this._hasSubquery(ast.where)) return false;
     // No UNION/INTERSECT/EXCEPT
     if (ast.union || ast.intersect || ast.except) return false;
+    // No DISTINCT (adaptive engine doesn't deduplicate)
+    if (ast.distinct) return false;
+    // No OFFSET (adaptive engine doesn't support it)
+    if (ast.offset !== undefined && ast.offset !== null) return false;
+    // No NOT IN or IN with subquery (complex predicates may slip through)
+    if (ast.where && this._hasNotIn(ast.where)) return false;
     return true;
   }
 
@@ -2426,6 +2433,7 @@ export class HenryDBServer {
         node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' || node.type === 'SUBQUERY') return true;
     if (node.left && this._hasComplexPredicate(node.left)) return true;
     if (node.right && this._hasComplexPredicate(node.right)) return true;
+    if (node.expr && this._hasComplexPredicate(node.expr)) return true;
     return false;
   }
 

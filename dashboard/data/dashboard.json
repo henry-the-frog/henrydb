@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T14:58:43.927Z",
+  "generated": "2026-04-11T14:59:58.801Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Implement pageLSN: add LSN to page headers, per-page redo decisions, eliminate lastAppliedLSN hack",
-    "completedAt": "2026-04-11T14:58:43.927Z",
-    "taskId": "T16",
-    "summary": "Implemented pageLSN: 4-byte LSN in every page header, per-page recovery decisions, backward compatible. Recovery now ARIES-style — skip up-to-date pages, only replay stale ones. Falls back to full redo for uncommitted txns. 5 new tests, 58/58 persistence tests pass.",
-    "durationMs": 600000
+    "task": "Investigate and fix the 18 pre-existing test failures across 9 suites",
+    "startedAt": "2026-04-11T14:59:58.801Z",
+    "taskId": "T18"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3492,47 +3490,114 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Write technical content for CPython or Daniel audience: JIT insights, compiler techniques, or database internals",
         "task": null,
-        "started": "2026-04-11T14:31:36.346Z"
+        "started": "2026-04-11T14:31:36.346Z",
+        "completed": "2026-04-11T14:31:50.438Z",
+        "duration_ms": 60000,
+        "summary": "Planned 1 BUILD: blog post about 5 persistence bugs found today — test-driven ARIES correctness narrative."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Blog post: 5 Bugs That Would Have Destroyed Your Data — persistence correctness deep dive from todays test-driven discovery",
         "plan_ref": "T6",
-        "project": "blog"
+        "project": "blog",
+        "started": "2026-04-11T14:32:00.680Z",
+        "completed": "2026-04-11T14:33:23.835Z",
+        "duration_ms": 300000,
+        "summary": "Published blog post: 5 Bugs That Would Have Destroyed Your Data. Deep dive into persistence correctness — 5 bugs, 3 data-loss, 41 lines to fix. Good narrative arc from cache coherence through ARIES recovery."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: commit, push, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: commit, push, knowledge capture",
+        "started": "2026-04-11T14:33:45.399Z",
+        "completed": "2026-04-11T14:34:25.196Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, failures.md updated with persistence bug patterns, daily log updated."
       },
       {
         "id": "T9",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive: pick a paper or codebase connecting to recent work (MVCC, JIT, systems)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-11T14:34:34.445Z",
+        "completed": "2026-04-11T14:36:00.692Z",
+        "duration_ms": 240000,
+        "summary": "ARIES deep dive: wrote gap analysis (scratch/aries-gap-analysis.md). HenryDB has crude lastAppliedLSN per table but no pageLSNs, no DPT, no CLRs. PageLSN is the single biggest missing piece — would eliminate full-vs-incremental heuristic entirely."
       },
       {
         "id": "T10",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Follow rabbit holes from first EXPLORE, write scratch notes on anything non-obvious",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-11T14:36:17.069Z",
+        "completed": "2026-04-11T14:37:05.775Z",
+        "duration_ms": 180000,
+        "summary": "PageLSN implementation path: ~50-80 lines, eliminates lastAppliedLSN hack entirely, makes recovery idempotent by construction, enables parallel recovery. Wrote pagelsn-implementation.md."
+      },
+      {
+        "id": "T14",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess: should we implement pageLSN now? Or is there something more impactful from the TODO/backlog?",
+        "project": "henrydb",
+        "started": "2026-04-11T14:37:41.646Z",
+        "completed": "2026-04-11T14:37:53.223Z",
+        "duration_ms": 60000,
+        "summary": "Decision: run full HenryDB test suite first (changed fundamental recovery code), then implement pageLSN if green. Responsible sequence: verify → improve."
+      },
+      {
+        "id": "T15",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Run full HenryDB test suite, fix any regressions from recovery changes",
+        "project": "henrydb",
+        "started": "2026-04-11T14:38:09.745Z",
+        "completed": "2026-04-11T14:50:11.318Z",
+        "duration_ms": 360000,
+        "summary": "Full test suite: 18 failures, ALL pre-existing (same count before and after our changes). Zero regressions from recovery code changes. 53 new persistence tests all pass."
+      },
+      {
+        "id": "T16",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement pageLSN: add LSN to page headers, per-page redo decisions, eliminate lastAppliedLSN hack",
+        "project": "henrydb",
+        "started": "2026-04-11T14:50:31.110Z",
+        "completed": "2026-04-11T14:58:43.886Z",
+        "duration_ms": 600000,
+        "summary": "Implemented pageLSN: 4-byte LSN in every page header, per-page recovery decisions, backward compatible. Recovery now ARIES-style — skip up-to-date pages, only replay stale ones. Falls back to full redo for uncommitted txns. 5 new tests, 58/58 persistence tests pass."
+      },
+      {
+        "id": "T17",
+        "mode": "THINK",
+        "status": "in-progress",
+        "task": "Direction check: fix pre-existing test failures (18 across 9 suites) or start something new?",
+        "project": "henrydb",
+        "started": "2026-04-11T14:59:34.793Z"
+      },
+      {
+        "id": "T18",
+        "mode": "BUILD",
+        "task": "Investigate and fix the 18 pre-existing test failures across 9 suites",
+        "status": "upcoming",
+        "plan_ref": "T17"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 16,
-    "blocksTotal": 13,
+    "blocksCompleted": 17,
+    "blocksTotal": 18,
     "modeDistribution": {
-      "THINK": 3,
+      "THINK": 4,
       "PLAN": 2,
       "BUILD": 7,
       "MAINTAIN": 2,
