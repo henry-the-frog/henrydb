@@ -650,6 +650,17 @@ check('DDL', 'CTAS with recursive CTE', () => {
   db.execute('CREATE TABLE ctas_rcte_test AS WITH RECURSIVE cnt(x) AS (SELECT 1 as x UNION ALL SELECT x + 1 FROM cnt WHERE x < 3) SELECT * FROM cnt');
   return db.execute('SELECT COUNT(*) as c FROM ctas_rcte_test').rows[0].c === 3;
 });
+check('DDL', 'DROP INDEX', () => {
+  db.execute('CREATE TABLE drop_idx_test (id INT, val INT)');
+  db.execute('CREATE INDEX drop_idx ON drop_idx_test (val)');
+  db.execute('DROP INDEX drop_idx');
+  return true;
+});
+check('DDL', 'DROP VIEW', () => {
+  db.execute('CREATE VIEW drop_v_test AS SELECT * FROM t1');
+  db.execute('DROP VIEW drop_v_test');
+  return true;
+});
 check('SELECT+', 'VALUES clause', () => db.execute("VALUES (1, 'a'), (2, 'b')").rows.length === 2);
 check('EXPR', 'CAST TEXT to INT', () => db.execute("SELECT CAST('42' AS INT) as r").rows[0].r === 42);
 check('EXPR', 'CAST TEXT to FLOAT', () => db.execute("SELECT CAST('3.14' AS FLOAT) as r").rows[0].r === 3.14);
