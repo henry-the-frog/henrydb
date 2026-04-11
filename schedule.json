@@ -2449,6 +2449,14 @@
       "completed": "2026-04-11T02:51:01.167Z",
       "duration_ms": 180000,
       "summary": "COPY TO STDOUT already implemented. Validated with 4 tests: TSV export, round-trip (COPY TO then FROM preserves data), column selection, performance (0.081ms/row). The full COPY pipeline works end-to-end."
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement pg_notify trigger simulation — when LISTEN table_changes is active and a row is modified, automatically send a NOTIFY with JSON payload containing the changed data. Like a poor-mans logical replication.",
+      "project": "henrydb",
+      "started": "2026-04-11T02:52:13.497Z"
     }
   ],
   "focusProjects": [
@@ -3352,6 +3360,10 @@
     {
       "time": "2026-04-11T02:50:04.291Z",
       "msg": "Added T227 (BUILD) after end: HenryDB: implement COPY TO STDOUT — export query results as TSV. Complements COPY FROM. Wire protocol sends CopyOutResponse then CopyData messages then CopyDone."
+    },
+    {
+      "time": "2026-04-11T02:52:13.082Z",
+      "msg": "Added T228 (BUILD) after end: HenryDB: implement pg_notify trigger simulation — when LISTEN table_changes is active and a row is modified, automatically send a NOTIFY with JSON payload containing the changed data. Like a poor-mans logical replication."
     }
   ]
 }

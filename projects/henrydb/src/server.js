@@ -837,6 +837,9 @@ export class HenryDBServer {
           const tableMatch = stmt.match(/(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM|DROP\s+TABLE|ALTER\s+TABLE|TRUNCATE)\s+(\w+)/i);
           if (tableMatch) {
             this._queryCache.invalidate(tableMatch[1]);
+            
+            // Emit change notifications for table_changes listeners
+            this._emitTableChange(conn, upper, tableMatch[1], result);
           }
         }
 
@@ -1367,6 +1370,42 @@ export class HenryDBServer {
       writeErrorResponse('ERROR', '57014', `COPY failed: ${message}`),
       writeReadyForQuery(conn.txStatus),
     ]));
+  }
+
+  /**
+   * Emit table change notification to all listeners on 'table_changes' channel.
+   * Payload is JSON: { action, table, count }
+   * For INSERT, also includes the new row data if available.
+   */
+  _emitTableChange(sourceConn, upperSql, tableName, result) {
+    const channel = 'table_changes';
+    const listeners = this._channels.get(channel);
+    if (!listeners || listeners.size === 0) return;
+    
+    let action = 'UNKNOWN';
+    if (upperSql.startsWith('INSERT')) action = 'INSERT';
+    else if (upperSql.startsWith('UPDATE')) action = 'UPDATE';
+    else if (upperSql.startsWith('DELETE')) action = 'DELETE';
+    else if (upperSql.startsWith('DROP')) action = 'DROP';
+    else if (upperSql.startsWith('TRUNCATE')) action = 'TRUNCATE';
+    
+    const count = result?.count || result?.rowCount || 0;
+    
+    const payload = JSON.stringify({
+      action,
+      table: tableName.toLowerCase(),
+      count,
+      timestamp: Date.now(),
+    });
+    
+    const notifBuf = writeNotificationResponse(sourceConn.pid, channel, payload);
+    for (const listener of listeners) {
+      if (listener !== sourceConn && listener.socket && !listener.socket.destroyed) {
+        try {
+          listener.socket.write(notifBuf);
+        } catch (e) { /* ignore write errors */ }
+      }
+    }
   }
 
   _handleClose(conn, msgBody) {

@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-11T02:51:01.235Z",
+  "generated": "2026-04-11T02:52:13.560Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: implement COPY TO STDOUT — export query results as TSV. Complements COPY FROM. Wire protocol sends CopyOutResponse then CopyData messages then CopyDone.",
-    "completedAt": "2026-04-11T02:51:01.235Z",
-    "taskId": "T227",
-    "summary": "COPY TO STDOUT already implemented. Validated with 4 tests: TSV export, round-trip (COPY TO then FROM preserves data), column selection, performance (0.081ms/row). The full COPY pipeline works end-to-end.",
-    "durationMs": 180000
+    "task": "HenryDB: implement pg_notify trigger simulation — when LISTEN table_changes is active and a row is modified, automatically send a NOTIFY with JSON payload containing the changed data. Like a poor-mans logical replication.",
+    "startedAt": "2026-04-11T02:52:13.560Z",
+    "taskId": "T228"
   },
   "schedule": {
     "date": "2026-04-10",
