@@ -286,14 +286,13 @@ export function recoverFromFileWAL(heap, wal) {
   // Phase 1: Analysis — identify committed transactions
   const committedTxns = new Set();
   const abortedTxns = new Set();
+  let lastCheckpointLsn = 0;
   for (const r of allRecords) {
     if (r.type === WAL_TYPES.COMMIT) committedTxns.add(r.txId);
     if (r.type === WAL_TYPES.ABORT) abortedTxns.add(r.txId);
+    if (r.type === WAL_TYPES.CHECKPOINT) lastCheckpointLsn = r.lsn;
   }
   
-  // Phase 2: Clear heap data and rebuild from WAL
-  // This ensures page/slot assignments match the original layout exactly
-  // We need to clear all pages and replay from scratch for this table
   const dm = heap._dm;
   const bp = heap._bp;
   
@@ -305,20 +304,50 @@ export function recoverFromFileWAL(heap, wal) {
     bp.invalidateAll();
   }
   
-  // Clear all data pages (write zeroed pages)
-  for (let i = 0; i < dm.pageCount; i++) {
-    const zeroBuf = Buffer.alloc(PAGE_SIZE);
-    dm.writePage(i, zeroBuf);
-  }
-  // Reset page count to 0
-  dm._pageCount = 0;
-  dm._freeListHead = -1;
-  dm._writeHeader();
+  // Determine recovery strategy:
+  // - If WAL has records from before the last checkpoint (or no checkpoint at all),
+  //   we need to wipe pages and replay from scratch (full redo).
+  // - If all WAL records are AFTER a checkpoint, page files have the pre-checkpoint
+  //   data and we only need to replay the new records on top.
+  const hasPreCheckpointData = lastCheckpointLsn === 0 || 
+    allRecords.some(r => r.lsn < lastCheckpointLsn && 
+      (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE));
   
-  // Re-initialize FSM
-  heap._fsm = new FreeSpaceMap();
-  // Reset row count — recovery will rebuild it
-  heap._rowCount = 0;
+  // Only records after lastAppliedLSN need replay
+  const recordsToReplay = allRecords.filter(r => r.lsn > lastAppliedLSN);
+  
+  if (hasPreCheckpointData && lastAppliedLSN === 0) {
+    // Full redo: WAL contains full history, clear pages and replay everything
+    // Clear all data pages (write zeroed pages)
+    for (let i = 0; i < dm.pageCount; i++) {
+      const zeroBuf = Buffer.alloc(PAGE_SIZE);
+      dm.writePage(i, zeroBuf);
+    }
+    // Reset page count to 0
+    dm._pageCount = 0;
+    dm._freeListHead = -1;
+    dm._writeHeader();
+    
+    // Re-initialize FSM and row count
+    heap._fsm = new FreeSpaceMap();
+    heap._rowCount = 0;
+  } else {
+    // Incremental redo: page files have data from prior checkpoint/flush.
+    // Just replay WAL records that haven't been applied yet.
+    // Re-initialize FSM from current pages (they have valid data)
+    heap._fsm = new FreeSpaceMap();
+    heap._rowCount = 0;
+    for (let i = 0; i < dm.pageCount; i++) {
+      try {
+        const page = heap._fetchPage(i);
+        heap._fsm.update(i, page.freeSpace());
+        for (const _ of page.scanTuples()) heap._rowCount++;
+        heap._unpinPage(i, false);
+      } catch (e) {
+        // Page may not exist, skip
+      }
+    }
+  }
   
   // Phase 3: Redo — replay committed operations for this heap's table only
   let redone = 0;
@@ -328,7 +357,9 @@ export function recoverFromFileWAL(heap, wal) {
   const savedWal = heap._wal;
   heap._wal = null;
   
-  for (const r of allRecords) {
+  const replaySet = hasPreCheckpointData && lastAppliedLSN === 0 ? allRecords : recordsToReplay;
+  
+  for (const r of replaySet) {
     if (!committedTxns.has(r.txId)) {
       skipped++;
       continue;

@@ -25,18 +25,22 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "BufferPool eviction stress: tiny pool (4 pages) with file I/O, force eviction cascades, verify data integrity after reopen",
       "plan_ref": "T2",
       "project": "henrydb",
-      "started": "2026-04-11T14:18:04.589Z"
+      "started": "2026-04-11T14:18:04.589Z",
+      "completed": "2026-04-11T14:24:16.879Z",
+      "duration_ms": 600000,
+      "summary": "12 persistence depth tests (4 suites), found and fixed 2 real bugs: (1) BufferPool.invalidateAll missing — stale cache during recovery, (2) rowCount not reset during WAL recovery. All 44 persistence tests pass."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "task": "WAL crash recovery depth: simulate crash (no close), reopen, verify only committed data survives — test abort, partial writes, interleaved txns",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "in-progress",
+      "plan_ref": "T2",
+      "started": "2026-04-11T14:24:33.111Z"
     },
     {
       "id": "T12",

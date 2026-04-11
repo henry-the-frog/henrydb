@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T14:18:04.625Z",
+  "generated": "2026-04-11T14:24:33.150Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "BufferPool eviction stress: tiny pool (4 pages) with file I/O, force eviction cascades, verify data integrity after reopen",
-    "startedAt": "2026-04-11T14:18:04.625Z",
-    "taskId": "T3"
+    "task": "WAL crash recovery depth: simulate crash (no close), reopen, verify only committed data survives — test abort, partial writes, interleaved txns",
+    "startedAt": "2026-04-11T14:24:33.149Z",
+    "taskId": "T11"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3499,11 +3499,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 2,
+    "blocksCompleted": 3,
     "blocksTotal": 13,
     "modeDistribution": {
       "THINK": 1,
-      "PLAN": 1
+      "PLAN": 1,
+      "BUILD": 1
     }
   },
   "artifacts": [

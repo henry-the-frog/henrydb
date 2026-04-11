@@ -84,9 +84,13 @@ export class PersistentDatabase {
       }
       
       // Run crash recovery if requested
-      // Recovery uses lastAppliedLSN to skip already-applied records
+      // Restore lastAppliedLSN from catalog before recovery
       if (recover) {
         for (const [name, heap] of heaps) {
+          const tableEntry = catalog?.tables?.find(t => t.name === name);
+          if (tableEntry?.lastAppliedLSN && heap._dm) {
+            heap._dm.lastAppliedLSN = tableEntry.lastAppliedLSN;
+          }
           recoverFromFileWAL(heap, wal);
         }
       }
@@ -187,8 +191,15 @@ export class PersistentDatabase {
    * Close the database. Flushes all data and closes files.
    */
   close() {
-    this._saveCatalog();
     this.flush();
+    // After flushing, all WAL records are applied — update lastAppliedLSN
+    const maxLSN = this._wal._flushedLsn || 0;
+    for (const dm of this._diskManagers.values()) {
+      if (maxLSN > dm.lastAppliedLSN) {
+        dm.lastAppliedLSN = maxLSN;
+      }
+    }
+    this._saveCatalog();
     this._wal.close();
     for (const dm of this._diskManagers.values()) {
       dm.close();
@@ -207,7 +218,13 @@ export class PersistentDatabase {
   _saveCatalog() {
     const tables = [];
     for (const [name, sql] of this._createSqls) {
-      tables.push({ name, createSql: sql });
+      const entry = { name, createSql: sql };
+      // Persist lastAppliedLSN for crash recovery
+      const heap = this._heaps.get(name);
+      if (heap && heap._dm) {
+        entry.lastAppliedLSN = heap._dm.lastAppliedLSN || 0;
+      }
+      tables.push(entry);
     }
     writeFileSync(this._catalogPath, JSON.stringify({ tables }, null, 2), 'utf8');
   }
