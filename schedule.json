@@ -123,17 +123,21 @@
     {
       "id": "T9",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Deep dive: pick a paper or codebase connecting to recent work (MVCC, JIT, systems)",
       "project": "henrydb",
-      "started": "2026-04-11T14:34:34.445Z"
+      "started": "2026-04-11T14:34:34.445Z",
+      "completed": "2026-04-11T14:36:00.692Z",
+      "duration_ms": 240000,
+      "summary": "ARIES deep dive: wrote gap analysis (scratch/aries-gap-analysis.md). HenryDB has crude lastAppliedLSN per table but no pageLSNs, no DPT, no CLRs. PageLSN is the single biggest missing piece — would eliminate full-vs-incremental heuristic entirely."
     },
     {
       "id": "T10",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Follow rabbit holes from first EXPLORE, write scratch notes on anything non-obvious",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-11T14:36:17.069Z"
     }
   ],
   "focusProjects": [
