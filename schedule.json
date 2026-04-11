@@ -812,10 +812,21 @@
     {
       "id": "T75",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Verify indexes are used: EXPLAIN shows index scan vs seq scan",
       "project": "henrydb",
-      "started": "2026-04-11T18:13:33.287Z"
+      "started": "2026-04-11T18:13:33.287Z",
+      "completed": "2026-04-11T18:15:22.118Z",
+      "duration_ms": 180000,
+      "summary": "Verified indexes work via EXPLAIN ANALYZE. INDEX_SCAN shown for indexed columns, 17-44x faster than TABLE_SCAN. Optimizer auto-selects best access path."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write a nice interactive SQL CLI for HenryDB (henrydb-cli.js)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:15:38.372Z"
     }
   ],
   "focusProjects": [
@@ -1123,6 +1134,10 @@
     {
       "time": "2026-04-11T18:13:32.878Z",
       "msg": "Added T75 (BUILD) after end: Verify indexes are used: EXPLAIN shows index scan vs seq scan"
+    },
+    {
+      "time": "2026-04-11T18:15:37.964Z",
+      "msg": "Added T76 (BUILD) after end: Write a nice interactive SQL CLI for HenryDB (henrydb-cli.js)"
     }
   ]
 }
