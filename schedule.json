@@ -746,10 +746,13 @@
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Test recursive CTEs through wire protocol with persistence",
       "project": "henrydb",
-      "started": "2026-04-11T17:46:28.522Z"
+      "started": "2026-04-11T17:46:28.522Z",
+      "completed": "2026-04-11T17:47:06.245Z",
+      "duration_ms": 240000,
+      "summary": "Recursive CTEs verified through full stack: wire protocol → parser → CTE executor → WAL → restart. Org chart (4 levels), fibonacci (10 terms) all pass via pg client."
     }
   ],
   "focusProjects": [

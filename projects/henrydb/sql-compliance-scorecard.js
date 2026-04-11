@@ -316,10 +316,26 @@ check('CTE', 'WITH RECURSIVE factorial', () => {
   const r = db.execute('WITH RECURSIVE fact(n, f) AS (SELECT 1 as n, 1 as f UNION ALL SELECT n + 1, f * (n + 1) FROM fact WHERE n < 10) SELECT * FROM fact');
   return r.rows.length === 10 && r.rows[9].f === 3628800;
 });
+check('CTE', 'WITH RECURSIVE tree traversal', () => {
+  db.execute('CREATE TABLE IF NOT EXISTS emp_tree (id INT PRIMARY KEY, name TEXT, mgr_id INT)');
+  try { db.execute("INSERT INTO emp_tree VALUES (1, 'Root', NULL), (2, 'Child', 1)"); } catch {}
+  const r = db.execute("WITH RECURSIVE org(id, name, lvl) AS (SELECT id, name, 0 as lvl FROM emp_tree WHERE mgr_id IS NULL UNION ALL SELECT e.id, e.name, org.lvl + 1 FROM emp_tree e JOIN org ON e.mgr_id = org.id) SELECT * FROM org");
+  return r.rows.length >= 2;
+});
+check('DDL', 'table.* in JOIN', () => {
+  db.execute('CREATE TABLE tstar_a (id INT PRIMARY KEY, val TEXT)');
+  db.execute('CREATE TABLE tstar_b (id INT PRIMARY KEY, num INT)');
+  db.execute("INSERT INTO tstar_a VALUES (1, 'x')");
+  db.execute('INSERT INTO tstar_b VALUES (1, 42)');
+  const r = db.execute('SELECT tstar_a.*, tstar_b.num FROM tstar_a JOIN tstar_b ON tstar_a.id = tstar_b.id');
+  return r.rows.length === 1 && r.rows[0].val === 'x' && r.rows[0].num === 42;
+});
 check('TYPE', 'Float literal', () => db.execute('SELECT 3.14 as r').rows[0].r === 3.14);
 check('STRING', 'SUBSTR', () => db.execute("SELECT SUBSTR('hello', 2, 3) as r").rows[0].r === 'ell');
 check('TYPE', 'Negative number', () => db.execute('SELECT -42 as r').rows[0].r === -42);
 check('TYPE', 'String with special chars', () => db.execute("SELECT 'hello world' as r").rows[0].r === 'hello world');
+check('EXPR', 'Unary minus', () => db.execute('SELECT -1 * 2 as r').rows[0].r === -2);
+check('EXPR', 'Boolean comparison in WHERE', () => db.execute('SELECT * FROM t1 WHERE 1 = 1 LIMIT 1').rows.length === 1);
 
 // --- Report ---
 console.log('\n=== HenryDB SQL Compliance Scorecard ===\n');
