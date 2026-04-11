@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-11T18:24:59.346Z",
+  "generated": "2026-04-11T18:28:50.044Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Implement ORDER BY ... NULLS FIRST/LAST",
-    "startedAt": "2026-04-11T18:24:59.346Z",
-    "taskId": "T84"
+    "task": "Test and verify complex SQL patterns: nested subqueries, multi-level CTEs, correlated updates",
+    "completedAt": "2026-04-11T18:28:50.044Z",
+    "taskId": "T85",
+    "summary": "Verified complex SQL patterns all work: nested subqueries, correlated subqueries with aggregates, multi-level CTEs, UPDATE with subquery. All correct.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3596,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 83,
+    "blocksCompleted": 85,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 2,
-      "BUILD": 66,
+      "BUILD": 68,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }

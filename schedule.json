@@ -911,10 +911,24 @@
     {
       "id": "T84",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement ORDER BY ... NULLS FIRST/LAST",
       "project": "henrydb",
-      "started": "2026-04-11T18:24:59.277Z"
+      "started": "2026-04-11T18:24:59.277Z",
+      "completed": "2026-04-11T18:28:06.157Z",
+      "duration_ms": 300000,
+      "summary": "Implemented ORDER BY NULLS FIRST/LAST. Parser + executor. Fixed bug where DESC negation swapped NULL semantics. 260/260 scorecard."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Test and verify complex SQL patterns: nested subqueries, multi-level CTEs, correlated updates",
+      "project": "henrydb",
+      "started": "2026-04-11T18:28:25.775Z",
+      "completed": "2026-04-11T18:28:49.978Z",
+      "duration_ms": 180000,
+      "summary": "Verified complex SQL patterns all work: nested subqueries, correlated subqueries with aggregates, multi-level CTEs, UPDATE with subquery. All correct."
     }
   ],
   "focusProjects": [
@@ -1258,6 +1272,10 @@
     {
       "time": "2026-04-11T18:24:58.863Z",
       "msg": "Added T84 (BUILD) after end: Implement ORDER BY ... NULLS FIRST/LAST"
+    },
+    {
+      "time": "2026-04-11T18:28:25.366Z",
+      "msg": "Added T85 (BUILD) after end: Test and verify complex SQL patterns: nested subqueries, multi-level CTEs, correlated updates"
     }
   ]
 }
