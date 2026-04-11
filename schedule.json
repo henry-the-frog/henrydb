@@ -1450,23 +1450,485 @@
     {
       "id": "T133",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement RETURNING for multi-row INSERT",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-11T20:15:23.870Z",
+      "completed": "2026-04-11T20:16:19.971Z",
+      "duration_ms": 30000,
+      "summary": "RETURNING for multi-row INSERT already works correctly — returns all rows with both * and specific column selection."
     },
     {
       "id": "T134",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Test persistence of recursive CTE-created data through wire protocol restart",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-11T20:16:28.304Z",
+      "completed": "2026-04-11T20:24:54.890Z",
+      "duration_ms": 600000,
+      "summary": "Fixed critical BufferPoolManager bug: persistence layer was completely broken (import mismatch + missing setEvictCallback/invalidateAll/external callbacks). Added 6 methods to BufferPoolManager. PersistentDatabase now works end-to-end — CTE-created data persists through close/reopen. 21/21 persistence tests pass."
     },
     {
       "id": "T135",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write evening summary for daily log",
-      "project": "workspace"
+      "project": "workspace",
+      "started": "2026-04-11T20:25:03.851Z",
+      "completed": "2026-04-11T20:25:39.755Z",
+      "duration_ms": 120000,
+      "summary": "Updated daily log with Session B entries, git pushed."
+    },
+    {
+      "id": "T136",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction check: BufferPool persistence is now fixed. 18 pre-existing HenryDB test failures remain. Also fixed import alias and stats issues. What's the best use of remaining Saturday afternoon — fix test failures, start new feature, or explore?",
+      "started": "2026-04-11T20:26:36.616Z",
+      "completed": "2026-04-11T20:52:51.682Z",
+      "duration_ms": 300000,
+      "summary": "Direction check: ran test sweep across both workspace src/ (288 files, 0 failures) and projects/henrydb/src/ (593 files, server tests 0/0 failures). The 18 pre-existing failures from Session A appear resolved. BufferPool persistence fix is the significant win today. Decision: since test health is excellent and persistence works, focus on depth — run the differential fuzzer against the persistence layer (insert via PersistentDatabase, compare with SQLite). This tests the full stack under stress."
+    },
+    {
+      "id": "T137",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB depth: fuzzer-driven persistence stress — random schema + data via PersistentDatabase, close, reopen, verify all data matches. Combine differential SQLite testing with persistence correctness.",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-11T20:53:10.634Z",
+      "completed": "2026-04-11T20:53:23.686Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 2 BUILD tasks for persistence fuzzer"
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "task": "Build persistence fuzzer: random schema gen, random INSERT/UPDATE/DELETE through PersistentDatabase, close/reopen cycle, verify all queries match pre-close state",
+      "status": "done",
+      "plan_ref": "T137",
+      "started": "2026-04-11T20:53:36.891Z",
+      "completed": "2026-04-11T20:55:51.975Z",
+      "duration_ms": 600000,
+      "summary": "Built persistence fuzzer: 23 tests, all pass. Random schemas (2-5 cols), random INSERT/UPDATE/DELETE, tiny buffer pools (8 pages) forcing evictions, 3-10 close/reopen cycles per round. 20 seeded runs + heavy stress (5 tables, 100 ops, 5 cycles) + tiny pool + many-cycle variants. Zero bugs found — persistence layer is solid."
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "task": "Run persistence fuzzer: iterate until 100+ random schemas pass 5 close/reopen cycles each, fix bugs found",
+      "status": "done",
+      "plan_ref": "T137",
+      "started": "2026-04-11T20:56:04.584Z",
+      "completed": "2026-04-11T21:01:00.876Z",
+      "duration_ms": 300000,
+      "summary": "Scaled persistence fuzzer to 100 seeds: 100/100 pass. Each seed: 2-4 random tables, 2-5 columns, 20 random DML ops per cycle, 5 close/reopen cycles, variable pool sizes (4-16). 261s total. Zero bugs found — persistence layer verified under massive randomized stress."
+    },
+    {
+      "id": "T140",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What's the deepest unsolved problem in HenryDB now? Persistence is verified (100 fuzzer rounds). Options: (1) WAL crash during write (simulate partial record), (2) concurrent persistence (multiple connections with transactions + persistence), (3) explore something new entirely — maybe wire the persistence into the projects/henrydb server for real E2E testing",
+      "project": "henrydb",
+      "started": "2026-04-11T21:01:28.682Z",
+      "completed": "2026-04-11T21:02:57.469Z",
+      "duration_ms": 120000,
+      "summary": "Decision: RISC-V emulator has 11 test files all failing (require vs import ESM issue). More interesting than more HenryDB depth — persistence is verified. Fixing RISC-V teaches ISA internals, pipeline, cache, branch prediction. Pivot to RISC-V emulator."
+    },
+    {
+      "id": "T141",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix RISC-V emulator: 11 test files failing with ESM/CJS mismatch, then investigate what tests cover and extend",
+      "task": null,
+      "project": "riscv",
+      "started": "2026-04-11T21:03:11.930Z",
+      "completed": "2026-04-11T21:03:31.222Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 2 BUILD tasks — fix CJS/ESM, then investigate coverage"
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "task": "Fix ESM/CJS mismatch: rename all RISC-V emulator .js files to .cjs or convert to ESM imports, get 11 test files passing",
+      "status": "done",
+      "plan_ref": "T141",
+      "started": "2026-04-11T21:03:37.782Z",
+      "completed": "2026-04-11T21:04:35.216Z",
+      "duration_ms": 300000,
+      "summary": "Converted all 23 RISC-V emulator files from CJS to ESM (require→import, module.exports→export). 208/208 tests pass. Zero failures. Covers CPU (RV32I), assembler, disassembler, M-extension, pipeline, branch predictor, cache, MMU, OOO execution, ELF loader, traps."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "task": "Investigate test coverage and emulator depth — what ISA extensions are supported, what's broken, what could be added",
+      "status": "done",
+      "plan_ref": "T141",
+      "started": "2026-04-11T21:04:41.547Z",
+      "completed": "2026-04-11T21:05:33.260Z",
+      "duration_ms": 120000,
+      "summary": "RISC-V emulator investigation: 208 tests covering RV32IM base + M-extension, 5-stage pipeline, Tomasulo OOO execution, 7 branch predictors, cache hierarchy, MMU, ELF loader, assembler/disassembler. No failing tests, no TODOs in code. Best additions: A-extension (atomics), C-extension (compressed instructions), or CSR support for privilege modes. C-extension is most impactful for real-world binary compatibility."
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix Git implementation: reset --hard fails to remove files not in target commit (1 of 152 tests failing)",
+      "project": "henrydb",
+      "started": "2026-04-11T21:06:42.858Z",
+      "completed": "2026-04-11T21:07:42.819Z",
+      "duration_ms": 180000,
+      "summary": "Fixed git reset --hard: was reading currentIndex AFTER overwriting it (so no files to remove). Moved read before write. 153/153 git tests pass, up from 152/153."
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix ESM/CJS for remaining projects: type-inference, sat-solver, regex-engine, huffman, forth — convert all to ESM and get tests passing",
+      "project": "henrydb",
+      "started": "2026-04-11T21:08:32.886Z",
+      "completed": "2026-04-11T21:11:12.791Z",
+      "duration_ms": 300000,
+      "summary": "Converted 4 projects to ESM: type-inference (120 tests), regex-engine (325 tests), huffman (38 tests), forth (74 tests). Fixed empty export {} issue from multi-line module.exports. All pass. Combined with RISC-V fix, thats 5 projects fixed today."
+    },
+    {
+      "id": "T146",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth: explore the SAT/SMT solver implementation — what does it actually do? CDCL? DPLL? What kind of SMT theories? Can I find bugs with random formulas?",
+      "project": "henrydb",
+      "started": "2026-04-11T21:11:36.907Z",
+      "completed": "2026-04-11T21:12:26.622Z",
+      "duration_ms": 120000,
+      "summary": "SAT solver exploration: serious CDCL implementation with 2-watched literals, VSIDS, 1UIP conflict analysis, clause learning, LBD. SMT layer has EUF (congruence closure with backtrackable union-find) and LIA (Simplex). 120 tests across 3 files, all passing. CJS format (not affected by ESM issue since .cjs). Worth stress-testing with random formula generation."
+    },
+    {
+      "id": "T147",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "SAT solver depth testing: build random formula fuzzer to find solver bugs, verify solutions, test edge cases",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-11T21:12:37.114Z",
+      "completed": "2026-04-11T21:12:49.748Z",
+      "duration_ms": 15000,
+      "summary": "PLAN: 2 BUILD tasks for SAT fuzzer"
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "task": "Build SAT fuzzer: random 3-SAT formulas at phase transition (4.27 clause/var ratio), verify solutions or UNSAT, cross-check small instances with brute force",
+      "status": "done",
+      "plan_ref": "T147",
+      "started": "2026-04-11T21:12:50.229Z",
+      "completed": "2026-04-11T21:15:55.219Z",
+      "duration_ms": 300000,
+      "summary": "Built SAT fuzzer: 1100/1100 pass. Phase 1: 500 small instances with brute-force cross-check (3-12 vars). Phase 2: 500 medium instances (20-50 vars) with solution verification. Phase 3: 100 large instances (50-200 vars). All near phase transition ratio (~4.27). Initially found 821 apparent failures — turned out to be fuzzer bug (comparing string SAT with boolean true). Solver is correct."
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "task": "Run SAT fuzzer: 1000+ random formulas, report bugs found",
+      "status": "done",
+      "plan_ref": "T147",
+      "started": "2026-04-11T21:16:07.191Z",
+      "completed": "2026-04-11T21:16:07.440Z",
+      "duration_ms": 1000,
+      "summary": "Already completed in T148 — 1100 random formulas, 0 bugs found."
+    },
+    {
+      "id": "T150",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Regex engine depth: fuzz-test the NFA/DFA matcher against JavaScript native RegExp, stress catastrophic backtracking patterns, verify DFA minimization correctness",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-11T21:16:32.687Z",
+      "completed": "2026-04-11T21:16:49.827Z",
+      "duration_ms": 10000,
+      "summary": "PLAN: 1 BUILD task for regex differential fuzzer"
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "task": "Build regex differential fuzzer: random patterns + strings, compare our engine vs native JS RegExp, find mismatches",
+      "status": "done",
+      "plan_ref": "T150",
+      "started": "2026-04-11T21:16:50.286Z",
+      "completed": "2026-04-11T21:25:23.731Z",
+      "duration_ms": 600000,
+      "summary": "Built regex differential fuzzer: 33,258 comparisons against native JS RegExp, 0 mismatches after fixing 3 bugs: (1) non-capturing group (?:...) parser support, (2) zero-width match in search(), (3) DFA falls back to NFA for DOT/char-class patterns (alphabet overlap bug in subset construction). 110/110 existing tests pass."
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Type inference fuzzer: random well-formed expressions, verify inference is consistent and correct",
+      "project": "henrydb",
+      "started": "2026-04-11T21:26:37.545Z",
+      "completed": "2026-04-11T21:28:19.814Z",
+      "duration_ms": 300000,
+      "summary": "Type inference fuzzer: 5000 random expressions, 0 crashes. 2066 well-typed, 2934 properly rejected. HM Algorithm W is robust."
+    },
+    {
+      "id": "T153",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB query optimizer stress test: random multi-table queries with JOINs, WHERE, GROUP BY, ORDER BY — verify planner doesnt crash and produces valid results",
+      "project": "henrydb",
+      "started": "2026-04-11T21:31:50.875Z",
+      "completed": "2026-04-11T21:32:42.233Z",
+      "duration_ms": 240000,
+      "summary": "Query optimizer stress test: 50 seeds × 20 queries = 1000 random queries across random schemas with JOINs, GROUP BY, ORDER BY, subqueries, DISTINCT. 0 crashes, all pass in 1.5s."
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix regex engine DFA subset construction: implement proper alphabet refinement for overlapping transitions (DOT, character classes). Currently falling back to NFA — restore DFA path with correct alphabet splitting",
+      "project": "henrydb",
+      "started": "2026-04-11T21:33:11.707Z",
+      "completed": "2026-04-11T21:34:52.304Z",
+      "duration_ms": 600000,
+      "summary": "Fixed DFA subset construction with proper alphabet refinement. DOT and char-class overlaps now handled correctly: merge target states for overlapping transitions, prefer specific over DOT in matching. DFA enabled for all non-anchor patterns. 33,258 fuzzer comparisons: 0 mismatches. 3x faster than NFA fallback (0.3s vs 0.9s)."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Huffman roundtrip fuzzer: random strings, compress then decompress, verify roundtrip correctness and compression ratio",
+      "project": "henrydb",
+      "started": "2026-04-11T21:35:12.464Z",
+      "completed": "2026-04-11T21:36:01.545Z",
+      "duration_ms": 120000,
+      "summary": "Huffman roundtrip fuzzer: 3000 random strings (random, skewed, uniform, single char, binary), all pass. Compress→decompress roundtrip verified."
+    },
+    {
+      "id": "T156",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What is the hardest unsolved problem in HenryDB right now? The persistence layer is verified, query optimizer handles random workloads, test suite is clean. What would push the boundaries — EXPLAIN ANALYZE, concurrent transactions stress test, or cross-project integration?",
+      "started": "2026-04-11T21:36:33.406Z",
+      "completed": "2026-04-11T21:37:15.588Z",
+      "duration_ms": 120000,
+      "summary": "Analysis: workspace HenryDB has basic transactions (flags only). The projects/henrydb/ version has full MVCC+SSI. Both have strong test coverage. Rather than more testing/fuzzing, the most valuable next step is adding a genuinely new feature to workspace HenryDB: MVCC with snapshot isolation. This would bring it closer to the projects/ version and is the hardest remaining feature listed in TASKS.md."
+    },
+    {
+      "id": "T157",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement MVCC snapshot isolation in workspace HenryDB: transaction IDs, tuple versioning, visibility checks, snapshot reads, write-write conflict detection",
+      "task": null,
+      "started": "2026-04-11T21:37:29.596Z",
+      "completed": "2026-04-11T21:38:13.601Z",
+      "duration_ms": 60000,
+      "summary": "PLAN: 3 BUILD tasks for MVCC implementation — core classes, DB integration, tests"
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "task": "Port MVCC core: MVCCTransaction + MVCCManager classes — version chains, snapshots, read/write/delete with visibility checks",
+      "status": "done",
+      "plan_ref": "T157",
+      "started": "2026-04-11T21:38:14.056Z",
+      "completed": "2026-04-11T21:40:08.961Z",
+      "duration_ms": 600000,
+      "summary": "Implemented MVCC core: MVCCManager + MVCCTransaction with version chains, PostgreSQL-style snapshots (xmin:xmax:xip_list), snapshot isolation, write-write conflict detection, rollback, delete, GC, vacuum, scan with visibility. 15/15 tests pass."
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "task": "Integrate MVCC into Database class: transaction-aware execute(), BEGIN/COMMIT/ROLLBACK use MVCC, snapshot reads",
+      "status": "done",
+      "plan_ref": "T157",
+      "started": "2026-04-11T21:40:16.101Z",
+      "completed": "2026-04-11T21:42:33.112Z",
+      "duration_ms": 300000,
+      "summary": "Integrated MVCC into Database class: BEGIN/COMMIT/ROLLBACK now create/commit/rollback MVCCTransactions. Backward compatible — non-MVCC mode unchanged. Phase 1 complete (lifecycle management). Phase 2 needed: route DML through MVCCManager for true multi-version reads. 5/5 integration tests pass."
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "task": "MVCC tests: basic isolation (dirty reads prevented), write-write conflict detection, phantom reads with snapshot",
+      "status": "done",
+      "plan_ref": "T157",
+      "started": "2026-04-11T21:42:40.841Z",
+      "completed": "2026-04-11T21:43:36.557Z",
+      "duration_ms": 240000,
+      "summary": "MVCC stress tests: 5 tests covering 100 concurrent transactions, snapshot isolation invariants (reads never change), write-write conflict detection (20/20), GC preserves active reader versions, 1000-transaction stress. All pass."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build SHA-256 from scratch: implement the full algorithm (message padding, schedule, compression, mixing), verify against Node crypto module",
+      "project": "henrydb",
+      "started": "2026-04-11T21:44:59.446Z",
+      "completed": "2026-04-11T21:46:50.117Z",
+      "duration_ms": 600000,
+      "summary": "Built SHA-256 + HMAC-SHA256 from scratch following FIPS 180-4. 26/26 tests pass including NIST vectors, RFC 4231 HMAC vectors, 1000-string differential fuzzer against Node crypto, avalanche effect check."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build Merkle tree using our SHA-256: tree construction, proof generation, proof verification. This is how git and databases verify data integrity.",
+      "project": "henrydb",
+      "started": "2026-04-11T21:47:18.341Z",
+      "completed": "2026-04-11T21:48:40.637Z",
+      "duration_ms": 360000,
+      "summary": "Built Merkle tree using our SHA-256: tree construction, O(log n) proof generation/verification, efficient tree diff. 18/18 tests including 100-tree random fuzzer."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build Bloom filter using our SHA-256: configurable false positive rate, add/test/merge operations. Useful for HenryDB query optimization (skip scans)",
+      "project": "henrydb",
+      "started": "2026-04-11T21:49:04.213Z",
+      "completed": "2026-04-11T21:50:23.709Z",
+      "duration_ms": 300000,
+      "summary": "Built Bloom filter using SHA-256 double hashing. Optimal parameters, configurable FPR. 11/11 tests. Actual FPR: 0.97% at 1% target. 12KB for 10K items."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Merkle tree: adversarial inputs (identical blocks, empty strings, very long data), second preimage resistance, collision resistance of proofs",
+      "project": "henrydb",
+      "started": "2026-04-11T21:50:51.058Z",
+      "completed": "2026-04-11T21:52:36.741Z",
+      "duration_ms": 300000,
+      "summary": "Found and fixed Merkle tree second preimage vulnerability! Without domain separation, attacker could construct 1-leaf tree with same root as 2-leaf tree. Fixed with 0x00 leaf prefix and 0x01 internal prefix (RFC 6962). 19/19 tests pass."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build consistent hashing ring using SHA-256: virtual nodes, node addition/removal with minimal key redistribution, load balancing. Foundation for distributed HenryDB",
+      "project": "henrydb",
+      "started": "2026-04-11T21:53:01.945Z",
+      "completed": "2026-04-11T21:54:24.560Z",
+      "duration_ms": 600000,
+      "summary": "Built consistent hashing ring: virtual nodes, O(log n) lookup, replication, load balance (<8% deviation), minimal redistribution (25.7% on add, ideal 25%). 11/11 tests."
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a distributed key-value store concept that uses: SHA-256 (key hashing), consistent hashing (partitioning), Bloom filter (existence checks), Merkle tree (anti-entropy sync), MVCC (transactions). Integration showcase.",
+      "project": "henrydb",
+      "started": "2026-04-11T21:54:50.155Z",
+      "completed": "2026-04-11T21:56:25.305Z",
+      "duration_ms": 600000,
+      "summary": "Built distributed KV store integrating all 5 new data structures: SHA-256, consistent hashing, Bloom filter, Merkle tree, MVCC. Partitioned key-value store with replication, transactions, anti-entropy sync, bloom-accelerated lookups. 10/10 tests pass."
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build HTTP API server for HenryDB: POST /sql executes queries, GET /tables lists tables, GET /stats returns stats. Uses native Node http module.",
+      "project": "henrydb",
+      "started": "2026-04-11T21:57:37.274Z",
+      "completed": "2026-04-11T21:58:57.593Z",
+      "duration_ms": 360000,
+      "summary": "Built HenryDB HTTP API server: POST /sql executes queries with timing, GET /tables lists schemas, GET /stats returns metrics, GET /health. CORS, error handling, CLI mode. 12/12 tests including complex JOIN queries via API."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build interactive HenryDB REPL: readline-based SQL shell with syntax highlighting, timing, table formatting. .tables, .schema, .help commands.",
+      "project": "henrydb",
+      "started": "2026-04-11T21:59:27.912Z",
+      "completed": "2026-04-11T22:00:45.992Z",
+      "duration_ms": 300000,
+      "summary": "Built HenryDB interactive REPL: table formatting, query timing, dot commands (.tables, .schema, .indexes, .history, .help), multi-line SQL, color output. 9/9 tests."
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build LSM tree: memtable (skip list) + sorted string tables (SSTables) + compaction. Uses our Bloom filter for read optimization. Core storage engine.",
+      "project": "henrydb",
+      "started": "2026-04-11T22:01:17.680Z",
+      "completed": "2026-04-11T22:04:12.872Z",
+      "duration_ms": 600000,
+      "summary": "Built LSM tree: memtable → SSTable flush → level-based compaction. Bloom filter saved 3260 reads in 10K-op stress test. Found and fixed compaction ordering bug (stale reads from wrongly-ordered SSTables). 14/14 tests including 10K random ops consistency check."
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build JSON parser from scratch: tokenizer + recursive descent parser. Handle all JSON types (string, number, bool, null, array, object). Differential test against native JSON.parse.",
+      "project": "henrydb",
+      "started": "2026-04-11T22:05:04.315Z",
+      "completed": "2026-04-11T22:06:39.568Z",
+      "duration_ms": 300000,
+      "summary": "Built JSON parser + stringify from scratch (RFC 8259). Recursive descent, all types, unicode/surrogate pairs, error reporting. 17/17 tests including 1000-value differential fuzzer."
+    },
+    {
+      "id": "T171",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session B mid-session checkpoint: update daily log, CURRENT.md, git push",
+      "project": "henrydb",
+      "started": "2026-04-11T22:07:04.341Z",
+      "completed": "2026-04-11T22:07:50.818Z",
+      "duration_ms": 60000,
+      "summary": "Mid-session checkpoint complete."
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a stack-based bytecode VM: compiler from simple AST to bytecodes, then VM executes. Instructions: push, pop, add, sub, mul, jmp, jz, call, ret. Test with fibonacci and factorial.",
+      "project": "henrydb",
+      "started": "2026-04-11T22:08:06.974Z",
+      "completed": "2026-04-11T22:09:57.923Z",
+      "duration_ms": 600000,
+      "summary": "Built stack-based bytecode VM: 30 instructions, assembler with labels, disassembler. Recursive fibonacci(10)=55 and factorial(5)=120 work. 18/18 tests."
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "DEPTH: Stress-test the bytecode VM — random bytecode programs, try to crash it. Test edge cases: deep recursion, stack overflow, negative numbers, boundary values.",
+      "project": "henrydb",
+      "started": "2026-04-11T22:10:29.119Z",
+      "completed": "2026-04-11T22:13:17.329Z",
+      "duration_ms": 300000,
+      "summary": "Found and fixed 4 VM safety bugs: stack underflow on POP/ADD/DUP (returned undefined/NaN), invalid jump addresses silently accepted. Added bounds-checked _pop()/_peek() and address validation. All 18 tests still pass."
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "DEPTH: Adversarial LSM tree testing — concurrent-like workloads, range scans after compaction, deletion edge cases, large values, exact same key written 1000 times",
+      "project": "henrydb",
+      "started": "2026-04-11T22:13:44.026Z",
+      "completed": "2026-04-11T22:14:30.622Z",
+      "duration_ms": 180000,
+      "summary": "Adversarial LSM testing: same key 1000x, delete-reinsert, scan-after-delete, write-compact-delete-compact cycle, interleaved write/scan with tiny memtable (3 entries). ALL PASS — zero bugs found. LSM tree is correct under adversarial workloads."
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire LSM tree as storage backend for the distributed KV store, replacing the simple Map. Verify anti-entropy still works with LSM-backed partitions.",
+      "project": "henrydb",
+      "started": "2026-04-11T22:14:53.108Z",
+      "completed": "2026-04-11T22:17:02.852Z",
+      "duration_ms": 240000,
+      "summary": "Wired LSM tree as storage backend for distributed KV store, replacing Map. Anti-entropy, Merkle trees, and all tests pass with LSM. Now integrates 6 components."
+    },
+    {
+      "id": "T176",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session B final wrap-up: evening summary, CURRENT.md, daily log, git push",
+      "project": "henrydb",
+      "started": "2026-04-11T22:17:23.829Z"
     }
   ],
   "focusProjects": [
@@ -2014,6 +2476,150 @@
     {
       "time": "2026-04-11T19:42:09.894Z",
       "msg": "Added T135 (MAINTAIN) after end: Write evening summary for daily log"
+    },
+    {
+      "time": "2026-04-11T20:26:25.984Z",
+      "msg": "Added T136 (THINK) after end: Direction check: BufferPool persistence is now fixed. 18 pre-existing HenryDB test failures remain. Also fixed import alias and stats issues. What's the best use of remaining Saturday afternoon — fix test failures, start new feature, or explore?"
+    },
+    {
+      "time": "2026-04-11T20:52:59.551Z",
+      "msg": "Added T137 (PLAN) after end: HenryDB depth: fuzzer-driven persistence stress — random schema + data via PersistentDatabase, close, reopen, verify all data matches. Combine differential SQLite testing with persistence correctness."
+    },
+    {
+      "time": "2026-04-11T20:53:17.131Z",
+      "msg": "PLAN T137 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T21:01:22.879Z",
+      "msg": "Added T140 (THINK) after end: What's the deepest unsolved problem in HenryDB now? Persistence is verified (100 fuzzer rounds). Options: (1) WAL crash during write (simulate partial record), (2) concurrent persistence (multiple connections with transactions + persistence), (3) explore something new entirely — maybe wire the persistence into the projects/henrydb server for real E2E testing"
+    },
+    {
+      "time": "2026-04-11T21:03:05.419Z",
+      "msg": "Added T141 (PLAN) after end: Fix RISC-V emulator: 11 test files failing with ESM/CJS mismatch, then investigate what tests cover and extend"
+    },
+    {
+      "time": "2026-04-11T21:03:26.101Z",
+      "msg": "PLAN T141 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T21:06:37.565Z",
+      "msg": "Added T144 (BUILD) after end: Fix Git implementation: reset --hard fails to remove files not in target commit (1 of 152 tests failing)"
+    },
+    {
+      "time": "2026-04-11T21:08:27.875Z",
+      "msg": "Added T145 (BUILD) after end: Fix ESM/CJS for remaining projects: type-inference, sat-solver, regex-engine, huffman, forth — convert all to ESM and get tests passing"
+    },
+    {
+      "time": "2026-04-11T21:11:31.730Z",
+      "msg": "Added T146 (THINK) after end: Depth: explore the SAT/SMT solver implementation — what does it actually do? CDCL? DPLL? What kind of SMT theories? Can I find bugs with random formulas?"
+    },
+    {
+      "time": "2026-04-11T21:12:32.395Z",
+      "msg": "Added T147 (PLAN) after end: SAT solver depth testing: build random formula fuzzer to find solver bugs, verify solutions, test edge cases"
+    },
+    {
+      "time": "2026-04-11T21:12:43.974Z",
+      "msg": "PLAN T147 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T21:16:25.644Z",
+      "msg": "Added T150 (PLAN) after end: Regex engine depth: fuzz-test the NFA/DFA matcher against JavaScript native RegExp, stress catastrophic backtracking patterns, verify DFA minimization correctness"
+    },
+    {
+      "time": "2026-04-11T21:16:44.370Z",
+      "msg": "PLAN T150 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T21:26:31.100Z",
+      "msg": "Added T152 (BUILD) after end: Type inference fuzzer: random well-formed expressions, verify inference is consistent and correct"
+    },
+    {
+      "time": "2026-04-11T21:31:45.638Z",
+      "msg": "Added T153 (BUILD) after end: HenryDB query optimizer stress test: random multi-table queries with JOINs, WHERE, GROUP BY, ORDER BY — verify planner doesnt crash and produces valid results"
+    },
+    {
+      "time": "2026-04-11T21:33:06.329Z",
+      "msg": "Added T154 (BUILD) after end: Fix regex engine DFA subset construction: implement proper alphabet refinement for overlapping transitions (DOT, character classes). Currently falling back to NFA — restore DFA path with correct alphabet splitting"
+    },
+    {
+      "time": "2026-04-11T21:35:12.056Z",
+      "msg": "Added T155 (BUILD) after end: Huffman roundtrip fuzzer: random strings, compress then decompress, verify roundtrip correctness and compression ratio"
+    },
+    {
+      "time": "2026-04-11T21:36:27.131Z",
+      "msg": "Added T156 (THINK) after end: What is the hardest unsolved problem in HenryDB right now? The persistence layer is verified, query optimizer handles random workloads, test suite is clean. What would push the boundaries — EXPLAIN ANALYZE, concurrent transactions stress test, or cross-project integration?"
+    },
+    {
+      "time": "2026-04-11T21:37:23.585Z",
+      "msg": "Added T157 (PLAN) after end: Implement MVCC snapshot isolation in workspace HenryDB: transaction IDs, tuple versioning, visibility checks, snapshot reads, write-write conflict detection"
+    },
+    {
+      "time": "2026-04-11T21:38:05.956Z",
+      "msg": "PLAN T157 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T21:44:51.134Z",
+      "msg": "Added T161 (BUILD) after end: Build SHA-256 from scratch: implement the full algorithm (message padding, schedule, compression, mixing), verify against Node crypto module"
+    },
+    {
+      "time": "2026-04-11T21:47:12.430Z",
+      "msg": "Added T162 (BUILD) after end: Build Merkle tree using our SHA-256: tree construction, proof generation, proof verification. This is how git and databases verify data integrity."
+    },
+    {
+      "time": "2026-04-11T21:49:03.801Z",
+      "msg": "Added T163 (BUILD) after end: Build Bloom filter using our SHA-256: configurable false positive rate, add/test/merge operations. Useful for HenryDB query optimization (skip scans)"
+    },
+    {
+      "time": "2026-04-11T21:50:50.646Z",
+      "msg": "Added T164 (BUILD) after end: Stress-test Merkle tree: adversarial inputs (identical blocks, empty strings, very long data), second preimage resistance, collision resistance of proofs"
+    },
+    {
+      "time": "2026-04-11T21:53:01.535Z",
+      "msg": "Added T165 (BUILD) after end: Build consistent hashing ring using SHA-256: virtual nodes, node addition/removal with minimal key redistribution, load balancing. Foundation for distributed HenryDB"
+    },
+    {
+      "time": "2026-04-11T21:54:49.743Z",
+      "msg": "Added T166 (BUILD) after end: Build a distributed key-value store concept that uses: SHA-256 (key hashing), consistent hashing (partitioning), Bloom filter (existence checks), Merkle tree (anti-entropy sync), MVCC (transactions). Integration showcase."
+    },
+    {
+      "time": "2026-04-11T21:57:36.864Z",
+      "msg": "Added T167 (BUILD) after end: Build HTTP API server for HenryDB: POST /sql executes queries, GET /tables lists tables, GET /stats returns stats. Uses native Node http module."
+    },
+    {
+      "time": "2026-04-11T21:59:27.498Z",
+      "msg": "Added T168 (BUILD) after end: Build interactive HenryDB REPL: readline-based SQL shell with syntax highlighting, timing, table formatting. .tables, .schema, .help commands."
+    },
+    {
+      "time": "2026-04-11T22:01:17.270Z",
+      "msg": "Added T169 (BUILD) after end: Build LSM tree: memtable (skip list) + sorted string tables (SSTables) + compaction. Uses our Bloom filter for read optimization. Core storage engine."
+    },
+    {
+      "time": "2026-04-11T22:05:03.905Z",
+      "msg": "Added T170 (BUILD) after end: Build JSON parser from scratch: tokenizer + recursive descent parser. Handle all JSON types (string, number, bool, null, array, object). Differential test against native JSON.parse."
+    },
+    {
+      "time": "2026-04-11T22:07:03.930Z",
+      "msg": "Added T171 (MAINTAIN) after end: Session B mid-session checkpoint: update daily log, CURRENT.md, git push"
+    },
+    {
+      "time": "2026-04-11T22:08:06.563Z",
+      "msg": "Added T172 (BUILD) after end: Build a stack-based bytecode VM: compiler from simple AST to bytecodes, then VM executes. Instructions: push, pop, add, sub, mul, jmp, jz, call, ret. Test with fibonacci and factorial."
+    },
+    {
+      "time": "2026-04-11T22:10:28.709Z",
+      "msg": "Added T173 (BUILD) after end: DEPTH: Stress-test the bytecode VM — random bytecode programs, try to crash it. Test edge cases: deep recursion, stack overflow, negative numbers, boundary values."
+    },
+    {
+      "time": "2026-04-11T22:13:43.792Z",
+      "msg": "Added T174 (BUILD) after end: DEPTH: Adversarial LSM tree testing — concurrent-like workloads, range scans after compaction, deletion edge cases, large values, exact same key written 1000 times"
+    },
+    {
+      "time": "2026-04-11T22:14:52.698Z",
+      "msg": "Added T175 (BUILD) after end: Wire LSM tree as storage backend for the distributed KV store, replacing the simple Map. Verify anti-entropy still works with LSM-backed partitions."
+    },
+    {
+      "time": "2026-04-11T22:17:23.407Z",
+      "msg": "Added T176 (MAINTAIN) after end: Session B final wrap-up: evening summary, CURRENT.md, daily log, git push"
     }
   ]
 }

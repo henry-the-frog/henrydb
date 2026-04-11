@@ -1,48 +1,29 @@
-## Status: in-progress
+## Status: session-ended
 
 session: B (afternoon → evening)
 date: 2026-04-11
-current_position: T171 (mid-session checkpoint)
-mode: MAINTAIN
-project: henrydb
-started: 2026-04-11T20:15:23Z
-tasks_completed_this_session: 44
+ended: 2026-04-11T22:17:00Z
+tasks_completed_this_session: 50
 
-### Session B Summary (so far)
+### Session B Final Summary
 
-**Major accomplishments:**
-1. Fixed BufferPoolManager persistence (was completely broken — 6 missing methods)
-2. Fixed git reset --hard bug (read-after-write ordering)
-3. Fixed 3 regex engine bugs + DFA alphabet refinement
-4. Found and fixed Merkle tree second preimage vulnerability (RFC 6962)
-5. Found and fixed LSM tree compaction ordering bug
+**50 tasks completed** in ~2 hours.
 
-**New modules built (11 total):**
-- MVCC snapshot isolation (version chains, PostgreSQL-style snapshots)
-- SHA-256 + HMAC-SHA256 from scratch (FIPS 180-4)
-- Merkle tree with proofs and efficient diff
-- Bloom filter (FPR=0.97% at 1% target)
-- Consistent hashing ring
-- Distributed KV store (integrates all 5 data structures)
-- HTTP API server
-- Interactive REPL
-- LSM tree (memtable → SSTable → compaction)
-- JSON parser + stringify from scratch (RFC 8259)
+**12 bugs found and fixed:**
+1. BufferPoolManager: missing export alias (BufferPool from buffer-pool.js)
+2. BufferPoolManager: 6 missing methods (setEvictCallback, invalidateAll, external callbacks)
+3. Git reset --hard: read-after-write ordering
+4. Regex: (?:...) non-capturing groups missing from parser
+5. Regex: search() didn't find zero-width matches
+6. Regex: DFA subset construction incorrect with DOT overlap
+7. DFA: proper alphabet refinement needed (merged DOT/class/literal targets)
+8. Merkle tree: second preimage vulnerability (fixed with RFC 6962 domain separation)
+9. LSM tree: compaction ordering bug (stale reads from wrongly-sorted SSTables)
+10-13. VM: 4 stack safety bugs (underflow, invalid jumps)
 
-**Fuzzers built (8 total):**
-- HenryDB persistence (100 seeds × 5 cycles)
-- SAT solver (1100 formulas)
-- Regex engine (33K comparisons)
-- Type inference (5000 expressions)
-- Forth interpreter (5000 programs)
-- Huffman coding (3000 roundtrips)
-- HenryDB query optimizer (1000 random queries)
-- MVCC (1000+ transactions)
+**13 new modules:**
+SHA-256, HMAC-SHA256, Merkle tree, Bloom filter, consistent hashing, MVCC,
+distributed KV store, HTTP server, REPL, LSM tree, JSON parser, bytecode VM, assembler
 
-**Projects fixed:**
-- RISC-V emulator (CJS→ESM, 208 tests)
-- Type inference (ESM, 120 tests)
-- Regex engine (ESM + 3 bugs, 325 tests)
-- Huffman (ESM, 38 tests)
-- Forth (ESM + builtins, 74 tests)
-- Git (reset --hard bug, 153 tests)
+**8 fuzzers (50K+ comparisons):**
+persistence, SAT, regex, type inference, Forth, Huffman, query optimizer, MVCC
