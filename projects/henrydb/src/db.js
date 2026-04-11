@@ -1532,17 +1532,20 @@ export class Database {
       return result;
     }
 
-    // INNER/LEFT/RIGHT JOIN
+    // INNER/LEFT/RIGHT/FULL JOIN
+    const rightMatched = new Set();
     for (const leftRow of leftRows) {
       let matched = false;
-      for (const rightRow of rightRows) {
+      for (let ri = 0; ri < rightRows.length; ri++) {
+        const rightRow = rightRows[ri];
         const combined = { ...leftRow, ...rightRow };
         if (!join.on || this._evalExpr(join.on, combined)) {
           result.push(combined);
           matched = true;
+          rightMatched.add(ri);
         }
       }
-      if (!matched && (join.joinType === 'LEFT' || join.joinType === 'LEFT_OUTER')) {
+      if (!matched && (join.joinType === 'LEFT' || join.joinType === 'LEFT_OUTER' || join.joinType === 'FULL' || join.joinType === 'FULL_OUTER')) {
         const nullRow = {};
         for (const key of Object.keys(rightRows[0] || {})) {
           nullRow[key] = null;
@@ -1550,6 +1553,20 @@ export class Database {
         result.push({ ...leftRow, ...nullRow });
       }
     }
+    
+    // RIGHT and FULL: add unmatched right rows
+    if (join.joinType === 'RIGHT' || join.joinType === 'RIGHT_OUTER' || join.joinType === 'FULL' || join.joinType === 'FULL_OUTER') {
+      for (let ri = 0; ri < rightRows.length; ri++) {
+        if (!rightMatched.has(ri)) {
+          const nullRow = {};
+          for (const key of Object.keys(leftRows[0] || {})) {
+            nullRow[key] = null;
+          }
+          result.push({ ...nullRow, ...rightRows[ri] });
+        }
+      }
+    }
+    
     return result;
   }
 
@@ -1947,8 +1964,8 @@ export class Database {
       return result;
     }
 
-    // RIGHT JOIN: swap logic
-    if (join.joinType === 'RIGHT') {
+    // RIGHT or FULL JOIN: track matched right rows
+    if (join.joinType === 'RIGHT' || join.joinType === 'FULL') {
       const rightMatchedSet = new Set();
       const rightRows = [];
       for (const { values } of rightTable.heap.scan()) {
@@ -1958,12 +1975,23 @@ export class Database {
       }
 
       for (const leftRow of leftRows) {
+        let matched = false;
         for (let i = 0; i < rightRows.length; i++) {
           const combined = { ...leftRow, ...rightRows[i] };
           if (this._evalExpr(join.on, combined)) {
             result.push(combined);
             rightMatchedSet.add(i);
+            matched = true;
           }
+        }
+        // FULL JOIN: add unmatched left rows with null right
+        if (!matched && join.joinType === 'FULL') {
+          const nullRow = {};
+          for (const col of rightTable.schema) {
+            nullRow[col.name] = null;
+            nullRow[`${rightAlias}.${col.name}`] = null;
+          }
+          result.push({ ...leftRow, ...nullRow });
         }
       }
 

@@ -494,10 +494,32 @@
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: update README with compliance scorecard results and feature list",
       "project": "henrydb",
-      "started": "2026-04-11T16:31:55.952Z"
+      "started": "2026-04-11T16:31:55.952Z",
+      "completed": "2026-04-11T16:32:54.931Z",
+      "duration_ms": 120000,
+      "summary": "Updated README with 105/105 compliance scorecard table, operator precedence mention, STRING_AGG."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement EXPLAIN ANALYZE — runs query and shows actual timing per operator",
+      "project": "henrydb",
+      "started": "2026-04-11T16:33:16.833Z",
+      "completed": "2026-04-11T16:33:58.946Z",
+      "duration_ms": 30000,
+      "summary": "EXPLAIN ANALYZE already implemented — has tree plan, timing, estimated vs actual rows. No new work needed."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix FULL OUTER JOIN — returns undefined for all columns instead of actual values",
+      "project": "henrydb",
+      "started": "2026-04-11T16:34:18.920Z"
     }
   ],
   "focusProjects": [
@@ -689,6 +711,14 @@
     {
       "time": "2026-04-11T16:31:55.543Z",
       "msg": "Added T46 (BUILD) after end: HenryDB: update README with compliance scorecard results and feature list"
+    },
+    {
+      "time": "2026-04-11T16:33:16.598Z",
+      "msg": "Added T47 (BUILD) after end: HenryDB: implement EXPLAIN ANALYZE — runs query and shows actual timing per operator"
+    },
+    {
+      "time": "2026-04-11T16:34:18.513Z",
+      "msg": "Added T48 (BUILD) after end: Fix FULL OUTER JOIN — returns undefined for all columns instead of actual values"
     }
   ]
 }

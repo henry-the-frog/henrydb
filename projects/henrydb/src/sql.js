@@ -13,7 +13,7 @@ const KEYWORDS = new Set([
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
-  'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'SHOW', 'TABLES', 'DESCRIBE',
+  'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'FULL', 'OUTER', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
   'POWER', 'SQRT', 'LOG', 'RANDOM',
@@ -372,7 +372,7 @@ export function parse(sql) {
       }
 
       // JOINs
-      while (isKeyword('JOIN') || isKeyword('INNER') || isKeyword('LEFT') || isKeyword('RIGHT') || isKeyword('CROSS')) {
+      while (isKeyword('JOIN') || isKeyword('INNER') || isKeyword('LEFT') || isKeyword('RIGHT') || isKeyword('CROSS') || isKeyword('FULL')) {
         joins.push(parseJoin());
       }
     }
@@ -813,8 +813,11 @@ export function parse(sql) {
     let joinType = 'INNER';
     if (isKeyword('LEFT')) { joinType = 'LEFT'; advance(); }
     else if (isKeyword('RIGHT')) { joinType = 'RIGHT'; advance(); }
+    else if (isKeyword('FULL')) { joinType = 'FULL'; advance(); }
     else if (isKeyword('CROSS')) { joinType = 'CROSS'; advance(); }
     else if (isKeyword('INNER')) { advance(); }
+    // Skip optional OUTER keyword (LEFT OUTER JOIN, RIGHT OUTER JOIN, FULL OUTER JOIN)
+    if (isKeyword('OUTER')) advance();
     expect('KEYWORD', 'JOIN');
     const joinTok = advance();
     const table = joinTok.originalValue || joinTok.value;
