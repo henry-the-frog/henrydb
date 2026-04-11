@@ -78,6 +78,12 @@ check('JOIN', 'LEFT JOIN', () => db.execute('SELECT * FROM t1 LEFT JOIN t2 ON t1
 check('JOIN', 'RIGHT JOIN', () => db.execute('SELECT * FROM t2 RIGHT JOIN t1 ON t1.id = t2.t1_id').rows.length >= 3);
 check('JOIN', 'CROSS JOIN', () => db.execute('SELECT * FROM t1 CROSS JOIN t2').rows.length > 0);
 check('JOIN', 'Self-join', () => db.execute('SELECT a.name, b.name FROM t1 a JOIN t1 b ON a.age = b.age AND a.id < b.id').rows.length >= 0);
+check('JOIN', 'FULL OUTER JOIN', () => {
+  db.execute('CREATE TABLE join_a (id INT)'); db.execute('INSERT INTO join_a VALUES (1)'); db.execute('INSERT INTO join_a VALUES (2)');
+  db.execute('CREATE TABLE join_b (id INT)'); db.execute('INSERT INTO join_b VALUES (2)'); db.execute('INSERT INTO join_b VALUES (3)');
+  const r = db.execute('SELECT join_a.id as a_id, join_b.id as b_id FROM join_a FULL OUTER JOIN join_b ON join_a.id = join_b.id');
+  return r.rows.length === 3; // 1/null, 2/2, null/3
+});
 
 // --- Aggregates ---
 check('AGG', 'COUNT(*)', () => db.execute('SELECT COUNT(*) as c FROM t1').rows[0].c > 0);

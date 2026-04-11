@@ -516,10 +516,13 @@
     {
       "id": "T48",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix FULL OUTER JOIN — returns undefined for all columns instead of actual values",
       "project": "henrydb",
-      "started": "2026-04-11T16:34:18.920Z"
+      "started": "2026-04-11T16:34:18.920Z",
+      "completed": "2026-04-11T16:38:19.311Z",
+      "duration_ms": 300000,
+      "summary": "Implemented FULL OUTER JOIN — parser + executor. Tracks matched rows on both sides, adds unmatched rows with NULL columns. No regressions."
     }
   ],
   "focusProjects": [
