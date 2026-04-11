@@ -160,7 +160,8 @@ describe('500 Test Milestone', () => {
     db.execute("INSERT INTO names VALUES (1, 'Alice')");
     db.execute("INSERT INTO names VALUES (2, 'ALICE')");
     db.execute("INSERT INTO names VALUES (3, 'Bob')");
-    const r = db.execute("SELECT * FROM names WHERE name LIKE 'alice%'");
+    // ILIKE for case-insensitive matching (LIKE is case-sensitive per SQL standard)
+    const r = db.execute("SELECT * FROM names WHERE name ILIKE 'alice%'");
     assert.equal(r.rows.length, 2); // Case insensitive
   });
 
