@@ -669,10 +669,21 @@
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix GROUP BY alias resolution - GROUP BY should resolve SELECT aliases to expressions",
       "project": "henrydb",
-      "started": "2026-04-11T17:30:37.767Z"
+      "started": "2026-04-11T17:30:37.767Z",
+      "completed": "2026-04-11T17:33:02.332Z",
+      "duration_ms": 600000,
+      "summary": "Fixed GROUP BY alias resolution. Before: GROUP BY <alias> produced undefined. After: resolves SELECT aliases to expressions (CASE, functions, arbitrary). Scorecard 154/154."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix table.* expansion in JOIN queries (fuzzer-found crash)",
+      "project": "henrydb",
+      "started": "2026-04-11T17:33:28.627Z"
     }
   ],
   "focusProjects": [
@@ -928,6 +939,10 @@
     {
       "time": "2026-04-11T17:30:37.360Z",
       "msg": "Added T62 (BUILD) after end: Fix GROUP BY alias resolution - GROUP BY should resolve SELECT aliases to expressions"
+    },
+    {
+      "time": "2026-04-11T17:33:28.221Z",
+      "msg": "Added T63 (BUILD) after end: Fix table.* expansion in JOIN queries (fuzzer-found crash)"
     }
   ]
 }

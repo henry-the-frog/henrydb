@@ -1387,6 +1387,7 @@ export class Database {
     
     // Apply SELECT columns
     const isStar = ast.columns.length === 1 && (ast.columns[0].name === '*' || ast.columns[0].type === 'star');
+    const hasQualifiedStar = ast.columns.some(c => c.type === 'qualified_star');
     if (!isStar) {
       rows = rows.map(row => {
         const result = {};
@@ -1907,6 +1908,28 @@ export class Database {
           const baseName = colName.includes('.') ? colName.split('.').pop() : colName;
           const name = col.alias || baseName;
           result[name] = this._resolveColumn(colName, row);
+        } else if (col.type === 'qualified_star') {
+          // Expand table.* — add all columns from that table
+          const prefix = col.table + '.';
+          for (const [key, val] of Object.entries(row)) {
+            if (key.startsWith(prefix)) {
+              result[key.slice(prefix.length)] = val;
+            } else if (!key.includes('.')) {
+              // In single-table or self-join context, include unqualified columns
+              // only if no other table has claimed them
+              // (we'll skip this for now — prefer qualified matches)
+            }
+          }
+          // If no qualified matches found, try matching via table schema
+          if (Object.keys(result).length === 0 || !Object.keys(result).some(k => k !== undefined)) {
+            const table = this.tables.get(col.table);
+            if (table) {
+              for (const s of table.schema) {
+                const val = row[prefix + s.name] ?? row[s.name];
+                if (val !== undefined) result[s.name] = val;
+              }
+            }
+          }
         }
       }
       return result;

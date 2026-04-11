@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-11T17:30:37.830Z",
+  "generated": "2026-04-11T17:33:28.673Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix GROUP BY alias resolution - GROUP BY should resolve SELECT aliases to expressions",
-    "startedAt": "2026-04-11T17:30:37.830Z",
-    "taskId": "T62"
+    "task": "Fix table.* expansion in JOIN queries (fuzzer-found crash)",
+    "startedAt": "2026-04-11T17:33:28.673Z",
+    "taskId": "T63"
   },
   "schedule": {
     "date": "2026-04-11",
@@ -3594,12 +3594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 61,
+    "blocksCompleted": 62,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 2,
-      "BUILD": 46,
+      "BUILD": 47,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

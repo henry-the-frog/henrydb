@@ -120,6 +120,12 @@ export function tokenize(sql) {
     if (/[a-zA-Z_]/.test(src[i])) {
       let ident = '';
       while (i < src.length && /[a-zA-Z0-9_.]/.test(src[i])) ident += src[i++];
+      // Check for qualified star: table.* 
+      if (ident.endsWith('.') && i < src.length && src[i] === '*') {
+        i++; // consume *
+        tokens.push({ type: 'QUALIFIED_STAR', table: ident.slice(0, -1) });
+        continue;
+      }
       const upper = ident.toUpperCase();
       if (KEYWORDS.has(upper)) tokens.push({ type: 'KEYWORD', value: upper, originalValue: ident });
       else tokens.push({ type: 'IDENT', value: ident });
@@ -440,8 +446,21 @@ export function parse(sql) {
 
   function parseSelectList() {
     if (match('*')) return [{ type: 'star' }];
+    if (peek().type === 'QUALIFIED_STAR') {
+      const t = advance();
+      const cols = [{ type: 'qualified_star', table: t.table }];
+      while (match(',')) cols.push(parseSelectColumn());
+      return cols;
+    }
     const cols = [parseSelectColumn()];
-    while (match(',')) cols.push(parseSelectColumn());
+    while (match(',')) {
+      if (peek().type === 'QUALIFIED_STAR') {
+        const t = advance();
+        cols.push({ type: 'qualified_star', table: t.table });
+      } else {
+        cols.push(parseSelectColumn());
+      }
+    }
     return cols;
   }
 
