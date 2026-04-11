@@ -65,6 +65,9 @@ export class Database {
       this._queryStats.reset();
       return { type: 'OK', message: 'Query statistics reset' };
     }
+    if (trimmed === 'APPLY RECOMMENDED INDEXES' || trimmed === 'APPLY RECOMMENDED INDEXES;') {
+      return this._applyRecommendedIndexes();
+    }
 
     // Check plan cache first (only for SELECT)
     let ast = this._planCache.get(sql);
@@ -307,6 +310,8 @@ export class Database {
   }
 
   _recommendIndexes() {
+    // Refresh index list to catch any manually created indexes
+    this._indexAdvisor._existingIndexes = this._indexAdvisor._collectExistingIndexes();
     const recs = this._indexAdvisor.recommend();
     if (recs.length === 0) {
       return {
@@ -325,6 +330,52 @@ export class Database {
         reason: r.reason,
         sql: r.sql,
       })),
+    };
+  }
+
+  _applyRecommendedIndexes(minLevel = 'medium') {
+    // Refresh index list to catch any manually created indexes
+    this._indexAdvisor._existingIndexes = this._indexAdvisor._collectExistingIndexes();
+    const recs = this._indexAdvisor.recommend();
+    const levels = { high: 3, medium: 2, low: 1 };
+    const minLevelVal = levels[minLevel] || 2;
+    
+    const toApply = recs.filter(r => (levels[r.level] || 0) >= minLevelVal);
+    
+    if (toApply.length === 0) {
+      return {
+        type: 'OK',
+        message: 'No high/medium impact index recommendations to apply.',
+        rows: [],
+      };
+    }
+    
+    const results = [];
+    for (const rec of toApply) {
+      try {
+        this.execute_ast(parse(rec.sql));
+        results.push({
+          status: 'created',
+          sql: rec.sql,
+          impact: rec.level,
+          costReduction: rec.costReduction != null ? `${rec.costReduction}%` : null,
+        });
+      } catch (e) {
+        results.push({
+          status: 'failed',
+          sql: rec.sql,
+          error: e.message,
+        });
+      }
+    }
+    
+    // Refresh the advisor's index list
+    this._indexAdvisor._existingIndexes = this._indexAdvisor._collectExistingIndexes();
+    
+    return {
+      type: 'ROWS',
+      rows: results,
+      message: `Applied ${results.filter(r => r.status === 'created').length}/${toApply.length} recommended indexes`,
     };
   }
 
