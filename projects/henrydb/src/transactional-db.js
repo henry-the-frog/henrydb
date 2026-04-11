@@ -193,6 +193,41 @@ export class TransactionalDatabase {
     for (const heap of this._heaps.values()) heap.flush();
   }
 
+  /**
+   * Checkpoint: flush all dirty pages to data files, save catalog/MVCC state,
+   * then truncate the WAL. After checkpoint, recovery will start from scratch
+   * (no WAL replay needed since all data is on disk).
+   * 
+   * Only safe when no transactions are in-progress.
+   * Returns the WAL size before truncation.
+   */
+  checkpoint() {
+    // Verify no active transactions
+    for (const [, session] of this._sessions) {
+      if (session._tx) {
+        throw new Error('Cannot checkpoint while transactions are in progress');
+      }
+    }
+    
+    // 1. Flush all heap pages to disk
+    this.flush();
+    
+    // 2. Save catalog and MVCC state
+    this._saveCatalog();
+    this._saveMvccState();
+    
+    // 3. Write checkpoint record to WAL
+    this._wal.checkpoint();
+    
+    // 4. Get WAL size before truncation
+    const walSize = this._wal.fileSize;
+    
+    // 5. Truncate WAL (all data is safely on disk)
+    this._wal.truncate();
+    
+    return { walSizeBefore: walSize };
+  }
+
   close() {
     for (const [id, session] of this._sessions) {
       if (session._tx) try { session.rollback(); } catch (e) { /* ignore */ }

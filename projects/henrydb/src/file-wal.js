@@ -117,6 +117,28 @@ export class FileWAL {
     return lsn;
   }
 
+  /**
+   * Truncate the WAL file after a successful checkpoint.
+   * Only safe to call after all dirty pages have been flushed to data files.
+   * Resets the WAL to empty — next recovery will start fresh.
+   */
+  truncate() {
+    if (this._fd !== null && this._fd !== undefined) {
+      ftruncateSync(this._fd, 0);
+      this._flushedLsn = 0;
+      this._writeBuffer = [];
+      this._pendingSync = false;
+    }
+  }
+
+  /** Get WAL file size in bytes */
+  get fileSize() {
+    if (this._fd !== null && this._fd !== undefined) {
+      return statSync(this._filePath).size;
+    }
+    return 0;
+  }
+
   /** Flush buffered records to the file. */
   flush() {
     this._flushToFile();
