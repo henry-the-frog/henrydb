@@ -9,7 +9,7 @@ const KEYWORDS = new Set([
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'POSITION',
+  'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT',
@@ -964,6 +964,14 @@ export function parse(sql) {
       advance();
       const pattern = parsePrimary();
       return { type: 'ILIKE', left, pattern };
+    }
+
+    // SIMILAR TO
+    if (isKeyword('SIMILAR')) {
+      advance(); // SIMILAR
+      if (isKeyword('TO')) advance(); // TO
+      const pattern = parsePrimary();
+      return { type: 'SIMILAR_TO', left, pattern };
     }
 
     if (isKeyword('IS')) {

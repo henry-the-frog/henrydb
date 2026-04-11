@@ -966,10 +966,21 @@
     {
       "id": "T89",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement BETWEEN SYMMETRIC (PostgreSQL: lower bound can be higher)",
       "project": "henrydb",
-      "started": "2026-04-11T18:32:26.180Z"
+      "started": "2026-04-11T18:32:26.180Z",
+      "completed": "2026-04-11T18:34:11.640Z",
+      "duration_ms": 180000,
+      "summary": "Implemented BETWEEN SYMMETRIC. Swaps bounds when low > high. BETWEEN 4 AND 2 returns 0; BETWEEN SYMMETRIC 4 AND 2 returns 3."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement SIMILAR TO (regex-based LIKE alternative, SQL standard)",
+      "project": "henrydb",
+      "started": "2026-04-11T18:34:28.968Z"
     }
   ],
   "focusProjects": [
@@ -1333,6 +1344,10 @@
     {
       "time": "2026-04-11T18:32:25.772Z",
       "msg": "Added T89 (BUILD) after end: Implement BETWEEN SYMMETRIC (PostgreSQL: lower bound can be higher)"
+    },
+    {
+      "time": "2026-04-11T18:34:28.558Z",
+      "msg": "Added T90 (BUILD) after end: Implement SIMILAR TO (regex-based LIKE alternative, SQL standard)"
     }
   ]
 }

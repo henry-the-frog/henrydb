@@ -3867,6 +3867,20 @@ export class Database {
           + '$';
         return new RegExp(regex, 'i').test(String(val));
       }
+      case 'SIMILAR_TO': {
+        const val = this._evalValue(expr.left, row);
+        const pattern = this._evalValue(expr.pattern, row);
+        if (val == null || pattern == null) return false;
+        // SIMILAR TO uses SQL regex: % = .*, _ = ., | = alternation
+        // Convert to JavaScript regex
+        const regex = '^' + String(pattern)
+          .replace(/([.*+?^${}()[\]\\])/g, '\\$1')
+          .replace(/%/g, '.*')
+          .replace(/_/g, '.')
+          .replace(/\\\|/g, '|')  // unescape | for alternation
+          + '$';
+        return new RegExp(regex).test(String(val));
+      }
       case 'BETWEEN': {
         const val = this._evalValue(expr.left, row);
         let low = this._evalValue(expr.low, row);
