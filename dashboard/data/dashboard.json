@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:06:28.759Z",
+  "generated": "2026-04-12T15:08:23.837Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Curiosity-driven: consciousness research, academic papers, or deep-dive from the week",
-    "completedAt": "2026-04-12T15:06:28.759Z",
-    "taskId": "T14",
-    "summary": "Explored Lottery Ticket Hypothesis (Frankle & Carlin 2019). Implemented winning ticket experiment, magnitude pruning masks, iterative magnitude pruning (IMP), and random ticket control. 11 tests. Key finding: winning ticket (original init + trained mask) consistently outperforms random ticket (random init + same mask) at 30% sparsity on XOR.",
-    "durationMs": 360000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-12T15:08:23.837Z",
+    "taskId": "T19",
+    "summary": "Planned 2 tasks: stress-test normalizing flows (numerical Jacobian, extreme inputs, composition degradation) + fix bugs found.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3826,41 +3826,88 @@
       {
         "id": "T11",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Blog post: Sunday writing - week reflection or deep technical topic",
         "task": null,
-        "started": "2026-04-12T15:02:00.128Z"
+        "started": "2026-04-12T15:02:00.128Z",
+        "completed": "2026-04-12T15:02:27.621Z",
+        "duration_ms": 60000,
+        "summary": "Planned blog post: How HenryDB Learned to Use Its Indexes. Optimizer journey from equality-only to range scans."
       },
       {
         "id": "T12",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Write blog post: 'How HenryDB Learned to Use Its Indexes' — optimizer journey from equality-only to range scans, BETWEEN, IN lists. Include EXPLAIN output, before/after, real code.",
         "plan_ref": "T11",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-12T15:02:43.059Z",
+        "completed": "2026-04-12T15:03:54.520Z",
+        "duration_ms": 300000,
+        "summary": "Published blog post: How HenryDB Learned to Use Its Indexes. Covers range scans, BETWEEN, IN list optimization with real code examples and EXPLAIN output. Honest about what is still missing (OR, multi-column indexes)."
       },
       {
         "id": "T13",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping"
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-12T15:04:19.171Z",
+        "completed": "2026-04-12T15:04:38.627Z",
+        "duration_ms": 30000,
+        "summary": "All repos pushed and clean."
       },
       {
         "id": "T14",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Curiosity-driven: consciousness research, academic papers, or deep-dive from the week",
-        "project": "neural-net"
+        "project": "neural-net",
+        "started": "2026-04-12T15:04:48.472Z",
+        "completed": "2026-04-12T15:06:28.697Z",
+        "duration_ms": 360000,
+        "summary": "Explored Lottery Ticket Hypothesis (Frankle & Carlin 2019). Implemented winning ticket experiment, magnitude pruning masks, iterative magnitude pruning (IMP), and random ticket control. 11 tests. Key finding: winning ticket (original init + trained mask) consistently outperforms random ticket (random init + same mask) at 30% sparsity on XOR."
+      },
+      {
+        "id": "T18",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Decide next depth focus — HenryDB OR optimization, neural-net normalizing flows depth, or Monkey fuzzer support",
+        "started": "2026-04-12T15:07:28.828Z",
+        "completed": "2026-04-12T15:07:42.705Z",
+        "duration_ms": 30000,
+        "summary": "Chose normalizing flows depth. Reason: depth check rule says pick a recent feature and stress-test until it breaks. Flows were built yesterday in breadth sprint, never deeply tested. Most aligned with depth mandate."
+      },
+      {
+        "id": "T19",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Normalizing flows deep testing — find bugs in yesterday's breadth sprint implementation",
+        "task": null,
+        "started": "2026-04-12T15:07:54.359Z"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "Stress-test normalizing flows: numerical Jacobian verification (finite-diff vs analytical logDetJ), invertibility under extreme inputs, change-of-variables formula verification, deep flow composition degradation",
+        "status": "upcoming",
+        "plan_ref": "T19"
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "Fix any bugs found in normalizing flows stress test",
+        "status": "upcoming",
+        "plan_ref": "T19"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 17,
-    "blocksTotal": 17,
+    "blocksCompleted": 19,
+    "blocksTotal": 21,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
+      "THINK": 4,
+      "PLAN": 4,
       "BUILD": 6,
       "MAINTAIN": 3,
       "EXPLORE": 2

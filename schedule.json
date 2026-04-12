@@ -184,6 +184,41 @@
       "completed": "2026-04-12T15:06:28.697Z",
       "duration_ms": 360000,
       "summary": "Explored Lottery Ticket Hypothesis (Frankle & Carlin 2019). Implemented winning ticket experiment, magnitude pruning masks, iterative magnitude pruning (IMP), and random ticket control. 11 tests. Key finding: winning ticket (original init + trained mask) consistently outperforms random ticket (random init + same mask) at 30% sparsity on XOR."
+    },
+    {
+      "id": "T18",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Decide next depth focus — HenryDB OR optimization, neural-net normalizing flows depth, or Monkey fuzzer support",
+      "started": "2026-04-12T15:07:28.828Z",
+      "completed": "2026-04-12T15:07:42.705Z",
+      "duration_ms": 30000,
+      "summary": "Chose normalizing flows depth. Reason: depth check rule says pick a recent feature and stress-test until it breaks. Flows were built yesterday in breadth sprint, never deeply tested. Most aligned with depth mandate."
+    },
+    {
+      "id": "T19",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Normalizing flows deep testing — find bugs in yesterday's breadth sprint implementation",
+      "task": null,
+      "started": "2026-04-12T15:07:54.359Z",
+      "completed": "2026-04-12T15:08:23.775Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 tasks: stress-test normalizing flows (numerical Jacobian, extreme inputs, composition degradation) + fix bugs found."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Stress-test normalizing flows: numerical Jacobian verification (finite-diff vs analytical logDetJ), invertibility under extreme inputs, change-of-variables formula verification, deep flow composition degradation",
+      "status": "upcoming",
+      "plan_ref": "T19"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Fix any bugs found in normalizing flows stress test",
+      "status": "upcoming",
+      "plan_ref": "T19"
     }
   ],
   "focusProjects": [
@@ -263,6 +298,18 @@
     {
       "time": "2026-04-12T15:02:18.652Z",
       "msg": "PLAN T11 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-12T15:07:18.095Z",
+      "msg": "Added T18 (THINK) after end: THINK: Decide next depth focus — HenryDB OR optimization, neural-net normalizing flows depth, or Monkey fuzzer support"
+    },
+    {
+      "time": "2026-04-12T15:07:49.530Z",
+      "msg": "Added T19 (PLAN) after end: PLAN normalizing flows depth: stress-test forward/inverse, Jacobian computation, sampling, invertibility"
+    },
+    {
+      "time": "2026-04-12T15:08:16.477Z",
+      "msg": "PLAN T19 filled 2 BUILD tasks"
     }
   ]
 }
