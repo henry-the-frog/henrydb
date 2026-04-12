@@ -293,6 +293,17 @@
       "completed": "2026-04-12T15:27:42.879Z",
       "duration_ms": 180000,
       "summary": "14 Capsule stress tests: squash properties (direction-preserving, monotonic, bounded), coupling coefficients sum to 1, routing convergence, large inputs handled. No bugs found."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB BETWEEN SYMMETRIC compliance: 2 failing tests in sql-compliance-scorecard (321/323 → 323/323)",
+      "project": "henrydb",
+      "started": "2026-04-12T15:28:12.415Z",
+      "completed": "2026-04-12T15:29:36.013Z",
+      "duration_ms": 120000,
+      "summary": "BETWEEN SYMMETRIC bug: _tryIndexScan didnt swap lo/hi for SYMMETRIC flag. Fixed. SQL compliance: 323/323 (100%)! 🎉"
     }
   ],
   "focusProjects": [
@@ -408,6 +419,10 @@
     {
       "time": "2026-04-12T15:26:32.608Z",
       "msg": "Added T27 (BUILD) after end: Stress-test Capsule Network: dynamic routing convergence, squash function properties, pose equivariance, agreement metric"
+    },
+    {
+      "time": "2026-04-12T15:28:12.181Z",
+      "msg": "Added T28 (BUILD) after end: Fix HenryDB BETWEEN SYMMETRIC compliance: 2 failing tests in sql-compliance-scorecard (321/323 → 323/323)"
     }
   ]
 }

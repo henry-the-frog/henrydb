@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:27:42.941Z",
+  "generated": "2026-04-12T15:29:36.049Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test Capsule Network: dynamic routing convergence, squash function properties, pose equivariance, agreement metric",
-    "completedAt": "2026-04-12T15:27:42.941Z",
-    "taskId": "T27",
-    "summary": "14 Capsule stress tests: squash properties (direction-preserving, monotonic, bounded), coupling coefficients sum to 1, routing convergence, large inputs handled. No bugs found.",
-    "durationMs": 180000
+    "task": "Fix HenryDB BETWEEN SYMMETRIC compliance: 2 failing tests in sql-compliance-scorecard (321/323 → 323/323)",
+    "completedAt": "2026-04-12T15:29:36.049Z",
+    "taskId": "T28",
+    "summary": "BETWEEN SYMMETRIC bug: _tryIndexScan didnt swap lo/hi for SYMMETRIC flag. Fixed. SQL compliance: 323/323 (100%)! 🎉",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 27,
+    "blocksCompleted": 28,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 14,
+      "BUILD": 15,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
