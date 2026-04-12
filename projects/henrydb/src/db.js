@@ -192,6 +192,29 @@ export class Database {
         columns: Object.keys(s.columns).length,
       })) };
     }
+    if (trimmed === 'SHOW STATUS' || trimmed === 'SHOW STATUS;') {
+      const tableCount = this.tables.size;
+      let totalRows = 0, indexCount = 0;
+      for (const [, table] of this.tables) {
+        totalRows += this._estimateRowCount(table);
+        indexCount += table.indexes?.size || 0;
+      }
+      return {
+        type: 'ROWS',
+        rows: [{
+          tables: tableCount,
+          total_rows: totalRows,
+          indexes: indexCount,
+          cache_size: this._resultCache.size,
+          cache_hit_rate: (this._resultCacheHits + this._resultCacheMisses) > 0
+            ? ((this._resultCacheHits / (this._resultCacheHits + this._resultCacheMisses)) * 100).toFixed(1) + '%'
+            : 'N/A',
+          prepared_statements: this._preparedStatements.size,
+          savepoints: this._savepoints.length,
+          analyzed_tables: this._tableStats.size,
+        }],
+      };
+    }
 
     // Check plan cache first (only for SELECT)
     let ast = this._planCache.get(sql);
