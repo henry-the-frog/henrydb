@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-12T18:09:31.592Z",
+  "generated": "2026-04-12T23:47:29.583Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Fix 5 pre-existing ANALYZE test failures (format mismatch between _handleAnalyze and _analyzeTable)",
-    "completedAt": "2026-04-12T18:09:31.592Z",
-    "taskId": "T64",
-    "summary": "Fixed 5 pre-existing ANALYZE test failures. Root cause: two ANALYZE code paths returning different formats. Unified the string-match path to return { type: ANALYZE, tables: [...] } format while still populating _tableStats for optimizer.",
-    "durationMs": 180000
+    "task": "Housekeeping",
+    "startedAt": "2026-04-12T23:47:29.583Z",
+    "taskId": "T70"
   },
   "schedule": {
     "date": "2026-04-12",
@@ -4262,45 +4260,65 @@
       {
         "id": "T57",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth: SQL fuzzer round 2, optimizer accuracy, stress testing new features (prepared stmts, cache, savepoints)",
         "task": null,
-        "started": "2026-04-12T17:34:41.595Z"
+        "started": "2026-04-12T17:34:41.595Z",
+        "completed": "2026-04-12T17:37:52.321Z",
+        "duration_ms": 90000,
+        "summary": "Planned 4 BUILD tasks: enhanced fuzzer (20K queries), optimizer accuracy testing, cache/prepared stress, blog post. Loaded existing sql-fuzzer.test.js and failures.md."
       },
       {
         "id": "T59",
         "mode": "BUILD",
         "task": "Enhanced SQL fuzzer: add window functions, CTEs, UNION, HAVING, NULL patterns, prepared stmts. Run 20K+ queries, find crashes",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-12T17:38:03.556Z",
+        "completed": "2026-04-12T17:47:33.919Z",
+        "duration_ms": 600000,
+        "summary": "Enhanced SQL fuzzer: 2000 random queries (13 pattern types), 74 tests, 0 crashes. Found and fixed ORDER BY column number bug (name.toLowerCase crash). Added adversarial edge cases: empty sets, NULL arithmetic, BETWEEN reversed, deeply nested WHERE, mutation stress."
       },
       {
         "id": "T60",
         "mode": "BUILD",
         "task": "Optimizer accuracy: ANALYZE tables then compare EXPLAIN estimated rows vs actual. Find worst estimates",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-12T17:48:13.690Z",
+        "completed": "2026-04-12T17:58:04.609Z",
+        "duration_ms": 600000,
+        "summary": "Optimizer accuracy test: 18 targeted queries. Fixed range estimation (linear interpolation from ANALYZE min/max), GROUP BY cardinality (uses ndistinct), BETWEEN/IN/IS NULL estimation. Average error: 13.32x→2.77x, within 2x: 83%→78%. Remaining gaps: skewed distributions (need histograms), JOIN estimates (no LIMIT propagation). 21 tests pass."
       },
       {
         "id": "T61",
         "mode": "BUILD",
         "task": "Query cache + prepared statement stress: mutation-invalidation correctness, edge cases",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-12T17:58:37.467Z",
+        "completed": "2026-04-12T18:04:16.908Z",
+        "duration_ms": 480000,
+        "summary": "Cache + prepared statement stress: 20 tests. Found 2 real bugs: (1) DROP TABLE did not invalidate result cache (stale SELECT results after DROP), (2) result cache invalidation list missed DDL types (DROP_TABLE, ALTER_TABLE, etc.). Both fixed. All tests pass."
       },
       {
         "id": "T62",
         "mode": "BUILD",
         "task": "Blog post: HenryDB Fuzzing — What 20K Random Queries Found",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-12T18:05:00.389Z",
+        "completed": "2026-04-12T18:06:11.728Z",
+        "duration_ms": 300000,
+        "summary": "Blog post: HenryDB Fuzzing — What 2,000 Random Queries Revealed. Covers 3 bugs found (ORDER BY column number crash, stale DROP TABLE cache, optimizer 100x estimation error), methodology, and lessons learned."
       },
       {
         "id": "T58",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Extra placeholder, generating new work"
       },
       {
         "id": "T54",
@@ -4321,19 +4339,127 @@
       {
         "id": "T56",
         "mode": "MAINTAIN",
+        "status": "skipped",
+        "task": "Mid-session housekeeping",
+        "skip_reason": "Skip housekeeping, prioritize depth work"
+      },
+      {
+        "id": "T63",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session checkpoint: 56 tasks done, 1:54 left until boundary. Found 4 real bugs in HenryDB depth work. What's highest value for remaining time?",
+        "started": "2026-04-12T18:07:01.469Z",
+        "completed": "2026-04-12T18:07:18.640Z",
+        "duration_ms": 60000,
+        "summary": "Plan: (1) Fix ANALYZE test failures (15min), (2) Implement histograms for optimizer estimation. Genuine depth: equi-depth histograms for selectivity estimation on skewed data."
+      },
+      {
+        "id": "T64",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Fix 5 pre-existing ANALYZE test failures (format mismatch between _handleAnalyze and _analyzeTable)",
+        "project": "henrydb",
+        "started": "2026-04-12T18:07:45.701Z",
+        "completed": "2026-04-12T18:09:31.556Z",
+        "duration_ms": 180000,
+        "summary": "Fixed 5 pre-existing ANALYZE test failures. Root cause: two ANALYZE code paths returning different formats. Unified the string-match path to return { type: ANALYZE, tables: [...] } format while still populating _tableStats for optimizer."
+      },
+      {
+        "id": "T65",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement equi-depth histograms for ANALYZE — improve selectivity estimation on skewed data",
+        "project": "henrydb",
+        "started": "2026-04-12T18:10:08.970Z",
+        "completed": "2026-04-12T23:31:23.930Z",
+        "summary": " [auto-resolved: orphaned in-progress task]"
+      },
+      {
+        "id": "T66",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Integrate histograms into _estimateFilteredRows for equality and range predicates",
+        "project": "henrydb",
+        "started": "2026-04-12T23:31:39.041Z",
+        "completed": "2026-04-12T23:40:44.805Z",
+        "duration_ms": 180000,
+        "summary": "Integrated equi-height histograms into ANALYZE and _estimateFilteredRows. Histogram equality uses bucket frequency (skewed data aware). Range estimation sums histogram buckets with partial interpolation. Falls back to linear when <10 values. 12 tests all passing. Existing 21 optimizer-accuracy tests + 6 ANALYZE tests still green."
+      },
+      {
+        "id": "T67",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Post-histogram direction: what depth work remains? Consider: HenryDB cost-based optimizer using histograms, Monkey lang improvements, or neural-net depth",
+        "started": "2026-04-12T23:41:36.541Z",
+        "completed": "2026-04-12T23:41:52.804Z",
+        "duration_ms": 60000,
+        "summary": "Direction: HenryDB cost-based join ordering using histogram statistics. Natural follow-on from histogram work. Real algorithm depth (DP join enumeration, selectivity estimation for joins)."
+      },
+      {
+        "id": "T68",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "TBD after THINK",
+        "task": null,
+        "started": "2026-04-12T23:42:07.526Z"
+      },
+      {
+        "id": "T75",
+        "mode": "BUILD",
+        "task": "Implement cost-based join ordering: (1) _estimateJoinSize using histogram/stats, (2) DP join enumeration for multi-table joins, (3) integrate into query execution to reorder joins, (4) test with skewed multi-table joins",
         "status": "upcoming",
-        "task": "Mid-session housekeeping"
+        "plan_ref": "T68"
+      },
+      {
+        "id": "T74",
+        "mode": "BUILD",
+        "task": "Implement cost-based join ordering: DP enumeration over join orderings, use histogram stats for join selectivity, compare with current naive ordering",
+        "status": "upcoming",
+        "plan_ref": "T68"
+      },
+      {
+        "id": "T69",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T70",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping"
+      },
+      {
+        "id": "T71",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Depth check + second cycle direction"
+      },
+      {
+        "id": "T72",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "TBD",
+        "task": null
+      },
+      {
+        "id": "T73",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 60,
-    "blocksTotal": 62,
+    "blocksCompleted": 67,
+    "blocksTotal": 75,
     "modeDistribution": {
-      "THINK": 6,
-      "PLAN": 5,
-      "BUILD": 41,
+      "THINK": 7,
+      "PLAN": 6,
+      "BUILD": 46,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

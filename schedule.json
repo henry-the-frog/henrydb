@@ -687,15 +687,103 @@
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement equi-depth histograms for ANALYZE — improve selectivity estimation on skewed data",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-12T18:10:08.970Z",
+      "completed": "2026-04-12T23:31:23.930Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
     },
     {
       "id": "T66",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Integrate histograms into _estimateFilteredRows for equality and range predicates",
+      "project": "henrydb",
+      "started": "2026-04-12T23:31:39.041Z",
+      "completed": "2026-04-12T23:40:44.805Z",
+      "duration_ms": 180000,
+      "summary": "Integrated equi-height histograms into ANALYZE and _estimateFilteredRows. Histogram equality uses bucket frequency (skewed data aware). Range estimation sums histogram buckets with partial interpolation. Falls back to linear when <10 values. 12 tests all passing. Existing 21 optimizer-accuracy tests + 6 ANALYZE tests still green."
+    },
+    {
+      "id": "T67",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Post-histogram direction: what depth work remains? Consider: HenryDB cost-based optimizer using histograms, Monkey lang improvements, or neural-net depth",
+      "started": "2026-04-12T23:41:36.541Z",
+      "completed": "2026-04-12T23:41:52.804Z",
+      "duration_ms": 60000,
+      "summary": "Direction: HenryDB cost-based join ordering using histogram statistics. Natural follow-on from histogram work. Real algorithm depth (DP join enumeration, selectivity estimation for joins)."
+    },
+    {
+      "id": "T68",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "TBD after THINK",
+      "task": null,
+      "started": "2026-04-12T23:42:07.526Z",
+      "completed": "2026-04-12T23:42:26.273Z",
+      "duration_ms": 60000,
+      "summary": "Plan: cost-based join ordering. (1) _estimateJoinSize from histogram stats, (2) DP join enumeration, (3) integrate into execution to reorder, (4) test with skewed multi-table joins. Single BUILD task T69."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "task": "Implement cost-based join ordering: (1) _estimateJoinSize using histogram/stats, (2) DP join enumeration for multi-table joins, (3) integrate into query execution to reorder joins, (4) test with skewed multi-table joins",
+      "status": "done",
+      "plan_ref": "T68",
+      "started": "2026-04-12T23:42:33.951Z",
+      "completed": "2026-04-12T23:45:09.494Z",
+      "duration_ms": 600000,
+      "summary": "Implemented cost-based join ordering: DP enumeration (System R style) over join subsets, ndv-based join size estimation, reorders INNER joins for minimum total tuples. Preserves LEFT/RIGHT/FULL join order. Handles up to 6-table joins. 10 tests, 75 existing tests still green."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "task": "Implement cost-based join ordering: DP enumeration over join orderings, use histogram stats for join selectivity, compare with current naive ordering",
+      "status": "done",
+      "plan_ref": "T68",
+      "started": "2026-04-12T23:45:24.054Z",
+      "completed": "2026-04-12T23:45:24.197Z",
+      "duration_ms": 0,
+      "summary": "Duplicate of T75 — already completed."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-12T23:45:37.542Z",
+      "completed": "2026-04-12T23:47:20.458Z",
+      "duration_ms": 120000,
+      "summary": "Enhanced EXPLAIN to show join ordering decisions: JOIN_REORDER operation when optimizer changes order, estimated_right_rows on join entries. Text format updated. All tests green."
+    },
+    {
+      "id": "T70",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-12T23:47:29.548Z"
+    },
+    {
+      "id": "T71",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Depth check + second cycle direction"
+    },
+    {
+      "id": "T72",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "TBD",
+      "task": null
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
       "project": "henrydb"
     }
   ],
@@ -972,6 +1060,42 @@
     {
       "time": "2026-04-12T18:07:39.937Z",
       "msg": "Removed T56: Skip housekeeping, prioritize depth work"
+    },
+    {
+      "time": "2026-04-12T23:41:16.748Z",
+      "msg": "Added T67 (THINK) after end: Post-histogram direction: what depth work remains? Consider: HenryDB cost-based optimizer using histograms, Monkey lang improvements, or neural-net depth"
+    },
+    {
+      "time": "2026-04-12T23:41:22.377Z",
+      "msg": "Added T68 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-12T23:41:27.200Z",
+      "msg": "Added T69 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-12T23:41:27.316Z",
+      "msg": "Added T70 (MAINTAIN) after end: Housekeeping"
+    },
+    {
+      "time": "2026-04-12T23:41:27.434Z",
+      "msg": "Added T71 (THINK) after end: Depth check + second cycle direction"
+    },
+    {
+      "time": "2026-04-12T23:41:27.551Z",
+      "msg": "Added T72 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-12T23:41:27.667Z",
+      "msg": "Added T73 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-12T23:41:58.162Z",
+      "msg": "PLAN T68 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-12T23:42:21.220Z",
+      "msg": "PLAN T68 filled 1 BUILD tasks"
     }
   ]
 }
