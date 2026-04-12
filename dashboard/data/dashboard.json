@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T14:53:41.464Z",
+  "generated": "2026-04-12T14:55:18.639Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test HenryDB index selection: verify optimizer picks index scans over table scans for indexed columns, test multi-column indexes, composite WHERE clauses, OR conditions, range scans. Find bugs where optimizer chooses wrong plan.",
-    "completedAt": "2026-04-12T14:53:41.464Z",
-    "taskId": "T7",
-    "summary": "Implemented B+tree index range scans (>, >=, <, <=, BETWEEN). Previously only equality used indexes. 23 stress tests covering all index scenarios. Found optimizer gaps: OR, IN still use table scan (out of scope). 321/323 scorecard, 52/52 index tests.",
-    "durationMs": 300000
+    "task": "Fix bugs found in index selection stress test (if any). Otherwise, add covering index support or index-only scans.",
+    "completedAt": "2026-04-12T14:55:18.639Z",
+    "taskId": "T17",
+    "summary": "Added IN list index lookup: per-value index lookups with dedup. Optimizer now covers: =, >, >=, <, <=, BETWEEN, IN. Only OR remains as table-scan-only. 321/323 scorecard, 23/23 stress tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3832,12 +3832,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 9,
+    "blocksCompleted": 10,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 4,
+      "BUILD": 5,
       "MAINTAIN": 1
     }
   },
