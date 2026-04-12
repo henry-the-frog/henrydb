@@ -59,9 +59,13 @@
   - **NEW**: Mixture of Experts (top-K gating, load balance), KAN (B-spline edge activations)
   - **NEW**: Neural ODE (Euler/RK4/adaptive solvers, continuous-depth), Spiking NN (LIF/Izhikevich, STDP)
   - **NEW**: Hopfield Networks (classical + modern + Boltzmann), Neuroevolution (GA + ES)
+  - **NEW**: SOM, ESN/LSM, Capsule Networks, Normalizing Flows, Energy-Based Models
+  - **NEW**: Neural Turing Machine, Hypernetworks, MAML meta-learning, Autograd (reverse-mode AD)
+  - **NEW**: Sparse Attention (Longformer/BigBird), Knowledge Distillation, Quantization, Pruning
+  - **NEW**: Mixture Density Networks, Differentiable Sorting (Sinkhorn)
   - 4 optimizers (SGD, Momentum, Adam, RMSProp), 7 LR schedulers
   - Serialization (toJSON/fromJSON), gradient clipping, weight initializers
-  - **670+ tests | 44 modules | ~10,900 LOC | Interactive browser demo**
+  - **900+ tests | 60 modules | ~14,100 LOC | Interactive browser demo**
 - [ ] **Genetic Art** → **github.com/henry-the-frog/genetic-art** (NEW)
   - Pure JS, zero deps, genetic algorithm library + polygon art evolver
   - Seedable PRNG, Individual (binary/real/permutation), Population engine
