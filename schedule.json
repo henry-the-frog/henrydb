@@ -337,6 +337,17 @@
       "completed": "2026-04-12T15:39:25.966Z",
       "duration_ms": 300000,
       "summary": "13 SOM stress tests: BMU correctness, neighborhood Gaussian properties, decay, quantization error decreases, topological ordering preserved. No bugs — API confusion (train expects dataset) is minor."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Echo State Network: spectral radius condition, reservoir dynamics, memory capacity, washout period",
+      "project": "neural-net",
+      "started": "2026-04-12T15:40:44.418Z",
+      "completed": "2026-04-12T15:44:15.126Z",
+      "duration_ms": 300000,
+      "summary": "8 ESN stress tests. Echo state property verified: state bounded, converges regardless of init, zero input decays. Ridge regression learns identity and sine prediction. No bugs."
     }
   ],
   "focusProjects": [
@@ -468,6 +479,10 @@
     {
       "time": "2026-04-12T15:36:09.852Z",
       "msg": "Added T31 (BUILD) after end: Stress-test SOM: neighborhood function decay, BMU correctness, topological ordering, quantization error"
+    },
+    {
+      "time": "2026-04-12T15:40:43.979Z",
+      "msg": "Added T32 (BUILD) after end: Stress-test Echo State Network: spectral radius condition, reservoir dynamics, memory capacity, washout period"
     }
   ]
 }

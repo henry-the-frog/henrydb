@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T15:39:26.028Z",
+  "generated": "2026-04-12T15:44:15.162Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test SOM: neighborhood function decay, BMU correctness, topological ordering, quantization error",
-    "completedAt": "2026-04-12T15:39:26.028Z",
-    "taskId": "T31",
-    "summary": "13 SOM stress tests: BMU correctness, neighborhood Gaussian properties, decay, quantization error decreases, topological ordering preserved. No bugs — API confusion (train expects dataset) is minor.",
+    "task": "Stress-test Echo State Network: spectral radius condition, reservoir dynamics, memory capacity, washout period",
+    "completedAt": "2026-04-12T15:44:15.162Z",
+    "taskId": "T32",
+    "summary": "8 ESN stress tests. Echo state property verified: state bounded, converges regardless of init, zero input decays. Ridge regression learns identity and sine prediction. No bugs.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 31,
+    "blocksCompleted": 32,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 18,
+      "BUILD": 19,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
