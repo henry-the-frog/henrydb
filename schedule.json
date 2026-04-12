@@ -501,6 +501,17 @@
       "completed": "2026-04-12T16:28:24.467Z",
       "duration_ms": 180000,
       "summary": "ANALYZE TABLE: per-column stats (distinct, nulls, min/max, selectivity). SHOW TABLE STATS. 323/323 compliance."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Use ANALYZE stats in EXPLAIN to show estimated vs actual rows. Selectivity-based row estimation for WHERE conditions.",
+      "project": "henrydb",
+      "started": "2026-04-12T16:29:09.131Z",
+      "completed": "2026-04-12T16:31:02.652Z",
+      "duration_ms": 180000,
+      "summary": "Selectivity-based row estimation in EXPLAIN using ANALYZE stats. Equality: 1/distinct. Range: ~33%. AND: multiply. OR: add. Shows estimation_method. 323/323."
     }
   ],
   "focusProjects": [
@@ -692,6 +703,10 @@
     {
       "time": "2026-04-12T16:26:23.527Z",
       "msg": "Added T46 (BUILD) after end: Add ANALYZE TABLE to HenryDB: collect table statistics (row count, column cardinality, null count) for optimizer row estimation"
+    },
+    {
+      "time": "2026-04-12T16:29:08.896Z",
+      "msg": "Added T47 (BUILD) after end: Use ANALYZE stats in EXPLAIN to show estimated vs actual rows. Selectivity-based row estimation for WHERE conditions."
     }
   ]
 }

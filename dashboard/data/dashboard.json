@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T16:28:24.530Z",
+  "generated": "2026-04-12T16:31:02.716Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add ANALYZE TABLE to HenryDB: collect table statistics (row count, column cardinality, null count) for optimizer row estimation",
-    "completedAt": "2026-04-12T16:28:24.530Z",
-    "taskId": "T46",
-    "summary": "ANALYZE TABLE: per-column stats (distinct, nulls, min/max, selectivity). SHOW TABLE STATS. 323/323 compliance.",
+    "task": "Use ANALYZE stats in EXPLAIN to show estimated vs actual rows. Selectivity-based row estimation for WHERE conditions.",
+    "completedAt": "2026-04-12T16:31:02.716Z",
+    "taskId": "T47",
+    "summary": "Selectivity-based row estimation in EXPLAIN using ANALYZE stats. Equality: 1/distinct. Range: ~33%. AND: multiply. OR: add. Shows estimation_method. 323/323.",
     "durationMs": 180000
   },
   "schedule": {
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 46,
+    "blocksCompleted": 47,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 32,
+      "BUILD": 33,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
