@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:02:27.683Z",
+  "generated": "2026-04-12T15:03:54.582Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-12T15:02:27.683Z",
-    "taskId": "T11",
-    "summary": "Planned blog post: How HenryDB Learned to Use Its Indexes. Optimizer journey from equality-only to range scans.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "Write blog post: 'How HenryDB Learned to Use Its Indexes' — optimizer journey from equality-only to range scans, BETWEEN, IN lists. Include EXPLAIN output, before/after, real code.",
+    "completedAt": "2026-04-12T15:03:54.582Z",
+    "taskId": "T12",
+    "summary": "Published blog post: How HenryDB Learned to Use Its Indexes. Covers range scans, BETWEEN, IN list optimization with real code examples and EXPLAIN output. Honest about what is still missing (OR, multi-column indexes).",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3856,12 +3856,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 14,
+    "blocksCompleted": 15,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 3,
       "PLAN": 3,
-      "BUILD": 5,
+      "BUILD": 6,
       "MAINTAIN": 2,
       "EXPLORE": 1
     }
