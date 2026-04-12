@@ -260,6 +260,17 @@
       "completed": "2026-04-12T15:19:45.306Z",
       "duration_ms": 300000,
       "summary": "FOUND BUG: B-spline right boundary — basis sum was 0 at x=max due to incorrect endpoint handling in augmented knots. Fixed. Also: 18 KAN stress tests (partition of unity, non-negativity, function approximation). KAN successfully learns sin(x), x², x+y."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Spiking Neural Network: LIF dynamics (voltage reset, refractory period), Izhikevich model (regular spiking, bursting, chattering patterns), STDP learning window",
+      "project": "neural-net",
+      "started": "2026-04-12T15:20:24.834Z",
+      "completed": "2026-04-12T15:23:06.432Z",
+      "duration_ms": 300000,
+      "summary": "FOUND BUG: Izhikevich voltage history recorded pre-spike-check overshoots (up to 172 mV). Fixed to record 30 mV canonical spike peak. 24 SNN stress tests: LIF dynamics, Izhikevich patterns, STDP learning window, Poisson encoding."
     }
   ],
   "focusProjects": [
@@ -363,6 +374,10 @@
     {
       "time": "2026-04-12T15:16:00.143Z",
       "msg": "Added T24 (BUILD) after end: Stress-test KAN: verify B-spline edge activations, test function approximation (sin, polynomial), compare accuracy with equivalent MLP"
+    },
+    {
+      "time": "2026-04-12T15:20:16.945Z",
+      "msg": "Added T25 (BUILD) after end: Stress-test Spiking Neural Network: LIF dynamics (voltage reset, refractory period), Izhikevich model (regular spiking, bursting, chattering patterns), STDP learning window"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T15:19:45.342Z",
+  "generated": "2026-04-12T15:23:06.493Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test KAN: verify B-spline edge activations, test function approximation (sin, polynomial), compare accuracy with equivalent MLP",
-    "completedAt": "2026-04-12T15:19:45.342Z",
-    "taskId": "T24",
-    "summary": "FOUND BUG: B-spline right boundary — basis sum was 0 at x=max due to incorrect endpoint handling in augmented knots. Fixed. Also: 18 KAN stress tests (partition of unity, non-negativity, function approximation). KAN successfully learns sin(x), x², x+y.",
+    "task": "Stress-test Spiking Neural Network: LIF dynamics (voltage reset, refractory period), Izhikevich model (regular spiking, bursting, chattering patterns), STDP learning window",
+    "completedAt": "2026-04-12T15:23:06.493Z",
+    "taskId": "T25",
+    "summary": "FOUND BUG: Izhikevich voltage history recorded pre-spike-check overshoots (up to 172 mV). Fixed to record 30 mV canonical spike peak. 24 SNN stress tests: LIF dynamics, Izhikevich patterns, STDP learning window, Poisson encoding.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 24,
+    "blocksCompleted": 25,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 11,
+      "BUILD": 12,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
