@@ -53,6 +53,9 @@ export class Database {
     this._resultCacheMaxSize = 128;
     this._resultCacheHits = 0;
     this._resultCacheMisses = 0;
+    
+    // Prepared statements: name → { sql, ast }
+    this._preparedStatements = new Map();
   }
 
   execute(sql) {
@@ -92,6 +95,17 @@ export class Database {
     }
     if (trimmed === 'APPLY RECOMMENDED INDEXES' || trimmed === 'APPLY RECOMMENDED INDEXES;') {
       return this._applyRecommendedIndexes();
+    }
+
+    // Prepared statements
+    if (trimmed.startsWith('PREPARE ')) {
+      return this._handlePrepare(sql);
+    }
+    if (trimmed.startsWith('EXECUTE ')) {
+      return this._handleExecute(sql);
+    }
+    if (trimmed.startsWith('DEALLOCATE ')) {
+      return this._handleDeallocate(sql);
     }
 
     // Check plan cache first (only for SELECT)
@@ -174,6 +188,55 @@ export class Database {
         this._resultCache.delete(sql);
       }
     }
+  }
+
+  // PREPARE name AS sql_with_placeholders
+  _handlePrepare(sql) {
+    // PREPARE stmt_name AS SELECT ... WHERE id = $1
+    const match = sql.match(/PREPARE\s+(\w+)\s+AS\s+(.*)/is);
+    if (!match) throw new Error('Invalid PREPARE syntax. Use: PREPARE name AS sql');
+    const name = match[1];
+    const template = match[2].replace(/;$/, '').trim();
+    const ast = parse(template);
+    this._preparedStatements.set(name, { sql: template, ast });
+    return { type: 'OK', message: `Prepared statement "${name}" created` };
+  }
+
+  // EXECUTE name (val1, val2, ...)
+  _handleExecute(sql) {
+    const match = sql.match(/EXECUTE\s+(\w+)\s*(?:\(([^)]*)\))?/is);
+    if (!match) throw new Error('Invalid EXECUTE syntax. Use: EXECUTE name (val1, val2)');
+    const name = match[1];
+    const paramsStr = match[2] || '';
+    
+    const stmt = this._preparedStatements.get(name);
+    if (!stmt) throw new Error(`Prepared statement "${name}" not found`);
+    
+    // Parse parameter values
+    const params = paramsStr.split(',').map(p => p.trim()).filter(p => p);
+    
+    // Substitute $1, $2, etc. in the SQL
+    let resolved = stmt.sql;
+    for (let i = 0; i < params.length; i++) {
+      resolved = resolved.replace(new RegExp('\\$' + (i + 1), 'g'), params[i]);
+    }
+    
+    return this.execute(resolved);
+  }
+
+  // DEALLOCATE name
+  _handleDeallocate(sql) {
+    const match = sql.match(/DEALLOCATE\s+(\w+)/i);
+    if (!match) throw new Error('Invalid DEALLOCATE syntax');
+    const name = match[1].replace(/;$/, '');
+    if (name.toUpperCase() === 'ALL') {
+      this._preparedStatements.clear();
+      return { type: 'OK', message: 'All prepared statements deallocated' };
+    }
+    if (!this._preparedStatements.delete(name)) {
+      throw new Error(`Prepared statement "${name}" not found`);
+    }
+    return { type: 'OK', message: `Prepared statement "${name}" deallocated` };
   }
 
   /**
