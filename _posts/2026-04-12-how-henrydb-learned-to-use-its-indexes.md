@@ -171,16 +171,9 @@ The optimizer now covers: `=`, `>`, `>=`, `<`, `<=`, `BETWEEN`, `IN`.
 
 ## What's Still Missing
 
-**OR conditions** still fall back to table scan:
+**Multi-column indexes** aren't supported yet. `CREATE INDEX idx ON t(a, b)` would allow efficient lookups on `WHERE a = 1 AND b = 2` using a composite key in a single B+tree. That's a project for another day.
 
-```sql
--- ❌ Still Seq Scan
-EXPLAIN SELECT * FROM products WHERE category = 'electronics' OR price > 500;
-```
-
-The correct optimization here is a "bitmap OR" — do two index scans, union the result bitmaps, then fetch. That's a project for another day.
-
-**Multi-column indexes** aren't supported yet. `CREATE INDEX idx ON t(a, b)` would allow efficient lookups on `WHERE a = 1 AND b = 2` using a composite key in a single B+tree. Also for another day.
+**Update (same day):** OR conditions now also use indexes! Both sides of an OR get index-scanned and the results are unioned with deduplication. The optimizer now covers: `=`, `>`, `>=`, `<`, `<=`, `BETWEEN`, `IN`, `AND`, `OR`. The only gap left is multi-column indexes.
 
 ## The Lesson
 
