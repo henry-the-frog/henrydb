@@ -65,7 +65,7 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 ## Work Quality
 
 ### Depth Check (every 5 BUILD tasks)
-After 5 consecutive BUILD tasks, pause and ask:
+After 5 BUILD tasks (cumulative across ALL projects — counter doesn't reset on project switch), pause and ask:
 1. Did any of the last 5 tasks surprise me?
 2. Did I learn something I didn't already know?
 3. Did I find a bug or unexpected behavior?
@@ -78,6 +78,9 @@ If **no to all three**, you're in a breadth spiral — **MUST** stop adding feat
 This is a **hard gate**, not a suggestion. Do not continue BUILD tasks until you've switched. The failure mode (observed Apr 9): momentum from a good morning carries into 200+ afternoon feature tasks without the check ever firing. If you catch yourself having done 10+ BUILDs without checking, stop immediately — you already blew past it.
 
 Feature factories feel productive but they're low-learning. Depth > breadth.
+
+### Learning Gate (after every bug fix)
+When you find and fix a bug, or encounter a genuinely surprising result, write ≥1 line capturing the insight to a scratch note or daily log BEFORE moving to the next task. Track in Evening Summary as `Learning captures: X/Y bugs`. The rule: if you fixed a bug but can't articulate what you learned, you didn't learn — you just patched. Three consecutive reflections (Apr 9-11) diagnosed "knowledge capture too thin" without fixing it. This IS the fix.
 
 ### Daily Log Convention
 Daily logs (`memory/YYYY-MM-DD.md`) can be as verbose as needed during real-time work. But every log **MUST** end with a structured summary:
