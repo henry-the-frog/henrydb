@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:14:43.320Z",
+  "generated": "2026-04-12T15:19:45.342Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Implement OR condition index optimization in HenryDB: bitmap union of two index scans for OR predicates on indexed columns",
-    "completedAt": "2026-04-12T15:14:43.320Z",
-    "taskId": "T23",
-    "summary": "Implemented OR condition index optimization. Both sides of OR get index-scanned and results unioned with dedup. Optimizer now covers ALL common predicates: =, >, >=, <, <=, BETWEEN, IN, AND, OR. 321/323 scorecard, 23/23 index tests.",
-    "durationMs": 180000
+    "task": "Stress-test KAN: verify B-spline edge activations, test function approximation (sin, polynomial), compare accuracy with equivalent MLP",
+    "completedAt": "2026-04-12T15:19:45.342Z",
+    "taskId": "T24",
+    "summary": "FOUND BUG: B-spline right boundary — basis sum was 0 at x=max due to incorrect endpoint handling in augmented knots. Fixed. Also: 18 KAN stress tests (partition of unity, non-negativity, function approximation). KAN successfully learns sin(x), x², x+y.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 23,
+    "blocksCompleted": 24,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 10,
+      "BUILD": 11,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

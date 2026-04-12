@@ -249,6 +249,17 @@
       "completed": "2026-04-12T15:14:43.254Z",
       "duration_ms": 180000,
       "summary": "Implemented OR condition index optimization. Both sides of OR get index-scanned and results unioned with dedup. Optimizer now covers ALL common predicates: =, >, >=, <, <=, BETWEEN, IN, AND, OR. 321/323 scorecard, 23/23 index tests."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test KAN: verify B-spline edge activations, test function approximation (sin, polynomial), compare accuracy with equivalent MLP",
+      "project": "neural-net",
+      "started": "2026-04-12T15:16:06.791Z",
+      "completed": "2026-04-12T15:19:45.306Z",
+      "duration_ms": 300000,
+      "summary": "FOUND BUG: B-spline right boundary — basis sum was 0 at x=max due to incorrect endpoint handling in augmented knots. Fixed. Also: 18 KAN stress tests (partition of unity, non-negativity, function approximation). KAN successfully learns sin(x), x², x+y."
     }
   ],
   "focusProjects": [
@@ -348,6 +359,10 @@
     {
       "time": "2026-04-12T15:13:25.853Z",
       "msg": "Added T23 (BUILD) after end: Implement OR condition index optimization in HenryDB: bitmap union of two index scans for OR predicates on indexed columns"
+    },
+    {
+      "time": "2026-04-12T15:16:00.143Z",
+      "msg": "Added T24 (BUILD) after end: Stress-test KAN: verify B-spline edge activations, test function approximation (sin, polynomial), compare accuracy with equivalent MLP"
     }
   ]
 }
