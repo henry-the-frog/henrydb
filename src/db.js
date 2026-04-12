@@ -1086,6 +1086,54 @@ export class Database {
     }
   }
 
+  // LATERAL JOIN: for each outer row, execute subquery with outer row in scope
+  _executeLateralJoin(leftRows, join) {
+    const result = [];
+    const rightAlias = join.alias || '__lateral';
+    
+    for (const leftRow of leftRows) {
+      // Execute the subquery with the outer row's columns available
+      // We do this by temporarily creating a "scope" that _evalExpr can access
+      const savedLateralScope = this._lateralScope;
+      this._lateralScope = leftRow;
+      
+      let subResult;
+      try {
+        subResult = this._select(join.subquery);
+      } finally {
+        this._lateralScope = savedLateralScope;
+      }
+      
+      const rightRows = (subResult.rows || []).map(r => {
+        const row = {};
+        for (const [k, v] of Object.entries(r)) {
+          row[k] = v;
+          row[`${rightAlias}.${k}`] = v;
+        }
+        return row;
+      });
+      
+      if (rightRows.length === 0) {
+        if (join.joinType === 'LEFT') {
+          // LEFT JOIN LATERAL with no results: add null right side
+          const nullRow = {};
+          // We don't know the columns, so just add the left row
+          result.push({ ...leftRow });
+        }
+        // CROSS/INNER JOIN LATERAL with no results: skip this left row
+      } else {
+        for (const rightRow of rightRows) {
+          const combined = { ...leftRow, ...rightRow };
+          if (!join.on || this._evalExpr(join.on, combined)) {
+            result.push(combined);
+          }
+        }
+      }
+    }
+    
+    return result;
+  }
+
   // Join with pre-materialized rows (for CTE/view joins)
   _executeJoinWithRows(leftRows, rightRows, join, rightAlias) {
     const result = [];
@@ -1417,6 +1465,11 @@ export class Database {
   }
 
   _executeJoin(leftRows, join, leftAlias) {
+    // LATERAL JOIN: re-execute subquery per outer row
+    if (join.lateral && join.subquery) {
+      return this._executeLateralJoin(leftRows, join);
+    }
+    
     const rightTable = this.tables.get(join.table);
     const rightView = this.views.get(join.table);
 
@@ -2466,6 +2519,13 @@ export class Database {
       if (name in this._outerRow) return this._outerRow[name];
       for (const key of Object.keys(this._outerRow)) {
         if (key.endsWith(`.${name}`)) return this._outerRow[key];
+      }
+    }
+    // For LATERAL JOINs: check lateral scope (outer row)
+    if (this._lateralScope) {
+      if (name in this._lateralScope) return this._lateralScope[name];
+      for (const key of Object.keys(this._lateralScope)) {
+        if (key.endsWith(`.${name}`)) return this._lateralScope[key];
       }
     }
     return undefined;

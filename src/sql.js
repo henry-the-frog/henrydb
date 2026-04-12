@@ -501,6 +501,36 @@ export function parse(sql) {
     else if (isKeyword('CROSS')) { joinType = 'CROSS'; advance(); }
     else if (isKeyword('INNER')) { advance(); }
     expect('KEYWORD', 'JOIN');
+    
+    // LATERAL JOIN: for each outer row, re-evaluate the subquery
+    let lateral = false;
+    if (isKeyword('LATERAL')) {
+      lateral = true;
+      advance();
+    }
+    
+    if (lateral) {
+      // Expect a parenthesized subquery: ( SELECT ... )
+      expect('(');
+      const subquery = parseSelect();
+      expect(')');
+      
+      let alias = null;
+      // Optional: AS alias or just alias
+      if (isKeyword('AS')) { advance(); alias = advance().value; }
+      else if (peek().type === 'IDENT' && !isKeyword('ON') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('LIMIT')) {
+        alias = advance().value;
+      }
+      
+      let on = null;
+      if (isKeyword('ON')) {
+        advance();
+        on = parseExpr();
+      }
+      
+      return { type: 'JOIN', joinType, lateral: true, subquery, alias: alias || '__lateral', on };
+    }
+    
     const table = advance().value;
     let alias = null;
     if (peek().type === 'IDENT' && !isKeyword('ON')) alias = advance().value;
