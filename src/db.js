@@ -2990,6 +2990,7 @@ export class Database {
         const b = this._evalValue(args[1], row);
         return a === b ? null : a;
       }
+      case 'SUBSTR':
       case 'SUBSTRING': {
         const str = this._evalValue(args[0], row);
         if (str == null) return null;
