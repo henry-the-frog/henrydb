@@ -1676,7 +1676,16 @@ export class Database {
     if (ast.orderBy && !this._canEliminateSort(ast)) {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          const av = a[column], bv = b[column];
+          let av, bv;
+          if (typeof column === 'number') {
+            // Numeric column reference (ORDER BY 1, 2, etc.)
+            const keys = Object.keys(a);
+            const key = keys[column - 1];
+            av = key !== undefined ? a[key] : undefined;
+            bv = key !== undefined ? b[key] : undefined;
+          } else {
+            av = a[column]; bv = b[column];
+          }
           // NULL handling: NULL is smaller than any value (SQLite behavior)
           const aNull = av === null || av === undefined;
           const bNull = bv === null || bv === undefined;
@@ -4343,6 +4352,13 @@ export class Database {
   }
 
   _resolveColumn(name, row) {
+    // Handle numeric column references (ORDER BY 1, 2, etc.)
+    if (typeof name === 'number') {
+      const keys = Object.keys(row);
+      const idx = name - 1; // 1-based to 0-based
+      if (idx >= 0 && idx < keys.length) return row[keys[idx]];
+      return undefined;
+    }
     if (name in row) return row[name];
     // Case-insensitive lookup
     const lowerName = name.toLowerCase();
