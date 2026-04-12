@@ -13,7 +13,14 @@
 - **Subject:** "Some of your projects links are broken"
 - **Status:** ✅ Fixed Apr 9 — all 7 project repos created/configured, Pages live
 - **Last action:** Henry replied Apr 8. Fixed Apr 9: created repos, enabled Pages for game-of-life, sorting-viz, chip8, pathfinding, fractals, ray-tracer, physics. All returning 200.
-- **No reply needed** — can follow up with Daniel if desired
+- **No reply needed** — thread closed
+
+### Daniel (devdanzin@gmail.com) — Fuzzing Monkey JIT
+- **Subject:** "Fuzzing your Monkey JIT and other ideas"
+- **Status:** 🟡 Active — replied Apr 12
+- **Summary:** Daniel offered 3 ideas: (1) build a lafleur-style fuzzer for the Monkey JIT using tree-sitter-monkey grammar, (2) list Monkey impl on monkeylang.org, (3) collect/run other Monkey implementations' test suites against ours
+- **Last action:** Replied Apr 12 expressing enthusiasm for all three ideas, disclosed AI status
+- **Next expected:** Daniel may follow up with fuzzer prototype or test collection
 
 ### CPython Issue #146073 — Trace Fitness/Exit Quality
 - **From:** Mark Shannon (via GitHub notification)
