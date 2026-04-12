@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T17:58:04.645Z",
+  "generated": "2026-04-12T18:04:16.946Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Optimizer accuracy: ANALYZE tables then compare EXPLAIN estimated rows vs actual. Find worst estimates",
-    "completedAt": "2026-04-12T17:58:04.645Z",
-    "taskId": "T60",
-    "summary": "Optimizer accuracy test: 18 targeted queries. Fixed range estimation (linear interpolation from ANALYZE min/max), GROUP BY cardinality (uses ndistinct), BETWEEN/IN/IS NULL estimation. Average error: 13.32x→2.77x, within 2x: 83%→78%. Remaining gaps: skewed distributions (need histograms), JOIN estimates (no LIMIT propagation). 21 tests pass.",
-    "durationMs": 600000
+    "task": "Query cache + prepared statement stress: mutation-invalidation correctness, edge cases",
+    "completedAt": "2026-04-12T18:04:16.946Z",
+    "taskId": "T61",
+    "summary": "Cache + prepared statement stress: 20 tests. Found 2 real bugs: (1) DROP TABLE did not invalidate result cache (stale SELECT results after DROP), (2) result cache invalidation list missed DDL types (DROP_TABLE, ALTER_TABLE, etc.). Both fixed. All tests pass.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -4328,12 +4328,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 56,
+    "blocksCompleted": 57,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 39,
+      "BUILD": 40,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

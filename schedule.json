@@ -614,8 +614,12 @@
       "id": "T61",
       "mode": "BUILD",
       "task": "Query cache + prepared statement stress: mutation-invalidation correctness, edge cases",
-      "status": "upcoming",
-      "plan_ref": "T57"
+      "status": "done",
+      "plan_ref": "T57",
+      "started": "2026-04-12T17:58:37.467Z",
+      "completed": "2026-04-12T18:04:16.908Z",
+      "duration_ms": 480000,
+      "summary": "Cache + prepared statement stress: 20 tests. Found 2 real bugs: (1) DROP TABLE did not invalidate result cache (stale SELECT results after DROP), (2) result cache invalidation list missed DDL types (DROP_TABLE, ALTER_TABLE, etc.). Both fixed. All tests pass."
     },
     {
       "id": "T62",

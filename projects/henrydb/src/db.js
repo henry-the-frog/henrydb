@@ -183,7 +183,9 @@ export class Database {
     }
     
     // Invalidate cache on write operations
-    if (['INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE', 'TRUNCATE', 'TRUNCATE_TABLE'].includes(ast.type)) {
+    if (['INSERT', 'UPDATE', 'DELETE', 'DROP', 'DROP_TABLE', 'DROP_INDEX', 'DROP_VIEW',
+         'ALTER', 'ALTER_TABLE', 'CREATE', 'CREATE_TABLE', 'CREATE_TABLE_AS', 
+         'TRUNCATE', 'TRUNCATE_TABLE', 'RENAME_TABLE'].includes(ast.type)) {
       const affectedTable = ast.table || ast.name || '';
       this._invalidateCache(affectedTable);
     }
@@ -830,7 +832,7 @@ export class Database {
       case 'CREATE_TABLE': this._planCache.invalidateAll(); return this._createTable(ast);
       case 'CREATE_TABLE_AS': this._planCache.invalidateAll(); return this._createTableAs(ast);
       case 'ALTER_TABLE': this._planCache.invalidateAll(); return this._alterTable(ast);
-      case 'DROP_TABLE': return this._dropTable(ast);
+      case 'DROP_TABLE': this._planCache.invalidateAll(); return this._dropTable(ast);
       case 'TRUNCATE_TABLE': {
         const table = this.tables.get(ast.table);
         if (!table) throw new Error(`Table ${ast.table} not found`);
