@@ -2448,6 +2448,60 @@ export class Database {
     return count;
   }
 
+  /**
+   * Estimate rows for a WHERE condition using ANALYZE stats.
+   * Returns { estimated: number, method: string }
+   */
+  _estimateFilteredRows(tableName, where, totalRows) {
+    if (!where) return { estimated: totalRows, method: 'no filter' };
+    
+    const stats = this._tableStats.get(tableName);
+    if (!stats) return { estimated: Math.ceil(totalRows * 0.33), method: 'default 33%' };
+    
+    // Equality: col = value → selectivity from ANALYZE
+    if (where.type === 'COMPARE' && where.op === 'EQ') {
+      const col = where.left?.type === 'column_ref' ? where.left.name : 
+                  (where.right?.type === 'column_ref' ? where.right.name : null);
+      if (col) {
+        const colName = col.includes('.') ? col.split('.').pop() : col;
+        const colStats = stats.columns[colName];
+        if (colStats) {
+          return {
+            estimated: Math.max(1, Math.ceil(totalRows * colStats.selectivity)),
+            method: `selectivity(${colName})=${colStats.selectivity.toFixed(3)}`,
+          };
+        }
+      }
+    }
+    
+    // Range: col > val, col < val → estimate ~33% of rows
+    if (where.type === 'COMPARE' && ['GT', 'GTE', 'LT', 'LTE'].includes(where.op)) {
+      return { estimated: Math.ceil(totalRows * 0.33), method: 'range ~33%' };
+    }
+    
+    // AND: multiply selectivities
+    if (where.type === 'AND') {
+      const left = this._estimateFilteredRows(tableName, where.left, totalRows);
+      const right = this._estimateFilteredRows(tableName, where.right, totalRows);
+      return {
+        estimated: Math.max(1, Math.ceil(left.estimated * right.estimated / totalRows)),
+        method: `AND(${left.method}, ${right.method})`,
+      };
+    }
+    
+    // OR: add selectivities (capped at totalRows)
+    if (where.type === 'OR') {
+      const left = this._estimateFilteredRows(tableName, where.left, totalRows);
+      const right = this._estimateFilteredRows(tableName, where.right, totalRows);
+      return {
+        estimated: Math.min(totalRows, left.estimated + right.estimated),
+        method: `OR(${left.method}, ${right.method})`,
+      };
+    }
+    
+    return { estimated: Math.ceil(totalRows * 0.33), method: 'default 33%' };
+  }
+
   _update(ast) {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
@@ -3096,17 +3150,18 @@ export class Database {
       // Determine scan type
       const estRows = this._estimateRowCount(table);
       const engine = table.heap instanceof BTreeTable ? 'btree' : 'heap';
+      const filterEst = stmt.where ? this._estimateFilteredRows(tableName, stmt.where, estRows) : null;
       if (!hasJoins && stmt.where) {
         const indexScan = this._tryIndexScan(table, stmt.where, stmt.from.alias || tableName);
         if (indexScan !== null) {
           if (indexScan.btreeLookup) {
-            plan.push({ operation: 'BTREE_PK_LOOKUP', table: tableName, engine, estimated_rows: indexScan.rows.length });
+            plan.push({ operation: 'BTREE_PK_LOOKUP', table: tableName, engine, estimated_rows: filterEst?.estimated || 1, estimation_method: filterEst?.method });
           } else {
             const colName = this._findIndexedColumn(stmt.where);
-            plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: indexScan.rows.length });
+            plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: filterEst?.estimated || indexScan.rows.length, estimation_method: filterEst?.method });
           }
         } else {
-          plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows });
+          plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows, filtered_estimate: filterEst?.estimated, estimation_method: filterEst?.method });
           plan.push({ operation: 'FILTER', condition: 'WHERE' });
         }
       } else {
