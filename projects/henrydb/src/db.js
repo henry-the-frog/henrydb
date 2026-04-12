@@ -47,6 +47,12 @@ export class Database {
     this._planCache = new PlanCache(256);
     this._indexAdvisor = new IndexAdvisor(this);
     this._queryStats = new QueryStatsCollector();
+    
+    // Result cache: SQL → { result, tables }
+    this._resultCache = new Map();
+    this._resultCacheMaxSize = 128;
+    this._resultCacheHits = 0;
+    this._resultCacheMisses = 0;
   }
 
   execute(sql) {
@@ -79,6 +85,16 @@ export class Database {
       }
     }
     
+    // Check result cache for SELECT queries
+    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN')) {
+      const cached = this._resultCache.get(sql);
+      if (cached) {
+        this._resultCacheHits++;
+        return cached.result;
+      }
+      this._resultCacheMisses++;
+    }
+    
     // Feed SELECTs to the index advisor
     if (ast.type === 'SELECT') {
       try { this._indexAdvisor.analyze(sql); } catch (e) { /* advisory, don't fail */ }
@@ -97,7 +113,48 @@ export class Database {
     const rowCount = result?.rows?.length || 0;
     this._queryStats.record(sql, elapsed, rowCount);
     
+    // Store SELECT results in cache
+    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN')) {
+      // Extract table names from the AST for invalidation
+      const tables = this._extractTables(ast);
+      if (this._resultCache.size >= this._resultCacheMaxSize) {
+        // Evict oldest entry (first key in Map)
+        const firstKey = this._resultCache.keys().next().value;
+        this._resultCache.delete(firstKey);
+      }
+      this._resultCache.set(sql, { result, tables });
+    }
+    
+    // Invalidate cache on write operations
+    if (['INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE', 'TRUNCATE', 'TRUNCATE_TABLE'].includes(ast.type)) {
+      const affectedTable = ast.table || ast.name || '';
+      this._invalidateCache(affectedTable);
+    }
+    
     return result;
+  }
+
+  // Extract table names from AST for cache invalidation
+  _extractTables(ast) {
+    const tables = new Set();
+    if (ast.from) {
+      for (const f of Array.isArray(ast.from) ? ast.from : [ast.from]) {
+        if (f.table) tables.add(f.table);
+        else if (typeof f === 'string') tables.add(f);
+      }
+    }
+    if (ast.table) tables.add(ast.table);
+    return tables;
+  }
+
+  // Invalidate all cached queries that reference a given table
+  _invalidateCache(tableName) {
+    const lower = tableName.toLowerCase();
+    for (const [sql, entry] of this._resultCache) {
+      if (entry.tables.has(tableName) || entry.tables.has(lower) || sql.toLowerCase().includes(lower)) {
+        this._resultCache.delete(sql);
+      }
+    }
   }
 
   /**
