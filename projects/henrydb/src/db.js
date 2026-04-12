@@ -2952,11 +2952,45 @@ export class Database {
     // Reconstruct join list in optimal order
     // optimal.order gives indices into allTables; index 0 is fromTable (already the base)
     const reordered = [];
+    const availableTables = new Set([fromTable]); // Tables whose columns are available
+    const remainingJoins = [];
+    
     for (const idx of optimal.order) {
       if (idx === 0) continue; // Skip the base table
       const tableName = allTables[idx];
       const join = innerJoins.find(j => j.table === tableName);
-      if (join) reordered.push(join);
+      if (join) remainingJoins.push(join);
+    }
+    
+    // Greedy: emit joins in order where all referenced tables are available
+    while (remainingJoins.length > 0) {
+      let found = false;
+      for (let i = 0; i < remainingJoins.length; i++) {
+        const join = remainingJoins[i];
+        const cols = this._extractJoinColumns(join.on);
+        // Check if both sides of the ON condition reference available tables
+        let canExecute = true;
+        if (cols) {
+          if (cols.leftTable && cols.leftTable !== join.table && !availableTables.has(cols.leftTable)) {
+            canExecute = false;
+          }
+          if (cols.rightTable && cols.rightTable !== join.table && !availableTables.has(cols.rightTable)) {
+            canExecute = false;
+          }
+        }
+        if (canExecute) {
+          reordered.push(join);
+          availableTables.add(join.table);
+          remainingJoins.splice(i, 1);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // Can't find a valid next join — fallback: emit remaining in original order
+        reordered.push(...remainingJoins);
+        break;
+      }
     }
     
     // Append any non-inner joins at the end (preserved in original order)
