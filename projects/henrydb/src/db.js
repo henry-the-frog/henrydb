@@ -130,7 +130,25 @@ export class Database {
           const numericVals = values.filter(v => typeof v === 'number' && !isNaN(v));
           const min = numericVals.length > 0 ? Math.min(...numericVals) : null;
           const max = numericVals.length > 0 ? Math.max(...numericVals) : null;
-          columns[col.name] = { distinct, nulls, min, max, selectivity: distinct > 0 ? 1 / distinct : 1 };
+          // Build equi-height histogram for numeric columns
+          let histogram = null;
+          if (numericVals.length >= 10) {
+            const sorted = [...numericVals].sort((a, b) => a - b);
+            const numBuckets = Math.min(50, Math.max(10, Math.ceil(Math.sqrt(sorted.length))));
+            const bucketSize = sorted.length / numBuckets;
+            histogram = [];
+            for (let b = 0; b < numBuckets; b++) {
+              const startIdx = Math.floor(b * bucketSize);
+              const endIdx = Math.floor((b + 1) * bucketSize) - 1;
+              histogram.push({
+                lo: sorted[startIdx],
+                hi: sorted[endIdx],
+                count: endIdx - startIdx + 1,
+                ndv: new Set(sorted.slice(startIdx, endIdx + 1)).size,
+              });
+            }
+          }
+          columns[col.name] = { distinct, nulls, min, max, selectivity: distinct > 0 ? 1 / distinct : 1, histogram };
         }
         this._tableStats.set(tn, { rowCount, columns, analyzedAt: Date.now() });
       }
@@ -2589,14 +2607,31 @@ export class Database {
     const stats = this._tableStats.get(tableName);
     if (!stats) return { estimated: Math.ceil(totalRows * 0.33), method: 'default 33%' };
     
-    // Equality: col = value → selectivity from ANALYZE
+    // Equality: col = value → use histogram if available, else uniform selectivity
     if (where.type === 'COMPARE' && where.op === 'EQ') {
       const col = where.left?.type === 'column_ref' ? where.left.name : 
                   (where.right?.type === 'column_ref' ? where.right.name : null);
+      const val = where.left?.type === 'literal' ? where.left.value :
+                  (where.right?.type === 'literal' ? where.right.value : null);
       if (col) {
         const colName = col.includes('.') ? col.split('.').pop() : col;
         const colStats = stats.columns[colName];
         if (colStats) {
+          // Try histogram for better estimate on skewed data
+          if (colStats.histogram && val != null && typeof val === 'number') {
+            for (const bucket of colStats.histogram) {
+              if (val >= bucket.lo && val <= bucket.hi) {
+                // Estimate: bucket.count / bucket.ndv (frequency within this bucket)
+                const est = bucket.ndv > 0 ? bucket.count / bucket.ndv : 1;
+                return {
+                  estimated: Math.max(1, Math.ceil(est)),
+                  method: `histogram_eq(${colName})=${est.toFixed(1)}`,
+                };
+              }
+            }
+            // Value outside all buckets → likely 0 rows
+            return { estimated: 1, method: `histogram_eq(${colName})=out_of_range` };
+          }
           return {
             estimated: Math.max(1, Math.ceil(totalRows * colStats.selectivity)),
             method: `selectivity(${colName})=${colStats.selectivity.toFixed(3)}`,
@@ -2605,26 +2640,61 @@ export class Database {
       }
     }
     
-    // Range: col > val, col < val → use min/max from ANALYZE if available
+    // Range: col > val, col < val → use histogram if available, else linear interpolation
     if (where.type === 'COMPARE' && ['GT', 'GE', 'GTE', 'LT', 'LE', 'LTE'].includes(where.op)) {
       const col = where.left?.type === 'column_ref' ? where.left.name : null;
       const val = where.right?.type === 'literal' ? where.right.value : null;
       if (col && val != null) {
         const colName = col.includes('.') ? col.split('.').pop() : col;
         const colStats = stats.columns[colName];
-        if (colStats && colStats.min != null && colStats.max != null && colStats.max > colStats.min) {
-          // Linear interpolation between min and max
-          const range = colStats.max - colStats.min;
-          let fraction;
-          if (where.op === 'GT' || where.op === 'GE' || where.op === 'GTE') {
-            fraction = Math.max(0, Math.min(1, (colStats.max - val) / range));
-          } else {
-            fraction = Math.max(0, Math.min(1, (val - colStats.min) / range));
+        if (colStats) {
+          // Try histogram for better range estimate
+          if (colStats.histogram && typeof val === 'number') {
+            let matchingRows = 0;
+            const isGreater = where.op === 'GT' || where.op === 'GE' || where.op === 'GTE';
+            const isInclusive = where.op === 'GE' || where.op === 'GTE' || where.op === 'LE' || where.op === 'LTE';
+            for (const bucket of colStats.histogram) {
+              if (isGreater) {
+                // For > or >=: count rows in buckets above val
+                if (bucket.lo > val || (isInclusive && bucket.lo >= val)) {
+                  matchingRows += bucket.count; // entire bucket qualifies
+                } else if (val >= bucket.lo && val <= bucket.hi) {
+                  // Partial bucket: linear interpolation within bucket
+                  const bucketRange = bucket.hi - bucket.lo;
+                  const fraction = bucketRange > 0 ? (bucket.hi - val) / bucketRange : 0.5;
+                  matchingRows += Math.ceil(bucket.count * fraction);
+                }
+              } else {
+                // For < or <=: count rows in buckets below val
+                if (bucket.hi < val || (isInclusive && bucket.hi <= val)) {
+                  matchingRows += bucket.count; // entire bucket qualifies
+                } else if (val >= bucket.lo && val <= bucket.hi) {
+                  // Partial bucket
+                  const bucketRange = bucket.hi - bucket.lo;
+                  const fraction = bucketRange > 0 ? (val - bucket.lo) / bucketRange : 0.5;
+                  matchingRows += Math.ceil(bucket.count * fraction);
+                }
+              }
+            }
+            return {
+              estimated: Math.max(1, matchingRows),
+              method: `histogram_range(${colName} ${where.op} ${val})=${matchingRows}`,
+            };
           }
-          return {
-            estimated: Math.max(1, Math.ceil(totalRows * fraction)),
-            method: `range(${colName}: ${fraction.toFixed(3)})`,
-          };
+          // Fallback: linear interpolation with min/max
+          if (colStats.min != null && colStats.max != null && colStats.max > colStats.min) {
+            const range = colStats.max - colStats.min;
+            let fraction;
+            if (where.op === 'GT' || where.op === 'GE' || where.op === 'GTE') {
+              fraction = Math.max(0, Math.min(1, (colStats.max - val) / range));
+            } else {
+              fraction = Math.max(0, Math.min(1, (val - colStats.min) / range));
+            }
+            return {
+              estimated: Math.max(1, Math.ceil(totalRows * fraction)),
+              method: `range(${colName}: ${fraction.toFixed(3)})`,
+            };
+          }
         }
       }
       return { estimated: Math.ceil(totalRows * 0.33), method: 'range ~33%' };
