@@ -1214,6 +1214,19 @@ export class Database {
       return this._applySelectColumns(ast, rows);
     }
 
+    // Check if FROM is information_schema
+    if (tableName.startsWith('information_schema.') || tableName === 'information_schema') {
+      const isRows = this._getInformationSchema(tableName);
+      if (isRows !== null) {
+        let rows = isRows;
+        if (ast.where) rows = rows.filter(row => this._evalExpr(ast.where, row));
+        for (const join of ast.joins || []) {
+          rows = this._executeJoin(rows, join, ast.from.alias || tableName);
+        }
+        return this._applySelectColumns(ast, rows);
+      }
+    }
+
     // Check if FROM is a subquery
     if (tableName === '__subquery') {
       const subResult = this._select(ast.from.subquery);
@@ -2506,6 +2519,166 @@ export class Database {
       if (expr[key]) results.push(...this._collectAggregateExprs(expr[key]));
     }
     return results;
+  }
+
+  // information_schema virtual tables
+  _getInformationSchema(tableName) {
+    const schema = tableName.replace('information_schema.', '');
+    
+    switch (schema) {
+      case 'tables': {
+        const rows = [];
+        for (const [name] of this.tables) {
+          rows.push({
+            table_catalog: 'henrydb',
+            table_schema: 'public',
+            table_name: name,
+            table_type: 'BASE TABLE',
+            'information_schema.tables.table_catalog': 'henrydb',
+            'information_schema.tables.table_schema': 'public',
+            'information_schema.tables.table_name': name,
+            'information_schema.tables.table_type': 'BASE TABLE',
+          });
+        }
+        for (const [name] of this.views) {
+          rows.push({
+            table_catalog: 'henrydb',
+            table_schema: 'public',
+            table_name: name,
+            table_type: 'VIEW',
+            'information_schema.tables.table_catalog': 'henrydb',
+            'information_schema.tables.table_schema': 'public',
+            'information_schema.tables.table_name': name,
+            'information_schema.tables.table_type': 'VIEW',
+          });
+        }
+        return rows;
+      }
+      
+      case 'columns': {
+        const rows = [];
+        for (const [tableName, table] of this.tables) {
+          for (let i = 0; i < table.schema.length; i++) {
+            const col = table.schema[i];
+            const row = {
+              table_catalog: 'henrydb',
+              table_schema: 'public',
+              table_name: tableName,
+              column_name: col.name,
+              ordinal_position: i + 1,
+              column_default: col.defaultValue,
+              is_nullable: col.notNull ? 'NO' : 'YES',
+              data_type: col.type,
+            };
+            // Also add qualified names
+            for (const [k, v] of Object.entries(row)) {
+              row[`information_schema.columns.${k}`] = v;
+            }
+            rows.push(row);
+          }
+        }
+        return rows;
+      }
+      
+      case 'table_constraints': {
+        const rows = [];
+        for (const [tableName, table] of this.tables) {
+          for (const col of table.schema) {
+            if (col.primaryKey) {
+              const row = {
+                constraint_catalog: 'henrydb',
+                constraint_schema: 'public',
+                constraint_name: `${tableName}_${col.name}_pkey`,
+                table_catalog: 'henrydb',
+                table_schema: 'public',
+                table_name: tableName,
+                constraint_type: 'PRIMARY KEY',
+              };
+              for (const [k, v] of Object.entries(row)) {
+                row[`information_schema.table_constraints.${k}`] = v;
+              }
+              rows.push(row);
+            }
+            if (col.notNull) {
+              const row = {
+                constraint_catalog: 'henrydb',
+                constraint_schema: 'public',
+                constraint_name: `${tableName}_${col.name}_notnull`,
+                table_catalog: 'henrydb',
+                table_schema: 'public',
+                table_name: tableName,
+                constraint_type: 'NOT NULL',
+              };
+              for (const [k, v] of Object.entries(row)) {
+                row[`information_schema.table_constraints.${k}`] = v;
+              }
+              rows.push(row);
+            }
+            if (col.references) {
+              const row = {
+                constraint_catalog: 'henrydb',
+                constraint_schema: 'public',
+                constraint_name: `${tableName}_${col.name}_fkey`,
+                table_catalog: 'henrydb',
+                table_schema: 'public',
+                table_name: tableName,
+                constraint_type: 'FOREIGN KEY',
+              };
+              for (const [k, v] of Object.entries(row)) {
+                row[`information_schema.table_constraints.${k}`] = v;
+              }
+              rows.push(row);
+            }
+          }
+        }
+        return rows;
+      }
+      
+      case 'key_column_usage': {
+        const rows = [];
+        for (const [tableName, table] of this.tables) {
+          for (let i = 0; i < table.schema.length; i++) {
+            const col = table.schema[i];
+            if (col.primaryKey) {
+              const row = {
+                constraint_catalog: 'henrydb',
+                constraint_schema: 'public',
+                constraint_name: `${tableName}_${col.name}_pkey`,
+                table_catalog: 'henrydb',
+                table_schema: 'public',
+                table_name: tableName,
+                column_name: col.name,
+                ordinal_position: i + 1,
+              };
+              for (const [k, v] of Object.entries(row)) {
+                row[`information_schema.key_column_usage.${k}`] = v;
+              }
+              rows.push(row);
+            }
+            if (col.references) {
+              const row = {
+                constraint_catalog: 'henrydb',
+                constraint_schema: 'public',
+                constraint_name: `${tableName}_${col.name}_fkey`,
+                table_catalog: 'henrydb',
+                table_schema: 'public',
+                table_name: tableName,
+                column_name: col.name,
+                ordinal_position: i + 1,
+              };
+              for (const [k, v] of Object.entries(row)) {
+                row[`information_schema.key_column_usage.${k}`] = v;
+              }
+              rows.push(row);
+            }
+          }
+        }
+        return rows;
+      }
+      
+      default:
+        return null;
+    }
   }
 
   _resolveColumn(name, row) {
