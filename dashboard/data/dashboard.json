@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T18:04:16.946Z",
+  "generated": "2026-04-12T18:06:11.764Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Query cache + prepared statement stress: mutation-invalidation correctness, edge cases",
-    "completedAt": "2026-04-12T18:04:16.946Z",
-    "taskId": "T61",
-    "summary": "Cache + prepared statement stress: 20 tests. Found 2 real bugs: (1) DROP TABLE did not invalidate result cache (stale SELECT results after DROP), (2) result cache invalidation list missed DDL types (DROP_TABLE, ALTER_TABLE, etc.). Both fixed. All tests pass.",
-    "durationMs": 480000
+    "task": "Blog post: HenryDB Fuzzing — What 20K Random Queries Found",
+    "completedAt": "2026-04-12T18:06:11.764Z",
+    "taskId": "T62",
+    "summary": "Blog post: HenryDB Fuzzing — What 2,000 Random Queries Revealed. Covers 3 bugs found (ORDER BY column number crash, stale DROP TABLE cache, optimizer 100x estimation error), methodology, and lessons learned.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -4328,12 +4328,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 57,
+    "blocksCompleted": 58,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 40,
+      "BUILD": 41,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
