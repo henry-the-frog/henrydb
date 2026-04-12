@@ -635,9 +635,10 @@
     {
       "id": "T58",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Extra placeholder, generating new work"
     },
     {
       "id": "T54",
@@ -658,8 +659,44 @@
     {
       "id": "T56",
       "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Mid-session housekeeping",
+      "skip_reason": "Skip housekeeping, prioritize depth work"
+    },
+    {
+      "id": "T63",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session checkpoint: 56 tasks done, 1:54 left until boundary. Found 4 real bugs in HenryDB depth work. What's highest value for remaining time?",
+      "started": "2026-04-12T18:07:01.469Z",
+      "completed": "2026-04-12T18:07:18.640Z",
+      "duration_ms": 60000,
+      "summary": "Plan: (1) Fix ANALYZE test failures (15min), (2) Implement histograms for optimizer estimation. Genuine depth: equi-depth histograms for selectivity estimation on skewed data."
+    },
+    {
+      "id": "T64",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Fix 5 pre-existing ANALYZE test failures (format mismatch between _handleAnalyze and _analyzeTable)",
+      "project": "henrydb",
+      "started": "2026-04-12T18:07:45.701Z",
+      "completed": "2026-04-12T18:09:31.556Z",
+      "duration_ms": 180000,
+      "summary": "Fixed 5 pre-existing ANALYZE test failures. Root cause: two ANALYZE code paths returning different formats. Unified the string-match path to return { type: ANALYZE, tables: [...] } format while still populating _tableStats for optimizer."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Mid-session housekeeping"
+      "task": "Implement equi-depth histograms for ANALYZE — improve selectivity estimation on skewed data",
+      "project": "henrydb"
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Integrate histograms into _estimateFilteredRows for equality and range predicates",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -911,6 +948,30 @@
     {
       "time": "2026-04-12T17:37:45.269Z",
       "msg": "PLAN T57 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-12T18:06:36.412Z",
+      "msg": "Removed T58: Extra placeholder, generating new work"
+    },
+    {
+      "time": "2026-04-12T18:06:51.262Z",
+      "msg": "Added T63 (THINK) after end: Session checkpoint: 56 tasks done, 1:54 left until boundary. Found 4 real bugs in HenryDB depth work. What's highest value for remaining time?"
+    },
+    {
+      "time": "2026-04-12T18:07:26.731Z",
+      "msg": "Added T64 (MAINTAIN) after end: Fix 5 pre-existing ANALYZE test failures (format mismatch between _handleAnalyze and _analyzeTable)"
+    },
+    {
+      "time": "2026-04-12T18:07:26.850Z",
+      "msg": "Added T65 (BUILD) after end: Implement equi-depth histograms for ANALYZE — improve selectivity estimation on skewed data"
+    },
+    {
+      "time": "2026-04-12T18:07:26.968Z",
+      "msg": "Added T66 (BUILD) after end: Integrate histograms into _estimateFilteredRows for equality and range predicates"
+    },
+    {
+      "time": "2026-04-12T18:07:39.937Z",
+      "msg": "Removed T56: Skip housekeeping, prioritize depth work"
     }
   ]
 }

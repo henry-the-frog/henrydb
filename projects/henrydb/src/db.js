@@ -113,8 +113,51 @@ export class Database {
     if (trimmed.startsWith('DEALLOCATE ')) {
       return this._handleDeallocate(sql);
     }
-    if (trimmed.startsWith('ANALYZE ')) {
-      return this._handleAnalyze(sql);
+    if (trimmed.startsWith('ANALYZE')) {
+      // Collect internal stats first (for _estimateFilteredRows)
+      const match = sql.match(/ANALYZE\s+(?:TABLE\s+)?(\w+)/i);
+      const tableNames = match ? [match[1].replace(/;$/, '')] : [...this.tables.keys()];
+      for (const tn of tableNames) {
+        const table = this.tables.get(tn) || this.tables.get(tn.toLowerCase());
+        if (!table) continue;
+        const allRows = this.execute(`SELECT * FROM ${tn}`).rows;
+        const rowCount = allRows.length;
+        const columns = {};
+        for (const col of table.schema) {
+          const values = allRows.map(r => r[col.name]);
+          const distinct = new Set(values.filter(v => v !== null && v !== undefined)).size;
+          const nulls = values.filter(v => v === null || v === undefined).length;
+          const numericVals = values.filter(v => typeof v === 'number' && !isNaN(v));
+          const min = numericVals.length > 0 ? Math.min(...numericVals) : null;
+          const max = numericVals.length > 0 ? Math.max(...numericVals) : null;
+          columns[col.name] = { distinct, nulls, min, max, selectivity: distinct > 0 ? 1 / distinct : 1 };
+        }
+        this._tableStats.set(tn, { rowCount, columns, analyzedAt: Date.now() });
+      }
+      // Return in the standard format expected by tests
+      const results = tableNames.map(tn => {
+        const table = this.tables.get(tn) || this.tables.get(tn.toLowerCase());
+        if (!table) return null;
+        const stats = this._tableStats.get(tn);
+        return {
+          table: tn,
+          rows: stats.rowCount,
+          pages: Math.ceil(stats.rowCount / 100),
+          columns: Object.entries(stats.columns).map(([name, cs]) => ({
+            name,
+            ndv: cs.distinct,
+            nulls: cs.nulls,
+            min: cs.min,
+            max: cs.max,
+            avg_width: 8,
+          })),
+        };
+      }).filter(Boolean);
+      return {
+        type: 'ANALYZE',
+        tables: results,
+        message: `Analyzed ${results.length} table(s): ${results.map(r => `${r.table}(${r.rows} rows)`).join(', ')}`,
+      };
     }
     if (trimmed.startsWith('SAVEPOINT ')) {
       return this._handleSavepoint(sql);
