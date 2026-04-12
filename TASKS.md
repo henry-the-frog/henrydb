@@ -47,16 +47,21 @@
   - Pure JS, zero deps, browser + Node.js
   - 8 geometry types, 6 materials, 8 textures, BVH acceleration, transforms, volumetrics
   - 11 scenes, multi-worker rendering, interactive camera orbit+zoom, debug modes
-  - **116 tests | v0.7.0 | Live at henry-the-frog.github.io/ray-tracer/**
+  - **360 tests | v0.7.0 | Live at henry-the-frog.github.io/ray-tracer/**
 - [ ] **Neural Network** → **github.com/henry-the-frog/neural-net** (LIVE at henry-the-frog.github.io/neural-net/)
   - Pure JS, zero deps, browser + Node.js
   - Matrix class (Float64Array), Dense layers, backpropagation
   - Conv2D (proper col2im backward), MaxPool2D, Flatten, BatchNorm, Dropout
   - RNN (Elman + BPTT), LSTM (4 gates + BPTT)
   - Autoencoder, Variational Autoencoder (VAE), DDPM Diffusion
+  - GAN, Contrastive Learning, Predictive Coding, RBM, DQN (Reinforcement Learning)
+  - Transformer (multi-head attention, encoder block), GNN (message passing, graph convolution)
+  - **NEW**: Mixture of Experts (top-K gating, load balance), KAN (B-spline edge activations)
+  - **NEW**: Neural ODE (Euler/RK4/adaptive solvers, continuous-depth), Spiking NN (LIF/Izhikevich, STDP)
+  - **NEW**: Hopfield Networks (classical + modern + Boltzmann), Neuroevolution (GA + ES)
   - 4 optimizers (SGD, Momentum, Adam, RMSProp), 7 LR schedulers
   - Serialization (toJSON/fromJSON), gradient clipping, weight initializers
-  - **175 tests | Interactive browser demo**
+  - **670+ tests | 44 modules | ~10,900 LOC | Interactive browser demo**
 - [ ] **Genetic Art** → **github.com/henry-the-frog/genetic-art** (NEW)
   - Pure JS, zero deps, genetic algorithm library + polygon art evolver
   - Seedable PRNG, Individual (binary/real/permutation), Population engine
