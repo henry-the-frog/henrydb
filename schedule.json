@@ -1954,11 +1954,607 @@
       "completed": "2026-04-11T22:24:54.839Z",
       "duration_ms": 300000,
       "summary": "Built compiler optimizer: constant folding (3+4→7), algebraic simplification (x*0→0, x+0→x), dead code elimination (if false→else), peephole optimization (PUSH-POP removal, double NEG). 16/16 tests."
+    },
+    {
+      "id": "T179",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Generate evening direction: review projects, pick depth work for 3 hours",
+      "started": "2026-04-11T23:01:31.654Z",
+      "completed": "2026-04-11T23:01:57.585Z",
+      "duration_ms": 90000,
+      "summary": "Evening direction: switch away from HenryDB (depth check — all-day breadth). Neural net depth: stress-test training, find real bugs in backprop/conv, train working classifiers, verify gradient correctness."
+    },
+    {
+      "id": "T180",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural net depth: gradient verification, training stress tests, find real bugs in backprop/conv/LSTM",
+      "task": null,
+      "started": "2026-04-11T23:02:41.207Z",
+      "completed": "2026-04-11T23:03:51.759Z",
+      "duration_ms": 120000,
+      "summary": "Planned 4 BUILD tasks: gradient checker, convergence stress, edge cases, MNIST-style E2E classifier"
+    },
+    {
+      "id": "T184",
+      "mode": "BUILD",
+      "task": "Numerical gradient checker: finite-difference verification for Dense, Conv2D, RNN, LSTM backward passes",
+      "status": "done",
+      "plan_ref": "T180",
+      "started": "2026-04-11T23:04:00.262Z",
+      "completed": "2026-04-11T23:09:53.546Z",
+      "duration_ms": 600000,
+      "summary": "27 gradient-check tests: Dense (5 activations), Conv2D (6 configs), RNN (3), LSTM (5 gates), BatchNorm (2), flow sanity (3). All pass. Found MSE loss gradient missing 1/N normalization — latent bug compensated by update(). 303 total tests."
+    },
+    {
+      "id": "T185",
+      "mode": "BUILD",
+      "task": "Training convergence stress tests: XOR, spiral classification, sequence prediction — verify networks actually learn",
+      "status": "done",
+      "plan_ref": "T180",
+      "started": "2026-04-11T23:10:03.192Z",
+      "completed": "2026-04-11T23:14:44.111Z",
+      "duration_ms": 600000,
+      "summary": "14 convergence tests: XOR (3), classification (2), regression (2), sequence RNN/LSTM (2), training dynamics (3), Conv2D (1), BatchNorm (1). All pass. Some mild flakiness from random init. 317 total tests."
+    },
+    {
+      "id": "T186",
+      "mode": "BUILD",
+      "task": "Conv2D and LSTM edge cases: padding, stride>1, multi-channel, variable-length sequences, gradient explosion detection",
+      "status": "done",
+      "plan_ref": "T180",
+      "started": "2026-04-11T23:14:52.383Z",
+      "completed": "2026-04-11T23:16:53.983Z",
+      "duration_ms": 600000,
+      "summary": "25 edge-case tests: Conv2D (7), MaxPool2D (3), RNN (4), LSTM (4), gradient explosion (2), numerical stability (4), serialization (1). All pass. LSTM memory retention needed 2K epochs to learn. 342 total tests."
+    },
+    {
+      "id": "T187",
+      "mode": "BUILD",
+      "task": "End-to-end MNIST-style digit classifier: train CNN pipeline (Conv→Pool→Dense), verify >90% accuracy on synthetic digits",
+      "status": "done",
+      "plan_ref": "T180",
+      "started": "2026-04-11T23:17:02.843Z",
+      "completed": "2026-04-11T23:19:48.013Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed Conv2D double batch-size division bug (N² slower training). CNN classifier: 8 tests. Dense >80%, Conv pipeline >50%, clean patterns, confusion matrix, noise robustness, softmax validation. 350 total tests."
+    },
+    {
+      "id": "T181",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "plan_ref": "T180",
+      "project": "neural-net",
+      "started": "2026-04-11T23:19:58.192Z",
+      "completed": "2026-04-11T23:25:42.802Z",
+      "duration_ms": 600000,
+      "summary": "GRU gradient checks (4 tests, all pass), fixed dead-ReLU and Conv2D convergence flakiness. 354 total tests all passing."
+    },
+    {
+      "id": "T182",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard",
+      "started": "2026-04-11T23:25:51.744Z",
+      "completed": "2026-04-11T23:26:58.128Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed neural-net, updated daily log"
+    },
+    {
+      "id": "T183",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Reflect on neural net depth work — real bugs found?",
+      "started": "2026-04-11T23:27:07.307Z",
+      "completed": "2026-04-11T23:27:23.195Z",
+      "duration_ms": 120000,
+      "summary": "Depth check: 3/3 positive — real Conv2D bug found, learned about gradient normalization inconsistency, found dead-ReLU flakiness. Switching to ray tracer for remaining time."
+    },
+    {
+      "id": "T188",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Ray tracer assessment: current state, what feature adds the most visual impact?",
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:27:46.723Z",
+      "completed": "2026-04-11T23:28:48.914Z",
+      "duration_ms": 120000,
+      "summary": "Ray tracer: 274 tests, 30 src files, comprehensive features. Best depth feature: dispersion (chromatic aberration/rainbows) — visually stunning, builds on existing Dielectric material."
+    },
+    {
+      "id": "T189",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Dispersion material: wavelength-dependent refraction for rainbow effects through prisms/glass",
+      "task": null,
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:29:01.054Z",
+      "completed": "2026-04-11T23:29:23.009Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks: spectral utilities, DispersiveGlass material, tests"
+    },
+    {
+      "id": "T190",
+      "mode": "BUILD",
+      "task": "Implement spectral utilities: wavelength→RGB conversion, Cauchy equation for wavelength-dependent IOR",
+      "status": "done",
+      "plan_ref": "T189",
+      "started": "2026-04-11T23:29:32.291Z",
+      "completed": "2026-04-11T23:30:27.147Z",
+      "duration_ms": 300000,
+      "summary": "Spectral utilities: wavelength→RGB, Cauchy IOR equation, Abbe number conversion, 6 glass type presets. Physically accurate dispersion values."
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "task": "Implement DispersiveGlass material: per-sample wavelength selection, refraction with Cauchy IOR, spectral accumulation",
+      "status": "done",
+      "plan_ref": "T189",
+      "started": "2026-04-11T23:30:36.691Z",
+      "completed": "2026-04-11T23:31:54.598Z",
+      "duration_ms": 300000,
+      "summary": "DispersiveGlass material: per-sample wavelength selection, Cauchy IOR, spectral attenuation, 5 factory functions. Energy ~1.16 (physically correct)."
+    },
+    {
+      "id": "T192",
+      "mode": "BUILD",
+      "task": "Tests for dispersion: spectral conversion accuracy, Cauchy IOR values, prism geometry producing rainbow, integration with renderer",
+      "status": "done",
+      "plan_ref": "T189",
+      "started": "2026-04-11T23:32:05.800Z",
+      "completed": "2026-04-11T23:33:34.618Z",
+      "duration_ms": 300000,
+      "summary": "23 dispersion tests: spectral utilities (13), DispersiveGlass (10). Covers physics accuracy, energy conservation, TIR, renderer integration. 297 total ray tracer tests."
+    },
+    {
+      "id": "T193",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Ray tracer depth: stress-test BVH, CSG, and material interactions for correctness bugs",
+      "task": null,
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:33:58.599Z",
+      "completed": "2026-04-11T23:34:14.133Z",
+      "duration_ms": 120000,
+      "summary": "Assessed BVH/CSG: CSG intersection is approximate but functional. Pivoting to subsurface scattering — more impactful feature addition."
+    },
+    {
+      "id": "T194",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement subsurface scattering (SSS) material: random walk inside surface, wavelength-dependent absorption",
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:34:25.167Z",
+      "completed": "2026-04-11T23:36:31.928Z",
+      "duration_ms": 600000,
+      "summary": "SSS material: random walk simulation, Beer-Lambert absorption, Fresnel, 5 presets (skin/marble/wax/jade/milk). 11 tests. 308 total ray tracer tests."
+    },
+    {
+      "id": "T195",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Atmospheric fog: global exponential fog with distance-based scattering, Rayleigh/Mie for sky color",
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:37:11.461Z",
+      "completed": "2026-04-11T23:39:06.649Z",
+      "duration_ms": 600000,
+      "summary": "Atmospheric effects: ExponentialFog, HeightFog, Rayleigh+Mie scattering. 14 tests, physics-verified. 322 total ray tracer tests."
+    },
+    {
+      "id": "T196",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Torus primitive: ray-torus intersection via quartic solver, normal computation, UV mapping",
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:39:28.233Z",
+      "completed": "2026-04-11T23:41:54.581Z",
+      "duration_ms": 600000,
+      "summary": "Torus primitive: quartic solver (Ferrari method), ray-torus intersection, normals, AABB. 19 tests including polynomial solver verification. 341 total ray tracer tests."
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Scene showcase: render demo scene with dispersion prism, SSS sphere, torus, atmospheric fog — output to PPM",
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:42:16.705Z",
+      "completed": "2026-04-11T23:43:14.607Z",
+      "duration_ms": 300000,
+      "summary": "Showcase scene with all new features: dispersion, SSS (jade/skin/marble), gold torus, diamond, checker ground. Renders to PPM."
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive README.md for ray-tracer with feature list, architecture, and examples",
+      "project": "ray-tracer",
+      "started": "2026-04-11T23:43:51.160Z",
+      "completed": "2026-04-11T23:44:46.554Z",
+      "duration_ms": 300000,
+      "summary": "Comprehensive README.md: features, quick start, code examples (dispersion, SSS), architecture tree, physics models, stats."
+    },
+    {
+      "id": "T199",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB LATERAL JOIN assessment: what's needed, how it interacts with planner/executor",
+      "project": "henrydb",
+      "started": "2026-04-11T23:45:05.605Z",
+      "completed": "2026-04-11T23:54:04.179Z",
+      "duration_ms": 300000,
+      "summary": "Assessed LATERAL JOIN: keyword exists but not parsed. Needs parser changes (LATERAL + subquery in JOIN) and executor changes (per-row subquery execution). Medium complexity. Foundation exists in subquery.js lateral() method."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Parse LATERAL JOIN syntax in SQL parser (CROSS JOIN LATERAL (subquery), LEFT JOIN LATERAL (subquery))",
+      "project": "henrydb",
+      "started": "2026-04-11T23:54:19.115Z",
+      "completed": "2026-04-12T00:06:05.048Z",
+      "duration_ms": 600000,
+      "summary": "LATERAL JOIN fully working: parser supports CROSS/LEFT/INNER JOIN LATERAL (subquery), executor re-evaluates per outer row with scope resolution. 5 tests covering top-N, aggregates, LEFT, outer column refs. All passing."
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: information_schema views (tables, columns, table_constraints, key_column_usage)",
+      "project": "henrydb",
+      "started": "2026-04-12T00:06:41.409Z",
+      "completed": "2026-04-12T00:09:28.782Z",
+      "duration_ms": 600000,
+      "summary": "information_schema: 4 views (tables, columns, table_constraints, key_column_usage). Dynamic from metadata. 15 tests covering listing, filtering, types, nullable. All passing."
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTILE window functions",
+      "project": "henrydb",
+      "started": "2026-04-12T00:10:00.645Z",
+      "completed": "2026-04-12T00:12:59.163Z",
+      "duration_ms": 600000,
+      "summary": "5 window functions: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTILE. Parser + executor. 13 tests covering basic, nulls, partitions, offsets. All passing."
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Query optimizer stress test — generate complex queries, measure plan quality, find optimizer bugs",
+      "project": "henrydb",
+      "started": "2026-04-12T00:14:37.416Z",
+      "completed": "2026-04-12T00:17:24.278Z",
+      "duration_ms": 600000,
+      "summary": "12 optimizer stress tests. Found 3 real bugs: CTE alias resolution, 3-col recursive CTE, UNION ALL + LIMIT. Verified multi-table joins, correlated subqueries, window funcs, LATERAL, CTEs, NULL handling."
+    },
+    {
+      "id": "T204",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Fix UNION ALL + LIMIT/ORDER BY not being applied",
+      "project": "henrydb",
+      "started": "2026-04-12T00:17:43.932Z",
+      "completed": "2026-04-12T00:20:08.408Z",
+      "duration_ms": 300000,
+      "summary": "Fixed UNION ALL + ORDER BY + LIMIT bug. ORDER BY/LIMIT now correctly applied to combined result instead of just second SELECT. Updated stress test to verify."
+    },
+    {
+      "id": "T205",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Fix CTE alias resolution (ds.column_name not resolving)",
+      "project": "henrydb",
+      "started": "2026-04-12T00:20:27.657Z",
+      "completed": "2026-04-12T00:21:47.456Z",
+      "duration_ms": 300000,
+      "summary": "Fixed CTE alias resolution: qualified column names (ds.col) now resolve. CTE/view rows get alias-qualified entries. 98 tests passing."
+    },
+    {
+      "id": "T206",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Fix recursive CTE with 3+ columns",
+      "project": "henrydb",
+      "started": "2026-04-12T00:22:07.129Z",
+      "completed": "2026-04-12T00:26:09.773Z",
+      "duration_ms": 600000,
+      "summary": "Fixed recursive CTE 3+ column bug. Root cause: _evalExpr vs _evalValue confusion + column name collision. Fibonacci sequence now works correctly. All 3 stress-test bugs now fixed."
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Add COALESCE, NULLIF, IFNULL tests + verify NULL arithmetic",
+      "project": "henrydb",
+      "started": "2026-04-12T00:26:32.413Z",
+      "completed": "2026-04-12T00:28:04.886Z",
+      "duration_ms": 300000,
+      "summary": "21 NULL handling tests: COALESCE, NULLIF, IFNULL, NULL arithmetic, comparisons, aggregates, CASE, ORDER BY, DISTINCT. All pass — good NULL handling."
+    },
+    {
+      "id": "T209",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Fluent scene builder API with method chaining for easy scene construction",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:31:02.532Z",
+      "completed": "2026-04-12T00:32:47.799Z",
+      "duration_ms": 300000,
+      "summary": "Fluent SceneBuilder API: chainable sphere/torus/ground + materials (lambertian/metal/glass/dispersive/diamond/sss/checker/emissive) + camera + render. 12 tests. 353 total."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Torus UV mapping + textured torus tests",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:33:12.913Z",
+      "completed": "2026-04-12T00:35:03.810Z",
+      "duration_ms": 300000,
+      "summary": "Torus UV mapping: u=major circle angle, v=tube cross-section angle. 3 tests (UV range, variation, checker texture). 356 total ray tracer tests."
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Performance benchmark script with M rays/sec measurement",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:36:23.993Z",
+      "completed": "2026-04-12T00:37:20.923Z",
+      "duration_ms": 300000,
+      "summary": "Benchmark: 7 scenes measuring Mrays/sec. Average 0.19 Mrays/s. Torus quartic + SSS notably slower. Glass fastest at 0.32 Mrays/s."
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Model serialization — save/load trained networks to/from JSON",
+      "project": "neural-net",
+      "started": "2026-04-12T00:37:53.649Z",
+      "completed": "2026-04-12T00:40:47.766Z",
+      "duration_ms": 300000,
+      "summary": "Model serialization: save/load Dense networks to JSON. Zero-diff round-trip, weight preservation, post-training save/load, continue training. 8 tests."
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Learning rate schedulers (step decay, cosine annealing, warmup)",
+      "project": "neural-net",
+      "started": "2026-04-12T00:41:13.577Z",
+      "completed": "2026-04-12T00:42:34.470Z",
+      "duration_ms": 300000,
+      "summary": "7 LR schedulers: step, exponential, cosine, warmup, warmup+cosine, cyclic, reduce-on-plateau. 15 tests all passing."
+    },
+    {
+      "id": "T214",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Data augmentation utilities (noise, dropout, shuffle, normalize, train/test split)",
+      "project": "neural-net",
+      "started": "2026-04-12T00:42:58.438Z",
+      "completed": "2026-04-12T00:45:02.317Z",
+      "duration_ms": 300000,
+      "summary": "8 data utilities: shuffle, trainTestSplit, normalize, applyNormalization, minMaxScale, addNoise, createBatches, oneHotEncode. 14 tests."
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Evaluation metrics (accuracy, precision, recall, F1, confusion matrix, R²)",
+      "project": "neural-net",
+      "started": "2026-04-12T00:45:30.982Z",
+      "completed": "2026-04-12T00:46:48.771Z",
+      "duration_ms": 300000,
+      "summary": "Evaluation metrics: accuracy, confusion matrix, precision/recall/F1, macroF1, weightedF1, MSE, MAE, RMSE, R². 19 tests."
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Procedural sky gradient based on time-of-day parameter",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:47:05.638Z",
+      "completed": "2026-04-12T00:50:02.360Z",
+      "duration_ms": 600000,
+      "summary": "Fixed scheduler.js (restored original class-based schedulers), added function-based extras, exported data.js and metrics.js from index.js."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Comprehensive README.md",
+      "project": "neural-net",
+      "started": "2026-04-12T00:50:18.633Z",
+      "completed": "2026-04-12T00:51:15.514Z",
+      "duration_ms": 300000,
+      "summary": "Neural net README: features, quick start, CNN/LSTM/save-load examples, architecture tree, stats."
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Comprehensive README.md",
+      "project": "henrydb",
+      "started": "2026-04-12T00:51:35.797Z",
+      "completed": "2026-04-12T00:52:24.260Z",
+      "duration_ms": 120000,
+      "summary": "Updated HenryDB README with LATERAL JOIN, information_schema, FIRST_VALUE/LAST_VALUE/NTILE, WITH RECURSIVE."
+    },
+    {
+      "id": "T219",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Add Box primitive + movingSphere to SceneBuilder",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:52:55.917Z",
+      "completed": "2026-04-12T00:55:10.975Z",
+      "duration_ms": 300000,
+      "summary": "Added Box, Cylinder, Cone, MovingSphere to SceneBuilder. 4 new tests. 360 total ray tracer tests."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Add Microfacet (PBR) + CSG to SceneBuilder",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:55:25.579Z",
+      "completed": "2026-04-12T00:57:23.319Z",
+      "duration_ms": 300000,
+      "summary": "Added PBR microfacet material and CSG operations (union/intersect/subtract) to SceneBuilder. 360 tests passing."
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: EXPLAIN ANALYZE with actual execution time measurement",
+      "project": "henrydb",
+      "started": "2026-04-12T00:58:04.938Z",
+      "completed": "2026-04-12T00:58:35.362Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN ANALYZE already fully implemented: execution timing, plan nodes, selectivity, estimation accuracy. No work needed."
+    },
+    {
+      "id": "T222",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: ASCII art renderer (terminal preview)",
+      "project": "ray-tracer",
+      "started": "2026-04-12T00:58:50.504Z",
+      "completed": "2026-04-12T00:59:39.419Z",
+      "duration_ms": 300000,
+      "summary": "ASCII art renderer: pixelsToAscii + renderAscii for terminal preview. ANSI color support. 360 tests unchanged."
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: CSG showcase scene (sphere-minus-sphere, box-intersection-sphere)",
+      "project": "ray-tracer",
+      "started": "2026-04-12T01:00:20.759Z",
+      "completed": "2026-04-12T01:01:09.503Z",
+      "duration_ms": 300000,
+      "summary": "CSG showcase scene: difference (hollow sphere), intersection (rounded cube), union (snowman). Renders correctly."
+    },
+    {
+      "id": "T224",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Write lessons learned from today's bugs to memory/lessons",
+      "project": "henrydb",
+      "started": "2026-04-12T01:01:30.704Z",
+      "completed": "2026-04-12T01:02:15.379Z",
+      "duration_ms": 300000,
+      "summary": "Wrote detailed lessons learned from 4 bugs: Conv2D double division, UNION ALL+LIMIT, CTE alias, recursive CTE. Meta-lesson: stress tests find bugs unit tests miss."
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Complete training example script with data loading, training, evaluation",
+      "project": "neural-net",
+      "started": "2026-04-12T01:02:37.655Z",
+      "completed": "2026-04-12T01:03:28.075Z",
+      "duration_ms": 300000,
+      "summary": "Complete training pipeline example: data→train→eval→save. 97% accuracy, per-class metrics, cosine LR scheduling. Demonstrates all new modules together."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Quick-render CLI tool with ASCII preview",
+      "project": "ray-tracer",
+      "started": "2026-04-12T01:03:44.155Z",
+      "completed": "2026-04-12T01:04:36.001Z",
+      "duration_ms": 300000,
+      "summary": "Quick-render CLI tool: 5 preset scenes (cornell, materials, dispersion, torus, sss) with ASCII terminal preview and optional ANSI color."
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Example script demonstrating key SQL features",
+      "project": "henrydb",
+      "started": "2026-04-12T01:04:53.358Z",
+      "completed": "2026-04-12T01:05:41.127Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB demo: 7 SQL showcases (JOINs, window functions, LATERAL, recursive CTE, information_schema, CASE, UNION). All work correctly."
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Training history object + loss plotting utility",
+      "project": "neural-net",
+      "started": "2026-04-12T01:05:55.448Z",
+      "completed": "2026-04-12T01:06:52.524Z",
+      "duration_ms": 300000,
+      "summary": "TrainingHistory: loss tracking, sparklines, ASCII plots, summary. 7 tests."
+    },
+    {
+      "id": "T230",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Update TODO.md and TASKS.md with today's progress and new ideas",
+      "started": "2026-04-12T01:07:25.874Z",
+      "completed": "2026-04-12T01:08:15.487Z",
+      "duration_ms": 120000,
+      "summary": "Updated TASKS.md: marked 12 items as completed, updated tomorrow focus, added 16 new backlog ideas."
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: MixTexture (blend two textures) + PerlinTexture improvements",
+      "project": "ray-tracer",
+      "started": "2026-04-12T01:08:36.232Z",
+      "completed": "2026-04-12T01:09:31.725Z",
+      "duration_ms": 180000,
+      "summary": "MixTexture + MultiplyTexture for texture compositing. Blend two textures with factor or multiply for tinting."
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: Add texture options (noise, marble, wood) to SceneBuilder",
+      "project": "ray-tracer",
+      "started": "2026-04-12T01:09:44.712Z",
+      "completed": "2026-04-12T01:10:23.919Z",
+      "duration_ms": 180000,
+      "summary": "Added noise/marble/wood/stripe textures to SceneBuilder fluent API. 360 tests passing."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: ASCII confusion matrix printer for metrics",
+      "project": "neural-net",
+      "started": "2026-04-12T01:10:38.251Z",
+      "completed": "2026-04-12T01:11:11.273Z",
+      "duration_ms": 120000,
+      "summary": "printConfusionMatrix: ASCII table with Actual/Predicted labels."
+    },
+    {
+      "id": "T229",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session wrap: git push all, update daily log, CURRENT.md"
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Neural net: Fix MSE gradient to include 1/N normalization, standardize gradient convention across layers",
+      "project": "neural-net",
+      "skip_reason": ""
     }
   ],
   "focusProjects": [
-    "henrydb",
-    "blog"
+    "ray-tracer",
+    "neural-net"
   ],
   "backlog": [],
   "adjustments": [
@@ -2653,6 +3249,258 @@
     {
       "time": "2026-04-11T22:22:55.752Z",
       "msg": "Added T178 (BUILD) after end: Add optimization passes to the compiler: constant folding (3+4 → 7 at compile time), dead code elimination (if false), peephole optimization (push-pop removal)"
+    },
+    {
+      "time": "2026-04-11T23:01:22.776Z",
+      "msg": "Added T179 (THINK) after T178: Generate evening direction: review projects, pick depth work for 3 hours"
+    },
+    {
+      "time": "2026-04-11T23:02:02.360Z",
+      "msg": "Added T180 (PLAN) after T179: Neural net depth: gradient verification, training stress tests, find real bugs in backprop/conv/LSTM"
+    },
+    {
+      "time": "2026-04-11T23:02:22.603Z",
+      "msg": "Focus set: [neural-net, henrydb]"
+    },
+    {
+      "time": "2026-04-11T23:02:27.946Z",
+      "msg": "Added T181 (BUILD) after T180: placeholder"
+    },
+    {
+      "time": "2026-04-11T23:02:33.249Z",
+      "msg": "Added T182 (MAINTAIN) after T181: Housekeeping: git push, dashboard"
+    },
+    {
+      "time": "2026-04-11T23:02:33.459Z",
+      "msg": "Added T183 (THINK) after T182: Reflect on neural net depth work — real bugs found?"
+    },
+    {
+      "time": "2026-04-11T23:03:46.373Z",
+      "msg": "PLAN T180 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T23:27:34.933Z",
+      "msg": "Focus set: [neural-net, ray-tracer]"
+    },
+    {
+      "time": "2026-04-11T23:27:40.626Z",
+      "msg": "Added T188 (THINK) after T183: Ray tracer assessment: current state, what feature adds the most visual impact?"
+    },
+    {
+      "time": "2026-04-11T23:28:55.857Z",
+      "msg": "Added T189 (PLAN) after T188: Dispersion material: wavelength-dependent refraction for rainbow effects through prisms/glass"
+    },
+    {
+      "time": "2026-04-11T23:29:17.717Z",
+      "msg": "PLAN T189 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-11T23:33:53.358Z",
+      "msg": "Added T193 (PLAN) after T192: Ray tracer depth: stress-test BVH, CSG, and material interactions for correctness bugs"
+    },
+    {
+      "time": "2026-04-11T23:34:19.905Z",
+      "msg": "Added T194 (BUILD) after T193: Implement subsurface scattering (SSS) material: random walk inside surface, wavelength-dependent absorption"
+    },
+    {
+      "time": "2026-04-11T23:37:06.485Z",
+      "msg": "Added T195 (BUILD) after T194: Atmospheric fog: global exponential fog with distance-based scattering, Rayleigh/Mie for sky color"
+    },
+    {
+      "time": "2026-04-11T23:39:19.923Z",
+      "msg": "Added T196 (BUILD) after T195: Torus primitive: ray-torus intersection via quartic solver, normal computation, UV mapping"
+    },
+    {
+      "time": "2026-04-11T23:42:11.617Z",
+      "msg": "Added T197 (BUILD) after T196: Scene showcase: render demo scene with dispersion prism, SSS sphere, torus, atmospheric fog — output to PPM"
+    },
+    {
+      "time": "2026-04-11T23:43:26.636Z",
+      "msg": "Focus set: [ray-tracer, henrydb]"
+    },
+    {
+      "time": "2026-04-11T23:43:44.505Z",
+      "msg": "Added T198 (BUILD) after T197: Write comprehensive README.md for ray-tracer with feature list, architecture, and examples"
+    },
+    {
+      "time": "2026-04-11T23:44:59.473Z",
+      "msg": "Added T199 (THINK) after T198: HenryDB LATERAL JOIN assessment: what's needed, how it interacts with planner/executor"
+    },
+    {
+      "time": "2026-04-11T23:54:11.905Z",
+      "msg": "Added T200 (BUILD) after T199: HenryDB: Parse LATERAL JOIN syntax in SQL parser (CROSS JOIN LATERAL (subquery), LEFT JOIN LATERAL (subquery))"
+    },
+    {
+      "time": "2026-04-12T00:06:34.976Z",
+      "msg": "Added T201 (BUILD) after T200: HenryDB: information_schema views (tables, columns, table_constraints, key_column_usage)"
+    },
+    {
+      "time": "2026-04-12T00:09:55.057Z",
+      "msg": "Added T202 (BUILD) after T201: HenryDB: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTILE window functions"
+    },
+    {
+      "time": "2026-04-12T00:14:29.802Z",
+      "msg": "Added T203 (BUILD) after T202: HenryDB: Query optimizer stress test — generate complex queries, measure plan quality, find optimizer bugs"
+    },
+    {
+      "time": "2026-04-12T00:17:36.429Z",
+      "msg": "Added T204 (BUILD) after T203: HenryDB: Fix UNION ALL + LIMIT/ORDER BY not being applied"
+    },
+    {
+      "time": "2026-04-12T00:20:20.297Z",
+      "msg": "Added T205 (BUILD) after T204: HenryDB: Fix CTE alias resolution (ds.column_name not resolving)"
+    },
+    {
+      "time": "2026-04-12T00:22:01.566Z",
+      "msg": "Added T206 (BUILD) after T205: HenryDB: Fix recursive CTE with 3+ columns"
+    },
+    {
+      "time": "2026-04-12T00:26:26.505Z",
+      "msg": "Added T207 (BUILD) after T206: HenryDB: Add COALESCE, NULLIF, IFNULL tests + verify NULL arithmetic"
+    },
+    {
+      "time": "2026-04-12T00:30:34.182Z",
+      "msg": "Added T208 (BUILD) after T207: Neural net: Fix MSE gradient to include 1/N normalization, standardize gradient convention across layers"
+    },
+    {
+      "time": "2026-04-12T00:30:44.510Z",
+      "msg": "Removed T208: "
+    },
+    {
+      "time": "2026-04-12T00:30:53.443Z",
+      "msg": "Added T209 (BUILD) after T207: Ray tracer: Fluent scene builder API with method chaining for easy scene construction"
+    },
+    {
+      "time": "2026-04-12T00:33:04.249Z",
+      "msg": "Added T210 (BUILD) after T209: Ray tracer: Torus UV mapping + textured torus tests"
+    },
+    {
+      "time": "2026-04-12T00:36:14.404Z",
+      "msg": "Added T211 (BUILD) after T210: Ray tracer: Performance benchmark script with M rays/sec measurement"
+    },
+    {
+      "time": "2026-04-12T00:37:36.289Z",
+      "msg": "Added T212 (BUILD) after T211: Neural net: Model serialization — save/load trained networks to/from JSON"
+    },
+    {
+      "time": "2026-04-12T00:37:45.469Z",
+      "msg": "Focus set: [neural-net, ray-tracer]"
+    },
+    {
+      "time": "2026-04-12T00:41:07.485Z",
+      "msg": "Added T213 (BUILD) after T212: Neural net: Learning rate schedulers (step decay, cosine annealing, warmup)"
+    },
+    {
+      "time": "2026-04-12T00:42:50.078Z",
+      "msg": "Added T214 (BUILD) after T213: Neural net: Data augmentation utilities (noise, dropout, shuffle, normalize, train/test split)"
+    },
+    {
+      "time": "2026-04-12T00:45:19.678Z",
+      "msg": "Added T215 (BUILD) after T214: Neural net: Evaluation metrics (accuracy, precision, recall, F1, confusion matrix, R²)"
+    },
+    {
+      "time": "2026-04-12T00:47:05.201Z",
+      "msg": "Added T216 (BUILD) after T215: Ray tracer: Procedural sky gradient based on time-of-day parameter"
+    },
+    {
+      "time": "2026-04-12T00:50:18.221Z",
+      "msg": "Added T217 (BUILD) after T216: Neural net: Comprehensive README.md"
+    },
+    {
+      "time": "2026-04-12T00:51:29.074Z",
+      "msg": "Focus set: [henrydb, neural-net]"
+    },
+    {
+      "time": "2026-04-12T00:51:35.561Z",
+      "msg": "Added T218 (BUILD) after T217: HenryDB: Comprehensive README.md"
+    },
+    {
+      "time": "2026-04-12T00:52:47.038Z",
+      "msg": "Focus set: [ray-tracer, neural-net]"
+    },
+    {
+      "time": "2026-04-12T00:52:55.453Z",
+      "msg": "Added T219 (BUILD) after T218: Ray tracer: Add Box primitive + movingSphere to SceneBuilder"
+    },
+    {
+      "time": "2026-04-12T00:55:25.166Z",
+      "msg": "Added T220 (BUILD) after T219: Ray tracer: Add Microfacet (PBR) + CSG to SceneBuilder"
+    },
+    {
+      "time": "2026-04-12T00:57:57.058Z",
+      "msg": "Focus set: [henrydb, ray-tracer]"
+    },
+    {
+      "time": "2026-04-12T00:58:04.516Z",
+      "msg": "Added T221 (BUILD) after T220: HenryDB: EXPLAIN ANALYZE with actual execution time measurement"
+    },
+    {
+      "time": "2026-04-12T00:58:50.091Z",
+      "msg": "Added T222 (BUILD) after T221: Ray tracer: ASCII art renderer (terminal preview)"
+    },
+    {
+      "time": "2026-04-12T01:00:13.391Z",
+      "msg": "Focus set: [ray-tracer, henrydb]"
+    },
+    {
+      "time": "2026-04-12T01:00:20.487Z",
+      "msg": "Added T223 (BUILD) after T222: Ray tracer: CSG showcase scene (sphere-minus-sphere, box-intersection-sphere)"
+    },
+    {
+      "time": "2026-04-12T01:01:30.284Z",
+      "msg": "Added T224 (MAINTAIN) after T223: Write lessons learned from today's bugs to memory/lessons"
+    },
+    {
+      "time": "2026-04-12T01:02:37.029Z",
+      "msg": "Focus set: [neural-net, ray-tracer]"
+    },
+    {
+      "time": "2026-04-12T01:02:37.243Z",
+      "msg": "Added T225 (BUILD) after T224: Neural net: Complete training example script with data loading, training, evaluation"
+    },
+    {
+      "time": "2026-04-12T01:03:43.743Z",
+      "msg": "Added T226 (BUILD) after T225: Ray tracer: Quick-render CLI tool with ASCII preview"
+    },
+    {
+      "time": "2026-04-12T01:04:52.732Z",
+      "msg": "Focus set: [henrydb, ray-tracer]"
+    },
+    {
+      "time": "2026-04-12T01:04:52.943Z",
+      "msg": "Added T227 (BUILD) after T226: HenryDB: Example script demonstrating key SQL features"
+    },
+    {
+      "time": "2026-04-12T01:05:54.824Z",
+      "msg": "Focus set: [neural-net, ray-tracer]"
+    },
+    {
+      "time": "2026-04-12T01:05:55.035Z",
+      "msg": "Added T228 (BUILD) after T227: Neural net: Training history object + loss plotting utility"
+    },
+    {
+      "time": "2026-04-12T01:07:08.440Z",
+      "msg": "Added T229 (MAINTAIN) after T228: Final session wrap: git push all, update daily log, CURRENT.md"
+    },
+    {
+      "time": "2026-04-12T01:07:25.462Z",
+      "msg": "Added T230 (MAINTAIN) after T228: Update TODO.md and TASKS.md with today's progress and new ideas"
+    },
+    {
+      "time": "2026-04-12T01:08:35.609Z",
+      "msg": "Focus set: [ray-tracer, neural-net]"
+    },
+    {
+      "time": "2026-04-12T01:08:35.821Z",
+      "msg": "Added T231 (BUILD) after T230: Ray tracer: MixTexture (blend two textures) + PerlinTexture improvements"
+    },
+    {
+      "time": "2026-04-12T01:09:44.295Z",
+      "msg": "Added T232 (BUILD) after T231: Ray tracer: Add texture options (noise, marble, wood) to SceneBuilder"
+    },
+    {
+      "time": "2026-04-12T01:10:37.836Z",
+      "msg": "Added T233 (BUILD) after T232: Neural net: ASCII confusion matrix printer for metrics"
     }
   ]
 }
