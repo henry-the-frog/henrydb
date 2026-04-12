@@ -2198,8 +2198,15 @@ export class Database {
       rows = rows.filter(() => Math.random() < pct);
     }
 
-    // Handle JOINs (using the potentially modified AST with pushed filters)
-    for (const join of workingAst.joins || []) {
+    // Handle JOINs — optimize join order if possible
+    let joinList = workingAst.joins || [];
+    if (joinList.length >= 2) {
+      const fromTableName = workingAst.from.table;
+      if (fromTableName) {
+        joinList = this._optimizeJoinOrder(fromTableName, joinList);
+      }
+    }
+    for (const join of joinList) {
       rows = this._executeJoin(rows, join, workingAst.from.alias || workingAst.from.table);
     }
 
@@ -2770,6 +2777,216 @@ export class Database {
     }
 
     return { estimated: Math.ceil(totalRows * 0.33), method: 'default 33%' };
+  }
+
+  /**
+   * Estimate the result size of joining two relations.
+   * Uses the principle: |R ⋈ S| = |R| * |S| / max(ndv(R.key), ndv(S.key))
+   */
+  _estimateJoinSize(leftTable, leftRows, rightTableName, joinOn) {
+    if (!joinOn) return leftRows * 10; // No join condition — cross join estimate
+    
+    // Extract join columns from ON condition (e.g., a.id = b.foreign_id)
+    const joinCols = this._extractJoinColumns(joinOn);
+    if (!joinCols) return leftRows * 10; // Can't parse — conservative estimate
+    
+    const rightTable = this.tables.get(rightTableName);
+    if (!rightTable) return leftRows * 10;
+    const rightRows = this._estimateRowCount(rightTable);
+    
+    // Get ndv from stats
+    const leftStats = this._tableStats.get(joinCols.leftTable);
+    const rightStats = this._tableStats.get(rightTableName);
+    
+    let leftNdv = leftRows; // default: assume unique
+    let rightNdv = rightRows;
+    
+    if (leftStats?.columns[joinCols.leftCol]) {
+      leftNdv = leftStats.columns[joinCols.leftCol].distinct || leftRows;
+    }
+    if (rightStats?.columns[joinCols.rightCol]) {
+      rightNdv = rightStats.columns[joinCols.rightCol].distinct || rightRows;
+    }
+    
+    // Standard formula: |R ⋈ S| = |R| * |S| / max(ndv_R, ndv_S)
+    const maxNdv = Math.max(leftNdv, rightNdv, 1);
+    return Math.max(1, Math.ceil(leftRows * rightRows / maxNdv));
+  }
+
+  /**
+   * Extract left/right table and column from a join ON condition.
+   * Handles: a.col = b.col or col = col patterns.
+   */
+  _extractJoinColumns(on) {
+    if (!on || on.type !== 'COMPARE' || on.op !== 'EQ') return null;
+    
+    const left = on.left;
+    const right = on.right;
+    
+    if (left?.type === 'column_ref' && right?.type === 'column_ref') {
+      const leftParts = (left.table ? [left.table, left.name] : left.name.split('.'));
+      const rightParts = (right.table ? [right.table, right.name] : right.name.split('.'));
+      
+      return {
+        leftTable: leftParts.length > 1 ? leftParts[0] : null,
+        leftCol: leftParts.length > 1 ? leftParts[1] : leftParts[0],
+        rightTable: rightParts.length > 1 ? rightParts[0] : null,
+        rightCol: rightParts.length > 1 ? rightParts[1] : rightParts[0],
+      };
+    }
+    return null;
+  }
+
+  /**
+   * Cost-based join ordering using dynamic programming (System R style).
+   * For N tables, considers all orderings and picks the cheapest.
+   * Only reorders INNER joins — LEFT/RIGHT/FULL preserve user order.
+   */
+  _optimizeJoinOrder(fromTable, joins) {
+    // Only optimize if we have 2+ INNER joins and stats available
+    const innerJoins = joins.filter(j => !j.joinType || j.joinType === 'INNER');
+    if (innerJoins.length < 2) return joins;
+    
+    // Check if all joined tables have stats
+    const tables = [fromTable, ...innerJoins.map(j => j.table)];
+    const allHaveStats = tables.every(t => this._tableStats.has(t));
+    if (!allHaveStats) return joins; // Can't optimize without stats
+    
+    // For small join counts (≤6 tables), do full DP enumeration
+    if (innerJoins.length > 5) return joins; // Too many — don't try
+    
+    // Build adjacency: which tables can join which?
+    const joinConditions = new Map(); // "tableA:tableB" -> join ON condition
+    for (const j of innerJoins) {
+      const cols = this._extractJoinColumns(j.on);
+      if (cols) {
+        const key1 = `${cols.leftTable || fromTable}:${j.table}`;
+        const key2 = `${j.table}:${cols.leftTable || fromTable}`;
+        joinConditions.set(key1, j);
+        joinConditions.set(key2, j);
+      }
+    }
+    
+    // DP over subsets: dp[bitmask] = { cost, order, resultRows }
+    const n = innerJoins.length;
+    const tableNames = innerJoins.map(j => j.table);
+    const allTables = [fromTable, ...tableNames];
+    
+    // Initialize single tables
+    const dp = new Map();
+    for (let i = 0; i < allTables.length; i++) {
+      const mask = 1 << i;
+      const table = this.tables.get(allTables[i]);
+      const rows = table ? this._estimateRowCount(table) : 100;
+      dp.set(mask, { cost: rows, rows, order: [i], lastTable: i });
+    }
+    
+    // Build up larger subsets
+    const fullMask = (1 << allTables.length) - 1;
+    for (let size = 2; size <= allTables.length; size++) {
+      // Enumerate all subsets of this size
+      for (let mask = 1; mask <= fullMask; mask++) {
+        if (this._popcount(mask) !== size) continue;
+        
+        let bestCost = Infinity;
+        let bestPlan = null;
+        
+        // Try all ways to split this subset into (subset-1) + 1
+        for (let i = 0; i < allTables.length; i++) {
+          if (!(mask & (1 << i))) continue; // i not in mask
+          
+          const subMask = mask ^ (1 << i); // mask without table i
+          const subPlan = dp.get(subMask);
+          if (!subPlan) continue;
+          
+          // Check if table i can join with any table in subPlan
+          const leftTable = allTables[subPlan.lastTable];
+          const key = `${leftTable}:${allTables[i]}`;
+          const altKey = `${allTables[i]}:${leftTable}`;
+          
+          // Also check any table in the subset
+          let canJoin = joinConditions.has(key) || joinConditions.has(altKey);
+          if (!canJoin) {
+            for (const idx of subPlan.order) {
+              const k1 = `${allTables[idx]}:${allTables[i]}`;
+              const k2 = `${allTables[i]}:${allTables[idx]}`;
+              if (joinConditions.has(k1) || joinConditions.has(k2)) {
+                canJoin = true;
+                break;
+              }
+            }
+          }
+          if (!canJoin) continue;
+          
+          // Estimate cost: subPlan.cost + join cost
+          const rightTable = this.tables.get(allTables[i]);
+          const rightRows = rightTable ? this._estimateRowCount(rightTable) : 100;
+          
+          // Join result estimate
+          const maxNdv = Math.max(
+            this._getTableNdv(allTables[subPlan.lastTable], allTables[i], joinConditions),
+            1
+          );
+          const joinRows = Math.max(1, Math.ceil(subPlan.rows * rightRows / maxNdv));
+          const cost = subPlan.cost + joinRows; // Total tuples processed
+          
+          if (cost < bestCost) {
+            bestCost = cost;
+            bestPlan = { cost, rows: joinRows, order: [...subPlan.order, i], lastTable: i };
+          }
+        }
+        
+        if (bestPlan) {
+          const existing = dp.get(mask);
+          if (!existing || bestPlan.cost < existing.cost) {
+            dp.set(mask, bestPlan);
+          }
+        }
+      }
+    }
+    
+    // Get optimal order for all tables
+    const optimal = dp.get(fullMask);
+    if (!optimal) return joins; // DP failed, use original order
+    
+    // Reconstruct join list in optimal order
+    // optimal.order gives indices into allTables; index 0 is fromTable (already the base)
+    const reordered = [];
+    for (const idx of optimal.order) {
+      if (idx === 0) continue; // Skip the base table
+      const tableName = allTables[idx];
+      const join = innerJoins.find(j => j.table === tableName);
+      if (join) reordered.push(join);
+    }
+    
+    // Append any non-inner joins at the end (preserved in original order)
+    const nonInner = joins.filter(j => j.joinType && j.joinType !== 'INNER');
+    return [...reordered, ...nonInner];
+  }
+
+  _popcount(n) {
+    let count = 0;
+    while (n) { count += n & 1; n >>= 1; }
+    return count;
+  }
+
+  _getTableNdv(table1, table2, joinConditions) {
+    const key = `${table1}:${table2}`;
+    const join = joinConditions.get(key);
+    if (!join) return 1;
+    
+    const cols = this._extractJoinColumns(join.on);
+    if (!cols) return 1;
+    
+    const stats1 = this._tableStats.get(table1);
+    const stats2 = this._tableStats.get(table2);
+    
+    const ndv1 = stats1?.columns[cols.leftCol]?.distinct || 
+                 stats1?.columns[cols.rightCol]?.distinct || 1;
+    const ndv2 = stats2?.columns[cols.leftCol]?.distinct ||
+                 stats2?.columns[cols.rightCol]?.distinct || 1;
+    
+    return Math.max(ndv1, ndv2);
   }
 
   _update(ast) {
