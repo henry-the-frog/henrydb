@@ -210,8 +210,12 @@
       "id": "T20",
       "mode": "BUILD",
       "task": "Stress-test normalizing flows: numerical Jacobian verification (finite-diff vs analytical logDetJ), invertibility under extreme inputs, change-of-variables formula verification, deep flow composition degradation",
-      "status": "upcoming",
-      "plan_ref": "T19"
+      "status": "done",
+      "plan_ref": "T19",
+      "started": "2026-04-12T15:08:36.737Z",
+      "completed": "2026-04-12T15:09:51.034Z",
+      "duration_ms": 300000,
+      "summary": "17 stress tests for normalizing flows. Numerical Jacobian verification (finite-diff) matches analytical logDetJ for all layer types. Invertibility through 20 mixed layers. Change-of-variables formula verified. Extreme inputs handled. ZERO bugs found — implementation is solid."
     },
     {
       "id": "T21",
