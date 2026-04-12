@@ -297,6 +297,20 @@ export function parse(sql) {
       if (isKeyword('ALL')) { all = true; advance(); }
       const right = parseSelect();
       result = { type: 'UNION', left: result, right, all };
+      // If the right SELECT has ORDER BY or LIMIT, they should apply
+      // to the entire UNION (standard SQL behavior)
+      if (right.orderBy) {
+        result.orderBy = right.orderBy;
+        delete right.orderBy;
+      }
+      if (right.limit != null) {
+        result.limit = right.limit;
+        delete right.limit;
+      }
+      if (right.offset != null) {
+        result.offset = right.offset;
+        delete right.offset;
+      }
     } else if (isKeyword('INTERSECT')) {
       advance();
       const right = parseSelect();

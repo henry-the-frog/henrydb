@@ -1842,6 +1842,27 @@ export class Database {
       });
     }
 
+    // ORDER BY on the combined result
+    if (ast.orderBy) {
+      rows.sort((a, b) => {
+        for (const { column, direction } of ast.orderBy) {
+          const colName = typeof column === 'string' ? column : column;
+          const av = this._resolveColumn(colName, a);
+          const bv = this._resolveColumn(colName, b);
+          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
+        }
+        return 0;
+      });
+    }
+
+    // LIMIT/OFFSET
+    if (ast.limit != null || ast.offset != null) {
+      const offset = ast.offset || 0;
+      const limit = ast.limit != null ? ast.limit : rows.length;
+      rows = rows.slice(offset, offset + limit);
+    }
+
     return { type: 'ROWS', rows };
   }
 

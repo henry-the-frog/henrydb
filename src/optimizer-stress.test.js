@@ -190,18 +190,20 @@ describe('Query Optimizer Stress Tests', () => {
     assert.equal(result.rows[9].val, 512);  // 2^9
   });
 
-  it('should handle UNION ALL (without LIMIT — known limitation)', () => {
+  it('should handle UNION ALL + ORDER BY + LIMIT', () => {
     const db = makeDB();
     const result = db.execute(`
       SELECT name, salary, 'high' AS category FROM employees WHERE salary > 70000
       UNION ALL
       SELECT name, salary, 'low' AS category FROM employees WHERE salary < 50000
+      ORDER BY salary DESC
+      LIMIT 10
     `);
     
-    // Should have all high + low earners
-    assert.ok(result.rows.length > 0, 'Should have some results');
-    for (const row of result.rows) {
-      assert.ok(row.salary > 70000 || row.salary < 50000, `${row.salary} should be >70k or <50k`);
+    assert.equal(result.rows.length, 10);
+    // Should be ordered by salary desc
+    for (let i = 1; i < result.rows.length; i++) {
+      assert.ok(result.rows[i - 1].salary >= result.rows[i].salary);
     }
   });
 
