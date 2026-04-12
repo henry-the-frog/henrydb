@@ -457,6 +457,17 @@
       "completed": "2026-04-12T16:18:08.560Z",
       "duration_ms": 300000,
       "summary": "Implemented PREPARE/EXECUTE/DEALLOCATE for HenryDB. Parameter substitution ($1, $2). Works with SELECT, INSERT, UPDATE, DELETE. 10 tests. 323/323 compliance."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create neural-net training logger: tracks loss, accuracy, gradients per epoch. Exports to JSON/CSV for visualization.",
+      "project": "neural-net",
+      "started": "2026-04-12T16:19:15.504Z",
+      "completed": "2026-04-12T16:20:39.242Z",
+      "duration_ms": 180000,
+      "summary": "TrainingLogger: metrics tracking, stats, ASCII charts, JSON/CSV export, improvement detection, checkpoints. 11 tests."
     }
   ],
   "focusProjects": [
@@ -632,6 +643,10 @@
     {
       "time": "2026-04-12T16:15:55.507Z",
       "msg": "Added T42 (BUILD) after end: Implement prepared statements for HenryDB: PREPARE, EXECUTE with parameters, DEALLOCATE. Prevents SQL injection and enables plan reuse."
+    },
+    {
+      "time": "2026-04-12T16:19:15.269Z",
+      "msg": "Added T43 (BUILD) after end: Create neural-net training logger: tracks loss, accuracy, gradients per epoch. Exports to JSON/CSV for visualization."
     }
   ]
 }
