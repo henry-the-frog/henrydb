@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T15:09:51.096Z",
+  "generated": "2026-04-12T15:12:52.522Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test normalizing flows: numerical Jacobian verification (finite-diff vs analytical logDetJ), invertibility under extreme inputs, change-of-variables formula verification, deep flow composition degradation",
-    "completedAt": "2026-04-12T15:09:51.096Z",
-    "taskId": "T20",
-    "summary": "17 stress tests for normalizing flows. Numerical Jacobian verification (finite-diff) matches analytical logDetJ for all layer types. Invertibility through 20 mixed layers. Change-of-variables formula verified. Extreme inputs handled. ZERO bugs found — implementation is solid.",
+    "task": "Stress-test Neural Turing Machine: memory read/write consistency, attention sharpness, copy task learning, gradient flow through memory ops",
+    "completedAt": "2026-04-12T15:12:52.522Z",
+    "taskId": "T22",
+    "summary": "22 NTM stress tests. Memory R/W consistency, content/location addressing, 100-step sequences, attention validity. Initial shift test caught my misunderstanding of circular convolution direction (test bug, not code bug). No implementation bugs found — NTM is solid.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 20,
+    "blocksCompleted": 22,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 7,
+      "BUILD": 9,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
