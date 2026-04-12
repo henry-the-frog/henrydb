@@ -1,6 +1,7 @@
 # Scratch Notes Index
 
 ## Active Notes
+- **depth-testing-lessons.md** — Stress-testing 8 modules: 3 bugs found (KAN boundary, Izhikevich voltage, BETWEEN SYMMETRIC). Methodology for verifying ML implementations. (uses: 0, created: 2026-04-12)
 - **henrydb-persistence-bugs.md** — BufferPool bugs (#1-#3), layer mismatches, WAL recovery, autocommit txId=0 issue, architecture diagram (uses: 1, created: 2026-04-09)
 - **aries-gap-analysis.md** — ARIES recovery vs HenryDB: what we have, what's missing, pageLSN, DPT, CLRs (uses: 2, created: 2026-04-11)
 - **pagelsn-implementation.md** — Concrete implementation path for pageLSN in HenryDB, ~50-80 lines, eliminates lastAppliedLSN hack (uses: 1, created: 2026-04-11, IMPLEMENTED)

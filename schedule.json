@@ -304,6 +304,17 @@
       "completed": "2026-04-12T15:29:36.013Z",
       "duration_ms": 120000,
       "summary": "BETWEEN SYMMETRIC bug: _tryIndexScan didnt swap lo/hi for SYMMETRIC flag. Fixed. SQL compliance: 323/323 (100%)! 🎉"
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Energy Based Model: energy function properties, contrastive divergence, sampling, partition function estimation",
+      "project": "neural-net",
+      "started": "2026-04-12T15:30:07.104Z",
+      "completed": "2026-04-12T15:31:10.827Z",
+      "duration_ms": 120000,
+      "summary": "10 EBM stress tests: numerical gradient matches analytical, Langevin reduces energy, CD training finite. No bugs found."
     }
   ],
   "focusProjects": [
@@ -423,6 +434,10 @@
     {
       "time": "2026-04-12T15:28:12.181Z",
       "msg": "Added T28 (BUILD) after end: Fix HenryDB BETWEEN SYMMETRIC compliance: 2 failing tests in sql-compliance-scorecard (321/323 → 323/323)"
+    },
+    {
+      "time": "2026-04-12T15:30:06.871Z",
+      "msg": "Added T29 (BUILD) after end: Stress-test Energy Based Model: energy function properties, contrastive divergence, sampling, partition function estimation"
     }
   ]
 }
