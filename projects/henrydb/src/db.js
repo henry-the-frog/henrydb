@@ -3897,7 +3897,9 @@ export class Database {
         const colName = colRef.name.includes('.') ? colRef.name.split('.').pop() : colRef.name;
         const index = table.indexes.get(colName);
         if (index && !index._isHash && where.low?.type === 'literal' && where.high?.type === 'literal') {
-          const entries = index.range(where.low.value, where.high.value);
+          let lo = where.low.value, hi = where.high.value;
+          if (where.symmetric && lo > hi) { const tmp = lo; lo = hi; hi = tmp; }
+          const entries = index.range(lo, hi);
           const rows = [];
           for (const entry of entries) {
             const rid = entry.value;
