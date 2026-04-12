@@ -238,6 +238,17 @@
       "completed": "2026-04-12T15:12:52.457Z",
       "duration_ms": 300000,
       "summary": "22 NTM stress tests. Memory R/W consistency, content/location addressing, 100-step sequences, attention validity. Initial shift test caught my misunderstanding of circular convolution direction (test bug, not code bug). No implementation bugs found — NTM is solid."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement OR condition index optimization in HenryDB: bitmap union of two index scans for OR predicates on indexed columns",
+      "project": "henrydb",
+      "started": "2026-04-12T15:13:32.617Z",
+      "completed": "2026-04-12T15:14:43.254Z",
+      "duration_ms": 180000,
+      "summary": "Implemented OR condition index optimization. Both sides of OR get index-scanned and results unioned with dedup. Optimizer now covers ALL common predicates: =, >, >=, <, <=, BETWEEN, IN, AND, OR. 321/323 scorecard, 23/23 index tests."
     }
   ],
   "focusProjects": [
@@ -333,6 +344,10 @@
     {
       "time": "2026-04-12T15:10:47.120Z",
       "msg": "Added T22 (BUILD) after end: Stress-test Neural Turing Machine: memory read/write consistency, attention sharpness, copy task learning, gradient flow through memory ops"
+    },
+    {
+      "time": "2026-04-12T15:13:25.853Z",
+      "msg": "Added T23 (BUILD) after end: Implement OR condition index optimization in HenryDB: bitmap union of two index scans for OR predicates on indexed columns"
     }
   ]
 }

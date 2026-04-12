@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:12:52.522Z",
+  "generated": "2026-04-12T15:14:43.320Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test Neural Turing Machine: memory read/write consistency, attention sharpness, copy task learning, gradient flow through memory ops",
-    "completedAt": "2026-04-12T15:12:52.522Z",
-    "taskId": "T22",
-    "summary": "22 NTM stress tests. Memory R/W consistency, content/location addressing, 100-step sequences, attention validity. Initial shift test caught my misunderstanding of circular convolution direction (test bug, not code bug). No implementation bugs found — NTM is solid.",
-    "durationMs": 300000
+    "task": "Implement OR condition index optimization in HenryDB: bitmap union of two index scans for OR predicates on indexed columns",
+    "completedAt": "2026-04-12T15:14:43.320Z",
+    "taskId": "T23",
+    "summary": "Implemented OR condition index optimization. Both sides of OR get index-scanned and results unioned with dedup. Optimizer now covers ALL common predicates: =, >, >=, <, <=, BETWEEN, IN, AND, OR. 321/323 scorecard, 23/23 index tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 22,
+    "blocksCompleted": 23,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 9,
+      "BUILD": 10,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
