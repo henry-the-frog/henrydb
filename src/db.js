@@ -2057,15 +2057,39 @@ export class Database {
       if (newRows.length === 0) break;
 
       // Normalize column names to match base query
-      if (columnNames.length > 0) {
-        newRows = newRows.map(row => {
+      // Recursive query columns map positionally to base column names.
+      // Re-evaluate expressions because SELECT column naming can collide.
+      if (columnNames.length > 0 && recursiveQuery.columns) {
+        const recCols = recursiveQuery.columns;
+        
+        // Get the raw working set rows (before SELECT transforms them)
+        // We need to re-evaluate against the source rows, not the SELECT output
+        const sourceView = this.views.get(cte.name);
+        const sourceRows = sourceView?.materializedRows || workingSet;
+        
+        // Re-evaluate: for each source row that passes WHERE, compute each column
+        const whereFilter = recursiveQuery.where;
+        newRows = [];
+        
+        for (const srcRow of sourceRows) {
+          if (whereFilter && !this._evalExpr(whereFilter, srcRow)) continue;
+          
           const normalized = {};
-          const rowKeys = Object.keys(row);
-          for (let i = 0; i < columnNames.length && i < rowKeys.length; i++) {
-            normalized[columnNames[i]] = row[rowKeys[i]];
+          for (let i = 0; i < columnNames.length && i < recCols.length; i++) {
+            const col = recCols[i];
+            let val;
+            if (col.type === 'expression' && col.expr) {
+              val = this._evalValue(col.expr, srcRow);
+            } else if (col.type === 'column') {
+              val = this._resolveColumn(col.name, srcRow);
+            } else if (col.type === 'aggregate') {
+              val = null; // Aggregates not supported in recursive part
+            }
+            if (col.alias) normalized[col.alias] = val;
+            normalized[columnNames[i]] = val;
           }
-          return normalized;
-        });
+          newRows.push(normalized);
+        }
       }
 
       // Cycle detection: check if any new row already exists in allRows

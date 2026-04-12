@@ -173,21 +173,22 @@ describe('Query Optimizer Stress Tests', () => {
     }
   });
 
-  it('should handle recursive CTE (powers of 2)', () => {
+  it('should handle recursive CTE (Fibonacci)', () => {
     const db = new Database();
     const result = db.execute(`
-      WITH RECURSIVE pow2 AS (
-        SELECT 1 AS n, 1 AS val
+      WITH RECURSIVE fib AS (
+        SELECT 1 AS n, 1 AS val, 0 AS prev
         UNION ALL
-        SELECT n + 1 AS n, val * 2 AS val FROM pow2 WHERE n < 10
+        SELECT n + 1, val + prev, val FROM fib WHERE n < 10
       )
-      SELECT n, val FROM pow2
+      SELECT n, val FROM fib
     `);
     
     assert.equal(result.rows.length, 10);
-    assert.equal(result.rows[0].val, 1);    // 2^0
-    assert.equal(result.rows[4].val, 16);   // 2^4
-    assert.equal(result.rows[9].val, 512);  // 2^9
+    // Fibonacci: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
+    assert.equal(result.rows[0].val, 1);
+    assert.equal(result.rows[4].val, 5);
+    assert.equal(result.rows[9].val, 55);
   });
 
   it('should handle UNION ALL + ORDER BY + LIMIT', () => {
