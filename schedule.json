@@ -603,8 +603,12 @@
       "id": "T60",
       "mode": "BUILD",
       "task": "Optimizer accuracy: ANALYZE tables then compare EXPLAIN estimated rows vs actual. Find worst estimates",
-      "status": "upcoming",
-      "plan_ref": "T57"
+      "status": "done",
+      "plan_ref": "T57",
+      "started": "2026-04-12T17:48:13.690Z",
+      "completed": "2026-04-12T17:58:04.609Z",
+      "duration_ms": 600000,
+      "summary": "Optimizer accuracy test: 18 targeted queries. Fixed range estimation (linear interpolation from ANALYZE min/max), GROUP BY cardinality (uses ndistinct), BETWEEN/IN/IS NULL estimation. Average error: 13.32x→2.77x, within 2x: 83%→78%. Remaining gaps: skewed distributions (need histograms), JOIN estimates (no LIMIT propagation). 21 tests pass."
     },
     {
       "id": "T61",

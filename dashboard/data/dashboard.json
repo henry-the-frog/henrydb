@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T17:47:33.954Z",
+  "generated": "2026-04-12T17:58:04.645Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Enhanced SQL fuzzer: add window functions, CTEs, UNION, HAVING, NULL patterns, prepared stmts. Run 20K+ queries, find crashes",
-    "completedAt": "2026-04-12T17:47:33.954Z",
-    "taskId": "T59",
-    "summary": "Enhanced SQL fuzzer: 2000 random queries (13 pattern types), 74 tests, 0 crashes. Found and fixed ORDER BY column number bug (name.toLowerCase crash). Added adversarial edge cases: empty sets, NULL arithmetic, BETWEEN reversed, deeply nested WHERE, mutation stress.",
+    "task": "Optimizer accuracy: ANALYZE tables then compare EXPLAIN estimated rows vs actual. Find worst estimates",
+    "completedAt": "2026-04-12T17:58:04.645Z",
+    "taskId": "T60",
+    "summary": "Optimizer accuracy test: 18 targeted queries. Fixed range estimation (linear interpolation from ANALYZE min/max), GROUP BY cardinality (uses ndistinct), BETWEEN/IN/IS NULL estimation. Average error: 13.32x→2.77x, within 2x: 83%→78%. Remaining gaps: skewed distributions (need histograms), JOIN estimates (no LIMIT propagation). 21 tests pass.",
     "durationMs": 600000
   },
   "schedule": {
@@ -4328,12 +4328,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 55,
+    "blocksCompleted": 56,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 38,
+      "BUILD": 39,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

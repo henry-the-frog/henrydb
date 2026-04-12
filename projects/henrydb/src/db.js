@@ -2560,8 +2560,28 @@ export class Database {
       }
     }
     
-    // Range: col > val, col < val → estimate ~33% of rows
-    if (where.type === 'COMPARE' && ['GT', 'GTE', 'LT', 'LTE'].includes(where.op)) {
+    // Range: col > val, col < val → use min/max from ANALYZE if available
+    if (where.type === 'COMPARE' && ['GT', 'GE', 'GTE', 'LT', 'LE', 'LTE'].includes(where.op)) {
+      const col = where.left?.type === 'column_ref' ? where.left.name : null;
+      const val = where.right?.type === 'literal' ? where.right.value : null;
+      if (col && val != null) {
+        const colName = col.includes('.') ? col.split('.').pop() : col;
+        const colStats = stats.columns[colName];
+        if (colStats && colStats.min != null && colStats.max != null && colStats.max > colStats.min) {
+          // Linear interpolation between min and max
+          const range = colStats.max - colStats.min;
+          let fraction;
+          if (where.op === 'GT' || where.op === 'GE' || where.op === 'GTE') {
+            fraction = Math.max(0, Math.min(1, (colStats.max - val) / range));
+          } else {
+            fraction = Math.max(0, Math.min(1, (val - colStats.min) / range));
+          }
+          return {
+            estimated: Math.max(1, Math.ceil(totalRows * fraction)),
+            method: `range(${colName}: ${fraction.toFixed(3)})`,
+          };
+        }
+      }
       return { estimated: Math.ceil(totalRows * 0.33), method: 'range ~33%' };
     }
     
@@ -2585,6 +2605,55 @@ export class Database {
       };
     }
     
+    // IS NULL / IS NOT NULL
+    if (where.type === 'IS_NULL' || where.type === 'IS_NOT_NULL' || 
+        (where.type === 'COMPARE' && (where.op === 'IS' || where.op === 'IS_NOT'))) {
+      const col = where.left?.name || where.column?.name || where.operand?.name;
+      if (col) {
+        const colName = col.includes('.') ? col.split('.').pop() : col;
+        const colStats = stats.columns[colName];
+        if (colStats) {
+          const nullFraction = totalRows > 0 ? colStats.nulls / totalRows : 0;
+          if (where.type === 'IS_NULL' || where.op === 'IS') {
+            return { estimated: Math.max(1, Math.ceil(totalRows * nullFraction)), method: `null_frac(${colName})=${nullFraction.toFixed(3)}` };
+          } else {
+            return { estimated: Math.max(1, Math.ceil(totalRows * (1 - nullFraction))), method: `not_null_frac(${colName})=${(1-nullFraction).toFixed(3)}` };
+          }
+        }
+      }
+    }
+
+    // BETWEEN: use min/max interpolation
+    if (where.type === 'BETWEEN') {
+      const col = where.left?.name || where.column?.name || where.expr?.name;
+      if (col) {
+        const colName = col.includes('.') ? col.split('.').pop() : col;
+        const colStats = stats.columns[colName];
+        const lo = where.low?.value;
+        const hi = where.high?.value;
+        if (colStats && colStats.min != null && colStats.max != null && lo != null && hi != null) {
+          const range = colStats.max - colStats.min;
+          if (range > 0) {
+            const fraction = Math.max(0, Math.min(1, (Math.min(hi, colStats.max) - Math.max(lo, colStats.min)) / range));
+            return { estimated: Math.max(1, Math.ceil(totalRows * fraction)), method: `between(${colName}: ${fraction.toFixed(3)})` };
+          }
+        }
+      }
+    }
+
+    // IN list: sum of per-value selectivities
+    if (where.type === 'IN' || where.type === 'IN_LIST') {
+      const col = where.left?.name || where.column?.name;
+      if (col) {
+        const colName = col.includes('.') ? col.split('.').pop() : col;
+        const colStats = stats.columns[colName];
+        const listLen = where.values?.length || where.list?.length || 3;
+        if (colStats) {
+          return { estimated: Math.max(1, Math.ceil(totalRows * colStats.selectivity * listLen)), method: `in(${colName}, ${listLen} values)` };
+        }
+      }
+    }
+
     return { estimated: Math.ceil(totalRows * 0.33), method: 'default 33%' };
   }
 
@@ -3274,7 +3343,23 @@ export class Database {
 
     // GROUP BY
     if (stmt.groupBy) {
-      plan.push({ operation: 'HASH_GROUP_BY', columns: stmt.groupBy });
+      // Estimate group count from ANALYZE ndistinct
+      let groupEstimate = null;
+      const stats = this._tableStats?.get(tableName);
+      if (stats && stmt.groupBy.length > 0) {
+        // For single column GROUP BY, use ndistinct
+        const groupCols = stmt.groupBy.map(g => typeof g === 'string' ? g : g.name).filter(Boolean);
+        if (groupCols.length === 1 && stats.columns[groupCols[0]]) {
+          groupEstimate = stats.columns[groupCols[0]].distinct;
+        } else if (groupCols.length > 1) {
+          // Multi-column: product of ndistinct (capped at total rows)
+          groupEstimate = groupCols.reduce((prod, c) => {
+            return prod * (stats.columns[c]?.distinct || 10);
+          }, 1);
+          groupEstimate = Math.min(groupEstimate, estRows);
+        }
+      }
+      plan.push({ operation: 'HASH_GROUP_BY', columns: stmt.groupBy, estimated_groups: groupEstimate });
     }
 
     // HAVING
@@ -3606,11 +3691,29 @@ export class Database {
       
       const engine = table.heap instanceof BTreeTable ? 'btree' : 'heap';
       
+      // Use _estimateFilteredRows for better WHERE clause estimates
+      let outputEstimate = plannerEstimate?.estimatedRows || totalRows;
+      if (stmt.where) {
+        const filterEst = this._estimateFilteredRows(tableName, stmt.where, totalRows);
+        if (filterEst) outputEstimate = filterEst.estimated;
+      }
+      
+      // For GROUP BY queries, estimate output rows based on group cardinality
+      if (stmt.groupBy) {
+        const stats = this._tableStats?.get(tableName);
+        if (stats) {
+          const groupCols = stmt.groupBy.map(g => typeof g === 'string' ? g : g.name).filter(Boolean);
+          if (groupCols.length === 1 && stats.columns[groupCols[0]]) {
+            outputEstimate = stats.columns[groupCols[0]].distinct;
+          }
+        }
+      }
+
       analysis.push({
         operation: plannerEstimate?.scanType || 'TABLE_SCAN',
         table: tableName,
         engine,
-        estimated_rows: plannerEstimate?.estimatedRows || '?',
+        estimated_rows: outputEstimate,
         actual_rows: actualRows,
         total_table_rows: totalRows,
         selectivity: totalRows > 0 ? (actualRows / totalRows).toFixed(4) : '?',
@@ -3638,7 +3741,16 @@ export class Database {
 
     // GROUP BY
     if (stmt.groupBy) {
-      analysis.push({ operation: 'GROUP_BY', groups: actualRows });
+      // Estimate group cardinality from ANALYZE stats
+      let estimatedGroups = null;
+      if (tableName && this._tableStats?.has(tableName)) {
+        const stats = this._tableStats.get(tableName);
+        const groupCols = stmt.groupBy.map(g => typeof g === 'string' ? g : g.name).filter(Boolean);
+        if (groupCols.length === 1 && stats.columns[groupCols[0]]) {
+          estimatedGroups = stats.columns[groupCols[0]].distinct;
+        }
+      }
+      analysis.push({ operation: 'GROUP_BY', groups: actualRows, estimated_groups: estimatedGroups });
     }
 
     // ORDER BY
