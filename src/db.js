@@ -1250,6 +1250,20 @@ export class Database {
         rows = viewResult.rows;
       }
 
+      // Add alias-qualified column names so e.g. "ds.col" resolves
+      const alias = ast.from.alias || tableName;
+      if (alias) {
+        rows = rows.map(row => {
+          const newRow = { ...row };
+          for (const [k, v] of Object.entries(row)) {
+            if (!k.includes('.')) {
+              newRow[`${alias}.${k}`] = v;
+            }
+          }
+          return newRow;
+        });
+      }
+
       // Apply WHERE
       if (ast.where) {
         rows = rows.filter(row => this._evalExpr(ast.where, row));
