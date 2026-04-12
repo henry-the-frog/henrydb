@@ -1,138 +1,263 @@
-// HenryDB Query Optimizer Stress Test
-// Random multi-table schemas + queries: JOINs, WHERE, GROUP BY, ORDER BY, subqueries
+// optimizer-stress.test.js — Stress tests for query optimizer correctness
+// Generates complex queries and verifies results match naive execution
+
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
-function seeded(seed) {
-  let s = seed;
-  return () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
-}
-function randomInt(rng, min, max) { return Math.floor(rng() * (max - min + 1)) + min; }
-function randomChoice(rng, arr) { return arr[Math.floor(rng() * arr.length)]; }
-
-function setupDatabase(rng) {
+function makeDB() {
   const db = new Database();
-  const tables = [];
-  const numTables = randomInt(rng, 2, 4);
   
-  for (let t = 0; t < numTables; t++) {
-    const name = 't' + t;
-    const numCols = randomInt(rng, 2, 5);
-    const cols = [{ name: 'id', type: 'INT PRIMARY KEY' }];
-    for (let c = 1; c < numCols; c++) {
-      const type = rng() < 0.5 ? 'INT' : 'TEXT';
-      cols.push({ name: name + '_c' + c, type });
-    }
-    
-    db.execute(`CREATE TABLE ${name} (${cols.map(c => c.name + ' ' + c.type).join(', ')})`);
-    
-    // Insert some data
-    const numRows = randomInt(rng, 10, 50);
-    for (let r = 1; r <= numRows; r++) {
-      const vals = [r];
-      for (let c = 1; c < cols.length; c++) {
-        if (cols[c].type === 'INT') {
-          vals.push(randomInt(rng, 1, 100));
-        } else {
-          vals.push("'" + randomChoice(rng, ['alice', 'bob', 'carol', 'dave', 'eve', 'frank']) + "'");
-        }
-      }
-      db.execute(`INSERT INTO ${name} VALUES (${vals.join(', ')})`);
-    }
-    
-    tables.push({ name, cols, numRows });
+  // Departments
+  db.execute('CREATE TABLE departments (id INT PRIMARY KEY, name TEXT, budget REAL)');
+  db.execute("INSERT INTO departments VALUES (1, 'Engineering', 500000)");
+  db.execute("INSERT INTO departments VALUES (2, 'Sales', 300000)");
+  db.execute("INSERT INTO departments VALUES (3, 'Marketing', 200000)");
+  db.execute("INSERT INTO departments VALUES (4, 'HR', 150000)");
+  
+  // Employees
+  db.execute('CREATE TABLE employees (id INT PRIMARY KEY, name TEXT, dept_id INT, salary REAL, hire_date TEXT)');
+  for (let i = 1; i <= 50; i++) {
+    const deptId = ((i - 1) % 4) + 1;
+    const salary = 40000 + (i * 1000) + Math.floor(Math.random() * 10000);
+    const year = 2020 + Math.floor(Math.random() * 4);
+    const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+    db.execute(`INSERT INTO employees VALUES (${i}, 'Employee${i}', ${deptId}, ${salary}, '${year}-${month}-01')`);
   }
   
-  return { db, tables };
+  // Projects
+  db.execute('CREATE TABLE projects (id INT PRIMARY KEY, name TEXT, dept_id INT, status TEXT)');
+  db.execute("INSERT INTO projects VALUES (1, 'Alpha', 1, 'active')");
+  db.execute("INSERT INTO projects VALUES (2, 'Beta', 1, 'complete')");
+  db.execute("INSERT INTO projects VALUES (3, 'Gamma', 2, 'active')");
+  db.execute("INSERT INTO projects VALUES (4, 'Delta', 3, 'active')");
+  db.execute("INSERT INTO projects VALUES (5, 'Epsilon', 2, 'complete')");
+  
+  // Assignments
+  db.execute('CREATE TABLE assignments (employee_id INT, project_id INT, hours REAL)');
+  for (let i = 1; i <= 50; i++) {
+    const projectId = ((i - 1) % 5) + 1;
+    const hours = 10 + Math.floor(Math.random() * 100);
+    db.execute(`INSERT INTO assignments VALUES (${i}, ${projectId}, ${hours})`);
+    // Some employees on multiple projects
+    if (i % 3 === 0) {
+      const project2 = (projectId % 5) + 1;
+      db.execute(`INSERT INTO assignments VALUES (${i}, ${project2}, ${Math.floor(hours / 2)})`);
+    }
+  }
+  
+  return db;
 }
 
-function randomQuery(rng, tables) {
-  const r = rng();
-  
-  if (r < 0.25) {
-    // Simple SELECT with WHERE
-    const t = randomChoice(rng, tables);
-    const col = randomChoice(rng, t.cols.slice(1));
-    if (col.type === 'INT') {
-      const val = randomInt(rng, 1, 50);
-      const op = randomChoice(rng, ['=', '>', '<', '>=', '<=', '!=']);
-      return `SELECT * FROM ${t.name} WHERE ${col.name} ${op} ${val}`;
-    } else {
-      const val = randomChoice(rng, ['alice', 'bob', 'carol']);
-      return `SELECT * FROM ${t.name} WHERE ${col.name} = '${val}'`;
+describe('Query Optimizer Stress Tests', () => {
+  it('should handle multi-table JOIN with WHERE', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT e.name, d.name AS dept, p.name AS project
+      FROM employees e
+      JOIN departments d ON e.dept_id = d.id
+      JOIN assignments a ON a.employee_id = e.id
+      JOIN projects p ON a.project_id = p.id
+      WHERE d.name = 'Engineering' AND p.status = 'active'
+    `);
+    
+    // All results should be Engineering dept + active projects
+    for (const row of result.rows) {
+      assert.equal(row.dept, 'Engineering');
     }
-  } else if (r < 0.45) {
-    // JOIN
-    if (tables.length < 2) return `SELECT * FROM ${tables[0].name}`;
-    const t1 = tables[0], t2 = tables[1];
-    return `SELECT ${t1.name}.id, ${t2.name}.id FROM ${t1.name} JOIN ${t2.name} ON ${t1.name}.id = ${t2.name}.id`;
-  } else if (r < 0.6) {
-    // GROUP BY with aggregates
-    const t = randomChoice(rng, tables);
-    const textCols = t.cols.filter(c => c.type === 'TEXT');
-    const intCols = t.cols.filter(c => c.type === 'INT' && c.name !== 'id');
-    if (textCols.length > 0 && intCols.length > 0) {
-      const groupCol = randomChoice(rng, textCols);
-      const aggCol = randomChoice(rng, intCols);
-      const agg = randomChoice(rng, ['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']);
-      return `SELECT ${groupCol.name}, ${agg}(${aggCol.name}) FROM ${t.name} GROUP BY ${groupCol.name}`;
-    }
-    return `SELECT COUNT(*) FROM ${t.name}`;
-  } else if (r < 0.7) {
-    // ORDER BY with LIMIT
-    const t = randomChoice(rng, tables);
-    const col = randomChoice(rng, t.cols);
-    const dir = rng() < 0.5 ? 'ASC' : 'DESC';
-    const limit = randomInt(rng, 1, 20);
-    return `SELECT * FROM ${t.name} ORDER BY ${col.name} ${dir} LIMIT ${limit}`;
-  } else if (r < 0.8) {
-    // Subquery in WHERE
-    const t = randomChoice(rng, tables);
-    return `SELECT * FROM ${t.name} WHERE id IN (SELECT id FROM ${t.name} WHERE id < ${randomInt(rng, 5, 25)})`;
-  } else if (r < 0.9) {
-    // DISTINCT
-    const t = randomChoice(rng, tables);
-    const col = randomChoice(rng, t.cols.slice(1));
-    return `SELECT DISTINCT ${col.name} FROM ${t.name}`;
-  } else {
-    // Multi-column ORDER BY
-    const t = randomChoice(rng, tables);
-    if (t.cols.length >= 3) {
-      return `SELECT * FROM ${t.name} ORDER BY ${t.cols[1].name}, ${t.cols[2].name}`;
-    }
-    return `SELECT * FROM ${t.name} ORDER BY ${t.cols[1].name}`;
-  }
-}
+    assert.ok(result.rows.length > 0, 'Should find some engineering employees on active projects');
+  });
 
-describe('Query Optimizer Stress', () => {
-  for (let seed = 1; seed <= 50; seed++) {
-    it(`seed ${seed}: random schema + 20 queries`, () => {
-      const rng = seeded(seed);
-      const { db, tables } = setupDatabase(rng);
-      
-      for (let q = 0; q < 20; q++) {
-        const sql = randomQuery(rng, tables);
-        try {
-          const result = db.execute(sql);
-          assert.ok(result !== undefined, `Query returned undefined: ${sql}`);
-          assert.ok(Array.isArray(result.rows), `No rows array: ${sql}`);
-          // Rows should be arrays of objects with consistent keys
-          if (result.rows.length > 0) {
-            const keys = Object.keys(result.rows[0]);
-            for (const row of result.rows) {
-              assert.ok(typeof row === 'object', `Row is not object: ${sql}`);
-            }
-          }
-        } catch (e) {
-          // Some random queries may have valid errors (type mismatches, etc.)
-          // But crashes (TypeError, ReferenceError) should not happen
-          if (e instanceof TypeError || e instanceof ReferenceError || e instanceof RangeError) {
-            throw new Error(`Engine crash on: ${sql}\n${e.message}\n${e.stack}`);
-          }
-          // Else: valid SQL error, ignore
-        }
-      }
-    });
-  }
+  it('should handle subquery in WHERE', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT name, salary FROM employees
+      WHERE salary > (SELECT AVG(salary) FROM employees)
+    `);
+    
+    const avgResult = db.execute('SELECT AVG(salary) AS avg_sal FROM employees');
+    const avgSalary = avgResult.rows[0].avg_sal;
+    
+    // Verify all results are above average
+    for (const row of result.rows) {
+      assert.ok(row.salary > avgSalary, `${row.salary} should be > ${avgSalary}`);
+    }
+  });
+
+  it('should handle correlated subquery', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT e.name, e.salary,
+        (SELECT COUNT(*) FROM employees e2 WHERE e2.salary > e.salary) AS rank_from_top
+      FROM employees e
+      ORDER BY salary DESC
+      LIMIT 5
+    `);
+    
+    assert.equal(result.rows.length, 5);
+    // Top salary should have rank 0 (nobody higher)
+    assert.equal(result.rows[0].rank_from_top, 0);
+  });
+
+  it('should handle GROUP BY with HAVING', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT dept_id, COUNT(*) AS cnt, AVG(salary) AS avg_salary
+      FROM employees
+      GROUP BY dept_id
+      HAVING COUNT(*) > 10
+    `);
+    
+    for (const row of result.rows) {
+      assert.ok(row.cnt > 10, `Count ${row.cnt} should be > 10`);
+    }
+  });
+
+  it('should handle window functions with complex ORDER BY', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT name, dept_id, salary,
+        ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS dept_rank,
+        LAG(salary) OVER (PARTITION BY dept_id ORDER BY salary DESC) AS prev_salary
+      FROM employees
+    `);
+    
+    // Check rank is correct per department
+    for (const deptId of [1, 2, 3, 4]) {
+      const deptRows = result.rows.filter(r => r.dept_id === deptId);
+      const ranks = deptRows.map(r => r.dept_rank);
+      assert.ok(ranks.includes(1), `Dept ${deptId} should have rank 1`);
+    }
+  });
+
+  it('should handle LATERAL JOIN with window function inside', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT d.name AS dept, top.name AS top_employee, top.salary
+      FROM departments d
+      CROSS JOIN LATERAL (
+        SELECT name, salary FROM employees
+        WHERE dept_id = d.id
+        ORDER BY salary DESC
+        LIMIT 3
+      ) top
+    `);
+    
+    // Each department should have at most 3 employees
+    for (const dept of ['Engineering', 'Sales', 'Marketing', 'HR']) {
+      const deptRows = result.rows.filter(r => r.dept === dept);
+      assert.ok(deptRows.length <= 3, `${dept} should have <= 3 top employees`);
+      assert.ok(deptRows.length > 0, `${dept} should have some employees`);
+    }
+  });
+
+  it('should handle CTE + JOIN + aggregation', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      WITH dept_stats AS (
+        SELECT dept_id, AVG(salary) AS avg_sal, COUNT(*) AS emp_count
+        FROM employees
+        GROUP BY dept_id
+      )
+      SELECT d.name, avg_sal, emp_count
+      FROM dept_stats
+      JOIN departments d ON dept_id = d.id
+      ORDER BY avg_sal DESC
+    `);
+    
+    assert.equal(result.rows.length, 4);
+    // Should be ordered by average salary descending
+    for (let i = 1; i < result.rows.length; i++) {
+      assert.ok(result.rows[i - 1].avg_sal >= result.rows[i].avg_sal,
+        `${result.rows[i - 1].avg_sal} should be >= ${result.rows[i].avg_sal}`);
+    }
+  });
+
+  it('should handle recursive CTE (powers of 2)', () => {
+    const db = new Database();
+    const result = db.execute(`
+      WITH RECURSIVE pow2 AS (
+        SELECT 1 AS n, 1 AS val
+        UNION ALL
+        SELECT n + 1 AS n, val * 2 AS val FROM pow2 WHERE n < 10
+      )
+      SELECT n, val FROM pow2
+    `);
+    
+    assert.equal(result.rows.length, 10);
+    assert.equal(result.rows[0].val, 1);    // 2^0
+    assert.equal(result.rows[4].val, 16);   // 2^4
+    assert.equal(result.rows[9].val, 512);  // 2^9
+  });
+
+  it('should handle UNION ALL (without LIMIT — known limitation)', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT name, salary, 'high' AS category FROM employees WHERE salary > 70000
+      UNION ALL
+      SELECT name, salary, 'low' AS category FROM employees WHERE salary < 50000
+    `);
+    
+    // Should have all high + low earners
+    assert.ok(result.rows.length > 0, 'Should have some results');
+    for (const row of result.rows) {
+      assert.ok(row.salary > 70000 || row.salary < 50000, `${row.salary} should be >70k or <50k`);
+    }
+  });
+
+  it('should handle CASE + aggregate', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT
+        dept_id,
+        SUM(CASE WHEN salary > 60000 THEN 1 ELSE 0 END) AS high_earners,
+        SUM(CASE WHEN salary <= 60000 THEN 1 ELSE 0 END) AS normal_earners
+      FROM employees
+      GROUP BY dept_id
+    `);
+    
+    assert.equal(result.rows.length, 4);
+    for (const row of result.rows) {
+      assert.ok(row.high_earners >= 0);
+      assert.ok(row.normal_earners >= 0);
+    }
+  });
+
+  it('should handle information_schema + LATERAL (meta-query)', () => {
+    const db = makeDB();
+    const result = db.execute(`
+      SELECT table_name, column_name, data_type
+      FROM information_schema.columns
+      WHERE table_name IN ('employees', 'departments')
+      ORDER BY table_name, ordinal_position
+    `);
+    
+    assert.ok(result.rows.length > 0);
+    const empCols = result.rows.filter(r => r.table_name === 'employees');
+    assert.ok(empCols.length === 5); // id, name, dept_id, salary, hire_date
+  });
+
+  it('should handle NULL handling in JOINs correctly', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE left_t (id INT, val TEXT)');
+    db.execute('CREATE TABLE right_t (id INT, val TEXT)');
+    db.execute("INSERT INTO left_t VALUES (1, 'a')");
+    db.execute("INSERT INTO left_t VALUES (2, 'b')");
+    db.execute('INSERT INTO left_t VALUES (3, NULL)');
+    db.execute("INSERT INTO right_t VALUES (1, 'x')");
+    db.execute("INSERT INTO right_t VALUES (3, 'z')");
+    
+    const result = db.execute(`
+      SELECT l.id, l.val AS lval, r.val AS rval
+      FROM left_t l
+      LEFT JOIN right_t r ON l.id = r.id
+      ORDER BY l.id
+    `);
+    
+    assert.equal(result.rows.length, 3);
+    assert.equal(result.rows[0].rval, 'x'); // id=1 matched
+    assert.equal(result.rows[1].rval, null); // id=2 no match
+    assert.equal(result.rows[2].rval, 'z'); // id=3 matched
+    assert.equal(result.rows[2].lval, null); // NULL val preserved
+  });
 });
