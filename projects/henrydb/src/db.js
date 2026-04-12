@@ -3849,6 +3849,68 @@ export class Database {
       }
     }
 
+    // Range comparison: col > literal, col >= literal, col < literal, col <= literal
+    if (where.type === 'COMPARE' && ['GT', 'GTE', 'LT', 'LTE'].includes(where.op)) {
+      const colRef = where.left.type === 'column_ref' ? where.left : (where.right.type === 'column_ref' ? where.right : null);
+      const literal = where.left.type === 'literal' ? where.left : (where.right.type === 'literal' ? where.right : null);
+      if (colRef && literal) {
+        const colName = colRef.name.includes('.') ? colRef.name.split('.').pop() : colRef.name;
+        const index = table.indexes.get(colName);
+        if (index && !index._isHash && index.range) {
+          // B+tree scan — iterate all index entries and filter by comparison
+          const isColLeft = where.left.type === 'column_ref';
+          const rows = [];
+          for (const entry of index.scan()) {
+            const val = entry.key;
+            let passes;
+            if (isColLeft) {
+              switch (where.op) {
+                case 'GT':  passes = val > literal.value; break;
+                case 'GTE': passes = val >= literal.value; break;
+                case 'LT':  passes = val < literal.value; break;
+                case 'LTE': passes = val <= literal.value; break;
+              }
+            } else {
+              switch (where.op) {
+                case 'GT':  passes = val < literal.value; break;
+                case 'GTE': passes = val <= literal.value; break;
+                case 'LT':  passes = val > literal.value; break;
+                case 'LTE': passes = val >= literal.value; break;
+              }
+            }
+            if (!passes) continue;
+            const rid = entry.value;
+            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            if (values) {
+              rows.push(this._valuesToRow(values, table.schema, tableAlias));
+            }
+          }
+          return { rows, residual: null };
+        }
+      }
+    }
+
+    // BETWEEN: col BETWEEN lo AND hi
+    if (where.type === 'BETWEEN') {
+      const colRef = (where.left?.type === 'column_ref') ? where.left : (where.expr?.type === 'column_ref' ? where.expr : null);
+      if (colRef) {
+        const colName = colRef.name.includes('.') ? colRef.name.split('.').pop() : colRef.name;
+        const index = table.indexes.get(colName);
+        if (index && !index._isHash && where.low?.type === 'literal' && where.high?.type === 'literal') {
+          const entries = index.range(where.low.value, where.high.value);
+          const rows = [];
+          for (const entry of entries) {
+            const rid = entry.value;
+            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            if (values) {
+              rows.push(this._valuesToRow(values, table.schema, tableAlias));
+            }
+          }
+          return { rows, residual: null };
+        }
+      }
+    }
+
     // AND: try to use index on one side, residual on the other
     if (where.type === 'AND') {
       const leftScan = this._tryIndexScan(table, where.left, tableAlias);
