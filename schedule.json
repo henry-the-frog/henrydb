@@ -90,10 +90,14 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Stress-test HenryDB index selection: verify optimizer picks index scans over table scans for indexed columns, test multi-column indexes, composite WHERE clauses, OR conditions, range scans. Find bugs where optimizer chooses wrong plan.",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-12T14:46:34.772Z",
+      "completed": "2026-04-12T14:53:41.427Z",
+      "duration_ms": 300000,
+      "summary": "Implemented B+tree index range scans (>, >=, <, <=, BETWEEN). Previously only equality used indexes. 23 stress tests covering all index scenarios. Found optimizer gaps: OR, IN still use table scan (out of scope). 321/323 scorecard, 52/52 index tests."
     },
     {
       "id": "T17",

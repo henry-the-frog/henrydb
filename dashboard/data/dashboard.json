@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T14:46:19.128Z",
+  "generated": "2026-04-12T14:53:41.464Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-12T14:46:19.128Z",
-    "taskId": "T6",
-    "summary": "Planned 2 BUILD tasks for HenryDB index optimization depth: stress-test index selection + fix bugs found.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "Stress-test HenryDB index selection: verify optimizer picks index scans over table scans for indexed columns, test multi-column indexes, composite WHERE clauses, OR conditions, range scans. Find bugs where optimizer chooses wrong plan.",
+    "completedAt": "2026-04-12T14:53:41.464Z",
+    "taskId": "T7",
+    "summary": "Implemented B+tree index range scans (>, >=, <, <=, BETWEEN). Previously only equality used indexes. 23 stress tests covering all index scenarios. Found optimizer gaps: OR, IN still use table scan (out of scope). 321/323 scorecard, 52/52 index tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3832,12 +3832,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 8,
+    "blocksCompleted": 9,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 3,
+      "BUILD": 4,
       "MAINTAIN": 1
     }
   },
