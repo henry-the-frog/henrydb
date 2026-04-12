@@ -67,6 +67,25 @@ export class Database {
     if (trimmed === 'SHOW SLOW QUERIES' || trimmed === 'SHOW SLOW QUERIES;') {
       return { type: 'ROWS', rows: this._queryStats.getSlowest(20) };
     }
+    if (trimmed === 'SHOW CACHE STATS' || trimmed === 'SHOW CACHE STATS;') {
+      const total = this._resultCacheHits + this._resultCacheMisses;
+      return {
+        type: 'ROWS',
+        rows: [{
+          cache_size: this._resultCache.size,
+          max_size: this._resultCacheMaxSize,
+          hits: this._resultCacheHits,
+          misses: this._resultCacheMisses,
+          hit_rate: total > 0 ? (this._resultCacheHits / total * 100).toFixed(1) + '%' : 'N/A',
+        }],
+      };
+    }
+    if (trimmed === 'CLEAR CACHE' || trimmed === 'CLEAR CACHE;') {
+      this._resultCache.clear();
+      this._resultCacheHits = 0;
+      this._resultCacheMisses = 0;
+      return { type: 'OK', message: 'Result cache cleared' };
+    }
     if (trimmed === 'RESET QUERY STATS' || trimmed === 'RESET QUERY STATS;') {
       this._queryStats.reset();
       return { type: 'OK', message: 'Query statistics reset' };
