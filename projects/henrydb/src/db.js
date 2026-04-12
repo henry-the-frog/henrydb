@@ -56,6 +56,9 @@ export class Database {
     
     // Prepared statements: name → { sql, ast }
     this._preparedStatements = new Map();
+    
+    // Table statistics: tableName → { rowCount, columns: { colName: { distinct, nulls, min, max } } }
+    this._tableStats = new Map();
   }
 
   execute(sql) {
@@ -106,6 +109,15 @@ export class Database {
     }
     if (trimmed.startsWith('DEALLOCATE ')) {
       return this._handleDeallocate(sql);
+    }
+    if (trimmed.startsWith('ANALYZE ')) {
+      return this._handleAnalyze(sql);
+    }
+    if (trimmed === 'SHOW TABLE STATS' || trimmed === 'SHOW TABLE STATS;') {
+      return { type: 'ROWS', rows: Array.from(this._tableStats.entries()).map(([name, s]) => ({
+        table: name, row_count: s.rowCount,
+        columns: Object.keys(s.columns).length,
+      })) };
     }
 
     // Check plan cache first (only for SELECT)
@@ -237,6 +249,47 @@ export class Database {
       throw new Error(`Prepared statement "${name}" not found`);
     }
     return { type: 'OK', message: `Prepared statement "${name}" deallocated` };
+  }
+
+  // ANALYZE TABLE tableName
+  _handleAnalyze(sql) {
+    const match = sql.match(/ANALYZE\s+(?:TABLE\s+)?(\w+)/i);
+    if (!match) throw new Error('Invalid ANALYZE syntax. Use: ANALYZE TABLE name');
+    const tableName = match[1].replace(/;$/, '');
+    const table = this.tables.get(tableName) || this.tables.get(tableName.toLowerCase());
+    if (!table) throw new Error(`Table "${tableName}" not found`);
+    
+    // Collect all rows
+    const allRows = this.execute(`SELECT * FROM ${tableName}`).rows;
+    const rowCount = allRows.length;
+    
+    // Compute per-column statistics
+    const columns = {};
+    for (const col of table.schema) {
+      const values = allRows.map(r => r[col.name]);
+      const distinct = new Set(values.filter(v => v !== null && v !== undefined)).size;
+      const nulls = values.filter(v => v === null || v === undefined).length;
+      
+      const numericVals = values.filter(v => typeof v === 'number' && !isNaN(v));
+      const min = numericVals.length > 0 ? Math.min(...numericVals) : null;
+      const max = numericVals.length > 0 ? Math.max(...numericVals) : null;
+      
+      columns[col.name] = { distinct, nulls, min, max, selectivity: distinct > 0 ? 1 / distinct : 1 };
+    }
+    
+    this._tableStats.set(tableName, { rowCount, columns, analyzedAt: Date.now() });
+    
+    return {
+      type: 'ROWS',
+      rows: Object.entries(columns).map(([col, stats]) => ({
+        column: col,
+        distinct_values: stats.distinct,
+        null_count: stats.nulls,
+        min: stats.min,
+        max: stats.max,
+        selectivity: stats.selectivity.toFixed(4),
+      })),
+    };
   }
 
   /**
