@@ -25,10 +25,14 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix 5 neural-net test failures: (1) gradient clipping in trainBatch, (2) clipGradients method on Network, (3) fromJSON/toJSON serialization mismatch (two competing toJSON methods)",
       "plan_ref": "T2",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-12T14:21:46.968Z",
+      "completed": "2026-04-12T14:26:52.240Z",
+      "duration_ms": 300000,
+      "summary": "Fixed all 5 test failures. (1) Added gradient clipping: clipGrad option in trainBatch + clipGradients method + _clipMatrix helper. (2) Fixed serialization: fromJSON handles v2 format with flat arrays+shapes, removed shadowed v1 toJSON. (3) Added crossEntropy alias in getLoss. (4) Fixed flaky hypernetwork test (larger embedding dim). 903/903 tests passing, pushed to GitHub."
     },
     {
       "id": "T15",
