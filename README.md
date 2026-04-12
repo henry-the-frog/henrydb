@@ -41,7 +41,7 @@ Raft consensus (leader election + log replication) · Lamport clocks · Vector c
 Run-Length Encoding · Delta encoding · Bit-packing · Dictionary encoding · Frame-of-Reference
 
 ### SQL Features
-Window functions (ROW_NUMBER, RANK, LAG, LEAD, SUM OVER) · Common Table Expressions (WITH) · Materialized views · Correlated subqueries · Expression compiler · Constant folder · Query rewriter · Plan visualization (DOT/text)
+Window functions (ROW_NUMBER, RANK, LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE, SUM OVER) · LATERAL JOIN · Common Table Expressions (WITH, WITH RECURSIVE) · Materialized views · Correlated subqueries · information_schema (tables, columns, constraints) · Expression compiler · Constant folder · Query rewriter · Plan visualization (DOT/text)
 
 ### Analytics & Observability
 Statistics collector (histograms, NDV, selectivity) · Cursor pagination · Change Data Capture · Time series engine · Graph database primitives · Data generator (TPC-H style)
