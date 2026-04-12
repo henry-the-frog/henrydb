@@ -141,6 +141,17 @@
   - Sv32 MMU (two-level page tables, TLB with LRU)
   - Tomasulo OoO execution (register renaming, reservation stations, ROB, CDB)
   - **208 tests | ~3800 LOC**
+- [ ] **FFT/Signal Processing** → projects/fft
+  - Pure JS, zero deps, FFT and signal processing library
+  - Cooley-Tukey radix-2 FFT/IFFT, DFT, convolution
+  - FIR filters (lowpass/highpass/bandpass), IIR biquad filters, cascaded sections
+  - Windowing (Hamming, Hanning, Blackman), STFT/ISTFT with overlap-add
+  - Cross-correlation, auto-correlation, zero-pad interpolation
+  - Goertzel algorithm, cepstrum, pitch detection, power/magnitude spectrum
+  - Audio analyzer: note/chord detection, DTMF generation/detection, ASCII spectrogram
+  - Wavelet transform: Haar/DB2/DB3, DWT/IDWT, denoising (VisuShrink), multiresolution analysis
+  - Stationary wavelet transform, 2D DWT for image processing
+  - **120 tests | ~2160 LOC**
 
 ## Today (2026-04-07) — HenryDB Depth + Blog Fix + RISC-V Emulator
 ### Session A (Morning)
