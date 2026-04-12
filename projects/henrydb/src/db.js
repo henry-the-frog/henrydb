@@ -3655,16 +3655,44 @@ export class Database {
         plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows });
       }
 
-      // Joins
-      for (const join of stmt.joins || []) {
+      // Joins — show optimized order if applicable
+      let joinList = stmt.joins || [];
+      const originalOrder = joinList.map(j => j.table?.table || j.table);
+      if (joinList.length >= 2 && tableName) {
+        joinList = this._optimizeJoinOrder(tableName, joinList);
+      }
+      const optimizedOrder = joinList.map(j => j.table?.table || j.table);
+      const wasReordered = JSON.stringify(originalOrder) !== JSON.stringify(optimizedOrder);
+      
+      if (wasReordered) {
+        plan.push({
+          operation: 'JOIN_REORDER',
+          original: originalOrder.join(' → '),
+          optimized: optimizedOrder.join(' → '),
+          reason: 'cost-based (DP enumeration)',
+        });
+      }
+      
+      for (const join of joinList) {
         const joinTable = join.table?.table || join.table;
         const equiJoinKey = join.on ? this._extractEquiJoinKey(join.on, stmt.from.alias || tableName, join.alias || joinTable) : null;
-        plan.push({
+        const joinEntry = {
           operation: equiJoinKey ? 'HASH_JOIN' : 'NESTED_LOOP_JOIN',
           type: join.type || 'INNER',
           table: joinTable,
           on: equiJoinKey ? `${equiJoinKey.leftKey} = ${equiJoinKey.rightKey}` : 'complex condition',
-        });
+        };
+        
+        // Add cost estimate if stats available
+        if (equiJoinKey) {
+          const rightTbl = this.tables.get(joinTable);
+          if (rightTbl) {
+            const rightRows = this._estimateRowCount(rightTbl);
+            joinEntry.estimated_right_rows = rightRows;
+          }
+        }
+        
+        plan.push(joinEntry);
       }
     }
 
@@ -3766,12 +3794,15 @@ export class Database {
               indent++;
               break;
             case 'HASH_JOIN':
-              lines.push(`${prefix}Hash ${step.type} Join  (on: ${step.on})`);
+              lines.push(`${prefix}Hash ${step.type} Join  (on: ${step.on}${step.estimated_right_rows ? ', right_rows=' + step.estimated_right_rows : ''})`);
               indent++;
               break;
             case 'NESTED_LOOP_JOIN':
-              lines.push(`${prefix}Nested Loop ${step.type} Join  (${step.on})`);
+              lines.push(`${prefix}Nested Loop ${step.type} Join  (${step.on}${step.estimated_right_rows ? ', right_rows=' + step.estimated_right_rows : ''})`);
               indent++;
+              break;
+            case 'JOIN_REORDER':
+              lines.push(`${prefix}Join Reorder: ${step.original} → ${step.optimized}  (${step.reason})`);
               break;
             case 'FILTER':
               lines.push(`${prefix}Filter: ${step.condition}`);
