@@ -59,6 +59,9 @@ export class Database {
     
     // Table statistics: tableName → { rowCount, columns: { colName: { distinct, nulls, min, max } } }
     this._tableStats = new Map();
+    
+    // Savepoint stack
+    this._savepoints = [];
   }
 
   execute(sql) {
@@ -112,6 +115,15 @@ export class Database {
     }
     if (trimmed.startsWith('ANALYZE ')) {
       return this._handleAnalyze(sql);
+    }
+    if (trimmed.startsWith('SAVEPOINT ')) {
+      return this._handleSavepoint(sql);
+    }
+    if (trimmed.startsWith('ROLLBACK TO ') || trimmed.startsWith('ROLLBACK TO SAVEPOINT ')) {
+      return this._handleRollbackToSavepoint(sql);
+    }
+    if (trimmed.startsWith('RELEASE ') || trimmed.startsWith('RELEASE SAVEPOINT ')) {
+      return this._handleReleaseSavepoint(sql);
     }
     if (trimmed === 'SHOW TABLE STATS' || trimmed === 'SHOW TABLE STATS;') {
       return { type: 'ROWS', rows: Array.from(this._tableStats.entries()).map(([name, s]) => ({
@@ -251,7 +263,72 @@ export class Database {
     return { type: 'OK', message: `Prepared statement "${name}" deallocated` };
   }
 
-  // ANALYZE TABLE tableName
+  // SAVEPOINT name — save current state
+  _handleSavepoint(sql) {
+    const match = sql.match(/SAVEPOINT\s+(\w+)/i);
+    if (!match) throw new Error('Invalid SAVEPOINT syntax');
+    const name = match[1].replace(/;$/, '');
+    
+    // Snapshot: serialize all tables to JSON
+    const snapshot = {};
+    for (const [tableName, table] of this.tables) {
+      const rows = this.execute(`SELECT * FROM ${tableName}`).rows;
+      snapshot[tableName] = rows;
+    }
+    
+    this._savepoints.push({ name, snapshot });
+    return { type: 'OK', message: `Savepoint "${name}" created` };
+  }
+
+  // ROLLBACK TO [SAVEPOINT] name — restore to savepoint
+  _handleRollbackToSavepoint(sql) {
+    const match = sql.match(/ROLLBACK\s+TO\s+(?:SAVEPOINT\s+)?(\w+)/i);
+    if (!match) throw new Error('Invalid ROLLBACK TO syntax');
+    const name = match[1].replace(/;$/, '');
+    
+    // Find the savepoint
+    const idx = this._savepoints.findLastIndex(sp => sp.name === name);
+    if (idx === -1) throw new Error(`Savepoint "${name}" not found`);
+    
+    const { snapshot } = this._savepoints[idx];
+    
+    // Restore each table
+    for (const [tableName, rows] of Object.entries(snapshot)) {
+      // Delete all current rows
+      this.execute(`DELETE FROM ${tableName}`);
+      // Re-insert saved rows
+      if (rows.length > 0) {
+        const cols = Object.keys(rows[0]);
+        for (const row of rows) {
+          const vals = cols.map(c => {
+            const v = row[c];
+            return typeof v === 'string' ? `'${v.replace(/'/g, "''")}'` : (v === null ? 'NULL' : v);
+          });
+          this.execute(`INSERT INTO ${tableName} (${cols.join(', ')}) VALUES (${vals.join(', ')})`);
+        }
+      }
+    }
+    
+    // Remove savepoints after the rollback target
+    this._savepoints.splice(idx + 1);
+    
+    return { type: 'OK', message: `Rolled back to savepoint "${name}"` };
+  }
+
+  // RELEASE [SAVEPOINT] name — remove savepoint
+  _handleReleaseSavepoint(sql) {
+    const match = sql.match(/RELEASE\s+(?:SAVEPOINT\s+)?(\w+)/i);
+    if (!match) throw new Error('Invalid RELEASE syntax');
+    const name = match[1].replace(/;$/, '');
+    
+    const idx = this._savepoints.findLastIndex(sp => sp.name === name);
+    if (idx === -1) throw new Error(`Savepoint "${name}" not found`);
+    
+    // Remove this and all later savepoints
+    this._savepoints.splice(idx);
+    return { type: 'OK', message: `Savepoint "${name}" released` };
+  }
+
   _handleAnalyze(sql) {
     const match = sql.match(/ANALYZE\s+(?:TABLE\s+)?(\w+)/i);
     if (!match) throw new Error('Invalid ANALYZE syntax. Use: ANALYZE TABLE name');
