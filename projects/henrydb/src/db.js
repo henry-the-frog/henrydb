@@ -3911,6 +3911,41 @@ export class Database {
       }
     }
 
+    // IN list: col IN (val1, val2, ...)
+    if (where.type === 'IN_LIST' && where.left?.type === 'column_ref') {
+      const colName = where.left.name.includes('.') ? where.left.name.split('.').pop() : where.left.name;
+      const index = table.indexes.get(colName);
+      if (index && where.values.every(v => v.type === 'literal')) {
+        const rows = [];
+        const seen = new Set(); // dedup by pageId+slotIdx
+        for (const val of where.values) {
+          let entries;
+          if (index._isHash) {
+            const found = index.get(val.value);
+            if (found !== undefined) {
+              const rids = Array.isArray(found) ? found : [found];
+              entries = rids.map(rid => ({ key: val.value, value: rid }));
+            } else {
+              entries = [];
+            }
+          } else {
+            entries = index.range(val.value, val.value);
+          }
+          for (const entry of entries) {
+            const rid = entry.value;
+            const key = `${rid.pageId}:${rid.slotIdx}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            if (values) {
+              rows.push(this._valuesToRow(values, table.schema, tableAlias));
+            }
+          }
+        }
+        return { rows, residual: null };
+      }
+    }
+
     // AND: try to use index on one side, residual on the other
     if (where.type === 'AND') {
       const leftScan = this._tryIndexScan(table, where.left, tableAlias);
