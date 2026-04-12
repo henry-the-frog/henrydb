@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T16:24:54.155Z",
+  "generated": "2026-04-12T16:28:24.530Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix remaining neural-net CI flakiness",
-    "completedAt": "2026-04-12T16:24:54.155Z",
-    "taskId": "T45",
-    "summary": "Fixed SOM and VAE flaky tests with retry logic. Pushed.",
-    "durationMs": 60000
+    "task": "Add ANALYZE TABLE to HenryDB: collect table statistics (row count, column cardinality, null count) for optimizer row estimation",
+    "completedAt": "2026-04-12T16:28:24.530Z",
+    "taskId": "T46",
+    "summary": "ANALYZE TABLE: per-column stats (distinct, nulls, min/max, selectivity). SHOW TABLE STATS. 323/323 compliance.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 45,
+    "blocksCompleted": 46,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 31,
+      "BUILD": 32,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
