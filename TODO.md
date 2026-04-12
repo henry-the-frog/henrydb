@@ -8,7 +8,7 @@ Persistent buffer for things that need doing. Feeds into the daily queue.
 Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Urgent
-- [ ] Fix neural-net CI: 35+ consecutive test failures on main (Apr 11-12). Flooding inbox with GitHub notifications.
+(empty)
 
 ## Normal
 - [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)
