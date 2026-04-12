@@ -10,7 +10,7 @@ const KEYWORDS = new Set([
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
-  'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
+  'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED',
   'INTERSECT', 'EXCEPT',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'SHOW', 'TABLES', 'DESCRIBE',
@@ -389,7 +389,7 @@ export function parse(sql) {
       return { type: 'aggregate', func, arg, distinct, alias, ...aggExtra };
     }
 
-    // Window functions: ROW_NUMBER, RANK, DENSE_RANK
+    // Window functions: ROW_NUMBER, RANK, DENSE_RANK (no arguments)
     if (peek().type === 'KEYWORD' && ['ROW_NUMBER', 'RANK', 'DENSE_RANK'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
@@ -398,6 +398,24 @@ export function parse(sql) {
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'window', func, arg: null, over, alias };
+    }
+
+    // Window functions with arguments: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTILE
+    if (peek().type === 'KEYWORD' && ['LEAD', 'LAG', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE'].includes(peek().value)) {
+      const func = advance().value;
+      expect('(');
+      const args = [];
+      if (!match(')')) {
+        args.push(parseExpr());
+        while (match(',')) args.push(parseExpr());
+        expect(')');
+      }
+      const over = parseOverClause();
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      // First arg is the column, rest are additional args
+      const arg = args.length > 0 && args[0].type === 'column_ref' ? args[0].name : null;
+      return { type: 'window', func, arg, args, over, alias };
     }
 
     // String functions in SELECT

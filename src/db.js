@@ -2307,6 +2307,54 @@ export class Database {
             }
             break;
           }
+          case 'LEAD': {
+            // LEAD(column, offset, default) — value from a following row
+            const offset = col.args && col.args.length > 1 ? this._evalValue(col.args[1], {}) : 1;
+            const defaultVal = col.args && col.args.length > 2 ? this._evalValue(col.args[2], {}) : null;
+            for (let i = 0; i < partition.length; i++) {
+              const targetIdx = i + offset;
+              if (targetIdx < partition.length) {
+                partition[i][`__window_${name}`] = this._resolveColumn(col.arg, partition[targetIdx]);
+              } else {
+                partition[i][`__window_${name}`] = defaultVal;
+              }
+            }
+            break;
+          }
+          case 'LAG': {
+            // LAG(column, offset, default) — value from a preceding row
+            const offset = col.args && col.args.length > 1 ? this._evalValue(col.args[1], {}) : 1;
+            const defaultVal = col.args && col.args.length > 2 ? this._evalValue(col.args[2], {}) : null;
+            for (let i = 0; i < partition.length; i++) {
+              const targetIdx = i - offset;
+              if (targetIdx >= 0) {
+                partition[i][`__window_${name}`] = this._resolveColumn(col.arg, partition[targetIdx]);
+              } else {
+                partition[i][`__window_${name}`] = defaultVal;
+              }
+            }
+            break;
+          }
+          case 'FIRST_VALUE': {
+            const firstVal = this._resolveColumn(col.arg, partition[0]);
+            for (const r of partition) r[`__window_${name}`] = firstVal;
+            break;
+          }
+          case 'LAST_VALUE': {
+            // Without frame specification, LAST_VALUE uses the whole partition
+            const lastVal = this._resolveColumn(col.arg, partition[partition.length - 1]);
+            for (const r of partition) r[`__window_${name}`] = lastVal;
+            break;
+          }
+          case 'NTILE': {
+            // NTILE(n) — divide partition into n roughly equal groups
+            const n = col.args && col.args.length > 0 ? this._evalValue(col.args[0], {}) : 1;
+            const size = partition.length;
+            for (let i = 0; i < size; i++) {
+              partition[i][`__window_${name}`] = Math.floor(i * n / size) + 1;
+            }
+            break;
+          }
         }
       }
     }
