@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:31:10.872Z",
+  "generated": "2026-04-12T15:35:10.707Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test Energy Based Model: energy function properties, contrastive divergence, sampling, partition function estimation",
-    "completedAt": "2026-04-12T15:31:10.872Z",
-    "taskId": "T29",
-    "summary": "10 EBM stress tests: numerical gradient matches analytical, Langevin reduces energy, CD training finite. No bugs found.",
-    "durationMs": 120000
+    "task": "Stress-test Transformer: multi-head attention softmax validity, causal mask correctness, positional encoding periodicity, encoder-decoder cross-attention",
+    "completedAt": "2026-04-12T15:35:10.707Z",
+    "taskId": "T30",
+    "summary": "17 Transformer stress tests. PE bounded [-1,1], LayerNorm zero-mean unit-variance, MHA shape preservation, 3-block stacking finite, backward finite. No bugs found.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 29,
+    "blocksCompleted": 30,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 16,
+      "BUILD": 17,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

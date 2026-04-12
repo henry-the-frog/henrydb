@@ -315,6 +315,17 @@
       "completed": "2026-04-12T15:31:10.827Z",
       "duration_ms": 120000,
       "summary": "10 EBM stress tests: numerical gradient matches analytical, Langevin reduces energy, CD training finite. No bugs found."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Transformer: multi-head attention softmax validity, causal mask correctness, positional encoding periodicity, encoder-decoder cross-attention",
+      "project": "neural-net",
+      "started": "2026-04-12T15:32:36.561Z",
+      "completed": "2026-04-12T15:35:10.645Z",
+      "duration_ms": 180000,
+      "summary": "17 Transformer stress tests. PE bounded [-1,1], LayerNorm zero-mean unit-variance, MHA shape preservation, 3-block stacking finite, backward finite. No bugs found."
     }
   ],
   "focusProjects": [
@@ -438,6 +449,10 @@
     {
       "time": "2026-04-12T15:30:06.871Z",
       "msg": "Added T29 (BUILD) after end: Stress-test Energy Based Model: energy function properties, contrastive divergence, sampling, partition function estimation"
+    },
+    {
+      "time": "2026-04-12T15:32:36.327Z",
+      "msg": "Added T30 (BUILD) after end: Stress-test Transformer: multi-head attention softmax validity, causal mask correctness, positional encoding periodicity, encoder-decoder cross-attention"
     }
   ]
 }
