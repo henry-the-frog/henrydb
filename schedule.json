@@ -282,6 +282,17 @@
       "completed": "2026-04-12T15:25:38.721Z",
       "duration_ms": 300000,
       "summary": "14 Hopfield stress tests: energy monotonicity (500 async steps, 0 violations), pattern recall from 20-30% noise, capacity at 0.14N, weight symmetry, zero diagonal, opposite attractors. No bugs found."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Capsule Network: dynamic routing convergence, squash function properties, pose equivariance, agreement metric",
+      "project": "neural-net",
+      "started": "2026-04-12T15:26:32.841Z",
+      "completed": "2026-04-12T15:27:42.879Z",
+      "duration_ms": 180000,
+      "summary": "14 Capsule stress tests: squash properties (direction-preserving, monotonic, bounded), coupling coefficients sum to 1, routing convergence, large inputs handled. No bugs found."
     }
   ],
   "focusProjects": [
@@ -393,6 +404,10 @@
     {
       "time": "2026-04-12T15:23:41.973Z",
       "msg": "Added T26 (BUILD) after end: Stress-test Hopfield Network: pattern storage capacity, recall from corrupted input, energy convergence, modern Hopfield exponential attention"
+    },
+    {
+      "time": "2026-04-12T15:26:32.608Z",
+      "msg": "Added T27 (BUILD) after end: Stress-test Capsule Network: dynamic routing convergence, squash function properties, pose equivariance, agreement metric"
     }
   ]
 }
