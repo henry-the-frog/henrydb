@@ -370,6 +370,17 @@
       "completed": "2026-04-12T15:50:01.497Z",
       "duration_ms": 180000,
       "summary": "10 MoE stress tests: gating softmax valid, top-k routing, training convergence. No bugs."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test GNN: message passing correctness, graph convolution, pooling, GCN/GAT layer properties",
+      "project": "neural-net",
+      "started": "2026-04-12T15:51:01.183Z",
+      "completed": "2026-04-12T15:56:16.803Z",
+      "duration_ms": 180000,
+      "summary": "8 GNN stress tests: GCN shape, Karate Club 34 nodes, multi-layer, star/complete graphs. No bugs."
     }
   ],
   "focusProjects": [
@@ -513,6 +524,10 @@
     {
       "time": "2026-04-12T15:48:05.628Z",
       "msg": "Added T34 (BUILD) after end: Stress-test Mixture of Experts: gating softmax validity, expert specialization, load balancing, top-k routing correctness"
+    },
+    {
+      "time": "2026-04-12T15:51:00.949Z",
+      "msg": "Added T35 (BUILD) after end: Stress-test GNN: message passing correctness, graph convolution, pooling, GCN/GAT layer properties"
     }
   ]
 }
