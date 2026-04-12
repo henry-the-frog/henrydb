@@ -359,6 +359,17 @@
       "completed": "2026-04-12T15:46:46.842Z",
       "duration_ms": 180000,
       "summary": "9 index benchmark tests verifying EXPLAIN output: INDEX_SCAN for equality, range, BETWEEN, IN, OR, BETWEEN SYMMETRIC. TABLE_SCAN for non-indexed. EXPLAIN ANALYZE actual rows match."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test Mixture of Experts: gating softmax validity, expert specialization, load balancing, top-k routing correctness",
+      "project": "neural-net",
+      "started": "2026-04-12T15:48:06.090Z",
+      "completed": "2026-04-12T15:50:01.497Z",
+      "duration_ms": 180000,
+      "summary": "10 MoE stress tests: gating softmax valid, top-k routing, training convergence. No bugs."
     }
   ],
   "focusProjects": [
@@ -498,6 +509,10 @@
     {
       "time": "2026-04-12T15:45:10.572Z",
       "msg": "Added T33 (BUILD) after end: Enhance HenryDB EXPLAIN ANALYZE: show actual row counts and timing per plan node, compare estimated vs actual"
+    },
+    {
+      "time": "2026-04-12T15:48:05.628Z",
+      "msg": "Added T34 (BUILD) after end: Stress-test Mixture of Experts: gating softmax validity, expert specialization, load balancing, top-k routing correctness"
     }
   ]
 }

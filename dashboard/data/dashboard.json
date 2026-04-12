@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T15:46:46.878Z",
+  "generated": "2026-04-12T15:50:01.535Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Enhance HenryDB EXPLAIN ANALYZE: show actual row counts and timing per plan node, compare estimated vs actual",
-    "completedAt": "2026-04-12T15:46:46.878Z",
-    "taskId": "T33",
-    "summary": "9 index benchmark tests verifying EXPLAIN output: INDEX_SCAN for equality, range, BETWEEN, IN, OR, BETWEEN SYMMETRIC. TABLE_SCAN for non-indexed. EXPLAIN ANALYZE actual rows match.",
+    "task": "Stress-test Mixture of Experts: gating softmax validity, expert specialization, load balancing, top-k routing correctness",
+    "completedAt": "2026-04-12T15:50:01.535Z",
+    "taskId": "T34",
+    "summary": "10 MoE stress tests: gating softmax valid, top-k routing, training convergence. No bugs.",
     "durationMs": 180000
   },
   "schedule": {
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 33,
+    "blocksCompleted": 34,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
