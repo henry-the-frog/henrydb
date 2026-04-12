@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-12T15:01:44.294Z",
+  "generated": "2026-04-12T15:02:27.683Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Evening direction: what deserves deeper attention vs what is breadth-chasing",
-    "completedAt": "2026-04-12T15:01:44.294Z",
-    "taskId": "T10",
-    "summary": "Depth check passed (3/3): surprise (shadowed toJSON), learning (B+tree optimizer gap), bugs (5 test failures). 9 tasks done, all high quality. Remaining queue good: blog PLAN/BUILD is creative variety, EXPLORE is appropriate for Sunday. No changes needed.",
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-12T15:02:27.683Z",
+    "taskId": "T11",
+    "summary": "Planned blog post: How HenryDB Learned to Use Its Indexes. Optimizer journey from equality-only to range scans.",
     "durationMs": 60000
   },
   "schedule": {
@@ -3761,57 +3761,81 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB index-based query optimization or deeper persistence testing",
         "task": null,
-        "started": "2026-04-12T14:44:38.943Z"
+        "started": "2026-04-12T14:44:38.943Z",
+        "completed": "2026-04-12T14:46:19.065Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 BUILD tasks for HenryDB index optimization depth: stress-test index selection + fix bugs found."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Stress-test HenryDB index selection: verify optimizer picks index scans over table scans for indexed columns, test multi-column indexes, composite WHERE clauses, OR conditions, range scans. Find bugs where optimizer chooses wrong plan.",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-12T14:46:34.772Z",
+        "completed": "2026-04-12T14:53:41.427Z",
+        "duration_ms": 300000,
+        "summary": "Implemented B+tree index range scans (>, >=, <, <=, BETWEEN). Previously only equality used indexes. 23 stress tests covering all index scenarios. Found optimizer gaps: OR, IN still use table scan (out of scope). 321/323 scorecard, 52/52 index tests."
       },
       {
         "id": "T17",
         "mode": "BUILD",
         "task": "Fix bugs found in index selection stress test (if any). Otherwise, add covering index support or index-only scans.",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-12T14:54:15.576Z",
+        "completed": "2026-04-12T14:55:18.575Z",
+        "duration_ms": 180000,
+        "summary": "Added IN list index lookup: per-value index lookups with dedup. Optimizer now covers: =, >, >=, <, <=, BETWEEN, IN. Only OR remains as table-scan-only. 321/323 scorecard, 23/23 stress tests."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping"
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-12T14:55:44.487Z",
+        "completed": "2026-04-12T14:56:05.736Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed (workspace + henrydb). All repos clean."
       },
       {
         "id": "T9",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research new domain: graph algorithms, OS concepts, or distributed systems paper",
-        "project": "neural-net"
+        "project": "neural-net",
+        "started": "2026-04-12T14:56:14.871Z",
+        "completed": "2026-04-12T15:00:51.484Z",
+        "duration_ms": 360000,
+        "summary": "Explored DARTS (Differentiable Architecture Search). Implemented MixedOp, DARTSCell, DARTSSearcher with bilevel optimization via finite-difference gradients. 14 tests. Key insight: DARTS replaces discrete architecture search with continuous relaxation — softmax over candidate ops allows gradient-based architecture optimization."
       },
       {
         "id": "T10",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Evening direction: what deserves deeper attention vs what is breadth-chasing"
+        "status": "done",
+        "task": "Evening direction: what deserves deeper attention vs what is breadth-chasing",
+        "started": "2026-04-12T15:01:15.676Z",
+        "completed": "2026-04-12T15:01:44.258Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passed (3/3): surprise (shadowed toJSON), learning (B+tree optimizer gap), bugs (5 test failures). 9 tasks done, all high quality. Remaining queue good: blog PLAN/BUILD is creative variety, EXPLORE is appropriate for Sunday. No changes needed."
       },
       {
         "id": "T11",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Blog post: Sunday writing - week reflection or deep technical topic",
-        "task": null
+        "task": null,
+        "started": "2026-04-12T15:02:00.128Z"
       },
       {
         "id": "T12",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Write blog post: 'How HenryDB Learned to Use Its Indexes' — optimizer journey from equality-only to range scans, BETWEEN, IN lists. Include EXPLAIN output, before/after, real code.",
         "plan_ref": "T11",
         "project": "henrydb"
       },
@@ -3832,11 +3856,11 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 13,
+    "blocksCompleted": 14,
     "blocksTotal": 17,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 2,
+      "PLAN": 3,
       "BUILD": 5,
       "MAINTAIN": 2,
       "EXPLORE": 1
