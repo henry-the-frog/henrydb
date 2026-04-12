@@ -3958,6 +3958,41 @@ export class Database {
       }
     }
 
+    // OR: if both sides can use indexes, union the results (bitmap OR)
+    if (where.type === 'OR') {
+      const leftScan = this._tryIndexScan(table, where.left, tableAlias);
+      const rightScan = this._tryIndexScan(table, where.right, tableAlias);
+      if (leftScan && rightScan) {
+        // Union: deduplicate by row identity
+        const seen = new Set();
+        const rows = [];
+        for (const row of leftScan.rows) {
+          // Use all column values as key for dedup
+          const key = JSON.stringify(Object.entries(row).filter(([k]) => !k.includes('.')).sort());
+          if (!seen.has(key)) {
+            seen.add(key);
+            rows.push(row);
+          }
+        }
+        for (const row of rightScan.rows) {
+          const key = JSON.stringify(Object.entries(row).filter(([k]) => !k.includes('.')).sort());
+          if (!seen.has(key)) {
+            seen.add(key);
+            rows.push(row);
+          }
+        }
+        // Apply residuals from both sides (already handled within each scan)
+        const leftResidual = leftScan.residual;
+        const rightResidual = rightScan.residual;
+        // If either side had a residual, we need to re-evaluate the original OR condition
+        // on the unioned rows to ensure correctness
+        if (leftResidual || rightResidual) {
+          return { rows, residual: where };
+        }
+        return { rows, residual: null };
+      }
+    }
+
     return null;
   }
 
