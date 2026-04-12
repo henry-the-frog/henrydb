@@ -326,6 +326,17 @@
       "completed": "2026-04-12T15:35:10.645Z",
       "duration_ms": 180000,
       "summary": "17 Transformer stress tests. PE bounded [-1,1], LayerNorm zero-mean unit-variance, MHA shape preservation, 3-block stacking finite, backward finite. No bugs found."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test SOM: neighborhood function decay, BMU correctness, topological ordering, quantization error",
+      "project": "neural-net",
+      "started": "2026-04-12T15:36:10.088Z",
+      "completed": "2026-04-12T15:39:25.966Z",
+      "duration_ms": 300000,
+      "summary": "13 SOM stress tests: BMU correctness, neighborhood Gaussian properties, decay, quantization error decreases, topological ordering preserved. No bugs — API confusion (train expects dataset) is minor."
     }
   ],
   "focusProjects": [
@@ -453,6 +464,10 @@
     {
       "time": "2026-04-12T15:32:36.327Z",
       "msg": "Added T30 (BUILD) after end: Stress-test Transformer: multi-head attention softmax validity, causal mask correctness, positional encoding periodicity, encoder-decoder cross-attention"
+    },
+    {
+      "time": "2026-04-12T15:36:09.852Z",
+      "msg": "Added T31 (BUILD) after end: Stress-test SOM: neighborhood function decay, BMU correctness, topological ordering, quantization error"
     }
   ]
 }

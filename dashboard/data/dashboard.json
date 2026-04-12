@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T15:35:10.707Z",
+  "generated": "2026-04-12T15:39:26.028Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test Transformer: multi-head attention softmax validity, causal mask correctness, positional encoding periodicity, encoder-decoder cross-attention",
-    "completedAt": "2026-04-12T15:35:10.707Z",
-    "taskId": "T30",
-    "summary": "17 Transformer stress tests. PE bounded [-1,1], LayerNorm zero-mean unit-variance, MHA shape preservation, 3-block stacking finite, backward finite. No bugs found.",
-    "durationMs": 180000
+    "task": "Stress-test SOM: neighborhood function decay, BMU correctness, topological ordering, quantization error",
+    "completedAt": "2026-04-12T15:39:26.028Z",
+    "taskId": "T31",
+    "summary": "13 SOM stress tests: BMU correctness, neighborhood Gaussian properties, decay, quantization error decreases, topological ordering preserved. No bugs — API confusion (train expects dataset) is minor.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -3903,12 +3903,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
+    "blocksCompleted": 31,
     "blocksTotal": 21,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 17,
+      "BUILD": 18,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
