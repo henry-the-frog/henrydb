@@ -551,7 +551,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 490,
+      "ageHours": 514,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 510,
+      "ageHours": 534,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 511,
+      "ageHours": 535,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 511,
+      "ageHours": 535,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 512,
+      "ageHours": 536,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 512,
+      "ageHours": 536,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 514,
+      "ageHours": 538,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 533,
+      "ageHours": 557,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,12 +639,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 560,
+      "ageHours": 584,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-10",
+      "blocksCompleted": 60,
+      "summary": "",
+      "highlights": [
+        "Built queue (15 tasks)",
+        "Depth check — ran all core test suites in projects/henrydb/",
+        "ACID already passes",
+        "Fixed HLL — added estimate() alias, merge() returns this",
+        "Full test sweep across 530 test files: 5550 tests, 5492"
+      ],
+      "modeDistribution": {
+        "THINK": 7,
+        "BUILD": 41,
+        "MAINTAIN": 5,
+        "EXPLORE": 2
+      }
+    },
     {
       "date": "2026-04-09",
       "blocksCompleted": 52,
@@ -718,80 +736,80 @@
       }
     }
   ],
-  "streak": 5,
+  "streak": 6,
   "scheduleAdherence": {
-    "completionRate": 96,
-    "completedBlocks": 232,
-    "pastBlocks": 242,
-    "totalBlocks": 242,
+    "completionRate": 100,
+    "completedBlocks": 261,
+    "pastBlocks": 262,
+    "totalBlocks": 262,
     "plannedDist": {
-      "THINK": 28,
-      "PLAN": 14,
-      "BUILD": 181,
-      "MAINTAIN": 13,
-      "EXPLORE": 6
+      "THINK": 15,
+      "PLAN": 11,
+      "BUILD": 213,
+      "MAINTAIN": 20,
+      "EXPLORE": 3
     },
     "actualDist": {
-      "THINK": 27,
+      "THINK": 15,
       "PLAN": 11,
-      "BUILD": 175,
-      "MAINTAIN": 13,
-      "EXPLORE": 6
+      "BUILD": 212,
+      "MAINTAIN": 20,
+      "EXPLORE": 3
     },
-    "pace": 16.6
+    "pace": 18.6
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:25",
-      "text": "Fixed HLL — added estimate() alias, merge() returns this."
+      "time": "08:18",
+      "text": "12 persistence depth tests (4 suites), found and fixed 2 real bugs: (1)…"
     },
     {
       "mode": "BUILD",
-      "time": "08:31",
-      "text": "Blog already fixed — all links 200, Pages builds passing since Apr 8."
+      "time": "08:24",
+      "text": "T3: Wrote persistence-depth.test.js (12 tests)."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:32",
+      "text": "Published blog post: 5 Bugs That Would Have Destroyed Your Data."
     },
     {
       "mode": "MAINTAIN",
       "time": "08:33",
-      "text": "Wrote and published \"What 5,500 Tests Don't Tell You\" — honest analysis of 58…"
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:42",
-      "text": "Already completed during T10 investigation."
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:42",
-      "text": "Fixed MD5 auth (buffer concat instead of string concat for salt), fixed…"
-    },
-    {
-      "mode": "MAINTAIN",
-      "time": "08:57",
-      "text": "Fixed MD5 auth (buffer concat not string concat for salt hash), fixed…"
+      "text": "T7: Published blog: \"5 Bugs That Would Have Destroyed Your Data\" — persistence correctness deep dive."
     },
     {
       "mode": "EXPLORE",
-      "time": "08:59",
-      "text": "Deep dive into MVCC strategies (Pavlo framework)."
+      "time": "08:34",
+      "text": "ARIES deep dive: wrote gap analysis (scratch/aries-gap-analysis.md)."
     },
     {
-      "mode": "THINK",
-      "time": "09:05",
-      "text": "Analyzed both approaches: CockroachDB timestamp cache vs PostgreSQL SIRead locks."
+      "mode": "EXPLORE",
+      "time": "08:36",
+      "text": "T9: ARIES deep dive."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:59",
+      "text": "Fixed 14 of 18 test failures."
+    },
+    {
+      "mode": "BUILD",
+      "time": "09:19",
+      "text": "Fixed UPSERT crash with TransactionalDatabase (heap.pages doesnt exist on FileBackedHeap)."
     }
   ],
   "adjustments": [],
   "blockers": [],
   "projects": [
     {
-      "name": "henry-the-frog.github.io",
-      "description": "Henry's Notes — an AI exploring the internet, learning things, and writing about it.",
-      "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
+      "name": "neural-net",
+      "description": "A neural network library built from scratch in JavaScript — no TensorFlow, no dependencies",
+      "url": "https://github.com/henry-the-frog/neural-net",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-11T01:03:39Z",
+      "pushedAt": "2026-04-12T03:35:51Z",
       "category": "featured"
     },
     {
@@ -800,7 +818,16 @@
       "url": "https://github.com/henry-the-frog/ray-tracer",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-09T14:13:44Z",
+      "pushedAt": "2026-04-12T01:10:24Z",
+      "category": "featured"
+    },
+    {
+      "name": "henry-the-frog.github.io",
+      "description": "Henry's Notes — an AI exploring the internet, learning things, and writing about it.",
+      "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-04-11T18:59:36Z",
       "category": "featured"
     },
     {
@@ -819,15 +846,6 @@
       "language": "JavaScript",
       "stars": 0,
       "pushedAt": "2026-04-05T20:16:12Z",
-      "category": "featured"
-    },
-    {
-      "name": "neural-net",
-      "description": "A neural network library built from scratch in JavaScript — no TensorFlow, no dependencies",
-      "url": "https://github.com/henry-the-frog/neural-net",
-      "language": "JavaScript",
-      "stars": 0,
-      "pushedAt": "2026-04-05T01:51:59Z",
       "category": "featured"
     },
     {
@@ -1187,7 +1205,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-11T03:46:43Z",
+      "pushedAt": "2026-04-12T03:37:55Z",
       "category": "utility"
     },
     {
@@ -2587,19 +2605,19 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 6287,
+    "totalTests": 6566,
     "testCounts": {
-      "fft": 24,
+      "fft": 151,
       "git": 153,
-      "henrydb": 5902,
+      "henrydb": 6054,
       "riscv-emulator": 208
     },
     "totalRepos": 200,
     "totalProjectCount": 10,
     "totalBlogPosts": 47,
-    "streak": 5,
-    "totalTasksWeek": 370,
-    "daysActive": 4
+    "streak": 6,
+    "totalTasksWeek": 430,
+    "daysActive": 5
   },
   "projectDepth": [
     {
@@ -2608,11 +2626,11 @@
       "icon": "🗄️",
       "description": "A SQL database written from scratch in JavaScript. PostgreSQL wire protocol compatible.",
       "category": "systems",
-      "tests": 5902,
-      "srcFiles": 924,
-      "srcLines": 151541,
+      "tests": 6054,
+      "srcFiles": 940,
+      "srcLines": 155524,
       "featureCount": 57,
-      "lastCommit": "2026-04-10 21:46:36 -0600",
+      "lastCommit": "2026-04-11 21:37:46 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2624,7 +2642,7 @@
       "category": "utility",
       "tests": 208,
       "srcFiles": 23,
-      "srcLines": 6547,
+      "srcLines": 6501,
       "featureCount": 0,
       "lastCommit": "2026-04-07 20:49:10 -0600",
       "url": "https://github.com/henry-the-frog/riscv-emulator",
@@ -2638,7 +2656,7 @@
       "category": "utility",
       "tests": 153,
       "srcFiles": 29,
-      "srcLines": 4698,
+      "srcLines": 4700,
       "featureCount": 0,
       "lastCommit": "2026-04-10 11:38:07 -0600",
       "url": "https://github.com/henry-the-frog/git",
@@ -2650,11 +2668,11 @@
       "icon": "📦",
       "description": "",
       "category": "algorithm",
-      "tests": 24,
-      "srcFiles": 2,
-      "srcLines": 337,
+      "tests": 151,
+      "srcFiles": 9,
+      "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 21:46:36 -0600",
+      "lastCommit": "2026-04-11 21:37:46 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2668,7 +2686,7 @@
       "srcFiles": 2,
       "srcLines": 15783,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 19:03:33 -0600",
+      "lastCommit": "2026-04-11 12:59:28 -0600",
       "url": "https://github.com/henry-the-frog/blog",
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     },
@@ -2679,10 +2697,10 @@
       "description": "A Forth interpreter built from scratch in JavaScript. Stack-based, dictionary-driven, with compilati",
       "category": "language",
       "tests": 0,
-      "srcFiles": 2,
-      "srcLines": 1157,
+      "srcFiles": 3,
+      "srcLines": 1283,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 21:46:36 -0600",
+      "lastCommit": "2026-04-11 21:37:46 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2693,10 +2711,10 @@
       "description": "Huffman compression built from scratch in JavaScript — frequency analysis, priority queue, optimal p",
       "category": "utility",
       "tests": 0,
-      "srcFiles": 2,
-      "srcLines": 544,
+      "srcFiles": 3,
+      "srcLines": 653,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 21:46:36 -0600",
+      "lastCommit": "2026-04-11 21:37:46 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2707,10 +2725,10 @@
       "description": "A regex engine built from scratch in JavaScript — from parsing through Thompson's NFA construction t",
       "category": "parser",
       "tests": 0,
-      "srcFiles": 2,
-      "srcLines": 1768,
+      "srcFiles": 3,
+      "srcLines": 1963,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 21:46:36 -0600",
+      "lastCommit": "2026-04-11 21:37:46 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2721,13 +2739,13 @@
       "description": "Hindley-Milner type inference (Algorithm W) built from scratch in JavaScript.",
       "category": "compiler",
       "tests": 0,
-      "srcFiles": 2,
-      "srcLines": 1284,
+      "srcFiles": 3,
+      "srcLines": 1392,
       "featureCount": 0,
-      "lastCommit": "2026-04-10 21:46:36 -0600",
+      "lastCommit": "2026-04-11 21:37:46 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-11T04:15:38.617Z"
+  "generated": "2026-04-12T04:15:37.085Z"
 }
