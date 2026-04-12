@@ -113,16 +113,23 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-12T14:55:44.487Z"
+      "started": "2026-04-12T14:55:44.487Z",
+      "completed": "2026-04-12T14:56:05.736Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed (workspace + henrydb). All repos clean."
     },
     {
       "id": "T9",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research new domain: graph algorithms, OS concepts, or distributed systems paper",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-12T14:56:14.871Z",
+      "completed": "2026-04-12T15:00:51.484Z",
+      "duration_ms": 360000,
+      "summary": "Explored DARTS (Differentiable Architecture Search). Implemented MixedOp, DARTSCell, DARTSSearcher with bilevel optimization via finite-difference gradients. 14 tests. Key insight: DARTS replaces discrete architecture search with continuous relaxation — softmax over candidate ops allows gradient-based architecture optimization."
     },
     {
       "id": "T10",
