@@ -348,6 +348,17 @@
       "completed": "2026-04-12T15:44:15.126Z",
       "duration_ms": 300000,
       "summary": "8 ESN stress tests. Echo state property verified: state bounded, converges regardless of init, zero input decays. Ridge regression learns identity and sine prediction. No bugs."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Enhance HenryDB EXPLAIN ANALYZE: show actual row counts and timing per plan node, compare estimated vs actual",
+      "project": "henrydb",
+      "started": "2026-04-12T15:45:10.981Z",
+      "completed": "2026-04-12T15:46:46.842Z",
+      "duration_ms": 180000,
+      "summary": "9 index benchmark tests verifying EXPLAIN output: INDEX_SCAN for equality, range, BETWEEN, IN, OR, BETWEEN SYMMETRIC. TABLE_SCAN for non-indexed. EXPLAIN ANALYZE actual rows match."
     }
   ],
   "focusProjects": [
@@ -483,6 +494,10 @@
     {
       "time": "2026-04-12T15:40:43.979Z",
       "msg": "Added T32 (BUILD) after end: Stress-test Echo State Network: spectral radius condition, reservoir dynamics, memory capacity, washout period"
+    },
+    {
+      "time": "2026-04-12T15:45:10.572Z",
+      "msg": "Added T33 (BUILD) after end: Enhance HenryDB EXPLAIN ANALYZE: show actual row counts and timing per plan node, compare estimated vs actual"
     }
   ]
 }
