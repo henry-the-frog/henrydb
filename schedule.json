@@ -2738,6 +2738,137 @@
       "completed": "2026-04-12T02:59:36.493Z",
       "duration_ms": 120000,
       "summary": "Updated daily log with Session C neural net additions (6 modules, 115 tests). Updated TASKS.md: neural net entry expanded with new modules, ray tracer test count corrected, FFT project added."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Self-Organizing Map (SOM) — Kohonen network, competitive learning, neighborhood function, topology-preserving mapping, 2D grid visualization",
+      "project": "neural-net",
+      "started": "2026-04-12T03:00:03.487Z",
+      "completed": "2026-04-12T03:01:41.466Z",
+      "duration_ms": 600000,
+      "summary": "Self-Organizing Map: SOM (Kohonen network) with BMU search, Gaussian neighborhood, competitive learning, train/decay, quantization error, topographic error, U-Matrix (cluster boundary visualization), component planes, ASCII viz. Growing SOM (GSOM) with dynamic topology expansion based on error threshold. 14/14 tests pass."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Echo State Network (ESN) — random reservoir, spectral radius scaling, ridge regression readout, time-series prediction",
+      "project": "neural-net",
+      "started": "2026-04-12T03:02:05.109Z",
+      "completed": "2026-04-12T03:03:49.431Z",
+      "duration_ms": 600000,
+      "summary": "Echo State Network: random sparse reservoir with spectral radius scaling (power iteration), leaky integration, ridge regression readout, sequence collection with washout, autonomous prediction mode. Liquid State Machine: spiking reservoir with LIF dynamics, sparse connectivity. Linear system solver (Gaussian elimination with partial pivoting). 13/13 tests pass. Sine wave prediction MSE < 0.5."
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Capsule Network — primary capsules, squash activation, dynamic routing between capsules, capsule layer, margin loss",
+      "project": "neural-net",
+      "started": "2026-04-12T03:04:10.736Z",
+      "completed": "2026-04-12T03:05:47.647Z",
+      "duration_ms": 600000,
+      "summary": "Capsule Networks: squash activation (direction-preserving, norm → [0,1]), dynamic routing between capsules (iterative agreement with softmax coupling coefficients), CapsuleLayer (transformation matrices, routing iterations, backward pass), margin loss (positive/negative class margins), primary capsules (feature-to-capsule conversion). 16/16 tests pass."
+    },
+    {
+      "id": "T254",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Normalizing Flows — affine coupling layers, planar flows, log-determinant tracking, invertible transforms, density estimation",
+      "project": "neural-net",
+      "started": "2026-04-12T03:06:10.514Z",
+      "completed": "2026-04-12T03:07:47.138Z",
+      "duration_ms": 600000,
+      "summary": "Normalizing Flows: PlanarFlow (z + u*tanh(wTz+b), invertibility-enforced), AffineCouplingLayer (split-based, exact invertible, exp-scale + shift), ActNorm (data-dependent initialization, scale+bias), NormalizingFlow (stacked layers, forward/inverse roundtrip, log-likelihood under Gaussian prior, sampling). All coupling layers have exact inverse with machine-precision roundtrip. 15/15 tests pass."
+    },
+    {
+      "id": "T255",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Energy-Based Model — energy function parameterized by neural net, contrastive divergence training, Langevin dynamics sampling, score matching",
+      "project": "neural-net",
+      "started": "2026-04-12T03:08:38.689Z",
+      "completed": "2026-04-12T03:10:14.859Z",
+      "duration_ms": 600000,
+      "summary": "Energy-Based Models: EnergyNetwork (2-layer MLP energy function with analytic gradients verified by finite differences), Langevin dynamics sampling (gradient descent + noise for MCMC), contrastive divergence training (positive/negative phase gradient), denoising score matching training. 12/12 tests pass."
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Neural Turing Machine — external memory bank, content-based addressing, read/write heads, controller network",
+      "project": "neural-net",
+      "started": "2026-04-12T03:10:53.573Z",
+      "completed": "2026-04-12T03:13:05.287Z",
+      "duration_ms": 600000,
+      "summary": "Neural Turing Machine: MemoryBank (read with attention weights, write with erase+add), content-based addressing (cosine similarity + softmax with temperature), location-based addressing (interpolation gate, circular convolution shift, sharpening), ReadHead and WriteHead with controller-generated parameters, full NTM (controller + memory + heads, sequence processing, memory changes tracked). 15/15 tests pass."
+    },
+    {
+      "id": "T257",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final Session C housekeeping: update daily log, TASKS.md, CURRENT.md, final git push",
+      "started": "2026-04-12T03:16:02.735Z",
+      "completed": "2026-04-12T03:16:30.001Z",
+      "duration_ms": 60000,
+      "summary": "Updated daily log with comprehensive Session C work: 14 new neural net modules, 4 new FFT modules, ~340 new tests total."
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement gradient checking utility — numerical differentiation, cross-check all backward passes, relative error reporting",
+      "project": "neural-net",
+      "started": "2026-04-12T03:14:09.749Z",
+      "completed": "2026-04-12T03:15:36.851Z",
+      "duration_ms": 300000,
+      "summary": "Gradient checking utility: numerical gradient (central difference), relative error, Dense layer gradient verification (verifies weight + bias gradients for linear/tanh/relu activations), generic gradient check for arbitrary parameterized functions, gradient report with pass/warn/fail. Verified Dense layer gradients are correct (maxError < 1% for linear, < 5% for tanh). 13/13 tests pass."
+    },
+    {
+      "id": "T259",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Hypernetwork — weight-generating network, task-conditioned parameter generation, dynamic architecture",
+      "project": "neural-net",
+      "started": "2026-04-12T03:16:37.295Z",
+      "completed": "2026-04-12T03:18:07.437Z",
+      "duration_ms": 300000,
+      "summary": "Hypernetworks: HyperNetwork (generates target network weights from task embeddings, chunked per-layer MLP generators), TaskConditionedHyperNetwork (learnable task embeddings, per-task network generation, embedding interpolation for smooth task transfer), FiLM (Feature-wise Linear Modulation — lightweight conditioning with scale+shift). 12/12 tests pass."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement MAML (Model-Agnostic Meta-Learning) — inner loop gradient steps, outer loop meta-optimization, few-shot task adaptation",
+      "project": "neural-net",
+      "started": "2026-04-12T03:18:36.442Z",
+      "completed": "2026-04-12T03:20:06.794Z",
+      "duration_ms": 300000,
+      "summary": "MAML (Model-Agnostic Meta-Learning): MAMLNetwork with clone/getParams/setParams, inner loop fast adaptation (K gradient steps), outer loop meta-optimization (FOMAML first-order approximation), sinusoidal and linear regression task generators (classic MAML benchmarks), test evaluation on unseen tasks. 11/11 tests pass."
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement Autograd — reverse-mode automatic differentiation, computational graph, tape-based gradient computation",
+      "project": "neural-net",
+      "started": "2026-04-12T03:20:47.311Z",
+      "completed": "2026-04-12T03:22:22.435Z",
+      "duration_ms": 300000,
+      "summary": "Autograd: reverse-mode automatic differentiation with computational graph. Variable class with topological sort backward pass. 12 differentiable operations (add, mul, sub, div, pow, neg, relu, sigmoid, tanh, exp, log, sin, cos). Convenience: constant, parameter, sum, mean, MSE loss. Verified: chain rule (multi-variable), gradient descent minimizing x², linear regression fitting y=2x+1. 22/22 tests pass."
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: implement sparse attention patterns — local window, strided, dilated, combined (Longformer/BigBird style), causal mask",
+      "project": "neural-net",
+      "started": "2026-04-12T03:22:55.020Z",
+      "completed": "2026-04-12T03:24:25.277Z",
+      "duration_ms": 300000,
+      "summary": "Sparse Attention: 7 mask patterns (full, causal, local window, strided, dilated, global tokens, random), mask combinations (OR/AND), Longformer-style (local+global+random), BigBird-style, sparse attention computation with softmax over valid positions, mask statistics (density, sparsity, average attended positions). 19/19 tests pass."
     }
   ],
   "focusProjects": [
@@ -3749,6 +3880,54 @@
     {
       "time": "2026-04-12T02:58:19.908Z",
       "msg": "Added T250 (MAINTAIN) after end: Update daily log, TASKS.md, CURRENT.md with all Session C work"
+    },
+    {
+      "time": "2026-04-12T02:59:58.309Z",
+      "msg": "Added T251 (BUILD) after end: Neural net: implement Self-Organizing Map (SOM) — Kohonen network, competitive learning, neighborhood function, topology-preserving mapping, 2D grid visualization"
+    },
+    {
+      "time": "2026-04-12T03:01:57.559Z",
+      "msg": "Added T252 (BUILD) after end: Neural net: implement Echo State Network (ESN) — random reservoir, spectral radius scaling, ridge regression readout, time-series prediction"
+    },
+    {
+      "time": "2026-04-12T03:04:03.348Z",
+      "msg": "Added T253 (BUILD) after end: Neural net: implement Capsule Network — primary capsules, squash activation, dynamic routing between capsules, capsule layer, margin loss"
+    },
+    {
+      "time": "2026-04-12T03:06:02.246Z",
+      "msg": "Added T254 (BUILD) after end: Neural net: implement Normalizing Flows — affine coupling layers, planar flows, log-determinant tracking, invertible transforms, density estimation"
+    },
+    {
+      "time": "2026-04-12T03:08:29.961Z",
+      "msg": "Added T255 (BUILD) after end: Neural net: implement Energy-Based Model — energy function parameterized by neural net, contrastive divergence training, Langevin dynamics sampling, score matching"
+    },
+    {
+      "time": "2026-04-12T03:10:44.394Z",
+      "msg": "Added T256 (BUILD) after end: Neural net: implement Neural Turing Machine — external memory bank, content-based addressing, read/write heads, controller network"
+    },
+    {
+      "time": "2026-04-12T03:13:44.049Z",
+      "msg": "Added T257 (MAINTAIN) after end: Final Session C housekeeping: update daily log, TASKS.md, CURRENT.md, final git push"
+    },
+    {
+      "time": "2026-04-12T03:14:01.811Z",
+      "msg": "Added T258 (BUILD) after end: Neural net: implement gradient checking utility — numerical differentiation, cross-check all backward passes, relative error reporting"
+    },
+    {
+      "time": "2026-04-12T03:15:54.361Z",
+      "msg": "Added T259 (BUILD) after end: Neural net: implement Hypernetwork — weight-generating network, task-conditioned parameter generation, dynamic architecture"
+    },
+    {
+      "time": "2026-04-12T03:18:28.369Z",
+      "msg": "Added T260 (BUILD) after end: Neural net: implement MAML (Model-Agnostic Meta-Learning) — inner loop gradient steps, outer loop meta-optimization, few-shot task adaptation"
+    },
+    {
+      "time": "2026-04-12T03:20:39.259Z",
+      "msg": "Added T261 (BUILD) after end: Neural net: implement Autograd — reverse-mode automatic differentiation, computational graph, tape-based gradient computation"
+    },
+    {
+      "time": "2026-04-12T03:22:50.470Z",
+      "msg": "Added T262 (BUILD) after end: Neural net: implement sparse attention patterns — local window, strided, dilated, combined (Longformer/BigBird style), causal mask"
     }
   ]
 }

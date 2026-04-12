@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-12T02:59:36.557Z",
+  "generated": "2026-04-12T03:24:25.341Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Update daily log, TASKS.md, CURRENT.md with all Session C work",
-    "completedAt": "2026-04-12T02:59:36.557Z",
-    "taskId": "T250",
-    "summary": "Updated daily log with Session C neural net additions (6 modules, 115 tests). Updated TASKS.md: neural net entry expanded with new modules, ray tracer test count corrected, FFT project added.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "Neural net: implement sparse attention patterns — local window, strided, dilated, combined (Longformer/BigBird style), causal mask",
+    "completedAt": "2026-04-12T03:24:25.341Z",
+    "taskId": "T262",
+    "summary": "Sparse Attention: 7 mask patterns (full, causal, local window, strided, dilated, global tokens, random), mask combinations (OR/AND), Longformer-style (local+global+random), BigBird-style, sparse attention computation with softmax over valid positions, mask statistics (density, sparsity, average attended positions). 19/19 tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-11",
@@ -6020,13 +6020,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 249,
+    "blocksCompleted": 261,
     "blocksTotal": 241,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 11,
-      "BUILD": 201,
-      "MAINTAIN": 19,
+      "BUILD": 212,
+      "MAINTAIN": 20,
       "EXPLORE": 3
     }
   },
