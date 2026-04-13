@@ -650,30 +650,84 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix arithmetic between aggregates (SUM(a)/SUM(b) should return 1 row, not N)",
       "project": "henrydb",
-      "started": "2026-04-13T21:53:43.621Z"
+      "started": "2026-04-13T21:53:43.621Z",
+      "completed": "2026-04-13T21:58:35.340Z",
+      "duration_ms": 600000,
+      "summary": "Fixed arithmetic between aggregates. SUM(a)/SUM(b) now returns 1 row. Added _exprContainsAggregate() for recursive detection and _evalAggregateExpr() for evaluation. TPC-H Q14 now works as single query. 657 test files pass."
     },
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: add variable mutation (SET statement) to Monkey for while loop utility",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:58:56.547Z",
+      "completed": "2026-04-13T22:03:37.325Z",
+      "duration_ms": 600000,
+      "summary": "Added set statement for variable mutation. while+set now works: sum(1..10)=55, factorial(5)=120. Both engines. 294 tests pass."
     },
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: add EXPLAIN ANALYZE (time each stage, show actual vs estimated rows)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T22:03:57.040Z",
+      "completed": "2026-04-13T22:05:08.119Z",
+      "duration_ms": 120000,
+      "summary": "EXPLAIN ANALYZE already implemented! Shows table scan engine, estimated/actual rows, selectivity, planning time, execution time. Estimates are accurate (GROUP BY 3=3 exact, filtered 79=79 exact after ANALYZE)."
     },
     {
       "id": "T64",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final housekeeping and daily log",
+      "started": "2026-04-13T22:05:23.034Z",
+      "completed": "2026-04-13T22:05:23.176Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 4 hours remain."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add for loop syntax (for (init; condition; update) { body })",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:05:53.203Z",
+      "completed": "2026-04-13T22:08:32.073Z",
+      "duration_ms": 300000,
+      "summary": "C-style for loops: for (let i=0; i<10; set i=i+1) { body }. Works in both engines. 294 tests pass."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add JSON_EXTRACT function for querying JSON columns",
+      "project": "henrydb",
+      "started": "2026-04-13T22:08:42.079Z"
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final housekeeping and daily log"
+      "task": "HenryDB: add JSON_ARRAY_LENGTH and JSON_TYPE functions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: update README with set/while/for loop docs and examples",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T69",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session housekeeping"
     }
   ],
   "focusProjects": [
@@ -901,6 +955,26 @@
     {
       "time": "2026-04-13T21:53:24.002Z",
       "msg": "Added T64 (MAINTAIN) after end: Final housekeeping and daily log"
+    },
+    {
+      "time": "2026-04-13T22:05:38.086Z",
+      "msg": "Added T65 (BUILD) after end: Monkey: add for loop syntax (for (init; condition; update) { body })"
+    },
+    {
+      "time": "2026-04-13T22:05:38.205Z",
+      "msg": "Added T66 (BUILD) after end: HenryDB: add JSON_EXTRACT function for querying JSON columns"
+    },
+    {
+      "time": "2026-04-13T22:05:38.324Z",
+      "msg": "Added T67 (BUILD) after end: HenryDB: add JSON_ARRAY_LENGTH and JSON_TYPE functions"
+    },
+    {
+      "time": "2026-04-13T22:05:38.442Z",
+      "msg": "Added T68 (BUILD) after end: Monkey: update README with set/while/for loop docs and examples"
+    },
+    {
+      "time": "2026-04-13T22:05:38.560Z",
+      "msg": "Added T69 (MAINTAIN) after end: Final session housekeeping"
     }
   ]
 }

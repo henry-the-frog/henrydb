@@ -5354,6 +5354,39 @@ export class Database {
   }
 
   /**
+   * Extract a value from a JSON object using a path expression.
+   * Supports: $.key, $.nested.key, $.array[0], $[0], $.key.array[1].nested
+   */
+  _jsonExtract(obj, path) {
+    if (!path || !path.startsWith('$')) return null;
+    const parts = path.substring(1); // Remove leading $
+    if (!parts) return obj;
+    
+    let current = obj;
+    // Tokenize path: split on . and [] 
+    const tokens = parts.match(/\.([^.\[\]]+)|\[(\d+)\]/g);
+    if (!tokens) return obj;
+    
+    for (const token of tokens) {
+      if (current == null) return null;
+      if (token.startsWith('.')) {
+        const key = token.substring(1);
+        if (typeof current !== 'object' || Array.isArray(current)) return null;
+        current = current[key];
+      } else if (token.startsWith('[')) {
+        const idx = parseInt(token.slice(1, -1), 10);
+        if (!Array.isArray(current)) return null;
+        current = current[idx];
+      }
+    }
+    
+    // Return primitives directly, objects as JSON strings
+    if (current === null || current === undefined) return null;
+    if (typeof current === 'object') return JSON.stringify(current);
+    return current;
+  }
+
+  /**
    * Evaluate an expression that contains aggregate functions against a set of rows.
    * Recursively evaluates aggregate_expr nodes against all rows, then computes arithmetic.
    */
@@ -5956,6 +5989,54 @@ export class Database {
           .replace('%H', String(d.getUTCHours()).padStart(2, '0'))
           .replace('%M', String(d.getUTCMinutes()).padStart(2, '0'))
           .replace('%S', String(d.getUTCSeconds()).padStart(2, '0'));
+      }
+      
+      // JSON functions
+      case 'JSON_EXTRACT': case 'JSON_VALUE': {
+        const jsonStr = this._evalValue(args[0], row);
+        const path = this._evalValue(args[1], row);
+        if (jsonStr == null || path == null) return null;
+        try {
+          const obj = typeof jsonStr === 'object' ? jsonStr : JSON.parse(String(jsonStr));
+          return this._jsonExtract(obj, String(path));
+        } catch (e) { return null; }
+      }
+      case 'JSON_ARRAY_LENGTH': {
+        const jsonStr = this._evalValue(args[0], row);
+        if (jsonStr == null) return null;
+        try {
+          const arr = typeof jsonStr === 'object' ? jsonStr : JSON.parse(String(jsonStr));
+          return Array.isArray(arr) ? arr.length : null;
+        } catch (e) { return null; }
+      }
+      case 'JSON_TYPE': {
+        const jsonStr = this._evalValue(args[0], row);
+        if (jsonStr == null) return 'null';
+        try {
+          const val = typeof jsonStr === 'object' ? jsonStr : JSON.parse(String(jsonStr));
+          if (Array.isArray(val)) return 'array';
+          if (val === null) return 'null';
+          return typeof val; // 'object', 'number', 'string', 'boolean'
+        } catch (e) { return 'text'; }
+      }
+      case 'JSON_OBJECT': {
+        // JSON_OBJECT('key1', val1, 'key2', val2, ...)
+        const obj = {};
+        for (let i = 0; i < args.length; i += 2) {
+          const key = String(this._evalValue(args[i], row));
+          const val = i + 1 < args.length ? this._evalValue(args[i + 1], row) : null;
+          obj[key] = val;
+        }
+        return JSON.stringify(obj);
+      }
+      case 'JSON_ARRAY': {
+        const arr = args.map(a => this._evalValue(a, row));
+        return JSON.stringify(arr);
+      }
+      case 'JSON_VALID': {
+        const jsonStr = this._evalValue(args[0], row);
+        if (jsonStr == null) return 0;
+        try { JSON.parse(String(jsonStr)); return 1; } catch (e) { return 0; }
       }
       
       default: throw new Error(`Unknown function: ${func}`);
