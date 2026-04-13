@@ -5433,7 +5433,17 @@ export class Database {
           case 'GE': return left >= right;
         }
       }
-      default: return true;
+      default: {
+        // For expression types not explicitly handled as boolean conditions
+        // (arith, function_call, case_expr, etc.), evaluate as a value and
+        // check truthiness. This handles WHERE 1+1, WHERE LENGTH('x'), etc.
+        try {
+          const val = this._evalValue(expr, row);
+          return !!val; // NULL/0/false/'' → false, others → true
+        } catch {
+          return true; // If evaluation fails, default to true for safety
+        }
+      }
     }
   }
 

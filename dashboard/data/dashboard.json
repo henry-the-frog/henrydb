@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T19:07:41.252Z",
+  "generated": "2026-04-13T19:09:36.373Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Systematic audit: find all remaining parsePrimary() calls in sql.js that should be parseExpr() or parsePrimaryWithConcat()",
-    "startedAt": "2026-04-13T19:07:41.252Z",
-    "taskId": "T75"
+    "task": "Test the _evalExpr fallthrough: find all expression types missing from _evalExpr that silently return truthy",
+    "startedAt": "2026-04-13T19:09:36.373Z",
+    "taskId": "T76"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2436,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 74,
+    "blocksCompleted": 75,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 48,
+      "BUILD": 49,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
