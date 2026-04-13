@@ -4782,6 +4782,18 @@ export class Database {
         }
         return this._resolveColumn(col, row);
       }
+      // Ordinal position: GROUP BY 1 → first SELECT column
+      if (col.type === 'literal' && typeof col.value === 'number') {
+        const idx = col.value - 1; // 1-based
+        if (idx >= 0 && idx < ast.columns.length) {
+          const selCol = ast.columns[idx];
+          if (selCol.type === 'column') return this._resolveColumn(selCol.name, row);
+          if (selCol.type === 'expression' && selCol.expr) return this._evalValue(selCol.expr, row);
+          if (selCol.type === 'function') return this._evalFunction(selCol.func, selCol.args, row);
+          if (selCol.type === 'case') return this._evalCase(selCol, row);
+          return this._evalValue(selCol, row);
+        }
+      }
       return this._evalValue(col, row); // Expression
     };
 
@@ -4820,6 +4832,22 @@ export class Database {
             if (col.includes('.')) result[col.split('.').pop()] = val;
           }
         } else {
+          // Ordinal position: GROUP BY 1 → resolve to SELECT column
+          if (col.type === 'literal' && typeof col.value === 'number') {
+            const idx = col.value - 1;
+            if (idx >= 0 && idx < ast.columns.length) {
+              const selCol = ast.columns[idx];
+              const outKey = selCol.alias || selCol.name || `col_${col.value}`;
+              let val;
+              if (selCol.type === 'column') val = this._resolveColumn(selCol.name, groupRows[0]);
+              else if (selCol.type === 'expression' && selCol.expr) val = this._evalValue(selCol.expr, groupRows[0]);
+              else if (selCol.type === 'function') val = this._evalFunction(selCol.func, selCol.args, groupRows[0]);
+              else if (selCol.type === 'case') val = this._evalCase(selCol, groupRows[0]);
+              else val = this._evalValue(selCol, groupRows[0]);
+              result[outKey] = val;
+              continue;
+            }
+          }
           // Expression group key — evaluate and use the matching SELECT column alias
           const val = this._evalValue(col, groupRows[0]);
           // Find matching SELECT column alias for this expression
