@@ -6213,4 +6213,126 @@ export class Database {
     }
     return result;
   }
+
+  /**
+   * Import CSV data into a table.
+   * @param {string} tableName - Target table
+   * @param {string} csv - CSV string
+   * @param {object} opts - { header: true, delimiter: ',' }
+   */
+  copyFrom(tableName, csv, opts = {}) {
+    const table = this.tables.get(tableName);
+    if (!table) throw new Error(`Table ${tableName} not found`);
+    
+    const delimiter = opts.delimiter || ',';
+    const hasHeader = opts.header !== false;
+    
+    const lines = csv.trim().split('\n');
+    if (lines.length === 0) return { count: 0 };
+    
+    let csvColumns = null; // column names from CSV header (for mapping)
+    let startLine = 0;
+    
+    if (hasHeader) {
+      csvColumns = this._parseCsvLine(lines[0], delimiter);
+      startLine = 1;
+    }
+    
+    // Use table schema column order, mapping from CSV header if present
+    const schemaColumns = table.schema.map(c => c.name);
+    
+    let count = 0;
+    for (let i = startLine; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const vals = this._parseCsvLine(lines[i], delimiter);
+      
+      // Map CSV columns to schema order
+      const newValues = new Array(schemaColumns.length).fill(null);
+      for (let j = 0; j < vals.length; j++) {
+        const csvCol = csvColumns ? csvColumns[j] : schemaColumns[j];
+        const schemaIdx = schemaColumns.indexOf(csvCol);
+        if (schemaIdx === -1) continue;
+        const v = vals[j];
+        if (v === '' || v === null) { newValues[schemaIdx] = null; continue; }
+        const n = Number(v);
+        if (!isNaN(n) && v.trim() !== '') { newValues[schemaIdx] = n; continue; }
+        newValues[schemaIdx] = v;
+      }
+      
+      // Direct insert via heap (bypass SQL parsing for speed and keyword safety)
+      table.heap.insert(newValues);
+      count++;
+    }
+    
+    return { count };
+  }
+
+  /**
+   * Export query results as CSV.
+   * @param {string} query - SELECT query
+   * @param {object} opts - { header: true, delimiter: ',' }
+   */
+  copyTo(query, opts = {}) {
+    const result = this.execute(query);
+    if (!result.rows || result.rows.length === 0) return '';
+    
+    const delimiter = opts.delimiter || ',';
+    const includeHeader = opts.header !== false;
+    
+    const columns = Object.keys(result.rows[0]);
+    const lines = [];
+    
+    if (includeHeader) {
+      lines.push(columns.map(c => this._escapeCsvField(c, delimiter)).join(delimiter));
+    }
+    
+    for (const row of result.rows) {
+      const fields = columns.map(c => {
+        const val = row[c];
+        if (val === null || val === undefined) return '';
+        return this._escapeCsvField(String(val), delimiter);
+      });
+      lines.push(fields.join(delimiter));
+    }
+    
+    return lines.join('\n') + '\n';
+  }
+
+  _parseCsvLine(line, delimiter) {
+    const fields = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQuotes) {
+        if (ch === '"' && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else if (ch === '"') {
+          inQuotes = false;
+        } else {
+          current += ch;
+        }
+      } else {
+        if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === delimiter) {
+          fields.push(current);
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+    }
+    fields.push(current);
+    return fields;
+  }
+
+  _escapeCsvField(val, delimiter) {
+    if (val.includes(delimiter) || val.includes('"') || val.includes('\n')) {
+      return '"' + val.replace(/"/g, '""') + '"';
+    }
+    return val;
+  }
 }

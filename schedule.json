@@ -1171,16 +1171,24 @@
     {
       "id": "T110",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement && and || logical operators (short-circuit)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:15:20.590Z",
+      "completed": "2026-04-13T23:18:55.350Z",
+      "duration_ms": 300000,
+      "summary": "&& and || with short-circuit evaluation. Both engines, full parity. 330 tests."
     },
     {
       "id": "T111",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: CASE expression in WHERE clause",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:20:06.050Z",
+      "completed": "2026-04-13T23:20:28.919Z",
+      "duration_ms": 30000,
+      "summary": "CASE in WHERE already works. Verified CASE in WHERE (boolean) and ORDER BY."
     },
     {
       "id": "T112",
@@ -1196,24 +1204,32 @@
     {
       "id": "T113",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement a sorting builtin (sort with optional comparator)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:18:55.494Z",
+      "completed": "2026-04-13T23:19:59.324Z",
+      "duration_ms": 180000,
+      "summary": "sort() builtin: default ascending, custom comparator (evaluator). Both engines for default sort. 330 tests."
     },
     {
       "id": "T114",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: INSERT INTO ... SELECT (insert from query)",
       "project": "henrydb",
-      "started": "2026-04-13T23:14:32.507Z"
+      "started": "2026-04-13T23:14:32.507Z",
+      "completed": "2026-04-13T23:15:20.447Z",
+      "duration_ms": 120000,
+      "summary": "INSERT INTO ... SELECT already works. 3 tests added. 682 total."
     },
     {
       "id": "T115",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: COPY TO/FROM CSV support",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:20:29.062Z"
     }
   ],
   "focusProjects": [
