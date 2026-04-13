@@ -4648,10 +4648,10 @@ export class Database {
       // Pre-compute aggregates used in HAVING that aren't in SELECT
       if (ast.having) {
         this._collectAggregateExprs(ast.having).forEach(agg => {
-          const argStr = typeof agg.arg === 'string' ? agg.arg : (agg.arg?.name || '*');
+          const argStr = this._serializeExpr(agg.arg);
           const key = `${agg.func}(${argStr})`;
           if (!(key in result) && !(`__agg_${key}` in result)) {
-            result[`__agg_${key}`] = computeAgg(agg.func, argStr, agg.distinct);
+            result[`__agg_${key}`] = computeAgg(agg.func, agg.arg, agg.distinct);
           }
         });
       }
@@ -4934,6 +4934,19 @@ export class Database {
   }
 
   // Collect aggregate_expr nodes from an expression tree (for HAVING pre-computation)
+  // Serialize an expression to a canonical string for key matching
+  _serializeExpr(expr) {
+    if (expr == null) return '*';
+    if (typeof expr === 'string') return expr;
+    if (typeof expr !== 'object') return String(expr);
+    switch (expr.type) {
+      case 'column_ref': return expr.table ? `${expr.table}.${expr.name}` : expr.name;
+      case 'literal': return String(expr.value);
+      case 'arith': return `${this._serializeExpr(expr.left)} ${expr.op} ${this._serializeExpr(expr.right)}`;
+      default: return JSON.stringify(expr);
+    }
+  }
+
   _collectAggregateExprs(expr) {
     if (!expr) return [];
     if (expr.type === 'aggregate_expr') return [expr];
@@ -5159,7 +5172,7 @@ export class Database {
     }
     if (node.type === 'aggregate_expr') {
       // In HAVING/ORDER BY context, look up the computed aggregate from the row
-      const argStr = typeof node.arg === 'string' ? node.arg : (node.arg?.name || '*');
+      const argStr = this._serializeExpr(node.arg);
       const key = `${node.func}(${argStr})`;
       if (key in row) return row[key];
       // Check prefixed aggregate keys (used for HAVING resolution)

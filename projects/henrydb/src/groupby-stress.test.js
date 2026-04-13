@@ -65,18 +65,16 @@ describe('GROUP BY stress tests', () => {
     assert.strictEqual(r.rows.length, 2);
   });
 
-  it('HAVING with aggregate on computed column', () => {
-    // SUM(qty * price) in HAVING may not be supported directly
-    // Workaround: use alias or simple aggregate
+  it('HAVING with complex aggregate expression', () => {
     const r = db.execute(`
-      SELECT customer, SUM(qty) as total_qty
+      SELECT customer, SUM(qty * price) as total_value
       FROM orders GROUP BY customer
-      HAVING SUM(qty) > 10
-      ORDER BY total_qty DESC
+      HAVING SUM(qty * price) > 100
+      ORDER BY total_value DESC
     `);
     assert.ok(r.rows.length > 0);
     for (const row of r.rows) {
-      assert.ok(row.total_qty > 10);
+      assert.ok(row.total_value > 100);
     }
   });
 
