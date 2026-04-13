@@ -18,3 +18,5 @@ Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Low
 - [ ] Named Cloudflare tunnel for dashboard webhook (URL changes on restart)
+
+- [ ] HenryDB: Fix TRUNCATE TABLE persistence (WAL recovery restores truncated rows after close/reopen)
