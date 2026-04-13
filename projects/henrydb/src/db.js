@@ -1895,6 +1895,12 @@ export class Database {
           // Recursive CTE: iterate until fixed point
           const allRows = this._executeRecursiveCTE(cte);
           this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
+        } else if (cte.unionQuery || cte.query.type === 'UNION') {
+          // Non-recursive CTE with UNION: materialize by executing both parts
+          const leftResult = this._select(cte.query);
+          const rightResult = this.execute_ast(cte.unionQuery);
+          const allRows = [...leftResult.rows, ...rightResult.rows];
+          this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
         } else {
           this.views.set(cte.name, { query: cte.query, isCTE: true });
         }
@@ -2057,7 +2063,10 @@ export class Database {
       if (viewDef.materializedRows) {
         rows = [...viewDef.materializedRows];
       } else {
-        const viewResult = this._select(viewDef.query);
+        // Execute the view query — handle UNION/INTERSECT/EXCEPT via execute_ast
+        const viewResult = viewDef.query.type === 'UNION' || viewDef.query.type === 'INTERSECT' || viewDef.query.type === 'EXCEPT'
+          ? this.execute_ast(viewDef.query)
+          : this._select(viewDef.query);
         rows = viewResult.rows;
       }
 
