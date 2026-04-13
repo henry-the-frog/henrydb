@@ -2,35 +2,36 @@
 
 ## Status: session-ended
 ## Session: Work Session C (Sunday 4/12, 8:15 PM - 10:15 PM MDT)
-## Completed: 2026-04-13T03:42:00Z
-## Tasks Completed This Session: 15 (T105-T124)
+## Completed: 2026-04-13T03:51:00Z
+## Tasks Completed This Session: 17 (T105-T125)
 
 ## Session C Final Summary
-Evening deep-dive session focused on HenryDB bug fixing and quality improvement.
+Evening deep-dive on HenryDB quality. All fixes pushed to henrydb/main.
 
-### Stats
-- **12 bugs found and fixed** (most multi-layer)
-- **35 new tests** across 6 test files
-- **~25+ pre-existing failures fixed** across the test suite
-- **12 git commits** pushed to henrydb/main
-- **Test suite pass rate**: ~99.37% → ~99.7%+
+### Bugs Fixed: 13
+1. Unary minus parser
+2. CASE expression in ORDER BY
+3. ORDER BY numeric column reference (qualified key issue)
+4. CTE/view JOIN handler (completely missing)
+5. INSERT SELECT column mapping (name-based)
+6. UNION/INTERSECT/EXCEPT in derived tables
+7. CASE+aggregates in GROUP BY projection
+8. Post-aggregate arithmetic in parser (SUM(a)*100)
+9. TransactionalDatabase UPDATE rollback (4-layer fix)
+10. Column case normalization (SQL keywords as column names)
+11. LIKE case-insensitive (SQLite-compatible)
+12. EquiWidthHistogram class wrapper
+13. Implicit type coercion (number vs string comparisons)
 
-### Key Achievements
-1. **Unary minus** in parser + evaluator
-2. **Expression ORDER BY** (CASE, functions, arithmetic)
-3. **Index nested-loop join** optimization
-4. **UNION in derived table** subqueries
-5. **CASE+aggregates in GROUP BY** projection
-6. **CTE/view JOIN handler** (was completely missing)
-7. **INSERT SELECT column mapping** (name-based)
-8. **TransactionalDatabase UPDATE rollback** — 4-layer bug (21/21 tests)
-9. **Column case normalization** for keyword-named columns
-10. **LIKE case-insensitive** (SQLite-compatible)
-11. **EquiWidthHistogram class wrapper**
+### New Feature: Index nested-loop join optimization
 
-### Known Issues (for next session)
-- 5 pre-existing transactional-db.test.js failures (MVCC deep issues)
-- SSI write skew prevention incomplete
-- PG protocol concurrency issues
-- Histogram estimation accuracy for high-frequency values
-- ~10 remaining test failures in batch 7 (mostly transaction/perf)
+### Tests: 35 new + ~25 pre-existing fixed
+### Full suite: ~6734/6761 = 99.6% (was ~99.4% pre-session)
+### Commits: 13 pushed
+
+### Known Issues (next session)
+- Savepoints (not implemented)
+- PG wire protocol prepared statements
+- SSI write skew prevention
+- Index lookup performance (slower than full scan for some queries)
+- 5 pre-existing transactional-db.test.js failures
