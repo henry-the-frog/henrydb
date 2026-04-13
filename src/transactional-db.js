@@ -528,6 +528,18 @@ export class TransactionalDatabase {
            trimmed.startsWith('TRUNCATE') || trimmed.startsWith('RENAME');
   }
 
+  _trackDrop(sql) {
+    const match = sql.match(/DROP\s+(?:TABLE|INDEX|(?:MATERIALIZED\s+)?VIEW|TRIGGER|FUNCTION|PROCEDURE|SEQUENCE)\s+(?:IF\s+EXISTS\s+)?(\w+)/i);
+    if (match) {
+      const name = match[1];
+      this._createSqls.delete(name);
+      this._createSqls.delete(name.toLowerCase());
+      this._versionMaps.delete(name);
+      this._versionMaps.delete(name.toLowerCase());
+      this._saveCatalog();
+    }
+  }
+
   _trackAlter(sql) {
     const match = sql.match(/ALTER\s+TABLE\s+(\w+)/i);
     if (match) {
