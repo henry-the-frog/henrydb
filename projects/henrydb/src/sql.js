@@ -768,6 +768,36 @@ export function parse(sql) {
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
     }
+    // Unary minus in SELECT: -val, -SUM(...), -(expr)
+    if (peek().type === 'MINUS') {
+      advance(); // consume MINUS
+      const operand = parsePrimary();
+      let expr;
+      if (operand.type === 'literal' && typeof operand.value === 'number') {
+        expr = { type: 'literal', value: -operand.value };
+      } else {
+        expr = { type: 'unary_minus', operand };
+      }
+      // Check for arithmetic after: -val + 100, -val * 2
+      while (true) {
+        const t = peek().type;
+        if (t === '*' && tokens[pos+1]?.type !== ')') {
+          advance(); const right = parsePrimary(); expr = { type: 'arith', op: '*', left: expr, right };
+        } else if (t === 'SLASH') {
+          advance(); const right = parsePrimary(); expr = { type: 'arith', op: '/', left: expr, right };
+        } else if (t === 'MOD') {
+          advance(); const right = parsePrimary(); expr = { type: 'arith', op: '%', left: expr, right };
+        } else if (t === 'PLUS' || t === 'MINUS') {
+          const op = t === 'PLUS' ? '+' : '-';
+          advance();
+          const right = parsePrimary();
+          expr = { type: 'arith', op, left: expr, right };
+        } else break;
+      }
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
     const colTok = advance();
     const col = colTok.value;
     // Check for || concatenation or arithmetic operators
@@ -1098,6 +1128,21 @@ export function parse(sql) {
 
   function parsePrimary() {
     const t = peek();
+    // Unary minus: -expr
+    if (t.type === 'MINUS') {
+      advance();
+      const operand = parsePrimary();
+      // Fold literal numbers: -5 → literal(-5)
+      if (operand.type === 'literal' && typeof operand.value === 'number') {
+        return { type: 'literal', value: -operand.value };
+      }
+      return { type: 'unary_minus', operand };
+    }
+    // Unary plus: +expr (no-op, just parse the operand)
+    if (t.type === 'PLUS') {
+      advance();
+      return parsePrimary();
+    }
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
@@ -1220,7 +1265,16 @@ export function parse(sql) {
   function parseOrderBy() {
     const cols = [];
     do {
-      const col = advance().value;
+      // Parse as expression to support: ORDER BY -val, ORDER BY col + 1, etc.
+      const expr = parseExpr();
+      let column;
+      if (expr.type === 'column_ref') {
+        column = expr.name; // Simple column name (backward compat)
+      } else if (expr.type === 'literal' && typeof expr.value === 'number') {
+        column = expr.value; // Numeric column reference: ORDER BY 1
+      } else {
+        column = expr; // Expression node
+      }
       let dir = 'ASC';
       if (isKeyword('DESC')) { dir = 'DESC'; advance(); }
       else if (isKeyword('ASC')) { advance(); }
@@ -1233,7 +1287,7 @@ export function parse(sql) {
           nulls = 'LAST'; advance();
         }
       }
-      cols.push({ column: col, direction: dir, nulls });
+      cols.push({ column, direction: dir, nulls });
     } while (match(','));
     return cols;
   }

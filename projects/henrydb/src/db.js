@@ -1759,16 +1759,8 @@ export class Database {
     if (ast.orderBy && !this._canEliminateSort(ast)) {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          let av, bv;
-          if (typeof column === 'number') {
-            // Numeric column reference (ORDER BY 1, 2, etc.)
-            const keys = Object.keys(a);
-            const key = keys[column - 1];
-            av = key !== undefined ? a[key] : undefined;
-            bv = key !== undefined ? b[key] : undefined;
-          } else {
-            av = a[column]; bv = b[column];
-          }
+          const av = this._orderByValue(column, a);
+          const bv = this._orderByValue(column, b);
           // NULL handling: NULL is smaller than any value (SQLite behavior)
           const aNull = av === null || av === undefined;
           const bNull = bv === null || bv === undefined;
@@ -2130,8 +2122,8 @@ export class Database {
       if (ast.orderBy) {
         rows.sort((a, b) => {
           for (const { column, direction } of ast.orderBy) {
-            const av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
-            const bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+            const av = this._orderByValue(column, a);
+            const bv = this._orderByValue(column, b);
             const aNull = av === null || av === undefined;
             const bNull = bv === null || bv === undefined;
             if (aNull && bNull) continue;
@@ -2300,7 +2292,11 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction, nulls } of ast.orderBy) {
           let av, bv;
-          if (column in a) {
+          if (typeof column === 'object' && column !== null) {
+            // Expression node (ORDER BY -val, ORDER BY col + 1, etc.)
+            av = this._evalValue(column, a);
+            bv = this._evalValue(column, b);
+          } else if (column in a) {
             // Direct key match (works for aliased columns in the result)
             av = a[column];
             bv = b[column];
@@ -4317,8 +4313,8 @@ export class Database {
         if (orderBy) {
           partition.sort((a, b) => {
             for (const { column, direction } of orderBy) {
-              const av = this._resolveColumn(column, a);
-              const bv = this._resolveColumn(column, b);
+              const av = this._orderByValue(column, a);
+              const bv = this._orderByValue(column, b);
               const cmp = av < bv ? -1 : av > bv ? 1 : 0;
               if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
             }
@@ -4680,8 +4676,8 @@ export class Database {
     if (ast.orderBy) {
       resultRows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          const av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
-          const bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+          const av = this._orderByValue(column, a);
+          const bv = this._orderByValue(column, b);
           const aNull = av === null || av === undefined;
           const bNull = bv === null || bv === undefined;
           if (aNull && bNull) continue;
@@ -4955,6 +4951,7 @@ export class Database {
       case 'column_ref': return expr.table ? `${expr.table}.${expr.name}` : expr.name;
       case 'literal': return String(expr.value);
       case 'arith': return `${this._serializeExpr(expr.left)} ${expr.op} ${this._serializeExpr(expr.right)}`;
+      case 'unary_minus': return `-(${this._serializeExpr(expr.operand)})`;
       default: return JSON.stringify(expr);
     }
   }
@@ -4967,6 +4964,24 @@ export class Database {
       if (expr[key]) results.push(...this._collectAggregateExprs(expr[key]));
     }
     return results;
+  }
+
+  /**
+   * Resolve an ORDER BY column value from a row.
+   * Handles string column names, numeric references, and expression nodes.
+   */
+  _orderByValue(column, row) {
+    if (typeof column === 'number') {
+      const keys = Object.keys(row);
+      const key = keys[column - 1];
+      return key !== undefined ? row[key] : undefined;
+    }
+    if (typeof column === 'object' && column !== null) {
+      return this._evalValue(column, row);
+    }
+    // String column name — try direct lookup first, then _resolveColumn
+    if (row[column] !== undefined) return row[column];
+    return this._resolveColumn(column, row);
   }
 
   _resolveColumn(name, row) {
@@ -5156,6 +5171,12 @@ export class Database {
     }
     if (node.type === 'interval') {
       return { __interval: true, value: node.value };
+    }
+    if (node.type === 'unary_minus') {
+      const val = this._evalValue(node.operand, row);
+      if (val == null) return null;
+      const neg = -val;
+      return neg === 0 ? 0 : neg; // avoid -0
     }
     if (node.type === 'arith') {
       const left = this._evalValue(node.left, row);
