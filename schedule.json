@@ -1045,9 +1045,55 @@
     {
       "id": "T98",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session housekeeping",
-      "started": "2026-04-13T22:48:49.966Z"
+      "started": "2026-04-13T22:48:49.966Z",
+      "completed": "2026-04-13T22:49:16.742Z",
+      "duration_ms": 60000,
+      "summary": "Daily log updated, git pushed. 70+ tasks in this session."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement >= and <= comparison operators",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:49:42.039Z",
+      "completed": "2026-04-13T22:51:56.304Z",
+      "duration_ms": 180000,
+      "summary": ">= and <= operators. Enables natural for loops (i <= 5). Both engines. 330 tests."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add map() and filter() as builtins (currently require manual implementation)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:52:03.809Z",
+      "completed": "2026-04-13T22:57:40.797Z",
+      "duration_ms": 600000,
+      "summary": "map(), filter(), reduce() builtins in evaluator. Chainable: reduce(map(filter(...))). VM supports closures natively. 330 tests."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add LIMIT push-down optimization (stop scanning after LIMIT rows)",
+      "project": "henrydb",
+      "started": "2026-04-13T22:57:45.481Z"
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add DISTINCT ON (PostgreSQL extension)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T103",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "End session housekeeping"
     }
   ],
   "focusProjects": [
@@ -1411,6 +1457,26 @@
     {
       "time": "2026-04-13T22:44:30.698Z",
       "msg": "Added T98 (MAINTAIN) after end: Final session housekeeping"
+    },
+    {
+      "time": "2026-04-13T22:49:27.047Z",
+      "msg": "Added T99 (BUILD) after end: Monkey: implement >= and <= comparison operators"
+    },
+    {
+      "time": "2026-04-13T22:49:27.165Z",
+      "msg": "Added T100 (BUILD) after end: Monkey: add map() and filter() as builtins (currently require manual implementation)"
+    },
+    {
+      "time": "2026-04-13T22:49:27.284Z",
+      "msg": "Added T101 (BUILD) after end: HenryDB: add LIMIT push-down optimization (stop scanning after LIMIT rows)"
+    },
+    {
+      "time": "2026-04-13T22:49:27.403Z",
+      "msg": "Added T102 (BUILD) after end: HenryDB: add DISTINCT ON (PostgreSQL extension)"
+    },
+    {
+      "time": "2026-04-13T22:49:27.521Z",
+      "msg": "Added T103 (MAINTAIN) after end: End session housekeeping"
     }
   ]
 }

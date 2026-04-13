@@ -2396,14 +2396,17 @@ export class Database {
           rows = rows.filter(row => this._evalExpr(indexScan.residual, row));
         }
       } else {
-        // Full table scan
+        // Full table scan with optional early LIMIT
+        // Can push limit into scan when: no ORDER BY, no GROUP BY, no DISTINCT, no HAVING, no windows
+        const canEarlyLimit = ast.limit != null && !ast.orderBy && !ast.groupBy && !ast.distinct &&
+          !ast.having && !ast.columns.some(c => c.type === 'window');
+        const earlyLimit = canEarlyLimit ? (ast.limit + (ast.offset || 0)) : Infinity;
+        
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
           const row = this._valuesToRow(values, table.schema, ast.from.alias || ast.from.table);
+          if (ast.where && !this._evalExpr(ast.where, row)) continue;
           rows.push(row);
-        }
-        // WHERE filter
-        if (ast.where) {
-          rows = rows.filter(row => this._evalExpr(ast.where, row));
+          if (rows.length >= earlyLimit) break;
         }
       }
     } else {
