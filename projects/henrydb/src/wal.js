@@ -659,6 +659,7 @@ export class WALManager {
   logCommit(txId) { return this.writeRecord('COMMIT', { txId }); }
   logRollback(txId) { return this.writeRecord('ROLLBACK', { txId }); }
   logCreateTable(name, cols) { return this.writeRecord('CREATE_TABLE', { table: name, columns: cols }); }
+  logDropTable(name) { return this.writeRecord('DROP_TABLE', { table: name }); }
   logTruncate(name, txId) { return this.writeRecord('TRUNCATE', { table: name, txId }); }
 }
 
@@ -869,6 +870,13 @@ function recoverFromWAL(wal, db) {
             tableObj.heap = db._heapFactory ? db._heapFactory() : { _data: [], scan: function*(){}, insert(){}, rowCount: 0 };
             replayed++;
           }
+        } else if (type === 'DROP_TABLE' && table) {
+          if (db.execute) {
+            try { db.execute(`DROP TABLE IF EXISTS ${table}`); } catch {}
+          } else if (db.tables) {
+            db.tables.delete(table);
+          }
+          replayed++;
         }
       } catch { /* skip replay errors */ }
     }
@@ -971,6 +979,13 @@ function recoverToTimestamp(wal, db, targetTimestamp) {
             if (tableObj.heap) {
               tableObj.heap = db._heapFactory ? db._heapFactory() : { _data: [], scan: function*(){}, insert(){}, rowCount: 0 };
             }
+          }
+          replayed++;
+        } else if (type === 'DROP_TABLE' && table) {
+          if (db.execute) {
+            try { db.execute(`DROP TABLE IF EXISTS ${table}`); } catch {}
+          } else if (db.tables) {
+            db.tables.delete(table);
           }
           replayed++;
         }

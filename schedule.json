@@ -674,9 +674,37 @@
     {
       "id": "T62",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard check",
-      "started": "2026-04-13T18:14:07.181Z"
+      "started": "2026-04-13T18:14:07.181Z",
+      "completed": "2026-04-13T18:14:19.866Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed henrydb and workspace repos. Both clean."
+    },
+    {
+      "id": "T63",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Pick next HenryDB improvement: query optimizer cost estimates, DROP TABLE persistence, or stress test the WAL recovery path",
+      "started": "2026-04-13T18:14:45.507Z",
+      "completed": "2026-04-13T18:15:19.368Z",
+      "duration_ms": 60000,
+      "summary": "Found another persistence bug: DROP TABLE also not WAL-logged, same class as TRUNCATE. Will fix DROP TABLE persistence + add tests. Both fixes together strengthen the WAL recovery path."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix DROP TABLE persistence: add WAL logging and replay handling",
+      "project": "henrydb",
+      "started": "2026-04-13T18:15:48.974Z"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -904,6 +932,18 @@
     {
       "time": "2026-04-13T18:07:54.094Z",
       "msg": "PLAN T60 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T18:14:40.822Z",
+      "msg": "Added T63 (THINK) after end: Pick next HenryDB improvement: query optimizer cost estimates, DROP TABLE persistence, or stress test the WAL recovery path"
+    },
+    {
+      "time": "2026-04-13T18:15:25.019Z",
+      "msg": "Added T64 (BUILD) after end: Fix DROP TABLE persistence: add WAL logging and replay handling"
+    },
+    {
+      "time": "2026-04-13T18:15:31.816Z",
+      "msg": "Added T65 (BUILD) after end: WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP"
     }
   ]
 }

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T18:14:07.216Z",
+  "generated": "2026-04-13T18:15:49.009Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard check",
-    "startedAt": "2026-04-13T18:14:07.216Z",
-    "taskId": "T62"
+    "mode": "BUILD",
+    "task": "Fix DROP TABLE persistence: add WAL logging and replay handling",
+    "startedAt": "2026-04-13T18:15:49.009Z",
+    "taskId": "T64"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,13 +2436,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 61,
+    "blocksCompleted": 63,
     "blocksTotal": 62,
     "modeDistribution": {
-      "THINK": 9,
+      "THINK": 10,
       "PLAN": 8,
       "BUILD": 39,
-      "MAINTAIN": 3,
+      "MAINTAIN": 4,
       "EXPLORE": 2
     }
   },

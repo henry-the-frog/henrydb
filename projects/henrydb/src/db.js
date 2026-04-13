@@ -650,6 +650,13 @@ export class Database {
               }
               break;
             }
+            case 'DROP_TABLE': {
+              const table = record.payload?.table;
+              if (table && db.tables.has(table)) {
+                db.execute(`DROP TABLE ${table}`);
+              }
+              break;
+            }
           }
         } catch (e) {
           // Skip errors during replay — best effort
@@ -1238,6 +1245,10 @@ export class Database {
     if (!this.tables.has(ast.table)) {
       if (ast.ifExists) return { type: 'OK', message: `Table ${ast.table} does not exist (IF EXISTS)` };
       throw new Error(`Table ${ast.table} not found`);
+    }
+    // WAL: log the drop for crash recovery
+    if (this.wal && this.wal.logDropTable) {
+      this.wal.logDropTable(ast.table);
     }
     // Remove any indexes for this table
     for (const [idxName, meta] of this.indexCatalog) {
