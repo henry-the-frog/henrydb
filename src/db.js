@@ -1048,13 +1048,16 @@ export class Database {
     for (const [colName, index] of table.indexes) {
       const colIdx = table.schema.findIndex(c => c.name === colName);
       const key = orderedValues[colIdx];
-      if (index.unique) {
+      if (index.unique && key !== null && key !== undefined) {
+        // SQL standard: NULL is never equal to NULL, so multiple NULLs are allowed in UNIQUE columns
         const existing = index.range(key, key);
         if (existing.length > 0) {
           throw new Error(`Duplicate key '${key}' violates unique constraint on column '${colName}'`);
         }
       }
-      index.insert(key, rid);
+      if (key !== null && key !== undefined) {
+        index.insert(key, rid);
+      }
     }
 
     // AFTER INSERT triggers
@@ -1635,7 +1638,7 @@ export class Database {
       // Remove old index entries
       for (const [colName, index] of table.indexes) {
         const colIdx = table.schema.findIndex(c => c.name === colName);
-        // B+ tree doesn't have delete, so we rebuild affected indexes after
+        try { index.delete(item.values[colIdx], { pageId: item.pageId, slotIdx: item.slotIdx }); } catch {}
       }
 
       // Delete old, insert new
@@ -1647,10 +1650,19 @@ export class Database {
       this.wal.appendUpdate(txId, ast.table, newRid.pageId, newRid.slotIdx, item.values, newValues);
       if (!this._currentTxId) this.wal.appendCommit(txId);
 
-      // Update indexes with new entries
+      // Update indexes with new entries (and enforce uniqueness)
       for (const [colName, index] of table.indexes) {
         const colIdx = table.schema.findIndex(c => c.name === colName);
-        index.insert(newValues[colIdx], newRid);
+        const newKey = newValues[colIdx];
+        if (index.unique && newKey !== null && newKey !== undefined) {
+          const existing = index.range(newKey, newKey);
+          if (existing.length > 0) {
+            throw new Error(`Duplicate key '${newKey}' violates unique constraint on column '${colName}'`);
+          }
+        }
+        if (newKey !== null && newKey !== undefined) {
+          index.insert(newKey, newRid);
+        }
       }
 
       updated++;
@@ -1727,6 +1739,14 @@ export class Database {
       }
       
       table.heap.delete(pageId, slotIdx);
+      
+      // Remove from indexes
+      if (values) {
+        for (const [colName, index] of table.indexes) {
+          const colIdx = table.schema.findIndex(c => c.name === colName);
+          try { index.delete(values[colIdx], { pageId, slotIdx }); } catch {}
+        }
+      }
       
       // WAL: log the delete
       if (values) {

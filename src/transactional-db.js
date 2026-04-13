@@ -182,6 +182,8 @@ export class TransactionalDatabase {
       return result;
     } catch (e) {
       // Rollback: undo any heap modifications
+      // Track new rows FIRST so rollback knows what to undo
+      this._trackNewRows(tx);
       this._rollbackNewRows(tx);
       try { this._mvcc.rollback(tx.txId); } catch (e2) { /* ignore */ }
       this._wal.appendAbort(tx.txId);
@@ -475,8 +477,23 @@ export class TransactionalDatabase {
         if (ver && ver.xmin === tx.txId) {
           // Row was created by this transaction — physically remove it
           const tableObj = this._db.tables.get(tableName);
-          if (tableObj && tableObj.heap._origDelete) {
-            try { tableObj.heap._origDelete(pageId, slotIdx); } catch (e) { /* ignore */ }
+          if (tableObj) {
+            // Get values before deleting (for index cleanup)
+            let values = null;
+            try { values = tableObj.heap.get(pageId, slotIdx); } catch {}
+            
+            // Remove from indexes first
+            if (values) {
+              for (const [colName, index] of tableObj.indexes) {
+                const colIdx = tableObj.schema.findIndex(c => c.name === colName);
+                try { index.delete(values[colIdx], { pageId, slotIdx }); } catch {}
+              }
+            }
+            
+            // Remove from heap
+            if (tableObj.heap._origDelete) {
+              try { tableObj.heap._origDelete(pageId, slotIdx); } catch (e) { /* ignore */ }
+            }
           }
           vm.delete(`${pageId}:${slotIdx}`);
         }
