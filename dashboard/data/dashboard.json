@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-12T23:47:29.583Z",
+  "generated": "2026-04-13T00:17:32.646Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping",
-    "startedAt": "2026-04-12T23:47:29.583Z",
-    "taskId": "T70"
+    "task": "Git push all repos, update CURRENT.md and daily log",
+    "startedAt": "2026-04-13T00:17:32.646Z",
+    "taskId": "T82"
   },
   "schedule": {
     "date": "2026-04-12",
@@ -4398,69 +4398,173 @@
       {
         "id": "T68",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "TBD after THINK",
         "task": null,
-        "started": "2026-04-12T23:42:07.526Z"
+        "started": "2026-04-12T23:42:07.526Z",
+        "completed": "2026-04-12T23:42:26.273Z",
+        "duration_ms": 60000,
+        "summary": "Plan: cost-based join ordering. (1) _estimateJoinSize from histogram stats, (2) DP join enumeration, (3) integrate into execution to reorder, (4) test with skewed multi-table joins. Single BUILD task T69."
       },
       {
         "id": "T75",
         "mode": "BUILD",
         "task": "Implement cost-based join ordering: (1) _estimateJoinSize using histogram/stats, (2) DP join enumeration for multi-table joins, (3) integrate into query execution to reorder joins, (4) test with skewed multi-table joins",
-        "status": "upcoming",
-        "plan_ref": "T68"
+        "status": "done",
+        "plan_ref": "T68",
+        "started": "2026-04-12T23:42:33.951Z",
+        "completed": "2026-04-12T23:45:09.494Z",
+        "duration_ms": 600000,
+        "summary": "Implemented cost-based join ordering: DP enumeration (System R style) over join subsets, ndv-based join size estimation, reorders INNER joins for minimum total tuples. Preserves LEFT/RIGHT/FULL join order. Handles up to 6-table joins. 10 tests, 75 existing tests still green."
       },
       {
         "id": "T74",
         "mode": "BUILD",
         "task": "Implement cost-based join ordering: DP enumeration over join orderings, use histogram stats for join selectivity, compare with current naive ordering",
-        "status": "upcoming",
-        "plan_ref": "T68"
+        "status": "done",
+        "plan_ref": "T68",
+        "started": "2026-04-12T23:45:24.054Z",
+        "completed": "2026-04-12T23:45:24.197Z",
+        "duration_ms": 0,
+        "summary": "Duplicate of T75 — already completed."
       },
       {
         "id": "T69",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-12T23:45:37.542Z",
+        "completed": "2026-04-12T23:47:20.458Z",
+        "duration_ms": 120000,
+        "summary": "Enhanced EXPLAIN to show join ordering decisions: JOIN_REORDER operation when optimizer changes order, estimated_right_rows on join entries. Text format updated. All tests green."
       },
       {
         "id": "T70",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping"
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-12T23:47:29.548Z",
+        "completed": "2026-04-12T23:48:03.874Z",
+        "duration_ms": 60000,
+        "summary": "Housekeeping: git pushed all repos, CURRENT.md updated, dashboard healthy."
       },
       {
         "id": "T71",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Depth check + second cycle direction"
+        "status": "done",
+        "task": "Depth check + second cycle direction",
+        "started": "2026-04-12T23:48:14.858Z",
+        "completed": "2026-04-12T23:48:29.394Z",
+        "duration_ms": 60000,
+        "summary": "Depth check PASSES (2/3). Join ordering surprised me (correct star-schema non-reorder). Learned System R DP bitmask enumeration. Direction: stress-test join ordering with adversarial inputs."
       },
       {
         "id": "T72",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "TBD",
+        "task": null,
+        "started": "2026-04-12T23:48:47.809Z",
+        "completed": "2026-04-12T23:48:47.953Z",
+        "duration_ms": 30000,
+        "summary": "Plan: 2 BUILD tasks — stress-test join ordering + blog post."
+      },
+      {
+        "id": "T76",
+        "mode": "BUILD",
+        "task": "Stress-test join ordering: adversarial table sizes, chain joins, star joins, cyclic join graphs. Find bugs.",
+        "status": "done",
+        "plan_ref": "T72",
+        "started": "2026-04-12T23:48:58.636Z",
+        "completed": "2026-04-12T23:52:49.699Z",
+        "duration_ms": 600000,
+        "summary": "FOUND REAL BUG: Join ordering could reorder joins whose ON conditions referenced tables not yet joined. Chain join t1→t2→t3 was incorrectly reordered to t1→t3→t2 even though t3.ON references t2. Fixed with greedy emission respecting ON condition dependencies. 11 stress tests all passing."
+      },
+      {
+        "id": "T77",
+        "mode": "BUILD",
+        "task": "Write blog post about cost-based join ordering journey",
+        "status": "done",
+        "plan_ref": "T72",
+        "started": "2026-04-12T23:53:14.368Z",
+        "completed": "2026-04-12T23:53:54.292Z",
+        "duration_ms": 120000,
+        "summary": "Blog post: How HenryDB Learned to Order Its Joins. Covers System R DP, the ON-condition dependency bug, fix strategy."
+      },
+      {
+        "id": "T73",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-12T23:57:40.587Z",
+        "completed": "2026-04-13T00:00:21.865Z",
+        "duration_ms": 300000,
+        "summary": "SAT solver stress tests: 20 tests covering pigeonhole (3→2 to 6→5), N-queens (6,8), graph coloring (C5, K4, Petersen), Latin square, XOR chain, 500 random instances. Zero crashes, all solutions verified. Solver is solid."
+      },
+      {
+        "id": "T78",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What HenryDB areas have NOT been stress-tested? Identify weakness.",
+        "started": "2026-04-13T00:01:44.147Z",
+        "completed": "2026-04-13T00:03:21.679Z",
+        "duration_ms": 60000,
+        "summary": "Untested depth areas: window functions (breadth sprint addition), CTEs (recursive edge cases), correlated subqueries, WAL recovery. Going with window functions — most likely to hide bugs from breadth sprint."
+      },
+      {
+        "id": "T79",
         "mode": "PLAN",
         "status": "upcoming",
         "goal": "TBD",
         "task": null
       },
       {
-        "id": "T73",
+        "id": "T83",
+        "mode": "BUILD",
+        "task": "Stress-test HenryDB window functions: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER, PARTITION BY, ORDER BY, ROWS/RANGE frames",
+        "status": "upcoming",
+        "plan_ref": "T79"
+      },
+      {
+        "id": "T84",
+        "mode": "BUILD",
+        "task": "Stress-test HenryDB CTEs: recursive CTEs, deep recursion, mutual recursion, CTE in subquery",
+        "status": "upcoming",
+        "plan_ref": "T79"
+      },
+      {
+        "id": "T80",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
+      },
+      {
+        "id": "T81",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T82",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push all repos, update CURRENT.md and daily log"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 67,
-    "blocksTotal": 75,
+    "blocksCompleted": 79,
+    "blocksTotal": 84,
     "modeDistribution": {
-      "THINK": 7,
-      "PLAN": 6,
-      "BUILD": 46,
-      "MAINTAIN": 6,
+      "THINK": 9,
+      "PLAN": 8,
+      "BUILD": 53,
+      "MAINTAIN": 7,
       "EXPLORE": 2
     }
   },

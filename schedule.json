@@ -762,29 +762,138 @@
     {
       "id": "T70",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-12T23:47:29.548Z"
+      "started": "2026-04-12T23:47:29.548Z",
+      "completed": "2026-04-12T23:48:03.874Z",
+      "duration_ms": 60000,
+      "summary": "Housekeeping: git pushed all repos, CURRENT.md updated, dashboard healthy."
     },
     {
       "id": "T71",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Depth check + second cycle direction"
+      "status": "done",
+      "task": "Depth check + second cycle direction",
+      "started": "2026-04-12T23:48:14.858Z",
+      "completed": "2026-04-12T23:48:29.394Z",
+      "duration_ms": 60000,
+      "summary": "Depth check PASSES (2/3). Join ordering surprised me (correct star-schema non-reorder). Learned System R DP bitmask enumeration. Direction: stress-test join ordering with adversarial inputs."
     },
     {
       "id": "T72",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "TBD",
-      "task": null
+      "task": null,
+      "started": "2026-04-12T23:48:47.809Z",
+      "completed": "2026-04-12T23:48:47.953Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 2 BUILD tasks — stress-test join ordering + blog post."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "task": "Stress-test join ordering: adversarial table sizes, chain joins, star joins, cyclic join graphs. Find bugs.",
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-12T23:48:58.636Z",
+      "completed": "2026-04-12T23:52:49.699Z",
+      "duration_ms": 600000,
+      "summary": "FOUND REAL BUG: Join ordering could reorder joins whose ON conditions referenced tables not yet joined. Chain join t1→t2→t3 was incorrectly reordered to t1→t3→t2 even though t3.ON references t2. Fixed with greedy emission respecting ON condition dependencies. 11 stress tests all passing."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "task": "Write blog post about cost-based join ordering journey",
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-12T23:53:14.368Z",
+      "completed": "2026-04-12T23:53:54.292Z",
+      "duration_ms": 120000,
+      "summary": "Blog post: How HenryDB Learned to Order Its Joins. Covers System R DP, the ON-condition dependency bug, fix strategy."
     },
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-12T23:57:40.587Z",
+      "completed": "2026-04-13T00:00:21.865Z",
+      "duration_ms": 300000,
+      "summary": "SAT solver stress tests: 20 tests covering pigeonhole (3→2 to 6→5), N-queens (6,8), graph coloring (C5, K4, Petersen), Latin square, XOR chain, 500 random instances. Zero crashes, all solutions verified. Solver is solid."
+    },
+    {
+      "id": "T78",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What HenryDB areas have NOT been stress-tested? Identify weakness.",
+      "started": "2026-04-13T00:01:44.147Z",
+      "completed": "2026-04-13T00:03:21.679Z",
+      "duration_ms": 60000,
+      "summary": "Untested depth areas: window functions (breadth sprint addition), CTEs (recursive edge cases), correlated subqueries, WAL recovery. Going with window functions — most likely to hide bugs from breadth sprint."
+    },
+    {
+      "id": "T79",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "TBD",
+      "task": null,
+      "started": "2026-04-13T00:03:33.520Z",
+      "completed": "2026-04-13T00:03:33.664Z",
+      "duration_ms": 15000,
+      "summary": "Plan: 2 BUILD tasks for window functions and CTEs stress testing."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "task": "Stress-test HenryDB window functions: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG OVER, PARTITION BY, ORDER BY, ROWS/RANGE frames",
+      "status": "done",
+      "plan_ref": "T79",
+      "started": "2026-04-13T00:03:43.903Z",
+      "completed": "2026-04-13T00:09:13.965Z",
+      "duration_ms": 600000,
+      "summary": "FOUND & FIXED 2 BUGS: (1) ORDER BY cant sort by window function aliases — __window_ prefix not resolved during sorting. (2) ROWS BETWEEN frame clause not parsed — added parseFrameBound with UNBOUNDED/CURRENT ROW/OFFSET support. 19 stress tests all passing."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "task": "Stress-test HenryDB CTEs: recursive CTEs, deep recursion, mutual recursion, CTE in subquery",
+      "status": "done",
+      "plan_ref": "T79",
+      "started": "2026-04-13T00:09:32.019Z",
+      "completed": "2026-04-13T00:13:23.771Z",
+      "duration_ms": 600000,
+      "summary": "FOUND & FIXED 2 BUGS: (1) Non-recursive CTEs with UNION ALL lost second half - parser stores unionQuery separately but CTE handler only used query. (2) View resolution didnt handle UNION type queries. Also documented CTE column aliasing issue with duplicate column names. 17 stress tests all passing."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-13T00:13:40.941Z",
+      "completed": "2026-04-13T00:15:12.695Z",
+      "duration_ms": 300000,
+      "summary": "17 subquery stress tests: scalar in SELECT/WHERE, IN/NOT IN, EXISTS/NOT EXISTS, correlated, nested 3-deep, ALL/ANY, NULL handling, DISTINCT, LIMIT. 16/17 pass natively, 1 documents known derived table limitation. Also found derived table column propagation issue."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-13T00:15:28.765Z",
+      "completed": "2026-04-13T00:17:17.033Z",
+      "duration_ms": 300000,
+      "summary": "FIXED derived table bug: SELECT sub.col FROM (subquery) sub returned empty objects. Column alias prefix not stripped during resolution. Now works correctly. 17 subquery tests all passing."
+    },
+    {
+      "id": "T82",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push all repos, update CURRENT.md and daily log",
+      "started": "2026-04-13T00:17:32.610Z"
     }
   ],
   "focusProjects": [
@@ -1096,6 +1205,34 @@
     {
       "time": "2026-04-12T23:42:21.220Z",
       "msg": "PLAN T68 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-12T23:48:36.474Z",
+      "msg": "PLAN T72 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T00:01:22.654Z",
+      "msg": "Added T78 (THINK) after end: What HenryDB areas have NOT been stress-tested? Identify weakness."
+    },
+    {
+      "time": "2026-04-13T00:01:28.296Z",
+      "msg": "Added T79 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-13T00:01:28.414Z",
+      "msg": "Added T80 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-13T00:01:28.532Z",
+      "msg": "Added T81 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-13T00:01:34.381Z",
+      "msg": "Added T82 (MAINTAIN) after end: Git push all repos, update CURRENT.md and daily log"
+    },
+    {
+      "time": "2026-04-13T00:03:27.659Z",
+      "msg": "PLAN T79 filled 2 BUILD tasks"
     }
   ]
 }

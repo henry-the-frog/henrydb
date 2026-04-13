@@ -1,10 +1,15 @@
-status: done
-session: A (8:15 AM - 2:15 PM MDT)
-date: 2026-04-12
-mode: BUILD
-task: Enhanced SQL fuzzer — 2000 queries, ORDER BY column number bug fixed
-current_position: T59
-started: 2026-04-12T17:38:03Z
-completed: 2026-04-12T17:47:33Z
-context-files: projects/henrydb/src/sql-fuzzer-v2.test.js, projects/henrydb/src/db.js
-tasks_completed_this_session: 53
+# CURRENT.md — Active Work State
+
+## Status: in-progress
+## Session: Work Session B (Sunday 4/12, 2:15 PM MDT)
+## Boundary: 8:15 PM MDT
+
+## Recent Completed
+- T66: Histogram-based estimation (equi-height histograms in ANALYZE + _estimateFilteredRows)
+- T67: THINK — Direction: cost-based join ordering
+- T68: PLAN — DP join enumeration for multi-table joins
+- T75: BUILD — Cost-based join ordering (System R style DP)
+- T69: BUILD — EXPLAIN join ordering output
+- T70: MAINTAIN — Housekeeping (in progress)
+
+## Current Task: T70 (MAINTAIN — Housekeeping)
