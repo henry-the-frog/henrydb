@@ -1010,10 +1010,21 @@
     {
       "id": "T93",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix SUBSTRING FROM/FOR to work when nested inside other functions",
       "project": "henrydb",
-      "started": "2026-04-13T19:44:40.134Z"
+      "started": "2026-04-13T19:44:40.134Z",
+      "completed": "2026-04-13T19:46:11.413Z",
+      "duration_ms": 240000,
+      "summary": "Fixed nested SUBSTRING FROM/FOR syntax — UPPER(SUBSTRING(name FROM 1 FOR 5)) now works. Added SUBSTRING special handler in parsePrimary before generic function parser. Bug #19."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Try to fix CAST() operator chaining (CAST(val AS TEXT) || ' units')",
+      "project": "henrydb",
+      "started": "2026-04-13T19:46:27.116Z"
     }
   ],
   "focusProjects": [
@@ -1365,6 +1376,10 @@
     {
       "time": "2026-04-13T19:44:39.901Z",
       "msg": "Added T93 (BUILD) after end: Fix SUBSTRING FROM/FOR to work when nested inside other functions"
+    },
+    {
+      "time": "2026-04-13T19:46:26.879Z",
+      "msg": "Added T94 (BUILD) after end: Try to fix CAST() operator chaining (CAST(val AS TEXT) || ' units')"
     }
   ]
 }

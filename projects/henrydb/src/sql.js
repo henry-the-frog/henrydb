@@ -561,9 +561,30 @@ export function parse(sql) {
       expect('KEYWORD', 'AS');
       const targetType = advance().value;
       expect(')');
+      let castNode = { type: 'cast', expr, targetType };
+      // Handle operator chaining after CAST: CAST(x AS TEXT) || 'suffix'
+      if (peek().type === 'CONCAT_OP' || peek().type === 'CONCAT') {
+        let left = castNode;
+        while (match('CONCAT_OP') || match('CONCAT')) {
+          const right = parsePrimaryWithConcat();
+          left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
+        }
+        castNode = left;
+      } else if (peek().type === 'PLUS' || peek().type === 'MINUS') {
+        let left = castNode;
+        while (peek().type === 'PLUS' || peek().type === 'MINUS') {
+          const op = advance().type === 'PLUS' ? '+' : '-';
+          const right = parsePrimaryWithConcat();
+          left = { type: 'arith', op, left, right };
+        }
+        castNode = left;
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'expression', expr: { type: 'cast', expr, targetType }, alias };
+      else if (peek().type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('JOIN') && !isKeyword('ON') && !isKeyword('GROUP') && !isKeyword('ORDER') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
+        alias = readAlias();
+      }
+      return { type: 'expression', expr: castNode, alias };
     }
 
     // Check for scalar subquery: (SELECT ...)
