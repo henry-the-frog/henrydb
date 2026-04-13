@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T19:21:31.149Z",
+  "generated": "2026-04-13T19:24:24.949Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions",
-    "startedAt": "2026-04-13T19:21:31.149Z",
-    "taskId": "T82"
+    "task": "Write comprehensive edge case test covering all session parser fixes: tokenizer, comparison RHS, IN list, BETWEEN, INSERT VALUES, CASE WHEN NULL, _evalExpr, window PARTITION BY, UPDATE SET subquery, DEFAULT expressions",
+    "startedAt": "2026-04-13T19:24:24.949Z",
+    "taskId": "T83"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2436,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 81,
+    "blocksCompleted": 82,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 55,
+      "BUILD": 56,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

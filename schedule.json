@@ -890,10 +890,21 @@
     {
       "id": "T82",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions",
       "project": "henrydb",
-      "started": "2026-04-13T19:21:31.114Z"
+      "started": "2026-04-13T19:21:31.114Z",
+      "completed": "2026-04-13T19:23:54.873Z",
+      "duration_ms": 240000,
+      "summary": "Fixed CREATE TABLE DEFAULT with expressions (DEFAULT 10*2 now works). Added _resolveDefault() helper for evaluating expression defaults at INSERT time. Both CREATE TABLE and ALTER TABLE ADD COLUMN now use parseExpr() for defaults. Also found RETURNING doesnt support expressions — logged for future. Bug #16 this session."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write comprehensive edge case test covering all session parser fixes: tokenizer, comparison RHS, IN list, BETWEEN, INSERT VALUES, CASE WHEN NULL, _evalExpr, window PARTITION BY, UPDATE SET subquery, DEFAULT expressions",
+      "project": "henrydb",
+      "started": "2026-04-13T19:24:24.913Z"
     }
   ],
   "focusProjects": [
@@ -1201,6 +1212,10 @@
     {
       "time": "2026-04-13T19:21:30.881Z",
       "msg": "Added T82 (BUILD) after end: More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions"
+    },
+    {
+      "time": "2026-04-13T19:24:24.680Z",
+      "msg": "Added T83 (BUILD) after end: Write comprehensive edge case test covering all session parser fixes: tokenizer, comparison RHS, IN list, BETWEEN, INSERT VALUES, CASE WHEN NULL, _evalExpr, window PARTITION BY, UPDATE SET subquery, DEFAULT expressions"
     }
   ]
 }
