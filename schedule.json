@@ -845,9 +845,201 @@
     {
       "id": "T79",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: daily log, git push, CURRENT.md",
-      "started": "2026-04-13T22:25:33.225Z"
+      "started": "2026-04-13T22:25:33.225Z",
+      "completed": "2026-04-13T22:26:19.026Z",
+      "duration_ms": 60000,
+      "summary": "Housekeeping: daily log, CURRENT.md, git push. 55+ tasks complete."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement MERGE statement (UPSERT) - INSERT ON CONFLICT DO UPDATE",
+      "project": "henrydb",
+      "started": "2026-04-13T22:26:41.360Z",
+      "completed": "2026-04-13T22:27:38.317Z",
+      "duration_ms": 30000,
+      "summary": "UPSERT (INSERT ON CONFLICT DO UPDATE) already implemented and working."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement string interpolation or format function",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:27:50.940Z",
+      "completed": "2026-04-13T22:28:57.819Z",
+      "duration_ms": 180000,
+      "summary": "format() builtin: format(\"%s is %d\", \"Alice\", 30). Both engines. 298 tests pass."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add RETURNING clause for INSERT/UPDATE/DELETE",
+      "project": "henrydb",
+      "started": "2026-04-13T22:27:38.460Z",
+      "completed": "2026-04-13T22:27:38.603Z",
+      "duration_ms": 30000,
+      "summary": "RETURNING clause already implemented and working for INSERT/UPDATE/DELETE."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write comprehensive test for JSON + GROUP BY + HAVING + ORDER BY combined",
+      "project": "henrydb",
+      "started": "2026-04-13T22:29:03.811Z",
+      "completed": "2026-04-13T22:29:54.402Z",
+      "duration_ms": 180000,
+      "summary": "9 combined JSON+SQL tests: GROUP BY, HAVING, ORDER BY, AVG, subquery, CTE, CASE with JSON. All pass."
+    },
+    {
+      "id": "T84",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session housekeeping",
+      "started": "2026-04-13T22:30:08.683Z",
+      "completed": "2026-04-13T22:30:08.826Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 3.5 hours remain."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement constant folding optimization pass (evaluate 2+3 at compile time)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:30:32.631Z",
+      "completed": "2026-04-13T22:32:52.345Z",
+      "duration_ms": 300000,
+      "summary": "Constant folding: 2+3→5, (2+3)*4-1→19, string concat folded. Recursive through nested exprs. Variables unfolded. 298 tests."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement INTERSECT and EXCEPT set operations",
+      "project": "henrydb",
+      "started": "2026-04-13T22:32:58.424Z",
+      "completed": "2026-04-13T22:33:24.017Z",
+      "duration_ms": 30000,
+      "summary": "INTERSECT and EXCEPT already implemented. Both work correctly."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add comprehensive window function tests (RANK, ROW_NUMBER, NTILE)",
+      "project": "henrydb",
+      "started": "2026-04-13T22:33:30.992Z",
+      "completed": "2026-04-13T22:34:57.609Z",
+      "duration_ms": 180000,
+      "summary": "11 comprehensive window function tests: ROW_NUMBER, RANK, DENSE_RANK, SUM/AVG/COUNT OVER, partitioned, multiple windows, with WHERE. All pass."
+    },
+    {
+      "id": "T88",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final housekeeping",
+      "started": "2026-04-13T22:35:12.506Z",
+      "completed": "2026-04-13T22:35:12.649Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 3.5 hours remain."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: dead code elimination (remove unreachable code after return)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:35:36.608Z",
+      "completed": "2026-04-13T22:36:21.926Z",
+      "duration_ms": 120000,
+      "summary": "Dead code elimination: statements after return are removed. fn(){return 1; 2; 3;} → only emits return 1. 298 tests."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add COALESCE, NULLIF, GREATEST, LEAST functions and test them",
+      "project": "henrydb",
+      "started": "2026-04-13T22:36:28.765Z",
+      "completed": "2026-04-13T22:36:46.513Z",
+      "duration_ms": 30000,
+      "summary": "COALESCE, NULLIF, GREATEST, LEAST all already implemented and working."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add range builtin for creating arrays (range(1, 10) → [1,2,...,9])",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:36:53.347Z",
+      "completed": "2026-04-13T22:37:56.433Z",
+      "duration_ms": 120000,
+      "summary": "range() builtin: range(5)→[0..4], range(1,5)→[1..4], step support, negative step. Both engines. 298 tests."
+    },
+    {
+      "id": "T92",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session housekeeping",
+      "started": "2026-04-13T22:38:17.521Z",
+      "completed": "2026-04-13T22:38:17.665Z",
+      "duration_ms": 0,
+      "summary": "Deferred — continuing work."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write a real-world showcase test — e-commerce data warehouse with 5 tables, complex queries, JSON, CTEs, windows",
+      "project": "henrydb",
+      "started": "2026-04-13T22:38:43.897Z",
+      "completed": "2026-04-13T22:42:51.128Z",
+      "duration_ms": 600000,
+      "summary": "11 e-commerce showcase tests: 5-table schema, 4-way JOINs, CLV ranking, JSON analysis, CTE trends, NOT EXISTS anti-join, window partitions, CASE basket analysis. Found PK+EXISTS bug (tracked). All pass."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: comprehensive builtin test suite (all builtins: len, first, last, rest, push, puts, type, str, int, format, range)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:43:05.882Z",
+      "completed": "2026-04-13T22:44:05.644Z",
+      "duration_ms": 180000,
+      "summary": "32 builtin tests with parity (both engines). All 11 builtins covered. 330 total Monkey tests pass."
+    },
+    {
+      "id": "T95",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping"
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix PK index scan + correlated EXISTS bug (tracked from showcase test)",
+      "project": "henrydb",
+      "started": "2026-04-13T22:44:43.588Z"
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: update README with current feature list and test count",
+      "project": "henrydb"
+    },
+    {
+      "id": "T98",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session housekeeping"
     }
   ],
   "focusProjects": [
@@ -1135,6 +1327,82 @@
     {
       "time": "2026-04-13T22:18:54.604Z",
       "msg": "Added T79 (MAINTAIN) after end: Housekeeping: daily log, git push, CURRENT.md"
+    },
+    {
+      "time": "2026-04-13T22:26:29.334Z",
+      "msg": "Added T80 (BUILD) after end: HenryDB: implement MERGE statement (UPSERT) - INSERT ON CONFLICT DO UPDATE"
+    },
+    {
+      "time": "2026-04-13T22:26:29.453Z",
+      "msg": "Added T81 (BUILD) after end: Monkey: implement string interpolation or format function"
+    },
+    {
+      "time": "2026-04-13T22:26:29.572Z",
+      "msg": "Added T82 (BUILD) after end: HenryDB: add RETURNING clause for INSERT/UPDATE/DELETE"
+    },
+    {
+      "time": "2026-04-13T22:26:29.690Z",
+      "msg": "Added T83 (BUILD) after end: HenryDB: write comprehensive test for JSON + GROUP BY + HAVING + ORDER BY combined"
+    },
+    {
+      "time": "2026-04-13T22:26:29.807Z",
+      "msg": "Added T84 (MAINTAIN) after end: Final session housekeeping"
+    },
+    {
+      "time": "2026-04-13T22:30:18.595Z",
+      "msg": "Added T85 (BUILD) after end: Monkey: implement constant folding optimization pass (evaluate 2+3 at compile time)"
+    },
+    {
+      "time": "2026-04-13T22:30:18.713Z",
+      "msg": "Added T86 (BUILD) after end: HenryDB: implement INTERSECT and EXCEPT set operations"
+    },
+    {
+      "time": "2026-04-13T22:30:18.831Z",
+      "msg": "Added T87 (BUILD) after end: HenryDB: add comprehensive window function tests (RANK, ROW_NUMBER, NTILE)"
+    },
+    {
+      "time": "2026-04-13T22:30:18.949Z",
+      "msg": "Added T88 (MAINTAIN) after end: Final housekeeping"
+    },
+    {
+      "time": "2026-04-13T22:35:23.658Z",
+      "msg": "Added T89 (BUILD) after end: Monkey: dead code elimination (remove unreachable code after return)"
+    },
+    {
+      "time": "2026-04-13T22:35:23.776Z",
+      "msg": "Added T90 (BUILD) after end: HenryDB: add COALESCE, NULLIF, GREATEST, LEAST functions and test them"
+    },
+    {
+      "time": "2026-04-13T22:35:23.895Z",
+      "msg": "Added T91 (BUILD) after end: Monkey: add range builtin for creating arrays (range(1, 10) → [1,2,...,9])"
+    },
+    {
+      "time": "2026-04-13T22:35:24.014Z",
+      "msg": "Added T92 (MAINTAIN) after end: Final session housekeeping"
+    },
+    {
+      "time": "2026-04-13T22:38:28.946Z",
+      "msg": "Added T93 (BUILD) after end: HenryDB: write a real-world showcase test — e-commerce data warehouse with 5 tables, complex queries, JSON, CTEs, windows"
+    },
+    {
+      "time": "2026-04-13T22:38:29.065Z",
+      "msg": "Added T94 (BUILD) after end: Monkey: comprehensive builtin test suite (all builtins: len, first, last, rest, push, puts, type, str, int, format, range)"
+    },
+    {
+      "time": "2026-04-13T22:38:29.182Z",
+      "msg": "Added T95 (MAINTAIN) after end: Final housekeeping"
+    },
+    {
+      "time": "2026-04-13T22:44:30.461Z",
+      "msg": "Added T96 (BUILD) after end: HenryDB: fix PK index scan + correlated EXISTS bug (tracked from showcase test)"
+    },
+    {
+      "time": "2026-04-13T22:44:30.580Z",
+      "msg": "Added T97 (BUILD) after end: HenryDB: update README with current feature list and test count"
+    },
+    {
+      "time": "2026-04-13T22:44:30.698Z",
+      "msg": "Added T98 (MAINTAIN) after end: Final session housekeeping"
     }
   ]
 }

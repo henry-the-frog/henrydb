@@ -11,26 +11,26 @@ describe('E-Commerce Data Warehouse', () => {
     
     // Schema: 5 tables
     db.execute(`CREATE TABLE customers (
-      id INT, name TEXT, email TEXT, 
+      id INT PRIMARY KEY, name TEXT, email TEXT, 
       region TEXT, metadata TEXT, created_at TEXT
     )`);
     db.execute(`CREATE TABLE products (
-      id INT, name TEXT, category TEXT,
+      id INT PRIMARY KEY, name TEXT, category TEXT,
       price REAL, stock INT
     )`);
     db.execute(`CREATE TABLE orders (
-      id INT, customer_id INT, 
+      id INT PRIMARY KEY, customer_id INT, 
       order_date TEXT, status TEXT, total REAL,
       FOREIGN KEY (customer_id) REFERENCES customers(id)
     )`);
     db.execute(`CREATE TABLE order_items (
-      id INT, order_id INT, product_id INT,
+      id INT PRIMARY KEY, order_id INT, product_id INT,
       quantity INT, unit_price REAL,
       FOREIGN KEY (order_id) REFERENCES orders(id),
       FOREIGN KEY (product_id) REFERENCES products(id)
     )`);
     db.execute(`CREATE TABLE reviews (
-      id INT, product_id INT, customer_id INT,
+      id INT, product_id INT PRIMARY KEY, customer_id INT,
       rating INT, comment TEXT, review_date TEXT
     )`);
 
