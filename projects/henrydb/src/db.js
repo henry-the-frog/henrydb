@@ -1494,6 +1494,9 @@ export class Database {
       }
     }
 
+    // Invalidate result cache since materialized view data changed
+    if (this._resultCache) this._resultCache.clear();
+
     return { type: 'OK', message: `Materialized view ${ast.name} refreshed with ${result.rows.length} rows` };
   }
 
@@ -2256,7 +2259,15 @@ export class Database {
       const viewDef = this.views.get(tableName);
       // Execute view query or use materialized rows (for recursive CTEs)
       let rows;
-      if (viewDef.materializedRows) {
+      if (viewDef.isMaterialized && this.tables.has(tableName)) {
+        // Materialized view: read from stored table
+        const mvTable = this.tables.get(tableName);
+        rows = [];
+        for (const { values } of mvTable.heap.scan()) {
+          const row = this._valuesToRow(values, mvTable.schema, tableName);
+          rows.push(row);
+        }
+      } else if (viewDef.materializedRows) {
         rows = [...viewDef.materializedRows];
       } else {
         // Execute the view query — handle UNION/INTERSECT/EXCEPT via execute_ast

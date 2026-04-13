@@ -1237,16 +1237,21 @@
     {
       "id": "T116",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: materialized views (CREATE MATERIALIZED VIEW, REFRESH MATERIALIZED VIEW)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:26:43.483Z"
     },
     {
       "id": "T117",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: RETURNING clause for DELETE",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:26:28.273Z",
+      "completed": "2026-04-13T23:26:43.339Z",
+      "duration_ms": 15000,
+      "summary": "DELETE RETURNING already works. Verified."
     },
     {
       "id": "T118",
@@ -1269,17 +1274,24 @@
     {
       "id": "T120",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: NTILE window function",
       "project": "henrydb",
-      "started": "2026-04-13T23:24:27.826Z"
+      "started": "2026-04-13T23:24:27.826Z",
+      "completed": "2026-04-13T23:25:49.288Z",
+      "duration_ms": 180000,
+      "summary": "Fixed NTILE distribution to match PostgreSQL (4,3,3 not 4,4,2). 3 tests. 684 total."
     },
     {
       "id": "T121",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: FETCH FIRST N ROWS ONLY (SQL standard LIMIT)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:25:49.430Z",
+      "completed": "2026-04-13T23:26:28.130Z",
+      "duration_ms": 30000,
+      "summary": "FETCH FIRST N ROWS ONLY already implemented. Verified with OFFSET."
     }
   ],
   "focusProjects": [
