@@ -109,15 +109,19 @@ export class MVCCManager {
     tx.writeSet.add(key);
   }
 
-  /** Commit a transaction. */
-  commit(tx) {
+  /** Commit a transaction. Accepts tx object or txId. */
+  commit(txOrId) {
+    const tx = typeof txOrId === 'number' ? this.activeTxns.get(txOrId) : txOrId;
+    if (!tx) throw new Error(`Transaction not found`);
     tx.committed = true;
     tx.commitTxId = this._nextTx;
     this.committedTxns.add(tx.txId);
   }
 
   /** Rollback: remove all versions written by this transaction. */
-  rollback(tx) {
+  rollback(txOrId) {
+    const tx = typeof txOrId === 'number' ? this.activeTxns.get(txOrId) : txOrId;
+    if (!tx) return; // Already cleaned up
     for (const key of tx.writeSet) {
       const versions = this._versions.get(key);
       if (versions) {
@@ -215,6 +219,39 @@ export class MVCCManager {
     return { cleaned, keysRemoved };
   }
 
+  /** Check if a given txId's writes are visible to the given transaction. */
+  isVisible(writerTxId, tx) {
+    // Frozen tuples (txId 0) are always visible — used for recovered/pre-existing rows
+    if (writerTxId === 0) return true;
+    
+    // Own writes are visible
+    if (writerTxId === tx.txId) return true;
+    
+    const snap = tx.snapshot;
+    
+    // Must be committed
+    const isCommitted = this.committedTxns.has(writerTxId) ||
+      (this.activeTxns.get(writerTxId)?.committed ?? false);
+    if (!isCommitted) return false;
+    
+    // Above or equal to xmax: started after snapshot → invisible
+    if (writerTxId >= snap.xmax) return false;
+    
+    // In active set at snapshot time → invisible
+    if (snap.activeSet.has(writerTxId)) return false;
+    
+    return true;
+  }
+
+  /** Compute the xmin horizon — the oldest txId that any active transaction might need. */
+  computeXminHorizon() {
+    let min = this._nextTx;
+    for (const [id, tx] of this.activeTxns) {
+      if (!tx.committed && id < min) min = id;
+    }
+    return min;
+  }
+
   getStats() {
     let totalVersions = 0;
     for (const [, versions] of this._versions) totalVersions += versions.length;
@@ -225,4 +262,137 @@ export class MVCCManager {
       committedTxns: this.committedTxns.size,
     };
   }
+}
+
+/**
+ * MVCCHeap — MVCC-aware wrapper around HeapFile.
+ * Provides transactional insert/delete/scan with visibility rules,
+ * plus VACUUM garbage collection of dead tuples.
+ */
+export class MVCCHeap {
+  constructor(heapFile) {
+    this.heap = heapFile;
+    // Track MVCC metadata per row: "pageId:slotIdx" → { xmin, xmax, deleted }
+    // xmin = txId that created this row, xmax = txId that deleted it (0 = not deleted)
+    this._rowMeta = new Map();
+  }
+
+  _key(pageId, slotIdx) { return `${pageId}:${slotIdx}`; }
+
+  /** Insert a row within a transaction. Returns {pageId, slotIdx}. */
+  insert(values, tx) {
+    const rid = this.heap.insert(values);
+    this._rowMeta.set(this._key(rid.pageId, rid.slotIdx), {
+      xmin: tx.txId,
+      xmax: 0,
+      deleted: false,
+      values  // Keep a copy for potential compaction
+    });
+    return rid;
+  }
+
+  /** Mark a row as deleted within a transaction. */
+  delete(pageId, slotIdx, tx) {
+    const key = this._key(pageId, slotIdx);
+    const meta = this._rowMeta.get(key);
+    if (!meta) throw new Error(`Row ${key} not found in MVCC metadata`);
+    if (meta.xmax !== 0 && meta.xmax !== tx.txId) {
+      throw new Error(`Row ${key} already deleted by tx ${meta.xmax}`);
+    }
+    meta.xmax = tx.txId;
+    meta.deleted = true;
+  }
+
+  /** Scan rows visible to a transaction's snapshot. */
+  *scan(tx) {
+    for (const { pageId, slotIdx, values } of this.heap.scan()) {
+      const key = this._key(pageId, slotIdx);
+      const meta = this._rowMeta.get(key);
+      if (!meta) continue; // No MVCC metadata — skip (shouldn't happen normally)
+      if (this._isVisible(meta, tx)) {
+        yield { pageId, slotIdx, values };
+      }
+    }
+  }
+
+  /** Check if a row is visible to a transaction based on xmin/xmax. */
+  _isVisible(meta, tx) {
+    const mgr = tx.manager;
+    // Row created by this transaction and not deleted by it
+    if (meta.xmin === tx.txId) {
+      return !meta.deleted || meta.xmax !== tx.txId;
+    }
+    // xmin must be committed and visible in snapshot
+    if (!this._isTxCommittedAndVisible(meta.xmin, tx, mgr)) return false;
+    // If not deleted, it's visible
+    if (meta.xmax === 0) return true;
+    // If deleted by this tx, not visible
+    if (meta.xmax === tx.txId) return false;
+    // If deleter is committed and visible, row is not visible
+    if (this._isTxCommittedAndVisible(meta.xmax, tx, mgr)) return false;
+    return true;
+  }
+
+  _isTxCommittedAndVisible(txId, tx, mgr) {
+    const snap = tx.snapshot;
+    // Must be committed
+    const isCommitted = mgr.committedTxns.has(txId) ||
+      (mgr.activeTxns.get(txId)?.committed ?? false);
+    if (!isCommitted) return false;
+    // Must be visible in snapshot
+    if (txId >= snap.xmax) return false;
+    if (snap.activeSet.has(txId)) return false;
+    return true;
+  }
+
+  /** VACUUM: remove dead tuples that no active transaction can see. */
+  vacuum(mgr) {
+    const horizon = mgr.computeXminHorizon();
+    let deadTuplesRemoved = 0;
+    let bytesFreed = 0;
+    let pagesCompacted = 0;
+    const pagesAffected = new Set();
+
+    for (const [key, meta] of this._rowMeta) {
+      // A tuple is dead if:
+      // 1. It was deleted (xmax != 0)
+      // 2. The deleter committed (xmax is in committedTxns)
+      // 3. No active transaction can see it (xmax < horizon)
+      if (meta.xmax === 0) continue; // Not deleted
+      
+      const deleterCommitted = mgr.committedTxns.has(meta.xmax) ||
+        (mgr.activeTxns.get(meta.xmax)?.committed ?? false);
+      if (!deleterCommitted) continue; // Deleter hasn't committed
+      
+      if (meta.xmax >= horizon) continue; // Active tx might still see it
+
+      // Also check xmin < horizon (creator committed before horizon)
+      const creatorCommitted = mgr.committedTxns.has(meta.xmin) ||
+        (mgr.activeTxns.get(meta.xmin)?.committed ?? false);
+      if (!creatorCommitted) continue;
+
+      // Safe to remove this tuple
+      const [pageIdStr, slotIdxStr] = key.split(':');
+      const pageId = parseInt(pageIdStr, 10);
+      const slotIdx = parseInt(slotIdxStr, 10);
+      
+      // Delete from physical heap
+      const deleted = this.heap.delete(pageId, slotIdx);
+      if (deleted) {
+        deadTuplesRemoved++;
+        bytesFreed += meta.values ? JSON.stringify(meta.values).length : 32;
+        pagesAffected.add(pageId);
+      }
+      // Remove MVCC metadata
+      this._rowMeta.delete(key);
+    }
+
+    return {
+      deadTuplesRemoved,
+      bytesFreed,
+      pagesCompacted: pagesAffected.size
+    };
+  }
+
+  get pageCount() { return this.heap.pageCount; }
 }

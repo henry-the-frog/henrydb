@@ -10,7 +10,7 @@ import { DiskManager } from './disk-manager.js';
 import { BufferPool } from './buffer-pool.js';
 import { FileWAL, recoverFromFileWAL } from './file-wal.js';
 import { FileBackedHeap } from './file-backed-heap.js';
-import { MVCCManager, MVCCHeap, MVCCTransaction } from './mvcc.js';
+import { MVCCManager, MVCCTransaction } from './mvcc.js';
 import { SSIManager } from './ssi.js';
 import { HeapFile } from './page.js';
 import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
