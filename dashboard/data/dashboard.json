@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-13T00:17:32.646Z",
+  "generated": "2026-04-13T01:17:17.025Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git push all repos, update CURRENT.md and daily log",
-    "startedAt": "2026-04-13T00:17:32.646Z",
-    "taskId": "T82"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "Stress-test CASE expressions: nested CASE, CASE in WHERE/ORDER BY/GROUP BY, searched vs simple CASE",
+    "completedAt": "2026-04-13T01:17:17.025Z",
+    "taskId": "T104",
+    "summary": "9 CASE expression stress tests all passing. Documented CASE in ORDER BY limitation. Covered: searched CASE, no ELSE, WHERE, arithmetic, NULL, GROUP BY, conditional aggregation.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-12",
@@ -4558,13 +4560,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 79,
+    "blocksCompleted": 100,
     "blocksTotal": 84,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 8,
-      "BUILD": 53,
-      "MAINTAIN": 7,
+      "BUILD": 73,
+      "MAINTAIN": 8,
       "EXPLORE": 2
     }
   },
