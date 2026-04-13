@@ -1629,7 +1629,11 @@ export class Database {
     const returnedRows = [];
     
     for (const row of ast.rows) {
-      const values = row.map(r => r.value);
+      const values = row.map(r => {
+        if (r.type === 'literal') return r.value;
+        // Evaluate expression (for INSERT VALUES with arithmetic, CASE, etc.)
+        try { return this._evalValue(r, {}); } catch { return r.value; }
+      });
       
       // UPSERT: ON CONFLICT handling
       if (ast.onConflict) {

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T18:44:10.352Z",
+  "generated": "2026-04-13T18:54:47.207Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Edge case stress test: try to crash HenryDB with unusual queries (empty tables, deeply nested subqueries, huge IN lists, self-referential CTEs, etc.)",
-    "startedAt": "2026-04-13T18:44:10.352Z",
-    "taskId": "T71"
+    "task": "Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases",
+    "startedAt": "2026-04-13T18:54:47.207Z",
+    "taskId": "T72"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2436,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 70,
+    "blocksCompleted": 71,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 44,
+      "BUILD": 45,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

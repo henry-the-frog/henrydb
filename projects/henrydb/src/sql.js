@@ -364,7 +364,7 @@ export function parse(sql) {
       expect('(');
       const values = [];
       do {
-        values.push(parsePrimary());
+        values.push(parseExpr());
       } while (match(','));
       expect(')');
       tuples.push(values);
@@ -1417,7 +1417,7 @@ export function parse(sql) {
     do {
       expect('(');
       const values = [];
-      do { values.push(parsePrimary()); } while (match(','));
+      do { values.push(parseExpr()); } while (match(','));
       expect(')');
       rows.push(values);
     } while (match(','));

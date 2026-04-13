@@ -769,10 +769,21 @@
     {
       "id": "T71",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Edge case stress test: try to crash HenryDB with unusual queries (empty tables, deeply nested subqueries, huge IN lists, self-referential CTEs, etc.)",
       "project": "henrydb",
-      "started": "2026-04-13T18:44:10.317Z"
+      "started": "2026-04-13T18:44:10.317Z",
+      "completed": "2026-04-13T18:54:31.175Z",
+      "duration_ms": 600000,
+      "summary": "Edge case stress testing found 2 significant parser bugs: (1) Function names as aliases failed (fixed earlier this session), (2) CRITICAL: arithmetic on RHS of comparison operators was silently dropped — WHERE id=2-1 parsed as WHERE id=2. Fixed by using parsePrimaryWithConcat() in comparison RHS and BETWEEN bounds. Also found: correlated EXISTS with arithmetic now works. 14+7 new regression tests."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases",
+      "project": "henrydb",
+      "started": "2026-04-13T18:54:47.172Z"
     }
   ],
   "focusProjects": [
@@ -1036,6 +1047,10 @@
     {
       "time": "2026-04-13T18:44:05.371Z",
       "msg": "Added T71 (BUILD) after end: Edge case stress test: try to crash HenryDB with unusual queries (empty tables, deeply nested subqueries, huge IN lists, self-referential CTEs, etc.)"
+    },
+    {
+      "time": "2026-04-13T18:54:46.940Z",
+      "msg": "Added T72 (BUILD) after end: Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases"
     }
   ]
 }
