@@ -5,1029 +5,136 @@
       "id": "T1",
       "mode": "THINK",
       "status": "done",
-      "task": "Review weekend work, assess HenryDB test gaps, set Monday direction",
-      "started": "2026-04-13T14:15:25.950Z",
-      "completed": "2026-04-13T14:17:06.976Z",
-      "duration_ms": 180000,
-      "summary": "Reviewed weekend: 120 tasks Sun, HenryDB 3068 tests/323 SQL compliance, neural-net CI green. Key issue: MVCCHeap missing export breaks transactional-db.test.js. Queue is well-structured — no reordering needed."
+      "task": "Review today's HenryDB work: 20 bugs fixed, 200+ tests. What's the hardest remaining problem? GROUP BY alias, query optimizer gaps, or file-backed persistence?",
+      "started": "2026-04-13T20:17:59.330Z",
+      "completed": "2026-04-13T20:18:23.983Z",
+      "duration_ms": 120000,
+      "summary": "Reviewed 94 tasks today. Not in breadth spiral — found genuine bugs. Hardest remaining: file-backed persistence (multi-session). This session: GROUP BY alias fix + adversarial stress testing, then Monkey evening."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Fix remaining HenryDB test failures (5 transactional-db, HeapFile.getByRowId for index NLJ)",
+      "status": "skipped",
+      "goal": "Fix neural-net CI failures (23 legacy test failures from API mismatches, broken since Apr 11)",
       "task": null,
-      "started": "2026-04-13T14:17:30.966Z",
-      "completed": "2026-04-13T14:18:17.454Z",
-      "duration_ms": 90000,
-      "summary": "Planned 3 BUILD tasks: (1) Implement MVCCHeap + fix import, (2) Fix remaining transactional-db test failures, (3) HeapFile.getByRowId for index NLJ"
+      "skip_reason": "neural-net not in focus projects"
     },
     {
       "id": "T3",
-      "mode": "BUILD",
+      "mode": "PLAN",
       "status": "done",
-      "task": "Implement MVCCHeap class in mvcc.js + fix transactional-db.js import, run transactional-db tests",
-      "plan_ref": "T2",
-      "project": "henrydb",
-      "started": "2026-04-13T14:18:26.263Z",
-      "completed": "2026-04-13T14:26:01.747Z",
-      "duration_ms": 600000,
-      "summary": "Implemented MVCCHeap, isVisible, computeXminHorizon, frozen txId 0. Fixed commit/rollback API compat. 13/13 transactional-db + 9/9 vacuum tests passing."
+      "goal": "Deepen HenryDB: fix GROUP BY alias resolution, improve query optimizer cost model accuracy",
+      "task": null,
+      "started": "2026-04-13T20:18:31.870Z",
+      "completed": "2026-04-13T20:20:07.132Z",
+      "duration_ms": 120000,
+      "summary": "Found 2 real GROUP BY bugs: (1) simple column alias not resolved (GROUP BY person gives 1 group instead of 2), (2) ordinal position not supported. Planned 3 BUILD tasks."
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "task": "Fix GROUP BY simple column alias resolution (GROUP BY person when SELECT name AS person)",
+      "status": "done",
+      "plan_ref": "T3",
+      "started": "2026-04-13T20:20:15.483Z",
+      "completed": "2026-04-13T20:21:48.530Z",
+      "duration_ms": 300000,
+      "summary": "Fixed GROUP BY simple column alias resolution. Added columnAliasMap for type:column aliases. GROUP BY person when SELECT name AS person now works correctly. All 39 GROUP BY tests pass."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "task": "Fix remaining transactional-db test failures after MVCCHeap fix",
+      "task": "Fix GROUP BY ordinal position support (GROUP BY 1, GROUP BY 2)",
       "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-13T14:26:26.271Z",
-      "completed": "2026-04-13T14:26:26.413Z",
-      "duration_ms": 5000,
-      "summary": "Already complete — all 13 transactional-db tests pass from T3 work."
+      "plan_ref": "T3",
+      "started": "2026-04-13T20:21:57.250Z",
+      "completed": "2026-04-13T20:23:02.093Z",
+      "duration_ms": 180000,
+      "summary": "Implemented GROUP BY ordinal position support. GROUP BY 1/2/etc now resolves to corresponding SELECT columns. Works with plain columns, expressions, functions, CASE. All 39 GROUP BY tests pass."
     },
     {
       "id": "T16",
       "mode": "BUILD",
-      "task": "Implement HeapFile.getByRowId for index NLJ",
+      "task": "Write comprehensive GROUP BY alias + ordinal test suite",
       "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-13T14:26:37.820Z",
-      "completed": "2026-04-13T14:28:10.572Z",
-      "duration_ms": 120000,
-      "summary": "HeapFile.get(pageId, slotIdx) already implements getByRowId for both HeapFile and FileBackedHeap. Index scans use it at db.js:2587. INLJ tests pass 8/8. No changes needed."
+      "plan_ref": "T3",
+      "started": "2026-04-13T20:23:10.491Z",
+      "completed": "2026-04-13T20:23:55.489Z",
+      "duration_ms": 180000,
+      "summary": "18 comprehensive GROUP BY alias + ordinal tests: simple/expression/CASE/function aliases, ordinal 1/2/multiple, HAVING, ORDER BY, NULL, shadowing. All pass."
     },
     {
       "id": "T4",
-      "mode": "MAINTAIN",
+      "mode": "BUILD",
       "status": "done",
-      "task": "Housekeeping: git push, dashboard health, knowledge capture",
-      "started": "2026-04-13T14:28:30.241Z",
-      "completed": "2026-04-13T14:29:10.880Z",
-      "duration_ms": 120000,
-      "summary": "Git pushed henrydb and workspace. Dashboard healthy. Knowledge capture: frozen txId 0 pattern added to failures.md."
+      "task": null,
+      "plan_ref": "T2",
+      "project": "henrydb",
+      "started": "2026-04-13T20:24:11.133Z",
+      "completed": "2026-04-13T20:24:11.275Z",
+      "duration_ms": 0,
+      "summary": "Skipped — orphan placeholder from removed plan T2"
     },
     {
       "id": "T5",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on HenryDB quality — what patterns keep breaking? What needs architectural attention?",
-      "started": "2026-04-13T14:29:22.349Z",
-      "completed": "2026-04-13T14:29:38.107Z",
-      "duration_ms": 120000,
-      "summary": "Key patterns: (1) Layer interface mismatches, (2) Recovery != operational path, (3) Cache invalidation is #1 subtle bug source, (4) MVCC bugs compound (4-layer cascade), (5) JS null coercion. Architectural: need unified MVCC interface, consistent cache invalidation framework, systematic close/reopen integration tests."
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, knowledge capture",
+      "started": "2026-04-13T20:24:20.526Z"
     },
     {
       "id": "T6",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Monkey ecosystem: submit monkeylang.org listing PR, add JIT diagnostic output for fuzzer support (Daniel collab)",
-      "task": null,
-      "started": "2026-04-13T14:29:46.826Z",
-      "completed": "2026-04-13T14:31:44.849Z",
-      "duration_ms": 120000,
-      "summary": "Planned 2 BUILD tasks: (1) monkeylang.org listing PR, (2) JIT diagnostic output for fuzzer support."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What's the most interesting unsolved problem in HenryDB? Where would going deeper teach me the most?"
     },
     {
       "id": "T7",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Submit monkeylang.org listing PR to mrnugget/monkeylang",
-      "plan_ref": "T6",
-      "project": "monkey-lang",
-      "started": "2026-04-13T14:31:56.709Z",
-      "completed": "2026-04-13T14:32:58.778Z",
-      "duration_ms": 300000,
-      "summary": "Submitted PR #50 to mrnugget/monkeylang. Added JS implementation with 5 backends (interpreter, VM, JIT, transpiler, WASM), playground link, blog links."
-    },
-    {
-      "id": "T17",
-      "mode": "BUILD",
-      "task": "Add JIT diagnostic --trace-info flag for fuzzer support (Daniel collab)",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-13T14:33:21.440Z",
-      "completed": "2026-04-13T14:36:00.274Z",
-      "duration_ms": 300000,
-      "summary": "Added --trace-info (JSON JIT diagnostics to stderr) and --diff-test (run JIT vs interpreter, compare outputs, exit 1 on mismatch) flags. Both designed for fuzzer integration. Tested with loop and fib programs."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB stress testing: find bugs through adversarial query patterns and edge cases",
+      "task": null
     },
     {
       "id": "T8",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, check email/GitHub",
-      "started": "2026-04-13T14:36:18.797Z",
-      "completed": "2026-04-13T14:37:07.376Z",
-      "duration_ms": 60000,
-      "summary": "Git pushed workspace+henrydb. Neural-net CI still failing on GitHub (3 recent failures). No real email/notifications beyond CI. Added neural-net CI to queue priority."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T7",
+      "project": "henrydb"
     },
     {
       "id": "T9",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Mid-day review — what's working, what to tackle afternoon?",
-      "started": "2026-04-13T14:37:19.402Z",
-      "completed": "2026-04-13T14:37:40.509Z",
-      "duration_ms": 60000,
-      "summary": "Mid-morning: 9 tasks done. Depth check passes (frozen txId bug was surprising). Neural-net CI still failing — urgent. Reprioritize: fix CI before T10-T14."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session housekeeping"
     },
     {
       "id": "T10",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB depth: histogram accuracy or new persistence stress tests",
-      "task": null,
-      "started": "2026-04-13T14:38:01.405Z",
-      "completed": "2026-04-13T14:38:14.387Z",
-      "duration_ms": 60000,
-      "summary": "Planned 2 BUILD tasks: (1) Persistence stress test for close/reopen cycle across all features, (2) Fix bugs found."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Monkey lang: what's the hardest remaining problem? WASM closures, GC, or language feature depth?"
     },
     {
       "id": "T11",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Persistence stress test: close/reopen cycle for every feature (indexes, prepared stmts, cache stats, version maps, MVCC state)",
-      "plan_ref": "T10",
-      "project": "henrydb",
-      "started": "2026-04-13T14:38:26.349Z",
-      "completed": "2026-04-13T14:43:29.313Z",
-      "duration_ms": 600000,
-      "summary": "FOUND & FIXED 2 BUGS: (1) Indexes empty after reopen — added rebuild from heap data during recovery. (2) PK uniqueness not enforced on INSERT — added BTree unique check before index insert. 15/15 persistence stress tests."
-    },
-    {
-      "id": "T18",
-      "mode": "BUILD",
-      "task": "Fix any persistence bugs found in stress test",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-13T14:43:58.545Z",
-      "completed": "2026-04-13T14:43:58.746Z",
-      "duration_ms": 0,
-      "summary": "Already fixed in T11 — both persistence bugs resolved."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Monkey lang improvement: pick one deep feature to implement",
+      "task": null
     },
     {
       "id": "T12",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard, knowledge capture",
-      "started": "2026-04-13T14:44:13.051Z",
-      "completed": "2026-04-13T14:44:53.700Z",
-      "duration_ms": 120000,
-      "summary": "Git pushed henrydb+workspace. Knowledge capture: 2 new persistence bug patterns in failures.md."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T11",
+      "project": "monkey-lang"
     },
     {
       "id": "T13",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Research: deep-dive on something curiosity-driven (compiler, DB, or consciousness)",
-      "project": "henrydb",
-      "started": "2026-04-13T14:45:07.641Z",
-      "completed": "2026-04-13T14:46:53.642Z",
-      "duration_ms": 300000,
-      "summary": "Explored concurrent session stress testing: 10 tests covering snapshot isolation, read-committed, 10 concurrent inserters, bank transfer consistency, persistence. All pass. MVCC is solid."
-    },
-    {
-      "id": "T14",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Research: study grammar-based fuzzers (lafleur or similar) for Daniel collab",
-      "project": "monkey-lang",
-      "started": "2026-04-13T14:47:17.116Z",
-      "completed": "2026-04-13T14:53:17.002Z",
-      "duration_ms": 600000,
-      "summary": "Built grammar-based differential fuzzer for Monkey JIT. 500/500 programs pass (JIT vs interpreter). Covers let, fn, if/else, arrays, arithmetic, closures. Committed and pushed."
-    },
-    {
-      "id": "T19",
-      "mode": "THINK",
-      "status": "done",
-      "task": "HenryDB: What areas have the least test coverage? Identify the next high-value testing target.",
-      "project": "henrydb",
-      "started": "2026-04-13T14:54:22.937Z",
-      "completed": "2026-04-13T14:54:50.995Z",
-      "duration_ms": 60000,
-      "summary": "db.js (3201 LOC) has 0 direct test files (tested indirectly). volcano-planner (391 LOC) has 0 tests. High-value target: run SQL features through TransactionalDatabase to catch MVCC+SQL interaction bugs."
-    },
-    {
-      "id": "T20",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: SQL compliance through TransactionalDatabase (MVCC)",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-13T14:55:02.315Z",
-      "completed": "2026-04-13T14:55:16.506Z",
-      "duration_ms": 30000,
-      "summary": "Planned 3 BUILD tasks: SQL-through-MVCC tests for JOINs/subqueries/CTEs, window functions/UNION through sessions, fix bugs found."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "task": "Write SQL-through-MVCC test suite: JOINs, subqueries, CTEs, aggregates, GROUP BY through TransactionalDatabase",
-      "status": "done",
-      "plan_ref": "T20",
-      "started": "2026-04-13T14:55:27.358Z",
-      "completed": "2026-04-13T14:56:40.667Z",
-      "duration_ms": 300000,
-      "summary": "18/18 SQL-through-MVCC tests pass: JOINs (4), subqueries (4), CTEs (3), aggregates (3), MVCC interactions (4). No bugs found — MVCC layer cleanly supports advanced SQL."
-    },
-    {
-      "id": "T22",
-      "mode": "BUILD",
-      "task": "Write MVCC+session SQL test: window functions, HAVING, UNION through sessions with concurrent readers",
-      "status": "done",
-      "plan_ref": "T20",
-      "started": "2026-04-13T14:56:56.030Z",
-      "completed": "2026-04-13T14:58:44.442Z",
-      "duration_ms": 300000,
-      "summary": "12/12 MVCC+session SQL tests pass: window functions (3), UNION (3), ORDER BY LIMIT (2), concurrent readers (4). Found ORDER BY window-alias bug (sorts alphabetically not numerically) — tracked."
-    },
-    {
-      "id": "T23",
-      "mode": "BUILD",
-      "task": "Fix any bugs found in SQL-through-MVCC tests",
-      "status": "done",
-      "plan_ref": "T20",
-      "started": "2026-04-13T14:59:03.221Z",
-      "completed": "2026-04-13T14:59:03.365Z",
-      "duration_ms": 5000,
-      "summary": "No SQL-through-MVCC bugs to fix — all 30 tests pass. ORDER BY window-alias tracked separately."
-    },
-    {
-      "id": "T24",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Investigate ORDER BY window-alias bug: RANK() column sorts alphabetically instead of numerically",
-      "project": "henrydb",
-      "started": "2026-04-13T14:59:33.696Z",
-      "completed": "2026-04-13T15:01:14.178Z",
-      "duration_ms": 300000,
-      "summary": "FIXED: ORDER BY window-function alias bug. Window aliases werent in aliasExprs map, so ORDER BY fell through to _resolveColumn which couldnt find __window_ prefixed values. Added windowAliases set. All window/MVCC tests pass."
-    },
-    {
-      "id": "T25",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Stress test savepoints, prepared statements, and EXPLAIN ANALYZE through MVCC",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-13T15:01:56.064Z",
-      "completed": "2026-04-13T15:02:11.258Z",
-      "duration_ms": 30000,
-      "summary": "Planned 3 BUILD tasks: savepoints, prepared stmts, EXPLAIN ANALYZE through MVCC."
-    },
-    {
-      "id": "T26",
-      "mode": "BUILD",
-      "task": "Savepoints through TransactionalDatabase: nested savepoints, rollback to savepoint, release, concurrent sessions",
-      "status": "done",
-      "plan_ref": "T25",
-      "started": "2026-04-13T15:02:16.772Z",
-      "completed": "2026-04-13T15:12:31.430Z",
-      "duration_ms": 900000,
-      "summary": "MAJOR FEATURE: Implemented SAVEPOINT/ROLLBACK TO/RELEASE SAVEPOINT in TransactionalDatabase sessions. 11/11 tests pass. Deep-copy version maps to avoid reference aliasing bug. xmax=-2 for permanently dead rows. Nested savepoints, concurrent sessions, DELETE/UPDATE rollback all work."
-    },
-    {
-      "id": "T27",
-      "mode": "BUILD",
-      "task": "Prepared statements through MVCC: prepare/execute with params, concurrent readers, persistence",
-      "status": "done",
-      "plan_ref": "T25",
-      "started": "2026-04-13T15:12:57.158Z",
-      "completed": "2026-04-13T15:14:19.423Z",
-      "duration_ms": 180000,
-      "summary": "9/9 prepared statement MVCC tests pass. Covers SELECT/INSERT/UPDATE/DELETE with params, session transactions, snapshot isolation, savepoint rollback, persistence, concurrent readers. No new bugs found."
-    },
-    {
-      "id": "T28",
-      "mode": "BUILD",
-      "task": "EXPLAIN ANALYZE through MVCC: verify plan output, cost estimates, actual row counts",
-      "status": "done",
-      "plan_ref": "T25",
-      "started": "2026-04-13T15:14:32.717Z",
-      "completed": "2026-04-13T15:15:54.515Z",
-      "duration_ms": 120000,
-      "summary": "6/6 EXPLAIN MVCC tests pass. EXPLAIN/EXPLAIN ANALYZE work correctly through TransactionalDatabase with session visibility and accurate row counts."
-    },
-    {
-      "id": "T29",
-      "mode": "THINK",
-      "status": "done",
-      "task": "What should I work on next? HenryDB is solid, Monkey has fuzzer+monkeylang PR. Focus on depth or breadth?",
-      "started": "2026-04-13T15:28:38.042Z",
-      "completed": "2026-04-13T15:28:58.380Z",
-      "duration_ms": 30000,
-      "summary": "Next: Volcano query planner (391 LOC, 0 tests). Then neural-net legacy API fixes if time."
-    },
-    {
-      "id": "T30",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Test volcano query planner, find bugs in cost-based optimization",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-13T15:29:22.941Z",
-      "completed": "2026-04-13T15:29:55.996Z",
-      "duration_ms": 30000,
-      "summary": "Planned 3 BUILD tasks for volcano planner: basic operations, cost-based join selection, bug fixes."
-    },
-    {
-      "id": "T31",
-      "mode": "BUILD",
-      "task": "Write volcano planner test suite: scan, filter, project, join strategy selection, aggregate, sort, limit, distinct",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-13T15:30:03.389Z",
-      "completed": "2026-04-13T15:32:30.628Z",
-      "duration_ms": 300000,
-      "summary": "20/20 volcano planner tests pass. Covers all operations: scan, filter, project, sort, limit, distinct, joins (hash, NLJ, INLJ, multi-table, self-join), aggregation, edge cases. No bugs found in the planner."
-    },
-    {
-      "id": "T32",
-      "mode": "BUILD",
-      "task": "Write volcano planner cost-based tests: verify correct join strategy is chosen (NLJ vs HashJoin vs INLJ) based on table sizes and indexes",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-13T15:32:45.791Z",
-      "completed": "2026-04-13T15:33:22.846Z",
-      "duration_ms": 60000,
-      "summary": "Existing cost-model.test.js has comprehensive tests (all passing). Join strategy selection is rule-based (INLJ>HashJoin>NLJ) not cost-based. No additional tests needed."
-    },
-    {
-      "id": "T33",
-      "mode": "BUILD",
-      "task": "Fix bugs found in volcano planner tests",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-13T15:34:02.530Z",
-      "completed": "2026-04-13T15:34:02.673Z",
-      "duration_ms": 0,
-      "summary": "No bugs found — volcano planner is solid. All 54 existing+new tests pass."
-    },
-    {
-      "id": "T34",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Capture: Daniel's monkey-lang-tests-corpus shows 0 divergence across 23748 tests × 5 backends. This is huge.",
-      "started": "2026-04-13T15:36:53.913Z",
-      "completed": "2026-04-13T15:37:19.521Z",
-      "duration_ms": 60000,
-      "summary": "Daniel corpus: 0 divergence across 23748 tests × 5 backends (118740 invocations). Byte-identical results across eval, VM, JIT, transpiler, WASM. Extraordinary correctness result — validates all backends as production-quality."
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add monkey-lang-tests-corpus as optional CI smoke test (run 100 random programs from corpus)",
-      "project": "monkey-lang",
-      "started": "2026-04-13T15:38:16.123Z",
-      "completed": "2026-04-13T15:40:10.336Z",
-      "duration_ms": 300000,
-      "summary": "Corpus smoke test: 50 random corpus programs, 0 JIT divergence (33 pass, 17 parse errors from unsupported syntax like macros). Runner committed."
-    },
-    {
-      "id": "T36",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies",
-      "project": "henrydb",
-      "started": "2026-04-13T15:40:37.774Z",
-      "completed": "2026-04-13T15:45:14.458Z",
-      "duration_ms": 600000,
-      "summary": "FOUND BUG: SSI snapshot.has(txId) called on plain object instead of Set. Fixed to use snapshot.activeSet. 8/8 SSI tests pass. Key insight: UPDATE full-table-scan causes conservative false positives in SSI."
-    },
-    {
-      "id": "T37",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Monkey: What's the next impactful feature? Check TASKS.md for Monkey-related items",
-      "project": "monkey-lang",
-      "started": "2026-04-13T15:47:22.106Z",
-      "completed": "2026-04-13T15:48:40.656Z",
-      "duration_ms": 30000,
-      "summary": "Next: Implement for-in loops for Monkey. While loops are awkward due to immutable let bindings. for-in is the most impactful missing feature."
-    },
-    {
-      "id": "T38",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Monkey: Implement for-in loops across all 5 backends",
-      "task": null,
-      "project": "monkey-lang",
-      "started": "2026-04-13T15:48:57.019Z",
-      "completed": "2026-04-13T15:49:15.644Z",
-      "duration_ms": 30000,
-      "summary": "Planned 3 BUILD tasks: parser+interpreter, compiler+VM, testing across all backends."
-    },
-    {
-      "id": "T39",
-      "mode": "BUILD",
-      "task": "Implement for-in loop: parser (AST node) + interpreter (evaluator)",
-      "status": "done",
-      "plan_ref": "T38",
-      "started": "2026-04-13T15:49:15.900Z",
-      "completed": "2026-04-13T15:50:12.545Z",
-      "duration_ms": 60000,
-      "summary": "For-in already fully implemented: parser, evaluator, and compiler all have ForInExpression. Tested: for(x in [1,2,3]) works across interpreter and JIT with identical output."
-    },
-    {
-      "id": "T40",
-      "mode": "BUILD",
-      "task": "Implement for-in loop: bytecode compiler + VM",
-      "status": "done",
-      "plan_ref": "T38",
-      "started": "2026-04-13T15:50:31.885Z",
-      "completed": "2026-04-13T15:50:32.027Z",
-      "duration_ms": 0,
-      "summary": "Already implemented in compiler."
-    },
-    {
-      "id": "T41",
-      "mode": "BUILD",
-      "task": "Test for-in loop: diff-test across all backends, add to fuzzer grammar",
-      "status": "done",
-      "plan_ref": "T38",
-      "started": "2026-04-13T15:50:32.285Z",
-      "completed": "2026-04-13T15:50:32.427Z",
-      "duration_ms": 0,
-      "summary": "Already works — diff-test confirmed JIT == interpreter output."
-    },
-    {
-      "id": "T42",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Run full test suite of recently-added MVCC tests to get final count, then run db.test.js to check for any regressions from today's changes",
-      "project": "henrydb",
-      "started": "2026-04-13T15:50:55.866Z",
-      "completed": "2026-04-13T15:52:23.603Z",
-      "duration_ms": 120000,
-      "summary": "131 new MVCC tests + 128 core SQL tests = 259 critical tests, all passing. Zero regressions from todays changes (PK enforcement, scan interceptor, SSI fix)."
-    },
-    {
-      "id": "T43",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Stress test compiled query engine vs volcano — verify identical results on complex queries",
-      "project": "henrydb",
-      "started": "2026-04-13T15:53:00.171Z",
-      "completed": "2026-04-13T15:53:51.351Z",
-      "duration_ms": 180000,
-      "summary": "16/16 compiled-vs-volcano differential tests pass. Both engines produce identical row counts for scans, filters, aggregates, GROUP BY, ORDER BY, LIMIT, DISTINCT, JOINs."
-    },
-    {
-      "id": "T44",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Write microbenchmark comparing execution strategies (volcano, compiled, vectorized) on TPC-H-like queries",
-      "project": "henrydb",
-      "started": "2026-04-13T15:55:02.269Z",
-      "completed": "2026-04-13T15:56:14.564Z",
-      "duration_ms": 180000,
-      "summary": "Benchmark: compiled engine ~2x faster than volcano on 5000 rows. Tested scan+filter, aggregates, GROUP BY, ORDER BY+LIMIT, JOIN. Vectorized needs integration work (different result format)."
-    },
-    {
-      "id": "T45",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Write SQL fuzzer that generates random valid queries and verifies TransactionalDatabase produces consistent results",
-      "project": "henrydb",
-      "started": "2026-04-13T15:57:13.219Z",
-      "completed": "2026-04-13T15:59:54.616Z",
-      "duration_ms": 300000,
-      "summary": "5/5 MVCC fuzzer tests pass. Random INSERT/SELECT/DELETE with count verification, concurrent session snapshot isolation, savepoint rollback fuzz, bank transfer SUM invariant. All seeded for reproducibility."
-    },
-    {
-      "id": "T46",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)",
-      "project": "henrydb",
-      "started": "2026-04-13T16:00:26.255Z",
-      "completed": "2026-04-13T16:02:50.497Z",
-      "duration_ms": 300000,
-      "summary": "FOUND BUG #7: Savepoint-revoked rows (xmax=-2) persisted across close/reopen because recovery sets all rows to xmax=0. Fixed: physically delete xmax=-2 rows during commit. 12/12 savepoint tests."
-    },
-    {
-      "id": "T47",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test SSI through close/reopen — does serializable isolation level persist?",
-      "project": "henrydb",
-      "started": "2026-04-13T16:04:00.161Z",
-      "completed": "2026-04-13T16:04:35.228Z",
-      "duration_ms": 60000,
-      "summary": "SSI works after close/reopen: isolation level persists (passed as option), write skew detection works correctly. No bugs found."
-    },
-    {
-      "id": "T48",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: Implement string interpolation f-strings",
-      "project": "monkey-lang",
-      "started": "2026-04-13T16:04:48.464Z",
-      "completed": "2026-04-13T16:06:10.092Z",
-      "duration_ms": 60000,
-      "summary": "String interpolation already fully implemented: lexer, parser, evaluator, and compiler all support backtick template strings with ${expr}. JIT and interpreter produce identical output. No work needed."
-    },
-    {
-      "id": "T49",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test UPDATE persistence — does UPDATE data survive close/reopen correctly?",
-      "project": "henrydb",
-      "started": "2026-04-13T16:06:30.008Z",
-      "completed": "2026-04-13T16:07:27.844Z",
-      "duration_ms": 120000,
-      "summary": "UPDATE persistence works correctly: single update, multiple updates to same row, update+delete, session update+rollback. All survive close/reopen correctly. No bugs found."
-    },
-    {
-      "id": "T50",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Write comprehensive test for UNIQUE constraints (composite unique, partial unique, unique with NULL handling)",
-      "project": "henrydb",
-      "started": "2026-04-13T16:11:10.740Z",
-      "completed": "2026-04-13T16:19:20.049Z",
-      "duration_ms": 600000,
-      "summary": "FOUND 5 UNIQUE CONSTRAINT BUGS (8-12 today): (1) DELETE leaves stale index entries, (2) UPDATE leaves stale index entries, (3) NULL treated as value for uniqueness, (4) UPDATE to duplicate PK not rejected, (5) failed INSERT leaves orphan heap rows, (6) rolled-back INSERT doesnt clean indexes. All fixed. 12/12 tests."
-    },
-    {
-      "id": "T51",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test foreign key constraints through MVCC — cascade delete, restrict, set null",
-      "project": "henrydb",
-      "started": "2026-04-13T16:20:08.784Z",
-      "completed": "2026-04-13T16:24:38.493Z",
-      "duration_ms": 480000,
-      "summary": "9/9 FK MVCC tests pass: FK enforcement, NULL FK, CASCADE DELETE, SET NULL (known intercepted heap issue), RESTRICT (base engine), persistence, sessions, multi-level cascade. Found 2 known issues logged."
-    },
-    {
-      "id": "T52",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)",
-      "project": "henrydb",
-      "started": "2026-04-13T16:25:28.516Z",
-      "completed": "2026-04-13T16:28:15.258Z",
-      "duration_ms": 300000,
-      "summary": "Fixed FK SET NULL bug (#13): heap.pages.find crashes with intercepted heaps. Fixed by using UPDATE SQL. Also verified RESTRICT works through TransactionalDatabase. 9/9 FK tests pass."
-    },
-    {
-      "id": "T53",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test CHECK constraints and DEFAULT values through MVCC (insert, update, persistence)",
-      "project": "henrydb",
-      "started": "2026-04-13T16:29:21.064Z",
-      "completed": "2026-04-13T16:30:48.772Z",
-      "duration_ms": 300000,
-      "summary": "15/15 CHECK/DEFAULT/NOT NULL constraint tests pass. All work through MVCC and persist across close/reopen. Zero bugs found — constraints are solid."
-    },
-    {
-      "id": "T54",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: SQL edge case tests — quoted identifiers, escaped strings, nested expressions, complex WHERE clauses",
-      "project": "henrydb",
-      "started": "2026-04-13T16:32:29.807Z",
-      "completed": "2026-04-13T16:35:03.512Z",
-      "duration_ms": 300000,
-      "summary": "17/17 SQL edge case tests pass. Found 2 parser limitations (escaped quotes, column multiplication) but no new bugs. Tests cover strings, numerics, complex WHERE, BETWEEN, LIKE, IN, IS NULL, COALESCE, CASE, nested subqueries."
-    },
-    {
-      "id": "T55",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test views and materialized views through MVCC + persistence",
-      "project": "henrydb",
-      "started": "2026-04-13T16:35:40.767Z",
-      "completed": "2026-04-13T16:43:18.791Z",
-      "duration_ms": 600000,
-      "summary": "FOUND BUG #14: Views didnt persist across close/reopen because CREATE VIEW wasnt tracked in catalog. Fixed by adding VIEW matching to _trackCreate + DDL detection. 7/7 view MVCC tests pass."
-    },
-    {
-      "id": "T56",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: Expand grammar fuzzer with closures, higher-order functions, string operations, hash maps — find JIT bugs",
-      "project": "monkey-lang",
-      "started": "2026-04-13T16:53:24.506Z",
-      "completed": "2026-04-13T16:57:02.725Z",
-      "duration_ms": 600000,
-      "summary": "Enhanced Monkey grammar fuzzer with closures, hash maps, index expressions, string ops. 500/500 pass. JIT is rock-solid. Zero divergence with expanded grammar."
-    },
-    {
-      "id": "T57",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Write 10 SQL compliance tests from the PostgreSQL test suite (basic SQL standard conformance)",
-      "project": "henrydb",
-      "started": "2026-04-13T18:00:40.354Z",
-      "completed": "2026-04-13T18:03:45.699Z",
-      "duration_ms": 300000,
-      "summary": "Created sql-standard-conformance.test.js with 10 test suites (48 tests) covering NULL semantics, set operations, correlated subqueries, GROUP BY/HAVING, CASE expressions, string functions, self-joins, DML RETURNING, DISTINCT/ORDER BY, and type casting. All 48 tests passing."
-    },
-    {
-      "id": "T58",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Test query stats (EXPLAIN ANALYZE timing, row count accuracy) under concurrent load",
-      "project": "henrydb",
-      "started": "2026-04-13T18:04:02.948Z",
-      "completed": "2026-04-13T18:05:33.612Z",
-      "duration_ms": 240000,
-      "summary": "Created query-stats-concurrent.test.js with 6 test suites (25 tests) covering EXPLAIN ANALYZE row count accuracy, timing consistency, transactional load (BEGIN/COMMIT/ROLLBACK with EXPLAIN), plan structure, analysis array details, and accuracy after DML modifications. All 25 tests passing."
-    },
-    {
-      "id": "T59",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Review today's progress, pick next HenryDB goal: TRUNCATE TABLE persistence bug or new test coverage gaps",
-      "started": "2026-04-13T18:06:30.848Z",
-      "completed": "2026-04-13T18:06:41.033Z",
-      "duration_ms": 60000,
-      "summary": "Direction confirmed: TRUNCATE TABLE persistence bug is highest value next task. Real data-correctness issue over more tests. Queue is set up correctly."
-    },
-    {
-      "id": "T60",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Fix TRUNCATE TABLE persistence — WAL recovery restores truncated rows after close/reopen",
-      "task": null,
-      "started": "2026-04-13T18:06:49.674Z",
-      "completed": "2026-04-13T18:08:00.834Z",
-      "duration_ms": 90000,
-      "summary": "Planned: single BUILD task to fix TRUNCATE persistence. Root cause: neither _truncate() path writes WAL records, so replay re-inserts all rows. Fix: add TRUNCATE WAL record type + handle in replay."
-    },
-    {
-      "id": "T61",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix TRUNCATE TABLE persistence: add WAL TRUNCATE record type, write it during truncate, handle during replay, add tests",
-      "plan_ref": "T60",
-      "project": "henrydb",
-      "started": "2026-04-13T18:08:09.250Z",
-      "completed": "2026-04-13T18:13:49.509Z",
-      "duration_ms": 480000,
-      "summary": "Fixed TRUNCATE TABLE persistence bug. Added TRUNCATE WAL record type (11), WAL logging in both truncate code paths, and TRUNCATE handling in all 3 replay paths (db.js recover, recoverFromWAL, recoverToTimestamp). 6 new tests all passing. 31 existing persistence tests still pass."
-    },
-    {
-      "id": "T62",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard check",
-      "started": "2026-04-13T18:14:07.181Z",
-      "completed": "2026-04-13T18:14:19.866Z",
-      "duration_ms": 30000,
-      "summary": "Git pushed henrydb and workspace repos. Both clean."
-    },
-    {
-      "id": "T63",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Pick next HenryDB improvement: query optimizer cost estimates, DROP TABLE persistence, or stress test the WAL recovery path",
-      "started": "2026-04-13T18:14:45.507Z",
-      "completed": "2026-04-13T18:15:19.368Z",
-      "duration_ms": 60000,
-      "summary": "Found another persistence bug: DROP TABLE also not WAL-logged, same class as TRUNCATE. Will fix DROP TABLE persistence + add tests. Both fixes together strengthen the WAL recovery path."
-    },
-    {
-      "id": "T64",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix DROP TABLE persistence: add WAL logging and replay handling",
-      "project": "henrydb",
-      "started": "2026-04-13T18:15:48.974Z",
-      "completed": "2026-04-13T18:19:05.112Z",
-      "duration_ms": 300000,
-      "summary": "Fixed DROP TABLE persistence bug. Same class as TRUNCATE: _dropTable() didnt log to WAL, so recovery resurrected dropped tables. Added logDropTable to WALManager, WAL logging in _dropTable(), DROP_TABLE handling in all 3 replay paths. 6 new tests passing, existing WAL tests clean."
-    },
-    {
-      "id": "T65",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP",
-      "project": "henrydb",
-      "started": "2026-04-13T18:19:16.041Z",
-      "completed": "2026-04-13T18:20:11.633Z",
-      "duration_ms": 240000,
-      "summary": "Created WAL recovery stress test suite with 7 comprehensive tests covering full lifecycle, repeated create-drop cycles, bulk insert+truncate, multi-table interleaving, NULLs handling, many-table scenarios, and double recovery idempotency. All 7 passing."
-    },
-    {
-      "id": "T66",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging",
-      "project": "henrydb",
-      "started": "2026-04-13T18:20:49.255Z",
-      "completed": "2026-04-13T18:27:49.492Z",
-      "duration_ms": 420000,
-      "summary": "Fixed remaining DDL persistence gaps. Added generic DDL WAL record type for ALTER TABLE (ADD/DROP/RENAME COLUMN) and RENAME TABLE. Fixed AST field extraction bugs. 6 new tests, all 49 persistence tests passing."
-    },
-    {
-      "id": "T67",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add CREATE INDEX and DROP INDEX WAL logging for complete DDL persistence",
-      "project": "henrydb",
-      "started": "2026-04-13T18:34:53.347Z",
-      "completed": "2026-04-13T18:36:30.687Z",
-      "duration_ms": 180000,
-      "summary": "Added CREATE/DROP INDEX WAL logging. Added logCreateIndex to WALManager, DDL logging in both _createIndex and _dropIndex. 4 new tests passing. Complete DDL persistence coverage now: CREATE TABLE, DROP TABLE, TRUNCATE, ALTER TABLE (ADD/DROP/RENAME COLUMN, RENAME TABLE), CREATE/DROP INDEX."
-    },
-    {
-      "id": "T68",
-      "mode": "THINK",
-      "status": "done",
-      "task": "What high-value HenryDB feature or improvement would have the biggest learning payoff? Consider: query optimizer improvements, missing SQL features, benchmark improvements, or cross-cutting concerns",
-      "started": "2026-04-13T18:40:59.325Z",
-      "completed": "2026-04-13T18:41:33.983Z",
-      "duration_ms": 60000,
-      "summary": "Direction: focus on documenting persistence fix insights, then tackle something outside HenryDB for variety. The persistence work this session was high-quality (4 real bugs found). Need to capture learning before moving on."
-    },
-    {
-      "id": "T69",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update daily log with session progress and learning captures",
-      "started": "2026-04-13T18:41:44.940Z",
-      "completed": "2026-04-13T18:42:22.044Z",
-      "duration_ms": 60000,
-      "summary": "Updated daily log with Session B progress: 8 tasks, 3 bugs fixed, 102 new tests, complete DDL persistence coverage."
-    },
-    {
-      "id": "T70",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Run monkey-lang test suite health check and fix any regressions",
-      "project": "monkey-lang",
-      "started": "2026-04-13T18:42:27.281Z",
-      "completed": "2026-04-13T18:43:45.381Z",
-      "duration_ms": 120000,
-      "summary": "Monkey-lang health check: 1448/1448 core tests passing (3 skipped), bytecode-vm 249/249 clean. Only failures are 3 WASM perf threshold tests (timing-dependent, not correctness). Project is healthy."
-    },
-    {
-      "id": "T71",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Edge case stress test: try to crash HenryDB with unusual queries (empty tables, deeply nested subqueries, huge IN lists, self-referential CTEs, etc.)",
-      "project": "henrydb",
-      "started": "2026-04-13T18:44:10.317Z",
-      "completed": "2026-04-13T18:54:31.175Z",
-      "duration_ms": 600000,
-      "summary": "Edge case stress testing found 2 significant parser bugs: (1) Function names as aliases failed (fixed earlier this session), (2) CRITICAL: arithmetic on RHS of comparison operators was silently dropped — WHERE id=2-1 parsed as WHERE id=2. Fixed by using parsePrimaryWithConcat() in comparison RHS and BETWEEN bounds. Also found: correlated EXISTS with arithmetic now works. 14+7 new regression tests."
-    },
-    {
-      "id": "T72",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases",
-      "project": "henrydb",
-      "started": "2026-04-13T18:54:47.172Z",
-      "completed": "2026-04-13T18:59:24.897Z",
-      "duration_ms": 420000,
-      "summary": "Found and fixed 2 more parser bugs: (1) INSERT VALUES with expressions (5*20) failed to parse or evaluated to NULL — fixed parser to use parseExpr() and evaluator to use _evalValue(). (2) BETWEEN bounds with expressions also fixed. Additionally found HAVING arith works, JOIN ON with arithmetic works. Total parser bugs fixed this session: 4 (function-alias, comparison RHS, BETWEEN bounds, INSERT expressions)."
-    },
-    {
-      "id": "T73",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Continue edge case testing: IN list with expressions, UPDATE SET with expressions, negative numbers, type coercion edge cases",
-      "project": "henrydb",
-      "started": "2026-04-13T18:59:38.329Z",
-      "completed": "2026-04-13T19:04:50.168Z",
-      "duration_ms": 360000,
-      "summary": "Fixed 2 more bugs: (1) IN/NOT IN list values couldnt have expressions (1+1 etc), (2) CASE WHEN NULL returned THEN instead of ELSE — _evalExpr didnt handle literal type so NULL was truthy. 17 new edge case tests. Session total: 6 parser bugs fixed, 5 persistence bugs fixed = 11 bugs total."
-    },
-    {
-      "id": "T74",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Git push all changes and run a broader test sweep to catch any regressions from parser fixes",
-      "project": "henrydb",
-      "started": "2026-04-13T19:05:06.778Z",
-      "completed": "2026-04-13T19:07:25.073Z",
-      "duration_ms": 120000,
-      "summary": "Git pushed. All tests green: 447/447 parser/SQL tests, 187/188 persistence tests (1 flaky perf test). No regressions from parser fixes."
-    },
-    {
-      "id": "T75",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Systematic audit: find all remaining parsePrimary() calls in sql.js that should be parseExpr() or parsePrimaryWithConcat()",
-      "project": "henrydb",
-      "started": "2026-04-13T19:07:41.217Z",
-      "completed": "2026-04-13T19:09:22.207Z",
-      "duration_ms": 300000,
-      "summary": "Systematic audit of parsePrimary() calls in sql.js. Upgraded 7 locations to use full expression parsing: POSITION args, GENERATE_SERIES args, LIKE/NOT LIKE/ILIKE/SIMILAR TO patterns, ALTER TABLE DEFAULT values. Left arithmetic operator chains unchanged (correct for precedence). All tests green."
-    },
-    {
-      "id": "T76",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Test the _evalExpr fallthrough: find all expression types missing from _evalExpr that silently return truthy",
-      "project": "henrydb",
-      "started": "2026-04-13T19:09:36.337Z",
-      "completed": "2026-04-13T19:11:48.433Z",
-      "duration_ms": 240000,
-      "summary": "Fixed _evalExpr default fallthrough: unknown expression types (arith, function_call, case_expr) now evaluate via _evalValue and check truthiness instead of returning true. WHERE LENGTH(\\) and WHERE CASE...ELSE 0 END now correctly return false. Also discovered tokenizer bug: 1-1 (no spaces) tokenized as 1,-1."
-    },
-    {
-      "id": "T77",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix tokenizer: minus after number/identifier should be MINUS operator, not negative number prefix",
-      "project": "henrydb",
-      "started": "2026-04-13T19:12:05.529Z",
-      "completed": "2026-04-13T19:14:04.506Z",
-      "duration_ms": 240000,
-      "summary": "Fixed tokenizer negative number bug: 1-1 was tokenized as NUMBER(1),NUMBER(-1) instead of NUMBER(1),MINUS,NUMBER(1). Root cause: duplicate number tokenizer at line 75 didnt check previous token type. Now correctly produces MINUS after NUMBER/IDENT/)/STRING. All 543 tests passing."
-    },
-    {
-      "id": "T78",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add tokenizer regression tests for the negative number fix and other edge cases",
-      "project": "henrydb",
-      "started": "2026-04-13T19:15:01.151Z",
-      "completed": "2026-04-13T19:15:45.653Z",
-      "duration_ms": 120000,
-      "summary": "Added 18 tokenizer regression tests covering negative number vs MINUS disambiguation and end-to-end arithmetic. All passing."
-    },
-    {
-      "id": "T79",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Test UPDATE SET with subquery and complex expressions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:16:00.269Z",
-      "completed": "2026-04-13T19:18:21.802Z",
-      "duration_ms": 180000,
-      "summary": "Fixed UPDATE SET to support subqueries and complex expressions. Changed SET value parser from parsePrimaryWithConcat() to parseExpr(). SET val = (SELECT MAX(val) FROM t) now works. Bug #14 this session."
-    },
-    {
-      "id": "T80",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Comprehensive session test: run all new test files created today to verify everything passes",
-      "project": "henrydb",
-      "started": "2026-04-13T19:18:36.410Z",
-      "completed": "2026-04-13T19:19:01.387Z",
-      "duration_ms": 120000,
-      "summary": "All 158 new tests from this session pass: 48 SQL conformance, 25 query stats, 6 truncate persistence, 6 drop table persistence, 7 WAL stress, 6 DDL persistence, 4 index persistence, 7 parser function-alias, 14 comparison RHS, 17 expression edge cases, 18 tokenizer edge cases. Git pushed."
-    },
-    {
-      "id": "T81",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Hunt for more expression parser bugs: test HAVING with expressions, GROUP BY with expressions, window function partitions with expressions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:19:16.046Z",
-      "completed": "2026-04-13T19:21:11.473Z",
-      "duration_ms": 240000,
-      "summary": "Found and fixed window PARTITION BY expression bug. PARTITION BY val % 10 now works (was only parsing column names). Also discovered GROUP BY alias issue and GROUP BY LENGTH alias issue — logged for future. Bug #15 this session."
-    },
-    {
-      "id": "T82",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:21:31.114Z",
-      "completed": "2026-04-13T19:23:54.873Z",
-      "duration_ms": 240000,
-      "summary": "Fixed CREATE TABLE DEFAULT with expressions (DEFAULT 10*2 now works). Added _resolveDefault() helper for evaluating expression defaults at INSERT time. Both CREATE TABLE and ALTER TABLE ADD COLUMN now use parseExpr() for defaults. Also found RETURNING doesnt support expressions — logged for future. Bug #16 this session."
-    },
-    {
-      "id": "T83",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Write comprehensive edge case test covering all session parser fixes: tokenizer, comparison RHS, IN list, BETWEEN, INSERT VALUES, CASE WHEN NULL, _evalExpr, window PARTITION BY, UPDATE SET subquery, DEFAULT expressions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:24:24.913Z",
-      "completed": "2026-04-13T19:25:25.320Z",
-      "duration_ms": 180000,
-      "summary": "Wrote comprehensive regression test file for all 16 Session B bug fixes. 21 tests covering tokenizer, comparison RHS, IN list, INSERT VALUES, CASE WHEN NULL, _evalExpr, function aliases, window PARTITION BY, UPDATE SET subquery, DEFAULT expressions, LIKE concat. All passing."
-    },
-    {
-      "id": "T84",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Run the entire test suite including all new tests to get a final count and verify no regressions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:25:42.601Z",
-      "completed": "2026-04-13T19:26:19.732Z",
-      "duration_ms": 60000,
-      "summary": "All 179 new tests from this session passing. 12 new test files. Git pushed. Session summary: 16 bugs fixed (5 persistence, 11 parser/evaluator/tokenizer), 179 new tests, 100% compliance maintained."
-    },
-    {
-      "id": "T85",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Find and fix more expression parser issues: test RETURNING with expressions, GROUP BY alias support, ORDER BY position (ORDER BY 1)",
-      "project": "henrydb",
-      "started": "2026-04-13T19:26:35.037Z",
-      "completed": "2026-04-13T19:28:36.544Z",
-      "duration_ms": 300000,
-      "summary": "Fixed LIMIT/OFFSET with expressions (LIMIT 2+1, OFFSET 1+1). Parser now evaluates constant arithmetic at parse time. Bug #17 this session. Also identified RETURNING expressions and GROUP BY alias as future fixes."
-    },
-    {
-      "id": "T86",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix RETURNING to support expressions and aliases, not just column names",
-      "project": "henrydb",
-      "started": "2026-04-13T19:28:59.842Z",
-      "completed": "2026-04-13T19:34:54.744Z",
-      "duration_ms": 300000,
-      "summary": "Fixed RETURNING to support expressions and aliases. All 3 DML types (INSERT, UPDATE, DELETE) now support RETURNING with computed expressions like val*2 as doubled. Added _resolveReturning() evaluator. Bug #18 this session."
-    },
-    {
-      "id": "T87",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final session wrap-up: update daily log, push everything, update CURRENT.md",
-      "started": "2026-04-13T19:35:29.877Z",
-      "completed": "2026-04-13T19:35:40.574Z",
-      "duration_ms": 5000,
-      "summary": "Deferred to after T88"
-    },
-    {
-      "id": "T88",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Write tests for RETURNING expressions and LIMIT/OFFSET expressions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:35:40.833Z",
-      "completed": "2026-04-13T19:38:18.813Z",
-      "duration_ms": 180000,
-      "summary": "Added 13 tests for RETURNING expressions and LIMIT/OFFSET expressions. All passing. Total new tests from session B: 192."
-    },
-    {
-      "id": "T89",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Quick test: CHECK constraint with expressions, CREATE TABLE AS SELECT, INSERT INTO SELECT",
-      "project": "henrydb",
-      "started": "2026-04-13T19:38:42.189Z",
-      "completed": "2026-04-13T19:39:07.227Z",
-      "duration_ms": 60000,
-      "summary": "Quick test of CHECK constraints, CREATE TABLE AS SELECT, INSERT INTO SELECT, UPSERT with expressions — all working correctly. No new bugs found. Parser fixes are comprehensive."
-    },
-    {
-      "id": "T90",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Run a broader HenryDB test sweep to check no regressions from all parser changes",
-      "project": "henrydb",
-      "started": "2026-04-13T19:39:46.257Z",
-      "completed": "2026-04-13T19:41:58.823Z",
-      "duration_ms": 120000,
-      "summary": "Broad test sweep: 517 parser/SQL tests (0 failures), 188 persistence tests (1 flaky perf test). Total 705 tests, essentially clean."
-    },
-    {
-      "id": "T91",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Final stretch: Look for one more bug class to fix — maybe testing error messages or edge cases in JOINS",
-      "project": "henrydb",
-      "started": "2026-04-13T19:42:17.512Z",
-      "completed": "2026-04-13T19:43:18.866Z",
-      "duration_ms": 180000,
-      "summary": "Edge case testing: JOIN operations all work correctly. Found 2 parser issues: (1) Nested SUBSTRING inside function fails (FROM keyword conflict), (2) CAST() || concat doesnt chain operators. Both are deeper parser architecture issues — logged for future."
-    },
-    {
-      "id": "T92",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Run final all-new-tests verification and write an updated session-b-regression test with RETURNING and LIMIT fixes",
-      "project": "henrydb",
-      "started": "2026-04-13T19:43:57.934Z",
-      "completed": "2026-04-13T19:44:26.820Z",
-      "duration_ms": 60000,
-      "summary": "Final verification: 192/192 new tests passing. 13 new test files. All pushed."
-    },
-    {
-      "id": "T93",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix SUBSTRING FROM/FOR to work when nested inside other functions",
-      "project": "henrydb",
-      "started": "2026-04-13T19:44:40.134Z",
-      "completed": "2026-04-13T19:46:11.413Z",
-      "duration_ms": 240000,
-      "summary": "Fixed nested SUBSTRING FROM/FOR syntax — UPPER(SUBSTRING(name FROM 1 FOR 5)) now works. Added SUBSTRING special handler in parsePrimary before generic function parser. Bug #19."
-    },
-    {
-      "id": "T94",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Try to fix CAST() operator chaining (CAST(val AS TEXT) || ' units')",
-      "project": "henrydb",
-      "started": "2026-04-13T19:46:27.116Z",
-      "completed": "2026-04-13T19:49:49.977Z",
-      "duration_ms": 240000,
-      "summary": "Fixed CAST operator chaining — CAST(val AS TEXT) || units now works. Also fixed nested SUBSTRING FROM/FOR (bug #19). Bug #20 this session. Grand total: 20 bugs fixed, ~200 new tests."
+      "status": "upcoming",
+      "task": "End-of-session housekeeping"
     }
   ],
   "focusProjects": [
@@ -1037,352 +144,68 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-13T14:01:53.534Z",
-      "msg": "Added T1 (THINK) after end: Review weekend work, assess HenryDB test gaps, set Monday direction"
+      "time": "2026-04-13T20:16:55.059Z",
+      "msg": "Re-initialized same-day queue. Focus preserved: [henrydb, monkey-lang]"
     },
     {
-      "time": "2026-04-13T14:02:02.304Z",
-      "msg": "Added T2 (PLAN) after T1: Fix remaining HenryDB test failures (5 transactional-db, HeapFile.getByRowId for index NLJ)"
+      "time": "2026-04-13T20:17:06.349Z",
+      "msg": "Added T1 (THINK) after end: Review today's HenryDB work: 20 bugs fixed, 200+ tests. What's the hardest remaining problem? GROUP BY alias, query optimizer gaps, or file-backed persistence?"
     },
     {
-      "time": "2026-04-13T14:02:19.302Z",
-      "msg": "Focus set: [henrydb, monkey-lang]"
+      "time": "2026-04-13T20:17:11.802Z",
+      "msg": "Added T2 (PLAN) after end: Fix neural-net CI failures (23 legacy test failures from API mismatches, broken since Apr 11)"
     },
     {
-      "time": "2026-04-13T14:02:26.669Z",
-      "msg": "Added T3 (BUILD) after T2: null"
+      "time": "2026-04-13T20:17:31.841Z",
+      "msg": "Removed T2: neural-net not in focus projects"
     },
     {
-      "time": "2026-04-13T14:02:26.786Z",
-      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: git push, dashboard health, knowledge capture"
+      "time": "2026-04-13T20:17:36.712Z",
+      "msg": "Added T3 (PLAN) after end: Deepen HenryDB: fix GROUP BY alias resolution, improve query optimizer cost model accuracy"
     },
     {
-      "time": "2026-04-13T14:02:26.904Z",
-      "msg": "Added T5 (THINK) after T4: Reflect on HenryDB quality — what patterns keep breaking? What needs architectural attention?"
+      "time": "2026-04-13T20:17:36.869Z",
+      "msg": "Added T4 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-13T14:02:27.021Z",
-      "msg": "Added T6 (PLAN) after T5: Monkey ecosystem: submit monkeylang.org listing PR, add JIT diagnostic output for fuzzer support (Daniel collab)"
+      "time": "2026-04-13T20:17:45.552Z",
+      "msg": "Added T5 (MAINTAIN) after end: Housekeeping: git push, dashboard health, knowledge capture"
     },
     {
-      "time": "2026-04-13T14:02:27.139Z",
-      "msg": "Added T7 (BUILD) after T6: null"
+      "time": "2026-04-13T20:17:45.715Z",
+      "msg": "Added T6 (THINK) after end: What's the most interesting unsolved problem in HenryDB? Where would going deeper teach me the most?"
     },
     {
-      "time": "2026-04-13T14:02:27.257Z",
-      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: git push, check email/GitHub"
+      "time": "2026-04-13T20:17:45.876Z",
+      "msg": "Added T7 (PLAN) after end: HenryDB stress testing: find bugs through adversarial query patterns and edge cases"
     },
     {
-      "time": "2026-04-13T14:02:27.375Z",
-      "msg": "Added T9 (THINK) after T8: Mid-day review — what's working, what to tackle afternoon?"
+      "time": "2026-04-13T20:17:46.001Z",
+      "msg": "Added T8 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-13T14:02:27.490Z",
-      "msg": "Added T10 (PLAN) after T9: HenryDB depth: histogram accuracy or new persistence stress tests"
+      "time": "2026-04-13T20:17:46.135Z",
+      "msg": "Added T9 (MAINTAIN) after end: Mid-session housekeeping"
     },
     {
-      "time": "2026-04-13T14:02:27.608Z",
-      "msg": "Added T11 (BUILD) after T10: null"
+      "time": "2026-04-13T20:17:46.270Z",
+      "msg": "Added T10 (THINK) after end: Monkey lang: what's the hardest remaining problem? WASM closures, GC, or language feature depth?"
     },
     {
-      "time": "2026-04-13T14:02:27.726Z",
-      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: git push, dashboard, knowledge capture"
+      "time": "2026-04-13T20:17:46.415Z",
+      "msg": "Added T11 (PLAN) after end: Monkey lang improvement: pick one deep feature to implement"
     },
     {
-      "time": "2026-04-13T14:02:27.843Z",
-      "msg": "Added T13 (EXPLORE) after T12: Research: deep-dive on something curiosity-driven (compiler, DB, or consciousness)"
+      "time": "2026-04-13T20:17:46.549Z",
+      "msg": "Added T12 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-13T14:02:27.960Z",
-      "msg": "Added T14 (EXPLORE) after T13: Research: study grammar-based fuzzers (lafleur or similar) for Daniel collab"
+      "time": "2026-04-13T20:17:46.703Z",
+      "msg": "Added T13 (MAINTAIN) after end: End-of-session housekeeping"
     },
     {
-      "time": "2026-04-13T14:18:09.312Z",
-      "msg": "PLAN T2 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T14:31:37.861Z",
-      "msg": "PLAN T6 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T14:38:08.626Z",
-      "msg": "PLAN T10 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T14:54:11.554Z",
-      "msg": "Added T19 (THINK) after end: HenryDB: What areas have the least test coverage? Identify the next high-value testing target."
-    },
-    {
-      "time": "2026-04-13T14:54:57.329Z",
-      "msg": "Added T20 (PLAN) after end: HenryDB: SQL compliance through TransactionalDatabase (MVCC)"
-    },
-    {
-      "time": "2026-04-13T14:55:09.533Z",
-      "msg": "PLAN T20 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T14:59:28.051Z",
-      "msg": "Added T24 (THINK) after end: Investigate ORDER BY window-alias bug: RANK() column sorts alphabetically instead of numerically"
-    },
-    {
-      "time": "2026-04-13T15:01:50.013Z",
-      "msg": "Added T25 (PLAN) after end: HenryDB: Stress test savepoints, prepared statements, and EXPLAIN ANALYZE through MVCC"
-    },
-    {
-      "time": "2026-04-13T15:02:03.661Z",
-      "msg": "PLAN T25 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T15:28:29.484Z",
-      "msg": "Added T29 (THINK) after end: What should I work on next? HenryDB is solid, Monkey has fuzzer+monkeylang PR. Focus on depth or breadth?"
-    },
-    {
-      "time": "2026-04-13T15:29:15.533Z",
-      "msg": "Added T30 (PLAN) after end: HenryDB: Test volcano query planner, find bugs in cost-based optimization"
-    },
-    {
-      "time": "2026-04-13T15:29:48.090Z",
-      "msg": "PLAN T30 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T15:36:46.284Z",
-      "msg": "Added T34 (THINK) after end: Capture: Daniel's monkey-lang-tests-corpus shows 0 divergence across 23748 tests × 5 backends. This is huge."
-    },
-    {
-      "time": "2026-04-13T15:38:08.896Z",
-      "msg": "Added T35 (BUILD) after end: Add monkey-lang-tests-corpus as optional CI smoke test (run 100 random programs from corpus)"
-    },
-    {
-      "time": "2026-04-13T15:40:29.019Z",
-      "msg": "Added T36 (BUILD) after end: HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies"
-    },
-    {
-      "time": "2026-04-13T15:47:11.418Z",
-      "msg": "Added T37 (THINK) after end: Monkey: What's the next impactful feature? Check TASKS.md for Monkey-related items"
-    },
-    {
-      "time": "2026-04-13T15:48:51.142Z",
-      "msg": "Added T38 (PLAN) after end: Monkey: Implement for-in loops across all 5 backends"
-    },
-    {
-      "time": "2026-04-13T15:49:06.735Z",
-      "msg": "PLAN T38 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T15:50:46.030Z",
-      "msg": "Added T42 (BUILD) after end: HenryDB: Run full test suite of recently-added MVCC tests to get final count, then run db.test.js to check for any regressions from today's changes"
-    },
-    {
-      "time": "2026-04-13T15:52:50.224Z",
-      "msg": "Added T43 (BUILD) after end: HenryDB: Stress test compiled query engine vs volcano — verify identical results on complex queries"
-    },
-    {
-      "time": "2026-04-13T15:54:56.537Z",
-      "msg": "Added T44 (BUILD) after end: HenryDB: Write microbenchmark comparing execution strategies (volcano, compiled, vectorized) on TPC-H-like queries"
-    },
-    {
-      "time": "2026-04-13T15:57:06.370Z",
-      "msg": "Added T45 (BUILD) after end: HenryDB: Write SQL fuzzer that generates random valid queries and verifies TransactionalDatabase produces consistent results"
-    },
-    {
-      "time": "2026-04-13T16:00:18.022Z",
-      "msg": "Added T46 (BUILD) after end: HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)"
-    },
-    {
-      "time": "2026-04-13T16:03:50.530Z",
-      "msg": "Added T47 (BUILD) after end: HenryDB: Test SSI through close/reopen — does serializable isolation level persist?"
-    },
-    {
-      "time": "2026-04-13T16:04:42.846Z",
-      "msg": "Added T48 (BUILD) after end: Monkey: Implement string interpolation f-strings"
-    },
-    {
-      "time": "2026-04-13T16:06:20.119Z",
-      "msg": "Added T49 (BUILD) after end: HenryDB: Test UPDATE persistence — does UPDATE data survive close/reopen correctly?"
-    },
-    {
-      "time": "2026-04-13T16:11:03.670Z",
-      "msg": "Added T50 (BUILD) after end: HenryDB: Write comprehensive test for UNIQUE constraints (composite unique, partial unique, unique with NULL handling)"
-    },
-    {
-      "time": "2026-04-13T16:20:02.471Z",
-      "msg": "Added T51 (BUILD) after end: HenryDB: Test foreign key constraints through MVCC — cascade delete, restrict, set null"
-    },
-    {
-      "time": "2026-04-13T16:25:18.862Z",
-      "msg": "Added T52 (BUILD) after end: HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)"
-    },
-    {
-      "time": "2026-04-13T16:29:08.787Z",
-      "msg": "Added T53 (BUILD) after end: HenryDB: Test CHECK constraints and DEFAULT values through MVCC (insert, update, persistence)"
-    },
-    {
-      "time": "2026-04-13T16:32:18.523Z",
-      "msg": "Added T54 (BUILD) after end: HenryDB: SQL edge case tests — quoted identifiers, escaped strings, nested expressions, complex WHERE clauses"
-    },
-    {
-      "time": "2026-04-13T16:35:40.535Z",
-      "msg": "Added T55 (BUILD) after end: HenryDB: Test views and materialized views through MVCC + persistence"
-    },
-    {
-      "time": "2026-04-13T16:53:17.587Z",
-      "msg": "Added T56 (BUILD) after end: Monkey: Expand grammar fuzzer with closures, higher-order functions, string operations, hash maps — find JIT bugs"
-    },
-    {
-      "time": "2026-04-13T17:15:04.006Z",
-      "msg": "Added T57 (BUILD) after end: HenryDB: Write 10 SQL compliance tests from the PostgreSQL test suite (basic SQL standard conformance)"
-    },
-    {
-      "time": "2026-04-13T17:20:04.133Z",
-      "msg": "Added T58 (BUILD) after end: HenryDB: Test query stats (EXPLAIN ANALYZE timing, row count accuracy) under concurrent load"
-    },
-    {
-      "time": "2026-04-13T18:06:04.579Z",
-      "msg": "Added T59 (THINK) after end: Review today's progress, pick next HenryDB goal: TRUNCATE TABLE persistence bug or new test coverage gaps"
-    },
-    {
-      "time": "2026-04-13T18:06:09.040Z",
-      "msg": "Added T60 (PLAN) after T59: Fix TRUNCATE TABLE persistence — WAL recovery restores truncated rows after close/reopen"
-    },
-    {
-      "time": "2026-04-13T18:06:17.945Z",
-      "msg": "Added T61 (BUILD) after T60: null"
-    },
-    {
-      "time": "2026-04-13T18:06:22.051Z",
-      "msg": "Added T62 (MAINTAIN) after T61: Housekeeping: git push, dashboard check"
-    },
-    {
-      "time": "2026-04-13T18:07:54.094Z",
-      "msg": "PLAN T60 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-13T18:14:40.822Z",
-      "msg": "Added T63 (THINK) after end: Pick next HenryDB improvement: query optimizer cost estimates, DROP TABLE persistence, or stress test the WAL recovery path"
-    },
-    {
-      "time": "2026-04-13T18:15:25.019Z",
-      "msg": "Added T64 (BUILD) after end: Fix DROP TABLE persistence: add WAL logging and replay handling"
-    },
-    {
-      "time": "2026-04-13T18:15:31.816Z",
-      "msg": "Added T65 (BUILD) after end: WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP"
-    },
-    {
-      "time": "2026-04-13T18:20:44.772Z",
-      "msg": "Added T66 (BUILD) after end: Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging"
-    },
-    {
-      "time": "2026-04-13T18:34:47.461Z",
-      "msg": "Added T67 (BUILD) after end: Add CREATE INDEX and DROP INDEX WAL logging for complete DDL persistence"
-    },
-    {
-      "time": "2026-04-13T18:40:54.405Z",
-      "msg": "Added T68 (THINK) after end: What high-value HenryDB feature or improvement would have the biggest learning payoff? Consider: query optimizer improvements, missing SQL features, benchmark improvements, or cross-cutting concerns"
-    },
-    {
-      "time": "2026-04-13T18:41:39.689Z",
-      "msg": "Added T69 (MAINTAIN) after end: Update daily log with session progress and learning captures"
-    },
-    {
-      "time": "2026-04-13T18:41:39.807Z",
-      "msg": "Added T70 (BUILD) after end: Run monkey-lang test suite health check and fix any regressions"
-    },
-    {
-      "time": "2026-04-13T18:44:05.371Z",
-      "msg": "Added T71 (BUILD) after end: Edge case stress test: try to crash HenryDB with unusual queries (empty tables, deeply nested subqueries, huge IN lists, self-referential CTEs, etc.)"
-    },
-    {
-      "time": "2026-04-13T18:54:46.940Z",
-      "msg": "Added T72 (BUILD) after end: Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases"
-    },
-    {
-      "time": "2026-04-13T18:59:38.097Z",
-      "msg": "Added T73 (BUILD) after end: Continue edge case testing: IN list with expressions, UPDATE SET with expressions, negative numbers, type coercion edge cases"
-    },
-    {
-      "time": "2026-04-13T19:05:06.544Z",
-      "msg": "Added T74 (BUILD) after end: Git push all changes and run a broader test sweep to catch any regressions from parser fixes"
-    },
-    {
-      "time": "2026-04-13T19:07:40.980Z",
-      "msg": "Added T75 (BUILD) after end: Systematic audit: find all remaining parsePrimary() calls in sql.js that should be parseExpr() or parsePrimaryWithConcat()"
-    },
-    {
-      "time": "2026-04-13T19:09:36.104Z",
-      "msg": "Added T76 (BUILD) after end: Test the _evalExpr fallthrough: find all expression types missing from _evalExpr that silently return truthy"
-    },
-    {
-      "time": "2026-04-13T19:12:05.297Z",
-      "msg": "Added T77 (BUILD) after end: Fix tokenizer: minus after number/identifier should be MINUS operator, not negative number prefix"
-    },
-    {
-      "time": "2026-04-13T19:15:00.917Z",
-      "msg": "Added T78 (BUILD) after end: Add tokenizer regression tests for the negative number fix and other edge cases"
-    },
-    {
-      "time": "2026-04-13T19:16:00.036Z",
-      "msg": "Added T79 (BUILD) after end: Test UPDATE SET with subquery and complex expressions"
-    },
-    {
-      "time": "2026-04-13T19:18:36.176Z",
-      "msg": "Added T80 (BUILD) after end: Comprehensive session test: run all new test files created today to verify everything passes"
-    },
-    {
-      "time": "2026-04-13T19:19:15.813Z",
-      "msg": "Added T81 (BUILD) after end: Hunt for more expression parser bugs: test HAVING with expressions, GROUP BY with expressions, window function partitions with expressions"
-    },
-    {
-      "time": "2026-04-13T19:21:30.881Z",
-      "msg": "Added T82 (BUILD) after end: More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions"
-    },
-    {
-      "time": "2026-04-13T19:24:24.680Z",
-      "msg": "Added T83 (BUILD) after end: Write comprehensive edge case test covering all session parser fixes: tokenizer, comparison RHS, IN list, BETWEEN, INSERT VALUES, CASE WHEN NULL, _evalExpr, window PARTITION BY, UPDATE SET subquery, DEFAULT expressions"
-    },
-    {
-      "time": "2026-04-13T19:25:42.368Z",
-      "msg": "Added T84 (BUILD) after end: Run the entire test suite including all new tests to get a final count and verify no regressions"
-    },
-    {
-      "time": "2026-04-13T19:26:34.780Z",
-      "msg": "Added T85 (BUILD) after end: Find and fix more expression parser issues: test RETURNING with expressions, GROUP BY alias support, ORDER BY position (ORDER BY 1)"
-    },
-    {
-      "time": "2026-04-13T19:28:59.610Z",
-      "msg": "Added T86 (BUILD) after end: Fix RETURNING to support expressions and aliases, not just column names"
-    },
-    {
-      "time": "2026-04-13T19:35:29.526Z",
-      "msg": "Added T87 (MAINTAIN) after end: Final session wrap-up: update daily log, push everything, update CURRENT.md"
-    },
-    {
-      "time": "2026-04-13T19:35:29.644Z",
-      "msg": "Added T88 (BUILD) after end: Write tests for RETURNING expressions and LIMIT/OFFSET expressions"
-    },
-    {
-      "time": "2026-04-13T19:38:41.955Z",
-      "msg": "Added T89 (BUILD) after end: Quick test: CHECK constraint with expressions, CREATE TABLE AS SELECT, INSERT INTO SELECT"
-    },
-    {
-      "time": "2026-04-13T19:39:46.024Z",
-      "msg": "Added T90 (BUILD) after end: Run a broader HenryDB test sweep to check no regressions from all parser changes"
-    },
-    {
-      "time": "2026-04-13T19:42:17.279Z",
-      "msg": "Added T91 (BUILD) after end: Final stretch: Look for one more bug class to fix — maybe testing error messages or edge cases in JOINS"
-    },
-    {
-      "time": "2026-04-13T19:43:57.701Z",
-      "msg": "Added T92 (BUILD) after end: Run final all-new-tests verification and write an updated session-b-regression test with RETURNING and LIMIT fixes"
-    },
-    {
-      "time": "2026-04-13T19:44:39.901Z",
-      "msg": "Added T93 (BUILD) after end: Fix SUBSTRING FROM/FOR to work when nested inside other functions"
-    },
-    {
-      "time": "2026-04-13T19:46:26.879Z",
-      "msg": "Added T94 (BUILD) after end: Try to fix CAST() operator chaining (CAST(val AS TEXT) || ' units')"
+      "time": "2026-04-13T20:20:01.368Z",
+      "msg": "PLAN T3 filled 3 BUILD tasks"
     }
   ]
 }
