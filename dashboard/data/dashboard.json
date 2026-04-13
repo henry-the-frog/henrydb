@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T21:37:20.665Z",
+  "generated": "2026-04-13T21:51:02.945Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, daily log",
-    "startedAt": "2026-04-13T21:37:20.665Z",
-    "taskId": "T43"
+    "task": "Housekeeping",
+    "startedAt": "2026-04-13T21:51:02.945Z",
+    "taskId": "T56"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2196,83 +2196,195 @@
       {
         "id": "T40",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: implement ORDER BY NULLS FIRST/LAST and window function improvements",
         "task": null,
-        "started": "2026-04-13T21:16:49.926Z"
+        "started": "2026-04-13T21:16:49.926Z",
+        "completed": "2026-04-13T21:16:59.399Z",
+        "duration_ms": 30000,
+        "summary": "Planned: NULLS FIRST/LAST + EXISTS fix + tests"
       },
       {
         "id": "T41",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement ORDER BY NULLS FIRST/LAST syntax in parser and evaluator",
         "plan_ref": "T40",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-13T21:17:08.806Z",
+        "completed": "2026-04-13T21:19:14.531Z",
+        "duration_ms": 180000,
+        "summary": "Fixed NULLS FIRST/LAST parser bug — FIRST was tokenized as KEYWORD not IDENT. All 4 combinations work: ASC/DESC × NULLS FIRST/LAST. No regressions."
       },
       {
         "id": "T49",
         "mode": "BUILD",
         "task": "Fix EXISTS subquery for correlated queries",
-        "status": "upcoming",
-        "plan_ref": "T40"
+        "status": "done",
+        "plan_ref": "T40",
+        "started": "2026-04-13T21:19:28.579Z",
+        "completed": "2026-04-13T21:34:03.221Z",
+        "duration_ms": 1200000,
+        "summary": "Fixed correlated EXISTS subquery. Root cause: decorrelate optimizer isCorrelated() conflated table names with aliases. FROM t t2 had innerTables={t,t2} instead of {t2}, making outer ref t.a appear inner. Fix: only add alias to innerTables. Also enhanced _resolveColumn for qualified names. All 656 test files pass."
       },
       {
         "id": "T50",
         "mode": "BUILD",
         "task": "Write tests for NULLS FIRST/LAST and EXISTS",
-        "status": "upcoming",
-        "plan_ref": "T40"
+        "status": "done",
+        "plan_ref": "T40",
+        "started": "2026-04-13T21:34:23.220Z",
+        "completed": "2026-04-13T21:35:52.026Z",
+        "duration_ms": 120000,
+        "summary": "14 tests for NULLS FIRST/LAST (7) and correlated EXISTS (7). All pass."
       },
       {
         "id": "T42",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Monkey: add alphanumeric identifier support to lexer (allow digits in identifiers after first char)",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-13T21:36:08.380Z",
+        "completed": "2026-04-13T21:37:06.892Z",
+        "duration_ms": 120000,
+        "summary": "Alphanumeric identifiers: digits allowed after first char. add1, x2, count0 all work. 276 tests pass."
       },
       {
         "id": "T43",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, daily log"
+        "status": "done",
+        "task": "Housekeeping: git push, daily log",
+        "started": "2026-04-13T21:37:20.629Z",
+        "completed": "2026-04-13T21:38:08.007Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed both repos, daily log updated. Session running 1h20m, 35+ tasks."
       },
       {
         "id": "T44",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "HenryDB: investigate query plan caching — are we caching prepared statement plans? Test with parameterized queries."
+        "status": "done",
+        "task": "HenryDB: investigate query plan caching — are we caching prepared statement plans? Test with parameterized queries.",
+        "started": "2026-04-13T21:38:19.147Z",
+        "completed": "2026-04-13T21:38:47.517Z",
+        "duration_ms": 60000,
+        "summary": "PREPARE/EXECUTE works correctly with parameterized queries. Plan cache and prepared statements functional. Result cache also exists for SELECT queries."
       },
       {
         "id": "T45",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: implement ORDER BY NULLS FIRST/LAST syntax",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-13T21:39:02.523Z",
+        "completed": "2026-04-13T21:39:02.666Z",
+        "duration_ms": 0,
+        "summary": "Already done in T41."
       },
       {
         "id": "T46",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: improve EXISTS subquery evaluation (currently returns wrong results for correlated EXISTS)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-13T21:39:15.458Z",
+        "completed": "2026-04-13T21:39:15.601Z",
+        "duration_ms": 0,
+        "summary": "Already done in T49."
       },
       {
         "id": "T47",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "End-of-session housekeeping",
+        "started": "2026-04-13T21:39:30.782Z",
+        "completed": "2026-04-13T21:39:30.926Z",
+        "duration_ms": 0,
+        "summary": "Deferred — not end of session, 4.5 hours remain."
+      },
+      {
+        "id": "T51",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What would make HenryDB stand out? What feature would be genuinely impressive for a from-scratch JS database?",
+        "started": "2026-04-13T21:40:05.934Z",
+        "completed": "2026-04-13T21:40:20.314Z",
+        "duration_ms": 60000,
+        "summary": "Standout features: TPC-H validation, WASM browser runtime, JSON operators, or EXPLAIN ANALYZE. TPC-H is most impressive for this session — proves end-to-end completeness."
+      },
+      {
+        "id": "T52",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: implement a TPC-H micro-benchmark (queries 1, 6, 14 — simple but representative)",
+        "task": null,
+        "started": "2026-04-13T21:40:32.526Z"
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "End-of-session housekeeping"
+        "task": "Create TPC-H micro schema (lineitem, part tables) with data generator",
+        "plan_ref": "T52",
+        "project": "henrydb"
+      },
+      {
+        "id": "T59",
+        "mode": "BUILD",
+        "task": "Implement TPC-H Q1 (pricing summary report) and verify correctness",
+        "status": "upcoming",
+        "plan_ref": "T52"
+      },
+      {
+        "id": "T60",
+        "mode": "BUILD",
+        "task": "Implement TPC-H Q6 (revenue forecast) and Q14 (promotion effect) with benchmark timing",
+        "status": "upcoming",
+        "plan_ref": "T52"
+      },
+      {
+        "id": "T54",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Monkey: add while loops to the language (extends beyond Book 1)",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Monkey: add string comparison operators (==, !=, <, >) to VM",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T56",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping"
+      },
+      {
+        "id": "T57",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Monkey: what makes this compiler interesting? Document the architecture for the README."
+      },
+      {
+        "id": "T58",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Monkey: update README with architecture docs (lexer → parser → compiler → VM pipeline)",
+        "project": "monkey-lang"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 44,
-    "blocksTotal": 50,
+    "blocksCompleted": 56,
+    "blocksTotal": 60,
     "modeDistribution": {
-      "THINK": 8,
-      "PLAN": 6,
-      "BUILD": 26,
-      "MAINTAIN": 4
+      "THINK": 10,
+      "PLAN": 7,
+      "BUILD": 33,
+      "MAINTAIN": 6
     }
   },
   "artifacts": [

@@ -490,35 +490,151 @@
     {
       "id": "T43",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, daily log",
-      "started": "2026-04-13T21:37:20.629Z"
+      "started": "2026-04-13T21:37:20.629Z",
+      "completed": "2026-04-13T21:38:08.007Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed both repos, daily log updated. Session running 1h20m, 35+ tasks."
     },
     {
       "id": "T44",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "HenryDB: investigate query plan caching — are we caching prepared statement plans? Test with parameterized queries."
+      "status": "done",
+      "task": "HenryDB: investigate query plan caching — are we caching prepared statement plans? Test with parameterized queries.",
+      "started": "2026-04-13T21:38:19.147Z",
+      "completed": "2026-04-13T21:38:47.517Z",
+      "duration_ms": 60000,
+      "summary": "PREPARE/EXECUTE works correctly with parameterized queries. Plan cache and prepared statements functional. Result cache also exists for SELECT queries."
     },
     {
       "id": "T45",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: implement ORDER BY NULLS FIRST/LAST syntax",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T21:39:02.523Z",
+      "completed": "2026-04-13T21:39:02.666Z",
+      "duration_ms": 0,
+      "summary": "Already done in T41."
     },
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: improve EXISTS subquery evaluation (currently returns wrong results for correlated EXISTS)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T21:39:15.458Z",
+      "completed": "2026-04-13T21:39:15.601Z",
+      "duration_ms": 0,
+      "summary": "Already done in T49."
     },
     {
       "id": "T47",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End-of-session housekeeping",
+      "started": "2026-04-13T21:39:30.782Z",
+      "completed": "2026-04-13T21:39:30.926Z",
+      "duration_ms": 0,
+      "summary": "Deferred — not end of session, 4.5 hours remain."
+    },
+    {
+      "id": "T51",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What would make HenryDB stand out? What feature would be genuinely impressive for a from-scratch JS database?",
+      "started": "2026-04-13T21:40:05.934Z",
+      "completed": "2026-04-13T21:40:20.314Z",
+      "duration_ms": 60000,
+      "summary": "Standout features: TPC-H validation, WASM browser runtime, JSON operators, or EXPLAIN ANALYZE. TPC-H is most impressive for this session — proves end-to-end completeness."
+    },
+    {
+      "id": "T52",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: implement a TPC-H micro-benchmark (queries 1, 6, 14 — simple but representative)",
+      "task": null,
+      "started": "2026-04-13T21:40:32.526Z",
+      "completed": "2026-04-13T21:40:54.447Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 tasks: schema+data gen, Q1, Q6+Q14 with benchmarking."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create TPC-H micro schema (lineitem, part tables) with data generator",
+      "plan_ref": "T52",
+      "project": "henrydb",
+      "started": "2026-04-13T21:40:59.823Z",
+      "completed": "2026-04-13T21:43:27.843Z",
+      "duration_ms": 300000,
+      "summary": "TPC-H micro-benchmark: Q1 24ms (6 groups, 6 aggregates), Q6 13ms (filter+SUM), Q14 works via 2 queries (arithmetic-between-aggregates limitation). 1000 lineitem, 200 parts. All tests pass."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "task": "Implement TPC-H Q1 (pricing summary report) and verify correctness",
+      "status": "done",
+      "plan_ref": "T52",
+      "started": "2026-04-13T21:43:46.477Z",
+      "completed": "2026-04-13T21:43:46.619Z",
+      "duration_ms": 0,
+      "summary": "Already done in T53."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "task": "Implement TPC-H Q6 (revenue forecast) and Q14 (promotion effect) with benchmark timing",
+      "status": "done",
+      "plan_ref": "T52",
+      "started": "2026-04-13T21:43:46.761Z",
+      "completed": "2026-04-13T21:43:46.905Z",
+      "duration_ms": 0,
+      "summary": "Already done in T53."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add while loops to the language (extends beyond Book 1)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:44:02.172Z",
+      "completed": "2026-04-13T21:49:14.342Z",
+      "duration_ms": 300000,
+      "summary": "While loops added to Monkey: lexer keyword, parser, AST node, evaluator, compiler (jump-back), VM. Limitation: needs mutation support for practical use. 285 tests pass."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add string comparison operators (==, !=, <, >) to VM",
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:49:37.441Z",
+      "completed": "2026-04-13T21:50:55.117Z",
+      "duration_ms": 120000,
+      "summary": "Fixed string comparisons in VM: value-based instead of reference identity. ==, !=, <, > all work for strings. 285 tests pass."
+    },
+    {
+      "id": "T56",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-13T21:51:02.909Z"
+    },
+    {
+      "id": "T57",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "End-of-session housekeeping"
+      "task": "Monkey: what makes this compiler interesting? Document the architecture for the README."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: update README with architecture docs (lexer → parser → compiler → VM pipeline)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -694,6 +810,42 @@
     {
       "time": "2026-04-13T21:16:50.068Z",
       "msg": "PLAN T40 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T21:39:49.223Z",
+      "msg": "Added T51 (THINK) after end: What would make HenryDB stand out? What feature would be genuinely impressive for a from-scratch JS database?"
+    },
+    {
+      "time": "2026-04-13T21:39:49.341Z",
+      "msg": "Added T52 (PLAN) after end: HenryDB: implement a TPC-H micro-benchmark (queries 1, 6, 14 — simple but representative)"
+    },
+    {
+      "time": "2026-04-13T21:39:49.459Z",
+      "msg": "Added T53 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-13T21:39:49.578Z",
+      "msg": "Added T54 (BUILD) after end: Monkey: add while loops to the language (extends beyond Book 1)"
+    },
+    {
+      "time": "2026-04-13T21:39:49.696Z",
+      "msg": "Added T55 (BUILD) after end: Monkey: add string comparison operators (==, !=, <, >) to VM"
+    },
+    {
+      "time": "2026-04-13T21:39:49.814Z",
+      "msg": "Added T56 (MAINTAIN) after end: Housekeeping"
+    },
+    {
+      "time": "2026-04-13T21:39:49.953Z",
+      "msg": "Added T57 (THINK) after end: Monkey: what makes this compiler interesting? Document the architecture for the README."
+    },
+    {
+      "time": "2026-04-13T21:39:50.070Z",
+      "msg": "Added T58 (BUILD) after end: Monkey: update README with architecture docs (lexer → parser → compiler → VM pipeline)"
+    },
+    {
+      "time": "2026-04-13T21:40:45.941Z",
+      "msg": "PLAN T52 filled 3 BUILD tasks"
     }
   ]
 }
