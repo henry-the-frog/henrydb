@@ -1023,23 +1023,31 @@
     {
       "id": "T96",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix PK index scan + correlated EXISTS bug (tracked from showcase test)",
       "project": "henrydb",
-      "started": "2026-04-13T22:44:43.588Z"
+      "started": "2026-04-13T22:44:43.588Z",
+      "completed": "2026-04-13T22:47:08.662Z",
+      "duration_ms": 300000,
+      "summary": "Fixed result cache caching correlated subquery results. Cache now skips when _outerRow is set. PK+EXISTS works. Showcase test restored with PRIMARY KEYs. All tests pass."
     },
     {
       "id": "T97",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: update README with current feature list and test count",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T22:47:22.552Z",
+      "completed": "2026-04-13T22:48:34.257Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB README updated: full feature list, 666 test files, TPC-H benchmarks, architecture, example queries."
     },
     {
       "id": "T98",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session housekeeping"
+      "status": "in-progress",
+      "task": "Final session housekeeping",
+      "started": "2026-04-13T22:48:49.966Z"
     }
   ],
   "focusProjects": [
