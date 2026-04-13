@@ -1,6 +1,6 @@
-// transactional-db.js — TransactionalDatabase: ACID-compliant database engine
+// transactional-db.js - TransactionalDatabase: ACID-compliant database engine
 // Integrates: PersistentDatabase + MVCCManager for full transactional support
-// 
+//
 // Architecture: Instead of reimplementing DML, we intercept heap scans to apply
 // MVCC visibility. The regular Database engine runs queries normally, but sees
 // only rows visible to the current transaction's snapshot.
@@ -18,15 +18,15 @@ import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
- * TransactionalDatabase — full ACID SQL database with file-backed storage.
- * 
+ * TransactionalDatabase - full ACID SQL database with file-backed storage.
+ *
  * Usage:
  *   const db = TransactionalDatabase.open('/path/to/db');
- *   
+ *
  *   // Auto-commit mode:
  *   db.execute('CREATE TABLE users (id INT, name TEXT)');
  *   db.execute("INSERT INTO users VALUES (1, 'Alice')");
- *   
+ *
  *   // Explicit transactions via sessions:
  *   const s1 = db.session();
  *   s1.begin();
@@ -92,7 +92,7 @@ export class TransactionalDatabase {
         // Mark txId=1 as committed so recovered rows are visible
         mvcc.committedTxns.add(1);
         if (mvcc._nextTx <= 1) mvcc._nextTx = 2;
-        
+
         // Rebuild primary key indexes from heap data
         for (const [tableName, tableObj] of db.tables) {
           const { heap, schema, indexes } = tableObj;
@@ -143,16 +143,16 @@ export class TransactionalDatabase {
     this._isolationLevel = mvcc instanceof SSIManager ? 'serializable' : 'snapshot';
     this._sessions = new Map();
     this._nextSessionId = 1;
-    
+
     // Active transaction for the current execution context
     // This is set by session.execute() to provide MVCC context during heap scans
     this._activeTx = null;
-    
+
     // Auto-checkpoint: trigger when WAL exceeds this size (bytes)
     // Default: 16MB. Set to 0 to disable.
     this._autoCheckpointBytes = 16 * 1024 * 1024;
     this._checkpointInProgress = false;
-    
+
     // Monkey-patch each table's heap scan to apply MVCC visibility
     this._installScanInterceptors();
   }
@@ -165,7 +165,7 @@ export class TransactionalDatabase {
    */
   execute(sql) {
     const trimmed = sql.trim().toUpperCase();
-    
+
     // DDL and utility: bypass MVCC
     if (this._isDDL(trimmed)) {
       const result = this._db.execute(sql);
@@ -175,7 +175,7 @@ export class TransactionalDatabase {
       }
       return result;
     }
-    
+
     // DML: wrap in auto-commit transaction
     const tx = this._mvcc.begin();
     this._activeTx = tx;
@@ -222,7 +222,7 @@ export class TransactionalDatabase {
    * Checkpoint: flush all dirty pages to data files, save catalog/MVCC state,
    * then truncate the WAL. After checkpoint, recovery will start from scratch
    * (no WAL replay needed since all data is on disk).
-   * 
+   *
    * Only safe when no transactions are in-progress.
    * Returns the WAL size before truncation.
    */
@@ -233,23 +233,23 @@ export class TransactionalDatabase {
         throw new Error('Cannot checkpoint while transactions are in progress');
       }
     }
-    
+
     // 1. Flush all heap pages to disk
     this.flush();
-    
+
     // 2. Save catalog and MVCC state
     this._saveCatalog();
     this._saveMvccState();
-    
+
     // 3. Write checkpoint record to WAL
     this._wal.checkpoint();
-    
+
     // 4. Get WAL size before truncation
     const walSize = this._wal.fileSize;
-    
+
     // 5. Truncate WAL (all data is safely on disk)
     this._wal.truncate();
-    
+
     return { walSizeBefore: walSize };
   }
 
@@ -279,14 +279,14 @@ export class TransactionalDatabase {
     for (const [id, session] of this._sessions) {
       if (session._tx) try { session.rollback(); } catch (e) { /* ignore */ }
     }
-    
-    // Clean up dead rows before persisting — remove old MVCC versions
+
+    // Clean up dead rows before persisting - remove old MVCC versions
     // that have been superseded by committed updates/deletes
     this._compactDeadRows();
-    
+
     this._saveCatalog();
     this._saveMvccState();
-    
+
     // Update lastAppliedLSN after flush
     this.flush();
     const maxLSN = this._wal._flushedLsn || 0;
@@ -296,18 +296,18 @@ export class TransactionalDatabase {
       }
     }
     this._saveCatalog(); // Re-save with updated LSNs
-    
+
     this._wal.close();
     for (const dm of this._diskManagers.values()) dm.close();
   }
-  
+
   _compactDeadRows() {
     const committedTxns = this._mvcc.committedTxns || new Set();
-    
+
     for (const [tableName, vm] of this._versionMaps) {
       const heap = this._heaps.get(tableName);
       if (!heap) continue;
-      
+
       const deadSlots = [];
       for (const [key, ver] of vm) {
         // A row is dead if its xmax is committed (it was deleted or superseded)
@@ -316,7 +316,7 @@ export class TransactionalDatabase {
           deadSlots.push({ pageId, slotIdx });
         }
       }
-      
+
       // Delete dead rows from heap
       for (const { pageId, slotIdx } of deadSlots) {
         try {
@@ -364,7 +364,7 @@ export class TransactionalDatabase {
   _physicalizeDeletesNoWal(tx) {
     // Only safe to physicalize if no other active transactions could see these rows
     const hasOtherActive = this._mvcc.activeTxns.size > 0;
-    
+
     for (const key of tx.writeSet) {
       if (!key.endsWith(':del')) continue;
       const parts = key.replace(/:del$/, '').split(':');
@@ -374,7 +374,7 @@ export class TransactionalDatabase {
       if (isNaN(pageId) || isNaN(slotIdx)) continue;
 
       if (hasOtherActive) {
-        // Other transactions active — can't physically delete yet.
+        // Other transactions active - can't physically delete yet.
         // Keep the version map entry so MVCC filtering still works.
         // VACUUM will clean up later.
         continue;
@@ -402,7 +402,7 @@ export class TransactionalDatabase {
   vacuum() {
     // First, run MVCC garbage collection on version chains
     const gcResult = this._mvcc.gc();
-    
+
     const horizon = this._mvcc.computeXminHorizon();
     const results = {};
     for (const [name, vm] of this._versionMaps) {
@@ -461,23 +461,23 @@ export class TransactionalDatabase {
   }
 
   // --- Scan interceptors ---
-  
+
   _installScanInterceptors() {
     // For each table, intercept heap.scan() and heap.delete() for MVCC
     for (const [tableName, tableObj] of this._db.tables) {
       const heap = tableObj.heap;
       if (heap._mvccWrapped) continue;
-      
+
       const origScan = heap.scan.bind(heap);
       const origDelete = heap.delete.bind(heap);
       const tdb = this;
       const name = tableName;
-      
+
       // Intercept scan: filter by MVCC visibility
       heap.scan = function*() {
         const tx = tdb._activeTx;
         if (!tx) {
-          // No active transaction — show all non-deleted rows
+          // No active transaction - show all non-deleted rows
           for (const row of origScan()) {
             const vm = tdb._versionMaps.get(name);
             if (vm) {
@@ -491,15 +491,15 @@ export class TransactionalDatabase {
           }
           return;
         }
-        
+
         const vm = tdb._versionMaps.get(name);
         const visMap = tdb._visibilityMap;
         for (const row of origScan()) {
           if (!vm) { yield row; continue; }
-          
+
           // Visibility map optimization: if page is all-visible, skip MVCC check
           if (visMap.isAllVisible(name, row.pageId)) {
-            // Page is known to be all-visible — yield directly
+            // Page is known to be all-visible - yield directly
             // Still record read for SSI tracking
             if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
               const key = `${row.pageId}:${row.slotIdx}`;
@@ -508,18 +508,18 @@ export class TransactionalDatabase {
             yield row;
             continue;
           }
-          
+
           const key = `${row.pageId}:${row.slotIdx}`;
           const ver = vm.get(key);
-          
+
           if (!ver) {
             yield row;
             continue;
           }
-          
+
           const created = tdb._mvcc.isVisible(ver.xmin, tx);
           const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
-          
+
           if (created && !deleted) {
             // SSI tracking: record the read for serializable isolation
             if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
@@ -529,12 +529,12 @@ export class TransactionalDatabase {
           }
         }
       };
-      
+
       // Intercept delete: in MVCC mode, mark xmax instead of physical delete
       heap.delete = function(pageId, slotIdx) {
         const tx = tdb._activeTx;
         if (!tx) {
-          // No active transaction — physical delete + mark version
+          // No active transaction - physical delete + mark version
           const vm = tdb._versionMaps.get(name);
           if (vm) {
             const key = `${pageId}:${slotIdx}`;
@@ -543,7 +543,7 @@ export class TransactionalDatabase {
           }
           return origDelete(pageId, slotIdx);
         }
-        
+
         // MVCC delete: mark xmax, don't physically remove
         const vm = tdb._versionMaps.get(name);
         if (vm) {
@@ -569,9 +569,9 @@ export class TransactionalDatabase {
             tx.undoLog.push(() => { ver.xmax = oldXmax; });
           }
         }
-        // Don't physically delete — the row stays in the heap for other snapshots
+        // Don't physically delete - the row stays in the heap for other snapshots
       };
-      
+
       heap._mvccWrapped = true;
       heap._origScan = origScan;
       heap._origDelete = origDelete;
@@ -583,15 +583,15 @@ export class TransactionalDatabase {
     for (const [tableName, tableObj] of this._db.tables) {
       const vm = this._versionMaps.get(tableName);
       if (!vm) continue;
-      
+
       // Use the original (unwrapped) scan to see all physical rows
       const heap = tableObj.heap;
       const scan = heap._origScan || heap.scan.bind(heap);
-      
+
       for (const { pageId, slotIdx } of scan()) {
         const key = `${pageId}:${slotIdx}`;
         if (!vm.has(key)) {
-          // New row — created by this transaction
+          // New row - created by this transaction
           vm.set(key, { xmin: tx.txId, xmax: 0 });
           tx.writeSet.add(`${tableName}:${key}`);
           // Invalidate visibility map for this page
@@ -610,18 +610,18 @@ export class TransactionalDatabase {
     for (const key of tx.writeSet) {
       // Skip delete markers (handled by undo log)
       if (key.endsWith(':del')) continue;
-      
+
       const parts = key.split(':');
       const tableName = parts[0];
       const pageId = parseInt(parts[1]);
       const slotIdx = parseInt(parts[2]);
       if (isNaN(pageId) || isNaN(slotIdx)) continue;
-      
+
       const vm = this._versionMaps.get(tableName);
       if (vm) {
         const ver = vm.get(`${pageId}:${slotIdx}`);
         if (ver && ver.xmin === tx.txId) {
-          // Row was created by this transaction — physically remove it
+          // Row was created by this transaction - physically remove it
           const tableObj = this._db.tables.get(tableName);
           if (tableObj && tableObj.heap._origDelete) {
             try { tableObj.heap._origDelete(pageId, slotIdx); } catch (e) { /* ignore */ }
@@ -630,10 +630,12 @@ export class TransactionalDatabase {
         }
       }
     }
-    // Execute undo log (restores xmax values for deletes)
+    // Execute undo log (restores xmax values for deletes and UPDATE rollbacks)
     for (let i = tx.undoLog.length - 1; i >= 0; i--) {
       try { tx.undoLog[i](); } catch (e) { /* ignore */ }
     }
+    // Clear undo log to prevent double-execution (MVCC.rollback also runs it)
+    tx.undoLog.length = 0;
   }
 
   // Track DELETE operations by marking version xmax
@@ -686,7 +688,7 @@ export class TransactionalDatabase {
 }
 
 /**
- * TransactionSession — connection-level session with explicit transaction control.
+ * TransactionSession - connection-level session with explicit transaction control.
  */
 export class TransactionSession {
   constructor(id, tdb) {
@@ -716,13 +718,13 @@ export class TransactionSession {
     if (!this._tx) throw new Error('No transaction in progress');
     const sp = this._savepoints.get(name);
     if (!sp) throw new Error(`Savepoint "${name}" does not exist`);
-    
+
     // Replay undo log from current position back to savepoint
     for (let i = this._tx.undoLog.length - 1; i >= sp.undoLogLen; i--) {
       try { this._tx.undoLog[i](); } catch (e) { /* ignore */ }
     }
     this._tx.undoLog.length = sp.undoLogLen;
-    
+
     // Physically remove rows added after savepoint (new inserts/updates)
     const addedKeys = new Set();
     for (const key of this._tx.writeSet) {
@@ -736,7 +738,7 @@ export class TransactionSession {
       const pageId = parseInt(parts[1]);
       const slotIdx = parseInt(parts[2]);
       if (isNaN(pageId) || isNaN(slotIdx)) continue;
-      
+
       const vm = this._tdb._versionMaps.get(tableName);
       if (vm) {
         const ver = vm.get(`${pageId}:${slotIdx}`);
@@ -758,10 +760,10 @@ export class TransactionSession {
         }
       }
     }
-    
+
     // Restore writeSet to savepoint state
     this._tx.writeSet = new Set(sp.writeSetSnapshot);
-    
+
     // Remove any savepoints created after this one
     const names = [...this._savepoints.keys()];
     let found = false;
@@ -769,7 +771,7 @@ export class TransactionSession {
       if (n === name) { found = true; continue; }
       if (found) this._savepoints.delete(n);
     }
-    
+
     return { type: 'OK', message: `ROLLBACK TO SAVEPOINT ${name}` };
   }
 
@@ -791,10 +793,10 @@ export class TransactionSession {
     // Physicalize committed deletes (no additional WAL)
     this._tdb._physicalizeDeletesNoWal(this._tx);
     this._tx = null;
-    
+
     // Auto-checkpoint if WAL exceeds threshold
     this._tdb._maybeAutoCheckpoint();
-    
+
     return { type: 'OK', message: 'COMMIT' };
   }
 
@@ -810,13 +812,13 @@ export class TransactionSession {
   execute(sql) {
     if (this._closed) throw new Error('Session is closed');
     const trimmed = sql.trim().toUpperCase();
-    
+
     if (trimmed === 'BEGIN' || trimmed === 'BEGIN TRANSACTION' || trimmed === 'START TRANSACTION') {
       return this.begin();
     }
     if (trimmed === 'COMMIT') return this.commit();
     if (trimmed === 'ROLLBACK' || trimmed === 'ABORT') return this.rollback();
-    
+
     // Savepoint support
     if (trimmed.startsWith('SAVEPOINT ')) {
       const name = sql.trim().replace(/^SAVEPOINT\s+/i, '').replace(/;$/, '').trim();
@@ -830,7 +832,7 @@ export class TransactionSession {
       const name = sql.trim().replace(/^RELEASE\s+(?:SAVEPOINT\s+)?/i, '').replace(/;$/, '').trim();
       return this.releaseSavepoint(name);
     }
-    
+
     // DDL: bypass MVCC
     if (this._tdb._isDDL(trimmed)) {
       const result = this._tdb._db.execute(sql);
@@ -840,12 +842,12 @@ export class TransactionSession {
       }
       return result;
     }
-    
+
     // DML with transaction context
     if (this._tx) {
       // FOR UPDATE: mark selected rows in writeSet
       const isForUpdate = trimmed.includes('FOR UPDATE') || trimmed.includes('FOR SHARE');
-      
+
       // Use explicit transaction
       const prevTx = this._tdb._activeTx;
       this._tdb._activeTx = this._tx;
@@ -854,10 +856,50 @@ export class TransactionSession {
       // causes false SSI dependencies on rows that don't match)
       const isModify = trimmed.startsWith('UPDATE') || trimmed.startsWith('DELETE');
       if (isModify) this._tx.suppressReadTracking = true;
+      // For UPDATE: save old row values for rollback
+      const isUpdate = trimmed.startsWith('UPDATE');
+      let updateSnapshot = null;
+      if (isUpdate) {
+        updateSnapshot = this._snapshotUpdateRows(sql);
+      }
       try {
         const result = this._tdb._db.execute(sql);
         // Track new rows immediately
         this._tdb._trackNewRows(this._tx);
+        // For UPDATE: save undo information to restore old values on rollback
+        if (isUpdate && updateSnapshot && updateSnapshot.rows.length > 0) {
+          const snap = updateSnapshot;
+          this._tx.undoLog.push(() => {
+            const table = this._tdb._db.tables.get(snap.tableName);
+            if (!table) return;
+            // Clear result cache - stale results from during the transaction
+            if (this._tdb._db._resultCache) {
+              this._tdb._db._resultCache.clear();
+            }
+            // Clear all current rows from the table
+            const toDelete = [];
+            for (const { pageId, slotIdx } of table.heap.scan()) {
+              toDelete.push({ pageId, slotIdx });
+            }
+            for (const { pageId, slotIdx } of toDelete) {
+              try { table.heap.delete(pageId, slotIdx); } catch (e) { /* ignore */ }
+            }
+            // Clear and rebuild indexes
+            for (const [colName, index] of table.indexes) {
+              // Can't clear BPlusTree easily - rebuild from scratch
+            }
+            // Re-insert all old rows
+            for (const values of snap.rows) {
+              const rid = table.heap.insert(values);
+              for (const [colName, index] of table.indexes) {
+                const colIdx = snap.schema.findIndex(c => c.name === colName);
+                if (colIdx >= 0) {
+                  index.insert(values[colIdx], rid);
+                }
+              }
+            }
+          });
+        }
         // For UPDATE/DELETE, record reads only for actually modified rows
         if (isModify && this._tdb._mvcc.recordRead) {
           this._tx.suppressReadTracking = false;
@@ -909,8 +951,8 @@ export class TransactionSession {
         this._tdb._setHeapTxId(prevTx ? prevTx.txId : 0);
       }
     }
-    
-    // No explicit transaction — auto-commit
+
+    // No explicit transaction - auto-commit
     return this._tdb.execute(sql);
   }
 
@@ -918,6 +960,31 @@ export class TransactionSession {
     if (this._tx) try { this.rollback(); } catch (e) { /* ignore */ }
     this._tdb._sessions.delete(this.id);
     this._closed = true;
+  }
+
+  _snapshotUpdateRows(sql) {
+    // Parse UPDATE table to find table name
+    const tableMatch = sql.match(/UPDATE\s+(\w+)/i);
+    if (!tableMatch) return null;
+    const tableName = tableMatch[1];
+    const table = this._tdb._db.tables.get(tableName);
+    if (!table) return null;
+
+    // Snapshot VISIBLE rows (through MVCC) that existed BEFORE this transaction
+    const txId = this._tx.txId;
+    const vm = this._tdb._versionMaps.get(tableName);
+    const snapshot = [];
+    // Use the regular (MVCC-filtered) scan to only get visible rows
+    for (const { pageId, slotIdx, values } of table.heap.scan()) {
+      if (vm) {
+        const key = `${pageId}:${slotIdx}`;
+        const ver = vm.get(key);
+        // Skip rows created by this transaction — they'll be rolled back separately
+        if (ver && ver.xmin === txId) continue;
+      }
+      snapshot.push([...values]);
+    }
+    return { tableName, rows: snapshot, schema: table.schema };
   }
 
   _extractTableName(sql) {
