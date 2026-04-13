@@ -1271,9 +1271,63 @@
     {
       "id": "T108",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Evening housekeeping + git push",
-      "started": "2026-04-13T03:28:45.813Z"
+      "started": "2026-04-13T03:28:45.813Z",
+      "completed": "2026-04-13T03:30:14.853Z",
+      "duration_ms": 120000,
+      "summary": "Evening housekeeping: updated daily log with Session C summary, git push to henrydb remote, updated CURRENT.md to session-ended."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix BTree column case normalization — column names uppercased in BTree engine output",
+      "project": "henrydb",
+      "started": "2026-04-13T03:30:38.128Z",
+      "completed": "2026-04-13T03:33:24.606Z",
+      "duration_ms": 300000,
+      "summary": "Fixed column case normalization: SQL keywords as column names (first, last, name) were uppercased in output. One-line fix: use originalValue instead of value in parseSelectColumn. 16/16 string-functions tests now pass (was 9/16). 349/349 broader regression."
+    },
+    {
+      "id": "T121",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run final test sweep on previously-failing batch 7 to measure improvement",
+      "project": "henrydb",
+      "started": "2026-04-13T03:33:40.960Z",
+      "completed": "2026-04-13T03:35:01.709Z",
+      "duration_ms": 300000,
+      "summary": "Final test sweep: batch 7 down from 22→10 failures, batch 3 down from 5→2. Estimated total suite: ~99.66% pass rate (up from 99.37%). ~20 additional tests fixed."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix push-800 LIKE and LOWER failures now that column case is fixed",
+      "project": "henrydb",
+      "started": "2026-04-13T03:35:24.369Z",
+      "completed": "2026-04-13T03:38:21.155Z",
+      "duration_ms": 120000,
+      "summary": "push-800 already passing after column case fix. Also fixed LIKE to be case-insensitive (SQLite-compatible). 63/63 string tests passing."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix EquiWidthHistogram import mismatch (pre-existing test failure)",
+      "project": "henrydb",
+      "started": "2026-04-13T03:38:44.109Z",
+      "completed": "2026-04-13T03:41:39.417Z",
+      "duration_ms": 300000,
+      "summary": "Fixed EquiWidthHistogram import mismatch by adding class wrapper. Small datasets skip MCV extraction to preserve bucket count. 2/2 histogram tests passing, 17/18 estimation tests passing (remaining is accuracy issue)."
+    },
+    {
+      "id": "T124",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session wrap-up: update daily log, git push, CURRENT.md",
+      "started": "2026-04-13T03:42:01.519Z"
     }
   ],
   "focusProjects": [
@@ -1769,6 +1823,26 @@
     {
       "time": "2026-04-13T03:27:26.620Z",
       "msg": "Moved T108 after T119"
+    },
+    {
+      "time": "2026-04-13T03:30:28.410Z",
+      "msg": "Added T120 (BUILD) after end: Fix BTree column case normalization — column names uppercased in BTree engine output"
+    },
+    {
+      "time": "2026-04-13T03:33:40.727Z",
+      "msg": "Added T121 (EXPLORE) after end: Run final test sweep on previously-failing batch 7 to measure improvement"
+    },
+    {
+      "time": "2026-04-13T03:35:24.112Z",
+      "msg": "Added T122 (BUILD) after end: Fix push-800 LIKE and LOWER failures now that column case is fixed"
+    },
+    {
+      "time": "2026-04-13T03:38:43.876Z",
+      "msg": "Added T123 (BUILD) after end: Fix EquiWidthHistogram import mismatch (pre-existing test failure)"
+    },
+    {
+      "time": "2026-04-13T03:42:01.285Z",
+      "msg": "Added T124 (MAINTAIN) after end: Final session wrap-up: update daily log, git push, CURRENT.md"
     }
   ]
 }
