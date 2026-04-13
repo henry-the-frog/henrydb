@@ -2606,6 +2606,7 @@ export class Database {
         if (!this._evalExpr(pushdownFilter, rightRow)) continue;
       }
       const keyVal = values[rightKeyIdx];
+      if (keyVal == null) continue; // NULL keys never match in SQL
       const keyStr = String(keyVal);
       if (!hashMap.has(keyStr)) hashMap.set(keyStr, []);
       hashMap.get(keyStr).push(values);
@@ -2632,8 +2633,8 @@ export class Database {
         }
       }
 
-      const keyStr = String(leftVal);
-      const matches = hashMap.get(keyStr);
+      const keyStr = leftVal == null ? null : String(leftVal);
+      const matches = keyStr != null ? hashMap.get(keyStr) : undefined;
       let matched = false;
 
       if (matches) {
