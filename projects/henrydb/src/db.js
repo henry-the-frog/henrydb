@@ -4714,6 +4714,12 @@ export class Database {
           const baseName = col.name.includes('.') ? col.name.split('.').pop() : col.name;
           const name = col.alias || baseName;
           result[name] = this._resolveColumn(col.name, groupRows[0]);
+        } else if (col.type === 'expression') {
+          // Expression columns (CASE, arithmetic, etc.) — evaluate with aggregate support
+          const name = col.alias || 'expr';
+          const expr = col.expr;
+          // Check if expression contains aggregate references — if so, compute them
+          result[name] = this._evalGroupExpr(expr, groupRows, result, computeAgg);
         }
       }
 
@@ -5052,6 +5058,74 @@ export class Database {
     // String column name — try direct lookup first, then _resolveColumn
     if (row[column] !== undefined) return row[column];
     return this._resolveColumn(column, row);
+  }
+
+  /**
+   * Evaluate an expression in GROUP BY context, resolving aggregate sub-expressions.
+   */
+  _evalGroupExpr(expr, groupRows, result, computeAgg) {
+    if (!expr) return null;
+    if (expr.type === 'literal') return expr.value;
+    if (expr.type === 'column_ref') {
+      // Try result first (already computed group-by / aggregate columns)
+      if (result[expr.name] !== undefined) return result[expr.name];
+      return this._resolveColumn(expr.name, groupRows[0]);
+    }
+    if (expr.type === 'aggregate_expr') {
+      return computeAgg(expr.func, expr.arg, expr.distinct);
+    }
+    if (expr.type === 'case_expr') {
+      for (const { condition, result: condResult } of expr.whens) {
+        if (this._evalGroupCond(condition, groupRows, result, computeAgg)) {
+          return this._evalGroupExpr(condResult, groupRows, result, computeAgg);
+        }
+      }
+      return expr.elseResult ? this._evalGroupExpr(expr.elseResult, groupRows, result, computeAgg) : null;
+    }
+    if (expr.type === 'arith') {
+      const left = this._evalGroupExpr(expr.left, groupRows, result, computeAgg);
+      const right = this._evalGroupExpr(expr.right, groupRows, result, computeAgg);
+      if (left == null || right == null) return null;
+      switch (expr.op) {
+        case '+': return left + right;
+        case '-': return left - right;
+        case '*': return left * right;
+        case '/': return right === 0 ? null : left / right;
+        case '%': return left % right;
+      }
+    }
+    if (expr.type === 'unary_minus') {
+      const val = this._evalGroupExpr(expr.operand, groupRows, result, computeAgg);
+      if (val == null) return null;
+      return val === 0 ? 0 : -val;
+    }
+    if (expr.type === 'function_call' || expr.type === 'function') {
+      const args = (expr.args || []).map(a => this._evalGroupExpr(a, groupRows, result, computeAgg));
+      return this._evalFunction(expr.func, args.map(v => ({ type: 'literal', value: v })), groupRows[0]);
+    }
+    // Fallback: try regular eval on first row
+    return this._evalValue(expr, groupRows[0]);
+  }
+
+  _evalGroupCond(cond, groupRows, result, computeAgg) {
+    if (!cond) return true;
+    if (cond.type === 'COMPARE') {
+      const left = this._evalGroupExpr(cond.left, groupRows, result, computeAgg);
+      const right = this._evalGroupExpr(cond.right, groupRows, result, computeAgg);
+      switch (cond.op) {
+        case 'EQ': case '=': return left === right;
+        case 'NE': case '!=': case '<>': return left !== right;
+        case 'LT': case '<': return left < right;
+        case 'GT': case '>': return left > right;
+        case 'LE': case '<=': return left <= right;
+        case 'GE': case '>=': return left >= right;
+      }
+    }
+    if (cond.type === 'AND') return this._evalGroupCond(cond.left, groupRows, result, computeAgg) && this._evalGroupCond(cond.right, groupRows, result, computeAgg);
+    if (cond.type === 'OR') return this._evalGroupCond(cond.left, groupRows, result, computeAgg) || this._evalGroupCond(cond.right, groupRows, result, computeAgg);
+    if (cond.type === 'NOT') return !this._evalGroupCond(cond.expr, groupRows, result, computeAgg);
+    // Fallback: eval as expression
+    return !!this._evalGroupExpr(cond, groupRows, result, computeAgg);
   }
 
   _resolveColumn(name, row) {

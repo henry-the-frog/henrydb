@@ -614,6 +614,37 @@ export function parse(sql) {
       }
 
       let alias = null;
+      // Check for arithmetic after aggregate: SUM(a) * 100 / SUM(b)
+      let node = { type: 'aggregate', func, arg, distinct, ...aggExtra };
+      if (['PLUS', 'MINUS', 'SLASH', 'MOD'].includes(peek().type) || (peek().type === '*' && tokens[pos+1]?.type !== ')')) {
+        // Parse arithmetic with the aggregate as left operand
+        let left = { type: 'aggregate_expr', func, arg: typeof arg === 'string' ? { type: 'column_ref', name: arg } : (arg === '*' ? '*' : arg), distinct };
+        // Handle operator precedence
+        while (true) {
+          const t = peek().type;
+          if (t === '*' && tokens[pos+1]?.type !== ')') {
+            advance(); const right = parsePrimary(); left = { type: 'arith', op: '*', left, right };
+          } else if (t === 'SLASH') {
+            advance(); const right = parsePrimary(); left = { type: 'arith', op: '/', left, right };
+          } else if (t === 'MOD') {
+            advance(); const right = parsePrimary(); left = { type: 'arith', op: '%', left, right };
+          } else if (t === 'PLUS' || t === 'MINUS') {
+            const op = t === 'PLUS' ? '+' : '-';
+            advance();
+            let right = parsePrimary();
+            while (true) {
+              const rt = peek().type;
+              if (rt === '*' && tokens[pos+1]?.type !== ')') { advance(); const rr = parsePrimary(); right = { type: 'arith', op: '*', left: right, right: rr }; }
+              else if (rt === 'SLASH') { advance(); const rr = parsePrimary(); right = { type: 'arith', op: '/', left: right, right: rr }; }
+              else if (rt === 'MOD') { advance(); const rr = parsePrimary(); right = { type: 'arith', op: '%', left: right, right: rr }; }
+              else break;
+            }
+            left = { type: 'arith', op, left, right };
+          } else break;
+        }
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr: left, alias };
+      }
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'aggregate', func, arg, distinct, alias, ...aggExtra };
     }
