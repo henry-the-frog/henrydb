@@ -4755,9 +4755,12 @@ export class Database {
   _selectWithGroupBy(ast, rows) {
     // Build alias→expression map from SELECT columns
     const aliasMap = new Map();
+    // Also build alias→column name map for simple renames (name AS person)
+    const columnAliasMap = new Map();
     for (const col of ast.columns) {
       if (col.alias) {
-        if (col.type === 'expression' && col.expr) aliasMap.set(col.alias, col.expr);
+        if (col.type === 'column') columnAliasMap.set(col.alias, col.name);
+        else if (col.type === 'expression' && col.expr) aliasMap.set(col.alias, col.expr);
         else if (col.type === 'function') aliasMap.set(col.alias, col);
         else if (col.type === 'case') aliasMap.set(col.alias, col);
       }
@@ -4772,6 +4775,10 @@ export class Database {
           if (expr.type === 'function') return this._evalFunction(expr.func, expr.args, row);
           if (expr.type === 'case') return this._evalCase(expr, row);
           return this._evalValue(expr, row);
+        }
+        // Simple column alias (e.g., name AS person → resolve to name)
+        if (columnAliasMap.has(col)) {
+          return this._resolveColumn(columnAliasMap.get(col), row);
         }
         return this._resolveColumn(col, row);
       }
@@ -4801,6 +4808,11 @@ export class Database {
             if (expr.type === 'function') val = this._evalFunction(expr.func, expr.args, groupRows[0]);
             else if (expr.type === 'case') val = this._evalCase(expr, groupRows[0]);
             else val = this._evalValue(expr, groupRows[0]);
+            result[col] = val;
+          } else if (columnAliasMap.has(col)) {
+            // Simple column alias (name AS person) — resolve to real column, use alias as output key
+            const realCol = columnAliasMap.get(col);
+            const val = this._resolveColumn(realCol, groupRows[0]);
             result[col] = val;
           } else {
             const val = this._resolveColumn(col, groupRows[0]);
