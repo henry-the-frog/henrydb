@@ -122,49 +122,245 @@
       "id": "T17",
       "mode": "BUILD",
       "task": "Hunt remaining test failures: run batches of test files, fix what's broken",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T7",
-      "started": "2026-04-13T20:29:42.696Z"
+      "started": "2026-04-13T20:29:42.696Z",
+      "completed": "2026-04-13T20:39:12.091Z",
+      "duration_ms": 600000,
+      "summary": "Hunted remaining failures: ACID compliance concurrent readers (stale result cache after DML) — FIXED. Ran all 656 test files individually with 10s timeout — 0 failures found. Estimated 100% pass rate."
     },
     {
       "id": "T18",
       "mode": "BUILD",
       "task": "Run full regression sweep to verify quality",
-      "status": "upcoming",
-      "plan_ref": "T7"
+      "status": "done",
+      "plan_ref": "T7",
+      "started": "2026-04-13T20:39:23.066Z",
+      "completed": "2026-04-13T20:39:23.208Z",
+      "duration_ms": 0,
+      "summary": "Already done during T17 — all 656 test files passed individually."
     },
     {
       "id": "T9",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping"
+      "status": "done",
+      "task": "Mid-session housekeeping",
+      "started": "2026-04-13T20:39:32.819Z",
+      "completed": "2026-04-13T20:40:06.568Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, daily log updated, CURRENT.md updated."
     },
     {
       "id": "T10",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Monkey lang: what's the hardest remaining problem? WASM closures, GC, or language feature depth?"
+      "status": "done",
+      "task": "Monkey lang: what's the hardest remaining problem? WASM closures, GC, or language feature depth?",
+      "started": "2026-04-13T20:40:18.333Z",
+      "completed": "2026-04-13T20:41:08.545Z",
+      "duration_ms": 120000,
+      "summary": "Direction: Monkey bytecode compiler + VM (Book 2). Natural next step from tree-walking interpreter. Will implement: bytecode instruction set, stack VM, compiler from AST to bytecode, symbol tables."
     },
     {
       "id": "T11",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey lang improvement: pick one deep feature to implement",
-      "task": null
+      "task": null,
+      "started": "2026-04-13T20:41:21.507Z",
+      "completed": "2026-04-13T20:41:44.177Z",
+      "duration_ms": 120000,
+      "summary": "Planned 8 BUILD tasks for Monkey bytecode compiler + VM. Steps: bytecode defs → compiler → VM → conditionals → globals → data structures → functions/closures → parity tests."
     },
     {
       "id": "T12",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement bytecode instruction set (code.js): opcodes, make, lookup, disassemble",
       "plan_ref": "T11",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T20:41:56.083Z",
+      "completed": "2026-04-13T20:43:11.693Z",
+      "duration_ms": 300000,
+      "summary": "Bytecode instruction set (code.js): 30 opcodes, make/readOperands/disassemble/concatInstructions. 12 tests pass."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Implement compiler: AST → bytecode. Handle integer literals, infix expressions, booleans",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:43:21.093Z",
+      "completed": "2026-04-13T20:45:12.929Z",
+      "duration_ms": 600000,
+      "summary": "Bytecode compiler (compiler.js): compiles all AST nodes to bytecode. Handles int/string/bool literals, infix/prefix, conditionals, let statements, arrays, hashes, functions, closures. SymbolTable with 5 scopes. 32 tests pass."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Implement stack VM: execute bytecodes, operand stack, integer arithmetic + comparisons",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:45:25.232Z",
+      "completed": "2026-04-13T20:47:26.245Z",
+      "duration_ms": 600000,
+      "summary": "Stack VM (vm.js): complete bytecode execution engine. Integer arithmetic, booleans, conditionals, globals/locals, strings, arrays, hashes, functions, closures, recursion (fibonacci), builtins. 89 tests pass."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Add conditionals and jumps to compiler + VM (if/else)",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:47:40.475Z",
+      "completed": "2026-04-13T20:47:56.557Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T19+T20."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Add global bindings: let statements, identifier resolution",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:47:40.621Z",
+      "completed": "2026-04-13T20:48:04.760Z",
+      "duration_ms": 0,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "Add string, array, hash support in compiler + VM",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:47:40.765Z",
+      "completed": "2026-04-13T20:48:09.974Z",
+      "duration_ms": 0,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Add function compilation: OpCall, OpReturn, local bindings, closures",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:47:40.907Z",
+      "completed": "2026-04-13T20:48:15.029Z",
+      "duration_ms": 0,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Test parity: verify compiler+VM matches tree-walker for all existing test cases",
+      "status": "done",
+      "plan_ref": "T11",
+      "started": "2026-04-13T20:48:26.955Z",
+      "completed": "2026-04-13T20:51:29.742Z",
+      "duration_ms": 300000,
+      "summary": "84 parity tests: compiler+VM matches tree-walker for all test cases. Fixed top-level return bug. Total: 257 tests pass. Git pushed."
     },
     {
       "id": "T13",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End-of-session housekeeping",
+      "started": "2026-04-13T20:51:46.199Z",
+      "completed": "2026-04-13T20:51:46.342Z",
+      "duration_ms": 0,
+      "summary": "Deferred - not end of session yet, 5+ hours remain."
+    },
+    {
+      "id": "T26",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Monkey VM performance: benchmark compiler+VM vs tree-walker. How much faster is the bytecode path? What are the bottlenecks?",
+      "started": "2026-04-13T20:52:14.259Z",
+      "completed": "2026-04-13T20:52:46.498Z",
+      "duration_ms": 120000,
+      "summary": "VM is 2.1x faster than tree-walker on fibonacci(30): 1131ms vs 2322ms. Consistent 2x across fib(25) too. Bottleneck: per-opcode switch dispatch + MonkeyInteger allocation. Optimizations possible: direct threading, constant folding, tail calls."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add VM benchmark: fibonacci(35), array processing, string ops. Compare compiler+VM vs tree-walker speed.",
+      "project": "monkey-lang",
+      "started": "2026-04-13T20:52:55.708Z",
+      "completed": "2026-04-13T20:55:59.156Z",
+      "duration_ms": 600000,
+      "summary": "VM benchmark suite: 2.5x speedup on fib(25), small programs have VM overhead. Fixed CRITICAL let-binding compilation order bug — value now compiled before symbol definition, fixes counter closure semantics. Also fixed via defineFunctionName for recursive functions. Stack size increased to 8192. All 257 tests pass."
+    },
+    {
+      "id": "T28",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: What's the next deep architectural improvement? File-backed integration, WAL-based recovery testing, or query plan caching?",
+      "started": "2026-04-13T20:56:09.778Z",
+      "completed": "2026-04-13T20:56:22.086Z",
+      "duration_ms": 60000,
+      "summary": "File-backed persistence stack exists and is integrated in TransactionalDatabase. Next valuable work: adversarial query stress testing to find more bugs."
+    },
+    {
+      "id": "T29",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: adversarial SQL queries — craft intentionally tricky queries that stress edge cases",
+      "task": null,
+      "started": "2026-04-13T20:56:31.228Z",
+      "completed": "2026-04-13T21:02:30.656Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed nested parenthesized expression parser bug. parseComparison had broken paren handler — now defers to parsePrimary. ((1+2)*3) and ((((((1+2)*3)-4)/5)+6)*7) now work. Also identified: self-join column ambiguity, EXISTS subquery, IN with NULL. 656 test files pass."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix parser: nested parenthesized expressions in parseComparison (DONE)",
+      "plan_ref": "T29",
+      "project": "henrydb",
+      "started": "2026-04-13T21:02:54.164Z",
+      "completed": "2026-04-13T21:02:54.307Z",
+      "duration_ms": 0,
+      "summary": "Already done during T29 PLAN."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Write nested-paren and adversarial query test suite",
+      "status": "done",
+      "plan_ref": "T29",
+      "started": "2026-04-13T21:03:06.607Z",
+      "completed": "2026-04-13T21:04:07.961Z",
+      "duration_ms": 300000,
+      "summary": "35 adversarial query tests: nested parens, NULL handling, aggregate edge cases, subqueries, UNION, CTEs, UPDATE/DELETE edge cases, expression ORDER BY, complex boolean logic. All pass."
+    },
+    {
+      "id": "T31",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session housekeeping: daily log, git push, CURRENT.md",
+      "started": "2026-04-13T21:04:22.862Z"
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "End-of-session housekeeping"
+      "task": "Monkey: add REPL with --engine flag to switch between tree-walker and compiler+VM",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T33",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What's the most interesting edge case in the Monkey compiler? Test closures-over-closures, mutual recursion, tail call patterns."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: stress test the compiler+VM with pathological programs (deep recursion, huge arrays, many closures)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -240,6 +436,50 @@
     {
       "time": "2026-04-13T20:29:10.747Z",
       "msg": "PLAN T7 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T20:41:36.877Z",
+      "msg": "PLAN T11 filled 8 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T20:52:02.478Z",
+      "msg": "Added T26 (THINK) after end: Monkey VM performance: benchmark compiler+VM vs tree-walker. How much faster is the bytecode path? What are the bottlenecks?"
+    },
+    {
+      "time": "2026-04-13T20:52:02.611Z",
+      "msg": "Added T27 (BUILD) after end: Add VM benchmark: fibonacci(35), array processing, string ops. Compare compiler+VM vs tree-walker speed."
+    },
+    {
+      "time": "2026-04-13T20:52:02.733Z",
+      "msg": "Added T28 (THINK) after end: HenryDB: What's the next deep architectural improvement? File-backed integration, WAL-based recovery testing, or query plan caching?"
+    },
+    {
+      "time": "2026-04-13T20:52:02.852Z",
+      "msg": "Added T29 (PLAN) after end: HenryDB: adversarial SQL queries — craft intentionally tricky queries that stress edge cases"
+    },
+    {
+      "time": "2026-04-13T20:52:02.969Z",
+      "msg": "Added T30 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-13T20:52:03.087Z",
+      "msg": "Added T31 (MAINTAIN) after end: Mid-session housekeeping: daily log, git push, CURRENT.md"
+    },
+    {
+      "time": "2026-04-13T20:52:03.206Z",
+      "msg": "Added T32 (BUILD) after end: Monkey: add REPL with --engine flag to switch between tree-walker and compiler+VM"
+    },
+    {
+      "time": "2026-04-13T20:52:03.326Z",
+      "msg": "Added T33 (THINK) after end: What's the most interesting edge case in the Monkey compiler? Test closures-over-closures, mutual recursion, tail call patterns."
+    },
+    {
+      "time": "2026-04-13T20:52:03.444Z",
+      "msg": "Added T34 (BUILD) after end: Monkey: stress test the compiler+VM with pathological programs (deep recursion, huge arrays, many closures)"
+    },
+    {
+      "time": "2026-04-13T21:02:14.838Z",
+      "msg": "PLAN T29 filled 2 BUILD tasks"
     }
   ]
 }
