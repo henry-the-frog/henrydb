@@ -824,10 +824,21 @@
     {
       "id": "T76",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Test the _evalExpr fallthrough: find all expression types missing from _evalExpr that silently return truthy",
       "project": "henrydb",
-      "started": "2026-04-13T19:09:36.337Z"
+      "started": "2026-04-13T19:09:36.337Z",
+      "completed": "2026-04-13T19:11:48.433Z",
+      "duration_ms": 240000,
+      "summary": "Fixed _evalExpr default fallthrough: unknown expression types (arith, function_call, case_expr) now evaluate via _evalValue and check truthiness instead of returning true. WHERE LENGTH(\\) and WHERE CASE...ELSE 0 END now correctly return false. Also discovered tokenizer bug: 1-1 (no spaces) tokenized as 1,-1."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix tokenizer: minus after number/identifier should be MINUS operator, not negative number prefix",
+      "project": "henrydb",
+      "started": "2026-04-13T19:12:05.529Z"
     }
   ],
   "focusProjects": [
@@ -1111,6 +1122,10 @@
     {
       "time": "2026-04-13T19:09:36.104Z",
       "msg": "Added T76 (BUILD) after end: Test the _evalExpr fallthrough: find all expression types missing from _evalExpr that silently return truthy"
+    },
+    {
+      "time": "2026-04-13T19:12:05.297Z",
+      "msg": "Added T77 (BUILD) after end: Fix tokenizer: minus after number/identifier should be MINUS operator, not negative number prefix"
     }
   ]
 }

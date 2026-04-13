@@ -72,7 +72,7 @@ export function tokenize(sql) {
     }
 
     // Number
-    if (/[0-9]/.test(src[i]) || (src[i] === '-' && /[0-9]/.test(src[i + 1]))) {
+    if (/[0-9]/.test(src[i]) || (src[i] === '-' && /[0-9]/.test(src[i + 1]) && (tokens.length === 0 || !['NUMBER', 'IDENT', ')', 'STRING'].includes(tokens[tokens.length-1]?.type)))) {
       let num = '';
       if (src[i] === '-') num += src[i++];
       while (i < src.length && /[0-9.]/.test(src[i])) num += src[i++];
