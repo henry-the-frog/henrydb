@@ -1299,10 +1299,13 @@
     {
       "id": "T122",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: GROUPING SETS / CUBE / ROLLUP",
       "project": "henrydb",
-      "started": "2026-04-13T23:45:19.299Z"
+      "started": "2026-04-13T23:45:19.299Z",
+      "completed": "2026-04-13T23:48:53.997Z",
+      "duration_ms": 600000,
+      "summary": "GROUPING SETS, ROLLUP, CUBE. Hierarchical and cross-dimensional aggregation. 3 tests. 690 total."
     },
     {
       "id": "T123",
@@ -1354,9 +1357,10 @@
     {
       "id": "T128",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: partial indexes (CREATE INDEX ... WHERE condition)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:52:28.955Z"
     },
     {
       "id": "T129",
@@ -1393,6 +1397,53 @@
       "completed": "2026-04-13T23:45:12.814Z",
       "duration_ms": 120000,
       "summary": "Monkey README: 19 builtins, 4 optimizations, all features, examples, 334 tests, 5500 lines."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: table value constructor (VALUES clause as standalone query)",
+      "project": "henrydb",
+      "started": "2026-04-13T23:52:13.809Z",
+      "completed": "2026-04-13T23:52:28.812Z",
+      "duration_ms": 15000,
+      "summary": "VALUES clause already works as standalone query. Verified."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: EXCEPT ALL and INTERSECT ALL",
+      "project": "henrydb"
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement negative array indexing (arr[-1] = last element)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:49:14.913Z",
+      "completed": "2026-04-13T23:51:47.621Z",
+      "duration_ms": 120000,
+      "summary": "Negative indexing: arr[-1]→last, str[-1]→last char. Both engines. 334 tests."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: SIMILAR TO regex matching",
+      "project": "henrydb"
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ILIKE (case-insensitive LIKE)",
+      "project": "henrydb",
+      "started": "2026-04-13T23:51:47.764Z",
+      "completed": "2026-04-13T23:52:13.666Z",
+      "duration_ms": 30000,
+      "summary": "ILIKE already implemented. Verified case-insensitive pattern matching."
     }
   ],
   "focusProjects": [
@@ -1892,6 +1943,26 @@
     {
       "time": "2026-04-13T23:39:39.784Z",
       "msg": "Added T132 (BUILD) after end: Monkey: README update with complete feature list"
+    },
+    {
+      "time": "2026-04-13T23:49:05.516Z",
+      "msg": "Added T133 (BUILD) after end: HenryDB: table value constructor (VALUES clause as standalone query)"
+    },
+    {
+      "time": "2026-04-13T23:49:05.635Z",
+      "msg": "Added T134 (BUILD) after end: HenryDB: EXCEPT ALL and INTERSECT ALL"
+    },
+    {
+      "time": "2026-04-13T23:49:05.754Z",
+      "msg": "Added T135 (BUILD) after end: Monkey: implement negative array indexing (arr[-1] = last element)"
+    },
+    {
+      "time": "2026-04-13T23:49:05.874Z",
+      "msg": "Added T136 (BUILD) after end: HenryDB: SIMILAR TO regex matching"
+    },
+    {
+      "time": "2026-04-13T23:49:05.992Z",
+      "msg": "Added T137 (BUILD) after end: HenryDB: ILIKE (case-insensitive LIKE)"
     }
   ]
 }
