@@ -36,6 +36,7 @@ const RECORD_TYPES = {
   DROP_TABLE: 9,
   CREATE_INDEX: 10,
   TRUNCATE: 11,
+  DDL: 12,  // Generic DDL (ALTER TABLE, RENAME TABLE, etc.) — stores raw SQL
 };
 
 const RECORD_TYPE_NAMES = Object.fromEntries(
@@ -256,6 +257,10 @@ export class WALWriter {
 
   logTruncate(tableName, txId) {
     return this.writeRecord('TRUNCATE', { table: tableName, txId });
+  }
+
+  logDDL(sql) {
+    return this.writeRecord('DDL', { sql });
   }
 
   getCurrentLSN() {
@@ -661,6 +666,7 @@ export class WALManager {
   logCreateTable(name, cols) { return this.writeRecord('CREATE_TABLE', { table: name, columns: cols }); }
   logDropTable(name) { return this.writeRecord('DROP_TABLE', { table: name }); }
   logTruncate(name, txId) { return this.writeRecord('TRUNCATE', { table: name, txId }); }
+  logDDL(sql) { return this.writeRecord('DDL', { sql }); }
 }
 
 // Extended type codes used by checkpoint/recovery subsystems
@@ -877,6 +883,11 @@ function recoverFromWAL(wal, db) {
             db.tables.delete(table);
           }
           replayed++;
+        } else if (type === 'DDL') {
+          const sql = op.data?.sql;
+          if (sql && db.execute) {
+            try { db.execute(sql); replayed++; } catch {}
+          }
         }
       } catch { /* skip replay errors */ }
     }
@@ -988,6 +999,11 @@ function recoverToTimestamp(wal, db, targetTimestamp) {
             db.tables.delete(table);
           }
           replayed++;
+        } else if (type === 'DDL') {
+          const sql = op.data?.sql;
+          if (sql && db.execute) {
+            try { db.execute(sql); replayed++; } catch {}
+          }
         }
       } catch { /* skip */ }
     }

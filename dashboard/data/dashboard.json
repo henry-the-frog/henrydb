@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T18:19:16.076Z",
+  "generated": "2026-04-13T18:20:49.291Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP",
-    "startedAt": "2026-04-13T18:19:16.076Z",
-    "taskId": "T65"
+    "task": "Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging",
+    "startedAt": "2026-04-13T18:20:49.291Z",
+    "taskId": "T66"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2436,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 64,
+    "blocksCompleted": 65,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 8,
-      "BUILD": 40,
+      "BUILD": 41,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

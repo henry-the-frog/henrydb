@@ -657,6 +657,13 @@ export class Database {
               }
               break;
             }
+            case 'DDL': {
+              const sql = record.payload?.sql;
+              if (sql) {
+                try { db.execute(sql); } catch {}
+              }
+              break;
+            }
           }
         } catch (e) {
           // Skip errors during replay — best effort
@@ -950,6 +957,10 @@ export class Database {
         const table = this.tables.get(ast.from);
         if (!table) throw new Error(`Table ${ast.from} not found`);
         if (this.tables.has(ast.to)) throw new Error(`Table ${ast.to} already exists`);
+        // WAL: log rename for crash recovery
+        if (this.wal && this.wal.logDDL) {
+          this.wal.logDDL(`ALTER TABLE ${ast.from} RENAME TO ${ast.to}`);
+        }
         this.tables.set(ast.to, table);
         this.tables.delete(ast.from);
         if (table.heap) table.heap.name = ast.to;
@@ -1176,9 +1187,36 @@ export class Database {
     return { type: 'OK', count: rows.length };
   }
 
+  _logAlterTableDDL(ast) {
+    if (!this.wal || !this.wal.logDDL) return;
+    switch (ast.action) {
+      case 'ADD_COLUMN': {
+        const colName = typeof ast.column === 'string' ? ast.column : (ast.column?.name || 'unknown');
+        const type = ast.dataType || (typeof ast.column === 'object' ? ast.column?.type : null) || 'TEXT';
+        this.wal.logDDL(`ALTER TABLE ${ast.table} ADD COLUMN ${colName} ${type}`);
+        break;
+      }
+      case 'DROP_COLUMN': {
+        const colName = typeof ast.column === 'string' ? ast.column : (ast.column?.name || ast.columnName);
+        this.wal.logDDL(`ALTER TABLE ${ast.table} DROP COLUMN ${colName}`);
+        break;
+      }
+      case 'RENAME_COLUMN': {
+        const oldName = ast.oldName || ast.column?.oldName;
+        const newName = ast.newName || ast.column?.newName;
+        this.wal.logDDL(`ALTER TABLE ${ast.table} RENAME COLUMN ${oldName} TO ${newName}`);
+        break;
+      }
+      case 'RENAME_TABLE':
+        this.wal.logDDL(`ALTER TABLE ${ast.table} RENAME TO ${ast.newName}`);
+        break;
+    }
+  }
+
   _alterTable(ast) {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
+    this._logAlterTableDDL(ast);
 
     switch (ast.action) {
       case 'ADD_COLUMN': {
@@ -1454,6 +1492,7 @@ export class Database {
   _alterTable(ast) {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
+    this._logAlterTableDDL(ast);
 
     switch (ast.action) {
       case 'ADD_COLUMN': {

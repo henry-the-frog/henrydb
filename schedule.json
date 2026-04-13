@@ -705,10 +705,21 @@
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP",
       "project": "henrydb",
-      "started": "2026-04-13T18:19:16.041Z"
+      "started": "2026-04-13T18:19:16.041Z",
+      "completed": "2026-04-13T18:20:11.633Z",
+      "duration_ms": 240000,
+      "summary": "Created WAL recovery stress test suite with 7 comprehensive tests covering full lifecycle, repeated create-drop cycles, bulk insert+truncate, multi-table interleaving, NULLs handling, many-table scenarios, and double recovery idempotency. All 7 passing."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging",
+      "project": "henrydb",
+      "started": "2026-04-13T18:20:49.255Z"
     }
   ],
   "focusProjects": [
@@ -948,6 +959,10 @@
     {
       "time": "2026-04-13T18:15:31.816Z",
       "msg": "Added T65 (BUILD) after end: WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP"
+    },
+    {
+      "time": "2026-04-13T18:20:44.772Z",
+      "msg": "Added T66 (BUILD) after end: Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging"
     }
   ]
 }
