@@ -551,7 +551,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 538,
+      "ageHours": 547,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 558,
+      "ageHours": 567,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 559,
+      "ageHours": 568,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 559,
+      "ageHours": 568,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 560,
+      "ageHours": 569,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 560,
+      "ageHours": 569,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 562,
+      "ageHours": 571,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 581,
+      "ageHours": 590,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,12 +639,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 608,
+      "ageHours": 618,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-12",
+      "blocksCompleted": 2,
+      "summary": "",
+      "highlights": [
+        "Built queue (14 tasks)",
+        "neural-net hit 1001 tests (all passing)",
+        "memory/scratch/INDEX.md — scratch notes index",
+        "memory/failures.md — recurring patterns",
+        "memory/scratch/mvcc-persistence-lessons.md — MVCC +"
+      ],
+      "modeDistribution": {
+        "BUILD": 1,
+        "EXPLORE": 1,
+        "THINK": 1,
+        "MAINTAIN": 1
+      }
+    },
     {
       "date": "2026-04-11",
       "blocksCompleted": 4,
@@ -731,31 +749,13 @@
         "MAINTAIN": 4,
         "EXPLORE": 2
       }
-    },
-    {
-      "date": "2026-04-06",
-      "blocksCompleted": 120,
-      "summary": "",
-      "highlights": [
-        "Built queue (18 tasks)",
-        "Analyzed HenryDB state — 994/1028 tests pass, 30 failures",
-        "Planned 3 BUILD tasks for HenryDB query optimizer cycle",
-        "Fixed all 30 failing tests in HenryDB",
-        "Built real cost-based query optimizer"
-      ],
-      "modeDistribution": {
-        "THINK": 11,
-        "BUILD": 85,
-        "EXPLORE": 2,
-        "MAINTAIN": 6
-      }
     }
   ],
-  "streak": 7,
+  "streak": 0,
   "scheduleAdherence": {
-    "completionRate": 96,
-    "completedBlocks": 120,
-    "pastBlocks": 125,
+    "completionRate": 0,
+    "completedBlocks": 0,
+    "pastBlocks": 5,
     "totalBlocks": 125,
     "plannedDist": {
       "THINK": 10,
@@ -764,30 +764,24 @@
       "MAINTAIN": 11,
       "EXPLORE": 8
     },
-    "actualDist": {
-      "THINK": 10,
-      "PLAN": 9,
-      "BUILD": 83,
-      "MAINTAIN": 10,
-      "EXPLORE": 8
-    },
-    "pace": 8.6
+    "actualDist": {},
+    "pace": 0
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:27",
-      "text": "T3: Fixed all 5 test failures."
+      "time": "08:21",
+      "text": "Fixed all 5 test failures."
+    },
+    {
+      "mode": "BUILD",
+      "time": "08:31",
+      "text": "Fixed neural-net CI."
     },
     {
       "mode": "MAINTAIN",
       "time": "08:42",
-      "text": "T16: Fixed neural-net CI."
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:54",
-      "text": "T7: Implemented B+tree index range scans (>, >=, <, <=, BETWEEN)."
+      "text": "Git pushed, CI green, dashboard healthy."
     },
     {
       "mode": "BUILD",
@@ -801,18 +795,18 @@
     },
     {
       "mode": "BUILD",
+      "time": "09:16",
+      "text": "FOUND BUG: B-spline right boundary — basis sum was 0 at x=max due to incorrect…"
+    },
+    {
+      "mode": "BUILD",
       "time": "09:20",
-      "text": "T24: **FOUND BUG** in KAN B-spline: right boundary basis sum was 0 (augmented knot empty intervals)."
+      "text": "FOUND BUG: Izhikevich voltage history recorded pre-spike-check overshoots (up to 172 mV)."
     },
     {
       "mode": "BUILD",
-      "time": "09:23",
-      "text": "T25: **FOUND BUG** in Izhikevich voltage history: pre-spike-check overshoots (172 mV)."
-    },
-    {
-      "mode": "BUILD",
-      "time": "09:30",
-      "text": "T28: **FOUND BUG** in HenryDB BETWEEN SYMMETRIC index scan — lo/hi not swapped."
+      "time": "09:28",
+      "text": "BETWEEN SYMMETRIC bug: _tryIndexScan didnt swap lo/hi for SYMMETRIC flag."
     }
   ],
   "adjustments": [],
@@ -1220,7 +1214,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-13T03:52:23Z",
+      "pushedAt": "2026-04-13T04:17:14Z",
       "category": "utility"
     },
     {
@@ -2630,8 +2624,8 @@
     "totalRepos": 200,
     "totalProjectCount": 10,
     "totalBlogPosts": 47,
-    "streak": 7,
-    "totalTasksWeek": 434,
+    "streak": 0,
+    "totalTasksWeek": 316,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2645,7 +2639,7 @@
       "srcFiles": 989,
       "srcLines": 165266,
       "featureCount": 57,
-      "lastCommit": "2026-04-12 21:57:35 -0600",
+      "lastCommit": "2026-04-12 22:17:11 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2687,7 +2681,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 21:57:35 -0600",
+      "lastCommit": "2026-04-12 22:17:11 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2715,7 +2709,7 @@
       "srcFiles": 3,
       "srcLines": 1283,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 21:57:35 -0600",
+      "lastCommit": "2026-04-12 22:17:11 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2729,7 +2723,7 @@
       "srcFiles": 3,
       "srcLines": 653,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 21:57:35 -0600",
+      "lastCommit": "2026-04-12 22:17:11 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2743,7 +2737,7 @@
       "srcFiles": 3,
       "srcLines": 1963,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 21:57:35 -0600",
+      "lastCommit": "2026-04-12 22:17:11 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2757,10 +2751,10 @@
       "srcFiles": 3,
       "srcLines": 1392,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 21:57:35 -0600",
+      "lastCommit": "2026-04-12 22:17:11 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-13T04:15:46.789Z"
+  "generated": "2026-04-13T13:46:05.805Z"
 }

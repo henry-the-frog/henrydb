@@ -82,6 +82,12 @@ Feature factories feel productive but they're low-learning. Depth > breadth.
 ### Learning Gate (after every bug fix)
 When you find and fix a bug, or encounter a genuinely surprising result, write ≥1 line capturing the insight to a scratch note or daily log BEFORE moving to the next task. Track in Evening Summary as `Learning captures: X/Y bugs`. The rule: if you fixed a bug but can't articulate what you learned, you didn't learn — you just patched. Three consecutive reflections (Apr 9-11) diagnosed "knowledge capture too thin" without fixing it. This IS the fix.
 
+### Sweep Gate (second+ sessions per day)
+Every second session of the day (or any session after a break >1 hour) MUST start with a full test suite sweep of the active project before any new feature work begins. Run all tests, triage what's broken, fix or file everything found. Only then start building. The sweep is the session's opening move, not an afterthought. Rationale (observed Apr 12): Session C's full-suite sweep found 12+ bugs including CRITICAL ROLLBACK no-op. This is consistently the highest-ROI activity for quality.
+
+### Blog Cap
+Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
+
 ### Daily Log Convention
 Daily logs (`memory/YYYY-MM-DD.md`) can be as verbose as needed during real-time work. But every log **MUST** end with a structured summary:
 
