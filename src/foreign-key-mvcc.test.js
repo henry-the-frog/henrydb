@@ -1,7 +1,6 @@
 // foreign-key-mvcc.test.js — FK constraints through TransactionalDatabase
 import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { Database } from './db.js';
 import { TransactionalDatabase } from './transactional-db.js';
 import { mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -62,27 +61,18 @@ describe('Foreign Key Constraints Through MVCC', () => {
     db.execute('CREATE TABLE children (id INT, parent_id INT REFERENCES parents(id) ON DELETE SET NULL)');
     db.execute('INSERT INTO parents VALUES (1)');
     db.execute('INSERT INTO children VALUES (1, 1)');
-    // Note: SET NULL via heap.pages.find may not work with intercepted heaps
-    // This tests the basic path
-    try {
-      db.execute('DELETE FROM parents WHERE id = 1');
-      const r = db.execute('SELECT parent_id FROM children WHERE id = 1');
-      assert.equal(r.rows[0].parent_id, null);
-    } catch (e) {
-      // SET NULL might fail with intercepted heap — known issue
-      assert.ok(e.message.includes('Cannot read') || e.message.includes('pages'), 
-        'Expected SET NULL crash with intercepted heap: ' + e.message);
-    }
+    db.execute('DELETE FROM parents WHERE id = 1');
+    const r = db.execute('SELECT parent_id FROM children WHERE id = 1');
+    assert.equal(r.rows[0].parent_id, null);
   });
 
-  it('RESTRICT prevents parent deletion (base engine)', () => {
-    // Test through base Database, not TransactionalDatabase
-    const baseDb = new Database();
-    baseDb.execute('CREATE TABLE parents (id INT PRIMARY KEY)');
-    baseDb.execute('CREATE TABLE children (id INT, parent_id INT REFERENCES parents(id))');
-    baseDb.execute('INSERT INTO parents VALUES (1)');
-    baseDb.execute('INSERT INTO children VALUES (1, 1)');
-    assert.throws(() => baseDb.execute('DELETE FROM parents WHERE id = 1'), /foreign key|restrict|referenced/i);
+  it('RESTRICT prevents parent deletion', () => {
+    db = fresh();
+    db.execute('CREATE TABLE parents (id INT PRIMARY KEY)');
+    db.execute('CREATE TABLE children (id INT, parent_id INT REFERENCES parents(id))');
+    db.execute('INSERT INTO parents VALUES (1)');
+    db.execute('INSERT INTO children VALUES (1, 1)');
+    assert.throws(() => db.execute('DELETE FROM parents WHERE id = 1'), /foreign key|restrict|referenced/i);
   });
 
   it('FK enforcement survives close/reopen', () => {

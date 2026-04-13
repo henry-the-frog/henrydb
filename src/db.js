@@ -1695,14 +1695,8 @@ export class Database {
               childTable.heap.delete(pageId, slotIdx);
             }
           } else if (col.references.onDelete === 'SET NULL') {
-            // Set child column to NULL
-            for (const { pageId, slotIdx, values } of childTable.heap.scan()) {
-              if (values[childColIdx] === parentValue) {
-                values[childColIdx] = null;
-                const encoded = encodeTuple(values);
-                childTable.heap.pages.find(p => p.id === pageId)?.updateTuple(slotIdx, encoded);
-              }
-            }
+            // Set child column to NULL via UPDATE
+            this.execute(`UPDATE ${childTableName} SET ${col.name} = NULL WHERE ${col.name} = ${typeof parentValue === 'string' ? `'${parentValue}'` : parentValue}`);
           } else {
             // RESTRICT: check if any child rows exist
             for (const { values } of childTable.heap.scan()) {
