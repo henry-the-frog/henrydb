@@ -1077,17 +1077,21 @@
     {
       "id": "T101",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add LIMIT push-down optimization (stop scanning after LIMIT rows)",
       "project": "henrydb",
-      "started": "2026-04-13T22:57:45.481Z"
+      "started": "2026-04-13T22:57:45.481Z",
+      "completed": "2026-04-13T22:59:14.587Z",
+      "duration_ms": 300000,
+      "summary": "LIMIT push-down: stops scanning early for simple queries. WHERE integrated into scan loop. 6 tests. 669 total."
     },
     {
       "id": "T102",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: add DISTINCT ON (PostgreSQL extension)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T22:59:20.197Z"
     },
     {
       "id": "T103",

@@ -375,7 +375,19 @@ export function parse(sql) {
   function parseSelect() {
     advance(); // SELECT
     let distinct = false;
-    if (isKeyword('DISTINCT')) { distinct = true; advance(); }
+    let distinctOn = null;
+    if (isKeyword('DISTINCT')) {
+      distinct = true; advance();
+      if (isKeyword('ON') && tokens[pos + 1] && tokens[pos + 1].type === '(') {
+        advance(); // ON
+        advance(); // (
+        distinctOn = [];
+        // Parse column references
+        distinctOn.push({ type: 'column_ref', name: advance().value });
+        while (peek().type === ',') { advance(); distinctOn.push({ type: 'column_ref', name: advance().value }); }
+        expect(')');
+      }
+    }
     const columns = parseSelectList();
     let from = null;
     let where = null, orderBy = null, limit = null, offset = null;
@@ -487,7 +499,7 @@ export function parse(sql) {
       }
     }
 
-    let result = { type: 'SELECT', distinct, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate };
+    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate };
 
     // UNION / UNION ALL / INTERSECT / EXCEPT
     if (isKeyword('UNION')) {

@@ -2596,9 +2596,24 @@ export class Database {
       return result;
     });
 
-    // DISTINCT
+    // DISTINCT / DISTINCT ON
     let finalRows = projected;
-    if (ast.distinct) {
+    if (ast.distinctOn) {
+      // DISTINCT ON: keep first row per unique combination of ON expressions
+      // Uses pre-ORDER BY rows for key evaluation, then filters projected
+      const seen = new Set();
+      finalRows = [];
+      for (let i = 0; i < projected.length; i++) {
+        const row = rows[i]; // use pre-projection row for expression evaluation
+        const key = ast.distinctOn.map(expr => JSON.stringify(this._evalValue(expr, row))).join('|');
+        if (!seen.has(key)) {
+          seen.add(key);
+          finalRows.push(projected[i]);
+        }
+      }
+      if (ast.offset) finalRows = finalRows.slice(ast.offset);
+      if (ast.limit != null) finalRows = finalRows.slice(0, ast.limit);
+    } else if (ast.distinct) {
       const seen = new Set();
       finalRows = projected.filter(row => {
         const key = JSON.stringify(row);
