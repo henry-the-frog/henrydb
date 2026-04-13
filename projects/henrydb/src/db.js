@@ -2036,6 +2036,24 @@ export class Database {
     if (tableName === '__subquery') {
       const subResult = this._select(ast.from.subquery);
       let rows = subResult.rows || [];
+      
+      // Strip table alias prefix from column references (e.g., sub.col → col)
+      const subAlias = ast.from.alias;
+      if (subAlias) {
+        const prefix = subAlias + '.';
+        for (const col of ast.columns) {
+          if (col.name && col.name.startsWith(prefix)) {
+            col.name = col.name.substring(prefix.length);
+          }
+        }
+        if (ast.orderBy) {
+          for (const o of ast.orderBy) {
+            if (typeof o.column === 'string' && o.column.startsWith(prefix)) {
+              o.column = o.column.substring(prefix.length);
+            }
+          }
+        }
+      }
       if (ast.where) rows = rows.filter(row => this._evalExpr(ast.where, row));
       for (const join of ast.joins || []) {
         rows = this._executeJoin(rows, join, ast.from.alias || '__subquery');

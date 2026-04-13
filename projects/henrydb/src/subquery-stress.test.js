@@ -108,19 +108,13 @@ describe('Subquery stress tests', () => {
   });
 
   it('subquery in FROM (derived table)', () => {
-    try {
-      const r = db.execute(`
-        SELECT sub.dept_id, sub.max_sal
-        FROM (SELECT dept_id, MAX(salary) as max_sal FROM employees GROUP BY dept_id) sub
-        ORDER BY sub.max_sal DESC
-      `);
-      assert.strictEqual(r.rows.length, 3);
-      assert.strictEqual(r.rows[0].max_sal, 120); // Engineering
-    } catch (e) {
-      // Derived tables with grouped subqueries may not be fully supported
-      // This is a known limitation — test documents it
-      assert.ok(e.message.length > 0, 'should error gracefully');
-    }
+    const r = db.execute(`
+      SELECT sub.dept_id, sub.max_sal
+      FROM (SELECT dept_id, MAX(salary) as max_sal FROM employees GROUP BY dept_id) sub
+      ORDER BY sub.max_sal DESC
+    `);
+    assert.strictEqual(r.rows.length, 3);
+    assert.strictEqual(r.rows[0].max_sal, 120); // Engineering
   });
 
   it('nested subqueries (3 levels deep)', () => {
