@@ -1395,7 +1395,16 @@ export class Database {
       unique: ast.unique || false,
     });
 
+    this._logCreateIndexDDL(ast);
     return { type: 'OK', message: `Index ${ast.name} created` };
+  }
+
+  _logCreateIndexDDL(ast) {
+    if (!this.wal || !this.wal.logDDL) return;
+    const unique = ast.unique ? 'UNIQUE ' : '';
+    const ifNotExists = ast.ifNotExists ? 'IF NOT EXISTS ' : '';
+    const cols = ast.columns.join(', ');
+    this.wal.logDDL(`CREATE ${unique}INDEX ${ifNotExists}${ast.name} ON ${ast.table} (${cols})`);
   }
 
   _dropIndex(ast) {
@@ -1403,6 +1412,11 @@ export class Database {
     if (!meta) {
       if (ast.ifExists) return { type: 'OK', message: 'DROP INDEX' };
       throw new Error(`Index ${ast.name} not found`);
+    }
+
+    // WAL: log the drop
+    if (this.wal && this.wal.logDDL) {
+      this.wal.logDDL(`DROP INDEX IF EXISTS ${ast.name}`);
     }
 
     const table = this.tables.get(meta.table);

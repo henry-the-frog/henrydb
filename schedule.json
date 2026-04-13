@@ -716,10 +716,21 @@
     {
       "id": "T66",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging",
       "project": "henrydb",
-      "started": "2026-04-13T18:20:49.255Z"
+      "started": "2026-04-13T18:20:49.255Z",
+      "completed": "2026-04-13T18:27:49.492Z",
+      "duration_ms": 420000,
+      "summary": "Fixed remaining DDL persistence gaps. Added generic DDL WAL record type for ALTER TABLE (ADD/DROP/RENAME COLUMN) and RENAME TABLE. Fixed AST field extraction bugs. 6 new tests, all 49 persistence tests passing."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add CREATE INDEX and DROP INDEX WAL logging for complete DDL persistence",
+      "project": "henrydb",
+      "started": "2026-04-13T18:34:53.347Z"
     }
   ],
   "focusProjects": [
@@ -963,6 +974,10 @@
     {
       "time": "2026-04-13T18:20:44.772Z",
       "msg": "Added T66 (BUILD) after end: Audit and fix remaining DDL persistence gaps: ALTER TABLE, RENAME TABLE, CREATE/DROP INDEX WAL logging"
+    },
+    {
+      "time": "2026-04-13T18:34:47.461Z",
+      "msg": "Added T67 (BUILD) after end: Add CREATE INDEX and DROP INDEX WAL logging for complete DDL persistence"
     }
   ]
 }

@@ -667,6 +667,7 @@ export class WALManager {
   logDropTable(name) { return this.writeRecord('DROP_TABLE', { table: name }); }
   logTruncate(name, txId) { return this.writeRecord('TRUNCATE', { table: name, txId }); }
   logDDL(sql) { return this.writeRecord('DDL', { sql }); }
+  logCreateIndex(indexName, tableName, columns) { return this.writeRecord('CREATE_INDEX', { index: indexName, table: tableName, columns }); }
 }
 
 // Extended type codes used by checkpoint/recovery subsystems
