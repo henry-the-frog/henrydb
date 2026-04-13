@@ -694,17 +694,21 @@
     {
       "id": "T64",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix DROP TABLE persistence: add WAL logging and replay handling",
       "project": "henrydb",
-      "started": "2026-04-13T18:15:48.974Z"
+      "started": "2026-04-13T18:15:48.974Z",
+      "completed": "2026-04-13T18:19:05.112Z",
+      "duration_ms": 300000,
+      "summary": "Fixed DROP TABLE persistence bug. Same class as TRUNCATE: _dropTable() didnt log to WAL, so recovery resurrected dropped tables. Added logDropTable to WALManager, WAL logging in _dropTable(), DROP_TABLE handling in all 3 replay paths. 6 new tests passing, existing WAL tests clean."
     },
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "WAL recovery stress test: complex scenario with interleaved DDL + DML + TRUNCATE + DROP",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T18:19:16.041Z"
     }
   ],
   "focusProjects": [
