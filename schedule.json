@@ -1299,9 +1299,10 @@
     {
       "id": "T122",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: GROUPING SETS / CUBE / ROLLUP",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T23:45:19.299Z"
     },
     {
       "id": "T123",
@@ -1349,6 +1350,49 @@
       "completed": "2026-04-13T23:39:07.567Z",
       "duration_ms": 300000,
       "summary": "Generated columns: auto-compute on INSERT, recompute on UPDATE. 4 tests. 689 total."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: partial indexes (CREATE INDEX ... WHERE condition)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: expression indexes (CREATE INDEX ... ON (expression))",
+      "project": "henrydb"
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement break/continue for loops",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:39:49.002Z",
+      "completed": "2026-04-13T23:44:15.473Z",
+      "duration_ms": 300000,
+      "summary": "break/continue for all loops (evaluator). Fixed >= <= missing from evaluator. 334 tests."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: PIVOT/UNPIVOT (crosstab queries)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: README update with complete feature list",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:44:15.616Z",
+      "completed": "2026-04-13T23:45:12.814Z",
+      "duration_ms": 120000,
+      "summary": "Monkey README: 19 builtins, 4 optimizations, all features, examples, 334 tests, 5500 lines."
     }
   ],
   "focusProjects": [
@@ -1828,6 +1872,26 @@
     {
       "time": "2026-04-13T23:29:45.884Z",
       "msg": "Added T127 (BUILD) after end: HenryDB: computed/generated columns"
+    },
+    {
+      "time": "2026-04-13T23:39:39.307Z",
+      "msg": "Added T128 (BUILD) after end: HenryDB: partial indexes (CREATE INDEX ... WHERE condition)"
+    },
+    {
+      "time": "2026-04-13T23:39:39.426Z",
+      "msg": "Added T129 (BUILD) after end: HenryDB: expression indexes (CREATE INDEX ... ON (expression))"
+    },
+    {
+      "time": "2026-04-13T23:39:39.545Z",
+      "msg": "Added T130 (BUILD) after end: Monkey: implement break/continue for loops"
+    },
+    {
+      "time": "2026-04-13T23:39:39.665Z",
+      "msg": "Added T131 (BUILD) after end: HenryDB: PIVOT/UNPIVOT (crosstab queries)"
+    },
+    {
+      "time": "2026-04-13T23:39:39.784Z",
+      "msg": "Added T132 (BUILD) after end: Monkey: README update with complete feature list"
     }
   ]
 }

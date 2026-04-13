@@ -4942,6 +4942,73 @@ export class Database {
       return this._evalValue(col, row); // Expression
     };
 
+    // Handle GROUPING SETS / ROLLUP / CUBE
+    let groupingSets = null;
+    let effectiveGroupBy = ast.groupBy;
+    
+    if (ast.groupBy && !Array.isArray(ast.groupBy)) {
+      if (ast.groupBy.type === 'ROLLUP') {
+        // ROLLUP(a, b, c) = GROUPING SETS ((a,b,c), (a,b), (a), ())
+        const cols = ast.groupBy.columns;
+        groupingSets = [];
+        for (let i = cols.length; i >= 0; i--) {
+          groupingSets.push(cols.slice(0, i));
+        }
+      } else if (ast.groupBy.type === 'CUBE') {
+        // CUBE(a, b) = all subsets: (a,b), (a), (b), ()
+        const cols = ast.groupBy.columns;
+        groupingSets = [];
+        for (let mask = (1 << cols.length) - 1; mask >= 0; mask--) {
+          const set = [];
+          for (let i = 0; i < cols.length; i++) {
+            if (mask & (1 << (cols.length - 1 - i))) set.push(cols[i]);
+          }
+          groupingSets.push(set);
+        }
+      } else if (ast.groupBy.type === 'GROUPING_SETS') {
+        groupingSets = ast.groupBy.sets;
+      }
+    }
+
+    if (groupingSets) {
+      // Execute query for each grouping set and UNION ALL
+      const allCols = ast.groupBy.columns || groupingSets.flat().filter((v, i, a) => a.indexOf(v) === i);
+      let allRows = [];
+      // Remove ORDER BY from sub-queries to avoid re-sorting
+      const baseAst = { ...ast, orderBy: null, limit: null, offset: null };
+      for (const setCols of groupingSets) {
+        const subAst = { ...baseAst, groupBy: setCols.length > 0 ? setCols : null };
+        const subResult = this._select(subAst);
+        // NULL out columns not in this grouping set
+        for (const row of subResult.rows) {
+          for (const col of allCols) {
+            const colName = typeof col === 'string' ? col : (col.alias || col.name);
+            if (!setCols.includes(col)) {
+              row[colName] = null;
+            }
+          }
+        }
+        allRows = allRows.concat(subResult.rows);
+      }
+      // Apply ORDER BY and LIMIT to combined results
+      if (ast.orderBy) {
+        allRows.sort((a, b) => {
+          for (const o of ast.orderBy) {
+            const colName = typeof o.column === 'string' ? o.column : (o.column.name || o.column.alias);
+            const av = a[colName], bv = b[colName];
+            if (av === null && bv !== null) return o.direction === 'DESC' ? -1 : 1;
+            if (av !== null && bv === null) return o.direction === 'DESC' ? 1 : -1;
+            if (av < bv) return o.direction === 'DESC' ? 1 : -1;
+            if (av > bv) return o.direction === 'DESC' ? -1 : 1;
+          }
+          return 0;
+        });
+      }
+      if (ast.offset) allRows = allRows.slice(ast.offset);
+      if (ast.limit != null) allRows = allRows.slice(0, ast.limit);
+      return { rows: allRows, columns: allRows.length > 0 ? Object.keys(allRows[0]) : [] };
+    }
+
     // Group rows by GROUP BY columns
     const groups = new Map();
     for (const row of rows) {

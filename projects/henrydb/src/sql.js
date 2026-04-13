@@ -12,7 +12,7 @@ const KEYWORDS = new Set([
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
-  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED',
+  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED', 'ROLLUP', 'CUBE', 'GROUPING', 'SETS',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'FULL', 'OUTER', 'NATURAL', 'USING', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
@@ -1414,17 +1414,57 @@ export function parse(sql) {
   }
 
   function parseGroupBy() {
+    // Check for ROLLUP, CUBE, GROUPING SETS
+    if (isKeyword('ROLLUP')) {
+      advance();
+      expect('(');
+      const cols = [];
+      do { cols.push(parseGroupByItem()); } while (match(','));
+      expect(')');
+      return { type: 'ROLLUP', columns: cols };
+    }
+    if (isKeyword('CUBE')) {
+      advance();
+      expect('(');
+      const cols = [];
+      do { cols.push(parseGroupByItem()); } while (match(','));
+      expect(')');
+      return { type: 'CUBE', columns: cols };
+    }
+    if (isKeyword('GROUPING') && tokens[pos + 1] && tokens[pos + 1].value === 'SETS') {
+      advance(); // GROUPING
+      advance(); // SETS
+      expect('(');
+      const sets = [];
+      do {
+        if (peek().type === '(') {
+          advance(); // (
+          const cols = [];
+          if (peek().type !== ')') {
+            do { cols.push(parseGroupByItem()); } while (match(','));
+          }
+          expect(')');
+          sets.push(cols);
+        } else {
+          sets.push([parseGroupByItem()]);
+        }
+      } while (match(','));
+      expect(')');
+      return { type: 'GROUPING_SETS', sets };
+    }
+    
+    // Regular GROUP BY
     const cols = [];
     do {
-      // Try to parse as expression (handles col % 3, function calls, etc.)
-      const expr = parseExpr();
-      if (expr.type === 'column_ref') {
-        cols.push(expr.name); // Simple column name
-      } else {
-        cols.push(expr); // Expression
-      }
+      cols.push(parseGroupByItem());
     } while (match(','));
     return cols;
+  }
+
+  function parseGroupByItem() {
+    const expr = parseExpr();
+    if (expr.type === 'column_ref') return expr.name;
+    return expr;
   }
 
   function parseOverClause() {
