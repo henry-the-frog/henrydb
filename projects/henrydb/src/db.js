@@ -3408,10 +3408,32 @@ export class Database {
     let updated = 0;
     const toUpdate = [];
 
-    for (const { pageId, slotIdx, values } of table.heap.scan()) {
-      const row = this._valuesToRow(values, table.schema, ast.table);
-      if (!ast.where || this._evalExpr(ast.where, row)) {
-        toUpdate.push({ pageId, slotIdx, values: [...values] });
+    if (ast.from) {
+      // UPDATE ... FROM: join with another table
+      const fromTable = this.tables.get(ast.from);
+      if (!fromTable) throw new Error(`Table ${ast.from} not found`);
+      const fromAlias = ast.fromAlias || ast.from;
+      
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        
+        // For each from-table row, check WHERE
+        for (const fromItem of fromTable.heap.scan()) {
+          const fromRow = this._valuesToRow(fromItem.values, fromTable.schema, fromAlias);
+          const merged = { ...row, ...fromRow };
+          
+          if (!ast.where || this._evalExpr(ast.where, merged)) {
+            toUpdate.push({ pageId, slotIdx, values: [...values], mergedRow: merged });
+            break; // Only update target row once per match
+          }
+        }
+      }
+    } else {
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        if (!ast.where || this._evalExpr(ast.where, row)) {
+          toUpdate.push({ pageId, slotIdx, values: [...values], mergedRow: row });
+        }
       }
     }
 
@@ -3423,7 +3445,7 @@ export class Database {
 
     for (const item of toUpdate) {
       const newValues = [...item.values];
-      const row = this._valuesToRow(item.values, table.schema, ast.table);
+      const row = item.mergedRow || this._valuesToRow(item.values, table.schema, ast.table);
       for (const { column, value } of ast.assignments) {
         const colIdx = table.schema.findIndex(c => c.name === column);
         if (colIdx === -1) throw new Error(`Column ${column} not found`);

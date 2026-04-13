@@ -1577,13 +1577,24 @@ export function parse(sql) {
       const value = parseExpr();
       assignments.push({ column: col, value });
     } while (match(','));
+    // PostgreSQL-style UPDATE ... FROM
+    let from = null;
+    let fromAlias = null;
+    if (isKeyword('FROM')) {
+      advance(); // FROM
+      const fromTok = advance();
+      from = fromTok.originalValue || fromTok.value;
+      if (peek().type === 'IDENT' && !isKeyword('WHERE') && !isKeyword('RETURNING')) {
+        fromAlias = advance().value;
+      }
+    }
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     let returning = null;
     if (isKeyword('RETURNING')) {
       returning = parseReturningClause();
     }
-    return { type: 'UPDATE', table, assignments, where, returning };
+    return { type: 'UPDATE', table, assignments, where, from, fromAlias, returning };
   }
 
   function parseDelete() {
