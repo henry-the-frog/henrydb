@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T21:51:02.945Z",
+  "generated": "2026-04-13T21:53:43.656Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping",
-    "startedAt": "2026-04-13T21:51:02.945Z",
-    "taskId": "T56"
+    "mode": "BUILD",
+    "task": "HenryDB: fix arithmetic between aggregates (SUM(a)/SUM(b) should return 1 row, not N)",
+    "startedAt": "2026-04-13T21:53:43.656Z",
+    "taskId": "T61"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2378,13 +2378,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 56,
+    "blocksCompleted": 59,
     "blocksTotal": 60,
     "modeDistribution": {
-      "THINK": 10,
+      "THINK": 11,
       "PLAN": 7,
-      "BUILD": 33,
-      "MAINTAIN": 6
+      "BUILD": 34,
+      "MAINTAIN": 7
     }
   },
   "artifacts": [

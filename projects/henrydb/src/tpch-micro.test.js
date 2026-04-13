@@ -158,18 +158,12 @@ describe('TPC-H Micro-Benchmark', () => {
   });
 
   it('TPC-H Q14: Promotion Effect', () => {
-    // Simplified Q14: compute promo and total revenue separately
-    const sql1 = `
+    // JOIN + conditional aggregate: what percentage of revenue comes from promo parts?
+    const sql = `
       SELECT
-        SUM(CASE WHEN p_type LIKE 'PROMO%' THEN l_extendedprice * (1 - l_discount) ELSE 0 END) AS promo_revenue
-      FROM lineitem
-      JOIN part ON l_partkey = p_partkey
-      WHERE l_shipdate >= '1995-09-01'
-        AND l_shipdate < '1995-10-01'
-    `;
-    const sql2 = `
-      SELECT
-        SUM(l_extendedprice * (1 - l_discount)) AS total_revenue
+        100.00 * SUM(
+          CASE WHEN p_type LIKE 'PROMO%' THEN l_extendedprice * (1 - l_discount) ELSE 0 END
+        ) / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue
       FROM lineitem
       JOIN part ON l_partkey = p_partkey
       WHERE l_shipdate >= '1995-09-01'
@@ -177,20 +171,15 @@ describe('TPC-H Micro-Benchmark', () => {
     `;
 
     const start = performance.now();
-    const r1 = db.execute(sql1);
-    const r2 = db.execute(sql2);
+    const result = db.execute(sql);
     const elapsed = performance.now() - start;
-    
-    const promo = r1.rows[0]?.promo_revenue || 0;
-    const total = r2.rows[0]?.total_revenue || 1;
-    const pct = (100 * promo / total);
 
-    console.log(`  Q14: ${elapsed.toFixed(1)}ms, promo=${promo.toFixed(2)}, total=${total.toFixed(2)}, pct=${pct.toFixed(2)}%`);
+    console.log(`  Q14: ${elapsed.toFixed(1)}ms, promo_revenue=${result.rows[0]?.promo_revenue?.toFixed(2)}%`);
 
-    assert.equal(r1.rows.length, 1, 'Promo query should return one row');
-    assert.equal(r2.rows.length, 1, 'Total query should return one row');
-    if (total > 0) {
-      assert.ok(pct >= 0 && pct <= 100, 'Promo percentage should be 0-100');
+    assert.equal(result.rows.length, 1, 'Should return exactly one row');
+    const promo = result.rows[0].promo_revenue;
+    if (promo !== null) {
+      assert.ok(promo >= 0 && promo <= 100, 'Promo percentage should be 0-100');
     }
   });
 

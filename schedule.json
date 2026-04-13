@@ -619,22 +619,61 @@
     {
       "id": "T56",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-13T21:51:02.909Z"
+      "started": "2026-04-13T21:51:02.909Z",
+      "completed": "2026-04-13T21:51:32.619Z",
+      "duration_ms": 30000,
+      "summary": "Housekeeping done."
     },
     {
       "id": "T57",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Monkey: what makes this compiler interesting? Document the architecture for the README."
+      "status": "done",
+      "task": "Monkey: what makes this compiler interesting? Document the architecture for the README.",
+      "started": "2026-04-13T21:51:42.407Z",
+      "completed": "2026-04-13T21:51:56.023Z",
+      "duration_ms": 60000,
+      "summary": "Interesting aspects: dual engines (tree-walker + VM), TCO, full closures, integer cache, 285 tests with parity verification, language extensions (while, alphanumeric ids)."
     },
     {
       "id": "T58",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: update README with architecture docs (lexer → parser → compiler → VM pipeline)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:52:03.904Z",
+      "completed": "2026-04-13T21:53:03.552Z",
+      "duration_ms": 180000,
+      "summary": "Comprehensive README: architecture docs, dual engines, TCO, examples, benchmarks, 285 tests, language extensions."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix arithmetic between aggregates (SUM(a)/SUM(b) should return 1 row, not N)",
+      "project": "henrydb",
+      "started": "2026-04-13T21:53:43.621Z"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add variable mutation (SET statement) to Monkey for while loop utility",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add EXPLAIN ANALYZE (time each stage, show actual vs estimated rows)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T64",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping and daily log"
     }
   ],
   "focusProjects": [
@@ -846,6 +885,22 @@
     {
       "time": "2026-04-13T21:40:45.941Z",
       "msg": "PLAN T52 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T21:53:23.648Z",
+      "msg": "Added T61 (BUILD) after end: HenryDB: fix arithmetic between aggregates (SUM(a)/SUM(b) should return 1 row, not N)"
+    },
+    {
+      "time": "2026-04-13T21:53:23.766Z",
+      "msg": "Added T62 (BUILD) after end: HenryDB: add variable mutation (SET statement) to Monkey for while loop utility"
+    },
+    {
+      "time": "2026-04-13T21:53:23.884Z",
+      "msg": "Added T63 (BUILD) after end: HenryDB: add EXPLAIN ANALYZE (time each stage, show actual vs estimated rows)"
+    },
+    {
+      "time": "2026-04-13T21:53:24.002Z",
+      "msg": "Added T64 (MAINTAIN) after end: Final housekeeping and daily log"
     }
   ]
 }

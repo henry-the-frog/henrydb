@@ -2442,7 +2442,9 @@ export class Database {
     }
 
     // Aggregates / GROUP BY / Window functions
-    const hasAggregates = ast.columns.some(c => c.type === 'aggregate');
+    const hasAggregates = ast.columns.some(c =>
+      c.type === 'aggregate' || this._exprContainsAggregate(c.expr)
+    );
     const hasWindow = ast.columns.some(c => c.type === 'window');
 
     if (ast.groupBy) {
@@ -5351,6 +5353,67 @@ export class Database {
     return !!this._evalGroupExpr(cond, groupRows, result, computeAgg);
   }
 
+  /**
+   * Evaluate an expression that contains aggregate functions against a set of rows.
+   * Recursively evaluates aggregate_expr nodes against all rows, then computes arithmetic.
+   */
+  _evalAggregateExpr(expr, rows) {
+    if (!expr) return null;
+    if (expr.type === 'aggregate_expr') {
+      // Compute the aggregate
+      const func = expr.func;
+      const isStarArg = expr.arg === '*' || (typeof expr.arg === 'object' && expr.arg?.name === '*');
+      let values;
+      if (isStarArg) {
+        values = rows;
+      } else if (typeof expr.arg === 'object') {
+        values = rows.map(r => this._evalValue(expr.arg, r)).filter(v => v != null);
+      } else {
+        values = rows.map(r => this._resolveColumn(expr.arg, r)).filter(v => v != null);
+      }
+      if (expr.distinct) values = [...new Set(values)];
+      
+      switch (func) {
+        case 'COUNT': return isStarArg ? rows.length : values.length;
+        case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
+        case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
+        case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
+        case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
+        default: return null;
+      }
+    }
+    if (expr.type === 'arith') {
+      const left = this._evalAggregateExpr(expr.left, rows);
+      const right = this._evalAggregateExpr(expr.right, rows);
+      if (left == null || right == null) return null;
+      switch (expr.op) {
+        case '+': return left + right;
+        case '-': return left - right;
+        case '*': return left * right;
+        case '/': return right !== 0 ? left / right : null;
+        case '%': return right !== 0 ? left % right : null;
+        default: return null;
+      }
+    }
+    if (expr.type === 'literal') return expr.value;
+    if (expr.type === 'number') return expr.value;
+    // For non-aggregate expressions, evaluate against first row
+    return rows.length ? this._evalValue(expr, rows[0]) : null;
+  }
+
+  /**
+   * Check if an expression tree contains any aggregate function calls.
+   */
+  _exprContainsAggregate(expr) {
+    if (!expr) return false;
+    if (expr.type === 'aggregate_expr') return true;
+    if (expr.type === 'arith') {
+      return this._exprContainsAggregate(expr.left) || this._exprContainsAggregate(expr.right);
+    }
+    if (expr.type === 'function_call' && ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX'].includes(expr.func?.toUpperCase())) return true;
+    return false;
+  }
+
   _resolveColumn(name, row) {
     // Handle numeric column references (ORDER BY 1, 2, etc.)
     if (typeof name === 'number') {
@@ -5928,6 +5991,12 @@ export class Database {
   _computeAggregates(columns, rows) {
     const result = {};
     for (const col of columns) {
+      // Handle expression columns that contain aggregates (e.g., SUM(a) / SUM(b))
+      if (col.type === 'expression' && this._exprContainsAggregate(col.expr)) {
+        const name = col.alias || 'expr';
+        result[name] = this._evalAggregateExpr(col.expr, rows);
+        continue;
+      }
       if (col.type !== 'aggregate') continue;
       const argStr = typeof col.arg === 'object' ? 'expr' : col.arg;
       const name = col.alias || `${col.func}(${argStr})`;
