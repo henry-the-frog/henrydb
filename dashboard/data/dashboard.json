@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T20:24:20.562Z",
+  "generated": "2026-04-13T20:29:42.731Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard health, knowledge capture",
-    "startedAt": "2026-04-13T20:24:20.562Z",
-    "taskId": "T5"
+    "mode": "BUILD",
+    "task": "Hunt remaining test failures: run batches of test files, fix what's broken",
+    "startedAt": "2026-04-13T20:29:42.731Z",
+    "taskId": "T17"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -1784,66 +1784,108 @@
       {
         "id": "T3",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Deepen HenryDB: fix GROUP BY alias resolution, improve query optimizer cost model accuracy",
         "task": null,
-        "started": "2026-04-13T20:18:31.870Z"
+        "started": "2026-04-13T20:18:31.870Z",
+        "completed": "2026-04-13T20:20:07.132Z",
+        "duration_ms": 120000,
+        "summary": "Found 2 real GROUP BY bugs: (1) simple column alias not resolved (GROUP BY person gives 1 group instead of 2), (2) ordinal position not supported. Planned 3 BUILD tasks."
       },
       {
         "id": "T14",
         "mode": "BUILD",
         "task": "Fix GROUP BY simple column alias resolution (GROUP BY person when SELECT name AS person)",
-        "status": "upcoming",
-        "plan_ref": "T3"
+        "status": "done",
+        "plan_ref": "T3",
+        "started": "2026-04-13T20:20:15.483Z",
+        "completed": "2026-04-13T20:21:48.530Z",
+        "duration_ms": 300000,
+        "summary": "Fixed GROUP BY simple column alias resolution. Added columnAliasMap for type:column aliases. GROUP BY person when SELECT name AS person now works correctly. All 39 GROUP BY tests pass."
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "task": "Fix GROUP BY ordinal position support (GROUP BY 1, GROUP BY 2)",
-        "status": "upcoming",
-        "plan_ref": "T3"
+        "status": "done",
+        "plan_ref": "T3",
+        "started": "2026-04-13T20:21:57.250Z",
+        "completed": "2026-04-13T20:23:02.093Z",
+        "duration_ms": 180000,
+        "summary": "Implemented GROUP BY ordinal position support. GROUP BY 1/2/etc now resolves to corresponding SELECT columns. Works with plain columns, expressions, functions, CASE. All 39 GROUP BY tests pass."
       },
       {
         "id": "T16",
         "mode": "BUILD",
         "task": "Write comprehensive GROUP BY alias + ordinal test suite",
-        "status": "upcoming",
-        "plan_ref": "T3"
+        "status": "done",
+        "plan_ref": "T3",
+        "started": "2026-04-13T20:23:10.491Z",
+        "completed": "2026-04-13T20:23:55.489Z",
+        "duration_ms": 180000,
+        "summary": "18 comprehensive GROUP BY alias + ordinal tests: simple/expression/CASE/function aliases, ordinal 1/2/multiple, HAVING, ORDER BY, NULL, shadowing. All pass."
       },
       {
         "id": "T4",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
         "plan_ref": "T2",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-13T20:24:11.133Z",
+        "completed": "2026-04-13T20:24:11.275Z",
+        "duration_ms": 0,
+        "summary": "Skipped — orphan placeholder from removed plan T2"
       },
       {
         "id": "T5",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard health, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard health, knowledge capture",
+        "started": "2026-04-13T20:24:20.526Z",
+        "completed": "2026-04-13T20:24:42.533Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed henrydb + workspace. Dashboard healthy."
       },
       {
         "id": "T6",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "What's the most interesting unsolved problem in HenryDB? Where would going deeper teach me the most?"
+        "status": "done",
+        "task": "What's the most interesting unsolved problem in HenryDB? Where would going deeper teach me the most?",
+        "started": "2026-04-13T20:24:53.721Z",
+        "completed": "2026-04-13T20:25:28.808Z",
+        "duration_ms": 120000,
+        "summary": "Direction: hunt remaining test failures to push pass rate higher. Focus on whatever class of failures is most common. Alternative: query bytecode VM or incremental vacuum. Going with failure hunting — highest ROI for quality."
       },
       {
         "id": "T7",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB stress testing: find bugs through adversarial query patterns and edge cases",
-        "task": null
+        "task": null,
+        "started": "2026-04-13T20:25:38.448Z"
       },
       {
         "id": "T8",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix histogram equality estimation for high-frequency values (DONE in PLAN)",
         "plan_ref": "T7",
         "project": "henrydb"
+      },
+      {
+        "id": "T17",
+        "mode": "BUILD",
+        "task": "Hunt remaining test failures: run batches of test files, fix what's broken",
+        "status": "upcoming",
+        "plan_ref": "T7"
+      },
+      {
+        "id": "T18",
+        "mode": "BUILD",
+        "task": "Run full regression sweep to verify quality",
+        "status": "upcoming",
+        "plan_ref": "T7"
       },
       {
         "id": "T9",
@@ -1882,12 +1924,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 6,
-    "blocksTotal": 16,
+    "blocksCompleted": 10,
+    "blocksTotal": 18,
     "modeDistribution": {
-      "THINK": 1,
-      "PLAN": 1,
-      "BUILD": 4
+      "THINK": 2,
+      "PLAN": 2,
+      "BUILD": 5,
+      "MAINTAIN": 1
     }
   },
   "artifacts": [

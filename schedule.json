@@ -78,30 +78,60 @@
     {
       "id": "T5",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard health, knowledge capture",
-      "started": "2026-04-13T20:24:20.526Z"
+      "started": "2026-04-13T20:24:20.526Z",
+      "completed": "2026-04-13T20:24:42.533Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed henrydb + workspace. Dashboard healthy."
     },
     {
       "id": "T6",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What's the most interesting unsolved problem in HenryDB? Where would going deeper teach me the most?"
+      "status": "done",
+      "task": "What's the most interesting unsolved problem in HenryDB? Where would going deeper teach me the most?",
+      "started": "2026-04-13T20:24:53.721Z",
+      "completed": "2026-04-13T20:25:28.808Z",
+      "duration_ms": 120000,
+      "summary": "Direction: hunt remaining test failures to push pass rate higher. Focus on whatever class of failures is most common. Alternative: query bytecode VM or incremental vacuum. Going with failure hunting — highest ROI for quality."
     },
     {
       "id": "T7",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB stress testing: find bugs through adversarial query patterns and edge cases",
-      "task": null
+      "task": null,
+      "started": "2026-04-13T20:25:38.448Z",
+      "completed": "2026-04-13T20:29:17.042Z",
+      "duration_ms": 300000,
+      "summary": "Fixed histogram equality estimation bug — exact-match buckets now sum full count instead of dividing by ndv. Estimate for val=1 (900/1000 rows) went from 31 to 884. Planned 3 BUILD tasks."
     },
     {
       "id": "T8",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix histogram equality estimation for high-frequency values (DONE in PLAN)",
       "plan_ref": "T7",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T20:29:33.614Z",
+      "completed": "2026-04-13T20:29:33.759Z",
+      "duration_ms": 0,
+      "summary": "Already fixed during PLAN T7."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Hunt remaining test failures: run batches of test files, fix what's broken",
+      "status": "in-progress",
+      "plan_ref": "T7",
+      "started": "2026-04-13T20:29:42.696Z"
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Run full regression sweep to verify quality",
+      "status": "upcoming",
+      "plan_ref": "T7"
     },
     {
       "id": "T9",
@@ -206,6 +236,10 @@
     {
       "time": "2026-04-13T20:20:01.368Z",
       "msg": "PLAN T3 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T20:29:10.747Z",
+      "msg": "PLAN T7 filled 3 BUILD tasks"
     }
   ]
 }
