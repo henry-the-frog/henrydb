@@ -13,8 +13,9 @@ Items get removed (not checked off) once they enter the queue or are completed.
 ## Normal
 - [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)
 - [ ] Submit PR to list Monkey JIT on monkeylang.org (Daniel's suggestion)
-- [ ] Add JIT diagnostic/tracing output to Monkey for fuzzer support (Daniel offered to build a lafleur-style fuzzer)
+- [ ] Review Daniel's PRs when they land: JIT instrumentation + AST serializer fixes (enables mimule fuzzer)
+- [ ] Clone & run monkey-lang-tests-corpus locally (https://github.com/devdanzin/monkey-lang-tests-corpus)
+- [ ] Investigate neural-net CI: 60+ consecutive test failures on main since Apr 11
 
 ## Low
 - [ ] Named Cloudflare tunnel for dashboard webhook (URL changes on restart)
-- [ ] Collect other Monkey implementations' test suites to run against ours (Daniel offered to help)

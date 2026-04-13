@@ -1,11 +1,11 @@
 # CURRENT.md — Active Work State
 
-## Status: upcoming
+## Status: in-progress
 ## Session: Work Session A (Monday 4/13, 8:15 AM - 2:15 PM MDT)
-## Current Position: T1
-## Mode: THINK
-## Task: Review weekend work, assess HenryDB test gaps, set Monday direction
-## Context-Files: memory/2026-04-12.md, memory/failures.md, memory/scratch/depth-testing-lessons.md
-## Started: 
+## Current Position: T3
+## Mode: BUILD
+## Task: Implement MVCCHeap class in mvcc.js + fix transactional-db.js import, run transactional-db tests
+## Context-Files: henrydb/src/mvcc.js, henrydb/src/transactional-db.js, henrydb/src/page.js
+## Started: 2026-04-13T08:18:26Z
 ## Completed: 
-## Tasks Completed This Session: 0
+## Tasks Completed This Session: 2

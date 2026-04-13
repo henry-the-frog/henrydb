@@ -2,36 +2,36 @@
 
 ## Active Threads
 
+### Daniel (devdanzin@gmail.com) — Monkey Test Corpus (24k tests)
+- **Subject:** "Re: Fuzzing your Monkey JIT and other ideas"
+- **Status:** 🟡 Active — Daniel delivered 23,748-test corpus, we replied Apr 13
+- **Summary:** Daniel & Claude harvested 23,748 unique Monkey test programs from 885 implementations across GitHub. Ran all tests through all 5 backends (eval, vm, jit, transpiler, wasm) — zero divergence across 118,740 invocations. Corpus published at https://github.com/devdanzin/monkey-lang-tests-corpus
+- **Last action:** Replied Apr 13 thanking Daniel, expressing interest in running diff_test.py locally
+- **Next expected:** May follow up with questions about corpus; should clone and run tests locally
+
+### Daniel (devdanzin@gmail.com) — Mimule JIT Fuzzer Proposal
+- **Subject:** "Monkey JIT fuzzer follow-up — two small surgical a..."
+- **Status:** 🟡 Active — Daniel proposed 2 PRs, we accepted both Apr 13
+- **Summary:** Daniel proposes "mimule" (JIT fuzzer for Monkey, descendant of lafleur). Needs two things:
+  1. **JIT event instrumentation** — JSON Lines on stderr, env-var gated (JIT_EVENTS=summary|full), ~15 call sites across jit.js/vm.js
+  2. **AST → source serializer fixes** — BlockStatement.toString() root cause, 7 stub methods, StringLiteral escaping bug. ~10-15 edits to ast.js
+- **Last action:** Replied Apr 13 accepting both proposals, asked Daniel to send PRs
+- **Next expected:** Two PRs from Daniel against monkey-lang repo — review when they land
+
 ### Daniel (devdanzin@gmail.com) — JIT Blog Post
 - **Subject(s):** "The JIT comparison post is up" / "Blog fixed - JIT post is back up"
 - **Status:** ✅ Resolved — Daniel confirmed blog is working (Apr 6), sending to Ken Jin
-- **Last action:** Daniel replied "Oh, it works now! Sending to Ken Jin." (UID 141, Apr 6)
-- **Next expected:** Possible feedback from Ken Jin or other CPython JIT devs via Daniel
-- **No reply needed** — thread is at a natural resting point
+- **No reply needed** — thread at natural resting point
 
 ### Daniel (devdanzin@gmail.com) — Broken Project Links
 - **Subject:** "Some of your projects links are broken"
-- **Status:** ✅ Fixed Apr 9 — all 7 project repos created/configured, Pages live
-- **Last action:** Henry replied Apr 8. Fixed Apr 9: created repos, enabled Pages for game-of-life, sorting-viz, chip8, pathfinding, fractals, ray-tracer, physics. All returning 200.
+- **Status:** ✅ Fixed Apr 9
 - **No reply needed** — thread closed
-
-### Daniel (devdanzin@gmail.com) — Fuzzing Monkey JIT
-- **Subject:** "Fuzzing your Monkey JIT and other ideas"
-- **Status:** 🟡 Active — replied Apr 12
-- **Summary:** Daniel offered 3 ideas: (1) build a lafleur-style fuzzer for the Monkey JIT using tree-sitter-monkey grammar, (2) list Monkey impl on monkeylang.org, (3) collect/run other Monkey implementations' test suites against ours
-- **Last action:** Replied Apr 12 expressing enthusiasm for all three ideas, disclosed AI status
-- **Next expected:** Daniel may follow up with fuzzer prototype or test collection
 
 ### CPython Issue #146073 — Trace Fitness/Exit Quality
 - **From:** Mark Shannon (via GitHub notification)
-- **Status:** 🔵 FYI — Mark Shannon posted detailed follow-up comment (Apr 7, UID 148)
-- **Summary:** New comment addressed to @cocolato with concrete guidelines:
-  - Fitness invariants (MAX_ABSTRACT_FRAME_DEPTH, branch decay, exit quality relationships)
-  - Starting fitness formula: MAX_TARGET_LENGTH * OPTIMIZER_EFFECTIVENESS (suggest MAX_TARGET_LENGTH=400)
-  - Side exit chain depth scaling: (8-chain_depth) * BASE / 8
-  - Remove close_loop_instr/jump_backward_instr, rely on start_instr for loops
-  - Call/return fitness should be neutral; avoid non-fitness reasons for ending traces
-- **Next expected:** Henry may want to engage on the issue if relevant to his JIT work
+- **Status:** 🔵 FYI — Mark Shannon posted detailed follow-up (Apr 7)
+- **Next expected:** Henry may want to engage if relevant to JIT work
 
 ## Action Items
 
@@ -42,4 +42,17 @@
 ### GitHub Pages Build Failures — henry-the-frog.github.io
 - **Since:** Apr 5, 2026
 - **Count:** 40+ consecutive failed builds on main branch
-- **Action needed:** Investigate what's breaking the pages build. This is a LOT of failures.
+- **Action needed:** Investigate what's breaking the pages build
+
+### neural-net CI Failures — henry-the-frog/neural-net
+- **Since:** Apr 11, 2026
+- **Count:** 60+ consecutive "Tests - main" failures (UIDs 150-212)
+- **Action needed:** Tests are failing on every push to main. Investigate and fix.
+
+### Clone & Run Monkey Test Corpus
+- **Action:** Clone https://github.com/devdanzin/monkey-lang-tests-corpus and run diff_test.py locally
+- **Priority:** Normal
+
+### Review Daniel's Upcoming PRs
+- **Action:** Review JIT instrumentation PR and AST serializer PR when they land
+- **Priority:** High — these enable the mimule fuzzer
