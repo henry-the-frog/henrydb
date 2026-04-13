@@ -1021,10 +1021,13 @@
     {
       "id": "T94",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Try to fix CAST() operator chaining (CAST(val AS TEXT) || ' units')",
       "project": "henrydb",
-      "started": "2026-04-13T19:46:27.116Z"
+      "started": "2026-04-13T19:46:27.116Z",
+      "completed": "2026-04-13T19:49:49.977Z",
+      "duration_ms": 240000,
+      "summary": "Fixed CAST operator chaining — CAST(val AS TEXT) || units now works. Also fixed nested SUBSTRING FROM/FOR (bug #19). Bug #20 this session. Grand total: 20 bugs fixed, ~200 new tests."
     }
   ],
   "focusProjects": [
