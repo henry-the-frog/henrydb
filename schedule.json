@@ -1127,10 +1127,13 @@
     {
       "id": "T106",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: UPDATE with FROM clause (PostgreSQL style)",
       "project": "henrydb",
-      "started": "2026-04-13T23:11:25.921Z"
+      "started": "2026-04-13T23:11:25.921Z",
+      "completed": "2026-04-13T23:12:59.821Z",
+      "duration_ms": 300000,
+      "summary": "UPDATE ... FROM: join update with another table. 3 tests. 680 total test files."
     },
     {
       "id": "T107",
@@ -1164,6 +1167,49 @@
       "completed": "2026-04-13T23:09:21.759Z",
       "duration_ms": 30000,
       "summary": "STRING_AGG already implemented. Verified with separator."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement && and || logical operators (short-circuit)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CASE expression in WHERE clause",
+      "project": "henrydb"
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: recursive CTE (WITH RECURSIVE)",
+      "project": "henrydb",
+      "started": "2026-04-13T23:13:17.607Z"
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement a sorting builtin (sort with optional comparator)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: INSERT INTO ... SELECT (insert from query)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: COPY TO/FROM CSV support",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1571,6 +1617,30 @@
     {
       "time": "2026-04-13T23:05:03.720Z",
       "msg": "Added T109 (BUILD) after end: HenryDB: STRING_AGG aggregate function"
+    },
+    {
+      "time": "2026-04-13T23:13:12.100Z",
+      "msg": "Added T110 (BUILD) after end: Monkey: implement && and || logical operators (short-circuit)"
+    },
+    {
+      "time": "2026-04-13T23:13:12.220Z",
+      "msg": "Added T111 (BUILD) after end: HenryDB: CASE expression in WHERE clause"
+    },
+    {
+      "time": "2026-04-13T23:13:12.339Z",
+      "msg": "Added T112 (BUILD) after end: HenryDB: recursive CTE (WITH RECURSIVE)"
+    },
+    {
+      "time": "2026-04-13T23:13:12.458Z",
+      "msg": "Added T113 (BUILD) after end: Monkey: implement a sorting builtin (sort with optional comparator)"
+    },
+    {
+      "time": "2026-04-13T23:13:12.576Z",
+      "msg": "Added T114 (BUILD) after end: HenryDB: INSERT INTO ... SELECT (insert from query)"
+    },
+    {
+      "time": "2026-04-13T23:13:12.694Z",
+      "msg": "Added T115 (BUILD) after end: HenryDB: COPY TO/FROM CSV support"
     }
   ]
 }
