@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-13T16:02:50.533Z",
+  "generated": "2026-04-13T16:07:27.880Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)",
-    "completedAt": "2026-04-13T16:02:50.533Z",
-    "taskId": "T46",
-    "summary": "FOUND BUG #7: Savepoint-revoked rows (xmax=-2) persisted across close/reopen because recovery sets all rows to xmax=0. Fixed: physically delete xmax=-2 rows during commit. 12/12 savepoint tests.",
-    "durationMs": 300000
+    "task": "HenryDB: Test UPDATE persistence — does UPDATE data survive close/reopen correctly?",
+    "completedAt": "2026-04-13T16:07:27.880Z",
+    "taskId": "T49",
+    "summary": "UPDATE persistence works correctly: single update, multiple updates to same row, update+delete, session update+rollback. All survive close/reopen correctly. No bugs found.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2204,12 +2204,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 46,
+    "blocksCompleted": 49,
     "blocksTotal": 41,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 7,
-      "BUILD": 26,
+      "BUILD": 29,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }
