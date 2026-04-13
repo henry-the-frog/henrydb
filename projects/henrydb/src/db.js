@@ -4272,7 +4272,7 @@ export class Database {
 
     for (const col of windowCols) {
       const name = col.alias || `${col.func}(${col.arg || ''})`;
-      const { partitionBy, orderBy } = col.over;
+      const { partitionBy, orderBy, frame } = col.over;
 
       // Partition rows
       const partitions = new Map();
@@ -4299,6 +4299,41 @@ export class Database {
         }
 
         // Compute window function values
+        // Helper: get frame bounds for row at index i
+        const getFrameBounds = (i, len) => {
+          if (!frame) {
+            // Default: with ORDER BY → UNBOUNDED PRECEDING to CURRENT ROW
+            // Without ORDER BY → entire partition
+            return orderBy ? [0, i] : [0, len - 1];
+          }
+          let start = 0, end = len - 1;
+          // Start bound
+          if (frame.start.type === 'UNBOUNDED' && frame.start.direction === 'PRECEDING') {
+            start = 0;
+          } else if (frame.start.type === 'CURRENT ROW') {
+            start = i;
+          } else if (frame.start.type === 'OFFSET') {
+            if (frame.start.direction === 'PRECEDING') {
+              start = Math.max(0, i - frame.start.offset);
+            } else {
+              start = Math.min(len - 1, i + frame.start.offset);
+            }
+          }
+          // End bound
+          if (frame.end.type === 'UNBOUNDED' && frame.end.direction === 'FOLLOWING') {
+            end = len - 1;
+          } else if (frame.end.type === 'CURRENT ROW') {
+            end = i;
+          } else if (frame.end.type === 'OFFSET') {
+            if (frame.end.direction === 'PRECEDING') {
+              end = Math.max(0, i - frame.end.offset);
+            } else {
+              end = Math.min(len - 1, i + frame.end.offset);
+            }
+          }
+          return [start, end];
+        };
+
         switch (col.func) {
           case 'ROW_NUMBER': {
             for (let i = 0; i < partition.length; i++) {
@@ -4333,74 +4368,56 @@ export class Database {
             break;
           }
           case 'COUNT': {
-            // With ORDER BY: running count, without: total count
-            if (orderBy) {
-              for (let i = 0; i < partition.length; i++) {
-                partition[i][`__window_${name}`] = i + 1;
-              }
-            } else {
-              for (let i = 0; i < partition.length; i++) {
-                partition[i][`__window_${name}`] = partition.length;
-              }
+            for (let i = 0; i < partition.length; i++) {
+              const [start, end] = getFrameBounds(i, partition.length);
+              partition[i][`__window_${name}`] = end - start + 1;
             }
             break;
           }
           case 'SUM': {
-            if (orderBy) {
-              // Running sum (default frame: UNBOUNDED PRECEDING to CURRENT ROW)
-              let runningSum = 0;
-              for (const r of partition) {
-                runningSum += (this._resolveColumn(col.arg, r) || 0);
-                r[`__window_${name}`] = runningSum;
+            for (let i = 0; i < partition.length; i++) {
+              const [start, end] = getFrameBounds(i, partition.length);
+              let sum = 0;
+              for (let j = start; j <= end; j++) {
+                sum += (this._resolveColumn(col.arg, partition[j]) || 0);
               }
-            } else {
-              const total = partition.reduce((s, r) => s + (this._resolveColumn(col.arg, r) || 0), 0);
-              for (const r of partition) r[`__window_${name}`] = total;
+              partition[i][`__window_${name}`] = sum;
             }
             break;
           }
           case 'AVG': {
-            if (orderBy) {
-              // Running average
+            for (let i = 0; i < partition.length; i++) {
+              const [start, end] = getFrameBounds(i, partition.length);
               let sum = 0;
-              for (let i = 0; i < partition.length; i++) {
-                sum += (this._resolveColumn(col.arg, partition[i]) || 0);
-                partition[i][`__window_${name}`] = sum / (i + 1);
+              const count = end - start + 1;
+              for (let j = start; j <= end; j++) {
+                sum += (this._resolveColumn(col.arg, partition[j]) || 0);
               }
-            } else {
-              const total = partition.reduce((s, r) => s + (this._resolveColumn(col.arg, r) || 0), 0);
-              const avg = total / partition.length;
-              for (const r of partition) r[`__window_${name}`] = avg;
+              partition[i][`__window_${name}`] = count > 0 ? sum / count : null;
             }
             break;
           }
           case 'MIN': {
-            if (orderBy) {
+            for (let i = 0; i < partition.length; i++) {
+              const [start, end] = getFrameBounds(i, partition.length);
               let min = Infinity;
-              for (const r of partition) {
-                const v = this._resolveColumn(col.arg, r);
+              for (let j = start; j <= end; j++) {
+                const v = this._resolveColumn(col.arg, partition[j]);
                 if (v != null && v < min) min = v;
-                r[`__window_${name}`] = min === Infinity ? null : min;
               }
-            } else {
-              const values = partition.map(r => this._resolveColumn(col.arg, r)).filter(v => v != null);
-              const min = values.length ? values.reduce((a, b) => a < b ? a : b) : null;
-              for (const r of partition) r[`__window_${name}`] = min;
+              partition[i][`__window_${name}`] = min === Infinity ? null : min;
             }
             break;
           }
           case 'MAX': {
-            if (orderBy) {
+            for (let i = 0; i < partition.length; i++) {
+              const [start, end] = getFrameBounds(i, partition.length);
               let max = -Infinity;
-              for (const r of partition) {
-                const v = this._resolveColumn(col.arg, r);
+              for (let j = start; j <= end; j++) {
+                const v = this._resolveColumn(col.arg, partition[j]);
                 if (v != null && v > max) max = v;
-                r[`__window_${name}`] = max === -Infinity ? null : max;
               }
-            } else {
-              const values = partition.map(r => this._resolveColumn(col.arg, r)).filter(v => v != null);
-              const max = values.length ? values.reduce((a, b) => a > b ? a : b) : null;
-              for (const r of partition) r[`__window_${name}`] = max;
+              partition[i][`__window_${name}`] = max === -Infinity ? null : max;
             }
             break;
           }
