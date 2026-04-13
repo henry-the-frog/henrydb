@@ -1226,10 +1226,60 @@
     {
       "id": "T115",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: COPY TO/FROM CSV support",
       "project": "henrydb",
-      "started": "2026-04-13T23:20:29.062Z"
+      "started": "2026-04-13T23:20:29.062Z",
+      "completed": "2026-04-13T23:22:52.537Z",
+      "duration_ms": 300000,
+      "summary": "CSV import/export: copyFrom(), copyTo() API. Header mapping, quoted fields, round-trip. Direct heap insert. 5 tests. 683 total."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: materialized views (CREATE MATERIALIZED VIEW, REFRESH MATERIALIZED VIEW)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: RETURNING clause for DELETE",
+      "project": "henrydb"
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement a simple module/import system",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LAG/LEAD window functions",
+      "project": "henrydb",
+      "started": "2026-04-13T23:23:14.088Z",
+      "completed": "2026-04-13T23:24:27.683Z",
+      "duration_ms": 60000,
+      "summary": "LAG/LEAD already implemented. Verified working with ORDER BY."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: NTILE window function",
+      "project": "henrydb",
+      "started": "2026-04-13T23:24:27.826Z"
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: FETCH FIRST N ROWS ONLY (SQL standard LIMIT)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1661,6 +1711,30 @@
     {
       "time": "2026-04-13T23:13:12.694Z",
       "msg": "Added T115 (BUILD) after end: HenryDB: COPY TO/FROM CSV support"
+    },
+    {
+      "time": "2026-04-13T23:23:05.953Z",
+      "msg": "Added T116 (BUILD) after end: HenryDB: materialized views (CREATE MATERIALIZED VIEW, REFRESH MATERIALIZED VIEW)"
+    },
+    {
+      "time": "2026-04-13T23:23:06.073Z",
+      "msg": "Added T117 (BUILD) after end: HenryDB: RETURNING clause for DELETE"
+    },
+    {
+      "time": "2026-04-13T23:23:06.192Z",
+      "msg": "Added T118 (BUILD) after end: Monkey: implement a simple module/import system"
+    },
+    {
+      "time": "2026-04-13T23:23:06.311Z",
+      "msg": "Added T119 (BUILD) after end: HenryDB: LAG/LEAD window functions"
+    },
+    {
+      "time": "2026-04-13T23:23:06.430Z",
+      "msg": "Added T120 (BUILD) after end: HenryDB: NTILE window function"
+    },
+    {
+      "time": "2026-04-13T23:23:06.548Z",
+      "msg": "Added T121 (BUILD) after end: HenryDB: FETCH FIRST N ROWS ONLY (SQL standard LIMIT)"
     }
   ]
 }

@@ -4813,9 +4813,15 @@ export class Database {
           }
           case 'NTILE': {
             const nArg = typeof col.arg === 'object' && col.arg?.value ? col.arg.value : (col.arg || 4);
-            const bucketSize = Math.ceil(partition.length / nArg);
-            for (let i = 0; i < partition.length; i++) {
-              partition[i][`__window_${name}`] = Math.floor(i / bucketSize) + 1;
+            const n = Math.min(nArg, partition.length);
+            const baseSize = Math.floor(partition.length / n);
+            const remainder = partition.length % n;
+            let idx = 0;
+            for (let tile = 1; tile <= n; tile++) {
+              const size = baseSize + (tile <= remainder ? 1 : 0);
+              for (let j = 0; j < size; j++) {
+                partition[idx++][`__window_${name}`] = tile;
+              }
             }
             break;
           }
