@@ -1365,9 +1365,10 @@ export function parse(sql) {
       let nulls = null; // null = default, 'FIRST' or 'LAST'
       if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'NULLS') {
         advance(); // consume NULLS
-        if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'FIRST') {
+        const nv = peek().value?.toUpperCase();
+        if (nv === 'FIRST') {
           nulls = 'FIRST'; advance();
-        } else if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'LAST') {
+        } else if (nv === 'LAST') {
           nulls = 'LAST'; advance();
         }
       }
