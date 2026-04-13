@@ -182,6 +182,24 @@ describe('Savepoints through MVCC', () => {
     s.close();
   });
 
+  it('savepoint rollback data does NOT persist across close/reopen', () => {
+    db = fresh();
+    db.execute('CREATE TABLE t (id INT, val TEXT)');
+    const s = db.session();
+    s.begin();
+    s.execute("INSERT INTO t VALUES (1, 'keep')");
+    s.execute('SAVEPOINT sp1');
+    s.execute("INSERT INTO t VALUES (2, 'discard')");
+    s.execute('ROLLBACK TO sp1');
+    s.commit();
+    s.close();
+    db.close();
+    db = TransactionalDatabase.open(dir);
+    const r = db.execute('SELECT * FROM t');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].val, 'keep');
+  });
+
   it('commit after savepoints clears them', () => {
     db = fresh();
     db.execute('CREATE TABLE t (id INT)');

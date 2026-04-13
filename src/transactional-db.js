@@ -569,10 +569,31 @@ export class TransactionSession {
     this._tdb._wal.appendCommit(this._tx.txId);
     // Physicalize committed deletes (no additional WAL)
     this._tdb._physicalizeDeletesNoWal(this._tx);
+    // Physically remove savepoint-revoked rows (xmax=-2) from heap
+    this._physicalizeRevokedRows();
     this._tx = null;
     this._savepoints.clear();
     this._revokedRows.clear();
     return { type: 'OK', message: 'COMMIT' };
+  }
+
+  /** Remove savepoint-revoked rows (xmax=-2) from heap for persistence correctness */
+  _physicalizeRevokedRows() {
+    for (const [tableName, vm] of this._tdb._versionMaps) {
+      const table = this._tdb._db.tables.get(tableName);
+      if (!table) continue;
+      const keysToDelete = [];
+      for (const [key, ver] of vm) {
+        if (ver.xmax === -2) {
+          const [pageId, slotIdx] = key.split(':').map(Number);
+          try { table.heap.delete(pageId, slotIdx); } catch {}
+          keysToDelete.push(key);
+        }
+      }
+      for (const key of keysToDelete) {
+        vm.delete(key);
+      }
+    }
   }
 
   rollback() {
