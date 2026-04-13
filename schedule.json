@@ -846,10 +846,21 @@
     {
       "id": "T78",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tokenizer regression tests for the negative number fix and other edge cases",
       "project": "henrydb",
-      "started": "2026-04-13T19:15:01.151Z"
+      "started": "2026-04-13T19:15:01.151Z",
+      "completed": "2026-04-13T19:15:45.653Z",
+      "duration_ms": 120000,
+      "summary": "Added 18 tokenizer regression tests covering negative number vs MINUS disambiguation and end-to-end arithmetic. All passing."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Test UPDATE SET with subquery and complex expressions",
+      "project": "henrydb",
+      "started": "2026-04-13T19:16:00.269Z"
     }
   ],
   "focusProjects": [
@@ -1141,6 +1152,10 @@
     {
       "time": "2026-04-13T19:15:00.917Z",
       "msg": "Added T78 (BUILD) after end: Add tokenizer regression tests for the negative number fix and other edge cases"
+    },
+    {
+      "time": "2026-04-13T19:16:00.036Z",
+      "msg": "Added T79 (BUILD) after end: Test UPDATE SET with subquery and complex expressions"
     }
   ]
 }

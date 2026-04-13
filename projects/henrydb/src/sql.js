@@ -1477,7 +1477,7 @@ export function parse(sql) {
     do {
       const col = advance().value;
       expect('EQ');
-      const value = parsePrimaryWithConcat();
+      const value = parseExpr();
       assignments.push({ column: col, value });
     } while (match(','));
     let where = null;
