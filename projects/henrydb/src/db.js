@@ -1927,11 +1927,20 @@ export class Database {
     return { type: 'ROWS', rows };
   }
 
+  _resolveDefault(defaultValue) {
+    if (defaultValue == null) return null;
+    if (typeof defaultValue === 'object' && defaultValue.type) {
+      // It's an expression node — evaluate it
+      try { return this._evalValue(defaultValue, {}); } catch { return null; }
+    }
+    return defaultValue;
+  }
+
   _orderValues(table, columns, values) {
     if (columns) {
       const ordered = new Array(table.schema.length).fill(null);
       for (let i = 0; i < table.schema.length; i++) {
-        if (table.schema[i].defaultValue != null) ordered[i] = table.schema[i].defaultValue;
+        if (table.schema[i].defaultValue != null) ordered[i] = this._resolveDefault(table.schema[i].defaultValue);
       }
       for (let i = 0; i < columns.length; i++) {
         const colIdx = table.schema.findIndex(c => c.name === columns[i]);
@@ -1949,7 +1958,7 @@ export class Database {
       // Apply default values first
       for (let i = 0; i < table.schema.length; i++) {
         if (table.schema[i].defaultValue !== undefined && table.schema[i].defaultValue !== null) {
-          orderedValues[i] = table.schema[i].defaultValue;
+          orderedValues[i] = this._resolveDefault(table.schema[i].defaultValue);
         }
       }
       for (let i = 0; i < columns.length; i++) {

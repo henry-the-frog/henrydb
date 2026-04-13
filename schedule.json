@@ -879,10 +879,21 @@
     {
       "id": "T81",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Hunt for more expression parser bugs: test HAVING with expressions, GROUP BY with expressions, window function partitions with expressions",
       "project": "henrydb",
-      "started": "2026-04-13T19:19:16.046Z"
+      "started": "2026-04-13T19:19:16.046Z",
+      "completed": "2026-04-13T19:21:11.473Z",
+      "duration_ms": 240000,
+      "summary": "Found and fixed window PARTITION BY expression bug. PARTITION BY val % 10 now works (was only parsing column names). Also discovered GROUP BY alias issue and GROUP BY LENGTH alias issue — logged for future. Bug #15 this session."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions",
+      "project": "henrydb",
+      "started": "2026-04-13T19:21:31.114Z"
     }
   ],
   "focusProjects": [
@@ -1186,6 +1197,10 @@
     {
       "time": "2026-04-13T19:19:15.813Z",
       "msg": "Added T81 (BUILD) after end: Hunt for more expression parser bugs: test HAVING with expressions, GROUP BY with expressions, window function partitions with expressions"
+    },
+    {
+      "time": "2026-04-13T19:21:30.881Z",
+      "msg": "Added T82 (BUILD) after end: More edge case hunting: test CREATE TABLE column defaults with expressions, DELETE with subqueries, RETURNING with expressions"
     }
   ]
 }

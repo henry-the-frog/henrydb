@@ -1521,8 +1521,8 @@ export function parse(sql) {
       let defaultVal = null;
       if (isKeyword('DEFAULT')) {
         advance();
-        const t = advance();
-        defaultVal = t.type === 'NUMBER' ? t.value : t.type === 'STRING' ? t.value : null;
+        const defExpr = parseExpr();
+        defaultVal = defExpr.type === 'literal' ? defExpr.value : defExpr;
       }
       return { type: 'ALTER_TABLE', table, action: 'ADD_COLUMN', column: colName, dataType: colType, defaultValue: defaultVal };
     }
@@ -1637,8 +1637,13 @@ export function parse(sql) {
         }
         else if (isKeyword('DEFAULT')) {
           advance();
-          const t = advance();
-          defaultVal = t.type === 'NUMBER' ? t.value : t.type === 'STRING' ? t.value : null;
+          const defExpr = parseExpr();
+          // Extract value from literal or evaluate simple expressions
+          if (defExpr.type === 'literal') {
+            defaultVal = defExpr.value;
+          } else {
+            defaultVal = defExpr; // Store expression node for later evaluation
+          }
         }
         else if (isKeyword('REFERENCES')) {
           advance();
