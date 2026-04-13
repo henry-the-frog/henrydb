@@ -59,36 +59,63 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard health, knowledge capture",
-      "started": "2026-04-13T14:28:30.241Z"
+      "started": "2026-04-13T14:28:30.241Z",
+      "completed": "2026-04-13T14:29:10.880Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed henrydb and workspace. Dashboard healthy. Knowledge capture: frozen txId 0 pattern added to failures.md."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on HenryDB quality — what patterns keep breaking? What needs architectural attention?"
+      "status": "done",
+      "task": "Reflect on HenryDB quality — what patterns keep breaking? What needs architectural attention?",
+      "started": "2026-04-13T14:29:22.349Z",
+      "completed": "2026-04-13T14:29:38.107Z",
+      "duration_ms": 120000,
+      "summary": "Key patterns: (1) Layer interface mismatches, (2) Recovery != operational path, (3) Cache invalidation is #1 subtle bug source, (4) MVCC bugs compound (4-layer cascade), (5) JS null coercion. Architectural: need unified MVCC interface, consistent cache invalidation framework, systematic close/reopen integration tests."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey ecosystem: submit monkeylang.org listing PR, add JIT diagnostic output for fuzzer support (Daniel collab)",
-      "task": null
+      "task": null,
+      "started": "2026-04-13T14:29:46.826Z",
+      "completed": "2026-04-13T14:31:44.849Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILD tasks: (1) monkeylang.org listing PR, (2) JIT diagnostic output for fuzzer support."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Submit monkeylang.org listing PR to mrnugget/monkeylang",
       "plan_ref": "T6",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T14:31:56.709Z",
+      "completed": "2026-04-13T14:32:58.778Z",
+      "duration_ms": 300000,
+      "summary": "Submitted PR #50 to mrnugget/monkeylang. Added JS implementation with 5 backends (interpreter, VM, JIT, transpiler, WASM), playground link, blog links."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Add JIT diagnostic --trace-info flag for fuzzer support (Daniel collab)",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-13T14:33:21.440Z",
+      "completed": "2026-04-13T14:36:00.274Z",
+      "duration_ms": 300000,
+      "summary": "Added --trace-info (JSON JIT diagnostics to stderr) and --diff-test (run JIT vs interpreter, compare outputs, exit 1 on mismatch) flags. Both designed for fuzzer integration. Tested with loop and fib programs."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, check email/GitHub"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, check email/GitHub",
+      "started": "2026-04-13T14:36:18.797Z"
     },
     {
       "id": "T9",
@@ -201,6 +228,10 @@
     {
       "time": "2026-04-13T14:18:09.312Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T14:31:37.861Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }

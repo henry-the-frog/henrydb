@@ -1,5 +1,13 @@
 # Failures & Patterns
 
+## 2026-04-13: Frozen TxId 0 Not Visible After Recovery
+
+**Bug:** After close/reopen, TransactionalDatabase returned 0 rows even though data was correctly persisted on disk.
+**Root cause:** During WAL recovery, rebuilt version maps set xmin=0 for all recovered rows. But MVCCManager.isVisible() checked if txId 0 was in committedTxns — it wasn't (it's a synthetic ID). So all recovered rows were invisible.
+**Fix:** Treat txId 0 as "frozen" — always visible, like PostgreSQL's frozen tuple optimization.
+**Pattern:** Recovery paths create synthetic state that doesn't match the normal operational path. Any MVCC visibility check needs special cases for recovered/pre-existing data.
+**Related:** MVCCManager.commit()/rollback() accepted tx objects but TransactionalDatabase passed txId numbers. SSIManager accepted txId numbers. Made both accept either.
+
 ## 2026-04-09 HenryDB Depth Day
 
 ### Critical Bugs Found and Fixed
