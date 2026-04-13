@@ -597,44 +597,13 @@ export function parse(sql) {
       return { type: 'scalar_subquery', subquery, alias };
     }
 
-    // Parenthesized expression: (2 + 3) * 4
+    // Parenthesized expression: (2 + 3) * 4, ((1+2)*3), etc.
+    // Use the standard expression parser which handles paren nesting and operator precedence correctly.
     if (peek().type === '(' && !(tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'SELECT')) {
-      advance(); // (
-      const inner = parseExpr();
-      expect(')');
-      // Check for arithmetic after the parenthesized expression
-      let left = inner;
-      // First handle mul/div/mod (high precedence)
-      while (true) {
-        const t = peek().type;
-        if (t === '*' && tokens[pos+1]?.type !== ')') {
-          advance(); const right = parsePrimary(); left = { type: 'arith', op: '*', left, right };
-        } else if (t === 'SLASH') {
-          advance(); const right = parsePrimary(); left = { type: 'arith', op: '/', left, right };
-        } else if (t === 'MOD') {
-          advance(); const right = parsePrimary(); left = { type: 'arith', op: '%', left, right };
-        } else break;
-      }
-      // Then handle add/sub (low precedence)
-      while (true) {
-        const t = peek().type;
-        if (t === 'PLUS' || t === 'MINUS') {
-          const op = t === 'PLUS' ? '+' : '-';
-          advance();
-          let right = parsePrimary();
-          while (true) {
-            const rt = peek().type;
-            if (rt === '*' && tokens[pos+1]?.type !== ')') { advance(); const rr = parsePrimary(); right = { type: 'arith', op: '*', left: right, right: rr }; }
-            else if (rt === 'SLASH') { advance(); const rr = parsePrimary(); right = { type: 'arith', op: '/', left: right, right: rr }; }
-            else if (rt === 'MOD') { advance(); const rr = parsePrimary(); right = { type: 'arith', op: '%', left: right, right: rr }; }
-            else break;
-          }
-          left = { type: 'arith', op, left, right };
-        } else break;
-      }
+      const expr = parseExpr();
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'expression', expr: left, alias };
+      return { type: 'expression', expr, alias };
     }
 
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
@@ -1050,9 +1019,9 @@ export function parse(sql) {
         expect(')');
         return { type: 'SUBQUERY', subquery };
       }
-      const expr = parseExpr();
-      expect(')');
-      return expr;
+      // Not a subquery — put the '(' back and let parsePrimary handle it
+      // (parsePrimary correctly handles nested parens with operator precedence)
+      pos--;
     }
 
     const left = parsePrimaryWithConcat();
