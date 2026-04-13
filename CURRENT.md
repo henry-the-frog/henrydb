@@ -2,10 +2,10 @@
 
 ## Status: in-progress
 ## Session: Work Session A (Monday 4/13, 8:15 AM - 2:15 PM MDT)
-## Current Position: T11
+## Current Position: T51
 ## Mode: BUILD
-## Task: Persistence stress test: close/reopen cycle for every feature
-## Context-Files: henrydb/src/transactional-db.js, henrydb/src/file-backed-heap.js
-## Started: 2026-04-13T08:38:26Z
+## Task: FK constraints through MVCC
+## Context-Files: henrydb/src/db.js, henrydb/src/transactional-db.js
+## Started: 2026-04-13T08:15:25Z
 ## Completed: 
-## Tasks Completed This Session: 10
+## Tasks Completed This Session: 51

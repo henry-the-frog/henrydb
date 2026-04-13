@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-13T16:19:20.084Z",
+  "generated": "2026-04-13T16:28:15.294Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: Write comprehensive test for UNIQUE constraints (composite unique, partial unique, unique with NULL handling)",
-    "completedAt": "2026-04-13T16:19:20.084Z",
-    "taskId": "T50",
-    "summary": "FOUND 5 UNIQUE CONSTRAINT BUGS (8-12 today): (1) DELETE leaves stale index entries, (2) UPDATE leaves stale index entries, (3) NULL treated as value for uniqueness, (4) UPDATE to duplicate PK not rejected, (5) failed INSERT leaves orphan heap rows, (6) rolled-back INSERT doesnt clean indexes. All fixed. 12/12 tests.",
-    "durationMs": 600000
+    "task": "HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)",
+    "completedAt": "2026-04-13T16:28:15.294Z",
+    "taskId": "T52",
+    "summary": "Fixed FK SET NULL bug (#13): heap.pages.find crashes with intercepted heaps. Fixed by using UPDATE SQL. Also verified RESTRICT works through TransactionalDatabase. 9/9 FK tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2204,12 +2204,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 50,
+    "blocksCompleted": 52,
     "blocksTotal": 41,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 7,
-      "BUILD": 30,
+      "BUILD": 32,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

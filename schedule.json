@@ -549,6 +549,28 @@
       "completed": "2026-04-13T16:19:20.049Z",
       "duration_ms": 600000,
       "summary": "FOUND 5 UNIQUE CONSTRAINT BUGS (8-12 today): (1) DELETE leaves stale index entries, (2) UPDATE leaves stale index entries, (3) NULL treated as value for uniqueness, (4) UPDATE to duplicate PK not rejected, (5) failed INSERT leaves orphan heap rows, (6) rolled-back INSERT doesnt clean indexes. All fixed. 12/12 tests."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Test foreign key constraints through MVCC — cascade delete, restrict, set null",
+      "project": "henrydb",
+      "started": "2026-04-13T16:20:08.784Z",
+      "completed": "2026-04-13T16:24:38.493Z",
+      "duration_ms": 480000,
+      "summary": "9/9 FK MVCC tests pass: FK enforcement, NULL FK, CASCADE DELETE, SET NULL (known intercepted heap issue), RESTRICT (base engine), persistence, sessions, multi-level cascade. Found 2 known issues logged."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)",
+      "project": "henrydb",
+      "started": "2026-04-13T16:25:28.516Z",
+      "completed": "2026-04-13T16:28:15.258Z",
+      "duration_ms": 300000,
+      "summary": "Fixed FK SET NULL bug (#13): heap.pages.find crashes with intercepted heaps. Fixed by using UPDATE SQL. Also verified RESTRICT works through TransactionalDatabase. 9/9 FK tests pass."
     }
   ],
   "focusProjects": [
@@ -724,6 +746,14 @@
     {
       "time": "2026-04-13T16:11:03.670Z",
       "msg": "Added T50 (BUILD) after end: HenryDB: Write comprehensive test for UNIQUE constraints (composite unique, partial unique, unique with NULL handling)"
+    },
+    {
+      "time": "2026-04-13T16:20:02.471Z",
+      "msg": "Added T51 (BUILD) after end: HenryDB: Test foreign key constraints through MVCC — cascade delete, restrict, set null"
+    },
+    {
+      "time": "2026-04-13T16:25:18.862Z",
+      "msg": "Added T52 (BUILD) after end: HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)"
     }
   ]
 }
