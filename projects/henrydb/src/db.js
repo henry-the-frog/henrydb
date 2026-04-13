@@ -995,9 +995,29 @@ export class Database {
       case 'SHOW_TABLES': return this._showTables();
       case 'DESCRIBE': return this._describe(ast);
       case 'EXPLAIN': return this._explain(ast);
-      case 'BEGIN': this._inTransaction = true; return { type: 'OK', message: 'BEGIN' };
-      case 'COMMIT': this._inTransaction = false; return { type: 'OK', message: 'COMMIT' };
-      case 'ROLLBACK': this._inTransaction = false; return { type: 'OK', message: 'ROLLBACK' };
+      case 'BEGIN': {
+        this._inTransaction = true;
+        // Auto-create internal savepoint for transaction rollback
+        this._handleSavepoint('SAVEPOINT __txn_begin__');
+        return { type: 'OK', message: 'BEGIN' };
+      }
+      case 'COMMIT': {
+        this._inTransaction = false;
+        // Remove internal savepoint on commit
+        const idx = this._savepoints.findLastIndex(sp => sp.name === '__txn_begin__');
+        if (idx >= 0) this._savepoints.splice(idx, 1);
+        return { type: 'OK', message: 'COMMIT' };
+      }
+      case 'ROLLBACK': {
+        // Restore from internal savepoint
+        const idx = this._savepoints.findLastIndex(sp => sp.name === '__txn_begin__');
+        if (idx >= 0) {
+          this._handleRollbackToSavepoint('ROLLBACK TO __txn_begin__');
+          this._savepoints.splice(idx, 1);
+        }
+        this._inTransaction = false;
+        return { type: 'OK', message: 'ROLLBACK' };
+      }
       case 'VACUUM': return this._vacuum(ast);
       case 'PREPARE': return this._prepareSql(ast);
       case 'EXECUTE_PREPARED': return this._executePrepared(ast);
