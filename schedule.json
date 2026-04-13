@@ -802,10 +802,21 @@
     {
       "id": "T74",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push all changes and run a broader test sweep to catch any regressions from parser fixes",
       "project": "henrydb",
-      "started": "2026-04-13T19:05:06.778Z"
+      "started": "2026-04-13T19:05:06.778Z",
+      "completed": "2026-04-13T19:07:25.073Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed. All tests green: 447/447 parser/SQL tests, 187/188 persistence tests (1 flaky perf test). No regressions from parser fixes."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Systematic audit: find all remaining parsePrimary() calls in sql.js that should be parseExpr() or parsePrimaryWithConcat()",
+      "project": "henrydb",
+      "started": "2026-04-13T19:07:41.217Z"
     }
   ],
   "focusProjects": [
@@ -1081,6 +1092,10 @@
     {
       "time": "2026-04-13T19:05:06.544Z",
       "msg": "Added T74 (BUILD) after end: Git push all changes and run a broader test sweep to catch any regressions from parser fixes"
+    },
+    {
+      "time": "2026-04-13T19:07:40.980Z",
+      "msg": "Added T75 (BUILD) after end: Systematic audit: find all remaining parsePrimary() calls in sql.js that should be parseExpr() or parsePrimaryWithConcat()"
     }
   ]
 }

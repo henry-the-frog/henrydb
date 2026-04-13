@@ -754,10 +754,10 @@ export function parse(sql) {
     // POSITION(substr IN str)
     if (isKeyword('POSITION')) {
       advance(); expect('(');
-      const substr = parsePrimary();
+      const substr = parsePrimaryWithConcat();
       if (!isKeyword('IN')) throw new Error('Expected IN in POSITION');
       advance(); // consume IN
-      const str = parsePrimary();
+      const str = parsePrimaryWithConcat();
       expect(')');
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
@@ -893,11 +893,11 @@ export function parse(sql) {
     if (isKeyword('GENERATE_SERIES')) {
       advance();
       expect('(');
-      const start = parsePrimary();
+      const start = parseExpr();
       expect(',');
-      const stop = parsePrimary();
+      const stop = parseExpr();
       let step = null;
-      if (match(',')) step = parsePrimary();
+      if (match(',')) step = parseExpr();
       expect(')');
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
@@ -1016,7 +1016,7 @@ export function parse(sql) {
     if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'LIKE') {
       advance(); // NOT
       advance(); // LIKE
-      const pattern = parsePrimary();
+      const pattern = parsePrimaryWithConcat();
       return { type: 'NOT', expr: { type: 'LIKE', left, pattern } };
     }
 
@@ -1046,13 +1046,13 @@ export function parse(sql) {
 
     if (isKeyword('LIKE')) {
       advance();
-      const pattern = parsePrimary();
+      const pattern = parsePrimaryWithConcat();
       return { type: 'LIKE', left, pattern };
     }
 
     if (isKeyword('ILIKE')) {
       advance();
-      const pattern = parsePrimary();
+      const pattern = parsePrimaryWithConcat();
       return { type: 'ILIKE', left, pattern };
     }
 
@@ -1060,7 +1060,7 @@ export function parse(sql) {
     if (isKeyword('SIMILAR')) {
       advance(); // SIMILAR
       if (isKeyword('TO')) advance(); // TO
-      const pattern = parsePrimary();
+      const pattern = parsePrimaryWithConcat();
       return { type: 'SIMILAR_TO', left, pattern };
     }
 
@@ -1770,7 +1770,7 @@ export function parse(sql) {
       let defaultValue = null;
       if (isKeyword('DEFAULT')) {
         advance();
-        defaultValue = parsePrimary();
+        defaultValue = parseExpr();
       }
       return { type: 'ALTER_TABLE', table, action: 'ADD_COLUMN', column: { name, type: dataType, default: defaultValue } };
     }

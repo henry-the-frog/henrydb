@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T19:05:06.813Z",
+  "generated": "2026-04-13T19:07:41.252Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Git push all changes and run a broader test sweep to catch any regressions from parser fixes",
-    "startedAt": "2026-04-13T19:05:06.813Z",
-    "taskId": "T74"
+    "task": "Systematic audit: find all remaining parsePrimary() calls in sql.js that should be parseExpr() or parsePrimaryWithConcat()",
+    "startedAt": "2026-04-13T19:07:41.252Z",
+    "taskId": "T75"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2436,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 73,
+    "blocksCompleted": 74,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 47,
+      "BUILD": 48,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
