@@ -1,5 +1,24 @@
 # Failures & Patterns
 
+## 2026-04-13: DDL Persistence Pattern — The "Close/Reopen" Bug Family
+
+**Summary:** 5 separate bugs (#14-16 + 2 variants) from the same root cause: TransactionalDatabase's catalog only tracked CREATE TABLE and CREATE INDEX. Every other DDL statement (CREATE VIEW, CREATE TRIGGER, CREATE MATERIALIZED VIEW, ALTER TABLE) was lost on close/reopen.
+
+**Root cause:** The DDL detection used `trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')` — a manually-maintained allowlist that missed new DDL types. Also, ALTER TABLE wasn't tracked at all (it modifies existing objects rather than creating new ones).
+
+**Fix:** Changed to `trimmed.startsWith('CREATE ')` to catch ALL CREATE statements. Added `_trackAlter()` that reconstructs the CREATE TABLE SQL from the current schema after ALTER TABLE.
+
+**Pattern:** Allowlists rot. When you add a new DDL type to the SQL parser, you must also add it to the persistence layer. A negative approach ("catch all DDL except...") is more resilient than a positive approach ("catch TABLE, INDEX, VIEW, ..."). The fix catches this class of bugs permanently.
+
+**Related bugs in this session:**
+- Bug #1: Frozen txId 0 not visible after recovery (recovery path ≠ operational path)
+- Bug #2: Indexes empty after reopen (derived state not rebuilt)
+- Bug #3: PK not enforced (index check never wired for basic INSERT)
+- Bug #7: Savepoint-revoked rows persist (xmax=-2 not physicalized)
+- Bug #14: Views don't persist
+- Bug #15: Triggers don't persist
+- Bug #16: ALTER TABLE column additions don't persist
+
 ## 2026-04-13: SSI snapshot.has Called on Plain Object
 
 **Bug:** SSI `detectConflicts` at line 75 called `snapshot.has(txId)` but `snapshot` is `{ xmin, xmax, activeSet: Set }` — a plain object, not a Set.
