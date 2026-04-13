@@ -1,5 +1,17 @@
 # Failures & Patterns
 
+## 2026-04-13: Index Empty After Reopen + PK Not Enforced
+
+**Bug 1:** After close/reopen, indexes were empty. `WHERE id = 25` returned 0 rows even though full scan found all data.
+**Root cause:** Catalog replay creates `CREATE TABLE` + `CREATE INDEX` *before* WAL recovery fills the heap. So indexes were created but never populated with recovered data.
+**Fix:** After WAL recovery, scan heap and insert all rows into all indexes.
+
+**Bug 2:** PK constraint not enforced during INSERT after reopen. Duplicate PKs accepted silently.
+**Root cause:** `BTree.insert()` doesn't check uniqueness. The PK scan check in `_executeInsert` only runs when `ast.onConflict` is present. Normal INSERTs relied on... nothing.
+**Fix:** Added explicit uniqueness check via `index.range(key, key)` before inserting into unique indexes.
+
+**Pattern:** Recovery creates "fresh" derived objects (indexes, caches) but doesn't populate them from restored primary data. Every derived structure needs explicit rebuild after recovery. Also: PK enforcement was never properly wired for basic INSERTs — it only worked "by accident" because in-memory tables always had the index populated at insert time.
+
 ## 2026-04-13: Frozen TxId 0 Not Visible After Recovery
 
 **Bug:** After close/reopen, TransactionalDatabase returned 0 rows even though data was correctly persisted on disk.

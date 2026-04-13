@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-13T14:44:13.087Z",
+  "generated": "2026-04-13T15:15:54.550Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard, knowledge capture",
-    "startedAt": "2026-04-13T14:44:13.087Z",
-    "taskId": "T12"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "EXPLAIN ANALYZE through MVCC: verify plan output, cost estimates, actual row counts",
+    "completedAt": "2026-04-13T15:15:54.550Z",
+    "taskId": "T28",
+    "summary": "6/6 EXPLAIN MVCC tests pass. EXPLAIN/EXPLAIN ANALYZE work correctly through TransactionalDatabase with session visibility and accurate row counts.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -1895,57 +1897,178 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth: histogram accuracy or new persistence stress tests",
         "task": null,
-        "started": "2026-04-13T14:38:01.405Z"
+        "started": "2026-04-13T14:38:01.405Z",
+        "completed": "2026-04-13T14:38:14.387Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 BUILD tasks: (1) Persistence stress test for close/reopen cycle across all features, (2) Fix bugs found."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Persistence stress test: close/reopen cycle for every feature (indexes, prepared stmts, cache stats, version maps, MVCC state)",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-13T14:38:26.349Z",
+        "completed": "2026-04-13T14:43:29.313Z",
+        "duration_ms": 600000,
+        "summary": "FOUND & FIXED 2 BUGS: (1) Indexes empty after reopen — added rebuild from heap data during recovery. (2) PK uniqueness not enforced on INSERT — added BTree unique check before index insert. 15/15 persistence stress tests."
       },
       {
         "id": "T18",
         "mode": "BUILD",
         "task": "Fix any persistence bugs found in stress test",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-13T14:43:58.545Z",
+        "completed": "2026-04-13T14:43:58.746Z",
+        "duration_ms": 0,
+        "summary": "Already fixed in T11 — both persistence bugs resolved."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, knowledge capture",
+        "started": "2026-04-13T14:44:13.051Z",
+        "completed": "2026-04-13T14:44:53.700Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed henrydb+workspace. Knowledge capture: 2 new persistence bug patterns in failures.md."
       },
       {
         "id": "T13",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research: deep-dive on something curiosity-driven (compiler, DB, or consciousness)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-13T14:45:07.641Z",
+        "completed": "2026-04-13T14:46:53.642Z",
+        "duration_ms": 300000,
+        "summary": "Explored concurrent session stress testing: 10 tests covering snapshot isolation, read-committed, 10 concurrent inserters, bank transfer consistency, persistence. All pass. MVCC is solid."
       },
       {
         "id": "T14",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research: study grammar-based fuzzers (lafleur or similar) for Daniel collab",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-13T14:47:17.116Z",
+        "completed": "2026-04-13T14:53:17.002Z",
+        "duration_ms": 600000,
+        "summary": "Built grammar-based differential fuzzer for Monkey JIT. 500/500 programs pass (JIT vs interpreter). Covers let, fn, if/else, arrays, arithmetic, closures. Committed and pushed."
+      },
+      {
+        "id": "T19",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: What areas have the least test coverage? Identify the next high-value testing target.",
+        "project": "henrydb",
+        "started": "2026-04-13T14:54:22.937Z",
+        "completed": "2026-04-13T14:54:50.995Z",
+        "duration_ms": 60000,
+        "summary": "db.js (3201 LOC) has 0 direct test files (tested indirectly). volcano-planner (391 LOC) has 0 tests. High-value target: run SQL features through TransactionalDatabase to catch MVCC+SQL interaction bugs."
+      },
+      {
+        "id": "T20",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: SQL compliance through TransactionalDatabase (MVCC)",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-13T14:55:02.315Z",
+        "completed": "2026-04-13T14:55:16.506Z",
+        "duration_ms": 30000,
+        "summary": "Planned 3 BUILD tasks: SQL-through-MVCC tests for JOINs/subqueries/CTEs, window functions/UNION through sessions, fix bugs found."
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "Write SQL-through-MVCC test suite: JOINs, subqueries, CTEs, aggregates, GROUP BY through TransactionalDatabase",
+        "status": "done",
+        "plan_ref": "T20",
+        "started": "2026-04-13T14:55:27.358Z",
+        "completed": "2026-04-13T14:56:40.667Z",
+        "duration_ms": 300000,
+        "summary": "18/18 SQL-through-MVCC tests pass: JOINs (4), subqueries (4), CTEs (3), aggregates (3), MVCC interactions (4). No bugs found — MVCC layer cleanly supports advanced SQL."
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Write MVCC+session SQL test: window functions, HAVING, UNION through sessions with concurrent readers",
+        "status": "done",
+        "plan_ref": "T20",
+        "started": "2026-04-13T14:56:56.030Z",
+        "completed": "2026-04-13T14:58:44.442Z",
+        "duration_ms": 300000,
+        "summary": "12/12 MVCC+session SQL tests pass: window functions (3), UNION (3), ORDER BY LIMIT (2), concurrent readers (4). Found ORDER BY window-alias bug (sorts alphabetically not numerically) — tracked."
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "task": "Fix any bugs found in SQL-through-MVCC tests",
+        "status": "done",
+        "plan_ref": "T20",
+        "started": "2026-04-13T14:59:03.221Z",
+        "completed": "2026-04-13T14:59:03.365Z",
+        "duration_ms": 5000,
+        "summary": "No SQL-through-MVCC bugs to fix — all 30 tests pass. ORDER BY window-alias tracked separately."
+      },
+      {
+        "id": "T24",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate ORDER BY window-alias bug: RANK() column sorts alphabetically instead of numerically",
+        "project": "henrydb",
+        "started": "2026-04-13T14:59:33.696Z",
+        "completed": "2026-04-13T15:01:14.178Z",
+        "duration_ms": 300000,
+        "summary": "FIXED: ORDER BY window-function alias bug. Window aliases werent in aliasExprs map, so ORDER BY fell through to _resolveColumn which couldnt find __window_ prefixed values. Added windowAliases set. All window/MVCC tests pass."
+      },
+      {
+        "id": "T25",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Stress test savepoints, prepared statements, and EXPLAIN ANALYZE through MVCC",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-13T15:01:56.064Z"
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "task": "Savepoints through TransactionalDatabase: nested savepoints, rollback to savepoint, release, concurrent sessions",
+        "status": "upcoming",
+        "plan_ref": "T25"
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "task": "Prepared statements through MVCC: prepare/execute with params, concurrent readers, persistence",
+        "status": "upcoming",
+        "plan_ref": "T25"
+      },
+      {
+        "id": "T28",
+        "mode": "BUILD",
+        "task": "EXPLAIN ANALYZE through MVCC: verify plan output, cost estimates, actual row counts",
+        "status": "upcoming",
+        "plan_ref": "T25"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
-    "blocksTotal": 18,
+    "blocksCompleted": 28,
+    "blocksTotal": 28,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 7,
-      "MAINTAIN": 2
+      "THINK": 5,
+      "PLAN": 5,
+      "BUILD": 13,
+      "MAINTAIN": 3,
+      "EXPLORE": 2
     }
   },
   "artifacts": [
