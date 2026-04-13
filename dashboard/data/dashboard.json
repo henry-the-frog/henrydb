@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-13T16:28:15.294Z",
+  "generated": "2026-04-13T16:43:18.827Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)",
-    "completedAt": "2026-04-13T16:28:15.294Z",
-    "taskId": "T52",
-    "summary": "Fixed FK SET NULL bug (#13): heap.pages.find crashes with intercepted heaps. Fixed by using UPDATE SQL. Also verified RESTRICT works through TransactionalDatabase. 9/9 FK tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: Test views and materialized views through MVCC + persistence",
+    "completedAt": "2026-04-13T16:43:18.827Z",
+    "taskId": "T55",
+    "summary": "FOUND BUG #14: Views didnt persist across close/reopen because CREATE VIEW wasnt tracked in catalog. Fixed by adding VIEW matching to _trackCreate + DDL detection. 7/7 view MVCC tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2204,12 +2204,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 52,
+    "blocksCompleted": 55,
     "blocksTotal": 41,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 7,
-      "BUILD": 32,
+      "BUILD": 35,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

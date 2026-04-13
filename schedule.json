@@ -571,6 +571,39 @@
       "completed": "2026-04-13T16:28:15.258Z",
       "duration_ms": 300000,
       "summary": "Fixed FK SET NULL bug (#13): heap.pages.find crashes with intercepted heaps. Fixed by using UPDATE SQL. Also verified RESTRICT works through TransactionalDatabase. 9/9 FK tests pass."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Test CHECK constraints and DEFAULT values through MVCC (insert, update, persistence)",
+      "project": "henrydb",
+      "started": "2026-04-13T16:29:21.064Z",
+      "completed": "2026-04-13T16:30:48.772Z",
+      "duration_ms": 300000,
+      "summary": "15/15 CHECK/DEFAULT/NOT NULL constraint tests pass. All work through MVCC and persist across close/reopen. Zero bugs found — constraints are solid."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SQL edge case tests — quoted identifiers, escaped strings, nested expressions, complex WHERE clauses",
+      "project": "henrydb",
+      "started": "2026-04-13T16:32:29.807Z",
+      "completed": "2026-04-13T16:35:03.512Z",
+      "duration_ms": 300000,
+      "summary": "17/17 SQL edge case tests pass. Found 2 parser limitations (escaped quotes, column multiplication) but no new bugs. Tests cover strings, numerics, complex WHERE, BETWEEN, LIKE, IN, IS NULL, COALESCE, CASE, nested subqueries."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Test views and materialized views through MVCC + persistence",
+      "project": "henrydb",
+      "started": "2026-04-13T16:35:40.767Z",
+      "completed": "2026-04-13T16:43:18.791Z",
+      "duration_ms": 600000,
+      "summary": "FOUND BUG #14: Views didnt persist across close/reopen because CREATE VIEW wasnt tracked in catalog. Fixed by adding VIEW matching to _trackCreate + DDL detection. 7/7 view MVCC tests pass."
     }
   ],
   "focusProjects": [
@@ -754,6 +787,18 @@
     {
       "time": "2026-04-13T16:25:18.862Z",
       "msg": "Added T52 (BUILD) after end: HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)"
+    },
+    {
+      "time": "2026-04-13T16:29:08.787Z",
+      "msg": "Added T53 (BUILD) after end: HenryDB: Test CHECK constraints and DEFAULT values through MVCC (insert, update, persistence)"
+    },
+    {
+      "time": "2026-04-13T16:32:18.523Z",
+      "msg": "Added T54 (BUILD) after end: HenryDB: SQL edge case tests — quoted identifiers, escaped strings, nested expressions, complex WHERE clauses"
+    },
+    {
+      "time": "2026-04-13T16:35:40.535Z",
+      "msg": "Added T55 (BUILD) after end: HenryDB: Test views and materialized views through MVCC + persistence"
     }
   ]
 }
