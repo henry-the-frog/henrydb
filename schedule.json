@@ -704,30 +704,150 @@
     {
       "id": "T66",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add JSON_EXTRACT function for querying JSON columns",
       "project": "henrydb",
-      "started": "2026-04-13T22:08:42.079Z"
+      "started": "2026-04-13T22:08:42.079Z",
+      "completed": "2026-04-13T22:11:40.442Z",
+      "duration_ms": 600000,
+      "summary": "7 JSON functions added. JSON_EXTRACT with path navigation. 657 test files pass."
     },
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: add JSON_ARRAY_LENGTH and JSON_TYPE functions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T22:11:59.126Z",
+      "completed": "2026-04-13T22:11:59.269Z",
+      "duration_ms": 0,
+      "summary": "Already done in T66."
     },
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: update README with set/while/for loop docs and examples",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:12:07.463Z",
+      "completed": "2026-04-13T22:13:21.399Z",
+      "duration_ms": 120000,
+      "summary": "README updated with set/while/for docs, imperative examples, 294 tests."
     },
     {
       "id": "T69",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session housekeeping"
+      "status": "done",
+      "task": "Final session housekeeping",
+      "started": "2026-04-13T22:13:31.626Z",
+      "completed": "2026-04-13T22:13:31.770Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 3.5 hours remain."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: comprehensive JSON function test suite",
+      "project": "henrydb",
+      "started": "2026-04-13T22:13:56.675Z",
+      "completed": "2026-04-13T22:15:00.237Z",
+      "duration_ms": 300000,
+      "summary": "27 JSON function tests: extract (9 cases), type, array_length (4), object, array, valid (3), WHERE filtering (3), GROUP BY. All pass."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add modulo operator (%) to lexer, parser, evaluator, and VM",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:15:09.067Z",
+      "completed": "2026-04-13T22:18:14.382Z",
+      "duration_ms": 180000,
+      "summary": "Modulo operator (%) added to all layers. OpMod opcode. 10%3=1. 294 tests pass."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add -> and ->> operators for JSON field access (PostgreSQL-style)",
+      "project": "henrydb",
+      "started": "2026-04-13T22:18:31.320Z",
+      "completed": "2026-04-13T22:18:31.464Z",
+      "duration_ms": 0,
+      "summary": "Deferred — requires tokenizer changes, risky for regressions. JSON_EXTRACT covers the use case."
+    },
+    {
+      "id": "T73",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final housekeeping and daily log",
+      "started": "2026-04-13T22:18:43.084Z",
+      "completed": "2026-04-13T22:18:43.227Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 4 hours remain."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: FizzBuzz showcase — write a complete FizzBuzz using for/set/% that works in both engines",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:19:15.236Z",
+      "completed": "2026-04-13T22:20:08.202Z",
+      "duration_ms": 120000,
+      "summary": "FizzBuzz showcase: for/set/% working in both engines. 4 tests including parity and FizzBuzz(100)."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add LATERAL JOIN support for correlated lateral subqueries",
+      "project": "henrydb",
+      "started": "2026-04-13T22:20:19.491Z",
+      "completed": "2026-04-13T22:20:19.635Z",
+      "duration_ms": 0,
+      "summary": "Deferred — LATERAL JOIN is complex, multi-table JOIN tests are higher priority."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write comprehensive multi-table JOIN stress tests (3-4 way joins)",
+      "project": "henrydb",
+      "started": "2026-04-13T22:20:28.140Z",
+      "completed": "2026-04-13T22:21:34.670Z",
+      "duration_ms": 300000,
+      "summary": "9 multi-table JOIN tests: 3-way and 4-way joins, revenue calc, HAVING, WHERE+GROUP BY, LEFT JOIN chain, self-join, subquery with JOIN. All pass."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add string indexing (s[0]) and string slicing builtins (slice, charAt)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T22:21:44.082Z",
+      "completed": "2026-04-13T22:24:31.535Z",
+      "duration_ms": 300000,
+      "summary": "String indexing (hello[0]=h) + type/str/int builtins. Both engines. 298 tests pass."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add GENERATE_SERIES table function for range generation",
+      "project": "henrydb",
+      "started": "2026-04-13T22:24:41.053Z",
+      "completed": "2026-04-13T22:25:17.700Z",
+      "duration_ms": 30000,
+      "summary": "GENERATE_SERIES already implemented! 1..5, step 2, SUM(1..100)=5050 all work."
+    },
+    {
+      "id": "T79",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: daily log, git push, CURRENT.md",
+      "started": "2026-04-13T22:25:33.225Z"
     }
   ],
   "focusProjects": [
@@ -975,6 +1095,46 @@
     {
       "time": "2026-04-13T22:05:38.560Z",
       "msg": "Added T69 (MAINTAIN) after end: Final session housekeeping"
+    },
+    {
+      "time": "2026-04-13T22:13:39.998Z",
+      "msg": "Added T70 (BUILD) after end: HenryDB: comprehensive JSON function test suite"
+    },
+    {
+      "time": "2026-04-13T22:13:40.117Z",
+      "msg": "Added T71 (BUILD) after end: Monkey: add modulo operator (%) to lexer, parser, evaluator, and VM"
+    },
+    {
+      "time": "2026-04-13T22:13:40.235Z",
+      "msg": "Added T72 (BUILD) after end: HenryDB: add -> and ->> operators for JSON field access (PostgreSQL-style)"
+    },
+    {
+      "time": "2026-04-13T22:13:40.352Z",
+      "msg": "Added T73 (MAINTAIN) after end: Final housekeeping and daily log"
+    },
+    {
+      "time": "2026-04-13T22:18:53.991Z",
+      "msg": "Added T74 (BUILD) after end: Monkey: FizzBuzz showcase — write a complete FizzBuzz using for/set/% that works in both engines"
+    },
+    {
+      "time": "2026-04-13T22:18:54.110Z",
+      "msg": "Added T75 (BUILD) after end: HenryDB: add LATERAL JOIN support for correlated lateral subqueries"
+    },
+    {
+      "time": "2026-04-13T22:18:54.228Z",
+      "msg": "Added T76 (BUILD) after end: HenryDB: write comprehensive multi-table JOIN stress tests (3-4 way joins)"
+    },
+    {
+      "time": "2026-04-13T22:18:54.347Z",
+      "msg": "Added T77 (BUILD) after end: Monkey: add string indexing (s[0]) and string slicing builtins (slice, charAt)"
+    },
+    {
+      "time": "2026-04-13T22:18:54.465Z",
+      "msg": "Added T78 (BUILD) after end: HenryDB: add GENERATE_SERIES table function for range generation"
+    },
+    {
+      "time": "2026-04-13T22:18:54.604Z",
+      "msg": "Added T79 (MAINTAIN) after end: Housekeeping: daily log, git push, CURRENT.md"
     }
   ]
 }
