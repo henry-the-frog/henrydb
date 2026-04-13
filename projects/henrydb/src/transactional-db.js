@@ -567,6 +567,16 @@ export class TransactionalDatabase {
               tdb._mvcc.recordWrite(tx.txId, `${name}:${key}`);
             }
             tx.undoLog.push(() => { ver.xmax = oldXmax; });
+          } else {
+            // No version entry (e.g., restored by undo) — create one and mark deleted
+            const newVer = { xmin: 1, xmax: tx.txId };
+            vm.set(key, newVer);
+            tx.writeSet.add(`${name}:${key}:del`);
+            tdb._visibilityMap.onPageModified(name, pageId);
+            if (tdb._mvcc.recordWrite) {
+              tdb._mvcc.recordWrite(tx.txId, `${name}:${key}`);
+            }
+            tx.undoLog.push(() => { vm.delete(key); });
           }
         }
         // Don't physically delete - the row stays in the heap for other snapshots
@@ -872,25 +882,32 @@ export class TransactionSession {
           this._tx.undoLog.push(() => {
             const table = this._tdb._db.tables.get(snap.tableName);
             if (!table) return;
-            // Clear result cache - stale results from during the transaction
+            // Clear result cache — stale results from during the transaction
             if (this._tdb._db._resultCache) {
               this._tdb._db._resultCache.clear();
             }
-            // Clear all current rows from the table
+            const vm = this._tdb._versionMaps.get(snap.tableName);
+            // Use origScan to bypass MVCC filtering during undo
+            const origScan = table.heap._origScan || table.heap.scan.bind(table.heap);
+            const origDelete = table.heap._origDelete || table.heap.delete.bind(table.heap);
+            // Clear all current rows from the table (physical, bypass MVCC)
             const toDelete = [];
-            for (const { pageId, slotIdx } of table.heap.scan()) {
+            for (const { pageId, slotIdx } of origScan()) {
               toDelete.push({ pageId, slotIdx });
             }
             for (const { pageId, slotIdx } of toDelete) {
-              try { table.heap.delete(pageId, slotIdx); } catch (e) { /* ignore */ }
+              try { 
+                origDelete(pageId, slotIdx);
+                // Also clean up version map for deleted rows
+                if (vm) vm.delete(`${pageId}:${slotIdx}`);
+              } catch (e) { /* ignore */ }
             }
-            // Clear and rebuild indexes
-            for (const [colName, index] of table.indexes) {
-              // Can't clear BPlusTree easily - rebuild from scratch
-            }
-            // Re-insert all old rows
+            // Re-insert all old rows (bypass MVCC interceptors)
+            const origInsert = table.heap._origInsert || table.heap.insert.bind(table.heap);
             for (const values of snap.rows) {
-              const rid = table.heap.insert(values);
+              const rid = origInsert ? table.heap.insert(values) : table.heap.insert(values);
+              // Don't add version map entry — rows without entries are visible by default
+              // (the scan interceptor yields rows with no version entry)
               for (const [colName, index] of table.indexes) {
                 const colIdx = snap.schema.findIndex(c => c.name === colName);
                 if (colIdx >= 0) {
@@ -979,7 +996,7 @@ export class TransactionSession {
       if (vm) {
         const key = `${pageId}:${slotIdx}`;
         const ver = vm.get(key);
-        // Skip rows created by this transaction — they'll be rolled back separately
+        // Skip rows created by this transaction - they'll be rolled back separately
         if (ver && ver.xmin === txId) continue;
       }
       snapshot.push([...values]);
