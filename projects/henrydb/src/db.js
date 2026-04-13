@@ -2521,7 +2521,48 @@ export class Database {
       if (hashResult) return hashResult;
     }
 
-    // Fallback: nested loop join
+    // Try index nested-loop join for equi-join conditions
+    if (equiJoinKey) {
+      const rightColName = equiJoinKey.rightKey;
+      const rightIndex = rightTable.indexes?.get(rightColName);
+      if (rightIndex) {
+        // Index nested-loop join: for each left row, look up matching right rows via index
+        for (const leftRow of leftRows) {
+          const lookupVal = leftRow[equiJoinKey.leftKey] !== undefined
+            ? leftRow[equiJoinKey.leftKey]
+            : this._resolveColumn(equiJoinKey.leftKey, leftRow);
+          let matched = false;
+          if (lookupVal != null) {
+            // Use range(val, val) for non-unique indexes (returns all matching entries)
+            const entries = rightIndex.range ? rightIndex.range(lookupVal, lookupVal) : [];
+            for (const entry of entries) {
+              const rid = entry.value || entry;
+              const values = rightTable.heap.get(rid.pageId, rid.slotIdx);
+              if (!values) continue;
+              const rightRow = this._valuesToRow(values, rightTable.schema, rightAlias);
+              if (join.filter && !this._evalExpr(join.filter, rightRow)) continue;
+              const combined = { ...leftRow, ...rightRow };
+              // Verify full join condition (handles compound conditions)
+              if (this._evalExpr(join.on, combined)) {
+                result.push(combined);
+                matched = true;
+              }
+            }
+          }
+          if (!matched && join.joinType === 'LEFT') {
+            const nullRow = {};
+            for (const col of rightTable.schema) {
+              nullRow[col.name] = null;
+              nullRow[`${rightAlias}.${col.name}`] = null;
+            }
+            result.push({ ...leftRow, ...nullRow });
+          }
+        }
+        return result;
+      }
+    }
+
+    // Fallback: nested loop join (full table scan)
     for (const leftRow of leftRows) {
       let matched = false;
       for (const { values } of rightTable.heap.scan()) {
