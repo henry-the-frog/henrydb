@@ -2922,15 +2922,28 @@ export class Database {
         if (colStats) {
           // Try histogram for better estimate on skewed data
           if (colStats.histogram && val != null && typeof val === 'number') {
+            // Sum all buckets containing the target value
+            // For exact-match buckets (lo===hi===val), use full count
+            // For mixed buckets, estimate as count/ndv
+            let est = 0;
+            let found = false;
             for (const bucket of colStats.histogram) {
               if (val >= bucket.lo && val <= bucket.hi) {
-                // Estimate: bucket.count / bucket.ndv (frequency within this bucket)
-                const est = bucket.ndv > 0 ? bucket.count / bucket.ndv : 1;
-                return {
-                  estimated: Math.max(1, Math.ceil(est)),
-                  method: `histogram_eq(${colName})=${est.toFixed(1)}`,
-                };
+                found = true;
+                if (bucket.lo === bucket.hi) {
+                  // Bucket contains only this value
+                  est += bucket.count;
+                } else {
+                  // Mixed bucket: estimate frequency as count/ndv
+                  est += (bucket.ndv > 0 ? bucket.count / bucket.ndv : bucket.count);
+                }
               }
+            }
+            if (found) {
+              return {
+                estimated: Math.max(1, Math.ceil(est)),
+                method: `histogram_eq(${colName})=${est.toFixed(1)}`,
+              };
             }
             // Value outside all buckets → likely 0 rows
             return { estimated: 1, method: `histogram_eq(${colName})=out_of_range` };
