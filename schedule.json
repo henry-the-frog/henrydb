@@ -338,29 +338,187 @@
     {
       "id": "T31",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping: daily log, git push, CURRENT.md",
-      "started": "2026-04-13T21:04:22.862Z"
+      "started": "2026-04-13T21:04:22.862Z",
+      "completed": "2026-04-13T21:04:58.031Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed both repos, daily log updated, CURRENT.md updated. 22 tasks completed."
     },
     {
       "id": "T32",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: add REPL with --engine flag to switch between tree-walker and compiler+VM",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:05:13.039Z",
+      "completed": "2026-04-13T21:06:48.656Z",
+      "duration_ms": 300000,
+      "summary": "REPL with --engine=vm|interpreter|both. VM mode persists globals+symbol table across lines. Both modes produce correct results for closures, recursion, builtins."
     },
     {
       "id": "T33",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What's the most interesting edge case in the Monkey compiler? Test closures-over-closures, mutual recursion, tail call patterns."
+      "status": "done",
+      "task": "What's the most interesting edge case in the Monkey compiler? Test closures-over-closures, mutual recursion, tail call patterns.",
+      "started": "2026-04-13T21:07:01.632Z",
+      "completed": "2026-04-13T21:07:51.588Z",
+      "duration_ms": 120000,
+      "summary": "Tested edge cases: closure chains (✓), closure arrays (✓), compose (✓), tail accumulator sum(100) (✓), array of closures (✓). Found: identifiers cant have digits (Monkey spec). Known limitation: forward reference in closures (Y combinator pattern) doesnt work due to compile-time symbol resolution."
     },
     {
       "id": "T34",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: stress test the compiler+VM with pathological programs (deep recursion, huge arrays, many closures)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:08:05.247Z",
+      "completed": "2026-04-13T21:10:06.086Z",
+      "duration_ms": 300000,
+      "summary": "19 stress tests: deep recursion (sum 200, fib 20, ackermann), large arrays (100 elements), many closures, map/filter/reduce combos, fibonacci sequence builder, edge cases. Total: 276 Monkey tests pass."
+    },
+    {
+      "id": "T36",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Monkey: What's the next meaningful compiler optimization? Integer caching, tail call elimination, or constant folding?",
+      "started": "2026-04-13T21:11:47.817Z",
+      "completed": "2026-04-13T21:12:02.372Z",
+      "duration_ms": 60000,
+      "summary": "Integer caching is quick but modest impact. Tail call elimination is the big win — solves stack overflow for recursive patterns, teaches fundamental optimization. Will do both: integer caching first (quick), then TCE."
+    },
+    {
+      "id": "T37",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Monkey: implement integer caching for small integers (-1 to 256) to reduce allocations",
+      "task": null,
+      "started": "2026-04-13T21:12:16.555Z",
+      "completed": "2026-04-13T21:12:23.696Z",
+      "duration_ms": 30000,
+      "summary": "Planned: integer cache + tail call optimization."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement integer cache in VM (pre-allocate -1 to 256)",
+      "plan_ref": "T37",
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:12:30.792Z",
+      "completed": "2026-04-13T21:13:33.114Z",
+      "duration_ms": 120000,
+      "summary": "Integer cache (-1 to 256) pre-allocates MonkeyInteger objects. Reduces GC pressure for small-number arithmetic. 276 tests pass."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "task": "Add tail call optimization to compiler and VM",
+      "status": "done",
+      "plan_ref": "T37",
+      "started": "2026-04-13T21:13:42.380Z",
+      "completed": "2026-04-13T21:15:54.016Z",
+      "duration_ms": 300000,
+      "summary": "Tail call optimization: OpCall+OpReturnValue → OpTailCall. sum(100000,0) works in 71ms with constant stack. Before: stack overflow at 5000. Peephole optimization in compiler + frame reuse in VM. 276 tests pass."
+    },
+    {
+      "id": "T39",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: What SQL features are most commonly tested in database benchmarks (TPC-H)? What are we missing?",
+      "started": "2026-04-13T21:16:10.957Z",
+      "completed": "2026-04-13T21:16:24.879Z",
+      "duration_ms": 60000,
+      "summary": "Key missing: NULLS FIRST/LAST, EXISTS correctness, multi-table JOIN testing. TPC-H also needs date arithmetic which we partially support. Priority: fix EXISTS, add NULLS FIRST/LAST, then stress multi-way JOINs."
+    },
+    {
+      "id": "T40",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: implement ORDER BY NULLS FIRST/LAST and window function improvements",
+      "task": null,
+      "started": "2026-04-13T21:16:49.926Z",
+      "completed": "2026-04-13T21:16:59.399Z",
+      "duration_ms": 30000,
+      "summary": "Planned: NULLS FIRST/LAST + EXISTS fix + tests"
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement ORDER BY NULLS FIRST/LAST syntax in parser and evaluator",
+      "plan_ref": "T40",
+      "project": "henrydb",
+      "started": "2026-04-13T21:17:08.806Z",
+      "completed": "2026-04-13T21:19:14.531Z",
+      "duration_ms": 180000,
+      "summary": "Fixed NULLS FIRST/LAST parser bug — FIRST was tokenized as KEYWORD not IDENT. All 4 combinations work: ASC/DESC × NULLS FIRST/LAST. No regressions."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "task": "Fix EXISTS subquery for correlated queries",
+      "status": "done",
+      "plan_ref": "T40",
+      "started": "2026-04-13T21:19:28.579Z",
+      "completed": "2026-04-13T21:34:03.221Z",
+      "duration_ms": 1200000,
+      "summary": "Fixed correlated EXISTS subquery. Root cause: decorrelate optimizer isCorrelated() conflated table names with aliases. FROM t t2 had innerTables={t,t2} instead of {t2}, making outer ref t.a appear inner. Fix: only add alias to innerTables. Also enhanced _resolveColumn for qualified names. All 656 test files pass."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "task": "Write tests for NULLS FIRST/LAST and EXISTS",
+      "status": "done",
+      "plan_ref": "T40",
+      "started": "2026-04-13T21:34:23.220Z",
+      "completed": "2026-04-13T21:35:52.026Z",
+      "duration_ms": 120000,
+      "summary": "14 tests for NULLS FIRST/LAST (7) and correlated EXISTS (7). All pass."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add alphanumeric identifier support to lexer (allow digits in identifiers after first char)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T21:36:08.380Z",
+      "completed": "2026-04-13T21:37:06.892Z",
+      "duration_ms": 120000,
+      "summary": "Alphanumeric identifiers: digits allowed after first char. add1, x2, count0 all work. 276 tests pass."
+    },
+    {
+      "id": "T43",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git push, daily log",
+      "started": "2026-04-13T21:37:20.629Z"
+    },
+    {
+      "id": "T44",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "HenryDB: investigate query plan caching — are we caching prepared statement plans? Test with parameterized queries."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: implement ORDER BY NULLS FIRST/LAST syntax",
+      "project": "henrydb"
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: improve EXISTS subquery evaluation (currently returns wrong results for correlated EXISTS)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T47",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "End-of-session housekeeping"
     }
   ],
   "focusProjects": [
@@ -480,6 +638,62 @@
     {
       "time": "2026-04-13T21:02:14.838Z",
       "msg": "PLAN T29 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T21:10:42.267Z",
+      "msg": "Added T36 (THINK) after end: Monkey: What's the next meaningful compiler optimization? Integer caching, tail call elimination, or constant folding?"
+    },
+    {
+      "time": "2026-04-13T21:10:42.385Z",
+      "msg": "Added T37 (PLAN) after end: Monkey: implement integer caching for small integers (-1 to 256) to reduce allocations"
+    },
+    {
+      "time": "2026-04-13T21:10:42.504Z",
+      "msg": "Added T38 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-13T21:10:42.621Z",
+      "msg": "Added T39 (THINK) after end: HenryDB: What SQL features are most commonly tested in database benchmarks (TPC-H)? What are we missing?"
+    },
+    {
+      "time": "2026-04-13T21:10:42.739Z",
+      "msg": "Added T40 (PLAN) after end: HenryDB: implement ORDER BY NULLS FIRST/LAST and window function improvements"
+    },
+    {
+      "time": "2026-04-13T21:10:42.857Z",
+      "msg": "Added T41 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-13T21:10:42.975Z",
+      "msg": "Added T42 (BUILD) after end: Monkey: add alphanumeric identifier support to lexer (allow digits in identifiers after first char)"
+    },
+    {
+      "time": "2026-04-13T21:10:43.092Z",
+      "msg": "Added T43 (MAINTAIN) after end: Housekeeping: git push, daily log"
+    },
+    {
+      "time": "2026-04-13T21:10:43.210Z",
+      "msg": "Added T44 (THINK) after end: HenryDB: investigate query plan caching — are we caching prepared statement plans? Test with parameterized queries."
+    },
+    {
+      "time": "2026-04-13T21:10:43.328Z",
+      "msg": "Added T45 (BUILD) after end: HenryDB: implement ORDER BY NULLS FIRST/LAST syntax"
+    },
+    {
+      "time": "2026-04-13T21:10:43.447Z",
+      "msg": "Added T46 (BUILD) after end: HenryDB: improve EXISTS subquery evaluation (currently returns wrong results for correlated EXISTS)"
+    },
+    {
+      "time": "2026-04-13T21:10:43.564Z",
+      "msg": "Added T47 (MAINTAIN) after end: End-of-session housekeeping"
+    },
+    {
+      "time": "2026-04-13T21:12:16.696Z",
+      "msg": "PLAN T37 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T21:16:50.068Z",
+      "msg": "PLAN T40 filled 3 BUILD tasks"
     }
   ]
 }
