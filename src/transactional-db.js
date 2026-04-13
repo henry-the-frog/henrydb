@@ -86,6 +86,24 @@ export class TransactionalDatabase {
             vm.set(`${pageId}:${slotIdx}`, { xmin: 0, xmax: 0 });
           }
         }
+        // Rebuild indexes from recovered heap data
+        for (const [tableName, table] of db.tables || []) {
+          if (!table.indexes || table.indexes.size === 0) continue;
+          const heap = heaps.get(tableName);
+          if (!heap) continue;
+          for (const { pageId, slotIdx, values } of heap.scan()) {
+            const row = {};
+            for (let i = 0; i < table.schema.length; i++) {
+              row[table.schema[i].name] = values[i];
+            }
+            for (const [colName, index] of table.indexes) {
+              const colIdx = table.schema.findIndex(c => c.name === colName);
+              if (colIdx >= 0 && values[colIdx] !== undefined) {
+                index.insert(values[colIdx], { pageId, slotIdx });
+              }
+            }
+          }
+        }
       }
     }
 

@@ -1044,10 +1044,17 @@ export class Database {
       this.wal.appendCommit(txId);
     }
 
-    // Update indexes
+    // Update indexes (and enforce uniqueness)
     for (const [colName, index] of table.indexes) {
       const colIdx = table.schema.findIndex(c => c.name === colName);
-      index.insert(orderedValues[colIdx], rid);
+      const key = orderedValues[colIdx];
+      if (index.unique) {
+        const existing = index.range(key, key);
+        if (existing.length > 0) {
+          throw new Error(`Duplicate key '${key}' violates unique constraint on column '${colName}'`);
+        }
+      }
+      index.insert(key, rid);
     }
 
     // AFTER INSERT triggers
