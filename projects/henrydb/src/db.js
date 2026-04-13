@@ -5304,10 +5304,18 @@ export class Database {
         return val >= low && val <= high;
       }
       case 'COMPARE': {
-        const left = this._evalValue(expr.left, row);
-        const right = this._evalValue(expr.right, row);
+        let left = this._evalValue(expr.left, row);
+        let right = this._evalValue(expr.right, row);
         // SQL NULL semantics: any comparison with NULL returns false
         if (left === null || left === undefined || right === null || right === undefined) return false;
+        // Implicit type coercion: if one is number and other is string, try numeric comparison
+        if (typeof left === 'number' && typeof right === 'string') {
+          const n = Number(right);
+          if (!isNaN(n)) right = n;
+        } else if (typeof left === 'string' && typeof right === 'number') {
+          const n = Number(left);
+          if (!isNaN(n)) left = n;
+        }
         switch (expr.op) {
           case 'EQ': return left === right;
           case 'NE': return left !== right;
