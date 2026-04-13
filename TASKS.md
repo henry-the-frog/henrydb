@@ -13,7 +13,8 @@
   - **ARIES Checkpointing**: fuzzy checkpoint, dirty page table, WAL truncation
   - **Point-in-Time Recovery (PITR)**: recover to any historical timestamp
   - **PageLSN**: per-page LSN tracking in page headers, ARIES-style per-page recovery decisions
-  - **Persistence Depth**: 58 persistence tests, 5 production bugs found (3 data-loss), pageLSN eliminates lastAppliedLSN hack
+  - **Persistence Depth**: 58+ persistence tests, 5+ production bugs found (3+ data-loss), pageLSN eliminates lastAppliedLSN hack
+  - **Complete DDL Persistence**: TRUNCATE, DROP TABLE, ALTER TABLE (ADD/DROP/RENAME COLUMN), RENAME TABLE, CREATE/DROP INDEX — all WAL-logged and recoverable
   - **Hash Join**: equi-join detection from AST, 186x faster than nested loop
   - **Batched WAL**: UPDATE 29x faster, DELETE 96x faster
   - **O(n²) WAL flush fix**: INSERT 8.2x faster (29.5K rows/sec)

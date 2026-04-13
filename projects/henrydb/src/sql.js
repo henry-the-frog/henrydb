@@ -1232,15 +1232,18 @@ export function parse(sql) {
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
       'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS'].includes(t.value)) {
-      const func = advance().value;
-      expect('(');
-      const args = [];
-      if (!match(')')) {
-        args.push(parseExpr());
-        while (match(',')) args.push(parseExpr());
-        expect(')');
+      // Only parse as function call if next token is '(' — otherwise treat as identifier
+      if (tokens[pos + 1]?.type === '(') {
+        const func = advance().value;
+        expect('(');
+        const args = [];
+        if (!match(')')) {
+          args.push(parseExpr());
+          while (match(',')) args.push(parseExpr());
+          expect(')');
+        }
+        return { type: 'function_call', func, args };
       }
-      return { type: 'function_call', func, args };
     }
 
     // Aggregate functions in expressions (HAVING, subqueries) — only if followed by (

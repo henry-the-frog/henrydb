@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T18:34:53.384Z",
+  "generated": "2026-04-13T18:44:10.352Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Add CREATE INDEX and DROP INDEX WAL logging for complete DDL persistence",
-    "startedAt": "2026-04-13T18:34:53.384Z",
-    "taskId": "T67"
+    "task": "Edge case stress test: try to crash HenryDB with unusual queries (empty tables, deeply nested subqueries, huge IN lists, self-referential CTEs, etc.)",
+    "startedAt": "2026-04-13T18:44:10.352Z",
+    "taskId": "T71"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,13 +2436,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 66,
+    "blocksCompleted": 70,
     "blocksTotal": 62,
     "modeDistribution": {
-      "THINK": 10,
+      "THINK": 11,
       "PLAN": 8,
-      "BUILD": 42,
-      "MAINTAIN": 4,
+      "BUILD": 44,
+      "MAINTAIN": 5,
       "EXPLORE": 2
     }
   },
