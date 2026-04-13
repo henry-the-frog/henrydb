@@ -934,10 +934,31 @@
     {
       "id": "T86",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix RETURNING to support expressions and aliases, not just column names",
       "project": "henrydb",
-      "started": "2026-04-13T19:28:59.842Z"
+      "started": "2026-04-13T19:28:59.842Z",
+      "completed": "2026-04-13T19:34:54.744Z",
+      "duration_ms": 300000,
+      "summary": "Fixed RETURNING to support expressions and aliases. All 3 DML types (INSERT, UPDATE, DELETE) now support RETURNING with computed expressions like val*2 as doubled. Added _resolveReturning() evaluator. Bug #18 this session."
+    },
+    {
+      "id": "T87",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session wrap-up: update daily log, push everything, update CURRENT.md",
+      "started": "2026-04-13T19:35:29.877Z",
+      "completed": "2026-04-13T19:35:40.574Z",
+      "duration_ms": 5000,
+      "summary": "Deferred to after T88"
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write tests for RETURNING expressions and LIMIT/OFFSET expressions",
+      "project": "henrydb",
+      "started": "2026-04-13T19:35:40.833Z"
     }
   ],
   "focusProjects": [
@@ -1261,6 +1282,14 @@
     {
       "time": "2026-04-13T19:28:59.610Z",
       "msg": "Added T86 (BUILD) after end: Fix RETURNING to support expressions and aliases, not just column names"
+    },
+    {
+      "time": "2026-04-13T19:35:29.526Z",
+      "msg": "Added T87 (MAINTAIN) after end: Final session wrap-up: update daily log, push everything, update CURRENT.md"
+    },
+    {
+      "time": "2026-04-13T19:35:29.644Z",
+      "msg": "Added T88 (BUILD) after end: Write tests for RETURNING expressions and LIMIT/OFFSET expressions"
     }
   ]
 }
