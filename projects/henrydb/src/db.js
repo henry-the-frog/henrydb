@@ -2292,7 +2292,16 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction, nulls } of ast.orderBy) {
           let av, bv;
-          if (typeof column === 'object' && column !== null) {
+          if (typeof column === 'number') {
+            // Numeric column reference (ORDER BY 1, 2, etc.)
+            // Resolve using SELECT column list
+            const selCol = ast.columns[column - 1];
+            if (selCol) {
+              const colName = selCol.alias || selCol.name;
+              av = a[colName] !== undefined ? a[colName] : this._resolveColumn(colName, a);
+              bv = b[colName] !== undefined ? b[colName] : this._resolveColumn(colName, b);
+            }
+          } else if (typeof column === 'object' && column !== null) {
             // Expression node (ORDER BY -val, ORDER BY col + 1, etc.)
             av = this._evalValue(column, a);
             bv = this._evalValue(column, b);
@@ -4970,9 +4979,15 @@ export class Database {
    * Resolve an ORDER BY column value from a row.
    * Handles string column names, numeric references, and expression nodes.
    */
-  _orderByValue(column, row) {
+  _orderByValue(column, row, selectCols) {
     if (typeof column === 'number') {
-      const keys = Object.keys(row);
+      if (selectCols && selectCols[column - 1]) {
+        const selCol = selectCols[column - 1];
+        const colName = selCol.alias || selCol.name;
+        return row[colName] !== undefined ? row[colName] : this._resolveColumn(colName, row);
+      }
+      // Fallback: use unqualified keys
+      const keys = Object.keys(row).filter(k => !k.includes('.'));
       const key = keys[column - 1];
       return key !== undefined ? row[key] : undefined;
     }
