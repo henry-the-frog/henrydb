@@ -1,5 +1,12 @@
 # Failures & Patterns
 
+## 2026-04-13: SSI snapshot.has Called on Plain Object
+
+**Bug:** SSI `detectConflicts` at line 75 called `snapshot.has(txId)` but `snapshot` is `{ xmin, xmax, activeSet: Set }` — a plain object, not a Set.
+**Root cause:** The snapshot was changed from a Set to a structured object at some point, but ssi.js wasn't updated.
+**Fix:** Changed to check `snapshot.activeSet.has(txId) || txId >= snapshot.xmax` for proper concurrent-writer detection.
+**Pattern:** API evolution creates stale call sites. When an internal data structure's shape changes, all consumers need updating. Type checking would catch this (TypeScript, or at least JSDoc).
+
 ## 2026-04-13: Index Empty After Reopen + PK Not Enforced
 
 **Bug 1:** After close/reopen, indexes were empty. `WHERE id = 25` returned 0 rows even though full scan found all data.

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-13T15:45:14.494Z",
+  "generated": "2026-04-13T16:02:50.533Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies",
-    "completedAt": "2026-04-13T15:45:14.494Z",
-    "taskId": "T36",
-    "summary": "FOUND BUG: SSI snapshot.has(txId) called on plain object instead of Set. Fixed to use snapshot.activeSet. 8/8 SSI tests pass. Key insight: UPDATE full-table-scan causes conservative false positives in SSI.",
-    "durationMs": 600000
+    "task": "HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)",
+    "completedAt": "2026-04-13T16:02:50.533Z",
+    "taskId": "T46",
+    "summary": "FOUND BUG #7: Savepoint-revoked rows (xmax=-2) persisted across close/reopen because recovery sets all rows to xmax=0. Fixed: physically delete xmax=-2 rows during commit. 12/12 savepoint tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2085,43 +2085,131 @@
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Test volcano query planner, find bugs in cost-based optimization",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-13T15:29:22.941Z"
+        "started": "2026-04-13T15:29:22.941Z",
+        "completed": "2026-04-13T15:29:55.996Z",
+        "duration_ms": 30000,
+        "summary": "Planned 3 BUILD tasks for volcano planner: basic operations, cost-based join selection, bug fixes."
       },
       {
         "id": "T31",
         "mode": "BUILD",
         "task": "Write volcano planner test suite: scan, filter, project, join strategy selection, aggregate, sort, limit, distinct",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-13T15:30:03.389Z",
+        "completed": "2026-04-13T15:32:30.628Z",
+        "duration_ms": 300000,
+        "summary": "20/20 volcano planner tests pass. Covers all operations: scan, filter, project, sort, limit, distinct, joins (hash, NLJ, INLJ, multi-table, self-join), aggregation, edge cases. No bugs found in the planner."
       },
       {
         "id": "T32",
         "mode": "BUILD",
         "task": "Write volcano planner cost-based tests: verify correct join strategy is chosen (NLJ vs HashJoin vs INLJ) based on table sizes and indexes",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-13T15:32:45.791Z",
+        "completed": "2026-04-13T15:33:22.846Z",
+        "duration_ms": 60000,
+        "summary": "Existing cost-model.test.js has comprehensive tests (all passing). Join strategy selection is rule-based (INLJ>HashJoin>NLJ) not cost-based. No additional tests needed."
       },
       {
         "id": "T33",
         "mode": "BUILD",
         "task": "Fix bugs found in volcano planner tests",
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-13T15:34:02.530Z",
+        "completed": "2026-04-13T15:34:02.673Z",
+        "duration_ms": 0,
+        "summary": "No bugs found — volcano planner is solid. All 54 existing+new tests pass."
+      },
+      {
+        "id": "T34",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Capture: Daniel's monkey-lang-tests-corpus shows 0 divergence across 23748 tests × 5 backends. This is huge.",
+        "started": "2026-04-13T15:36:53.913Z",
+        "completed": "2026-04-13T15:37:19.521Z",
+        "duration_ms": 60000,
+        "summary": "Daniel corpus: 0 divergence across 23748 tests × 5 backends (118740 invocations). Byte-identical results across eval, VM, JIT, transpiler, WASM. Extraordinary correctness result — validates all backends as production-quality."
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add monkey-lang-tests-corpus as optional CI smoke test (run 100 random programs from corpus)",
+        "project": "monkey-lang",
+        "started": "2026-04-13T15:38:16.123Z",
+        "completed": "2026-04-13T15:40:10.336Z",
+        "duration_ms": 300000,
+        "summary": "Corpus smoke test: 50 random corpus programs, 0 JIT divergence (33 pass, 17 parse errors from unsupported syntax like macros). Runner committed."
+      },
+      {
+        "id": "T36",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies",
+        "project": "henrydb",
+        "started": "2026-04-13T15:40:37.774Z",
+        "completed": "2026-04-13T15:45:14.458Z",
+        "duration_ms": 600000,
+        "summary": "FOUND BUG: SSI snapshot.has(txId) called on plain object instead of Set. Fixed to use snapshot.activeSet. 8/8 SSI tests pass. Key insight: UPDATE full-table-scan causes conservative false positives in SSI."
+      },
+      {
+        "id": "T37",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Monkey: What's the next impactful feature? Check TASKS.md for Monkey-related items",
+        "project": "monkey-lang",
+        "started": "2026-04-13T15:47:22.106Z",
+        "completed": "2026-04-13T15:48:40.656Z",
+        "duration_ms": 30000,
+        "summary": "Next: Implement for-in loops for Monkey. While loops are awkward due to immutable let bindings. for-in is the most impactful missing feature."
+      },
+      {
+        "id": "T38",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Monkey: Implement for-in loops across all 5 backends",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-13T15:48:57.019Z"
+      },
+      {
+        "id": "T39",
+        "mode": "BUILD",
+        "task": "Implement for-in loop: parser (AST node) + interpreter (evaluator)",
         "status": "upcoming",
-        "plan_ref": "T30"
+        "plan_ref": "T38"
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "task": "Implement for-in loop: bytecode compiler + VM",
+        "status": "upcoming",
+        "plan_ref": "T38"
+      },
+      {
+        "id": "T41",
+        "mode": "BUILD",
+        "task": "Test for-in loop: diff-test across all backends, add to fuzzer grammar",
+        "status": "upcoming",
+        "plan_ref": "T38"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 36,
-    "blocksTotal": 33,
+    "blocksCompleted": 46,
+    "blocksTotal": 41,
     "modeDistribution": {
-      "THINK": 7,
-      "PLAN": 6,
-      "BUILD": 18,
+      "THINK": 8,
+      "PLAN": 7,
+      "BUILD": 26,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

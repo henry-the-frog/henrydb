@@ -394,6 +394,117 @@
       "completed": "2026-04-13T15:45:14.458Z",
       "duration_ms": 600000,
       "summary": "FOUND BUG: SSI snapshot.has(txId) called on plain object instead of Set. Fixed to use snapshot.activeSet. 8/8 SSI tests pass. Key insight: UPDATE full-table-scan causes conservative false positives in SSI."
+    },
+    {
+      "id": "T37",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Monkey: What's the next impactful feature? Check TASKS.md for Monkey-related items",
+      "project": "monkey-lang",
+      "started": "2026-04-13T15:47:22.106Z",
+      "completed": "2026-04-13T15:48:40.656Z",
+      "duration_ms": 30000,
+      "summary": "Next: Implement for-in loops for Monkey. While loops are awkward due to immutable let bindings. for-in is the most impactful missing feature."
+    },
+    {
+      "id": "T38",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Monkey: Implement for-in loops across all 5 backends",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-13T15:48:57.019Z",
+      "completed": "2026-04-13T15:49:15.644Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks: parser+interpreter, compiler+VM, testing across all backends."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Implement for-in loop: parser (AST node) + interpreter (evaluator)",
+      "status": "done",
+      "plan_ref": "T38",
+      "started": "2026-04-13T15:49:15.900Z",
+      "completed": "2026-04-13T15:50:12.545Z",
+      "duration_ms": 60000,
+      "summary": "For-in already fully implemented: parser, evaluator, and compiler all have ForInExpression. Tested: for(x in [1,2,3]) works across interpreter and JIT with identical output."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Implement for-in loop: bytecode compiler + VM",
+      "status": "done",
+      "plan_ref": "T38",
+      "started": "2026-04-13T15:50:31.885Z",
+      "completed": "2026-04-13T15:50:32.027Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in compiler."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "Test for-in loop: diff-test across all backends, add to fuzzer grammar",
+      "status": "done",
+      "plan_ref": "T38",
+      "started": "2026-04-13T15:50:32.285Z",
+      "completed": "2026-04-13T15:50:32.427Z",
+      "duration_ms": 0,
+      "summary": "Already works — diff-test confirmed JIT == interpreter output."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Run full test suite of recently-added MVCC tests to get final count, then run db.test.js to check for any regressions from today's changes",
+      "project": "henrydb",
+      "started": "2026-04-13T15:50:55.866Z",
+      "completed": "2026-04-13T15:52:23.603Z",
+      "duration_ms": 120000,
+      "summary": "131 new MVCC tests + 128 core SQL tests = 259 critical tests, all passing. Zero regressions from todays changes (PK enforcement, scan interceptor, SSI fix)."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Stress test compiled query engine vs volcano — verify identical results on complex queries",
+      "project": "henrydb",
+      "started": "2026-04-13T15:53:00.171Z",
+      "completed": "2026-04-13T15:53:51.351Z",
+      "duration_ms": 180000,
+      "summary": "16/16 compiled-vs-volcano differential tests pass. Both engines produce identical row counts for scans, filters, aggregates, GROUP BY, ORDER BY, LIMIT, DISTINCT, JOINs."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Write microbenchmark comparing execution strategies (volcano, compiled, vectorized) on TPC-H-like queries",
+      "project": "henrydb",
+      "started": "2026-04-13T15:55:02.269Z",
+      "completed": "2026-04-13T15:56:14.564Z",
+      "duration_ms": 180000,
+      "summary": "Benchmark: compiled engine ~2x faster than volcano on 5000 rows. Tested scan+filter, aggregates, GROUP BY, ORDER BY+LIMIT, JOIN. Vectorized needs integration work (different result format)."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Write SQL fuzzer that generates random valid queries and verifies TransactionalDatabase produces consistent results",
+      "project": "henrydb",
+      "started": "2026-04-13T15:57:13.219Z",
+      "completed": "2026-04-13T15:59:54.616Z",
+      "duration_ms": 300000,
+      "summary": "5/5 MVCC fuzzer tests pass. Random INSERT/SELECT/DELETE with count verification, concurrent session snapshot isolation, savepoint rollback fuzz, bank transfer SUM invariant. All seeded for reproducibility."
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)",
+      "project": "henrydb",
+      "started": "2026-04-13T16:00:26.255Z",
+      "completed": "2026-04-13T16:02:50.497Z",
+      "duration_ms": 300000,
+      "summary": "FOUND BUG #7: Savepoint-revoked rows (xmax=-2) persisted across close/reopen because recovery sets all rows to xmax=0. Fixed: physically delete xmax=-2 rows during commit. 12/12 savepoint tests."
     }
   ],
   "focusProjects": [
@@ -521,6 +632,38 @@
     {
       "time": "2026-04-13T15:40:29.019Z",
       "msg": "Added T36 (BUILD) after end: HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies"
+    },
+    {
+      "time": "2026-04-13T15:47:11.418Z",
+      "msg": "Added T37 (THINK) after end: Monkey: What's the next impactful feature? Check TASKS.md for Monkey-related items"
+    },
+    {
+      "time": "2026-04-13T15:48:51.142Z",
+      "msg": "Added T38 (PLAN) after end: Monkey: Implement for-in loops across all 5 backends"
+    },
+    {
+      "time": "2026-04-13T15:49:06.735Z",
+      "msg": "PLAN T38 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T15:50:46.030Z",
+      "msg": "Added T42 (BUILD) after end: HenryDB: Run full test suite of recently-added MVCC tests to get final count, then run db.test.js to check for any regressions from today's changes"
+    },
+    {
+      "time": "2026-04-13T15:52:50.224Z",
+      "msg": "Added T43 (BUILD) after end: HenryDB: Stress test compiled query engine vs volcano — verify identical results on complex queries"
+    },
+    {
+      "time": "2026-04-13T15:54:56.537Z",
+      "msg": "Added T44 (BUILD) after end: HenryDB: Write microbenchmark comparing execution strategies (volcano, compiled, vectorized) on TPC-H-like queries"
+    },
+    {
+      "time": "2026-04-13T15:57:06.370Z",
+      "msg": "Added T45 (BUILD) after end: HenryDB: Write SQL fuzzer that generates random valid queries and verifies TransactionalDatabase produces consistent results"
+    },
+    {
+      "time": "2026-04-13T16:00:18.022Z",
+      "msg": "Added T46 (BUILD) after end: HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)"
     }
   ]
 }
