@@ -1350,7 +1350,7 @@ export function parse(sql) {
       advance(); // PARTITION
       expect('KEYWORD', 'BY');
       partitionBy = [];
-      do { partitionBy.push(advance().value); } while (match(','));
+      do { partitionBy.push(parseExpr()); } while (match(','));
     }
     if (isKeyword('ORDER')) {
       advance(); // ORDER

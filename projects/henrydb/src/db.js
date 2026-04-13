@@ -4515,7 +4515,7 @@ export class Database {
       const partitions = new Map();
       for (const row of rows) {
         const key = partitionBy
-          ? partitionBy.map(c => this._resolveColumn(c, row)).join('\0')
+          ? partitionBy.map(c => typeof c === 'string' ? this._resolveColumn(c, row) : this._evalValue(c, row)).join('\0')
           : '__all__';
         if (!partitions.has(key)) partitions.set(key, []);
         partitions.get(key).push(row);
