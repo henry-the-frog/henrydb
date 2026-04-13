@@ -999,10 +999,21 @@
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Run final all-new-tests verification and write an updated session-b-regression test with RETURNING and LIMIT fixes",
       "project": "henrydb",
-      "started": "2026-04-13T19:43:57.934Z"
+      "started": "2026-04-13T19:43:57.934Z",
+      "completed": "2026-04-13T19:44:26.820Z",
+      "duration_ms": 60000,
+      "summary": "Final verification: 192/192 new tests passing. 13 new test files. All pushed."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix SUBSTRING FROM/FOR to work when nested inside other functions",
+      "project": "henrydb",
+      "started": "2026-04-13T19:44:40.134Z"
     }
   ],
   "focusProjects": [
@@ -1350,6 +1361,10 @@
     {
       "time": "2026-04-13T19:43:57.701Z",
       "msg": "Added T92 (BUILD) after end: Run final all-new-tests verification and write an updated session-b-regression test with RETURNING and LIMIT fixes"
+    },
+    {
+      "time": "2026-04-13T19:44:39.901Z",
+      "msg": "Added T93 (BUILD) after end: Fix SUBSTRING FROM/FOR to work when nested inside other functions"
     }
   ]
 }

@@ -1268,7 +1268,27 @@ export function parse(sql) {
       return parseCaseExpr();
     }
 
-    // Built-in string/null functions
+    // SUBSTRING/SUBSTR with FROM...FOR syntax (must handle before generic function parser)
+    if (t.type === 'KEYWORD' && (t.value === 'SUBSTRING' || t.value === 'SUBSTR') && tokens[pos + 1]?.type === '(') {
+      const funcName = advance().value;
+      expect('(');
+      const arg1 = parseExpr();
+      if (isKeyword('FROM')) {
+        advance(); // FROM
+        const fromPos = parsePrimaryWithConcat();
+        let forLen = null;
+        if (isKeyword('FOR')) { advance(); forLen = parsePrimaryWithConcat(); }
+        expect(')');
+        const args = forLen ? [arg1, fromPos, forLen] : [arg1, fromPos];
+        return { type: 'function_call', func: 'SUBSTRING', args };
+      }
+      // Comma syntax: SUBSTRING(str, pos, len)
+      const args = [arg1];
+      while (match(',')) args.push(parseExpr());
+      expect(')');
+      return { type: 'function_call', func: funcName, args };
+    }
+// Built-in string/null functions
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
       'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS'].includes(t.value)) {
