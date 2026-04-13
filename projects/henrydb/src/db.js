@@ -2281,10 +2281,17 @@ export class Database {
     // Build alias→expression map for ORDER BY resolution
     const aliasExprs = new Map();
     for (const col of ast.columns) {
-      if (col.type === 'expression' && col.alias) {
-        aliasExprs.set(col.alias, col.expr);
-      } else if (col.type === 'function' && col.alias) {
-        aliasExprs.set(col.alias, col);
+      if (col.alias) {
+        if (col.type === 'expression') {
+          aliasExprs.set(col.alias, col.expr);
+        } else if (col.type === 'function') {
+          aliasExprs.set(col.alias, col);
+        } else if (col.type === 'column') {
+          // Simple column alias: val as v → resolve as column_ref
+          aliasExprs.set(col.alias, { type: 'column_ref', name: col.name });
+        } else if (col.type === 'aggregate') {
+          aliasExprs.set(col.alias, col);
+        }
       }
     }
 
@@ -2293,7 +2300,11 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction, nulls } of ast.orderBy) {
           let av, bv;
-          if (aliasExprs.has(column)) {
+          if (column in a) {
+            // Direct key match (works for aliased columns in the result)
+            av = a[column];
+            bv = b[column];
+          } else if (aliasExprs.has(column)) {
             const expr = aliasExprs.get(column);
             if (expr.type === 'function') {
               av = this._evalFunction(expr.func, expr.args, a);
