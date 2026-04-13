@@ -619,16 +619,60 @@
     {
       "id": "T57",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: Write 10 SQL compliance tests from the PostgreSQL test suite (basic SQL standard conformance)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T18:00:40.354Z",
+      "completed": "2026-04-13T18:03:45.699Z",
+      "duration_ms": 300000,
+      "summary": "Created sql-standard-conformance.test.js with 10 test suites (48 tests) covering NULL semantics, set operations, correlated subqueries, GROUP BY/HAVING, CASE expressions, string functions, self-joins, DML RETURNING, DISTINCT/ORDER BY, and type casting. All 48 tests passing."
     },
     {
       "id": "T58",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: Test query stats (EXPLAIN ANALYZE timing, row count accuracy) under concurrent load",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T18:04:02.948Z",
+      "completed": "2026-04-13T18:05:33.612Z",
+      "duration_ms": 240000,
+      "summary": "Created query-stats-concurrent.test.js with 6 test suites (25 tests) covering EXPLAIN ANALYZE row count accuracy, timing consistency, transactional load (BEGIN/COMMIT/ROLLBACK with EXPLAIN), plan structure, analysis array details, and accuracy after DML modifications. All 25 tests passing."
+    },
+    {
+      "id": "T59",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review today's progress, pick next HenryDB goal: TRUNCATE TABLE persistence bug or new test coverage gaps",
+      "started": "2026-04-13T18:06:30.848Z",
+      "completed": "2026-04-13T18:06:41.033Z",
+      "duration_ms": 60000,
+      "summary": "Direction confirmed: TRUNCATE TABLE persistence bug is highest value next task. Real data-correctness issue over more tests. Queue is set up correctly."
+    },
+    {
+      "id": "T60",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix TRUNCATE TABLE persistence — WAL recovery restores truncated rows after close/reopen",
+      "task": null,
+      "started": "2026-04-13T18:06:49.674Z",
+      "completed": "2026-04-13T18:08:00.834Z",
+      "duration_ms": 90000,
+      "summary": "Planned: single BUILD task to fix TRUNCATE persistence. Root cause: neither _truncate() path writes WAL records, so replay re-inserts all rows. Fix: add TRUNCATE WAL record type + handle in replay."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix TRUNCATE TABLE persistence: add WAL TRUNCATE record type, write it during truncate, handle during replay, add tests",
+      "plan_ref": "T60",
+      "project": "henrydb",
+      "started": "2026-04-13T18:08:09.250Z"
+    },
+    {
+      "id": "T62",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard check"
     }
   ],
   "focusProjects": [
@@ -836,6 +880,26 @@
     {
       "time": "2026-04-13T17:20:04.133Z",
       "msg": "Added T58 (BUILD) after end: HenryDB: Test query stats (EXPLAIN ANALYZE timing, row count accuracy) under concurrent load"
+    },
+    {
+      "time": "2026-04-13T18:06:04.579Z",
+      "msg": "Added T59 (THINK) after end: Review today's progress, pick next HenryDB goal: TRUNCATE TABLE persistence bug or new test coverage gaps"
+    },
+    {
+      "time": "2026-04-13T18:06:09.040Z",
+      "msg": "Added T60 (PLAN) after T59: Fix TRUNCATE TABLE persistence — WAL recovery restores truncated rows after close/reopen"
+    },
+    {
+      "time": "2026-04-13T18:06:17.945Z",
+      "msg": "Added T61 (BUILD) after T60: null"
+    },
+    {
+      "time": "2026-04-13T18:06:22.051Z",
+      "msg": "Added T62 (MAINTAIN) after T61: Housekeeping: git push, dashboard check"
+    },
+    {
+      "time": "2026-04-13T18:07:54.094Z",
+      "msg": "PLAN T60 filled 1 BUILD tasks"
     }
   ]
 }

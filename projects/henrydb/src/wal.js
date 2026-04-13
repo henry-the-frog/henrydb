@@ -35,6 +35,7 @@ const RECORD_TYPES = {
   CREATE_TABLE: 8,
   DROP_TABLE: 9,
   CREATE_INDEX: 10,
+  TRUNCATE: 11,
 };
 
 const RECORD_TYPE_NAMES = Object.fromEntries(
@@ -251,6 +252,10 @@ export class WALWriter {
 
   logCreateIndex(indexName, tableName, columns) {
     return this.writeRecord('CREATE_INDEX', { index: indexName, table: tableName, columns });
+  }
+
+  logTruncate(tableName, txId) {
+    return this.writeRecord('TRUNCATE', { table: tableName, txId });
   }
 
   getCurrentLSN() {
@@ -654,6 +659,7 @@ export class WALManager {
   logCommit(txId) { return this.writeRecord('COMMIT', { txId }); }
   logRollback(txId) { return this.writeRecord('ROLLBACK', { txId }); }
   logCreateTable(name, cols) { return this.writeRecord('CREATE_TABLE', { table: name, columns: cols }); }
+  logTruncate(name, txId) { return this.writeRecord('TRUNCATE', { table: name, txId }); }
 }
 
 // Extended type codes used by checkpoint/recovery subsystems
@@ -853,6 +859,16 @@ function recoverFromWAL(wal, db) {
           } else if (tableObj.heap) {
             replayed++;
           }
+        } else if (type === 'TRUNCATE' && table && db.tables?.get(table)) {
+          const tableObj = db.tables.get(table);
+          if (db.execute) {
+            db.execute(`DELETE FROM ${table} WHERE 1=1`);
+            replayed++;
+          } else if (tableObj.heap) {
+            // Direct heap access: clear it
+            tableObj.heap = db._heapFactory ? db._heapFactory() : { _data: [], scan: function*(){}, insert(){}, rowCount: 0 };
+            replayed++;
+          }
         }
       } catch { /* skip replay errors */ }
     }
@@ -947,6 +963,16 @@ function recoverToTimestamp(wal, db, targetTimestamp) {
             }
             replayed++;
           }
+        } else if (type === 'TRUNCATE' && table && db.tables?.get(table)) {
+          if (db.execute) {
+            db.execute(`DELETE FROM ${table} WHERE 1=1`);
+          } else {
+            const tableObj = db.tables.get(table);
+            if (tableObj.heap) {
+              tableObj.heap = db._heapFactory ? db._heapFactory() : { _data: [], scan: function*(){}, insert(){}, rowCount: 0 };
+            }
+          }
+          replayed++;
         }
       } catch { /* skip */ }
     }
@@ -1012,6 +1038,11 @@ _proto.appendDelete = function(txId, table, pageId, slotIdx, values) {
 _proto.appendAbort = function(txId) {
   if (!this._inMemory && (!this.writer.fd && this.writer.fd !== 0)) return;
   return this.writeRecord('ROLLBACK', { txId });
+};
+
+_proto.appendTruncate = function(txId, table) {
+  if (!this._inMemory && (!this.writer.fd && this.writer.fd !== 0)) return;
+  return this.logTruncate(table, txId);
 };
 
 _proto.beginTransaction = function(txId) {

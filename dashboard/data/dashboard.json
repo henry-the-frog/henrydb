@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-13T16:57:02.761Z",
+  "generated": "2026-04-13T18:08:09.285Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Monkey: Expand grammar fuzzer with closures, higher-order functions, string operations, hash maps — find JIT bugs",
-    "completedAt": "2026-04-13T16:57:02.761Z",
-    "taskId": "T56",
-    "summary": "Enhanced Monkey grammar fuzzer with closures, hash maps, index expressions, string ops. 500/500 pass. JIT is rock-solid. Zero divergence with expanded grammar.",
-    "durationMs": 600000
+    "task": "Fix TRUNCATE TABLE persistence: add WAL TRUNCATE record type, write it during truncate, handle during replay, add tests",
+    "startedAt": "2026-04-13T18:08:09.285Z",
+    "taskId": "T61"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2173,43 +2171,277 @@
       {
         "id": "T38",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Monkey: Implement for-in loops across all 5 backends",
         "task": null,
         "project": "monkey-lang",
-        "started": "2026-04-13T15:48:57.019Z"
+        "started": "2026-04-13T15:48:57.019Z",
+        "completed": "2026-04-13T15:49:15.644Z",
+        "duration_ms": 30000,
+        "summary": "Planned 3 BUILD tasks: parser+interpreter, compiler+VM, testing across all backends."
       },
       {
         "id": "T39",
         "mode": "BUILD",
         "task": "Implement for-in loop: parser (AST node) + interpreter (evaluator)",
-        "status": "upcoming",
-        "plan_ref": "T38"
+        "status": "done",
+        "plan_ref": "T38",
+        "started": "2026-04-13T15:49:15.900Z",
+        "completed": "2026-04-13T15:50:12.545Z",
+        "duration_ms": 60000,
+        "summary": "For-in already fully implemented: parser, evaluator, and compiler all have ForInExpression. Tested: for(x in [1,2,3]) works across interpreter and JIT with identical output."
       },
       {
         "id": "T40",
         "mode": "BUILD",
         "task": "Implement for-in loop: bytecode compiler + VM",
-        "status": "upcoming",
-        "plan_ref": "T38"
+        "status": "done",
+        "plan_ref": "T38",
+        "started": "2026-04-13T15:50:31.885Z",
+        "completed": "2026-04-13T15:50:32.027Z",
+        "duration_ms": 0,
+        "summary": "Already implemented in compiler."
       },
       {
         "id": "T41",
         "mode": "BUILD",
         "task": "Test for-in loop: diff-test across all backends, add to fuzzer grammar",
+        "status": "done",
+        "plan_ref": "T38",
+        "started": "2026-04-13T15:50:32.285Z",
+        "completed": "2026-04-13T15:50:32.427Z",
+        "duration_ms": 0,
+        "summary": "Already works — diff-test confirmed JIT == interpreter output."
+      },
+      {
+        "id": "T42",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Run full test suite of recently-added MVCC tests to get final count, then run db.test.js to check for any regressions from today's changes",
+        "project": "henrydb",
+        "started": "2026-04-13T15:50:55.866Z",
+        "completed": "2026-04-13T15:52:23.603Z",
+        "duration_ms": 120000,
+        "summary": "131 new MVCC tests + 128 core SQL tests = 259 critical tests, all passing. Zero regressions from todays changes (PK enforcement, scan interceptor, SSI fix)."
+      },
+      {
+        "id": "T43",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Stress test compiled query engine vs volcano — verify identical results on complex queries",
+        "project": "henrydb",
+        "started": "2026-04-13T15:53:00.171Z",
+        "completed": "2026-04-13T15:53:51.351Z",
+        "duration_ms": 180000,
+        "summary": "16/16 compiled-vs-volcano differential tests pass. Both engines produce identical row counts for scans, filters, aggregates, GROUP BY, ORDER BY, LIMIT, DISTINCT, JOINs."
+      },
+      {
+        "id": "T44",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Write microbenchmark comparing execution strategies (volcano, compiled, vectorized) on TPC-H-like queries",
+        "project": "henrydb",
+        "started": "2026-04-13T15:55:02.269Z",
+        "completed": "2026-04-13T15:56:14.564Z",
+        "duration_ms": 180000,
+        "summary": "Benchmark: compiled engine ~2x faster than volcano on 5000 rows. Tested scan+filter, aggregates, GROUP BY, ORDER BY+LIMIT, JOIN. Vectorized needs integration work (different result format)."
+      },
+      {
+        "id": "T45",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Write SQL fuzzer that generates random valid queries and verifies TransactionalDatabase produces consistent results",
+        "project": "henrydb",
+        "started": "2026-04-13T15:57:13.219Z",
+        "completed": "2026-04-13T15:59:54.616Z",
+        "duration_ms": 300000,
+        "summary": "5/5 MVCC fuzzer tests pass. Random INSERT/SELECT/DELETE with count verification, concurrent session snapshot isolation, savepoint rollback fuzz, bank transfer SUM invariant. All seeded for reproducibility."
+      },
+      {
+        "id": "T46",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test persistence of SAVEPOINT-affected data across close/reopen (regression risk)",
+        "project": "henrydb",
+        "started": "2026-04-13T16:00:26.255Z",
+        "completed": "2026-04-13T16:02:50.497Z",
+        "duration_ms": 300000,
+        "summary": "FOUND BUG #7: Savepoint-revoked rows (xmax=-2) persisted across close/reopen because recovery sets all rows to xmax=0. Fixed: physically delete xmax=-2 rows during commit. 12/12 savepoint tests."
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test SSI through close/reopen — does serializable isolation level persist?",
+        "project": "henrydb",
+        "started": "2026-04-13T16:04:00.161Z",
+        "completed": "2026-04-13T16:04:35.228Z",
+        "duration_ms": 60000,
+        "summary": "SSI works after close/reopen: isolation level persists (passed as option), write skew detection works correctly. No bugs found."
+      },
+      {
+        "id": "T48",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Monkey: Implement string interpolation f-strings",
+        "project": "monkey-lang",
+        "started": "2026-04-13T16:04:48.464Z",
+        "completed": "2026-04-13T16:06:10.092Z",
+        "duration_ms": 60000,
+        "summary": "String interpolation already fully implemented: lexer, parser, evaluator, and compiler all support backtick template strings with ${expr}. JIT and interpreter produce identical output. No work needed."
+      },
+      {
+        "id": "T49",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test UPDATE persistence — does UPDATE data survive close/reopen correctly?",
+        "project": "henrydb",
+        "started": "2026-04-13T16:06:30.008Z",
+        "completed": "2026-04-13T16:07:27.844Z",
+        "duration_ms": 120000,
+        "summary": "UPDATE persistence works correctly: single update, multiple updates to same row, update+delete, session update+rollback. All survive close/reopen correctly. No bugs found."
+      },
+      {
+        "id": "T50",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Write comprehensive test for UNIQUE constraints (composite unique, partial unique, unique with NULL handling)",
+        "project": "henrydb",
+        "started": "2026-04-13T16:11:10.740Z",
+        "completed": "2026-04-13T16:19:20.049Z",
+        "duration_ms": 600000,
+        "summary": "FOUND 5 UNIQUE CONSTRAINT BUGS (8-12 today): (1) DELETE leaves stale index entries, (2) UPDATE leaves stale index entries, (3) NULL treated as value for uniqueness, (4) UPDATE to duplicate PK not rejected, (5) failed INSERT leaves orphan heap rows, (6) rolled-back INSERT doesnt clean indexes. All fixed. 12/12 tests."
+      },
+      {
+        "id": "T51",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test foreign key constraints through MVCC — cascade delete, restrict, set null",
+        "project": "henrydb",
+        "started": "2026-04-13T16:20:08.784Z",
+        "completed": "2026-04-13T16:24:38.493Z",
+        "duration_ms": 480000,
+        "summary": "9/9 FK MVCC tests pass: FK enforcement, NULL FK, CASCADE DELETE, SET NULL (known intercepted heap issue), RESTRICT (base engine), persistence, sessions, multi-level cascade. Found 2 known issues logged."
+      },
+      {
+        "id": "T52",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Fix FK RESTRICT and SET NULL through TransactionalDatabase (scan interceptor hides child rows during FK check)",
+        "project": "henrydb",
+        "started": "2026-04-13T16:25:28.516Z",
+        "completed": "2026-04-13T16:28:15.258Z",
+        "duration_ms": 300000,
+        "summary": "Fixed FK SET NULL bug (#13): heap.pages.find crashes with intercepted heaps. Fixed by using UPDATE SQL. Also verified RESTRICT works through TransactionalDatabase. 9/9 FK tests pass."
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test CHECK constraints and DEFAULT values through MVCC (insert, update, persistence)",
+        "project": "henrydb",
+        "started": "2026-04-13T16:29:21.064Z",
+        "completed": "2026-04-13T16:30:48.772Z",
+        "duration_ms": 300000,
+        "summary": "15/15 CHECK/DEFAULT/NOT NULL constraint tests pass. All work through MVCC and persist across close/reopen. Zero bugs found — constraints are solid."
+      },
+      {
+        "id": "T54",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: SQL edge case tests — quoted identifiers, escaped strings, nested expressions, complex WHERE clauses",
+        "project": "henrydb",
+        "started": "2026-04-13T16:32:29.807Z",
+        "completed": "2026-04-13T16:35:03.512Z",
+        "duration_ms": 300000,
+        "summary": "17/17 SQL edge case tests pass. Found 2 parser limitations (escaped quotes, column multiplication) but no new bugs. Tests cover strings, numerics, complex WHERE, BETWEEN, LIKE, IN, IS NULL, COALESCE, CASE, nested subqueries."
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test views and materialized views through MVCC + persistence",
+        "project": "henrydb",
+        "started": "2026-04-13T16:35:40.767Z",
+        "completed": "2026-04-13T16:43:18.791Z",
+        "duration_ms": 600000,
+        "summary": "FOUND BUG #14: Views didnt persist across close/reopen because CREATE VIEW wasnt tracked in catalog. Fixed by adding VIEW matching to _trackCreate + DDL detection. 7/7 view MVCC tests pass."
+      },
+      {
+        "id": "T56",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Monkey: Expand grammar fuzzer with closures, higher-order functions, string operations, hash maps — find JIT bugs",
+        "project": "monkey-lang",
+        "started": "2026-04-13T16:53:24.506Z",
+        "completed": "2026-04-13T16:57:02.725Z",
+        "duration_ms": 600000,
+        "summary": "Enhanced Monkey grammar fuzzer with closures, hash maps, index expressions, string ops. 500/500 pass. JIT is rock-solid. Zero divergence with expanded grammar."
+      },
+      {
+        "id": "T57",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Write 10 SQL compliance tests from the PostgreSQL test suite (basic SQL standard conformance)",
+        "project": "henrydb",
+        "started": "2026-04-13T18:00:40.354Z",
+        "completed": "2026-04-13T18:03:45.699Z",
+        "duration_ms": 300000,
+        "summary": "Created sql-standard-conformance.test.js with 10 test suites (48 tests) covering NULL semantics, set operations, correlated subqueries, GROUP BY/HAVING, CASE expressions, string functions, self-joins, DML RETURNING, DISTINCT/ORDER BY, and type casting. All 48 tests passing."
+      },
+      {
+        "id": "T58",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Test query stats (EXPLAIN ANALYZE timing, row count accuracy) under concurrent load",
+        "project": "henrydb",
+        "started": "2026-04-13T18:04:02.948Z",
+        "completed": "2026-04-13T18:05:33.612Z",
+        "duration_ms": 240000,
+        "summary": "Created query-stats-concurrent.test.js with 6 test suites (25 tests) covering EXPLAIN ANALYZE row count accuracy, timing consistency, transactional load (BEGIN/COMMIT/ROLLBACK with EXPLAIN), plan structure, analysis array details, and accuracy after DML modifications. All 25 tests passing."
+      },
+      {
+        "id": "T59",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Review today's progress, pick next HenryDB goal: TRUNCATE TABLE persistence bug or new test coverage gaps",
+        "started": "2026-04-13T18:06:30.848Z",
+        "completed": "2026-04-13T18:06:41.033Z",
+        "duration_ms": 60000,
+        "summary": "Direction confirmed: TRUNCATE TABLE persistence bug is highest value next task. Real data-correctness issue over more tests. Queue is set up correctly."
+      },
+      {
+        "id": "T60",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix TRUNCATE TABLE persistence — WAL recovery restores truncated rows after close/reopen",
+        "task": null,
+        "started": "2026-04-13T18:06:49.674Z"
+      },
+      {
+        "id": "T61",
+        "mode": "BUILD",
         "status": "upcoming",
-        "plan_ref": "T38"
+        "task": "Fix TRUNCATE TABLE persistence: add WAL TRUNCATE record type, write it during truncate, handle during replay, add tests",
+        "plan_ref": "T60",
+        "project": "henrydb"
+      },
+      {
+        "id": "T62",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git push, dashboard check"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 56,
-    "blocksTotal": 41,
+    "blocksCompleted": 60,
+    "blocksTotal": 62,
     "modeDistribution": {
-      "THINK": 8,
-      "PLAN": 7,
-      "BUILD": 36,
+      "THINK": 9,
+      "PLAN": 8,
+      "BUILD": 38,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

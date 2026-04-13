@@ -643,6 +643,13 @@ export class Database {
               }
               break;
             }
+            case 'TRUNCATE': {
+              const table = record.payload?.table;
+              if (table && db.tables.has(table)) {
+                db.execute(`DELETE FROM ${table} WHERE 1=1`);
+              }
+              break;
+            }
           }
         } catch (e) {
           // Skip errors during replay — best effort
@@ -920,6 +927,10 @@ export class Database {
       case 'TRUNCATE_TABLE': {
         const table = this.tables.get(ast.table);
         if (!table) throw new Error(`Table ${ast.table} not found`);
+        // WAL: log the truncate for crash recovery
+        const truncTxId = this._nextTxId++;
+        this.wal.appendTruncate(truncTxId, ast.table);
+        this.wal.appendCommit(truncTxId);
         table.heap = this._heapFactory(ast.table);
         // Rebuild indexes (empty)
         for (const [colName] of table.indexes) {
@@ -3441,6 +3452,11 @@ export class Database {
   _truncate(ast) {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
+
+    // WAL: log the truncate for crash recovery
+    const txId = this._nextTxId++;
+    this.wal.appendTruncate(txId, ast.table);
+    this.wal.appendCommit(txId);
 
     // Clear heap file
     const count = table.heap.rowCount || 0;
