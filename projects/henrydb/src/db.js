@@ -1723,11 +1723,7 @@ export class Database {
     }
 
     if (ast.returning) {
-      const filteredRows = ast.returning === '*' ? returnedRows : returnedRows.map(row => {
-        const filtered = {};
-        for (const col of ast.returning) filtered[col] = row[col];
-        return filtered;
-      });
+      const filteredRows = this._resolveReturning(ast.returning, returnedRows);
       return { type: 'ROWS', rows: filteredRows, count: inserted };
     }
     return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
@@ -1934,6 +1930,30 @@ export class Database {
       try { return this._evalValue(defaultValue, {}); } catch { return null; }
     }
     return defaultValue;
+  }
+
+  _resolveReturning(returning, rows) {
+    if (returning === '*') return rows;
+    return rows.map(row => {
+      const filtered = {};
+      for (const col of returning) {
+        if (typeof col === 'string') {
+          filtered[col] = row[col];
+        } else if (col.expr && col.alias) {
+          filtered[col.alias] = this._evalValue(col.expr, row);
+        } else if (col.type === 'column_ref') {
+          const name = col.column || col.name;
+          filtered[name] = row[name];
+        } else if (col.type) {
+          const val = this._evalValue(col, row);
+          const name = col.column || col.name || `expr_${Object.keys(filtered).length}`;
+          filtered[name] = val;
+        } else {
+          filtered[col] = row[col];
+        }
+      }
+      return filtered;
+    });
   }
 
   _orderValues(table, columns, values) {
@@ -3365,11 +3385,7 @@ export class Database {
     if (isAutoCommit && updated > 0) this.wal.appendCommit(batchTxId);
 
     if (ast.returning) {
-      const filteredRows = ast.returning === '*' ? returnedRows : returnedRows.map(row => {
-        const filtered = {};
-        for (const col of ast.returning) filtered[col] = row[col];
-        return filtered;
-      });
+      const filteredRows = this._resolveReturning(ast.returning, returnedRows);
       return { type: 'ROWS', rows: filteredRows, count: updated };
     }
 
@@ -3515,11 +3531,7 @@ export class Database {
     if (isAutoCommit && deleted > 0) this.wal.appendCommit(batchTxId);
 
     if (ast.returning) {
-      const filteredRows = ast.returning === '*' ? deletedRows : deletedRows.map(row => {
-        const filtered = {};
-        for (const col of ast.returning) filtered[col] = row[col];
-        return filtered;
-      });
+      const filteredRows = this._resolveReturning(ast.returning, deletedRows);
       return { type: 'ROWS', rows: filteredRows, count: deleted };
     }
 

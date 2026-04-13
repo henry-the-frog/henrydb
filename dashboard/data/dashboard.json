@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-13T19:26:35.072Z",
+  "generated": "2026-04-13T19:28:59.878Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Find and fix more expression parser issues: test RETURNING with expressions, GROUP BY alias support, ORDER BY position (ORDER BY 1)",
-    "startedAt": "2026-04-13T19:26:35.072Z",
-    "taskId": "T85"
+    "task": "Fix RETURNING to support expressions and aliases, not just column names",
+    "startedAt": "2026-04-13T19:28:59.878Z",
+    "taskId": "T86"
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2436,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 84,
+    "blocksCompleted": 85,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 58,
+      "BUILD": 59,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

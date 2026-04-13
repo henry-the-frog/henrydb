@@ -923,10 +923,21 @@
     {
       "id": "T85",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Find and fix more expression parser issues: test RETURNING with expressions, GROUP BY alias support, ORDER BY position (ORDER BY 1)",
       "project": "henrydb",
-      "started": "2026-04-13T19:26:35.037Z"
+      "started": "2026-04-13T19:26:35.037Z",
+      "completed": "2026-04-13T19:28:36.544Z",
+      "duration_ms": 300000,
+      "summary": "Fixed LIMIT/OFFSET with expressions (LIMIT 2+1, OFFSET 1+1). Parser now evaluates constant arithmetic at parse time. Bug #17 this session. Also identified RETURNING expressions and GROUP BY alias as future fixes."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix RETURNING to support expressions and aliases, not just column names",
+      "project": "henrydb",
+      "started": "2026-04-13T19:28:59.842Z"
     }
   ],
   "focusProjects": [
@@ -1246,6 +1257,10 @@
     {
       "time": "2026-04-13T19:26:34.780Z",
       "msg": "Added T85 (BUILD) after end: Find and fix more expression parser issues: test RETURNING with expressions, GROUP BY alias support, ORDER BY position (ORDER BY 1)"
+    },
+    {
+      "time": "2026-04-13T19:28:59.610Z",
+      "msg": "Added T86 (BUILD) after end: Fix RETURNING to support expressions and aliases, not just column names"
     }
   ]
 }

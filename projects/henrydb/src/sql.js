@@ -1433,6 +1433,22 @@ export function parse(sql) {
     return { type: 'OFFSET', offset: Number(n), direction: dir };
   }
 
+  function parseReturningClause() {
+    advance(); // RETURNING
+    if (match('*')) return '*';
+    const cols = [];
+    do {
+      const expr = parseExpr();
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = advance().value; }
+      else if (peek().type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE')) {
+        alias = advance().value;
+      }
+      cols.push(alias ? { expr, alias } : expr);
+    } while (match(','));
+    return cols;
+  }
+
   function parseInsert() {
     advance(); // INSERT
     expect('KEYWORD', 'INTO');
@@ -1496,13 +1512,7 @@ export function parse(sql) {
     // RETURNING clause
     let returning = null;
     if (isKeyword('RETURNING')) {
-      advance();
-      if (match('*')) {
-        returning = '*';
-      } else {
-        returning = [];
-        do { returning.push(advance().value); } while (match(','));
-      }
+      returning = parseReturningClause();
     }
 
     return { type: 'INSERT', table, columns, rows, onConflict, returning };
@@ -1524,9 +1534,7 @@ export function parse(sql) {
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     let returning = null;
     if (isKeyword('RETURNING')) {
-      advance();
-      if (match('*')) { returning = '*'; }
-      else { returning = []; do { returning.push(advance().value); } while (match(',')); }
+      returning = parseReturningClause();
     }
     return { type: 'UPDATE', table, assignments, where, returning };
   }
@@ -1540,9 +1548,7 @@ export function parse(sql) {
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     let returning = null;
     if (isKeyword('RETURNING')) {
-      advance();
-      if (match('*')) { returning = '*'; }
-      else { returning = []; do { returning.push(advance().value); } while (match(',')); }
+      returning = parseReturningClause();
     }
     return { type: 'DELETE', table, where, returning };
   }
