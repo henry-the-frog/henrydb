@@ -1117,6 +1117,163 @@
       "completed": "2026-04-13T01:17:16.988Z",
       "duration_ms": 120000,
       "summary": "9 CASE expression stress tests all passing. Documented CASE in ORDER BY limitation. Covered: searched CASE, no ELSE, WHERE, arithmetic, NULL, GROUP BY, conditional aggregation."
+    },
+    {
+      "id": "T105",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening Session C: review 100-task day, pick exploration direction for last 2 hours",
+      "started": "2026-04-13T02:16:20.294Z",
+      "completed": "2026-04-13T02:16:42.827Z",
+      "duration_ms": 60000,
+      "summary": "Evening review: 100-task day. Direction: fix HenryDB known bugs (HeapFile.getByRowId, INSERT SELECT, CASE in ORDER BY, unary minus, UNION in derived table). Cleaned TODO urgent (CI already fixed). Depth > breadth."
+    },
+    {
+      "id": "T106",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Evening exploration project — something new and interesting",
+      "task": null,
+      "started": "2026-04-13T02:16:57.754Z",
+      "completed": "2026-04-13T02:17:46.324Z",
+      "duration_ms": 60000,
+      "summary": "Planned 4 BUILD tasks for HenryDB bug fixes: unary minus, CASE in ORDER BY, index nested-loop join, UNION in derived tables."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "task": "Fix unary minus (-val) in parser — enable negative number literals and expressions",
+      "status": "done",
+      "plan_ref": "T106",
+      "started": "2026-04-13T02:17:54.936Z",
+      "completed": "2026-04-13T02:30:46.872Z",
+      "duration_ms": 300000,
+      "summary": "Implemented unary minus (-val) in parser and all expression contexts. parseOrderBy() now uses parseExpr() enabling ORDER BY expressions. Added _orderByValue() helper. 8 tests, 0 regressions."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "task": "Fix CASE expression in ORDER BY — proper alias resolution for CASE/WHEN",
+      "status": "done",
+      "plan_ref": "T106",
+      "started": "2026-04-13T02:30:56.347Z",
+      "completed": "2026-04-13T02:36:42.088Z",
+      "duration_ms": 600000,
+      "summary": "Fixed CASE and arbitrary expressions in ORDER BY. Found and fixed ORDER BY numeric column reference bug — qualified column names (t.col) in row caused wrong key position. 6 new tests, 506/506 tested passing."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "task": "Implement index nested-loop join — use B+tree index on inner table join key for NLJ",
+      "status": "done",
+      "plan_ref": "T106",
+      "started": "2026-04-13T02:36:53.858Z",
+      "completed": "2026-04-13T02:39:23.994Z",
+      "duration_ms": 600000,
+      "summary": "Implemented index nested-loop join. When right table has B+tree index on join key, uses index lookup instead of full scan. range(val,val) for non-unique indexes. 6 tests, 123/123 join tests passing."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "task": "Fix UNION in derived table subqueries",
+      "status": "done",
+      "plan_ref": "T106",
+      "started": "2026-04-13T02:39:34.534Z",
+      "completed": "2026-04-13T02:42:02.818Z",
+      "duration_ms": 300000,
+      "summary": "Fixed UNION/INTERSECT/EXCEPT in derived table subqueries. Dispatches compound queries to execute_ast(). Added qualified column mapping for alias-prefixed references. 7 tests."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T109",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Evening curiosity: explore something fun",
+      "project": "henrydb",
+      "started": "2026-04-13T02:42:44.778Z",
+      "completed": "2026-04-13T02:46:40.410Z",
+      "duration_ms": 600000,
+      "summary": "Deep exploration of pre-existing failures. Fixed: (1) CASE+aggregates silently dropped in GROUP BY projection — added _evalGroupExpr/_evalGroupCond. (2) Post-aggregate arithmetic in parser (SUM(a)*100/SUM(b)). Fixed 2 pre-existing compound-queries-stress test failures. 4 new tests."
+    },
+    {
+      "id": "T114",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test HenryDB: run full test suite and investigate any remaining failures",
+      "project": "henrydb",
+      "started": "2026-04-13T02:47:02.406Z",
+      "completed": "2026-04-13T02:58:50.319Z",
+      "duration_ms": 900000,
+      "summary": "Deep stress test of full suite. Found and fixed 3 more bugs: (1) INSERT SELECT column mapping using Object.values broke with qualified keys (2) CTE/view missing JOIN handler — right side JOINs silently dropped (3) Qualified column names missing in CTE/view rows. Also fixed integration-mega test. 375+ tests passing."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix INSERT SELECT column mapping with mixed literal+aggregate",
+      "project": "henrydb",
+      "started": "2026-04-13T02:59:09.629Z",
+      "completed": "2026-04-13T02:59:09.774Z",
+      "duration_ms": 0,
+      "summary": "Already fixed in T114 — INSERT SELECT column mapping now uses name-based mapping."
+    },
+    {
+      "id": "T116",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Continue full test suite sweep — batches 301-642",
+      "project": "henrydb",
+      "started": "2026-04-13T02:59:40.286Z",
+      "completed": "2026-04-13T03:02:22.937Z",
+      "duration_ms": 600000,
+      "summary": "Full test suite sweep (642 files, ~6776 tests). 99.4% pass rate (6733/6776). Remaining 43 failures are pre-existing: transaction rollback via TransactionalDatabase/wire protocol (~30), PG protocol concurrency (~6), import mismatches (~2), timing-sensitive perf (~5). All regression-free from tonight changes."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix TransactionalDatabase UPDATE rollback — the main pre-existing failure category",
+      "project": "henrydb",
+      "started": "2026-04-13T03:02:48.729Z",
+      "completed": "2026-04-13T03:17:12.027Z",
+      "duration_ms": 1200000,
+      "summary": "Fixed TransactionalDatabase UPDATE rollback! 4-layer bug: (1) no undo for UPDATE, (2) result cache stale after rollback, (3) snapshot included physically-deleted rows, (4) double undo execution. 13/13 update-rollback tests now passing (was 7/13). 0 regressions."
+    },
+    {
+      "id": "T118",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run wider transactional tests to see if UPDATE rollback fix improves other failing tests",
+      "project": "henrydb",
+      "started": "2026-04-13T03:17:39.835Z",
+      "completed": "2026-04-13T03:26:58.366Z",
+      "duration_ms": 900000,
+      "summary": "Major UPDATE rollback fix series: (1) Missing version entries caused undo-restored rows to be invisible to MVCC delete interceptor (2) Undo log must use origScan/origDelete to bypass MVCC filtering (3) Result cache invalidation on rollback. 21/21 update-rollback tests now pass (was 7/21 pre-session)."
+    },
+    {
+      "id": "T119",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore fixing LIKE pattern matching — multiple pre-existing failures",
+      "project": "henrydb",
+      "started": "2026-04-13T03:27:33.492Z",
+      "completed": "2026-04-13T03:28:37.544Z",
+      "duration_ms": 120000,
+      "summary": "Investigated LIKE failures. Root cause is BTree engine uppercasing column names (FIRST vs first). LIKE itself works correctly. Column case normalization is pre-existing BTree issue — would need changes to column projection/alias handling."
+    },
+    {
+      "id": "T108",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Evening housekeeping + git push",
+      "started": "2026-04-13T03:28:45.813Z"
     }
   ],
   "focusProjects": [
@@ -1536,6 +1693,82 @@
     {
       "time": "2026-04-13T01:15:44.331Z",
       "msg": "Added T104 (BUILD) after end: Stress-test CASE expressions: nested CASE, CASE in WHERE/ORDER BY/GROUP BY, searched vs simple CASE"
+    },
+    {
+      "time": "2026-04-13T02:15:55.208Z",
+      "msg": "Added T105 (THINK) after T104: Evening Session C: review 100-task day, pick exploration direction for last 2 hours"
+    },
+    {
+      "time": "2026-04-13T02:16:01.492Z",
+      "msg": "Added T106 (PLAN) after T105: Evening exploration project — something new and interesting"
+    },
+    {
+      "time": "2026-04-13T02:16:11.531Z",
+      "msg": "Added T107 (BUILD) after T106: null"
+    },
+    {
+      "time": "2026-04-13T02:16:11.651Z",
+      "msg": "Added T108 (MAINTAIN) after T107: Evening housekeeping + git push"
+    },
+    {
+      "time": "2026-04-13T02:16:11.771Z",
+      "msg": "Added T109 (EXPLORE) after T108: Evening curiosity: explore something fun"
+    },
+    {
+      "time": "2026-04-13T02:17:40.956Z",
+      "msg": "PLAN T106 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T02:42:21.912Z",
+      "msg": "Removed T107: "
+    },
+    {
+      "time": "2026-04-13T02:42:32.574Z",
+      "msg": "Moved T108 after T109"
+    },
+    {
+      "time": "2026-04-13T02:46:52.581Z",
+      "msg": "Added T114 (EXPLORE) after T108: Stress test HenryDB: run full test suite and investigate any remaining failures"
+    },
+    {
+      "time": "2026-04-13T02:46:52.701Z",
+      "msg": "Added T115 (BUILD) after T114: Fix INSERT SELECT column mapping with mixed literal+aggregate"
+    },
+    {
+      "time": "2026-04-13T02:46:52.821Z",
+      "msg": "Moved T108 after T115"
+    },
+    {
+      "time": "2026-04-13T02:59:28.468Z",
+      "msg": "Added T116 (EXPLORE) after T108: Continue full test suite sweep — batches 301-642"
+    },
+    {
+      "time": "2026-04-13T02:59:28.588Z",
+      "msg": "Moved T108 after T116"
+    },
+    {
+      "time": "2026-04-13T03:02:40.673Z",
+      "msg": "Added T117 (BUILD) after T108: Fix TransactionalDatabase UPDATE rollback — the main pre-existing failure category"
+    },
+    {
+      "time": "2026-04-13T03:02:40.792Z",
+      "msg": "Moved T108 after T117"
+    },
+    {
+      "time": "2026-04-13T03:17:32.136Z",
+      "msg": "Added T118 (EXPLORE) after T108: Run wider transactional tests to see if UPDATE rollback fix improves other failing tests"
+    },
+    {
+      "time": "2026-04-13T03:17:32.255Z",
+      "msg": "Moved T108 after T118"
+    },
+    {
+      "time": "2026-04-13T03:27:26.501Z",
+      "msg": "Added T119 (EXPLORE) after T108: Explore fixing LIKE pattern matching — multiple pre-existing failures"
+    },
+    {
+      "time": "2026-04-13T03:27:26.620Z",
+      "msg": "Moved T108 after T119"
     }
   ]
 }
