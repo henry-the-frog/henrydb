@@ -12,7 +12,7 @@ const KEYWORDS = new Set([
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
-  'INTERSECT', 'EXCEPT',
+  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'FULL', 'OUTER', 'NATURAL', 'USING', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
@@ -1778,7 +1778,26 @@ export function parse(sql) {
         }
         else break;
       }
-      columns.push({ name, type: dataType, primaryKey, notNull, unique, check, defaultValue: defaultVal, references });
+      // Generated column: GENERATED ALWAYS AS (expr) STORED
+      let generated = null;
+      if (isKeyword('GENERATED')) {
+        advance(); // GENERATED
+        if (isKeyword('ALWAYS')) advance(); // ALWAYS (optional)
+        expect('KEYWORD', 'AS');
+        expect('(');
+        generated = parseExpr();
+        expect(')');
+        if (isKeyword('STORED')) advance(); // STORED (optional)
+      }
+      // Alternative shorthand: AS (expr) STORED
+      if (!generated && isKeyword('AS') && tokens[pos + 1] && tokens[pos + 1].type === '(') {
+        advance(); // AS
+        expect('(');
+        generated = parseExpr();
+        expect(')');
+        if (isKeyword('STORED')) advance();
+      }
+      columns.push({ name, type: dataType, primaryKey, notNull, unique, check, defaultValue: defaultVal, references, generated });
     } while (match(','));
     expect(')');
     // Optional: USING BTREE | USING HEAP (default: HEAP)

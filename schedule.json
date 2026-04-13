@@ -1237,10 +1237,13 @@
     {
       "id": "T116",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: materialized views (CREATE MATERIALIZED VIEW, REFRESH MATERIALIZED VIEW)",
       "project": "henrydb",
-      "started": "2026-04-13T23:26:43.483Z"
+      "started": "2026-04-13T23:26:43.483Z",
+      "completed": "2026-04-13T23:29:34.799Z",
+      "duration_ms": 300000,
+      "summary": "Fixed mat views: read from stored table + cache invalidation on REFRESH. 4 tests. 688 total."
     },
     {
       "id": "T117",
@@ -1292,6 +1295,57 @@
       "completed": "2026-04-13T23:26:28.130Z",
       "duration_ms": 30000,
       "summary": "FETCH FIRST N ROWS ONLY already implemented. Verified with OFFSET."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: GROUPING SETS / CUBE / ROLLUP",
+      "project": "henrydb"
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement string escape sequences (\\n, \\t, \\\\)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:29:53.644Z",
+      "completed": "2026-04-13T23:32:26.571Z",
+      "duration_ms": 180000,
+      "summary": "String escapes: \\n, \\t, \\r, \\\\, \\\". Fixed 2 pre-existing test failures. 334 tests (ALL pass)."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: MERGE statement (SQL:2003 upsert)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: table inheritance (INHERITS clause)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement do/while loop",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:32:26.713Z",
+      "completed": "2026-04-13T23:35:27.016Z",
+      "duration_ms": 180000,
+      "summary": "do/while loop. Body executes before condition. Both engines. 334 tests."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: computed/generated columns",
+      "project": "henrydb",
+      "started": "2026-04-13T23:35:27.159Z"
     }
   ],
   "focusProjects": [
@@ -1747,6 +1801,30 @@
     {
       "time": "2026-04-13T23:23:06.548Z",
       "msg": "Added T121 (BUILD) after end: HenryDB: FETCH FIRST N ROWS ONLY (SQL standard LIMIT)"
+    },
+    {
+      "time": "2026-04-13T23:29:45.287Z",
+      "msg": "Added T122 (BUILD) after end: HenryDB: GROUPING SETS / CUBE / ROLLUP"
+    },
+    {
+      "time": "2026-04-13T23:29:45.407Z",
+      "msg": "Added T123 (BUILD) after end: Monkey: implement string escape sequences (\\n, \\t, \\\\)"
+    },
+    {
+      "time": "2026-04-13T23:29:45.526Z",
+      "msg": "Added T124 (BUILD) after end: HenryDB: MERGE statement (SQL:2003 upsert)"
+    },
+    {
+      "time": "2026-04-13T23:29:45.647Z",
+      "msg": "Added T125 (BUILD) after end: HenryDB: table inheritance (INHERITS clause)"
+    },
+    {
+      "time": "2026-04-13T23:29:45.765Z",
+      "msg": "Added T126 (BUILD) after end: Monkey: implement do/while loop"
+    },
+    {
+      "time": "2026-04-13T23:29:45.884Z",
+      "msg": "Added T127 (BUILD) after end: HenryDB: computed/generated columns"
     }
   ]
 }

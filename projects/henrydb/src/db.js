@@ -1094,6 +1094,7 @@ export class Database {
       check: c.check || null,
       defaultValue: c.defaultValue ?? null,
       references: c.references || null,
+      generated: c.generated || null,
     }));
     // Choose storage engine: BTREE (clustered) or HEAP (default)
     let heap;
@@ -2012,6 +2013,18 @@ export class Database {
     }
 
     // Validate constraints
+    // Compute generated/computed columns
+    for (let i = 0; i < table.schema.length; i++) {
+      if (table.schema[i].generated) {
+        // Build a row object for expression evaluation
+        const row = {};
+        for (let j = 0; j < table.schema.length; j++) {
+          row[table.schema[j].name] = orderedValues[j];
+        }
+        orderedValues[i] = this._evalValue(table.schema[i].generated, row);
+      }
+    }
+
     this._validateConstraints(table, orderedValues);
 
     // BEFORE INSERT triggers
@@ -3461,6 +3474,17 @@ export class Database {
         const colIdx = table.schema.findIndex(c => c.name === column);
         if (colIdx === -1) throw new Error(`Column ${column} not found`);
         newValues[colIdx] = this._evalValue(value, row);
+      }
+
+      // Recompute generated columns
+      for (let gi = 0; gi < table.schema.length; gi++) {
+        if (table.schema[gi].generated) {
+          const genRow = {};
+          for (let gj = 0; gj < table.schema.length; gj++) {
+            genRow[table.schema[gj].name] = newValues[gj];
+          }
+          newValues[gi] = this._evalValue(table.schema[gi].generated, genRow);
+        }
       }
 
       // Remove old index entries
