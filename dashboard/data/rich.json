@@ -551,7 +551,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 514,
+      "ageHours": 538,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 534,
+      "ageHours": 558,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 535,
+      "ageHours": 559,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 535,
+      "ageHours": 559,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 536,
+      "ageHours": 560,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 536,
+      "ageHours": 560,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 538,
+      "ageHours": 562,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 557,
+      "ageHours": 581,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,12 +639,27 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 584,
+      "ageHours": 608,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-11",
+      "blocksCompleted": 4,
+      "summary": "",
+      "highlights": [
+        "Built queue (10 tasks)",
+        "T133 — RETURNING for multi-row INSERT (already working,",
+        "T134 — Fixed critical BufferPoolManager persistence bug:",
+        "T135 — Git push, daily log update, evening summary"
+      ],
+      "modeDistribution": {
+        "BUILD": 2,
+        "MAINTAIN": 1
+      }
+    },
     {
       "date": "2026-04-10",
       "blocksCompleted": 60,
@@ -736,68 +751,68 @@
       }
     }
   ],
-  "streak": 6,
+  "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 261,
-    "pastBlocks": 262,
-    "totalBlocks": 262,
+    "completionRate": 96,
+    "completedBlocks": 120,
+    "pastBlocks": 125,
+    "totalBlocks": 125,
     "plannedDist": {
-      "THINK": 15,
-      "PLAN": 11,
-      "BUILD": 213,
-      "MAINTAIN": 20,
-      "EXPLORE": 3
+      "THINK": 10,
+      "PLAN": 10,
+      "BUILD": 86,
+      "MAINTAIN": 11,
+      "EXPLORE": 8
     },
     "actualDist": {
-      "THINK": 15,
-      "PLAN": 11,
-      "BUILD": 212,
-      "MAINTAIN": 20,
-      "EXPLORE": 3
+      "THINK": 10,
+      "PLAN": 9,
+      "BUILD": 83,
+      "MAINTAIN": 10,
+      "EXPLORE": 8
     },
-    "pace": 18.6
+    "pace": 8.6
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:18",
-      "text": "12 persistence depth tests (4 suites), found and fixed 2 real bugs: (1)…"
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:24",
-      "text": "T3: Wrote persistence-depth.test.js (12 tests)."
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:32",
-      "text": "Published blog post: 5 Bugs That Would Have Destroyed Your Data."
+      "time": "08:27",
+      "text": "T3: Fixed all 5 test failures."
     },
     {
       "mode": "MAINTAIN",
-      "time": "08:33",
-      "text": "T7: Published blog: \"5 Bugs That Would Have Destroyed Your Data\" — persistence correctness deep dive."
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "08:34",
-      "text": "ARIES deep dive: wrote gap analysis (scratch/aries-gap-analysis.md)."
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "08:36",
-      "text": "T9: ARIES deep dive."
+      "time": "08:42",
+      "text": "T16: Fixed neural-net CI."
     },
     {
       "mode": "BUILD",
-      "time": "08:59",
-      "text": "Fixed 14 of 18 test failures."
+      "time": "08:54",
+      "text": "T7: Implemented B+tree index range scans (>, >=, <, <=, BETWEEN)."
     },
     {
       "mode": "BUILD",
-      "time": "09:19",
-      "text": "Fixed UPSERT crash with TransactionalDatabase (heap.pages doesnt exist on FileBackedHeap)."
+      "time": "09:02",
+      "text": "Published blog post: How HenryDB Learned to Use Its Indexes."
+    },
+    {
+      "mode": "THINK",
+      "time": "09:07",
+      "text": "Chose normalizing flows depth."
+    },
+    {
+      "mode": "BUILD",
+      "time": "09:20",
+      "text": "T24: **FOUND BUG** in KAN B-spline: right boundary basis sum was 0 (augmented knot empty intervals)."
+    },
+    {
+      "mode": "BUILD",
+      "time": "09:23",
+      "text": "T25: **FOUND BUG** in Izhikevich voltage history: pre-spike-check overshoots (172 mV)."
+    },
+    {
+      "mode": "BUILD",
+      "time": "09:30",
+      "text": "T28: **FOUND BUG** in HenryDB BETWEEN SYMMETRIC index scan — lo/hi not swapped."
     }
   ],
   "adjustments": [],
@@ -809,7 +824,7 @@
       "url": "https://github.com/henry-the-frog/neural-net",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-12T03:35:51Z",
+      "pushedAt": "2026-04-12T16:51:14Z",
       "category": "featured"
     },
     {
@@ -1205,7 +1220,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-12T03:37:55Z",
+      "pushedAt": "2026-04-13T03:52:23Z",
       "category": "utility"
     },
     {
@@ -2605,19 +2620,19 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 6566,
+    "totalTests": 7130,
     "testCounts": {
       "fft": 151,
       "git": 153,
-      "henrydb": 6054,
+      "henrydb": 6618,
       "riscv-emulator": 208
     },
     "totalRepos": 200,
     "totalProjectCount": 10,
     "totalBlogPosts": 47,
-    "streak": 6,
-    "totalTasksWeek": 430,
-    "daysActive": 5
+    "streak": 7,
+    "totalTasksWeek": 434,
+    "daysActive": 6
   },
   "projectDepth": [
     {
@@ -2626,11 +2641,11 @@
       "icon": "🗄️",
       "description": "A SQL database written from scratch in JavaScript. PostgreSQL wire protocol compatible.",
       "category": "systems",
-      "tests": 6054,
-      "srcFiles": 940,
-      "srcLines": 155524,
+      "tests": 6618,
+      "srcFiles": 989,
+      "srcLines": 165266,
       "featureCount": 57,
-      "lastCommit": "2026-04-11 21:37:46 -0600",
+      "lastCommit": "2026-04-12 21:57:35 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2672,7 +2687,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-11 21:37:46 -0600",
+      "lastCommit": "2026-04-12 21:57:35 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2700,7 +2715,7 @@
       "srcFiles": 3,
       "srcLines": 1283,
       "featureCount": 0,
-      "lastCommit": "2026-04-11 21:37:46 -0600",
+      "lastCommit": "2026-04-12 21:57:35 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2714,7 +2729,7 @@
       "srcFiles": 3,
       "srcLines": 653,
       "featureCount": 0,
-      "lastCommit": "2026-04-11 21:37:46 -0600",
+      "lastCommit": "2026-04-12 21:57:35 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2728,7 +2743,7 @@
       "srcFiles": 3,
       "srcLines": 1963,
       "featureCount": 0,
-      "lastCommit": "2026-04-11 21:37:46 -0600",
+      "lastCommit": "2026-04-12 21:57:35 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2742,10 +2757,10 @@
       "srcFiles": 3,
       "srcLines": 1392,
       "featureCount": 0,
-      "lastCommit": "2026-04-11 21:37:46 -0600",
+      "lastCommit": "2026-04-12 21:57:35 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-12T04:15:37.085Z"
+  "generated": "2026-04-13T04:15:46.789Z"
 }
