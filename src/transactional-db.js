@@ -157,7 +157,7 @@ export class TransactionalDatabase {
     if (this._isDDL(trimmed)) {
       const result = this._db.execute(sql);
       if (trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')
-          || trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED')) {
+          || trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED') || trimmed.startsWith('CREATE TRIGGER')) {
         this._trackCreate(sql);
         this._installScanInterceptors(); // New table needs interceptor
       }
@@ -529,7 +529,7 @@ export class TransactionalDatabase {
   }
 
   _trackCreate(sql) {
-    const match = sql.match(/CREATE\s+(?:TABLE|INDEX|(?:MATERIALIZED\s+)?VIEW)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:UNIQUE\s+)?(\w+)/i);
+    const match = sql.match(/CREATE\s+(?:TABLE|INDEX|(?:MATERIALIZED\s+)?VIEW|TRIGGER)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:UNIQUE\s+)?(\w+)/i);
     if (match) {
       this._createSqls.set(match[1], sql);
       const tableName = match[1].toLowerCase();
@@ -727,7 +727,8 @@ export class TransactionSession {
     if (this._tdb._isDDL(trimmed)) {
       const result = this._tdb._db.execute(sql);
       if (trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX') ||
-          trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED')) {
+          trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED') ||
+          trimmed.startsWith('CREATE TRIGGER')) {
         this._tdb._trackCreate(sql);
         this._tdb._installScanInterceptors();
       }
