@@ -2135,9 +2135,28 @@ export class Database {
         rows = viewResult.rows;
       }
 
+      // Add qualified column names (alias.col) for alias-prefixed references
+      const viewAlias = ast.from.alias || ast.from.table;
+      if (viewAlias) {
+        rows = rows.map(row => {
+          const newRow = { ...row };
+          for (const key of Object.keys(row)) {
+            if (!key.includes('.')) {
+              newRow[`${viewAlias}.${key}`] = row[key];
+            }
+          }
+          return newRow;
+        });
+      }
+
       // Apply WHERE
       if (ast.where) {
         rows = rows.filter(row => this._evalExpr(ast.where, row));
+      }
+
+      // Handle JOINs on view results
+      for (const join of ast.joins || []) {
+        rows = this._executeJoin(rows, join, viewAlias || tableName);
       }
 
       // Handle aggregates / GROUP BY on view results
@@ -2190,8 +2209,10 @@ export class Database {
               const name = col.alias || `${col.func}(${col.arg || ''})`;
               result[name] = row[`__window_${name}`];
             } else {
-              const name = col.alias || col.name;
-              result[name] = row[col.name] !== undefined ? row[col.name] : row[name];
+              const rawName = col.alias || col.name;
+              // Strip table alias prefix for output key: ds.dept_name → dept_name
+              const name = rawName.includes('.') ? rawName.split('.').pop() : rawName;
+              result[name] = row[col.name] !== undefined ? row[col.name] : row[rawName] !== undefined ? row[rawName] : row[name];
             }
           }
           return result;
