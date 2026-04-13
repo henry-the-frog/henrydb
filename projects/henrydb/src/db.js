@@ -2630,6 +2630,55 @@ export class Database {
   }
 
   _executeJoin(leftRows, join, leftAlias) {
+    // LATERAL JOIN: for each left row, evaluate the subquery with left row in scope
+    if (join.lateral && join.subquery) {
+      const rightAlias = join.alias || '__lateral';
+      const result = [];
+      
+      for (const leftRow of leftRows) {
+        // Set outer row for correlated subquery resolution
+        const prevOuter = this._outerRow;
+        this._outerRow = leftRow;
+        
+        let rightRows;
+        try {
+          const subResult = this._select(join.subquery);
+          rightRows = subResult.rows.map(r => {
+            const row = {};
+            for (const [k, v] of Object.entries(r)) {
+              row[k] = v;
+              row[`${rightAlias}.${k}`] = v;
+            }
+            return row;
+          });
+        } finally {
+          this._outerRow = prevOuter;
+        }
+        
+        if (rightRows.length === 0) {
+          if (join.joinType === 'LEFT') {
+            result.push({ ...leftRow });
+          }
+          // INNER/CROSS: skip
+        } else {
+          for (const rightRow of rightRows) {
+            const merged = { ...leftRow, ...rightRow };
+            if (join.on) {
+              if (this._evalExpr(join.on, merged)) {
+                result.push(merged);
+              } else if (join.joinType === 'LEFT') {
+                result.push({ ...leftRow });
+              }
+            } else {
+              result.push(merged);
+            }
+          }
+        }
+      }
+      
+      return result;
+    }
+
     const rightTable = this.tables.get(join.table);
     const rightView = this.views.get(join.table);
 

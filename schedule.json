@@ -1088,16 +1088,78 @@
     {
       "id": "T102",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add DISTINCT ON (PostgreSQL extension)",
       "project": "henrydb",
-      "started": "2026-04-13T22:59:20.197Z"
+      "started": "2026-04-13T22:59:20.197Z",
+      "completed": "2026-04-13T23:04:51.761Z",
+      "duration_ms": 600000,
+      "summary": "DISTINCT ON: parser + evaluator. SELECT DISTINCT ON (dept) ... ORDER BY dept, salary DESC → highest earner per dept. 4 tests. 674 total."
     },
     {
       "id": "T103",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "End session housekeeping"
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement string methods (split, join, trim, upper, lower) as builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:05:08.896Z",
+      "completed": "2026-04-13T23:06:29.112Z",
+      "duration_ms": 180000,
+      "summary": "5 string builtins (split, join, trim, upper, lower). Both engines, full parity. 330 tests."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: LATERAL JOIN support",
+      "project": "henrydb",
+      "started": "2026-04-13T23:09:28.393Z"
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: UPDATE with FROM clause (PostgreSQL style)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: hash literal iteration (keys, values builtins)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T23:06:29.255Z",
+      "completed": "2026-04-13T23:08:40.094Z",
+      "duration_ms": 180000,
+      "summary": "keys() and values() builtins for hash maps. Both engines. 330 tests."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ARRAY_AGG aggregate function",
+      "project": "henrydb",
+      "started": "2026-04-13T23:08:40.237Z",
+      "completed": "2026-04-13T23:09:10.336Z",
+      "duration_ms": 30000,
+      "summary": "ARRAY_AGG already implemented. Verified working with GROUP BY."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: STRING_AGG aggregate function",
+      "project": "henrydb",
+      "started": "2026-04-13T23:09:10.484Z",
+      "completed": "2026-04-13T23:09:21.759Z",
+      "duration_ms": 30000,
+      "summary": "STRING_AGG already implemented. Verified with separator."
     }
   ],
   "focusProjects": [
@@ -1481,6 +1543,30 @@
     {
       "time": "2026-04-13T22:49:27.521Z",
       "msg": "Added T103 (MAINTAIN) after end: End session housekeeping"
+    },
+    {
+      "time": "2026-04-13T23:05:03.127Z",
+      "msg": "Added T104 (BUILD) after end: Monkey: implement string methods (split, join, trim, upper, lower) as builtins"
+    },
+    {
+      "time": "2026-04-13T23:05:03.246Z",
+      "msg": "Added T105 (BUILD) after end: HenryDB: LATERAL JOIN support"
+    },
+    {
+      "time": "2026-04-13T23:05:03.365Z",
+      "msg": "Added T106 (BUILD) after end: HenryDB: UPDATE with FROM clause (PostgreSQL style)"
+    },
+    {
+      "time": "2026-04-13T23:05:03.484Z",
+      "msg": "Added T107 (BUILD) after end: Monkey: hash literal iteration (keys, values builtins)"
+    },
+    {
+      "time": "2026-04-13T23:05:03.603Z",
+      "msg": "Added T108 (BUILD) after end: HenryDB: ARRAY_AGG aggregate function"
+    },
+    {
+      "time": "2026-04-13T23:05:03.720Z",
+      "msg": "Added T109 (BUILD) after end: HenryDB: STRING_AGG aggregate function"
     }
   ]
 }

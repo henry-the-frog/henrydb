@@ -985,6 +985,30 @@ export function parse(sql) {
     // Skip optional OUTER keyword (LEFT OUTER JOIN, RIGHT OUTER JOIN, FULL OUTER JOIN)
     if (isKeyword('OUTER')) advance();
     expect('KEYWORD', 'JOIN');
+    let lateral = false;
+    let subquery = null;
+    if (isKeyword('LATERAL')) {
+      lateral = true;
+      advance();
+    }
+    if (peek().type === '(') {
+      // Subquery as join source
+      advance(); // (
+      if (isKeyword('SELECT')) {
+        subquery = parseSelect();
+      }
+      expect(')');
+      let alias = null;
+      if (peek().type === 'IDENT' && !isKeyword('ON') && !isKeyword('WHERE')) alias = advance().value;
+      // Optional AS
+      if (isKeyword('AS') || (peek().type === 'IDENT' && peek().value.toUpperCase() === 'AS')) {
+        advance(); // AS
+        alias = advance().value;
+      }
+      let on = null;
+      if (isKeyword('ON')) { advance(); on = parseExpr(); }
+      return { type: 'JOIN', joinType, table: null, alias, on, lateral, subquery };
+    }
     const joinTok = advance();
     const table = joinTok.originalValue || joinTok.value;
     let alias = null;
