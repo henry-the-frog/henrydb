@@ -72,7 +72,9 @@ export class SSIManager extends MVCCManager {
     
     // Check if any committed transaction wrote to this key
     for (const [committedTxId, info] of this.committedInfo) {
-      if (info.writeSet.has(key) && !this.activeTxns.get(txId)?.snapshot.has(committedTxId)) {
+      const readerSnap = this.activeTxns.get(txId)?.snapshot;
+      if (info.writeSet.has(key) && readerSnap && 
+          (committedTxId >= readerSnap.xmax || readerSnap.activeSet.has(committedTxId))) {
         this._addRWDependency(txId, committedTxId);
       }
     }
