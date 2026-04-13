@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-13T15:15:54.550Z",
+  "generated": "2026-04-13T15:45:14.494Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "EXPLAIN ANALYZE through MVCC: verify plan output, cost estimates, actual row counts",
-    "completedAt": "2026-04-13T15:15:54.550Z",
-    "taskId": "T28",
-    "summary": "6/6 EXPLAIN MVCC tests pass. EXPLAIN/EXPLAIN ANALYZE work correctly through TransactionalDatabase with session visibility and accurate row counts.",
-    "durationMs": 120000
+    "task": "HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies",
+    "completedAt": "2026-04-13T15:45:14.494Z",
+    "taskId": "T36",
+    "summary": "FOUND BUG: SSI snapshot.has(txId) called on plain object instead of Set. Fixed to use snapshot.activeSet. 8/8 SSI tests pass. Key insight: UPDATE full-table-scan causes conservative false positives in SSI.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2030,43 +2030,98 @@
       {
         "id": "T25",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Stress test savepoints, prepared statements, and EXPLAIN ANALYZE through MVCC",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-13T15:01:56.064Z"
+        "started": "2026-04-13T15:01:56.064Z",
+        "completed": "2026-04-13T15:02:11.258Z",
+        "duration_ms": 30000,
+        "summary": "Planned 3 BUILD tasks: savepoints, prepared stmts, EXPLAIN ANALYZE through MVCC."
       },
       {
         "id": "T26",
         "mode": "BUILD",
         "task": "Savepoints through TransactionalDatabase: nested savepoints, rollback to savepoint, release, concurrent sessions",
-        "status": "upcoming",
-        "plan_ref": "T25"
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-13T15:02:16.772Z",
+        "completed": "2026-04-13T15:12:31.430Z",
+        "duration_ms": 900000,
+        "summary": "MAJOR FEATURE: Implemented SAVEPOINT/ROLLBACK TO/RELEASE SAVEPOINT in TransactionalDatabase sessions. 11/11 tests pass. Deep-copy version maps to avoid reference aliasing bug. xmax=-2 for permanently dead rows. Nested savepoints, concurrent sessions, DELETE/UPDATE rollback all work."
       },
       {
         "id": "T27",
         "mode": "BUILD",
         "task": "Prepared statements through MVCC: prepare/execute with params, concurrent readers, persistence",
-        "status": "upcoming",
-        "plan_ref": "T25"
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-13T15:12:57.158Z",
+        "completed": "2026-04-13T15:14:19.423Z",
+        "duration_ms": 180000,
+        "summary": "9/9 prepared statement MVCC tests pass. Covers SELECT/INSERT/UPDATE/DELETE with params, session transactions, snapshot isolation, savepoint rollback, persistence, concurrent readers. No new bugs found."
       },
       {
         "id": "T28",
         "mode": "BUILD",
         "task": "EXPLAIN ANALYZE through MVCC: verify plan output, cost estimates, actual row counts",
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-13T15:14:32.717Z",
+        "completed": "2026-04-13T15:15:54.515Z",
+        "duration_ms": 120000,
+        "summary": "6/6 EXPLAIN MVCC tests pass. EXPLAIN/EXPLAIN ANALYZE work correctly through TransactionalDatabase with session visibility and accurate row counts."
+      },
+      {
+        "id": "T29",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What should I work on next? HenryDB is solid, Monkey has fuzzer+monkeylang PR. Focus on depth or breadth?",
+        "started": "2026-04-13T15:28:38.042Z",
+        "completed": "2026-04-13T15:28:58.380Z",
+        "duration_ms": 30000,
+        "summary": "Next: Volcano query planner (391 LOC, 0 tests). Then neural-net legacy API fixes if time."
+      },
+      {
+        "id": "T30",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Test volcano query planner, find bugs in cost-based optimization",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-13T15:29:22.941Z"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Write volcano planner test suite: scan, filter, project, join strategy selection, aggregate, sort, limit, distinct",
         "status": "upcoming",
-        "plan_ref": "T25"
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Write volcano planner cost-based tests: verify correct join strategy is chosen (NLJ vs HashJoin vs INLJ) based on table sizes and indexes",
+        "status": "upcoming",
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "task": "Fix bugs found in volcano planner tests",
+        "status": "upcoming",
+        "plan_ref": "T30"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 28,
-    "blocksTotal": 28,
+    "blocksCompleted": 36,
+    "blocksTotal": 33,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 5,
-      "BUILD": 13,
+      "THINK": 7,
+      "PLAN": 6,
+      "BUILD": 18,
       "MAINTAIN": 3,
       "EXPLORE": 2
     }

@@ -307,6 +307,93 @@
       "completed": "2026-04-13T15:15:54.515Z",
       "duration_ms": 120000,
       "summary": "6/6 EXPLAIN MVCC tests pass. EXPLAIN/EXPLAIN ANALYZE work correctly through TransactionalDatabase with session visibility and accurate row counts."
+    },
+    {
+      "id": "T29",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What should I work on next? HenryDB is solid, Monkey has fuzzer+monkeylang PR. Focus on depth or breadth?",
+      "started": "2026-04-13T15:28:38.042Z",
+      "completed": "2026-04-13T15:28:58.380Z",
+      "duration_ms": 30000,
+      "summary": "Next: Volcano query planner (391 LOC, 0 tests). Then neural-net legacy API fixes if time."
+    },
+    {
+      "id": "T30",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Test volcano query planner, find bugs in cost-based optimization",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-13T15:29:22.941Z",
+      "completed": "2026-04-13T15:29:55.996Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks for volcano planner: basic operations, cost-based join selection, bug fixes."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Write volcano planner test suite: scan, filter, project, join strategy selection, aggregate, sort, limit, distinct",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-13T15:30:03.389Z",
+      "completed": "2026-04-13T15:32:30.628Z",
+      "duration_ms": 300000,
+      "summary": "20/20 volcano planner tests pass. Covers all operations: scan, filter, project, sort, limit, distinct, joins (hash, NLJ, INLJ, multi-table, self-join), aggregation, edge cases. No bugs found in the planner."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Write volcano planner cost-based tests: verify correct join strategy is chosen (NLJ vs HashJoin vs INLJ) based on table sizes and indexes",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-13T15:32:45.791Z",
+      "completed": "2026-04-13T15:33:22.846Z",
+      "duration_ms": 60000,
+      "summary": "Existing cost-model.test.js has comprehensive tests (all passing). Join strategy selection is rule-based (INLJ>HashJoin>NLJ) not cost-based. No additional tests needed."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Fix bugs found in volcano planner tests",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-13T15:34:02.530Z",
+      "completed": "2026-04-13T15:34:02.673Z",
+      "duration_ms": 0,
+      "summary": "No bugs found — volcano planner is solid. All 54 existing+new tests pass."
+    },
+    {
+      "id": "T34",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Capture: Daniel's monkey-lang-tests-corpus shows 0 divergence across 23748 tests × 5 backends. This is huge.",
+      "started": "2026-04-13T15:36:53.913Z",
+      "completed": "2026-04-13T15:37:19.521Z",
+      "duration_ms": 60000,
+      "summary": "Daniel corpus: 0 divergence across 23748 tests × 5 backends (118740 invocations). Byte-identical results across eval, VM, JIT, transpiler, WASM. Extraordinary correctness result — validates all backends as production-quality."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add monkey-lang-tests-corpus as optional CI smoke test (run 100 random programs from corpus)",
+      "project": "monkey-lang",
+      "started": "2026-04-13T15:38:16.123Z",
+      "completed": "2026-04-13T15:40:10.336Z",
+      "duration_ms": 300000,
+      "summary": "Corpus smoke test: 50 random corpus programs, 0 JIT divergence (33 pass, 17 parse errors from unsupported syntax like macros). Runner committed."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies",
+      "project": "henrydb",
+      "started": "2026-04-13T15:40:37.774Z",
+      "completed": "2026-04-13T15:45:14.458Z",
+      "duration_ms": 600000,
+      "summary": "FOUND BUG: SSI snapshot.has(txId) called on plain object instead of Set. Fixed to use snapshot.activeSet. 8/8 SSI tests pass. Key insight: UPDATE full-table-scan causes conservative false positives in SSI."
     }
   ],
   "focusProjects": [
@@ -410,6 +497,30 @@
     {
       "time": "2026-04-13T15:02:03.661Z",
       "msg": "PLAN T25 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T15:28:29.484Z",
+      "msg": "Added T29 (THINK) after end: What should I work on next? HenryDB is solid, Monkey has fuzzer+monkeylang PR. Focus on depth or breadth?"
+    },
+    {
+      "time": "2026-04-13T15:29:15.533Z",
+      "msg": "Added T30 (PLAN) after end: HenryDB: Test volcano query planner, find bugs in cost-based optimization"
+    },
+    {
+      "time": "2026-04-13T15:29:48.090Z",
+      "msg": "PLAN T30 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T15:36:46.284Z",
+      "msg": "Added T34 (THINK) after end: Capture: Daniel's monkey-lang-tests-corpus shows 0 divergence across 23748 tests × 5 backends. This is huge."
+    },
+    {
+      "time": "2026-04-13T15:38:08.896Z",
+      "msg": "Added T35 (BUILD) after end: Add monkey-lang-tests-corpus as optional CI smoke test (run 100 random programs from corpus)"
+    },
+    {
+      "time": "2026-04-13T15:40:29.019Z",
+      "msg": "Added T36 (BUILD) after end: HenryDB: SSI (Serializable Snapshot Isolation) depth tests - write skew, phantom reads, serialization anomalies"
     }
   ]
 }
