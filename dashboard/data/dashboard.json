@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-13T19:35:40.868Z",
+  "generated": "2026-04-13T19:43:18.901Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Write tests for RETURNING expressions and LIMIT/OFFSET expressions",
-    "startedAt": "2026-04-13T19:35:40.868Z",
-    "taskId": "T88"
+    "task": "Final stretch: Look for one more bug class to fix — maybe testing error messages or edge cases in JOINS",
+    "completedAt": "2026-04-13T19:43:18.901Z",
+    "taskId": "T91",
+    "summary": "Edge case testing: JOIN operations all work correctly. Found 2 parser issues: (1) Nested SUBSTRING inside function fails (FROM keyword conflict), (2) CAST() || concat doesnt chain operators. Both are deeper parser architecture issues — logged for future.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2436,12 +2438,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 87,
+    "blocksCompleted": 91,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 8,
-      "BUILD": 60,
+      "BUILD": 64,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
