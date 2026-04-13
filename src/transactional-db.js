@@ -528,6 +528,30 @@ export class TransactionalDatabase {
            trimmed.startsWith('TRUNCATE') || trimmed.startsWith('RENAME');
   }
 
+  _trackAlter(sql) {
+    const match = sql.match(/ALTER\s+TABLE\s+(\w+)/i);
+    if (match) {
+      const tableName = match[1].toLowerCase();
+      const table = this._db.tables.get(tableName);
+      if (table) {
+        // Reconstruct CREATE TABLE from current schema
+        const cols = table.schema.map(c => {
+          let def = `${c.name} ${c.type || 'TEXT'}`;
+          if (c.primaryKey) def += ' PRIMARY KEY';
+          if (c.notNull) def += ' NOT NULL';
+          if (c.defaultValue !== undefined && c.defaultValue !== null) {
+            def += ` DEFAULT ${typeof c.defaultValue === 'string' ? `'${c.defaultValue}'` : c.defaultValue}`;
+          }
+          if (c.check) def += ` CHECK (${c.check})`;
+          return def;
+        }).join(', ');
+        const newCreateSql = `CREATE TABLE ${tableName} (${cols})`;
+        this._createSqls.set(tableName, newCreateSql);
+        this._saveCatalog();
+      }
+    }
+  }
+
   _trackCreate(sql) {
     const match = sql.match(/CREATE\s+(?:TABLE|INDEX|(?:MATERIALIZED\s+)?VIEW|TRIGGER|FUNCTION|PROCEDURE|UNIQUE\s+INDEX|SEQUENCE)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:UNIQUE\s+)?(\w+)/i);
     if (match) {
