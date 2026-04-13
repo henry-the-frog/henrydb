@@ -791,10 +791,21 @@
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Continue edge case testing: IN list with expressions, UPDATE SET with expressions, negative numbers, type coercion edge cases",
       "project": "henrydb",
-      "started": "2026-04-13T18:59:38.329Z"
+      "started": "2026-04-13T18:59:38.329Z",
+      "completed": "2026-04-13T19:04:50.168Z",
+      "duration_ms": 360000,
+      "summary": "Fixed 2 more bugs: (1) IN/NOT IN list values couldnt have expressions (1+1 etc), (2) CASE WHEN NULL returned THEN instead of ELSE — _evalExpr didnt handle literal type so NULL was truthy. 17 new edge case tests. Session total: 6 parser bugs fixed, 5 persistence bugs fixed = 11 bugs total."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Git push all changes and run a broader test sweep to catch any regressions from parser fixes",
+      "project": "henrydb",
+      "started": "2026-04-13T19:05:06.778Z"
     }
   ],
   "focusProjects": [
@@ -1066,6 +1077,10 @@
     {
       "time": "2026-04-13T18:59:38.097Z",
       "msg": "Added T73 (BUILD) after end: Continue edge case testing: IN list with expressions, UPDATE SET with expressions, negative numbers, type coercion edge cases"
+    },
+    {
+      "time": "2026-04-13T19:05:06.544Z",
+      "msg": "Added T74 (BUILD) after end: Git push all changes and run a broader test sweep to catch any regressions from parser fixes"
     }
   ]
 }
