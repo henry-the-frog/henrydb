@@ -5365,16 +5365,50 @@ export class Database {
     for (const key of Object.keys(row)) {
       if (key.toLowerCase() === lowerName) return row[key];
     }
-    // Try without table prefix
+    // Try without table prefix (e.g., t.a → a)
     for (const key of Object.keys(row)) {
       if (key.endsWith(`.${name}`)) return row[key];
       if (key.toLowerCase().endsWith(`.${lowerName}`)) return row[key];
+    }
+    // If name is qualified (contains '.'), try stripping the table alias
+    if (name.includes('.')) {
+      const colName = name.split('.').pop();
+      const tablePrefix = name.substring(0, name.lastIndexOf('.'));
+      const lowerColName = colName.toLowerCase();
+      const lowerPrefix = tablePrefix.toLowerCase();
+      
+      // Check if this table prefix belongs to the current (inner) query scope
+      const isInnerAlias = this._innerTableAliases && this._innerTableAliases.has(lowerPrefix);
+      // Check if this table prefix belongs to the outer query scope
+      const isOuterAlias = !isInnerAlias && this._outerRow;
+      
+      if (isOuterAlias) {
+        // Resolve from outer row
+        if (colName in this._outerRow) return this._outerRow[colName];
+        for (const key of Object.keys(this._outerRow)) {
+          if (key.toLowerCase() === lowerColName) return this._outerRow[key];
+        }
+      }
+      
+      // Resolve from inner row (strip alias)
+      if (colName in row) return row[colName];
+      for (const key of Object.keys(row)) {
+        if (key.toLowerCase() === lowerColName) return row[key];
+      }
     }
     // For correlated subqueries: check outer row
     if (this._outerRow) {
       if (name in this._outerRow) return this._outerRow[name];
       for (const key of Object.keys(this._outerRow)) {
         if (key.endsWith(`.${name}`)) return this._outerRow[key];
+      }
+      // If name is qualified, try stripping alias in outer row too
+      if (name.includes('.')) {
+        const colName = name.split('.').pop();
+        if (colName in this._outerRow) return this._outerRow[colName];
+        for (const key of Object.keys(this._outerRow)) {
+          if (key.toLowerCase() === colName.toLowerCase()) return this._outerRow[key];
+        }
       }
     }
     return undefined;
@@ -5868,9 +5902,26 @@ export class Database {
   _evalSubquery(subqueryAst, outerRow) {
     // Execute the subquery, passing outerRow for correlated references
     const savedOuterRow = this._outerRow;
+    const savedInnerAliases = this._innerTableAliases;
     this._outerRow = outerRow;
+    
+    // Collect inner query's table aliases for qualified column resolution
+    const aliases = new Set();
+    if (subqueryAst.from) {
+      const alias = (subqueryAst.from.alias || subqueryAst.from.table || '').toLowerCase();
+      if (alias) aliases.add(alias);
+    }
+    if (subqueryAst.joins) {
+      for (const join of subqueryAst.joins) {
+        const alias = (join.alias || join.table || '').toLowerCase();
+        if (alias) aliases.add(alias);
+      }
+    }
+    this._innerTableAliases = aliases;
+    
     const result = this._select(subqueryAst);
     this._outerRow = savedOuterRow;
+    this._innerTableAliases = savedInnerAliases;
     return result.rows;
   }
 

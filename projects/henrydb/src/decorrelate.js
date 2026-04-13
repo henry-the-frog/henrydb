@@ -36,12 +36,16 @@ function isCorrelated(subqueryAst, outerTables) {
   const refs = collectColumnRefs(subqueryAst.where);
   const innerTables = new Set();
   if (subqueryAst.from) {
-    innerTables.add(subqueryAst.from.table);
-    if (subqueryAst.from.alias) innerTables.add(subqueryAst.from.alias);
+    // Use alias as the inner scope's identifier when available;
+    // the raw table name should NOT be added when aliased, as it
+    // could conflict with outer table references (e.g., FROM t t2
+    // should have inner scope "t2", not "t" which is the outer table)
+    const alias = subqueryAst.from.alias || subqueryAst.from.table;
+    if (alias) innerTables.add(alias);
   }
   for (const join of subqueryAst.joins || []) {
-    innerTables.add(join.table);
-    if (join.alias) innerTables.add(join.alias);
+    const alias = join.alias || join.table;
+    if (alias) innerTables.add(alias);
   }
   
   // Check if any referenced table is NOT in the inner query
