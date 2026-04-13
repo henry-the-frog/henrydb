@@ -2,10 +2,10 @@
 
 ## Status: in-progress
 ## Session: Work Session A (Monday 4/13, 8:15 AM - 2:15 PM MDT)
-## Current Position: T3
+## Current Position: T11
 ## Mode: BUILD
-## Task: Implement MVCCHeap class in mvcc.js + fix transactional-db.js import, run transactional-db tests
-## Context-Files: henrydb/src/mvcc.js, henrydb/src/transactional-db.js, henrydb/src/page.js
-## Started: 2026-04-13T08:18:26Z
+## Task: Persistence stress test: close/reopen cycle for every feature
+## Context-Files: henrydb/src/transactional-db.js, henrydb/src/file-backed-heap.js
+## Started: 2026-04-13T08:38:26Z
 ## Completed: 
-## Tasks Completed This Session: 2
+## Tasks Completed This Session: 10

@@ -113,36 +113,63 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, check email/GitHub",
-      "started": "2026-04-13T14:36:18.797Z"
+      "started": "2026-04-13T14:36:18.797Z",
+      "completed": "2026-04-13T14:37:07.376Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed workspace+henrydb. Neural-net CI still failing on GitHub (3 recent failures). No real email/notifications beyond CI. Added neural-net CI to queue priority."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day review — what's working, what to tackle afternoon?"
+      "status": "done",
+      "task": "Mid-day review — what's working, what to tackle afternoon?",
+      "started": "2026-04-13T14:37:19.402Z",
+      "completed": "2026-04-13T14:37:40.509Z",
+      "duration_ms": 60000,
+      "summary": "Mid-morning: 9 tasks done. Depth check passes (frozen txId bug was surprising). Neural-net CI still failing — urgent. Reprioritize: fix CI before T10-T14."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: histogram accuracy or new persistence stress tests",
-      "task": null
+      "task": null,
+      "started": "2026-04-13T14:38:01.405Z",
+      "completed": "2026-04-13T14:38:14.387Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: (1) Persistence stress test for close/reopen cycle across all features, (2) Fix bugs found."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Persistence stress test: close/reopen cycle for every feature (indexes, prepared stmts, cache stats, version maps, MVCC state)",
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-13T14:38:26.349Z",
+      "completed": "2026-04-13T14:43:29.313Z",
+      "duration_ms": 600000,
+      "summary": "FOUND & FIXED 2 BUGS: (1) Indexes empty after reopen — added rebuild from heap data during recovery. (2) PK uniqueness not enforced on INSERT — added BTree unique check before index insert. 15/15 persistence stress tests."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Fix any persistence bugs found in stress test",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-13T14:43:58.545Z",
+      "completed": "2026-04-13T14:43:58.746Z",
+      "duration_ms": 0,
+      "summary": "Already fixed in T11 — both persistence bugs resolved."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, knowledge capture",
+      "started": "2026-04-13T14:44:13.051Z"
     },
     {
       "id": "T13",
@@ -232,6 +259,10 @@
     {
       "time": "2026-04-13T14:31:37.861Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-13T14:38:08.626Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }
