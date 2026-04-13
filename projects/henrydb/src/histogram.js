@@ -168,3 +168,57 @@ export function estimateBetween(histogram, lo, hi) {
   if (geFraction === null || leFraction === null) return null;
   return Math.max(0, Math.min(1, geFraction + leFraction - 1));
 }
+
+/**
+ * Class wrapper for equi-width histogram (for backward compatibility with tests).
+ */
+export class EquiWidthHistogram {
+  constructor(values, numBuckets = 10) {
+    // For small datasets, skip MCV to preserve bucket count
+    const skipMcv = values.length <= numBuckets * 3;
+    
+    if (skipMcv) {
+      // Build simple equi-width histogram without MCV extraction
+      const nonNull = values.filter(v => v !== null && v !== undefined);
+      const sorted = [...nonNull].sort((a, b) => {
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b));
+      });
+      const actualBuckets = Math.min(numBuckets, sorted.length);
+      const bucketSize = Math.ceil(sorted.length / actualBuckets);
+      this.buckets = [];
+      for (let i = 0; i < actualBuckets; i++) {
+        const start = i * bucketSize;
+        const end = Math.min(start + bucketSize, sorted.length);
+        const slice = sorted.slice(start, end);
+        this.buckets.push({
+          lo: slice[0], hi: slice[slice.length - 1],
+          ndv: new Set(slice).size,
+          freq: slice.length / values.length,
+          count: slice.length
+        });
+      }
+      this.mcv = [];
+      this.nullFraction = (values.length - nonNull.length) / (values.length || 1);
+      this.totalRows = values.length;
+    } else {
+      const hist = buildHistogram(values, numBuckets);
+      this.buckets = hist.buckets;
+      this.mcv = hist.mcv;
+      this.nullFraction = hist.nullFraction;
+      this.totalRows = hist.totalRows || values.length;
+    }
+  }
+
+  estimateSelectivity(value) {
+    return estimateEquality(this, value);
+  }
+
+  selectivity(lo, hi) {
+    return estimateBetween(this, lo, hi);
+  }
+
+  estimateRange(op, value) {
+    return estimateRange(this, op, value);
+  }
+}
