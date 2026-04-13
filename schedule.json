@@ -835,10 +835,21 @@
     {
       "id": "T77",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix tokenizer: minus after number/identifier should be MINUS operator, not negative number prefix",
       "project": "henrydb",
-      "started": "2026-04-13T19:12:05.529Z"
+      "started": "2026-04-13T19:12:05.529Z",
+      "completed": "2026-04-13T19:14:04.506Z",
+      "duration_ms": 240000,
+      "summary": "Fixed tokenizer negative number bug: 1-1 was tokenized as NUMBER(1),NUMBER(-1) instead of NUMBER(1),MINUS,NUMBER(1). Root cause: duplicate number tokenizer at line 75 didnt check previous token type. Now correctly produces MINUS after NUMBER/IDENT/)/STRING. All 543 tests passing."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add tokenizer regression tests for the negative number fix and other edge cases",
+      "project": "henrydb",
+      "started": "2026-04-13T19:15:01.151Z"
     }
   ],
   "focusProjects": [
@@ -1126,6 +1137,10 @@
     {
       "time": "2026-04-13T19:12:05.297Z",
       "msg": "Added T77 (BUILD) after end: Fix tokenizer: minus after number/identifier should be MINUS operator, not negative number prefix"
+    },
+    {
+      "time": "2026-04-13T19:15:00.917Z",
+      "msg": "Added T78 (BUILD) after end: Add tokenizer regression tests for the negative number fix and other edge cases"
     }
   ]
 }
