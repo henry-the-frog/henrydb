@@ -1325,9 +1325,23 @@
     {
       "id": "T124",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session wrap-up: update daily log, git push, CURRENT.md",
-      "started": "2026-04-13T03:42:01.519Z"
+      "started": "2026-04-13T03:42:01.519Z",
+      "completed": "2026-04-13T03:43:00.339Z",
+      "duration_ms": 60000,
+      "summary": "Final wrap-up: updated daily log, CURRENT.md, all commits pushed. Session C complete."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix materialized view test failures",
+      "project": "henrydb",
+      "started": "2026-04-13T03:43:12.445Z",
+      "completed": "2026-04-13T03:43:27.440Z",
+      "duration_ms": 0,
+      "summary": "Materialized view tests already passing (22/22) — fixed by earlier CTE/view/column changes."
     }
   ],
   "focusProjects": [
@@ -1843,6 +1857,10 @@
     {
       "time": "2026-04-13T03:42:01.285Z",
       "msg": "Added T124 (MAINTAIN) after end: Final session wrap-up: update daily log, git push, CURRENT.md"
+    },
+    {
+      "time": "2026-04-13T03:43:12.212Z",
+      "msg": "Added T125 (BUILD) after end: Fix materialized view test failures"
     }
   ]
 }
