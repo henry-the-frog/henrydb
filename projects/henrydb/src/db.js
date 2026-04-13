@@ -4007,16 +4007,32 @@ export class Database {
     
     // Apply CTE column aliases if provided: WITH RECURSIVE cnt(x) AS (...)
     if (cte.columns && cte.columns.length > 0) {
+      // Determine mapping: if CTE has more column names than row keys, there
+      // are duplicate column names in the base query. Use AST to resolve them.
+      // Otherwise, use row keys (more reliable).
+      const rowKeys = Object.keys(baseResult.rows[0] || {});
+      let mappingKeys;
+      if (rowKeys.length < cte.columns.length) {
+        // Duplicate column names detected — use AST column order
+        // Map AST column references to row keys
+        mappingKeys = baseQuery.columns.map(c => {
+          if (c.alias) return c.alias;
+          if (c.name) return c.name;
+          if (c.type === 'aggregate') return c.alias || `${c.func}(${c.arg || '*'})`;
+          return c.alias || c.name || 'expr';
+        });
+      } else {
+        mappingKeys = rowKeys;
+      }
       const aliasedRows = baseResult.rows.map(row => {
         const aliased = {};
-        const rowKeys = Object.keys(row);
-        for (let i = 0; i < cte.columns.length && i < rowKeys.length; i++) {
-          aliased[cte.columns[i]] = row[rowKeys[i]];
+        for (let i = 0; i < cte.columns.length && i < mappingKeys.length; i++) {
+          aliased[cte.columns[i]] = row[mappingKeys[i]];
         }
         return aliased;
       });
       baseResult.rows = aliasedRows;
-      columnNames = cte.columns.slice(0, columnNames.length);
+      columnNames = cte.columns.slice(0, mappingKeys.length);
     }
     let allRows = [...baseResult.rows];
     let workingSet = [...baseResult.rows];

@@ -251,10 +251,11 @@ describe('CTE stress tests', () => {
     assert.ok(r.rows.length > 0);
   });
 
-  it('recursive CTE: sum of subtree salaries', () => {
+  it('recursive CTE: sum of subtree salaries (with duplicate column in base)', () => {
+    // This tests the CTE column aliasing with duplicate column names
     const r = db.execute(`
       WITH RECURSIVE subtree(id, name, root_id, salary) AS (
-        SELECT id, name, id as root_id, salary FROM employees WHERE manager_id IS NULL
+        SELECT id, name, id, salary FROM employees WHERE manager_id IS NULL
         UNION ALL
         SELECT e.id, e.name, st.root_id, e.salary
         FROM employees e
