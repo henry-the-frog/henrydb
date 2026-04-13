@@ -1644,15 +1644,36 @@ export class Database {
     for (const row of result.rows) {
       const values = [];
       if (ast.columns) {
+        // Explicit column list: INSERT INTO t (col1, col2) SELECT ...
         for (const col of ast.columns) {
           values.push(row[col] !== undefined ? row[col] : null);
         }
       } else {
-        // Map by position, using only the last N values (skip qualified duplicates)
-        const rowValues = Object.values(row);
-        const offset = Math.max(0, rowValues.length - selectCols);
-        for (let i = 0; i < table.schema.length; i++) {
-          values.push(i + offset < rowValues.length ? rowValues[i + offset] : null);
+        // No explicit column list: map SELECT result to table schema by column name or position
+        const rowKeys = Object.keys(row);
+        // Try name-based mapping first
+        let nameMatch = true;
+        for (const col of table.schema) {
+          if (row[col.name] === undefined && row[col.name] !== null) {
+            nameMatch = false;
+            break;
+          }
+        }
+        if (nameMatch && table.schema.every(col => col.name in row)) {
+          // Name-based mapping: match by column name
+          for (const col of table.schema) {
+            values.push(row[col.name] !== undefined ? row[col.name] : null);
+          }
+        } else {
+          // Position-based mapping: use only unqualified keys
+          const unqualifiedKeys = rowKeys.filter(k => !k.includes('.'));
+          for (let i = 0; i < table.schema.length; i++) {
+            if (i < unqualifiedKeys.length) {
+              values.push(row[unqualifiedKeys[i]]);
+            } else {
+              values.push(null);
+            }
+          }
         }
       }
       this._insertRow(table, null, values);
