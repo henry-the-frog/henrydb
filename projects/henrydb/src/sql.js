@@ -405,8 +405,48 @@ export function parse(sql) {
     if (isKeyword('GROUP')) { advance(); expect('KEYWORD', 'BY'); groupBy = parseGroupBy(); }
     if (isKeyword('HAVING')) { advance(); having = parseExpr(); }
     if (isKeyword('ORDER')) { advance(); expect('KEYWORD', 'BY'); orderBy = parseOrderBy(); }
-    if (isKeyword('LIMIT')) { advance(); if (isKeyword('ALL')) { advance(); } else { limit = advance().value; } }
-    if (isKeyword('OFFSET')) { advance(); offset = advance().value; if (isKeyword('ROWS') || isKeyword('ROW')) advance(); }
+    if (isKeyword('LIMIT')) {
+      advance();
+      if (isKeyword('ALL')) { advance(); }
+      else {
+        const e = parseExpr();
+        limit = e.type === 'literal' ? e.value : null;
+        // Store expression for evaluation if not a literal
+        if (limit == null && e.type === 'arith') {
+          // Simple constant expression evaluation
+          try {
+            const evalArith = (n) => {
+              if (n.type === 'literal') return n.value;
+              if (n.type === 'arith') {
+                const l = evalArith(n.left), r = evalArith(n.right);
+                switch(n.op) { case '+': return l+r; case '-': return l-r; case '*': return l*r; case '/': return l/r; case '%': return l%r; }
+              }
+              return null;
+            };
+            limit = evalArith(e);
+          } catch { limit = null; }
+        }
+      }
+    }
+    if (isKeyword('OFFSET')) {
+      advance();
+      const e = parseExpr();
+      offset = e.type === 'literal' ? e.value : null;
+      if (offset == null && e.type === 'arith') {
+        try {
+          const evalArith = (n) => {
+            if (n.type === 'literal') return n.value;
+            if (n.type === 'arith') {
+              const l = evalArith(n.left), r = evalArith(n.right);
+              switch(n.op) { case '+': return l+r; case '-': return l-r; case '*': return l*r; case '/': return l/r; case '%': return l%r; }
+            }
+            return null;
+          };
+          offset = evalArith(e);
+        } catch { offset = null; }
+      }
+      if (isKeyword('ROWS') || isKeyword('ROW')) advance();
+    }
     // SQL standard: FETCH FIRST N ROWS ONLY
     if (isKeyword('FETCH')) {
       advance(); // FETCH
