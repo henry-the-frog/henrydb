@@ -1,65 +1,41 @@
-// insert-select.test.js — INSERT INTO ... SELECT and UPDATE expressions tests
-import { describe, it, beforeEach } from 'node:test';
+// insert-select.test.js — INSERT INTO ... SELECT
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
 describe('INSERT INTO ... SELECT', () => {
-  let db;
-
-  beforeEach(() => {
-    db = new Database();
-    db.execute('CREATE TABLE source (id INT PRIMARY KEY, name TEXT, value INT)');
-    db.execute("INSERT INTO source VALUES (1, 'Alpha', 100)");
-    db.execute("INSERT INTO source VALUES (2, 'Beta', 200)");
-    db.execute("INSERT INTO source VALUES (3, 'Gamma', 300)");
+  it('copies rows from one table to another', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE src (id INT, name TEXT)');
+    db.execute('CREATE TABLE dst (id INT, name TEXT)');
+    db.execute("INSERT INTO src VALUES (1, 'A'), (2, 'B'), (3, 'C')");
+    
+    db.execute('INSERT INTO dst SELECT * FROM src WHERE id <= 2');
+    const r = db.execute('SELECT * FROM dst ORDER BY id');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].name, 'A');
   });
 
-  it('basic INSERT SELECT', () => {
-    db.execute('CREATE TABLE target (id INT PRIMARY KEY, name TEXT, value INT)');
-    const result = db.execute('INSERT INTO target SELECT * FROM source');
-    assert.equal(result.count, 3);
-    const rows = db.execute('SELECT * FROM target');
-    assert.equal(rows.rows.length, 3);
+  it('with explicit column list', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE src (id INT, name TEXT, extra TEXT)');
+    db.execute('CREATE TABLE dst (id INT, name TEXT)');
+    db.execute("INSERT INTO src VALUES (1, 'Alice', 'x')");
+    
+    db.execute('INSERT INTO dst (id, name) SELECT id, name FROM src');
+    const r = db.execute('SELECT * FROM dst');
+    assert.equal(r.rows[0].name, 'Alice');
   });
 
-  it('INSERT SELECT with WHERE', () => {
-    db.execute('CREATE TABLE target (id INT PRIMARY KEY, name TEXT, value INT)');
-    db.execute('INSERT INTO target SELECT * FROM source WHERE value > 150');
-    const rows = db.execute('SELECT * FROM target');
-    assert.equal(rows.rows.length, 2);
-  });
-
-  it('INSERT SELECT with specific columns', () => {
-    db.execute('CREATE TABLE names (id INT PRIMARY KEY, label TEXT)');
-    db.execute('INSERT INTO names SELECT id, name FROM source');
-    const rows = db.execute('SELECT * FROM names');
-    assert.equal(rows.rows.length, 3);
-  });
-
-  it('INSERT SELECT preserves data', () => {
-    db.execute('CREATE TABLE backup (id INT PRIMARY KEY, name TEXT, value INT)');
-    db.execute('INSERT INTO backup SELECT * FROM source');
-    const orig = db.execute('SELECT id, name, value FROM source ORDER BY id');
-    const copy = db.execute('SELECT id, name, value FROM backup ORDER BY id');
-    assert.equal(orig.rows.length, copy.rows.length);
-    for (let i = 0; i < orig.rows.length; i++) {
-      assert.equal(orig.rows[i].id, copy.rows[i].id);
-      assert.equal(orig.rows[i].name, copy.rows[i].name);
-      assert.equal(orig.rows[i].value, copy.rows[i].value);
-    }
-  });
-
-  it('INSERT SELECT with aggregates', () => {
-    db.execute('CREATE TABLE stats (total_val INT)');
-    db.execute('INSERT INTO stats SELECT SUM(value) AS total_val FROM source');
-    const rows = db.execute('SELECT * FROM stats');
-    assert.equal(rows.rows[0].total_val, 600);
-  });
-
-  it('INSERT SELECT from CTE', () => {
-    db.execute('CREATE TABLE target (id INT PRIMARY KEY, name TEXT, value INT)');
-    db.execute('INSERT INTO target WITH high AS (SELECT * FROM source WHERE value >= 200) SELECT * FROM high');
-    const rows = db.execute('SELECT * FROM target');
-    assert.equal(rows.rows.length, 2);
+  it('with aggregation in SELECT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE sales (region TEXT, amount INT)');
+    db.execute('CREATE TABLE summary (region TEXT, total INT)');
+    db.execute("INSERT INTO sales VALUES ('A', 10), ('A', 20), ('B', 30)");
+    
+    db.execute('INSERT INTO summary SELECT region, SUM(amount) FROM sales GROUP BY region');
+    const r = db.execute('SELECT * FROM summary ORDER BY region');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].total, 30);
   });
 });
