@@ -2046,12 +2046,26 @@ export class Database {
 
     // Check if FROM is a subquery
     if (tableName === '__subquery') {
-      const subResult = this._select(ast.from.subquery);
+      const subAst = ast.from.subquery;
+      // Handle UNION/INTERSECT/EXCEPT in derived tables
+      const subResult = (subAst.type === 'UNION' || subAst.type === 'INTERSECT' || subAst.type === 'EXCEPT')
+        ? this.execute_ast(subAst)
+        : this._select(subAst);
       let rows = subResult.rows || [];
       
-      // Strip table alias prefix from column references (e.g., sub.col → col)
+      // Add qualified column names (sub.col) so alias-prefixed references work
       const subAlias = ast.from.alias;
       if (subAlias) {
+        rows = rows.map(row => {
+          const newRow = { ...row };
+          for (const key of Object.keys(row)) {
+            if (!key.includes('.')) {
+              newRow[`${subAlias}.${key}`] = row[key];
+            }
+          }
+          return newRow;
+        });
+        // Strip table alias prefix from column references (e.g., sub.col → col)
         const prefix = subAlias + '.';
         for (const col of ast.columns) {
           if (col.name && col.name.startsWith(prefix)) {
