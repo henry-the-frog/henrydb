@@ -830,7 +830,7 @@ export function parse(sql) {
       return { type: 'expression', expr, alias };
     }
     const colTok = advance();
-    const col = colTok.value;
+    const col = colTok.originalValue || colTok.value;
     // Check for || concatenation or arithmetic operators
     const nextType = peek().type;
     if (nextType === 'CONCAT_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
