@@ -192,6 +192,8 @@ export class TransactionalDatabase {
       this._physicalizeDeletesNoWal(tx);
       this._activeTx = null;
       this._setHeapTxId(0);
+      // Invalidate result cache — DML changed data, cached SELECTs may be stale
+      if (this._db._resultCache) this._db._resultCache.clear();
       return result;
     } catch (e) {
       // Rollback: undo any heap modifications
@@ -803,6 +805,8 @@ export class TransactionSession {
     // Physicalize committed deletes (no additional WAL)
     this._tdb._physicalizeDeletesNoWal(this._tx);
     this._tx = null;
+    // Invalidate result cache — committed data may change query results
+    if (this._tdb._db._resultCache) this._tdb._db._resultCache.clear();
 
     // Auto-checkpoint if WAL exceeds threshold
     this._tdb._maybeAutoCheckpoint();
