@@ -340,13 +340,14 @@ export class TransactionalDatabase {
       heap.scan = function*() {
         const tx = tdb._activeTx;
         if (!tx) {
-          // No active transaction — show all non-deleted rows
+          // No active transaction — show all non-deleted rows with version entries
           for (const row of origScan()) {
             const vm = tdb._versionMaps.get(name);
             if (vm) {
               const key = `${row.pageId}:${row.slotIdx}`;
               const ver = vm.get(key);
-              if (ver && ver.xmax !== 0 && (tdb._mvcc.committedTxns.has(ver.xmax) || ver.xmax === -1)) {
+              if (!ver) continue; // No version entry = orphaned/rolled-back row
+              if (ver.xmax !== 0 && (tdb._mvcc.committedTxns.has(ver.xmax) || ver.xmax === -1 || ver.xmax === -2)) {
                 continue;
               }
             }
@@ -363,12 +364,14 @@ export class TransactionalDatabase {
           const ver = vm.get(key);
           
           if (!ver) {
-            yield row;
+            // No version map entry: row exists physically but not tracked
+            // During a transaction, only show rows that are in the version map
+            // (untracked rows were created and rolled back, or are orphaned)
             continue;
           }
           
           const created = tdb._mvcc.isVisible(ver.xmin, tx);
-          const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
+          const deleted = ver.xmax === -2 || (ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx));
           
           if (created && !deleted) {
             // SSI tracking: record the read for serializable isolation
@@ -428,6 +431,7 @@ export class TransactionalDatabase {
 
   // Track newly inserted rows (rows in heap not yet in version map)
   _trackNewRows(tx) {
+    const revokedRows = tx._revokedRows || new Set();
     for (const [tableName, tableObj] of this._db.tables) {
       const vm = this._versionMaps.get(tableName);
       if (!vm) continue;
@@ -439,6 +443,8 @@ export class TransactionalDatabase {
       for (const { pageId, slotIdx } of scan()) {
         const key = `${pageId}:${slotIdx}`;
         if (!vm.has(key)) {
+          // Check if this row was revoked by a savepoint rollback
+          if (revokedRows.has(`${tableName}:${key}`)) continue;
           // New row — created by this transaction
           vm.set(key, { xmin: tx.txId, xmax: 0 });
           tx.writeSet.add(`${tableName}:${key}`);
@@ -540,6 +546,8 @@ export class TransactionSession {
     this._tdb = tdb;
     this._tx = null;
     this._closed = false;
+    this._savepoints = new Map(); // name → { versionMapSnapshots, newRowSnapshots }
+    this._revokedRows = new Set(); // Set of "tableName:pageId:slotIdx" keys rolled back by savepoints
   }
 
   begin() {
@@ -550,7 +558,10 @@ export class TransactionSession {
 
   commit() {
     if (!this._tx) throw new Error('No transaction in progress');
-    // Track any new rows from this transaction
+    // Track any new rows from this transaction (but not revoked ones)
+    if (this._revokedRows.size > 0) {
+      this._tx._revokedRows = this._revokedRows;
+    }
     this._tdb._trackNewRows(this._tx);
     // Write WAL delete records before commit
     this._tdb._walLogDeletes(this._tx);
@@ -559,6 +570,8 @@ export class TransactionSession {
     // Physicalize committed deletes (no additional WAL)
     this._tdb._physicalizeDeletesNoWal(this._tx);
     this._tx = null;
+    this._savepoints.clear();
+    this._revokedRows.clear();
     return { type: 'OK', message: 'COMMIT' };
   }
 
@@ -568,7 +581,85 @@ export class TransactionSession {
     this._tdb._mvcc.rollback(this._tx.txId);
     this._tdb._wal.appendAbort(this._tx.txId);
     this._tx = null;
+    this._savepoints.clear();
     return { type: 'OK', message: 'ROLLBACK' };
+  }
+
+  savepoint(name) {
+    if (!this._tx) throw new Error('No transaction in progress');
+    // Deep-snapshot version maps (must copy values to avoid reference aliasing!)
+    const vmSnapshots = new Map();
+    for (const [tableName, vm] of this._tdb._versionMaps) {
+      const snap = new Map();
+      for (const [k, v] of vm) {
+        snap.set(k, { xmin: v.xmin, xmax: v.xmax });
+      }
+      vmSnapshots.set(tableName, snap);
+    }
+    // Snapshot new rows tracking (if available)
+    const newRowsSnapshot = this._tx.newRows ? new Map(
+      [...this._tx.newRows].map(([k, v]) => [k, [...v]])
+    ) : null;
+    // Snapshot delete tracking
+    const deletesSnapshot = this._tx.deletes ? new Map(
+      [...this._tx.deletes].map(([k, v]) => [k, [...v]])
+    ) : null;
+    this._savepoints.set(name, { vmSnapshots, newRowsSnapshot, deletesSnapshot });
+    return { type: 'OK', message: `SAVEPOINT ${name}` };
+  }
+
+  rollbackTo(name) {
+    if (!this._tx) throw new Error('No transaction in progress');
+    const sp = this._savepoints.get(name);
+    if (!sp) throw new Error(`Savepoint '${name}' not found`);
+    
+    // Restore version maps to savepoint state
+    for (const [tableName, snapshot] of sp.vmSnapshots) {
+      const vm = this._tdb._versionMaps.get(tableName);
+      if (!vm) continue;
+      
+      // Find keys in current vm but not in snapshot — mark as dead
+      for (const [key, ver] of vm) {
+        if (!snapshot.has(key)) {
+          vm.set(key, { xmin: ver.xmin, xmax: -2 });
+          this._revokedRows.add(`${tableName}:${key}`);
+        }
+      }
+      // Restore all snapshot entries (overwriting any modifications like DELETE xmax changes)
+      for (const [k, v] of snapshot) {
+        vm.set(k, { ...v });
+      }
+    }
+    
+    // Restore new rows tracking
+    if (sp.newRowsSnapshot && this._tx.newRows) {
+      this._tx.newRows = new Map(
+        [...sp.newRowsSnapshot].map(([k, v]) => [k, [...v]])
+      );
+    }
+    
+    // Restore deletes tracking
+    if (sp.deletesSnapshot && this._tx.deletes) {
+      this._tx.deletes = new Map(
+        [...sp.deletesSnapshot].map(([k, v]) => [k, [...v]])
+      );
+    }
+    
+    // Remove savepoints created after this one
+    let found = false;
+    for (const [spName] of this._savepoints) {
+      if (spName === name) { found = true; continue; }
+      if (found) this._savepoints.delete(spName);
+    }
+    
+    return { type: 'OK', message: `ROLLBACK TO ${name}` };
+  }
+
+  releaseSavepoint(name) {
+    if (!this._tx) throw new Error('No transaction in progress');
+    if (!this._savepoints.has(name)) throw new Error(`Savepoint '${name}' not found`);
+    this._savepoints.delete(name);
+    return { type: 'OK', message: `RELEASE ${name}` };
   }
 
   execute(sql) {
@@ -580,6 +671,18 @@ export class TransactionSession {
     }
     if (trimmed === 'COMMIT') return this.commit();
     if (trimmed === 'ROLLBACK' || trimmed === 'ABORT') return this.rollback();
+    
+    // SAVEPOINT <name>
+    const spMatch = trimmed.match(/^SAVEPOINT\s+(\w+)$/);
+    if (spMatch) return this.savepoint(spMatch[1].toLowerCase());
+    
+    // ROLLBACK TO [SAVEPOINT] <name>
+    const rbMatch = trimmed.match(/^ROLLBACK\s+TO\s+(?:SAVEPOINT\s+)?(\w+)$/);
+    if (rbMatch) return this.rollbackTo(rbMatch[1].toLowerCase());
+    
+    // RELEASE [SAVEPOINT] <name>
+    const relMatch = trimmed.match(/^RELEASE\s+(?:SAVEPOINT\s+)?(\w+)$/);
+    if (relMatch) return this.releaseSavepoint(relMatch[1].toLowerCase());
     
     // DDL: bypass MVCC
     if (this._tdb._isDDL(trimmed)) {
@@ -597,6 +700,10 @@ export class TransactionSession {
       const prevTx = this._tdb._activeTx;
       this._tdb._activeTx = this._tx;
       this._tdb._setHeapTxId(this._tx.txId);
+      // Make revoked rows available to _trackNewRows
+      if (this._revokedRows.size > 0) {
+        this._tx._revokedRows = this._revokedRows;
+      }
       try {
         const result = this._tdb._db.execute(sql);
         // Track new rows immediately
