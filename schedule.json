@@ -780,10 +780,21 @@
     {
       "id": "T72",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases",
       "project": "henrydb",
-      "started": "2026-04-13T18:54:47.172Z"
+      "started": "2026-04-13T18:54:47.172Z",
+      "completed": "2026-04-13T18:59:24.897Z",
+      "duration_ms": 420000,
+      "summary": "Found and fixed 2 more parser bugs: (1) INSERT VALUES with expressions (5*20) failed to parse or evaluated to NULL — fixed parser to use parseExpr() and evaluator to use _evalValue(). (2) BETWEEN bounds with expressions also fixed. Additionally found HAVING arith works, JOIN ON with arithmetic works. Total parser bugs fixed this session: 4 (function-alias, comparison RHS, BETWEEN bounds, INSERT expressions)."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Continue edge case testing: IN list with expressions, UPDATE SET with expressions, negative numbers, type coercion edge cases",
+      "project": "henrydb",
+      "started": "2026-04-13T18:59:38.329Z"
     }
   ],
   "focusProjects": [
@@ -1051,6 +1062,10 @@
     {
       "time": "2026-04-13T18:54:46.940Z",
       "msg": "Added T72 (BUILD) after end: Continue edge case testing: focus on JOIN conditions, UPDATE/DELETE with expressions, aggregate edge cases"
+    },
+    {
+      "time": "2026-04-13T18:59:38.097Z",
+      "msg": "Added T73 (BUILD) after end: Continue edge case testing: IN list with expressions, UPDATE SET with expressions, negative numbers, type coercion edge cases"
     }
   ]
 }

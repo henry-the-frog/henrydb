@@ -1007,7 +1007,7 @@ export function parse(sql) {
         return { type: 'NOT', expr: { type: 'IN_SUBQUERY', left, subquery } };
       }
       const values = [];
-      do { values.push(parsePrimary()); } while (match(','));
+      do { values.push(parseExpr()); } while (match(','));
       expect(')');
       return { type: 'NOT', expr: { type: 'IN_LIST', left, values } };
     }
@@ -1039,7 +1039,7 @@ export function parse(sql) {
         return { type: 'IN_SUBQUERY', left, subquery };
       }
       const values = [];
-      do { values.push(parsePrimary()); } while (match(','));
+      do { values.push(parseExpr()); } while (match(','));
       expect(')');
       return { type: 'IN_LIST', left, values };
     }

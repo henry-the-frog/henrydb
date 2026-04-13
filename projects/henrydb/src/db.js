@@ -5309,6 +5309,7 @@ export class Database {
   _evalExpr(expr, row) {
     if (!expr) return true;
     switch (expr.type) {
+      case 'literal': return !!expr.value; // NULL/0/false → false, others → true
       case 'AND': return this._evalExpr(expr.left, row) && this._evalExpr(expr.right, row);
       case 'OR': return this._evalExpr(expr.left, row) || this._evalExpr(expr.right, row);
       case 'NOT': return !this._evalExpr(expr.expr, row);
