@@ -23,6 +23,7 @@ const KEYWORDS = new Set([
   'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT',
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
+  'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'RANGE', 'CURRENT',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
@@ -1256,6 +1257,7 @@ export function parse(sql) {
     expect('(');
     let partitionBy = null;
     let orderBy = null;
+    let frame = null;
     if (isKeyword('PARTITION')) {
       advance(); // PARTITION
       expect('KEYWORD', 'BY');
@@ -1267,8 +1269,40 @@ export function parse(sql) {
       expect('KEYWORD', 'BY');
       orderBy = parseOrderBy();
     }
+    // Optional frame clause: ROWS|RANGE BETWEEN ... AND ...
+    if (isKeyword('ROWS') || isKeyword('RANGE')) {
+      const frameType = advance().value; // ROWS or RANGE
+      if (isKeyword('BETWEEN')) {
+        advance(); // BETWEEN
+        const start = parseFrameBound();
+        expect('KEYWORD', 'AND');
+        const end = parseFrameBound();
+        frame = { type: frameType, start, end };
+      } else {
+        // Single bound: ROWS UNBOUNDED PRECEDING or ROWS N PRECEDING
+        const bound = parseFrameBound();
+        frame = { type: frameType, start: bound, end: { type: 'CURRENT ROW' } };
+      }
+    }
     expect(')');
-    return { partitionBy, orderBy };
+    return { partitionBy, orderBy, frame };
+  }
+
+  function parseFrameBound() {
+    if (isKeyword('UNBOUNDED')) {
+      advance(); // UNBOUNDED
+      const dir = advance().value; // PRECEDING or FOLLOWING
+      return { type: 'UNBOUNDED', direction: dir };
+    }
+    if (isKeyword('CURRENT')) {
+      advance(); // CURRENT
+      expect('KEYWORD', 'ROW');
+      return { type: 'CURRENT ROW' };
+    }
+    // N PRECEDING or N FOLLOWING
+    const n = advance().value;
+    const dir = advance().value;
+    return { type: 'OFFSET', offset: Number(n), direction: dir };
   }
 
   function parseInsert() {

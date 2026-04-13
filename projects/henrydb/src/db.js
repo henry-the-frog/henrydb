@@ -2255,6 +2255,10 @@ export class Database {
               av = this._evalValue(expr, a);
               bv = this._evalValue(expr, b);
             }
+          } else if (a[`__window_${column}`] !== undefined) {
+            // Window function alias — resolve from computed window columns
+            av = a[`__window_${column}`];
+            bv = b[`__window_${column}`];
           } else {
             av = this._resolveColumn(column, a);
             bv = this._resolveColumn(column, b);
