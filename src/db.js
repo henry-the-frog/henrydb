@@ -426,7 +426,17 @@ export class Database {
       }
     }
 
-    this.tables.set(ast.table, { heap, schema, indexes, foreignKeys });
+    // Table-level CHECK constraints
+    const tableChecks = [];
+    if (ast.constraints) {
+      for (const c of ast.constraints) {
+        if (c.type === 'CHECK') {
+          tableChecks.push(c.expression);
+        }
+      }
+    }
+
+    this.tables.set(ast.table, { heap, schema, indexes, foreignKeys, childFKs: [], tableChecks: tableChecks.length > 0 ? tableChecks : null });
     this.catalog.push({ name: ast.table, columns: schema });
 
     // Register reverse FK references on parent tables for cascade lookups
@@ -1043,6 +1053,19 @@ export class Database {
         }
         if (!found) {
           throw new Error(`Foreign key constraint violated: (${fkValues.join(', ')}) not found in ${fk.refTable}(${fk.refColumns.join(', ')})`);
+        }
+      }
+    }
+
+    // Table-level CHECK constraints
+    if (table.tableChecks) {
+      const row = {};
+      for (let i = 0; i < table.schema.length; i++) {
+        row[table.schema[i].name] = values[i];
+      }
+      for (const check of table.tableChecks) {
+        if (!this._evalExpr(check, row)) {
+          throw new Error('Table-level CHECK constraint violated');
         }
       }
     }

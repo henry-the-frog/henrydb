@@ -1221,6 +1221,14 @@ export function parse(sql) {
         tableConstraints.push({ type: 'PRIMARY_KEY', columns: pkCols });
         continue;
       }
+      if (isKeyword('CHECK')) {
+        advance(); // CHECK
+        expect('(');
+        const checkExpr = parseExpr();
+        expect(')');
+        tableConstraints.push({ type: 'CHECK', expression: checkExpr });
+        continue;
+      }
       if (isKeyword('UNIQUE')) {
         advance(); // UNIQUE
         expect('(');
