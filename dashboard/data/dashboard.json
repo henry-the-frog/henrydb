@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T15:46:02.964Z",
+  "generated": "2026-04-14T15:52:51.152Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: extend differential fuzzer to include WHERE clauses, JOIN conditions, and aggregate expressions",
-    "completedAt": "2026-04-14T15:46:02.964Z",
-    "taskId": "T28",
-    "summary": "Extended fuzzer with WHERE/JOIN/aggregate/ORDER BY tests. Found expression-based ORDER BY was broken (parser only captured first token, engine didnt evaluate expressions). Fixed parseOrderBy to use parseExpr and all 5 ORDER BY handlers. 11 new tests matching SQLite.",
-    "durationMs": 600000
+    "task": "Monkey-lang: const declarations (immutable bindings that error on reassignment via set)",
+    "completedAt": "2026-04-14T15:52:51.152Z",
+    "taskId": "T31",
+    "summary": "Monkey-lang const declarations. Parser, evaluator, Environment all updated. Immutable bindings with proper error on reassignment. 12 tests, 528/528 total passing.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 28,
+    "blocksCompleted": 30,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 14,
+      "BUILD": 16,
       "MAINTAIN": 3,
       "EXPLORE": 3
     }

@@ -308,9 +308,13 @@
     {
       "id": "T29",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: CHECK constraints with complex expressions (should work now with precedence fix)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T15:46:36.988Z",
+      "completed": "2026-04-14T15:48:58.137Z",
+      "duration_ms": 300000,
+      "summary": "Table-level CHECK constraints implemented. Parser + engine support for CHECK (expr) in CREATE TABLE. Works with compound arithmetic. All tests passing."
     },
     {
       "id": "T30",
@@ -323,9 +327,13 @@
     {
       "id": "T31",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey-lang: const declarations (immutable bindings that error on reassignment via set)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T15:49:32.074Z",
+      "completed": "2026-04-14T15:52:51.116Z",
+      "duration_ms": 300000,
+      "summary": "Monkey-lang const declarations. Parser, evaluator, Environment all updated. Immutable bindings with proper error on reassignment. 12 tests, 528/528 total passing."
     }
   ],
   "focusProjects": [
