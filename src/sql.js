@@ -445,15 +445,9 @@ export function parse(sql) {
         while (match(',')) args.push(parseExpr());
         expect(')');
       }
-      // Check for arithmetic after function call
+      // Check for arithmetic after function call — use parsePrimaryWithConcat for precedence
       let node = { type: 'function_call', func, args };
-      while (['PLUS', 'MINUS', 'SLASH', 'MOD'].includes(peek().type) || (peek().type === '*' && tokens[pos+1]?.type !== ')')) {
-        const t = peek().type;
-        const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
-        advance();
-        const right = parsePrimary();
-        node = { type: 'arith', op, left: node, right };
-      }
+      node = parseSelectArithExpr(node);
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       if (node.type === 'function_call') {
@@ -468,24 +462,52 @@ export function parse(sql) {
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
     }
+    // Literal number or string as expression
+    if (peek().type === 'NUMBER' || peek().type === 'STRING') {
+      const tok = advance();
+      let node = { type: 'literal', value: tok.value };
+      // Check for arithmetic
+      const nt = peek().type;
+      if (nt === 'CONCAT_OP' || nt === 'PLUS' || nt === 'MINUS' || nt === '*' || nt === 'SLASH' || nt === 'MOD') {
+        node = parseSelectArithExpr(node);
+      }
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      if (node.type === 'literal') {
+        return { type: 'expression', expr: node, alias };
+      }
+      return { type: 'expression', expr: node, alias };
+    }
+    // Parenthesized expression in SELECT
+    if (peek().type === '(') {
+      advance(); // (
+      // Could be a subquery or a parenthesized expression
+      if (peek().type === 'KEYWORD' && peek().value === 'SELECT') {
+        const subquery = parseSelect();
+        expect(')');
+        let alias = null;
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr: { type: 'subquery', query: subquery }, alias };
+      }
+      // Parenthesized expression
+      const expr = parsePrimaryWithConcat();
+      expect(')');
+      // Check for arithmetic after parens
+      let node = expr;
+      const nt = peek().type;
+      if (nt === 'PLUS' || nt === 'MINUS' || nt === '*' || nt === 'SLASH' || nt === 'MOD' || nt === 'CONCAT_OP') {
+        node = parseSelectArithExpr(node);
+      }
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr: node, alias };
+    }
     const col = advance().value;
     // Check for || concatenation or arithmetic operators
     const nextType = peek().type;
     if (nextType === 'CONCAT_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
       let left = { type: 'column_ref', name: col };
-      while (true) {
-        const t = peek().type;
-        if (t === 'CONCAT_OP') {
-          advance();
-          const right = parsePrimary();
-          left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
-        } else if (['PLUS', 'MINUS', 'SLASH', 'MOD'].includes(t) || (t === '*' && tokens[pos+1]?.type !== ')')) {
-          const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
-          advance();
-          const right = parsePrimary();
-          left = { type: 'arith', op, left, right };
-        } else break;
-      }
+      left = parseSelectArithExpr(left);
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr: left, alias };
@@ -493,6 +515,40 @@ export function parse(sql) {
     let alias = null;
     if (isKeyword('AS')) { advance(); alias = readAlias(); }
     return { type: 'column', name: col, alias };
+  }
+
+  // Parse arithmetic in SELECT columns with proper precedence (left is already parsed)
+  function parseSelectArithExpr(left) {
+    // First handle multiplicative (higher precedence) — left is already the first operand
+    while (peek().type === '*' || peek().type === 'SLASH' || peek().type === 'MOD') {
+      const t = peek().type;
+      const op = t === '*' ? '*' : t === 'SLASH' ? '/' : '%';
+      advance();
+      const right = parsePrimary();
+      left = { type: 'arith', op, left, right };
+    }
+    // Then handle additive (lower precedence)
+    while (['PLUS', 'MINUS'].includes(peek().type) || peek().type === 'CONCAT_OP') {
+      const t = peek().type;
+      advance();
+      if (t === 'CONCAT_OP') {
+        const right = parsePrimary();
+        left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
+      } else {
+        const op = t === 'PLUS' ? '+' : '-';
+        // Right side: parse multiplicative first
+        let right = parsePrimary();
+        while (peek().type === '*' || peek().type === 'SLASH' || peek().type === 'MOD') {
+          const mt = peek().type;
+          const mop = mt === '*' ? '*' : mt === 'SLASH' ? '/' : '%';
+          advance();
+          const mr = parsePrimary();
+          right = { type: 'arith', op: mop, left: right, right: mr };
+        }
+        left = { type: 'arith', op, left, right };
+      }
+    }
+    return left;
   }
 
   function parseFromClause() {
