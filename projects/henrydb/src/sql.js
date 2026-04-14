@@ -36,7 +36,7 @@ const KEYWORDS = new Set([
   'IF', 'EXISTS',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE',
   'FULLTEXT', 'MATCH', 'AGAINST',
-  'GENERATE_SERIES', 'LATERAL',
+  'GENERATE_SERIES', 'LATERAL', 'UNNEST',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
   'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
   'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW', 'COMMENT',
@@ -1166,6 +1166,31 @@ export function parse(sql) {
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       else if (peek().type === 'IDENT') alias = advance().value;
       return { table: '__generate_series', alias, start, stop, step };
+    }
+    // UNNEST(array_expr)
+    if (isKeyword('UNNEST')) {
+      advance();
+      expect('(');
+      const arrayExpr = parseExpr();
+      expect(')');
+      let alias = null;
+      let columnAlias = null;
+      if (isKeyword('AS')) {
+        advance();
+        alias = readAlias();
+        // Optional column alias: AS alias(col)
+        if (match('(')) {
+          columnAlias = advance().value;
+          expect(')');
+        }
+      } else if (peek() && peek().type === 'IDENT') {
+        alias = advance().value;
+        if (match('(')) {
+          columnAlias = advance().value;
+          expect(')');
+        }
+      }
+      return { table: '__unnest', alias, arrayExpr, columnAlias };
     }
     // Subquery in FROM
     if (peek().type === '(') {

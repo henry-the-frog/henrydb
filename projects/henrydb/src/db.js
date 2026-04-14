@@ -2367,6 +2367,27 @@ export class Database {
       return this._applySelectColumns(ast, rows);
     }
 
+    // UNNEST: expand array to rows
+    if (tableName === '__unnest') {
+      const arrayVal = this._evalValue(ast.from.arrayExpr, {});
+      let arr = Array.isArray(arrayVal) ? arrayVal : [];
+      if (typeof arrayVal === 'string') {
+        try { arr = JSON.parse(arrayVal); } catch { arr = []; }
+      }
+      const colName = ast.from.columnAlias || 'value';
+      let rows = arr.map(v => ({ [colName]: v }));
+      
+      if (ast.where) rows = rows.filter(row => this._evalExpr(ast.where, row));
+      if (ast.groupBy) return this._selectWithGroupBy(ast, rows);
+      
+      const hasAgg = ast.columns.some(c => c.type === 'aggregate');
+      if (hasAgg) return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      
+      if (ast.orderBy) rows = this._sortRows(rows, ast.orderBy);
+      if (ast.limit != null) rows = rows.slice(ast.offset || 0, (ast.offset || 0) + ast.limit);
+      return { type: 'ROWS', rows };
+    }
+
     // Check if FROM is a subquery
     if (tableName === '__subquery') {
       const subAst = ast.from.subquery;
