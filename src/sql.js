@@ -36,6 +36,7 @@ const KEYWORDS = new Set([
   'GENERATE_SERIES', 'LATERAL',
   'GENERATED', 'ALWAYS', 'STORED', 'VIRTUAL',
   'NO', 'ACTION',
+  'LTRIM', 'RTRIM', 'INSTR', 'PRINTF',
 ]);
 
 export function tokenize(sql) {
@@ -435,7 +436,7 @@ export function parse(sql) {
     }
 
     // String functions in SELECT
-    if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
+    if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'LTRIM', 'RTRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF', 'INSTR', 'PRINTF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW'].includes(peek().value)) {
       const func = advance().value;
       expect('(');

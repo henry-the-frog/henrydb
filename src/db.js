@@ -3362,6 +3362,36 @@ export class Database {
         const str = this._evalValue(args[0], row);
         return str != null ? String(str).trim() : null;
       }
+      case 'LTRIM': {
+        const str = this._evalValue(args[0], row);
+        return str != null ? String(str).replace(/^\s+/, '') : null;
+      }
+      case 'RTRIM': {
+        const str = this._evalValue(args[0], row);
+        return str != null ? String(str).replace(/\s+$/, '') : null;
+      }
+      case 'INSTR': {
+        const str = this._evalValue(args[0], row);
+        const sub = this._evalValue(args[1], row);
+        if (str == null || sub == null) return null;
+        const idx = String(str).indexOf(String(sub));
+        return idx >= 0 ? idx + 1 : 0; // SQL INSTR is 1-based, 0 if not found
+      }
+      case 'PRINTF': {
+        // Simplified printf: supports %d, %s, %f, %0Nd
+        const fmt = this._evalValue(args[0], row);
+        const vals = args.slice(1).map(a => this._evalValue(a, row));
+        if (fmt == null) return null;
+        let i = 0;
+        return String(fmt).replace(/%(\d*)([dsf%])/g, (m, width, type) => {
+          if (type === '%') return '%';
+          const v = vals[i++];
+          if (type === 'd') return width ? String(v || 0).padStart(parseInt(width), '0') : String(v || 0);
+          if (type === 's') return String(v ?? '');
+          if (type === 'f') return String(v ?? 0);
+          return m;
+        });
+      }
       case 'ABS': {
         const val = this._evalValue(args[0], row);
         return val != null ? Math.abs(val) : null;
