@@ -334,6 +334,31 @@
       "completed": "2026-04-14T15:52:51.116Z",
       "duration_ms": 300000,
       "summary": "Monkey-lang const declarations. Parser, evaluator, Environment all updated. Immutable bindings with proper error on reassignment. 12 tests, 528/528 total passing."
+    },
+    {
+      "id": "T32",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test HenryDB: generated columns + foreign keys + expression indexes together",
+      "project": "henrydb",
+      "started": "2026-04-14T15:53:34.147Z",
+      "completed": "2026-04-14T15:55:50.530Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE stress-test: generated cols + FKs + expression indexes all work together. Found CRITICAL INSERT atomicity bug — unique index check happened AFTER heap write, causing leaked phantom rows on constraint violations. Fixed by pre-checking uniqueness before heap.insert()."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: COALESCE, NULLIF, IFNULL functions (common SQL functions)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T34",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Monkey-lang: const in compiler/VM (does the compiler handle const?)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -457,6 +482,18 @@
     {
       "time": "2026-04-14T15:39:02.390Z",
       "msg": "Added T31 (BUILD) after end: Monkey-lang: const declarations (immutable bindings that error on reassignment via set)"
+    },
+    {
+      "time": "2026-04-14T15:53:18.922Z",
+      "msg": "Added T32 (EXPLORE) after end: Stress-test HenryDB: generated columns + foreign keys + expression indexes together"
+    },
+    {
+      "time": "2026-04-14T15:53:19.040Z",
+      "msg": "Added T33 (BUILD) after end: HenryDB: COALESCE, NULLIF, IFNULL functions (common SQL functions)"
+    },
+    {
+      "time": "2026-04-14T15:53:19.157Z",
+      "msg": "Added T34 (EXPLORE) after end: Monkey-lang: const in compiler/VM (does the compiler handle const?)"
     }
   ]
 }
