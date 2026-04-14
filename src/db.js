@@ -1165,6 +1165,17 @@ export class Database {
     const tableName = table.heap?.name || '';
     this._fireTriggers('BEFORE', 'INSERT', tableName, orderedValues);
 
+    // Pre-check unique index constraints BEFORE heap insertion (atomicity)
+    for (const [colName, index] of table.indexes) {
+      const key = this._computeIndexKey(colName, orderedValues, table, tableName);
+      if (index.unique && key !== null && key !== undefined) {
+        const existing = index.range(key, key);
+        if (existing.length > 0) {
+          throw new Error(`Duplicate key '${key}' violates unique constraint on column '${colName}'`);
+        }
+      }
+    }
+
     const rid = table.heap.insert(orderedValues);
 
     // WAL: log the insert
@@ -1175,16 +1186,9 @@ export class Database {
       this.wal.appendCommit(txId);
     }
 
-    // Update indexes (and enforce uniqueness)
+    // Update indexes (uniqueness already verified above)
     for (const [colName, index] of table.indexes) {
       const key = this._computeIndexKey(colName, orderedValues, table, tableName);
-      if (index.unique && key !== null && key !== undefined) {
-        // SQL standard: NULL is never equal to NULL, so multiple NULLs are allowed in UNIQUE columns
-        const existing = index.range(key, key);
-        if (existing.length > 0) {
-          throw new Error(`Duplicate key '${key}' violates unique constraint on column '${colName}'`);
-        }
-      }
       if (key !== null && key !== undefined) {
         index.insert(key, rid);
       }
