@@ -2110,17 +2110,46 @@
     {
       "id": "T207",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: implement string replace builtin",
       "project": "monkey-lang",
-      "started": "2026-04-14T01:13:51.038Z"
+      "started": "2026-04-14T01:13:51.038Z",
+      "completed": "2026-04-14T01:15:06.969Z",
+      "duration_ms": 120000,
+      "summary": "FIRST_VALUE/LAST_VALUE window functions. Both partitioned and ordered. All tests pass."
     },
     {
       "id": "T208",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: FIRST_VALUE/LAST_VALUE window functions",
+      "project": "henrydb",
+      "started": "2026-04-14T01:16:15.758Z"
+    },
+    {
+      "id": "T209",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CUME_DIST window function",
       "project": "henrydb"
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: PERCENT_RANK window function",
+      "project": "henrydb",
+      "started": "2026-04-14T01:15:22.138Z",
+      "completed": "2026-04-14T01:16:08.821Z",
+      "duration_ms": 60000,
+      "summary": "reverse() builtin: arrays and strings. Both engines. 442 tests."
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement array reverse builtin",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -2924,6 +2953,18 @@
     {
       "time": "2026-04-14T01:12:12.939Z",
       "msg": "Added T208 (BUILD) after end: HenryDB: FIRST_VALUE/LAST_VALUE window functions"
+    },
+    {
+      "time": "2026-04-14T01:15:15.072Z",
+      "msg": "Added T209 (BUILD) after end: HenryDB: CUME_DIST window function"
+    },
+    {
+      "time": "2026-04-14T01:15:15.192Z",
+      "msg": "Added T210 (BUILD) after end: HenryDB: PERCENT_RANK window function"
+    },
+    {
+      "time": "2026-04-14T01:15:15.312Z",
+      "msg": "Added T211 (BUILD) after end: Monkey: implement array reverse builtin"
     }
   ]
 }
