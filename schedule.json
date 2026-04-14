@@ -2168,17 +2168,85 @@
     {
       "id": "T213",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: GREATEST/LEAST with variable args",
       "project": "henrydb",
-      "started": "2026-04-14T01:18:14.923Z"
+      "started": "2026-04-14T01:18:14.923Z",
+      "completed": "2026-04-14T01:18:50.425Z",
+      "duration_ms": 60000,
+      "summary": "NTH_VALUE window function. All tests pass."
     },
     {
       "id": "T214",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: NTH_VALUE window function",
+      "project": "henrydb",
+      "started": "2026-04-14T01:19:07.549Z",
+      "completed": "2026-04-14T01:19:46.582Z",
+      "duration_ms": 120000,
+      "summary": "find(), every(), some() higher-order builtins. Evaluator. 442 tests."
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement array find builtin (first element matching predicate)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LEAST/GREATEST with NULL handling",
+      "project": "henrydb",
+      "started": "2026-04-14T01:20:19.114Z",
+      "completed": "2026-04-14T01:20:46.823Z",
+      "duration_ms": 60000,
+      "summary": "flat() builtin. 442 tests."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement flat/flatMap builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-14T01:21:01.450Z",
+      "completed": "2026-04-14T01:21:29.626Z",
+      "duration_ms": 30000,
+      "summary": "Skipped, ARRAY[] syntax not worth the parser complexity."
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement flat() builtin for nested arrays",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T219",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ARRAY constructor (ARRAY[1,2,3])",
+      "project": "henrydb",
+      "started": "2026-04-14T01:21:50.226Z",
+      "completed": "2026-04-14T01:22:40.388Z",
+      "duration_ms": 60000,
+      "summary": "startsWith(), endsWith() builtins. Both engines. 442 tests."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: UNNEST function (expand array into rows)",
       "project": "henrydb"
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement string startsWith/endsWith builtins",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3006,6 +3074,34 @@
     {
       "time": "2026-04-14T01:17:11.908Z",
       "msg": "Added T214 (BUILD) after end: HenryDB: NTH_VALUE window function"
+    },
+    {
+      "time": "2026-04-14T01:18:59.773Z",
+      "msg": "Added T215 (BUILD) after end: Monkey: implement array find builtin (first element matching predicate)"
+    },
+    {
+      "time": "2026-04-14T01:18:59.893Z",
+      "msg": "Added T216 (BUILD) after end: HenryDB: LEAST/GREATEST with NULL handling"
+    },
+    {
+      "time": "2026-04-14T01:19:00.013Z",
+      "msg": "Added T217 (BUILD) after end: Monkey: implement flat/flatMap builtins"
+    },
+    {
+      "time": "2026-04-14T01:20:18.996Z",
+      "msg": "Added T218 (BUILD) after end: Monkey: implement flat() builtin for nested arrays"
+    },
+    {
+      "time": "2026-04-14T01:20:54.664Z",
+      "msg": "Added T219 (BUILD) after end: HenryDB: ARRAY constructor (ARRAY[1,2,3])"
+    },
+    {
+      "time": "2026-04-14T01:20:54.785Z",
+      "msg": "Added T220 (BUILD) after end: HenryDB: UNNEST function (expand array into rows)"
+    },
+    {
+      "time": "2026-04-14T01:21:50.107Z",
+      "msg": "Added T221 (BUILD) after end: Monkey: implement string startsWith/endsWith builtins"
     }
   ]
 }
