@@ -1903,10 +1903,50 @@
     {
       "id": "T186",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: NATURAL JOIN (auto-match on same-named columns)",
       "project": "henrydb",
-      "started": "2026-04-14T00:44:49.584Z"
+      "started": "2026-04-14T00:44:49.584Z",
+      "completed": "2026-04-14T00:52:56.824Z",
+      "duration_ms": 600000,
+      "summary": "NATURAL JOIN: auto-match shared column names. Standard COMPARE conditions with qualified names. All tests pass."
+    },
+    {
+      "id": "T187",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement null coalescing operator (??)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:53:14.297Z",
+      "completed": "2026-04-14T00:54:30.089Z",
+      "duration_ms": 120000,
+      "summary": "Null coalescing: null ?? 42 → 42, 0 ?? 42 → 0. Short-circuit. 387 tests."
+    },
+    {
+      "id": "T188",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: USING clause in JOIN (JOIN ON using shared columns)",
+      "project": "henrydb",
+      "started": "2026-04-14T00:56:22.907Z"
+    },
+    {
+      "id": "T189",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: HAVING without GROUP BY",
+      "project": "henrydb"
+    },
+    {
+      "id": "T190",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement += and -= assignment operators",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:54:30.233Z",
+      "completed": "2026-04-14T00:56:16.328Z",
+      "duration_ms": 180000,
+      "summary": "Compound assignment: +=, -=, *=, /=. Desugars to set x = x op val. 387 tests."
     }
   ],
   "focusProjects": [
@@ -2622,6 +2662,22 @@
     {
       "time": "2026-04-14T00:44:40.821Z",
       "msg": "Added T186 (BUILD) after end: HenryDB: NATURAL JOIN (auto-match on same-named columns)"
+    },
+    {
+      "time": "2026-04-14T00:53:05.893Z",
+      "msg": "Added T187 (BUILD) after end: Monkey: implement null coalescing operator (??)"
+    },
+    {
+      "time": "2026-04-14T00:53:06.012Z",
+      "msg": "Added T188 (BUILD) after end: HenryDB: USING clause in JOIN (JOIN ON using shared columns)"
+    },
+    {
+      "time": "2026-04-14T00:53:06.132Z",
+      "msg": "Added T189 (BUILD) after end: HenryDB: HAVING without GROUP BY"
+    },
+    {
+      "time": "2026-04-14T00:53:06.251Z",
+      "msg": "Added T190 (BUILD) after end: Monkey: implement += and -= assignment operators"
     }
   ]
 }

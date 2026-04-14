@@ -1015,11 +1015,18 @@ export function parse(sql) {
     let alias = null;
     if (peek().type === 'IDENT' && !isKeyword('ON')) alias = advance().value;
     let on = null;
+    let usingColumns = null;
     if (isKeyword('ON')) {
       advance();
       on = parseExpr();
+    } else if (isKeyword('USING')) {
+      advance();
+      expect('(');
+      usingColumns = [];
+      do { usingColumns.push(advance().value); } while (match(','));
+      expect(')');
     }
-    return { type: 'JOIN', joinType, table, alias, on, natural: isNatural };
+    return { type: 'JOIN', joinType, table, alias, on, usingColumns, natural: isNatural };
   }
 
   function parseExpr() { return parseOr(); }

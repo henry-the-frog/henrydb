@@ -2760,17 +2760,22 @@ export class Database {
 
     const rightAlias = join.alias || join.table;
 
-    // NATURAL JOIN: auto-generate ON clause from shared column names
-    if (join.natural && rightTable && !join.on) {
-      const leftColNames = new Set();
-      if (leftRows.length > 0) {
-        for (const k of Object.keys(leftRows[0])) {
-          const parts = k.split('.');
-          leftColNames.add(parts[parts.length - 1]);
+    // NATURAL JOIN or USING clause: auto-generate ON condition
+    if ((join.natural || join.usingColumns) && rightTable && !join.on) {
+      let sharedCols;
+      if (join.usingColumns) {
+        sharedCols = join.usingColumns;
+      } else {
+        const leftColNames = new Set();
+        if (leftRows.length > 0) {
+          for (const k of Object.keys(leftRows[0])) {
+            const parts = k.split('.');
+            leftColNames.add(parts[parts.length - 1]);
+          }
         }
+        const rightCols = rightTable.schema.map(c => c.name);
+        sharedCols = rightCols.filter(c => leftColNames.has(c));
       }
-      const rightCols = rightTable.schema.map(c => c.name);
-      const sharedCols = rightCols.filter(c => leftColNames.has(c));
       if (sharedCols.length > 0) {
         // Add qualified names to left rows so the join condition can resolve them
         for (const leftRow of leftRows) {
