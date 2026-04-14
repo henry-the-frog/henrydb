@@ -644,10 +644,24 @@ export function parse(sql) {
         advance(); // skip comma
         separator = advance().value; // STRING literal
       }
+      // Optional ORDER BY inside aggregate (STRING_AGG, ARRAY_AGG, etc.)
+      let aggOrderBy = null;
+      if (isKeyword('ORDER')) {
+        advance(); // ORDER
+        expect('KEYWORD', 'BY');
+        aggOrderBy = [];
+        do {
+          const col = parseExpr();
+          let dir = 'ASC';
+          if (isKeyword('ASC')) { advance(); dir = 'ASC'; }
+          else if (isKeyword('DESC')) { advance(); dir = 'DESC'; }
+          aggOrderBy.push({ column: col, direction: dir });
+        } while (match(','));
+      }
       expect(')');
 
       // Add separator info for GROUP_CONCAT / STRING_AGG
-      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator } : {};
+      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy } : { aggOrderBy };
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();

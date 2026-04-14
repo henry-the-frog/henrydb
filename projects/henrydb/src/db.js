@@ -5357,7 +5357,25 @@ export class Database {
           case 'GROUP_CONCAT':
           case 'STRING_AGG': {
             const sep = extra.separator || ',';
-            const strs = (distinct ? [...new Set(values)] : values).map(String);
+            let items = distinct ? [...new Set(values)] : values;
+            // Apply ORDER BY if specified inside the aggregate
+            if (extra.aggOrderBy && extra.aggOrderBy.length > 0 && extra.groupRows) {
+              const ordered = extra.groupRows.slice();
+              ordered.sort((a, b) => {
+                for (const ob of extra.aggOrderBy) {
+                  const av = this._evalValue(ob.column, a);
+                  const bv = this._evalValue(ob.column, b);
+                  if (av < bv) return ob.direction === 'DESC' ? 1 : -1;
+                  if (av > bv) return ob.direction === 'DESC' ? -1 : 1;
+                }
+                return 0;
+              });
+              items = ordered.map(r => {
+                const v = typeof extra.aggArg === 'string' ? r[extra.aggArg] : this._evalValue(extra.aggArg, r);
+                return v;
+              }).filter(v => v != null);
+            }
+            const strs = items.map(String);
             return strs.length ? strs.join(sep) : null;
           }
           case 'JSON_AGG':
@@ -5374,7 +5392,7 @@ export class Database {
       for (const col of ast.columns) {
         if (col.type === 'aggregate') {
           const name = col.alias || `${col.func}(${col.arg})`;
-          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator });
+          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, groupRows, aggArg: col.arg });
           // Also store under canonical key for HAVING resolution
           const canonKey = `${col.func}(${col.arg})`;
           if (name !== canonKey) result[`__agg_${canonKey}`] = result[name];

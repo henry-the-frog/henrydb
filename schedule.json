@@ -1565,9 +1565,13 @@
     {
       "id": "T148",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement println (puts with newline)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T01:35:27.088Z",
+      "completed": "2026-04-14T01:35:37.316Z",
+      "duration_ms": 10000,
+      "summary": "puts already uses console.log (includes newline). println not needed."
     },
     {
       "id": "T149",
@@ -1644,9 +1648,13 @@
     {
       "id": "T157",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: HAVING without GROUP BY (filter on aggregate of whole table)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T01:35:41.463Z",
+      "completed": "2026-04-14T01:35:52.118Z",
+      "duration_ms": 15000,
+      "summary": "HAVING without GROUP BY already works. Verified COUNT(*) > N filter on whole table."
     },
     {
       "id": "T158",
@@ -1901,10 +1909,13 @@
     {
       "id": "T184",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: CREATE TEMPORARY TABLE (session-scoped tables)",
       "project": "henrydb",
-      "started": "2026-04-14T01:29:23.729Z"
+      "started": "2026-04-14T01:29:23.729Z",
+      "completed": "2026-04-14T01:35:21.417Z",
+      "duration_ms": 300000,
+      "summary": "CREATE TEMPORARY TABLE / CREATE TEMP TABLE. Parser supports both forms. All tests pass."
     },
     {
       "id": "T185",
@@ -2003,9 +2014,13 @@
     {
       "id": "T195",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: multiple ORDER BY with mixed directions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T01:35:52.261Z",
+      "completed": "2026-04-14T01:36:06.546Z",
+      "duration_ms": 15000,
+      "summary": "Multi-column ORDER BY with mixed ASC/DESC already works. Verified 3-column sort."
     },
     {
       "id": "T196",
@@ -2057,9 +2072,10 @@
     {
       "id": "T201",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: string_agg with ORDER BY inside aggregate",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T01:36:06.689Z"
     },
     {
       "id": "T202",
