@@ -76,6 +76,8 @@ export class Database {
         rows,
         indexes: [...table.indexes.keys()],
         indexMeta: table.indexMeta ? Object.fromEntries(table.indexMeta) : {},
+        foreignKeys: table.foreignKeys || [],
+        tableChecks: table.tableChecks || null,
       };
     }
     
@@ -169,7 +171,7 @@ export class Database {
       const schema = tableData.schema;
       const heap = db._heapFactory(name);
       const indexes = new Map();
-      const tableObj = { schema, heap, indexes };
+      const tableObj = { schema, heap, indexes, foreignKeys: tableData.foreignKeys || [], childFKs: [], tableChecks: tableData.tableChecks || null };
       db.tables.set(name, tableObj);
       
       // Insert rows
@@ -194,6 +196,39 @@ export class Database {
         if (!tableObj.indexMeta) tableObj.indexMeta = new Map();
         for (const [key, meta] of Object.entries(tableData.indexMeta)) {
           tableObj.indexMeta.set(key, meta);
+        }
+      }
+    }
+    
+    // Rebuild childFKs reverse references
+    for (const [name, table] of db.tables) {
+      for (const fk of table.foreignKeys || []) {
+        const parentTable = db.tables.get(fk.refTable);
+        if (parentTable) {
+          if (!parentTable.childFKs) parentTable.childFKs = [];
+          parentTable.childFKs.push({
+            childTable: name,
+            childColumns: fk.columns,
+            parentColumns: fk.refColumns,
+            onDelete: fk.onDelete,
+            onUpdate: fk.onUpdate,
+          });
+        }
+      }
+      // Also rebuild from column-level REFERENCES
+      for (const col of table.schema) {
+        if (col.references) {
+          const parentTable = db.tables.get(col.references.table);
+          if (parentTable) {
+            if (!parentTable.childFKs) parentTable.childFKs = [];
+            parentTable.childFKs.push({
+              childTable: name,
+              childColumns: [col.name],
+              parentColumns: [col.references.column],
+              onDelete: col.references.onDelete || 'RESTRICT',
+              onUpdate: col.references.onUpdate || 'RESTRICT',
+            });
+          }
         }
       }
     }
