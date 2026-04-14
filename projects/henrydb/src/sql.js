@@ -12,7 +12,7 @@ const KEYWORDS = new Set([
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
-  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED', 'ROLLUP', 'CUBE', 'GROUPING', 'SETS', 'MERGE', 'USING', 'MATCHED',
+  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED', 'ROLLUP', 'CUBE', 'GROUPING', 'SETS', 'MERGE', 'USING', 'MATCHED', 'SEQUENCE', 'START', 'INCREMENT', 'RESTART', 'NEXTVAL', 'CURRVAL',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'FULL', 'OUTER', 'NATURAL', 'USING', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
@@ -810,7 +810,7 @@ export function parse(sql) {
     // String functions in SELECT
     if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
-      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC'].includes(peek().value)) {
+      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC', 'NEXTVAL', 'CURRVAL', 'SETVAL'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
       const args = [];
@@ -1318,7 +1318,7 @@ export function parse(sql) {
 // Built-in string/null functions
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
-      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC'].includes(t.value)) {
+      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC', 'NEXTVAL', 'CURRVAL', 'SETVAL'].includes(t.value)) {
       // Only parse as function call if next token is '(' — otherwise treat as identifier
       if (tokens[pos + 1]?.type === '(') {
         const func = advance().value;
@@ -1806,6 +1806,19 @@ export function parse(sql) {
         else bodyTokens.push(tok.value || tok.type);
       }
       return { type: 'CREATE_TRIGGER', name, timing, event, table, bodySql: bodyTokens.join(' ') };
+    }
+    if (isKeyword('SEQUENCE')) {
+      advance(); // SEQUENCE
+      const name = advance().value;
+      let start = 1, increment = 1, minValue = 1, maxValue = Infinity;
+      while (peek().type === 'KEYWORD' || peek().type === 'IDENT') {
+        if (isKeyword('START')) { advance(); if (isKeyword('WITH')) advance(); start = Number(advance().value); }
+        else if (isKeyword('INCREMENT')) { advance(); if (isKeyword('BY')) advance(); increment = Number(advance().value); }
+        else if (isKeyword('MINVALUE')) { advance(); minValue = Number(advance().value); }
+        else if (isKeyword('MAXVALUE')) { advance(); maxValue = Number(advance().value); }
+        else break;
+      }
+      return { type: 'CREATE_SEQUENCE', name, start, increment, minValue, maxValue };
     }
     if (isKeyword('MATERIALIZED')) {
       advance(); // MATERIALIZED

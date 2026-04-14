@@ -26,6 +26,7 @@ export class Database {
     this.catalog = [];
     this.indexCatalog = new Map();  // indexName -> { table, columns, unique }
     this.views = new Map();  // viewName -> { query (AST) }
+    this.sequences = new Map(); // seqName -> { current, increment, min, max }
     this.triggers = [];      // { name, timing, event, table, bodySql }
     
     // Storage factory: can be overridden for file-backed storage
@@ -226,8 +227,9 @@ export class Database {
       }
     }
     
-    // Check result cache for SELECT queries
-    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN')) {
+    // Check result cache for SELECT queries (skip for non-deterministic functions)
+    const hasNonDeterministic = /NEXTVAL|CURRVAL|RANDOM|NOW|CURRENT_/i.test(sql);
+    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN') && !hasNonDeterministic) {
       const cached = this._resultCache.get(sql);
       if (cached) {
         this._resultCacheHits++;
@@ -1045,6 +1047,7 @@ export class Database {
       case 'DELETE': return this._delete(ast);
       case 'TRUNCATE': return this._truncate(ast);
       case 'MERGE': return this._merge(ast);
+      case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'SHOW_TABLES': return this._showTables();
       case 'DESCRIBE': return this._describe(ast);
       case 'EXPLAIN': return this._explain(ast);
@@ -3718,6 +3721,16 @@ export class Database {
     return { type: 'OK', message: `${ast.table} truncated`, count };
   }
 
+  _createSequence(ast) {
+    this.sequences.set(ast.name.toLowerCase(), {
+      current: ast.start - ast.increment, // Will be incremented on first NEXTVAL
+      increment: ast.increment,
+      min: ast.minValue,
+      max: ast.maxValue,
+    });
+    return { type: 'OK', message: `Sequence ${ast.name} created` };
+  }
+
   _merge(ast) {
     const targetTable = this.tables.get(ast.target);
     if (!targetTable) throw new Error(`Table ${ast.target} not found`);
@@ -6261,6 +6274,26 @@ export class Database {
       // Date/time functions
       case 'CURRENT_TIMESTAMP': case 'NOW': return new Date().toISOString();
       case 'CURRENT_DATE': return new Date().toISOString().split('T')[0];
+      case 'NEXTVAL': {
+        const seqName = String(this._evalValue(args[0], row)).toLowerCase();
+        const seq = this.sequences.get(seqName);
+        if (!seq) throw new Error(`Sequence ${seqName} not found`);
+        seq.current += seq.increment;
+        return seq.current;
+      }
+      case 'CURRVAL': {
+        const seqName = String(this._evalValue(args[0], row)).toLowerCase();
+        const seq = this.sequences.get(seqName);
+        if (!seq) throw new Error(`Sequence ${seqName} not found`);
+        return seq.current;
+      }
+      case 'SETVAL': {
+        const seqName = String(this._evalValue(args[0], row)).toLowerCase();
+        const seq = this.sequences.get(seqName);
+        if (!seq) throw new Error(`Sequence ${seqName} not found`);
+        seq.current = this._evalValue(args[1], row);
+        return seq.current;
+      }
       case 'DATE_ADD': {
         // DATE_ADD(date, interval, unit)
         const date = this._evalValue(args[0], row);

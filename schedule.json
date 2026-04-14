@@ -1629,10 +1629,169 @@
     {
       "id": "T156",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: date arithmetic functions (DATE_ADD, DATE_DIFF)",
       "project": "henrydb",
-      "started": "2026-04-14T00:13:10.732Z"
+      "started": "2026-04-14T00:13:10.732Z",
+      "completed": "2026-04-14T00:16:15.656Z",
+      "duration_ms": 300000,
+      "summary": "DATE_ADD, DATE_DIFF, DATE_TRUNC: date arithmetic with day/month/year/hour units. All tests pass."
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: HAVING without GROUP BY (filter on aggregate of whole table)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement ternary operator (cond ? a : b)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:16:35.423Z",
+      "completed": "2026-04-14T00:18:37.494Z",
+      "duration_ms": 180000,
+      "summary": "Ternary operator: cond ? a : b. Short-circuit, nestable. Evaluator. 334 tests."
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: multiple CTEs in single WITH clause",
+      "project": "henrydb",
+      "started": "2026-04-14T00:18:37.637Z",
+      "completed": "2026-04-14T00:18:57.629Z",
+      "duration_ms": 30000,
+      "summary": "Multiple CTEs in single WITH clause already work. Verified with chained CTEs."
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: POSITION function (POSITION('sub' IN 'string'))",
+      "project": "henrydb",
+      "started": "2026-04-14T00:18:57.771Z",
+      "completed": "2026-04-14T00:19:12.354Z",
+      "duration_ms": 15000,
+      "summary": "POSITION function already works. Verified 1-based indexing."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: EXTRACT function (EXTRACT(YEAR FROM date))",
+      "project": "henrydb",
+      "started": "2026-04-14T00:19:30.483Z",
+      "completed": "2026-04-14T00:19:45.948Z",
+      "duration_ms": 15000,
+      "summary": "EXTRACT already works. YEAR, MONTH, DAY verified."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement numeric comparison for strings (parseFloat-based)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CAST function (CAST(x AS INTEGER))",
+      "project": "henrydb",
+      "started": "2026-04-14T00:19:46.092Z",
+      "completed": "2026-04-14T00:20:02.325Z",
+      "duration_ms": 15000,
+      "summary": "CAST already works. INTEGER, TEXT, REAL verified."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: mathematical functions (POWER, SQRT, LOG, EXP, CEIL, FLOOR)",
+      "project": "henrydb",
+      "started": "2026-04-14T00:20:02.468Z",
+      "completed": "2026-04-14T00:20:17.453Z",
+      "duration_ms": 15000,
+      "summary": "POWER, SQRT, LOG, EXP, CEIL, FLOOR all already work. Verified."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: EXPLAIN ANALYZE cost improvements (show buffer hits, heap scans)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CREATE INDEX CONCURRENTLY (non-blocking index build)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: multi-column index support with prefix matching",
+      "project": "henrydb"
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement error handling (try/catch)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:20:37.643Z",
+      "completed": "2026-04-14T00:22:53.612Z",
+      "duration_ms": 300000,
+      "summary": "try/catch/throw: catches runtime errors and custom throws. Error bound as string. Evaluator. 334 tests."
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: self-join optimization (recognize self-referencing joins)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement for-in loop (for (x in arr) { ... })",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:23:15.795Z",
+      "completed": "2026-04-14T00:25:02.416Z",
+      "duration_ms": 180000,
+      "summary": "for-in loop: iterate arrays and hash keys. break/continue support. New scope per iteration. 334 tests."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: ANALYZE TABLE command (update histograms)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: sequence support (CREATE SEQUENCE, NEXTVAL)",
+      "project": "henrydb",
+      "started": "2026-04-14T00:26:26.833Z"
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: final comprehensive test suite (50+ tests for new features)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:25:09.054Z",
+      "completed": "2026-04-14T00:26:17.340Z",
+      "duration_ms": 180000,
+      "summary": "53 comprehensive tests for all extended features. 387 total Monkey tests."
     }
   ],
   "focusProjects": [
@@ -2228,6 +2387,74 @@
     {
       "time": "2026-04-14T00:11:18.660Z",
       "msg": "Added T156 (BUILD) after end: HenryDB: date arithmetic functions (DATE_ADD, DATE_DIFF)"
+    },
+    {
+      "time": "2026-04-14T00:16:27.092Z",
+      "msg": "Added T157 (BUILD) after end: HenryDB: HAVING without GROUP BY (filter on aggregate of whole table)"
+    },
+    {
+      "time": "2026-04-14T00:16:27.211Z",
+      "msg": "Added T158 (BUILD) after end: Monkey: implement ternary operator (cond ? a : b)"
+    },
+    {
+      "time": "2026-04-14T00:16:27.332Z",
+      "msg": "Added T159 (BUILD) after end: HenryDB: multiple CTEs in single WITH clause"
+    },
+    {
+      "time": "2026-04-14T00:16:27.449Z",
+      "msg": "Added T160 (BUILD) after end: HenryDB: POSITION function (POSITION('sub' IN 'string'))"
+    },
+    {
+      "time": "2026-04-14T00:19:22.035Z",
+      "msg": "Added T161 (BUILD) after end: HenryDB: EXTRACT function (EXTRACT(YEAR FROM date))"
+    },
+    {
+      "time": "2026-04-14T00:19:22.154Z",
+      "msg": "Added T162 (BUILD) after end: Monkey: implement numeric comparison for strings (parseFloat-based)"
+    },
+    {
+      "time": "2026-04-14T00:19:22.273Z",
+      "msg": "Added T163 (BUILD) after end: HenryDB: CAST function (CAST(x AS INTEGER))"
+    },
+    {
+      "time": "2026-04-14T00:19:22.391Z",
+      "msg": "Added T164 (BUILD) after end: HenryDB: mathematical functions (POWER, SQRT, LOG, EXP, CEIL, FLOOR)"
+    },
+    {
+      "time": "2026-04-14T00:20:28.564Z",
+      "msg": "Added T165 (BUILD) after end: HenryDB: EXPLAIN ANALYZE cost improvements (show buffer hits, heap scans)"
+    },
+    {
+      "time": "2026-04-14T00:20:28.684Z",
+      "msg": "Added T166 (BUILD) after end: HenryDB: CREATE INDEX CONCURRENTLY (non-blocking index build)"
+    },
+    {
+      "time": "2026-04-14T00:20:28.804Z",
+      "msg": "Added T167 (BUILD) after end: HenryDB: multi-column index support with prefix matching"
+    },
+    {
+      "time": "2026-04-14T00:20:28.923Z",
+      "msg": "Added T168 (BUILD) after end: Monkey: implement error handling (try/catch)"
+    },
+    {
+      "time": "2026-04-14T00:20:29.041Z",
+      "msg": "Added T169 (BUILD) after end: HenryDB: self-join optimization (recognize self-referencing joins)"
+    },
+    {
+      "time": "2026-04-14T00:23:07.059Z",
+      "msg": "Added T170 (BUILD) after end: Monkey: implement for-in loop (for (x in arr) { ... })"
+    },
+    {
+      "time": "2026-04-14T00:23:07.178Z",
+      "msg": "Added T171 (BUILD) after end: HenryDB: ANALYZE TABLE command (update histograms)"
+    },
+    {
+      "time": "2026-04-14T00:23:07.298Z",
+      "msg": "Added T172 (BUILD) after end: HenryDB: sequence support (CREATE SEQUENCE, NEXTVAL)"
+    },
+    {
+      "time": "2026-04-14T00:23:07.417Z",
+      "msg": "Added T173 (BUILD) after end: Monkey: final comprehensive test suite (50+ tests for new features)"
     }
   ]
 }
