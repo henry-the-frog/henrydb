@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T02:40:46.501Z",
+  "generated": "2026-04-14T02:42:34.854Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: multi-column index support with prefix matching",
-    "completedAt": "2026-04-14T02:40:46.501Z",
-    "taskId": "T167",
-    "summary": "Multi-column composite index prefix matching. WHERE a=5 on index(a,b,c) uses prefix scan. AND conditions combined for tighter prefix. Correct results for 1,2,3-column prefixes. 6 tests.",
-    "durationMs": 300000
+    "task": "HenryDB: EXPLAIN ANALYZE cost improvements (show buffer hits, heap scans)",
+    "completedAt": "2026-04-14T02:42:34.854Z",
+    "taskId": "T165",
+    "summary": "EXPLAIN ANALYZE now shows I/O statistics: heap_scans, buffer_reads, index_lookups, rows_examined. Instrumented via method wrapping during execution. Seq scan shows 1000 reads vs index scan shows 1 read. 8 tests pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 226,
+    "blocksCompleted": 227,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 190,
+      "BUILD": 191,
       "MAINTAIN": 17
     }
   },

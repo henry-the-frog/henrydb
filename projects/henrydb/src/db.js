@@ -4863,9 +4863,64 @@ export class Database {
       // Planner may fail for complex queries — proceed with execution only
     }
 
-    // Execute the actual query with timing
+    // Execute the actual query with timing and I/O tracking
     const startTime = performance.now();
-    const result = this._select(stmt);
+    
+    // Track I/O statistics: heap scans, buffer reads, index lookups
+    const ioStats = { heapScans: 0, bufferReads: 0, indexLookups: 0, rowsExamined: 0 };
+    
+    // Instrument the table to count heap scans
+    const ioTableName = stmt.from?.table;
+    let origScan = null;
+    let origGet = null;
+    if (ioTableName && this.tables.has(ioTableName)) {
+      const table = this.tables.get(ioTableName);
+      if (table.heap && table.heap.scan) {
+        origScan = table.heap.scan.bind(table.heap);
+        const origScanFn = table.heap.scan;
+        table.heap.scan = function(...args) {
+          ioStats.heapScans++;
+          const iter = origScan(...args);
+          // Wrap iterator to count rows
+          return {
+            [Symbol.iterator]() {
+              const it = iter[Symbol.iterator] ? iter[Symbol.iterator]() : iter;
+              return {
+                next() {
+                  const result = it.next();
+                  if (!result.done) {
+                    ioStats.bufferReads++;
+                    ioStats.rowsExamined++;
+                  }
+                  return result;
+                }
+              };
+            }
+          };
+        };
+      }
+      if (table.heap && table.heap.get) {
+        origGet = table.heap.get.bind(table.heap);
+        table.heap.get = function(...args) {
+          ioStats.bufferReads++;
+          ioStats.indexLookups++;
+          return origGet(...args);
+        };
+      }
+    }
+    
+    let result;
+    try {
+      result = this._select(stmt);
+    } finally {
+      // Restore original methods
+      if (ioTableName && this.tables.has(ioTableName)) {
+        const table = this.tables.get(ioTableName);
+        if (origScan) table.heap.scan = origScan;
+        if (origGet) table.heap.get = origGet;
+      }
+    }
+    
     const executionTime = performance.now() - startTime;
     const actualRows = result.rows.length;
 
@@ -4980,8 +5035,10 @@ export class Database {
         { 'QUERY PLAN': `Planning Time: ${(plannerEstimate ? 0.1 : 0).toFixed(3)} ms` },
         { 'QUERY PLAN': `Execution Time: ${executionTime.toFixed(3)} ms` },
         { 'QUERY PLAN': `Actual Rows: ${actualRows}` },
+        { 'QUERY PLAN': `Buffers: heap_scans=${ioStats.heapScans} buffer_reads=${ioStats.bufferReads} index_lookups=${ioStats.indexLookups} rows_examined=${ioStats.rowsExamined}` },
       ],
       analysis,
+      ioStats,
       execution_time_ms: parseFloat(executionTime.toFixed(3)),
       actual_rows: actualRows,
       planTree: planTree || null,

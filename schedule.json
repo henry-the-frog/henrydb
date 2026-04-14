@@ -1794,9 +1794,13 @@
     {
       "id": "T165",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: EXPLAIN ANALYZE cost improvements (show buffer hits, heap scans)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:41:02.371Z",
+      "completed": "2026-04-14T02:42:34.819Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN ANALYZE now shows I/O statistics: heap_scans, buffer_reads, index_lookups, rows_examined. Instrumented via method wrapping during execution. Seq scan shows 1000 reads vs index scan shows 1 read. 8 tests pass."
     },
     {
       "id": "T166",
