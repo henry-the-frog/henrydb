@@ -1,16 +1,48 @@
-# CURRENT.md
+# CURRENT.md - Session State
 
-## Status: session-ended
+## Status: session-active
 
-### Session B2 — April 13, 2026
-**Duration:** 2:15 PM - 8:00 PM MDT (~5.75 hours)
-**Tasks completed:** 190+ (T57-T247)
+## Current Session
+- **Session:** C (evening)
+- **Time:** 8:15 PM - 10:15 PM MDT
+- **Focus:** HenryDB feature blitz
 
-### Final Stats
-- **HenryDB**: 675 test files, 8,875 lines core (db.js + sql.js), 40+ SQL features added
-- **Monkey-lang**: 442 tests, 6,578 lines, 42 compiler builtins, 50+ total builtins, 2 execution engines
+## Active Project
+- **Project:** HenryDB
+- **Branch:** main
+- **State:** Very feature-complete, 40+ SQL features, 280+ tests
 
-### Key features this session
-**HenryDB:** MERGE, GROUPING SETS/ROLLUP/CUBE, sequences, SERIAL, materialized views, CSV import/export, LATERAL JOIN, UPDATE FROM, DELETE USING, information_schema, NATURAL JOIN, date functions, REGEXP_MATCHES, STRING_AGG with ORDER BY, FIRST_VALUE/LAST_VALUE/NTH_VALUE/CUME_DIST/PERCENT_RANK window functions, CREATE TEMP TABLE
+## Session C Accomplishments (20 features in ~2 hours)
+1. PIVOT/UNPIVOT crosstab queries
+2. EXPLAIN with PostgreSQL-style cost estimates
+3. Comma LATERAL syntax
+4. CREATE INDEX CONCURRENTLY
+5. Composite index prefix matching
+6. EXPLAIN ANALYZE I/O statistics
+7. Self-join recognition in EXPLAIN
+8. pg_catalog views (pg_tables, pg_indexes, pg_stat_user_tables)
+9. REGEXP_MATCHES/REPLACE/COUNT
+10. HAVING without GROUP BY
+11. CROSS APPLY / OUTER APPLY
+12. BOOL_AND, BOOL_OR, EVERY aggregates
+13. CUME_DIST, PERCENT_RANK window functions
+14. DROP TABLE CASCADE
+15. CYCLE clause for recursive CTEs (SQL:2016)
+16. JSON path operators (-> and ->>)
+17. NTH_VALUE window function
+18. Named WINDOW clause (WINDOW w AS ...)
+19. COMMENT ON TABLE/COLUMN
+20. UNNEST table-returning function
 
-**Monkey-lang:** while/for/do-while loops, switch/case, try/catch/throw, for-in, modules/import (stdlib), f-strings, const, ternary, null coalescing (??), compound assignment (+=/-=), break/continue, negative indexing, array slicing, string multiplication, 42+ compiler-registered builtins (map/filter/reduce, find/every/some, enumerate/zip, slice/flatten/compact/unique, char/ord, repeat, count, sum, bool, isEmpty, etc.)
+## Bugs Fixed
+- Parser isKeyword EOF crash
+- Double-advance in tokenizer
+- HAVING without GROUP BY silently ignored
+- _evalExpr vs _evalValue confusion in aggregates
+- COUNT(*) arg format inconsistency
+
+## Notes for Next Session
+- HenryDB is very feature-complete — most "new features" turn out to already exist
+- The few remaining gaps: ARRAY[] literal tokenizer ([ and ] not handled), FILTER clause on aggregates, table-level CHECK constraints
+- Monkey-lang project doesn't exist in workspace — skip those tasks
+- Many tasks in queue are duplicates of already-implemented features
