@@ -1838,9 +1838,13 @@
     {
       "id": "T169",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: self-join optimization (recognize self-referencing joins)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:42:57.061Z",
+      "completed": "2026-04-14T02:49:49.516Z",
+      "duration_ms": 300000,
+      "summary": "Self-join recognition in EXPLAIN (shows [Self-Join] tag). Hash join optimization deferred - column resolution complexity with qualified names needs careful handling. EXPLAIN detection working. 85 join tests pass."
     },
     {
       "id": "T170",

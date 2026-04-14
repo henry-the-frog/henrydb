@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T02:42:34.854Z",
+  "generated": "2026-04-14T02:49:49.552Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: EXPLAIN ANALYZE cost improvements (show buffer hits, heap scans)",
-    "completedAt": "2026-04-14T02:42:34.854Z",
-    "taskId": "T165",
-    "summary": "EXPLAIN ANALYZE now shows I/O statistics: heap_scans, buffer_reads, index_lookups, rows_examined. Instrumented via method wrapping during execution. Seq scan shows 1000 reads vs index scan shows 1 read. 8 tests pass.",
-    "durationMs": 180000
+    "task": "HenryDB: self-join optimization (recognize self-referencing joins)",
+    "completedAt": "2026-04-14T02:49:49.552Z",
+    "taskId": "T169",
+    "summary": "Self-join recognition in EXPLAIN (shows [Self-Join] tag). Hash join optimization deferred - column resolution complexity with qualified names needs careful handling. EXPLAIN detection working. 85 join tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 227,
+    "blocksCompleted": 228,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 191,
+      "BUILD": 192,
       "MAINTAIN": 17
     }
   },
