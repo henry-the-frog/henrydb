@@ -1442,6 +1442,28 @@
       "completed": "2026-04-14T19:48:23.298Z",
       "duration_ms": 300000,
       "summary": "compose(), pipe_fn(), identity() builtins. Function composition in both directions. 545/545 passing."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: memoize() higher-order function",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:48:48.729Z",
+      "completed": "2026-04-14T19:49:32.851Z",
+      "duration_ms": 300000,
+      "summary": "memoize() HOF. Caches results by argument key. fib(30)=832040 instant. 545/545 passing."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: curry() builtin for partial application",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:49:51.336Z",
+      "completed": "2026-04-14T19:50:40.672Z",
+      "duration_ms": 300000,
+      "summary": "partial() + constantly() builtins. Partial application works with map: (1..5).map(partial(mul, 2)). 545/545 passing."
     }
   ],
   "focusProjects": [
@@ -1969,6 +1991,14 @@
     {
       "time": "2026-04-14T19:47:28.147Z",
       "msg": "Added T132 (BUILD) after end: Monkey-lang: compose() and pipe_fn() function composition"
+    },
+    {
+      "time": "2026-04-14T19:48:48.494Z",
+      "msg": "Added T133 (BUILD) after end: Monkey-lang: memoize() higher-order function"
+    },
+    {
+      "time": "2026-04-14T19:49:51.102Z",
+      "msg": "Added T134 (BUILD) after end: Monkey-lang: curry() builtin for partial application"
     }
   ]
 }
