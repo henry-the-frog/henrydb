@@ -922,11 +922,17 @@ export function parse(sql) {
   function parseOrderBy() {
     const cols = [];
     do {
-      const col = advance().value;
+      const expr = parseExpr();
+      let column;
+      if (expr.type === 'column_ref') {
+        column = expr.name;
+      } else {
+        column = expr; // Expression-based ORDER BY
+      }
       let dir = 'ASC';
       if (isKeyword('DESC')) { dir = 'DESC'; advance(); }
       else if (isKeyword('ASC')) { advance(); }
-      cols.push({ column: col, direction: dir });
+      cols.push({ column, direction: dir });
     } while (match(','));
     return cols;
   }

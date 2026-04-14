@@ -1053,7 +1053,15 @@ export class Database {
     if (ast.orderBy) {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          const av = a[column], bv = b[column];
+          let av, bv;
+          if (typeof column === 'object') {
+            // Expression-based ORDER BY
+            av = this._evalValue(column, a);
+            bv = this._evalValue(column, b);
+          } else {
+            av = a[column];
+            bv = b[column];
+          }
           if (av < bv) return direction === 'DESC' ? 1 : -1;
           if (av > bv) return direction === 'DESC' ? -1 : 1;
         }
@@ -1392,8 +1400,14 @@ export class Database {
       if (ast.orderBy) {
         rows.sort((a, b) => {
           for (const { column, direction } of ast.orderBy) {
-            const av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
-            const bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+            let av, bv;
+            if (typeof column === 'object') {
+              av = this._evalValue(column, a);
+              bv = this._evalValue(column, b);
+            } else {
+              av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
+              bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+            }
             const cmp = av < bv ? -1 : av > bv ? 1 : 0;
             if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
           }
@@ -1524,7 +1538,10 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
           let av, bv;
-          if (windowAliases.has(column)) {
+          if (typeof column === 'object') {
+            av = this._evalValue(column, a);
+            bv = this._evalValue(column, b);
+          } else if (windowAliases.has(column)) {
             // Window function alias — values stored as __window_<name>
             av = a[`__window_${column}`];
             bv = b[`__window_${column}`];
@@ -2057,9 +2074,14 @@ export class Database {
     if (ast.orderBy) {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          const colName = typeof column === 'string' ? column : column;
-          const av = this._resolveColumn(colName, a);
-          const bv = this._resolveColumn(colName, b);
+          let av, bv;
+          if (typeof column === 'object') {
+            av = this._evalValue(column, a);
+            bv = this._evalValue(column, b);
+          } else {
+            av = this._resolveColumn(column, a);
+            bv = this._resolveColumn(column, b);
+          }
           const cmp = av < bv ? -1 : av > bv ? 1 : 0;
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
@@ -2730,8 +2752,14 @@ export class Database {
     if (ast.orderBy) {
       resultRows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          const av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
-          const bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+          let av, bv;
+          if (typeof column === 'object') {
+            av = this._evalValue(column, a);
+            bv = this._evalValue(column, b);
+          } else {
+            av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
+            bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
+          }
           const cmp = av < bv ? -1 : av > bv ? 1 : 0;
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
