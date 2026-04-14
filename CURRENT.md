@@ -2,37 +2,27 @@
 - **Task:** Session ended
 - **status:** session-ended
 - **mode:** MAINTAIN
-- **current_position:** T216
-- **ended:** 2026-04-14T01:17:00Z
-- **tasks_completed_this_session:** 76 (T141-T216)
+- **current_position:** T218
+- **ended:** 2026-04-15T02:00:00Z (8:00 PM MDT)
+- **tasks_completed_this_session:** 78 (T141-T218)
 
-## Session B Summary
-### Monkey-lang (586 → 606 tests)
-- Cell-based mutable closures (multi-closure shared state)
-- break/continue in VM compiler
-- for-in loop compiler
-- Loop return values (accumulator pattern)
-- OpSetFree for mutable closures
-- Constant folding optimization
-- Dead code elimination
-- Switch expressions
-- F-string interpolation
-- Null literal
-- WASM closure fix (_hasFreeVariables)
-- If-expression stack balance fix
+## Session B Final Summary
+
+### Monkey-lang VM Compiler
+- **Tests**: 545 → 610 (+65 new tests, 12% increase)
+- **New features**: break/continue, for-in, loop return values, Cell-based mutable closures, OpSetFree, switch expressions, f-string interpolation, null literal, destructuring let, constant folding, dead code elimination
+- **New opcodes**: OpSetFree (0x20), OpMakeCell (0x21), OpGetLocalRaw (0x22), OpGetFreeRaw (0x23)
+- **WASM fix**: _hasFreeVariables let-binding tracking
+- **Bugs fixed**: 8 (opcode collision, stack corruption, Cell contamination, if-expression imbalance)
 
 ### HenryDB
-- SSI write skew detection fix (result cache bypass)
-- ANY/ALL/SOME subquery operators
-- 8 SSI depth stress tests
-- Stress test expectation fix
+- **SSI write skew fix**: Result cache was bypassing SSI read tracking (critical correctness bug)
+- **ANY/ALL/SOME**: Implemented quantified subquery comparison operators
+- **Tests**: 8 new SSI stress tests, all 92+ critical tests pass
 
-### Bugs Found: 8
-1. SSI result cache bypass
-2. Loop accumulator corrupt stack
-3. OpSetFree opcode collision (0x1F)
-4. WASM _hasFreeVariables missing let tracking
-5. Cell contamination in TailCall
-6. Cell contamination in callClosure (stale stack)
-7. If-expression stack imbalance (set consequence)
-8. Constant folding null args
+### Key Lessons
+1. VMs with reusable stack frames MUST clear locals on entry
+2. Always check opcode value collisions when adding new opcodes
+3. Caches that bypass heap scans also bypass scan-level tracking
+4. If-expressions in expression contexts must always produce a value
+5. Free-variable analysis must track all local bindings

@@ -2317,9 +2317,34 @@
     {
       "id": "T216",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session push, update CURRENT.md to session-ended",
-      "started": "2026-04-14T23:43:03.309Z"
+      "started": "2026-04-14T23:43:03.309Z",
+      "completed": "2026-04-14T23:43:51.708Z",
+      "duration_ms": 30000,
+      "summary": "Session B complete. 76 tasks processed. All repos pushed. CURRENT.md set to session-ended."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement DestructureLetStatement in VM compiler (let [a, b] = [1, 2])",
+      "project": "monkey-lang",
+      "started": "2026-04-14T23:44:21.253Z",
+      "completed": "2026-04-14T23:46:02.152Z",
+      "duration_ms": 180000,
+      "summary": "Implemented destructuring let in VM compiler. let [a,b,c] = [1,2,3] works. Uses hidden local + indexing. 606/606 tests pass."
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add comprehensive parity test for all new VM features together",
+      "project": "monkey-lang",
+      "started": "2026-04-14T23:46:02.417Z",
+      "completed": "2026-04-14T23:47:29.491Z",
+      "duration_ms": 120000,
+      "summary": "Added 4 destructuring parity tests. 610/610 total. Up from 545 at session start — added 65 tests today."
     }
   ],
   "focusProjects": [
@@ -3203,6 +3228,14 @@
     {
       "time": "2026-04-14T23:42:17.115Z",
       "msg": "Added T216 (MAINTAIN) after end: Final session push, update CURRENT.md to session-ended"
+    },
+    {
+      "time": "2026-04-14T23:44:12.262Z",
+      "msg": "Added T217 (BUILD) after end: Implement DestructureLetStatement in VM compiler (let [a, b] = [1, 2])"
+    },
+    {
+      "time": "2026-04-14T23:44:12.382Z",
+      "msg": "Added T218 (BUILD) after end: Add comprehensive parity test for all new VM features together"
     }
   ]
 }
