@@ -1860,9 +1860,13 @@
     {
       "id": "T171",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: ANALYZE TABLE command (update histograms)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:50:13.717Z",
+      "completed": "2026-04-14T02:50:13.862Z",
+      "duration_ms": 0,
+      "summary": "Duplicate of T147 — ANALYZE TABLE already implemented."
     },
     {
       "id": "T172",
@@ -1922,9 +1926,13 @@
     {
       "id": "T177",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: pg_catalog.pg_tables compatibility view",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:50:24.286Z",
+      "completed": "2026-04-14T02:51:41.436Z",
+      "duration_ms": 180000,
+      "summary": "pg_catalog compatibility views: pg_tables (schema, name, owner, hasindexes), pg_indexes (indexname, indexdef), pg_stat_user_tables (n_live_tup, last_analyze). Supports both pg_catalog.pg_tables and short pg_tables forms. WHERE filtering works."
     },
     {
       "id": "T178",

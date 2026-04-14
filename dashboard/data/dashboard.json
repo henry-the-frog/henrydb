@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T02:49:49.552Z",
+  "generated": "2026-04-14T02:51:41.472Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: self-join optimization (recognize self-referencing joins)",
-    "completedAt": "2026-04-14T02:49:49.552Z",
-    "taskId": "T169",
-    "summary": "Self-join recognition in EXPLAIN (shows [Self-Join] tag). Hash join optimization deferred - column resolution complexity with qualified names needs careful handling. EXPLAIN detection working. 85 join tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: pg_catalog.pg_tables compatibility view",
+    "completedAt": "2026-04-14T02:51:41.472Z",
+    "taskId": "T177",
+    "summary": "pg_catalog compatibility views: pg_tables (schema, name, owner, hasindexes), pg_indexes (indexname, indexdef), pg_stat_user_tables (n_live_tup, last_analyze). Supports both pg_catalog.pg_tables and short pg_tables forms. WHERE filtering works.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 228,
+    "blocksCompleted": 230,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 192,
+      "BUILD": 194,
       "MAINTAIN": 17
     }
   },
