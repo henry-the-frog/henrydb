@@ -1080,6 +1080,39 @@
       "completed": "2026-04-14T18:46:22.954Z",
       "duration_ms": 300000,
       "summary": "GROUP_CONCAT now supports SQLite-style comma separator: GROUP_CONCAT(val, sep). Was only supporting SEPARATOR keyword. Tests passing."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: string multiplication ('ha' * 3 → 'hahaha')",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:47:49.340Z",
+      "completed": "2026-04-14T18:48:42.921Z",
+      "duration_ms": 30000,
+      "summary": "String multiplication already works: \"ha\" * 3 → \"hahaha\". Both orderings."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: set data structure ({1, 2, 3} + set operations union, intersect, diff)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:49:10.600Z",
+      "completed": "2026-04-14T18:49:10.743Z",
+      "duration_ms": 0,
+      "summary": "Deferred — needs new object type."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ILIKE (case-insensitive LIKE)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:49:18.068Z",
+      "completed": "2026-04-14T18:51:15.013Z",
+      "duration_ms": 300000,
+      "summary": "ILIKE + fixed LIKE case sensitivity bug #17 (was accidentally case-insensitive). LIKE is now case-sensitive, ILIKE case-insensitive."
     }
   ],
   "focusProjects": [
@@ -1475,6 +1508,18 @@
     {
       "time": "2026-04-14T18:45:05.310Z",
       "msg": "Added T99 (BUILD) after end: HenryDB: GROUP_CONCAT/STRING_AGG aggregate function"
+    },
+    {
+      "time": "2026-04-14T18:47:41.324Z",
+      "msg": "Added T100 (BUILD) after end: Monkey-lang: string multiplication ('ha' * 3 → 'hahaha')"
+    },
+    {
+      "time": "2026-04-14T18:48:53.587Z",
+      "msg": "Added T101 (BUILD) after end: Monkey-lang: set data structure ({1, 2, 3} + set operations union, intersect, diff)"
+    },
+    {
+      "time": "2026-04-14T18:48:53.705Z",
+      "msg": "Added T102 (BUILD) after end: HenryDB: ILIKE (case-insensitive LIKE)"
     }
   ]
 }

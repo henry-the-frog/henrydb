@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T18:46:22.990Z",
+  "generated": "2026-04-14T18:51:15.050Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: GROUP_CONCAT/STRING_AGG aggregate function",
-    "completedAt": "2026-04-14T18:46:22.990Z",
-    "taskId": "T99",
-    "summary": "GROUP_CONCAT now supports SQLite-style comma separator: GROUP_CONCAT(val, sep). Was only supporting SEPARATOR keyword. Tests passing.",
+    "task": "HenryDB: ILIKE (case-insensitive LIKE)",
+    "completedAt": "2026-04-14T18:51:15.050Z",
+    "taskId": "T102",
+    "summary": "ILIKE + fixed LIKE case sensitivity bug #17 (was accidentally case-insensitive). LIKE is now case-sensitive, ILIKE case-insensitive.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 98,
+    "blocksCompleted": 101,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 67,
+      "BUILD": 70,
       "MAINTAIN": 5,
       "EXPLORE": 17
     }
