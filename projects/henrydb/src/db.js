@@ -6971,7 +6971,9 @@ export class Database {
         const val = this._evalValue(args[0], row);
         return val != null ? Math.floor(val) : null;
       }
-      case 'IFNULL': {
+      case 'IFNULL':
+      case 'ISNULL':
+      case 'NVL': {
         const val = this._evalValue(args[0], row);
         return val != null ? val : this._evalValue(args[1], row);
       }
