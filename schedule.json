@@ -1574,9 +1574,13 @@
     {
       "id": "T145",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: CROSS JOIN LATERAL (implicit lateral)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:28:39.749Z",
+      "completed": "2026-04-14T02:29:59.211Z",
+      "duration_ms": 180000,
+      "summary": "Comma LATERAL syntax (FROM t, LATERAL (subquery) AS s) now supported alongside existing CROSS JOIN LATERAL. 5 tests."
     },
     {
       "id": "T146",

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T02:28:26.378Z",
+  "generated": "2026-04-14T02:29:59.247Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: EXPLAIN output improvement (tree format with costs)",
-    "completedAt": "2026-04-14T02:28:26.378Z",
-    "taskId": "T143",
-    "summary": "EXPLAIN now shows PostgreSQL-style cost estimates (startup..total cost, rows, width). Uses cost model: seq_page=1.0, cpu_tuple=0.01, cpu_op=0.0025 with n*log2(n) sort costs. Hash join build costs included. All 74 explain tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: CROSS JOIN LATERAL (implicit lateral)",
+    "completedAt": "2026-04-14T02:29:59.247Z",
+    "taskId": "T145",
+    "summary": "Comma LATERAL syntax (FROM t, LATERAL (subquery) AS s) now supported alongside existing CROSS JOIN LATERAL. 5 tests.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 219,
+    "blocksCompleted": 220,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 183,
+      "BUILD": 184,
       "MAINTAIN": 17
     }
   },

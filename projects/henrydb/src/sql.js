@@ -402,11 +402,32 @@ export function parse(sql) {
 
       // Implicit CROSS JOINs from comma-separated tables in FROM
       while (match(',')) {
-        const nextTable = advance().value;
-        let nextAlias = null;
-        if (peek().type === 'IDENT') nextAlias = advance().value;
-        else if (isKeyword('AS')) { advance(); nextAlias = readAlias(); }
-        joins.push({ joinType: 'CROSS', table: nextTable, alias: nextAlias, on: null });
+        // Check for LATERAL subquery
+        if (isKeyword('LATERAL')) {
+          advance(); // LATERAL
+          expect('(');
+          const subquery = parseSelect();
+          expect(')');
+          let alias = null;
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          else if (peek() && peek().type === 'IDENT') alias = advance().value;
+          joins.push({ joinType: 'CROSS', lateral: true, subquery, alias, on: null });
+        } else if (peek() && peek().type === '(') {
+          // Subquery as cross-joined table
+          advance(); // (
+          const subquery = parseSelect();
+          expect(')');
+          let alias = null;
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          else if (peek() && peek().type === 'IDENT') alias = advance().value;
+          joins.push({ joinType: 'CROSS', table: { table: '__subquery', subquery }, alias, on: null });
+        } else {
+          const nextTable = advance().value;
+          let nextAlias = null;
+          if (peek() && peek().type === 'IDENT') nextAlias = advance().value;
+          else if (isKeyword('AS')) { advance(); nextAlias = readAlias(); }
+          joins.push({ joinType: 'CROSS', table: nextTable, alias: nextAlias, on: null });
+        }
       }
 
       // JOINs
