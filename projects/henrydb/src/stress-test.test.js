@@ -27,7 +27,7 @@ describe('Stress Tests', () => {
     `);
     const elapsed = performance.now() - start;
     
-    assert.equal(r.rows.length, 16); // 4 regions × 4 products
+    assert.equal(r.rows.length, 4); // 4 unique (region,product) pairs since both use i%4
     assert.ok(elapsed < 5000, `Aggregation took ${elapsed}ms (should be <5s)`);
     console.log(`    10k aggregation: ${elapsed.toFixed(0)}ms`);
   });
