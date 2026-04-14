@@ -882,6 +882,28 @@
       "completed": "2026-04-14T18:21:00.117Z",
       "duration_ms": 60000,
       "summary": "LATERAL JOIN already fully implemented and working. Tested: top earner per department — correct."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: null coalescing (??) and optional chaining (?.)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:21:21.298Z",
+      "completed": "2026-04-14T18:23:55.972Z",
+      "duration_ms": 300000,
+      "summary": "null literal keyword + ?? already worked. Fixed: null can now be used directly (null ?? 42 → 42). Cleaned up duplicate FSTRING token. 528/528 passing."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: VALUES clause as standalone query (VALUES (1), (2), (3) → returns rows)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:24:03.812Z",
+      "completed": "2026-04-14T18:25:18.351Z",
+      "duration_ms": 300000,
+      "summary": "Standalone VALUES clause. Parser + engine. VALUES (1,a),(2,b) returns rows with column1/column2 naming. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1205,6 +1227,14 @@
     {
       "time": "2026-04-14T18:18:56.557Z",
       "msg": "Added T81 (BUILD) after end: HenryDB: LATERAL JOIN (LATERAL subquery can reference preceding tables)"
+    },
+    {
+      "time": "2026-04-14T18:21:14.276Z",
+      "msg": "Added T82 (BUILD) after end: Monkey-lang: null coalescing (??) and optional chaining (?.)"
+    },
+    {
+      "time": "2026-04-14T18:21:14.394Z",
+      "msg": "Added T83 (BUILD) after end: HenryDB: VALUES clause as standalone query (VALUES (1), (2), (3) → returns rows)"
     }
   ]
 }

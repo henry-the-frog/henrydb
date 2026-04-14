@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T18:21:00.153Z",
+  "generated": "2026-04-14T18:25:18.387Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: LATERAL JOIN (LATERAL subquery can reference preceding tables)",
-    "completedAt": "2026-04-14T18:21:00.153Z",
-    "taskId": "T81",
-    "summary": "LATERAL JOIN already fully implemented and working. Tested: top earner per department — correct.",
-    "durationMs": 60000
+    "task": "HenryDB: VALUES clause as standalone query (VALUES (1), (2), (3) → returns rows)",
+    "completedAt": "2026-04-14T18:25:18.387Z",
+    "taskId": "T83",
+    "summary": "Standalone VALUES clause. Parser + engine. VALUES (1,a),(2,b) returns rows with column1/column2 naming. Tests passing.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 80,
+    "blocksCompleted": 82,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 50,
+      "BUILD": 52,
       "MAINTAIN": 5,
       "EXPLORE": 16
     }
