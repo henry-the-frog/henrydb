@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:23:04.653Z",
+  "generated": "2026-04-14T03:25:40.359Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: JSON path operators (->  ->>  #>  #>>) for JSONB columns",
-    "completedAt": "2026-04-14T03:23:04.653Z",
-    "taskId": "T254",
-    "summary": "JSON path operators: -> (get as JSON), ->> (get as text), chained (a -> b -> c). Works in SELECT, WHERE, ORDER BY. Parser handles JSON_ARROW, JSON_ARROW_TEXT tokens. 86 SQL/JSON tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: NTH_VALUE window function",
+    "completedAt": "2026-04-14T03:25:40.359Z",
+    "taskId": "T256",
+    "summary": "NTH_VALUE implemented. Returns null until frame includes nth row.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 253,
+    "blocksCompleted": 255,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 217,
+      "BUILD": 219,
       "MAINTAIN": 17
     }
   },

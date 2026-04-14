@@ -5501,6 +5501,26 @@ export class Database {
             }
             break;
           }
+          case 'NTH_VALUE': {
+            // NTH_VALUE(col, n) — returns the value of col at the nth row in the partition
+            const nvArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
+            const n = col.offset || 1; // offset stores the second argument
+            if (partition.length >= n) {
+              const nthVal = this._resolveColumn(nvArg, partition[n - 1]);
+              for (let i = 0; i < partition.length; i++) {
+                // With default frame (RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
+                // NTH_VALUE returns null until the frame includes the nth row
+                if (orderBy && i < n - 1) {
+                  partition[i][`__window_${name}`] = null;
+                } else {
+                  partition[i][`__window_${name}`] = nthVal;
+                }
+              }
+            } else {
+              for (const r of partition) r[`__window_${name}`] = null;
+            }
+            break;
+          }
           case 'CUME_DIST': {
             // CUME_DIST = fraction of rows with value <= current row's value
             // For ties, all tied rows get the same value (highest rank / total)

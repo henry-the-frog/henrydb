@@ -2768,6 +2768,28 @@
       "completed": "2026-04-14T03:23:04.617Z",
       "duration_ms": 300000,
       "summary": "JSON path operators: -> (get as JSON), ->> (get as text), chained (a -> b -> c). Works in SELECT, WHERE, ORDER BY. Parser handles JSON_ARROW, JSON_ARROW_TEXT tokens. 86 SQL/JSON tests pass."
+    },
+    {
+      "id": "T255",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: NTILE window function",
+      "project": "henrydb",
+      "started": "2026-04-14T03:23:36.490Z",
+      "completed": "2026-04-14T03:24:03.274Z",
+      "duration_ms": 0,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: NTH_VALUE window function",
+      "project": "henrydb",
+      "started": "2026-04-14T03:25:40.177Z",
+      "completed": "2026-04-14T03:25:40.322Z",
+      "duration_ms": 120000,
+      "summary": "NTH_VALUE implemented. Returns null until frame includes nth row."
     }
   ],
   "focusProjects": [
@@ -3779,6 +3801,14 @@
     {
       "time": "2026-04-14T03:18:27.916Z",
       "msg": "Added T254 (BUILD) after end: HenryDB: JSON path operators (->  ->>  #>  #>>) for JSONB columns"
+    },
+    {
+      "time": "2026-04-14T03:23:29.099Z",
+      "msg": "Added T255 (BUILD) after end: HenryDB: NTILE window function"
+    },
+    {
+      "time": "2026-04-14T03:25:32.111Z",
+      "msg": "Added T256 (BUILD) after end: HenryDB: NTH_VALUE window function"
     }
   ]
 }
