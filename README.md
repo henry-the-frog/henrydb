@@ -1,91 +1,129 @@
-# HenryDB 🗄️
+# HenryDB 🐸
 
-**A teaching database engine built from scratch in JavaScript.**
-
-3,000+ tests · 70K+ lines · 388 files · Every major concept implemented.
-
-## What Is This?
-
-HenryDB is an educational database engine that implements virtually every concept from a database systems textbook. It's not meant for production — it's meant to *understand* how databases actually work, from B+ trees to Raft consensus.
-
-Built in a single day as a deep-dive into database internals.
+A fully-featured SQL database engine written from scratch in JavaScript. No dependencies. Single file.
 
 ## Features
 
-### Query Execution (5 Engines)
-- **Volcano** — classic iterator-based tuple-at-a-time
-- **Compiled** — pipeline JIT compilation via closures (365x faster)
-- **Vectorized** — columnar batch processing (220x faster)
-- **Codegen** — `new Function()` query compilation (143x faster)
-- **Adaptive** — auto-selects best engine based on query characteristics
+### DDL (Data Definition Language)
+- `CREATE TABLE` with column types, constraints, defaults
+- `ALTER TABLE ADD COLUMN` / `DROP COLUMN` / `RENAME COLUMN`
+- `DROP TABLE` / `TRUNCATE TABLE`
+- `CREATE INDEX` / `CREATE UNIQUE INDEX`
+- Expression indexes: `CREATE INDEX idx ON t (LOWER(name))`
+- Generated columns: `GENERATED ALWAYS AS (expr) STORED`
+- `CREATE TABLE AS SELECT` (CTAS)
+- `CREATE VIEW` / `DROP VIEW`
+- `CREATE TRIGGER` (BEFORE/AFTER INSERT/UPDATE/DELETE)
 
-### Index Structures (12+)
-B+ tree · R-tree (spatial) · ART (Adaptive Radix Tree) · Skip list · Trie (prefix search) · Inverted index (BM25) · Suffix array · Cuckoo hash · Robin Hood hash · Double hashing · Extendible hashing · Linear hashing
+### DML (Data Manipulation Language)
+- `INSERT INTO ... VALUES` (multi-row)
+- `INSERT INTO ... SELECT`
+- `INSERT ... ON CONFLICT DO UPDATE / DO NOTHING` (upsert)
+- `INSERT OR REPLACE` / `INSERT OR IGNORE`
+- `INSERT ... RETURNING *`
+- `UPDATE ... SET` with expressions
+- `UPDATE ... FROM` (PostgreSQL-style multi-table)
+- `UPDATE ... RETURNING *`
+- `DELETE FROM ... WHERE`
+- `DELETE ... USING` (multi-table delete)
+- `DELETE ... RETURNING *`
+- `MERGE INTO ... USING ... ON ... WHEN MATCHED/NOT MATCHED` (SQL:2003)
 
-### Join Algorithms (10)
-Hash join · Sort-merge join · Nested loop · Index nested loop · Semi/anti join (EXISTS/NOT EXISTS) · Band join (BETWEEN) · Theta join · Grace hash join · Radix-partitioned join · Symmetric hash join
+### Queries
+- `SELECT` with column aliases, expressions
+- `WHERE` with complex conditions
+- `ORDER BY` (multi-column, ASC/DESC, expressions)
+- `LIMIT` / `OFFSET`
+- `GROUP BY` / `HAVING`
+- `DISTINCT` / `DISTINCT ON`
+- `JOIN` (INNER, LEFT, RIGHT, FULL, CROSS)
+- `LATERAL JOIN`
+- `UNION` / `UNION ALL` / `INTERSECT` / `INTERSECT ALL` / `EXCEPT` / `EXCEPT ALL`
+- Subqueries (scalar, IN, EXISTS, correlated)
+- Common Table Expressions (WITH / recursive WITH)
+- Window functions (ROW_NUMBER, RANK, DENSE_RANK, SUM, AVG, etc.)
+- `CASE WHEN ... THEN ... ELSE ... END`
+- `VALUES (1, 'a'), (2, 'b')` as standalone query
 
-### Probabilistic Data Structures (7)
-Bloom filter · Cuckoo filter · XOR filter · Count-Min Sketch · HyperLogLog · T-Digest · MinHash
+### Constraints
+- `PRIMARY KEY`
+- `NOT NULL`
+- `UNIQUE` (column + expression)
+- `CHECK` (column-level and table-level)
+- `DEFAULT` values
+- `FOREIGN KEY ... REFERENCES ... ON DELETE CASCADE/SET NULL/RESTRICT`
 
-### Concurrency Control (7 Protocols)
-MVCC · Two-Phase Locking (2PL) · Optimistic CC (OCC) · Timestamp Ordering · Lock Manager (S/X/IS/IX/SIX) · Deadlock Detector (wait-for graph) · Savepoints (nested transactions)
+### Functions
+- String: `UPPER`, `LOWER`, `LENGTH`, `CONCAT`, `SUBSTRING`, `REPLACE`, `TRIM`, `LTRIM`, `RTRIM`, `INSTR`, `PRINTF`
+- Math: `ABS`, `ROUND`, `CEIL`, `FLOOR`
+- Null: `COALESCE`, `NULLIF`, `IFNULL`, `IIF`
+- Type: `TYPEOF`, `CAST`
+- Aggregates: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`, `GROUP_CONCAT`
 
-### Storage Engine
-LSM-tree with compaction (leveled + size-tiered) · Write-Ahead Log (WAL) · Buffer Pool Manager (LRU) · Slotted Page · Heap File · Column Store · Log-structured Hash Table · Page versioning
+### Pattern Matching
+- `LIKE` (case-sensitive)
+- `ILIKE` (case-insensitive)
+- `BETWEEN`
+- `IN` / `NOT IN`
 
-### Distributed Systems
-Raft consensus (leader election + log replication) · Lamport clocks · Vector clocks · CRDT counters (G-Counter, PN-Counter) · Gossip protocol · Consistent hashing
+### Advanced
+- `EXPLAIN` / `EXPLAIN ANALYZE` (query plan + actual timing)
+- Transactions (`BEGIN`, `COMMIT`, `ROLLBACK`, `SAVEPOINT`)
+- B-tree indexes with query planner optimization
+- WAL (Write-Ahead Log) for crash recovery
+- Full serialization/deserialization (save/restore entire database)
+- Inverted index for full-text search
 
-### Compression
-Run-Length Encoding · Delta encoding · Bit-packing · Dictionary encoding · Frame-of-Reference
+## Usage
 
-### SQL Features
-Window functions (ROW_NUMBER, RANK, LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE, SUM OVER) · LATERAL JOIN · Common Table Expressions (WITH, WITH RECURSIVE) · Materialized views · Correlated subqueries · information_schema (tables, columns, constraints) · Expression compiler · Constant folder · Query rewriter · Plan visualization (DOT/text)
+```javascript
+import { Database } from './src/db.js';
 
-### Analytics & Observability
-Statistics collector (histograms, NDV, selectivity) · Cursor pagination · Change Data Capture · Time series engine · Graph database primitives · Data generator (TPC-H style)
+const db = new Database();
 
-### More Data Structures
-Fenwick tree · Segment tree · Union-Find · Treap · Splay tree · Binary heap · Quadtree · Interval tree · Order statistics tree · Ring buffer · LRU-K cache · LFU cache
+// Create tables
+db.execute(`CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE,
+  score REAL DEFAULT 0,
+  grade TEXT GENERATED ALWAYS AS (
+    CASE WHEN score >= 90 THEN 'A'
+         WHEN score >= 80 THEN 'B'
+         ELSE 'C' END
+  ) STORED
+)`);
 
-## Performance Highlights
+// Insert data
+db.execute("INSERT INTO users (id, name, email, score) VALUES (1, 'Alice', 'alice@example.com', 95) RETURNING *");
+// → [{ id: 1, name: 'Alice', email: 'alice@example.com', score: 95, grade: 'A' }]
 
-| Benchmark | Speedup vs Volcano |
-|---|---|
-| Compiled query engine | **365x** |
-| Vectorized execution | **220x** |
-| Prepared query cache | **246x** |
-| Peak (10-table join) | **2,062x** |
+// Query with CTE + window function
+db.execute(`
+  WITH ranked AS (
+    SELECT name, score, ROW_NUMBER() OVER (ORDER BY score DESC) AS rank
+    FROM users
+  )
+  SELECT * FROM ranked WHERE rank <= 10
+`);
 
-## Running Tests
+// Persistence
+const snapshot = db.save();       // serialize to JSON
+const db2 = Database.fromSerialized(snapshot);  // restore
+```
+
+## Tests
 
 ```bash
-# Run all tests (~3000)
-node --test src/*.test.js
-
-# Run specific module
-node --test src/bplus-tree.test.js
-
-# Run benchmarks
-node --test src/benchmarks.test.js
+npm test
 ```
 
 ## Architecture
 
-```
-src/
-├── Query Engines: volcano.js, pipeline-compiler.js, vectorized.js, query-codegen.js, adaptive-engine.js
-├── Indexes: bplus-tree.js, rtree.js, art.js, skip-list.js, trie.js, inverted-index.js
-├── Joins: sort-merge-join.js, grace-hash-join.js, radix-join.js, band-join.js, theta-join.js, ...
-├── Concurrency: two-phase-locking.js, occ.js, timestamp-ordering.js, lock-manager.js, deadlock-detector.js
-├── Storage: lsm-compaction.js, wal-compaction.js, buffer-pool.js, slotted-page.js, heap-file.js
-├── Distributed: raft.js, distributed-primitives.js, consistent-hashing.js
-├── Compression: column-compression.js, string-intern.js
-├── Probabilistic: bloom-join.js, hyperloglog.js, count-min-sketch.js, tdigest.js
-├── SQL: window-functions.js, cte.js, subquery.js, expression-compiler.js, constant-folding.js
-└── Testing: integration.test.js, property-tests.test.js, edge-cases.test.js, benchmarks.test.js
-```
+- **Parser** (`sql.js`): Hand-written recursive descent SQL parser
+- **Planner** (`planner.js`): Cost-based query optimizer with index selection
+- **Engine** (`db.js`): Heap storage, B-tree indexes, WAL, constraint enforcement
+- **All in JavaScript**: No native modules, no dependencies, runs anywhere Node does
 
 ## License
 
