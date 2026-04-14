@@ -1118,13 +1118,12 @@ export class Database {
         }
       }
       
-      this._insertRow(table, ast.columns, values);
+      const { orderedValues: insertedValues } = this._insertRow(table, ast.columns, values);
       inserted++;
       
       if (ast.returning) {
-        const orderedValues = this._orderValues(table, ast.columns, values);
         const retRow = {};
-        table.schema.forEach((c, i) => { retRow[c.name] = orderedValues[i]; });
+        table.schema.forEach((c, i) => { retRow[c.name] = insertedValues[i]; });
         returnedRows.push(retRow);
       }
     }
@@ -1377,7 +1376,7 @@ export class Database {
     // AFTER INSERT triggers
     this._fireTriggers('AFTER', 'INSERT', tableName, orderedValues);
 
-    return rid;
+    return { rid, orderedValues };
   }
 
   _select(ast) {
