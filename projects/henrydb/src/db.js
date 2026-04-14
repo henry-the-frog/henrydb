@@ -1310,6 +1310,52 @@ export class Database {
       if (ast.ifExists) return { type: 'OK', message: `Table ${ast.table} does not exist (IF EXISTS)` };
       throw new Error(`Table ${ast.table} not found`);
     }
+    
+    // Check for dependent views
+    const dependentViews = [];
+    for (const [viewName, view] of this.views) {
+      if (view.isCTE) continue; // Skip CTEs
+      // Check if the view references this table
+      const viewDef = view.sql || view.definition || '';
+      if (viewDef.toLowerCase().includes(ast.table.toLowerCase())) {
+        dependentViews.push(viewName);
+      }
+    }
+    
+    // Check for foreign key references from other tables
+    const dependentFKs = [];
+    for (const [tableName, table] of this.tables) {
+      if (tableName === ast.table) continue;
+      for (const col of table.schema) {
+        if (col.references && col.references.table === ast.table) {
+          dependentFKs.push({ table: tableName, column: col.name });
+        }
+      }
+    }
+    
+    if ((dependentViews.length > 0 || dependentFKs.length > 0) && !ast.cascade) {
+      const deps = [];
+      if (dependentViews.length > 0) deps.push(`views: ${dependentViews.join(', ')}`);
+      if (dependentFKs.length > 0) deps.push(`foreign keys: ${dependentFKs.map(fk => `${fk.table}.${fk.column}`).join(', ')}`);
+      throw new Error(`Cannot drop table ${ast.table}: dependent objects exist (${deps.join('; ')}). Use CASCADE to drop them too.`);
+    }
+    
+    // CASCADE: drop dependent objects
+    const dropped = [];
+    if (ast.cascade) {
+      for (const viewName of dependentViews) {
+        this.views.delete(viewName);
+        dropped.push(`view ${viewName}`);
+      }
+      // Remove FK references (set to null) in dependent tables
+      for (const { table: depTable, column: depCol } of dependentFKs) {
+        const table = this.tables.get(depTable);
+        const col = table.schema.find(c => c.name === depCol);
+        if (col) delete col.references;
+        dropped.push(`FK ${depTable}.${depCol}`);
+      }
+    }
+    
     // WAL: log the drop for crash recovery
     if (this.wal && this.wal.logDropTable) {
       this.wal.logDropTable(ast.table);
@@ -1320,7 +1366,9 @@ export class Database {
     }
     this.tables.delete(ast.table);
     this.catalog = this.catalog.filter(t => t.name !== ast.table);
-    return { type: 'OK', message: `Table ${ast.table} dropped` };
+    
+    const cascadeMsg = dropped.length > 0 ? ` (also dropped: ${dropped.join(', ')})` : '';
+    return { type: 'OK', message: `Table ${ast.table} dropped${cascadeMsg}` };
   }
 
   _createIndex(ast) {

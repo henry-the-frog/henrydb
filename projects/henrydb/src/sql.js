@@ -2147,7 +2147,11 @@ export function parse(sql) {
     if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
     const _dropTok = advance();
     const table = _dropTok.originalValue || _dropTok.value;
-    return { type: 'DROP_TABLE', table, ifExists };
+    let cascade = false;
+    let restrict = false;
+    if (isKeyword('CASCADE')) { advance(); cascade = true; }
+    else if (isKeyword('RESTRICT')) { advance(); restrict = true; }
+    return { type: 'DROP_TABLE', table, ifExists, cascade, restrict };
   }
 
   function parseAlter() {

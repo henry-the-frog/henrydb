@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T03:06:47.273Z",
+  "generated": "2026-04-14T03:09:27.979Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: CUME_DIST window function",
-    "completedAt": "2026-04-14T03:06:47.273Z",
-    "taskId": "T209",
-    "summary": "CUME_DIST and PERCENT_RANK window functions. Proper tie handling. CUME_DIST = (rank of last tie + 1) / N. PERCENT_RANK = (rank - 1) / (N - 1). Added _windowOrderEqual helper.",
+    "task": "HenryDB: CASCADE option for DROP TABLE",
+    "completedAt": "2026-04-14T03:09:27.979Z",
+    "taskId": "T226",
+    "summary": "DROP TABLE CASCADE: detects dependent views and FK references, blocks without CASCADE, drops dependents with CASCADE. RESTRICT is explicit no-op. Error messages list dependencies.",
     "durationMs": 180000
   },
   "schedule": {
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 239,
+    "blocksCompleted": 246,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 203,
+      "BUILD": 210,
       "MAINTAIN": 17
     }
   },
