@@ -2080,9 +2080,13 @@
     {
       "id": "T191",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: CROSS APPLY / OUTER APPLY (SQL Server syntax for LATERAL)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T03:01:07.423Z",
+      "completed": "2026-04-14T03:02:43.828Z",
+      "duration_ms": 120000,
+      "summary": "CROSS APPLY = CROSS JOIN LATERAL, OUTER APPLY = LEFT JOIN LATERAL. Parser handles APPLY keyword. Known issue: column name collision in LEFT LATERAL when right side is empty (pre-existing)."
     },
     {
       "id": "T192",

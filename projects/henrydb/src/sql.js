@@ -38,7 +38,7 @@ const KEYWORDS = new Set([
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
-  'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT',
+  'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
 ]);
 
 export function tokenize(sql) {
@@ -431,7 +431,7 @@ export function parse(sql) {
       }
 
       // JOINs
-      while (isKeyword('JOIN') || isKeyword('INNER') || isKeyword('LEFT') || isKeyword('RIGHT') || isKeyword('CROSS') || isKeyword('FULL') || isKeyword('NATURAL')) {
+      while (isKeyword('JOIN') || isKeyword('INNER') || isKeyword('LEFT') || isKeyword('RIGHT') || isKeyword('CROSS') || isKeyword('FULL') || isKeyword('NATURAL') || (isKeyword('OUTER') && tokens[pos + 1]?.value?.toUpperCase() === 'APPLY')) {
         joins.push(parseJoin());
       }
     }
@@ -1069,6 +1069,35 @@ export function parse(sql) {
   function parseJoin() {
     let joinType = 'INNER';
     let isNatural = false;
+    
+    // CROSS APPLY / OUTER APPLY (SQL Server syntax for LATERAL)
+    if (isKeyword('CROSS') && tokens[pos + 1]?.value?.toUpperCase() === 'APPLY') {
+      advance(); // CROSS
+      advance(); // APPLY
+      expect('(');
+      const subquery = parseSelect();
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = advance().value; }
+      else if (peek() && peek().type === 'IDENT' && !isKeyword('ON') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP')) {
+        alias = advance().value;
+      }
+      return { joinType: 'CROSS', lateral: true, subquery, alias, on: null };
+    }
+    if (isKeyword('OUTER') && tokens[pos + 1]?.value?.toUpperCase() === 'APPLY') {
+      advance(); // OUTER
+      advance(); // APPLY
+      expect('(');
+      const subquery = parseSelect();
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = advance().value; }
+      else if (peek() && peek().type === 'IDENT' && !isKeyword('ON') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP')) {
+        alias = advance().value;
+      }
+      return { joinType: 'LEFT', lateral: true, subquery, alias, on: { type: 'LITERAL_BOOL', value: true } };
+    }
+    
     if (isKeyword('NATURAL')) { isNatural = true; advance(); }
     if (isKeyword('LEFT')) { joinType = 'LEFT'; advance(); }
     else if (isKeyword('RIGHT')) { joinType = 'RIGHT'; advance(); }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:00:41.004Z",
+  "generated": "2026-04-14T03:02:43.864Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: HAVING without GROUP BY",
-    "completedAt": "2026-04-14T03:00:41.004Z",
-    "taskId": "T189",
-    "summary": "HAVING without GROUP BY now works. Treats entire result as one group. Uses _evalGroupCond for proper aggregate_expr resolution. Fixed _computeSingleAggregate to use _evalValue (not _evalExpr) and handle COUNT(*) string arg.",
-    "durationMs": 300000
+    "task": "HenryDB: CROSS APPLY / OUTER APPLY (SQL Server syntax for LATERAL)",
+    "completedAt": "2026-04-14T03:02:43.864Z",
+    "taskId": "T191",
+    "summary": "CROSS APPLY = CROSS JOIN LATERAL, OUTER APPLY = LEFT JOIN LATERAL. Parser handles APPLY keyword. Known issue: column name collision in LEFT LATERAL when right side is empty (pre-existing).",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 233,
+    "blocksCompleted": 234,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 197,
+      "BUILD": 198,
       "MAINTAIN": 17
     }
   },
