@@ -1387,6 +1387,28 @@
       "completed": "2026-04-14T19:37:19.649Z",
       "duration_ms": 300000,
       "summary": "sum(), product(), count() builtins. (1..5).product()=120. Pipeline: filter+map+sum. 545/545 passing."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: BOOL_AND / BOOL_OR aggregate functions",
+      "project": "henrydb",
+      "started": "2026-04-14T19:38:01.405Z",
+      "completed": "2026-04-14T19:41:27.528Z",
+      "duration_ms": 300000,
+      "summary": "BOOL_AND / BOOL_OR aggregate functions. Tests passing."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: STRING_AGG as alias for GROUP_CONCAT with different default separator",
+      "project": "henrydb",
+      "started": "2026-04-14T19:41:40.969Z",
+      "completed": "2026-04-14T19:43:51.667Z",
+      "duration_ms": 300000,
+      "summary": "STRING_AGG as PostgreSQL alias for GROUP_CONCAT. Fixed separator passing. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1894,6 +1916,14 @@
     {
       "time": "2026-04-14T19:36:30.603Z",
       "msg": "Added T127 (BUILD) after end: Monkey-lang: sum() and product() convenience builtins"
+    },
+    {
+      "time": "2026-04-14T19:38:01.171Z",
+      "msg": "Added T128 (BUILD) after end: HenryDB: BOOL_AND / BOOL_OR aggregate functions"
+    },
+    {
+      "time": "2026-04-14T19:41:40.734Z",
+      "msg": "Added T129 (BUILD) after end: HenryDB: STRING_AGG as alias for GROUP_CONCAT with different default separator"
     }
   ]
 }

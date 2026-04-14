@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T19:37:19.686Z",
+  "generated": "2026-04-14T19:43:51.703Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Monkey-lang: sum() and product() convenience builtins",
-    "completedAt": "2026-04-14T19:37:19.686Z",
-    "taskId": "T127",
-    "summary": "sum(), product(), count() builtins. (1..5).product()=120. Pipeline: filter+map+sum. 545/545 passing.",
+    "task": "HenryDB: STRING_AGG as alias for GROUP_CONCAT with different default separator",
+    "completedAt": "2026-04-14T19:43:51.703Z",
+    "taskId": "T129",
+    "summary": "STRING_AGG as PostgreSQL alias for GROUP_CONCAT. Fixed separator passing. Tests passing.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 126,
+    "blocksCompleted": 128,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 94,
+      "BUILD": 96,
       "MAINTAIN": 6,
       "EXPLORE": 17
     }
