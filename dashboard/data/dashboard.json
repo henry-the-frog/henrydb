@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T17:52:41.825Z",
+  "generated": "2026-04-14T17:56:59.029Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Monkey-lang: pipe operator (|>) for function chaining",
-    "completedAt": "2026-04-14T17:52:41.825Z",
-    "taskId": "T67",
-    "summary": "Pipe operator |> (desugars to function call at parse time) + range operator .. with proper precedence levels. Full functional pipelines work: 1..10 |> filter |> map. 528/528 passing.",
+    "task": "Monkey-lang: array comprehensions ([x * 2 for x in 1..10 if x > 3])",
+    "completedAt": "2026-04-14T17:56:59.029Z",
+    "taskId": "T69",
+    "summary": "Array comprehensions [expr for x in iter if cond]. Parser + evaluator. Works with ranges, filters, nested expressions. FizzBuzz in one line! 528/528 passing.",
     "durationMs": 600000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 66,
+    "blocksCompleted": 68,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 37,
+      "BUILD": 39,
       "MAINTAIN": 4,
       "EXPLORE": 16
     }

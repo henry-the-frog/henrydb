@@ -729,6 +729,28 @@
       "completed": "2026-04-14T17:52:41.788Z",
       "duration_ms": 600000,
       "summary": "Pipe operator |> (desugars to function call at parse time) + range operator .. with proper precedence levels. Full functional pipelines work: 1..10 |> filter |> map. 528/528 passing."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: arrow functions (fn(x) => x * 2 shorthand)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:53:33.077Z",
+      "completed": "2026-04-14T17:54:49.634Z",
+      "duration_ms": 300000,
+      "summary": "Arrow functions fn(x) => expr. Desugars to fn(x) { return expr }. Composes with map/filter/pipe/range. 528/528 passing."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: array comprehensions ([x * 2 for x in 1..10 if x > 3])",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:54:54.482Z",
+      "completed": "2026-04-14T17:56:58.991Z",
+      "duration_ms": 600000,
+      "summary": "Array comprehensions [expr for x in iter if cond]. Parser + evaluator. Works with ranges, filters, nested expressions. FizzBuzz in one line! 528/528 passing."
     }
   ],
   "focusProjects": [
@@ -996,6 +1018,14 @@
     {
       "time": "2026-04-14T17:48:34.639Z",
       "msg": "Added T67 (BUILD) after end: Monkey-lang: pipe operator (|>) for function chaining"
+    },
+    {
+      "time": "2026-04-14T17:53:26.700Z",
+      "msg": "Added T68 (BUILD) after end: Monkey-lang: arrow functions (fn(x) => x * 2 shorthand)"
+    },
+    {
+      "time": "2026-04-14T17:53:26.818Z",
+      "msg": "Added T69 (BUILD) after end: Monkey-lang: array comprehensions ([x * 2 for x in 1..10 if x > 3])"
     }
   ]
 }
