@@ -8,6 +8,9 @@
 ## Every MAINTAIN block
 - [ ] Regenerate dashboard: `node dashboard/generate.cjs`
 
+## Sweep Gate Check (afternoon heartbeats)
+- [ ] If this is a second+ session today: was a full test suite sweep done before new features? If not, flag it NOW. Don't let another session pass without sweeping.
+
 ## Periodic
 - [ ] Memory maintenance (every few days): review daily logs, update MEMORY.md, reindex
 - [ ] Blog: did I write today?

@@ -1,48 +1,30 @@
 # CURRENT.md - Session State
 
-## Status: session-ended
+## Status: active
 
 ## Current Session
-- **Session:** C (evening)
-- **Time:** 8:15 PM - 10:15 PM MDT
-- **Focus:** HenryDB feature blitz
+- **Session:** A (morning)
+- **Date:** 2026-04-14 (Tuesday)
+- **Focus:** HenryDB depth + Daniel PR review + Knowledge debt payoff
 
-## Active Project
-- **Project:** HenryDB
-- **Branch:** main
-- **State:** Very feature-complete, 40+ SQL features, 280+ tests
+## Active Task
+- **Task:** T1 THINK — Review yesterday, depth check, knowledge debt assessment
+- **Project:** HenryDB + Monkey-Lang
+- **context-files:** memory/scratch/henrydb-persistence.md, memory/scratch/depth-testing-lessons.md, memory/failures.md
 
-## Session C Accomplishments (20 features in ~2 hours)
-1. PIVOT/UNPIVOT crosstab queries
-2. EXPLAIN with PostgreSQL-style cost estimates
-3. Comma LATERAL syntax
-4. CREATE INDEX CONCURRENTLY
-5. Composite index prefix matching
-6. EXPLAIN ANALYZE I/O statistics
-7. Self-join recognition in EXPLAIN
-8. pg_catalog views (pg_tables, pg_indexes, pg_stat_user_tables)
-9. REGEXP_MATCHES/REPLACE/COUNT
-10. HAVING without GROUP BY
-11. CROSS APPLY / OUTER APPLY
-12. BOOL_AND, BOOL_OR, EVERY aggregates
-13. CUME_DIST, PERCENT_RANK window functions
-14. DROP TABLE CASCADE
-15. CYCLE clause for recursive CTEs (SQL:2016)
-16. JSON path operators (-> and ->>)
-17. NTH_VALUE window function
-18. Named WINDOW clause (WINDOW w AS ...)
-19. COMMENT ON TABLE/COLUMN
-20. UNNEST table-returning function
+## Queue Summary (14 tasks)
+T1 THINK → T2 PLAN → T3 BUILD (henrydb) → T4 MAINTAIN
+T5 THINK → T6 PLAN → T7 BUILD (monkey-lang) → T8 MAINTAIN
+T9 THINK → T10 PLAN → T11 BUILD (henrydb) → T12 MAINTAIN
+T13 EXPLORE (henrydb) → T14 EXPLORE (monkey-lang)
 
-## Bugs Fixed
-- Parser isKeyword EOF crash
-- Double-advance in tokenizer
-- HAVING without GROUP BY silently ignored
-- _evalExpr vs _evalValue confusion in aggregates
-- COUNT(*) arg format inconsistency
+## Focus Projects
+- HenryDB (depth: expression indexes or file-backed persistence)
+- Monkey-Lang (Daniel's PRs: #2 AST serializer fix, #3 JIT event instrumentation)
 
-## Notes for Next Session
-- HenryDB is very feature-complete — most "new features" turn out to already exist
-- The few remaining gaps: ARRAY[] literal tokenizer ([ and ] not handled), FILTER clause on aggregates, table-level CHECK constraints
-- Monkey-lang project doesn't exist in workspace — skip those tasks
-- Many tasks in queue are duplicates of already-implemented features
+## Notes
+- Yesterday: 261 tasks, 36+ bugs. Most productive day ever but ZERO scratch notes — knowledge debt.
+- Daniel submitted 2 PRs to monkey-lang overnight — first external contributor!
+- Neural-net CI still failing (since Apr 11) — fix during PLAN/BUILD cycle
+- No COMMITMENTS.md found — no outstanding commitments to Jordan
+- GitHub notifications: all neural-net CI failures (noise). No human PR reviews on OpenClaw PRs.
