@@ -1640,9 +1640,21 @@ export class Database {
       // ORDER BY
       if (ast.orderBy) {
         rows.sort((a, b) => {
-          for (const { column, direction } of ast.orderBy) {
+          for (const { column, direction, nulls } of ast.orderBy) {
             const av = this._resolveOrderByValue(column, a, ast);
             const bv = this._resolveOrderByValue(column, b, ast);
+            
+            // Handle nulls
+            if (av == null && bv == null) continue;
+            if (av == null) {
+              const nullFirst = nulls === 'FIRST' || (!nulls && direction === 'DESC');
+              return nullFirst ? -1 : 1;
+            }
+            if (bv == null) {
+              const nullFirst = nulls === 'FIRST' || (!nulls && direction === 'DESC');
+              return nullFirst ? 1 : -1;
+            }
+            
             const cmp = av < bv ? -1 : av > bv ? 1 : 0;
             if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
           }
@@ -1771,7 +1783,7 @@ export class Database {
     // ORDER BY
     if (ast.orderBy) {
       rows.sort((a, b) => {
-        for (const { column, direction } of ast.orderBy) {
+        for (const { column, direction, nulls } of ast.orderBy) {
           let av, bv;
           if (typeof column === 'number') {
             av = this._resolveOrderByValue(column, a, ast);
@@ -1780,7 +1792,6 @@ export class Database {
             av = this._evalValue(column, a);
             bv = this._evalValue(column, b);
           } else if (windowAliases.has(column)) {
-            // Window function alias — values stored as __window_<name>
             av = a[`__window_${column}`];
             bv = b[`__window_${column}`];
           } else if (aliasExprs.has(column)) {
@@ -1796,7 +1807,19 @@ export class Database {
             av = this._resolveColumn(column, a);
             bv = this._resolveColumn(column, b);
           }
-          const cmp = av == null && bv == null ? 0 : av == null ? 1 : bv == null ? -1 : av < bv ? -1 : av > bv ? 1 : 0;
+          
+          // Handle nulls
+          if (av == null && bv == null) continue;
+          if (av == null) {
+            const nullFirst = nulls === 'FIRST' || (!nulls && direction === 'DESC');
+            return nullFirst ? -1 : 1;
+          }
+          if (bv == null) {
+            const nullFirst = nulls === 'FIRST' || (!nulls && direction === 'DESC');
+            return nullFirst ? 1 : -1;
+          }
+          
+          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;

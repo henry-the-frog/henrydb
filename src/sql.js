@@ -39,7 +39,7 @@ const KEYWORDS = new Set([
   'LTRIM', 'RTRIM', 'INSTR', 'PRINTF',
   'USING',
   'MERGE', 'MATCHED',
-  'IGNORE',
+  'IGNORE', 'NULLS', 'FIRST', 'LAST',
 ]);
 
 export function tokenize(sql) {
@@ -968,7 +968,13 @@ export function parse(sql) {
       let dir = 'ASC';
       if (isKeyword('DESC')) { dir = 'DESC'; advance(); }
       else if (isKeyword('ASC')) { advance(); }
-      cols.push({ column, direction: dir });
+      let nulls = null; // null = default behavior
+      if (isKeyword('NULLS')) {
+        advance();
+        if (isKeyword('FIRST')) { nulls = 'FIRST'; advance(); }
+        else if (isKeyword('LAST')) { nulls = 'LAST'; advance(); }
+      }
+      cols.push({ column, direction: dir, nulls });
     } while (match(','));
     return cols;
   }
