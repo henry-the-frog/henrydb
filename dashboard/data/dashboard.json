@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T18:02:03.672Z",
+  "generated": "2026-04-14T18:07:12.288Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: UPDATE with JOIN (UPDATE t1 SET ... FROM t2 WHERE t1.id = t2.id)",
-    "completedAt": "2026-04-14T18:02:03.672Z",
-    "taskId": "T73",
-    "summary": "UPDATE ... FROM (PostgreSQL-style). Parser + engine. Joins target with source table, evaluates assignments using combined row context. Tests passing.",
+    "task": "Monkey-lang: spread operator (...arr) in function calls and array literals",
+    "completedAt": "2026-04-14T18:07:12.288Z",
+    "taskId": "T75",
+    "summary": "Spread operator ... in arrays and fn calls. Lexer/parser/evaluator. Array concat + fn arg expansion. Coexists with .. (range) and . (method). 528/528 passing.",
     "durationMs": 600000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 72,
+    "blocksCompleted": 74,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 43,
+      "BUILD": 45,
       "MAINTAIN": 4,
       "EXPLORE": 16
     }

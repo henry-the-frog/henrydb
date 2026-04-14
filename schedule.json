@@ -795,6 +795,28 @@
       "completed": "2026-04-14T18:02:03.636Z",
       "duration_ms": 600000,
       "summary": "UPDATE ... FROM (PostgreSQL-style). Parser + engine. Joins target with source table, evaluates assignments using combined row context. Tests passing."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: DELETE ... USING (multi-table DELETE)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:02:26.913Z",
+      "completed": "2026-04-14T18:05:25.546Z",
+      "duration_ms": 600000,
+      "summary": "DELETE ... USING multi-table DELETE. Parser + engine. Fixed column resolution in both UPDATE FROM and DELETE USING (table-prefixed names). Tests passing."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: spread operator (...arr) in function calls and array literals",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:05:31.681Z",
+      "completed": "2026-04-14T18:07:12.252Z",
+      "duration_ms": 600000,
+      "summary": "Spread operator ... in arrays and fn calls. Lexer/parser/evaluator. Array concat + fn arg expansion. Coexists with .. (range) and . (method). 528/528 passing."
     }
   ],
   "focusProjects": [
@@ -1086,6 +1108,14 @@
     {
       "time": "2026-04-14T17:59:53.219Z",
       "msg": "Added T73 (BUILD) after end: HenryDB: UPDATE with JOIN (UPDATE t1 SET ... FROM t2 WHERE t1.id = t2.id)"
+    },
+    {
+      "time": "2026-04-14T18:02:22.077Z",
+      "msg": "Added T74 (BUILD) after end: HenryDB: DELETE ... USING (multi-table DELETE)"
+    },
+    {
+      "time": "2026-04-14T18:02:22.196Z",
+      "msg": "Added T75 (BUILD) after end: Monkey-lang: spread operator (...arr) in function calls and array literals"
     }
   ]
 }
