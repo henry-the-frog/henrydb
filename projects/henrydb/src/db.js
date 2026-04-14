@@ -6747,6 +6747,31 @@ export class Database {
         const rVal = row[`${expr.rightAlias}.${expr.column}`] ?? row[expr.column];
         return lVal === rVal;
       }
+      case 'QUANTIFIED_COMPARE': {
+        // val op ANY/ALL (subquery)
+        const leftVal = this._evalValue(expr.left, row);
+        if (leftVal === null || leftVal === undefined) return false;
+        const subRows = this._evalSubquery(expr.subquery, row);
+        if (subRows.length === 0) {
+          return expr.quantifier === 'ALL'; // ALL with empty set is true, ANY with empty set is false
+        }
+        const compare = (left, right) => {
+          if (right === null || right === undefined) return null;
+          switch (expr.op) {
+            case 'EQ': return left === right;
+            case 'NE': return left !== right;
+            case 'LT': return left < right;
+            case 'GT': return left > right;
+            case 'LE': return left <= right;
+            case 'GE': return left >= right;
+          }
+        };
+        if (expr.quantifier === 'ANY') {
+          return subRows.some(r => compare(leftVal, Object.values(r)[0]) === true);
+        } else {
+          return subRows.every(r => compare(leftVal, Object.values(r)[0]) === true);
+        }
+      }
       case 'COMPARE': {
         let left = this._evalValue(expr.left, row);
         let right = this._evalValue(expr.right, row);

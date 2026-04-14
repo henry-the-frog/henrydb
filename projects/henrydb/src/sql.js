@@ -33,6 +33,7 @@ const KEYWORDS = new Set([
   'ANALYZE', 'RETURNING', 'USING', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE',
   'MATERIALIZED', 'REFRESH',
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE', 'PREPARE', 'DEALLOCATE',
+  'ANY', 'SOME',
   'IF', 'EXISTS',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE',
   'FULLTEXT', 'MATCH', 'AGAINST',
@@ -1446,6 +1447,14 @@ export function parse(sql) {
     const op = peek().type;
     if (['EQ', 'NE', 'LT', 'GT', 'LE', 'GE'].includes(op)) {
       advance();
+      // Check for ANY/ALL/SOME subquery operators
+      if (isKeyword('ANY') || isKeyword('SOME') || isKeyword('ALL')) {
+        const quantifier = advance().value.toUpperCase(); // ANY, SOME, or ALL
+        expect('(');
+        const subquery = parseSelect();
+        expect(')');
+        return { type: 'QUANTIFIED_COMPARE', op, left, quantifier: quantifier === 'SOME' ? 'ANY' : quantifier, subquery };
+      }
       // Right side could be a scalar subquery
       if (match('(')) {
         if (isKeyword('SELECT')) {
