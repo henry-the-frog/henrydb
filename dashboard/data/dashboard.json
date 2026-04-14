@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T18:51:15.050Z",
+  "generated": "2026-04-14T18:54:23.246Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: ILIKE (case-insensitive LIKE)",
-    "completedAt": "2026-04-14T18:51:15.050Z",
-    "taskId": "T102",
-    "summary": "ILIKE + fixed LIKE case sensitivity bug #17 (was accidentally case-insensitive). LIKE is now case-sensitive, ILIKE case-insensitive.",
-    "durationMs": 300000
+    "task": "HenryDB: REPLACE INTO (delete conflicting row + insert)",
+    "completedAt": "2026-04-14T18:54:23.246Z",
+    "taskId": "T103",
+    "summary": "INSERT OR REPLACE + INSERT OR IGNORE. Parser + engine. OR REPLACE deletes conflicting PK row, OR IGNORE skips conflicts. Tests passing.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 101,
+    "blocksCompleted": 102,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 70,
+      "BUILD": 71,
       "MAINTAIN": 5,
       "EXPLORE": 17
     }

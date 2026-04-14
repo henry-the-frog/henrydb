@@ -1113,6 +1113,24 @@
       "completed": "2026-04-14T18:51:15.013Z",
       "duration_ms": 300000,
       "summary": "ILIKE + fixed LIKE case sensitivity bug #17 (was accidentally case-insensitive). LIKE is now case-sensitive, ILIKE case-insensitive."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: REPLACE INTO (delete conflicting row + insert)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:51:53.560Z",
+      "completed": "2026-04-14T18:54:23.209Z",
+      "duration_ms": 600000,
+      "summary": "INSERT OR REPLACE + INSERT OR IGNORE. Parser + engine. OR REPLACE deletes conflicting PK row, OR IGNORE skips conflicts. Tests passing."
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey-lang: string indexing assignment (like arr[0] = 'x' but for strings)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -1520,6 +1538,14 @@
     {
       "time": "2026-04-14T18:48:53.705Z",
       "msg": "Added T102 (BUILD) after end: HenryDB: ILIKE (case-insensitive LIKE)"
+    },
+    {
+      "time": "2026-04-14T18:51:46.024Z",
+      "msg": "Added T103 (BUILD) after end: HenryDB: REPLACE INTO (delete conflicting row + insert)"
+    },
+    {
+      "time": "2026-04-14T18:51:46.144Z",
+      "msg": "Added T104 (BUILD) after end: Monkey-lang: string indexing assignment (like arr[0] = 'x' but for strings)"
     }
   ]
 }
