@@ -1420,6 +1420,28 @@
       "completed": "2026-04-14T19:45:06.412Z",
       "duration_ms": 30000,
       "summary": "int(), float(), str() conversion builtins already exist. Verified."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: scan/accumulate builtin (like reduce but keeps intermediates)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:46:19.281Z",
+      "completed": "2026-04-14T19:47:11.306Z",
+      "duration_ms": 300000,
+      "summary": "scan() + repeat() builtins. scan = running accumulation. repeat = n copies. 545/545 passing."
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: compose() and pipe_fn() function composition",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:47:28.381Z",
+      "completed": "2026-04-14T19:48:23.298Z",
+      "duration_ms": 300000,
+      "summary": "compose(), pipe_fn(), identity() builtins. Function composition in both directions. 545/545 passing."
     }
   ],
   "focusProjects": [
@@ -1939,6 +1961,14 @@
     {
       "time": "2026-04-14T19:44:34.352Z",
       "msg": "Added T130 (BUILD) after end: Monkey-lang: to_int() and to_float() conversion builtins"
+    },
+    {
+      "time": "2026-04-14T19:46:19.047Z",
+      "msg": "Added T131 (BUILD) after end: Monkey-lang: scan/accumulate builtin (like reduce but keeps intermediates)"
+    },
+    {
+      "time": "2026-04-14T19:47:28.147Z",
+      "msg": "Added T132 (BUILD) after end: Monkey-lang: compose() and pipe_fn() function composition"
     }
   ]
 }
