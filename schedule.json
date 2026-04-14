@@ -663,6 +663,24 @@
       "completed": "2026-04-14T17:37:06.827Z",
       "duration_ms": 600000,
       "summary": "F-string interpolation: lexer, parser, evaluator. f\"hello {name}\" with arbitrary expressions. 528/528 passing."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: destructuring let/const — let [a, b] = [1, 2] and let {x, y} = {x: 1, y: 2}",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:37:49.067Z",
+      "completed": "2026-04-14T17:39:30.816Z",
+      "duration_ms": 600000,
+      "summary": "Destructuring let/const: array ([a,b]=arr) and hash ({x,y}=hash). Parser, AST, evaluator. Works with const. 528/528 passing."
+    },
+    {
+      "id": "T63",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: what happens when you ALTER TABLE ADD COLUMN with generated columns and FKs?",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -906,6 +924,14 @@
     {
       "time": "2026-04-14T17:33:34.114Z",
       "msg": "Added T61 (BUILD) after end: Monkey-lang: string interpolation with f-strings (f\"hello {name}\")"
+    },
+    {
+      "time": "2026-04-14T17:37:42.218Z",
+      "msg": "Added T62 (BUILD) after end: Monkey-lang: destructuring let/const — let [a, b] = [1, 2] and let {x, y} = {x: 1, y: 2}"
+    },
+    {
+      "time": "2026-04-14T17:37:42.336Z",
+      "msg": "Added T63 (EXPLORE) after end: HenryDB: what happens when you ALTER TABLE ADD COLUMN with generated columns and FKs?"
     }
   ]
 }
