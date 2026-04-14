@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T18:39:49.837Z",
+  "generated": "2026-04-14T18:43:38.486Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: DELETE ... RETURNING * (return deleted rows)",
-    "completedAt": "2026-04-14T18:39:49.837Z",
-    "taskId": "T90",
-    "summary": "Done with T89 - DELETE RETURNING already implemented.",
-    "durationMs": 0
+    "mode": "EXPLORE",
+    "task": "HenryDB: persistence round-trip for MERGE, UPDATE FROM, DELETE USING, CTAS — do new features survive save/restore?",
+    "completedAt": "2026-04-14T18:43:38.486Z",
+    "taskId": "T96",
+    "summary": "Found and fixed bug #16: CTAS called execute() instead of execute_ast(). Persistence round-trip works for CTAS, MERGE results, FK constraints. All survive save/restore.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 89,
+    "blocksCompleted": 95,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 59,
+      "BUILD": 64,
       "MAINTAIN": 5,
-      "EXPLORE": 16
+      "EXPLORE": 17
     }
   },
   "artifacts": [

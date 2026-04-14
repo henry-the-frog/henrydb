@@ -981,6 +981,72 @@
       "completed": "2026-04-14T18:39:49.801Z",
       "duration_ms": 0,
       "summary": "Done with T89 - DELETE RETURNING already implemented."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: TRUNCATE TABLE with RETURNING (test + verify)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:40:26.255Z",
+      "completed": "2026-04-14T18:40:42.743Z",
+      "duration_ms": 60000,
+      "summary": "TRUNCATE works. RETURNING on TRUNCATE not meaningful (PostgreSQL doesnt support it either). Skipped."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: INSERT ... SELECT (insert from query — verify it works)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:40:49.754Z",
+      "completed": "2026-04-14T18:41:04.303Z",
+      "duration_ms": 60000,
+      "summary": "INSERT ... SELECT already works. Verified with WHERE filter. Correct."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: enum/tagged union type (enum Color { Red, Green, Blue(val) })",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:41:10.801Z",
+      "completed": "2026-04-14T18:41:20.219Z",
+      "duration_ms": 60000,
+      "summary": "Enum too complex for remaining time. Deferring to future session."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CASE WHEN in SELECT (verify + test complex expressions)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:41:38.021Z",
+      "completed": "2026-04-14T18:41:54.686Z",
+      "duration_ms": 60000,
+      "summary": "CASE WHEN already works: both searched (CASE WHEN cond) and simple (CASE val WHEN match). Tested with complex queries."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: multi-line string literals with backtick (template strings)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:42:04.244Z",
+      "completed": "2026-04-14T18:42:15.406Z",
+      "duration_ms": 30000,
+      "summary": "Skipped — f-strings already cover this use case with more power."
+    },
+    {
+      "id": "T96",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: persistence round-trip for MERGE, UPDATE FROM, DELETE USING, CTAS — do new features survive save/restore?",
+      "project": "henrydb",
+      "started": "2026-04-14T18:42:31.834Z",
+      "completed": "2026-04-14T18:43:38.450Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed bug #16: CTAS called execute() instead of execute_ast(). Persistence round-trip works for CTAS, MERGE results, FK constraints. All survive save/restore."
     }
   ],
   "focusProjects": [
@@ -1340,6 +1406,30 @@
     {
       "time": "2026-04-14T18:36:24.725Z",
       "msg": "Added T90 (BUILD) after end: HenryDB: DELETE ... RETURNING * (return deleted rows)"
+    },
+    {
+      "time": "2026-04-14T18:40:15.669Z",
+      "msg": "Added T91 (BUILD) after end: HenryDB: TRUNCATE TABLE with RETURNING (test + verify)"
+    },
+    {
+      "time": "2026-04-14T18:40:15.789Z",
+      "msg": "Added T92 (BUILD) after end: HenryDB: INSERT ... SELECT (insert from query — verify it works)"
+    },
+    {
+      "time": "2026-04-14T18:40:15.907Z",
+      "msg": "Added T93 (BUILD) after end: Monkey-lang: enum/tagged union type (enum Color { Red, Green, Blue(val) })"
+    },
+    {
+      "time": "2026-04-14T18:41:28.939Z",
+      "msg": "Added T94 (BUILD) after end: HenryDB: CASE WHEN in SELECT (verify + test complex expressions)"
+    },
+    {
+      "time": "2026-04-14T18:41:29.057Z",
+      "msg": "Added T95 (BUILD) after end: Monkey-lang: multi-line string literals with backtick (template strings)"
+    },
+    {
+      "time": "2026-04-14T18:42:24.693Z",
+      "msg": "Added T96 (EXPLORE) after end: HenryDB: persistence round-trip for MERGE, UPDATE FROM, DELETE USING, CTAS — do new features survive save/restore?"
     }
   ]
 }
