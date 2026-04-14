@@ -34,6 +34,8 @@ const KEYWORDS = new Set([
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
+  'GENERATED', 'ALWAYS', 'STORED', 'VIRTUAL',
+  'NO', 'ACTION',
 ]);
 
 export function tokenize(sql) {
@@ -710,22 +712,31 @@ export function parse(sql) {
   }
 
   function parsePrimaryWithConcat() {
-    let left = parsePrimary();
+    let left = parseMultiplicative();
     while (true) {
       const t = peek().type;
       if (t === 'CONCAT_OP') {
         advance();
-        const right = parsePrimary();
+        const right = parseMultiplicative();
         left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
       } else if (t === 'PLUS') {
         advance();
-        const right = parsePrimary();
+        const right = parseMultiplicative();
         left = { type: 'arith', op: '+', left, right };
       } else if (t === 'MINUS') {
         advance();
-        const right = parsePrimary();
+        const right = parseMultiplicative();
         left = { type: 'arith', op: '-', left, right };
-      } else if (t === '*') {
+      } else break;
+    }
+    return left;
+  }
+
+  function parseMultiplicative() {
+    let left = parsePrimary();
+    while (true) {
+      const t = peek().type;
+      if (t === '*') {
         advance();
         const right = parsePrimary();
         left = { type: 'arith', op: '*', left, right };
@@ -1158,6 +1169,7 @@ export function parse(sql) {
       let check = null;
       let defaultVal = null;
       let references = null;
+      let generated = null;
       // Parse column constraints
       while (true) {
         if (isKeyword('PRIMARY')) { advance(); expect('KEYWORD', 'KEY'); primaryKey = true; }
@@ -1167,6 +1179,18 @@ export function parse(sql) {
           expect('(');
           check = parseExpr();
           expect(')');
+        }
+        else if (isKeyword('GENERATED')) {
+          advance(); // GENERATED
+          expect('KEYWORD', 'ALWAYS');
+          expect('KEYWORD', 'AS');
+          expect('(');
+          const genExpr = parseExpr();
+          expect(')');
+          let mode = 'VIRTUAL'; // default
+          if (isKeyword('STORED')) { advance(); mode = 'STORED'; }
+          else if (isKeyword('VIRTUAL')) { advance(); mode = 'VIRTUAL'; }
+          generated = { expression: genExpr, mode };
         }
         else if (isKeyword('DEFAULT')) {
           advance();
@@ -1201,7 +1225,7 @@ export function parse(sql) {
         }
         else break;
       }
-      columns.push({ name, type: dataType, primaryKey, notNull, check, defaultValue: defaultVal, references });
+      columns.push({ name, type: dataType, primaryKey, notNull, check, defaultValue: defaultVal, references, generated });
     } while (match(','));
     expect(')');
     return { type: 'CREATE_TABLE', table, columns, ifNotExists, constraints: tableConstraints.length > 0 ? tableConstraints : null };

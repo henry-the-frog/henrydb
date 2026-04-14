@@ -386,6 +386,7 @@ export class Database {
       check: c.check || null,
       defaultValue: c.defaultValue ?? null,
       references: c.references || null,
+      generated: c.generated || null,
     }));
     const heap = this._heapFactory(ast.table);
     const indexes = new Map();
@@ -1102,6 +1103,9 @@ export class Database {
   }
 
   _insertRow(table, columns, values) {
+    // Validate no writes to generated columns
+    this._validateNoGeneratedColumnWrites(table, columns);
+
     let orderedValues;
     if (columns) {
       orderedValues = new Array(table.schema.length).fill(null);
@@ -1119,6 +1123,9 @@ export class Database {
     } else {
       orderedValues = values;
     }
+
+    // Compute generated columns (STORED)
+    this._computeGeneratedColumns(table, orderedValues);
 
     // Validate constraints
     this._validateConstraints(table, orderedValues);
@@ -1708,6 +1715,9 @@ export class Database {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
+    // Validate no writes to generated columns
+    this._validateNoGeneratedColumnWrites(table, ast.assignments?.map(a => a.column));
+
     let updated = 0;
     const toUpdate = [];
 
@@ -1726,6 +1736,9 @@ export class Database {
         if (colIdx === -1) throw new Error(`Column ${column} not found`);
         newValues[colIdx] = this._evalValue(value, row);
       }
+
+      // Recompute generated columns
+      this._computeGeneratedColumns(table, newValues);
 
       // Validate constraints (including FK) on the new values
       this._validateConstraints(table, newValues);
@@ -2823,6 +2836,14 @@ export class Database {
       row[schema[i].name] = values[i];
       row[`${tableAlias}.${schema[i].name}`] = values[i];
     }
+    // Compute VIRTUAL generated columns
+    for (let i = 0; i < schema.length; i++) {
+      if (schema[i].generated && schema[i].generated.mode === 'VIRTUAL') {
+        const val = this._evalValue(schema[i].generated.expression, row);
+        row[schema[i].name] = val;
+        row[`${tableAlias}.${schema[i].name}`] = val;
+      }
+    }
     return row;
   }
 
@@ -2847,6 +2868,31 @@ export class Database {
         return whereExpr.value === indexExpr.value;
       default:
         return JSON.stringify(whereExpr) === JSON.stringify(indexExpr);
+    }
+  }
+
+  // Compute values for generated columns (STORED or both modes for pre-insert)
+  _computeGeneratedColumns(table, values) {
+    for (let i = 0; i < table.schema.length; i++) {
+      const col = table.schema[i];
+      if (col.generated && col.generated.mode === 'STORED') {
+        const row = {};
+        for (let j = 0; j < table.schema.length; j++) {
+          row[table.schema[j].name] = values[j];
+        }
+        values[i] = this._evalValue(col.generated.expression, row);
+      }
+    }
+  }
+
+  // Validate that generated columns are not directly set
+  _validateNoGeneratedColumnWrites(table, columns) {
+    if (!columns) return;
+    for (const colName of columns) {
+      const col = table.schema.find(c => c.name === colName);
+      if (col && col.generated) {
+        throw new Error(`Cannot INSERT or UPDATE generated column '${colName}'`);
+      }
     }
   }
 
