@@ -412,8 +412,8 @@ export function parse(sql) {
       }
       expect(')');
 
-      // Add separator info for GROUP_CONCAT
-      const aggExtra = func === 'GROUP_CONCAT' ? { separator } : {};
+      // Add separator info for GROUP_CONCAT/STRING_AGG
+      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator } : {};
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();
