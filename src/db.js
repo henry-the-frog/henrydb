@@ -3118,7 +3118,8 @@ export class Database {
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
           case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
           case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
-          case 'GROUP_CONCAT': {
+          case 'GROUP_CONCAT':
+          case 'STRING_AGG': {
             const sep = extra.separator || ',';
             const strs = (distinct ? [...new Set(values)] : values).map(String);
             return strs.join(sep);

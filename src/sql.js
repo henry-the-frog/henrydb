@@ -25,7 +25,7 @@ const KEYWORDS = new Set([
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
-  'GROUP_CONCAT', 'SEPARATOR',
+  'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
   'CONFLICT', 'DO', 'NOTHING',
   'ANALYZE', 'RETURNING',
   'MATERIALIZED', 'REFRESH',
@@ -387,7 +387,7 @@ export function parse(sql) {
     }
 
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
-    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT', 'ARRAY_AGG', 'JSON_AGG', 'BOOL_AND', 'BOOL_OR'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
+    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT', 'STRING_AGG', 'ARRAY_AGG', 'JSON_AGG', 'BOOL_AND', 'BOOL_OR'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
       expect('(');
       let distinct = false;
@@ -403,7 +403,7 @@ export function parse(sql) {
       }
       // Optional SEPARATOR for GROUP_CONCAT
       let separator = ',';
-      if (func === 'GROUP_CONCAT' && match(',')) {
+      if ((func === 'GROUP_CONCAT' || func === 'STRING_AGG') && match(',')) {
         // SQLite-style: GROUP_CONCAT(val, ',')
         separator = advance().value;
       } else if (isKeyword('SEPARATOR')) {
