@@ -3755,6 +3755,18 @@ export class Database {
         const sep = String(this._evalValue(args[0], row));
         return args.slice(1).map(a => this._evalValue(a, row)).filter(v => v != null).map(String).join(sep);
       }
+      case 'REGEXP_REPLACE': {
+        const str = String(this._evalValue(args[0], row));
+        const pattern = String(this._evalValue(args[1], row));
+        const replacement = String(this._evalValue(args[2], row));
+        const flags = args[3] ? String(this._evalValue(args[3], row)) : 'g';
+        return str.replace(new RegExp(pattern, flags), replacement);
+      }
+      case 'REGEXP_MATCH': {
+        const str = String(this._evalValue(args[0], row));
+        const pattern = String(this._evalValue(args[1], row));
+        return new RegExp(pattern).test(str) ? 1 : 0;
+      }
       case 'COALESCE': {
         for (const arg of args) {
           const v = this._evalValue(arg, row);

@@ -40,7 +40,7 @@ const KEYWORDS = new Set([
   'USING',
   'MERGE', 'MATCHED',
   'IGNORE', 'NULLS', 'FIRST', 'LAST',
-  'GREATEST', 'LEAST', 'CONCAT_WS',
+  'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH',
 ]);
 
 export function tokenize(sql) {
@@ -459,7 +459,7 @@ export function parse(sql) {
 
     // String functions in SELECT
     if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'LTRIM', 'RTRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF', 'INSTR', 'PRINTF',
-      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS'].includes(peek().value)) {
+      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
       const args = [];
@@ -898,7 +898,7 @@ export function parse(sql) {
 
     // Built-in string/null functions
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
-      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS'].includes(t.value)) {
+      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH'].includes(t.value)) {
       const func = advance().value;
       expect('(');
       const args = [];
