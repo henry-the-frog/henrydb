@@ -635,12 +635,15 @@ export function recoverFromWAL(wal, db) {
       case WAL_TYPES.INSERT: {
         if (record.after) {
           table.heap.insert(record.after);
-          // Update indexes
+          // Update indexes (use _computeIndexKey for expression index support)
           for (const [colName, index] of table.indexes) {
-            const colIdx = table.schema.findIndex(c => c.name === colName);
-            if (colIdx >= 0) {
+            const key = db._computeIndexKey ? db._computeIndexKey(colName, record.after, table, record.tableName) : (() => {
+              const colIdx = table.schema.findIndex(c => c.name === colName);
+              return colIdx >= 0 ? record.after[colIdx] : null;
+            })();
+            if (key !== null && key !== undefined) {
               const rid = { pageId: record.pageId, slotIdx: record.slotIdx };
-              index.insert(record.after[colIdx], rid);
+              index.insert(key, rid);
             }
           }
         }
@@ -656,14 +659,16 @@ export function recoverFromWAL(wal, db) {
       }
       case WAL_TYPES.UPDATE: {
         if (record.after && record.pageId >= 0) {
-          // Delete old, insert new (same as normal update path)
           table.heap.delete(record.pageId, record.slotIdx);
           const newRid = table.heap.insert(record.after);
-          // Update indexes
+          // Update indexes (use _computeIndexKey for expression index support)
           for (const [colName, index] of table.indexes) {
-            const colIdx = table.schema.findIndex(c => c.name === colName);
-            if (colIdx >= 0) {
-              index.insert(record.after[colIdx], newRid);
+            const key = db._computeIndexKey ? db._computeIndexKey(colName, record.after, table, record.tableName) : (() => {
+              const colIdx = table.schema.findIndex(c => c.name === colName);
+              return colIdx >= 0 ? record.after[colIdx] : null;
+            })();
+            if (key !== null && key !== undefined) {
+              index.insert(key, newRid);
             }
           }
         }
