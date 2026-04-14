@@ -634,7 +634,7 @@ export class Database {
 
   _createTableAs(ast) {
     // Execute the query to get the schema and data
-    const result = this.execute(ast.query);
+    const result = this.execute_ast(ast.query);
     if (!result.rows || result.rows.length === 0) {
       // Empty result — create table with no rows but infer schema from query
       // For now, create with no columns (this is a limitation)
