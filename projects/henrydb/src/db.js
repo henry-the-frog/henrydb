@@ -6946,6 +6946,27 @@ export class Database {
           return current === undefined ? null : (typeof current === 'object' ? JSON.stringify(current) : current);
         } catch { return null; }
       }
+      case 'JSON_EXTRACT_TEXT': {
+        // Same as JSON_EXTRACT but always returns text/string
+        const json = this._evalValue(args[0], row);
+        const path = this._evalValue(args[1], row);
+        if (json == null) return null;
+        try {
+          const obj = typeof json === 'string' ? JSON.parse(json) : json;
+          const parts = path.replace(/^\$\.?/, '').split('.').filter(Boolean);
+          let current = obj;
+          for (const part of parts) {
+            const arrMatch = part.match(/^(\w*)\[(\d+)\]$/);
+            if (arrMatch) {
+              if (arrMatch[1]) current = current[arrMatch[1]];
+              current = current?.[parseInt(arrMatch[2])];
+            } else {
+              current = current?.[part];
+            }
+          }
+          return current === undefined ? null : String(current);
+        } catch { return null; }
+      }
       case 'JSON_SET': {
         const json = this._evalValue(args[0], row);
         const path = this._evalValue(args[1], row);

@@ -99,6 +99,10 @@ export function tokenize(sql) {
     }
     if (src[i] === '*') { tokens.push({ type: '*' }); i++; continue; }
     if (src[i] === '+') { tokens.push({ type: 'PLUS' }); i++; continue; }
+    if (src[i] === '-' && src[i + 1] === '>' && src[i + 2] === '>') { tokens.push({ type: 'JSON_ARROW_TEXT' }); i += 3; continue; }
+    if (src[i] === '-' && src[i + 1] === '>') { tokens.push({ type: 'JSON_ARROW' }); i += 2; continue; }
+    if (src[i] === '#' && src[i + 1] === '>' && src[i + 2] === '>') { tokens.push({ type: 'JSON_PATH_TEXT' }); i += 3; continue; }
+    if (src[i] === '#' && src[i + 1] === '>') { tokens.push({ type: 'JSON_PATH' }); i += 2; continue; }
     if (src[i] === '-' && (i + 1 < src.length) && /[0-9]/.test(src[i+1]) && (tokens.length === 0 || ['(', ',', 'EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'PLUS', 'MINUS', 'KEYWORD'].includes(tokens[tokens.length-1]?.type))) {
       // Negative number literal
       let num = '-';
@@ -1057,6 +1061,22 @@ export function parse(sql) {
       return { type: 'expression', expr: left, alias };
     }
     let alias = null;
+    
+    // Check for JSON operators after column name
+    if (peek() && ['JSON_ARROW', 'JSON_ARROW_TEXT', 'JSON_PATH', 'JSON_PATH_TEXT'].includes(peek().type)) {
+      let left = { type: 'column_ref', name: col };
+      while (peek() && ['JSON_ARROW', 'JSON_ARROW_TEXT', 'JSON_PATH', 'JSON_PATH_TEXT'].includes(peek().type)) {
+        const opType = advance().type;
+        const right = parsePrimary();
+        const rightVal = right.type === 'literal' ? right.value : (right.name || right.value);
+        const func = opType === 'JSON_ARROW_TEXT' || opType === 'JSON_PATH_TEXT' ? 'JSON_EXTRACT_TEXT' : 'JSON_EXTRACT';
+        const path = opType.includes('PATH') ? rightVal : `$.${rightVal}`;
+        left = { type: 'function', func, args: [left, { type: 'literal', value: path }] };
+      }
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr: left, alias };
+    }
+    
     if (isKeyword('AS')) { advance(); alias = readAlias(); }
     // NUMBER and STRING tokens without operators should be literals, not column refs
     if (colTok.type === 'NUMBER' || colTok.type === 'STRING') {
@@ -1231,7 +1251,7 @@ export function parse(sql) {
       pos--;
     }
 
-    const left = parsePrimaryWithConcat();
+    let left = parsePrimaryWithConcat();
 
     // NOT IN / NOT LIKE / NOT BETWEEN
     if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'IN') {
@@ -1310,6 +1330,16 @@ export function parse(sql) {
       }
       expect('KEYWORD', 'NULL');
       return { type: 'IS_NULL', left };
+    }
+
+    // JSON operators: ->  ->>  #>  #>>
+    while (peek() && ['JSON_ARROW', 'JSON_ARROW_TEXT', 'JSON_PATH', 'JSON_PATH_TEXT'].includes(peek().type)) {
+      const opType = advance().type;
+      const right = parsePrimary();
+      const rightVal = right.type === 'literal' ? right.value : (right.name || right.value);
+      const func = opType === 'JSON_ARROW_TEXT' || opType === 'JSON_PATH_TEXT' ? 'JSON_EXTRACT_TEXT' : 'JSON_EXTRACT';
+      const path = opType.includes('PATH') ? rightVal : `$.${rightVal}`;
+      left = { type: 'function', func, args: [left, { type: 'literal', value: path }] };
     }
 
     if (isKeyword('BETWEEN')) {

@@ -2746,6 +2746,28 @@
       "completed": "2026-04-14T03:16:32.943Z",
       "duration_ms": 300000,
       "summary": "CYCLE clause for recursive CTEs (SQL:2016). Tracks visited rows by cycle columns, marks is_cycle=true when cycle detected, stops recursion. SEARCH clause parsing added but execution deferred. 25 CTE tests pass."
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: GROUPING SETS / ROLLUP / CUBE",
+      "project": "henrydb",
+      "started": "2026-04-14T03:16:59.038Z",
+      "completed": "2026-04-14T03:17:26.668Z",
+      "duration_ms": 0,
+      "summary": "Already implemented — ROLLUP, CUBE, GROUPING SETS all working correctly with NULL markers for subtotals."
+    },
+    {
+      "id": "T254",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: JSON path operators (->  ->>  #>  #>>) for JSONB columns",
+      "project": "henrydb",
+      "started": "2026-04-14T03:18:33.486Z",
+      "completed": "2026-04-14T03:23:04.617Z",
+      "duration_ms": 300000,
+      "summary": "JSON path operators: -> (get as JSON), ->> (get as text), chained (a -> b -> c). Works in SELECT, WHERE, ORDER BY. Parser handles JSON_ARROW, JSON_ARROW_TEXT tokens. 86 SQL/JSON tests pass."
     }
   ],
   "focusProjects": [
@@ -3749,6 +3771,14 @@
     {
       "time": "2026-04-14T03:13:36.157Z",
       "msg": "Added T252 (BUILD) after end: HenryDB: SEARCH DEPTH/BREADTH FIRST and CYCLE clause for recursive CTEs (SQL:2016)"
+    },
+    {
+      "time": "2026-04-14T03:16:53.483Z",
+      "msg": "Added T253 (BUILD) after end: HenryDB: GROUPING SETS / ROLLUP / CUBE"
+    },
+    {
+      "time": "2026-04-14T03:18:27.916Z",
+      "msg": "Added T254 (BUILD) after end: HenryDB: JSON path operators (->  ->>  #>  #>>) for JSONB columns"
     }
   ]
 }
