@@ -80,15 +80,45 @@
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-14T14:46:40.715Z",
+      "completed": "2026-04-14T14:46:57.189Z",
+      "duration_ms": 30000,
+      "summary": "Depth check passes: 2 bugs found, 2 genuine learnings. Not in breadth spiral. Daniel PR review next priority."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Daniel PR review strategy and integration testing plan",
-      "task": null
+      "task": null,
+      "started": "2026-04-14T14:47:07.777Z",
+      "completed": "2026-04-14T14:47:39.242Z",
+      "duration_ms": 30000,
+      "summary": "2 Daniel PRs open: #2 AST serializer fix, #3 JIT event instrumentation. Planned 2 review BUILD tasks."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Review Daniel PR #2: AST toString() round-trip fix — code review + run tests",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-14T14:47:54.131Z",
+      "completed": "2026-04-14T14:54:56.785Z",
+      "duration_ms": 600000,
+      "summary": "Reviewed and merged Daniel PR #2 (AST round-trip toString). Applied manually due to path mismatch (fork uses projects/monkey-lang/ vs our flat src/). Adapted tests for our parser features, added back 5 missing AST classes. 50 AST round-trip tests passing. Approved, merged as 66170d6b, closed PR."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Review Daniel PR #3: JIT event instrumentation — code review + integration test",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-14T14:55:23.281Z",
+      "completed": "2026-04-14T14:56:08.788Z",
+      "duration_ms": 300000,
+      "summary": "Reviewed Daniel PR #3 (JIT event instrumentation). Cannot merge — our repo has no JIT compiler (src/jit.js). Left comment explaining options. PR stays open pending JIT port."
     },
     {
       "id": "T7",
@@ -215,6 +245,10 @@
     {
       "time": "2026-04-14T14:16:32.364Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-14T14:47:30.220Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
