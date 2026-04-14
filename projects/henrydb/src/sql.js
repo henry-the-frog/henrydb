@@ -24,7 +24,7 @@ const KEYWORDS = new Set([
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'RANGE', 'CURRENT',
-  'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
+  'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET', 'TEMPORARY', 'TEMP',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
   'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG',
@@ -1835,6 +1835,8 @@ export function parse(sql) {
       const query = parseSelect();
       return { type: 'CREATE_MATVIEW', name, query };
     }
+    let temporary = false;
+    if (isKeyword('TEMPORARY') || isKeyword('TEMP')) { advance(); temporary = true; }
     expect('KEYWORD', 'TABLE');
     let ifNotExists = false;
     if (isKeyword('IF')) { advance(); expect('KEYWORD', 'NOT'); expect('KEYWORD', 'EXISTS'); ifNotExists = true; }
@@ -1945,7 +1947,7 @@ export function parse(sql) {
       const engineTok = advance();
       engine = (engineTok.originalValue || engineTok.value).toUpperCase();
     }
-    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine };
+    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine, temporary };
   }
 
   function parseCreateIndex(unique) {

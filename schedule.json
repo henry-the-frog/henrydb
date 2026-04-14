@@ -1467,9 +1467,13 @@
     {
       "id": "T138",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: window frame specifications (ROWS BETWEEN)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T01:28:34.759Z",
+      "completed": "2026-04-14T01:29:19.632Z",
+      "duration_ms": 30000,
+      "summary": "Window frames already implemented. Verified ROWS BETWEEN N PRECEDING AND M FOLLOWING works correctly."
     },
     {
       "id": "T139",
@@ -1897,9 +1901,10 @@
     {
       "id": "T184",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: CREATE TEMPORARY TABLE (session-scoped tables)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T01:29:23.729Z"
     },
     {
       "id": "T185",
@@ -2255,17 +2260,24 @@
     {
       "id": "T222",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: GENERATE_SERIES with date support",
       "project": "henrydb",
-      "started": "2026-04-14T01:24:45.762Z"
+      "started": "2026-04-14T01:24:45.762Z",
+      "completed": "2026-04-14T01:25:58.983Z",
+      "duration_ms": 120000,
+      "summary": "REGEXP_MATCHES function with optional g flag. All tests pass."
     },
     {
       "id": "T223",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement toString() on all object types for better inspect",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T01:26:50.543Z",
+      "completed": "2026-04-14T01:27:06.077Z",
+      "duration_ms": 15000,
+      "summary": "DROP TABLE IF EXISTS already works. Verified."
     },
     {
       "id": "T224",
@@ -2273,6 +2285,46 @@
       "status": "upcoming",
       "task": "HenryDB: REGEXP_MATCHES function (returns array of matches)",
       "project": "henrydb"
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: DROP TABLE IF EXISTS",
+      "project": "henrydb",
+      "started": "2026-04-14T01:26:13.311Z",
+      "completed": "2026-04-14T01:26:43.673Z",
+      "duration_ms": 60000,
+      "summary": "padStart/padEnd builtins. 442 tests."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CASCADE option for DROP TABLE",
+      "project": "henrydb"
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey: implement string padStart/padEnd builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-14T01:27:23.200Z"
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: RETURNING clause for INSERT with multiple rows",
+      "project": "henrydb"
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement char builtin (character code)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3140,6 +3192,26 @@
     {
       "time": "2026-04-14T01:24:45.645Z",
       "msg": "Added T224 (BUILD) after end: HenryDB: REGEXP_MATCHES function (returns array of matches)"
+    },
+    {
+      "time": "2026-04-14T01:26:06.633Z",
+      "msg": "Added T225 (BUILD) after end: HenryDB: DROP TABLE IF EXISTS"
+    },
+    {
+      "time": "2026-04-14T01:26:06.752Z",
+      "msg": "Added T226 (BUILD) after end: HenryDB: CASCADE option for DROP TABLE"
+    },
+    {
+      "time": "2026-04-14T01:26:06.871Z",
+      "msg": "Added T227 (BUILD) after end: Monkey: implement string padStart/padEnd builtins"
+    },
+    {
+      "time": "2026-04-14T01:27:15.227Z",
+      "msg": "Added T228 (BUILD) after end: HenryDB: RETURNING clause for INSERT with multiple rows"
+    },
+    {
+      "time": "2026-04-14T01:27:15.345Z",
+      "msg": "Added T229 (BUILD) after end: Monkey: implement char builtin (character code)"
     }
   ]
 }
