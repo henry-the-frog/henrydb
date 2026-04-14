@@ -180,15 +180,44 @@ export class Database {
       }
       
       // Rebuild indexes
+      const indexMetaMap = tableData.indexMeta || {};
       for (const colName of tableData.indexes || []) {
-        const colIdx = schema.findIndex(c => c.name === colName);
-        if (colIdx >= 0) {
-          const index = new BPlusTree(32);
+        const meta = indexMetaMap[colName];
+        const isUnique = meta?.unique || false;
+        const index = new BPlusTree(32, { unique: isUnique });
+        
+        if (meta?.expressions && meta.expressions.some(e => e !== null)) {
+          // Expression index: evaluate expressions for keys
           for (const { pageId, slotIdx, values } of heap.scan()) {
-            index.insert(values[colIdx], { pageId, slotIdx });
+            const row = {};
+            for (let j = 0; j < schema.length; j++) row[schema[j].name] = values[j];
+            let key;
+            if (meta.expressions.length === 1) {
+              const expr = meta.expressions[0];
+              key = db._evalValue(expr, row);
+            } else {
+              key = makeCompositeKey(meta.expressions.map((expr, i) => {
+                if (expr) return db._evalValue(expr, row);
+                return values[schema.findIndex(s => s.name === meta.columns[i])];
+              }));
+            }
+            if (key !== null && key !== undefined) {
+              index.insert(key, { pageId, slotIdx });
+            }
           }
-          indexes.set(colName, index);
+        } else {
+          // Regular column index
+          const colIdx = schema.findIndex(c => c.name === colName);
+          if (colIdx >= 0) {
+            for (const { pageId, slotIdx, values } of heap.scan()) {
+              const key = values[colIdx];
+              if (key !== null && key !== undefined) {
+                index.insert(key, { pageId, slotIdx });
+              }
+            }
+          }
         }
+        indexes.set(colName, index);
       }
       
       // Restore index metadata
