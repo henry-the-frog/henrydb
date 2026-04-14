@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T17:21:00.759Z",
+  "generated": "2026-04-14T17:25:33.174Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Monkey-lang: comprehensive tree-walker vs VM parity test — find all features that work in one but not the other",
-    "completedAt": "2026-04-14T17:21:00.759Z",
-    "taskId": "T55",
-    "summary": "Comprehensive tree-walker/VM parity: 32/35 match. 3 mismatches found: (1) for loop returns last loop body value instead of post-loop expression, (2) while loop returns null instead of post-loop expression, (3) compound assignment mismatch. All are compiler bugs in loop handling.",
-    "durationMs": 300000
+    "task": "HenryDB: performance benchmarks — how fast is insert/select/join with 10K+ rows?",
+    "completedAt": "2026-04-14T17:25:33.174Z",
+    "taskId": "T58",
+    "summary": "HenryDB benchmarks: INSERT 10K=7.8s (1280/s), index scan=4ms, expr index=2ms, COUNT(*)=174ms, GROUP BY=120ms, JOIN+GROUP BY=335ms. Insert is slow due to per-statement parsing. Reads are fast. Reasonable for educational DB.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 54,
+    "blocksCompleted": 57,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 27,
+      "BUILD": 29,
       "MAINTAIN": 4,
-      "EXPLORE": 14
+      "EXPLORE": 15
     }
   },
   "artifacts": [

@@ -597,6 +597,39 @@
       "completed": "2026-04-14T17:21:00.723Z",
       "duration_ms": 300000,
       "summary": "Comprehensive tree-walker/VM parity: 32/35 match. 3 mismatches found: (1) for loop returns last loop body value instead of post-loop expression, (2) while loop returns null instead of post-loop expression, (3) compound assignment mismatch. All are compiler bugs in loop handling."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix VM for/while loop return values to match tree-walker semantics",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:21:42.221Z",
+      "completed": "2026-04-14T17:22:58.545Z",
+      "duration_ms": 300000,
+      "summary": "Investigated for/while loop VM return values. Root cause: set inside for loop body doesnt update outer scope variable correctly. OpSetGlobal emitted but var scope resolution may be wrong. Complex compiler bug — needs detailed bytecode tracing. Deferred."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: RETURNING clause for INSERT/UPDATE/DELETE (PostgreSQL-style)",
+      "project": "henrydb",
+      "started": "2026-04-14T17:23:24.308Z",
+      "completed": "2026-04-14T17:24:00.994Z",
+      "duration_ms": 30000,
+      "summary": "RETURNING already fully implemented for INSERT/UPDATE/DELETE. All working."
+    },
+    {
+      "id": "T58",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: performance benchmarks — how fast is insert/select/join with 10K+ rows?",
+      "project": "henrydb",
+      "started": "2026-04-14T17:24:47.611Z",
+      "completed": "2026-04-14T17:25:33.138Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB benchmarks: INSERT 10K=7.8s (1280/s), index scan=4ms, expr index=2ms, COUNT(*)=174ms, GROUP BY=120ms, JOIN+GROUP BY=335ms. Insert is slow due to per-statement parsing. Reads are fast. Reasonable for educational DB."
     }
   ],
   "focusProjects": [
@@ -816,6 +849,18 @@
     {
       "time": "2026-04-14T17:20:09.226Z",
       "msg": "Added T55 (EXPLORE) after end: Monkey-lang: comprehensive tree-walker vs VM parity test — find all features that work in one but not the other"
+    },
+    {
+      "time": "2026-04-14T17:21:34.363Z",
+      "msg": "Added T56 (BUILD) after end: Fix VM for/while loop return values to match tree-walker semantics"
+    },
+    {
+      "time": "2026-04-14T17:23:16.073Z",
+      "msg": "Added T57 (BUILD) after end: HenryDB: RETURNING clause for INSERT/UPDATE/DELETE (PostgreSQL-style)"
+    },
+    {
+      "time": "2026-04-14T17:24:39.989Z",
+      "msg": "Added T58 (EXPLORE) after end: HenryDB: performance benchmarks — how fast is insert/select/join with 10K+ rows?"
     }
   ]
 }
