@@ -696,6 +696,24 @@
       "completed": "2026-04-14T17:41:34.047Z",
       "duration_ms": 60000,
       "summary": "map/filter/reduce already exist and work. Verified functional composition with new features (destructuring + f-strings + map/filter/reduce)."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey-lang: range operator (1..5 produces [1, 2, 3, 4, 5])",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: string methods (split, join, trim, startsWith, endsWith)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:43:45.337Z",
+      "completed": "2026-04-14T17:46:14.813Z",
+      "duration_ms": 300000,
+      "summary": "Range operator 1..5 → [1,2,3,4,5]. Forward+reverse. Composes with map/filter/reduce. 528/528 passing."
     }
   ],
   "focusProjects": [
@@ -951,6 +969,14 @@
     {
       "time": "2026-04-14T17:40:44.085Z",
       "msg": "Added T64 (BUILD) after end: Monkey-lang: map, filter, reduce builtins for functional programming"
+    },
+    {
+      "time": "2026-04-14T17:43:37.428Z",
+      "msg": "Added T65 (BUILD) after end: Monkey-lang: range operator (1..5 produces [1, 2, 3, 4, 5])"
+    },
+    {
+      "time": "2026-04-14T17:43:37.547Z",
+      "msg": "Added T66 (BUILD) after end: Monkey-lang: string methods (split, join, trim, startsWith, endsWith)"
     }
   ]
 }
