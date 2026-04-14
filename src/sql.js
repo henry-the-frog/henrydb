@@ -814,6 +814,13 @@ export function parse(sql) {
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
+    // Parenthesized expression
+    if (t.type === '(') {
+      advance();
+      const expr = parsePrimaryWithConcat();
+      expect(')');
+      return expr;
+    }
     // MATCH(column) AGAINST('text')
     if (t.type === 'KEYWORD' && t.value === 'MATCH') {
       advance(); // MATCH
