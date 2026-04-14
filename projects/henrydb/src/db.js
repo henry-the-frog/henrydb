@@ -2102,6 +2102,13 @@ export class Database {
   }
 
   _select(ast) {
+    // Handle information_schema queries
+    if (ast.from) {
+      const tableName = (ast.from.table || '').toLowerCase();
+      if (tableName.startsWith('information_schema.')) {
+        return this._selectInfoSchema(ast);
+      }
+    }
     // Handle CTEs — register as temporary views
     const tempViews = [];
     if (ast.ctes) {
@@ -3752,6 +3759,73 @@ export class Database {
     }
 
     return { type: 'OK', message: `${ast.table} truncated`, count };
+  }
+
+  _selectInfoSchema(ast) {
+    const tableName = (ast.from.table || '').toLowerCase().replace('information_schema.', '');
+    
+    if (tableName === 'tables' || tableName === 'information_schema.tables') {
+      const rows = [];
+      for (const [name, table] of this.tables) {
+        rows.push({
+          table_catalog: 'henrydb',
+          table_schema: 'public',
+          table_name: name,
+          table_type: 'BASE TABLE',
+          column_count: table.schema.length,
+        });
+      }
+      for (const [name] of this.views) {
+        rows.push({
+          table_catalog: 'henrydb',
+          table_schema: 'public',
+          table_name: name,
+          table_type: 'VIEW',
+          column_count: 0,
+        });
+      }
+      let filtered = rows;
+      if (ast.where) {
+        filtered = rows.filter(r => this._evalExpr(ast.where, r));
+      }
+      if (ast.orderBy) {
+        filtered.sort((a, b) => {
+          for (const o of ast.orderBy) {
+            const col = typeof o.column === 'string' ? o.column : o.column.name;
+            if (a[col] < b[col]) return o.direction === 'DESC' ? 1 : -1;
+            if (a[col] > b[col]) return o.direction === 'DESC' ? -1 : 1;
+          }
+          return 0;
+        });
+      }
+      return { rows: filtered, columns: Object.keys(rows[0] || {}) };
+    }
+
+    if (tableName === 'columns' || tableName === 'information_schema.columns') {
+      const rows = [];
+      for (const [tname, table] of this.tables) {
+        for (let i = 0; i < table.schema.length; i++) {
+          const col = table.schema[i];
+          rows.push({
+            table_catalog: 'henrydb',
+            table_schema: 'public',
+            table_name: tname,
+            column_name: col.name,
+            ordinal_position: i + 1,
+            data_type: col.type || 'TEXT',
+            is_nullable: col.notNull ? 'NO' : 'YES',
+            column_default: col.defaultValue,
+          });
+        }
+      }
+      let filtered = rows;
+      if (ast.where) {
+        filtered = rows.filter(r => this._evalExpr(ast.where, r));
+      }
+      return { rows: filtered, columns: Object.keys(rows[0] || {}) };
+    }
+
+    throw new Error(`Unknown information_schema table: ${tableName}`);
   }
 
   _createSequence(ast) {
