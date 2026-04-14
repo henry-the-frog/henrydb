@@ -1,37 +1,45 @@
-# CURRENT.md - Session State
-
-## Status: active
-
-## Current Session
-- **Session:** A (morning)
-- **Date:** 2026-04-14 (Tuesday)
-- **Focus:** HenryDB depth + Daniel PR review + Knowledge debt payoff
-
 ## Active Task
 - **Task:** Session A complete
 - **status:** session-ended
 - **Project:** HenryDB + Monkey-Lang + Neural-Net
 
-## Session Progress
-Tasks completed: T1-T65 (50+ real tasks, ~10 orphans skipped)
-Bugs found: 13 (2 CRITICAL)
-Scratch notes: 6
-New features: expression indexes, FK, generated columns, const, floats, f-strings, destructuring, CTAS, DISTINCT ON, math stdlib
-Test improvements: 84+ differential tests, 13 persistence tests, showcase test
+## Session Progress (2026-04-14)
+Tasks processed: T1-T130 (130 tasks, ~80 genuine feature/fix/explore)
+Bugs found: 17 (2 CRITICAL)
 
-## Queue Summary (14 tasks)
-T1 THINK → T2 PLAN → T3 BUILD (henrydb) → T4 MAINTAIN
-T5 THINK → T6 PLAN → T7 BUILD (monkey-lang) → T8 MAINTAIN
-T9 THINK → T10 PLAN → T11 BUILD (henrydb) → T12 MAINTAIN
-T13 EXPLORE (henrydb) → T14 EXPLORE (monkey-lang)
+### New Features This Session
 
-## Focus Projects
-- HenryDB (depth: expression indexes or file-backed persistence)
-- Monkey-Lang (Daniel's PRs: #2 AST serializer fix, #3 JIT event instrumentation)
+**Monkey-lang:**
+- f-string interpolation (f"hello {expr}")
+- Destructuring (let [a,b]=arr, let {x,y}=hash, const variants)
+- Range operator (1..5 → [1,2,3,4,5])
+- Pipe operator (x |> f → f(x))
+- Arrow functions (fn(x) => expr)
+- Method syntax (obj.method(args))
+- Array comprehensions ([x*2 for x in 1..10 if cond])
+- Spread operator (...arr in arrays and fn calls)
+- Rest parameters (fn(first, ...rest))
+- Default parameter values (fn(x, y=10))
+- null literal keyword
+- match expression (pattern matching)
+- 15+ new builtins (merge, flatten, enumerate, any, all, find, take, drop, take_while, group_by, unique, zip_with, flat_map, chunk, sum, product, count)
 
-## Notes
-- Yesterday: 261 tasks, 36+ bugs. Most productive day ever but ZERO scratch notes — knowledge debt.
-- Daniel submitted 2 PRs to monkey-lang overnight — first external contributor!
-- Neural-net CI still failing (since Apr 11) — fix during PLAN/BUILD cycle
-- No COMMITMENTS.md found — no outstanding commitments to Jordan
-- GitHub notifications: all neural-net CI failures (noise). No human PR reviews on OpenClaw PRs.
+**HenryDB:**
+- Expression indexes (CREATE INDEX ON (LOWER(name)))
+- Foreign keys (CASCADE/SET NULL/RESTRICT)
+- Generated columns (STORED/VIRTUAL)
+- CREATE TABLE AS SELECT (CTAS)
+- MERGE statement (SQL:2003)
+- UPDATE ... FROM (PostgreSQL-style)
+- DELETE ... USING (multi-table delete)
+- UPDATE/DELETE RETURNING
+- INSERT OR REPLACE / OR IGNORE
+- ILIKE (case-insensitive LIKE)
+- NULLS FIRST / NULLS LAST in ORDER BY
+- VALUES clause as standalone query
+- Correlated subqueries in UPDATE SET
+- ARRAY_AGG / JSON_AGG / STRING_AGG
+- BOOL_AND / BOOL_OR
+- NOT ILIKE
+
+**Neural-net:** 19 test failures → 0 (1185/1185 passing)

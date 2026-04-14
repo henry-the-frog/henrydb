@@ -1409,6 +1409,17 @@
       "completed": "2026-04-14T19:43:51.667Z",
       "duration_ms": 300000,
       "summary": "STRING_AGG as PostgreSQL alias for GROUP_CONCAT. Fixed separator passing. Tests passing."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: to_int() and to_float() conversion builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:44:34.587Z",
+      "completed": "2026-04-14T19:45:06.412Z",
+      "duration_ms": 30000,
+      "summary": "int(), float(), str() conversion builtins already exist. Verified."
     }
   ],
   "focusProjects": [
@@ -1924,6 +1935,10 @@
     {
       "time": "2026-04-14T19:41:40.734Z",
       "msg": "Added T129 (BUILD) after end: HenryDB: STRING_AGG as alias for GROUP_CONCAT with different default separator"
+    },
+    {
+      "time": "2026-04-14T19:44:34.352Z",
+      "msg": "Added T130 (BUILD) after end: Monkey-lang: to_int() and to_float() conversion builtins"
     }
   ]
 }
