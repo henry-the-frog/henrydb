@@ -167,6 +167,7 @@ export function parse(sql) {
   // SELECT or WITH
   if (isKeyword('WITH')) return parseWith();
   if (isKeyword('SELECT')) return parseSelect();
+  if (isKeyword('VALUES') && !isKeyword('INSERT')) return parseValuesClause();
   if (isKeyword('INSERT')) return parseInsert();
   if (isKeyword('UPDATE')) return parseUpdate();
   if (isKeyword('DELETE')) return parseDelete();
@@ -1114,6 +1115,21 @@ export function parse(sql) {
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     return { type: 'DELETE', table, where, using };
+  }
+
+  function parseValuesClause() {
+    advance(); // VALUES
+    const rows = [];
+    do {
+      expect('(');
+      const values = [];
+      do {
+        values.push(parsePrimaryWithConcat());
+      } while (match(','));
+      expect(')');
+      rows.push(values);
+    } while (match(','));
+    return { type: 'VALUES_QUERY', rows };
   }
 
   function parseMerge() {

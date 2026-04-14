@@ -404,6 +404,7 @@ export class Database {
       case 'UPDATE': return this._update(ast);
       case 'DELETE': return this._delete(ast);
       case 'MERGE': return this._merge(ast);
+      case 'VALUES_QUERY': return this._valuesQuery(ast);
       case 'TRUNCATE': return this._truncate(ast);
       case 'SHOW_TABLES': return this._showTables();
       case 'DESCRIBE': return this._describe(ast);
@@ -662,6 +663,18 @@ export class Database {
     }
     
     return { type: 'OK', message: `Table ${ast.table} created with ${result.rows.length} rows` };
+  }
+
+  _valuesQuery(ast) {
+    const rows = [];
+    for (const valRow of ast.rows) {
+      const row = {};
+      for (let i = 0; i < valRow.length; i++) {
+        row[`column${i + 1}`] = this._evalValue(valRow[i], {});
+      }
+      rows.push(row);
+    }
+    return { type: 'ROWS', rows };
   }
 
   _merge(ast) {
