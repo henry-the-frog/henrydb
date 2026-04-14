@@ -393,8 +393,30 @@
     {
       "id": "T37",
       "mode": "THINK",
+      "status": "done",
+      "task": "Depth check #2: review bugs found, learnings captured, assess breadth vs depth",
+      "started": "2026-04-14T16:09:32.815Z",
+      "completed": "2026-04-14T16:09:52.889Z",
+      "duration_ms": 60000,
+      "summary": "Depth check #2 passes. 8 bugs in 30 tasks. 6 scratch notes. Every EXPLORE found genuine bugs. Not in breadth spiral. Continue HenryDB depth work."
+    },
+    {
+      "id": "T38",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Full HenryDB test sweep: run ALL test files, triage failures",
+      "project": "henrydb",
+      "started": "2026-04-14T16:10:29.709Z",
+      "completed": "2026-04-14T16:33:55.377Z",
+      "duration_ms": 600000,
+      "summary": "Full test sweep: 327 files, ~11 failing (3.4%). Fixed ORDER BY column position regression from parseExpr change. Most failures pre-existing (SSI, cuckoo hash, catalog import). sql-standard-compliance now passes."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Depth check #2: review bugs found, learnings captured, assess breadth vs depth"
+      "task": "HenryDB: UPSERT (INSERT ... ON CONFLICT DO UPDATE SET ...)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -542,6 +564,14 @@
     {
       "time": "2026-04-14T16:02:47.265Z",
       "msg": "Added T37 (THINK) after end: Depth check #2: review bugs found, learnings captured, assess breadth vs depth"
+    },
+    {
+      "time": "2026-04-14T16:10:10.734Z",
+      "msg": "Added T38 (MAINTAIN) after end: Full HenryDB test sweep: run ALL test files, triage failures"
+    },
+    {
+      "time": "2026-04-14T16:10:10.851Z",
+      "msg": "Added T39 (BUILD) after end: HenryDB: UPSERT (INSERT ... ON CONFLICT DO UPDATE SET ...)"
     }
   ]
 }

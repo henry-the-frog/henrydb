@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T16:08:38.907Z",
+  "generated": "2026-04-14T16:33:55.413Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: DISTINCT ON (column) for deduplication",
-    "completedAt": "2026-04-14T16:08:38.907Z",
-    "taskId": "T36",
-    "summary": "DISTINCT ON (column) implemented. Also found/fixed ACTION keyword breaking action column names. All tests passing.",
-    "durationMs": 300000
+    "mode": "MAINTAIN",
+    "task": "Full HenryDB test sweep: run ALL test files, triage failures",
+    "completedAt": "2026-04-14T16:33:55.413Z",
+    "taskId": "T38",
+    "summary": "Full test sweep: 327 files, ~11 failing (3.4%). Fixed ORDER BY column position regression from parseExpr change. Most failures pre-existing (SSI, cuckoo hash, catalog import). sql-standard-compliance now passes.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,13 +3926,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 35,
+    "blocksCompleted": 37,
     "blocksTotal": 24,
     "modeDistribution": {
-      "THINK": 4,
+      "THINK": 5,
       "PLAN": 4,
       "BUILD": 19,
-      "MAINTAIN": 3,
+      "MAINTAIN": 4,
       "EXPLORE": 5
     }
   },
