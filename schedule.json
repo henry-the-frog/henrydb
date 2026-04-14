@@ -1508,6 +1508,28 @@
       "completed": "2026-04-14T19:57:17.824Z",
       "duration_ms": 300000,
       "summary": "GREATEST() and LEAST() scalar functions. Variable args. Tests passing."
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CONCAT_WS (concat with separator) function",
+      "project": "henrydb",
+      "started": "2026-04-14T19:58:04.509Z",
+      "completed": "2026-04-14T19:59:24.079Z",
+      "duration_ms": 300000,
+      "summary": "CONCAT_WS with separator, skips nulls. Tests passing."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: REGEXP_REPLACE function",
+      "project": "henrydb",
+      "started": "2026-04-14T19:59:42.756Z",
+      "completed": "2026-04-14T20:00:38.971Z",
+      "duration_ms": 300000,
+      "summary": "REGEXP_REPLACE and REGEXP_MATCH functions. Regex-based string replacement and matching."
     }
   ],
   "focusProjects": [
@@ -2059,6 +2081,14 @@
     {
       "time": "2026-04-14T19:54:28.410Z",
       "msg": "Added T138 (BUILD) after end: HenryDB: GREATEST and LEAST scalar functions"
+    },
+    {
+      "time": "2026-04-14T19:58:04.274Z",
+      "msg": "Added T139 (BUILD) after end: HenryDB: CONCAT_WS (concat with separator) function"
+    },
+    {
+      "time": "2026-04-14T19:59:42.521Z",
+      "msg": "Added T140 (BUILD) after end: HenryDB: REGEXP_REPLACE function"
     }
   ]
 }
