@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T17:12:57.317Z",
+  "generated": "2026-04-14T17:16:46.253Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: add persistence integration tests for expression indexes, generated columns, FKs, table-level CHECK",
-    "completedAt": "2026-04-14T17:12:57.317Z",
-    "taskId": "T51",
-    "summary": "13 new persistence tests. Found BUG #11 (unique flag lost) and BUG #12 (expression indexes empty after restore). Fixed fromSerialized index rebuild: unique flag from metadata, expression index evaluation. 13/13 passing.",
-    "durationMs": 600000
+    "task": "Monkey-lang: implement math stdlib (sin, cos, sqrt, pow, floor, ceil, round)",
+    "completedAt": "2026-04-14T17:16:46.253Z",
+    "taskId": "T53",
+    "summary": "Math stdlib: sqrt, pow, sin, cos, tan, floor, ceil, round, abs, log, PI, E. All delegate to JS Math. 528/528 passing.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 50,
+    "blocksCompleted": 52,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 26,
+      "BUILD": 27,
       "MAINTAIN": 4,
-      "EXPLORE": 11
+      "EXPLORE": 12
     }
   },
   "artifacts": [

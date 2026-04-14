@@ -553,6 +553,28 @@
       "completed": "2026-04-14T17:12:57.281Z",
       "duration_ms": 600000,
       "summary": "13 new persistence tests. Found BUG #11 (unique flag lost) and BUG #12 (expression indexes empty after restore). Fixed fromSerialized index rebuild: unique flag from metadata, expression index evaluation. 13/13 passing."
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: what happens with generated columns referencing other generated columns? Or circular generated cols?",
+      "project": "henrydb",
+      "started": "2026-04-14T17:13:40.823Z",
+      "completed": "2026-04-14T17:14:31.671Z",
+      "duration_ms": 180000,
+      "summary": "EXPLORE generated column edge cases: chaining works (b from a, c from b), reverse references work (x from y where y is defined after x), UPDATE recomputation correct. No bugs found — implementation is solid."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: implement math stdlib (sin, cos, sqrt, pow, floor, ceil, round)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:14:47.645Z",
+      "completed": "2026-04-14T17:16:46.217Z",
+      "duration_ms": 300000,
+      "summary": "Math stdlib: sqrt, pow, sin, cos, tan, floor, ceil, round, abs, log, PI, E. All delegate to JS Math. 528/528 passing."
     }
   ],
   "focusProjects": [
@@ -756,6 +778,14 @@
     {
       "time": "2026-04-14T17:10:26.105Z",
       "msg": "Added T51 (BUILD) after end: HenryDB: add persistence integration tests for expression indexes, generated columns, FKs, table-level CHECK"
+    },
+    {
+      "time": "2026-04-14T17:13:33.390Z",
+      "msg": "Added T52 (EXPLORE) after end: HenryDB: what happens with generated columns referencing other generated columns? Or circular generated cols?"
+    },
+    {
+      "time": "2026-04-14T17:13:33.509Z",
+      "msg": "Added T53 (BUILD) after end: Monkey-lang: implement math stdlib (sin, cos, sqrt, pow, floor, ceil, round)"
     }
   ]
 }
