@@ -2232,9 +2232,52 @@
     {
       "id": "T208",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session push, daily log evening summary",
-      "started": "2026-04-14T23:28:31.306Z"
+      "started": "2026-04-14T23:28:31.306Z",
+      "completed": "2026-04-14T23:29:45.846Z",
+      "duration_ms": 60000,
+      "summary": "Final maintain: all tests green (monkey-lang 586/586, henrydb 44/44 critical). Evening summary written."
+    },
+    {
+      "id": "T209",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What Monkey-lang feature would be most fun to implement next? Options: (1) string interpolation in VM, (2) try-catch in VM, (3) pattern matching, (4) destructuring assignments, (5) modules/imports",
+      "project": "monkey-lang",
+      "started": "2026-04-14T23:30:09.509Z",
+      "completed": "2026-04-14T23:30:44.937Z",
+      "duration_ms": 60000,
+      "summary": "THINK: 12 evaluator features missing from compiler. Quick wins: NullLiteral (OpNull), SliceExpression, TernaryExpression, SwitchExpression. Medium: FString, Spread, Destructure. Hard: TryCatch, Match. Starting with batch of quick wins."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-14T23:30:45.199Z",
+      "completed": "2026-04-14T23:33:35.296Z",
+      "duration_ms": 180000,
+      "summary": "Added NullLiteral (OpNull) and TernaryExpression support in VM compiler. 586/586 pass. Root parser doesnt produce ternary yet but compiler is ready."
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-14T23:33:41.460Z",
+      "completed": "2026-04-14T23:36:05.932Z",
+      "duration_ms": 300000,
+      "summary": "Implemented SwitchExpression in VM compiler (chain of condition checks + jumps). Both switch(val) and switch{case(cond)} forms work. 586/586 tests pass."
+    },
+    {
+      "id": "T212",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push",
+      "started": "2026-04-14T23:36:23.725Z"
     }
   ],
   "focusProjects": [
@@ -3086,6 +3129,22 @@
     {
       "time": "2026-04-14T23:24:12.092Z",
       "msg": "Added T208 (MAINTAIN) after end: Final session push, daily log evening summary"
+    },
+    {
+      "time": "2026-04-14T23:30:00.074Z",
+      "msg": "Added T209 (THINK) after end: What Monkey-lang feature would be most fun to implement next? Options: (1) string interpolation in VM, (2) try-catch in VM, (3) pattern matching, (4) destructuring assignments, (5) modules/imports"
+    },
+    {
+      "time": "2026-04-14T23:30:00.194Z",
+      "msg": "Added T210 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-14T23:30:00.315Z",
+      "msg": "Added T211 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-14T23:30:00.435Z",
+      "msg": "Added T212 (MAINTAIN) after end: Push"
     }
   ]
 }
