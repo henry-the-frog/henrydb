@@ -2163,7 +2163,13 @@ export class Database {
       let matched = false;
       for (let ri = 0; ri < rightRows.length; ri++) {
         const rightRow = rightRows[ri];
+        // For NATURAL JOIN: preserve left values before merge overwrites them
         const combined = { ...leftRow, ...rightRow };
+        if (join.natural) {
+          for (const key of Object.keys(leftRow)) {
+            combined[`__natural_left_${key}`] = leftRow[key];
+          }
+        }
         if (!join.on || this._evalExpr(join.on, combined)) {
           result.push(combined);
           matched = true;
@@ -2753,6 +2759,41 @@ export class Database {
     if (!rightTable && !rightView) throw new Error(`Table ${join.table} not found`);
 
     const rightAlias = join.alias || join.table;
+
+    // NATURAL JOIN: auto-generate ON clause from shared column names
+    if (join.natural && rightTable && !join.on) {
+      const leftColNames = new Set();
+      if (leftRows.length > 0) {
+        for (const k of Object.keys(leftRows[0])) {
+          const parts = k.split('.');
+          leftColNames.add(parts[parts.length - 1]);
+        }
+      }
+      const rightCols = rightTable.schema.map(c => c.name);
+      const sharedCols = rightCols.filter(c => leftColNames.has(c));
+      if (sharedCols.length > 0) {
+        // Add qualified names to left rows so the join condition can resolve them
+        for (const leftRow of leftRows) {
+          for (const col of sharedCols) {
+            if (leftRow[col] !== undefined && leftRow[`${leftAlias}.${col}`] === undefined) {
+              leftRow[`${leftAlias}.${col}`] = leftRow[col];
+            }
+          }
+        }
+        // Build standard COMPARE conditions
+        let onCondition = null;
+        for (const col of sharedCols) {
+          const cond = {
+            type: 'COMPARE', op: 'EQ',
+            left: { type: 'column_ref', name: `${leftAlias}.${col}` },
+            right: { type: 'column_ref', name: `${rightAlias}.${col}` },
+          };
+          if (!onCondition) onCondition = cond;
+          else onCondition = { type: 'AND', left: onCondition, right: cond };
+        }
+        join = { ...join, on: onCondition };
+      }
+    }
 
     // If right side is a view/CTE, get its rows
     if (rightView) {
@@ -6017,6 +6058,14 @@ export class Database {
         if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return false;
         if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
         return val >= low && val <= high;
+      }
+      case 'NATURAL_EQ': {
+        // Compare column from left and right table in merged row
+        // Use the RIGHT alias (qualified name preserved) and LEFT's original value
+        // Left value: stored as __natural_left_<col> before merge
+        const lVal = row[`__natural_left_${expr.column}`] ?? row[expr.column];
+        const rVal = row[`${expr.rightAlias}.${expr.column}`] ?? row[expr.column];
+        return lVal === rVal;
       }
       case 'COMPARE': {
         let left = this._evalValue(expr.left, row);

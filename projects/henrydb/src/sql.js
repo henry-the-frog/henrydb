@@ -1008,7 +1008,7 @@ export function parse(sql) {
       }
       let on = null;
       if (isKeyword('ON')) { advance(); on = parseExpr(); }
-      return { type: 'JOIN', joinType, table: null, alias, on, lateral, subquery };
+      return { type: 'JOIN', joinType, table: null, alias, on, lateral, subquery, natural: isNatural };
     }
     const joinTok = advance();
     const table = joinTok.originalValue || joinTok.value;
@@ -1019,7 +1019,7 @@ export function parse(sql) {
       advance();
       on = parseExpr();
     }
-    return { type: 'JOIN', joinType, table, alias, on };
+    return { type: 'JOIN', joinType, table, alias, on, natural: isNatural };
   }
 
   function parseExpr() { return parseOr(); }

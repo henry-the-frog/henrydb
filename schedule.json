@@ -1810,10 +1810,13 @@
     {
       "id": "T175",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: information_schema views (tables, columns)",
       "project": "henrydb",
-      "started": "2026-04-14T00:35:29.687Z"
+      "started": "2026-04-14T00:35:29.687Z",
+      "completed": "2026-04-14T00:37:49.794Z",
+      "duration_ms": 300000,
+      "summary": "information_schema: tables + columns views. WHERE filtering, ORDER BY. All tests pass."
     },
     {
       "id": "T176",
@@ -1825,6 +1828,85 @@
       "completed": "2026-04-14T00:34:24.813Z",
       "duration_ms": 300000,
       "summary": "SERIAL column type: auto-increment via sequences. CREATE TABLE t (id SERIAL PRIMARY KEY). 3 tests."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: pg_catalog.pg_tables compatibility view",
+      "project": "henrydb"
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CREATE OR REPLACE VIEW",
+      "project": "henrydb"
+    },
+    {
+      "id": "T179",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: DROP INDEX IF EXISTS",
+      "project": "henrydb"
+    },
+    {
+      "id": "T180",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement string interpolation (f-strings)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:38:13.033Z",
+      "completed": "2026-04-14T00:42:43.809Z",
+      "duration_ms": 300000,
+      "summary": "F-string interpolation: f\"Hello {name}!\" with expression evaluation. Evaluator. 387 tests."
+    },
+    {
+      "id": "T181",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: REGEXP_MATCHES function",
+      "project": "henrydb"
+    },
+    {
+      "id": "T182",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: final comprehensive README update",
+      "project": "henrydb",
+      "started": "2026-04-14T00:42:53.459Z",
+      "completed": "2026-04-14T00:44:29.470Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB README: 673 test files, 8772 lines, all features documented."
+    },
+    {
+      "id": "T183",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: REGEXP_REPLACE function",
+      "project": "henrydb"
+    },
+    {
+      "id": "T184",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CREATE TEMPORARY TABLE (session-scoped tables)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T185",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement typeof checking in pattern match",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T186",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: NATURAL JOIN (auto-match on same-named columns)",
+      "project": "henrydb",
+      "started": "2026-04-14T00:44:49.584Z"
     }
   ],
   "focusProjects": [
@@ -2500,6 +2582,46 @@
     {
       "time": "2026-04-14T00:31:58.052Z",
       "msg": "Added T176 (BUILD) after end: HenryDB: SERIAL/BIGSERIAL column type (auto-increment via sequences)"
+    },
+    {
+      "time": "2026-04-14T00:38:03.951Z",
+      "msg": "Added T177 (BUILD) after end: HenryDB: pg_catalog.pg_tables compatibility view"
+    },
+    {
+      "time": "2026-04-14T00:38:04.070Z",
+      "msg": "Added T178 (BUILD) after end: HenryDB: CREATE OR REPLACE VIEW"
+    },
+    {
+      "time": "2026-04-14T00:38:04.190Z",
+      "msg": "Added T179 (BUILD) after end: HenryDB: DROP INDEX IF EXISTS"
+    },
+    {
+      "time": "2026-04-14T00:38:04.310Z",
+      "msg": "Added T180 (BUILD) after end: Monkey: implement string interpolation (f-strings)"
+    },
+    {
+      "time": "2026-04-14T00:38:04.430Z",
+      "msg": "Added T181 (BUILD) after end: HenryDB: REGEXP_MATCHES function"
+    },
+    {
+      "time": "2026-04-14T00:38:04.548Z",
+      "msg": "Added T182 (BUILD) after end: HenryDB: final comprehensive README update"
+    },
+    {
+      "time": "2026-04-14T00:44:40.463Z",
+      "msg": "Added T183 (BUILD) after end: HenryDB: REGEXP_REPLACE function"
+    },
+    {
+      "time": "2026-04-14T00:44:40.583Z",
+      "msg": "Added T184 (BUILD) after end: HenryDB: CREATE TEMPORARY TABLE (session-scoped tables)"
+    },
+    {
+      "time": "2026-04-14T00:44:40.703Z",
+      "msg": "Added T185 (BUILD) after end: Monkey: implement typeof checking in pattern match"
+    },
+    {
+      "time": "2026-04-14T00:44:40.821Z",
+      "msg": "Added T186 (BUILD) after end: HenryDB: NATURAL JOIN (auto-match on same-named columns)"
     }
   ]
 }
