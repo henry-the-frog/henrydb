@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T16:59:30.046Z",
+  "generated": "2026-04-14T17:07:26.494Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Monkey-lang: float in built-in functions (len, first, last should handle arrays; push, etc)",
-    "completedAt": "2026-04-14T16:59:30.046Z",
-    "taskId": "T45",
-    "summary": "Float builtins: added float() conversion, fixed int(float) truncation. All existing builtins (len, first, last, rest, push, puts, type, str) already work with floats. 528/528 passing.",
-    "durationMs": 120000
+    "mode": "EXPLORE",
+    "task": "HenryDB: persistence round-trip of NEW features — expression indexes, generated columns, foreign keys through close/reopen",
+    "completedAt": "2026-04-14T17:07:26.494Z",
+    "taskId": "T48",
+    "summary": "EXPLORE persistence round-trip found BUG #9: CHECK constraints, foreign keys, and childFKs not serialized. Fixed serialize() and fromSerialized(). Also rebuilds childFKs reverse references. Exact DDL WAL completeness pattern from scratch note.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 44,
+    "blocksCompleted": 47,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 24,
+      "BUILD": 25,
       "MAINTAIN": 4,
-      "EXPLORE": 7
+      "EXPLORE": 9
     }
   },
   "artifacts": [

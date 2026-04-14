@@ -487,6 +487,39 @@
       "completed": "2026-04-14T16:59:30.010Z",
       "duration_ms": 120000,
       "summary": "Float builtins: added float() conversion, fixed int(float) truncation. All existing builtins (len, first, last, rest, push, puts, type, str) already work with floats. 528/528 passing."
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Monkey-lang: edge cases — float division by zero, infinity, NaN, very large/small floats",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:00:47.577Z",
+      "completed": "2026-04-14T17:01:48.935Z",
+      "duration_ms": 180000,
+      "summary": "EXPLORE float edge cases: division by zero returns Infinity/NaN (JS semantics, acceptable). Scientific notation 1e10/1.5e-3 was broken — fixed in lexer. 528/528 passing."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LATERAL JOIN support",
+      "project": "henrydb",
+      "started": "2026-04-14T17:02:24.857Z",
+      "completed": "2026-04-14T17:02:25.002Z",
+      "duration_ms": 15000,
+      "summary": "LATERAL JOIN already implemented (parser + engine). Skipping."
+    },
+    {
+      "id": "T48",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: persistence round-trip of NEW features — expression indexes, generated columns, foreign keys through close/reopen",
+      "project": "henrydb",
+      "started": "2026-04-14T17:02:50.672Z",
+      "completed": "2026-04-14T17:07:26.458Z",
+      "duration_ms": 600000,
+      "summary": "EXPLORE persistence round-trip found BUG #9: CHECK constraints, foreign keys, and childFKs not serialized. Fixed serialize() and fromSerialized(). Also rebuilds childFKs reverse references. Exact DDL WAL completeness pattern from scratch note."
     }
   ],
   "focusProjects": [
@@ -666,6 +699,18 @@
     {
       "time": "2026-04-14T16:56:04.970Z",
       "msg": "Added T45 (BUILD) after end: Monkey-lang: float in built-in functions (len, first, last should handle arrays; push, etc)"
+    },
+    {
+      "time": "2026-04-14T17:00:34.655Z",
+      "msg": "Added T46 (EXPLORE) after end: Monkey-lang: edge cases — float division by zero, infinity, NaN, very large/small floats"
+    },
+    {
+      "time": "2026-04-14T17:00:34.774Z",
+      "msg": "Added T47 (BUILD) after end: HenryDB: LATERAL JOIN support"
+    },
+    {
+      "time": "2026-04-14T17:02:40.753Z",
+      "msg": "Added T48 (EXPLORE) after end: HenryDB: persistence round-trip of NEW features — expression indexes, generated columns, foreign keys through close/reopen"
     }
   ]
 }
