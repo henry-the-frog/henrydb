@@ -5406,11 +5406,57 @@ export class Database {
             }
             break;
           }
+          case 'CUME_DIST': {
+            // CUME_DIST = fraction of rows with value <= current row's value
+            // For ties, all tied rows get the same value (highest rank / total)
+            const n = partition.length;
+            if (n === 0) break;
+            for (let i = 0; i < n; i++) {
+              // Find last row with same ORDER BY value (ties)
+              let lastTie = i;
+              while (lastTie + 1 < n && this._windowOrderEqual(partition[i], partition[lastTie + 1], orderBy)) {
+                lastTie++;
+              }
+              const cumeDist = (lastTie + 1) / n;
+              for (let j = i; j <= lastTie; j++) {
+                partition[j][`__window_${name}`] = cumeDist;
+              }
+              i = lastTie; // Skip ties
+            }
+            break;
+          }
+          case 'PERCENT_RANK': {
+            // PERCENT_RANK = (rank - 1) / (N - 1), 0 for first row
+            const n = partition.length;
+            if (n <= 1) {
+              for (const r of partition) r[`__window_${name}`] = 0;
+              break;
+            }
+            let rank = 1;
+            for (let i = 0; i < n; i++) {
+              if (i > 0 && !this._windowOrderEqual(partition[i - 1], partition[i], orderBy)) {
+                rank = i + 1;
+              }
+              partition[i][`__window_${name}`] = (rank - 1) / (n - 1);
+            }
+            break;
+          }
         }
       }
     }
 
     return rows;
+  }
+
+  _windowOrderEqual(rowA, rowB, orderBy) {
+    if (!orderBy || orderBy.length === 0) return true;
+    for (const ob of orderBy) {
+      const col = ob.column?.name || ob.column;
+      const va = this._resolveColumn(col, rowA);
+      const vb = this._resolveColumn(col, rowB);
+      if (va !== vb) return false;
+    }
+    return true;
   }
 
   _rebuildIndexes(table) {

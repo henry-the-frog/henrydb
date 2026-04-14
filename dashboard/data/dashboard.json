@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:04:49.243Z",
+  "generated": "2026-04-14T03:06:47.273Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: BOOL_AND/BOOL_OR aggregate functions",
-    "completedAt": "2026-04-14T03:04:49.243Z",
-    "taskId": "T202",
-    "summary": "BOOL_AND, BOOL_OR, EVERY aggregate functions. Work with GROUP BY and without. NULL-safe. Added to both group-by computeAgg and non-group-by _computeAggregates paths.",
-    "durationMs": 120000
+    "task": "HenryDB: CUME_DIST window function",
+    "completedAt": "2026-04-14T03:06:47.273Z",
+    "taskId": "T209",
+    "summary": "CUME_DIST and PERCENT_RANK window functions. Proper tie handling. CUME_DIST = (rank of last tie + 1) / N. PERCENT_RANK = (rank - 1) / (N - 1). Added _windowOrderEqual helper.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 238,
+    "blocksCompleted": 239,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 202,
+      "BUILD": 203,
       "MAINTAIN": 17
     }
   },

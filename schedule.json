@@ -2278,9 +2278,13 @@
     {
       "id": "T209",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: CUME_DIST window function",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T03:05:23.162Z",
+      "completed": "2026-04-14T03:06:47.237Z",
+      "duration_ms": 180000,
+      "summary": "CUME_DIST and PERCENT_RANK window functions. Proper tie handling. CUME_DIST = (rank of last tie + 1) / N. PERCENT_RANK = (rank - 1) / (N - 1). Added _windowOrderEqual helper."
     },
     {
       "id": "T210",

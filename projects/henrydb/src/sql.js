@@ -784,8 +784,8 @@ export function parse(sql) {
       return { type: 'aggregate', func, arg, distinct, alias, ...aggExtra };
     }
 
-    // Window functions: ROW_NUMBER, RANK, DENSE_RANK
-    if (peek().type === 'KEYWORD' && ['ROW_NUMBER', 'RANK', 'DENSE_RANK'].includes(peek().value)) {
+    // Window functions: ROW_NUMBER, RANK, DENSE_RANK, CUME_DIST, PERCENT_RANK
+    if (peek().type === 'KEYWORD' && ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
       expect(')');
