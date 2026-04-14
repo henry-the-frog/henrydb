@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-14T02:15:24.466Z",
+  "generated": "2026-04-14T02:25:13.266Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final housekeeping",
-    "startedAt": "2026-04-14T02:15:24.466Z",
-    "taskId": "T95"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "HenryDB: PIVOT/UNPIVOT (crosstab queries)",
+    "completedAt": "2026-04-14T02:25:13.266Z",
+    "taskId": "T131",
+    "summary": "Implemented PIVOT/UNPIVOT (crosstab queries). PIVOT supports SUM/COUNT/AVG/MAX/MIN aggregates with implicit grouping. UNPIVOT normalizes columns to rows (excludes NULLs). Fixed parser isKeyword EOF safety. 11 tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2378,13 +2380,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 214,
+    "blocksCompleted": 218,
     "blocksTotal": 60,
     "modeDistribution": {
-      "THINK": 11,
+      "THINK": 12,
       "PLAN": 7,
-      "BUILD": 181,
-      "MAINTAIN": 15
+      "BUILD": 182,
+      "MAINTAIN": 17
     }
   },
   "artifacts": [

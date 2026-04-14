@@ -2135,7 +2135,18 @@ export class Database {
     try {
       // Optimize: decorrelate subqueries
       const optimizedAst = optimizeSelect(ast, this);
-      return this._selectInner(optimizedAst);
+      let result = this._selectInner(optimizedAst);
+      
+      // PIVOT: transform rows into crosstab
+      if (ast.pivot) {
+        result = this._applyPivot(result, ast.pivot);
+      }
+      // UNPIVOT: transform columns into rows
+      if (ast.unpivot) {
+        result = this._applyUnpivot(result, ast.unpivot);
+      }
+      
+      return result;
     } finally {
       // Clean up temporary CTE views
       for (const name of tempViews) {
@@ -5143,6 +5154,79 @@ export class Database {
     }
   }
 
+    _applyPivot(result, pivot) {
+    const { aggFunc, aggCol, pivotCol, pivotValues } = pivot;
+    const rows = result.rows || [];
+    
+    // Determine grouping columns (all columns except aggCol and pivotCol)
+    const allCols = rows.length > 0 ? Object.keys(rows[0]) : [];
+    const groupCols = allCols.filter(c => c !== aggCol && c !== pivotCol);
+    
+    // Group rows by the grouping columns
+    const groups = new Map();
+    for (const row of rows) {
+      const key = groupCols.map(c => String(row[c] ?? 'NULL')).join('|||');
+      if (!groups.has(key)) {
+        const base = {};
+        for (const c of groupCols) base[c] = row[c];
+        // Initialize pivot columns to null
+        for (const v of pivotValues) base[String(v)] = null;
+        groups.set(key, { base, values: [] });
+      }
+      groups.get(key).values.push(row);
+    }
+    
+    // Apply aggregate for each pivot value
+    const pivotRows = [];
+    for (const { base, values } of groups.values()) {
+      const outRow = { ...base };
+      for (const pv of pivotValues) {
+        const pvStr = String(pv);
+        const matching = values.filter(r => String(r[pivotCol]) === pvStr);
+        outRow[pvStr] = this._pivotAggregate(aggFunc, aggCol, matching);
+      }
+      pivotRows.push(outRow);
+    }
+    
+    return { type: 'ROWS', rows: pivotRows };
+  }
+  
+  _pivotAggregate(func, col, rows) {
+    const vals = rows.map(r => r[col]).filter(v => v != null);
+    if (vals.length === 0) return null;
+    switch (func) {
+      case 'SUM': return vals.reduce((a, b) => Number(a) + Number(b), 0);
+      case 'COUNT': return vals.length;
+      case 'AVG': return vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;
+      case 'MAX': return vals.reduce((a, b) => (a > b ? a : b));
+      case 'MIN': return vals.reduce((a, b) => (a < b ? a : b));
+      default: return vals.length > 0 ? vals[0] : null;
+    }
+  }
+  
+  _applyUnpivot(result, unpivot) {
+    const { valueCol, nameCol, sourceCols } = unpivot;
+    const rows = result.rows || [];
+    const unpivotRows = [];
+    
+    // For each row, create one output row per source column
+    for (const row of rows) {
+      // Keep columns that are NOT in the sourceCols list
+      const baseCols = {};
+      for (const [k, v] of Object.entries(row)) {
+        if (!sourceCols.includes(k)) baseCols[k] = v;
+      }
+      for (const sc of sourceCols) {
+        const val = row[sc];
+        if (val != null) { // UNPIVOT excludes NULLs by default
+          unpivotRows.push({ ...baseCols, [nameCol]: sc, [valueCol]: val });
+        }
+      }
+    }
+    
+    return { type: 'ROWS', rows: unpivotRows };
+  }
+  
   _selectWithGroupBy(ast, rows) {
     // Build alias→expression map from SELECT columns
     const aliasMap = new Map();

@@ -38,6 +38,7 @@ const KEYWORDS = new Set([
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
+  'PIVOT', 'UNPIVOT',
 ]);
 
 export function tokenize(sql) {
@@ -163,7 +164,7 @@ export function parse(sql) {
     const t = advance();
     return t.originalValue || t.value;
   }
-  function isKeyword(val) { return peek().type === 'KEYWORD' && peek().value === val; }
+  function isKeyword(val) { const t = peek(); return t && t.type === 'KEYWORD' && t.value === val; }
 
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
@@ -414,6 +415,62 @@ export function parse(sql) {
       }
     }
 
+    // PIVOT / UNPIVOT
+    let pivot = null, unpivot = null;
+    if (isKeyword('PIVOT')) {
+      advance(); // PIVOT
+      expect('(');
+      // AGG(value_col)
+      const aggFunc = advance().value.toUpperCase(); // e.g. SUM, COUNT, AVG, MAX, MIN
+      expect('(');
+      const aggColTok = advance();
+      const aggCol = aggColTok.originalValue || aggColTok.value;
+      expect(')');
+      // FOR category_col IN (val1, val2, ...)
+      expect('KEYWORD', 'FOR');
+      const pivotColTok = advance();
+      const pivotCol = pivotColTok.originalValue || pivotColTok.value;
+      expect('KEYWORD', 'IN');
+      expect('(');
+      const pivotValues = [];
+      do {
+        const tok = advance();
+        pivotValues.push(tok.type === 'STRING' ? tok.value : (tok.originalValue || tok.value));
+      } while (match(','));
+      expect(')');
+      expect(')');
+      let pivotAlias = null;
+      if (isKeyword('AS')) { advance(); const t = advance(); pivotAlias = t.originalValue || t.value; }
+      else if (peek() && peek().type === 'IDENT' && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT')) {
+        const t = advance(); pivotAlias = t.originalValue || t.value;
+      }
+      pivot = { aggFunc, aggCol, pivotCol, pivotValues, alias: pivotAlias };
+    }
+    if (isKeyword('UNPIVOT')) {
+      advance(); // UNPIVOT
+      expect('(');
+      const valueColTok = advance();
+      const valueCol = valueColTok.originalValue || valueColTok.value;
+      expect('KEYWORD', 'FOR');
+      const nameColTok = advance();
+      const nameCol = nameColTok.originalValue || nameColTok.value;
+      expect('KEYWORD', 'IN');
+      expect('(');
+      const sourceCols = [];
+      do {
+        const tok = advance();
+        sourceCols.push(tok.originalValue || tok.value);
+      } while (match(','));
+      expect(')');
+      expect(')');
+      let unpivotAlias = null;
+      if (isKeyword('AS')) { advance(); const t = advance(); unpivotAlias = t.originalValue || t.value; }
+      else if (peek() && peek().type === 'IDENT' && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT')) {
+        const t = advance(); unpivotAlias = t.originalValue || t.value;
+      }
+      unpivot = { valueCol, nameCol, sourceCols, alias: unpivotAlias };
+    }
+
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     if (isKeyword('GROUP')) { advance(); expect('KEYWORD', 'BY'); groupBy = parseGroupBy(); }
     if (isKeyword('HAVING')) { advance(); having = parseExpr(); }
@@ -500,7 +557,7 @@ export function parse(sql) {
       }
     }
 
-    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate };
+    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate, pivot, unpivot };
 
     // UNION / UNION ALL / INTERSECT / EXCEPT
     if (isKeyword('UNION')) {
