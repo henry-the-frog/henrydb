@@ -5855,14 +5855,20 @@ export class Database {
         const val = this._evalValue(expr.left, row);
         const pattern = this._evalValue(expr.pattern, row);
         if (val == null || pattern == null) return false;
-        // SIMILAR TO uses SQL regex: % = .*, _ = ., | = alternation
-        // Convert to JavaScript regex
-        const regex = '^' + String(pattern)
-          .replace(/([.*+?^${}()[\]\\])/g, '\\$1')
-          .replace(/%/g, '.*')
-          .replace(/_/g, '.')
-          .replace(/\\\|/g, '|')  // unescape | for alternation
-          + '$';
+        // SIMILAR TO: SQL standard regex with %, _, |, (), [], *, +
+        // Convert to JS regex by only escaping non-SQL-regex chars
+        let regex = '^';
+        const p = String(pattern);
+        for (let i = 0; i < p.length; i++) {
+          const ch = p[i];
+          if (ch === '%') regex += '.*';
+          else if (ch === '_') regex += '.';
+          else if (ch === '(' || ch === ')' || ch === '|' || ch === '[' || ch === ']' || ch === '+' || ch === '*') regex += ch;
+          else if (ch === '\\' && i + 1 < p.length) { regex += '\\' + p[++i]; }
+          else if ('.^${}?'.includes(ch)) regex += '\\' + ch;
+          else regex += ch;
+        }
+        regex += '$';
         return new RegExp(regex).test(String(val));
       }
       case 'BETWEEN': {

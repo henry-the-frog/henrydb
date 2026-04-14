@@ -1325,10 +1325,13 @@
     {
       "id": "T124",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: MERGE statement (SQL:2003 upsert)",
       "project": "henrydb",
-      "started": "2026-04-13T23:58:49.315Z"
+      "started": "2026-04-13T23:58:49.315Z",
+      "completed": "2026-04-14T00:03:03.486Z",
+      "duration_ms": 600000,
+      "summary": "MERGE statement: WHEN MATCHED UPDATE + WHEN NOT MATCHED INSERT. 2 tests. 693 total."
     },
     {
       "id": "T125",
@@ -1438,9 +1441,10 @@
     {
       "id": "T136",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: SIMILAR TO regex matching",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T00:07:41.891Z"
     },
     {
       "id": "T137",
@@ -1488,6 +1492,92 @@
       "completed": "2026-04-13T23:58:49.151Z",
       "duration_ms": 15000,
       "summary": "TRUNCATE TABLE already implemented. Verified."
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement multi-line string literals (triple quotes)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:06:34.839Z",
+      "completed": "2026-04-14T00:07:41.748Z",
+      "duration_ms": 120000,
+      "summary": "Triple-quoted multi-line strings. Preserves whitespace/newlines. 334 tests."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: EXPLAIN output improvement (tree format with costs)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement switch/case expression",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:03:39.166Z",
+      "completed": "2026-04-14T00:05:55.837Z",
+      "duration_ms": 180000,
+      "summary": "switch/case expression: case matching for ints/strings, default clause. Evaluator. 334 tests."
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CROSS JOIN LATERAL (implicit lateral)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: COUNT(DISTINCT col) aggregate",
+      "project": "henrydb",
+      "started": "2026-04-14T00:03:22.454Z",
+      "completed": "2026-04-14T00:03:39.023Z",
+      "duration_ms": 15000,
+      "summary": "COUNT(DISTINCT) already works. Verified."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: table statistics command (ANALYZE TABLE)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement println (puts with newline)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CREATE TABLE AS SELECT (CTAS)",
+      "project": "henrydb",
+      "started": "2026-04-14T00:06:17.788Z",
+      "completed": "2026-04-14T00:06:34.679Z",
+      "duration_ms": 15000,
+      "summary": "CREATE TABLE AS SELECT already works. Verified with expressions and WHERE."
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: COALESCE in GROUP BY expressions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: SUM/AVG window functions with frame",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2023,6 +2113,46 @@
     {
       "time": "2026-04-13T23:56:58.170Z",
       "msg": "Added T141 (BUILD) after end: HenryDB: TRUNCATE TABLE (fast delete all rows)"
+    },
+    {
+      "time": "2026-04-14T00:03:14.580Z",
+      "msg": "Added T142 (BUILD) after end: Monkey: implement multi-line string literals (triple quotes)"
+    },
+    {
+      "time": "2026-04-14T00:03:14.702Z",
+      "msg": "Added T143 (BUILD) after end: HenryDB: EXPLAIN output improvement (tree format with costs)"
+    },
+    {
+      "time": "2026-04-14T00:03:14.821Z",
+      "msg": "Added T144 (BUILD) after end: Monkey: implement switch/case expression"
+    },
+    {
+      "time": "2026-04-14T00:03:14.941Z",
+      "msg": "Added T145 (BUILD) after end: HenryDB: CROSS JOIN LATERAL (implicit lateral)"
+    },
+    {
+      "time": "2026-04-14T00:03:15.059Z",
+      "msg": "Added T146 (BUILD) after end: HenryDB: COUNT(DISTINCT col) aggregate"
+    },
+    {
+      "time": "2026-04-14T00:06:09.705Z",
+      "msg": "Added T147 (BUILD) after end: HenryDB: table statistics command (ANALYZE TABLE)"
+    },
+    {
+      "time": "2026-04-14T00:06:09.824Z",
+      "msg": "Added T148 (BUILD) after end: Monkey: implement println (puts with newline)"
+    },
+    {
+      "time": "2026-04-14T00:06:09.943Z",
+      "msg": "Added T149 (BUILD) after end: HenryDB: CREATE TABLE AS SELECT (CTAS)"
+    },
+    {
+      "time": "2026-04-14T00:06:10.062Z",
+      "msg": "Added T150 (BUILD) after end: HenryDB: COALESCE in GROUP BY expressions"
+    },
+    {
+      "time": "2026-04-14T00:06:10.182Z",
+      "msg": "Added T151 (BUILD) after end: HenryDB: SUM/AVG window functions with frame"
     }
   ]
 }
