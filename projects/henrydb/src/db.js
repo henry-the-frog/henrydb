@@ -2359,7 +2359,7 @@ export class Database {
         return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
       }
       if (gsHasWindow) {
-        rows = this._computeWindowFunctions(ast.columns, rows);
+        rows = this._computeWindowFunctions(ast.columns, rows, ast.windowDefs);
       }
       
       // Apply columns
@@ -2416,7 +2416,7 @@ export class Database {
         return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
       }
       if (sqHasWindow) {
-        rows = this._computeWindowFunctions(ast.columns, rows);
+        rows = this._computeWindowFunctions(ast.columns, rows, ast.windowDefs);
       }
       return this._applySelectColumns(ast, rows);
     }
@@ -2478,7 +2478,7 @@ export class Database {
         return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
       }
       if (hasWindow) {
-        rows = this._computeWindowFunctions(ast.columns, rows);
+        rows = this._computeWindowFunctions(ast.columns, rows, ast.windowDefs);
       }
 
       // ORDER BY
@@ -2649,7 +2649,7 @@ export class Database {
 
     // Window functions: compute window values before projection
     if (hasWindow) {
-      rows = this._computeWindowFunctions(ast.columns, rows);
+      rows = this._computeWindowFunctions(ast.columns, rows, ast.windowDefs);
     }
 
     // Build alias→expression map for ORDER BY resolution
@@ -5287,12 +5287,18 @@ export class Database {
     return null;
   }
 
-  _computeWindowFunctions(columns, rows) {
+  _computeWindowFunctions(columns, rows, windowDefs) {
     const windowCols = columns.filter(c => c.type === 'window');
 
     for (const col of windowCols) {
       const name = col.alias || `${col.func}(${col.arg || ''})`;
-      const { partitionBy, orderBy, frame } = col.over;
+      
+      // Resolve named window reference
+      let overSpec = col.over;
+      if (overSpec && overSpec.windowRef && windowDefs && windowDefs[overSpec.windowRef]) {
+        overSpec = windowDefs[overSpec.windowRef];
+      }
+      const { partitionBy, orderBy, frame } = overSpec || {};
 
       // Partition rows
       const partitions = new Map();

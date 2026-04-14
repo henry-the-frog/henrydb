@@ -39,7 +39,7 @@ const KEYWORDS = new Set([
   'GENERATE_SERIES', 'LATERAL',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
   'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
-  'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH',
+  'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW',
 ]);
 
 export function tokenize(sql) {
@@ -594,6 +594,45 @@ export function parse(sql) {
       if (isKeyword('ONLY')) advance();
     }
 
+    // WINDOW clause: WINDOW w AS (PARTITION BY ... ORDER BY ...)
+    let windowDefs = null;
+    if (isKeyword('WINDOW')) {
+      advance(); // WINDOW
+      windowDefs = {};
+      do {
+        const wname = advance().value;
+        expect('KEYWORD', 'AS');
+        expect('(');
+        let partitionBy = null;
+        let orderBy = null;
+        let frame = null;
+        if (isKeyword('PARTITION')) {
+          advance(); expect('KEYWORD', 'BY');
+          partitionBy = [];
+          do { partitionBy.push(parseExpr()); } while (match(','));
+        }
+        if (isKeyword('ORDER')) {
+          advance(); expect('KEYWORD', 'BY');
+          orderBy = parseOrderBy();
+        }
+        if (isKeyword('ROWS') || isKeyword('RANGE')) {
+          const frameType = advance().value;
+          if (isKeyword('BETWEEN')) {
+            advance();
+            const start = parseFrameBound();
+            expect('KEYWORD', 'AND');
+            const end = parseFrameBound();
+            frame = { type: frameType, start, end };
+          } else {
+            const bound = parseFrameBound();
+            frame = { type: frameType, start: bound, end: { type: 'CURRENT ROW' } };
+          }
+        }
+        expect(')');
+        windowDefs[wname] = { partitionBy, orderBy, frame };
+      } while (match(','));
+    }
+
     // FOR UPDATE / FOR SHARE / FOR NO KEY UPDATE / FOR KEY SHARE
     let forUpdate = null;
     if (isKeyword('FOR')) {
@@ -624,7 +663,7 @@ export function parse(sql) {
       }
     }
 
-    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate, pivot, unpivot };
+    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate, pivot, unpivot, windowDefs };
 
     // UNION / UNION ALL / INTERSECT / EXCEPT
     if (isKeyword('UNION')) {
@@ -1670,6 +1709,12 @@ export function parse(sql) {
 
   function parseOverClause() {
     expect('KEYWORD', 'OVER');
+    // OVER w (named window reference) or OVER (...)
+    if (peek() && peek().type !== '(') {
+      // Named window reference
+      const windowName = advance().value;
+      return { windowRef: windowName };
+    }
     expect('(');
     let partitionBy = null;
     let orderBy = null;

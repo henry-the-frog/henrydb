@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:25:40.359Z",
+  "generated": "2026-04-14T03:29:52.516Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: NTH_VALUE window function",
-    "completedAt": "2026-04-14T03:25:40.359Z",
-    "taskId": "T256",
-    "summary": "NTH_VALUE implemented. Returns null until frame includes nth row.",
-    "durationMs": 120000
+    "task": "HenryDB: named WINDOW clause (WINDOW w AS (PARTITION BY ...))",
+    "completedAt": "2026-04-14T03:29:52.516Z",
+    "taskId": "T257",
+    "summary": "Named WINDOW clause (WINDOW w AS (PARTITION BY ... ORDER BY ...)). OVER w resolves to the named window definition. Multiple window functions can share the same named window.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 255,
+    "blocksCompleted": 256,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 219,
+      "BUILD": 220,
       "MAINTAIN": 17
     }
   },
