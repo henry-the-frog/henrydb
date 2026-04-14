@@ -926,6 +926,39 @@
       "completed": "2026-04-14T18:29:48.079Z",
       "duration_ms": 600000,
       "summary": "Fixed bug #15: INSERT RETURNING showed null for generated columns. _insertRow now returns post-computation values. Tests passing."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: type() builtin function + type checking in match",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:30:24.605Z",
+      "completed": "2026-04-14T18:30:59.971Z",
+      "duration_ms": 60000,
+      "summary": "type() already exists and works with match. Verified: match type(x) { \"INTEGER\" => ... } composes beautifully with f-strings and method syntax."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: try/catch/throw error handling (verify it works end-to-end)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:31:07.085Z",
+      "completed": "2026-04-14T18:31:24.469Z",
+      "duration_ms": 60000,
+      "summary": "try/catch/throw already works perfectly. Tested throw, try/catch, nested, f-string in catch. All functional."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: write a comprehensive showcase test exercising ALL new features together",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:31:40.985Z",
+      "completed": "2026-04-14T18:35:53.617Z",
+      "duration_ms": 900000,
+      "summary": "Comprehensive showcase test (17 subtests). Fixed const destructuring. Restored math stdlib (sqrt/pow/sin/cos/floor/ceil/PI/E) and string builtins (starts_with/ends_with/slice/chars). 545/545 passing."
     }
   ],
   "focusProjects": [
@@ -1265,6 +1298,18 @@
     {
       "time": "2026-04-14T18:25:41.407Z",
       "msg": "Added T85 (BUILD) after end: HenryDB: INSERT ... RETURNING * (already partly done — test + ensure)"
+    },
+    {
+      "time": "2026-04-14T18:30:17.762Z",
+      "msg": "Added T86 (BUILD) after end: Monkey-lang: type() builtin function + type checking in match"
+    },
+    {
+      "time": "2026-04-14T18:30:17.881Z",
+      "msg": "Added T87 (BUILD) after end: Monkey-lang: try/catch/throw error handling (verify it works end-to-end)"
+    },
+    {
+      "time": "2026-04-14T18:31:34.605Z",
+      "msg": "Added T88 (BUILD) after end: Monkey-lang: write a comprehensive showcase test exercising ALL new features together"
     }
   ]
 }
