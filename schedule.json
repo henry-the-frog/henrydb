@@ -817,6 +817,24 @@
       "completed": "2026-04-14T18:07:12.252Z",
       "duration_ms": 600000,
       "summary": "Spread operator ... in arrays and fn calls. Lexer/parser/evaluator. Array concat + fn arg expansion. Coexists with .. (range) and . (method). 528/528 passing."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: MERGE statement (MERGE INTO t USING src ON cond WHEN MATCHED/NOT MATCHED)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:07:51.441Z",
+      "completed": "2026-04-14T18:09:43.920Z",
+      "duration_ms": 900000,
+      "summary": "MERGE statement (SQL:2003). Parser + engine. WHEN MATCHED UPDATE/DELETE, WHEN NOT MATCHED INSERT. Aliases, condition. Tests passing."
+    },
+    {
+      "id": "T77",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Full test sweep across all repos + git push",
+      "started": "2026-04-14T18:09:49.087Z"
     }
   ],
   "focusProjects": [
@@ -1116,6 +1134,14 @@
     {
       "time": "2026-04-14T18:02:22.196Z",
       "msg": "Added T75 (BUILD) after end: Monkey-lang: spread operator (...arr) in function calls and array literals"
+    },
+    {
+      "time": "2026-04-14T18:07:45.760Z",
+      "msg": "Added T76 (BUILD) after end: HenryDB: MERGE statement (MERGE INTO t USING src ON cond WHEN MATCHED/NOT MATCHED)"
+    },
+    {
+      "time": "2026-04-14T18:07:45.878Z",
+      "msg": "Added T77 (MAINTAIN) after end: Full test sweep across all repos + git push"
     }
   ]
 }
