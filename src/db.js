@@ -3653,8 +3653,9 @@ export class Database {
       // Return relevance score
       return this._evalExpr(node, row) ? 1 : 0;
     }
-    if (node.type === 'SUBQUERY') {
-      const result = this._evalSubquery(node.subquery, row);
+    if (node.type === 'SUBQUERY' || node.type === 'subquery') {
+      const subqueryAst = node.subquery || node.query;
+      const result = this._evalSubquery(subqueryAst, row);
       if (result.length === 0) return null;
       const firstRow = result[0];
       return Object.values(firstRow)[0];

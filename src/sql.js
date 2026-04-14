@@ -841,9 +841,15 @@ export function parse(sql) {
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
-    // Parenthesized expression
+    // Parenthesized expression or subquery
     if (t.type === '(') {
       advance();
+      // Check for subquery
+      if (isKeyword('SELECT')) {
+        const subquery = parseSelect();
+        expect(')');
+        return { type: 'subquery', query: subquery };
+      }
       const expr = parsePrimaryWithConcat();
       expect(')');
       return expr;
