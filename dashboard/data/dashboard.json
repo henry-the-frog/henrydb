@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T17:25:33.174Z",
+  "generated": "2026-04-14T17:32:48.027Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB: performance benchmarks — how fast is insert/select/join with 10K+ rows?",
-    "completedAt": "2026-04-14T17:25:33.174Z",
-    "taskId": "T58",
-    "summary": "HenryDB benchmarks: INSERT 10K=7.8s (1280/s), index scan=4ms, expr index=2ms, COUNT(*)=174ms, GROUP BY=120ms, JOIN+GROUP BY=335ms. Insert is slow due to per-statement parsing. Reads are fast. Reasonable for educational DB.",
-    "durationMs": 180000
+    "mode": "BUILD",
+    "task": "HenryDB: CREATE TABLE AS SELECT (CTAS) — create table from query results",
+    "completedAt": "2026-04-14T17:32:48.027Z",
+    "taskId": "T59",
+    "summary": "Implemented CREATE TABLE AS SELECT (CTAS). Parser + engine. Infers schema from query results, creates table + bulk insert. Works with WHERE filters and computed columns.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 57,
+    "blocksCompleted": 58,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 29,
+      "BUILD": 30,
       "MAINTAIN": 4,
       "EXPLORE": 15
     }

@@ -630,6 +630,17 @@
       "completed": "2026-04-14T17:25:33.138Z",
       "duration_ms": 180000,
       "summary": "HenryDB benchmarks: INSERT 10K=7.8s (1280/s), index scan=4ms, expr index=2ms, COUNT(*)=174ms, GROUP BY=120ms, JOIN+GROUP BY=335ms. Insert is slow due to per-statement parsing. Reads are fast. Reasonable for educational DB."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CREATE TABLE AS SELECT (CTAS) — create table from query results",
+      "project": "henrydb",
+      "started": "2026-04-14T17:30:56.161Z",
+      "completed": "2026-04-14T17:32:47.991Z",
+      "duration_ms": 300000,
+      "summary": "Implemented CREATE TABLE AS SELECT (CTAS). Parser + engine. Infers schema from query results, creates table + bulk insert. Works with WHERE filters and computed columns."
     }
   ],
   "focusProjects": [
@@ -861,6 +872,10 @@
     {
       "time": "2026-04-14T17:24:39.989Z",
       "msg": "Added T58 (EXPLORE) after end: HenryDB: performance benchmarks — how fast is insert/select/join with 10K+ rows?"
+    },
+    {
+      "time": "2026-04-14T17:30:47.215Z",
+      "msg": "Added T59 (BUILD) after end: HenryDB: CREATE TABLE AS SELECT (CTAS) — create table from query results"
     }
   ]
 }
