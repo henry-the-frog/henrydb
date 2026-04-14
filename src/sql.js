@@ -402,7 +402,10 @@ export function parse(sql) {
       }
       // Optional SEPARATOR for GROUP_CONCAT
       let separator = ',';
-      if (isKeyword('SEPARATOR')) {
+      if (func === 'GROUP_CONCAT' && match(',')) {
+        // SQLite-style: GROUP_CONCAT(val, ',')
+        separator = advance().value;
+      } else if (isKeyword('SEPARATOR')) {
         advance();
         separator = advance().value; // STRING literal
       }
