@@ -5,15 +5,19 @@ A complete SQL database engine built from scratch in JavaScript. Features MVCC t
 ## Features
 
 ### SQL Support
-- **DDL**: CREATE/DROP TABLE, ALTER TABLE, CREATE INDEX, CREATE VIEW
-- **DML**: SELECT, INSERT, UPDATE, DELETE, UPSERT (ON CONFLICT DO UPDATE)
-- **Queries**: JOINs (INNER, LEFT, RIGHT, CROSS, self), subqueries (scalar, correlated, EXISTS), CTEs (WITH), UNION/INTERSECT/EXCEPT
-- **Aggregates**: COUNT, SUM, AVG, MIN, MAX with GROUP BY + HAVING
-- **Window Functions**: ROW_NUMBER, RANK, DENSE_RANK, SUM/AVG/COUNT OVER (PARTITION BY ... ORDER BY ...)
-- **Expressions**: CASE/WHEN, BETWEEN, LIKE, IN, IS NULL, COALESCE, NULLIF, GREATEST, LEAST
+- **DDL**: CREATE/DROP TABLE, ALTER TABLE, CREATE INDEX, CREATE VIEW, CREATE MATERIALIZED VIEW
+- **DML**: SELECT, INSERT, UPDATE, DELETE, UPSERT (ON CONFLICT), MERGE (SQL:2003)
+- **Queries**: JOINs (INNER, LEFT, RIGHT, CROSS, self, LATERAL), subqueries (scalar, correlated, EXISTS), CTEs (WITH, WITH RECURSIVE), UNION/INTERSECT/EXCEPT (ALL)
+- **Aggregates**: COUNT, SUM, AVG, MIN, MAX, ARRAY_AGG, STRING_AGG, COUNT(DISTINCT) with GROUP BY + HAVING
+- **Window Functions**: ROW_NUMBER, RANK, DENSE_RANK, NTILE, LAG, LEAD, SUM/AVG/COUNT OVER (PARTITION BY ... ORDER BY ...)
+- **Expressions**: CASE/WHEN, BETWEEN, LIKE, ILIKE, SIMILAR TO (regex), IN, IS NULL, COALESCE, NULLIF, GREATEST, LEAST
 - **ORDER BY**: ASC/DESC, NULLS FIRST/LAST, ordinal positions, expression ordering
-- **JSON Functions**: JSON_EXTRACT (with path navigation `$.key`, `$.array[0]`), JSON_TYPE, JSON_ARRAY_LENGTH, JSON_OBJECT, JSON_ARRAY, JSON_VALID
-- **Other**: PREPARE/EXECUTE, RETURNING clause, GENERATE_SERIES, EXPLAIN ANALYZE, GROUP BY alias/ordinal
+- **JSON Functions**: JSON_EXTRACT (path navigation), JSON_TYPE, JSON_ARRAY_LENGTH, JSON_OBJECT, JSON_ARRAY, JSON_VALID
+- **Date Functions**: DATE_ADD, DATE_DIFF, DATE_TRUNC, EXTRACT (YEAR/MONTH/DAY)
+- **Math Functions**: POWER, SQRT, LOG, EXP, CEIL, FLOOR, ABS, ROUND
+- **String Functions**: UPPER, LOWER, LENGTH, SUBSTR, POSITION, TRIM, REPLACE, CONCAT
+- **Advanced**: GROUPING SETS/ROLLUP/CUBE, DISTINCT ON, UPDATE FROM, DELETE USING, LATERAL JOIN, MERGE
+- **Other**: PREPARE/EXECUTE, RETURNING clause, GENERATE_SERIES, EXPLAIN ANALYZE, SERIAL columns, sequences (NEXTVAL/CURRVAL), generated columns, information_schema, CAST, FETCH FIRST N ROWS, CSV import/export
 
 ### Storage & Transactions
 - **MVCC**: Snapshot isolation with serializable snapshot isolation (SSI)
@@ -33,8 +37,8 @@ A complete SQL database engine built from scratch in JavaScript. Features MVCC t
 ### Architecture
 ```
 src/
-├── sql.js           # SQL parser (2200 lines) — tokenizer + recursive descent
-├── db.js            # Query evaluator + engine (6200 lines) — the core
+├── sql.js           # SQL parser (2060 lines) — tokenizer + recursive descent
+├── db.js            # Query evaluator + engine (6712 lines) — the core
 ├── transactional-db.js  # MVCC transaction manager
 ├── decorrelate.js   # Subquery decorrelation optimizer
 ├── heap-file.js     # Page-based heap storage
@@ -97,7 +101,7 @@ WHERE l_shipdate >= '1995-09-01' AND l_shipdate < '1995-10-01';
 
 ## Tests
 
-**666 test files** covering every feature:
+**673 test files** covering every feature:
 - SQL parsing (expressions, joins, subqueries, CTEs, window functions)
 - Query evaluation (aggregates, GROUP BY, HAVING, ORDER BY)
 - MVCC transactions (isolation levels, savepoints, rollback)
@@ -109,6 +113,9 @@ WHERE l_shipdate >= '1995-09-01' AND l_shipdate < '1995-10-01';
 - Multi-table JOINs (3-4 way, star schema)
 - TPC-H micro-benchmark (Q1, Q6, Q14)
 - E-commerce showcase (11 real-world queries)
+- Sequences, SERIAL, generated columns
+- MERGE, LATERAL JOIN, GROUPING SETS
+- CSV import/export, information_schema
 
 ```bash
 npm test
