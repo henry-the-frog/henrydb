@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-14T15:07:26.817Z",
+  "generated": "2026-04-14T15:27:41.726Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "",
-    "startedAt": "2026-04-14T15:07:26.817Z",
-    "taskId": "T12"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "HenryDB generated columns: parser + STORED column computation on INSERT/UPDATE + VIRTUAL computation on SELECT",
+    "completedAt": "2026-04-14T15:27:41.726Z",
+    "taskId": "T24",
+    "summary": "Generated columns implemented (STORED/VIRTUAL). Found and fixed CRITICAL arithmetic precedence bug — */% and +/- were at same precedence level, causing wrong results for ALL compound arithmetic in the entire DB. Also added GENERATED/ALWAYS/STORED/VIRTUAL/NO/ACTION keywords. 12 new tests, all core tests passing.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3821,64 +3823,117 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB deep feature: expression indexes + planner integration or file-backed persistence",
         "task": null,
-        "started": "2026-04-14T14:59:53.670Z"
+        "started": "2026-04-14T14:59:53.670Z",
+        "completed": "2026-04-14T15:01:08.169Z",
+        "duration_ms": 120000,
+        "summary": "Expression indexes done. Planned foreign key constraints as next deep feature: parser + enforcement + CASCADE actions. 2 BUILD tasks."
       },
       {
         "id": "T20",
         "mode": "BUILD",
         "task": "HenryDB foreign keys: parser support for REFERENCES clause in CREATE TABLE and standalone FOREIGN KEY",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-14T15:01:17.634Z",
+        "completed": "2026-04-14T15:06:32.893Z",
+        "duration_ms": 900000,
+        "summary": "Foreign key constraints implemented: table-level FOREIGN KEY parsing, column-level ON UPDATE, multi-column FKs, reverse FK registration, CASCADE/SET NULL/RESTRICT actions on DELETE. 13 tests, all passing. Core tests clean."
       },
       {
         "id": "T21",
         "mode": "BUILD",
         "task": "HenryDB foreign keys: enforcement during INSERT/UPDATE/DELETE + CASCADE/SET NULL/RESTRICT actions",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-14T15:06:56.228Z",
+        "completed": "2026-04-14T15:06:56.371Z",
+        "duration_ms": 5000,
+        "summary": "Already completed in T20 — enforcement was implemented together with parser changes."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
         "plan_ref": "10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-14T15:07:11.748Z",
+        "completed": "2026-04-14T15:07:11.891Z",
+        "duration_ms": 5000,
+        "summary": "Orphan placeholder, plan_ref T10 builds complete (T20-T21). Skipping."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": null
+        "status": "done",
+        "task": null,
+        "started": "2026-04-14T15:07:26.782Z",
+        "completed": "2026-04-14T15:08:05.961Z",
+        "duration_ms": 60000,
+        "summary": "Maintenance: workspace git commit done, both projects clean and pushed. No pending issues."
       },
       {
         "id": "T13",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-14T15:08:17.197Z",
+        "completed": "2026-04-14T15:09:54.964Z",
+        "duration_ms": 300000,
+        "summary": "EXPLORE stress-testing: self-referential FKs work (SET NULL + CASCADE), circular refs work. Found bug: UPDATE did not validate FK constraints. Fixed. All tests passing."
       },
       {
         "id": "T14",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-14T15:10:21.588Z",
+        "completed": "2026-04-14T15:11:50.511Z",
+        "duration_ms": 300000,
+        "summary": "EXPLORE monkey-lang: tree-walker/VM parity verified (9/9 tests). Found bug: compound assignment (set x += 1;) missing semicolon consumption. Fixed. 516/516 passing."
+      },
+      {
+        "id": "T22",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess next feature: prepared statements vs generated columns vs stored procedures for HenryDB",
+        "started": "2026-04-14T15:13:06.845Z",
+        "completed": "2026-04-14T15:19:22.185Z",
+        "duration_ms": 120000,
+        "summary": "Prepared statements already exist (52 tests). Choosing generated columns (STORED/VIRTUAL) as next feature — exercises expression evaluation infrastructure from expression indexes."
+      },
+      {
+        "id": "T23",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan HenryDB prepared statements (parameterized queries, plan cache, SQL injection safety)",
+        "task": null,
+        "started": "2026-04-14T15:19:38.146Z"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "HenryDB generated columns: parser + STORED column computation on INSERT/UPDATE + VIRTUAL computation on SELECT",
+        "status": "upcoming",
+        "plan_ref": "T23"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 18,
-    "blocksTotal": 21,
+    "blocksCompleted": 24,
+    "blocksTotal": 24,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 10,
-      "MAINTAIN": 2
+      "THINK": 4,
+      "PLAN": 4,
+      "BUILD": 11,
+      "MAINTAIN": 3,
+      "EXPLORE": 2
     }
   },
   "artifacts": [

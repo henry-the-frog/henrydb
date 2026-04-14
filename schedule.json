@@ -200,23 +200,66 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": null,
-      "started": "2026-04-14T15:07:26.782Z"
+      "started": "2026-04-14T15:07:26.782Z",
+      "completed": "2026-04-14T15:08:05.961Z",
+      "duration_ms": 60000,
+      "summary": "Maintenance: workspace git commit done, both projects clean and pushed. No pending issues."
     },
     {
       "id": "T13",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T15:08:17.197Z",
+      "completed": "2026-04-14T15:09:54.964Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE stress-testing: self-referential FKs work (SET NULL + CASCADE), circular refs work. Found bug: UPDATE did not validate FK constraints. Fixed. All tests passing."
     },
     {
       "id": "T14",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T15:10:21.588Z",
+      "completed": "2026-04-14T15:11:50.511Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE monkey-lang: tree-walker/VM parity verified (9/9 tests). Found bug: compound assignment (set x += 1;) missing semicolon consumption. Fixed. 516/516 passing."
+    },
+    {
+      "id": "T22",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess next feature: prepared statements vs generated columns vs stored procedures for HenryDB",
+      "started": "2026-04-14T15:13:06.845Z",
+      "completed": "2026-04-14T15:19:22.185Z",
+      "duration_ms": 120000,
+      "summary": "Prepared statements already exist (52 tests). Choosing generated columns (STORED/VIRTUAL) as next feature — exercises expression evaluation infrastructure from expression indexes."
+    },
+    {
+      "id": "T23",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan HenryDB prepared statements (parameterized queries, plan cache, SQL injection safety)",
+      "task": null,
+      "started": "2026-04-14T15:19:38.146Z",
+      "completed": "2026-04-14T15:19:58.027Z",
+      "duration_ms": 60000,
+      "summary": "Planned generated columns: parser + STORED/VIRTUAL modes + INSERT/UPDATE/SELECT integration. 1 BUILD task."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "HenryDB generated columns: parser + STORED column computation on INSERT/UPDATE + VIRTUAL computation on SELECT",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-14T15:20:12.394Z",
+      "completed": "2026-04-14T15:27:41.690Z",
+      "duration_ms": 900000,
+      "summary": "Generated columns implemented (STORED/VIRTUAL). Found and fixed CRITICAL arithmetic precedence bug — */% and +/- were at same precedence level, causing wrong results for ALL compound arithmetic in the entire DB. Also added GENERATED/ALWAYS/STORED/VIRTUAL/NO/ACTION keywords. 12 new tests, all core tests passing."
     }
   ],
   "focusProjects": [
@@ -296,6 +339,18 @@
     {
       "time": "2026-04-14T15:01:02.027Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-14T15:12:39.040Z",
+      "msg": "Added T22 (THINK) after end: Assess next feature: prepared statements vs generated columns vs stored procedures for HenryDB"
+    },
+    {
+      "time": "2026-04-14T15:12:44.496Z",
+      "msg": "Added T23 (PLAN) after end: Plan HenryDB prepared statements (parameterized queries, plan cache, SQL injection safety)"
+    },
+    {
+      "time": "2026-04-14T15:19:50.146Z",
+      "msg": "PLAN T23 filled 1 BUILD tasks"
     }
   ]
 }
