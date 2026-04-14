@@ -1047,6 +1047,39 @@
       "completed": "2026-04-14T18:43:38.450Z",
       "duration_ms": 600000,
       "summary": "Found and fixed bug #16: CTAS called execute() instead of execute_ast(). Persistence round-trip works for CTAS, MERGE results, FK constraints. All survive save/restore."
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: COALESCE with 3+ arguments (verify)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:44:13.147Z",
+      "completed": "2026-04-14T18:44:27.865Z",
+      "duration_ms": 30000,
+      "summary": "COALESCE with 3+ args already works. Verified with null chains up to 5 args."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: negative array indexing (arr[-1] → last element) — verify it works",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:44:38.741Z",
+      "completed": "2026-04-14T18:44:57.340Z",
+      "duration_ms": 30000,
+      "summary": "Negative indexing already works for both arrays and strings. arr[-1] → last element."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: GROUP_CONCAT/STRING_AGG aggregate function",
+      "project": "henrydb",
+      "started": "2026-04-14T18:45:10.956Z",
+      "completed": "2026-04-14T18:46:22.954Z",
+      "duration_ms": 300000,
+      "summary": "GROUP_CONCAT now supports SQLite-style comma separator: GROUP_CONCAT(val, sep). Was only supporting SEPARATOR keyword. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1430,6 +1463,18 @@
     {
       "time": "2026-04-14T18:42:24.693Z",
       "msg": "Added T96 (EXPLORE) after end: HenryDB: persistence round-trip for MERGE, UPDATE FROM, DELETE USING, CTAS — do new features survive save/restore?"
+    },
+    {
+      "time": "2026-04-14T18:44:03.757Z",
+      "msg": "Added T97 (BUILD) after end: HenryDB: COALESCE with 3+ arguments (verify)"
+    },
+    {
+      "time": "2026-04-14T18:44:03.875Z",
+      "msg": "Added T98 (BUILD) after end: Monkey-lang: negative array indexing (arr[-1] → last element) — verify it works"
+    },
+    {
+      "time": "2026-04-14T18:45:05.310Z",
+      "msg": "Added T99 (BUILD) after end: HenryDB: GROUP_CONCAT/STRING_AGG aggregate function"
     }
   ]
 }

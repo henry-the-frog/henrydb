@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T18:43:38.486Z",
+  "generated": "2026-04-14T18:46:22.990Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB: persistence round-trip for MERGE, UPDATE FROM, DELETE USING, CTAS — do new features survive save/restore?",
-    "completedAt": "2026-04-14T18:43:38.486Z",
-    "taskId": "T96",
-    "summary": "Found and fixed bug #16: CTAS called execute() instead of execute_ast(). Persistence round-trip works for CTAS, MERGE results, FK constraints. All survive save/restore.",
-    "durationMs": 600000
+    "mode": "BUILD",
+    "task": "HenryDB: GROUP_CONCAT/STRING_AGG aggregate function",
+    "completedAt": "2026-04-14T18:46:22.990Z",
+    "taskId": "T99",
+    "summary": "GROUP_CONCAT now supports SQLite-style comma separator: GROUP_CONCAT(val, sep). Was only supporting SEPARATOR keyword. Tests passing.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 95,
+    "blocksCompleted": 98,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 64,
+      "BUILD": 67,
       "MAINTAIN": 5,
       "EXPLORE": 17
     }
