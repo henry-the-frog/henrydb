@@ -959,6 +959,28 @@
       "completed": "2026-04-14T18:35:53.617Z",
       "duration_ms": 900000,
       "summary": "Comprehensive showcase test (17 subtests). Fixed const destructuring. Restored math stdlib (sqrt/pow/sin/cos/floor/ceil/PI/E) and string builtins (starts_with/ends_with/slice/chars). 545/545 passing."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: UPDATE ... RETURNING * (return modified rows)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:36:41.284Z",
+      "completed": "2026-04-14T18:39:41.937Z",
+      "duration_ms": 600000,
+      "summary": "UPDATE RETURNING + DELETE RETURNING. Parser + engine. Both return affected rows. Tests passing."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: DELETE ... RETURNING * (return deleted rows)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:39:49.657Z",
+      "completed": "2026-04-14T18:39:49.801Z",
+      "duration_ms": 0,
+      "summary": "Done with T89 - DELETE RETURNING already implemented."
     }
   ],
   "focusProjects": [
@@ -1310,6 +1332,14 @@
     {
       "time": "2026-04-14T18:31:34.605Z",
       "msg": "Added T88 (BUILD) after end: Monkey-lang: write a comprehensive showcase test exercising ALL new features together"
+    },
+    {
+      "time": "2026-04-14T18:36:24.605Z",
+      "msg": "Added T89 (BUILD) after end: HenryDB: UPDATE ... RETURNING * (return modified rows)"
+    },
+    {
+      "time": "2026-04-14T18:36:24.725Z",
+      "msg": "Added T90 (BUILD) after end: HenryDB: DELETE ... RETURNING * (return deleted rows)"
     }
   ]
 }
