@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T19:19:12.984Z",
+  "generated": "2026-04-14T19:22:24.554Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: NATURAL JOIN (auto-join on matching column names)",
-    "completedAt": "2026-04-14T19:19:12.984Z",
-    "taskId": "T114",
-    "summary": "NATURAL JOIN attempt — hit column name overwrite bug in join merge. Reverted. Need deeper refactor of join merge to preserve table-qualified names. Deferred.",
-    "durationMs": 900000
+    "task": "HenryDB: ARRAY_AGG aggregate function",
+    "completedAt": "2026-04-14T19:22:24.554Z",
+    "taskId": "T116",
+    "summary": "ARRAY_AGG / JSON_AGG aggregate functions. Collects values into JSON array. Tests passing.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 113,
+    "blocksCompleted": 115,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 82,
+      "BUILD": 84,
       "MAINTAIN": 5,
       "EXPLORE": 17
     }

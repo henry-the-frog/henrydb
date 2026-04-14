@@ -1245,6 +1245,28 @@
       "completed": "2026-04-14T19:19:12.947Z",
       "duration_ms": 900000,
       "summary": "NATURAL JOIN attempt — hit column name overwrite bug in join merge. Reverted. Need deeper refactor of join merge to preserve table-qualified names. Deferred."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: string.indexOf() builtin",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:19:58.170Z",
+      "completed": "2026-04-14T19:20:27.413Z",
+      "duration_ms": 30000,
+      "summary": "indexOf already exists. Verified with method syntax and function call syntax."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ARRAY_AGG aggregate function",
+      "project": "henrydb",
+      "started": "2026-04-14T19:20:45.216Z",
+      "completed": "2026-04-14T19:22:24.517Z",
+      "duration_ms": 300000,
+      "summary": "ARRAY_AGG / JSON_AGG aggregate functions. Collects values into JSON array. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1700,6 +1722,14 @@
     {
       "time": "2026-04-14T19:06:54.604Z",
       "msg": "Added T114 (BUILD) after end: HenryDB: NATURAL JOIN (auto-join on matching column names)"
+    },
+    {
+      "time": "2026-04-14T19:19:47.906Z",
+      "msg": "Added T115 (BUILD) after end: Monkey-lang: string.indexOf() builtin"
+    },
+    {
+      "time": "2026-04-14T19:20:35.822Z",
+      "msg": "Added T116 (BUILD) after end: HenryDB: ARRAY_AGG aggregate function"
     }
   ]
 }
