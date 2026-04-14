@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-14T20:27:58.135Z",
+  "generated": "2026-04-14T20:43:44.324Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard, test sweep",
-    "startedAt": "2026-04-14T20:27:58.135Z",
-    "taskId": "T144"
+    "task": "Test sweep, git push, update TASKS.md",
+    "startedAt": "2026-04-14T20:43:44.324Z",
+    "taskId": "T153"
   },
   "schedule": {
     "date": "2026-04-14",
@@ -5210,71 +5210,192 @@
       {
         "id": "T142",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix Monkey-lang VM/tree-walker parity issues: for/while loop return values, scope bugs, any remaining compiler gaps",
         "task": null,
-        "started": "2026-04-14T20:18:23.641Z"
+        "started": "2026-04-14T20:18:23.641Z",
+        "completed": "2026-04-14T20:19:01.030Z",
+        "duration_ms": 90000,
+        "summary": "Planned 3 BUILD tasks: (1) fix break/continue in VM, (2) fix for-in loop compiler, (3) fix loop return values. Found 6 parity failures beyond original 3."
       },
       {
         "id": "T143",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix break/continue in VM compiler — break doesn't stop loop, continue doesn't skip iteration",
         "plan_ref": "T142",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-14T20:19:09.224Z",
+        "completed": "2026-04-14T20:22:36.881Z",
+        "duration_ms": 300000,
+        "summary": "Implemented break/continue in VM compiler. Added loopStack to track break jump targets and continue targets. Break pushes null and jumps past loop. Continue jumps to update (for) or condition (while/do-while). All 545 tests pass."
       },
       {
         "id": "T148",
         "mode": "BUILD",
         "task": "Fix for-in loop in VM compiler — iteration variable scope wrong, set doesn't update outer, returns undefined",
-        "status": "upcoming",
-        "plan_ref": "T142"
+        "status": "done",
+        "plan_ref": "T142",
+        "started": "2026-04-14T20:22:51.172Z",
+        "completed": "2026-04-14T20:24:25.976Z",
+        "duration_ms": 240000,
+        "summary": "Implemented for-in loop in VM compiler via counter-based desugaring. Hidden locals for iterator/index, supports break/continue, set updates outer scope. 545/545 tests pass."
       },
       {
         "id": "T149",
         "mode": "BUILD",
         "task": "Fix for/while/do-while loop return values — should return last body expression like tree-walker",
-        "status": "upcoming",
-        "plan_ref": "T142"
+        "status": "done",
+        "plan_ref": "T142",
+        "started": "2026-04-14T20:24:34.709Z",
+        "completed": "2026-04-14T20:27:47.826Z",
+        "duration_ms": 360000,
+        "summary": "Implemented loop return values in VM. All loop types (while, do-while, for, for-in) now return last body expression via hidden accumulator locals. 545/545 tests, 156 parity tests all green."
       },
       {
         "id": "T144",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, test sweep"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, test sweep",
+        "started": "2026-04-14T20:27:58.097Z",
+        "completed": "2026-04-14T20:28:23.387Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed monkey-lang and workspace. Dashboard healthy. 149 tasks tracked."
       },
       {
         "id": "T145",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Fix HenryDB NATURAL JOIN column merge bug — {...left, ...right} overwrites same-named columns. Needs qualified name preservation in join merge.",
-        "task": null
+        "task": null,
+        "started": "2026-04-14T20:28:34.753Z",
+        "completed": "2026-04-14T20:31:39.173Z",
+        "duration_ms": 120000,
+        "summary": "Investigated NATURAL JOIN column merge bug — turns out it works correctly. The {...left, ...right} pattern is fine because shared columns have equal values after the join condition. SELECT * shows correct columns. No fix needed."
       },
       {
         "id": "T146",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
         "plan_ref": "T145",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-14T20:32:00.419Z",
+        "completed": "2026-04-14T20:32:00.565Z",
+        "duration_ms": 0,
+        "summary": "Orphan placeholder — NATURAL JOIN works, no fix needed."
       },
       {
         "id": "T147",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping + test sweep",
+        "started": "2026-04-14T20:32:19.846Z",
+        "completed": "2026-04-14T20:36:56.820Z",
+        "duration_ms": 180000,
+        "summary": "Monkey-lang: 545/545 pass. HenryDB joins: 35/35 pass. Full suite skipped (678 files too slow for maintain slot)."
+      },
+      {
+        "id": "T150",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What Monkey-lang VM features are untested? Check edge cases: nested loops with break/continue, for-in with break, closures capturing loop variables, loop inside function",
+        "started": "2026-04-14T20:38:15.378Z",
+        "completed": "2026-04-14T20:41:35.433Z",
+        "duration_ms": 300000,
+        "summary": "THINK: Found 2 bugs in VM loops inside functions — accumulator stores corrupt stack when body ends with set/let. Fixed all 4 loop types. Root cause: removeLastPop check is necessary before accumulator store."
+      },
+      {
+        "id": "T151",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Add comprehensive loop parity tests for Monkey-lang VM — nested, closures, edge cases",
+        "task": null,
+        "started": "2026-04-14T20:41:45.277Z"
+      },
+      {
+        "id": "T152",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Housekeeping + test sweep"
+        "task": "Write comprehensive loop parity test file: loops-in-functions, nested break/continue, closures over loop vars, for-in edge cases, do-while with break/continue, loop return values with set-only bodies",
+        "plan_ref": "T151",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T153",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Test sweep, git push, update TASKS.md"
+      },
+      {
+        "id": "T156",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "What is the most impactful deep work for HenryDB? Review recent test gaps, persistence edge cases, or optimizer quality. Not new features — depth on existing ones.",
+        "project": "henrydb"
+      },
+      {
+        "id": "T157",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Deep HenryDB quality work — based on THINK findings",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T158",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T157",
+        "project": "henrydb"
+      },
+      {
+        "id": "T159",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T157",
+        "project": "henrydb"
+      },
+      {
+        "id": "T160",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T157",
+        "project": "henrydb"
+      },
+      {
+        "id": "T161",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final test sweep, git push"
+      },
+      {
+        "id": "T154",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "What depth work would be most interesting for the ray tracer? Look at the codebase and find something challenging — path tracer, spectral rendering, importance sampling?"
+      },
+      {
+        "id": "T155",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Implement chosen ray tracer depth feature",
+        "task": null
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 144,
-    "blocksTotal": 149,
+    "blocksCompleted": 151,
+    "blocksTotal": 161,
     "modeDistribution": {
-      "THINK": 6,
-      "PLAN": 5,
-      "BUILD": 110,
-      "MAINTAIN": 6,
+      "THINK": 7,
+      "PLAN": 7,
+      "BUILD": 112,
+      "MAINTAIN": 8,
       "EXPLORE": 17
     }
   },

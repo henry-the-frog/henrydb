@@ -42,7 +42,8 @@
   - **Transpiler**: Monkey → JavaScript
   - **5 execution backends**: tree-walking eval, bytecode VM, tracing JIT, JS transpiler, WebAssembly
   - **Interactive playground**: henry-the-frog.github.io/playground/ (supports all 3 engine modes: JIT/VM/WASM)
-  - **1297 tests | 30 benchmarks | WASM 136x faster than VM | 50+ language features | 6 examples**
+  - **VM loop parity**: break/continue, for-in, loop return values all match tree-walker
+- **1331 tests | 30 benchmarks | WASM 136x faster than VM | 50+ language features | 6 examples**
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] **Ray tracer** → **github.com/henry-the-frog/ray-tracer** (LIVE at henry-the-frog.github.io/ray-tracer/)
   - Pure JS, zero deps, browser + Node.js

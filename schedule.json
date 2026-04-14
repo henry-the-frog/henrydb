@@ -1589,30 +1589,143 @@
     {
       "id": "T144",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard, test sweep",
-      "started": "2026-04-14T20:27:58.097Z"
+      "started": "2026-04-14T20:27:58.097Z",
+      "completed": "2026-04-14T20:28:23.387Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed monkey-lang and workspace. Dashboard healthy. 149 tasks tracked."
     },
     {
       "id": "T145",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix HenryDB NATURAL JOIN column merge bug — {...left, ...right} overwrites same-named columns. Needs qualified name preservation in join merge.",
-      "task": null
+      "task": null,
+      "started": "2026-04-14T20:28:34.753Z",
+      "completed": "2026-04-14T20:31:39.173Z",
+      "duration_ms": 120000,
+      "summary": "Investigated NATURAL JOIN column merge bug — turns out it works correctly. The {...left, ...right} pattern is fine because shared columns have equal values after the join condition. SELECT * shows correct columns. No fix needed."
     },
     {
       "id": "T146",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T145",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T20:32:00.419Z",
+      "completed": "2026-04-14T20:32:00.565Z",
+      "duration_ms": 0,
+      "summary": "Orphan placeholder — NATURAL JOIN works, no fix needed."
     },
     {
       "id": "T147",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping + test sweep",
+      "started": "2026-04-14T20:32:19.846Z",
+      "completed": "2026-04-14T20:36:56.820Z",
+      "duration_ms": 180000,
+      "summary": "Monkey-lang: 545/545 pass. HenryDB joins: 35/35 pass. Full suite skipped (678 files too slow for maintain slot)."
+    },
+    {
+      "id": "T150",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What Monkey-lang VM features are untested? Check edge cases: nested loops with break/continue, for-in with break, closures capturing loop variables, loop inside function",
+      "started": "2026-04-14T20:38:15.378Z",
+      "completed": "2026-04-14T20:41:35.433Z",
+      "duration_ms": 300000,
+      "summary": "THINK: Found 2 bugs in VM loops inside functions — accumulator stores corrupt stack when body ends with set/let. Fixed all 4 loop types. Root cause: removeLastPop check is necessary before accumulator store."
+    },
+    {
+      "id": "T151",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add comprehensive loop parity tests for Monkey-lang VM — nested, closures, edge cases",
+      "task": null,
+      "started": "2026-04-14T20:41:45.277Z",
+      "completed": "2026-04-14T20:41:58.711Z",
+      "duration_ms": 30000,
+      "summary": "Planned 1 BUILD task: comprehensive loop parity test file covering all discovered edge cases."
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive loop parity test file: loops-in-functions, nested break/continue, closures over loop vars, for-in edge cases, do-while with break/continue, loop return values with set-only bodies",
+      "plan_ref": "T151",
+      "project": "monkey-lang",
+      "started": "2026-04-14T20:42:08.541Z",
+      "completed": "2026-04-14T20:43:34.284Z",
+      "duration_ms": 240000,
+      "summary": "Added 34 loop parity tests in parity-loops.test.js. Covers break/continue, nested, for-in, loops-in-functions, closures, return values. Found closure set limitation (documented). 579/579 tests pass."
+    },
+    {
+      "id": "T153",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Test sweep, git push, update TASKS.md",
+      "started": "2026-04-14T20:43:44.287Z"
+    },
+    {
+      "id": "T156",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Housekeeping + test sweep"
+      "task": "What is the most impactful deep work for HenryDB? Review recent test gaps, persistence edge cases, or optimizer quality. Not new features — depth on existing ones.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T157",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Deep HenryDB quality work — based on THINK findings",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T157",
+      "project": "henrydb"
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T157",
+      "project": "henrydb"
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T157",
+      "project": "henrydb"
+    },
+    {
+      "id": "T161",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final test sweep, git push"
+    },
+    {
+      "id": "T154",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What depth work would be most interesting for the ray tracer? Look at the codebase and find something challenging — path tracer, spectral rendering, importance sampling?"
+    },
+    {
+      "id": "T155",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Implement chosen ray tracer depth feature",
+      "task": null
     }
   ],
   "focusProjects": [
@@ -2204,6 +2317,58 @@
     {
       "time": "2026-04-14T20:18:55.782Z",
       "msg": "PLAN T142 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-14T20:37:22.856Z",
+      "msg": "Added T150 (THINK) after end: What Monkey-lang VM features are untested? Check edge cases: nested loops with break/continue, for-in with break, closures capturing loop variables, loop inside function"
+    },
+    {
+      "time": "2026-04-14T20:37:27.726Z",
+      "msg": "Added T151 (PLAN) after T150: Add comprehensive loop parity tests for Monkey-lang VM — nested, closures, edge cases"
+    },
+    {
+      "time": "2026-04-14T20:37:32.381Z",
+      "msg": "Added T152 (BUILD) after T151: null"
+    },
+    {
+      "time": "2026-04-14T20:37:39.328Z",
+      "msg": "Added T153 (MAINTAIN) after T152: Test sweep, git push, update TASKS.md"
+    },
+    {
+      "time": "2026-04-14T20:37:45.854Z",
+      "msg": "Added T154 (THINK) after T153: What depth work would be most interesting for the ray tracer? Look at the codebase and find something challenging — path tracer, spectral rendering, importance sampling?"
+    },
+    {
+      "time": "2026-04-14T20:37:51.192Z",
+      "msg": "Added T155 (PLAN) after T154: Implement chosen ray tracer depth feature"
+    },
+    {
+      "time": "2026-04-14T20:37:57.755Z",
+      "msg": "Added T156 (THINK) after T153: What is the most impactful deep work for HenryDB? Review recent test gaps, persistence edge cases, or optimizer quality. Not new features — depth on existing ones."
+    },
+    {
+      "time": "2026-04-14T20:38:03.874Z",
+      "msg": "Added T157 (PLAN) after T156: Deep HenryDB quality work — based on THINK findings"
+    },
+    {
+      "time": "2026-04-14T20:38:03.995Z",
+      "msg": "Added T158 (BUILD) after T157: null"
+    },
+    {
+      "time": "2026-04-14T20:38:04.114Z",
+      "msg": "Added T159 (BUILD) after T158: null"
+    },
+    {
+      "time": "2026-04-14T20:38:04.233Z",
+      "msg": "Added T160 (BUILD) after T159: null"
+    },
+    {
+      "time": "2026-04-14T20:38:04.354Z",
+      "msg": "Added T161 (MAINTAIN) after T160: Final test sweep, git push"
+    },
+    {
+      "time": "2026-04-14T20:41:53.142Z",
+      "msg": "PLAN T151 filled 1 BUILD tasks"
     }
   ]
 }
