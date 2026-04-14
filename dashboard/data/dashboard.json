@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T02:51:41.472Z",
+  "generated": "2026-04-14T02:54:43.271Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: pg_catalog.pg_tables compatibility view",
-    "completedAt": "2026-04-14T02:51:41.472Z",
-    "taskId": "T177",
-    "summary": "pg_catalog compatibility views: pg_tables (schema, name, owner, hasindexes), pg_indexes (indexname, indexdef), pg_stat_user_tables (n_live_tup, last_analyze). Supports both pg_catalog.pg_tables and short pg_tables forms. WHERE filtering works.",
+    "task": "HenryDB: REGEXP_MATCHES function",
+    "completedAt": "2026-04-14T02:54:43.271Z",
+    "taskId": "T181",
+    "summary": "REGEXP_MATCHES (capture groups + global mode), REGEXP_REPLACE (with flags), REGEXP_COUNT. All 3 functions added to parser keyword set and function evaluator. 81 SQL tests pass.",
     "durationMs": 180000
   },
   "schedule": {
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 230,
+    "blocksCompleted": 231,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 194,
+      "BUILD": 195,
       "MAINTAIN": 17
     }
   },

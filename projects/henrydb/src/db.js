@@ -6882,6 +6882,51 @@ export class Database {
       case 'LTRIM': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).trimStart(); }
       case 'RTRIM': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).trimEnd(); }
       
+      // Regex functions
+      case 'REGEXP_MATCHES': {
+        const str = this._evalValue(args[0], row);
+        const pattern = this._evalValue(args[1], row);
+        if (str == null || pattern == null) return null;
+        const flags = args[2] ? String(this._evalValue(args[2], row)) : '';
+        try {
+          const re = new RegExp(String(pattern), flags);
+          const match = String(str).match(re);
+          if (!match) return null;
+          // If global flag, return all matches
+          if (flags.includes('g')) {
+            return [...String(str).matchAll(new RegExp(String(pattern), flags))].map(m => m[0]);
+          }
+          // Return capture groups (or full match if no groups)
+          return match.length > 1 ? match.slice(1) : [match[0]];
+        } catch (e) {
+          throw new Error(`Invalid regex pattern: ${pattern}`);
+        }
+      }
+      case 'REGEXP_REPLACE': {
+        const str = this._evalValue(args[0], row);
+        const pattern = this._evalValue(args[1], row);
+        const replacement = this._evalValue(args[2], row);
+        if (str == null) return null;
+        const flags = args[3] ? String(this._evalValue(args[3], row)) : '';
+        try {
+          return String(str).replace(new RegExp(String(pattern), flags), String(replacement || ''));
+        } catch (e) {
+          throw new Error(`Invalid regex pattern: ${pattern}`);
+        }
+      }
+      case 'REGEXP_COUNT': {
+        const str = this._evalValue(args[0], row);
+        const pattern = this._evalValue(args[1], row);
+        if (str == null || pattern == null) return 0;
+        const flags = args[2] ? String(this._evalValue(args[2], row)) : 'g';
+        try {
+          const matches = String(str).match(new RegExp(String(pattern), flags.includes('g') ? flags : flags + 'g'));
+          return matches ? matches.length : 0;
+        } catch (e) {
+          throw new Error(`Invalid regex pattern: ${pattern}`);
+        }
+      }
+      
       // Date/time functions
       case 'CURRENT_TIMESTAMP': case 'NOW': return new Date().toISOString();
       case 'CURRENT_DATE': return new Date().toISOString().split('T')[0];
