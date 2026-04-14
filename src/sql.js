@@ -35,7 +35,7 @@ const KEYWORDS = new Set([
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
   'GENERATED', 'ALWAYS', 'STORED', 'VIRTUAL',
-  'NO', 'ACTION',
+  'NO',
   'LTRIM', 'RTRIM', 'INSTR', 'PRINTF',
 ]);
 
@@ -258,7 +258,18 @@ export function parse(sql) {
   function parseSelect() {
     advance(); // SELECT
     let distinct = false;
-    if (isKeyword('DISTINCT')) { distinct = true; advance(); }
+    let distinctOn = null;
+    if (isKeyword('DISTINCT')) {
+      distinct = true;
+      advance();
+      if (isKeyword('ON')) {
+        advance(); // ON
+        expect('(');
+        distinctOn = [];
+        do { distinctOn.push(advance().value); } while (match(','));
+        expect(')');
+      }
+    }
     const columns = parseSelectList();
     let from = null;
     let where = null, orderBy = null, limit = null, offset = null;
@@ -291,7 +302,7 @@ export function parse(sql) {
     if (isKeyword('LIMIT')) { advance(); limit = advance().value; }
     if (isKeyword('OFFSET')) { advance(); offset = advance().value; }
 
-    let result = { type: 'SELECT', distinct, columns, from, joins, where, groupBy, having, orderBy, limit, offset };
+    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset };
 
     // UNION / UNION ALL / INTERSECT / EXCEPT
     if (isKeyword('UNION')) {
@@ -1200,13 +1211,13 @@ export function parse(sql) {
             if (isKeyword('CASCADE')) { advance(); onDelete = 'CASCADE'; }
             else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onDelete = 'SET NULL'; }
             else if (isKeyword('RESTRICT')) { advance(); onDelete = 'RESTRICT'; }
-            else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onDelete = 'NO ACTION'; }
+            else if (isKeyword('NO')) { advance(); advance() /* ACTION */; onDelete = 'NO ACTION'; }
           } else if (isKeyword('UPDATE')) {
             advance();
             if (isKeyword('CASCADE')) { advance(); onUpdate = 'CASCADE'; }
             else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onUpdate = 'SET NULL'; }
             else if (isKeyword('RESTRICT')) { advance(); onUpdate = 'RESTRICT'; }
-            else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onUpdate = 'NO ACTION'; }
+            else if (isKeyword('NO')) { advance(); advance() /* ACTION */; onUpdate = 'NO ACTION'; }
           }
         }
         tableConstraints.push({ type: 'FOREIGN_KEY', columns: fkCols, references: { table: refTable, columns: refCols, onDelete, onUpdate } });
@@ -1290,13 +1301,13 @@ export function parse(sql) {
               if (isKeyword('CASCADE')) { advance(); onDelete = 'CASCADE'; }
               else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onDelete = 'SET NULL'; }
               else if (isKeyword('RESTRICT')) { advance(); onDelete = 'RESTRICT'; }
-              else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onDelete = 'NO ACTION'; }
+              else if (isKeyword('NO')) { advance(); advance() /* ACTION */; onDelete = 'NO ACTION'; }
             } else if (isKeyword('UPDATE')) {
               advance();
               if (isKeyword('CASCADE')) { advance(); onUpdate = 'CASCADE'; }
               else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onUpdate = 'SET NULL'; }
               else if (isKeyword('RESTRICT')) { advance(); onUpdate = 'RESTRICT'; }
-              else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onUpdate = 'NO ACTION'; }
+              else if (isKeyword('NO')) { advance(); advance() /* ACTION */; onUpdate = 'NO ACTION'; }
             }
           }
           references = { table: refTable, column: refColumn, onDelete, onUpdate };

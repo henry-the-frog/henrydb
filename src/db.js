@@ -1638,12 +1638,25 @@ export class Database {
     let finalRows = projected;
     if (ast.distinct) {
       const seen = new Set();
-      finalRows = projected.filter(row => {
-        const key = JSON.stringify(row);
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
+      if (ast.distinctOn) {
+        // DISTINCT ON: keep first row per unique combination of ON columns
+        finalRows = projected.filter(row => {
+          const key = ast.distinctOn.map(col => {
+            const val = row[col];
+            return val === null ? 'NULL' : String(val);
+          }).join('\0');
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      } else {
+        finalRows = projected.filter(row => {
+          const key = JSON.stringify(row);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
       // Apply OFFSET and LIMIT after DISTINCT
       if (ast.offset) finalRows = finalRows.slice(ast.offset);
       if (ast.limit) finalRows = finalRows.slice(0, ast.limit);
