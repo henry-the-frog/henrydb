@@ -1328,6 +1328,14 @@ export function parse(sql) {
     const name = advance().value;
     expect('KEYWORD', 'ON');
     const table = advance().value;
+
+    // CREATE TABLE ... AS SELECT
+    if (isKeyword('AS')) {
+      advance(); // AS
+      const query = parseSelect();
+      return { type: 'CREATE_TABLE_AS', table, query, ifNotExists };
+    }
+
     expect('(');
     const columns = [];
     const expressions = [];

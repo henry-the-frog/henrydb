@@ -630,6 +630,39 @@ export class Database {
     return { type: 'OK', message: `Table ${ast.table} dropped` };
   }
 
+  _createTableAs(ast) {
+    // Execute the query to get the schema and data
+    const result = this.execute(ast.query);
+    if (!result.rows || result.rows.length === 0) {
+      // Empty result — create table with no rows but infer schema from query
+      // For now, create with no columns (this is a limitation)
+      throw new Error('CREATE TABLE AS with empty result set requires at least one row to infer schema');
+    }
+    
+    // Infer schema from first row
+    const firstRow = result.rows[0];
+    const columns = Object.keys(firstRow).filter(k => !k.includes('.')).map(name => {
+      const val = firstRow[name];
+      let type = 'TEXT';
+      if (typeof val === 'number') type = Number.isInteger(val) ? 'INTEGER' : 'REAL';
+      else if (typeof val === 'boolean') type = 'INTEGER';
+      return { name, type, primaryKey: false, notNull: false, check: null, defaultValue: null, references: null, generated: null };
+    });
+    
+    // Create the table
+    const createAst = { type: 'CREATE_TABLE', table: ast.table, columns, ifNotExists: ast.ifNotExists };
+    this._createTable(createAst);
+    
+    // Insert all rows
+    const table = this.tables.get(ast.table);
+    for (const row of result.rows) {
+      const values = columns.map(c => row[c.name] ?? null);
+      this._insertRow(table, null, values);
+    }
+    
+    return { type: 'OK', message: `Table ${ast.table} created with ${result.rows.length} rows` };
+  }
+
   _createIndex(ast) {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
