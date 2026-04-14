@@ -1267,6 +1267,17 @@
       "completed": "2026-04-14T19:22:24.517Z",
       "duration_ms": 300000,
       "summary": "ARRAY_AGG / JSON_AGG aggregate functions. Collects values into JSON array. Tests passing."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: GENERATE_SERIES table function",
+      "project": "henrydb",
+      "started": "2026-04-14T19:23:09.779Z",
+      "completed": "2026-04-14T19:23:40.069Z",
+      "duration_ms": 30000,
+      "summary": "GENERATE_SERIES already implemented and working. Verified with step parameter and expressions."
     }
   ],
   "focusProjects": [
@@ -1730,6 +1741,10 @@
     {
       "time": "2026-04-14T19:20:35.822Z",
       "msg": "Added T116 (BUILD) after end: HenryDB: ARRAY_AGG aggregate function"
+    },
+    {
+      "time": "2026-04-14T19:23:01.112Z",
+      "msg": "Added T117 (BUILD) after end: HenryDB: GENERATE_SERIES table function"
     }
   ]
 }
