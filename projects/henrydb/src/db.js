@@ -6261,6 +6261,46 @@ export class Database {
       // Date/time functions
       case 'CURRENT_TIMESTAMP': case 'NOW': return new Date().toISOString();
       case 'CURRENT_DATE': return new Date().toISOString().split('T')[0];
+      case 'DATE_ADD': {
+        // DATE_ADD(date, interval, unit)
+        const date = this._evalValue(args[0], row);
+        const interval = this._evalValue(args[1], row);
+        const unit = (this._evalValue(args[2], row) || 'day').toLowerCase();
+        const d = new Date(date);
+        switch (unit) {
+          case 'day': case 'days': d.setDate(d.getDate() + interval); break;
+          case 'month': case 'months': d.setMonth(d.getMonth() + interval); break;
+          case 'year': case 'years': d.setFullYear(d.getFullYear() + interval); break;
+          case 'hour': case 'hours': d.setHours(d.getHours() + interval); break;
+          default: throw new Error(`Unknown date unit: ${unit}`);
+        }
+        return d.toISOString().split('T')[0];
+      }
+      case 'DATE_DIFF': {
+        // DATE_DIFF(date1, date2, unit) — returns date1 - date2
+        const d1 = new Date(this._evalValue(args[0], row));
+        const d2 = new Date(this._evalValue(args[1], row));
+        const unit = (this._evalValue(args[2], row) || 'day').toLowerCase();
+        const diffMs = d1 - d2;
+        switch (unit) {
+          case 'day': case 'days': return Math.floor(diffMs / 86400000);
+          case 'hour': case 'hours': return Math.floor(diffMs / 3600000);
+          case 'month': case 'months': return (d1.getFullYear() - d2.getFullYear()) * 12 + d1.getMonth() - d2.getMonth();
+          case 'year': case 'years': return d1.getFullYear() - d2.getFullYear();
+          default: throw new Error(`Unknown date unit: ${unit}`);
+        }
+      }
+      case 'DATE_TRUNC': {
+        // DATE_TRUNC(unit, date)
+        const unit = (this._evalValue(args[0], row) || 'day').toLowerCase();
+        const d = new Date(this._evalValue(args[1], row));
+        switch (unit) {
+          case 'year': return `${d.getFullYear()}-01-01`;
+          case 'month': return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+          case 'day': return d.toISOString().split('T')[0];
+          default: throw new Error(`Unknown date trunc unit: ${unit}`);
+        }
+      }
       case 'STRFTIME': {
         const fmt = this._evalValue(args[0], row);
         const dateStr = args[1] ? this._evalValue(args[1], row) : new Date().toISOString();

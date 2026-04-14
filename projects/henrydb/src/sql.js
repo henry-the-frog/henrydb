@@ -28,7 +28,7 @@ const KEYWORDS = new Set([
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
   'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG',
-  'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS',
+  'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC',
   'CONFLICT', 'DO', 'NOTHING',
   'ANALYZE', 'RETURNING', 'USING', 'FIRST_VALUE', 'LAST_VALUE',
   'MATERIALIZED', 'REFRESH',
@@ -810,7 +810,7 @@ export function parse(sql) {
     // String functions in SELECT
     if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
-      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS'].includes(peek().value)) {
+      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
       const args = [];
@@ -1318,7 +1318,7 @@ export function parse(sql) {
 // Built-in string/null functions
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
-      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS'].includes(t.value)) {
+      'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC'].includes(t.value)) {
       // Only parse as function call if next token is '(' — otherwise treat as identifier
       if (tokens[pos + 1]?.type === '(') {
         const func = advance().value;
