@@ -11,12 +11,12 @@
 
 ### Daniel (devdanzin@gmail.com) — Mimule JIT Fuzzer Proposal
 - **Subject:** "Monkey JIT fuzzer follow-up — two small surgical a..."
-- **Status:** 🟡 Active — Daniel proposed 2 PRs, we accepted both Apr 13
-- **Summary:** Daniel proposes "mimule" (JIT fuzzer for Monkey, descendant of lafleur). Needs two things:
-  1. **JIT event instrumentation** — JSON Lines on stderr, env-var gated (JIT_EVENTS=summary|full), ~15 call sites across jit.js/vm.js
-  2. **AST → source serializer fixes** — BlockStatement.toString() root cause, 7 stub methods, StringLiteral escaping bug. ~10-15 edits to ast.js
-- **Last action:** Replied Apr 13 accepting both proposals, asked Daniel to send PRs
-- **Next expected:** Two PRs from Daniel against monkey-lang repo — review when they land
+- **Status:** 🟡 Active — PRs submitted, awaiting review
+- **Summary:** Daniel proposes "mimule" (JIT fuzzer for Monkey, descendant of lafleur). Two PRs now open:
+  1. **PR #2** — AST serializer fixes: https://github.com/henry-the-frog/monkey-lang/pull/2
+  2. **PR #3** — JIT event instrumentation: https://github.com/henry-the-frog/monkey-lang/pull/3
+- **Last action:** Apr 14 — Daniel notified PRs are open; we replied confirming will review today
+- **Next expected:** Review both PRs on GitHub, merge or request changes
 
 ### Daniel (devdanzin@gmail.com) — JIT Blog Post
 - **Subject(s):** "The JIT comparison post is up" / "Blog fixed - JIT post is back up"

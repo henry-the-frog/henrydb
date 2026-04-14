@@ -4,29 +4,78 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-14T14:15:23.718Z",
+      "completed": "2026-04-14T14:15:46.840Z",
+      "duration_ms": 60000,
+      "summary": "Reviewed state: knowledge debt from 261-task day is real priority, Daniel PRs urgent, queue order is correct, no modifications needed"
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Promote yesterday insights to scratch notes (parser audit pattern, persistence recovery lessons, DDL allowlist rot). Fix neural-net CI (failing since Apr 11). Plan HenryDB depth work.",
-      "task": null
+      "task": null,
+      "started": "2026-04-14T14:16:08.904Z",
+      "completed": "2026-04-14T14:16:37.650Z",
+      "duration_ms": 90000,
+      "summary": "Planned 3 BUILD tasks: knowledge debt payoff (scratch notes), neural-net CI fix, HenryDB expression indexes"
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "task": "Knowledge debt payoff: write 4-5 scratch notes for yesterday insights (parser audit pattern, tokenizer negative numbers, savepoint physicalization, let-binding compilation order, DDL WAL completeness)",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-14T14:17:01.030Z",
+      "completed": "2026-04-14T14:18:29.209Z",
+      "duration_ms": 300000,
+      "summary": "5 scratch notes written: parser-expression-audit, tokenizer-negative-numbers, savepoint-physicalization, monkey-let-binding-compilation, ddl-wal-completeness. INDEX.md updated. Git committed."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "task": "Fix neural-net CI remaining 23 legacy test failures (API mismatches: activation.forward, Network vs NeuralNetwork)",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-14T14:18:44.519Z",
+      "completed": "2026-04-14T14:26:25.792Z",
+      "duration_ms": 600000,
+      "summary": "Fixed all 19 neural-net test failures: VAE API alignment in autoencoder.test.js, createNetwork([sizes], activation) support, losses.mse.compute (not .forward), missing TransformerEncoderBlock/encodeText exports, Network.train data format. 1185/1185 passing, pushed to main."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "HenryDB expression indexes: implement CREATE INDEX with expression support and planner integration",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-14T14:26:42.509Z",
+      "completed": "2026-04-14T14:41:18.411Z",
+      "duration_ms": 1200000,
+      "summary": "Implemented expression indexes in HenryDB: parser accepts arbitrary expressions in CREATE INDEX, engine evaluates expressions for keys, INSERT/UPDATE/DELETE maintain expression indexes, _tryIndexScan matches WHERE expressions to index definitions, planner considers expression indexes for cost-based optimization. 11 new tests, all core tests passing. Pushed to main."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T14:42:06.659Z",
+      "completed": "2026-04-14T14:42:06.802Z",
+      "duration_ms": 5000,
+      "summary": "Orphan placeholder with no task defined, plan_ref T2 builds complete (T15-T17). Skipping."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-14T14:42:18.727Z",
+      "completed": "2026-04-14T14:46:04.941Z",
+      "duration_ms": 600000,
+      "summary": "MAINTAIN sweep: HenryDB core tests all clean (mvcc, transactions, savepoints, optimizer, explain, volcano, alter, views, triggers, window, cte, subquery, joins — all 0 failures). Monkey-Lang: found and fixed CRITICAL regression — readChar() body deleted by compound assignment commit (18915cbb), 442/459 tests failing. Restored readChar + added compound assignment token recognition. 459/459 passing."
     },
     {
       "id": "T5",
@@ -162,6 +211,10 @@
     {
       "time": "2026-04-14T14:01:43.727Z",
       "msg": "Added T14 (EXPLORE) after end: Consciousness research or trace-native language design"
+    },
+    {
+      "time": "2026-04-14T14:16:32.364Z",
+      "msg": "PLAN T2 filled 3 BUILD tasks"
     }
   ]
 }

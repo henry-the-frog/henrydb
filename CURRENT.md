@@ -8,9 +8,9 @@
 - **Focus:** HenryDB depth + Daniel PR review + Knowledge debt payoff
 
 ## Active Task
-- **Task:** T1 THINK — Review yesterday, depth check, knowledge debt assessment
-- **Project:** HenryDB + Monkey-Lang
-- **context-files:** memory/scratch/henrydb-persistence.md, memory/scratch/depth-testing-lessons.md, memory/failures.md
+- **Task:** T17 BUILD — DONE. Expression indexes implemented.
+- **Project:** HenryDB
+- **context-files:** src/db.js, src/sql.js, src/planner.js, src/expression-index.test.js
 
 ## Queue Summary (14 tasks)
 T1 THINK → T2 PLAN → T3 BUILD (henrydb) → T4 MAINTAIN
