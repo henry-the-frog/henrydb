@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T15:37:49.722Z",
+  "generated": "2026-04-14T15:46:02.964Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB differential fuzzer: compare SELECT results with SQLite for arithmetic correctness",
-    "completedAt": "2026-04-14T15:37:49.722Z",
-    "taskId": "T27",
-    "summary": "Differential fuzzer comparing HenryDB vs SQLite arithmetic. 60 tests (10 fixed + 50 random). Found parenthesized expression bug in parsePrimary — fixed. All tests match SQLite output.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "HenryDB: extend differential fuzzer to include WHERE clauses, JOIN conditions, and aggregate expressions",
+    "completedAt": "2026-04-14T15:46:02.964Z",
+    "taskId": "T28",
+    "summary": "Extended fuzzer with WHERE/JOIN/aggregate/ORDER BY tests. Found expression-based ORDER BY was broken (parser only captured first token, engine didnt evaluate expressions). Fixed parseOrderBy to use parseExpr and all 5 ORDER BY handlers. 11 new tests matching SQLite.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 27,
+    "blocksCompleted": 28,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 13,
+      "BUILD": 14,
       "MAINTAIN": 3,
       "EXPLORE": 3
     }

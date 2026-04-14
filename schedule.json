@@ -293,6 +293,39 @@
       "completed": "2026-04-14T15:37:49.685Z",
       "duration_ms": 300000,
       "summary": "Differential fuzzer comparing HenryDB vs SQLite arithmetic. 60 tests (10 fixed + 50 random). Found parenthesized expression bug in parsePrimary — fixed. All tests match SQLite output."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: extend differential fuzzer to include WHERE clauses, JOIN conditions, and aggregate expressions",
+      "project": "henrydb",
+      "started": "2026-04-14T15:39:14.248Z",
+      "completed": "2026-04-14T15:46:02.928Z",
+      "duration_ms": 600000,
+      "summary": "Extended fuzzer with WHERE/JOIN/aggregate/ORDER BY tests. Found expression-based ORDER BY was broken (parser only captured first token, engine didnt evaluate expressions). Fixed parseOrderBy to use parseExpr and all 5 ORDER BY handlers. 11 new tests matching SQLite."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CHECK constraints with complex expressions (should work now with precedence fix)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Monkey-lang: implement the JIT from Daniel's fork as a new feature",
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey-lang: const declarations (immutable bindings that error on reassignment via set)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -396,6 +429,26 @@
     {
       "time": "2026-04-14T15:28:39.261Z",
       "msg": "Added T27 (EXPLORE) after end: HenryDB differential fuzzer: compare SELECT results with SQLite for arithmetic correctness"
+    },
+    {
+      "time": "2026-04-14T15:38:30.166Z",
+      "msg": "Added T28 (BUILD) after end: HenryDB: extend differential fuzzer to include WHERE clauses, JOIN conditions, and aggregate expressions"
+    },
+    {
+      "time": "2026-04-14T15:38:37.829Z",
+      "msg": "Added T29 (BUILD) after end: HenryDB: CHECK constraints with complex expressions (should work now with precedence fix)"
+    },
+    {
+      "time": "2026-04-14T15:38:46.050Z",
+      "msg": "Added T30 (BUILD) after end: Monkey-lang: implement the JIT from Daniel's fork as a new feature"
+    },
+    {
+      "time": "2026-04-14T15:38:56.179Z",
+      "msg": "Removed T30: "
+    },
+    {
+      "time": "2026-04-14T15:39:02.390Z",
+      "msg": "Added T31 (BUILD) after end: Monkey-lang: const declarations (immutable bindings that error on reassignment via set)"
     }
   ]
 }
