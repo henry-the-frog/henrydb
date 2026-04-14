@@ -37,6 +37,7 @@ const KEYWORDS = new Set([
   'GENERATED', 'ALWAYS', 'STORED', 'VIRTUAL',
   'NO',
   'LTRIM', 'RTRIM', 'INSTR', 'PRINTF',
+  'USING',
 ]);
 
 export function tokenize(sql) {
@@ -1093,9 +1094,22 @@ export function parse(sql) {
     advance(); // DELETE
     expect('KEYWORD', 'FROM');
     const table = advance().value;
+    
+    // USING clause (multi-table DELETE)
+    let using = null;
+    if (isKeyword('USING')) {
+      advance(); // USING
+      const usingTable = advance().value;
+      let alias = null;
+      if (peek() && peek().type === 'IDENT' && !isKeyword('WHERE')) {
+        alias = advance().value;
+      }
+      using = { table: usingTable, alias: alias || usingTable };
+    }
+    
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
-    return { type: 'DELETE', table, where };
+    return { type: 'DELETE', table, where, using };
   }
 
   function parseAlter() {

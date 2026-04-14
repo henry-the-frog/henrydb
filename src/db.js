@@ -1877,14 +1877,14 @@ export class Database {
         // For each target row, find matching source rows
         for (const fromEntry of fromTableObj.heap.scan()) {
           const fromRow = this._valuesToRow(fromEntry.values, fromTableObj.schema, ast.from.table);
-          // Merge rows with aliases
-          const combined = { ...targetRow };
+          // Merge rows with proper prefixes
+          const combined = {};
+          for (const [k, v] of Object.entries(targetRow)) {
+            combined[k] = v;
+            combined[`${ast.table}.${k}`] = v;
+          }
           for (const [k, v] of Object.entries(fromRow)) {
             combined[`${fromAlias}.${k}`] = v;
-            // Also set without prefix if no conflict
-            if (!(k in combined) || k.includes('.')) {
-              combined[k] = v;
-            }
           }
           
           if (!ast.where || this._evalExpr(ast.where, combined)) {
@@ -2059,10 +2059,44 @@ export class Database {
     let deleted = 0;
     const toDelete = [];
 
-    for (const { pageId, slotIdx, values } of table.heap.scan()) {
-      const row = this._valuesToRow(values, table.schema, ast.table);
-      if (!ast.where || this._evalExpr(ast.where, row)) {
-        toDelete.push({ pageId, slotIdx });
+    if (ast.using) {
+      // DELETE ... USING: join target with source table
+      const usingTableObj = this.tables.get(ast.using.table);
+      if (!usingTableObj) throw new Error(`Table ${ast.using.table} not found`);
+      const usingAlias = ast.using.alias || ast.using.table;
+      
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const targetRow = this._valuesToRow(values, table.schema, ast.table);
+        
+        let matched = false;
+        for (const usingEntry of usingTableObj.heap.scan()) {
+          const usingRow = this._valuesToRow(usingEntry.values, usingTableObj.schema, ast.using.table);
+          const combined = {};
+          // Add target table columns with table prefix
+          for (const [k, v] of Object.entries(targetRow)) {
+            combined[k] = v;
+            combined[`${ast.table}.${k}`] = v;
+          }
+          // Add using table columns with alias prefix
+          for (const [k, v] of Object.entries(usingRow)) {
+            combined[`${usingAlias}.${k}`] = v;
+          }
+          
+          if (!ast.where || this._evalExpr(ast.where, combined)) {
+            matched = true;
+            break;
+          }
+        }
+        if (matched) {
+          toDelete.push({ pageId, slotIdx });
+        }
+      }
+    } else {
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        if (!ast.where || this._evalExpr(ast.where, row)) {
+          toDelete.push({ pageId, slotIdx });
+        }
       }
     }
 
