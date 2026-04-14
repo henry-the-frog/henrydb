@@ -860,6 +860,28 @@
       "completed": "2026-04-14T18:18:33.729Z",
       "duration_ms": 600000,
       "summary": "Fixed EXCEPT ALL and INTERSECT ALL — proper multiset (count-based) operations. Previous implementation was broken for ALL variants."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: default parameter values (fn(x, y = 10) { x + y })",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:19:01.664Z",
+      "completed": "2026-04-14T18:20:34.512Z",
+      "duration_ms": 600000,
+      "summary": "Default parameter values: fn(x, y=10). Parser detects = after param, evaluator uses default when arg missing. Works with rest+arrow. 528/528 passing."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LATERAL JOIN (LATERAL subquery can reference preceding tables)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:20:39.713Z",
+      "completed": "2026-04-14T18:21:00.117Z",
+      "duration_ms": 60000,
+      "summary": "LATERAL JOIN already fully implemented and working. Tested: top earner per department — correct."
     }
   ],
   "focusProjects": [
@@ -1175,6 +1197,14 @@
     {
       "time": "2026-04-14T18:14:24.877Z",
       "msg": "Added T79 (BUILD) after end: HenryDB: EXCEPT ALL and INTERSECT ALL"
+    },
+    {
+      "time": "2026-04-14T18:18:56.438Z",
+      "msg": "Added T80 (BUILD) after end: Monkey-lang: default parameter values (fn(x, y = 10) { x + y })"
+    },
+    {
+      "time": "2026-04-14T18:18:56.557Z",
+      "msg": "Added T81 (BUILD) after end: HenryDB: LATERAL JOIN (LATERAL subquery can reference preceding tables)"
     }
   ]
 }

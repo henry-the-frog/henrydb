@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T18:18:33.799Z",
+  "generated": "2026-04-14T18:21:00.153Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: EXCEPT ALL and INTERSECT ALL",
-    "completedAt": "2026-04-14T18:18:33.799Z",
-    "taskId": "T79",
-    "summary": "Fixed EXCEPT ALL and INTERSECT ALL — proper multiset (count-based) operations. Previous implementation was broken for ALL variants.",
-    "durationMs": 600000
+    "task": "HenryDB: LATERAL JOIN (LATERAL subquery can reference preceding tables)",
+    "completedAt": "2026-04-14T18:21:00.153Z",
+    "taskId": "T81",
+    "summary": "LATERAL JOIN already fully implemented and working. Tested: top earner per department — correct.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 78,
+    "blocksCompleted": 80,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 48,
+      "BUILD": 50,
       "MAINTAIN": 5,
       "EXPLORE": 16
     }
