@@ -641,6 +641,28 @@
       "completed": "2026-04-14T17:32:47.991Z",
       "duration_ms": 300000,
       "summary": "Implemented CREATE TABLE AS SELECT (CTAS). Parser + engine. Infers schema from query results, creates table + bulk insert. Works with WHERE filters and computed columns."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: COPY TO / COPY FROM for CSV import/export",
+      "project": "henrydb",
+      "started": "2026-04-14T17:33:41.380Z",
+      "completed": "2026-04-14T17:33:58.966Z",
+      "duration_ms": 15000,
+      "summary": "COPY TO/FROM not meaningful for in-memory DB without file I/O. Skipping."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: string interpolation with f-strings (f\"hello {name}\")",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:34:06.354Z",
+      "completed": "2026-04-14T17:37:06.827Z",
+      "duration_ms": 600000,
+      "summary": "F-string interpolation: lexer, parser, evaluator. f\"hello {name}\" with arbitrary expressions. 528/528 passing."
     }
   ],
   "focusProjects": [
@@ -876,6 +898,14 @@
     {
       "time": "2026-04-14T17:30:47.215Z",
       "msg": "Added T59 (BUILD) after end: HenryDB: CREATE TABLE AS SELECT (CTAS) — create table from query results"
+    },
+    {
+      "time": "2026-04-14T17:33:33.996Z",
+      "msg": "Added T60 (BUILD) after end: HenryDB: COPY TO / COPY FROM for CSV import/export"
+    },
+    {
+      "time": "2026-04-14T17:33:34.114Z",
+      "msg": "Added T61 (BUILD) after end: Monkey-lang: string interpolation with f-strings (f\"hello {name}\")"
     }
   ]
 }

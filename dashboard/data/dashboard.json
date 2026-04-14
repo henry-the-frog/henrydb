@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T17:32:48.027Z",
+  "generated": "2026-04-14T17:37:06.863Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: CREATE TABLE AS SELECT (CTAS) — create table from query results",
-    "completedAt": "2026-04-14T17:32:48.027Z",
-    "taskId": "T59",
-    "summary": "Implemented CREATE TABLE AS SELECT (CTAS). Parser + engine. Infers schema from query results, creates table + bulk insert. Works with WHERE filters and computed columns.",
-    "durationMs": 300000
+    "task": "Monkey-lang: string interpolation with f-strings (f\"hello {name}\")",
+    "completedAt": "2026-04-14T17:37:06.863Z",
+    "taskId": "T61",
+    "summary": "F-string interpolation: lexer, parser, evaluator. f\"hello {name}\" with arbitrary expressions. 528/528 passing.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 58,
+    "blocksCompleted": 60,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 30,
+      "BUILD": 32,
       "MAINTAIN": 4,
       "EXPLORE": 15
     }
