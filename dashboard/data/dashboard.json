@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T03:02:43.864Z",
+  "generated": "2026-04-14T03:04:49.243Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: CROSS APPLY / OUTER APPLY (SQL Server syntax for LATERAL)",
-    "completedAt": "2026-04-14T03:02:43.864Z",
-    "taskId": "T191",
-    "summary": "CROSS APPLY = CROSS JOIN LATERAL, OUTER APPLY = LEFT JOIN LATERAL. Parser handles APPLY keyword. Known issue: column name collision in LEFT LATERAL when right side is empty (pre-existing).",
+    "task": "HenryDB: BOOL_AND/BOOL_OR aggregate functions",
+    "completedAt": "2026-04-14T03:04:49.243Z",
+    "taskId": "T202",
+    "summary": "BOOL_AND, BOOL_OR, EVERY aggregate functions. Work with GROUP BY and without. NULL-safe. Added to both group-by computeAgg and non-group-by _computeAggregates paths.",
     "durationMs": 120000
   },
   "schedule": {
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 234,
+    "blocksCompleted": 238,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 198,
+      "BUILD": 202,
       "MAINTAIN": 17
     }
   },

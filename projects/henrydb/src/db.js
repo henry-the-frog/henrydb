@@ -5740,6 +5740,15 @@ export class Database {
           case 'ARRAY_AGG': {
             return (distinct ? [...new Set(values)] : values);
           }
+          case 'BOOL_AND':
+          case 'EVERY': {
+            const boolVals = (arg === '*' ? groupRows : values).filter(v => v != null);
+            return boolVals.length === 0 ? null : boolVals.every(v => !!v);
+          }
+          case 'BOOL_OR': {
+            const boolVals = (arg === '*' ? groupRows : values).filter(v => v != null);
+            return boolVals.length === 0 ? null : boolVals.some(v => !!v);
+          }
         }
       };
 
@@ -7164,6 +7173,19 @@ export class Database {
         }
         case 'ARRAY_AGG': {
           result[name] = col.distinct ? [...new Set(values)] : values;
+          break;
+        }
+        case 'BOOL_AND':
+        case 'EVERY': {
+          // Returns TRUE if all values are true/truthy, NULL if all are null
+          const boolVals = values.filter(v => v != null);
+          result[name] = boolVals.length === 0 ? null : boolVals.every(v => !!v);
+          break;
+        }
+        case 'BOOL_OR': {
+          // Returns TRUE if any value is true/truthy, NULL if all are null
+          const boolVals2 = values.filter(v => v != null);
+          result[name] = boolVals2.length === 0 ? null : boolVals2.some(v => !!v);
           break;
         }
       }

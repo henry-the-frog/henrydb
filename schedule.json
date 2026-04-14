@@ -2102,9 +2102,13 @@
     {
       "id": "T193",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: window function SUM with ROWS BETWEEN frame",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T03:03:02.930Z",
+      "completed": "2026-04-14T03:03:03.074Z",
+      "duration_ms": 0,
+      "summary": "Duplicate — already working (verified in T151)."
     },
     {
       "id": "T194",
@@ -2131,16 +2135,24 @@
     {
       "id": "T196",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement println (puts with newline return)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T03:03:09.180Z",
+      "completed": "2026-04-14T03:03:09.326Z",
+      "duration_ms": 0,
+      "summary": "Skipped — monkey-lang project not found."
     },
     {
       "id": "T197",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: EXPLAIN FORMAT TEXT (human-readable plan)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T03:03:16.387Z",
+      "completed": "2026-04-14T03:03:16.532Z",
+      "duration_ms": 0,
+      "summary": "Duplicate — covered by T143 (EXPLAIN with PostgreSQL-style cost estimates)."
     },
     {
       "id": "T198",
@@ -2189,9 +2201,13 @@
     {
       "id": "T202",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: BOOL_AND/BOOL_OR aggregate functions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T03:03:23.853Z",
+      "completed": "2026-04-14T03:04:49.207Z",
+      "duration_ms": 120000,
+      "summary": "BOOL_AND, BOOL_OR, EVERY aggregate functions. Work with GROUP BY and without. NULL-safe. Added to both group-by computeAgg and non-group-by _computeAggregates paths."
     },
     {
       "id": "T203",
