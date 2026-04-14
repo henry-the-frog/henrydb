@@ -1777,10 +1777,13 @@
     {
       "id": "T172",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: sequence support (CREATE SEQUENCE, NEXTVAL)",
       "project": "henrydb",
-      "started": "2026-04-14T00:26:26.833Z"
+      "started": "2026-04-14T00:26:26.833Z",
+      "completed": "2026-04-14T00:31:45.694Z",
+      "duration_ms": 300000,
+      "summary": "Sequences: CREATE SEQUENCE, NEXTVAL, CURRVAL, SETVAL. Cache bypass for non-deterministic functions. 3 tests."
     },
     {
       "id": "T173",
@@ -1792,6 +1795,28 @@
       "completed": "2026-04-14T00:26:17.340Z",
       "duration_ms": 180000,
       "summary": "53 comprehensive tests for all extended features. 387 total Monkey tests."
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: update README with latest features (try/catch, for-in, ternary, switch, slice, 387 tests)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: information_schema views (tables, columns)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T176",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: SERIAL/BIGSERIAL column type (auto-increment via sequences)",
+      "project": "henrydb",
+      "started": "2026-04-14T00:32:06.217Z"
     }
   ],
   "focusProjects": [
@@ -2455,6 +2480,18 @@
     {
       "time": "2026-04-14T00:23:07.417Z",
       "msg": "Added T173 (BUILD) after end: Monkey: final comprehensive test suite (50+ tests for new features)"
+    },
+    {
+      "time": "2026-04-14T00:31:57.814Z",
+      "msg": "Added T174 (BUILD) after end: Monkey: update README with latest features (try/catch, for-in, ternary, switch, slice, 387 tests)"
+    },
+    {
+      "time": "2026-04-14T00:31:57.934Z",
+      "msg": "Added T175 (BUILD) after end: HenryDB: information_schema views (tables, columns)"
+    },
+    {
+      "time": "2026-04-14T00:31:58.052Z",
+      "msg": "Added T176 (BUILD) after end: HenryDB: SERIAL/BIGSERIAL column type (auto-increment via sequences)"
     }
   ]
 }

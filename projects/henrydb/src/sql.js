@@ -1847,7 +1847,12 @@ export function parse(sql) {
     do {
       const tok = advance();
       const name = tok.originalValue || tok.value;
-      const dataType = advance().value;
+      let dataType = advance().value;
+      let isSerial = false;
+      if (dataType.toUpperCase() === 'SERIAL' || dataType.toUpperCase() === 'BIGSERIAL') {
+        isSerial = true;
+        dataType = dataType.toUpperCase() === 'BIGSERIAL' ? 'BIGINT' : 'INT';
+      }
       let primaryKey = false;
       let notNull = false;
       let unique = false;
@@ -1923,7 +1928,7 @@ export function parse(sql) {
         expect(')');
         if (isKeyword('STORED')) advance();
       }
-      columns.push({ name, type: dataType, primaryKey, notNull, unique, check, defaultValue: defaultVal, references, generated });
+      columns.push({ name, type: dataType, primaryKey, notNull: notNull || isSerial, unique, check, defaultValue: defaultVal, references, generated, serial: isSerial });
     } while (match(','));
     expect(')');
     // Optional: USING BTREE | USING HEAP (default: HEAP)

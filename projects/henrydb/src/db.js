@@ -1089,17 +1089,38 @@ export class Database {
       if (ast.ifNotExists) return { type: 'OK', message: `Table ${ast.table} already exists (IF NOT EXISTS)` };
       throw new Error(`Table ${ast.table} already exists`);
     }
-    const schema = ast.columns.map(c => ({
-      name: c.name,
-      type: c.type,
-      primaryKey: c.primaryKey || false,
-      notNull: c.notNull || false,
-      unique: c.unique || false,
-      check: c.check || null,
-      defaultValue: c.defaultValue ?? null,
-      references: c.references || null,
-      generated: c.generated || null,
-    }));
+    const schema = ast.columns.map(c => {
+      // Handle SERIAL columns: create sequence and set default
+      if (c.serial) {
+        const seqName = `${ast.table}_${c.name}_seq`;
+        this.sequences.set(seqName.toLowerCase(), {
+          current: 0, increment: 1, min: 1, max: Infinity,
+        });
+        return {
+          name: c.name,
+          type: c.type,
+          primaryKey: c.primaryKey || false,
+          notNull: true,
+          unique: c.unique || false,
+          check: c.check || null,
+          defaultValue: null,
+          references: c.references || null,
+          generated: null,
+          serial: seqName, // Store sequence name for auto-increment
+        };
+      }
+      return {
+        name: c.name,
+        type: c.type,
+        primaryKey: c.primaryKey || false,
+        notNull: c.notNull || false,
+        unique: c.unique || false,
+        check: c.check || null,
+        defaultValue: c.defaultValue ?? null,
+        references: c.references || null,
+        generated: c.generated || null,
+      };
+    });
     // Choose storage engine: BTREE (clustered) or HEAP (default)
     let heap;
     const pkCol = schema.find(c => c.primaryKey);
@@ -2017,6 +2038,18 @@ export class Database {
     }
 
     // Validate constraints
+    // Handle SERIAL columns: auto-increment if null
+    for (let i = 0; i < table.schema.length; i++) {
+      if (table.schema[i].serial && (orderedValues[i] === null || orderedValues[i] === undefined)) {
+        const seqName = table.schema[i].serial.toLowerCase();
+        const seq = this.sequences.get(seqName);
+        if (seq) {
+          seq.current += seq.increment;
+          orderedValues[i] = seq.current;
+        }
+      }
+    }
+
     // Compute generated/computed columns
     for (let i = 0; i < table.schema.length; i++) {
       if (table.schema[i].generated) {
