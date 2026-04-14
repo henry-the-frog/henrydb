@@ -39,6 +39,7 @@ const KEYWORDS = new Set([
   'LTRIM', 'RTRIM', 'INSTR', 'PRINTF',
   'USING',
   'MERGE', 'MATCHED',
+  'IGNORE',
 ]);
 
 export function tokenize(sql) {
@@ -1002,6 +1003,16 @@ export function parse(sql) {
 
   function parseInsert() {
     advance(); // INSERT
+    
+    // INSERT OR REPLACE / INSERT OR IGNORE
+    let orReplace = false;
+    let orIgnore = false;
+    if (isKeyword('OR')) {
+      advance(); // OR
+      if (isKeyword('REPLACE')) { advance(); orReplace = true; }
+      else if (isKeyword('IGNORE')) { advance(); orIgnore = true; }
+    }
+    
     expect('KEYWORD', 'INTO');
     const table = advance().value;
 
@@ -1071,7 +1082,7 @@ export function parse(sql) {
       }
     }
 
-    return { type: 'INSERT', table, columns, rows, onConflict, returning };
+    return { type: 'INSERT', table, columns, rows, onConflict, returning, orReplace, orIgnore };
   }
 
   function parseUpdate() {

@@ -1060,6 +1060,41 @@ export class Database {
     for (const row of ast.rows) {
       const values = row.map(r => r.value);
       
+      // INSERT OR REPLACE: delete conflicting row if exists
+      if (ast.orReplace) {
+        const pkIdx = table.schema.findIndex(c => c.primaryKey);
+        if (pkIdx >= 0) {
+          const orderedValues = this._orderValues(table, ast.columns, values);
+          for (const tuple of table.heap.scan()) {
+            if (tuple.values[pkIdx] === orderedValues[pkIdx]) {
+              table.heap.delete(tuple.pageId, tuple.slotIdx);
+              // Remove from indexes
+              for (const [colName, index] of table.indexes) {
+                const key = this._computeIndexKey(colName, tuple.values, table, ast.table);
+                try { index.delete(key, { pageId: tuple.pageId, slotIdx: tuple.slotIdx }); } catch {}
+              }
+              break;
+            }
+          }
+        }
+      }
+      
+      // INSERT OR IGNORE: skip if conflict
+      if (ast.orIgnore) {
+        const pkIdx = table.schema.findIndex(c => c.primaryKey);
+        if (pkIdx >= 0) {
+          const orderedValues = this._orderValues(table, ast.columns, values);
+          let conflict = false;
+          for (const tuple of table.heap.scan()) {
+            if (tuple.values[pkIdx] === orderedValues[pkIdx]) {
+              conflict = true;
+              break;
+            }
+          }
+          if (conflict) continue;
+        }
+      }
+      
       // UPSERT: ON CONFLICT handling
       if (ast.onConflict) {
         const pkIdx = table.schema.findIndex(c => c.primaryKey);
