@@ -38,7 +38,7 @@ const KEYWORDS = new Set([
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
-  'PIVOT', 'UNPIVOT',
+  'PIVOT', 'UNPIVOT', 'CONCURRENTLY',
 ]);
 
 export function tokenize(sql) {
@@ -2044,6 +2044,11 @@ export function parse(sql) {
 
   function parseCreateIndex(unique) {
     advance(); // INDEX
+    let concurrently = false;
+    if (isKeyword('CONCURRENTLY')) {
+      advance();
+      concurrently = true;
+    }
     let ifNotExists = false;
     if (isKeyword('IF')) {
       advance(); // IF
@@ -2080,7 +2085,7 @@ export function parse(sql) {
       advance();
       where = parseExpr();
     }
-    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, ifNotExists, indexType };
+    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, ifNotExists, indexType, concurrently };
   }
 
   function parseCreateView(orReplace = false) {

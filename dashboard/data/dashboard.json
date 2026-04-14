@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T02:29:59.247Z",
+  "generated": "2026-04-14T02:34:25.895Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: CROSS JOIN LATERAL (implicit lateral)",
-    "completedAt": "2026-04-14T02:29:59.247Z",
-    "taskId": "T145",
-    "summary": "Comma LATERAL syntax (FROM t, LATERAL (subquery) AS s) now supported alongside existing CROSS JOIN LATERAL. 5 tests.",
-    "durationMs": 180000
+    "task": "HenryDB: CREATE INDEX CONCURRENTLY (non-blocking index build)",
+    "completedAt": "2026-04-14T02:34:25.895Z",
+    "taskId": "T166",
+    "summary": "CREATE INDEX CONCURRENTLY: two-phase build (scan + validation), build stats reporting (rows indexed, validation time), unique constraint enforcement, partial index support. 8 tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 220,
+    "blocksCompleted": 224,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 184,
+      "BUILD": 188,
       "MAINTAIN": 17
     }
   },

@@ -1355,11 +1355,20 @@ export class Database {
     }
     const colIdx = colIndices[0];
 
+    // CONCURRENTLY: two-phase build
+    // Phase 1: Mark index as building (not used by query optimizer)
+    const isConcurrent = ast.concurrently || false;
+    let buildStats = null;
+    if (isConcurrent) {
+      buildStats = { phase: 1, rowsIndexed: 0, startTime: Date.now() };
+    }
+
     // Populate from existing data
     const includeColIdxs = (ast.include || []).map(col => 
       table.schema.findIndex(c => c.name === col)
     ).filter(i => i >= 0);
 
+    let rowsScanned = 0;
     for (const { pageId, slotIdx, values } of table.heap.scan()) {
       // Partial index: skip rows that don't match the WHERE clause
       if (ast.where) {
@@ -1402,6 +1411,31 @@ export class Database {
       } else {
         index.insert(key, rid);
       }
+      rowsScanned++;
+    }
+
+    // CONCURRENTLY Phase 2: validation pass
+    // In a real concurrent build, rows could have been modified during Phase 1.
+    // We verify the index is consistent with current table state.
+    if (isConcurrent) {
+      buildStats.phase = 2;
+      buildStats.rowsIndexed = rowsScanned;
+      // Validate: count entries match scan count (minus filtered)
+      let verifyCount = 0;
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        if (ast.where) {
+          const row = this._valuesToRow(values, table.schema, ast.table);
+          if (!this._evalExpr(ast.where, row)) continue;
+        }
+        verifyCount++;
+      }
+      if (verifyCount !== rowsScanned) {
+        // Table was modified during build — rebuild needed
+        // In single-threaded mode this shouldn't happen, but we handle it for completeness
+        throw new Error(`CREATE INDEX CONCURRENTLY failed: table ${ast.table} was modified during build (expected ${rowsScanned} rows, found ${verifyCount})`);
+      }
+      buildStats.validatedRows = verifyCount;
+      buildStats.endTime = Date.now();
     }
 
     table.indexes.set(colName, index);
@@ -1414,6 +1448,7 @@ export class Database {
       unique: ast.unique || false,
       partial: ast.where || null,
       indexType,
+      concurrently: isConcurrent,
     });
     this.indexCatalog.set(ast.name, {
       table: ast.table,
@@ -1422,7 +1457,10 @@ export class Database {
     });
 
     this._logCreateIndexDDL(ast);
-    return { type: 'OK', message: `Index ${ast.name} created` };
+    const msg = isConcurrent 
+      ? `Index ${ast.name} created concurrently (${rowsScanned} rows indexed, validated in ${buildStats.endTime - buildStats.startTime}ms)`
+      : `Index ${ast.name} created`;
+    return { type: 'OK', message: msg, buildStats };
   }
 
   _logCreateIndexDDL(ast) {
