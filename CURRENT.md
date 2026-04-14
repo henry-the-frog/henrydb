@@ -8,9 +8,9 @@
 - **Focus:** HenryDB depth + Daniel PR review + Knowledge debt payoff
 
 ## Active Task
-- **Task:** T17 BUILD — DONE. Expression indexes implemented.
+- **Task:** T20 BUILD — HenryDB foreign key parser support
 - **Project:** HenryDB
-- **context-files:** src/db.js, src/sql.js, src/planner.js, src/expression-index.test.js
+- **context-files:** src/sql.js, src/db.js
 
 ## Queue Summary (14 tasks)
 T1 THINK → T2 PLAN → T3 BUILD (henrydb) → T4 MAINTAIN

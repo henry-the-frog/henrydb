@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-14T14:56:08.824Z",
+  "generated": "2026-04-14T15:07:26.817Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Review Daniel PR #3: JIT event instrumentation — code review + integration test",
-    "completedAt": "2026-04-14T14:56:08.824Z",
-    "taskId": "T19",
-    "summary": "Reviewed Daniel PR #3 (JIT event instrumentation). Cannot merge — our repo has no JIT compiler (src/jit.js). Left comment explaining options. PR stays open pending JIT port.",
-    "durationMs": 300000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "",
+    "startedAt": "2026-04-14T15:07:26.817Z",
+    "taskId": "T12"
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3758,51 +3756,89 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Daniel PR review strategy and integration testing plan",
         "task": null,
-        "started": "2026-04-14T14:47:07.777Z"
+        "started": "2026-04-14T14:47:07.777Z",
+        "completed": "2026-04-14T14:47:39.242Z",
+        "duration_ms": 30000,
+        "summary": "2 Daniel PRs open: #2 AST serializer fix, #3 JIT event instrumentation. Planned 2 review BUILD tasks."
       },
       {
         "id": "T18",
         "mode": "BUILD",
         "task": "Review Daniel PR #2: AST toString() round-trip fix — code review + run tests",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-14T14:47:54.131Z",
+        "completed": "2026-04-14T14:54:56.785Z",
+        "duration_ms": 600000,
+        "summary": "Reviewed and merged Daniel PR #2 (AST round-trip toString). Applied manually due to path mismatch (fork uses projects/monkey-lang/ vs our flat src/). Adapted tests for our parser features, added back 5 missing AST classes. 50 AST round-trip tests passing. Approved, merged as 66170d6b, closed PR."
       },
       {
         "id": "T19",
         "mode": "BUILD",
         "task": "Review Daniel PR #3: JIT event instrumentation — code review + integration test",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-14T14:55:23.281Z",
+        "completed": "2026-04-14T14:56:08.788Z",
+        "duration_ms": 300000,
+        "summary": "Reviewed Daniel PR #3 (JIT event instrumentation). Cannot merge — our repo has no JIT compiler (src/jit.js). Left comment explaining options. PR stays open pending JIT port."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
         "plan_ref": "6",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-14T14:56:37.449Z",
+        "completed": "2026-04-14T14:56:37.593Z",
+        "duration_ms": 5000,
+        "summary": "Orphan placeholder, plan_ref T6 builds complete (T18-T19). Skipping."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": null
+        "status": "done",
+        "task": null,
+        "started": "2026-04-14T14:56:48.847Z",
+        "completed": "2026-04-14T14:59:05.707Z",
+        "duration_ms": 300000,
+        "summary": "MAINTAIN: Fixed ForInExpression.ident→.variable rename bug from AST PR merge. The PR renamed the property but evaluator still used old name. for-in loops broken (identifier not found: x). Fixed, 516/516 tests passing."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": null
+        "status": "done",
+        "task": null,
+        "started": "2026-04-14T14:59:26.668Z",
+        "completed": "2026-04-14T14:59:41.339Z",
+        "duration_ms": 30000,
+        "summary": "12 tasks done. Good depth work. ForInExpression rename bug is a property-rename pattern lesson. Continuing with HenryDB deep work."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB deep feature: expression indexes + planner integration or file-backed persistence",
-        "task": null
+        "task": null,
+        "started": "2026-04-14T14:59:53.670Z"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "HenryDB foreign keys: parser support for REFERENCES clause in CREATE TABLE and standalone FOREIGN KEY",
+        "status": "upcoming",
+        "plan_ref": "T10"
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "HenryDB foreign keys: enforcement during INSERT/UPDATE/DELETE + CASCADE/SET NULL/RESTRICT actions",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T11",
@@ -3836,13 +3872,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 11,
-    "blocksTotal": 19,
+    "blocksCompleted": 18,
+    "blocksTotal": 21,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 6,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 10,
+      "MAINTAIN": 2
     }
   },
   "artifacts": [

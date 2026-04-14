@@ -123,43 +123,86 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "6",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T14:56:37.449Z",
+      "completed": "2026-04-14T14:56:37.593Z",
+      "duration_ms": 5000,
+      "summary": "Orphan placeholder, plan_ref T6 builds complete (T18-T19). Skipping."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-14T14:56:48.847Z",
+      "completed": "2026-04-14T14:59:05.707Z",
+      "duration_ms": 300000,
+      "summary": "MAINTAIN: Fixed ForInExpression.ident→.variable rename bug from AST PR merge. The PR renamed the property but evaluator still used old name. for-in loops broken (identifier not found: x). Fixed, 516/516 tests passing."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-14T14:59:26.668Z",
+      "completed": "2026-04-14T14:59:41.339Z",
+      "duration_ms": 30000,
+      "summary": "12 tasks done. Good depth work. ForInExpression rename bug is a property-rename pattern lesson. Continuing with HenryDB deep work."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB deep feature: expression indexes + planner integration or file-backed persistence",
-      "task": null
+      "task": null,
+      "started": "2026-04-14T14:59:53.670Z",
+      "completed": "2026-04-14T15:01:08.169Z",
+      "duration_ms": 120000,
+      "summary": "Expression indexes done. Planned foreign key constraints as next deep feature: parser + enforcement + CASCADE actions. 2 BUILD tasks."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "HenryDB foreign keys: parser support for REFERENCES clause in CREATE TABLE and standalone FOREIGN KEY",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-14T15:01:17.634Z",
+      "completed": "2026-04-14T15:06:32.893Z",
+      "duration_ms": 900000,
+      "summary": "Foreign key constraints implemented: table-level FOREIGN KEY parsing, column-level ON UPDATE, multi-column FKs, reverse FK registration, CASCADE/SET NULL/RESTRICT actions on DELETE. 13 tests, all passing. Core tests clean."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "HenryDB foreign keys: enforcement during INSERT/UPDATE/DELETE + CASCADE/SET NULL/RESTRICT actions",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-14T15:06:56.228Z",
+      "completed": "2026-04-14T15:06:56.371Z",
+      "duration_ms": 5000,
+      "summary": "Already completed in T20 — enforcement was implemented together with parser changes."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T15:07:11.748Z",
+      "completed": "2026-04-14T15:07:11.891Z",
+      "duration_ms": 5000,
+      "summary": "Orphan placeholder, plan_ref T10 builds complete (T20-T21). Skipping."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": null
+      "status": "in-progress",
+      "task": null,
+      "started": "2026-04-14T15:07:26.782Z"
     },
     {
       "id": "T13",
@@ -249,6 +292,10 @@
     {
       "time": "2026-04-14T14:47:30.220Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-14T15:01:02.027Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }
