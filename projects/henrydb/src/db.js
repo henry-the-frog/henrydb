@@ -1049,6 +1049,7 @@ export class Database {
       case 'MERGE': return this._merge(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'SHOW_TABLES': return this._showTables();
+      case 'COMMENT_ON': return this._commentOn(ast);
       case 'DESCRIBE': return this._describe(ast);
       case 'EXPLAIN': return this._explain(ast);
       case 'BEGIN': {
@@ -5578,6 +5579,21 @@ export class Database {
       if (va !== vb) return false;
     }
     return true;
+  }
+
+  _commentOn(ast) {
+    if (!this._comments) this._comments = new Map();
+    if (ast.objectType === 'TABLE') {
+      if (!this.tables.has(ast.table)) throw new Error(`Table ${ast.table} not found`);
+      this._comments.set(`table:${ast.table}`, ast.comment);
+      return { type: 'OK', message: `COMMENT on table ${ast.table}` };
+    } else if (ast.objectType === 'COLUMN') {
+      if (ast.table && !this.tables.has(ast.table)) throw new Error(`Table ${ast.table} not found`);
+      const key = ast.table ? `column:${ast.table}.${ast.column}` : `column:*.${ast.column}`;
+      this._comments.set(key, ast.comment);
+      return { type: 'OK', message: `COMMENT on column ${ast.table ? ast.table + '.' : ''}${ast.column}` };
+    }
+    throw new Error('Unknown COMMENT ON object type');
   }
 
   _rebuildIndexes(table) {

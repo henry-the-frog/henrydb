@@ -39,7 +39,7 @@ const KEYWORDS = new Set([
   'GENERATE_SERIES', 'LATERAL',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
   'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
-  'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW',
+  'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW', 'COMMENT',
 ]);
 
 export function tokenize(sql) {
@@ -253,6 +253,33 @@ export function parse(sql) {
     return { type: 'SHOW_COLUMNS', table: advance().value };
   }
   if (isKeyword('TRUNCATE')) { advance(); if (isKeyword('TABLE')) advance(); const _tt = advance(); return { type: 'TRUNCATE', table: _tt.originalValue || _tt.value }; }
+  if (isKeyword('COMMENT')) {
+    advance(); // COMMENT
+    expect('KEYWORD', 'ON');
+    if (isKeyword('TABLE')) {
+      advance();
+      const table = (advance()).originalValue || tokens[pos - 1].value;
+      expect('KEYWORD', 'IS');
+      const comment = advance().value;
+      return { type: 'COMMENT_ON', objectType: 'TABLE', table, comment };
+    } else if (isKeyword('COLUMN')) {
+      advance();
+      const colRef = (advance()).originalValue || tokens[pos - 1].value;
+      let table, column;
+      if (colRef.includes('.')) {
+        const parts = colRef.split('.');
+        table = parts.slice(0, -1).join('.');
+        column = parts[parts.length - 1];
+      } else {
+        table = null;
+        column = colRef;
+      }
+      expect('KEYWORD', 'IS');
+      const comment = advance().value;
+      return { type: 'COMMENT_ON', objectType: 'COLUMN', table, column, comment };
+    }
+    throw new Error('Expected TABLE or COLUMN after COMMENT ON');
+  }
   if (isKeyword('SHOW')) { advance(); expect('KEYWORD', 'TABLES'); return { type: 'SHOW_TABLES' }; }
   if (isKeyword('DESCRIBE')) { advance(); return { type: 'DESCRIBE', table: advance().value }; }
   if (isKeyword('BEGIN')) { advance(); if (isKeyword('TRANSACTION')) advance(); return { type: 'BEGIN' }; }

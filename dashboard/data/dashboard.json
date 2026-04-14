@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:33:00.358Z",
+  "generated": "2026-04-14T03:37:09.491Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: TRUNCATE TABLE",
-    "completedAt": "2026-04-14T03:33:00.358Z",
-    "taskId": "T259",
-    "summary": "Already implemented.",
-    "durationMs": 0
+    "task": "HenryDB: COMMENT ON TABLE/COLUMN for metadata",
+    "completedAt": "2026-04-14T03:37:09.491Z",
+    "taskId": "T260",
+    "summary": "COMMENT ON TABLE/COLUMN stores metadata comments. Parses qualified column names (users.email). Comments accessible via _comments Map.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 258,
+    "blocksCompleted": 259,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 222,
+      "BUILD": 223,
       "MAINTAIN": 17
     }
   },

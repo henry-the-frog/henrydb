@@ -2823,6 +2823,17 @@
       "completed": "2026-04-14T03:33:00.321Z",
       "duration_ms": 0,
       "summary": "Already implemented."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: COMMENT ON TABLE/COLUMN for metadata",
+      "project": "henrydb",
+      "started": "2026-04-14T03:34:52.248Z",
+      "completed": "2026-04-14T03:37:09.455Z",
+      "duration_ms": 120000,
+      "summary": "COMMENT ON TABLE/COLUMN stores metadata comments. Parses qualified column names (users.email). Comments accessible via _comments Map."
     }
   ],
   "focusProjects": [
@@ -3854,6 +3865,10 @@
     {
       "time": "2026-04-14T03:32:22.833Z",
       "msg": "Added T259 (BUILD) after end: HenryDB: TRUNCATE TABLE"
+    },
+    {
+      "time": "2026-04-14T03:34:52.130Z",
+      "msg": "Added T260 (BUILD) after end: HenryDB: COMMENT ON TABLE/COLUMN for metadata"
     }
   ]
 }
