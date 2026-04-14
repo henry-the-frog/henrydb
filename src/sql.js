@@ -1071,9 +1071,22 @@ export function parse(sql) {
       const value = parsePrimaryWithConcat();
       assignments.push({ column: col, value });
     } while (match(','));
+    
+    // FROM clause (PostgreSQL-style UPDATE ... FROM)
+    let from = null;
+    if (isKeyword('FROM')) {
+      advance(); // FROM
+      const fromTable = advance().value;
+      let alias = null;
+      if (peek() && peek().type === 'IDENT' && !isKeyword('WHERE') && !isKeyword('SET')) {
+        alias = advance().value;
+      }
+      from = { table: fromTable, alias: alias || fromTable };
+    }
+    
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
-    return { type: 'UPDATE', table, assignments, where };
+    return { type: 'UPDATE', table, assignments, where, from };
   }
 
   function parseDelete() {

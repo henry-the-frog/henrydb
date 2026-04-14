@@ -1865,16 +1865,46 @@ export class Database {
     let updated = 0;
     const toUpdate = [];
 
-    for (const { pageId, slotIdx, values } of table.heap.scan()) {
-      const row = this._valuesToRow(values, table.schema, ast.table);
-      if (!ast.where || this._evalExpr(ast.where, row)) {
-        toUpdate.push({ pageId, slotIdx, values: [...values] });
+    if (ast.from) {
+      // UPDATE ... FROM: join target with source table
+      const fromTableObj = this.tables.get(ast.from.table);
+      if (!fromTableObj) throw new Error(`Table ${ast.from.table} not found`);
+      const fromAlias = ast.from.alias || ast.from.table;
+      
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const targetRow = this._valuesToRow(values, table.schema, ast.table);
+        
+        // For each target row, find matching source rows
+        for (const fromEntry of fromTableObj.heap.scan()) {
+          const fromRow = this._valuesToRow(fromEntry.values, fromTableObj.schema, ast.from.table);
+          // Merge rows with aliases
+          const combined = { ...targetRow };
+          for (const [k, v] of Object.entries(fromRow)) {
+            combined[`${fromAlias}.${k}`] = v;
+            // Also set without prefix if no conflict
+            if (!(k in combined) || k.includes('.')) {
+              combined[k] = v;
+            }
+          }
+          
+          if (!ast.where || this._evalExpr(ast.where, combined)) {
+            toUpdate.push({ pageId, slotIdx, values: [...values], combined });
+            break; // Only update once per target row
+          }
+        }
+      }
+    } else {
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        if (!ast.where || this._evalExpr(ast.where, row)) {
+          toUpdate.push({ pageId, slotIdx, values: [...values] });
+        }
       }
     }
 
     for (const item of toUpdate) {
       const newValues = [...item.values];
-      const row = this._valuesToRow(item.values, table.schema, ast.table);
+      const row = item.combined || this._valuesToRow(item.values, table.schema, ast.table);
       for (const { column, value } of ast.assignments) {
         const colIdx = table.schema.findIndex(c => c.name === column);
         if (colIdx === -1) throw new Error(`Column ${column} not found`);
