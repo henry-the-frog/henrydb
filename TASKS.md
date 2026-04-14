@@ -43,7 +43,10 @@
   - **5 execution backends**: tree-walking eval, bytecode VM, tracing JIT, JS transpiler, WebAssembly
   - **Interactive playground**: henry-the-frog.github.io/playground/ (supports all 3 engine modes: JIT/VM/WASM)
   - **VM loop parity**: break/continue, for-in, loop return values all match tree-walker
-- **1331 tests | 30 benchmarks | WASM 136x faster than VM | 50+ language features | 6 examples**
+- **Cell-based mutable closures**: multi-closure shared state, 3-level nesting, factory patterns
+- **Compiler optimizations**: constant folding, dead code elimination
+- **New VM features**: switch expressions, f-string interpolation, null literals
+- **1365+ tests | 30 benchmarks | WASM 136x faster than VM | 55+ language features | 7 examples**
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] **Ray tracer** → **github.com/henry-the-frog/ray-tracer** (LIVE at henry-the-frog.github.io/ray-tracer/)
   - Pure JS, zero deps, browser + Node.js

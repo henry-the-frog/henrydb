@@ -2275,9 +2275,30 @@
     {
       "id": "T212",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push",
-      "started": "2026-04-14T23:36:23.725Z"
+      "started": "2026-04-14T23:36:23.725Z",
+      "completed": "2026-04-14T23:36:39.874Z",
+      "duration_ms": 15000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement try-catch in VM compiler",
+      "project": "monkey-lang",
+      "started": "2026-04-14T23:36:59.563Z",
+      "completed": "2026-04-14T23:39:39.583Z",
+      "duration_ms": 300000,
+      "summary": "Implemented f-string interpolation and SwitchExpression in VM compiler. F-strings use str() builtin + OpAdd concatenation. 586/586 tests pass."
+    },
+    {
+      "id": "T214",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session wrap",
+      "started": "2026-04-14T23:39:55.819Z"
     }
   ],
   "focusProjects": [
@@ -3145,6 +3166,14 @@
     {
       "time": "2026-04-14T23:30:00.435Z",
       "msg": "Added T212 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-14T23:36:47.576Z",
+      "msg": "Added T213 (BUILD) after end: Implement try-catch in VM compiler"
+    },
+    {
+      "time": "2026-04-14T23:36:47.695Z",
+      "msg": "Added T214 (MAINTAIN) after end: Final session wrap"
     }
   ]
 }
