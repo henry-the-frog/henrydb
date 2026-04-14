@@ -520,6 +520,17 @@
       "completed": "2026-04-14T17:07:26.458Z",
       "duration_ms": 600000,
       "summary": "EXPLORE persistence round-trip found BUG #9: CHECK constraints, foreign keys, and childFKs not serialized. Fixed serialize() and fromSerialized(). Also rebuilds childFKs reverse references. Exact DDL WAL completeness pattern from scratch note."
+    },
+    {
+      "id": "T49",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: WAL-based persistence round-trip — do expression indexes, generated columns, FKs survive WAL replay?",
+      "project": "henrydb",
+      "started": "2026-04-14T17:08:24.723Z",
+      "completed": "2026-04-14T17:09:59.433Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE WAL persistence found BUG #10: WAL replay used column name lookup for expression indexes (always -1), silently leaving indexes empty after recovery. Fixed by using _computeIndexKey. Bug #9 (serialize) and #10 (WAL) are the same DDL completeness pattern."
     }
   ],
   "focusProjects": [
@@ -711,6 +722,10 @@
     {
       "time": "2026-04-14T17:02:40.753Z",
       "msg": "Added T48 (EXPLORE) after end: HenryDB: persistence round-trip of NEW features — expression indexes, generated columns, foreign keys through close/reopen"
+    },
+    {
+      "time": "2026-04-14T17:08:09.165Z",
+      "msg": "Added T49 (EXPLORE) after end: HenryDB: WAL-based persistence round-trip — do expression indexes, generated columns, FKs survive WAL replay?"
     }
   ]
 }
