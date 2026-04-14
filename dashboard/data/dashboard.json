@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T17:46:14.848Z",
+  "generated": "2026-04-14T17:52:41.825Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Monkey-lang: string methods (split, join, trim, startsWith, endsWith)",
-    "completedAt": "2026-04-14T17:46:14.848Z",
-    "taskId": "T66",
-    "summary": "Range operator 1..5 → [1,2,3,4,5]. Forward+reverse. Composes with map/filter/reduce. 528/528 passing.",
-    "durationMs": 300000
+    "task": "Monkey-lang: pipe operator (|>) for function chaining",
+    "completedAt": "2026-04-14T17:52:41.825Z",
+    "taskId": "T67",
+    "summary": "Pipe operator |> (desugars to function call at parse time) + range operator .. with proper precedence levels. Full functional pipelines work: 1..10 |> filter |> map. 528/528 passing.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 64,
+    "blocksCompleted": 66,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 35,
+      "BUILD": 37,
       "MAINTAIN": 4,
       "EXPLORE": 16
     }

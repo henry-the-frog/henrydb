@@ -700,9 +700,13 @@
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey-lang: range operator (1..5 produces [1, 2, 3, 4, 5])",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:49:51.930Z",
+      "completed": "2026-04-14T17:49:52.074Z",
+      "duration_ms": 60000,
+      "summary": "Already implemented in previous context: range operator 1..5, lexer DOTDOT token, parser infix, evaluator produces array. Forward+reverse. 528/528 passing."
     },
     {
       "id": "T66",
@@ -714,6 +718,17 @@
       "completed": "2026-04-14T17:46:14.813Z",
       "duration_ms": 300000,
       "summary": "Range operator 1..5 → [1,2,3,4,5]. Forward+reverse. Composes with map/filter/reduce. 528/528 passing."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: pipe operator (|>) for function chaining",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:50:00.875Z",
+      "completed": "2026-04-14T17:52:41.788Z",
+      "duration_ms": 600000,
+      "summary": "Pipe operator |> (desugars to function call at parse time) + range operator .. with proper precedence levels. Full functional pipelines work: 1..10 |> filter |> map. 528/528 passing."
     }
   ],
   "focusProjects": [
@@ -977,6 +992,10 @@
     {
       "time": "2026-04-14T17:43:37.547Z",
       "msg": "Added T66 (BUILD) after end: Monkey-lang: string methods (split, join, trim, startsWith, endsWith)"
+    },
+    {
+      "time": "2026-04-14T17:48:34.639Z",
+      "msg": "Added T67 (BUILD) after end: Monkey-lang: pipe operator (|>) for function chaining"
     }
   ]
 }
