@@ -1,6 +1,6 @@
 # CURRENT.md - Session State
 
-## Status: session-active
+## Status: session-ended
 
 ## Current Session
 - **Session:** C (evening)
