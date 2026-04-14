@@ -1552,9 +1552,13 @@
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: EXPLAIN output improvement (tree format with costs)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:25:28.628Z",
+      "completed": "2026-04-14T02:28:26.341Z",
+      "duration_ms": 300000,
+      "summary": "EXPLAIN now shows PostgreSQL-style cost estimates (startup..total cost, rows, width). Uses cost model: seq_page=1.0, cpu_tuple=0.01, cpu_op=0.0025 with n*log2(n) sort costs. Hash join build costs included. All 74 explain tests pass."
     },
     {
       "id": "T144",

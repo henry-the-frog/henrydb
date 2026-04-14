@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T02:25:13.266Z",
+  "generated": "2026-04-14T02:28:26.378Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: PIVOT/UNPIVOT (crosstab queries)",
-    "completedAt": "2026-04-14T02:25:13.266Z",
-    "taskId": "T131",
-    "summary": "Implemented PIVOT/UNPIVOT (crosstab queries). PIVOT supports SUM/COUNT/AVG/MAX/MIN aggregates with implicit grouping. UNPIVOT normalizes columns to rows (excludes NULLs). Fixed parser isKeyword EOF safety. 11 tests.",
+    "task": "HenryDB: EXPLAIN output improvement (tree format with costs)",
+    "completedAt": "2026-04-14T02:28:26.378Z",
+    "taskId": "T143",
+    "summary": "EXPLAIN now shows PostgreSQL-style cost estimates (startup..total cost, rows, width). Uses cost model: seq_page=1.0, cpu_tuple=0.01, cpu_op=0.0025 with n*log2(n) sort costs. Hash join build costs included. All 74 explain tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 218,
+    "blocksCompleted": 219,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 182,
+      "BUILD": 183,
       "MAINTAIN": 17
     }
   },
