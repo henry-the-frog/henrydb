@@ -2801,6 +2801,17 @@
       "completed": "2026-04-14T03:29:52.480Z",
       "duration_ms": 180000,
       "summary": "Named WINDOW clause (WINDOW w AS (PARTITION BY ... ORDER BY ...)). OVER w resolves to the named window definition. Multiple window functions can share the same named window."
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: EXCEPT and INTERSECT ALL variants",
+      "project": "henrydb",
+      "started": "2026-04-14T03:30:11.073Z",
+      "completed": "2026-04-14T03:30:45.463Z",
+      "duration_ms": 0,
+      "summary": "Already implemented — EXCEPT, INTERSECT, EXCEPT ALL, INTERSECT ALL all working correctly with bag semantics."
     }
   ],
   "focusProjects": [
@@ -3824,6 +3835,10 @@
     {
       "time": "2026-04-14T03:27:11.751Z",
       "msg": "Added T257 (BUILD) after end: HenryDB: named WINDOW clause (WINDOW w AS (PARTITION BY ...))"
+    },
+    {
+      "time": "2026-04-14T03:30:10.954Z",
+      "msg": "Added T258 (BUILD) after end: HenryDB: EXCEPT and INTERSECT ALL variants"
     }
   ]
 }

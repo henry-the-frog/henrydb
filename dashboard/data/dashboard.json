@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:29:52.516Z",
+  "generated": "2026-04-14T03:30:45.500Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: named WINDOW clause (WINDOW w AS (PARTITION BY ...))",
-    "completedAt": "2026-04-14T03:29:52.516Z",
-    "taskId": "T257",
-    "summary": "Named WINDOW clause (WINDOW w AS (PARTITION BY ... ORDER BY ...)). OVER w resolves to the named window definition. Multiple window functions can share the same named window.",
-    "durationMs": 180000
+    "task": "HenryDB: EXCEPT and INTERSECT ALL variants",
+    "completedAt": "2026-04-14T03:30:45.500Z",
+    "taskId": "T258",
+    "summary": "Already implemented — EXCEPT, INTERSECT, EXCEPT ALL, INTERSECT ALL all working correctly with bag semantics.",
+    "durationMs": 0
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 256,
+    "blocksCompleted": 257,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 220,
+      "BUILD": 221,
       "MAINTAIN": 17
     }
   },
