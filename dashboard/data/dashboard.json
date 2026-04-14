@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T16:33:55.413Z",
+  "generated": "2026-04-14T16:40:00.706Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Full HenryDB test sweep: run ALL test files, triage failures",
-    "completedAt": "2026-04-14T16:33:55.413Z",
-    "taskId": "T38",
-    "summary": "Full test sweep: 327 files, ~11 failing (3.4%). Fixed ORDER BY column position regression from parseExpr change. Most failures pre-existing (SSI, cuckoo hash, catalog import). sql-standard-compliance now passes.",
+    "mode": "BUILD",
+    "task": "HenryDB: extend diff fuzzer to test GROUP BY, HAVING, subqueries, and CTEs against SQLite",
+    "completedAt": "2026-04-14T16:40:00.706Z",
+    "taskId": "T40",
+    "summary": "Extended differential fuzzer: 13 new tests for GROUP BY, HAVING, subqueries, CTEs. All match SQLite output. Fixed float precision comparison. CTE produces correct values but extra columns (known row-shape issue).",
     "durationMs": 600000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 37,
+    "blocksCompleted": 39,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 19,
+      "BUILD": 21,
       "MAINTAIN": 4,
       "EXPLORE": 5
     }

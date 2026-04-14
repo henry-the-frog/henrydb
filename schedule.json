@@ -414,9 +414,31 @@
     {
       "id": "T39",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: UPSERT (INSERT ... ON CONFLICT DO UPDATE SET ...)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T16:35:01.111Z",
+      "completed": "2026-04-14T16:35:01.253Z",
+      "duration_ms": 15000,
+      "summary": "UPSERT already exists and works (ON CONFLICT DO UPDATE SET and ON CONFLICT DO NOTHING)."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: extend diff fuzzer to test GROUP BY, HAVING, subqueries, and CTEs against SQLite",
+      "project": "henrydb",
+      "started": "2026-04-14T16:35:29.811Z",
+      "completed": "2026-04-14T16:40:00.670Z",
+      "duration_ms": 600000,
+      "summary": "Extended differential fuzzer: 13 new tests for GROUP BY, HAVING, subqueries, CTEs. All match SQLite output. Fixed float precision comparison. CTE produces correct values but extra columns (known row-shape issue)."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey-lang: float/decimal literal support (currently integer only)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -572,6 +594,14 @@
     {
       "time": "2026-04-14T16:10:10.851Z",
       "msg": "Added T39 (BUILD) after end: HenryDB: UPSERT (INSERT ... ON CONFLICT DO UPDATE SET ...)"
+    },
+    {
+      "time": "2026-04-14T16:35:14.037Z",
+      "msg": "Added T40 (BUILD) after end: HenryDB: extend diff fuzzer to test GROUP BY, HAVING, subqueries, and CTEs against SQLite"
+    },
+    {
+      "time": "2026-04-14T16:35:14.155Z",
+      "msg": "Added T41 (BUILD) after end: Monkey-lang: float/decimal literal support (currently integer only)"
     }
   ]
 }
