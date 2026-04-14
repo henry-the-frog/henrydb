@@ -773,6 +773,28 @@
       "completed": "2026-04-14T17:59:39.458Z",
       "duration_ms": 120000,
       "summary": "EXPLAIN ANALYZE already fully implemented: execution timing, actual vs estimated rows, selectivity, estimation accuracy. Tested — works well."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: INSERT ... ON CONFLICT DO UPDATE (upsert)",
+      "project": "henrydb",
+      "started": "2026-04-14T17:59:57.595Z",
+      "completed": "2026-04-14T18:00:16.523Z",
+      "duration_ms": 60000,
+      "summary": "INSERT ON CONFLICT (upsert) already implemented. Tested DO UPDATE and DO NOTHING — both work correctly."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: UPDATE with JOIN (UPDATE t1 SET ... FROM t2 WHERE t1.id = t2.id)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:00:22.154Z",
+      "completed": "2026-04-14T18:02:03.636Z",
+      "duration_ms": 600000,
+      "summary": "UPDATE ... FROM (PostgreSQL-style). Parser + engine. Joins target with source table, evaluates assignments using combined row context. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1056,6 +1078,14 @@
     {
       "time": "2026-04-14T17:57:17.758Z",
       "msg": "Added T71 (BUILD) after end: HenryDB: EXPLAIN ANALYZE — show actual row counts and timing"
+    },
+    {
+      "time": "2026-04-14T17:59:53.073Z",
+      "msg": "Added T72 (BUILD) after end: HenryDB: INSERT ... ON CONFLICT DO UPDATE (upsert)"
+    },
+    {
+      "time": "2026-04-14T17:59:53.219Z",
+      "msg": "Added T73 (BUILD) after end: HenryDB: UPDATE with JOIN (UPDATE t1 SET ... FROM t2 WHERE t1.id = t2.id)"
     }
   ]
 }
