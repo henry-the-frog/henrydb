@@ -8,19 +8,16 @@
 - **Focus:** HenryDB depth + Daniel PR review + Knowledge debt payoff
 
 ## Active Task
-- **Task:** Session A continuing — generating new work
-- **Project:** HenryDB + Monkey-Lang
-- **context-files:** memory/2026-04-14.md
+- **Task:** Session A complete
+- **status:** session-ended
+- **Project:** HenryDB + Monkey-Lang + Neural-Net
 
 ## Session Progress
-Tasks completed this session: T1-T45 (35+ tasks, ~10 orphans skipped)
-Key accomplishments:
-- 8 bugs found and fixed (2 CRITICAL)
-- 6 scratch notes written
-- HenryDB: expression indexes, foreign keys, generated columns, DISTINCT ON, table-level CHECK, LTRIM/RTRIM/INSTR/PRINTF, arithmetic precedence fix, ORDER BY expressions, INSERT atomicity fix
-- Monkey-lang: readChar fix (critical), AST round-trip from PR, const declarations, float literals, compiler const enforcement
-- Neural-net: 19 test failures fixed (0 remaining)
-- Differential fuzzers: 84+ tests matching SQLite
+Tasks completed: T1-T65 (50+ real tasks, ~10 orphans skipped)
+Bugs found: 13 (2 CRITICAL)
+Scratch notes: 6
+New features: expression indexes, FK, generated columns, const, floats, f-strings, destructuring, CTAS, DISTINCT ON, math stdlib
+Test improvements: 84+ differential tests, 13 persistence tests, showcase test
 
 ## Queue Summary (14 tasks)
 T1 THINK → T2 PLAN → T3 BUILD (henrydb) → T4 MAINTAIN

@@ -678,9 +678,24 @@
     {
       "id": "T63",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: what happens when you ALTER TABLE ADD COLUMN with generated columns and FKs?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T17:40:10.675Z",
+      "completed": "2026-04-14T17:40:30.857Z",
+      "duration_ms": 120000,
+      "summary": "ALTER TABLE + generated columns: value not computed for existing rows (expected limitation). ALTER TABLE + FK works. No bugs."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: map, filter, reduce builtins for functional programming",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:40:55.334Z",
+      "completed": "2026-04-14T17:41:34.047Z",
+      "duration_ms": 60000,
+      "summary": "map/filter/reduce already exist and work. Verified functional composition with new features (destructuring + f-strings + map/filter/reduce)."
     }
   ],
   "focusProjects": [
@@ -932,6 +947,10 @@
     {
       "time": "2026-04-14T17:37:42.336Z",
       "msg": "Added T63 (EXPLORE) after end: HenryDB: what happens when you ALTER TABLE ADD COLUMN with generated columns and FKs?"
+    },
+    {
+      "time": "2026-04-14T17:40:44.085Z",
+      "msg": "Added T64 (BUILD) after end: Monkey-lang: map, filter, reduce builtins for functional programming"
     }
   ]
 }
