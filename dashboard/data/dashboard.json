@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T15:27:41.726Z",
+  "generated": "2026-04-14T15:37:49.722Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB generated columns: parser + STORED column computation on INSERT/UPDATE + VIRTUAL computation on SELECT",
-    "completedAt": "2026-04-14T15:27:41.726Z",
-    "taskId": "T24",
-    "summary": "Generated columns implemented (STORED/VIRTUAL). Found and fixed CRITICAL arithmetic precedence bug — */% and +/- were at same precedence level, causing wrong results for ALL compound arithmetic in the entire DB. Also added GENERATED/ALWAYS/STORED/VIRTUAL/NO/ACTION keywords. 12 new tests, all core tests passing.",
-    "durationMs": 900000
+    "mode": "EXPLORE",
+    "task": "HenryDB differential fuzzer: compare SELECT results with SQLite for arithmetic correctness",
+    "completedAt": "2026-04-14T15:37:49.722Z",
+    "taskId": "T27",
+    "summary": "Differential fuzzer comparing HenryDB vs SQLite arithmetic. 60 tests (10 fixed + 50 random). Found parenthesized expression bug in parsePrimary — fixed. All tests match SQLite output.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 24,
+    "blocksCompleted": 27,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 11,
+      "BUILD": 13,
       "MAINTAIN": 3,
-      "EXPLORE": 2
+      "EXPLORE": 3
     }
   },
   "artifacts": [

@@ -260,6 +260,39 @@
       "completed": "2026-04-14T15:27:41.690Z",
       "duration_ms": 900000,
       "summary": "Generated columns implemented (STORED/VIRTUAL). Found and fixed CRITICAL arithmetic precedence bug — */% and +/- were at same precedence level, causing wrong results for ALL compound arithmetic in the entire DB. Also added GENERATED/ALWAYS/STORED/VIRTUAL/NO/ACTION keywords. 12 new tests, all core tests passing."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write arithmetic precedence scratch note + add precedence tests to HenryDB",
+      "project": "henrydb",
+      "started": "2026-04-14T15:28:50.770Z",
+      "completed": "2026-04-14T15:33:55.734Z",
+      "duration_ms": 600000,
+      "summary": "Wrote arithmetic precedence scratch note. Fixed SELECT column precedence bug (same as WHERE). Added parseSelectArithExpr, literal number parsing in SELECT, parenthesized expr support. 9 new precedence tests. All core tests passing."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: also fix SELECT column arithmetic precedence (same flat-precedence bug)",
+      "project": "henrydb",
+      "started": "2026-04-14T15:34:24.060Z",
+      "completed": "2026-04-14T15:34:24.203Z",
+      "duration_ms": 5000,
+      "summary": "Already completed in T25 — SELECT precedence fix was done together with scratch note and tests."
+    },
+    {
+      "id": "T27",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB differential fuzzer: compare SELECT results with SQLite for arithmetic correctness",
+      "project": "henrydb",
+      "started": "2026-04-14T15:34:42.138Z",
+      "completed": "2026-04-14T15:37:49.685Z",
+      "duration_ms": 300000,
+      "summary": "Differential fuzzer comparing HenryDB vs SQLite arithmetic. 60 tests (10 fixed + 50 random). Found parenthesized expression bug in parsePrimary — fixed. All tests match SQLite output."
     }
   ],
   "focusProjects": [
@@ -351,6 +384,18 @@
     {
       "time": "2026-04-14T15:19:50.146Z",
       "msg": "PLAN T23 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-14T15:28:22.661Z",
+      "msg": "Added T25 (BUILD) after end: Write arithmetic precedence scratch note + add precedence tests to HenryDB"
+    },
+    {
+      "time": "2026-04-14T15:28:29.082Z",
+      "msg": "Added T26 (BUILD) after end: HenryDB: also fix SELECT column arithmetic precedence (same flat-precedence bug)"
+    },
+    {
+      "time": "2026-04-14T15:28:39.261Z",
+      "msg": "Added T27 (EXPLORE) after end: HenryDB differential fuzzer: compare SELECT results with SQLite for arithmetic correctness"
     }
   ]
 }
