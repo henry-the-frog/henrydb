@@ -3128,6 +3128,8 @@ export class Database {
             const arr = distinct ? [...new Set(values)] : values;
             return JSON.stringify(arr);
           }
+          case 'BOOL_AND': return values.every(v => v) ? 1 : 0;
+          case 'BOOL_OR': return values.some(v => v) ? 1 : 0;
         }
       };
 
