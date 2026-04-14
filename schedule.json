@@ -1423,9 +1423,13 @@
     {
       "id": "T134",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: EXCEPT ALL and INTERSECT ALL",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T00:09:02.463Z",
+      "completed": "2026-04-14T00:09:23.858Z",
+      "duration_ms": 30000,
+      "summary": "EXCEPT ALL and INTERSECT ALL already work. Verified multiset semantics."
     },
     {
       "id": "T135",
@@ -1441,10 +1445,13 @@
     {
       "id": "T136",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: SIMILAR TO regex matching",
       "project": "henrydb",
-      "started": "2026-04-14T00:07:41.891Z"
+      "started": "2026-04-14T00:07:41.891Z",
+      "completed": "2026-04-14T00:09:02.302Z",
+      "duration_ms": 120000,
+      "summary": "Fixed SIMILAR TO regex: alternation, char classes, wildcard. Character-by-character conversion."
     },
     {
       "id": "T137",
@@ -1478,9 +1485,10 @@
     {
       "id": "T140",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: DELETE with USING clause (like UPDATE FROM)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T00:09:24.001Z"
     },
     {
       "id": "T141",

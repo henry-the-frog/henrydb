@@ -1706,13 +1706,22 @@ export function parse(sql) {
     expect('KEYWORD', 'FROM');
     const delTok = advance();
     const table = delTok.originalValue || delTok.value;
+    // USING clause (PostgreSQL extension)
+    let using = null;
+    let usingAlias = null;
+    if (isKeyword('USING')) {
+      advance();
+      const usingTok = advance();
+      using = usingTok.originalValue || usingTok.value;
+      if (peek().type === 'IDENT' && !isKeyword('WHERE')) usingAlias = advance().value;
+    }
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     let returning = null;
     if (isKeyword('RETURNING')) {
       returning = parseReturningClause();
     }
-    return { type: 'DELETE', table, where, returning };
+    return { type: 'DELETE', table, using, usingAlias, where, returning };
   }
 
   function parseAlter() {

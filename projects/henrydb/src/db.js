@@ -3628,10 +3628,29 @@ export class Database {
     let deleted = 0;
     const toDelete = [];
 
-    for (const { pageId, slotIdx, values } of table.heap.scan()) {
-      const row = this._valuesToRow(values, table.schema, ast.table);
-      if (!ast.where || this._evalExpr(ast.where, row)) {
-        toDelete.push({ pageId, slotIdx });
+    if (ast.using) {
+      // DELETE ... USING: join with another table
+      const usingTable = this.tables.get(ast.using);
+      if (!usingTable) throw new Error(`Table ${ast.using} not found`);
+      const usingAlias = ast.usingAlias || ast.using;
+      
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        for (const usingItem of usingTable.heap.scan()) {
+          const usingRow = this._valuesToRow(usingItem.values, usingTable.schema, usingAlias);
+          const merged = { ...row, ...usingRow };
+          if (!ast.where || this._evalExpr(ast.where, merged)) {
+            toDelete.push({ pageId, slotIdx });
+            break; // Only delete target row once per match
+          }
+        }
+      }
+    } else {
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        if (!ast.where || this._evalExpr(ast.where, row)) {
+          toDelete.push({ pageId, slotIdx });
+        }
       }
     }
 
