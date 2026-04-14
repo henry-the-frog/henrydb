@@ -751,6 +751,28 @@
       "completed": "2026-04-14T17:56:58.991Z",
       "duration_ms": 600000,
       "summary": "Array comprehensions [expr for x in iter if cond]. Parser + evaluator. Works with ranges, filters, nested expressions. FizzBuzz in one line! 528/528 passing."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: method syntax (.len(), .push(), .map(), .filter())",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:57:22.291Z",
+      "completed": "2026-04-14T17:58:46.434Z",
+      "duration_ms": 600000,
+      "summary": "Method syntax: obj.method(args) desugars to method(obj, args). Chaining works: arr.filter().map().len(). 528/528 passing."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: EXPLAIN ANALYZE — show actual row counts and timing",
+      "project": "henrydb",
+      "started": "2026-04-14T17:58:50.987Z",
+      "completed": "2026-04-14T17:59:39.458Z",
+      "duration_ms": 120000,
+      "summary": "EXPLAIN ANALYZE already fully implemented: execution timing, actual vs estimated rows, selectivity, estimation accuracy. Tested — works well."
     }
   ],
   "focusProjects": [
@@ -1026,6 +1048,14 @@
     {
       "time": "2026-04-14T17:53:26.818Z",
       "msg": "Added T69 (BUILD) after end: Monkey-lang: array comprehensions ([x * 2 for x in 1..10 if x > 3])"
+    },
+    {
+      "time": "2026-04-14T17:57:17.640Z",
+      "msg": "Added T70 (BUILD) after end: Monkey-lang: method syntax (.len(), .push(), .map(), .filter())"
+    },
+    {
+      "time": "2026-04-14T17:57:17.758Z",
+      "msg": "Added T71 (BUILD) after end: HenryDB: EXPLAIN ANALYZE — show actual row counts and timing"
     }
   ]
 }
