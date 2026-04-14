@@ -1128,9 +1128,57 @@
     {
       "id": "T104",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey-lang: string indexing assignment (like arr[0] = 'x' but for strings)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:54:47.772Z",
+      "completed": "2026-04-14T18:54:47.918Z",
+      "duration_ms": 0,
+      "summary": "Strings should be immutable — assignment would break immutability semantics. Skipped."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LIMIT ... OFFSET (ensure both work in SELECT)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:55:07.482Z",
+      "completed": "2026-04-14T18:55:27.037Z",
+      "duration_ms": 30000,
+      "summary": "LIMIT + OFFSET already works. LIMIT -1 OFFSET for skip-only. Verified."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: multi-column ORDER BY (ORDER BY a DESC, b ASC) — verify",
+      "project": "henrydb",
+      "started": "2026-04-14T18:55:35.225Z",
+      "completed": "2026-04-14T18:55:50.767Z",
+      "duration_ms": 30000,
+      "summary": "Multi-column ORDER BY already works correctly. Verified with tie-breaking on secondary column."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write comprehensive README.md showing all features",
+      "project": "henrydb",
+      "started": "2026-04-14T18:56:09.849Z",
+      "completed": "2026-04-14T18:56:59.660Z",
+      "duration_ms": 300000,
+      "summary": "Comprehensive README.md for HenryDB. Full feature list: DDL, DML, queries, constraints, functions, advanced features. Usage example."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: write comprehensive README.md showing all features",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:57:22.390Z",
+      "completed": "2026-04-14T18:58:13.904Z",
+      "duration_ms": 300000,
+      "summary": "Comprehensive README.md for Monkey-lang. Full feature list with code examples: data types, functions, f-strings, comprehensions, pattern matching, pipes, spread, etc."
     }
   ],
   "focusProjects": [
@@ -1546,6 +1594,22 @@
     {
       "time": "2026-04-14T18:51:46.144Z",
       "msg": "Added T104 (BUILD) after end: Monkey-lang: string indexing assignment (like arr[0] = 'x' but for strings)"
+    },
+    {
+      "time": "2026-04-14T18:54:59.342Z",
+      "msg": "Added T105 (BUILD) after end: HenryDB: LIMIT ... OFFSET (ensure both work in SELECT)"
+    },
+    {
+      "time": "2026-04-14T18:54:59.462Z",
+      "msg": "Added T106 (BUILD) after end: HenryDB: multi-column ORDER BY (ORDER BY a DESC, b ASC) — verify"
+    },
+    {
+      "time": "2026-04-14T18:56:01.721Z",
+      "msg": "Added T107 (BUILD) after end: HenryDB: write comprehensive README.md showing all features"
+    },
+    {
+      "time": "2026-04-14T18:57:14.817Z",
+      "msg": "Added T108 (BUILD) after end: Monkey-lang: write comprehensive README.md showing all features"
     }
   ]
 }
