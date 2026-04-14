@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T18:14:02.883Z",
+  "generated": "2026-04-14T18:18:33.799Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Full test sweep across all repos + git push",
-    "completedAt": "2026-04-14T18:14:02.883Z",
-    "taskId": "T77",
-    "summary": "MAINTAIN sweep: Monkey-lang 528/528, HenryDB 106/106 (core tests), Neural-net 1183/1185 (2 flaky — pass on retry). All repos pushed. Workspace rebased and pushed.",
+    "mode": "BUILD",
+    "task": "HenryDB: EXCEPT ALL and INTERSECT ALL",
+    "completedAt": "2026-04-14T18:18:33.799Z",
+    "taskId": "T79",
+    "summary": "Fixed EXCEPT ALL and INTERSECT ALL — proper multiset (count-based) operations. Previous implementation was broken for ALL variants.",
     "durationMs": 600000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 76,
+    "blocksCompleted": 78,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 46,
+      "BUILD": 48,
       "MAINTAIN": 5,
       "EXPLORE": 16
     }

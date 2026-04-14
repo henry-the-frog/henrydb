@@ -838,6 +838,28 @@
       "completed": "2026-04-14T18:14:02.846Z",
       "duration_ms": 600000,
       "summary": "MAINTAIN sweep: Monkey-lang 528/528, HenryDB 106/106 (core tests), Neural-net 1183/1185 (2 flaky — pass on retry). All repos pushed. Workspace rebased and pushed."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: rest parameters (fn(first, ...rest) { rest })",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:14:29.988Z",
+      "completed": "2026-04-14T18:16:29.993Z",
+      "duration_ms": 600000,
+      "summary": "Rest parameters fn(first, ...rest). Parser stores restParam, evaluator collects excess args into array. Variadic functions work. 528/528 passing."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: EXCEPT ALL and INTERSECT ALL",
+      "project": "henrydb",
+      "started": "2026-04-14T18:16:37.900Z",
+      "completed": "2026-04-14T18:18:33.729Z",
+      "duration_ms": 600000,
+      "summary": "Fixed EXCEPT ALL and INTERSECT ALL — proper multiset (count-based) operations. Previous implementation was broken for ALL variants."
     }
   ],
   "focusProjects": [
@@ -1145,6 +1167,14 @@
     {
       "time": "2026-04-14T18:07:45.878Z",
       "msg": "Added T77 (MAINTAIN) after end: Full test sweep across all repos + git push"
+    },
+    {
+      "time": "2026-04-14T18:14:24.758Z",
+      "msg": "Added T78 (BUILD) after end: Monkey-lang: rest parameters (fn(first, ...rest) { rest })"
+    },
+    {
+      "time": "2026-04-14T18:14:24.877Z",
+      "msg": "Added T79 (BUILD) after end: HenryDB: EXCEPT ALL and INTERSECT ALL"
     }
   ]
 }
