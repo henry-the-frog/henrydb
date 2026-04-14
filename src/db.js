@@ -1727,6 +1727,9 @@ export class Database {
         newValues[colIdx] = this._evalValue(value, row);
       }
 
+      // Validate constraints (including FK) on the new values
+      this._validateConstraints(table, newValues);
+
       // Remove old index entries
       for (const [colName, index] of table.indexes) {
         const oldKey = this._computeIndexKey(colName, item.values, table, ast.table);
