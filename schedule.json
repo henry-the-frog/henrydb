@@ -2019,17 +2019,60 @@
     {
       "id": "T198",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: stress test - 10000 row JOIN + aggregate benchmark",
       "project": "henrydb",
-      "started": "2026-04-14T01:02:31.580Z"
+      "started": "2026-04-14T01:02:31.580Z",
+      "completed": "2026-04-14T01:03:21.178Z",
+      "duration_ms": 180000,
+      "summary": "Stress tests: 10k agg (139ms), 10k JOIN (126ms), 5k window (1099ms), recursive CTE 1000 (167ms). 674 files."
     },
     {
       "id": "T199",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: final comprehensive parity test (all features both engines)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T01:03:21.323Z",
+      "completed": "2026-04-14T01:04:33.310Z",
+      "duration_ms": 180000,
+      "summary": "55 comprehensive parity tests. 442 total Monkey tests. All pass."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: RANDOM() function for generating random data",
+      "project": "henrydb",
+      "started": "2026-04-14T01:04:53.288Z"
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: string_agg with ORDER BY inside aggregate",
+      "project": "henrydb"
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: BOOL_AND/BOOL_OR aggregate functions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement string contains/indexOf builtins",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T204",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: TABLESAMPLE BERNOULLI (random row sampling)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2797,6 +2840,26 @@
     {
       "time": "2026-04-14T01:02:24.423Z",
       "msg": "Added T199 (BUILD) after end: Monkey: final comprehensive parity test (all features both engines)"
+    },
+    {
+      "time": "2026-04-14T01:04:44.563Z",
+      "msg": "Added T200 (BUILD) after end: HenryDB: RANDOM() function for generating random data"
+    },
+    {
+      "time": "2026-04-14T01:04:44.683Z",
+      "msg": "Added T201 (BUILD) after end: HenryDB: string_agg with ORDER BY inside aggregate"
+    },
+    {
+      "time": "2026-04-14T01:04:44.802Z",
+      "msg": "Added T202 (BUILD) after end: HenryDB: BOOL_AND/BOOL_OR aggregate functions"
+    },
+    {
+      "time": "2026-04-14T01:04:44.922Z",
+      "msg": "Added T203 (BUILD) after end: Monkey: implement string contains/indexOf builtins"
+    },
+    {
+      "time": "2026-04-14T01:04:45.043Z",
+      "msg": "Added T204 (BUILD) after end: HenryDB: TABLESAMPLE BERNOULLI (random row sampling)"
     }
   ]
 }
