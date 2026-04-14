@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T18:25:18.387Z",
+  "generated": "2026-04-14T18:29:48.115Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: VALUES clause as standalone query (VALUES (1), (2), (3) → returns rows)",
-    "completedAt": "2026-04-14T18:25:18.387Z",
-    "taskId": "T83",
-    "summary": "Standalone VALUES clause. Parser + engine. VALUES (1,a),(2,b) returns rows with column1/column2 naming. Tests passing.",
-    "durationMs": 300000
+    "task": "HenryDB: INSERT ... RETURNING * (already partly done — test + ensure)",
+    "completedAt": "2026-04-14T18:29:48.115Z",
+    "taskId": "T85",
+    "summary": "Fixed bug #15: INSERT RETURNING showed null for generated columns. _insertRow now returns post-computation values. Tests passing.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 82,
+    "blocksCompleted": 84,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 52,
+      "BUILD": 54,
       "MAINTAIN": 5,
       "EXPLORE": 16
     }

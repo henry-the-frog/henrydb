@@ -904,6 +904,28 @@
       "completed": "2026-04-14T18:25:18.351Z",
       "duration_ms": 300000,
       "summary": "Standalone VALUES clause. Parser + engine. VALUES (1,a),(2,b) returns rows with column1/column2 naming. Tests passing."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: pattern matching (match expr { case val => expr })",
+      "project": "monkey-lang",
+      "started": "2026-04-14T18:25:46.403Z",
+      "completed": "2026-04-14T18:27:47.303Z",
+      "duration_ms": 600000,
+      "summary": "Pattern matching: match expr { pattern => body }. Expression-based, default arm (_). Supports literals+strings+bools. 528/528 passing."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: INSERT ... RETURNING * (already partly done — test + ensure)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:27:58.179Z",
+      "completed": "2026-04-14T18:29:48.079Z",
+      "duration_ms": 600000,
+      "summary": "Fixed bug #15: INSERT RETURNING showed null for generated columns. _insertRow now returns post-computation values. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1235,6 +1257,14 @@
     {
       "time": "2026-04-14T18:21:14.394Z",
       "msg": "Added T83 (BUILD) after end: HenryDB: VALUES clause as standalone query (VALUES (1), (2), (3) → returns rows)"
+    },
+    {
+      "time": "2026-04-14T18:25:41.289Z",
+      "msg": "Added T84 (BUILD) after end: Monkey-lang: pattern matching (match expr { case val => expr })"
+    },
+    {
+      "time": "2026-04-14T18:25:41.407Z",
+      "msg": "Added T85 (BUILD) after end: HenryDB: INSERT ... RETURNING * (already partly done — test + ensure)"
     }
   ]
 }
