@@ -3924,6 +3924,8 @@ export class Database {
       
       // Math functions
       case 'POWER': return Math.pow(this._evalValue(args[0], row), this._evalValue(args[1], row));
+      case 'GREATEST': return Math.max(...args.map(a => this._evalValue(a, row)));
+      case 'LEAST': return Math.min(...args.map(a => this._evalValue(a, row)));
       case 'SQRT': return Math.sqrt(this._evalValue(args[0], row));
       case 'LOG': return args.length > 1 ? Math.log(this._evalValue(args[1], row)) / Math.log(this._evalValue(args[0], row)) : Math.log(this._evalValue(args[0], row));
       case 'RANDOM': return Math.random();
