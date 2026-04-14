@@ -515,6 +515,10 @@ export class TransactionalDatabase {
           const ver = vm.get(key);
 
           if (!ver) {
+            // SSI tracking: record read even for rows without version info
+            if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
+              tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, 0);
+            }
             yield row;
             continue;
           }
@@ -866,6 +870,9 @@ export class TransactionSession {
       const prevTx = this._tdb._activeTx;
       this._tdb._activeTx = this._tx;
       this._tdb._setHeapTxId(this._tx.txId);
+      // Set txId on inner Database to bypass result cache during transactions
+      const prevDbTxId = this._tdb._db._currentTxId;
+      this._tdb._db._currentTxId = this._tx.txId;
       // For UPDATE/DELETE, suppress read tracking during scan (WHERE filter
       // causes false SSI dependencies on rows that don't match)
       const isModify = trimmed.startsWith('UPDATE') || trimmed.startsWith('DELETE');
@@ -970,6 +977,7 @@ export class TransactionSession {
       } finally {
         this._tdb._activeTx = prevTx;
         this._tdb._setHeapTxId(prevTx ? prevTx.txId : 0);
+        this._tdb._db._currentTxId = prevDbTxId;
       }
     }
 

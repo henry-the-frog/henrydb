@@ -229,7 +229,7 @@ export class Database {
     
     // Check result cache for SELECT queries (skip for non-deterministic functions)
     const hasNonDeterministic = /NEXTVAL|CURRVAL|RANDOM|NOW|CURRENT_/i.test(sql);
-    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN') && !hasNonDeterministic) {
+    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN') && !hasNonDeterministic && this._currentTxId === 0) {
       const cached = this._resultCache.get(sql);
       if (cached) {
         this._resultCacheHits++;
