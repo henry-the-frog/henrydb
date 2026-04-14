@@ -586,6 +586,17 @@
       "completed": "2026-04-14T17:17:45.866Z",
       "duration_ms": 120000,
       "summary": "Table-level PRIMARY KEY and UNIQUE both survive persistence round-trip correctly (enforced via index system). No bugs."
+    },
+    {
+      "id": "T55",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Monkey-lang: comprehensive tree-walker vs VM parity test — find all features that work in one but not the other",
+      "project": "monkey-lang",
+      "started": "2026-04-14T17:20:18.909Z",
+      "completed": "2026-04-14T17:21:00.723Z",
+      "duration_ms": 300000,
+      "summary": "Comprehensive tree-walker/VM parity: 32/35 match. 3 mismatches found: (1) for loop returns last loop body value instead of post-loop expression, (2) while loop returns null instead of post-loop expression, (3) compound assignment mismatch. All are compiler bugs in loop handling."
     }
   ],
   "focusProjects": [
@@ -801,6 +812,10 @@
     {
       "time": "2026-04-14T17:17:13.455Z",
       "msg": "Added T54 (EXPLORE) after end: HenryDB: persistence of DISTINCT ON, table-level PRIMARY KEY, table-level UNIQUE — do they survive round-trip?"
+    },
+    {
+      "time": "2026-04-14T17:20:09.226Z",
+      "msg": "Added T55 (EXPLORE) after end: Monkey-lang: comprehensive tree-walker vs VM parity test — find all features that work in one but not the other"
     }
   ]
 }
