@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T17:09:59.469Z",
+  "generated": "2026-04-14T17:12:57.317Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB: WAL-based persistence round-trip — do expression indexes, generated columns, FKs survive WAL replay?",
-    "completedAt": "2026-04-14T17:09:59.469Z",
-    "taskId": "T49",
-    "summary": "EXPLORE WAL persistence found BUG #10: WAL replay used column name lookup for expression indexes (always -1), silently leaving indexes empty after recovery. Fixed by using _computeIndexKey. Bug #9 (serialize) and #10 (WAL) are the same DDL completeness pattern.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "HenryDB: add persistence integration tests for expression indexes, generated columns, FKs, table-level CHECK",
+    "completedAt": "2026-04-14T17:12:57.317Z",
+    "taskId": "T51",
+    "summary": "13 new persistence tests. Found BUG #11 (unique flag lost) and BUG #12 (expression indexes empty after restore). Fixed fromSerialized index rebuild: unique flag from metadata, expression index evaluation. 13/13 passing.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 48,
+    "blocksCompleted": 50,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 25,
+      "BUILD": 26,
       "MAINTAIN": 4,
-      "EXPLORE": 10
+      "EXPLORE": 11
     }
   },
   "artifacts": [
