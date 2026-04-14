@@ -1475,6 +1475,28 @@
       "completed": "2026-04-14T19:51:56.398Z",
       "duration_ms": 30000,
       "summary": "puts + f-strings already compose perfectly. Monkey-lang now has 72 builtins!"
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: RANDOM() and ABS() scalar functions (verify)",
+      "project": "henrydb",
+      "started": "2026-04-14T19:52:27.627Z",
+      "completed": "2026-04-14T19:52:51.882Z",
+      "duration_ms": 30000,
+      "summary": "ABS, RANDOM, ROUND, CEIL, FLOOR all already work. Verified."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: JSON_EXTRACT function for JSON column values",
+      "project": "henrydb",
+      "started": "2026-04-14T19:53:04.341Z",
+      "completed": "2026-04-14T19:53:37.975Z",
+      "duration_ms": 30000,
+      "summary": "JSON_EXTRACT, JSON_ARRAY_LENGTH, JSON_SET etc. all already fully implemented. Tested nested extraction."
     }
   ],
   "focusProjects": [
@@ -2014,6 +2036,14 @@
     {
       "time": "2026-04-14T19:51:11.993Z",
       "msg": "Added T135 (BUILD) after end: Monkey-lang: print formatting with f-string in puts (verify puts works with f-strings)"
+    },
+    {
+      "time": "2026-04-14T19:52:27.390Z",
+      "msg": "Added T136 (BUILD) after end: HenryDB: RANDOM() and ABS() scalar functions (verify)"
+    },
+    {
+      "time": "2026-04-14T19:53:04.105Z",
+      "msg": "Added T137 (BUILD) after end: HenryDB: JSON_EXTRACT function for JSON column values"
     }
   ]
 }
