@@ -3123,6 +3123,11 @@ export class Database {
             const strs = (distinct ? [...new Set(values)] : values).map(String);
             return strs.join(sep);
           }
+          case 'ARRAY_AGG':
+          case 'JSON_AGG': {
+            const arr = distinct ? [...new Set(values)] : values;
+            return JSON.stringify(arr);
+          }
         }
       };
 

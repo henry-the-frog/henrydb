@@ -6,7 +6,7 @@ const KEYWORDS = new Set([
   'DELETE', 'CREATE', 'TABLE', 'DROP', 'AND', 'OR', 'NOT', 'NULL', 'TRUE',
   'FALSE', 'ORDER', 'BY', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'AS',
   'INT', 'INTEGER', 'TEXT', 'VARCHAR', 'FLOAT', 'BOOL', 'BOOLEAN',
-  'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
+  'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'ARRAY_AGG', 'JSON_AGG',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
@@ -387,7 +387,7 @@ export function parse(sql) {
     }
 
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
-    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
+    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT', 'ARRAY_AGG', 'JSON_AGG'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
       expect('(');
       let distinct = false;
