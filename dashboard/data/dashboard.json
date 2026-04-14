@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T16:48:21.769Z",
+  "generated": "2026-04-14T16:53:46.153Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Monkey-lang: float/decimal literal support (currently integer only)",
-    "completedAt": "2026-04-14T16:48:21.768Z",
-    "taskId": "T41",
-    "summary": "Float/decimal literals in Monkey-lang: lexer, parser, AST, object system, evaluator all updated. Mixed int/float arithmetic (auto-promotion). 528/528 tests passing.",
-    "durationMs": 600000
+    "mode": "EXPLORE",
+    "task": "Monkey-lang: verify float support in compiler/VM (parity test)",
+    "completedAt": "2026-04-14T16:53:46.153Z",
+    "taskId": "T42",
+    "summary": "Float support in compiler/VM: FloatLiteral compilation, float arithmetic, mixed int/float, comparison, negation. Perfect tree-walker/VM parity verified. 528/528 passing.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 40,
+    "blocksCompleted": 41,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
       "BUILD": 22,
       "MAINTAIN": 4,
-      "EXPLORE": 5
+      "EXPLORE": 6
     }
   },
   "artifacts": [

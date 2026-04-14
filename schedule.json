@@ -443,6 +443,24 @@
       "completed": "2026-04-14T16:48:21.733Z",
       "duration_ms": 600000,
       "summary": "Float/decimal literals in Monkey-lang: lexer, parser, AST, object system, evaluator all updated. Mixed int/float arithmetic (auto-promotion). 528/528 tests passing."
+    },
+    {
+      "id": "T42",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Monkey-lang: verify float support in compiler/VM (parity test)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T16:49:08.403Z",
+      "completed": "2026-04-14T16:53:46.117Z",
+      "duration_ms": 300000,
+      "summary": "Float support in compiler/VM: FloatLiteral compilation, float arithmetic, mixed int/float, comparison, negation. Perfect tree-walker/VM parity verified. 528/528 passing."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: EXPLAIN ANALYZE — actual row counts + timing",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -606,6 +624,14 @@
     {
       "time": "2026-04-14T16:35:14.155Z",
       "msg": "Added T41 (BUILD) after end: Monkey-lang: float/decimal literal support (currently integer only)"
+    },
+    {
+      "time": "2026-04-14T16:48:58.995Z",
+      "msg": "Added T42 (EXPLORE) after end: Monkey-lang: verify float support in compiler/VM (parity test)"
+    },
+    {
+      "time": "2026-04-14T16:48:59.134Z",
+      "msg": "Added T43 (BUILD) after end: HenryDB: EXPLAIN ANALYZE — actual row counts + timing"
     }
   ]
 }
