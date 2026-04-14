@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T16:02:04.787Z",
+  "generated": "2026-04-14T16:08:38.907Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Monkey-lang: const in compiler/VM (does the compiler handle const?)",
-    "completedAt": "2026-04-14T16:02:04.787Z",
-    "taskId": "T34",
-    "summary": "Found const not enforced in compiler/VM — set x = 10 silently worked on const. Added isConst tracking in SymbolTable, compile-time error in SetStatement. 528/528 passing.",
+    "mode": "BUILD",
+    "task": "HenryDB: DISTINCT ON (column) for deduplication",
+    "completedAt": "2026-04-14T16:08:38.907Z",
+    "taskId": "T36",
+    "summary": "DISTINCT ON (column) implemented. Also found/fixed ACTION keyword breaking action column names. All tests passing.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 33,
+    "blocksCompleted": 35,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 17,
+      "BUILD": 19,
       "MAINTAIN": 3,
       "EXPLORE": 5
     }

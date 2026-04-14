@@ -367,6 +367,34 @@
       "completed": "2026-04-14T16:02:04.750Z",
       "duration_ms": 300000,
       "summary": "Found const not enforced in compiler/VM — set x = 10 silently worked on const. Added isConst tracking in SymbolTable, compile-time error in SetStatement. 528/528 passing."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CASE WHEN expression support in SELECT and WHERE",
+      "project": "henrydb",
+      "started": "2026-04-14T16:03:06.435Z",
+      "completed": "2026-04-14T16:03:37.390Z",
+      "duration_ms": 30000,
+      "summary": "CASE WHEN already implemented and working: simple CASE, searched CASE, in SELECT and WHERE. No changes needed."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: DISTINCT ON (column) for deduplication",
+      "project": "henrydb",
+      "started": "2026-04-14T16:03:55.524Z",
+      "completed": "2026-04-14T16:08:38.871Z",
+      "duration_ms": 300000,
+      "summary": "DISTINCT ON (column) implemented. Also found/fixed ACTION keyword breaking action column names. All tests passing."
+    },
+    {
+      "id": "T37",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Depth check #2: review bugs found, learnings captured, assess breadth vs depth"
     }
   ],
   "focusProjects": [
@@ -502,6 +530,18 @@
     {
       "time": "2026-04-14T15:53:19.157Z",
       "msg": "Added T34 (EXPLORE) after end: Monkey-lang: const in compiler/VM (does the compiler handle const?)"
+    },
+    {
+      "time": "2026-04-14T16:02:47.030Z",
+      "msg": "Added T35 (BUILD) after end: HenryDB: CASE WHEN expression support in SELECT and WHERE"
+    },
+    {
+      "time": "2026-04-14T16:02:47.148Z",
+      "msg": "Added T36 (BUILD) after end: HenryDB: DISTINCT ON (column) for deduplication"
+    },
+    {
+      "time": "2026-04-14T16:02:47.265Z",
+      "msg": "Added T37 (THINK) after end: Depth check #2: review bugs found, learnings captured, assess breadth vs depth"
     }
   ]
 }
