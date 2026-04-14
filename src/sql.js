@@ -38,6 +38,7 @@ const KEYWORDS = new Set([
   'NO',
   'LTRIM', 'RTRIM', 'INSTR', 'PRINTF',
   'USING',
+  'MERGE', 'MATCHED',
 ]);
 
 export function tokenize(sql) {
@@ -169,6 +170,7 @@ export function parse(sql) {
   if (isKeyword('INSERT')) return parseInsert();
   if (isKeyword('UPDATE')) return parseUpdate();
   if (isKeyword('DELETE')) return parseDelete();
+  if (isKeyword('MERGE')) return parseMerge();
   if (isKeyword('ALTER')) return parseAlter();
   if (isKeyword('CREATE')) return parseCreate();
   if (isKeyword('REFRESH')) {
@@ -1110,6 +1112,78 @@ export function parse(sql) {
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
     return { type: 'DELETE', table, where, using };
+  }
+
+  function parseMerge() {
+    advance(); // MERGE
+    expect('KEYWORD', 'INTO');
+    const target = advance().value;
+    let targetAlias = null;
+    if (peek() && peek().type === 'IDENT' && !isKeyword('USING')) {
+      targetAlias = advance().value;
+    }
+    
+    expect('KEYWORD', 'USING');
+    const source = advance().value;
+    let sourceAlias = null;
+    if (peek() && peek().type === 'IDENT' && !isKeyword('ON')) {
+      sourceAlias = advance().value;
+    }
+    
+    expect('KEYWORD', 'ON');
+    const condition = parseExpr();
+    
+    const whenClauses = [];
+    while (isKeyword('WHEN')) {
+      advance(); // WHEN
+      let matched;
+      if (isKeyword('NOT')) {
+        advance(); // NOT
+        expect('KEYWORD', 'MATCHED');
+        matched = false;
+      } else {
+        expect('KEYWORD', 'MATCHED');
+        matched = true;
+      }
+      expect('KEYWORD', 'THEN');
+      
+      if (matched && isKeyword('UPDATE')) {
+        advance(); // UPDATE
+        expect('KEYWORD', 'SET');
+        const assignments = [];
+        do {
+          const col = advance().value;
+          expect('EQ');
+          const value = parsePrimaryWithConcat();
+          assignments.push({ column: col, value });
+        } while (match(','));
+        whenClauses.push({ matched: true, action: 'UPDATE', assignments });
+      } else if (matched && isKeyword('DELETE')) {
+        advance(); // DELETE
+        whenClauses.push({ matched: true, action: 'DELETE' });
+      } else if (!matched && isKeyword('INSERT')) {
+        advance(); // INSERT
+        let columns = null;
+        if (match('(')) {
+          columns = [];
+          do { columns.push(advance().value); } while (match(','));
+          expect(')');
+        }
+        expect('KEYWORD', 'VALUES');
+        expect('(');
+        const values = [];
+        do { values.push(parsePrimaryWithConcat()); } while (match(','));
+        expect(')');
+        whenClauses.push({ matched: false, action: 'INSERT', columns, values });
+      }
+    }
+    
+    return {
+      type: 'MERGE',
+      target, targetAlias: targetAlias || target,
+      source, sourceAlias: sourceAlias || source,
+      condition, whenClauses
+    };
   }
 
   function parseAlter() {

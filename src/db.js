@@ -403,6 +403,7 @@ export class Database {
       case 'EXCEPT': return this._except(ast);
       case 'UPDATE': return this._update(ast);
       case 'DELETE': return this._delete(ast);
+      case 'MERGE': return this._merge(ast);
       case 'TRUNCATE': return this._truncate(ast);
       case 'SHOW_TABLES': return this._showTables();
       case 'DESCRIBE': return this._describe(ast);
@@ -661,6 +662,82 @@ export class Database {
     }
     
     return { type: 'OK', message: `Table ${ast.table} created with ${result.rows.length} rows` };
+  }
+
+  _merge(ast) {
+    const targetTable = this.tables.get(ast.target);
+    if (!targetTable) throw new Error(`Table ${ast.target} not found`);
+    const sourceTable = this.tables.get(ast.source);
+    if (!sourceTable) throw new Error(`Table ${ast.source} not found`);
+    
+    let inserted = 0, updated = 0, deleted = 0;
+    
+    // For each source row, check if it matches any target row
+    for (const sourceEntry of sourceTable.heap.scan()) {
+      const sourceRow = this._valuesToRow(sourceEntry.values, sourceTable.schema, ast.source);
+      
+      let matched = false;
+      // Scan target for matching rows
+      for (const targetEntry of targetTable.heap.scan()) {
+        const targetRow = this._valuesToRow(targetEntry.values, targetTable.schema, ast.target);
+        
+        // Build combined row for condition evaluation
+        const combined = {};
+        for (const [k, v] of Object.entries(targetRow)) {
+          combined[k] = v;
+          combined[`${ast.targetAlias}.${k}`] = v;
+        }
+        for (const [k, v] of Object.entries(sourceRow)) {
+          combined[`${ast.sourceAlias}.${k}`] = v;
+        }
+        
+        if (this._evalExpr(ast.condition, combined)) {
+          matched = true;
+          // Apply WHEN MATCHED clauses
+          for (const clause of ast.whenClauses) {
+            if (!clause.matched) continue;
+            if (clause.action === 'UPDATE') {
+              // Build update AST and execute inline
+              const newValues = [...targetEntry.values];
+              for (const { column, value } of clause.assignments) {
+                const colIdx = targetTable.schema.findIndex(c => c.name === column);
+                if (colIdx === -1) throw new Error(`Column ${column} not found`);
+                newValues[colIdx] = this._evalValue(value, combined);
+              }
+              // Delete old, insert new
+              targetTable.heap.delete(targetEntry.pageId, targetEntry.slotIdx);
+              targetTable.heap.insert(newValues);
+              updated++;
+            } else if (clause.action === 'DELETE') {
+              targetTable.heap.delete(targetEntry.pageId, targetEntry.slotIdx);
+              deleted++;
+            }
+            break;
+          }
+          break; // Only match first target row per source row
+        }
+      }
+      
+      if (!matched) {
+        // Apply WHEN NOT MATCHED clauses
+        for (const clause of ast.whenClauses) {
+          if (clause.matched) continue;
+          if (clause.action === 'INSERT') {
+            const combined = {};
+            for (const [k, v] of Object.entries(sourceRow)) {
+              combined[`${ast.sourceAlias}.${k}`] = v;
+              combined[k] = v;
+            }
+            const values = clause.values.map(v => this._evalValue(v, combined));
+            this._insertRow(targetTable, clause.columns, values);
+            inserted++;
+          }
+          break;
+        }
+      }
+    }
+    
+    return { type: 'OK', message: `MERGE: ${inserted} inserted, ${updated} updated, ${deleted} deleted` };
   }
 
   _createIndex(ast) {
