@@ -718,6 +718,13 @@ export function parse(sql) {
       const pattern = parsePrimary();
       return { type: 'NOT', expr: { type: 'LIKE', left, pattern } };
     }
+    // NOT ILIKE
+    if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'ILIKE') {
+      advance(); // NOT
+      advance(); // ILIKE
+      const pattern = parsePrimary();
+      return { type: 'NOT', expr: { type: 'ILIKE', left, pattern } };
+    }
 
     // NOT BETWEEN
     if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'BETWEEN') {
