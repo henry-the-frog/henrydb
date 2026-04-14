@@ -1201,6 +1201,24 @@
       "completed": "2026-04-14T19:01:41.850Z",
       "duration_ms": 600000,
       "summary": "Correlated subquery in UPDATE SET. Parser detects (SELECT ...) in expression context. Engine evaluates per-row. Tests passing."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: NULLS FIRST / NULLS LAST in ORDER BY",
+      "project": "henrydb",
+      "started": "2026-04-14T19:02:19.280Z",
+      "completed": "2026-04-14T19:06:18.255Z",
+      "duration_ms": 600000,
+      "summary": "NULLS FIRST / NULLS LAST in ORDER BY. Parser + both sort code paths in engine. Default: ASC→nulls last, DESC→nulls first. Override works. Tests passing."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey-lang: multi-catch (try { } catch (TypeError) { } catch (e) { })",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -1640,6 +1658,14 @@
     {
       "time": "2026-04-14T18:58:41.244Z",
       "msg": "Added T110 (BUILD) after end: HenryDB: correlated subquery in UPDATE SET"
+    },
+    {
+      "time": "2026-04-14T19:02:09.927Z",
+      "msg": "Added T111 (BUILD) after end: HenryDB: NULLS FIRST / NULLS LAST in ORDER BY"
+    },
+    {
+      "time": "2026-04-14T19:02:10.046Z",
+      "msg": "Added T112 (BUILD) after end: Monkey-lang: multi-catch (try { } catch (TypeError) { } catch (e) { })"
     }
   ]
 }

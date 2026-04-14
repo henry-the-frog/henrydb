@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T19:01:41.887Z",
+  "generated": "2026-04-14T19:06:18.292Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: correlated subquery in UPDATE SET",
-    "completedAt": "2026-04-14T19:01:41.887Z",
-    "taskId": "T110",
-    "summary": "Correlated subquery in UPDATE SET. Parser detects (SELECT ...) in expression context. Engine evaluates per-row. Tests passing.",
+    "task": "HenryDB: NULLS FIRST / NULLS LAST in ORDER BY",
+    "completedAt": "2026-04-14T19:06:18.292Z",
+    "taskId": "T111",
+    "summary": "NULLS FIRST / NULLS LAST in ORDER BY. Parser + both sort code paths in engine. Default: ASC→nulls last, DESC→nulls first. Override works. Tests passing.",
     "durationMs": 600000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 109,
+    "blocksCompleted": 110,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 78,
+      "BUILD": 79,
       "MAINTAIN": 5,
       "EXPLORE": 17
     }
