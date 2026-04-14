@@ -349,16 +349,24 @@
     {
       "id": "T33",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: COALESCE, NULLIF, IFNULL functions (common SQL functions)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T15:56:24.291Z",
+      "completed": "2026-04-14T15:59:16.480Z",
+      "duration_ms": 300000,
+      "summary": "COALESCE/NULLIF/IFNULL already existed. Added LTRIM, RTRIM, INSTR, PRINTF functions. Added to tokenizer keywords + SELECT function recognition list."
     },
     {
       "id": "T34",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey-lang: const in compiler/VM (does the compiler handle const?)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T15:59:52.027Z",
+      "completed": "2026-04-14T16:02:04.750Z",
+      "duration_ms": 300000,
+      "summary": "Found const not enforced in compiler/VM — set x = 10 silently worked on const. Added isConst tracking in SymbolTable, compile-time error in SetStatement. 528/528 passing."
     }
   ],
   "focusProjects": [

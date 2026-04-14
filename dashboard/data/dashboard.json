@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T15:55:50.566Z",
+  "generated": "2026-04-14T16:02:04.787Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Stress-test HenryDB: generated columns + foreign keys + expression indexes together",
-    "completedAt": "2026-04-14T15:55:50.566Z",
-    "taskId": "T32",
-    "summary": "EXPLORE stress-test: generated cols + FKs + expression indexes all work together. Found CRITICAL INSERT atomicity bug — unique index check happened AFTER heap write, causing leaked phantom rows on constraint violations. Fixed by pre-checking uniqueness before heap.insert().",
+    "task": "Monkey-lang: const in compiler/VM (does the compiler handle const?)",
+    "completedAt": "2026-04-14T16:02:04.787Z",
+    "taskId": "T34",
+    "summary": "Found const not enforced in compiler/VM — set x = 10 silently worked on const. Added isConst tracking in SymbolTable, compile-time error in SetStatement. 528/528 passing.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 31,
+    "blocksCompleted": 33,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
-      "BUILD": 16,
+      "BUILD": 17,
       "MAINTAIN": 3,
-      "EXPLORE": 4
+      "EXPLORE": 5
     }
   },
   "artifacts": [
