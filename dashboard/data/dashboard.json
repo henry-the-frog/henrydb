@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T02:54:43.271Z",
+  "generated": "2026-04-14T03:00:41.004Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: REGEXP_MATCHES function",
-    "completedAt": "2026-04-14T02:54:43.271Z",
-    "taskId": "T181",
-    "summary": "REGEXP_MATCHES (capture groups + global mode), REGEXP_REPLACE (with flags), REGEXP_COUNT. All 3 functions added to parser keyword set and function evaluator. 81 SQL tests pass.",
-    "durationMs": 180000
+    "task": "HenryDB: HAVING without GROUP BY",
+    "completedAt": "2026-04-14T03:00:41.004Z",
+    "taskId": "T189",
+    "summary": "HAVING without GROUP BY now works. Treats entire result as one group. Uses _evalGroupCond for proper aggregate_expr resolution. Fixed _computeSingleAggregate to use _evalValue (not _evalExpr) and handle COUNT(*) string arg.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 231,
+    "blocksCompleted": 233,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 195,
+      "BUILD": 197,
       "MAINTAIN": 17
     }
   },

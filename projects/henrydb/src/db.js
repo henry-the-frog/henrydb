@@ -2584,7 +2584,19 @@ export class Database {
       return this._selectWithGroupBy(ast, rows);
     }
     if (hasAggregates && !hasWindow) {
-      return { type: 'ROWS', rows: [this._computeAggregates(ast.columns, rows)] };
+      const aggRow = this._computeAggregates(ast.columns, rows);
+      // HAVING without GROUP BY: entire result is one group
+      if (ast.having) {
+        // Evaluate HAVING using the group computation path
+        const computeAgg = (func, arg, distinct) => {
+          return this._computeSingleAggregate(func, arg, rows, distinct);
+        };
+        const passes = this._evalGroupCond(ast.having, rows, aggRow, computeAgg);
+        if (!passes) {
+          return { type: 'ROWS', rows: [] };
+        }
+      }
+      return { type: 'ROWS', rows: [aggRow] };
     }
 
     // Window functions: compute window values before projection
@@ -7087,6 +7099,20 @@ export class Database {
     this._outerRow = savedOuterRow;
     this._innerTableAliases = savedInnerAliases;
     return result.rows;
+  }
+
+  _computeSingleAggregate(func, arg, rows, distinct) {
+    if (func === 'COUNT' && (arg === '*' || (arg && arg.type === 'literal' && arg.value === '*'))) return rows.length;
+    let vals = rows.map(r => this._evalValue(arg, r)).filter(v => v != null);
+    if (distinct) vals = [...new Set(vals)];
+    switch (func) {
+      case 'COUNT': return arg.type === 'literal' && arg.value === '*' ? rows.length : vals.length;
+      case 'SUM': return vals.reduce((a, b) => Number(a) + Number(b), 0);
+      case 'AVG': return vals.length > 0 ? vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length : null;
+      case 'MAX': return vals.length > 0 ? vals.reduce((a, b) => a > b ? a : b) : null;
+      case 'MIN': return vals.length > 0 ? vals.reduce((a, b) => a < b ? a : b) : null;
+      default: return null;
+    }
   }
 
   _computeAggregates(columns, rows) {
