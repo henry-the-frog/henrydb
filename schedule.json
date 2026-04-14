@@ -1179,6 +1179,28 @@
       "completed": "2026-04-14T18:58:13.904Z",
       "duration_ms": 300000,
       "summary": "Comprehensive README.md for Monkey-lang. Full feature list with code examples: data types, functions, f-strings, comprehensions, pattern matching, pipes, spread, etc."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: HAVING with aggregate expressions (SUM(x) > 100)",
+      "project": "henrydb",
+      "started": "2026-04-14T18:58:51.275Z",
+      "completed": "2026-04-14T18:59:10.797Z",
+      "duration_ms": 60000,
+      "summary": "HAVING with aggregates already works: SUM(amount) > 100, COUNT(*) >= 2. Both verified."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: correlated subquery in UPDATE SET",
+      "project": "henrydb",
+      "started": "2026-04-14T18:59:20.006Z",
+      "completed": "2026-04-14T19:01:41.850Z",
+      "duration_ms": 600000,
+      "summary": "Correlated subquery in UPDATE SET. Parser detects (SELECT ...) in expression context. Engine evaluates per-row. Tests passing."
     }
   ],
   "focusProjects": [
@@ -1610,6 +1632,14 @@
     {
       "time": "2026-04-14T18:57:14.817Z",
       "msg": "Added T108 (BUILD) after end: Monkey-lang: write comprehensive README.md showing all features"
+    },
+    {
+      "time": "2026-04-14T18:58:41.125Z",
+      "msg": "Added T109 (BUILD) after end: HenryDB: HAVING with aggregate expressions (SUM(x) > 100)"
+    },
+    {
+      "time": "2026-04-14T18:58:41.244Z",
+      "msg": "Added T110 (BUILD) after end: HenryDB: correlated subquery in UPDATE SET"
     }
   ]
 }
