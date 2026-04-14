@@ -2121,10 +2121,13 @@
     {
       "id": "T208",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: FIRST_VALUE/LAST_VALUE window functions",
       "project": "henrydb",
-      "started": "2026-04-14T01:16:15.758Z"
+      "started": "2026-04-14T01:16:15.758Z",
+      "completed": "2026-04-14T01:17:02.993Z",
+      "duration_ms": 120000,
+      "summary": "CUME_DIST and PERCENT_RANK window functions. All tests pass."
     },
     {
       "id": "T209",
@@ -2147,9 +2150,35 @@
     {
       "id": "T211",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement array reverse builtin",
+      "project": "monkey-lang",
+      "started": "2026-04-14T01:17:18.297Z",
+      "completed": "2026-04-14T01:18:06.353Z",
+      "duration_ms": 120000,
+      "summary": "abs(), min(), max() builtins. Variable args. Both engines. 442 tests."
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement number builtins (abs, min, max)",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: GREATEST/LEAST with variable args",
+      "project": "henrydb",
+      "started": "2026-04-14T01:18:14.923Z"
+    },
+    {
+      "id": "T214",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: NTH_VALUE window function",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2965,6 +2994,18 @@
     {
       "time": "2026-04-14T01:15:15.312Z",
       "msg": "Added T211 (BUILD) after end: Monkey: implement array reverse builtin"
+    },
+    {
+      "time": "2026-04-14T01:17:11.670Z",
+      "msg": "Added T212 (BUILD) after end: Monkey: implement number builtins (abs, min, max)"
+    },
+    {
+      "time": "2026-04-14T01:17:11.789Z",
+      "msg": "Added T213 (BUILD) after end: HenryDB: GREATEST/LEAST with variable args"
+    },
+    {
+      "time": "2026-04-14T01:17:11.908Z",
+      "msg": "Added T214 (BUILD) after end: HenryDB: NTH_VALUE window function"
     }
   ]
 }
