@@ -3751,6 +3751,10 @@ export class Database {
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
       case 'LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
       case 'CONCAT': return args.map(a => { const v = this._evalValue(a, row); return v != null ? String(v) : ''; }).join('');
+      case 'CONCAT_WS': {
+        const sep = String(this._evalValue(args[0], row));
+        return args.slice(1).map(a => this._evalValue(a, row)).filter(v => v != null).map(String).join(sep);
+      }
       case 'COALESCE': {
         for (const arg of args) {
           const v = this._evalValue(arg, row);
