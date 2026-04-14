@@ -1839,9 +1839,13 @@
     {
       "id": "T178",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: CREATE OR REPLACE VIEW",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T00:58:01.788Z",
+      "completed": "2026-04-14T00:58:17.852Z",
+      "duration_ms": 15000,
+      "summary": "CREATE OR REPLACE VIEW already works. Verified."
     },
     {
       "id": "T179",
@@ -1882,9 +1886,13 @@
     {
       "id": "T183",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: REGEXP_REPLACE function",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T00:57:44.683Z",
+      "completed": "2026-04-14T00:58:01.644Z",
+      "duration_ms": 15000,
+      "summary": "REGEXP_REPLACE already works. Verified."
     },
     {
       "id": "T184",
@@ -1925,10 +1933,13 @@
     {
       "id": "T188",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: USING clause in JOIN (JOIN ON using shared columns)",
       "project": "henrydb",
-      "started": "2026-04-14T00:56:22.907Z"
+      "started": "2026-04-14T00:56:22.907Z",
+      "completed": "2026-04-14T00:57:29.520Z",
+      "duration_ms": 120000,
+      "summary": "JOIN ... USING (col): shorthand for equi-join on shared columns. All tests pass."
     },
     {
       "id": "T189",
@@ -1947,6 +1958,78 @@
       "completed": "2026-04-14T00:56:16.328Z",
       "duration_ms": 180000,
       "summary": "Compound assignment: +=, -=, *=, /=. Desugars to set x = x op val. 387 tests."
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: CROSS APPLY / OUTER APPLY (SQL Server syntax for LATERAL)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T192",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: implement const declarations (const x = 5; immutable)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T00:58:34.380Z",
+      "completed": "2026-04-14T01:01:36.409Z",
+      "duration_ms": 180000,
+      "summary": "const declarations: immutable bindings with error on set. Environment tracks const-ness. 387 tests."
+    },
+    {
+      "id": "T193",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: window function SUM with ROWS BETWEEN frame",
+      "project": "henrydb"
+    },
+    {
+      "id": "T194",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ALTER TABLE ADD COLUMN",
+      "project": "henrydb",
+      "started": "2026-04-14T01:01:56.247Z",
+      "completed": "2026-04-14T01:02:14.666Z",
+      "duration_ms": 15000,
+      "summary": "ALTER TABLE ADD COLUMN already works. Verified with null defaults."
+    },
+    {
+      "id": "T195",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: multiple ORDER BY with mixed directions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T196",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement println (puts with newline return)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: EXPLAIN FORMAT TEXT (human-readable plan)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: stress test - 10000 row JOIN + aggregate benchmark",
+      "project": "henrydb",
+      "started": "2026-04-14T01:02:31.580Z"
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: final comprehensive parity test (all features both engines)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -2678,6 +2761,42 @@
     {
       "time": "2026-04-14T00:53:06.251Z",
       "msg": "Added T190 (BUILD) after end: Monkey: implement += and -= assignment operators"
+    },
+    {
+      "time": "2026-04-14T00:58:27.377Z",
+      "msg": "Added T191 (BUILD) after end: HenryDB: CROSS APPLY / OUTER APPLY (SQL Server syntax for LATERAL)"
+    },
+    {
+      "time": "2026-04-14T00:58:27.497Z",
+      "msg": "Added T192 (BUILD) after end: Monkey: implement const declarations (const x = 5; immutable)"
+    },
+    {
+      "time": "2026-04-14T00:58:27.616Z",
+      "msg": "Added T193 (BUILD) after end: HenryDB: window function SUM with ROWS BETWEEN frame"
+    },
+    {
+      "time": "2026-04-14T01:01:48.191Z",
+      "msg": "Added T194 (BUILD) after end: HenryDB: ALTER TABLE ADD COLUMN"
+    },
+    {
+      "time": "2026-04-14T01:01:48.311Z",
+      "msg": "Added T195 (BUILD) after end: HenryDB: multiple ORDER BY with mixed directions"
+    },
+    {
+      "time": "2026-04-14T01:01:48.430Z",
+      "msg": "Added T196 (BUILD) after end: Monkey: implement println (puts with newline return)"
+    },
+    {
+      "time": "2026-04-14T01:01:48.549Z",
+      "msg": "Added T197 (BUILD) after end: HenryDB: EXPLAIN FORMAT TEXT (human-readable plan)"
+    },
+    {
+      "time": "2026-04-14T01:02:24.303Z",
+      "msg": "Added T198 (BUILD) after end: HenryDB: stress test - 10000 row JOIN + aggregate benchmark"
+    },
+    {
+      "time": "2026-04-14T01:02:24.423Z",
+      "msg": "Added T199 (BUILD) after end: Monkey: final comprehensive parity test (all features both engines)"
     }
   ]
 }
