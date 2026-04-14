@@ -1094,7 +1094,62 @@ export function parse(sql) {
     
     expect('(');
     const columns = [];
+    const tableConstraints = [];
     do {
+      // Check for table-level constraints
+      if (isKeyword('FOREIGN')) {
+        advance(); // FOREIGN
+        expect('KEYWORD', 'KEY');
+        expect('(');
+        const fkCols = [];
+        do { fkCols.push(advance().value); } while (match(','));
+        expect(')');
+        expect('KEYWORD', 'REFERENCES');
+        const refTable = advance().value;
+        expect('(');
+        const refCols = [];
+        do { refCols.push(advance().value); } while (match(','));
+        expect(')');
+        let onDelete = 'RESTRICT';
+        let onUpdate = 'RESTRICT';
+        while (isKeyword('ON')) {
+          advance();
+          if (isKeyword('DELETE')) {
+            advance();
+            if (isKeyword('CASCADE')) { advance(); onDelete = 'CASCADE'; }
+            else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onDelete = 'SET NULL'; }
+            else if (isKeyword('RESTRICT')) { advance(); onDelete = 'RESTRICT'; }
+            else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onDelete = 'NO ACTION'; }
+          } else if (isKeyword('UPDATE')) {
+            advance();
+            if (isKeyword('CASCADE')) { advance(); onUpdate = 'CASCADE'; }
+            else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onUpdate = 'SET NULL'; }
+            else if (isKeyword('RESTRICT')) { advance(); onUpdate = 'RESTRICT'; }
+            else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onUpdate = 'NO ACTION'; }
+          }
+        }
+        tableConstraints.push({ type: 'FOREIGN_KEY', columns: fkCols, references: { table: refTable, columns: refCols, onDelete, onUpdate } });
+        continue;
+      }
+      if (isKeyword('PRIMARY')) {
+        advance(); // PRIMARY
+        expect('KEYWORD', 'KEY');
+        expect('(');
+        const pkCols = [];
+        do { pkCols.push(advance().value); } while (match(','));
+        expect(')');
+        tableConstraints.push({ type: 'PRIMARY_KEY', columns: pkCols });
+        continue;
+      }
+      if (isKeyword('UNIQUE')) {
+        advance(); // UNIQUE
+        expect('(');
+        const uqCols = [];
+        do { uqCols.push(advance().value); } while (match(','));
+        expect(')');
+        tableConstraints.push({ type: 'UNIQUE', columns: uqCols });
+        continue;
+      }
       const tok = advance();
       const name = tok.originalValue || tok.value;
       const dataType = advance().value;
@@ -1125,23 +1180,31 @@ export function parse(sql) {
           const refColumn = advance().value;
           expect(')');
           let onDelete = 'RESTRICT';
-          if (isKeyword('ON')) {
+          let onUpdate = 'RESTRICT';
+          while (isKeyword('ON')) {
             advance();
             if (isKeyword('DELETE')) {
               advance();
               if (isKeyword('CASCADE')) { advance(); onDelete = 'CASCADE'; }
               else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onDelete = 'SET NULL'; }
               else if (isKeyword('RESTRICT')) { advance(); onDelete = 'RESTRICT'; }
+              else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onDelete = 'NO ACTION'; }
+            } else if (isKeyword('UPDATE')) {
+              advance();
+              if (isKeyword('CASCADE')) { advance(); onUpdate = 'CASCADE'; }
+              else if (isKeyword('SET')) { advance(); expect('KEYWORD', 'NULL'); onUpdate = 'SET NULL'; }
+              else if (isKeyword('RESTRICT')) { advance(); onUpdate = 'RESTRICT'; }
+              else if (isKeyword('NO')) { advance(); expect('KEYWORD', 'ACTION'); onUpdate = 'NO ACTION'; }
             }
           }
-          references = { table: refTable, column: refColumn, onDelete };
+          references = { table: refTable, column: refColumn, onDelete, onUpdate };
         }
         else break;
       }
       columns.push({ name, type: dataType, primaryKey, notNull, check, defaultValue: defaultVal, references });
     } while (match(','));
     expect(')');
-    return { type: 'CREATE_TABLE', table, columns, ifNotExists };
+    return { type: 'CREATE_TABLE', table, columns, ifNotExists, constraints: tableConstraints.length > 0 ? tableConstraints : null };
   }
 
   function parseCreateIndex(unique) {

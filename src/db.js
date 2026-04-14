@@ -396,8 +396,53 @@ export class Database {
       indexes.set(pkCol.name, new BPlusTree(32));
     }
 
-    this.tables.set(ast.table, { heap, schema, indexes });
+    // Collect foreign key constraints
+    const foreignKeys = [];
+    // Column-level REFERENCES
+    for (const col of schema) {
+      if (col.references) {
+        foreignKeys.push({
+          columns: [col.name],
+          refTable: col.references.table,
+          refColumns: [col.references.column],
+          onDelete: col.references.onDelete || 'RESTRICT',
+          onUpdate: col.references.onUpdate || 'RESTRICT',
+        });
+      }
+    }
+    // Table-level FOREIGN KEY constraints
+    if (ast.constraints) {
+      for (const c of ast.constraints) {
+        if (c.type === 'FOREIGN_KEY') {
+          foreignKeys.push({
+            columns: c.columns,
+            refTable: c.references.table,
+            refColumns: c.references.columns,
+            onDelete: c.references.onDelete || 'RESTRICT',
+            onUpdate: c.references.onUpdate || 'RESTRICT',
+          });
+        }
+      }
+    }
+
+    this.tables.set(ast.table, { heap, schema, indexes, foreignKeys });
     this.catalog.push({ name: ast.table, columns: schema });
+
+    // Register reverse FK references on parent tables for cascade lookups
+    for (const fk of foreignKeys) {
+      const parentTable = this.tables.get(fk.refTable);
+      if (parentTable) {
+        if (!parentTable.childFKs) parentTable.childFKs = [];
+        parentTable.childFKs.push({
+          childTable: ast.table,
+          childColumns: fk.columns,
+          parentColumns: fk.refColumns,
+          onDelete: fk.onDelete,
+          onUpdate: fk.onUpdate,
+        });
+      }
+    }
+
     return { type: 'OK', message: `Table ${ast.table} created` };
   }
 
@@ -971,6 +1016,32 @@ export class Database {
         }
         if (!found) {
           throw new Error(`Foreign key constraint violated: ${val} not found in ${col.references.table}(${col.references.column})`);
+        }
+      }
+    }
+
+    // Table-level foreign key constraints
+    if (table.foreignKeys) {
+      for (const fk of table.foreignKeys) {
+        const fkValues = fk.columns.map(col => {
+          const idx = table.schema.findIndex(c => c.name === col);
+          return idx >= 0 ? values[idx] : null;
+        });
+        if (fkValues.some(v => v == null)) continue;
+        
+        const refTable = this.tables.get(fk.refTable);
+        if (!refTable) throw new Error(`Referenced table ${fk.refTable} not found`);
+        
+        let found = false;
+        for (const { values: refValues } of refTable.heap.scan()) {
+          const refVals = fk.refColumns.map(col => {
+            const idx = refTable.schema.findIndex(c => c.name === col);
+            return idx >= 0 ? refValues[idx] : null;
+          });
+          if (fkValues.every((v, i) => v === refVals[i])) { found = true; break; }
+        }
+        if (!found) {
+          throw new Error(`Foreign key constraint violated: (${fkValues.join(', ')}) not found in ${fk.refTable}(${fk.refColumns.join(', ')})`);
         }
       }
     }
@@ -1693,7 +1764,71 @@ export class Database {
 
   // Handle foreign key actions when a parent row is deleted
   _handleForeignKeyDelete(parentTableName, parentTable, parentValues) {
-    // Find all child tables that reference this table
+    // Check childFKs (registered during CREATE TABLE)
+    if (parentTable.childFKs) {
+      for (const fk of parentTable.childFKs) {
+        const childTable = this.tables.get(fk.childTable);
+        if (!childTable) continue;
+        
+        const parentVals = fk.parentColumns.map(col => {
+          const idx = parentTable.schema.findIndex(c => c.name === col);
+          return idx >= 0 ? parentValues[idx] : null;
+        });
+        
+        const childColIndices = fk.childColumns.map(col =>
+          childTable.schema.findIndex(c => c.name === col)
+        );
+
+        if (fk.onDelete === 'CASCADE') {
+          const toDelete = [];
+          for (const { pageId, slotIdx, values: childValues } of childTable.heap.scan()) {
+            const childVals = childColIndices.map(i => childValues[i]);
+            if (parentVals.every((v, i) => v === childVals[i])) {
+              toDelete.push({ pageId, slotIdx, values: childValues });
+            }
+          }
+          for (const { pageId, slotIdx, values: childValues } of toDelete) {
+            this._handleForeignKeyDelete(fk.childTable, childTable, childValues);
+            childTable.heap.delete(pageId, slotIdx);
+            // Remove from indexes
+            for (const [colName, index] of childTable.indexes) {
+              const key = this._computeIndexKey(colName, childValues, childTable, fk.childTable);
+              try { index.delete(key, { pageId, slotIdx }); } catch {}
+            }
+          }
+        } else if (fk.onDelete === 'SET NULL') {
+          for (const { pageId, slotIdx, values: childValues } of childTable.heap.scan()) {
+            const childVals = childColIndices.map(i => childValues[i]);
+            if (parentVals.every((v, i) => v === childVals[i])) {
+              // Build UPDATE statement
+              const setClauses = fk.childColumns.map(col => `${col} = NULL`).join(', ');
+              // Build WHERE clause using all child columns for matching
+              const whereParts = [];
+              for (let ci = 0; ci < childTable.schema.length; ci++) {
+                const v = childValues[ci];
+                if (v === null) continue;
+                const colName = childTable.schema[ci].name;
+                whereParts.push(`${colName} = ${typeof v === 'string' ? `'${v}'` : v}`);
+              }
+              if (whereParts.length > 0) {
+                this.execute(`UPDATE ${fk.childTable} SET ${setClauses} WHERE ${whereParts.join(' AND ')}`);
+              }
+              break; // Re-scan needed after update (iterator invalidated)
+            }
+          }
+        } else {
+          // RESTRICT / NO ACTION
+          for (const { values: childValues } of childTable.heap.scan()) {
+            const childVals = childColIndices.map(i => childValues[i]);
+            if (parentVals.every((v, i) => v === childVals[i])) {
+              throw new Error(`Cannot delete: row is referenced by ${fk.childTable}(${fk.childColumns.join(', ')})`);
+            }
+          }
+        }
+      }
+    }
+
+    // Also check column-level REFERENCES (legacy path)
     for (const [childTableName, childTable] of this.tables) {
       for (const col of childTable.schema) {
         if (col.references && col.references.table === parentTableName) {
@@ -1702,7 +1837,6 @@ export class Database {
           const childColIdx = childTable.schema.findIndex(c => c.name === col.name);
 
           if (col.references.onDelete === 'CASCADE') {
-            // Delete child rows (recursively cascade)
             const toDelete = [];
             for (const { pageId, slotIdx, values: childValues } of childTable.heap.scan()) {
               if (childValues[childColIdx] === parentValue) {
@@ -1710,12 +1844,10 @@ export class Database {
               }
             }
             for (const { pageId, slotIdx, values: childValues } of toDelete) {
-              // Recursively handle FK cascades from this child row
               this._handleForeignKeyDelete(childTableName, childTable, childValues);
               childTable.heap.delete(pageId, slotIdx);
             }
           } else if (col.references.onDelete === 'SET NULL') {
-            // Set child column to NULL via UPDATE
             this.execute(`UPDATE ${childTableName} SET ${col.name} = NULL WHERE ${col.name} = ${typeof parentValue === 'string' ? `'${parentValue}'` : parentValue}`);
           } else {
             // RESTRICT: check if any child rows exist
