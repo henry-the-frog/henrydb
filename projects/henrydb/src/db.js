@@ -1044,6 +1044,7 @@ export class Database {
       case 'UPDATE': return this._update(ast);
       case 'DELETE': return this._delete(ast);
       case 'TRUNCATE': return this._truncate(ast);
+      case 'MERGE': return this._merge(ast);
       case 'SHOW_TABLES': return this._showTables();
       case 'DESCRIBE': return this._describe(ast);
       case 'EXPLAIN': return this._explain(ast);
@@ -3696,6 +3697,66 @@ export class Database {
     }
 
     return { type: 'OK', message: `${ast.table} truncated`, count };
+  }
+
+  _merge(ast) {
+    const targetTable = this.tables.get(ast.target);
+    if (!targetTable) throw new Error(`Table ${ast.target} not found`);
+    const sourceTable = this.tables.get(ast.source);
+    if (!sourceTable) throw new Error(`Table ${ast.source} not found`);
+    
+    const targetAlias = ast.targetAlias || ast.target;
+    const sourceAlias = ast.sourceAlias || ast.source;
+    
+    let updated = 0, inserted = 0;
+    
+    // For each source row, check if it matches any target row
+    for (const sourceItem of sourceTable.heap.scan()) {
+      const sourceRow = this._valuesToRow(sourceItem.values, sourceTable.schema, sourceAlias);
+      
+      let matched = false;
+      
+      // Check against all target rows
+      for (const targetItem of targetTable.heap.scan()) {
+        const targetRow = this._valuesToRow(targetItem.values, targetTable.schema, targetAlias);
+        const mergedRow = { ...targetRow, ...sourceRow };
+        
+        if (this._evalExpr(ast.on, mergedRow)) {
+          matched = true;
+          
+          // Find WHEN MATCHED clause
+          const matchClause = ast.whenClauses.find(c => c.type === 'MATCHED');
+          if (matchClause && matchClause.action === 'UPDATE') {
+            const newValues = [...targetItem.values];
+            for (const assignment of matchClause.assignments) {
+              const colIdx = targetTable.schema.findIndex(c => c.name === assignment.column);
+              if (colIdx >= 0) {
+                newValues[colIdx] = this._evalValue(assignment.value, mergedRow);
+              }
+            }
+            targetTable.heap.delete(targetItem.pageId, targetItem.slotIdx);
+            targetTable.heap.insert(newValues);
+            updated++;
+          }
+          break; // Only match once per source row
+        }
+      }
+      
+      if (!matched) {
+        // Find WHEN NOT MATCHED clause
+        const notMatchClause = ast.whenClauses.find(c => c.type === 'NOT_MATCHED');
+        if (notMatchClause && notMatchClause.action === 'INSERT') {
+          const values = notMatchClause.values.map(v => this._evalValue(v, sourceRow));
+          targetTable.heap.insert(values);
+          inserted++;
+        }
+      }
+    }
+    
+    // Invalidate cache
+    if (this._resultCache) this._resultCache.clear();
+    
+    return { type: 'OK', message: `MERGE: ${updated} updated, ${inserted} inserted`, updated, inserted };
   }
 
   _showTables() {

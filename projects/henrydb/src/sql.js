@@ -12,7 +12,7 @@ const KEYWORDS = new Set([
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
-  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED', 'ROLLUP', 'CUBE', 'GROUPING', 'SETS',
+  'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED', 'ROLLUP', 'CUBE', 'GROUPING', 'SETS', 'MERGE', 'USING', 'MATCHED',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'FULL', 'OUTER', 'NATURAL', 'USING', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
@@ -201,6 +201,7 @@ export function parse(sql) {
   if (isKeyword('WITH')) return parseWith();
   if (isKeyword('SELECT')) return parseSelect();
   if (isKeyword('VALUES')) return parseValuesClause();
+  if (isKeyword('MERGE')) return parseMerge();
   if (isKeyword('INSERT')) return parseInsert();
   if (isKeyword('UPDATE')) return parseUpdate();
   if (isKeyword('DELETE')) return parseDelete();
@@ -1534,6 +1535,69 @@ export function parse(sql) {
       cols.push(alias ? { expr, alias } : expr);
     } while (match(','));
     return cols;
+  }
+
+  function parseMerge() {
+    advance(); // MERGE
+    expect('KEYWORD', 'INTO');
+    const targetTok = advance();
+    const target = targetTok.originalValue || targetTok.value;
+    let targetAlias = null;
+    if (peek().type === 'IDENT' && !isKeyword('USING')) targetAlias = advance().value;
+    
+    expect('KEYWORD', 'USING');
+    const sourceTok = advance();
+    const source = sourceTok.originalValue || sourceTok.value;
+    let sourceAlias = null;
+    if (peek().type === 'IDENT' && !isKeyword('ON')) sourceAlias = advance().value;
+    
+    expect('KEYWORD', 'ON');
+    const onCondition = parseExpr();
+    
+    const whenClauses = [];
+    while (isKeyword('WHEN')) {
+      advance(); // WHEN
+      const matched = isKeyword('MATCHED');
+      if (matched) {
+        advance(); // MATCHED
+      } else {
+        expect('KEYWORD', 'NOT');
+        expect('KEYWORD', 'MATCHED');
+      }
+      expect('KEYWORD', 'THEN');
+      
+      if (matched) {
+        expect('KEYWORD', 'UPDATE');
+        expect('KEYWORD', 'SET');
+        const assignments = [];
+        do {
+          const colTok = advance();
+          const colName = colTok.originalValue || colTok.value;
+          if (peek().type === 'EQ') advance();
+          else expect('=');
+          const value = parseExpr();
+          assignments.push({ column: colName, value });
+        } while (match(','));
+        whenClauses.push({ type: 'MATCHED', action: 'UPDATE', assignments });
+      } else {
+        expect('KEYWORD', 'INSERT');
+        let columns = null;
+        if (peek().type === '(') {
+          advance();
+          columns = [];
+          do { const ct = advance(); columns.push(ct.originalValue || ct.value); } while (match(','));
+          expect(')');
+        }
+        expect('KEYWORD', 'VALUES');
+        expect('(');
+        const values = [];
+        do { values.push(parseExpr()); } while (match(','));
+        expect(')');
+        whenClauses.push({ type: 'NOT_MATCHED', action: 'INSERT', columns, values });
+      }
+    }
+    
+    return { type: 'MERGE', target, targetAlias, source, sourceAlias, on: onCondition, whenClauses };
   }
 
   function parseInsert() {
