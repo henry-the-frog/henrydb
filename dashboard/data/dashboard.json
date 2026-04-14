@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T16:57:05.777Z",
+  "generated": "2026-04-14T16:59:30.046Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB: stress-test UPDATE + DELETE with generated columns, expression indexes, and foreign keys interacting simultaneously",
-    "completedAt": "2026-04-14T16:57:05.777Z",
-    "taskId": "T44",
-    "summary": "EXPLORE stress-test: all features work together correctly. Generated cols recompute on UPDATE, expression indexes update, CHECK catches violations, FK RESTRICT/CASCADE both work. Expression index on generated column works through UPDATE. No bugs found — the integration is solid.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "Monkey-lang: float in built-in functions (len, first, last should handle arrays; push, etc)",
+    "completedAt": "2026-04-14T16:59:30.046Z",
+    "taskId": "T45",
+    "summary": "Float builtins: added float() conversion, fixed int(float) truncation. All existing builtins (len, first, last, rest, push, puts, type, str) already work with floats. 528/528 passing.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 43,
+    "blocksCompleted": 44,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 23,
+      "BUILD": 24,
       "MAINTAIN": 4,
       "EXPLORE": 7
     }
