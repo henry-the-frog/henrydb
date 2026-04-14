@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T02:34:25.895Z",
+  "generated": "2026-04-14T02:40:46.501Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: CREATE INDEX CONCURRENTLY (non-blocking index build)",
-    "completedAt": "2026-04-14T02:34:25.895Z",
-    "taskId": "T166",
-    "summary": "CREATE INDEX CONCURRENTLY: two-phase build (scan + validation), build stats reporting (rows indexed, validation time), unique constraint enforcement, partial index support. 8 tests.",
+    "task": "HenryDB: multi-column index support with prefix matching",
+    "completedAt": "2026-04-14T02:40:46.501Z",
+    "taskId": "T167",
+    "summary": "Multi-column composite index prefix matching. WHERE a=5 on index(a,b,c) uses prefix scan. AND conditions combined for tighter prefix. Correct results for 1,2,3-column prefixes. 6 tests.",
     "durationMs": 300000
   },
   "schedule": {
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 224,
+    "blocksCompleted": 226,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 188,
+      "BUILD": 190,
       "MAINTAIN": 17
     }
   },

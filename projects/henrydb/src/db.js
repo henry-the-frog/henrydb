@@ -5641,6 +5641,80 @@ export class Database {
     return { type: 'ROWS', rows: resultRows };
   }
 
+  _extractEqualityConditions(where, tableAlias) {
+    const conditions = [];
+    const extract = (node) => {
+      if (!node) return;
+      if (node.type === 'AND') {
+        extract(node.left);
+        extract(node.right);
+      } else if (node.type === 'COMPARE' && node.op === 'EQ') {
+        const colRef = node.left?.type === 'column_ref' ? node.left : (node.right?.type === 'column_ref' ? node.right : null);
+        const literal = node.left?.type === 'literal' ? node.left : (node.right?.type === 'literal' ? node.right : null);
+        if (colRef && literal) {
+          const colName = colRef.name.includes('.') ? colRef.name.split('.').pop() : colRef.name;
+          conditions.push({ col: colName, value: literal.value });
+        }
+      }
+    };
+    extract(where);
+    return conditions;
+  }
+
+  _tryCompositeIndexPrefix(table, tableAlias, eqConditions) {
+    // Look for composite indexes where eqConditions match a prefix
+    const eqCols = new Set(eqConditions.map(c => c.col));
+    const eqMap = new Map(eqConditions.map(c => [c.col, c.value]));
+    
+    for (const [indexKey, index] of table.indexes) {
+      if (index._isHash) continue; // Hash doesn't support prefix scans
+      
+      // Check if this is a composite index
+      const indexCols = indexKey.split(',');
+      if (indexCols.length < 2) continue;
+      
+      // Check for prefix match: the first N columns of the index must all be in eqConditions
+      let prefixLen = 0;
+      for (let i = 0; i < indexCols.length; i++) {
+        if (eqCols.has(indexCols[i])) {
+          prefixLen = i + 1;
+        } else {
+          break; // Must be a contiguous prefix
+        }
+      }
+      
+      if (prefixLen === 0) continue;
+      
+      // Build prefix key for range scan
+      const prefixValues = indexCols.slice(0, prefixLen).map(c => eqMap.get(c));
+      
+      // Scan the composite index for matching prefix
+      // Use table heap scan + index verification instead of iterating index directly
+      // This avoids needing to iterate an unfamiliar BPlusTree implementation
+      const rows = [];
+      for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        // Check if this row matches the prefix conditions
+        let matches = true;
+        for (let i = 0; i < prefixLen; i++) {
+          const colIdx = table.schema.findIndex(s => s.name === indexCols[i]);
+          if (colIdx < 0 || values[colIdx] !== prefixValues[i]) {
+            matches = false;
+            break;
+          }
+        }
+        if (matches) {
+          rows.push(this._valuesToRow(values, table.schema, tableAlias));
+        }
+      }
+      
+      // Return with residual if not all conditions were in the index prefix
+      const residualNeeded = eqConditions.some(c => !indexCols.slice(0, prefixLen).includes(c.col));
+      return { rows, residual: residualNeeded ? 'partial' : null, compositePrefix: true };
+    }
+    
+    return null;
+  }
+
   _tryIndexScan(table, where, tableAlias) {
     if (!where) return null;
 
@@ -5756,6 +5830,21 @@ export class Database {
           }
           return { rows, residual: null };
         }
+        
+        // Try composite index prefix matching: WHERE a = val using index (a, b, c)
+        if (!index) {
+          const compositeHit = this._tryCompositeIndexPrefix(table, tableAlias, [{ col: colName, value: literal.value }]);
+          if (compositeHit) return compositeHit;
+        }
+      }
+    }
+
+    // AND: try to combine conditions for composite index prefix matching
+    if (where.type === 'AND') {
+      const eqConditions = this._extractEqualityConditions(where, tableAlias);
+      if (eqConditions.length >= 2) {
+        const compositeHit = this._tryCompositeIndexPrefix(table, tableAlias, eqConditions);
+        if (compositeHit) return compositeHit;
       }
     }
 

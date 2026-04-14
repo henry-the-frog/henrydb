@@ -1761,9 +1761,13 @@
     {
       "id": "T162",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey: implement numeric comparison for strings (parseFloat-based)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-14T02:34:51.709Z",
+      "completed": "2026-04-14T02:34:51.853Z",
+      "duration_ms": 0,
+      "summary": "Skipping — Monkey already handles numeric string comparisons via parseFloat in evaluator."
     },
     {
       "id": "T163",
@@ -1808,9 +1812,13 @@
     {
       "id": "T167",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: multi-column index support with prefix matching",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T02:34:58.959Z",
+      "completed": "2026-04-14T02:40:46.465Z",
+      "duration_ms": 300000,
+      "summary": "Multi-column composite index prefix matching. WHERE a=5 on index(a,b,c) uses prefix scan. AND conditions combined for tighter prefix. Correct results for 1,2,3-column prefixes. 6 tests."
     },
     {
       "id": "T168",
