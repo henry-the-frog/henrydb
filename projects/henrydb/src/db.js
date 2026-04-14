@@ -6484,6 +6484,14 @@ export class Database {
           default: throw new Error(`Unknown date unit: ${unit}`);
         }
       }
+      case 'REGEXP_MATCHES': {
+        const str = String(this._evalValue(args[0], row));
+        const pattern = String(this._evalValue(args[1], row));
+        const flags = args.length > 2 ? String(this._evalValue(args[2], row)) : '';
+        const regex = new RegExp(pattern, flags.includes('g') ? 'g' : '');
+        const matches = str.match(regex);
+        return matches ? JSON.stringify(matches) : null;
+      }
       case 'DATE_TRUNC': {
         // DATE_TRUNC(unit, date)
         const unit = (this._evalValue(args[0], row) || 'day').toLowerCase();

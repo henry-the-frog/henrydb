@@ -2237,10 +2237,13 @@
     {
       "id": "T220",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: UNNEST function (expand array into rows)",
       "project": "henrydb",
-      "started": "2026-04-14T01:23:28.225Z"
+      "started": "2026-04-14T01:23:28.225Z",
+      "completed": "2026-04-14T01:24:37.531Z",
+      "duration_ms": 120000,
+      "summary": "GENERATE_SERIES with date support. Auto-detects YYYY-MM-DD format. All tests pass."
     },
     {
       "id": "T221",
@@ -2252,8 +2255,23 @@
     {
       "id": "T222",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: GENERATE_SERIES with date support",
+      "project": "henrydb",
+      "started": "2026-04-14T01:24:45.762Z"
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: implement toString() on all object types for better inspect",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T224",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: REGEXP_MATCHES function (returns array of matches)",
       "project": "henrydb"
     }
   ],
@@ -3114,6 +3132,14 @@
     {
       "time": "2026-04-14T01:23:28.107Z",
       "msg": "Added T222 (BUILD) after end: HenryDB: GENERATE_SERIES with date support"
+    },
+    {
+      "time": "2026-04-14T01:24:45.526Z",
+      "msg": "Added T223 (BUILD) after end: Monkey: implement toString() on all object types for better inspect"
+    },
+    {
+      "time": "2026-04-14T01:24:45.645Z",
+      "msg": "Added T224 (BUILD) after end: HenryDB: REGEXP_MATCHES function (returns array of matches)"
     }
   ]
 }
