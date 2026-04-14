@@ -1151,7 +1151,21 @@ export function parse(sql) {
     const table = advance().value;
     expect('(');
     const columns = [];
-    do { columns.push(advance().value); } while (match(','));
+    const expressions = [];
+    let hasExpressions = false;
+    do {
+      // Try to parse as an expression — if it's a simple identifier, treat as column name
+      const expr = parseExpr();
+      if (expr.type === 'column_ref' && !expr.table) {
+        columns.push(expr.name || expr.column);
+        expressions.push(null);
+      } else {
+        // Expression index: store the expression
+        columns.push(null);
+        expressions.push(expr);
+        hasExpressions = true;
+      }
+    } while (match(','));
     expect(')');
     // INCLUDE clause for covering indexes
     let include = null;
@@ -1168,7 +1182,7 @@ export function parse(sql) {
       advance();
       where = parseExpr();
     }
-    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where };
+    return { type: 'CREATE_INDEX', name, table, columns, unique, include, where, expressions: hasExpressions ? expressions : null };
   }
 
   function parseCreateView() {

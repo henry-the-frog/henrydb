@@ -514,20 +514,26 @@ export class Database {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
-    // Validate columns exist
-    for (const col of ast.columns) {
-      if (!table.schema.find(c => c.name === col)) {
-        throw new Error(`Column ${col} not found in table ${ast.table}`);
+    const hasExpressions = ast.expressions && ast.expressions.some(e => e !== null);
+
+    // Validate columns exist (only for non-expression columns)
+    if (!hasExpressions) {
+      for (const col of ast.columns) {
+        if (!table.schema.find(c => c.name === col)) {
+          throw new Error(`Column ${col} not found in table ${ast.table}`);
+        }
       }
     }
 
-    // For simplicity, support single-column indexes (composite uses CompositeKey)
-    const colName = ast.columns.join(',');
+    // Build the index key name — use expression string representation for expression indexes
+    const colName = hasExpressions
+      ? ast.columns.map((c, i) => c || `expr_${i}`).join(',')
+      : ast.columns.join(',');
     const isComposite = ast.columns.length > 1;
-    const colIndices = ast.columns.map(c => table.schema.findIndex(s => s.name === c));
+    const colIndices = hasExpressions ? null : ast.columns.map(c => table.schema.findIndex(s => s.name === c));
 
     const index = new BPlusTree(32, { unique: ast.unique || false });
-    const colIdx = colIndices[0];
+    const colIdx = colIndices ? colIndices[0] : null;
 
     // Populate from existing data
     const includeColIdxs = (ast.include || []).map(col => 
@@ -541,9 +547,23 @@ export class Database {
         if (!this._evalExpr(ast.where, row)) continue;
       }
       
-      const key = isComposite
-        ? makeCompositeKey(colIndices.map(i => values[i]))
-        : values[colIdx];
+      let key;
+      if (hasExpressions) {
+        const row = this._valuesToRow(values, table.schema, ast.table);
+        if (ast.expressions.length === 1) {
+          const expr = ast.expressions[0] || { type: 'column_ref', name: ast.columns[0] };
+          key = this._evalValue(expr, row);
+        } else {
+          key = makeCompositeKey(ast.expressions.map((expr, i) => {
+            if (expr) return this._evalValue(expr, row);
+            return values[table.schema.findIndex(s => s.name === ast.columns[i])];
+          }));
+        }
+      } else {
+        key = isComposite
+          ? makeCompositeKey(colIndices.map(i => values[i]))
+          : values[colIdx];
+      }
       if (ast.unique) {
         const existing = index.search(key);
         if (existing !== undefined) {
@@ -570,11 +590,13 @@ export class Database {
       include: ast.include || [],
       unique: ast.unique || false,
       partial: ast.where || null,
+      expressions: hasExpressions ? ast.expressions : null,
     });
     this.indexCatalog.set(ast.name, {
       table: ast.table,
       columns: ast.columns,
       unique: ast.unique || false,
+      expressions: hasExpressions ? ast.expressions : null,
     });
 
     return { type: 'OK', message: `Index ${ast.name} created` };
@@ -1046,8 +1068,7 @@ export class Database {
 
     // Update indexes (and enforce uniqueness)
     for (const [colName, index] of table.indexes) {
-      const colIdx = table.schema.findIndex(c => c.name === colName);
-      const key = orderedValues[colIdx];
+      const key = this._computeIndexKey(colName, orderedValues, table, tableName);
       if (index.unique && key !== null && key !== undefined) {
         // SQL standard: NULL is never equal to NULL, so multiple NULLs are allowed in UNIQUE columns
         const existing = index.range(key, key);
@@ -1637,8 +1658,8 @@ export class Database {
 
       // Remove old index entries
       for (const [colName, index] of table.indexes) {
-        const colIdx = table.schema.findIndex(c => c.name === colName);
-        try { index.delete(item.values[colIdx], { pageId: item.pageId, slotIdx: item.slotIdx }); } catch {}
+        const oldKey = this._computeIndexKey(colName, item.values, table, ast.table);
+        try { index.delete(oldKey, { pageId: item.pageId, slotIdx: item.slotIdx }); } catch {}
       }
 
       // Delete old, insert new
@@ -1652,8 +1673,7 @@ export class Database {
 
       // Update indexes with new entries (and enforce uniqueness)
       for (const [colName, index] of table.indexes) {
-        const colIdx = table.schema.findIndex(c => c.name === colName);
-        const newKey = newValues[colIdx];
+        const newKey = this._computeIndexKey(colName, newValues, table, ast.table);
         if (index.unique && newKey !== null && newKey !== undefined) {
           const existing = index.range(newKey, newKey);
           if (existing.length > 0) {
@@ -1737,8 +1757,8 @@ export class Database {
       // Remove from indexes
       if (values) {
         for (const [colName, index] of table.indexes) {
-          const colIdx = table.schema.findIndex(c => c.name === colName);
-          try { index.delete(values[colIdx], { pageId, slotIdx }); } catch {}
+          const key = this._computeIndexKey(colName, values, table, ast.table);
+          try { index.delete(key, { pageId, slotIdx }); } catch {}
         }
       }
       
@@ -2620,6 +2640,31 @@ export class Database {
           return { rows, residual: null, indexOnly: rows.length > 0 && rows[0]?.includedValues !== undefined };
         }
       }
+
+      // Expression index: check if either side of the comparison matches an expression index
+      if (table.indexMeta && literal) {
+        const exprSide = where.left.type !== 'literal' ? where.left : where.right;
+        for (const [idxKey, meta] of table.indexMeta) {
+          if (meta.expressions && meta.expressions.some(e => e !== null)) {
+            const idxExpr = meta.expressions[0];
+            if (idxExpr && this._exprMatchesIndex(exprSide, idxExpr)) {
+              const index = table.indexes.get(idxKey);
+              if (index) {
+                const entries = index.range(literal.value, literal.value);
+                const rows = [];
+                for (const entry of entries) {
+                  const rid = entry.value;
+                  const values = table.heap.get(rid.pageId, rid.slotIdx);
+                  if (values) {
+                    rows.push(this._valuesToRow(values, table.schema, tableAlias));
+                  }
+                }
+                return { rows, residual: null, expressionIndex: true };
+              }
+            }
+          }
+        }
+      }
     }
 
     // AND: try to use index on one side, residual on the other
@@ -2644,6 +2689,49 @@ export class Database {
       row[`${tableAlias}.${schema[i].name}`] = values[i];
     }
     return row;
+  }
+
+  // Check if a WHERE expression matches an expression index definition (structural AST comparison)
+  _exprMatchesIndex(whereExpr, indexExpr) {
+    if (!whereExpr || !indexExpr) return false;
+    if (whereExpr.type !== indexExpr.type) return false;
+    
+    switch (whereExpr.type) {
+      case 'function_call':
+        return (whereExpr.func || whereExpr.name || '').toUpperCase() === (indexExpr.func || indexExpr.name || '').toUpperCase() &&
+          whereExpr.args?.length === indexExpr.args?.length &&
+          (whereExpr.args || []).every((arg, i) => this._exprMatchesIndex(arg, indexExpr.args[i]));
+      case 'column_ref':
+        return (whereExpr.column || whereExpr.name) === (indexExpr.column || indexExpr.name);
+      case 'BINARY':
+      case 'arith':
+        return whereExpr.op === indexExpr.op &&
+          this._exprMatchesIndex(whereExpr.left, indexExpr.left) &&
+          this._exprMatchesIndex(whereExpr.right, indexExpr.right);
+      case 'literal':
+        return whereExpr.value === indexExpr.value;
+      default:
+        return JSON.stringify(whereExpr) === JSON.stringify(indexExpr);
+    }
+  }
+
+  // Compute index key for a given set of values, handling both column and expression indexes
+  _computeIndexKey(colName, values, table, tableName) {
+    const meta = table.indexMeta && table.indexMeta.get(colName);
+    if (meta && meta.expressions && meta.expressions.some(e => e !== null)) {
+      const row = this._valuesToRow(values, table.schema, tableName);
+      const exprs = meta.expressions;
+      if (exprs.length === 1) {
+        const expr = exprs[0] || { type: 'column_ref', name: meta.columns[0] };
+        return this._evalValue(expr, row);
+      }
+      return makeCompositeKey(exprs.map((expr, i) => {
+        if (expr) return this._evalValue(expr, row);
+        return values[table.schema.findIndex(s => s.name === meta.columns[i])];
+      }));
+    }
+    const colIdx = table.schema.findIndex(c => c.name === colName);
+    return colIdx >= 0 ? values[colIdx] : null;
   }
 
   // Collect aggregate_expr nodes from an expression tree (for HAVING pre-computation)

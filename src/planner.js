@@ -187,6 +187,21 @@ export class TableStats {
     this.avgRowWidth = 0;
     this.columns = new Map(); // columnName → ColumnStats
     this.indexedColumns = [...table.indexes.keys()];
+    this.expressionIndexes = [];
+    // Collect expression index metadata
+    if (table.indexMeta) {
+      for (const [key, meta] of table.indexMeta) {
+        if (meta.expressions && meta.expressions.some(e => e !== null)) {
+          this.expressionIndexes.push({
+            key,
+            name: meta.name,
+            expressions: meta.expressions,
+            columns: meta.columns,
+            unique: meta.unique,
+          });
+        }
+      }
+    }
     
     // Collect all rows and column values
     const columnValues = new Map(); // columnName → values[]
@@ -388,6 +403,46 @@ export class QueryPlanner {
       }
     }
 
+    // Check expression indexes: match WHERE expr = value against expression indexes
+    if (expr.type === 'COMPARE' && stats.expressionIndexes) {
+      for (const exprIdx of stats.expressionIndexes) {
+        if (exprIdx.expressions.length === 1 && exprIdx.expressions[0]) {
+          const idxExpr = exprIdx.expressions[0];
+          if (this._exprMatchesIndex(expr.left, idxExpr)) {
+            const fanOut = 100;
+            const treeHeight = Math.max(1, Math.ceil(Math.log(stats.rowCount + 1) / Math.log(fanOut)));
+            
+            if (expr.op === 'EQ') {
+              // Assume uniform distribution for expression indexes (we don't have per-expression stats)
+              const ndv = Math.max(1, stats.rowCount / 10);
+              const selectivity = 1 / ndv;
+              const matchingRows = Math.max(1, Math.round(stats.rowCount * selectivity));
+              const cost = treeHeight * RANDOM_IO_COST + matchingRows * CPU_TUPLE_COST;
+              plans.push({
+                type: 'INDEX_SCAN',
+                column: exprIdx.key,
+                cost,
+                estimatedRows: matchingRows,
+                expressionIndex: true,
+              });
+            } else if (['LT', 'GT', 'LE', 'GE'].includes(expr.op)) {
+              const selectivity = 0.33; // Default range selectivity for expression indexes
+              const matchingRows = Math.max(1, Math.round(stats.rowCount * selectivity));
+              const pagesRead = Math.max(1, Math.ceil(matchingRows / stats.tuplesPerPage));
+              const cost = treeHeight * RANDOM_IO_COST + pagesRead * IO_COST + matchingRows * CPU_TUPLE_COST;
+              plans.push({
+                type: 'INDEX_RANGE_SCAN',
+                column: exprIdx.key,
+                cost,
+                estimatedRows: matchingRows,
+                expressionIndex: true,
+              });
+            }
+          }
+        }
+      }
+    }
+
     // For AND expressions, check if either side can use an index
     if (expr.type === 'AND') {
       plans.push(...this._planIndexScans(expr.left, tableName, stats));
@@ -395,6 +450,32 @@ export class QueryPlanner {
     }
 
     return plans;
+  }
+
+  // Check if a WHERE expression matches an expression index definition
+  _exprMatchesIndex(whereExpr, indexExpr) {
+    if (!whereExpr || !indexExpr) return false;
+    // Deep structural comparison of AST nodes
+    if (whereExpr.type !== indexExpr.type) return false;
+    
+    switch (whereExpr.type) {
+      case 'function_call':
+        return (whereExpr.func || whereExpr.name || '').toUpperCase() === (indexExpr.func || indexExpr.name || '').toUpperCase() &&
+          whereExpr.args?.length === indexExpr.args?.length &&
+          (whereExpr.args || []).every((arg, i) => this._exprMatchesIndex(arg, indexExpr.args[i]));
+      case 'column_ref':
+        return (whereExpr.column || whereExpr.name) === (indexExpr.column || indexExpr.name) &&
+          (whereExpr.table || null) === (indexExpr.table || null);
+      case 'BINARY':
+      case 'arith':
+        return whereExpr.op === indexExpr.op &&
+          this._exprMatchesIndex(whereExpr.left, indexExpr.left) &&
+          this._exprMatchesIndex(whereExpr.right, indexExpr.right);
+      case 'literal':
+        return whereExpr.value === indexExpr.value;
+      default:
+        return JSON.stringify(whereExpr) === JSON.stringify(indexExpr);
+    }
   }
 
   // Selectivity estimation using histograms
