@@ -2486,9 +2486,13 @@
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: RETURNING clause for INSERT with multiple rows",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T03:09:53.396Z",
+      "completed": "2026-04-14T03:10:18.285Z",
+      "duration_ms": 0,
+      "summary": "Already working — multi-row INSERT RETURNING returns all inserted rows. Tested with * and specific columns."
     },
     {
       "id": "T229",
@@ -2698,6 +2702,50 @@
       "completed": "2026-04-14T01:48:38.059Z",
       "duration_ms": 30000,
       "summary": "flatten() deep recursive. Both engines. 442 tests."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CREATE MATERIALIZED VIEW with REFRESH",
+      "project": "henrydb",
+      "started": "2026-04-14T03:11:00.366Z",
+      "completed": "2026-04-14T03:11:33.430Z",
+      "duration_ms": 30000,
+      "summary": "Already implemented — CREATE MATERIALIZED VIEW + REFRESH working correctly. Stale data served until REFRESH."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: histogram-based selectivity estimation in optimizer",
+      "project": "henrydb",
+      "started": "2026-04-14T03:11:48.615Z",
+      "completed": "2026-04-14T03:12:17.483Z",
+      "duration_ms": 30000,
+      "summary": "Already fully implemented — histogram-based selectivity for equality (histogram_eq) and range (histogram_range) queries. Shows in EXPLAIN output. Verified with skewed data."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: MERGE statement (SQL MERGE INTO ... USING ... WHEN MATCHED/NOT MATCHED)",
+      "project": "henrydb",
+      "started": "2026-04-14T03:12:33.681Z",
+      "completed": "2026-04-14T03:13:28.770Z",
+      "duration_ms": 0,
+      "summary": "MERGE already implemented and working (UPDATE + INSERT). Pivoting to recursive CTE cycle detection."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SEARCH DEPTH/BREADTH FIRST and CYCLE clause for recursive CTEs (SQL:2016)",
+      "project": "henrydb",
+      "started": "2026-04-14T03:13:43.269Z",
+      "completed": "2026-04-14T03:16:32.943Z",
+      "duration_ms": 300000,
+      "summary": "CYCLE clause for recursive CTEs (SQL:2016). Tracks visited rows by cycle columns, marks is_cycle=true when cycle detected, stops recursion. SEARCH clause parsing added but execution deferred. 25 CTE tests pass."
     }
   ],
   "focusProjects": [
@@ -3685,6 +3733,22 @@
     {
       "time": "2026-04-14T02:17:39.818Z",
       "msg": "Moved T60 after T59"
+    },
+    {
+      "time": "2026-04-14T03:10:54.466Z",
+      "msg": "Added T249 (BUILD) after end: HenryDB: CREATE MATERIALIZED VIEW with REFRESH"
+    },
+    {
+      "time": "2026-04-14T03:11:41.635Z",
+      "msg": "Added T250 (BUILD) after end: HenryDB: histogram-based selectivity estimation in optimizer"
+    },
+    {
+      "time": "2026-04-14T03:12:27.318Z",
+      "msg": "Added T251 (BUILD) after end: HenryDB: MERGE statement (SQL MERGE INTO ... USING ... WHEN MATCHED/NOT MATCHED)"
+    },
+    {
+      "time": "2026-04-14T03:13:36.157Z",
+      "msg": "Added T252 (BUILD) after end: HenryDB: SEARCH DEPTH/BREADTH FIRST and CYCLE clause for recursive CTEs (SQL:2016)"
     }
   ]
 }

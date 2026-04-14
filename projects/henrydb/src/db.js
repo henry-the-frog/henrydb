@@ -4937,6 +4937,18 @@ export class Database {
     let allRows = [...baseResult.rows];
     let workingSet = [...baseResult.rows];
 
+    // Initialize CYCLE tracking with base rows
+    if (cte.cycle) {
+      this._cycleVisited = new Set();
+      const cycleCols = cte.cycle.columns;
+      for (const row of allRows) {
+        const key = cycleCols.map(c => String(row[c] ?? '')).join('|||');
+        this._cycleVisited.add(key);
+        row[cte.cycle.setCycleCol] = cte.cycle.defaultVal;
+        row[cte.cycle.pathCol] = key;
+      }
+    }
+
     // Step 2: Iterate until fixed point
     for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
       if (workingSet.length === 0) break;
@@ -4962,7 +4974,42 @@ export class Database {
         });
       }
 
-      // Cycle detection: check if any new row already exists in allRows
+      // CYCLE clause handling
+      if (cte.cycle) {
+        const { columns: cycleCols, setCycleCol, cycleMarkVal, defaultVal, pathCol } = cte.cycle;
+        // Track visited states by cycle columns
+        if (!this._cycleVisited) this._cycleVisited = new Set();
+        
+        // Compute cycle key for each new row
+        const filteredNew = [];
+        for (const row of newRows) {
+          const cycleKey = cycleCols.map(c => String(row[c] ?? '')).join('|||');
+          if (this._cycleVisited.has(cycleKey)) {
+            // This row would create a cycle — mark it but don't recurse
+            row[setCycleCol] = cycleMarkVal;
+            row[pathCol] = '(cycle)';
+            filteredNew.push(row); // Include the cycle row but don't add to working set
+          } else {
+            this._cycleVisited.add(cycleKey);
+            row[setCycleCol] = defaultVal;
+            row[pathCol] = cycleKey;
+            filteredNew.push(row);
+          }
+        }
+        
+        // Only non-cycle rows continue recursion
+        const nonCycleRows = filteredNew.filter(r => r[setCycleCol] !== cycleMarkVal);
+        allRows.push(...filteredNew);
+        workingSet = nonCycleRows;
+        
+        if (nonCycleRows.length === 0) {
+          delete this._cycleVisited;
+          break;
+        }
+        continue;
+      }
+
+      // Default cycle detection: check if any new row already exists in allRows
       const seenKeys = new Set(allRows.map(r => JSON.stringify(Object.values(r))));
       const uniqueNew = newRows.filter(r => !seenKeys.has(JSON.stringify(Object.values(r))));
 

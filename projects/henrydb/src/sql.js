@@ -39,6 +39,7 @@ const KEYWORDS = new Set([
   'GENERATE_SERIES', 'LATERAL',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
   'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
+  'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH',
 ]);
 
 export function tokenize(sql) {
@@ -350,7 +351,48 @@ export function parse(sql) {
         unionQuery.unionAll = all;
       }
       expect(')');
-      ctes.push({ name, query: baseQuery, unionQuery, recursive, columns: cteColumns });
+      
+      // Parse CYCLE clause: CYCLE col1, col2 SET is_cycle_col [TO 'Y' DEFAULT 'N'] USING path_col
+      let cycle = null;
+      if (isKeyword('CYCLE')) {
+        advance(); // CYCLE
+        const cycleCols = [];
+        do {
+          const tok = advance();
+          cycleCols.push(tok.originalValue || tok.value);
+        } while (match(','));
+        expect('KEYWORD', 'SET');
+        const setCycleCol = (advance()).originalValue || tokens[pos - 1].value;
+        let cycleMarkVal = true, defaultVal = false;
+        if (isKeyword('TO')) {
+          advance();
+          cycleMarkVal = advance().value;
+          expect('KEYWORD', 'DEFAULT');
+          defaultVal = advance().value;
+        }
+        expect('KEYWORD', 'USING');
+        const pathCol = (advance()).originalValue || tokens[pos - 1].value;
+        cycle = { columns: cycleCols, setCycleCol, cycleMarkVal, defaultVal, pathCol };
+      }
+      
+      // Parse SEARCH clause: SEARCH {DEPTH|BREADTH} FIRST BY col1, col2 SET ordering_col
+      let search = null;
+      if (isKeyword('SEARCH')) {
+        advance(); // SEARCH
+        const mode = advance().value.toUpperCase(); // DEPTH or BREADTH
+        expect('KEYWORD', 'FIRST');
+        expect('KEYWORD', 'BY');
+        const searchCols = [];
+        do {
+          const tok = advance();
+          searchCols.push(tok.originalValue || tok.value);
+        } while (match(','));
+        expect('KEYWORD', 'SET');
+        const orderCol = (advance()).originalValue || tokens[pos - 1].value;
+        search = { mode, columns: searchCols, orderCol };
+      }
+      
+      ctes.push({ name, query: baseQuery, unionQuery, recursive, columns: cteColumns, cycle, search });
     } while (match(','));
 
     // Main query

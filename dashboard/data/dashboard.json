@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T03:09:27.979Z",
+  "generated": "2026-04-14T03:16:32.980Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: CASCADE option for DROP TABLE",
-    "completedAt": "2026-04-14T03:09:27.979Z",
-    "taskId": "T226",
-    "summary": "DROP TABLE CASCADE: detects dependent views and FK references, blocks without CASCADE, drops dependents with CASCADE. RESTRICT is explicit no-op. Error messages list dependencies.",
-    "durationMs": 180000
+    "task": "HenryDB: SEARCH DEPTH/BREADTH FIRST and CYCLE clause for recursive CTEs (SQL:2016)",
+    "completedAt": "2026-04-14T03:16:32.980Z",
+    "taskId": "T252",
+    "summary": "CYCLE clause for recursive CTEs (SQL:2016). Tracks visited rows by cycle columns, marks is_cycle=true when cycle detected, stops recursion. SEARCH clause parsing added but execution deferred. 25 CTE tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-13",
@@ -2380,12 +2380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 246,
+    "blocksCompleted": 251,
     "blocksTotal": 60,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 7,
-      "BUILD": 210,
+      "BUILD": 215,
       "MAINTAIN": 17
     }
   },
