@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T16:40:00.706Z",
+  "generated": "2026-04-14T16:48:21.769Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: extend diff fuzzer to test GROUP BY, HAVING, subqueries, and CTEs against SQLite",
-    "completedAt": "2026-04-14T16:40:00.706Z",
-    "taskId": "T40",
-    "summary": "Extended differential fuzzer: 13 new tests for GROUP BY, HAVING, subqueries, CTEs. All match SQLite output. Fixed float precision comparison. CTE produces correct values but extra columns (known row-shape issue).",
+    "task": "Monkey-lang: float/decimal literal support (currently integer only)",
+    "completedAt": "2026-04-14T16:48:21.768Z",
+    "taskId": "T41",
+    "summary": "Float/decimal literals in Monkey-lang: lexer, parser, AST, object system, evaluator all updated. Mixed int/float arithmetic (auto-promotion). 528/528 tests passing.",
     "durationMs": 600000
   },
   "schedule": {
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 39,
+    "blocksCompleted": 40,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 21,
+      "BUILD": 22,
       "MAINTAIN": 4,
       "EXPLORE": 5
     }
