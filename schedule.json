@@ -1530,6 +1530,89 @@
       "completed": "2026-04-14T20:00:38.971Z",
       "duration_ms": 300000,
       "summary": "REGEXP_REPLACE and REGEXP_MATCH functions. Regex-based string replacement and matching."
+    },
+    {
+      "id": "T141",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review Monkey-lang VM loop scope bugs — what is hardest about getting for/while return values to match tree-walker?",
+      "started": "2026-04-14T20:16:30.033Z",
+      "completed": "2026-04-14T20:18:15.514Z",
+      "duration_ms": 120000,
+      "summary": "Identified VM loop parity bugs: for-loop returns null instead of last body value (eval returns 2 for i in 0..2). Root cause: compiler emits OpNull unconditionally after loop exit. Fix needs to preserve last body value across iterations."
+    },
+    {
+      "id": "T142",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix Monkey-lang VM/tree-walker parity issues: for/while loop return values, scope bugs, any remaining compiler gaps",
+      "task": null,
+      "started": "2026-04-14T20:18:23.641Z",
+      "completed": "2026-04-14T20:19:01.030Z",
+      "duration_ms": 90000,
+      "summary": "Planned 3 BUILD tasks: (1) fix break/continue in VM, (2) fix for-in loop compiler, (3) fix loop return values. Found 6 parity failures beyond original 3."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix break/continue in VM compiler — break doesn't stop loop, continue doesn't skip iteration",
+      "plan_ref": "T142",
+      "project": "monkey-lang",
+      "started": "2026-04-14T20:19:09.224Z",
+      "completed": "2026-04-14T20:22:36.881Z",
+      "duration_ms": 300000,
+      "summary": "Implemented break/continue in VM compiler. Added loopStack to track break jump targets and continue targets. Break pushes null and jumps past loop. Continue jumps to update (for) or condition (while/do-while). All 545 tests pass."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "task": "Fix for-in loop in VM compiler — iteration variable scope wrong, set doesn't update outer, returns undefined",
+      "status": "done",
+      "plan_ref": "T142",
+      "started": "2026-04-14T20:22:51.172Z",
+      "completed": "2026-04-14T20:24:25.976Z",
+      "duration_ms": 240000,
+      "summary": "Implemented for-in loop in VM compiler via counter-based desugaring. Hidden locals for iterator/index, supports break/continue, set updates outer scope. 545/545 tests pass."
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "task": "Fix for/while/do-while loop return values — should return last body expression like tree-walker",
+      "status": "done",
+      "plan_ref": "T142",
+      "started": "2026-04-14T20:24:34.709Z",
+      "completed": "2026-04-14T20:27:47.826Z",
+      "duration_ms": 360000,
+      "summary": "Implemented loop return values in VM. All loop types (while, do-while, for, for-in) now return last body expression via hidden accumulator locals. 545/545 tests, 156 parity tests all green."
+    },
+    {
+      "id": "T144",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, test sweep",
+      "started": "2026-04-14T20:27:58.097Z"
+    },
+    {
+      "id": "T145",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix HenryDB NATURAL JOIN column merge bug — {...left, ...right} overwrites same-named columns. Needs qualified name preservation in join merge.",
+      "task": null
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T145",
+      "project": "henrydb"
+    },
+    {
+      "id": "T147",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + test sweep"
     }
   ],
   "focusProjects": [
@@ -2089,6 +2172,38 @@
     {
       "time": "2026-04-14T19:59:42.521Z",
       "msg": "Added T140 (BUILD) after end: HenryDB: REGEXP_REPLACE function"
+    },
+    {
+      "time": "2026-04-14T20:15:53.740Z",
+      "msg": "Added T141 (THINK) after end: Review Monkey-lang VM loop scope bugs — what is hardest about getting for/while return values to match tree-walker?"
+    },
+    {
+      "time": "2026-04-14T20:15:58.460Z",
+      "msg": "Added T142 (PLAN) after T141: Fix Monkey-lang VM/tree-walker parity issues: for/while loop return values, scope bugs, any remaining compiler gaps"
+    },
+    {
+      "time": "2026-04-14T20:16:08.175Z",
+      "msg": "Added T143 (BUILD) after T142: null"
+    },
+    {
+      "time": "2026-04-14T20:16:12.966Z",
+      "msg": "Added T144 (MAINTAIN) after T143: Housekeeping: git push, dashboard, test sweep"
+    },
+    {
+      "time": "2026-04-14T20:16:19.895Z",
+      "msg": "Added T145 (PLAN) after T144: Fix HenryDB NATURAL JOIN column merge bug — {...left, ...right} overwrites same-named columns. Needs qualified name preservation in join merge."
+    },
+    {
+      "time": "2026-04-14T20:16:20.014Z",
+      "msg": "Added T146 (BUILD) after T145: null"
+    },
+    {
+      "time": "2026-04-14T20:16:20.132Z",
+      "msg": "Added T147 (MAINTAIN) after T146: Housekeeping + test sweep"
+    },
+    {
+      "time": "2026-04-14T20:18:55.782Z",
+      "msg": "PLAN T142 filled 3 BUILD tasks"
     }
   ]
 }
