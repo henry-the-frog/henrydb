@@ -1299,6 +1299,39 @@
       "completed": "2026-04-14T19:26:39.750Z",
       "duration_ms": 300000,
       "summary": "Final MAINTAIN: 545/545 monkey-lang, 57/57 henrydb core tests. Evening summary updated. All repos pushed."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: hash.merge() builtin — merge two hashes",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:27:19.779Z",
+      "completed": "2026-04-14T19:28:56.720Z",
+      "duration_ms": 300000,
+      "summary": "Hash merge() builtin. Merges two hashes, second overrides first on conflict. 545/545 passing."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: array.flat() builtin (flatten nested arrays)",
+      "project": "monkey-lang",
+      "started": "2026-04-14T19:29:15.979Z",
+      "completed": "2026-04-14T19:30:20.501Z",
+      "duration_ms": 300000,
+      "summary": "flatten() + enumerate() builtins. Recursive flatten, index-value pairs for enumerate. 545/545 passing."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: SUBSTR(str, start, length) function",
+      "project": "henrydb",
+      "started": "2026-04-14T19:30:32.673Z",
+      "completed": "2026-04-14T19:30:51.207Z",
+      "duration_ms": 30000,
+      "summary": "SUBSTR/SUBSTRING already works. Verified both forms."
     }
   ],
   "focusProjects": [
@@ -1774,6 +1807,18 @@
     {
       "time": "2026-04-14T19:25:08.697Z",
       "msg": "Added T119 (MAINTAIN) after end: Final session push: all repos, update evening summary, test sweeps"
+    },
+    {
+      "time": "2026-04-14T19:27:07.784Z",
+      "msg": "Added T120 (BUILD) after end: Monkey-lang: hash.merge() builtin — merge two hashes"
+    },
+    {
+      "time": "2026-04-14T19:29:07.167Z",
+      "msg": "Added T121 (BUILD) after end: Monkey-lang: array.flat() builtin (flatten nested arrays)"
+    },
+    {
+      "time": "2026-04-14T19:29:07.287Z",
+      "msg": "Added T122 (BUILD) after end: HenryDB: SUBSTR(str, start, length) function"
     }
   ]
 }
