@@ -3574,17 +3574,18 @@ export class Database {
         const val = this._evalValue(expr.left, row);
         return val !== null && val !== undefined;
       }
-      case 'LIKE': {
+      case 'LIKE':
+      case 'ILIKE': {
         const val = this._evalValue(expr.left, row);
         const pattern = this._evalValue(expr.pattern, row);
         if (val == null || pattern == null) return false;
-        // Convert SQL LIKE pattern to regex: % → .*, _ → ., escape special chars
         const regex = '^' + String(pattern)
           .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
           .replace(/%/g, '.*')
           .replace(/_/g, '.')
           + '$';
-        return new RegExp(regex, 'i').test(String(val));
+        const flags = expr.type === 'ILIKE' ? 'i' : '';
+        return new RegExp(regex, flags).test(String(val));
       }
       case 'BETWEEN': {
         const val = this._evalValue(expr.left, row);
