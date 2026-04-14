@@ -936,7 +936,10 @@ export function parse(sql) {
     do {
       const expr = parseExpr();
       let column;
-      if (expr.type === 'column_ref') {
+      if (expr.type === 'literal' && typeof expr.value === 'number' && Number.isInteger(expr.value)) {
+        // Integer literal in ORDER BY = column position (1-based, SQL standard)
+        column = expr.value;
+      } else if (expr.type === 'column_ref') {
         column = expr.name;
       } else {
         column = expr; // Expression-based ORDER BY

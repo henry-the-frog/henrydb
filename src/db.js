@@ -1074,17 +1074,10 @@ export class Database {
   _applySelectColumns(ast, rows) {
     // Apply ORDER BY
     if (ast.orderBy) {
-      rows.sort((a, b) => {
+              rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
-          let av, bv;
-          if (typeof column === 'object') {
-            // Expression-based ORDER BY
-            av = this._evalValue(column, a);
-            bv = this._evalValue(column, b);
-          } else {
-            av = a[column];
-            bv = b[column];
-          }
+          const av = this._resolveOrderByValue(column, a, ast);
+          const bv = this._resolveOrderByValue(column, b, ast);
           if (av < bv) return direction === 'DESC' ? 1 : -1;
           if (av > bv) return direction === 'DESC' ? -1 : 1;
         }
@@ -1427,14 +1420,8 @@ export class Database {
       if (ast.orderBy) {
         rows.sort((a, b) => {
           for (const { column, direction } of ast.orderBy) {
-            let av, bv;
-            if (typeof column === 'object') {
-              av = this._evalValue(column, a);
-              bv = this._evalValue(column, b);
-            } else {
-              av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
-              bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
-            }
+            const av = this._resolveOrderByValue(column, a, ast);
+            const bv = this._resolveOrderByValue(column, b, ast);
             const cmp = av < bv ? -1 : av > bv ? 1 : 0;
             if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
           }
@@ -1565,7 +1552,10 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
           let av, bv;
-          if (typeof column === 'object') {
+          if (typeof column === 'number') {
+            av = this._resolveOrderByValue(column, a, ast);
+            bv = this._resolveOrderByValue(column, b, ast);
+          } else if (typeof column === 'object') {
             av = this._evalValue(column, a);
             bv = this._evalValue(column, b);
           } else if (windowAliases.has(column)) {
@@ -2115,7 +2105,10 @@ export class Database {
       rows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
           let av, bv;
-          if (typeof column === 'object') {
+          if (typeof column === 'number') {
+            av = this._resolveOrderByValue(column, a, ast);
+            bv = this._resolveOrderByValue(column, b, ast);
+          } else if (typeof column === 'object') {
             av = this._evalValue(column, a);
             bv = this._evalValue(column, b);
           } else {
@@ -2793,7 +2786,10 @@ export class Database {
       resultRows.sort((a, b) => {
         for (const { column, direction } of ast.orderBy) {
           let av, bv;
-          if (typeof column === 'object') {
+          if (typeof column === 'number') {
+            av = this._resolveOrderByValue(column, a, ast);
+            bv = this._resolveOrderByValue(column, b, ast);
+          } else if (typeof column === 'object') {
             av = this._evalValue(column, a);
             bv = this._evalValue(column, b);
           } else {
@@ -2937,6 +2933,28 @@ export class Database {
       default:
         return JSON.stringify(whereExpr) === JSON.stringify(indexExpr);
     }
+  }
+
+  // Resolve ORDER BY column: string name, integer position (1-based), or expression object
+  _resolveOrderByValue(column, row, ast) {
+    if (typeof column === 'number') {
+      // Column position (1-based): try projected column names first, then raw row keys
+      if (ast && ast.columns) {
+        const col = ast.columns[column - 1];
+        if (col) {
+          const name = col.alias || col.name;
+          if (name && row[name] !== undefined) return row[name];
+        }
+      }
+      const keys = Object.keys(row).filter(k => !k.includes('.'));
+      const colName = keys[column - 1];
+      return colName ? row[colName] : null;
+    }
+    if (typeof column === 'object') {
+      return this._evalValue(column, row);
+    }
+    // String column name
+    return row[column] !== undefined ? row[column] : this._resolveColumn(column, row);
   }
 
   // Compute values for generated columns (STORED or both modes for pre-insert)
