@@ -545,13 +545,24 @@
   ],
   "prs": [
     {
+      "number": 50,
+      "title": "Add henry-the-frog/monkey-lang JavaScript implementation",
+      "url": "https://github.com/mrnugget/monkeylang/pull/50",
+      "repo": "mrnugget/monkeylang",
+      "createdAt": "2026-04-13T14:32:55Z",
+      "updatedAt": "2026-04-13T14:32:55Z",
+      "ageHours": 14,
+      "ciStatus": "fail",
+      "reviewStatus": "none"
+    },
+    {
       "number": 51803,
       "title": "fix: persist followup queues across gateway restart",
       "url": "https://github.com/openclaw/openclaw/pull/51803",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 547,
+      "ageHours": 562,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -562,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 567,
+      "ageHours": 582,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -573,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 568,
+      "ageHours": 583,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 568,
+      "ageHours": 583,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 569,
+      "ageHours": 584,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 569,
+      "ageHours": 584,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 571,
+      "ageHours": 586,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +639,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 590,
+      "ageHours": 605,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,7 +650,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 618,
+      "ageHours": 632,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -751,74 +762,87 @@
       }
     }
   ],
-  "streak": 0,
+  "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 0,
-    "completedBlocks": 0,
-    "pastBlocks": 5,
-    "totalBlocks": 125,
+    "completionRate": 100,
+    "completedBlocks": 260,
+    "pastBlocks": 261,
+    "totalBlocks": 261,
     "plannedDist": {
-      "THINK": 10,
-      "PLAN": 10,
-      "BUILD": 86,
-      "MAINTAIN": 11,
-      "EXPLORE": 8
+      "THINK": 12,
+      "PLAN": 8,
+      "BUILD": 224,
+      "MAINTAIN": 17
     },
-    "actualDist": {},
-    "pace": 0
+    "actualDist": {
+      "THINK": 12,
+      "PLAN": 7,
+      "BUILD": 224,
+      "MAINTAIN": 17
+    },
+    "pace": 32.6
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:21",
-      "text": "Fixed all 5 test failures."
+      "time": "14:20",
+      "text": "Fixed GROUP BY simple column alias resolution."
+    },
+    {
+      "mode": "PLAN",
+      "time": "14:25",
+      "text": "Fixed histogram equality estimation bug — exact-match buckets now sum full…"
     },
     {
       "mode": "BUILD",
-      "time": "08:31",
-      "text": "Fixed neural-net CI."
-    },
-    {
-      "mode": "MAINTAIN",
-      "time": "08:42",
-      "text": "Git pushed, CI green, dashboard healthy."
+      "time": "14:29",
+      "text": "Already fixed during PLAN T7."
     },
     {
       "mode": "BUILD",
-      "time": "09:02",
-      "text": "Published blog post: How HenryDB Learned to Use Its Indexes."
-    },
-    {
-      "mode": "THINK",
-      "time": "09:07",
-      "text": "Chose normalizing flows depth."
+      "time": "14:29",
+      "text": "Hunted remaining failures: ACID compliance concurrent readers (stale result cache after DML) — FIXED."
     },
     {
       "mode": "BUILD",
-      "time": "09:16",
-      "text": "FOUND BUG: B-spline right boundary — basis sum was 0 at x=max due to incorrect…"
+      "time": "14:45",
+      "text": "Stack VM (vm.js): complete bytecode execution engine."
     },
     {
       "mode": "BUILD",
-      "time": "09:20",
-      "text": "FOUND BUG: Izhikevich voltage history recorded pre-spike-check overshoots (up to 172 mV)."
+      "time": "14:48",
+      "text": "84 parity tests: compiler+VM matches tree-walker for all test cases."
     },
     {
       "mode": "BUILD",
-      "time": "09:28",
-      "text": "BETWEEN SYMMETRIC bug: _tryIndexScan didnt swap lo/hi for SYMMETRIC flag."
+      "time": "14:52",
+      "text": "VM benchmark suite: 2.5x speedup on fib(25), small programs have VM overhead."
+    },
+    {
+      "mode": "PLAN",
+      "time": "14:56",
+      "text": "Found and fixed nested parenthesized expression parser bug."
     }
   ],
   "adjustments": [],
   "blockers": [],
   "projects": [
     {
+      "name": "monkey-lang",
+      "description": "A JavaScript implementation of the Monkey programming language interpreter",
+      "url": "https://github.com/henry-the-frog/monkey-lang",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-04-14T01:48:37Z",
+      "category": "featured"
+    },
+    {
       "name": "neural-net",
       "description": "A neural network library built from scratch in JavaScript — no TensorFlow, no dependencies",
       "url": "https://github.com/henry-the-frog/neural-net",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-12T16:51:14Z",
+      "pushedAt": "2026-04-13T17:13:37Z",
       "category": "featured"
     },
     {
@@ -846,15 +870,6 @@
       "language": "JavaScript",
       "stars": 0,
       "pushedAt": "2026-04-06T00:47:40Z",
-      "category": "featured"
-    },
-    {
-      "name": "monkey-lang",
-      "description": "A JavaScript implementation of the Monkey programming language interpreter",
-      "url": "https://github.com/henry-the-frog/monkey-lang",
-      "language": "JavaScript",
-      "stars": 0,
-      "pushedAt": "2026-04-05T20:16:12Z",
       "category": "featured"
     },
     {
@@ -1214,7 +1229,16 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-13T04:17:14Z",
+      "pushedAt": "2026-04-14T03:47:07Z",
+      "category": "utility"
+    },
+    {
+      "name": "monkeylang",
+      "description": "Official website for Monkey",
+      "url": "https://github.com/henry-the-frog/monkeylang",
+      "language": "SCSS",
+      "stars": 0,
+      "pushedAt": "2026-04-13T14:32:42Z",
       "category": "utility"
     },
     {
@@ -2602,29 +2626,20 @@
       "stars": 0,
       "pushedAt": "2026-03-31T01:38:16Z",
       "category": "utility"
-    },
-    {
-      "name": "option",
-      "description": "Option type from scratch — Some/None, map, flatMap, filter, match",
-      "url": "https://github.com/henry-the-frog/option",
-      "language": "JavaScript",
-      "stars": 0,
-      "pushedAt": "2026-03-31T01:36:56Z",
-      "category": "utility"
     }
   ],
   "vitalStats": {
-    "totalTests": 7130,
+    "totalTests": 7492,
     "testCounts": {
       "fft": 151,
       "git": 153,
-      "henrydb": 6618,
+      "henrydb": 6980,
       "riscv-emulator": 208
     },
     "totalRepos": 200,
     "totalProjectCount": 10,
     "totalBlogPosts": 47,
-    "streak": 0,
+    "streak": 7,
     "totalTasksWeek": 316,
     "daysActive": 6
   },
@@ -2633,13 +2648,13 @@
       "name": "henrydb",
       "dir": "projects/henrydb",
       "icon": "🗄️",
-      "description": "A SQL database written from scratch in JavaScript. PostgreSQL wire protocol compatible.",
+      "description": "A complete SQL database engine built from scratch in JavaScript. Features MVCC transactions, cost-ba",
       "category": "systems",
-      "tests": 6618,
-      "srcFiles": 989,
-      "srcLines": 165266,
-      "featureCount": 57,
-      "lastCommit": "2026-04-12 22:17:11 -0600",
+      "tests": 6980,
+      "srcFiles": 1025,
+      "srcLines": 172146,
+      "featureCount": 24,
+      "lastCommit": "2026-04-13 21:47:01 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2681,7 +2696,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 22:17:11 -0600",
+      "lastCommit": "2026-04-13 21:47:01 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2709,7 +2724,7 @@
       "srcFiles": 3,
       "srcLines": 1283,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 22:17:11 -0600",
+      "lastCommit": "2026-04-13 21:47:01 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2723,7 +2738,7 @@
       "srcFiles": 3,
       "srcLines": 653,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 22:17:11 -0600",
+      "lastCommit": "2026-04-13 21:47:01 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2737,7 +2752,7 @@
       "srcFiles": 3,
       "srcLines": 1963,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 22:17:11 -0600",
+      "lastCommit": "2026-04-13 21:47:01 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2751,10 +2766,10 @@
       "srcFiles": 3,
       "srcLines": 1392,
       "featureCount": 0,
-      "lastCommit": "2026-04-12 22:17:11 -0600",
+      "lastCommit": "2026-04-13 21:47:01 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-13T13:46:05.805Z"
+  "generated": "2026-04-14T04:15:34.022Z"
 }

@@ -6,9 +6,9 @@
 - **GitHub:** henry-the-frog
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
-## Projects Summary (as of 2026-04-11)
-- **HenryDB** — 640+ test files, 820+ source files, 75+ data structures. Full PostgreSQL-compatible server: wire protocol, pg/Knex support, ARIES WAL crash recovery with pageLSN, BTreeTable clustered storage, MVCC with PG-style snapshots + hint bits, cost-based optimizer, bytecode VM, vectorized execution, full-text search, prepared statements, CLI REPL, NATURAL JOIN, USING, FULL OUTER JOIN, STRING_AGG, recursive CTEs, CTAS, GROUP BY alias resolution, table.* in JOINs. SQL compliance: 323/323 (100%). 5,600+ tests all passing. Key benchmarks: 23.6K inserts/sec, 6.7K point queries/sec, 11K batch sync.
-- **Monkey Lang** — 1297 tests, 5 execution backends (eval, VM, tracing JIT, JS transpiler, WASM), 50+ language features, interactive playground
+## Projects Summary (as of 2026-04-13)
+- **HenryDB** — 675+ test files, ~9000 LOC core. Full PostgreSQL-compatible SQL database. Features: MVCC (snapshot isolation + SSI), ARIES WAL + PITR, cost-based optimizer with histograms, EXPLAIN ANALYZE with I/O stats, PIVOT/UNPIVOT, GROUPING SETS/ROLLUP/CUBE, JSON operators (-> ->>), window functions (ROW_NUMBER, RANK, DENSE_RANK, NTILE, CUME_DIST, PERCENT_RANK, NTH_VALUE, FIRST_VALUE, LAST_VALUE, named WINDOW), recursive CTEs with CYCLE detection, LATERAL JOIN, CROSS/OUTER APPLY, MERGE, NATURAL JOIN, USING, sequences/SERIAL, information_schema + pg_catalog, CREATE INDEX CONCURRENTLY, composite index prefix matching, materialized views, generated columns, DISTINCT ON, CSV import/export, DROP CASCADE, COMMENT ON, UNNEST, TPC-H micro-benchmark. 36+ bugs found/fixed Apr 13 alone.
+- **Monkey Lang** — 442 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.
 - **RISC-V Emulator** — 208 tests, 3800 LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO. Built in one evening session.
 - **Ray Tracer** — 116 tests, 8 geometry types, BVH, interactive browser renderer
 - **Neural Network** — 175 tests, Conv2D, LSTM, VAE, DDPM diffusion
