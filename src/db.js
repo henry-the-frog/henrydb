@@ -2374,6 +2374,26 @@ export class Database {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
     
+    if (ast.all) {
+      // INTERSECT ALL: multiset intersection (count-based)
+      const rightCounts = new Map();
+      for (const row of rightResult.rows) {
+        const key = JSON.stringify(row);
+        rightCounts.set(key, (rightCounts.get(key) || 0) + 1);
+      }
+      const rows = [];
+      for (const row of leftResult.rows) {
+        const key = JSON.stringify(row);
+        const count = rightCounts.get(key) || 0;
+        if (count > 0) {
+          rows.push(row);
+          rightCounts.set(key, count - 1);
+        }
+      }
+      return { type: 'ROWS', rows };
+    }
+    
+    // INTERSECT (set): deduplicate
     const rightKeys = new Set(rightResult.rows.map(r => JSON.stringify(r)));
     const seen = new Set();
     const rows = leftResult.rows.filter(row => {
@@ -2392,6 +2412,27 @@ export class Database {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
     
+    if (ast.all) {
+      // EXCEPT ALL: multiset difference (count-based)
+      const rightCounts = new Map();
+      for (const row of rightResult.rows) {
+        const key = JSON.stringify(row);
+        rightCounts.set(key, (rightCounts.get(key) || 0) + 1);
+      }
+      const rows = [];
+      for (const row of leftResult.rows) {
+        const key = JSON.stringify(row);
+        const count = rightCounts.get(key) || 0;
+        if (count > 0) {
+          rightCounts.set(key, count - 1);
+        } else {
+          rows.push(row);
+        }
+      }
+      return { type: 'ROWS', rows };
+    }
+    
+    // EXCEPT (set): deduplicate
     const rightKeys = new Set(rightResult.rows.map(r => JSON.stringify(r)));
     const seen = new Set();
     const rows = leftResult.rows.filter(row => {
