@@ -458,9 +458,31 @@
     {
       "id": "T43",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: EXPLAIN ANALYZE — actual row counts + timing",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-14T16:54:33.371Z",
+      "completed": "2026-04-14T16:55:52.966Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN ANALYZE already fully implemented with timing, actual row counts, selectivity, estimation accuracy, and planner integration. No changes needed."
+    },
+    {
+      "id": "T44",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress-test UPDATE + DELETE with generated columns, expression indexes, and foreign keys interacting simultaneously",
+      "project": "henrydb",
+      "started": "2026-04-14T16:56:15.117Z",
+      "completed": "2026-04-14T16:57:05.741Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE stress-test: all features work together correctly. Generated cols recompute on UPDATE, expression indexes update, CHECK catches violations, FK RESTRICT/CASCADE both work. Expression index on generated column works through UPDATE. No bugs found — the integration is solid."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey-lang: float in built-in functions (len, first, last should handle arrays; push, etc)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -632,6 +654,14 @@
     {
       "time": "2026-04-14T16:48:59.134Z",
       "msg": "Added T43 (BUILD) after end: HenryDB: EXPLAIN ANALYZE — actual row counts + timing"
+    },
+    {
+      "time": "2026-04-14T16:56:04.851Z",
+      "msg": "Added T44 (EXPLORE) after end: HenryDB: stress-test UPDATE + DELETE with generated columns, expression indexes, and foreign keys interacting simultaneously"
+    },
+    {
+      "time": "2026-04-14T16:56:04.970Z",
+      "msg": "Added T45 (BUILD) after end: Monkey-lang: float in built-in functions (len, first, last should handle arrays; push, etc)"
     }
   ]
 }

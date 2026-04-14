@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-14T16:53:46.153Z",
+  "generated": "2026-04-14T16:57:05.777Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Monkey-lang: verify float support in compiler/VM (parity test)",
-    "completedAt": "2026-04-14T16:53:46.153Z",
-    "taskId": "T42",
-    "summary": "Float support in compiler/VM: FloatLiteral compilation, float arithmetic, mixed int/float, comparison, negation. Perfect tree-walker/VM parity verified. 528/528 passing.",
+    "task": "HenryDB: stress-test UPDATE + DELETE with generated columns, expression indexes, and foreign keys interacting simultaneously",
+    "completedAt": "2026-04-14T16:57:05.777Z",
+    "taskId": "T44",
+    "summary": "EXPLORE stress-test: all features work together correctly. Generated cols recompute on UPDATE, expression indexes update, CHECK catches violations, FK RESTRICT/CASCADE both work. Expression index on generated column works through UPDATE. No bugs found — the integration is solid.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3926,14 +3926,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 41,
+    "blocksCompleted": 43,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 22,
+      "BUILD": 23,
       "MAINTAIN": 4,
-      "EXPLORE": 6
+      "EXPLORE": 7
     }
   },
   "artifacts": [
