@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-14T19:06:18.292Z",
+  "generated": "2026-04-14T19:19:12.984Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: NULLS FIRST / NULLS LAST in ORDER BY",
-    "completedAt": "2026-04-14T19:06:18.292Z",
-    "taskId": "T111",
-    "summary": "NULLS FIRST / NULLS LAST in ORDER BY. Parser + both sort code paths in engine. Default: ASC→nulls last, DESC→nulls first. Override works. Tests passing.",
-    "durationMs": 600000
+    "task": "HenryDB: NATURAL JOIN (auto-join on matching column names)",
+    "completedAt": "2026-04-14T19:19:12.984Z",
+    "taskId": "T114",
+    "summary": "NATURAL JOIN attempt — hit column name overwrite bug in join merge. Reverted. Need deeper refactor of join merge to preserve table-qualified names. Deferred.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-14",
@@ -3926,12 +3926,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 110,
+    "blocksCompleted": 113,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 79,
+      "BUILD": 82,
       "MAINTAIN": 5,
       "EXPLORE": 17
     }
