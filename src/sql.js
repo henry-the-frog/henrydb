@@ -1092,7 +1092,17 @@ export function parse(sql) {
     
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
-    return { type: 'UPDATE', table, assignments, where, from };
+    
+    let returning = null;
+    if (isKeyword('RETURNING')) {
+      advance();
+      if (match('*')) { returning = '*'; }
+      else {
+        returning = [];
+        do { returning.push(advance().value); } while (match(','));
+      }
+    }
+    return { type: 'UPDATE', table, assignments, where, from, returning };
   }
 
   function parseDelete() {
@@ -1114,7 +1124,16 @@ export function parse(sql) {
     
     let where = null;
     if (isKeyword('WHERE')) { advance(); where = parseExpr(); }
-    return { type: 'DELETE', table, where, using };
+    let returning = null;
+    if (isKeyword('RETURNING')) {
+      advance();
+      if (match('*')) { returning = '*'; }
+      else {
+        returning = [];
+        do { returning.push(advance().value); } while (match(','));
+      }
+    }
+    return { type: 'DELETE', table, where, using, returning };
   }
 
   function parseValuesClause() {

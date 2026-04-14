@@ -1952,6 +1952,7 @@ export class Database {
     this._validateNoGeneratedColumnWrites(table, ast.assignments?.map(a => a.column));
 
     let updated = 0;
+    const returnedRows = [];
     const toUpdate = [];
 
     if (ast.from) {
@@ -2036,8 +2037,22 @@ export class Database {
       }
 
       updated++;
+      
+      if (ast.returning) {
+        const retRow = {};
+        table.schema.forEach((c, i) => { retRow[c.name] = newValues[i]; });
+        returnedRows.push(retRow);
+      }
     }
 
+    if (ast.returning) {
+      const filteredRows = ast.returning === '*' ? returnedRows : returnedRows.map(row => {
+        const filtered = {};
+        for (const col of ast.returning) filtered[col] = row[col];
+        return filtered;
+      });
+      return { type: 'ROWS', rows: filteredRows, count: updated };
+    }
     return { type: 'OK', message: `${updated} row(s) updated`, count: updated };
   }
 
@@ -2146,6 +2161,7 @@ export class Database {
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     let deleted = 0;
+    const returnedRows = [];
     const toDelete = [];
 
     if (ast.using) {
@@ -2215,8 +2231,22 @@ export class Database {
       }
       
       deleted++;
+      
+      if (ast.returning && values) {
+        const retRow = {};
+        table.schema.forEach((c, i) => { retRow[c.name] = values[i]; });
+        returnedRows.push(retRow);
+      }
     }
 
+    if (ast.returning) {
+      const filteredRows = ast.returning === '*' ? returnedRows : returnedRows.map(row => {
+        const filtered = {};
+        for (const col of ast.returning) filtered[col] = row[col];
+        return filtered;
+      });
+      return { type: 'ROWS', rows: filteredRows, count: deleted };
+    }
     return { type: 'OK', message: `${deleted} row(s) deleted`, count: deleted };
   }
 
