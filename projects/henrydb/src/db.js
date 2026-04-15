@@ -6010,7 +6010,6 @@ export class Database {
           } else {
             const val = this._resolveColumn(col, groupRows[0]);
             result[col] = val;
-            if (col.includes('.')) result[col.split('.').pop()] = val;
           }
         } else {
           // Ordinal position: GROUP BY 1 → resolve to SELECT column
@@ -6210,7 +6209,13 @@ export class Database {
     resultRows = resultRows.map(row => {
       const clean = {};
       for (const [k, v] of Object.entries(row)) {
-        if (!k.startsWith('__agg_')) clean[k] = v;
+        if (k.startsWith('__agg_')) continue;
+        // Skip qualified GROUP BY keys that duplicate a SELECT column
+        if (k.includes('.')) {
+          const unqualified = k.split('.').pop();
+          if (unqualified in row) continue;
+        }
+        clean[k] = v;
       }
       return clean;
     });
