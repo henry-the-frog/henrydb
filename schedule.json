@@ -241,15 +241,49 @@
     {
       "id": "T22",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T16:13:20.707Z",
+      "completed": "2026-04-15T16:13:20.851Z",
+      "duration_ms": 0,
+      "summary": "Skipped — IC work done in T24."
     },
     {
       "id": "T23",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard update",
+      "started": "2026-04-15T16:13:30.619Z",
+      "completed": "2026-04-15T16:13:59.638Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated (24 blocks, 23 done)."
+    },
+    {
+      "id": "T25",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard update"
+      "task": "HenryDB assessment: what's the current test count and what bugs/features are highest value?"
+    },
+    {
+      "id": "T26",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB depth work: fix bugs or add high-value features",
+      "task": null
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T28",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, knowledge capture"
     }
   ],
   "focusProjects": [
@@ -361,6 +395,22 @@
     {
       "time": "2026-04-15T16:08:06.581Z",
       "msg": "PLAN T21 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T16:14:25.748Z",
+      "msg": "Added T25 (THINK) after end: HenryDB assessment: what's the current test count and what bugs/features are highest value?"
+    },
+    {
+      "time": "2026-04-15T16:14:31.480Z",
+      "msg": "Added T26 (PLAN) after T25: HenryDB depth work: fix bugs or add high-value features"
+    },
+    {
+      "time": "2026-04-15T16:14:39.821Z",
+      "msg": "Added T27 (BUILD) after T26: null"
+    },
+    {
+      "time": "2026-04-15T16:14:44.465Z",
+      "msg": "Added T28 (MAINTAIN) after T27: Housekeeping: git push, knowledge capture"
     }
   ]
 }
