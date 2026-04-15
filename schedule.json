@@ -322,6 +322,27 @@
       "completed": "2026-04-15T16:35:03.488Z",
       "duration_ms": 120000,
       "summary": "Git pushed, dashboard regenerated (30 blocks, 29 done). Knowledge captured for 3 HenryDB bugs."
+    },
+    {
+      "id": "T31",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Continue HenryDB stress testing: CTE edge cases, correlated subqueries, complex DML",
+      "started": "2026-04-15T16:35:43.424Z",
+      "completed": "2026-04-15T16:42:47.557Z",
+      "duration_ms": 600000,
+      "summary": "Stress testing found UNION ORDER BY+LIMIT bug — parser consumed them for right SELECT. Fixed parser + evaluator. 6 tests."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB bugs found via stress testing",
+      "project": "henrydb",
+      "started": "2026-04-15T16:42:56.512Z",
+      "completed": "2026-04-15T16:42:56.653Z",
+      "duration_ms": 0,
+      "summary": "Covered by T31 — UNION ORDER BY+LIMIT fix done there."
     }
   ],
   "focusProjects": [
@@ -453,6 +474,14 @@
     {
       "time": "2026-04-15T16:27:30.878Z",
       "msg": "PLAN T26 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T16:35:22.273Z",
+      "msg": "Added T31 (THINK) after end: Continue HenryDB stress testing: CTE edge cases, correlated subqueries, complex DML"
+    },
+    {
+      "time": "2026-04-15T16:35:29.531Z",
+      "msg": "Added T32 (BUILD) after T31: Fix HenryDB bugs found via stress testing"
     }
   ]
 }
