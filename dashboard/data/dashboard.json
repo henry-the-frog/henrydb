@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T17:20:04.194Z",
+  "generated": "2026-04-15T17:32:41.604Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Write a non-trivial monkey-lang program using generators+modules+try-catch as an integration test",
-    "completedAt": "2026-04-15T17:20:04.194Z",
-    "taskId": "T44",
-    "summary": "10 integration tests: Sieve of Eratosthenes, try/catch+generators, destructuring, chained generators, memoization, break, hashes, try/catch/finally, rethrow, ranges. 1641 total tests.",
-    "durationMs": 600000
+    "task": "monkey-lang: add compiler support for generators (VM/bytecode gen/yield opcodes)",
+    "completedAt": "2026-04-15T17:32:41.604Z",
+    "taskId": "T45",
+    "summary": "Generator compiler/VM support: OpYield + OpMakeGenerator opcodes, generator frames with yield collection, len+index support. Both evaluator and compiler paths work. 1641 tests pass.",
+    "durationMs": 1200000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -481,12 +481,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 43,
+    "blocksCompleted": 45,
     "blocksTotal": 44,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 8,
-      "BUILD": 20,
+      "BUILD": 22,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

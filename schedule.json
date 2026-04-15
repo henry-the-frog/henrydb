@@ -468,9 +468,24 @@
     {
       "id": "T43",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T17:20:55.556Z",
+      "completed": "2026-04-15T17:21:09.062Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add compiler support for generators (VM/bytecode gen/yield opcodes)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T17:21:23.673Z",
+      "completed": "2026-04-15T17:32:41.568Z",
+      "duration_ms": 1200000,
+      "summary": "Generator compiler/VM support: OpYield + OpMakeGenerator opcodes, generator frames with yield collection, len+index support. Both evaluator and compiler paths work. 1641 tests pass."
     }
   ],
   "focusProjects": [
@@ -650,6 +665,10 @@
     {
       "time": "2026-04-15T17:17:10.947Z",
       "msg": "PLAN T42 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T17:20:42.029Z",
+      "msg": "Added T45 (BUILD) after end: monkey-lang: add compiler support for generators (VM/bytecode gen/yield opcodes)"
     }
   ]
 }
