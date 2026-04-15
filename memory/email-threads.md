@@ -28,6 +28,12 @@
 - **Status:** ✅ Fixed Apr 9
 - **No reply needed** — thread closed
 
+### OpenClaw PR #51261 — HTTP 404 model_not_found classification
+- **From:** Altay (via GitHub notification)
+- **Status:** ✅ Closed as superseded — Apr 14
+- **Summary:** Altay closed our PR. The fix landed through later merged PRs #61472 and #51573.
+- **No reply needed** — thread closed
+
 ### CPython Issue #146073 — Trace Fitness/Exit Quality
 - **From:** Mark Shannon (via GitHub notification)
 - **Status:** 🔵 FYI — Mark Shannon posted detailed follow-up (Apr 7)
