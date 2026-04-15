@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T21:36:32.920Z",
+  "generated": "2026-04-15T21:44:23.873Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V backend showcase: write and run a complex monkey-lang program that exercises all features (strings, arrays, functions, for-in, push, concat, recursion, type inference). Verify it compiles and runs correctly. Update scratch note with final stats.",
-    "startedAt": "2026-04-15T21:36:32.920Z",
-    "taskId": "T108"
+    "task": "Closure analysis pass: walk AST to identify free variables in nested functions. For each inner fn, compute which outer variables it references. Store in a freeVars map. 10+ tests.",
+    "startedAt": "2026-04-15T21:44:23.873Z",
+    "taskId": "T111"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1093,34 +1093,132 @@
       {
         "id": "T101",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Heap allocator for RISC-V compiled monkey-lang: (1) bump allocator in assembly (heap region in high memory, allocation pointer, bump on alloc), (2) array representation (header: length + capacity, followed by element words), (3) compile array literals and array indexing",
         "task": null,
-        "started": "2026-04-15T21:13:41.946Z"
+        "started": "2026-04-15T21:13:41.946Z",
+        "completed": "2026-04-15T21:14:01.713Z",
+        "duration_ms": 60000,
+        "summary": "PLAN: 2 BUILD tasks. (1) Bump allocator with gp register, (2) Array literal compilation with heap storage + indexing."
       },
       {
         "id": "T102",
         "mode": "BUILD",
         "task": "Implement bump allocator for RISC-V: initialize heap pointer (gp register), _alloc subroutine (takes size in a0, returns pointer in a0), integrate with codegen prologue. Test: allocate and write to heap memory.",
-        "status": "upcoming",
-        "plan_ref": "T101"
+        "status": "done",
+        "plan_ref": "T101",
+        "started": "2026-04-15T21:14:07.242Z",
+        "completed": "2026-04-15T21:17:22.816Z",
+        "duration_ms": 600000,
+        "summary": "Bump allocator + heap arrays: gp register as heap pointer, array literal compilation, indexing, len(). 25 new tests. 227 total all pass. Dot product, find_max, array-in-function all work."
       },
       {
         "id": "T103",
         "mode": "BUILD",
         "task": "Compile array literals and indexing: ArrayLiteral → allocate header+elements on heap, store length+values. IndexExpression on arrays → compute offset, load element. Support len() builtin. 15+ tests.",
+        "status": "done",
+        "plan_ref": "T101",
+        "started": "2026-04-15T21:17:36.085Z",
+        "completed": "2026-04-15T21:17:36.226Z",
+        "duration_ms": 0,
+        "summary": "Already done in T102 — arrays fully implemented with 25 tests."
+      },
+      {
+        "id": "T104",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "RISC-V codegen: for-in loops, push() builtin for arrays, and first/rest builtins. These enable idiomatic monkey-lang array programs to compile. 15+ tests.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T21:18:35.770Z",
+        "completed": "2026-04-15T21:21:44.545Z",
+        "duration_ms": 600000,
+        "summary": "for-in loops + push/first/last builtins. Functional patterns (map/filter/reduce) work via for-in + push. Fibonacci via arrays. 23 new tests, 250 total."
+      },
+      {
+        "id": "T105",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "RISC-V codegen: string support. Strings as heap objects (length + char data). String literals in data section. puts() for strings (char-by-char ecall). String concatenation via heap copy. 15+ tests.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T21:22:05.891Z",
+        "completed": "2026-04-15T21:29:43.172Z",
+        "duration_ms": 900000,
+        "summary": "String support with type-directed compilation. Strings on heap, puts() generates int/string code based on compile-time type info. Known limitation: function params have unknown type. 20 new tests, 262 total."
+      },
+      {
+        "id": "T106",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "RISC-V codegen: basic type inference pass. Before code generation, walk the AST and infer types for function parameters based on call sites. If greet('Alice') is called, infer name:string. Enables type-correct puts() for function params. 10+ tests.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T21:30:28.454Z",
+        "completed": "2026-04-15T21:33:12.345Z",
+        "duration_ms": 600000,
+        "summary": "Type inference pass: analyze call sites to determine function parameter types. greet(\"Alice\") → name:string. Enables type-correct puts() for function params. 16 new tests, 278 total. Connected type theory to practical codegen."
+      },
+      {
+        "id": "T107",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "RISC-V codegen: string concatenation. InfixExpression with + on strings → allocate new string on heap, copy both operands. Use type inference to detect string operands. Support: str+str, str+int (number to string), multiple concat. 10+ tests.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T21:33:43.235Z",
+        "completed": "2026-04-15T21:36:04.770Z",
+        "duration_ms": 600000,
+        "summary": "String concatenation: + on strings allocates new heap string, copies both. Type inference detects string operands. Chained concat + function params work. 12 new tests, 290 total."
+      },
+      {
+        "id": "T108",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "RISC-V backend showcase: write and run a complex monkey-lang program that exercises all features (strings, arrays, functions, for-in, push, concat, recursion, type inference). Verify it compiles and runs correctly. Update scratch note with final stats.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T21:36:32.858Z",
+        "completed": "2026-04-15T21:40:06.571Z",
+        "duration_ms": 600000,
+        "summary": "Showcase: FizzBuzz, prime sieve, string builder, binary search, Tower of Hanoi, dot product all compile+run on RISC-V. Return type inference enables string functions. 297 total tests."
+      },
+      {
+        "id": "T109",
+        "mode": "THINK",
+        "status": "done",
+        "task": "RISC-V backend is feature-complete (297 tests). 4 hours left. Options: (1) Closures in RISC-V codegen (hardest unsolved), (2) Switch to HenryDB — query optimizer or stress testing, (3) Monkey-lang type checker integration with existing project, (4) Something completely new.",
+        "started": "2026-04-15T21:41:09.174Z",
+        "completed": "2026-04-15T21:41:28.357Z",
+        "duration_ms": 60000,
+        "summary": "Switching to HenryDB for depth diversity. RISC-V backend complete (297 tests, feature-complete). HenryDB query optimizer is the next depth target — cost-based optimization, histogram stats, join ordering."
+      },
+      {
+        "id": "T110",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "RISC-V closures: Functions that capture variables from enclosing scope. Requires: (1) closure representation on heap (function pointer + environment), (2) environment capture during function creation, (3) environment access during function execution. Example: let make_adder = fn(x) { fn(y) { x + y } }",
+        "task": null,
+        "started": "2026-04-15T21:43:53.848Z"
+      },
+      {
+        "id": "T111",
+        "mode": "BUILD",
+        "task": "Closure analysis pass: walk AST to identify free variables in nested functions. For each inner fn, compute which outer variables it references. Store in a freeVars map. 10+ tests.",
         "status": "upcoming",
-        "plan_ref": "T101"
+        "plan_ref": "T110"
+      },
+      {
+        "id": "T112",
+        "mode": "BUILD",
+        "task": "Closure compilation: (1) allocate closure objects on heap with captured vars, (2) pass closure pointer as implicit arg, (3) access captured vars via closure object inside function body. Support make_adder pattern. 15+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T110"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 106,
-    "blocksTotal": 103,
+    "blocksCompleted": 109,
+    "blocksTotal": 112,
     "modeDistribution": {
-      "THINK": 14,
-      "PLAN": 14,
-      "BUILD": 66,
+      "THINK": 15,
+      "PLAN": 15,
+      "BUILD": 67,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

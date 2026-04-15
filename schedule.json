@@ -1159,10 +1159,49 @@
     {
       "id": "T108",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V backend showcase: write and run a complex monkey-lang program that exercises all features (strings, arrays, functions, for-in, push, concat, recursion, type inference). Verify it compiles and runs correctly. Update scratch note with final stats.",
       "project": "monkey-lang",
-      "started": "2026-04-15T21:36:32.858Z"
+      "started": "2026-04-15T21:36:32.858Z",
+      "completed": "2026-04-15T21:40:06.571Z",
+      "duration_ms": 600000,
+      "summary": "Showcase: FizzBuzz, prime sieve, string builder, binary search, Tower of Hanoi, dot product all compile+run on RISC-V. Return type inference enables string functions. 297 total tests."
+    },
+    {
+      "id": "T109",
+      "mode": "THINK",
+      "status": "done",
+      "task": "RISC-V backend is feature-complete (297 tests). 4 hours left. Options: (1) Closures in RISC-V codegen (hardest unsolved), (2) Switch to HenryDB — query optimizer or stress testing, (3) Monkey-lang type checker integration with existing project, (4) Something completely new.",
+      "started": "2026-04-15T21:41:09.174Z",
+      "completed": "2026-04-15T21:41:28.357Z",
+      "duration_ms": 60000,
+      "summary": "Switching to HenryDB for depth diversity. RISC-V backend complete (297 tests, feature-complete). HenryDB query optimizer is the next depth target — cost-based optimization, histogram stats, join ordering."
+    },
+    {
+      "id": "T110",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "RISC-V closures: Functions that capture variables from enclosing scope. Requires: (1) closure representation on heap (function pointer + environment), (2) environment capture during function creation, (3) environment access during function execution. Example: let make_adder = fn(x) { fn(y) { x + y } }",
+      "task": null,
+      "started": "2026-04-15T21:43:53.848Z",
+      "completed": "2026-04-15T21:44:16.295Z",
+      "duration_ms": 60000,
+      "summary": "PLAN: 2 BUILD tasks. (1) Free variable analysis pass, (2) Closure compilation with heap objects."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "task": "Closure analysis pass: walk AST to identify free variables in nested functions. For each inner fn, compute which outer variables it references. Store in a freeVars map. 10+ tests.",
+      "status": "in-progress",
+      "plan_ref": "T110",
+      "started": "2026-04-15T21:44:23.838Z"
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "task": "Closure compilation: (1) allocate closure objects on heap with captured vars, (2) pass closure pointer as implicit arg, (3) access captured vars via closure object inside function body. Support make_adder pattern. 15+ tests.",
+      "status": "upcoming",
+      "plan_ref": "T110"
     }
   ],
   "focusProjects": [
@@ -1574,6 +1613,18 @@
     {
       "time": "2026-04-15T21:36:23.199Z",
       "msg": "Added T108 (BUILD) after end: RISC-V backend showcase: write and run a complex monkey-lang program that exercises all features (strings, arrays, functions, for-in, push, concat, recursion, type inference). Verify it compiles and runs correctly. Update scratch note with final stats."
+    },
+    {
+      "time": "2026-04-15T21:41:00.442Z",
+      "msg": "Added T109 (THINK) after end: RISC-V backend is feature-complete (297 tests). 4 hours left. Options: (1) Closures in RISC-V codegen (hardest unsolved), (2) Switch to HenryDB — query optimizer or stress testing, (3) Monkey-lang type checker integration with existing project, (4) Something completely new."
+    },
+    {
+      "time": "2026-04-15T21:43:45.078Z",
+      "msg": "Added T110 (PLAN) after end: RISC-V closures: Functions that capture variables from enclosing scope. Requires: (1) closure representation on heap (function pointer + environment), (2) environment capture during function creation, (3) environment access during function execution. Example: let make_adder = fn(x) { fn(y) { x + y } }"
+    },
+    {
+      "time": "2026-04-15T21:44:09.609Z",
+      "msg": "PLAN T110 filled 2 BUILD tasks"
     }
   ]
 }
