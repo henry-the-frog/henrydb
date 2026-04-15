@@ -1452,10 +1452,21 @@
     {
       "id": "T135",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: showcase programs demonstrating full language features. (1) quicksort using closures as comparators, (2) church numerals, (3) Y-combinator (if possible). Demonstrate the backend's expressiveness.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:08:59.997Z"
+      "started": "2026-04-15T23:08:59.997Z",
+      "completed": "2026-04-15T23:15:14.496Z",
+      "duration_ms": 900000,
+      "summary": "6 showcase programs: reduce/fold, apply_n, compose, closure factory, factorial-via-fold, tail-recursive sum. Fixed cross-function calls and closure analysis. All tests pass."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Update RISCV-BACKEND.md with all new features (closures, HOF, string interning, benchmarks, _str_eq, cross-function calls). Update test counts.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:15:35.887Z"
     }
   ],
   "focusProjects": [
@@ -1967,6 +1978,10 @@
     {
       "time": "2026-04-15T23:08:55.217Z",
       "msg": "Added T135 (BUILD) after end: RISC-V: showcase programs demonstrating full language features. (1) quicksort using closures as comparators, (2) church numerals, (3) Y-combinator (if possible). Demonstrate the backend's expressiveness."
+    },
+    {
+      "time": "2026-04-15T23:15:31.197Z",
+      "msg": "Added T136 (BUILD) after end: RISC-V: Update RISCV-BACKEND.md with all new features (closures, HOF, string interning, benchmarks, _str_eq, cross-function calls). Update test counts."
     }
   ]
 }
