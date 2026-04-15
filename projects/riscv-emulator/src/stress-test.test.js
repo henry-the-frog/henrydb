@@ -1,0 +1,253 @@
+// stress-test.test.js — Adversarial tests for Monkey → RISC-V codegen
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { RiscVCodeGen } from './monkey-codegen.js';
+import { peepholeOptimize } from './riscv-peephole.js';
+import { Assembler } from './assembler.js';
+import { CPU } from './cpu.js';
+import { Lexer } from '/Users/henry/repos/monkey-lang/src/lexer.js';
+import { Parser } from '/Users/henry/repos/monkey-lang/src/parser.js';
+
+function compileAndRun(input, { useRegisters = false, optimize = false } = {}, maxCycles = 500000) {
+  const p = new Parser(new Lexer(input));
+  const prog = p.parseProgram();
+  if (p.errors.length > 0) throw new Error(`Parse: ${p.errors.join('\n')}`);
+  const cg = new RiscVCodeGen({ useRegisters });
+  let asm = cg.compile(prog);
+  if (optimize) asm = peepholeOptimize(asm).optimized;
+  const assembler = new Assembler();
+  const result = assembler.assemble(asm);
+  if (result.errors.length > 0) throw new Error(`Asm: ${result.errors.map(e=>e.message).join(', ')}\n${asm}`);
+  const cpu = new CPU();
+  cpu.loadProgram(result.words);
+  cpu.regs.set(2, 0x100000 - 4);
+  cpu.run(maxCycles);
+  return cpu.output.join('');
+}
+
+function testBothModes(name, code, expected) {
+  it(`${name} (stack)`, () => {
+    assert.equal(compileAndRun(code, { useRegisters: false }), expected);
+  });
+  it(`${name} (register)`, () => {
+    assert.equal(compileAndRun(code, { useRegisters: true }), expected);
+  });
+  it(`${name} (reg+peep)`, () => {
+    assert.equal(compileAndRun(code, { useRegisters: true, optimize: true }), expected);
+  });
+}
+
+describe('Stress: deeply nested expressions', () => {
+  testBothModes('10-deep addition', 
+    'puts(1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10)', '55');
+  
+  testBothModes('nested multiplication',
+    'puts(2 * 3 * 4 * 5)', '120');
+
+  testBothModes('mixed deep nesting',
+    'puts((1 + 2) * (3 + 4) - (5 - 6) * (7 + 8))', '36');
+
+  testBothModes('deeply nested parens',
+    'puts(((((((1 + 2) + 3) + 4) + 5) + 6) + 7) + 8)', '36');
+});
+
+describe('Stress: many variables (register spill)', () => {
+  testBothModes('12 variables (some spilled in reg mode)',
+    `let a = 1; let b = 2; let c = 3; let d = 4; let e = 5
+     let f = 6; let g = 7; let h = 8; let i = 9; let j = 10
+     let k = 11; let l = 12
+     puts(a + b + c + d + e + f + g + h + i + j + k + l)`,
+    '78');
+
+  testBothModes('15 variables (definitely spilled)',
+    `let v1=1; let v2=2; let v3=3; let v4=4; let v5=5
+     let v6=6; let v7=7; let v8=8; let v9=9; let v10=10
+     let v11=11; let v12=12; let v13=13; let v14=14; let v15=15
+     puts(v1+v2+v3+v4+v5+v6+v7+v8+v9+v10+v11+v12+v13+v14+v15)`,
+    '120');
+
+  testBothModes('mutation of spilled variable',
+    `let a=1; let b=2; let c=3; let d=4; let e=5
+     let f=6; let g=7; let h=8; let i=9; let j=10
+     let k=11; let l=12
+     set l = l + 1
+     puts(l)`,
+    '13');
+});
+
+describe('Stress: negative numbers and overflow', () => {
+  testBothModes('negative arithmetic',
+    'puts(-10 + 3)', '-7');
+
+  testBothModes('double negative',
+    'puts(-(-42))', '42');
+
+  testBothModes('negative multiplication',
+    'puts(-3 * 7)', '-21');
+
+  testBothModes('negative division',
+    'puts(-20 / 4)', '-5');
+
+  testBothModes('comparison with negatives',
+    'puts(-5 < 3)', '1');
+
+  testBothModes('negative in variable',
+    'let x = -100; puts(x + 142)', '42');
+
+  testBothModes('large number',
+    'puts(1000000 + 1)', '1000001');
+});
+
+describe('Stress: complex control flow', () => {
+  testBothModes('if chain with 5 branches',
+    `let x = 3
+     if (x == 1) { puts(10) }
+     if (x == 2) { puts(20) }
+     if (x == 3) { puts(30) }
+     if (x == 4) { puts(40) }
+     if (x == 5) { puts(50) }`,
+    '30');
+
+  testBothModes('nested if 4 deep',
+    `let x = 10
+     if (x > 0) {
+       if (x > 5) {
+         if (x > 8) {
+           if (x > 9) { puts(1) } else { puts(2) }
+         } else { puts(3) }
+       } else { puts(4) }
+     } else { puts(5) }`,
+    '1');
+
+  testBothModes('while with break-like early return',
+    `let find = fn(target) {
+       let i = 0
+       while (i < 100) {
+         if (i == target) { return i }
+         set i = i + 1
+       }
+       return -1
+     }
+     puts(find(42))`,
+    '42');
+
+  testBothModes('nested while loops',
+    `let count = 0
+     let i = 0
+     while (i < 5) {
+       let j = 0
+       while (j < 3) {
+         set count = count + 1
+         set j = j + 1
+       }
+       set i = i + 1
+     }
+     puts(count)`,
+    '15');
+});
+
+describe('Stress: function edge cases', () => {
+  testBothModes('function with no args',
+    `let forty_two = fn() { return 42 }
+     puts(forty_two())`,
+    '42');
+
+  testBothModes('function called multiple times',
+    `let inc = fn(x) { return x + 1 }
+     let x = 0
+     set x = inc(x); set x = inc(x); set x = inc(x)
+     puts(x)`,
+    '3');
+
+  testBothModes('deeply recursive',
+    `let sum_to = fn(n) {
+       if (n <= 0) { return 0 }
+       return n + sum_to(n - 1)
+     }
+     puts(sum_to(50))`,
+    '1275');
+
+  testBothModes('fibonacci iterative vs recursive',
+    `let fib_iter = fn(n) {
+       let a = 0; let b = 1
+       let i = 0
+       while (i < n) {
+         let temp = b
+         set b = a + b
+         set a = temp
+         set i = i + 1
+       }
+       return a
+     }
+     let fib_rec = fn(n) {
+       if (n <= 1) { return n }
+       return fib_rec(n-1) + fib_rec(n-2)
+     }
+     puts(fib_iter(10))
+     puts(fib_rec(10))`,
+    '5555');
+
+  testBothModes('ackermann(2,3)',
+    `let ack = fn(m, n) {
+       if (m == 0) { return n + 1 }
+       if (n == 0) { return ack(m - 1, 1) }
+       return ack(m - 1, ack(m, n - 1))
+     }
+     puts(ack(2, 3))`,
+    '9');
+});
+
+describe('Stress: long-running programs', () => {
+  testBothModes('sum 1..1000',
+    `let s = 0; let i = 1
+     while (i <= 1000) { set s = s + i; set i = i + 1 }
+     puts(s)`,
+    '500500');
+
+  testBothModes('counting to 5000',
+    `let i = 0
+     while (i < 5000) { set i = i + 1 }
+     puts(i)`,
+    '5000');
+
+  testBothModes('multiple counters',
+    `let a = 0; let b = 0
+     let i = 0
+     while (i < 100) {
+       set a = a + i
+       set b = b + (100 - i)
+       set i = i + 1
+     }
+     puts(a)
+     puts(b)`,
+    '49505050');
+});
+
+describe('Stress: complex programs', () => {
+  testBothModes('bubble sort simulation',
+    `let sort3 = fn(a, b, c) {
+       if (a > b) { let t = a; set a = b; set b = t }
+       if (b > c) { let t = b; set b = c; set c = t }
+       if (a > b) { let t = a; set a = b; set b = t }
+       puts(a); puts(b); puts(c)
+     }
+     sort3(3, 1, 2)`,
+    '123');
+
+  testBothModes('modular exponentiation',
+    `let mod_pow = fn(base, exp, mod) {
+       let result = 1
+       set base = base % mod
+       while (exp > 0) {
+         if (exp % 2 == 1) {
+           set result = result * base % mod
+         }
+         set exp = exp / 2
+         set base = base * base % mod
+       }
+       return result
+     }
+     puts(mod_pow(2, 10, 1000))
+     puts(mod_pow(3, 5, 100))`,
+    '2443');
+});

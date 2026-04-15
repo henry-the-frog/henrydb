@@ -274,17 +274,8 @@ export class RiscVCodeGen {
 
   _compileIntegerLiteral(expr) {
     const val = expr.value;
-    if (val >= -2048 && val <= 2047) {
-      this._emit(`  li a0, ${val}`);
-    } else {
-      // Need lui + addi for large immediates
-      const upper = (val + 0x800) >>> 12;
-      const lower = val - (upper << 12);
-      this._emit(`  lui a0, ${upper}`);
-      if (lower !== 0) {
-        this._emit(`  addi a0, a0, ${lower}`);
-      }
-    }
+    // li pseudo-instruction handles all sizes
+    this._emit(`  li a0, ${val}`);
   }
 
   _compileBooleanLiteral(expr) {

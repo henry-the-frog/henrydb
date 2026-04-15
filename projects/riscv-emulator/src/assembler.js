@@ -86,6 +86,7 @@ class Assembler {
 
   // Encode U-type
   static encU(opcode, rd, imm) {
+    // imm is already in upper-20-bit position (pre-shifted by caller)
     return (imm & 0xFFFFF000) | ((rd & 0x1F) << 7) | (opcode & 0x7F);
   }
 

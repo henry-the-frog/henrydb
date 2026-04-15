@@ -1040,10 +1040,31 @@
     {
       "id": "T97",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Pipeline integration: compile monkey-lang programs, run through PipelineCPU and TomasuloCPU. Compare IPC, stall cycles, forwarding stats. Show how register allocation affects pipeline efficiency. Tests + benchmark report.",
       "project": "monkey-lang",
-      "started": "2026-04-15T20:57:24.106Z"
+      "started": "2026-04-15T20:57:24.106Z",
+      "completed": "2026-04-15T21:01:45.074Z",
+      "duration_ms": 600000,
+      "summary": "Pipeline integration: run compiled monkey through 5-stage PipelineCPU. Register mode IPC=0.97 vs stack IPC=0.90. Register mode eliminates load-use stalls. Recursive programs hit memory bounds in pipeline sim. 8 tests."
+    },
+    {
+      "id": "T98",
+      "mode": "THINK",
+      "status": "done",
+      "task": "10+ BUILDs cumulative today. Depth check: learned stack frame layout, IC hit rates, pipeline IPC, register allocation tradeoffs. What's genuinely new territory? Consider: branch predictor optimization for compiled code, or switch to stress-testing existing infrastructure.",
+      "started": "2026-04-15T21:02:13.952Z",
+      "completed": "2026-04-15T21:02:31.317Z",
+      "duration_ms": 60000,
+      "summary": "Depth check 3/3 YES. Direction: stress-test the RISC-V codegen. Compile increasingly complex/adversarial monkey programs. Find bugs in edge cases: deeply nested expressions, many variables (spill test), large loops, etc."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Stress-test RISC-V codegen: edge cases (deeply nested exprs, 20+ variables forcing register spill, mutual recursion, large while loops, negative numbers, overflow, if-chains with 10+ branches). Fix any bugs found.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T21:02:49.310Z"
     }
   ],
   "focusProjects": [
@@ -1415,6 +1436,14 @@
     {
       "time": "2026-04-15T20:57:17.231Z",
       "msg": "Added T97 (BUILD) after end: Pipeline integration: compile monkey-lang programs, run through PipelineCPU and TomasuloCPU. Compare IPC, stall cycles, forwarding stats. Show how register allocation affects pipeline efficiency. Tests + benchmark report."
+    },
+    {
+      "time": "2026-04-15T21:02:07.444Z",
+      "msg": "Added T98 (THINK) after end: 10+ BUILDs cumulative today. Depth check: learned stack frame layout, IC hit rates, pipeline IPC, register allocation tradeoffs. What's genuinely new territory? Consider: branch predictor optimization for compiled code, or switch to stress-testing existing infrastructure."
+    },
+    {
+      "time": "2026-04-15T21:02:40.352Z",
+      "msg": "Added T99 (BUILD) after end: Stress-test RISC-V codegen: edge cases (deeply nested exprs, 20+ variables forcing register spill, mutual recursion, large while loops, negative numbers, overflow, if-chains with 10+ branches). Fix any bugs found."
     }
   ]
 }

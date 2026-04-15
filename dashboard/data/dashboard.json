@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T20:57:24.141Z",
+  "generated": "2026-04-15T21:02:49.345Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Pipeline integration: compile monkey-lang programs, run through PipelineCPU and TomasuloCPU. Compare IPC, stall cycles, forwarding stats. Show how register allocation affects pipeline efficiency. Tests + benchmark report.",
-    "startedAt": "2026-04-15T20:57:24.141Z",
-    "taskId": "T97"
+    "task": "Stress-test RISC-V codegen: edge cases (deeply nested exprs, 20+ variables forcing register spill, mutual recursion, large while loops, negative numbers, overflow, if-chains with 10+ branches). Fix any bugs found.",
+    "startedAt": "2026-04-15T21:02:49.345Z",
+    "taskId": "T99"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1030,12 +1030,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 95,
+    "blocksCompleted": 97,
     "blocksTotal": 95,
     "modeDistribution": {
-      "THINK": 12,
+      "THINK": 13,
       "PLAN": 13,
-      "BUILD": 58,
+      "BUILD": 59,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
