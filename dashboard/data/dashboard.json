@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T18:42:33.851Z",
+  "generated": "2026-04-15T18:45:01.585Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "monkey-lang: comprehensive OOP protocol tests (toString, operator overloading, __iter__)",
-    "completedAt": "2026-04-15T18:42:33.851Z",
-    "taskId": "T68",
-    "summary": "12 OOP protocol tests: toString, operator overloading (__add__/__eq__/etc), __iter__ (arrays, generators, LinkedList), combined protocols (Matrix). 1713 total tests.",
-    "durationMs": 600000
+    "task": "monkey-lang: add static methods to classes (fn static method_name)",
+    "completedAt": "2026-04-15T18:45:01.585Z",
+    "taskId": "T69",
+    "summary": "Static methods: static fn name() { }. Called on class. No regressions.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 68,
+    "blocksCompleted": 69,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 42,
+      "BUILD": 43,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }
