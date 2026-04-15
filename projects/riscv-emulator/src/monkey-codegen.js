@@ -156,7 +156,7 @@ export class RiscVCodeGen {
    * @param {import('../../monkey-lang/src/ast.js').Program} program
    * @returns {string} Assembly text
    */
-  compile(program) {
+  compile(program, typeInfo = null) {
     this.output = [];
     this.variables = new Map();
     this.stackOffset = 8; // Reserve for ra + s0
@@ -165,6 +165,16 @@ export class RiscVCodeGen {
     this.errors = [];
     this.nextRegIdx = 0;
     this.usedRegs = new Set();
+    this.varTypes = new Map();
+    this._lastExprType = 'int';
+    
+    // Apply type info from inference pass
+    this._typeInfo = typeInfo;
+    if (typeInfo?.varTypes) {
+      for (const [k, v] of typeInfo.varTypes) {
+        this.varTypes.set(k, v);
+      }
+    }
 
     // Prologue: set up main frame
     this._emit('  # Monkey → RISC-V compiled program');
@@ -772,6 +782,14 @@ export class RiscVCodeGen {
           this._emit(`  mv ${loc.reg}, a${i}`);
         } else {
           this._emit(`  sw a${i}, ${loc.offset}(s0)`);
+        }
+        // Apply inferred parameter type
+        if (this._typeInfo?.funcTypes?.has(name)) {
+          const funcInfo = this._typeInfo.funcTypes.get(name);
+          const paramType = funcInfo.params.get(paramName);
+          if (paramType) {
+            this.varTypes.set(paramName, paramType);
+          }
         }
       }
     }

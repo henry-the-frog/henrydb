@@ -1126,10 +1126,21 @@
     {
       "id": "T105",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V codegen: string support. Strings as heap objects (length + char data). String literals in data section. puts() for strings (char-by-char ecall). String concatenation via heap copy. 15+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T21:22:05.891Z"
+      "started": "2026-04-15T21:22:05.891Z",
+      "completed": "2026-04-15T21:29:43.172Z",
+      "duration_ms": 900000,
+      "summary": "String support with type-directed compilation. Strings on heap, puts() generates int/string code based on compile-time type info. Known limitation: function params have unknown type. 20 new tests, 262 total."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V codegen: basic type inference pass. Before code generation, walk the AST and infer types for function parameters based on call sites. If greet('Alice') is called, infer name:string. Enables type-correct puts() for function params. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T21:30:28.454Z"
     }
   ],
   "focusProjects": [
@@ -1529,6 +1540,10 @@
     {
       "time": "2026-04-15T21:21:59.919Z",
       "msg": "Added T105 (BUILD) after end: RISC-V codegen: string support. Strings as heap objects (length + char data). String literals in data section. puts() for strings (char-by-char ecall). String concatenation via heap copy. 15+ tests."
+    },
+    {
+      "time": "2026-04-15T21:30:20.898Z",
+      "msg": "Added T106 (BUILD) after end: RISC-V codegen: basic type inference pass. Before code generation, walk the AST and infer types for function parameters based on call sites. If greet('Alice') is called, infer name:string. Enables type-correct puts() for function params. 10+ tests."
     }
   ]
 }
