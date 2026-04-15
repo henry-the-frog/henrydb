@@ -137,6 +137,49 @@ const benchmarks = [
       puts(collatz(27))
     `,
   },
+  {
+    name: 'make_adder closure',
+    code: `
+      let make_adder = fn(x) { fn(y) { x + y } };
+      let add5 = make_adder(5);
+      let sum = 0;
+      let i = 0;
+      while (i < 100) {
+        set sum = sum + add5(i);
+        set i = i + 1;
+      };
+      puts(sum)
+    `,
+  },
+  {
+    name: 'higher-order apply',
+    code: `
+      let apply = fn(f, x) { f(x) };
+      let double = fn(x) { x * 2 };
+      let sum = 0;
+      let i = 0;
+      while (i < 100) {
+        set sum = sum + apply(double, i);
+        set i = i + 1;
+      };
+      puts(sum)
+    `,
+  },
+  {
+    name: 'is_even mutual recursion (RISC-V only)',
+    code: `
+      let is_even = fn(n) { if (n == 0) { return 1 }; return is_odd(n - 1) };
+      let is_odd = fn(n) { if (n == 0) { return 0 }; return is_even(n - 1) };
+      let count = 0;
+      let i = 0;
+      while (i < 50) {
+        set count = count + is_even(i);
+        set i = i + 1;
+      };
+      puts(count)
+    `,
+    rvOnly: true,
+  },
 ];
 
 console.log('╔══════════════════════════════════════════════════════════════════╗');
@@ -147,6 +190,19 @@ console.log('');
 const results = [];
 
 for (const bench of benchmarks) {
+  if (bench.rvOnly) {
+    const rv = runRISCV(bench.code);
+    if (rv.error) {
+      console.log(`  ${bench.name}: RISC-V ERROR: ${rv.error}`);
+      continue;
+    }
+    console.log(`  📊 ${bench.name}`);
+    console.log(`     RISC-V:  ${rv.elapsed.toFixed(2)}ms (${rv.cycles.toLocaleString()} cycles)`);
+    console.log(`     Output:  ${rv.output}`);
+    console.log('');
+    continue;
+  }
+  
   const rv = runRISCV(bench.code);
   const vm = runVM(bench.code);
   

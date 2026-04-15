@@ -1595,10 +1595,29 @@
     {
       "id": "T148",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Write a mini calculator in monkey-lang that evaluates simple expressions (+ and * with ints). Compile to RISC-V. Demonstrates the backend's expressiveness — code that interprets code.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:43:43.566Z"
+      "started": "2026-04-15T23:43:43.566Z",
+      "completed": "2026-04-15T23:44:58.227Z",
+      "duration_ms": 300000,
+      "summary": "Meta: expression tree evaluator (recursive tree-walker) compiled to RISC-V. Nested arrays as AST, supports add/sub/mul. (2+3)*(4+5)=45. 2 new tests, 29 showcase total."
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Monkey-lang VM: Add WASM-like compilation of while loops to avoid re-entering the compiler. Detect hot loops and compile to direct iteration. 5+ tests.",
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Run updated benchmark suite after all optimizations (closures, mutual recursion, etc). Compare with earlier results. Add new benchmarks for closures and HOF.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:45:58.274Z"
     }
   ],
   "focusProjects": [
@@ -2162,6 +2181,18 @@
     {
       "time": "2026-04-15T23:43:34.419Z",
       "msg": "Added T148 (BUILD) after end: RISC-V: Write a mini calculator in monkey-lang that evaluates simple expressions (+ and * with ints). Compile to RISC-V. Demonstrates the backend's expressiveness — code that interprets code."
+    },
+    {
+      "time": "2026-04-15T23:45:15.159Z",
+      "msg": "Added T149 (BUILD) after end: Monkey-lang VM: Add WASM-like compilation of while loops to avoid re-entering the compiler. Detect hot loops and compile to direct iteration. 5+ tests."
+    },
+    {
+      "time": "2026-04-15T23:45:30.453Z",
+      "msg": "Removed T149: "
+    },
+    {
+      "time": "2026-04-15T23:45:46.973Z",
+      "msg": "Added T150 (BUILD) after end: RISC-V: Run updated benchmark suite after all optimizations (closures, mutual recursion, etc). Compare with earlier results. Add new benchmarks for closures and HOF."
     }
   ]
 }
