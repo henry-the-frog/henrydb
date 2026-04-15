@@ -1317,6 +1317,31 @@
       "completed": "2026-04-15T22:22:48.072Z",
       "duration_ms": 600000,
       "summary": "String keys in hashes partially work (short keys OK, 4+ char keys have a regression). Integer keys fully work. Added DotExpression support but reverted (parser handles it). Filed as known limitation."
+    },
+    {
+      "id": "T123",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End of session maintenance: update daily log, MEMORY.md, push all code, final git status.",
+      "started": "2026-04-15T22:23:52.971Z",
+      "completed": "2026-04-15T22:26:08.315Z",
+      "duration_ms": 600000,
+      "summary": "Fixed HenryDB planner case-sensitivity bug. Full sweep: 3068 tests, 0 failures. Planner, volcano executor, db, storage, WAL, replication, MVCC, LSM all green."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix HenryDB planner test failure (NULL selectivity) and run full sweep. Fix any broken tests found.",
+      "project": "henrydb",
+      "started": "2026-04-15T22:27:24.197Z"
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Debug and fix 4+ char string keys in hash access. Use disassembler to trace execution. The comparison loop works for string equality (==) but fails inside hash access. Likely register clobbering issue.",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -1780,6 +1805,18 @@
     {
       "time": "2026-04-15T22:17:21.324Z",
       "msg": "Added T122 (BUILD) after end: Monkey-lang: add DotExpression support to RISC-V codegen. h.name compiles to hash string key lookup. Requires: DotExpression AST node in codegen, string key conversion for hash access. 8+ tests."
+    },
+    {
+      "time": "2026-04-15T22:23:36.194Z",
+      "msg": "Added T123 (MAINTAIN) after end: End of session maintenance: update daily log, MEMORY.md, push all code, final git status."
+    },
+    {
+      "time": "2026-04-15T22:23:45.271Z",
+      "msg": "Added T124 (BUILD) after end: Fix HenryDB planner test failure (NULL selectivity) and run full sweep. Fix any broken tests found."
+    },
+    {
+      "time": "2026-04-15T22:27:17.215Z",
+      "msg": "Added T125 (BUILD) after end: Debug and fix 4+ char string keys in hash access. Use disassembler to trace execution. The comparison loop works for string equality (==) but fails inside hash access. Likely register clobbering issue."
     }
   ]
 }

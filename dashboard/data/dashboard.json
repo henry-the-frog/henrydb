@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-15T22:22:48.108Z",
+  "generated": "2026-04-15T22:27:24.258Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Monkey-lang: add DotExpression support to RISC-V codegen. h.name compiles to hash string key lookup. Requires: DotExpression AST node in codegen, string key conversion for hash access. 8+ tests.",
-    "completedAt": "2026-04-15T22:22:48.108Z",
-    "taskId": "T122",
-    "summary": "String keys in hashes partially work (short keys OK, 4+ char keys have a regression). Integer keys fully work. Added DotExpression support but reverted (parser handles it). Filed as known limitation.",
-    "durationMs": 600000
+    "task": "Fix HenryDB planner test failure (NULL selectivity) and run full sweep. Fix any broken tests found.",
+    "startedAt": "2026-04-15T22:27:24.258Z",
+    "taskId": "T124"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1215,13 +1213,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 121,
+    "blocksCompleted": 122,
     "blocksTotal": 112,
     "modeDistribution": {
       "THINK": 16,
       "PLAN": 16,
       "BUILD": 76,
-      "MAINTAIN": 11,
+      "MAINTAIN": 12,
       "EXPLORE": 2
     }
   }
