@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T23:39:34.869Z",
+  "generated": "2026-04-15T23:43:43.604Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: recursive closures. A function defined inside another function that calls itself. let f = fn(n) { let helper = fn(i) { if (i <= 0) { return 0 }; return 1 + helper(i-1) }; return helper(n) }. Self-reference in nested scope.",
-    "startedAt": "2026-04-15T23:39:34.869Z",
-    "taskId": "T147"
+    "task": "RISC-V: Write a mini calculator in monkey-lang that evaluates simple expressions (+ and * with ints). Compile to RISC-V. Demonstrates the backend's expressiveness — code that interprets code.",
+    "startedAt": "2026-04-15T23:43:43.604Z",
+    "taskId": "T148"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 145,
+    "blocksCompleted": 146,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 16,
-      "BUILD": 97,
+      "BUILD": 98,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

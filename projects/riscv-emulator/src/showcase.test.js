@@ -521,3 +521,39 @@ describe('Showcase: Advanced Algorithms', () => {
     assert.equal(result, '15');  // 15 primes ≤ 50
   });
 });
+
+describe('Showcase: Meta — Interpreter on RISC-V', () => {
+  it('expression tree evaluator (add)', () => {
+    const result = run(`
+      let eval_expr = fn(expr) {
+        if (len(expr) == 1) { return expr[0] }
+        let op = expr[0]
+        let left = eval_expr(expr[1])
+        let right = eval_expr(expr[2])
+        if (op == 1) { return left + right }
+        if (op == 2) { return left - right }
+        if (op == 3) { return left * right }
+        return 0
+      }
+      puts(eval_expr([1, [10], [20]]))
+    `);
+    assert.equal(result, '30');
+  });
+
+  it('expression tree evaluator (complex)', () => {
+    const result = run(`
+      let eval_expr = fn(expr) {
+        if (len(expr) == 1) { return expr[0] }
+        let op = expr[0]
+        let left = eval_expr(expr[1])
+        let right = eval_expr(expr[2])
+        if (op == 1) { return left + right }
+        if (op == 2) { return left - right }
+        if (op == 3) { return left * right }
+        return 0
+      }
+      puts(eval_expr([3, [1, [2], [3]], [1, [4], [5]]]))
+    `);
+    assert.equal(result, '45');  // (2+3) * (4+5) = 45
+  });
+});

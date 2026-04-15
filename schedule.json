@@ -1584,10 +1584,21 @@
     {
       "id": "T147",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: recursive closures. A function defined inside another function that calls itself. let f = fn(n) { let helper = fn(i) { if (i <= 0) { return 0 }; return 1 + helper(i-1) }; return helper(n) }. Self-reference in nested scope.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:39:34.808Z"
+      "started": "2026-04-15T23:39:34.808Z",
+      "completed": "2026-04-15T23:43:07.031Z",
+      "duration_ms": 600000,
+      "summary": "Recursive closures! Nested fn calling itself with captured outer vars. Self-reference via env pointer. sum_to(100)=5050. 3 new tests, 39 closure total."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Write a mini calculator in monkey-lang that evaluates simple expressions (+ and * with ints). Compile to RISC-V. Demonstrates the backend's expressiveness — code that interprets code.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:43:43.566Z"
     }
   ],
   "focusProjects": [
@@ -2147,6 +2158,10 @@
     {
       "time": "2026-04-15T23:39:26.469Z",
       "msg": "Added T147 (BUILD) after end: RISC-V: recursive closures. A function defined inside another function that calls itself. let f = fn(n) { let helper = fn(i) { if (i <= 0) { return 0 }; return 1 + helper(i-1) }; return helper(n) }. Self-reference in nested scope."
+    },
+    {
+      "time": "2026-04-15T23:43:34.419Z",
+      "msg": "Added T148 (BUILD) after end: RISC-V: Write a mini calculator in monkey-lang that evaluates simple expressions (+ and * with ints). Compile to RISC-V. Demonstrates the backend's expressiveness — code that interprets code."
     }
   ]
 }
