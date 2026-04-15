@@ -376,6 +376,15 @@ export class RiscVCodeGen {
       }
     }
     
+    // Check if this is string comparison
+    if (op === '==' || op === '!=') {
+      const leftType = this._inferExprType(expr.left);
+      const rightType = this._inferExprType(expr.right);
+      if (leftType === 'string' || rightType === 'string') {
+        return this._compileStringCompare(expr.left, expr.right, op);
+      }
+    }
+    
     // Compile left, push to stack
     this._compileExpression(expr.left);
     this._emit('  addi sp, sp, -4');
@@ -621,6 +630,56 @@ export class RiscVCodeGen {
     // Result: string pointer in a0 (untagged — type tracked at compile time)
     this._emit('  mv a0, t1');
     this._lastExprType = 'string';
+  }
+
+  /** Compile string equality/inequality comparison */
+  _compileStringCompare(left, right, op) {
+    this._comment(`string ${op}`);
+    
+    // Compile both strings
+    this._compileExpression(left);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');
+    this._compileExpression(right);
+    this._emit('  lw t0, 0(sp)');     // t0 = left string ptr
+    this._emit('  addi sp, sp, 4');
+    this._emit('  mv t1, a0');        // t1 = right string ptr
+    
+    const equalLabel = this._label('streq');
+    const notEqualLabel = this._label('strne');
+    const endLabel = this._label('strcmp_end');
+    
+    // Compare lengths first
+    this._emit('  lw t2, 0(t0)');     // t2 = left length
+    this._emit('  lw t3, 0(t1)');     // t3 = right length
+    this._emit(`  bne t2, t3, ${notEqualLabel}`);
+    
+    // Lengths match — compare chars
+    this._emit('  li t4, 0');         // i = 0
+    const charLoop = this._label('strcmp_loop');
+    this._emitLabel(charLoop);
+    this._emit(`  bge t4, t2, ${equalLabel}`);
+    this._emit('  slli t5, t4, 2');
+    this._emit('  add t5, t0, t5');
+    this._emit('  lw t5, 4(t5)');     // left[i]
+    this._emit('  slli t6, t4, 2');
+    this._emit('  add t6, t1, t6');
+    this._emit('  lw t6, 4(t6)');     // right[i]
+    this._emit(`  bne t5, t6, ${notEqualLabel}`);
+    this._emit('  addi t4, t4, 1');
+    this._emit(`  j ${charLoop}`);
+    
+    // Equal
+    this._emitLabel(equalLabel);
+    this._emit(`  li a0, ${op === '==' ? 1 : 0}`);
+    this._emit(`  j ${endLabel}`);
+    
+    // Not equal
+    this._emitLabel(notEqualLabel);
+    this._emit(`  li a0, ${op === '==' ? 0 : 1}`);
+    
+    this._emitLabel(endLabel);
+    this._lastExprType = 'int';
   }
 
   _compileIndexExpression(left, index) {

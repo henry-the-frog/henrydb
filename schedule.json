@@ -1245,10 +1245,21 @@
     {
       "id": "T116",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey-lang RISC-V: add --dump flag to codegen that shows assembly listing with disassembly. Also add a compile-and-dump CLI tool that takes monkey source and outputs annotated assembly. Verify with sample programs.",
       "project": "monkey-lang",
-      "started": "2026-04-15T22:04:12.131Z"
+      "started": "2026-04-15T22:04:12.131Z",
+      "completed": "2026-04-15T22:05:47.916Z",
+      "duration_ms": 300000,
+      "summary": "monkey-riscv CLI: compile+dump+disasm+run in one tool. Shows assembly, hex disassembly, or executes with cycle/timing stats. fib(15)=610 in 61K cycles/13ms."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V codegen: implement string equality comparison (== on strings). Currently only integer == works. Compare char-by-char using type inference. Also implement string indexing (accessing individual characters). 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:06:13.349Z"
     }
   ],
   "focusProjects": [
@@ -1688,6 +1699,10 @@
     {
       "time": "2026-04-15T22:04:05.918Z",
       "msg": "Added T116 (BUILD) after end: Monkey-lang RISC-V: add --dump flag to codegen that shows assembly listing with disassembly. Also add a compile-and-dump CLI tool that takes monkey source and outputs annotated assembly. Verify with sample programs."
+    },
+    {
+      "time": "2026-04-15T22:06:07.473Z",
+      "msg": "Added T117 (BUILD) after end: RISC-V codegen: implement string equality comparison (== on strings). Currently only integer == works. Compare char-by-char using type inference. Also implement string indexing (accessing individual characters). 10+ tests."
     }
   ]
 }

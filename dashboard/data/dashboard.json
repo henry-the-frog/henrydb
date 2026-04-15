@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T22:04:12.168Z",
+  "generated": "2026-04-15T22:06:13.385Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Monkey-lang RISC-V: add --dump flag to codegen that shows assembly listing with disassembly. Also add a compile-and-dump CLI tool that takes monkey source and outputs annotated assembly. Verify with sample programs.",
-    "startedAt": "2026-04-15T22:04:12.168Z",
-    "taskId": "T116"
+    "task": "RISC-V codegen: implement string equality comparison (== on strings). Currently only integer == works. Compare char-by-char using type inference. Also implement string indexing (accessing individual characters). 10+ tests.",
+    "startedAt": "2026-04-15T22:06:13.385Z",
+    "taskId": "T117"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1213,12 +1213,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 114,
+    "blocksCompleted": 115,
     "blocksTotal": 112,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 15,
-      "BUILD": 71,
+      "BUILD": 72,
       "MAINTAIN": 11,
       "EXPLORE": 2
     }
