@@ -1115,10 +1115,21 @@
     {
       "id": "T104",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V codegen: for-in loops, push() builtin for arrays, and first/rest builtins. These enable idiomatic monkey-lang array programs to compile. 15+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T21:18:35.770Z"
+      "started": "2026-04-15T21:18:35.770Z",
+      "completed": "2026-04-15T21:21:44.545Z",
+      "duration_ms": 600000,
+      "summary": "for-in loops + push/first/last builtins. Functional patterns (map/filter/reduce) work via for-in + push. Fibonacci via arrays. 23 new tests, 250 total."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V codegen: string support. Strings as heap objects (length + char data). String literals in data section. puts() for strings (char-by-char ecall). String concatenation via heap copy. 15+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T21:22:05.891Z"
     }
   ],
   "focusProjects": [
@@ -1514,6 +1525,10 @@
     {
       "time": "2026-04-15T21:18:30.012Z",
       "msg": "Added T104 (BUILD) after end: RISC-V codegen: for-in loops, push() builtin for arrays, and first/rest builtins. These enable idiomatic monkey-lang array programs to compile. 15+ tests."
+    },
+    {
+      "time": "2026-04-15T21:21:59.919Z",
+      "msg": "Added T105 (BUILD) after end: RISC-V codegen: string support. Strings as heap objects (length + char data). String literals in data section. puts() for strings (char-by-char ecall). String concatenation via heap copy. 15+ tests."
     }
   ]
 }

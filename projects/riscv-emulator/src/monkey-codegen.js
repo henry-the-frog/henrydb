@@ -43,6 +43,10 @@ export class RiscVCodeGen {
     this.heapBase = 0x10000;  // Heap starts at 64KB
     this.needsHeap = false;   // Set true if any heap allocation needed
     this.needsAlloc = false;  // Set true if _alloc subroutine needed
+    
+    // Type tracking for type-directed compilation
+    this.varTypes = new Map(); // name → 'int' | 'string' | 'array' | 'unknown'
+    this._lastExprType = 'int'; // Type of last compiled expression
   }
 
   /** Generate a unique label */
@@ -237,6 +241,9 @@ export class RiscVCodeGen {
     // Compile the value expression (result in a0)
     this._compileExpression(stmt.value);
     
+    // Track the type of this variable
+    this.varTypes.set(name, this._lastExprType);
+    
     // Allocate storage and store
     this._allocLocal(name);
     this._emitStoreVar(name);
@@ -286,6 +293,8 @@ export class RiscVCodeGen {
         return this._compileWhile(expr);
       case 'ArrayLiteral':
         return this._compileArrayLiteral(expr);
+      case 'StringLiteral':
+        return this._compileStringLiteral(expr);
       case 'IndexExpression':
         return this._compileIndexExpression(expr.left, expr.index);
       case 'ForInExpression':
@@ -297,17 +306,19 @@ export class RiscVCodeGen {
 
   _compileIntegerLiteral(expr) {
     const val = expr.value;
-    // li pseudo-instruction handles all sizes
     this._emit(`  li a0, ${val}`);
+    this._lastExprType = 'int';
   }
 
   _compileBooleanLiteral(expr) {
     this._emit(`  li a0, ${expr.value ? 1 : 0}`);
+    this._lastExprType = 'int';
   }
 
   _compileIdentifier(expr) {
     const name = expr.value;
     this._emitLoadVar(name);
+    this._lastExprType = this.varTypes.get(name) || 'unknown';
   }
 
   _compilePrefixExpression(expr) {
@@ -459,6 +470,34 @@ export class RiscVCodeGen {
     
     // Result: array pointer in a0
     this._emit(`  mv a0, t1`);
+    this._lastExprType = 'array';
+  }
+
+  _compileStringLiteral(expr) {
+    this._comment(`string "${expr.value.slice(0, 20)}${expr.value.length > 20 ? '...' : ''}"`);
+    const chars = expr.value;
+    const len = chars.length;
+    // String layout: [length (4 bytes)][char0 (4 bytes)][char1 (4 bytes)]...
+    const totalSize = 4 + len * 4;
+    
+    // Allocate on heap
+    this._emit('  mv t1, gp');
+    this._emit(`  addi gp, gp, ${totalSize}`);
+    
+    // Store length
+    this._emit(`  li t2, ${len}`);
+    this._emit('  sw t2, 0(t1)');
+    
+    // Store characters
+    for (let i = 0; i < len; i++) {
+      const code = chars.charCodeAt(i);
+      this._emit(`  li t2, ${code}`);
+      this._emit(`  sw t2, ${4 + i * 4}(t1)`);
+    }
+    
+    // Result: string pointer in a0 (untagged — type tracked at compile time)
+    this._emit('  mv a0, t1');
+    this._lastExprType = 'string';
   }
 
   _compileIndexExpression(left, index) {
@@ -541,25 +580,47 @@ export class RiscVCodeGen {
   _compileCallExpression(expr) {
     const funcName = expr.function.value || expr.function.toString();
     
-    // Special case: puts() → print_int syscall
+    // Special case: puts() → print_int or print_string
     if (funcName === 'puts') {
       this._comment('puts()');
       if (expr.arguments.length > 0) {
         this._compileExpression(expr.arguments[0]);
-        this._emit('  mv a0, a0');  // nop — value already in a0
-        this._emit('  li a7, 1');   // print_int syscall
-        this._emit('  ecall');
+        const exprType = this._lastExprType;
+        
+        if (exprType === 'string') {
+          // String: a0 has heap pointer, print chars
+          this._emit('  mv t1, a0');
+          this._emit('  lw t2, 0(t1)');     // length
+          this._emit('  li t3, 0');          // index
+          const charLoop = this._label('puts_char');
+          const charEnd = this._label('puts_char_end');
+          this._emitLabel(charLoop);
+          this._emit(`  bge t3, t2, ${charEnd}`);
+          this._emit('  slli t4, t3, 2');
+          this._emit('  add t4, t1, t4');
+          this._emit('  lw a0, 4(t4)');
+          this._emit('  li a7, 11');         // print_char
+          this._emit('  ecall');
+          this._emit('  addi t3, t3, 1');
+          this._emit(`  j ${charLoop}`);
+          this._emitLabel(charEnd);
+        } else {
+          // Integer (or unknown): print as number
+          this._emit('  li a7, 1');          // print_int
+          this._emit('  ecall');
+        }
       }
       return;
     }
     
-    // Special case: len() → load array length from header
+    // Special case: len() → load length from header
     if (funcName === 'len') {
       this._comment('len()');
       if (expr.arguments.length > 0) {
         this._compileExpression(expr.arguments[0]);
-        this._emit('  lw a0, 0(a0)');  // Load length from array header
+        this._emit('  lw a0, 0(a0)');  // Load length from header
       }
+      this._lastExprType = 'int'; // length is always an integer
       return;
     }
     
@@ -570,6 +631,7 @@ export class RiscVCodeGen {
         this._compileExpression(expr.arguments[0]);
         this._emit('  lw a0, 4(a0)');  // Load first element
       }
+      this._lastExprType = 'int'; // element type unknown, assume int
       return;
     }
     
@@ -578,12 +640,13 @@ export class RiscVCodeGen {
       this._comment('last()');
       if (expr.arguments.length > 0) {
         this._compileExpression(expr.arguments[0]);
-        this._emit('  mv t0, a0');        // t0 = arr pointer
-        this._emit('  lw t1, 0(t0)');     // t1 = length
-        this._emit('  slli t1, t1, 2');   // length * 4
-        this._emit('  add t0, t0, t1');   // arr + length * 4
-        this._emit('  lw a0, 0(t0)');     // load last element
+        this._emit('  mv t0, a0');
+        this._emit('  lw t1, 0(t0)');
+        this._emit('  slli t1, t1, 2');
+        this._emit('  add t0, t0, t1');
+        this._emit('  lw a0, 0(t0)');
       }
+      this._lastExprType = 'int';
       return;
     }
     
@@ -673,6 +736,7 @@ export class RiscVCodeGen {
     // Call the function
     this._emit(`  jal ${funcName}`);
     // Result is in a0
+    this._lastExprType = 'unknown';
   }
 
   _compileFunctionDef(name, funcLit) {

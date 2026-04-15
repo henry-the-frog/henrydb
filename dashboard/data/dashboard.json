@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T21:18:35.807Z",
+  "generated": "2026-04-15T21:22:05.928Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V codegen: for-in loops, push() builtin for arrays, and first/rest builtins. These enable idiomatic monkey-lang array programs to compile. 15+ tests.",
-    "startedAt": "2026-04-15T21:18:35.807Z",
-    "taskId": "T104"
+    "task": "RISC-V codegen: string support. Strings as heap objects (length + char data). String literals in data section. puts() for strings (char-by-char ecall). String concatenation via heap copy. 15+ tests.",
+    "startedAt": "2026-04-15T21:22:05.928Z",
+    "taskId": "T105"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1115,12 +1115,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 102,
+    "blocksCompleted": 103,
     "blocksTotal": 103,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 14,
-      "BUILD": 62,
+      "BUILD": 63,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
