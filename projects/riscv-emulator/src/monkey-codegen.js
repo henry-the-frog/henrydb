@@ -38,6 +38,11 @@ export class RiscVCodeGen {
     this.availableRegs = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
     this.nextRegIdx = 0;     // Next available register index
     this.usedRegs = new Set(); // Which s-registers are in use (for save/restore)
+    
+    // Heap allocation
+    this.heapBase = 0x10000;  // Heap starts at 64KB
+    this.needsHeap = false;   // Set true if any heap allocation needed
+    this.needsAlloc = false;  // Set true if _alloc subroutine needed
   }
 
   /** Generate a unique label */
@@ -160,6 +165,8 @@ export class RiscVCodeGen {
     // Prologue: set up main frame
     this._emit('  # Monkey → RISC-V compiled program');
     this._emitLabel('_start');
+    // Initialize heap pointer (gp = x3)
+    this._emit(`  li gp, ${this.heapBase}`);
     this._emitPrologue();
 
     // Compile program body
@@ -180,6 +187,16 @@ export class RiscVCodeGen {
     for (const fn of this.functions) {
       this._emit('');
       this.output.push(...fn);
+    }
+
+    // Append _alloc subroutine if needed
+    if (this.needsAlloc) {
+      this._emit('');
+      this._emit('# Bump allocator: a0 = size in bytes, returns pointer in a0');
+      this._emitLabel('_alloc');
+      this._emit('  mv a0, gp');           // Return current heap pointer
+      this._emit('  add gp, gp, a1');      // Bump by size (a1 = size passed by caller)
+      this._emit('  ret');                   // Return with pointer in a0
     }
 
     if (this.errors.length > 0) {
@@ -267,6 +284,10 @@ export class RiscVCodeGen {
         return this._compileBlock(expr);
       case 'WhileExpression':
         return this._compileWhile(expr);
+      case 'ArrayLiteral':
+        return this._compileArrayLiteral(expr);
+      case 'IndexExpression':
+        return this._compileIndexExpression(expr.left, expr.index);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -405,6 +426,58 @@ export class RiscVCodeGen {
     this._emitLabel(endLabel);
   }
 
+  _compileArrayLiteral(expr) {
+    this._comment('array literal');
+    this.needsAlloc = true;
+    const elements = expr.elements || [];
+    const numElements = elements.length;
+    const totalSize = 4 + numElements * 4; // 4 bytes for length + 4 per element
+    
+    // Evaluate all elements first, push onto stack
+    for (let i = 0; i < numElements; i++) {
+      this._compileExpression(elements[i]);
+      this._emit('  addi sp, sp, -4');
+      this._emit('  sw a0, 0(sp)');
+    }
+    
+    // Allocate heap space: save current gp as array base
+    this._emit(`  mv t1, gp`);            // t1 = array base pointer
+    this._emit(`  addi gp, gp, ${totalSize}`); // bump allocator
+    
+    // Store length at [base+0]
+    this._emit(`  li t2, ${numElements}`);
+    this._emit(`  sw t2, 0(t1)`);          // [base] = length
+    
+    // Pop elements from stack and store in array (reverse order)
+    for (let i = numElements - 1; i >= 0; i--) {
+      this._emit(`  lw t2, 0(sp)`);
+      this._emit(`  addi sp, sp, 4`);
+      this._emit(`  sw t2, ${4 + i * 4}(t1)`); // [base + 4 + i*4] = element[i]
+    }
+    
+    // Result: array pointer in a0
+    this._emit(`  mv a0, t1`);
+  }
+
+  _compileIndexExpression(left, index) {
+    // Compile left (array pointer), push to stack
+    this._compileExpression(left);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');
+    
+    // Compile index
+    this._compileExpression(index);
+    
+    // Pop array pointer into t0
+    this._emit('  lw t0, 0(sp)');
+    this._emit('  addi sp, sp, 4');
+    
+    // Compute element address: base + 4 + index * 4
+    this._emit('  slli a0, a0, 2');        // index * 4
+    this._emit('  add a0, t0, a0');        // base + index * 4
+    this._emit('  lw a0, 4(a0)');          // load [base + 4 + index * 4]
+  }
+
   _compileCallExpression(expr) {
     const funcName = expr.function.value || expr.function.toString();
     
@@ -416,6 +489,16 @@ export class RiscVCodeGen {
         this._emit('  mv a0, a0');  // nop — value already in a0
         this._emit('  li a7, 1');   // print_int syscall
         this._emit('  ecall');
+      }
+      return;
+    }
+    
+    // Special case: len() → load array length from header
+    if (funcName === 'len') {
+      this._comment('len()');
+      if (expr.arguments.length > 0) {
+        this._compileExpression(expr.arguments[0]);
+        this._emit('  lw a0, 0(a0)');  // Load length from array header
       }
       return;
     }

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T21:02:49.345Z",
+  "generated": "2026-04-15T21:14:07.301Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Stress-test RISC-V codegen: edge cases (deeply nested exprs, 20+ variables forcing register spill, mutual recursion, large while loops, negative numbers, overflow, if-chains with 10+ branches). Fix any bugs found.",
-    "startedAt": "2026-04-15T21:02:49.345Z",
-    "taskId": "T99"
+    "task": "Implement bump allocator for RISC-V: initialize heap pointer (gp register), _alloc subroutine (takes size in a0, returns pointer in a0), integrate with codegen prologue. Test: allocate and write to heap memory.",
+    "startedAt": "2026-04-15T21:14:07.301Z",
+    "taskId": "T102"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1008,34 +1008,119 @@
       {
         "id": "T93",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "RISC-V register allocator: (1) peephole pass to eliminate redundant load/stores, (2) map frequently-used locals to callee-saved registers (s1-s11), (3) measure cycle count improvement vs stack-only",
         "task": null,
-        "started": "2026-04-15T20:49:53.818Z"
+        "started": "2026-04-15T20:49:53.818Z",
+        "completed": "2026-04-15T20:50:17.000Z",
+        "duration_ms": 60000,
+        "summary": "PLAN: 2 BUILD tasks — peephole optimizer + register allocator for RISC-V backend."
       },
       {
         "id": "T94",
         "mode": "BUILD",
         "task": "Peephole optimizer for RISC-V assembly: eliminate redundant push/pop pairs (sw+lw same reg same offset), merge consecutive addi to sp, remove dead mv a0 a0. Run as post-pass on assembly text. Benchmark before/after cycle counts.",
-        "status": "upcoming",
-        "plan_ref": "T93"
+        "status": "done",
+        "plan_ref": "T93",
+        "started": "2026-04-15T20:50:25.921Z",
+        "completed": "2026-04-15T20:52:26.097Z",
+        "duration_ms": 600000,
+        "summary": "Peephole optimizer: 5 patterns (self-move, push-pop-same, push-pop-mv, merge-addi-sp, store-load-elim). 15.2% cycle reduction on fib(10). 26 tests all pass."
       },
       {
         "id": "T95",
         "mode": "BUILD",
         "task": "Register allocator: map let-bound variables to callee-saved registers s1-s11 (instead of stack slots). Track live ranges, spill to stack when registers exhausted. Save/restore used callee-saved regs in prologue/epilogue. Benchmark fib(10) and prime sieve cycle counts.",
+        "status": "done",
+        "plan_ref": "T93",
+        "started": "2026-04-15T20:52:44.392Z",
+        "completed": "2026-04-15T20:55:40.726Z",
+        "duration_ms": 900000,
+        "summary": "Register allocator: map locals to callee-saved s1-s11, spill to stack. Combined with peephole: fib 6% faster, fact 6% faster. 33 tests all pass. Learned: recursive calls make register save/restore overhead significant."
+      },
+      {
+        "id": "T96",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Next depth on RISC-V backend: Run compiled code through the pipeline simulator (5-stage, branch predictor, caches). This would benchmark the compiled code realistically. Also: string support (data section), or connecting to the existing playground.",
+        "started": "2026-04-15T20:56:01.423Z",
+        "completed": "2026-04-15T20:56:56.755Z",
+        "duration_ms": 60000,
+        "summary": "Direction: Run compiled monkey code through 5-stage pipeline + Tomasulo OOO. Get IPC, hazard stats, pipeline diagram. Connects codegen → pipeline → performance analysis."
+      },
+      {
+        "id": "T97",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Pipeline integration: compile monkey-lang programs, run through PipelineCPU and TomasuloCPU. Compare IPC, stall cycles, forwarding stats. Show how register allocation affects pipeline efficiency. Tests + benchmark report.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T20:57:24.106Z",
+        "completed": "2026-04-15T21:01:45.074Z",
+        "duration_ms": 600000,
+        "summary": "Pipeline integration: run compiled monkey through 5-stage PipelineCPU. Register mode IPC=0.97 vs stack IPC=0.90. Register mode eliminates load-use stalls. Recursive programs hit memory bounds in pipeline sim. 8 tests."
+      },
+      {
+        "id": "T98",
+        "mode": "THINK",
+        "status": "done",
+        "task": "10+ BUILDs cumulative today. Depth check: learned stack frame layout, IC hit rates, pipeline IPC, register allocation tradeoffs. What's genuinely new territory? Consider: branch predictor optimization for compiled code, or switch to stress-testing existing infrastructure.",
+        "started": "2026-04-15T21:02:13.952Z",
+        "completed": "2026-04-15T21:02:31.317Z",
+        "duration_ms": 60000,
+        "summary": "Depth check 3/3 YES. Direction: stress-test the RISC-V codegen. Compile increasingly complex/adversarial monkey programs. Find bugs in edge cases: deeply nested expressions, many variables (spill test), large loops, etc."
+      },
+      {
+        "id": "T99",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Stress-test RISC-V codegen: edge cases (deeply nested exprs, 20+ variables forcing register spill, mutual recursion, large while loops, negative numbers, overflow, if-chains with 10+ branches). Fix any bugs found.",
+        "project": "monkey-lang",
+        "started": "2026-04-15T21:02:49.310Z",
+        "completed": "2026-04-15T21:07:30.994Z",
+        "duration_ms": 600000,
+        "summary": "Stress testing found 1 bug: large integer encoding (lui vs li). Fixed and added 84 stress tests covering edge cases (spill, deep nesting, negatives, large numbers, Ackermann). 202 total RISC-V pipeline tests all pass."
+      },
+      {
+        "id": "T100",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What is the hardest unsolved problem in monkey-lang? RISC-V backend is solid. Consider: array/string support in RISC-V codegen (requires heap allocator in assembly), or type inference integration with existing type-inference project, or improving the JIT with IC knowledge.",
+        "started": "2026-04-15T21:13:09.216Z",
+        "completed": "2026-04-15T21:13:24.380Z",
+        "duration_ms": 60000,
+        "summary": "Direction: heap allocator in RISC-V assembly. Required for array/string support in compiled code. Implement bump allocator with arena, then compile monkey-lang arrays to use heap allocation. Genuinely hard systems work."
+      },
+      {
+        "id": "T101",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Heap allocator for RISC-V compiled monkey-lang: (1) bump allocator in assembly (heap region in high memory, allocation pointer, bump on alloc), (2) array representation (header: length + capacity, followed by element words), (3) compile array literals and array indexing",
+        "task": null,
+        "started": "2026-04-15T21:13:41.946Z"
+      },
+      {
+        "id": "T102",
+        "mode": "BUILD",
+        "task": "Implement bump allocator for RISC-V: initialize heap pointer (gp register), _alloc subroutine (takes size in a0, returns pointer in a0), integrate with codegen prologue. Test: allocate and write to heap memory.",
         "status": "upcoming",
-        "plan_ref": "T93"
+        "plan_ref": "T101"
+      },
+      {
+        "id": "T103",
+        "mode": "BUILD",
+        "task": "Compile array literals and indexing: ArrayLiteral → allocate header+elements on heap, store length+values. IndexExpression on arrays → compute offset, load element. Support len() builtin. 15+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T101"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 97,
-    "blocksTotal": 95,
+    "blocksCompleted": 100,
+    "blocksTotal": 103,
     "modeDistribution": {
-      "THINK": 13,
-      "PLAN": 13,
-      "BUILD": 59,
+      "THINK": 14,
+      "PLAN": 14,
+      "BUILD": 60,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
