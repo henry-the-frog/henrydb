@@ -322,6 +322,8 @@ export class RiscVCodeGen {
         return this._compileArrayLiteral(expr);
       case 'StringLiteral':
         return this._compileStringLiteral(expr);
+      case 'HashLiteral':
+        return this._compileHashLiteral(expr);
       case 'IndexExpression':
         return this._compileIndexExpression(expr.left, expr.index);
       case 'ForInExpression':
@@ -450,6 +452,7 @@ export class RiscVCodeGen {
     if (name === 'IntegerLiteral') return 'int';
     if (name === 'BooleanLiteral') return 'int';
     if (name === 'ArrayLiteral') return 'array';
+    if (name === 'HashLiteral') return 'hash';
     if (name === 'Identifier') return this.varTypes.get(expr.value) || 'unknown';
     if (name === 'InfixExpression' && expr.operator === '+') {
       const lt = this._inferExprType(expr.left);
@@ -632,6 +635,50 @@ export class RiscVCodeGen {
     this._lastExprType = 'string';
   }
 
+  _compileHashLiteral(expr) {
+    this._comment('hash literal');
+    const pairs = [...expr.pairs]; // Convert Map to array of [key, value]
+    const numPairs = pairs.length;
+    // Hash layout: [num_pairs (4)][key0 (4)][val0 (4)][key1 (4)][val1 (4)]...
+    const totalSize = 4 + numPairs * 8;
+    
+    // Evaluate all keys and values, push to stack
+    for (let i = 0; i < numPairs; i++) {
+      const [key, value] = pairs[i];
+      this._compileExpression(key);
+      this._emit('  addi sp, sp, -4');
+      this._emit('  sw a0, 0(sp)');
+      this._compileExpression(value);
+      this._emit('  addi sp, sp, -4');
+      this._emit('  sw a0, 0(sp)');
+    }
+    
+    // Allocate on heap
+    this._emit('  mv t1, gp');
+    this._emit(`  addi gp, gp, ${totalSize}`);
+    
+    // Store num_pairs
+    this._emit(`  li t2, ${numPairs}`);
+    this._emit('  sw t2, 0(t1)');
+    
+    // Pop pairs from stack (in reverse order) and store
+    for (let i = numPairs - 1; i >= 0; i--) {
+      // Pop value
+      this._emit('  lw t2, 0(sp)');
+      this._emit('  addi sp, sp, 4');
+      this._emit(`  sw t2, ${4 + i * 8 + 4}(t1)`); // value slot
+      
+      // Pop key
+      this._emit('  lw t2, 0(sp)');
+      this._emit('  addi sp, sp, 4');
+      this._emit(`  sw t2, ${4 + i * 8}(t1)`); // key slot
+    }
+    
+    // Result: hash pointer in a0
+    this._emit('  mv a0, t1');
+    this._lastExprType = 'hash';
+  }
+
   /** Compile string equality/inequality comparison */
   _compileStringCompare(left, right, op) {
     this._comment(`string ${op}`);
@@ -683,7 +730,15 @@ export class RiscVCodeGen {
   }
 
   _compileIndexExpression(left, index) {
-    // Compile left (array pointer), push to stack
+    // Check if left is a hash
+    const leftType = this._inferExprType(left);
+    
+    if (leftType === 'hash') {
+      return this._compileHashAccess(left, index);
+    }
+    
+    // Array/string indexing
+    // Compile left (array/string pointer), push to stack
     this._compileExpression(left);
     this._emit('  addi sp, sp, -4');
     this._emit('  sw a0, 0(sp)');
@@ -699,6 +754,65 @@ export class RiscVCodeGen {
     this._emit('  slli a0, a0, 2');        // index * 4
     this._emit('  add a0, t0, a0');        // base + index * 4
     this._emit('  lw a0, 4(a0)');          // load [base + 4 + index * 4]
+    this._lastExprType = 'int'; // element type
+  }
+
+  _compileHashAccess(hashExpr, keyExpr) {
+    this._comment('hash access');
+    
+    // Compile hash pointer
+    this._compileExpression(hashExpr);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');
+    
+    // Compile key
+    const keyType = this._inferExprType(keyExpr);
+    this._compileExpression(keyExpr);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');
+    
+    // Pop key and hash pointer
+    this._emit('  lw t0, 0(sp)');       // t0 = key
+    this._emit('  lw t1, 4(sp)');       // t1 = hash pointer
+    this._emit('  addi sp, sp, 8');
+    
+    // Linear scan: iterate through pairs
+    this._emit('  lw t2, 0(t1)');       // t2 = num_pairs
+    this._emit('  li t3, 0');           // t3 = i
+    
+    const scanLoop = this._label('hash_scan');
+    const found = this._label('hash_found');
+    const notFound = this._label('hash_notfound');
+    
+    this._emitLabel(scanLoop);
+    this._emit(`  bge t3, t2, ${notFound}`);
+    
+    // Load key at index i
+    this._emit('  slli t4, t3, 3');     // i * 8
+    this._emit('  add t4, t1, t4');     // hash + i * 8
+    this._emit('  lw t5, 4(t4)');       // key[i]
+    
+    // Compare: for integer keys, use integer ==
+    // For now, assume integer keys (most common)
+    this._emit(`  beq t0, t5, ${found}`);
+    
+    this._emit('  addi t3, t3, 1');
+    this._emit(`  j ${scanLoop}`);
+    
+    // Found: load value
+    this._emitLabel(found);
+    this._emit('  slli t4, t3, 3');
+    this._emit('  add t4, t1, t4');
+    this._emit('  lw a0, 8(t4)');       // value[i]
+    const endLabel = this._label('hash_end');
+    this._emit(`  j ${endLabel}`);
+    
+    // Not found: return 0 (null)
+    this._emitLabel(notFound);
+    this._emit('  li a0, 0');
+    
+    this._emitLabel(endLabel);
+    this._lastExprType = 'unknown';
   }
 
   _compileForIn(expr) {

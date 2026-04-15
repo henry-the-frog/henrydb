@@ -1256,10 +1256,21 @@
     {
       "id": "T117",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V codegen: implement string equality comparison (== on strings). Currently only integer == works. Compare char-by-char using type inference. Also implement string indexing (accessing individual characters). 10+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T22:06:13.349Z"
+      "started": "2026-04-15T22:06:13.349Z",
+      "completed": "2026-04-15T22:08:44.675Z",
+      "duration_ms": 300000,
+      "summary": "String equality (== !=) with char-by-char comparison + string indexing. Fast length check. Works with concat. 16 new tests, 379 total."
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V codegen: hash literal support. Store hashes on heap as linear key-value pairs. Hash access via linear scan (type-aware equality). Support: hash literals, hash[key] access, keys() builtin. 15+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:09:13.998Z"
     }
   ],
   "focusProjects": [
@@ -1703,6 +1714,10 @@
     {
       "time": "2026-04-15T22:06:07.473Z",
       "msg": "Added T117 (BUILD) after end: RISC-V codegen: implement string equality comparison (== on strings). Currently only integer == works. Compare char-by-char using type inference. Also implement string indexing (accessing individual characters). 10+ tests."
+    },
+    {
+      "time": "2026-04-15T22:09:02.874Z",
+      "msg": "Added T118 (BUILD) after end: RISC-V codegen: hash literal support. Store hashes on heap as linear key-value pairs. Hash access via linear scan (type-aware equality). Support: hash literals, hash[key] access, keys() builtin. 15+ tests."
     }
   ]
 }

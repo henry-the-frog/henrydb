@@ -81,6 +81,7 @@ function exprType(expr, varTypes) {
     case 'BooleanLiteral': return 'int'; // booleans are ints in our codegen
     case 'StringLiteral': return 'string';
     case 'ArrayLiteral': return 'array';
+    case 'HashLiteral': return 'hash';
     case 'Identifier':
       return varTypes.get(expr.value) || 'unknown';
     case 'PrefixExpression':
