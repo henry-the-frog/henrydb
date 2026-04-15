@@ -31,3 +31,5 @@
 ### Systems
 - **riscv-architecture.md** — RISC-V instruction encoding, pipeline hazards, branch prediction, Sv32, Tomasulo. (uses: 1, created: 2026-04-07)
 - **cpython-trace-fitness.md** — Mark Shannon's trace quality model for CPython JIT. (uses: 1, created: 2026-04-07)
+### Monkey-lang WASM
+- **wasm-strip-imports-bug.md** — Never scan raw bytecode by value matching; track instruction positions at emit time. (uses: 1, created: 2026-04-15)
