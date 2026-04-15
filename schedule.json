@@ -672,6 +672,39 @@
       "completed": "2026-04-15T18:30:39.064Z",
       "duration_ms": 60000,
       "summary": "All repos pushed, dashboard regenerating."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add string interpolation support — let x = f\"hello {name}\"",
+      "project": "monkey-lang",
+      "started": "2026-04-15T18:31:10.053Z",
+      "completed": "2026-04-15T18:31:53.612Z",
+      "duration_ms": 0,
+      "summary": "Template strings already exist. Skipping."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: fix or remove flaky WASM perf test",
+      "project": "monkey-lang",
+      "started": "2026-04-15T18:32:09.749Z",
+      "completed": "2026-04-15T18:32:47.173Z",
+      "duration_ms": 60000,
+      "summary": "WASM perf tests currently stable (pass 3/3 runs). Thresholds generous (100ms). No fix needed."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add toString method support for instances in str() and puts()",
+      "project": "monkey-lang",
+      "started": "2026-04-15T18:35:30.445Z",
+      "completed": "2026-04-15T18:37:22.099Z",
+      "duration_ms": 300000,
+      "summary": "toString method support: str(instance) and puts(instance) call toString() if present. No regressions."
     }
   ],
   "focusProjects": [
@@ -915,6 +948,18 @@
     {
       "time": "2026-04-15T18:28:20.062Z",
       "msg": "Added T62 (MAINTAIN) after T61: Git push repos and update dashboard"
+    },
+    {
+      "time": "2026-04-15T18:30:59.674Z",
+      "msg": "Added T63 (BUILD) after end: monkey-lang: add string interpolation support — let x = f\"hello {name}\""
+    },
+    {
+      "time": "2026-04-15T18:32:02.989Z",
+      "msg": "Added T64 (BUILD) after end: monkey-lang: fix or remove flaky WASM perf test"
+    },
+    {
+      "time": "2026-04-15T18:35:22.443Z",
+      "msg": "Added T65 (BUILD) after end: monkey-lang: add toString method support for instances in str() and puts()"
     }
   ]
 }
