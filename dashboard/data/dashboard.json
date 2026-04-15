@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T16:59:29.085Z",
+  "generated": "2026-04-15T17:01:57.308Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fix HenryDB NULL GROUP BY issue + continue stress testing",
-    "completedAt": "2026-04-15T16:59:29.085Z",
-    "taskId": "T34",
-    "summary": "NULL GROUP BY was test error (double quotes vs single quotes). Continued stress testing: multi-window queries, correlated updates, expression GROUP BY all pass. Found ARRAY_AGG ORDER BY ignored (minor). No more critical bugs in this round.",
-    "durationMs": 600000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T17:01:57.308Z",
+    "taskId": "T35",
+    "summary": "PLAN: 3 BUILD tasks for generators — AST+parser, evaluator with suspension, for-in integration. for-in already works with arrays/strings.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -285,46 +285,151 @@
       {
         "id": "T26",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth work: fix bugs or add high-value features",
         "task": null,
-        "started": "2026-04-15T16:26:32.785Z"
+        "started": "2026-04-15T16:26:32.785Z",
+        "completed": "2026-04-15T16:27:37.658Z",
+        "duration_ms": 300000,
+        "summary": "PLAN: found 2 window function bugs — RANGE BETWEEN ignores offsets (returns full sum), LAST_VALUE with explicit frame broken. 2 BUILD tasks."
       },
       {
         "id": "T29",
         "mode": "BUILD",
         "task": "Fix RANGE BETWEEN window frame boundaries (ignoring range offsets, returns full partition sum)",
-        "status": "upcoming",
-        "plan_ref": "T26"
+        "status": "done",
+        "plan_ref": "T26",
+        "started": "2026-04-15T16:27:55.273Z",
+        "completed": "2026-04-15T16:31:22.860Z",
+        "duration_ms": 900000,
+        "summary": "Fixed RANGE BETWEEN window frames — value-based bounds instead of row position. 6 regression tests. All existing window tests pass."
       },
       {
         "id": "T30",
         "mode": "BUILD",
         "task": "Fix LAST_VALUE with explicit frame (returns current row value instead of frame last)",
-        "status": "upcoming",
-        "plan_ref": "T26"
+        "status": "done",
+        "plan_ref": "T26",
+        "started": "2026-04-15T16:31:42.073Z",
+        "completed": "2026-04-15T16:33:17.793Z",
+        "duration_ms": 600000,
+        "summary": "Fixed FIRST_VALUE/LAST_VALUE frame spec handling. Both now use getFrameBounds(). Also fixed FIRST_VALUE (was ignoring frames). 5 regression tests."
       },
       {
         "id": "T27",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-15T16:33:45.766Z",
+        "completed": "2026-04-15T16:33:45.908Z",
+        "duration_ms": 0,
+        "summary": "Skipped — HenryDB fixes done in T29/T30."
       },
       {
         "id": "T28",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, knowledge capture",
+        "started": "2026-04-15T16:34:05.992Z",
+        "completed": "2026-04-15T16:35:03.488Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, dashboard regenerated (30 blocks, 29 done). Knowledge captured for 3 HenryDB bugs."
+      },
+      {
+        "id": "T31",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Continue HenryDB stress testing: CTE edge cases, correlated subqueries, complex DML",
+        "started": "2026-04-15T16:35:43.424Z",
+        "completed": "2026-04-15T16:42:47.557Z",
+        "duration_ms": 600000,
+        "summary": "Stress testing found UNION ORDER BY+LIMIT bug — parser consumed them for right SELECT. Fixed parser + evaluator. 6 tests."
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix HenryDB bugs found via stress testing",
+        "project": "henrydb",
+        "started": "2026-04-15T16:42:56.512Z",
+        "completed": "2026-04-15T16:42:56.653Z",
+        "duration_ms": 0,
+        "summary": "Covered by T31 — UNION ORDER BY+LIMIT fix done there."
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Continue HenryDB stress testing — find+fix more edge cases",
+        "project": "henrydb",
+        "started": "2026-04-15T16:43:31.549Z",
+        "completed": "2026-04-15T16:55:43.696Z",
+        "duration_ms": 1200000,
+        "summary": "Fixed boolean expressions in SELECT list (IS NULL, comparisons, LIKE, IN). Parser+evaluator fix. 6 regression tests. Also found NULL GROUP BY and nested aggregate issues (lower priority)."
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix HenryDB NULL GROUP BY issue + continue stress testing",
+        "project": "henrydb",
+        "started": "2026-04-15T16:56:19.570Z",
+        "completed": "2026-04-15T16:59:29.049Z",
+        "duration_ms": 600000,
+        "summary": "NULL GROUP BY was test error (double quotes vs single quotes). Continued stress testing: multi-window queries, correlated updates, expression GROUP BY all pass. Found ARRAY_AGG ORDER BY ignored (minor). No more critical bugs in this round."
+      },
+      {
+        "id": "T35",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement iterators/generators in monkey-lang (yield, for-in loops)",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:00:26.057Z"
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "task": "Add generator AST nodes (gen keyword, yield expression) and parser support",
         "status": "upcoming",
-        "task": "Housekeeping: git push, knowledge capture"
+        "plan_ref": "T35"
+      },
+      {
+        "id": "T39",
+        "mode": "BUILD",
+        "task": "Implement MonkeyGenerator object with suspension/resumption in evaluator",
+        "status": "upcoming",
+        "plan_ref": "T35"
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "task": "Integrate generators with for-in loops + write comprehensive tests",
+        "status": "upcoming",
+        "plan_ref": "T35"
+      },
+      {
+        "id": "T36",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T37",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Midday git push + dashboard"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 34,
-    "blocksTotal": 30,
+    "blocksCompleted": 35,
+    "blocksTotal": 40,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 6,
+      "PLAN": 7,
       "BUILD": 15,
       "MAINTAIN": 5,
       "EXPLORE": 2
