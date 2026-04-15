@@ -2957,6 +2957,10 @@ export class Database {
         }
       }
       
+      // Apply pushed-down filter predicates (e.g., WHERE sub.col > X pushed to join.filter)
+      if (join.filter) {
+        return result.filter(row => this._evalExpr(join.filter, row));
+      }
       return result;
     }
 
