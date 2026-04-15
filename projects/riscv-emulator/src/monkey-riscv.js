@@ -85,9 +85,15 @@ for (let i = 0; i < args.length; i++) {
 }
 
 if (!source) {
-  console.log('Usage: node monkey-riscv.js [--dump|--disasm|--run|--opt] [-e expr | file.monkey]');
-  process.exit(0);
-}
+  // Check if REPL mode
+  if (args.includes('--repl') || args.includes('-i')) {
+    startREPL(optimize);
+  } else {
+    console.log('Usage: node monkey-riscv.js [--dump|--disasm|--run|--opt|--repl] [-e expr | file.monkey]');
+    console.log('  --repl / -i  Interactive REPL mode');
+    process.exit(0);
+  }
+} else {
 
 const { asm, words, labels, typeInfo, closureInfo, peepholeStats } = compilePipeline(source, { 
   useRegisters: optimize, 
@@ -130,4 +136,119 @@ switch (mode) {
     
     console.error(`[${cpu.cycles} cycles, ${elapsed.toFixed(1)}ms, ${words.length} instructions]`);
     break;
+}
+}
+
+// --- REPL Mode ---
+
+async function startREPL(optimize) {
+  const readline = await import('readline');
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: 'monkey-rv> ',
+  });
+
+  console.log('🐒 Monkey → RISC-V REPL');
+  console.log('Type monkey-lang code and press Enter to compile and run.');
+  console.log('Use { } for multi-line input. Type .dump to show assembly. Type .quit to exit.\n');
+
+  let buffer = '';
+  let braceCount = 0;
+  let showAsm = false;
+  // Accumulated definitions for persistent context
+  let definitions = '';
+
+  rl.prompt();
+
+  rl.on('line', (line) => {
+    const trimmed = line.trim();
+
+    // Commands
+    if (trimmed === '.quit' || trimmed === '.exit') {
+      console.log('Goodbye! 🦀');
+      rl.close();
+      process.exit(0);
+    }
+    if (trimmed === '.dump') {
+      showAsm = !showAsm;
+      console.log(`Assembly display: ${showAsm ? 'ON' : 'OFF'}`);
+      rl.prompt();
+      return;
+    }
+    if (trimmed === '.clear') {
+      definitions = '';
+      console.log('Context cleared.');
+      rl.prompt();
+      return;
+    }
+    if (trimmed === '.help') {
+      console.log('Commands:');
+      console.log('  .dump    Toggle assembly display');
+      console.log('  .clear   Clear accumulated definitions');
+      console.log('  .quit    Exit REPL');
+      rl.prompt();
+      return;
+    }
+
+    // Multi-line support
+    buffer += line + '\n';
+    braceCount += (line.match(/{/g) || []).length;
+    braceCount -= (line.match(/}/g) || []).length;
+
+    if (braceCount > 0) {
+      // Waiting for closing braces
+      process.stdout.write('...       ');
+      return;
+    }
+
+    // Complete expression — compile and run
+    const code = buffer.trim();
+    buffer = '';
+    braceCount = 0;
+
+    if (!code) {
+      rl.prompt();
+      return;
+    }
+
+    try {
+      // Prepend accumulated definitions
+      const fullCode = definitions + code;
+      
+      const result = compilePipeline(fullCode, { useRegisters: optimize, optimize });
+
+      if (showAsm) {
+        console.log('\x1b[90m--- Assembly ---\x1b[0m');
+        console.log('\x1b[90m' + result.asm + '\x1b[0m');
+      }
+
+      // Run
+      const cpu = new CPU();
+      cpu.loadProgram(result.words);
+      cpu.regs.set(2, 0x100000 - 4);
+      const start = performance.now();
+      cpu.run(10000000);
+      const elapsed = performance.now() - start;
+
+      if (cpu.output.length > 0) {
+        console.log('\x1b[32m' + cpu.output.join('') + '\x1b[0m');
+      }
+
+      console.log(`\x1b[90m[${cpu.cycles} cycles, ${elapsed.toFixed(1)}ms, ${result.words.length} instrs]\x1b[0m`);
+
+      // If the code defines functions or variables, accumulate it
+      if (code.includes('let ')) {
+        definitions += code + '\n';
+      }
+    } catch (e) {
+      console.log(`\x1b[31mError: ${e.message}\x1b[0m`);
+    }
+
+    rl.prompt();
+  });
+
+  rl.on('close', () => {
+    process.exit(0);
+  });
 }
