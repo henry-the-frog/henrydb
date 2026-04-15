@@ -124,9 +124,73 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping + push",
-      "started": "2026-04-15T00:39:09.396Z"
+      "started": "2026-04-15T00:39:09.396Z",
+      "completed": "2026-04-15T00:39:47.404Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed all repos. Workspace synced."
+    },
+    {
+      "id": "T13",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 5 BUILD tasks done. Any surprises?",
+      "started": "2026-04-15T00:40:08.993Z",
+      "completed": "2026-04-15T00:40:22.655Z",
+      "duration_ms": 30000,
+      "summary": "Depth check PASS: 4 bugs found, genuine surprises (composite PK parser, persistence data loss). Not in breadth spiral. Continue."
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write composite PK comprehensive tests (multi-column PKs with SERIAL, FKs, JOINs)",
+      "project": "henrydb",
+      "started": "2026-04-15T00:40:37.618Z",
+      "completed": "2026-04-15T00:43:33.089Z",
+      "duration_ms": 480000,
+      "summary": "Composite PK: full support with uniqueness enforcement. Found+fixed query correctness bug (individual indexes on composite PK columns returned wrong results). 8 tests."
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: run full test suite sweep — find regressions from parser changes",
+      "project": "henrydb",
+      "started": "2026-04-15T00:43:47.349Z",
+      "completed": "2026-04-15T00:50:13.224Z",
+      "duration_ms": 480000,
+      "summary": "Full test sweep: 781 tests across joins, e2e, SQL, selects, subqueries, windows, CTEs, aggregates, indexes. 0 regressions from parser changes. 5 pre-existing failures (2 missing pg package, 3 window ROW_NUMBER bug)."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: port break/continue to VM compiler (currently evaluator-only)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T00:50:29.348Z",
+      "completed": "2026-04-15T00:53:18.698Z",
+      "duration_ms": 240000,
+      "summary": "Break/continue already implemented in VM compiler (loopStack with breakJumps and continueTarget). Verified with parity tests: both produce correct results. Root uses set-syntax not for-in."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: FILTER clause for aggregates (COUNT(*) FILTER (WHERE x > 5))",
+      "project": "henrydb",
+      "started": "2026-04-15T00:53:33.377Z",
+      "completed": "2026-04-15T00:57:01.452Z",
+      "duration_ms": 600000,
+      "summary": "FILTER clause for aggregates: parser + executor for both standalone and GROUP BY paths. 7 tests (COUNT, SUM, AVG, MIN, MAX with FILTER, GROUP BY, edge cases)."
+    },
+    {
+      "id": "T18",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-15T00:57:17.438Z"
     }
   ],
   "focusProjects": [
@@ -178,6 +242,30 @@
     {
       "time": "2026-04-15T00:29:42.715Z",
       "msg": "PLAN T6 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T00:39:58.231Z",
+      "msg": "Added T13 (THINK) after end: Depth check: 5 BUILD tasks done. Any surprises?"
+    },
+    {
+      "time": "2026-04-15T00:39:58.349Z",
+      "msg": "Added T14 (BUILD) after end: HenryDB: write composite PK comprehensive tests (multi-column PKs with SERIAL, FKs, JOINs)"
+    },
+    {
+      "time": "2026-04-15T00:39:58.467Z",
+      "msg": "Added T15 (BUILD) after end: HenryDB: run full test suite sweep — find regressions from parser changes"
+    },
+    {
+      "time": "2026-04-15T00:39:58.586Z",
+      "msg": "Added T16 (BUILD) after end: Monkey: port break/continue to VM compiler (currently evaluator-only)"
+    },
+    {
+      "time": "2026-04-15T00:39:58.704Z",
+      "msg": "Added T17 (BUILD) after end: HenryDB: FILTER clause for aggregates (COUNT(*) FILTER (WHERE x > 5))"
+    },
+    {
+      "time": "2026-04-15T00:39:58.821Z",
+      "msg": "Added T18 (MAINTAIN) after end: Housekeeping"
     }
   ]
 }
