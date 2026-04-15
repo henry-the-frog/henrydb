@@ -188,9 +188,52 @@
     {
       "id": "T18",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-15T00:57:17.438Z"
+      "started": "2026-04-15T00:57:17.438Z",
+      "completed": "2026-04-15T00:57:42.811Z",
+      "duration_ms": 60000,
+      "summary": "Housekeeping: daily log updated, git pushed all repos."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: fix pre-existing window function ROW_NUMBER() bug",
+      "project": "henrydb",
+      "started": "2026-04-15T00:58:17.049Z",
+      "completed": "2026-04-15T01:00:44.230Z",
+      "duration_ms": 360000,
+      "summary": "Fixed window function output ordering: rows now sorted by window ORDER BY (matching PostgreSQL). Fixed 3 pre-existing test failures (ROW_NUMBER, window+WHERE). 116/117 pass (1 is pg pkg)."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LATERAL JOIN support (FROM t1, LATERAL (SELECT ... WHERE t1.col = ...))",
+      "project": "henrydb",
+      "started": "2026-04-15T01:01:02.995Z",
+      "completed": "2026-04-15T01:01:39.458Z",
+      "duration_ms": 120000,
+      "summary": "LATERAL JOIN already fully implemented: parser (LATERAL keyword, CROSS APPLY, OUTER APPLY) + executor (correlated subquery with _outerRow). Verified with top-N per group pattern."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: port ternary operator to root parser+compiler",
+      "project": "monkey-lang",
+      "started": "2026-04-15T01:01:50.717Z",
+      "completed": "2026-04-15T01:05:15.247Z",
+      "duration_ms": 240000,
+      "summary": "Ternary expression compilation: condition ? consequence : alternative using JumpNotTruthy+Jump pattern. AST, parser, evaluator already existed — only compiler was missing. 5/5 parity tests, 608/608 full suite."
+    },
+    {
+      "id": "T22",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session housekeeping",
+      "started": "2026-04-15T01:05:35.467Z"
     }
   ],
   "focusProjects": [
@@ -266,6 +309,22 @@
     {
       "time": "2026-04-15T00:39:58.821Z",
       "msg": "Added T18 (MAINTAIN) after end: Housekeeping"
+    },
+    {
+      "time": "2026-04-15T00:58:07.562Z",
+      "msg": "Added T19 (BUILD) after end: HenryDB: fix pre-existing window function ROW_NUMBER() bug"
+    },
+    {
+      "time": "2026-04-15T00:58:07.680Z",
+      "msg": "Added T20 (BUILD) after end: HenryDB: LATERAL JOIN support (FROM t1, LATERAL (SELECT ... WHERE t1.col = ...))"
+    },
+    {
+      "time": "2026-04-15T00:58:07.798Z",
+      "msg": "Added T21 (BUILD) after end: Monkey: port ternary operator to root parser+compiler"
+    },
+    {
+      "time": "2026-04-15T00:58:07.915Z",
+      "msg": "Added T22 (MAINTAIN) after end: Final session housekeeping"
     }
   ]
 }
