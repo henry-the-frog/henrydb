@@ -5657,6 +5657,28 @@ export class Database {
       }
     }
 
+    // Sort output by the first window function's ORDER BY
+    // This matches PostgreSQL behavior: window ORDER BY implies output order
+    // when no explicit SELECT-level ORDER BY is present
+    if (windowCols.length > 0) {
+      let firstOver = windowCols[0].over;
+      if (firstOver && firstOver.windowRef && windowDefs && windowDefs[firstOver.windowRef]) {
+        firstOver = windowDefs[firstOver.windowRef];
+      }
+      const firstOrderBy = firstOver?.orderBy;
+      if (firstOrderBy && firstOrderBy.length > 0) {
+        rows.sort((a, b) => {
+          for (const { column, direction } of firstOrderBy) {
+            const av = typeof column === 'string' ? this._resolveColumn(column, a) : this._evalValue(column, a);
+            const bv = typeof column === 'string' ? this._resolveColumn(column, b) : this._evalValue(column, b);
+            const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+            if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
+          }
+          return 0;
+        });
+      }
+    }
+
     return rows;
   }
 
