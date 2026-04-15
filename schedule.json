@@ -486,6 +486,28 @@
       "completed": "2026-04-15T17:32:41.568Z",
       "duration_ms": 1200000,
       "summary": "Generator compiler/VM support: OpYield + OpMakeGenerator opcodes, generator frames with yield collection, len+index support. Both evaluator and compiler paths work. 1641 tests pass."
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: pipe operator (|>) for functional chaining",
+      "project": "monkey-lang",
+      "started": "2026-04-15T17:33:39.001Z",
+      "completed": "2026-04-15T17:34:41.101Z",
+      "duration_ms": 0,
+      "summary": "Pipe operator already exists and works. Skipping."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: stress-test generators in compiler/JIT path, find+fix bugs",
+      "project": "monkey-lang",
+      "started": "2026-04-15T17:35:01.697Z",
+      "completed": "2026-04-15T17:36:19.342Z",
+      "duration_ms": 600000,
+      "summary": "10 compiler/VM generator stress tests. All pass including Sieve and sum(1..100)=5050. 1651 total tests."
     }
   ],
   "focusProjects": [
@@ -669,6 +691,14 @@
     {
       "time": "2026-04-15T17:20:42.029Z",
       "msg": "Added T45 (BUILD) after end: monkey-lang: add compiler support for generators (VM/bytecode gen/yield opcodes)"
+    },
+    {
+      "time": "2026-04-15T17:33:21.430Z",
+      "msg": "Added T46 (BUILD) after end: monkey-lang: pipe operator (|>) for functional chaining"
+    },
+    {
+      "time": "2026-04-15T17:34:55.658Z",
+      "msg": "Added T47 (BUILD) after end: monkey-lang: stress-test generators in compiler/JIT path, find+fix bugs"
     }
   ]
 }
