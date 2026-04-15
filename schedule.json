@@ -343,6 +343,17 @@
       "completed": "2026-04-15T16:42:56.653Z",
       "duration_ms": 0,
       "summary": "Covered by T31 — UNION ORDER BY+LIMIT fix done there."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Continue HenryDB stress testing — find+fix more edge cases",
+      "project": "henrydb",
+      "started": "2026-04-15T16:43:31.549Z",
+      "completed": "2026-04-15T16:55:43.696Z",
+      "duration_ms": 1200000,
+      "summary": "Fixed boolean expressions in SELECT list (IS NULL, comparisons, LIKE, IN). Parser+evaluator fix. 6 regression tests. Also found NULL GROUP BY and nested aggregate issues (lower priority)."
     }
   ],
   "focusProjects": [
@@ -482,6 +493,10 @@
     {
       "time": "2026-04-15T16:35:29.531Z",
       "msg": "Added T32 (BUILD) after T31: Fix HenryDB bugs found via stress testing"
+    },
+    {
+      "time": "2026-04-15T16:43:23.594Z",
+      "msg": "Added T33 (BUILD) after end: Continue HenryDB stress testing — find+fix more edge cases"
     }
   ]
 }

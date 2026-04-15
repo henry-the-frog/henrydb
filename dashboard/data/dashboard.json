@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T16:42:56.689Z",
+  "generated": "2026-04-15T16:55:43.733Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix HenryDB bugs found via stress testing",
-    "completedAt": "2026-04-15T16:42:56.689Z",
-    "taskId": "T32",
-    "summary": "Covered by T31 — UNION ORDER BY+LIMIT fix done there.",
-    "durationMs": 0
+    "task": "Continue HenryDB stress testing — find+fix more edge cases",
+    "completedAt": "2026-04-15T16:55:43.733Z",
+    "taskId": "T33",
+    "summary": "Fixed boolean expressions in SELECT list (IS NULL, comparisons, LIKE, IN). Parser+evaluator fix. 6 regression tests. Also found NULL GROUP BY and nested aggregate issues (lower priority).",
+    "durationMs": 1200000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -320,12 +320,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 32,
+    "blocksCompleted": 33,
     "blocksTotal": 30,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 6,
-      "BUILD": 13,
+      "BUILD": 14,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
