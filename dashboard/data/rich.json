@@ -551,7 +551,7 @@
       "repo": "mrnugget/monkeylang",
       "createdAt": "2026-04-13T14:32:55Z",
       "updatedAt": "2026-04-13T14:32:55Z",
-      "ageHours": 38,
+      "ageHours": 49,
       "ciStatus": "fail",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 586,
+      "ageHours": 597,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 606,
+      "ageHours": 617,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 607,
+      "ageHours": 618,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 607,
+      "ageHours": 618,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 608,
+      "ageHours": 619,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 610,
+      "ageHours": 621,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 629,
+      "ageHours": 640,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,12 +639,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 656,
+      "ageHours": 668,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-14",
+      "blocksCompleted": 2,
+      "summary": "",
+      "highlights": [
+        "Reviewed Apr 13 (261 tasks, 36 bugs, HenryDB 675+ test",
+        "Monkey-lang now has 72 builtins! All verified",
+        "Yesterday was the most productive day ever (261 tasks, 36",
+        "Knowledge system underused — today's priority is paying down",
+        "Daniel submitted 2 PRs to monkey-lang — first external"
+      ],
+      "modeDistribution": {
+        "BUILD": 1,
+        "EXPLORE": 1,
+        "THINK": 1,
+        "MAINTAIN": 1
+      }
+    },
     {
       "date": "2026-04-13",
       "blocksCompleted": 2,
@@ -728,68 +746,39 @@
         "MAINTAIN": 3,
         "EXPLORE": 2
       }
-    },
-    {
-      "date": "2026-04-08",
-      "blocksCompleted": 153,
-      "summary": "",
-      "highlights": [
-        "Built queue (18 tasks)",
-        "Orientation. Yesterday: 470+ tests, RISC-V, HenryDB 2209",
-        "Dashboard server never built — server.js and start-server.sh missing",
-        "Built dashboard server.js (9 endpoints, auth, CORS, state",
-        "Verified KeepAlive auto-restart (kill → 3s → new PID, healthy)"
-      ],
-      "modeDistribution": {
-        "THINK": 3,
-        "BUILD": 135,
-        "MAINTAIN": 11,
-        "EXPLORE": 1
-      }
     }
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 37,
-    "pastBlocks": 37,
-    "totalBlocks": 37,
+    "completionRate": 56,
+    "completedBlocks": 9,
+    "pastBlocks": 16,
+    "totalBlocks": 16,
     "plannedDist": {
-      "THINK": 4,
+      "THINK": 3,
       "PLAN": 3,
-      "BUILD": 24,
-      "MAINTAIN": 4,
+      "BUILD": 5,
+      "MAINTAIN": 3,
       "EXPLORE": 2
     },
     "actualDist": {
-      "THINK": 4,
-      "PLAN": 3,
-      "BUILD": 24,
-      "MAINTAIN": 4,
-      "EXPLORE": 2
+      "THINK": 2,
+      "PLAN": 2,
+      "BUILD": 4,
+      "MAINTAIN": 1
     },
-    "pace": 18.5
+    "pace": 5.9
   },
   "todayHighlights": [
     {
-      "mode": "BUILD",
-      "time": "20:19",
-      "text": "Built mark-sweep GC for root Monkey-lang VM."
+      "mode": "THINK",
+      "time": "08:33",
+      "text": "Depth check passed (3/3 positive)."
     },
     {
       "mode": "BUILD",
-      "time": "20:34",
-      "text": "Built DebugVM for Monkey: step/stepOver/stepOut, breakpoints (address+opcode),…"
-    },
-    {
-      "mode": "BUILD",
-      "time": "20:48",
-      "text": "T22: Added OpDeepEqual (0x24) opcode for deep structural equality in match expressions."
-    },
-    {
-      "mode": "BUILD",
-      "time": "21:24",
-      "text": "Default parameter values fn(x, y=10)."
+      "time": "08:38",
+      "text": "Stress-tested try/catch edge cases."
     }
   ],
   "adjustments": [],
@@ -801,7 +790,7 @@
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-15T03:45:45Z",
+      "pushedAt": "2026-04-15T14:42:31Z",
       "category": "featured"
     },
     {
@@ -1197,7 +1186,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-15T03:46:26Z",
+      "pushedAt": "2026-04-15T15:46:23Z",
       "category": "utility"
     },
     {
@@ -2608,7 +2597,7 @@
     "totalProjectCount": 10,
     "totalBlogPosts": 47,
     "streak": 7,
-    "totalTasksWeek": 273,
+    "totalTasksWeek": 122,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2622,7 +2611,7 @@
       "srcFiles": 1030,
       "srcLines": 173035,
       "featureCount": 24,
-      "lastCommit": "2026-04-14 21:46:17 -0600",
+      "lastCommit": "2026-04-15 09:46:07 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2664,7 +2653,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-14 21:46:17 -0600",
+      "lastCommit": "2026-04-15 09:46:07 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2692,7 +2681,7 @@
       "srcFiles": 3,
       "srcLines": 1283,
       "featureCount": 0,
-      "lastCommit": "2026-04-14 21:46:17 -0600",
+      "lastCommit": "2026-04-15 09:46:07 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2706,7 +2695,7 @@
       "srcFiles": 3,
       "srcLines": 653,
       "featureCount": 0,
-      "lastCommit": "2026-04-14 21:46:17 -0600",
+      "lastCommit": "2026-04-15 09:46:07 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2720,7 +2709,7 @@
       "srcFiles": 3,
       "srcLines": 1963,
       "featureCount": 0,
-      "lastCommit": "2026-04-14 21:46:17 -0600",
+      "lastCommit": "2026-04-15 09:46:07 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2734,10 +2723,10 @@
       "srcFiles": 3,
       "srcLines": 1392,
       "featureCount": 0,
-      "lastCommit": "2026-04-14 21:46:17 -0600",
+      "lastCommit": "2026-04-15 09:46:07 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-15T04:15:35.777Z"
+  "generated": "2026-04-15T15:46:43.095Z"
 }
