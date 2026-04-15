@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-15T17:11:24.049Z",
+  "generated": "2026-04-15T17:13:09.573Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Implement MonkeyGenerator object with suspension/resumption in evaluator",
-    "completedAt": "2026-04-15T17:11:24.049Z",
-    "taskId": "T39",
-    "summary": "Generator evaluator: yield collector in env chain, eager execution. Fibonacci, range, conditional, nested generators all work. No regressions.",
+    "task": "Integrate generators with for-in loops + write comprehensive tests",
+    "completedAt": "2026-04-15T17:13:09.573Z",
+    "taskId": "T40",
+    "summary": "15 comprehensive generator tests: basic, fibonacci, range, conditional, nested, closures, strings, arrays, empty, early return, type, do-while. All pass. 1631 total tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -425,12 +425,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 37,
+    "blocksCompleted": 38,
     "blocksTotal": 40,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 7,
-      "BUILD": 17,
+      "BUILD": 18,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
