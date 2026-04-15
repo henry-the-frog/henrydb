@@ -5,27 +5,67 @@
       "id": "T1",
       "mode": "THINK",
       "status": "done",
+<<<<<<< Updated upstream
       "task": "Review yesterday (818 tests, 26 bugs, GC+debugger+optimizer). Daniel PR #3 still open. Set direction.",
       "started": "2026-04-15T14:15:21.016Z",
       "completed": "2026-04-15T14:15:54.638Z",
       "duration_ms": 45000,
       "summary": "Reviewed yesterday (818 tests, 26 bugs). Queue order correct — Daniel PR #3 first priority (urgent >1 day). No queue modifications."
+=======
+      "task": "Evening session direction: queue empty, 1h45m left. Review TASKS.md ideas/backlog, recent work. What has the highest learning value right now? Consider: HenryDB has 2017 tests and massive feature set — is there still depth to find? Or is a different project more interesting? Check memory/scratch/INDEX.md for knowledge gaps.",
+      "started": "2026-04-07T00:30:59.983Z",
+      "completed": "2026-04-07T00:31:53.224Z",
+      "duration_ms": 60000,
+      "summary": "Direction: build CDCL SAT solver. HenryDB at natural plateau (40K lines, 2017 tests). SAT solver is genuinely deep: different algorithmic domain, connects to type inference/SMT, well-bounded, blog-worthy. 1.5 hours available."
+>>>>>>> Stashed changes
     },
     {
       "id": "T2",
       "mode": "PLAN",
       "status": "done",
+<<<<<<< Updated upstream
       "goal": "Review and merge Daniel PR #3 (JIT instrumentation) + monkey-lang try/catch compilation",
       "task": null,
       "started": "2026-04-15T14:16:09.449Z",
       "completed": "2026-04-15T14:16:58.325Z",
       "duration_ms": 120000,
       "summary": "PLAN: 2 BUILD tasks — (1) review+merge Daniel PR #3 (JIT events instrumentation), (2) try/catch compilation. PR looks solid: 695+/-28, 16 tests, schema docs, backward compat."
+=======
+      "goal": "Build CDCL SAT solver from scratch: DIMACS parser, unit propagation, DPLL backtracking, conflict-driven clause learning, watched literals, VSIDS decision heuristic, model extraction. Test with classic problems (pigeonhole, graph coloring, Sudoku). Blog post.",
+      "task": null,
+      "started": "2026-04-07T00:32:19.269Z",
+      "completed": "2026-04-07T00:32:42.835Z",
+      "duration_ms": 30000,
+      "summary": "Planned 2 BUILD tasks for CDCL SAT solver. Loaded constraint-solving scratch notes with 1UIP, watched-lit, and VSIDS details."
+    },
+    {
+      "id": "T7",
+      "mode": "BUILD",
+      "task": "Build complete CDCL SAT solver: DIMACS parser, Clause+Literal types, 2-watched-literal propagation (qhead pattern), 1UIP conflict analysis (MiniSat-style single walk), VSIDS decision heuristic, non-chronological backtracking, model extraction. Test: simple SAT/UNSAT, unit clauses, pure literals, pigeonhole (UNSAT proof), random 3-SAT at phase transition, graph coloring. Target: 60+ tests.",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-07T00:32:51.805Z",
+      "completed": "2026-04-07T00:45:58.980Z",
+      "duration_ms": 1200000,
+      "summary": "Built CDCL SAT solver: 2-watched-literal propagation, 1UIP conflict analysis, VSIDS heuristic, non-chronological backjumping, clause minimization, restarts. 5 problem encoders (pigeonhole, N-queens, graph coloring, sudoku, random 3-SAT) + DIMACS parser. Found and fixed critical bug: literal negation in analyze was inverting lower-level literals, causing unsound learned clauses. 52 tests pass including 12-queens, Petersen graph 3-coloring, hard sudoku."
+    },
+    {
+      "id": "T8",
+      "mode": "BUILD",
+      "task": "Build SAT applications: Sudoku-to-SAT encoder, N-Queens encoder, graph coloring encoder. Interactive CLI that reads DIMACS or accepts problem descriptions. Add clause minimization to learned clauses.",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-07T00:46:11.228Z",
+      "completed": "2026-04-07T00:48:58.880Z",
+      "duration_ms": 600000,
+      "summary": "Built SMT solver (DPLL(T)) on top of CDCL: backtrackable union-find, EUF theory solver with congruence closure, bounds-based LIA solver, S-expression parser. Encoders already done in T7. 83 total tests (52 SAT + 31 SMT), all passing."
+>>>>>>> Stashed changes
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "done",
+<<<<<<< Updated upstream
       "task": "Review Daniel PR #3: checkout branch, run full test suite, code review, merge or request changes",
       "plan_ref": "T2",
       "project": "monkey-lang",
@@ -44,20 +84,35 @@
       "completed": "2026-04-15T14:31:47.287Z",
       "duration_ms": 600000,
       "summary": "Implemented try/catch/throw/finally exception handling in monkey-lang. Full stack: lexer keywords, parser rules, AST nodes, 3 new opcodes (OpTry/OpThrow/OpPopHandler), VM handler stack with frame unwinding, evaluator support. 29 new tests (1580 total). Cross-function throws work."
+=======
+      "task": "placeholder",
+      "project": "sat-solver",
+      "started": "2026-04-07T00:49:10.159Z",
+      "completed": "2026-04-07T00:49:54.057Z",
+      "duration_ms": 300000,
+      "summary": "Built interactive CLI: sudoku, queens, pigeonhole, random 3-SAT, SMT mode. All using the CDCL solver. 8-Queens solves in 15ms with 22 conflicts."
+>>>>>>> Stashed changes
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
+<<<<<<< Updated upstream
       "status": "done",
       "task": "Housekeeping: git push, dashboard health, knowledge capture",
       "started": "2026-04-15T14:32:09.107Z",
       "completed": "2026-04-15T14:32:54.470Z",
       "duration_ms": 60000,
       "summary": "Git pushed, knowledge captured (monkey-try-catch-impl.md), INDEX.md updated."
+=======
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, knowledge capture, daily log",
+      "started": "2026-04-07T00:50:04.306Z"
+>>>>>>> Stashed changes
     },
     {
       "id": "T5",
       "mode": "THINK",
+<<<<<<< Updated upstream
       "status": "done",
       "task": "Depth check: quality of monkey-lang features. Parser unification status.",
       "started": "2026-04-15T14:33:04.682Z",
@@ -1156,4 +1211,18 @@
       "msg": "Added T78 (BUILD) after end: monkey-lang: __getitem__/__setitem__ protocols for index access"
     }
   ]
+=======
+      "status": "upcoming",
+      "task": "Reflect on SAT solver: what was hard, what connects to SMT/type inference, what would I build next?"
+    },
+    {
+      "id": "T6",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write blog post about building a SAT solver from scratch",
+      "project": "sat-solver"
+    }
+  ],
+  "updated_at": "2026-04-07T00:50:04.306Z"
+>>>>>>> Stashed changes
 }
