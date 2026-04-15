@@ -1,14 +1,19 @@
 # Inline Caching for Monkey-lang
 
-**Created:** 2026-04-15 | **Uses:** 1
+**Created:** 2026-04-15 | **Uses:** 2
 
-## Key Lesson (from implementation attempt)
-**Interpreter-level IC for mutable values DOES NOT WORK.** If you cache `(shape, key) → value`, the cached value goes stale when the hash is mutated. Tests failed: `h["count"] = h["count"] + 1` returned 2 instead of 4 because the IC returned the old value.
+## Key Lessons
+1. **Interpreter-level IC for mutable values DOES NOT WORK.** Caching `(shape, key) → value` goes stale on mutation. T24 proved this.
+2. **Cache structure, not values.** The correct approach: `(shapeId, keyStr) → slotIndex`, then read `slots[slotIndex]`. Always reads the current value.
+3. **ShapedHash + slot-based storage works.** Replace `Map<key, value>` with `Shape` (key→slot mapping) + `slots[]` array. 100% IC hit rate after warmup.
 
-Correct approaches:
-1. **Cache structure, not values** — IC can cache that a shape exists and how to access it, but must always read the current value from the Map
-2. **JIT-level IC** — emit GUARD_SHAPE instruction, then direct offset access. The JIT can specialize for known shapes and bail out on shape change
-3. **Hidden classes** — convert hashes to fixed-layout objects (like V8). Property access becomes array index instead of Map.get(). This is the big win but a major refactor.
+## Implementation (T83-T84, Session B)
+- **Shape class**: `keyMap: Map<string, slotIndex>`, transition chains for property addition, global registry with sorted-key dedup
+- **ShapedHash**: `shape` + `slots[]` + `keys[]` (original MonkeyObjects for iteration). `.pairs` getter for backward compat.
+- **InlineCache**: Per-bytecode-position. Monomorphic (1 entry) → Polymorphic (up to 4) → Megamorphic (give up).
+- **VM integration**: OpHash creates ShapedHash, OpIndex passes `icIp` to executeIndexExpression, IC fast path on ShapedHash.
+- **objectKeyString()**: Converts MonkeyInteger/String/Boolean to canonical string form for shape lookup.
+- **Results**: 48 tests, 866 total all pass. 100% monomorphic hit rate on repeated access.
 
 ## Concept
 Inline caching (IC) speeds up property/key lookups by caching the result at the access site.

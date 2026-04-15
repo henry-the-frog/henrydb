@@ -902,9 +902,76 @@
     {
       "id": "T82",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard, knowledge capture",
-      "started": "2026-04-15T20:34:30.573Z"
+      "started": "2026-04-15T20:34:30.573Z",
+      "completed": "2026-04-15T20:35:19.178Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed (monkey-lang+workspace), dashboard live, IC scratch note updated with implementation learnings."
+    },
+    {
+      "id": "T85",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What depth work remains in monkey-lang? IC is done. Consider: generational GC, type checker, WASM closures, or switch to HenryDB depth.",
+      "started": "2026-04-15T20:35:38.052Z",
+      "completed": "2026-04-15T20:35:52.513Z",
+      "duration_ms": 120000,
+      "summary": "Direction: generational GC for monkey-lang. Bounded scope, deep systems work, builds on existing mark-sweep (547 LOC). Nursery + old gen, write barrier, promotion. Expected 2-3 BUILD tasks."
+    },
+    {
+      "id": "T86",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Upgrade monkey-lang GC from mark-sweep to generational: nursery (young gen) with fast bump allocation, write barrier for old→young references, minor collection (scavenge nursery), major collection (full mark-sweep), promotion to old gen after surviving N collections",
+      "task": null,
+      "started": "2026-04-15T20:36:07.571Z",
+      "completed": "2026-04-15T20:36:42.302Z",
+      "duration_ms": 60000,
+      "summary": "Generational GC already fully implemented in monkey-lang: nursery/young gen, write barrier, remembered set, minor/major collection, promotion (age-based), DOT visualization, 50 GC tests. No new work needed."
+    },
+    {
+      "id": "T87",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Monkey-lang is very mature: 866 tests, compiler, VM, GC, debugger, optimizer, classes, generators, modules, IC. What is genuinely NEW depth work? Check: WASM closure compilation, register-based VM, JIT tracing, or SSA IR.",
+      "started": "2026-04-15T20:36:56.574Z",
+      "completed": "2026-04-15T20:39:07.826Z",
+      "duration_ms": 180000,
+      "summary": "monkey-lang is extremely mature (5 backends, 4467 LOC JIT, 7513 LOC WASM, GC, debugger, optimizer). Fresh depth: compile monkey-lang → RISC-V assembly using existing assembler+emulator. Would connect 3 projects. Alternative: integrate type-inference into monkey-lang."
+    },
+    {
+      "id": "T88",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Monkey-lang RISC-V backend: compile simple monkey-lang programs (arithmetic, variables, if/else, functions) to RISC-V assembly, assemble with existing assembler, run on existing RISC-V emulator. Start with integer arithmetic and work up.",
+      "task": null,
+      "started": "2026-04-15T20:39:21.000Z",
+      "completed": "2026-04-15T20:40:09.772Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: 3 BUILD tasks. (1) RISC-V codegen for arithmetic/variables/if-else/puts, (2) function calls with calling convention, (3) end-to-end integration tests."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "task": "Build monkey-lang → RISC-V code generator (riscv-codegen.js): AST traversal emitting RV32I assembly. Support integer arithmetic (+,-,*,/,%), let bindings (stack-allocated), if/else, boolean comparisons, puts() via ecall. 20+ tests.",
+      "status": "in-progress",
+      "plan_ref": "T88",
+      "started": "2026-04-15T20:40:20.549Z"
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "task": "Extend RISC-V codegen for functions: calling convention (a0-a7 args, sp frame), jal/jalr calls, return values, recursive fibonacci. 15+ tests.",
+      "status": "upcoming",
+      "plan_ref": "T88"
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "task": "Integration: end-to-end pipeline test — monkey-lang source → parse → codegen → assemble → execute on RISC-V CPU → verify output. Cover: arithmetic, variables, if/else, functions, recursion.",
+      "status": "upcoming",
+      "plan_ref": "T88"
     }
   ],
   "focusProjects": [
@@ -1236,6 +1303,26 @@
     {
       "time": "2026-04-15T20:34:20.047Z",
       "msg": "Removed T81: Unfilled placeholder — PLAN tasks T83/T84 covered all IC work"
+    },
+    {
+      "time": "2026-04-15T20:35:25.736Z",
+      "msg": "Added T85 (THINK) after end: What depth work remains in monkey-lang? IC is done. Consider: generational GC, type checker, WASM closures, or switch to HenryDB depth."
+    },
+    {
+      "time": "2026-04-15T20:35:59.232Z",
+      "msg": "Added T86 (PLAN) after end: Upgrade monkey-lang GC from mark-sweep to generational: nursery (young gen) with fast bump allocation, write barrier for old→young references, minor collection (scavenge nursery), major collection (full mark-sweep), promotion to old gen after surviving N collections"
+    },
+    {
+      "time": "2026-04-15T20:36:50.850Z",
+      "msg": "Added T87 (THINK) after end: Monkey-lang is very mature: 866 tests, compiler, VM, GC, debugger, optimizer, classes, generators, modules, IC. What is genuinely NEW depth work? Check: WASM closure compilation, register-based VM, JIT tracing, or SSA IR."
+    },
+    {
+      "time": "2026-04-15T20:39:15.806Z",
+      "msg": "Added T88 (PLAN) after end: Monkey-lang RISC-V backend: compile simple monkey-lang programs (arithmetic, variables, if/else, functions) to RISC-V assembly, assemble with existing assembler, run on existing RISC-V emulator. Start with integer arithmetic and work up."
+    },
+    {
+      "time": "2026-04-15T20:40:02.746Z",
+      "msg": "PLAN T88 filled 3 BUILD tasks"
     }
   ]
 }

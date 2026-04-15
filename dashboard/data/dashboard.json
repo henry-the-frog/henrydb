@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T20:34:30.630Z",
+  "generated": "2026-04-15T20:40:20.584Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard, knowledge capture",
-    "startedAt": "2026-04-15T20:34:30.630Z",
-    "taskId": "T82"
+    "mode": "BUILD",
+    "task": "Build monkey-lang → RISC-V code generator (riscv-codegen.js): AST traversal emitting RV32I assembly. Support integer arithmetic (+,-,*,/,%), let bindings (stack-allocated), if/else, boolean comparisons, puts() via ecall. 20+ tests.",
+    "startedAt": "2026-04-15T20:40:20.584Z",
+    "taskId": "T89"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -872,48 +872,124 @@
       {
         "id": "T80",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Monkey-lang inline caching: monomorphic IC for hash property access using shape IDs, polymorphic IC fallback, integration with VM dispatch loop",
         "task": null,
-        "started": "2026-04-15T20:23:13.691Z"
+        "started": "2026-04-15T20:23:13.691Z",
+        "completed": "2026-04-15T20:23:57.496Z",
+        "duration_ms": 90000,
+        "summary": "PLAN: 2 BUILD tasks for hidden classes + inline caching. T81: Shape registry, slot-based storage, transition chains. T82: VM IC slots, OpIndex fast path, polymorphic IC, benchmarks."
       },
       {
         "id": "T83",
         "mode": "BUILD",
         "task": "Implement hidden classes (Shape) for MonkeyHash: Shape registry with transition chains, slot-based storage replacing Map, shape ID computation, MonkeyHash constructor creates/looks up shape. Include shape transitions for property additions. 30+ tests.",
-        "status": "upcoming",
-        "plan_ref": "T80"
+        "status": "done",
+        "plan_ref": "T80",
+        "started": "2026-04-15T20:24:06.140Z",
+        "completed": "2026-04-15T20:32:22.214Z",
+        "duration_ms": 600000,
+        "summary": "Hidden classes + inline caching. Shape class with transition chains, ShapedHash with slot-based storage, monomorphic/polymorphic IC in VM OpIndex. 43 new tests, 861 total all pass. GC+debugger updated."
       },
       {
         "id": "T84",
         "mode": "BUILD",
         "task": "Implement inline cache in VM: IC slots per bytecode position, OpIndex fast path for hash access (shape check → slot access), IC miss fallback to full lookup. Polymorphic IC (2-4 entries). Benchmark property access before/after. 20+ tests.",
-        "status": "upcoming",
-        "plan_ref": "T80"
+        "status": "done",
+        "plan_ref": "T80",
+        "started": "2026-04-15T20:32:38.885Z",
+        "completed": "2026-04-15T20:34:02.522Z",
+        "duration_ms": 300000,
+        "summary": "IC already implemented in T83. Added bench-ic.js (4 benchmarks) showing 100% monomorphic hit rate. 5 more edge case tests (48 shape tests total, 866 all pass)."
       },
       {
         "id": "T81",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "skip_reason": "Unfilled placeholder — PLAN tasks T83/T84 covered all IC work"
       },
       {
         "id": "T82",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, knowledge capture",
+        "started": "2026-04-15T20:34:30.573Z",
+        "completed": "2026-04-15T20:35:19.178Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed (monkey-lang+workspace), dashboard live, IC scratch note updated with implementation learnings."
+      },
+      {
+        "id": "T85",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What depth work remains in monkey-lang? IC is done. Consider: generational GC, type checker, WASM closures, or switch to HenryDB depth.",
+        "started": "2026-04-15T20:35:38.052Z",
+        "completed": "2026-04-15T20:35:52.513Z",
+        "duration_ms": 120000,
+        "summary": "Direction: generational GC for monkey-lang. Bounded scope, deep systems work, builds on existing mark-sweep (547 LOC). Nursery + old gen, write barrier, promotion. Expected 2-3 BUILD tasks."
+      },
+      {
+        "id": "T86",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Upgrade monkey-lang GC from mark-sweep to generational: nursery (young gen) with fast bump allocation, write barrier for old→young references, minor collection (scavenge nursery), major collection (full mark-sweep), promotion to old gen after surviving N collections",
+        "task": null,
+        "started": "2026-04-15T20:36:07.571Z",
+        "completed": "2026-04-15T20:36:42.302Z",
+        "duration_ms": 60000,
+        "summary": "Generational GC already fully implemented in monkey-lang: nursery/young gen, write barrier, remembered set, minor/major collection, promotion (age-based), DOT visualization, 50 GC tests. No new work needed."
+      },
+      {
+        "id": "T87",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Monkey-lang is very mature: 866 tests, compiler, VM, GC, debugger, optimizer, classes, generators, modules, IC. What is genuinely NEW depth work? Check: WASM closure compilation, register-based VM, JIT tracing, or SSA IR.",
+        "started": "2026-04-15T20:36:56.574Z",
+        "completed": "2026-04-15T20:39:07.826Z",
+        "duration_ms": 180000,
+        "summary": "monkey-lang is extremely mature (5 backends, 4467 LOC JIT, 7513 LOC WASM, GC, debugger, optimizer). Fresh depth: compile monkey-lang → RISC-V assembly using existing assembler+emulator. Would connect 3 projects. Alternative: integrate type-inference into monkey-lang."
+      },
+      {
+        "id": "T88",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Monkey-lang RISC-V backend: compile simple monkey-lang programs (arithmetic, variables, if/else, functions) to RISC-V assembly, assemble with existing assembler, run on existing RISC-V emulator. Start with integer arithmetic and work up.",
+        "task": null,
+        "started": "2026-04-15T20:39:21.000Z"
+      },
+      {
+        "id": "T89",
+        "mode": "BUILD",
+        "task": "Build monkey-lang → RISC-V code generator (riscv-codegen.js): AST traversal emitting RV32I assembly. Support integer arithmetic (+,-,*,/,%), let bindings (stack-allocated), if/else, boolean comparisons, puts() via ecall. 20+ tests.",
         "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, knowledge capture"
+        "plan_ref": "T88"
+      },
+      {
+        "id": "T90",
+        "mode": "BUILD",
+        "task": "Extend RISC-V codegen for functions: calling convention (a0-a7 args, sp frame), jal/jalr calls, return values, recursive fibonacci. 15+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T88"
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "task": "Integration: end-to-end pipeline test — monkey-lang source → parse → codegen → assemble → execute on RISC-V CPU → verify output. Cover: arithmetic, variables, if/else, functions, recursion.",
+        "status": "upcoming",
+        "plan_ref": "T88"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 82,
-    "blocksTotal": 84,
+    "blocksCompleted": 87,
+    "blocksTotal": 91,
     "modeDistribution": {
-      "THINK": 8,
-      "PLAN": 10,
+      "THINK": 10,
+      "PLAN": 12,
       "BUILD": 53,
-      "MAINTAIN": 9,
+      "MAINTAIN": 10,
       "EXPLORE": 2
     }
   }
