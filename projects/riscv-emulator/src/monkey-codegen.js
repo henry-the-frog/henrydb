@@ -216,6 +216,33 @@ export class RiscVCodeGen {
       this._emit('  ret');                   // Return with pointer in a0
     }
 
+    // Append _str_eq subroutine if needed
+    if (this.needsStrEq) {
+      this._emit('');
+      this._emit('# String equality: a0=str1, a1=str2, returns a0=1 if equal, 0 otherwise');
+      this._emitLabel('_str_eq');
+      this._emit('  lw t0, 0(a0)');        // t0 = len1
+      this._emit('  lw t1, 0(a1)');        // t1 = len2
+      this._emit('  bne t0, t1, _str_eq_ne'); // different lengths → not equal
+      this._emit('  li t2, 0');             // t2 = char index
+      this._emitLabel('_str_eq_loop');
+      this._emit('  bge t2, t0, _str_eq_eq'); // all chars compared → equal
+      this._emit('  slli t3, t2, 2');       // index * 4
+      this._emit('  add t4, a0, t3');       
+      this._emit('  lw t4, 4(t4)');         // str1[i]
+      this._emit('  add t5, a1, t3');
+      this._emit('  lw t5, 4(t5)');         // str2[i]
+      this._emit('  bne t4, t5, _str_eq_ne'); // chars differ → not equal
+      this._emit('  addi t2, t2, 1');
+      this._emit('  j _str_eq_loop');
+      this._emitLabel('_str_eq_eq');
+      this._emit('  li a0, 1');
+      this._emit('  ret');
+      this._emitLabel('_str_eq_ne');
+      this._emit('  li a0, 0');
+      this._emit('  ret');
+    }
+
     if (this.errors.length > 0) {
       throw new Error(`Compilation errors:\n${this.errors.join('\n')}`);
     }
@@ -793,53 +820,33 @@ export class RiscVCodeGen {
     this._emit('  lw t5, 4(t4)');       // key[i]
     
     if (keyType === 'string') {
-      // String comparison: compare by value
-      // Save context (t0-t3 used in loop)
-      this._emit('  addi sp, sp, -16');
-      this._emit('  sw t0, 0(sp)');   // save search key
-      this._emit('  sw t1, 4(sp)');   // save hash ptr
-      this._emit('  sw t2, 8(sp)');   // save num_pairs
-      this._emit('  sw t3, 12(sp)');  // save loop index
+      // String comparison via subroutine: a0=str1, a1=str2, returns a0=1 if equal
+      this.needsStrEq = true;
       
-      // Compare strings: t0=search key, t5=candidate key
-      // Check lengths
-      this._emit('  lw a0, 0(t0)');   // search key length
-      this._emit('  lw a1, 0(t5)');   // candidate length
-      const skipStr = this._label('hash_skip_str');
-      this._emit(`  bne a0, a1, ${skipStr}`);
+      // Save loop context
+      this._emit('  addi sp, sp, -20');
+      this._emit('  sw t0, 0(sp)');   // search key
+      this._emit('  sw t1, 4(sp)');   // hash ptr
+      this._emit('  sw t2, 8(sp)');   // num_pairs
+      this._emit('  sw t3, 12(sp)');  // loop index
+      this._emit('  sw ra, 16(sp)');  // save ra for subroutine call
       
-      // Lengths match — compare chars
-      this._emit('  li a2, 0');        // char index
-      const charCmp = this._label('hash_charcmp');
-      const charMatch = this._label('hash_charmatch');
-      this._emitLabel(charCmp);
-      this._emit(`  bge a2, a0, ${charMatch}`);
-      this._emit('  slli a3, a2, 2');
-      this._emit('  add a3, t0, a3');
-      this._emit('  lw a3, 4(a3)');    // search[i]
-      this._emit('  slli a4, a2, 2');
-      this._emit('  add a4, t5, a4');
-      this._emit('  lw a4, 4(a4)');    // candidate[i]
-      this._emit(`  bne a3, a4, ${skipStr}`);
-      this._emit('  addi a2, a2, 1');
-      this._emit(`  j ${charCmp}`);
+      // Call _str_eq(t0, t5) → result in a0
+      this._emit('  mv a0, t0');      // a0 = search key
+      this._emit('  mv a1, t5');      // a1 = candidate key
+      this._emit('  jal _str_eq');
       
-      // Strings match!
-      this._emitLabel(charMatch);
+      // Restore loop context
       this._emit('  lw t0, 0(sp)');
       this._emit('  lw t1, 4(sp)');
       this._emit('  lw t2, 8(sp)');
       this._emit('  lw t3, 12(sp)');
-      this._emit('  addi sp, sp, 16');
-      this._emit(`  j ${found}`);
+      this._emit('  lw ra, 16(sp)');
+      this._emit('  addi sp, sp, 20');
       
-      // Strings don't match — continue scan
-      this._emitLabel(skipStr);
-      this._emit('  lw t0, 0(sp)');
-      this._emit('  lw t1, 4(sp)');
-      this._emit('  lw t2, 8(sp)');
-      this._emit('  lw t3, 12(sp)');
-      this._emit('  addi sp, sp, 16');
+      // If a0 == 1, strings match → found
+      this._emit(`  li t4, 1`);
+      this._emit(`  beq a0, t4, ${found}`);
     } else {
       // Integer comparison
       this._emit(`  beq t0, t5, ${found}`);

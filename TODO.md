@@ -1,16 +1,14 @@
-# TODO.md — Task Intake
+## TODO
 
-Persistent buffer for things that need doing. Feeds into the daily queue.
-- **Urgent:** Do next if a task finishes early
-- **Normal:** Fold into next morning's standup queue
-- **Low:** Backlog — do when interesting or when time permits
+### Urgent
 
-Items get removed (not checked off) once they enter the queue or are completed.
+### Normal
+- HenryDB window function executor (parser done, need WindowOperator in volcano)
+- RISC-V: fix 4+ char string hash key issue (register clobbering in comparison loop)
+- RISC-V: make_adder closure pattern (returning closures from functions)
+- Neural net: investigate flaky "loss decreases during training" test
 
-## Urgent
-
-## Normal
-- [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)
-
-## Low
-- [ ] Named Cloudflare tunnel for dashboard webhook (URL changes on restart)
+### Low
+- RISC-V: tail call optimization for recursive functions
+- HenryDB: cost-based optimizer improvements
+- Monkey-lang: type checker integration with existing type-inference project

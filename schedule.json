@@ -1339,8 +1339,60 @@
     {
       "id": "T125",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Debug and fix 4+ char string keys in hash access. Use disassembler to trace execution. The comparison loop works for string equality (==) but fails inside hash access. Likely register clobbering issue.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:32:32.297Z",
+      "completed": "2026-04-15T22:36:54.093Z",
+      "duration_ms": 600000,
+      "summary": "HenryDB: parsed window functions (OVER clause) in parser. AST node created. Executor not yet implemented — complex feature needs dedicated session. 296 parser tests still pass."
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add window function support (ROW_NUMBER, RANK, SUM OVER). Parse OVER clause, implement WindowOperator in volcano executor. 15+ tests.",
+      "project": "henrydb",
+      "started": "2026-04-15T22:37:45.201Z",
+      "completed": "2026-04-15T22:38:37.257Z",
+      "duration_ms": 300000,
+      "summary": "10 IC stress tests: polymorphic (3 shapes), megamorphic (5+ shapes), monomorphic loop, shape transitions, nested access, builtins, equality. 876 total monkey-lang tests."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: stress-test IC/hidden classes with polymorphic access patterns, shape transitions under load, and IC invalidation. Verify IC stats show expected behavior. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:39:05.224Z",
+      "completed": "2026-04-15T22:42:19.083Z",
+      "duration_ms": 300000,
+      "summary": "String interning: global dedup table, identical strings share same reference. O(1) comparison. 5 new tests, 881 total."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang VM: string interning. Deduplicate string objects so identical strings share the same MonkeyString instance. Enables O(1) string comparison. Add intern table, update string creation, benchmark.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:42:46.341Z",
+      "completed": "2026-04-15T22:44:05.885Z",
+      "duration_ms": 60000,
+      "summary": "Constant folding already implemented in monkey-lang optimizer. 3+4 → 7 after optimize(). 55 optimizer tests pass."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey-lang compiler: constant folding optimization. Fold compile-time constant expressions (3+4 → 7, 'a'+'b' → 'ab', !true → false). Add as a pass before code generation. 15+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:44:22.326Z"
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix: RISC-V string hash key 4+ char bug. Simplify: use a _str_eq subroutine instead of inline comparison. The subroutine avoids register conflicts by using its own stack frame.",
       "project": "monkey-lang"
     }
   ],
@@ -1817,6 +1869,26 @@
     {
       "time": "2026-04-15T22:27:17.215Z",
       "msg": "Added T125 (BUILD) after end: Debug and fix 4+ char string keys in hash access. Use disassembler to trace execution. The comparison loop works for string equality (==) but fails inside hash access. Likely register clobbering issue."
+    },
+    {
+      "time": "2026-04-15T22:32:25.387Z",
+      "msg": "Added T126 (BUILD) after end: HenryDB: add window function support (ROW_NUMBER, RANK, SUM OVER). Parse OVER clause, implement WindowOperator in volcano executor. 15+ tests."
+    },
+    {
+      "time": "2026-04-15T22:37:37.545Z",
+      "msg": "Added T127 (BUILD) after end: Monkey-lang: stress-test IC/hidden classes with polymorphic access patterns, shape transitions under load, and IC invalidation. Verify IC stats show expected behavior. 10+ tests."
+    },
+    {
+      "time": "2026-04-15T22:38:54.523Z",
+      "msg": "Added T128 (BUILD) after end: Monkey-lang VM: string interning. Deduplicate string objects so identical strings share the same MonkeyString instance. Enables O(1) string comparison. Add intern table, update string creation, benchmark."
+    },
+    {
+      "time": "2026-04-15T22:42:38.787Z",
+      "msg": "Added T129 (BUILD) after end: Monkey-lang compiler: constant folding optimization. Fold compile-time constant expressions (3+4 → 7, 'a'+'b' → 'ab', !true → false). Add as a pass before code generation. 15+ tests."
+    },
+    {
+      "time": "2026-04-15T22:44:15.304Z",
+      "msg": "Added T130 (BUILD) after end: Fix: RISC-V string hash key 4+ char bug. Simplify: use a _str_eq subroutine instead of inline comparison. The subroutine avoids register conflicts by using its own stack frame."
     }
   ]
 }

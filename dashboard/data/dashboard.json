@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T22:27:24.258Z",
+  "generated": "2026-04-15T22:44:22.362Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix HenryDB planner test failure (NULL selectivity) and run full sweep. Fix any broken tests found.",
-    "startedAt": "2026-04-15T22:27:24.258Z",
-    "taskId": "T124"
+    "task": "Monkey-lang compiler: constant folding optimization. Fold compile-time constant expressions (3+4 → 7, 'a'+'b' → 'ab', !true → false). Add as a pass before code generation. 15+ tests.",
+    "startedAt": "2026-04-15T22:44:22.362Z",
+    "taskId": "T129"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1213,12 +1213,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 122,
+    "blocksCompleted": 126,
     "blocksTotal": 112,
     "modeDistribution": {
       "THINK": 16,
       "PLAN": 16,
-      "BUILD": 76,
+      "BUILD": 80,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

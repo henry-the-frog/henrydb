@@ -115,3 +115,29 @@ describe('Hash — complex programs', () => {
     `), '55');
   });
 });
+
+describe('String hash keys — 4+ chars (regression)', () => {
+  it('single 4-char key', () => {
+    assert.equal(run('let h = {"abcd": 42}; puts(h["abcd"])'), '42');
+  });
+
+  it('single 5-char key', () => {
+    assert.equal(run('let h = {"hello": 99}; puts(h["hello"])'), '99');
+  });
+
+  it('multiple long string keys', () => {
+    assert.equal(run('let h = {"hello": 10, "world": 20}; puts(h["hello"] + h["world"])'), '30');
+  });
+
+  it('long key not found returns 0', () => {
+    assert.equal(run('let h = {"hello": 42}; puts(h["missing"])'), '0');
+  });
+
+  it('7-char key works', () => {
+    assert.equal(run('let h = {"abcdefg": 777}; puts(h["abcdefg"])'), '777');
+  });
+
+  it('mixed short and long keys', () => {
+    assert.equal(run('let h = {"ab": 1, "abcde": 2, "x": 3}; puts(h["abcde"])'), '2');
+  });
+});
