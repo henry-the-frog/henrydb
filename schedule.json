@@ -295,8 +295,12 @@
       "id": "T30",
       "mode": "BUILD",
       "task": "Fix LAST_VALUE with explicit frame (returns current row value instead of frame last)",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-15T16:31:42.073Z",
+      "completed": "2026-04-15T16:33:17.793Z",
+      "duration_ms": 600000,
+      "summary": "Fixed FIRST_VALUE/LAST_VALUE frame spec handling. Both now use getFrameBounds(). Also fixed FIRST_VALUE (was ignoring frames). 5 regression tests."
     },
     {
       "id": "T27",
