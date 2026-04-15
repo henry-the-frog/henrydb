@@ -1441,10 +1441,21 @@
     {
       "id": "T134",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V backend: first-class functions as arguments (higher-order). apply(f, x) pattern, map over array with function. Requires indirect call dispatch. 8+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:06:34.440Z"
+      "started": "2026-04-15T23:06:34.440Z",
+      "completed": "2026-04-15T23:08:34.027Z",
+      "duration_ms": 600000,
+      "summary": "Higher-order functions: apply, twice, compose, predicate patterns. Functions as values create closure wrappers. Dispatch shifts args for plain functions. 8 new tests, 28 closure tests total."
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: showcase programs demonstrating full language features. (1) quicksort using closures as comparators, (2) church numerals, (3) Y-combinator (if possible). Demonstrate the backend's expressiveness.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:08:59.997Z"
     }
   ],
   "focusProjects": [
@@ -1952,6 +1963,10 @@
     {
       "time": "2026-04-15T23:06:28.590Z",
       "msg": "Added T134 (BUILD) after end: RISC-V backend: first-class functions as arguments (higher-order). apply(f, x) pattern, map over array with function. Requires indirect call dispatch. 8+ tests."
+    },
+    {
+      "time": "2026-04-15T23:08:55.217Z",
+      "msg": "Added T135 (BUILD) after end: RISC-V: showcase programs demonstrating full language features. (1) quicksort using closures as comparators, (2) church numerals, (3) Y-combinator (if possible). Demonstrate the backend's expressiveness."
     }
   ]
 }

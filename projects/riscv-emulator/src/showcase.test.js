@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { RiscVCodeGen } from './monkey-codegen.js';
 import { inferTypes } from './type-infer.js';
+import { analyzeFreeVars } from './closure-analysis.js';
 import { peepholeOptimize } from './riscv-peephole.js';
 import { Assembler } from './assembler.js';
 import { CPU } from './cpu.js';
@@ -14,8 +15,9 @@ function runFull(input, { useRegisters = false, optimize = false } = {}) {
   const prog = p.parseProgram();
   if (p.errors.length > 0) throw new Error(p.errors.join('\n'));
   const typeInfo = inferTypes(prog);
+  const closureInfo = analyzeFreeVars(prog);
   const cg = new RiscVCodeGen({ useRegisters });
-  let asm = cg.compile(prog, typeInfo);
+  let asm = cg.compile(prog, typeInfo, closureInfo);
   if (optimize) asm = peepholeOptimize(asm).optimized;
   const assembler = new Assembler();
   const result = assembler.assemble(asm);
@@ -25,6 +27,10 @@ function runFull(input, { useRegisters = false, optimize = false } = {}) {
   cpu.regs.set(2, 0x100000 - 4);
   cpu.run(2000000);
   return { output: cpu.output.join(''), cycles: cpu.cycles, words: result.words.length };
+}
+
+function run(input) {
+  return runFull(input).output;
 }
 
 describe('Showcase: Feature-Complete Demo', () => {
@@ -195,5 +201,91 @@ describe('Showcase: Feature-Complete Demo', () => {
     console.log(`  Showcase: ${base.words} instructions, ${base.cycles} cycles (base)`);
     console.log(`  Showcase: ${opt.words} instructions, ${opt.cycles} cycles (optimized)`);
     console.log(`  Savings: ${base.cycles - opt.cycles} cycles (${((base.cycles - opt.cycles)/base.cycles*100).toFixed(1)}%)`);
+  });
+});
+
+describe('Showcase: Higher-Order Functions', () => {
+  it('reduce/fold pattern', () => {
+    const result = run(`
+      let reduce = fn(arr, init, f) {
+        let acc = init
+        let i = 0
+        while (i < len(arr)) {
+          set acc = f(acc, arr[i])
+          set i = i + 1
+        }
+        return acc
+      }
+      let sum = fn(a, b) { a + b }
+      puts(reduce([1, 2, 3, 4, 5], 0, sum))
+    `);
+    assert.equal(result, '15');
+  });
+
+  it('apply_n (repeated application)', () => {
+    const result = run(`
+      let apply_n = fn(f, n, x) {
+        let result = x
+        let i = 0
+        while (i < n) {
+          set result = f(result)
+          set i = i + 1
+        }
+        return result
+      }
+      let double = fn(x) { x * 2 }
+      puts(apply_n(double, 5, 1))
+    `);
+    assert.equal(result, '32');
+  });
+
+  it('function composition chain', () => {
+    const result = run(`
+      let compose = fn(f, g, x) { f(g(x)) }
+      let add1 = fn(x) { x + 1 }
+      let mul3 = fn(x) { x * 3 }
+      puts(compose(mul3, add1, 4))
+    `);
+    assert.equal(result, '15');  // mul3(add1(4)) = mul3(5) = 15
+  });
+
+  it('closure factory with higher-order apply', () => {
+    const result = run(`
+      let make_adder = fn(n) { fn(x) { x + n } }
+      let apply = fn(f, x) { f(x) }
+      puts(apply(make_adder(100), 42))
+    `);
+    assert.equal(result, '142');
+  });
+
+  it('reduce with multiplication (factorial via fold)', () => {
+    const result = run(`
+      let reduce = fn(arr, init, f) {
+        let acc = init
+        let i = 0
+        while (i < len(arr)) {
+          set acc = f(acc, arr[i])
+          set i = i + 1
+        }
+        return acc
+      }
+      let mul = fn(a, b) { a * b }
+      puts(reduce([1, 2, 3, 4, 5], 1, mul))
+    `);
+    assert.equal(result, '120');  // 5! = 120
+  });
+
+  it('recursive sum with accumulator (tail-recursive style)', () => {
+    // Note: nested recursive closures (helper calls itself) not yet supported
+    // Using top-level recursive function instead
+    const result = run(`
+      let sum_helper = fn(n, i, acc) {
+        if (i > n) { return acc }
+        return sum_helper(n, i + 1, acc + i)
+      }
+      let sum_to = fn(n) { sum_helper(n, 1, 0) }
+      puts(sum_to(100))
+    `);
+    assert.equal(result, '5050');
   });
 });

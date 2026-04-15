@@ -1366,6 +1366,13 @@ export class RiscVCodeGen {
     // Add self-reference for recursive calls
     this.variables.set(name, { type: 'func', label: name });
     
+    // Copy all function labels from outer scope (for cross-function calls)
+    for (const [varName, varInfo] of savedVars) {
+      if (varInfo.type === 'func') {
+        this.variables.set(varName, varInfo);
+      }
+    }
+    
     this._emitLabel(name);
     this._emitPrologue();
     

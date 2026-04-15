@@ -22,11 +22,15 @@ export function analyzeFreeVars(program) {
   
   // Walk program, tracking scope
   const globalScope = new Set();
+  const globalFunctions = new Set(); // Track which globals are functions
   
   // First pass: collect global bindings
   for (const stmt of program.statements) {
     if (stmt.constructor.name === 'LetStatement') {
       globalScope.add(stmt.name.value);
+      if (stmt.value?.constructor.name === 'FunctionLiteral') {
+        globalFunctions.add(stmt.name.value);
+      }
     }
   }
   
@@ -34,7 +38,7 @@ export function analyzeFreeVars(program) {
   for (const stmt of program.statements) {
     if (stmt.constructor.name === 'LetStatement' && 
         stmt.value?.constructor.name === 'FunctionLiteral') {
-      analyzeFunction(stmt.value, globalScope, result, stmt.name.value);
+      analyzeFunction(stmt.value, globalScope, result, stmt.name.value, globalFunctions);
     }
   }
   
@@ -48,7 +52,7 @@ export function analyzeFreeVars(program) {
  * @param {Map} result - Accumulator for results
  * @param {string} funcName - Name of this function (for self-reference)
  */
-function analyzeFunction(funcLit, outerScope, result, funcName = null) {
+function analyzeFunction(funcLit, outerScope, result, funcName = null, globalFunctions = new Set()) {
   // Build this function's local scope
   const localScope = new Set();
   
@@ -66,7 +70,7 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null) {
           // Analyze nested function with combined scope
           const combinedScope = new Set([...outerScope, ...localScope]);
           if (funcName) combinedScope.add(funcName); // Self-reference
-          analyzeFunction(stmt.value, combinedScope, result, stmt.name.value);
+          analyzeFunction(stmt.value, combinedScope, result, stmt.name.value, globalFunctions);
         }
         localScope.add(stmt.name.value);
       }
@@ -78,7 +82,7 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null) {
         if (stmt.constructor.name === 'LetStatement' && stmt.value === nestedFunc) continue;
         const combinedScope = new Set([...outerScope, ...localScope]);
         if (funcName) combinedScope.add(funcName);
-        analyzeFunction(nestedFunc, combinedScope, result);
+        analyzeFunction(nestedFunc, combinedScope, result, null, globalFunctions);
       }
     }
   }
@@ -92,7 +96,7 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null) {
   const freeVars = [];
   
   for (const name of referenced) {
-    if (!localScope.has(name) && !builtins.has(name) && name !== funcName) {
+    if (!localScope.has(name) && !builtins.has(name) && name !== funcName && !globalFunctions.has(name)) {
       // It's a free variable if it's in the outer scope
       if (outerScope.has(name)) {
         freeVars.push(name);
