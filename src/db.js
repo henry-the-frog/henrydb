@@ -35,6 +35,11 @@ export class Database {
     this._currentTx = null;  // Current MVCC transaction
   }
 
+  /** Case-insensitive table lookup */
+  _getTable(name) {
+    return this.tables.get(name) || this.tables.get(name.toLowerCase()) || this.tables.get(name.toUpperCase());
+  }
+
   execute(sql) {
     // Check plan cache first (only for SELECT)
     let ast = this._planCache.get(sql);
@@ -308,7 +313,7 @@ export class Database {
       case 'ALTER_TABLE': this._planCache.clear(); return this._alterTable(ast);
       case 'DROP_TABLE': return this._dropTable(ast);
       case 'TRUNCATE_TABLE': {
-        const table = this.tables.get(ast.table);
+        const table = this._getTable(ast.table);
         if (!table) throw new Error(`Table ${ast.table} not found`);
         table.heap = this._heapFactory(ast.table);
         // Rebuild indexes (empty)
@@ -338,7 +343,7 @@ export class Database {
         return { type: 'ROWS', rows };
       }
       case 'SHOW_CREATE_TABLE': {
-        const table = this.tables.get(ast.table);
+        const table = this._getTable(ast.table);
         if (!table) throw new Error(`Table ${ast.table} not found`);
         const cols = table.schema.map(c => {
           let def = `${c.name} ${c.type}`;
@@ -350,7 +355,7 @@ export class Database {
         return { type: 'ROWS', rows: [{ sql }] };
       }
       case 'SHOW_COLUMNS': {
-        const table = this.tables.get(ast.table);
+        const table = this._getTable(ast.table);
         if (!table) throw new Error(`Table ${ast.table} not found`);
         const rows = table.schema.map(c => ({
           column_name: c.name,
@@ -377,7 +382,7 @@ export class Database {
         return { type: 'OK', message: `Trigger ${ast.name} created` };
       }
       case 'CREATE_FULLTEXT_INDEX': {
-        const table = this.tables.get(ast.table);
+        const table = this._getTable(ast.table);
         if (!table) throw new Error(`Table ${ast.table} not found`);
         const colIdx = table.schema.findIndex(c => c.name === ast.column);
         if (colIdx === -1) throw new Error(`Column ${ast.column} not found`);
@@ -554,7 +559,7 @@ export class Database {
   }
 
   _alterTable(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     switch (ast.action) {
@@ -656,7 +661,7 @@ export class Database {
     this._createTable(createAst);
     
     // Insert all rows
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     for (const row of result.rows) {
       const values = columns.map(c => row[c.name] ?? null);
       this._insertRow(table, null, values);
@@ -754,7 +759,7 @@ export class Database {
   }
 
   _createIndex(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     const hasExpressions = ast.expressions && ast.expressions.some(e => e !== null);
@@ -934,7 +939,7 @@ export class Database {
   }
 
   _alterTable(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     switch (ast.action) {
@@ -1029,7 +1034,7 @@ export class Database {
       }
 
       case 'RENAME_TABLE': {
-        const tableData = this.tables.get(ast.table);
+        const tableData = this._getTable(ast.table);
         this.tables.delete(ast.table);
         this.tables.set(ast.newName, tableData);
 
@@ -1051,7 +1056,7 @@ export class Database {
   }
 
   _insert(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table) || this.tables.get(ast.table.toLowerCase());
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     let inserted = 0;
@@ -1175,7 +1180,7 @@ export class Database {
   }
 
   _insertSelect(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     const result = this.execute_ast(ast.query);
@@ -2003,7 +2008,7 @@ export class Database {
   }
 
   _update(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     // Validate no writes to generated columns
@@ -2215,7 +2220,7 @@ export class Database {
   }
 
   _delete(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     let deleted = 0;
@@ -2309,7 +2314,7 @@ export class Database {
   }
 
   _truncate(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
     // Clear heap file
@@ -2333,7 +2338,7 @@ export class Database {
   }
 
   _describe(ast) {
-    const table = this.tables.get(ast.table);
+    const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
     const rows = table.schema.map(col => ({
       column_name: col.name,

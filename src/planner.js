@@ -277,8 +277,7 @@ export class QueryPlanner {
 
   // Gather (or refresh) statistics for a table
   analyzeTable(tableName) {
-    const upperName = tableName.toUpperCase();
-    const table = this.db.tables.get(upperName);
+    const table = this.db.tables.get(tableName) || this.db.tables.get(tableName.toLowerCase()) || this.db.tables.get(tableName.toUpperCase());
     if (!table) throw new Error(`Table ${tableName} not found`);
     const stats = new TableStats(tableName, table);
     this.statsCache.set(tableName, stats);
