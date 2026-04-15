@@ -1431,9 +1431,20 @@
       "id": "T133",
       "mode": "BUILD",
       "task": "RISC-V: Implement returning closures (make_adder pattern). A function returns another function that captures variables from the outer scope. Tests: make_adder, counter factory, compose.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T131",
-      "started": "2026-04-15T22:58:05.639Z"
+      "started": "2026-04-15T22:58:05.639Z",
+      "completed": "2026-04-15T23:05:34.898Z",
+      "duration_ms": 1200000,
+      "summary": "Returning closures (make_adder), recursive self-reference fix, closure analysis for nested expressions. 6 new tests, fixed 4+ pre-existing recursive function failures. All codegen/closure/showcase tests pass."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V backend: first-class functions as arguments (higher-order). apply(f, x) pattern, map over array with function. Requires indirect call dispatch. 8+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:06:34.440Z"
     }
   ],
   "focusProjects": [
@@ -1937,6 +1948,10 @@
     {
       "time": "2026-04-15T22:55:50.436Z",
       "msg": "PLAN T131 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T23:06:28.590Z",
+      "msg": "Added T134 (BUILD) after end: RISC-V backend: first-class functions as arguments (higher-order). apply(f, x) pattern, map over array with function. Requires indirect call dispatch. 8+ tests."
     }
   ]
 }

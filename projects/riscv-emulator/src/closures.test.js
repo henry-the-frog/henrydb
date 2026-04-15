@@ -171,3 +171,69 @@ describe('Returning closures (make_adder pattern)', () => {
     assert.equal(run('let make_adder = fn(x) { fn(y) { x + y } }; let add0 = make_adder(0); puts(add0(42))'), '42');
   });
 });
+
+describe('Higher-order functions', () => {
+  it('apply function to value', () => {
+    assert.equal(run('let double = fn(x) { x * 2 }; let apply = fn(f, x) { f(x) }; puts(apply(double, 5))'), '10');
+  });
+
+  it('apply twice', () => {
+    const result = run(`
+      let twice = fn(f, x) { f(f(x)) }
+      let add3 = fn(x) { x + 3 }
+      puts(twice(add3, 10))
+    `);
+    assert.equal(result, '16');
+  });
+
+  it('pass closure as argument', () => {
+    const result = run(`
+      let make_adder = fn(x) { fn(y) { x + y } }
+      let apply = fn(f, x) { f(x) }
+      let add10 = make_adder(10)
+      puts(apply(add10, 5))
+    `);
+    assert.equal(result, '15');
+  });
+
+  it('apply with two-arg function', () => {
+    const result = run(`
+      let apply2 = fn(f, a, b) { f(a, b) }
+      let add = fn(x, y) { x + y }
+      puts(apply2(add, 3, 4))
+    `);
+    assert.equal(result, '7');
+  });
+
+  it('function composition', () => {
+    const result = run(`
+      let double = fn(x) { x * 2 }
+      let add1 = fn(x) { x + 1 }
+      let compose = fn(f, g, x) { f(g(x)) }
+      puts(compose(double, add1, 5))
+    `);
+    assert.equal(result, '12');  // double(add1(5)) = double(6) = 12
+  });
+
+  it('predicate function', () => {
+    const result = run(`
+      let is_positive = fn(x) { x > 0 }
+      let check = fn(pred, x) { pred(x) }
+      puts(check(is_positive, 42))
+    `);
+    assert.equal(result, '1');
+  });
+
+  it('negate function', () => {
+    const result = run(`
+      let negate = fn(x) { 0 - x }
+      let apply = fn(f, x) { f(x) }
+      puts(apply(negate, 42))
+    `);
+    assert.equal(result, '-42');
+  });
+
+  it('identity function', () => {
+    assert.equal(run('let id = fn(x) { x }; let apply = fn(f, x) { f(x) }; puts(apply(id, 99))'), '99');
+  });
+});

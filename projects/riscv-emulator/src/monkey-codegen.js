@@ -247,9 +247,25 @@ export class RiscVCodeGen {
     if (this.needsClosureDispatch && this._closureLabels && this._closureLabels.length > 0) {
       this._emit('');
       this._emit('# Closure dispatch: a0=closure_ptr, a1+=args');
-      this._emit('# Reads fn_id from closure[0], tail-calls the correct function');
+      this._emit('# Reads fn_id from closure[0], checks num_captured');
+      this._emit('# If num_captured==0 (function ref), shifts args down (a0=a1, a1=a2, ...)');
       this._emitLabel('_closure_dispatch');
       this._emit('  lw t0, 0(a0)');    // t0 = fn_id
+      this._emit('  lw t2, 4(a0)');    // t2 = num_captured
+      
+      // If num_captured == 0, shift args down (this is a plain function ref, not a real closure)
+      const noShift = this._label('_cd_noshift');
+      this._emit(`  bnez t2, ${noShift}`);
+      // Shift: a0=a1, a1=a2, a2=a3, ...
+      this._emit('  mv a0, a1');
+      this._emit('  mv a1, a2');
+      this._emit('  mv a2, a3');
+      this._emit('  mv a3, a4');
+      this._emit('  mv a4, a5');
+      this._emit('  mv a5, a6');
+      this._emit('  mv a6, a7');
+      this._emitLabel(noShift);
+      
       for (let i = 0; i < this._closureLabels.length; i++) {
         const skipLabel = this._label('_cd_skip');
         this._emit(`  li t1, ${i}`);
@@ -394,6 +410,34 @@ export class RiscVCodeGen {
 
   _compileIdentifier(expr) {
     const name = expr.value;
+    const varInfo = this._lookupVar(name);
+    
+    // If it's a function reference used as a value (not called), 
+    // create a closure wrapper for it
+    if (varInfo && varInfo.type === 'func') {
+      this._comment(`function ref → closure: ${name}`);
+      this.needsClosureDispatch = true;
+      this._closureLabels = this._closureLabels || [];
+      
+      // Find or create closure label for this function
+      let closureId = this._closureLabels.indexOf(name);
+      if (closureId === -1) {
+        closureId = this._closureLabels.length;
+        this._closureLabels.push(name);
+      }
+      
+      // Allocate closure object: [fn_id (4), num_captured=0 (4)]
+      this._emit('  mv t1, gp');
+      this._emit('  addi gp, gp, 8');
+      this._emit(`  li t2, ${closureId}`);
+      this._emit('  sw t2, 0(t1)');
+      this._emit('  li t2, 0');       // no captured vars
+      this._emit('  sw t2, 4(t1)');
+      this._emit('  mv a0, t1');
+      this._lastExprType = 'closure';
+      return;
+    }
+    
     this._emitLoadVar(name);
     this._lastExprType = this.varTypes.get(name) || 'unknown';
   }
