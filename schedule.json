@@ -749,6 +749,17 @@
       "completed": "2026-04-15T18:45:01.550Z",
       "duration_ms": 300000,
       "summary": "Static methods: static fn name() { }. Called on class. No regressions."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add super keyword for calling parent class methods",
+      "project": "monkey-lang",
+      "started": "2026-04-15T18:45:36.790Z",
+      "completed": "2026-04-15T18:47:20.461Z",
+      "duration_ms": 300000,
+      "summary": "super keyword: super.method() calls parent class methods with self preserved."
     }
   ],
   "focusProjects": [
@@ -1020,6 +1031,10 @@
     {
       "time": "2026-04-15T18:43:02.354Z",
       "msg": "Added T69 (BUILD) after end: monkey-lang: add static methods to classes (fn static method_name)"
+    },
+    {
+      "time": "2026-04-15T18:45:29.817Z",
+      "msg": "Added T70 (BUILD) after end: monkey-lang: add super keyword for calling parent class methods"
     }
   ]
 }

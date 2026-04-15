@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-15T18:45:01.585Z",
+  "generated": "2026-04-15T18:47:20.520Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "monkey-lang: add static methods to classes (fn static method_name)",
-    "completedAt": "2026-04-15T18:45:01.585Z",
-    "taskId": "T69",
-    "summary": "Static methods: static fn name() { }. Called on class. No regressions.",
+    "task": "monkey-lang: add super keyword for calling parent class methods",
+    "completedAt": "2026-04-15T18:47:20.520Z",
+    "taskId": "T70",
+    "summary": "super keyword: super.method() calls parent class methods with self preserved.",
     "durationMs": 300000
   },
   "schedule": {
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 69,
+    "blocksCompleted": 70,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 43,
+      "BUILD": 44,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }
