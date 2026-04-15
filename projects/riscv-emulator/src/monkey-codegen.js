@@ -322,8 +322,8 @@ export class RiscVCodeGen {
       // Check if it has free variables (is a closure)
       const freeVars = this._closureInfo?.get(stmt.value);
       if (freeVars && freeVars.length > 0) {
-        // Compile as closure expression
-        this._compileExpression(stmt.value);
+        // Compile as closure expression, passing the binding name for self-reference
+        this._compileFunctionLiteralExpr(stmt.value, name);
         this.varTypes.set(name, 'closure');
         // Record which closure label this variable maps to
         this._varClosureLabels = this._varClosureLabels || new Map();
@@ -1003,7 +1003,7 @@ export class RiscVCodeGen {
   }
 
   /** Compile a function literal as an expression (closure creation) */
-  _compileFunctionLiteralExpr(funcLit) {
+  _compileFunctionLiteralExpr(funcLit, bindingName = null) {
     const closureLabel = this._label('closure_fn');
     this._comment(`closure ${closureLabel}`);
     
@@ -1078,6 +1078,23 @@ export class RiscVCodeGen {
         } else {
           this._emit(`  sw a${i + 1}, ${loc.offset}(s0)`);
         }
+
+    // Add self-reference for recursive closures
+    if (bindingName) {
+      // Store the closure's environment pointer as a self-reference
+      // So recursive calls go through closure dispatch (which handles env correctly)
+      this._allocLocal(bindingName);
+      this._emitLoadVar(envName);
+      this._emitStoreVar(bindingName);
+      this.varTypes.set(bindingName, 'closure');
+    }
+    
+    // Copy function labels from outer scope
+    for (const [varName, varInfo] of savedVars) {
+      if (varInfo.type === 'func' && !this.variables.has(varName)) {
+        this.variables.set(varName, varInfo);
+      }
+    }
       }
     }
     
@@ -1286,12 +1303,14 @@ export class RiscVCodeGen {
       this._emit(`  addi sp, sp, ${(args.length + 1) * 4}`);
       
       // Get the closure function label from the closure labels table
-      // For now, look up the closure label from the variable's associated closure
+      // Use direct call if we know the label, otherwise use dispatch
       const closureLabel = this._varClosureLabels?.get(funcName);
       if (closureLabel) {
         this._emit(`  jal ${closureLabel}`);
       } else {
-        this.errors.push(`Unknown closure label for ${funcName}`);
+        // Use closure dispatch trampoline
+        this.needsClosureDispatch = true;
+        this._emit('  jal _closure_dispatch');
       }
     } else {
       // Check if this is a variable that might hold a closure

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T23:36:57.787Z",
+  "generated": "2026-04-15T23:39:34.869Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: support mutual recursion. Two-pass approach: first pass registers all function labels, second pass compiles bodies. is_even/is_odd pattern. 4+ tests.",
-    "startedAt": "2026-04-15T23:36:57.787Z",
-    "taskId": "T146"
+    "task": "RISC-V: recursive closures. A function defined inside another function that calls itself. let f = fn(n) { let helper = fn(i) { if (i <= 0) { return 0 }; return 1 + helper(i-1) }; return helper(n) }. Self-reference in nested scope.",
+    "startedAt": "2026-04-15T23:39:34.869Z",
+    "taskId": "T147"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 144,
+    "blocksCompleted": 145,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 16,
-      "BUILD": 96,
+      "BUILD": 97,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

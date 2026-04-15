@@ -307,3 +307,47 @@ describe('Mutual recursion', () => {
     assert.equal(result, '1231');  // fa(0)=1, fa(1)=fb(0)=2, fa(2)=fb(1)=fc(0)=3, fa(3)=fb(2)=fc(1)=fa(0)=1
   });
 });
+
+describe('Recursive closures', () => {
+  it('recursive helper with captured var', () => {
+    const result = run(`
+      let sum_to = fn(n) {
+        let helper = fn(i, acc) {
+          if (i > n) { return acc }
+          return helper(i + 1, acc + i)
+        }
+        return helper(1, 0)
+      }
+      puts(sum_to(10))
+    `);
+    assert.equal(result, '55');
+  });
+
+  it('recursive closure counts down', () => {
+    const result = run(`
+      let make_counter = fn(target) {
+        let count = fn(n) {
+          if (n >= target) { return n }
+          return count(n + 1)
+        }
+        return count(0)
+      }
+      puts(make_counter(42))
+    `);
+    assert.equal(result, '42');
+  });
+
+  it('recursive closure with no captured vars', () => {
+    const result = run(`
+      let wrap = fn(n) {
+        let helper = fn(i) {
+          if (i <= 0) { return 0 }
+          return 1 + helper(i - 1)
+        }
+        return helper(n)
+      }
+      puts(wrap(5))
+    `);
+    assert.equal(result, '5');
+  });
+});

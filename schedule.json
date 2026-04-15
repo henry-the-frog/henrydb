@@ -1573,10 +1573,21 @@
     {
       "id": "T146",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: support mutual recursion. Two-pass approach: first pass registers all function labels, second pass compiles bodies. is_even/is_odd pattern. 4+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:36:57.750Z"
+      "started": "2026-04-15T23:36:57.750Z",
+      "completed": "2026-04-15T23:38:18.622Z",
+      "duration_ms": 300000,
+      "summary": "Mutual recursion! First pass registers all function names. is_even/is_odd, mutual counting, three-way recursion all work. 3 new tests, 36 closure total. Simple fix: pre-populate variable map."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: recursive closures. A function defined inside another function that calls itself. let f = fn(n) { let helper = fn(i) { if (i <= 0) { return 0 }; return 1 + helper(i-1) }; return helper(n) }. Self-reference in nested scope.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:39:34.808Z"
     }
   ],
   "focusProjects": [
@@ -2132,6 +2143,10 @@
     {
       "time": "2026-04-15T23:36:52.406Z",
       "msg": "Added T146 (BUILD) after end: RISC-V: support mutual recursion. Two-pass approach: first pass registers all function labels, second pass compiles bodies. is_even/is_odd pattern. 4+ tests."
+    },
+    {
+      "time": "2026-04-15T23:39:26.469Z",
+      "msg": "Added T147 (BUILD) after end: RISC-V: recursive closures. A function defined inside another function that calls itself. let f = fn(n) { let helper = fn(i) { if (i <= 0) { return 0 }; return 1 + helper(i-1) }; return helper(n) }. Self-reference in nested scope."
     }
   ]
 }
