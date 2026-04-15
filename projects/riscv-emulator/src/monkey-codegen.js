@@ -288,6 +288,8 @@ export class RiscVCodeGen {
         return this._compileArrayLiteral(expr);
       case 'IndexExpression':
         return this._compileIndexExpression(expr.left, expr.index);
+      case 'ForInExpression':
+        return this._compileForIn(expr);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -478,6 +480,64 @@ export class RiscVCodeGen {
     this._emit('  lw a0, 4(a0)');          // load [base + 4 + index * 4]
   }
 
+  _compileForIn(expr) {
+    this._comment(`for (${expr.variable} in ...)`);
+    const uid = this.labelCount++;
+    const loopLabel = this._label('forin');
+    const endLabel = this._label('endforin');
+    const arrName = `__forin_arr_${uid}`;
+    const idxName = `__forin_idx_${uid}`;
+    
+    // Compile iterable (array pointer → a0)
+    this._compileExpression(expr.iterable);
+    
+    // Save array pointer to a stack slot
+    this._allocLocal(arrName);
+    this._emitStoreVar(arrName);
+    
+    // Allocate loop counter
+    this._allocLocal(idxName);
+    this._emit('  li a0, 0');
+    this._emitStoreVar(idxName);
+    
+    // Allocate loop variable
+    this._allocLocal(expr.variable);
+    
+    // Loop start
+    this._emitLabel(loopLabel);
+    
+    // Check: idx < len(arr)
+    this._emitLoadVar(idxName);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');       // push idx
+    this._emitLoadVar(arrName);
+    this._emit('  lw a0, 0(a0)');       // a0 = len(arr)
+    this._emit('  lw t0, 0(sp)');       // t0 = idx
+    this._emit('  addi sp, sp, 4');
+    this._emit('  slt a0, t0, a0');     // a0 = (idx < len)
+    this._emit(`  beqz a0, ${endLabel}`);
+    
+    // Load arr[idx] into loop variable
+    this._emitLoadVar(arrName);
+    this._emit('  mv t1, a0');          // t1 = arr pointer
+    this._emitLoadVar(idxName);
+    this._emit('  slli a0, a0, 2');     // idx * 4
+    this._emit('  add a0, t1, a0');     // arr + idx * 4
+    this._emit('  lw a0, 4(a0)');       // arr[idx]
+    this._emitStoreVar(expr.variable);
+    
+    // Execute body
+    this._compileBlock(expr.body);
+    
+    // Increment index
+    this._emitLoadVar(idxName);
+    this._emit('  addi a0, a0, 1');
+    this._emitStoreVar(idxName);
+    
+    this._emit(`  j ${loopLabel}`);
+    this._emitLabel(endLabel);
+  }
+
   _compileCallExpression(expr) {
     const funcName = expr.function.value || expr.function.toString();
     
@@ -499,6 +559,89 @@ export class RiscVCodeGen {
       if (expr.arguments.length > 0) {
         this._compileExpression(expr.arguments[0]);
         this._emit('  lw a0, 0(a0)');  // Load length from array header
+      }
+      return;
+    }
+    
+    // Special case: first() → arr[0]
+    if (funcName === 'first') {
+      this._comment('first()');
+      if (expr.arguments.length > 0) {
+        this._compileExpression(expr.arguments[0]);
+        this._emit('  lw a0, 4(a0)');  // Load first element
+      }
+      return;
+    }
+    
+    // Special case: last() → arr[len-1]
+    if (funcName === 'last') {
+      this._comment('last()');
+      if (expr.arguments.length > 0) {
+        this._compileExpression(expr.arguments[0]);
+        this._emit('  mv t0, a0');        // t0 = arr pointer
+        this._emit('  lw t1, 0(t0)');     // t1 = length
+        this._emit('  slli t1, t1, 2');   // length * 4
+        this._emit('  add t0, t0, t1');   // arr + length * 4
+        this._emit('  lw a0, 0(t0)');     // load last element
+      }
+      return;
+    }
+    
+    // Special case: push() → create new array with element appended
+    if (funcName === 'push') {
+      this._comment('push()');
+      this.needsAlloc = true;
+      if (expr.arguments.length >= 2) {
+        // Compile array arg
+        this._compileExpression(expr.arguments[0]);
+        this._emit('  addi sp, sp, -4');
+        this._emit('  sw a0, 0(sp)');     // push old array pointer
+        
+        // Compile element to push
+        this._compileExpression(expr.arguments[1]);
+        this._emit('  addi sp, sp, -4');
+        this._emit('  sw a0, 0(sp)');     // push new element
+        
+        // Pop element and old array
+        this._emit('  lw t2, 0(sp)');     // t2 = new element
+        this._emit('  lw t0, 4(sp)');     // t0 = old array
+        this._emit('  addi sp, sp, 8');
+        
+        // Get old length
+        this._emit('  lw t1, 0(t0)');     // t1 = old length
+        
+        // Allocate new array: (length + 1 + 1) * 4 bytes (header + old elements + new)
+        this._emit('  addi t3, t1, 1');   // t3 = new length
+        this._emit('  addi t4, t3, 1');   // t4 = new length + 1 (header)
+        this._emit('  slli t4, t4, 2');   // t4 * 4 = total size
+        this._emit('  mv a0, gp');        // new array base
+        this._emit('  add gp, gp, t4');   // bump allocator
+        
+        // Store new length
+        this._emit('  sw t3, 0(a0)');     // [new_arr] = new_length
+        
+        // Copy old elements
+        this._emit('  li t4, 0');         // i = 0
+        const copyLoop = this._label('push_copy');
+        const copyEnd = this._label('push_copy_end');
+        this._emitLabel(copyLoop);
+        this._emit('  bge t4, t1, ' + copyEnd);
+        this._emit('  slli t5, t4, 2');   // i * 4
+        this._emit('  add t5, t0, t5');   // old_arr + i * 4
+        this._emit('  lw t6, 4(t5)');     // old_arr[i]
+        this._emit('  slli t5, t4, 2');
+        this._emit('  add t5, a0, t5');   // new_arr + i * 4
+        this._emit('  sw t6, 4(t5)');     // new_arr[i] = old_arr[i]
+        this._emit('  addi t4, t4, 1');
+        this._emit('  j ' + copyLoop);
+        this._emitLabel(copyEnd);
+        
+        // Store new element at end
+        this._emit('  slli t5, t1, 2');   // old_length * 4
+        this._emit('  add t5, a0, t5');   // new_arr + old_length * 4
+        this._emit('  sw t2, 4(t5)');     // new_arr[old_length] = new_element
+        
+        // a0 already has new array pointer
       }
       return;
     }

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T21:14:07.301Z",
+  "generated": "2026-04-15T21:18:35.807Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Implement bump allocator for RISC-V: initialize heap pointer (gp register), _alloc subroutine (takes size in a0, returns pointer in a0), integrate with codegen prologue. Test: allocate and write to heap memory.",
-    "startedAt": "2026-04-15T21:14:07.301Z",
-    "taskId": "T102"
+    "task": "RISC-V codegen: for-in loops, push() builtin for arrays, and first/rest builtins. These enable idiomatic monkey-lang array programs to compile. 15+ tests.",
+    "startedAt": "2026-04-15T21:18:35.807Z",
+    "taskId": "T104"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1115,12 +1115,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 100,
+    "blocksCompleted": 102,
     "blocksTotal": 103,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 14,
-      "BUILD": 60,
+      "BUILD": 62,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
