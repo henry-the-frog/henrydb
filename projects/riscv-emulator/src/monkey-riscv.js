@@ -69,6 +69,7 @@ const args = process.argv.slice(2);
 let mode = 'run';
 let source = null;
 let optimize = false;
+let useStdlib = false;
 
 for (let i = 0; i < args.length; i++) {
   switch (args[i]) {
@@ -76,12 +77,22 @@ for (let i = 0; i < args.length; i++) {
     case '--disasm': mode = 'disasm'; break;
     case '--run': mode = 'run'; break;
     case '--opt': optimize = true; break;
+    case '--stdlib': useStdlib = true; break;
+    case '--repl':
+    case '-i': break; // handled later
     case '-e': source = args[++i]; break;
     default:
       if (!args[i].startsWith('-')) {
         source = readFileSync(args[i], 'utf-8');
       }
   }
+}
+
+// Load stdlib if requested
+if (useStdlib && source) {
+  const stdlibPath = new URL('./stdlib.monkey', import.meta.url).pathname;
+  const stdlib = readFileSync(stdlibPath, 'utf-8');
+  source = stdlib + '\n' + source;
 }
 
 if (!source) {

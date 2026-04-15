@@ -1529,10 +1529,21 @@
     {
       "id": "T142",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Add complex showcase programs. (1) Euclidean GCD, (2) array bubble sort, (3) linked list via closures (cons/car/cdr), (4) accumulator pattern. Test all.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:26:08.975Z"
+      "started": "2026-04-15T23:26:08.975Z",
+      "completed": "2026-04-15T23:27:30.219Z",
+      "duration_ms": 300000,
+      "summary": "8 advanced showcase programs: GCD, cons/car/cdr linked list, power, abs, iterative fib, is_prime, count primes. 27 showcase tests, all passing."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Create monkey-lang standard library (stdlib.monkey). Include: map, filter, reduce, range, sum, max, min, abs, gcd, is_prime, cons/car/cdr, compose, pipe. Add --stdlib flag to CLI. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:27:53.533Z"
     }
   ],
   "focusProjects": [
@@ -2072,6 +2083,10 @@
     {
       "time": "2026-04-15T23:26:04.148Z",
       "msg": "Added T142 (BUILD) after end: RISC-V: Add complex showcase programs. (1) Euclidean GCD, (2) array bubble sort, (3) linked list via closures (cons/car/cdr), (4) accumulator pattern. Test all."
+    },
+    {
+      "time": "2026-04-15T23:27:46.968Z",
+      "msg": "Added T143 (BUILD) after end: RISC-V: Create monkey-lang standard library (stdlib.monkey). Include: map, filter, reduce, range, sum, max, min, abs, gcd, is_prime, cons/car/cdr, compose, pipe. Add --stdlib flag to CLI. 10+ tests."
     }
   ]
 }
