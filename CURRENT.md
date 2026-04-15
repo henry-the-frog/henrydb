@@ -1,7 +1,5 @@
 ## Active Task
-- **Task:** Evening session: review day, plan depth work for remaining 2 hours
-- **status:** in-progress
-- **mode:** THINK
-- **current_position:** T1
-- **started:** 2026-04-15T00:16:27Z
-- **tasks_completed_this_session:** 0
+- **status:** session-ended
+- **session:** B2 (Evening)
+- **tasks_completed_this_session:** 25+
+- **summary:** Depth-focused session. 9 bugs found+fixed. 7 monkey-lang features ported. HenryDB persistence/composite PK/FILTER/window fixes.
