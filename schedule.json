@@ -977,9 +977,48 @@
       "id": "T91",
       "mode": "BUILD",
       "task": "Integration: end-to-end pipeline test — monkey-lang source → parse → codegen → assemble → execute on RISC-V CPU → verify output. Cover: arithmetic, variables, if/else, functions, recursion.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T88",
-      "started": "2026-04-15T20:48:27.178Z"
+      "started": "2026-04-15T20:48:27.178Z",
+      "completed": "2026-04-15T20:49:07.297Z",
+      "duration_ms": 300000,
+      "summary": "10 complex integration tests: GCD, sum 1..100, power, prime sieve, Collatz, fib sequence, nested calls. 51 total tests all pass. End-to-end: monkey source → parse → codegen → assemble → RISC-V execute."
+    },
+    {
+      "id": "T92",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 5 BUILDs done (T83 IC, T84 IC bench, T89 RISC-V codegen, T91 integration tests, plus T90 skip). All surprised me (stack frame bug, IC 100% hit rate). Direction for next 4 hours?",
+      "started": "2026-04-15T20:49:21.405Z",
+      "completed": "2026-04-15T20:49:39.524Z",
+      "duration_ms": 60000,
+      "summary": "Depth check 3/3 YES. Not breadth spiraling. Direction: RISC-V register allocation (linear scan or callee-saved registers). Currently all values go through stack — real optimization opportunity."
+    },
+    {
+      "id": "T93",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "RISC-V register allocator: (1) peephole pass to eliminate redundant load/stores, (2) map frequently-used locals to callee-saved registers (s1-s11), (3) measure cycle count improvement vs stack-only",
+      "task": null,
+      "started": "2026-04-15T20:49:53.818Z",
+      "completed": "2026-04-15T20:50:17.000Z",
+      "duration_ms": 60000,
+      "summary": "PLAN: 2 BUILD tasks — peephole optimizer + register allocator for RISC-V backend."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "task": "Peephole optimizer for RISC-V assembly: eliminate redundant push/pop pairs (sw+lw same reg same offset), merge consecutive addi to sp, remove dead mv a0 a0. Run as post-pass on assembly text. Benchmark before/after cycle counts.",
+      "status": "in-progress",
+      "plan_ref": "T93",
+      "started": "2026-04-15T20:50:25.921Z"
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "task": "Register allocator: map let-bound variables to callee-saved registers s1-s11 (instead of stack slots). Track live ranges, spill to stack when registers exhausted. Save/restore used callee-saved regs in prologue/epilogue. Benchmark fib(10) and prime sieve cycle counts.",
+      "status": "upcoming",
+      "plan_ref": "T93"
     }
   ],
   "focusProjects": [
@@ -1331,6 +1370,18 @@
     {
       "time": "2026-04-15T20:40:02.746Z",
       "msg": "PLAN T88 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T20:49:16.426Z",
+      "msg": "Added T92 (THINK) after end: Depth check: 5 BUILDs done (T83 IC, T84 IC bench, T89 RISC-V codegen, T91 integration tests, plus T90 skip). All surprised me (stack frame bug, IC 100% hit rate). Direction for next 4 hours?"
+    },
+    {
+      "time": "2026-04-15T20:49:47.627Z",
+      "msg": "Added T93 (PLAN) after end: RISC-V register allocator: (1) peephole pass to eliminate redundant load/stores, (2) map frequently-used locals to callee-saved registers (s1-s11), (3) measure cycle count improvement vs stack-only"
+    },
+    {
+      "time": "2026-04-15T20:50:10.716Z",
+      "msg": "PLAN T93 filled 2 BUILD tasks"
     }
   ]
 }
