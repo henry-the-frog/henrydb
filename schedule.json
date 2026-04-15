@@ -5,448 +5,93 @@
       "id": "T1",
       "mode": "THINK",
       "status": "done",
-      "task": "Evening session: review day, plan depth work for remaining 2 hours",
-      "started": "2026-04-15T00:16:27.006Z",
-      "completed": "2026-04-15T00:16:44.744Z",
+      "task": "Evening C session: review today's progress, pick exploration direction for 2 hours",
+      "started": "2026-04-15T02:15:59.030Z",
+      "completed": "2026-04-15T02:16:57.242Z",
       "duration_ms": 60000,
-      "summary": "Reviewed day state: 200+ tasks, 17 bugs, parser divergence is top priority debt. Queue correct: parser unification then HenryDB persistence depth."
+      "summary": "Reviewed day: 200+ tasks, 26 bugs. Parser unification done (608/608), Cell-based closures, SSI fix, 10 features ported. Evening direction: explore something new and fun. Monkey-lang WASM backend needs closures+GC — good depth project. Or start something new."
     },
     {
       "id": "T2",
       "mode": "PLAN",
       "status": "done",
-      "goal": "Parser unification: merge diverged root and WASM Monkey-lang parsers",
+      "goal": "Evening exploration: pick a depth project to dig into",
       "task": null,
-      "started": "2026-04-15T00:16:52.670Z",
-      "completed": "2026-04-15T00:19:16.537Z",
+      "started": "2026-04-15T02:17:05.390Z",
+      "completed": "2026-04-15T02:19:47.843Z",
       "duration_ms": 120000,
-      "summary": "Analyzed divergence: root parser has switch/fstring/null but compiler lacks them (12 failing parity tests). WASM project has 1535/1540 tests. Plan: add 3 missing compilations to root compiler. fill applied 3 BUILD tasks."
+      "summary": "Planned GC for root Monkey-lang VM. 3 BUILD tasks: core mark-sweep, stress tests, optimizations. The VM has no GC — objects allocated but never freed. Mark-sweep with root set from stack+globals+frames."
+    },
+    {
+      "id": "T8",
+      "mode": "BUILD",
+      "task": "Build mark-sweep GC for root Monkey-lang VM: root marking, object graph tracing, sweep phase, GC trigger on allocation threshold",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-15T02:19:57.822Z",
+      "completed": "2026-04-15T02:25:29.014Z",
+      "duration_ms": 480000,
+      "summary": "Built mark-sweep GC for root Monkey-lang VM. GarbageCollector class with mark/sweep phases, root tracing from stack/globals/frames/constants, Symbol-based mark bits, configurable threshold. VM instrumented with _track() at all major allocation sites. 26/26 tests passing, 634/634 total."
+    },
+    {
+      "id": "T9",
+      "mode": "BUILD",
+      "task": "Add GC stress tests: circular references, closure chains, large allocations, GC during recursion",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-15T02:25:38.784Z",
+      "completed": "2026-04-15T02:26:30.730Z",
+      "duration_ms": 180000,
+      "summary": "Added 13 stress tests for GC. Closure chains (compose, factory, recursive), large allocations, correctness under pressure (live data, hash integrity, closure captures, mutable cells, fibonacci). Stats accuracy. 39 total GC tests, 647/647 all passing."
+    },
+    {
+      "id": "T10",
+      "mode": "BUILD",
+      "task": "Explore GC optimizations: generational hints, incremental marking, weak references",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-15T02:26:39.945Z",
+      "completed": "2026-04-15T02:29:02.288Z",
+      "duration_ms": 360000,
+      "summary": "Added generational GC (young/old gen, minor/major collections, promotion, write barrier, remembered set) + weak references (WeakRef-based cache pattern). 11 new tests, 50 total GC tests, 658/658 all passing."
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "done",
-      "task": "Add SwitchExpression compilation to root compiler+VM (4 parity tests)",
-      "plan_ref": "T2",
+      "task": null,
       "project": "monkey-lang",
-      "started": "2026-04-15T00:19:24.831Z",
-      "completed": "2026-04-15T00:24:19.733Z",
-      "duration_ms": 480000,
-      "summary": "Switch expression compiled in VM: value form + condition form. Fixed parser (brace-optional case bodies), fixed evaluator (condition-form truthiness). 4/4 parity tests pass, 600/608 total."
-    },
-    {
-      "id": "T9",
-      "mode": "BUILD",
-      "task": "Add FStringExpression compilation to root compiler+VM (5 parity tests)",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-15T00:24:27.616Z",
-      "completed": "2026-04-15T00:26:42.670Z",
-      "duration_ms": 180000,
-      "summary": "F-string compilation: text segments as constants, expression segments via str() builtin + OpAdd concatenation. 5/5 parity tests pass."
-    },
-    {
-      "id": "T10",
-      "mode": "BUILD",
-      "task": "Add NullLiteral compilation to root compiler+VM (3 parity tests)",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-15T00:26:52.190Z",
-      "completed": "2026-04-15T00:27:37.137Z",
-      "duration_ms": 120000,
-      "summary": "NullLiteral compilation: OpNull. Root tests now 608/608 (0 failures). All parity tests passing for switch, f-strings, null, constant folding, HOFs."
+      "started": "2026-04-15T02:29:18.050Z",
+      "completed": "2026-04-15T02:29:18.194Z",
+      "duration_ms": 0,
+      "summary": "Skipped - unfilled placeholder."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping",
-      "started": "2026-04-15T00:27:45.669Z",
-      "completed": "2026-04-15T00:28:20.465Z",
-      "duration_ms": 60000,
-      "summary": "Housekeeping: git push, daily log, CURRENT.md updated."
+      "status": "in-progress",
+      "task": "Mid-session housekeeping",
+      "started": "2026-04-15T02:29:28.109Z"
     },
     {
       "id": "T5",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on parser unification, plan next depth work",
-      "started": "2026-04-15T00:28:31.148Z",
-      "completed": "2026-04-15T00:28:47.390Z",
-      "duration_ms": 60000,
-      "summary": "Reflected: 2 bugs found (condition-form switch, brace-optional parser). Key insight: BlockStatement vs raw expression compilation pattern. Parser divergence still exists but root is clean at 608/608. Pivot to HenryDB depth."
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deep dive exploration (TBD after THINK)",
+      "project": "monkey-lang"
     },
     {
       "id": "T6",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB depth: stress-test new features with persistence round-trips",
+      "mode": "BUILD",
+      "status": "upcoming",
       "task": null,
-      "started": "2026-04-15T00:28:59.797Z",
-      "completed": "2026-04-15T00:29:48.041Z",
-      "duration_ms": 120000,
-      "summary": "Planned: persistence round-trips for sequences/SERIAL and materialized views, plus adversarial stress testing. Expression indexes, generated columns, FKs already covered."
+      "project": "monkey-lang"
     },
     {
       "id": "T7",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add persistence round-trip tests for sequences/SERIAL",
-      "plan_ref": "T6",
-      "project": "henrydb",
-      "started": "2026-04-15T00:29:58.524Z",
-      "completed": "2026-04-15T00:34:43.737Z",
-      "duration_ms": 360000,
-      "summary": "Found+fixed persistence bug: sequences, materialized views, comments were silently lost on save/restore. Added serialize/fromSerialized for all three. 5 round-trip tests pass."
-    },
-    {
-      "id": "T11",
-      "mode": "BUILD",
-      "task": "Add persistence round-trip tests for materialized views",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-15T00:35:02.593Z",
-      "completed": "2026-04-15T00:35:02.736Z",
-      "duration_ms": 0,
-      "summary": "Already done in T7."
-    },
-    {
-      "id": "T12",
-      "mode": "BUILD",
-      "task": "Stress-test HenryDB: adversarial query patterns that exercise persistence",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-15T00:35:13.937Z",
-      "completed": "2026-04-15T00:38:56.221Z",
-      "duration_ms": 600000,
-      "summary": "Found+fixed table-level composite PRIMARY KEY parser bug. Added table-level UNIQUE, FOREIGN KEY support. 5 adversarial persistence stress tests: 10-table schema, double round-trip, FK+SERIAL+INSERT, mat view mutation, CTE+window."
-    },
-    {
-      "id": "T8",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final housekeeping + push",
-      "started": "2026-04-15T00:39:09.396Z",
-      "completed": "2026-04-15T00:39:47.404Z",
-      "duration_ms": 30000,
-      "summary": "Git pushed all repos. Workspace synced."
-    },
-    {
-      "id": "T13",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Depth check: 5 BUILD tasks done. Any surprises?",
-      "started": "2026-04-15T00:40:08.993Z",
-      "completed": "2026-04-15T00:40:22.655Z",
-      "duration_ms": 30000,
-      "summary": "Depth check PASS: 4 bugs found, genuine surprises (composite PK parser, persistence data loss). Not in breadth spiral. Continue."
-    },
-    {
-      "id": "T14",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: write composite PK comprehensive tests (multi-column PKs with SERIAL, FKs, JOINs)",
-      "project": "henrydb",
-      "started": "2026-04-15T00:40:37.618Z",
-      "completed": "2026-04-15T00:43:33.089Z",
-      "duration_ms": 480000,
-      "summary": "Composite PK: full support with uniqueness enforcement. Found+fixed query correctness bug (individual indexes on composite PK columns returned wrong results). 8 tests."
-    },
-    {
-      "id": "T15",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: run full test suite sweep — find regressions from parser changes",
-      "project": "henrydb",
-      "started": "2026-04-15T00:43:47.349Z",
-      "completed": "2026-04-15T00:50:13.224Z",
-      "duration_ms": 480000,
-      "summary": "Full test sweep: 781 tests across joins, e2e, SQL, selects, subqueries, windows, CTEs, aggregates, indexes. 0 regressions from parser changes. 5 pre-existing failures (2 missing pg package, 3 window ROW_NUMBER bug)."
-    },
-    {
-      "id": "T16",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: port break/continue to VM compiler (currently evaluator-only)",
-      "project": "monkey-lang",
-      "started": "2026-04-15T00:50:29.348Z",
-      "completed": "2026-04-15T00:53:18.698Z",
-      "duration_ms": 240000,
-      "summary": "Break/continue already implemented in VM compiler (loopStack with breakJumps and continueTarget). Verified with parity tests: both produce correct results. Root uses set-syntax not for-in."
-    },
-    {
-      "id": "T17",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: FILTER clause for aggregates (COUNT(*) FILTER (WHERE x > 5))",
-      "project": "henrydb",
-      "started": "2026-04-15T00:53:33.377Z",
-      "completed": "2026-04-15T00:57:01.452Z",
-      "duration_ms": 600000,
-      "summary": "FILTER clause for aggregates: parser + executor for both standalone and GROUP BY paths. 7 tests (COUNT, SUM, AVG, MIN, MAX with FILTER, GROUP BY, edge cases)."
-    },
-    {
-      "id": "T18",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping",
-      "started": "2026-04-15T00:57:17.438Z",
-      "completed": "2026-04-15T00:57:42.811Z",
-      "duration_ms": 60000,
-      "summary": "Housekeeping: daily log updated, git pushed all repos."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: fix pre-existing window function ROW_NUMBER() bug",
-      "project": "henrydb",
-      "started": "2026-04-15T00:58:17.049Z",
-      "completed": "2026-04-15T01:00:44.230Z",
-      "duration_ms": 360000,
-      "summary": "Fixed window function output ordering: rows now sorted by window ORDER BY (matching PostgreSQL). Fixed 3 pre-existing test failures (ROW_NUMBER, window+WHERE). 116/117 pass (1 is pg pkg)."
-    },
-    {
-      "id": "T20",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: LATERAL JOIN support (FROM t1, LATERAL (SELECT ... WHERE t1.col = ...))",
-      "project": "henrydb",
-      "started": "2026-04-15T01:01:02.995Z",
-      "completed": "2026-04-15T01:01:39.458Z",
-      "duration_ms": 120000,
-      "summary": "LATERAL JOIN already fully implemented: parser (LATERAL keyword, CROSS APPLY, OUTER APPLY) + executor (correlated subquery with _outerRow). Verified with top-N per group pattern."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: port ternary operator to root parser+compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:01:50.717Z",
-      "completed": "2026-04-15T01:05:15.247Z",
-      "duration_ms": 240000,
-      "summary": "Ternary expression compilation: condition ? consequence : alternative using JumpNotTruthy+Jump pattern. AST, parser, evaluator already existed — only compiler was missing. 5/5 parity tests, 608/608 full suite."
-    },
-    {
-      "id": "T22",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final session housekeeping",
-      "started": "2026-04-15T01:05:35.467Z",
-      "completed": "2026-04-15T01:05:54.068Z",
-      "duration_ms": 30000,
-      "summary": "Housekeeping: git synced."
-    },
-    {
-      "id": "T23",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: GROUPING SETS support (extension of GROUP BY ROLLUP/CUBE)",
-      "project": "henrydb",
-      "started": "2026-04-15T01:06:20.579Z",
-      "completed": "2026-04-15T01:07:04.353Z",
-      "duration_ms": 120000,
-      "summary": "GROUPING SETS, ROLLUP, CUBE all already implemented and working. Verified with test queries."
-    },
-    {
-      "id": "T24",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: port range expression (1..10) to root parser+evaluator+compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:07:17.642Z",
-      "completed": "2026-04-15T01:12:31.819Z",
-      "duration_ms": 480000,
-      "summary": "Range expression (a..b) compiled in VM via __range_inclusive builtin. Forward and reverse ranges. Handles InfixExpression with .. operator. 6 parity tests, 608/608 full suite."
-    },
-    {
-      "id": "T25",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session end housekeeping",
-      "started": "2026-04-15T01:12:58.140Z",
-      "completed": "2026-04-15T01:12:58.285Z",
-      "duration_ms": 10000,
-      "summary": "Quick housekeeping."
-    },
-    {
-      "id": "T26",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Depth check: 10 BUILD tasks. Evaluate breadth vs depth.",
-      "started": "2026-04-15T01:13:09.398Z",
-      "completed": "2026-04-15T01:13:25.213Z",
-      "duration_ms": 30000,
-      "summary": "Depth check PASS: 6 bugs found, high learning rate. Composite PK correctness, persistence data loss, window ordering — all genuine depth work."
-    },
-    {
-      "id": "T27",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: EXPLAIN ANALYZE (show actual row counts and timing)",
-      "project": "henrydb",
-      "started": "2026-04-15T01:13:35.923Z",
-      "completed": "2026-04-15T01:14:45.504Z",
-      "duration_ms": 120000,
-      "summary": "EXPLAIN ANALYZE already fully implemented: timing, I/O stats (heap scans, buffer reads, index lookups), row counts, plan tree builder. Verified with GROUP BY query."
-    },
-    {
-      "id": "T28",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: port enum statement to root parser+evaluator+compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:14:57.352Z",
-      "completed": "2026-04-15T01:23:28.810Z",
-      "duration_ms": 720000,
-      "summary": "Enum statement ported: parser, evaluator (MonkeyEnum), compiler (hash of strings). Fixed 3 bugs: dot property access was function-calling, MonkeyHash.inspect() crashed in VM, SymbolScopes case mismatch. 608/608 tests."
-    },
-    {
-      "id": "T29",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session end: final log + push",
-      "started": "2026-04-15T01:23:48.922Z",
-      "completed": "2026-04-15T01:23:49.066Z",
-      "duration_ms": 10000,
-      "summary": "Quick mid-session housekeeping."
-    },
-    {
-      "id": "T30",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: TABLESAMPLE SYSTEM/BERNOULLI (random sample of table)",
-      "project": "henrydb",
-      "started": "2026-04-15T01:24:16.254Z",
-      "completed": "2026-04-15T01:25:03.047Z",
-      "duration_ms": 60000,
-      "summary": "TABLESAMPLE BERNOULLI/SYSTEM already implemented. Parser + executor with random percentage filtering. Verified with 1000-row table: 10% → ~96 rows, 50% → ~492 rows."
-    },
-    {
-      "id": "T31",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: port import statement to root parser+evaluator",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:25:49.818Z",
-      "completed": "2026-04-15T01:25:49.962Z",
-      "duration_ms": 30000,
-      "summary": "Skipped: import requires full module system (multi-session project). Replaced with compound assignment."
-    },
-    {
-      "id": "T32",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final session close",
-      "started": "2026-04-15T01:26:10.910Z",
-      "completed": "2026-04-15T01:26:11.055Z",
-      "duration_ms": 10000,
-      "summary": "Mid-session housekeeping."
-    },
-    {
-      "id": "T33",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: add postfix operators (x++, x--) to root parser+evaluator+compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:26:23.487Z",
-      "completed": "2026-04-15T01:29:02.698Z",
-      "duration_ms": 360000,
-      "summary": "Postfix ++/--: lexer tokens, parser desugaring to set x = x ± 1. Works in both evaluator and VM. 3 parity tests, 608/608 full suite."
-    },
-    {
-      "id": "T34",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: add compound assignment (+=, -=, *=, /=) to root",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:29:24.977Z",
-      "completed": "2026-04-15T01:30:18.376Z",
-      "duration_ms": 60000,
-      "summary": "Compound assignment (+=, -=, *=, /=) already fully implemented in lexer, parser, evaluator, and compiler. 5 parity tests confirm. Also works with strings (+=)."
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: add optional chaining operator (?.) to root",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:30:42.169Z",
-      "completed": "2026-04-15T01:34:03.454Z",
-      "duration_ms": 480000,
-      "summary": "Optional chaining (?.): lexer token, parser (obj?.prop + obj?.[key]), evaluator (null propagation), compiler (null-check with jump). 2 parity tests, 608/608."
-    },
-    {
-      "id": "T36",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: RETURNING clause for INSERT/UPDATE/DELETE",
-      "project": "henrydb",
-      "started": "2026-04-15T01:34:21.587Z",
-      "completed": "2026-04-15T01:35:01.044Z",
-      "duration_ms": 60000,
-      "summary": "RETURNING clause already fully implemented for INSERT/UPDATE/DELETE. Supports * and column lists. Verified."
-    },
-    {
-      "id": "T37",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final session close: log + push",
-      "started": "2026-04-15T01:35:26.834Z",
-      "completed": "2026-04-15T01:35:26.977Z",
-      "duration_ms": 5000,
-      "summary": "Deferred, more work to do."
-    },
-    {
-      "id": "T38",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: add arrow functions (x => x + 1) to root parser+evaluator+compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:35:27.234Z",
-      "completed": "2026-04-15T01:40:29.800Z",
-      "duration_ms": 480000,
-      "summary": "Arrow functions: single-param (x => expr) in parseIdentifier prefix position. Avoids conflict with match expression. 608/608 tests."
-    },
-    {
-      "id": "T39",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: compile match expression in VM",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:41:01.257Z",
-      "completed": "2026-04-15T01:42:17.785Z",
-      "duration_ms": 360000,
-      "summary": "Match expression compiled in VM: chained equality comparisons with default arm. Same pattern as switch. 4 parity tests, 608/608."
-    },
-    {
-      "id": "T40",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Log and push session results",
-      "started": "2026-04-15T01:42:31.696Z",
-      "completed": "2026-04-15T01:43:16.187Z",
-      "duration_ms": 60000,
-      "summary": "Daily log updated with full session results. All repos pushed."
-    },
-    {
-      "id": "T41",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: add for-in loop compilation to VM (for (let x in array) { body })",
-      "project": "monkey-lang",
-      "started": "2026-04-15T01:43:33.138Z",
-      "completed": "2026-04-15T01:45:16.739Z",
-      "duration_ms": 120000,
-      "summary": "For-in loop already fully implemented in VM compiler. Root uses for (x in ...) syntax (no let). 3 parity tests pass."
-    },
-    {
-      "id": "T42",
-      "mode": "MAINTAIN",
-      "status": "in-progress",
-      "task": "Session close: update daily log evening summary",
-      "started": "2026-04-15T01:45:35.160Z"
+      "status": "upcoming",
+      "task": "Session close: log + push"
     }
   ],
   "focusProjects": [
@@ -456,168 +101,40 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-15T00:16:00.246Z",
+      "time": "2026-04-15T02:15:32.497Z",
       "msg": "Re-initialized same-day queue. Focus preserved: [henrydb, monkey-lang]"
     },
     {
-      "time": "2026-04-15T00:16:04.954Z",
-      "msg": "Added T1 (THINK) after end: Evening session: review day, plan depth work for remaining 2 hours"
+      "time": "2026-04-15T02:15:37.250Z",
+      "msg": "Added T1 (THINK) after end: Evening C session: review today's progress, pick exploration direction for 2 hours"
     },
     {
-      "time": "2026-04-15T00:16:12.241Z",
-      "msg": "Added T2 (PLAN) after end: Parser unification: merge diverged root and WASM Monkey-lang parsers"
+      "time": "2026-04-15T02:15:43.837Z",
+      "msg": "Added T2 (PLAN) after T1: Evening exploration: pick a depth project to dig into"
     },
     {
-      "time": "2026-04-15T00:16:17.536Z",
-      "msg": "Added T3 (BUILD) after end: null"
+      "time": "2026-04-15T02:15:48.979Z",
+      "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-15T00:16:17.655Z",
-      "msg": "Added T4 (MAINTAIN) after end: Housekeeping"
+      "time": "2026-04-15T02:15:49.097Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Mid-session housekeeping"
     },
     {
-      "time": "2026-04-15T00:16:17.773Z",
-      "msg": "Added T5 (THINK) after end: Reflect on parser unification, plan next depth work"
+      "time": "2026-04-15T02:15:49.215Z",
+      "msg": "Added T5 (EXPLORE) after T4: Deep dive exploration (TBD after THINK)"
     },
     {
-      "time": "2026-04-15T00:16:17.891Z",
-      "msg": "Added T6 (PLAN) after end: HenryDB depth: stress-test new features with persistence round-trips"
+      "time": "2026-04-15T02:15:49.333Z",
+      "msg": "Added T6 (BUILD) after T5: null"
     },
     {
-      "time": "2026-04-15T00:16:18.009Z",
-      "msg": "Added T7 (BUILD) after end: null"
+      "time": "2026-04-15T02:15:49.450Z",
+      "msg": "Added T7 (MAINTAIN) after T6: Session close: log + push"
     },
     {
-      "time": "2026-04-15T00:16:18.126Z",
-      "msg": "Added T8 (MAINTAIN) after end: Final housekeeping + push"
-    },
-    {
-      "time": "2026-04-15T00:19:09.986Z",
+      "time": "2026-04-15T02:19:41.242Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-15T00:29:42.715Z",
-      "msg": "PLAN T6 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-15T00:39:58.231Z",
-      "msg": "Added T13 (THINK) after end: Depth check: 5 BUILD tasks done. Any surprises?"
-    },
-    {
-      "time": "2026-04-15T00:39:58.349Z",
-      "msg": "Added T14 (BUILD) after end: HenryDB: write composite PK comprehensive tests (multi-column PKs with SERIAL, FKs, JOINs)"
-    },
-    {
-      "time": "2026-04-15T00:39:58.467Z",
-      "msg": "Added T15 (BUILD) after end: HenryDB: run full test suite sweep — find regressions from parser changes"
-    },
-    {
-      "time": "2026-04-15T00:39:58.586Z",
-      "msg": "Added T16 (BUILD) after end: Monkey: port break/continue to VM compiler (currently evaluator-only)"
-    },
-    {
-      "time": "2026-04-15T00:39:58.704Z",
-      "msg": "Added T17 (BUILD) after end: HenryDB: FILTER clause for aggregates (COUNT(*) FILTER (WHERE x > 5))"
-    },
-    {
-      "time": "2026-04-15T00:39:58.821Z",
-      "msg": "Added T18 (MAINTAIN) after end: Housekeeping"
-    },
-    {
-      "time": "2026-04-15T00:58:07.562Z",
-      "msg": "Added T19 (BUILD) after end: HenryDB: fix pre-existing window function ROW_NUMBER() bug"
-    },
-    {
-      "time": "2026-04-15T00:58:07.680Z",
-      "msg": "Added T20 (BUILD) after end: HenryDB: LATERAL JOIN support (FROM t1, LATERAL (SELECT ... WHERE t1.col = ...))"
-    },
-    {
-      "time": "2026-04-15T00:58:07.798Z",
-      "msg": "Added T21 (BUILD) after end: Monkey: port ternary operator to root parser+compiler"
-    },
-    {
-      "time": "2026-04-15T00:58:07.915Z",
-      "msg": "Added T22 (MAINTAIN) after end: Final session housekeeping"
-    },
-    {
-      "time": "2026-04-15T01:06:03.458Z",
-      "msg": "Added T23 (BUILD) after end: HenryDB: GROUPING SETS support (extension of GROUP BY ROLLUP/CUBE)"
-    },
-    {
-      "time": "2026-04-15T01:06:03.576Z",
-      "msg": "Added T24 (BUILD) after end: Monkey: port range expression (1..10) to root parser+evaluator+compiler"
-    },
-    {
-      "time": "2026-04-15T01:06:03.693Z",
-      "msg": "Added T25 (MAINTAIN) after end: Session end housekeeping"
-    },
-    {
-      "time": "2026-04-15T01:12:45.286Z",
-      "msg": "Added T26 (THINK) after end: Depth check: 10 BUILD tasks. Evaluate breadth vs depth."
-    },
-    {
-      "time": "2026-04-15T01:12:45.404Z",
-      "msg": "Added T27 (BUILD) after end: HenryDB: EXPLAIN ANALYZE (show actual row counts and timing)"
-    },
-    {
-      "time": "2026-04-15T01:12:45.522Z",
-      "msg": "Added T28 (BUILD) after end: Monkey: port enum statement to root parser+evaluator+compiler"
-    },
-    {
-      "time": "2026-04-15T01:12:45.639Z",
-      "msg": "Added T29 (MAINTAIN) after end: Session end: final log + push"
-    },
-    {
-      "time": "2026-04-15T01:23:58.246Z",
-      "msg": "Added T30 (BUILD) after end: HenryDB: TABLESAMPLE SYSTEM/BERNOULLI (random sample of table)"
-    },
-    {
-      "time": "2026-04-15T01:23:58.365Z",
-      "msg": "Added T31 (BUILD) after end: Monkey: port import statement to root parser+evaluator"
-    },
-    {
-      "time": "2026-04-15T01:23:58.482Z",
-      "msg": "Added T32 (MAINTAIN) after end: Final session close"
-    },
-    {
-      "time": "2026-04-15T01:25:57.056Z",
-      "msg": "Added T33 (BUILD) after end: Monkey: add postfix operators (x++, x--) to root parser+evaluator+compiler"
-    },
-    {
-      "time": "2026-04-15T01:29:18.034Z",
-      "msg": "Added T34 (BUILD) after end: Monkey: add compound assignment (+=, -=, *=, /=) to root"
-    },
-    {
-      "time": "2026-04-15T01:30:31.142Z",
-      "msg": "Added T35 (BUILD) after end: Monkey: add optional chaining operator (?.) to root"
-    },
-    {
-      "time": "2026-04-15T01:30:31.260Z",
-      "msg": "Added T36 (BUILD) after end: HenryDB: RETURNING clause for INSERT/UPDATE/DELETE"
-    },
-    {
-      "time": "2026-04-15T01:30:31.396Z",
-      "msg": "Added T37 (MAINTAIN) after end: Final session close: log + push"
-    },
-    {
-      "time": "2026-04-15T01:35:17.860Z",
-      "msg": "Added T38 (BUILD) after end: Monkey: add arrow functions (x => x + 1) to root parser+evaluator+compiler"
-    },
-    {
-      "time": "2026-04-15T01:40:53.433Z",
-      "msg": "Added T39 (BUILD) after end: Monkey: compile match expression in VM"
-    },
-    {
-      "time": "2026-04-15T01:41:01.025Z",
-      "msg": "Added T40 (MAINTAIN) after end: Log and push session results"
-    },
-    {
-      "time": "2026-04-15T01:43:32.904Z",
-      "msg": "Added T41 (BUILD) after end: Monkey: add for-in loop compilation to VM (for (let x in array) { body })"
-    },
-    {
-      "time": "2026-04-15T01:45:34.928Z",
-      "msg": "Added T42 (MAINTAIN) after end: Session close: update daily log evening summary"
     }
   ]
 }
