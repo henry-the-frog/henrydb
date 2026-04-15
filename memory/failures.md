@@ -143,3 +143,11 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 **Related:** Adaptive engine too broadly eligible — accepted DISTINCT, OFFSET, NOT IN queries but didn't implement them. Fix: exclusion checks in `_isAdaptiveEligible()`
 
 **Prevention:** Any query shortcut (cache, adaptive engine, query rewriter) must check transaction state. If in a transaction, MUST route through the session's MVCC layer.
+
+## 2026-04-15: LATERAL JOIN WHERE Filter Dropped
+
+**Bug:** WHERE predicates on LATERAL subquery columns were silently ignored.
+**Root cause:** pushdownPredicates() pushed WHERE conditions referencing the lateral alias (e.g., sub.max_sal IS NOT NULL) into join.filter. But _executeJoin()'s LATERAL path returned results without checking join.filter. The predicates were pushed but never applied.
+**Fix:** Apply join.filter to the LATERAL result rows before returning.
+**Key insight:** When adding a query optimization pass (like predicate pushdown), you must verify that ALL join execution paths honor the filter placement. The LATERAL path was added later and missed this.
+**Prevention:** Any new join type must check for join.filter. The pushdown optimizer doesn't know about execution paths — it just assigns filters.
