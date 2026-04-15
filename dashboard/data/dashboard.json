@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T17:46:50.266Z",
+  "generated": "2026-04-15T17:50:43.422Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-15T17:46:50.266Z",
-    "taskId": "T50",
-    "summary": "PLAN: 3 BUILD tasks for classes — syntax, evaluator, tests.",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "Add class syntax to lexer+parser+AST (class keyword, self, method definitions)",
+    "completedAt": "2026-04-15T17:50:43.422Z",
+    "taskId": "T51",
+    "summary": "Class syntax: lexer tokens (class/self/new/extends), parser, AST nodes. Fields + methods parse correctly.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 50,
+    "blocksCompleted": 51,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 26,
+      "BUILD": 27,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
