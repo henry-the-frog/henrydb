@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T14:19:17.530Z",
+  "generated": "2026-04-15T14:31:47.322Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Review Daniel PR #3: checkout branch, run full test suite, code review, merge or request changes",
-    "completedAt": "2026-04-15T14:19:17.530Z",
-    "taskId": "T3",
-    "summary": "Reviewed + merged Daniel PR #3 (JIT event instrumentation). 695+/-28 LOC, 16/16 tests pass, 1551/1556 full suite (preexisting wasm-perf failures). Also checked PR #2 — already closed. TODO.md cleaned.",
-    "durationMs": 300000
+    "task": "Implement try/catch compilation in monkey-lang VM (OpTry/OpThrow/OpCatch)",
+    "completedAt": "2026-04-15T14:31:47.322Z",
+    "taskId": "T15",
+    "summary": "Implemented try/catch/throw/finally exception handling in monkey-lang. Full stack: lexer keywords, parser rules, AST nodes, 3 new opcodes (OpTry/OpThrow/OpPopHandler), VM handler stack with frame unwinding, evaluator support. 29 new tests (1580 total). Cross-function throws work.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -124,12 +124,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 3,
+    "blocksCompleted": 4,
     "blocksTotal": 15,
     "modeDistribution": {
       "THINK": 1,
       "PLAN": 1,
-      "BUILD": 1
+      "BUILD": 2
     }
   }
 }
