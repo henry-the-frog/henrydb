@@ -1169,7 +1169,8 @@ export class Database {
     });
     // Choose storage engine: BTREE (clustered) or HEAP (default)
     let heap;
-    const pkCol = schema.find(c => c.primaryKey);
+    const pkCols = schema.filter(c => c.primaryKey);
+    const pkCol = pkCols.length === 1 ? pkCols[0] : null;
     if (ast.engine === 'BTREE' && pkCol) {
       const pkIdx = schema.findIndex(c => c.primaryKey);
       heap = new BTreeTable(ast.table, { pkIndices: [pkIdx] });
@@ -1178,9 +1179,15 @@ export class Database {
     }
     const indexes = new Map();
 
-    // Create index for primary key
+    // Create index for single-column primary key only
+    // Composite PKs don't get individual column indexes (they're not unique per-column)
     if (pkCol) {
       indexes.set(pkCol.name, new BPlusTree(32));
+    }
+    
+    // Store composite PK metadata for uniqueness enforcement
+    if (pkCols.length > 1) {
+      // Will be used during INSERT to check composite uniqueness
     }
     
     // Create unique indexes
@@ -1989,6 +1996,23 @@ export class Database {
         }
         if (!found) {
           throw new Error(`Foreign key constraint violated: ${val} not found in ${col.references.table}(${col.references.column})`);
+        }
+      }
+    }
+    // Composite PRIMARY KEY uniqueness check
+    const pkIndices = [];
+    for (let i = 0; i < table.schema.length; i++) {
+      if (table.schema[i].primaryKey) pkIndices.push(i);
+    }
+    if (pkIndices.length > 1) {
+      for (const { values: existing } of table.heap.scan()) {
+        let match = true;
+        for (const idx of pkIndices) {
+          if (existing[idx] !== values[idx]) { match = false; break; }
+        }
+        if (match) {
+          const keyDesc = pkIndices.map(i => `${table.schema[i].name}=${values[i]}`).join(', ');
+          throw new Error(`Duplicate key value violates unique constraint: (${keyDesc})`);
         }
       }
     }
