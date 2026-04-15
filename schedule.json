@@ -231,8 +231,12 @@
       "id": "T24",
       "mode": "BUILD",
       "task": "Implement shape IDs on MonkeyHash + inline cache slots in VM OpIndex for hash lookups + benchmarks",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "done",
+      "plan_ref": "T21",
+      "started": "2026-04-15T16:08:28.415Z",
+      "completed": "2026-04-15T16:12:48.942Z",
+      "duration_ms": 900000,
+      "summary": "Shape IDs for MonkeyHash: lazy computation, same-keys=same-shape, invalidation. Interpreter IC attempted but reverted (stale values on mutation). Shape IDs are JIT infrastructure. 8 new tests (1616 total)."
     },
     {
       "id": "T22",

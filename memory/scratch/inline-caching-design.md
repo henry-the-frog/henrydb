@@ -1,6 +1,14 @@
 # Inline Caching for Monkey-lang
 
-**Created:** 2026-04-15 | **Uses:** 0
+**Created:** 2026-04-15 | **Uses:** 1
+
+## Key Lesson (from implementation attempt)
+**Interpreter-level IC for mutable values DOES NOT WORK.** If you cache `(shape, key) → value`, the cached value goes stale when the hash is mutated. Tests failed: `h["count"] = h["count"] + 1` returned 2 instead of 4 because the IC returned the old value.
+
+Correct approaches:
+1. **Cache structure, not values** — IC can cache that a shape exists and how to access it, but must always read the current value from the Map
+2. **JIT-level IC** — emit GUARD_SHAPE instruction, then direct offset access. The JIT can specialize for known shapes and bail out on shape change
+3. **Hidden classes** — convert hashes to fixed-layout objects (like V8). Property access becomes array index instead of Map.get(). This is the big win but a major refactor.
 
 ## Concept
 Inline caching (IC) speeds up property/key lookups by caching the result at the access site.
