@@ -319,9 +319,12 @@
     {
       "id": "T29",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session close: logs, git push, CURRENT.md",
-      "started": "2026-04-15T03:13:14.992Z"
+      "started": "2026-04-15T03:13:14.992Z",
+      "completed": "2026-04-15T03:14:01.719Z",
+      "duration_ms": 120000,
+      "summary": "Session close: daily log updated with evening summary, CURRENT.md set to session-ended, git push workspace + monkey-lang."
     },
     {
       "id": "T31",
@@ -355,6 +358,50 @@
       "completed": "2026-04-15T03:12:47.077Z",
       "duration_ms": 300000,
       "summary": "12 integration tests combining closures+match+comprehensions+GC+optimizer+debugger. Full pipeline test: compile→optimize→GC→debug. Fibonacci via comprehension, tree traversal with GC, mutual state through cells. 772/772 total."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add type() builtin tests and type checking patterns for match",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:14:19.227Z",
+      "completed": "2026-04-15T03:16:59.985Z",
+      "duration_ms": 180000,
+      "summary": "3 type-based dispatch integration tests: type()+match polymorphism, type-safe operations, recursive dispatch. 775/775 total."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add rest parameters in function definitions: fn(first, ...rest)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:19:57.488Z",
+      "completed": "2026-04-15T03:23:34.955Z",
+      "duration_ms": 300000,
+      "summary": "Rest parameters fn(a, ...rest). Packs extra args into array. Works with for-in, spread, len. 7 new tests, 787/787 total."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add default parameter values: fn(x, y = 10)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:24:02.589Z",
+      "completed": "2026-04-15T03:27:35.499Z",
+      "duration_ms": 300000,
+      "summary": "Default parameter values fn(x, y=10). Compile-time evaluation, VM fills missing args. Fixed falsy-zero bug. Works with closures and rest params. 7 tests, 794/794 total."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add <= and >= comparisons for deep equality (currently only < > == !=)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:35:17.035Z",
+      "completed": "2026-04-15T03:35:17.179Z",
+      "duration_ms": 0,
+      "summary": "<= and >= already work correctly. No changes needed."
     }
   ],
   "focusProjects": [
@@ -478,6 +525,22 @@
     {
       "time": "2026-04-15T03:11:24.442Z",
       "msg": "Added T33 (BUILD) after end: Integration tests: complex programs combining multiple features"
+    },
+    {
+      "time": "2026-04-15T03:14:13.850Z",
+      "msg": "Added T34 (BUILD) after end: Add type() builtin tests and type checking patterns for match"
+    },
+    {
+      "time": "2026-04-15T03:19:48.348Z",
+      "msg": "Added T35 (BUILD) after end: Add rest parameters in function definitions: fn(first, ...rest)"
+    },
+    {
+      "time": "2026-04-15T03:23:50.538Z",
+      "msg": "Added T36 (BUILD) after end: Add default parameter values: fn(x, y = 10)"
+    },
+    {
+      "time": "2026-04-15T03:34:54.526Z",
+      "msg": "Added T37 (BUILD) after end: Add <= and >= comparisons for deep equality (currently only < > == !=)"
     }
   ]
 }

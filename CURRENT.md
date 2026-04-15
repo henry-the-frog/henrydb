@@ -1,6 +1,15 @@
 ## Active Task
 - **status:** session-ended
-- **session:** C (Evening, 8:15 PM - 9:15 PM MDT)
-- **tasks_completed_this_session:** 17
-- **total_tests:** 772 (up from 608 — +164 new tests)
-- **summary:** GC (mark-sweep + generational), debugger, optimizer, OpDeepEqual, array comprehensions, spread operator, integration tests.
+- **session:** C (Evening, 8:15 PM - 9:40 PM MDT)
+- **tasks_completed_this_session:** 22+
+- **total_tests:** 800 (up from 608 — +192 new tests)
+- **highlights:**
+  - GC (mark-sweep + generational): 50 tests
+  - Bytecode debugger: 25 tests
+  - Bytecode optimizer: 24 tests
+  - Deep equality (OpDeepEqual): 26 match tests
+  - Array comprehensions + spread: 17 tests
+  - Rest params + default params: 14 tests
+  - Exponentiation (**): 6 tests
+  - Integration tests: 40 tests
+  - REPL + benchmark suite
