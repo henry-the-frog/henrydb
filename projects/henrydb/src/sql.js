@@ -2152,7 +2152,66 @@ export function parse(sql) {
     
     expect('(');
     const columns = [];
+        const tableConstraints = [];
     do {
+      // Check for table-level constraints (PRIMARY KEY, UNIQUE, FOREIGN KEY, CHECK)
+      if (isKeyword('PRIMARY')) {
+        advance(); // PRIMARY
+        expect('KEYWORD', 'KEY');
+        expect('(');
+        const pkCols = [];
+        do {
+          const col = advance();
+          pkCols.push(col.originalValue || col.value);
+        } while (match(','));
+        expect(')');
+        tableConstraints.push({ type: 'PRIMARY_KEY', columns: pkCols });
+        continue;
+      }
+      if (isKeyword('UNIQUE')) {
+        advance(); // UNIQUE
+        if (tokens[pos] && tokens[pos].type === '(') {
+          expect('(');
+          const uqCols = [];
+          do {
+            const col = advance();
+            uqCols.push(col.originalValue || col.value);
+          } while (match(','));
+          expect(')');
+          tableConstraints.push({ type: 'UNIQUE', columns: uqCols });
+          continue;
+        }
+        // Otherwise it's a column-level unique that got here oddly
+      }
+      if (isKeyword('FOREIGN')) {
+        advance(); // FOREIGN
+        expect('KEYWORD', 'KEY');
+        expect('(');
+        const fkCols = [];
+        do {
+          const col = advance();
+          fkCols.push(col.originalValue || col.value);
+        } while (match(','));
+        expect(')');
+        expect('KEYWORD', 'REFERENCES');
+        const refTable = advance().value;
+        expect('(');
+        const refCols = [];
+        do {
+          const col = advance();
+          refCols.push(col.originalValue || col.value);
+        } while (match(','));
+        expect(')');
+        let onDelete = null, onUpdate = null;
+        while (isKeyword('ON')) {
+          advance();
+          if (isKeyword('DELETE')) { advance(); onDelete = advance().value; if (isKeyword('NULL')) { onDelete += ' NULL'; advance(); } }
+          else if (isKeyword('UPDATE')) { advance(); onUpdate = advance().value; if (isKeyword('NULL')) { onUpdate += ' NULL'; advance(); } }
+        }
+        tableConstraints.push({ type: 'FOREIGN_KEY', columns: fkCols, refTable, refColumns: refCols, onDelete, onUpdate });
+        continue;
+      }
+      
       const tok = advance();
       const name = tok.originalValue || tok.value;
       let dataType = advance().value;
@@ -2239,6 +2298,27 @@ export function parse(sql) {
       columns.push({ name, type: dataType, primaryKey, notNull: notNull || isSerial, unique, check, defaultValue: defaultVal, references, generated, serial: isSerial });
     } while (match(','));
     expect(')');
+    
+    // Apply table-level constraints to columns
+    for (const tc of tableConstraints) {
+      if (tc.type === 'PRIMARY_KEY') {
+        for (const colName of tc.columns) {
+          const col = columns.find(c => c.name.toLowerCase() === colName.toLowerCase());
+          if (col) { col.primaryKey = true; col.notNull = true; }
+        }
+      } else if (tc.type === 'UNIQUE') {
+        for (const colName of tc.columns) {
+          const col = columns.find(c => c.name.toLowerCase() === colName.toLowerCase());
+          if (col) col.unique = true;
+        }
+      } else if (tc.type === 'FOREIGN_KEY') {
+        for (let i = 0; i < tc.columns.length; i++) {
+          const col = columns.find(c => c.name.toLowerCase() === tc.columns[i].toLowerCase());
+          if (col) col.references = { table: tc.refTable, column: tc.refColumns[i], onDelete: tc.onDelete, onUpdate: tc.onUpdate };
+        }
+      }
+    }
+    
     // Optional: USING BTREE | USING HEAP (default: HEAP)
     let engine = null;
     if (isKeyword('USING')) {
