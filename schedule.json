@@ -640,6 +640,17 @@
       "completed": "2026-04-15T18:21:53.434Z",
       "duration_ms": 300000,
       "summary": "HenryDB stress testing: CTEs+JOIN work, correlated subqueries work, UNION CTEs work. Found: (1) CTE before UPDATE not supported (missing feature), (2) GROUP BY with qualified column names creates duplicate columns (cosmetic bug). Both low priority."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB GROUP BY duplicate column names with qualified references",
+      "project": "henrydb",
+      "started": "2026-04-15T18:22:39.485Z",
+      "completed": "2026-04-15T18:27:27.366Z",
+      "duration_ms": 600000,
+      "summary": "Fixed GROUP BY duplicate qualified column names. Stripped qualified keys when unqualified version exists."
     }
   ],
   "focusProjects": [
@@ -871,6 +882,10 @@
     {
       "time": "2026-04-15T18:20:14.251Z",
       "msg": "Added T59 (BUILD) after end: HenryDB: targeted stress testing — CTEs, complex subqueries, edge cases"
+    },
+    {
+      "time": "2026-04-15T18:22:31.907Z",
+      "msg": "Added T60 (BUILD) after end: Fix HenryDB GROUP BY duplicate column names with qualified references"
     }
   ]
 }

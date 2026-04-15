@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T18:21:53.470Z",
+  "generated": "2026-04-15T18:27:27.401Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: targeted stress testing — CTEs, complex subqueries, edge cases",
-    "completedAt": "2026-04-15T18:21:53.470Z",
-    "taskId": "T59",
-    "summary": "HenryDB stress testing: CTEs+JOIN work, correlated subqueries work, UNION CTEs work. Found: (1) CTE before UPDATE not supported (missing feature), (2) GROUP BY with qualified column names creates duplicate columns (cosmetic bug). Both low priority.",
-    "durationMs": 300000
+    "task": "Fix HenryDB GROUP BY duplicate column names with qualified references",
+    "completedAt": "2026-04-15T18:27:27.401Z",
+    "taskId": "T60",
+    "summary": "Fixed GROUP BY duplicate qualified column names. Stripped qualified keys when unqualified version exists.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 59,
+    "blocksCompleted": 60,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 34,
+      "BUILD": 35,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
