@@ -1234,10 +1234,21 @@
     {
       "id": "T115",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V disassembler: decode 32-bit machine words back to assembly text. Part of the monkey-lang compilation pipeline. Cover RV32I + RV32M instructions. 20+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T22:01:05.038Z"
+      "started": "2026-04-15T22:01:05.038Z",
+      "completed": "2026-04-15T22:03:46.819Z",
+      "duration_ms": 300000,
+      "summary": "RISC-V disassembler: decodes RV32I/RV32M machine words to assembly. Pseudo-instruction detection (li, mv, ret). Sign extension bug found+fixed. 33 tests. 363 total RISC-V tests."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey-lang RISC-V: add --dump flag to codegen that shows assembly listing with disassembly. Also add a compile-and-dump CLI tool that takes monkey source and outputs annotated assembly. Verify with sample programs.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:04:12.131Z"
     }
   ],
   "focusProjects": [
@@ -1673,6 +1684,10 @@
     {
       "time": "2026-04-15T22:00:55.572Z",
       "msg": "Added T115 (BUILD) after end: RISC-V disassembler: decode 32-bit machine words back to assembly text. Part of the monkey-lang compilation pipeline. Cover RV32I + RV32M instructions. 20+ tests."
+    },
+    {
+      "time": "2026-04-15T22:04:05.918Z",
+      "msg": "Added T116 (BUILD) after end: Monkey-lang RISC-V: add --dump flag to codegen that shows assembly listing with disassembly. Also add a compile-and-dump CLI tool that takes monkey source and outputs annotated assembly. Verify with sample programs."
     }
   ]
 }
