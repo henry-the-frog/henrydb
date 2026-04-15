@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T20:40:20.584Z",
+  "generated": "2026-04-15T20:48:27.236Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Build monkey-lang → RISC-V code generator (riscv-codegen.js): AST traversal emitting RV32I assembly. Support integer arithmetic (+,-,*,/,%), let bindings (stack-allocated), if/else, boolean comparisons, puts() via ecall. 20+ tests.",
-    "startedAt": "2026-04-15T20:40:20.584Z",
-    "taskId": "T89"
+    "task": "Integration: end-to-end pipeline test — monkey-lang source → parse → codegen → assemble → execute on RISC-V CPU → verify output. Cover: arithmetic, variables, if/else, functions, recursion.",
+    "startedAt": "2026-04-15T20:48:27.236Z",
+    "taskId": "T91"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -983,12 +983,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 87,
+    "blocksCompleted": 89,
     "blocksTotal": 91,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 12,
-      "BUILD": 53,
+      "BUILD": 55,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

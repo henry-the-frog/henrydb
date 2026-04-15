@@ -955,23 +955,31 @@
       "id": "T89",
       "mode": "BUILD",
       "task": "Build monkey-lang → RISC-V code generator (riscv-codegen.js): AST traversal emitting RV32I assembly. Support integer arithmetic (+,-,*,/,%), let bindings (stack-allocated), if/else, boolean comparisons, puts() via ecall. 20+ tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T88",
-      "started": "2026-04-15T20:40:20.549Z"
+      "started": "2026-04-15T20:40:20.549Z",
+      "completed": "2026-04-15T20:47:54.823Z",
+      "duration_ms": 900000,
+      "summary": "Monkey-lang → RISC-V codegen: integer arithmetic, variables, if/else, while, functions with calling convention, recursive fib(10)=55 in 5845 cycles. 41 tests all pass. Stack frame layout bug found+fixed (ra/local overlap)."
     },
     {
       "id": "T90",
       "mode": "BUILD",
       "task": "Extend RISC-V codegen for functions: calling convention (a0-a7 args, sp frame), jal/jalr calls, return values, recursive fibonacci. 15+ tests.",
-      "status": "upcoming",
-      "plan_ref": "T88"
+      "status": "done",
+      "plan_ref": "T88",
+      "started": "2026-04-15T20:48:14.001Z",
+      "completed": "2026-04-15T20:48:14.142Z",
+      "duration_ms": 0,
+      "summary": "Already done in T89 — functions, calling convention, recursive fib all implemented."
     },
     {
       "id": "T91",
       "mode": "BUILD",
       "task": "Integration: end-to-end pipeline test — monkey-lang source → parse → codegen → assemble → execute on RISC-V CPU → verify output. Cover: arithmetic, variables, if/else, functions, recursion.",
-      "status": "upcoming",
-      "plan_ref": "T88"
+      "status": "in-progress",
+      "plan_ref": "T88",
+      "started": "2026-04-15T20:48:27.178Z"
     }
   ],
   "focusProjects": [

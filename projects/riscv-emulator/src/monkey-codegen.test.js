@@ -316,3 +316,146 @@ describe('Monkey → RISC-V Code Generation', () => {
     });
   });
 });
+
+describe('Integration: complex programs', () => {
+  it('euclidean GCD', () => {
+    const output = getOutput(`
+      let gcd = fn(a, b) {
+        if (b == 0) { return a }
+        return gcd(b, a % b)
+      }
+      puts(gcd(48, 18))
+    `);
+    assert.equal(output, '6');
+  });
+
+  it('iterative sum 1..100', () => {
+    const output = getOutput(`
+      let sum = 0
+      let i = 1
+      while (i <= 100) {
+        set sum = sum + i
+        set i = i + 1
+      }
+      puts(sum)
+    `);
+    assert.equal(output, '5050');
+  });
+
+  it('power function', () => {
+    const output = getOutput(`
+      let pow = fn(base, exp) {
+        if (exp == 0) { return 1 }
+        return base * pow(base, exp - 1)
+      }
+      puts(pow(2, 10))
+    `);
+    assert.equal(output, '1024');
+  });
+
+  it('multiple function calls in sequence', () => {
+    const output = getOutput(`
+      let square = fn(x) { return x * x }
+      let double = fn(x) { return x + x }
+      puts(square(5))
+      puts(double(7))
+      puts(square(double(3)))
+    `);
+    assert.equal(output, '251436');
+  });
+
+  it('fibonacci sequence (first 8)', () => {
+    const output = getOutput(`
+      let fib = fn(n) {
+        if (n <= 1) { return n }
+        return fib(n - 1) + fib(n - 2)
+      }
+      let i = 0
+      while (i < 8) {
+        puts(fib(i))
+        set i = i + 1
+      }
+    `);
+    assert.equal(output, '011235813');
+  });
+
+  it('conditional cascade', () => {
+    const output = getOutput(`
+      let classify = fn(n) {
+        if (n < 0) { return 0 }
+        if (n == 0) { return 1 }
+        if (n < 10) { return 2 }
+        return 3
+      }
+      puts(classify(-5))
+      puts(classify(0))
+      puts(classify(7))
+      puts(classify(100))
+    `);
+    assert.equal(output, '0123');
+  });
+
+  it('nested function calls', () => {
+    const output = getOutput(`
+      let add = fn(a, b) { return a + b }
+      let mul = fn(a, b) { return a * b }
+      puts(add(mul(3, 4), mul(5, 6)))
+    `);
+    assert.equal(output, '42');
+  });
+
+  it('absolute value', () => {
+    const output = getOutput(`
+      let abs = fn(n) {
+        if (n < 0) { return -n }
+        return n
+      }
+      puts(abs(-42))
+      puts(abs(7))
+      puts(abs(0))
+    `);
+    assert.equal(output, '4270');
+  });
+
+  it('is_prime function', () => {
+    const output = getOutput(`
+      let is_prime = fn(n) {
+        if (n < 2) { return 0 }
+        let i = 2
+        while (i * i <= n) {
+          if (n % i == 0) { return 0 }
+          set i = i + 1
+        }
+        return 1
+      }
+      let n = 2
+      while (n <= 20) {
+        if (is_prime(n) == 1) {
+          puts(n)
+        }
+        set n = n + 1
+      }
+    `);
+    // Primes up to 20: 2,3,5,7,11,13,17,19
+    assert.equal(output, '235711131719');
+  });
+
+  it('collatz sequence length', () => {
+    const output = getOutput(`
+      let collatz_len = fn(n) {
+        let steps = 0
+        while (n != 1) {
+          if (n % 2 == 0) {
+            set n = n / 2
+          } else {
+            set n = 3 * n + 1
+          }
+          set steps = steps + 1
+        }
+        return steps
+      }
+      puts(collatz_len(27))
+    `);
+    assert.equal(output, '111');
+  });
+});
