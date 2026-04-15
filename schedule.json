@@ -1213,10 +1213,20 @@
     {
       "id": "T113",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey-lang RISC-V: compile and run the self-hosting test — write a monkey-lang program that implements a simple expression evaluator, compile it to RISC-V, and run it on the emulator. This tests the backend's ability to handle complex real-world programs.",
       "project": "monkey-lang",
-      "started": "2026-04-15T21:52:53.706Z"
+      "started": "2026-04-15T21:52:53.706Z",
+      "completed": "2026-04-15T21:57:35.850Z",
+      "duration_ms": 600000,
+      "summary": "Self-hosting tests: 9 complex programs (linked list, matrix multiply, Collatz, bubble sort, closures+strings+arrays). 330 RISC-V tests, 1196 total. All pass."
+    },
+    {
+      "id": "T114",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session maintenance: update daily log, scratch notes, push code. Then switch to a different project for depth diversity.",
+      "started": "2026-04-15T21:58:02.841Z"
     }
   ],
   "focusProjects": [
@@ -1644,6 +1654,10 @@
     {
       "time": "2026-04-15T21:52:43.438Z",
       "msg": "Added T113 (BUILD) after end: Monkey-lang RISC-V: compile and run the self-hosting test — write a monkey-lang program that implements a simple expression evaluator, compile it to RISC-V, and run it on the emulator. This tests the backend's ability to handle complex real-world programs."
+    },
+    {
+      "time": "2026-04-15T21:57:53.231Z",
+      "msg": "Added T114 (MAINTAIN) after end: Mid-session maintenance: update daily log, scratch notes, push code. Then switch to a different project for depth diversity."
     }
   ]
 }
