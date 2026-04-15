@@ -5964,19 +5964,25 @@ export class Database {
 
       // Helper to compute an aggregate on this group
       const computeAgg = (func, arg, distinct, extra = {}) => {
+        // Apply FILTER clause if present
+        let effectiveRows = groupRows;
+        if (extra.filter) {
+          effectiveRows = groupRows.filter(r => {
+            try { return !!this._evalExpr(extra.filter, r); } catch { return false; }
+          });
+        }
         let values;
         if (arg === '*') {
-          values = groupRows;
+          values = effectiveRows;
         } else if (typeof arg === 'object') {
-          // Expression argument (e.g., SUM(qty * price))
-          values = groupRows.map(r => this._evalValue(arg, r)).filter(v => v != null);
+          values = effectiveRows.map(r => this._evalValue(arg, r)).filter(v => v != null);
         } else {
-          values = groupRows.map(r => this._resolveColumn(arg, r)).filter(v => v != null);
+          values = effectiveRows.map(r => this._resolveColumn(arg, r)).filter(v => v != null);
         }
         switch (func) {
           case 'COUNT': {
             if (distinct && arg !== '*') return new Set(values).size;
-            return arg === '*' ? groupRows.length : values.length;
+            return arg === '*' ? effectiveRows.length : values.length;
           }
           case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
@@ -6029,7 +6035,7 @@ export class Database {
       for (const col of ast.columns) {
         if (col.type === 'aggregate') {
           const name = col.alias || `${col.func}(${col.arg})`;
-          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, groupRows, aggArg: col.arg });
+          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, filter: col.filter, groupRows, aggArg: col.arg });
           // Also store under canonical key for HAVING resolution
           const canonKey = `${col.func}(${col.arg})`;
           if (name !== canonKey) result[`__agg_${canonKey}`] = result[name];
@@ -7457,13 +7463,22 @@ export class Database {
       if (col.type !== 'aggregate') continue;
       const argStr = typeof col.arg === 'object' ? 'expr' : col.arg;
       const name = col.alias || `${col.func}(${argStr})`;
+      
+      // Apply FILTER clause: only include rows matching the filter condition
+      let filteredRows = rows;
+      if (col.filter) {
+        filteredRows = rows.filter(r => {
+          try { return !!this._evalExpr(col.filter, r); } catch { return false; }
+        });
+      }
+      
       let values;
       if (col.arg === '*') {
-        values = rows;
+        values = filteredRows;
       } else if (typeof col.arg === 'object') {
-        values = rows.map(r => this._evalValue(col.arg, r)).filter(v => v != null);
+        values = filteredRows.map(r => this._evalValue(col.arg, r)).filter(v => v != null);
       } else {
-        values = rows.map(r => this._resolveColumn(col.arg, r)).filter(v => v != null);
+        values = filteredRows.map(r => this._resolveColumn(col.arg, r)).filter(v => v != null);
       }
 
       switch (col.func) {
@@ -7471,7 +7486,7 @@ export class Database {
           if (col.distinct && col.arg !== '*') {
             result[name] = new Set(values).size;
           } else {
-            result[name] = col.arg === '*' ? rows.length : values.length;
+            result[name] = col.arg === '*' ? filteredRows.length : values.length;
           }
           break;
         }

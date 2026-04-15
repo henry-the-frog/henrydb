@@ -851,8 +851,18 @@ export function parse(sql) {
       }
       expect(')');
 
+      // Optional FILTER clause: AGG(...) FILTER (WHERE condition)
+      let filterClause = null;
+      if (isKeyword('FILTER')) {
+        advance(); // FILTER
+        expect('(');
+        expect('KEYWORD', 'WHERE');
+        filterClause = parseExpr();
+        expect(')');
+      }
+
       // Add separator info for GROUP_CONCAT / STRING_AGG
-      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy } : { aggOrderBy };
+      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy, filter: filterClause } : { aggOrderBy, filter: filterClause };
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();
