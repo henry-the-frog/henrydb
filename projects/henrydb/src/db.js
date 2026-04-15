@@ -4500,6 +4500,9 @@ export class Database {
       });
     }
 
+    // Apply ORDER BY / OFFSET / LIMIT on combined result
+    rows = this._applySetOrderLimit(ast, rows);
+
     return { type: 'ROWS', rows };
   }
 
@@ -4524,7 +4527,7 @@ export class Database {
           rightCounts.set(key, rightCounts.get(key) - 1);
         }
       }
-      return { type: 'ROWS', rows };
+      return { type: 'ROWS', rows: this._applySetOrderLimit(ast, rows) };
     }
     
     const rightKeys = new Set(rightRemapped.map(r => JSON.stringify(r)));
@@ -4537,7 +4540,7 @@ export class Database {
       }
       return false;
     });
-    return { type: 'ROWS', rows };
+    return { type: 'ROWS', rows: this._applySetOrderLimit(ast, rows) };
   }
 
   _except(ast) {
@@ -4562,7 +4565,7 @@ export class Database {
           rows.push(row);
         }
       }
-      return { type: 'ROWS', rows };
+      return { type: 'ROWS', rows: this._applySetOrderLimit(ast, rows) };
     }
     
     const rightKeys = new Set(rightRemapped.map(r => JSON.stringify(r)));
@@ -4576,9 +4579,27 @@ export class Database {
       return false;
     });
     
-    return { type: 'ROWS', rows };
+    return { type: 'ROWS', rows: this._applySetOrderLimit(ast, rows) };
   }
   
+  /** Apply ORDER BY, OFFSET, LIMIT to set operation results */
+  _applySetOrderLimit(ast, rows) {
+    if (ast.orderBy) {
+      rows.sort((a, b) => {
+        for (const { column, direction } of ast.orderBy) {
+          const av = this._orderByValue(column, a);
+          const bv = this._orderByValue(column, b);
+          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
+        }
+        return 0;
+      });
+    }
+    if (ast.offset) rows = rows.slice(ast.offset);
+    if (ast.limit != null) rows = rows.slice(0, ast.limit);
+    return rows;
+  }
+
   /** Remap rows' column names to match target column names (for UNION/INTERSECT/EXCEPT) */
   _remapUnionColumns(rows, targetCols) {
     if (rows.length === 0 || targetCols.length === 0) return rows;

@@ -712,6 +712,51 @@ export function parse(sql) {
       result = { type: 'EXCEPT', left: result, right, all };
     }
 
+    // ORDER BY / LIMIT / OFFSET on combined result (after UNION/INTERSECT/EXCEPT)
+    // Note: parseSelect() on the right side may have consumed ORDER BY/LIMIT
+    // that actually belongs to the UNION. Steal them from right if present.
+    if (result.type === 'UNION' || result.type === 'INTERSECT' || result.type === 'EXCEPT') {
+      // First check if there are more tokens to parse
+      if (isKeyword('ORDER')) {
+        advance(); expect('KEYWORD', 'BY');
+        result.orderBy = parseOrderBy();
+      }
+      if (isKeyword('LIMIT')) {
+        advance();
+        if (isKeyword('ALL')) { advance(); result.limit = null; }
+        else { result.limit = Number(advance().value); }
+      }
+      if (isKeyword('OFFSET')) {
+        advance();
+        result.offset = Number(advance().value);
+        if (isKeyword('ROWS') || isKeyword('ROW')) advance();
+      }
+      if (isKeyword('FETCH')) {
+        advance();
+        if (isKeyword('FIRST') || isKeyword('NEXT')) advance();
+        result.limit = Number(advance().value);
+        if (isKeyword('ROWS') || isKeyword('ROW')) advance();
+        if (isKeyword('ONLY')) advance();
+      }
+      
+      // If the UNION still has no ORDER BY/LIMIT but the right SELECT does,
+      // it was likely intended for the UNION. Move them up.
+      if (result.right && result.right.type === 'SELECT') {
+        if (!result.orderBy && result.right.orderBy) {
+          result.orderBy = result.right.orderBy;
+          result.right.orderBy = null;
+        }
+        if (result.limit == null && result.right.limit != null) {
+          result.limit = result.right.limit;
+          result.right.limit = null;
+        }
+        if (!result.offset && result.right.offset) {
+          result.offset = result.right.offset;
+          result.right.offset = null;
+        }
+      }
+    }
+
     return result;
   }
 
