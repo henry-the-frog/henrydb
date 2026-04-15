@@ -1203,9 +1203,20 @@
       "id": "T112",
       "mode": "BUILD",
       "task": "Closure compilation: (1) allocate closure objects on heap with captured vars, (2) pass closure pointer as implicit arg, (3) access captured vars via closure object inside function body. Support make_adder pattern. 15+ tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T110",
-      "started": "2026-04-15T21:46:24.826Z"
+      "started": "2026-04-15T21:46:24.826Z",
+      "completed": "2026-04-15T21:52:18.166Z",
+      "duration_ms": 600000,
+      "summary": "Closures work! Heap-allocated closure objects with captured variables. Environment passed as implicit first arg. Simple capture, multiple captures, string/array capture all work. 14 tests, 321 total."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey-lang RISC-V: compile and run the self-hosting test — write a monkey-lang program that implements a simple expression evaluator, compile it to RISC-V, and run it on the emulator. This tests the backend's ability to handle complex real-world programs.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T21:52:53.706Z"
     }
   ],
   "focusProjects": [
@@ -1629,6 +1640,10 @@
     {
       "time": "2026-04-15T21:44:09.609Z",
       "msg": "PLAN T110 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T21:52:43.438Z",
+      "msg": "Added T113 (BUILD) after end: Monkey-lang RISC-V: compile and run the self-hosting test — write a monkey-lang program that implements a simple expression evaluator, compile it to RISC-V, and run it on the emulator. This tests the backend's ability to handle complex real-world programs."
     }
   ]
 }
