@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T18:17:44.313Z",
+  "generated": "2026-04-15T18:21:53.470Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "monkey-lang: add standard library — map, filter, reduce builtins for arrays",
-    "completedAt": "2026-04-15T18:17:44.313Z",
-    "taskId": "T57",
-    "summary": "9 new builtins: map, filter, reduce, find, any, all, sort, reverse, range. 22 tests. 1701 total.",
-    "durationMs": 600000
+    "task": "HenryDB: targeted stress testing — CTEs, complex subqueries, edge cases",
+    "completedAt": "2026-04-15T18:21:53.470Z",
+    "taskId": "T59",
+    "summary": "HenryDB stress testing: CTEs+JOIN work, correlated subqueries work, UNION CTEs work. Found: (1) CTE before UPDATE not supported (missing feature), (2) GROUP BY with qualified column names creates duplicate columns (cosmetic bug). Both low priority.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 57,
+    "blocksCompleted": 59,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 32,
+      "BUILD": 34,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }

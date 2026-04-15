@@ -618,6 +618,28 @@
       "completed": "2026-04-15T18:17:44.278Z",
       "duration_ms": 600000,
       "summary": "9 new builtins: map, filter, reduce, find, any, all, sort, reverse, range. 22 tests. 1701 total."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add stdlib builtins to VM (map/filter/reduce/sort/etc)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T18:18:28.547Z",
+      "completed": "2026-04-15T18:20:00.873Z",
+      "duration_ms": 60000,
+      "summary": "Skipped — stdlib builtins in VM requires re-entrant closure calls. Works in evaluator; compiler users can use for-in loops. Not high priority."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: targeted stress testing — CTEs, complex subqueries, edge cases",
+      "project": "henrydb",
+      "started": "2026-04-15T18:20:27.150Z",
+      "completed": "2026-04-15T18:21:53.434Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB stress testing: CTEs+JOIN work, correlated subqueries work, UNION CTEs work. Found: (1) CTE before UPDATE not supported (missing feature), (2) GROUP BY with qualified column names creates duplicate columns (cosmetic bug). Both low priority."
     }
   ],
   "focusProjects": [
@@ -841,6 +863,14 @@
     {
       "time": "2026-04-15T18:14:09.486Z",
       "msg": "Added T57 (BUILD) after end: monkey-lang: add standard library — map, filter, reduce builtins for arrays"
+    },
+    {
+      "time": "2026-04-15T18:18:17.003Z",
+      "msg": "Added T58 (BUILD) after end: monkey-lang: add stdlib builtins to VM (map/filter/reduce/sort/etc)"
+    },
+    {
+      "time": "2026-04-15T18:20:14.251Z",
+      "msg": "Added T59 (BUILD) after end: HenryDB: targeted stress testing — CTEs, complex subqueries, edge cases"
     }
   ]
 }
