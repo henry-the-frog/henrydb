@@ -382,8 +382,12 @@
       "id": "T38",
       "mode": "BUILD",
       "task": "Add generator AST nodes (gen keyword, yield expression) and parser support",
-      "status": "upcoming",
-      "plan_ref": "T35"
+      "status": "done",
+      "plan_ref": "T35",
+      "started": "2026-04-15T17:02:14.498Z",
+      "completed": "2026-04-15T17:05:26.864Z",
+      "duration_ms": 300000,
+      "summary": "Added gen/yield AST nodes, lexer tokens, parser support. gen(n) { yield i } parses correctly. No regressions (1612 pass)."
     },
     {
       "id": "T39",

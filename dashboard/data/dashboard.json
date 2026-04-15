@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T17:01:57.308Z",
+  "generated": "2026-04-15T17:05:26.900Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-15T17:01:57.308Z",
-    "taskId": "T35",
-    "summary": "PLAN: 3 BUILD tasks for generators — AST+parser, evaluator with suspension, for-in integration. for-in already works with arrays/strings.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "Add generator AST nodes (gen keyword, yield expression) and parser support",
+    "completedAt": "2026-04-15T17:05:26.900Z",
+    "taskId": "T38",
+    "summary": "Added gen/yield AST nodes, lexer tokens, parser support. gen(n) { yield i } parses correctly. No regressions (1612 pass).",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -425,12 +425,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 35,
+    "blocksCompleted": 36,
     "blocksTotal": 40,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 7,
-      "BUILD": 15,
+      "BUILD": 16,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
