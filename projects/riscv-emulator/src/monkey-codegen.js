@@ -22,15 +22,22 @@
 //   - ecall with a7=11: print char in a0
 
 export class RiscVCodeGen {
-  constructor() {
+  constructor(options = {}) {
     this.output = [];         // Assembly lines
-    this.variables = new Map(); // name → stack offset from s0
+    this.variables = new Map(); // name → { type: 'stack'|'reg', offset?, reg? }
     this.stackOffset = 8;    // Start at 8: reserve s0-4=ra, s0-8=old_s0
     this.labelCount = 0;     // For generating unique labels
     this.functions = [];      // Deferred function bodies
     this.currentScope = null; // Variable scope chain
     this.errors = [];
     this.frameSize = 256;    // Default frame size
+    
+    // Register allocation
+    this.useRegisters = options.useRegisters || false;
+    // Callee-saved registers available for locals: s1-s11
+    this.availableRegs = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+    this.nextRegIdx = 0;     // Next available register index
+    this.usedRegs = new Set(); // Which s-registers are in use (for save/restore)
   }
 
   /** Generate a unique label */
@@ -53,36 +60,86 @@ export class RiscVCodeGen {
     this._emit(`${label}:`);
   }
 
-  /** Allocate a stack slot for a variable, return offset from s0 */
+  /** Allocate storage for a variable — register if available, otherwise stack */
   _allocLocal(name) {
+    if (this.useRegisters && this.nextRegIdx < this.availableRegs.length) {
+      const reg = this.availableRegs[this.nextRegIdx++];
+      this.usedRegs.add(reg);
+      this.variables.set(name, { type: 'reg', reg });
+      return { type: 'reg', reg };
+    }
+    // Fall back to stack
     this.stackOffset += 4;
     const offset = -this.stackOffset;
-    this.variables.set(name, offset);
-    return offset;
+    this.variables.set(name, { type: 'stack', offset });
+    return { type: 'stack', offset };
   }
 
-  /** Look up variable offset from s0 */
+  /** Look up variable location */
   _lookupVar(name) {
     if (this.variables.has(name)) {
       return this.variables.get(name);
     }
     this.errors.push(`Undefined variable: ${name}`);
-    return 0;
+    return { type: 'stack', offset: 0 };
   }
 
-  /** Emit function prologue */
+  /** Emit: load variable value into a0 */
+  _emitLoadVar(name) {
+    const loc = this._lookupVar(name);
+    if (loc.type === 'reg') {
+      this._emit(`  mv a0, ${loc.reg}`);
+    } else {
+      this._emit(`  lw a0, ${loc.offset}(s0)`);
+    }
+  }
+
+  /** Emit: store a0 into variable */
+  _emitStoreVar(name) {
+    const loc = this._lookupVar(name);
+    if (loc.type === 'reg') {
+      this._emit(`  mv ${loc.reg}, a0`);
+    } else {
+      this._emit(`  sw a0, ${loc.offset}(s0)`);
+    }
+  }
+
+  /** Emit function prologue — returns placeholder index for deferred save/restore */
   _emitPrologue() {
     this._emit(`  addi sp, sp, -${this.frameSize}`);
     this._emit(`  sw ra, ${this.frameSize - 4}(sp)`);
     this._emit(`  sw s0, ${this.frameSize - 8}(sp)`);
+    // Placeholder for callee-saved register saves — will be filled in later
+    this._prologueSaveIdx = this.output.length;
     this._emit(`  addi s0, sp, ${this.frameSize}`);
   }
 
   /** Emit function epilogue */
   _emitEpilogue() {
+    // Restore callee-saved registers
+    if (this.useRegisters) {
+      let saveOffset = this.frameSize - 12; // After ra and s0
+      for (const reg of this.usedRegs) {
+        this._emit(`  lw ${reg}, ${saveOffset}(sp)`);
+        saveOffset -= 4;
+      }
+    }
     this._emit(`  lw ra, ${this.frameSize - 4}(sp)`);
     this._emit(`  lw s0, ${this.frameSize - 8}(sp)`);
     this._emit(`  addi sp, sp, ${this.frameSize}`);
+  }
+
+  /** Patch prologue to save callee-saved registers (call after compilation) */
+  _patchPrologueSaves() {
+    if (!this.useRegisters || this.usedRegs.size === 0) return;
+    const saves = [];
+    let saveOffset = this.frameSize - 12;
+    for (const reg of this.usedRegs) {
+      saves.push(`  sw ${reg}, ${saveOffset}(sp)`);
+      saveOffset -= 4;
+    }
+    // Insert saves at the placeholder position
+    this.output.splice(this._prologueSaveIdx, 0, ...saves);
   }
 
   /**
@@ -97,6 +154,8 @@ export class RiscVCodeGen {
     this.labelCount = 0;
     this.functions = [];
     this.errors = [];
+    this.nextRegIdx = 0;
+    this.usedRegs = new Set();
 
     // Prologue: set up main frame
     this._emit('  # Monkey → RISC-V compiled program');
@@ -113,6 +172,9 @@ export class RiscVCodeGen {
     this._emitEpilogue();
     this._emit('  li a7, 10');           // exit syscall
     this._emit('  ecall');
+
+    // Patch prologue with callee-saved register saves
+    this._patchPrologueSaves();
 
     // Append deferred function bodies
     for (const fn of this.functions) {
@@ -158,17 +220,16 @@ export class RiscVCodeGen {
     // Compile the value expression (result in a0)
     this._compileExpression(stmt.value);
     
-    // Allocate stack slot and store
-    const offset = this._allocLocal(name);
-    this._emit(`  sw a0, ${offset}(s0)`);
+    // Allocate storage and store
+    this._allocLocal(name);
+    this._emitStoreVar(name);
   }
 
   _compileSet(stmt) {
     const name = stmt.name.value;
     this._comment(`set ${name}`);
     this._compileExpression(stmt.value);
-    const offset = this._lookupVar(name);
-    this._emit(`  sw a0, ${offset}(s0)`);
+    this._emitStoreVar(name);
   }
 
   _compileReturn(stmt) {
@@ -232,8 +293,7 @@ export class RiscVCodeGen {
 
   _compileIdentifier(expr) {
     const name = expr.value;
-    const offset = this._lookupVar(name);
-    this._emit(`  lw a0, ${offset}(s0)`);
+    this._emitLoadVar(name);
   }
 
   _compilePrefixExpression(expr) {
@@ -402,26 +462,36 @@ export class RiscVCodeGen {
     this._comment(`function ${name} (deferred)`);
     
     // Save function label for calls
-    this.variables.set(name, `__func_${name}`);
+    this.variables.set(name, { type: 'func', label: name });
     
     // Generate function body (deferred — appended after main)
     const savedOutput = this.output;
     const savedVars = new Map(this.variables);
     const savedOffset = this.stackOffset;
+    const savedNextReg = this.nextRegIdx;
+    const savedUsedRegs = new Set(this.usedRegs);
     
     this.output = [];
     this.variables = new Map();
     this.stackOffset = 8; // Reserve for ra + s0
+    this.nextRegIdx = 0;
+    this.usedRegs = new Set();
     
     this._emitLabel(name);
     this._emitPrologue();
     
-    // Map parameters to stack slots (they arrive in a0-a7)
+    // Map parameters to storage (registers or stack)
     if (funcLit.parameters) {
       for (let i = 0; i < funcLit.parameters.length; i++) {
         const paramName = funcLit.parameters[i].value;
-        const offset = this._allocLocal(paramName);
-        this._emit(`  sw a${i}, ${offset}(s0)`);
+        this._allocLocal(paramName);
+        // Store from argument register to allocated location
+        const loc = this._lookupVar(paramName);
+        if (loc.type === 'reg') {
+          this._emit(`  mv ${loc.reg}, a${i}`);
+        } else {
+          this._emit(`  sw a${i}, ${loc.offset}(s0)`);
+        }
       }
     }
     
@@ -443,12 +513,17 @@ export class RiscVCodeGen {
       this._emit('  ret');
     }
     
+    // Patch prologue saves for this function
+    this._patchPrologueSaves();
+    
     const funcBody = this.output;
     
     // Restore state
     this.output = savedOutput;
     this.variables = savedVars;
     this.stackOffset = savedOffset;
+    this.nextRegIdx = savedNextReg;
+    this.usedRegs = savedUsedRegs;
     
     this.functions.push(funcBody);
   }
