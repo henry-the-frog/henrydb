@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-15T17:36:19.378Z",
+  "generated": "2026-04-15T17:44:11.099Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "monkey-lang: stress-test generators in compiler/JIT path, find+fix bugs",
-    "completedAt": "2026-04-15T17:36:19.378Z",
-    "taskId": "T47",
-    "summary": "10 compiler/VM generator stress tests. All pass including Sieve and sum(1..100)=5050. 1651 total tests.",
+    "task": "Fix HenryDB ARRAY_AGG ORDER BY + add STRING_AGG aggregate",
+    "completedAt": "2026-04-15T17:44:11.099Z",
+    "taskId": "T48",
+    "summary": "Fixed ARRAY_AGG and STRING_AGG ORDER BY in non-GROUP-BY context. 6 regression tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -481,12 +481,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 48,
     "blocksTotal": 44,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 8,
-      "BUILD": 24,
+      "BUILD": 25,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

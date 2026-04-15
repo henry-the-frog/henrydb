@@ -508,6 +508,17 @@
       "completed": "2026-04-15T17:36:19.342Z",
       "duration_ms": 600000,
       "summary": "10 compiler/VM generator stress tests. All pass including Sieve and sum(1..100)=5050. 1651 total tests."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB ARRAY_AGG ORDER BY + add STRING_AGG aggregate",
+      "project": "henrydb",
+      "started": "2026-04-15T17:39:05.852Z",
+      "completed": "2026-04-15T17:44:11.062Z",
+      "duration_ms": 600000,
+      "summary": "Fixed ARRAY_AGG and STRING_AGG ORDER BY in non-GROUP-BY context. 6 regression tests."
     }
   ],
   "focusProjects": [
@@ -699,6 +710,10 @@
     {
       "time": "2026-04-15T17:34:55.658Z",
       "msg": "Added T47 (BUILD) after end: monkey-lang: stress-test generators in compiler/JIT path, find+fix bugs"
+    },
+    {
+      "time": "2026-04-15T17:38:57.082Z",
+      "msg": "Added T48 (BUILD) after end: Fix HenryDB ARRAY_AGG ORDER BY + add STRING_AGG aggregate"
     }
   ]
 }
