@@ -117,3 +117,19 @@ describe('String in arrays', () => {
     assert.equal(run('let arr = [1, 2, 3]; let s = "hello"; puts(len(arr)); puts(len(s))'), '35');
   });
 });
+
+describe('String edge cases', () => {
+  it('empty string length', () => { assert.equal(run('puts(len(""))'), '0'); });
+  it('empty string concat', () => { assert.equal(run('puts("" + "hello")'), 'hello'); });
+  it('concat empty right', () => { assert.equal(run('puts("hello" + "")'), 'hello'); });
+  it('empty string equality', () => { assert.equal(run('puts("" == "")'), '1'); });
+  it('string function parameter', () => {
+    assert.equal(run('let greet = fn(name) { puts("Hi " + name) }; greet("Bob")'), 'Hi Bob');
+  });
+  it('multiple string concat in function', () => {
+    assert.equal(run(`
+      let bracket = fn(s) { "[" + s + "]" }
+      puts(bracket("ok"))
+    `), '[ok]');
+  });
+});

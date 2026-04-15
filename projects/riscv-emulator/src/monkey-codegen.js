@@ -69,6 +69,25 @@ export class RiscVCodeGen {
     this._emit(`${label}:`);
   }
 
+  /** Emit code to print string at a0 */
+  _emitPrintString() {
+    this._emit('  mv t1, a0');
+    this._emit('  lw t2, 0(t1)');     // length
+    this._emit('  li t3, 0');          // index
+    const charLoop = this._label('puts_char');
+    const charEnd = this._label('puts_char_end');
+    this._emitLabel(charLoop);
+    this._emit(`  bge t3, t2, ${charEnd}`);
+    this._emit('  slli t4, t3, 2');
+    this._emit('  add t4, t1, t4');
+    this._emit('  lw a0, 4(t4)');
+    this._emit('  li a7, 11');         // print_char
+    this._emit('  ecall');
+    this._emit('  addi t3, t3, 1');
+    this._emit(`  j ${charLoop}`);
+    this._emitLabel(charEnd);
+  }
+
   /** Allocate storage for a variable — register if available, otherwise stack */
   _allocLocal(name) {
     if (this.useRegisters && this.nextRegIdx < this.availableRegs.length) {
@@ -1145,23 +1164,23 @@ export class RiscVCodeGen {
         
         if (exprType === 'string') {
           // String: a0 has heap pointer, print chars
-          this._emit('  mv t1, a0');
-          this._emit('  lw t2, 0(t1)');     // length
-          this._emit('  li t3, 0');          // index
-          const charLoop = this._label('puts_char');
-          const charEnd = this._label('puts_char_end');
-          this._emitLabel(charLoop);
-          this._emit(`  bge t3, t2, ${charEnd}`);
-          this._emit('  slli t4, t3, 2');
-          this._emit('  add t4, t1, t4');
-          this._emit('  lw a0, 4(t4)');
-          this._emit('  li a7, 11');         // print_char
+          this._emitPrintString();
+        } else if (exprType === 'unknown') {
+          // Runtime type dispatch: check if a0 looks like a heap pointer
+          // Heap starts at gp base (65536 = 0x10000), integers are small
+          const isStr = this._label('puts_is_str');
+          const putsEnd = this._label('puts_end');
+          this._emit('  li t0, 65536');
+          this._emit(`  bge a0, t0, ${isStr}`);
+          // Must be integer
+          this._emit('  li a7, 1');
           this._emit('  ecall');
-          this._emit('  addi t3, t3, 1');
-          this._emit(`  j ${charLoop}`);
-          this._emitLabel(charEnd);
+          this._emit(`  j ${putsEnd}`);
+          this._emitLabel(isStr);
+          this._emitPrintString();
+          this._emitLabel(putsEnd);
         } else {
-          // Integer (or unknown): print as number
+          // Integer (default): print as number
           this._emit('  li a7, 1');          // print_int
           this._emit('  ecall');
         }
