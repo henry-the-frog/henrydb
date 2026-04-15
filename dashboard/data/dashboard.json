@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T20:52:44.427Z",
+  "generated": "2026-04-15T20:57:24.141Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Register allocator: map let-bound variables to callee-saved registers s1-s11 (instead of stack slots). Track live ranges, spill to stack when registers exhausted. Save/restore used callee-saved regs in prologue/epilogue. Benchmark fib(10) and prime sieve cycle counts.",
-    "startedAt": "2026-04-15T20:52:44.427Z",
-    "taskId": "T95"
+    "task": "Pipeline integration: compile monkey-lang programs, run through PipelineCPU and TomasuloCPU. Compare IPC, stall cycles, forwarding stats. Show how register allocation affects pipeline efficiency. Tests + benchmark report.",
+    "startedAt": "2026-04-15T20:57:24.141Z",
+    "taskId": "T97"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1030,12 +1030,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 93,
+    "blocksCompleted": 95,
     "blocksTotal": 95,
     "modeDistribution": {
-      "THINK": 11,
+      "THINK": 12,
       "PLAN": 13,
-      "BUILD": 57,
+      "BUILD": 58,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
