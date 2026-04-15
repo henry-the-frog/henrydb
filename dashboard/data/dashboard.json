@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T15:47:34.560Z",
+  "generated": "2026-04-15T15:53:48.085Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Mid-day reflection: real progress or spinning? Check knowledge capture.",
-    "completedAt": "2026-04-15T15:47:34.560Z",
-    "taskId": "T9",
-    "summary": "Mid-day reflection: real progress (3/3 depth check passed). T16 WASM orphaned — re-queued as T17 PLAN + T18 BUILD. 4+ hours remain, plenty of runway.",
-    "durationMs": 90000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T15:53:48.085Z",
+    "taskId": "T17",
+    "summary": "PLAN: 1 BUILD — fix WASM stripUnusedImports (body.bytes→body.code, callSites tracking). HenryDB ROW_NUMBER+NATURAL JOIN already working correctly.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -81,37 +81,77 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth: fix ROW_NUMBER PARTITION BY bug + NATURAL JOIN column resolution",
         "task": null,
-        "started": "2026-04-15T14:34:03.302Z"
+        "started": "2026-04-15T14:34:03.302Z",
+        "completed": "2026-04-15T14:38:40.337Z",
+        "duration_ms": 120000,
+        "summary": "PLAN: 2 BUILD tasks — (1) stress-test try/catch edge cases, (2) fix WASM binary size bloat. Shifted from HenryDB to monkey-lang depth focus based on THINK T5 findings."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Stress-test try/catch edge cases in monkey-lang: throw in loop, return inside try, nested finally, throw from catch",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-15T14:38:49.555Z",
+        "completed": "2026-04-15T14:42:30.102Z",
+        "duration_ms": 600000,
+        "summary": "Stress-tested try/catch edge cases. Found+fixed 2 VM bugs: (1) nested finally propagation, (2) throw through finally-only blocks. Root cause: compiler needed separate exception path for finally-only (emit finally+OpThrow). 12 new edge case tests, 41 total try/catch tests. 1591 passing."
       },
       {
         "id": "T16",
         "mode": "BUILD",
         "task": "Fix WASM binary size bloat in monkey-lang (1124 vs <1000 bytes for fib)",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-15T14:43:04.293Z",
+        "completed": "2026-04-15T15:45:28.407Z",
+        "summary": " [auto-resolved: orphaned in-progress task]"
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, email check, GitHub notifications"
+        "status": "done",
+        "task": "Housekeeping: git push, email check, GitHub notifications",
+        "started": "2026-04-15T15:45:59.634Z",
+        "completed": "2026-04-15T15:46:51.709Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard live+regenerated, GitHub notifications checked (nothing urgent, CI failures are known neural-net issue). T16 WASM fix orphaned from Session A noted."
       },
       {
         "id": "T9",
         "mode": "THINK",
+        "status": "done",
+        "task": "Mid-day reflection: real progress or spinning? Check knowledge capture.",
+        "started": "2026-04-15T15:47:06.175Z",
+        "completed": "2026-04-15T15:47:34.525Z",
+        "duration_ms": 90000,
+        "summary": "Mid-day reflection: real progress (3/3 depth check passed). T16 WASM orphaned — re-queued as T17 PLAN + T18 BUILD. 4+ hours remain, plenty of runway."
+      },
+      {
+        "id": "T17",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix WASM binary size bloat + HenryDB ROW_NUMBER/NATURAL JOIN bugs",
+        "task": null,
+        "started": "2026-04-15T15:47:46.924Z"
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "task": "Fix WASM stripUnusedImports bug (body.bytes→body.code, callSites-based scanning) and verify binary size reduction",
         "status": "upcoming",
-        "task": "Mid-day reflection: real progress or spinning? Check knowledge capture."
+        "plan_ref": "T17"
+      },
+      {
+        "id": "T18",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "monkey-lang"
       },
       {
         "id": "T10",
@@ -151,11 +191,11 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 11,
-    "blocksTotal": 16,
+    "blocksCompleted": 12,
+    "blocksTotal": 19,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 2,
+      "PLAN": 3,
       "BUILD": 4,
       "MAINTAIN": 2
     }

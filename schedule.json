@@ -121,9 +121,20 @@
     {
       "id": "T17",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix WASM binary size bloat + HenryDB ROW_NUMBER/NATURAL JOIN bugs",
-      "task": null
+      "task": null,
+      "started": "2026-04-15T15:47:46.924Z",
+      "completed": "2026-04-15T15:53:48.049Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: 1 BUILD — fix WASM stripUnusedImports (body.bytes→body.code, callSites tracking). HenryDB ROW_NUMBER+NATURAL JOIN already working correctly."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Fix WASM stripUnusedImports bug (body.bytes→body.code, callSites-based scanning) and verify binary size reduction",
+      "status": "upcoming",
+      "plan_ref": "T17"
     },
     {
       "id": "T18",
@@ -249,6 +260,10 @@
     {
       "time": "2026-04-15T15:47:28.737Z",
       "msg": "Added T18 (BUILD) after T17: null"
+    },
+    {
+      "time": "2026-04-15T15:53:41.931Z",
+      "msg": "PLAN T17 filled 1 BUILD tasks"
     }
   ]
 }
