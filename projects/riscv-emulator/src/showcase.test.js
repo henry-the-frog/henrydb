@@ -403,3 +403,121 @@ describe('Showcase: Functional Programming Patterns', () => {
     assert.equal(result, '17');  // mul3(4) = 12, add5(12) = 17
   });
 });
+
+describe('Showcase: Advanced Algorithms', () => {
+  it('Euclidean GCD', () => {
+    const result = run(`
+      let gcd = fn(a, b) {
+        if (b == 0) { return a }
+        return gcd(b, a % b)
+      }
+      puts(gcd(48, 18))
+    `);
+    assert.equal(result, '6');
+  });
+
+  it('GCD multiple values', () => {
+    const { output } = runFull(`
+      let gcd = fn(a, b) { if (b == 0) { return a }; return gcd(b, a % b) }
+      puts(gcd(100, 75))
+      puts(gcd(17, 13))
+      puts(gcd(1071, 462))
+    `);
+    assert.equal(output, '25121');  // 25, 1, 21
+  });
+
+  it('cons/car/cdr linked list', () => {
+    const { output } = runFull(`
+      let cons = fn(a, b) { [a, b] }
+      let car = fn(pair) { pair[0] }
+      let cdr = fn(pair) { pair[1] }
+      let list = cons(1, cons(2, cons(3, cons(4, []))))
+      puts(car(list))
+      puts(car(cdr(list)))
+      puts(car(cdr(cdr(list))))
+      puts(car(cdr(cdr(cdr(list)))))
+    `);
+    assert.equal(output, '1234');
+  });
+
+  it('power function (recursive)', () => {
+    const result = run(`
+      let power = fn(base, exp) {
+        if (exp == 0) { return 1 }
+        return base * power(base, exp - 1)
+      }
+      puts(power(2, 10))
+    `);
+    assert.equal(result, '1024');
+  });
+
+  it('abs function', () => {
+    const result = run(`
+      let abs = fn(x) { if (x < 0) { return 0 - x }; return x }
+      puts(abs(42))
+      puts(abs(0 - 17))
+    `);
+    assert.equal(result, '4217');
+  });
+
+  it('fibonacci iterative', () => {
+    const result = run(`
+      let fib_iter = fn(n) {
+        let a = 0
+        let b = 1
+        let i = 0
+        while (i < n) {
+          let tmp = a + b
+          set a = b
+          set b = tmp
+          set i = i + 1
+        }
+        return a
+      }
+      puts(fib_iter(10))
+      puts(fib_iter(20))
+    `);
+    assert.equal(result, '556765');  // 55, 6765
+  });
+
+  it('is_prime function', () => {
+    const result = run(`
+      let is_prime = fn(n) {
+        if (n < 2) { return 0 }
+        let i = 2
+        while (i * i <= n) {
+          if (n % i == 0) { return 0 }
+          set i = i + 1
+        }
+        return 1
+      }
+      puts(is_prime(2))
+      puts(is_prime(17))
+      puts(is_prime(18))
+      puts(is_prime(97))
+    `);
+    assert.equal(result, '1101');  // 1, 1, 0, 1
+  });
+
+  it('count primes up to 50', () => {
+    const result = run(`
+      let is_prime = fn(n) {
+        if (n < 2) { return 0 }
+        let i = 2
+        while (i * i <= n) {
+          if (n % i == 0) { return 0 }
+          set i = i + 1
+        }
+        return 1
+      }
+      let count = 0
+      let n = 2
+      while (n <= 50) {
+        if (is_prime(n)) { set count = count + 1 }
+        set n = n + 1
+      }
+      puts(count)
+    `);
+    assert.equal(result, '15');  // 15 primes ≤ 50
+  });
+});
