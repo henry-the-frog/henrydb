@@ -6981,6 +6981,19 @@ export class Database {
   _evalValue(node, row) {
     if (node.type === 'literal') return node.value;
     if (node.type === 'column_ref') return this._resolveColumn(node.name, row);
+    // Boolean expression types — delegate to _evalExpr and return true/false as values
+    if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' ||
+        node.type === 'COMPARE' || node.type === 'BETWEEN' ||
+        node.type === 'LIKE' || node.type === 'ILIKE' ||
+        node.type === 'IN_LIST' || node.type === 'IN_SUBQUERY' ||
+        node.type === 'NOT_IN' || node.type === 'NOT_LIKE' ||
+        node.type === 'IS_TRUE' || node.type === 'IS_FALSE' ||
+        node.type === 'IS_NOT_TRUE' || node.type === 'IS_NOT_FALSE' ||
+        node.type === 'IS_DISTINCT_FROM' || node.type === 'IS_NOT_DISTINCT_FROM' ||
+        node.type === 'AND' || node.type === 'OR' || node.type === 'NOT' ||
+        node.type === 'EXISTS') {
+      return this._evalExpr(node, row) ? true : false;
+    }
     if (node.type === 'MATCH_AGAINST') {
       // Return relevance score
       return this._evalExpr(node, row) ? 1 : 0;

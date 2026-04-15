@@ -1204,6 +1204,87 @@ export function parse(sql) {
     if (colTok.type === 'NUMBER' || colTok.type === 'STRING') {
       return { type: 'expression', expr: { type: 'literal', value: col }, alias };
     }
+    
+    // Check for IS NULL / IS NOT NULL / comparison operators after a column name
+    // These weren't consumed by earlier handlers since they don't start with arithmetic operators
+    if (!alias && isKeyword('IS')) {
+      advance(); // IS
+      let not = false;
+      if (isKeyword('NOT')) { not = true; advance(); }
+      if (isKeyword('NULL')) {
+        advance();
+        const expr = not 
+          ? { type: 'IS_NOT_NULL', left: { type: 'column_ref', name: col } }
+          : { type: 'IS_NULL', left: { type: 'column_ref', name: col } };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        else if (peek().type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
+          alias = readAlias();
+        }
+        return { type: 'expression', expr, alias };
+      } else if (isKeyword('TRUE')) {
+        advance();
+        const expr = not ? { type: 'IS_NOT_TRUE', expr: { type: 'column_ref', name: col } } : { type: 'IS_TRUE', expr: { type: 'column_ref', name: col } };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      } else if (isKeyword('FALSE')) {
+        advance();
+        const expr = not ? { type: 'IS_NOT_FALSE', expr: { type: 'column_ref', name: col } } : { type: 'IS_FALSE', expr: { type: 'column_ref', name: col } };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      } else if (isKeyword('DISTINCT')) {
+        advance(); // DISTINCT
+        expect('KEYWORD', 'FROM');
+        const right = parseExpr();
+        const expr = not 
+          ? { type: 'IS_NOT_DISTINCT_FROM', left: { type: 'column_ref', name: col }, right }
+          : { type: 'IS_DISTINCT_FROM', left: { type: 'column_ref', name: col }, right };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+    }
+    
+    // BETWEEN in SELECT list is tricky (BETWEEN x AND y conflicts with alias),
+    // so we skip it here. Users can wrap in parens: (col BETWEEN x AND y) AS alias
+    
+    // Check for comparison operators (=, <>, <, >, <=, >=) after column
+    if (!alias && peek() && ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE'].includes(peek().type)) {
+      const opMap = { EQ: 'EQ', NE: 'NEQ', LT: 'LT', GT: 'GT', LE: 'LTE', GE: 'GTE' };
+      const op = opMap[advance().type];
+      const right = parseExpr();
+      const expr = { type: 'COMPARE', op, left: { type: 'column_ref', name: col }, right };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
+    
+    // Check for LIKE/ILIKE after column
+    if (!alias && (isKeyword('LIKE') || isKeyword('ILIKE'))) {
+      const func = advance().value;
+      const pattern = parseExpr();
+      const expr = { type: func, left: { type: 'column_ref', name: col }, pattern };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
+    
+    // Check for IN after column
+    if (!alias && isKeyword('IN')) {
+      advance();
+      expect('(');
+      // Could be subquery or value list
+      if (isKeyword('SELECT')) {
+        const subquery = parseSelect();
+        expect(')');
+        const expr = { type: 'IN_SUBQUERY', left: { type: 'column_ref', name: col }, subquery };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+      const values = [parseExpr()];
+      while (match(',')) values.push(parseExpr());
+      expect(')');
+      const expr = { type: 'IN_LIST', left: { type: 'column_ref', name: col }, values };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
+    
     return { type: 'column', name: col, alias };
   }
 
