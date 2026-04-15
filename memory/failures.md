@@ -151,3 +151,9 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 **Fix:** Apply join.filter to the LATERAL result rows before returning.
 **Key insight:** When adding a query optimization pass (like predicate pushdown), you must verify that ALL join execution paths honor the filter placement. The LATERAL path was added later and missed this.
 **Prevention:** Any new join type must check for join.filter. The pushdown optimizer doesn't know about execution paths — it just assigns filters.
+
+## 2026-04-15: Window Function Frame Spec Bugs
+
+**RANGE BETWEEN Bug:** getFrameBounds() treated all OFFSET frame specs as ROWS offsets (row-position based). RANGE offsets should be value-based (current ORDER BY value ± offset).
+**FIRST_VALUE/LAST_VALUE Bug:** Both ignored the frame spec entirely. FIRST_VALUE always used partition[0], LAST_VALUE always used current row. Should use getFrameBounds() start/end indices.
+**Key insight:** When adding new functionality to getFrameBounds (like RANGE mode), every function that calls it needs to actually use the bounds — FIRST_VALUE/LAST_VALUE were hardcoded to bypass it.
