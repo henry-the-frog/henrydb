@@ -423,9 +423,30 @@
     {
       "id": "T40",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Log and push session results",
-      "started": "2026-04-15T01:42:31.696Z"
+      "started": "2026-04-15T01:42:31.696Z",
+      "completed": "2026-04-15T01:43:16.187Z",
+      "duration_ms": 60000,
+      "summary": "Daily log updated with full session results. All repos pushed."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add for-in loop compilation to VM (for (let x in array) { body })",
+      "project": "monkey-lang",
+      "started": "2026-04-15T01:43:33.138Z",
+      "completed": "2026-04-15T01:45:16.739Z",
+      "duration_ms": 120000,
+      "summary": "For-in loop already fully implemented in VM compiler. Root uses for (x in ...) syntax (no let). 3 parity tests pass."
+    },
+    {
+      "id": "T42",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session close: update daily log evening summary",
+      "started": "2026-04-15T01:45:35.160Z"
     }
   ],
   "focusProjects": [
@@ -589,6 +610,14 @@
     {
       "time": "2026-04-15T01:41:01.025Z",
       "msg": "Added T40 (MAINTAIN) after end: Log and push session results"
+    },
+    {
+      "time": "2026-04-15T01:43:32.904Z",
+      "msg": "Added T41 (BUILD) after end: Monkey: add for-in loop compilation to VM (for (let x in array) { body })"
+    },
+    {
+      "time": "2026-04-15T01:45:34.928Z",
+      "msg": "Added T42 (MAINTAIN) after end: Session close: update daily log evening summary"
     }
   ]
 }
