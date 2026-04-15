@@ -1651,6 +1651,14 @@
       "completed": "2026-04-15T23:55:55.864Z",
       "duration_ms": 600000,
       "summary": "Fixed puts() runtime type dispatch for strings from functions. bracket(\"ok\")=[ok]. String edge case tests (empty concat, function params). All tests pass."
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: update monkey-riscv.js to add --bench flag that runs all benchmarks. Also add string-heavy benchmark and closure-factory benchmark.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:56:45.546Z"
     }
   ],
   "focusProjects": [
@@ -2242,6 +2250,10 @@
     {
       "time": "2026-04-15T23:51:15.884Z",
       "msg": "Added T153 (BUILD) after end: RISC-V: string operations — len on strings, string indexing in for-in, string comparison improvements. Fix any remaining string edge cases."
+    },
+    {
+      "time": "2026-04-15T23:56:39.907Z",
+      "msg": "Added T154 (BUILD) after end: RISC-V: update monkey-riscv.js to add --bench flag that runs all benchmarks. Also add string-heavy benchmark and closure-factory benchmark."
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { CPU } from './cpu.js';
-import { Disassembler } from './disassembler.js';
+import { disassembleWord } from './disassembler.js';
 
 /**
  * Out-of-Order Execution Simulator — Tomasulo's Algorithm
@@ -214,7 +214,7 @@ class TomasuloCPU {
     const robEntry = this._allocROB();
     if (!robEntry) return false;
 
-    const asm = Disassembler.disassemble(inst, pc);
+    const asm = disassembleWord(inst, pc);
 
     // Fill RS
     rs.busy = true;
