@@ -354,6 +354,17 @@
       "completed": "2026-04-15T16:55:43.696Z",
       "duration_ms": 1200000,
       "summary": "Fixed boolean expressions in SELECT list (IS NULL, comparisons, LIKE, IN). Parser+evaluator fix. 6 regression tests. Also found NULL GROUP BY and nested aggregate issues (lower priority)."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB NULL GROUP BY issue + continue stress testing",
+      "project": "henrydb",
+      "started": "2026-04-15T16:56:19.570Z",
+      "completed": "2026-04-15T16:59:29.049Z",
+      "duration_ms": 600000,
+      "summary": "NULL GROUP BY was test error (double quotes vs single quotes). Continued stress testing: multi-window queries, correlated updates, expression GROUP BY all pass. Found ARRAY_AGG ORDER BY ignored (minor). No more critical bugs in this round."
     }
   ],
   "focusProjects": [
@@ -497,6 +508,10 @@
     {
       "time": "2026-04-15T16:43:23.594Z",
       "msg": "Added T33 (BUILD) after end: Continue HenryDB stress testing — find+fix more edge cases"
+    },
+    {
+      "time": "2026-04-15T16:56:13.237Z",
+      "msg": "Added T34 (BUILD) after end: Fix HenryDB NULL GROUP BY issue + continue stress testing"
     }
   ]
 }

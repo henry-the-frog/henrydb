@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T16:55:43.733Z",
+  "generated": "2026-04-15T16:59:29.085Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Continue HenryDB stress testing — find+fix more edge cases",
-    "completedAt": "2026-04-15T16:55:43.733Z",
-    "taskId": "T33",
-    "summary": "Fixed boolean expressions in SELECT list (IS NULL, comparisons, LIKE, IN). Parser+evaluator fix. 6 regression tests. Also found NULL GROUP BY and nested aggregate issues (lower priority).",
-    "durationMs": 1200000
+    "task": "Fix HenryDB NULL GROUP BY issue + continue stress testing",
+    "completedAt": "2026-04-15T16:59:29.085Z",
+    "taskId": "T34",
+    "summary": "NULL GROUP BY was test error (double quotes vs single quotes). Continued stress testing: multi-window queries, correlated updates, expression GROUP BY all pass. Found ARRAY_AGG ORDER BY ignored (minor). No more critical bugs in this round.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -320,12 +320,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 33,
+    "blocksCompleted": 34,
     "blocksTotal": 30,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 6,
-      "BUILD": 14,
+      "BUILD": 15,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
