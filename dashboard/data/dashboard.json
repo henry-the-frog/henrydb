@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T16:25:57.728Z",
+  "generated": "2026-04-15T16:27:37.694Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "HenryDB assessment: what's the current test count and what bugs/features are highest value?",
-    "completedAt": "2026-04-15T16:25:57.728Z",
-    "taskId": "T25",
-    "summary": "HenryDB assessment: found LATERAL JOIN WHERE bug — predicates pushed to join.filter not applied. Fixed + 4 tests. 6920+ tests in HenryDB.",
-    "durationMs": 900000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T16:27:37.694Z",
+    "taskId": "T26",
+    "summary": "PLAN: found 2 window function bugs — RANGE BETWEEN ignores offsets (returns full sum), LAST_VALUE with explicit frame broken. 2 BUILD tasks.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -232,39 +232,99 @@
       {
         "id": "T21",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement inline caching for monkey-lang hash lookups",
         "task": null,
-        "started": "2026-04-15T16:07:41.411Z"
+        "started": "2026-04-15T16:07:41.411Z",
+        "completed": "2026-04-15T16:08:14.337Z",
+        "duration_ms": 60000,
+        "summary": "PLAN: 1 BUILD — shape IDs + IC slots in VM OpIndex. Key insight: MonkeyHash.pairs is a Map keyed by fastHashKey string, IC can cache (shapeId, key) → value."
       },
       {
         "id": "T24",
         "mode": "BUILD",
         "task": "Implement shape IDs on MonkeyHash + inline cache slots in VM OpIndex for hash lookups + benchmarks",
-        "status": "upcoming",
-        "plan_ref": "T21"
+        "status": "done",
+        "plan_ref": "T21",
+        "started": "2026-04-15T16:08:28.415Z",
+        "completed": "2026-04-15T16:12:48.942Z",
+        "duration_ms": 900000,
+        "summary": "Shape IDs for MonkeyHash: lazy computation, same-keys=same-shape, invalidation. Interpreter IC attempted but reverted (stale values on mutation). Shape IDs are JIT infrastructure. 8 new tests (1616 total)."
       },
       {
         "id": "T22",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-15T16:13:20.707Z",
+        "completed": "2026-04-15T16:13:20.851Z",
+        "duration_ms": 0,
+        "summary": "Skipped — IC work done in T24."
       },
       {
         "id": "T23",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard update",
+        "started": "2026-04-15T16:13:30.619Z",
+        "completed": "2026-04-15T16:13:59.638Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard regenerated (24 blocks, 23 done)."
+      },
+      {
+        "id": "T25",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB assessment: what's the current test count and what bugs/features are highest value?",
+        "started": "2026-04-15T16:14:55.320Z",
+        "completed": "2026-04-15T16:25:57.691Z",
+        "duration_ms": 900000,
+        "summary": "HenryDB assessment: found LATERAL JOIN WHERE bug — predicates pushed to join.filter not applied. Fixed + 4 tests. 6920+ tests in HenryDB."
+      },
+      {
+        "id": "T26",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB depth work: fix bugs or add high-value features",
+        "task": null,
+        "started": "2026-04-15T16:26:32.785Z"
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "task": "Fix RANGE BETWEEN window frame boundaries (ignoring range offsets, returns full partition sum)",
         "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard update"
+        "plan_ref": "T26"
+      },
+      {
+        "id": "T30",
+        "mode": "BUILD",
+        "task": "Fix LAST_VALUE with explicit frame (returns current row value instead of frame last)",
+        "status": "upcoming",
+        "plan_ref": "T26"
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T28",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git push, knowledge capture"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 25,
-    "blocksTotal": 24,
+    "blocksCompleted": 26,
+    "blocksTotal": 30,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 5,
+      "PLAN": 6,
       "BUILD": 9,
       "MAINTAIN": 4,
       "EXPLORE": 2

@@ -272,9 +272,27 @@
     {
       "id": "T26",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth work: fix bugs or add high-value features",
-      "task": null
+      "task": null,
+      "started": "2026-04-15T16:26:32.785Z",
+      "completed": "2026-04-15T16:27:37.658Z",
+      "duration_ms": 300000,
+      "summary": "PLAN: found 2 window function bugs — RANGE BETWEEN ignores offsets (returns full sum), LAST_VALUE with explicit frame broken. 2 BUILD tasks."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Fix RANGE BETWEEN window frame boundaries (ignoring range offsets, returns full partition sum)",
+      "status": "upcoming",
+      "plan_ref": "T26"
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Fix LAST_VALUE with explicit frame (returns current row value instead of frame last)",
+      "status": "upcoming",
+      "plan_ref": "T26"
     },
     {
       "id": "T27",
@@ -415,6 +433,10 @@
     {
       "time": "2026-04-15T16:14:44.465Z",
       "msg": "Added T28 (MAINTAIN) after T27: Housekeeping: git push, knowledge capture"
+    },
+    {
+      "time": "2026-04-15T16:27:30.878Z",
+      "msg": "PLAN T26 filled 2 BUILD tasks"
     }
   ]
 }
