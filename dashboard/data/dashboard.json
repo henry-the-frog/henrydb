@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T15:56:34.682Z",
+  "generated": "2026-04-15T15:58:24.163Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fix WASM stripUnusedImports bug (body.bytes→body.code, callSites-based scanning) and verify binary size reduction",
-    "completedAt": "2026-04-15T15:56:34.682Z",
-    "taskId": "T19",
-    "summary": "Fixed WASM stripUnusedImports: body.bytes→body.code + callSites tracking. 9 tests fixed (8 size + 1 disassembler). Fib binary 747 bytes (was 1124, -33%). 1593/1597 passing.",
-    "durationMs": 600000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T15:58:24.163Z",
+    "taskId": "T10",
+    "summary": "PLAN: 1 BUILD — file-based module system (import ./path.monkey). Built-in modules already working. Parser unification already done (single parser.js).",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -134,37 +134,49 @@
       {
         "id": "T17",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix WASM binary size bloat + HenryDB ROW_NUMBER/NATURAL JOIN bugs",
         "task": null,
-        "started": "2026-04-15T15:47:46.924Z"
+        "started": "2026-04-15T15:47:46.924Z",
+        "completed": "2026-04-15T15:53:48.049Z",
+        "duration_ms": 120000,
+        "summary": "PLAN: 1 BUILD — fix WASM stripUnusedImports (body.bytes→body.code, callSites tracking). HenryDB ROW_NUMBER+NATURAL JOIN already working correctly."
       },
       {
         "id": "T19",
         "mode": "BUILD",
         "task": "Fix WASM stripUnusedImports bug (body.bytes→body.code, callSites-based scanning) and verify binary size reduction",
-        "status": "upcoming",
-        "plan_ref": "T17"
+        "status": "done",
+        "plan_ref": "T17",
+        "started": "2026-04-15T15:54:05.044Z",
+        "completed": "2026-04-15T15:56:34.623Z",
+        "duration_ms": 600000,
+        "summary": "Fixed WASM stripUnusedImports: body.bytes→body.code + callSites tracking. 9 tests fixed (8 size + 1 disassembler). Fib binary 747 bytes (was 1124, -33%). 1593/1597 passing."
       },
       {
         "id": "T18",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-15T15:57:15.423Z",
+        "completed": "2026-04-15T15:57:15.564Z",
+        "duration_ms": 0,
+        "summary": "Skipped — work completed in T19."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Monkey-lang module system or parser unification",
-        "task": null
+        "task": null,
+        "started": "2026-04-15T15:57:24.225Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Implement file-based module system: import \"./path.monkey\" with file resolution, caching, and circular dependency detection",
         "plan_ref": "T10",
         "project": "monkey-lang"
       },
@@ -191,12 +203,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 13,
+    "blocksCompleted": 15,
     "blocksTotal": 19,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 5,
+      "PLAN": 4,
+      "BUILD": 6,
       "MAINTAIN": 2
     }
   }

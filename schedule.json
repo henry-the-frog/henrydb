@@ -143,22 +143,30 @@
     {
       "id": "T18",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T15:57:15.423Z",
+      "completed": "2026-04-15T15:57:15.564Z",
+      "duration_ms": 0,
+      "summary": "Skipped — work completed in T19."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey-lang module system or parser unification",
-      "task": null
+      "task": null,
+      "started": "2026-04-15T15:57:24.225Z",
+      "completed": "2026-04-15T15:58:24.127Z",
+      "duration_ms": 90000,
+      "summary": "PLAN: 1 BUILD — file-based module system (import ./path.monkey). Built-in modules already working. Parser unification already done (single parser.js)."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Implement file-based module system: import \"./path.monkey\" with file resolution, caching, and circular dependency detection",
       "plan_ref": "T10",
       "project": "monkey-lang"
     },
@@ -268,6 +276,10 @@
     {
       "time": "2026-04-15T15:53:41.931Z",
       "msg": "PLAN T17 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T15:58:18.614Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
     }
   ]
 }
