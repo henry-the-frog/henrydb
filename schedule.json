@@ -111,8 +111,26 @@
     {
       "id": "T9",
       "mode": "THINK",
+      "status": "done",
+      "task": "Mid-day reflection: real progress or spinning? Check knowledge capture.",
+      "started": "2026-04-15T15:47:06.175Z",
+      "completed": "2026-04-15T15:47:34.525Z",
+      "duration_ms": 90000,
+      "summary": "Mid-day reflection: real progress (3/3 depth check passed). T16 WASM orphaned — re-queued as T17 PLAN + T18 BUILD. 4+ hours remain, plenty of runway."
+    },
+    {
+      "id": "T17",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Mid-day reflection: real progress or spinning? Check knowledge capture."
+      "goal": "Fix WASM binary size bloat + HenryDB ROW_NUMBER/NATURAL JOIN bugs",
+      "task": null
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "monkey-lang"
     },
     {
       "id": "T10",
@@ -223,6 +241,14 @@
     {
       "time": "2026-04-15T14:38:28.335Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T15:47:20.099Z",
+      "msg": "Added T17 (PLAN) after T9: Fix WASM binary size bloat + HenryDB ROW_NUMBER/NATURAL JOIN bugs"
+    },
+    {
+      "time": "2026-04-15T15:47:28.737Z",
+      "msg": "Added T18 (BUILD) after T17: null"
     }
   ]
 }
