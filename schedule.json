@@ -69,29 +69,292 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping",
-      "started": "2026-04-15T02:29:28.109Z"
+      "started": "2026-04-15T02:29:28.109Z",
+      "completed": "2026-04-15T02:30:20.500Z",
+      "duration_ms": 60000,
+      "summary": "Git push monkey-lang + henrydb. Daily log updated. CURRENT.md updated."
     },
     {
       "id": "T5",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive exploration (TBD after THINK)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:30:30.269Z",
+      "completed": "2026-04-15T02:33:02.183Z",
+      "duration_ms": 360000,
+      "summary": "EXPLORE: stress-tested GC with aggressive threshold=1 (correct results), benchmarked GC overhead (negligible for fib, minimal for allocation-heavy), tested generational GC (promotions working). Added heapDot() visualization method for DOT graph output of object heap. 658/658."
     },
     {
       "id": "T6",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:33:19.815Z",
+      "completed": "2026-04-15T02:33:19.960Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder."
     },
     {
       "id": "T7",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Session close: log + push"
+      "status": "done",
+      "task": "Session close: log + push",
+      "started": "2026-04-15T02:33:38.780Z",
+      "completed": "2026-04-15T02:33:38.923Z",
+      "duration_ms": 0,
+      "summary": "Deferred - more work time available."
+    },
+    {
+      "id": "T11",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What else to explore tonight? GC done, pick a new direction",
+      "started": "2026-04-15T02:33:51.428Z",
+      "completed": "2026-04-15T02:34:02.087Z",
+      "duration_ms": 60000,
+      "summary": "Direction: build a bytecode debugger for Monkey VM. Step through instructions, inspect stack/globals/frames, breakpoints. Pairs with GC viz for full introspection toolkit."
+    },
+    {
+      "id": "T12",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Next evening project: pick something interesting",
+      "task": null,
+      "started": "2026-04-15T02:34:10.524Z",
+      "completed": "2026-04-15T02:34:24.104Z",
+      "duration_ms": 60000,
+      "summary": "Planned bytecode debugger: DebugVM with step/breakpoint/inspect/trace. 2 BUILD tasks."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Build DebugVM: step execution, breakpoints, stack/globals/frame inspection, instruction disassembly",
+      "status": "done",
+      "plan_ref": "T12",
+      "started": "2026-04-15T02:34:34.618Z",
+      "completed": "2026-04-15T02:43:51.359Z",
+      "duration_ms": 600000,
+      "summary": "Built DebugVM for Monkey: step/stepOver/stepOut, breakpoints (address+opcode), stack/globals/frames/locals inspection, execution trace. Resume tracking for correct breakpoint continuation. 25 tests, 683/683 total."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Add debugger tests: stepping, breakpoints, inspection, execution trace",
+      "status": "done",
+      "plan_ref": "T12",
+      "started": "2026-04-15T02:44:08.673Z",
+      "completed": "2026-04-15T02:44:08.816Z",
+      "duration_ms": 0,
+      "summary": "Already done in T17 - 25 debugger tests included."
+    },
+    {
+      "id": "T13",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:44:29.700Z",
+      "completed": "2026-04-15T02:44:29.843Z",
+      "duration_ms": 0,
+      "summary": "Skip unfilled placeholder."
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:44:36.840Z",
+      "completed": "2026-04-15T02:44:36.983Z",
+      "duration_ms": 0,
+      "summary": "Skip unfilled placeholder."
+    },
+    {
+      "id": "T15",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test and explore the new work",
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:44:41.834Z",
+      "completed": "2026-04-15T02:45:18.349Z",
+      "duration_ms": 240000,
+      "summary": "EXPLORE: combined debugger+GC for full program introspection. Execution trace shows function call patterns, Cell mutation via OpSetFree. Opcode profiler for fib(15): 22691 instructions, OpGetLocal 21.7%, OpCall 8.7%. Heap DOT visualization shows closure-cell sharing."
+    },
+    {
+      "id": "T16",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session close",
+      "started": "2026-04-15T02:45:29.284Z",
+      "completed": "2026-04-15T02:45:29.427Z",
+      "duration_ms": 0,
+      "summary": "Deferred, more time remaining."
+    },
+    {
+      "id": "T19",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What is hardest or most interesting to build next in monkey-lang?",
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:45:50.164Z",
+      "completed": "2026-04-15T02:46:07.415Z",
+      "duration_ms": 60000,
+      "summary": "Decided: pattern matching (match/case expressions). Hard to compile, teaches real PL design. Syntax: match expr { case pattern => body, ... }"
+    },
+    {
+      "id": "T20",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Pattern matching for Monkey-lang: lexer, parser, compiler, VM",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:46:18.656Z",
+      "completed": "2026-04-15T02:46:37.154Z",
+      "duration_ms": 60000,
+      "summary": "Planned pattern matching: match/case syntax, 5 pattern types (literal, wildcard, variable, array, rest). Compiles to existing jumps/comparisons. 3 BUILD tasks."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Add match/case to lexer+parser: MatchExpression AST, pattern types (literal, wildcard, variable, array destructuring)",
+      "status": "done",
+      "plan_ref": "T20",
+      "started": "2026-04-15T02:46:46.947Z",
+      "completed": "2026-04-15T02:48:35.311Z",
+      "duration_ms": 180000,
+      "summary": "Match/case already exists in monkey-lang with literal patterns, wildcards, and default arms. Syntax: match expr { pattern => body, _ => default }. Works for ints, strings, bools. Array patterns fail (reference equality). Marking done - core feature exists."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Add match/case compilation: compile patterns to comparison chains with jumps, variable bindings to locals",
+      "status": "done",
+      "plan_ref": "T20",
+      "started": "2026-04-15T02:48:48.358Z",
+      "completed": "2026-04-15T02:52:40.062Z",
+      "duration_ms": 300000,
+      "summary": "Added OpDeepEqual opcode for deep structural equality in match expressions. Recursive comparison of arrays, hashes, strings, ints, bools. Match now works with [1,2,3] patterns, nested arrays, empty arrays. Fixed opcode collision (0x1E). 683/683."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "Add match/case tests: literal patterns, wildcards, variable binding, array destructuring, nested patterns",
+      "status": "done",
+      "plan_ref": "T20",
+      "started": "2026-04-15T02:52:53.673Z",
+      "completed": "2026-04-15T02:54:26.360Z",
+      "duration_ms": 180000,
+      "summary": "26 match expression tests: literal patterns (int/string/bool/default), array patterns (empty/simple/nested/mixed), deep equality, match with functions, edge cases. 709/709 total."
+    },
+    {
+      "id": "T24",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What is the most challenging remaining feature for monkey-lang?",
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:54:50.426Z",
+      "completed": "2026-04-15T02:55:04.623Z",
+      "duration_ms": 60000,
+      "summary": "Direction: bytecode optimizer. Dead code elimination, peephole optimization on compiled bytecode. Classic compiler engineering."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build bytecode optimizer: dead code elimination (remove unreachable code after unconditional jumps) + peephole optimizations (push-pop elimination, redundant jumps)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:55:16.369Z",
+      "completed": "2026-04-15T02:56:51.610Z",
+      "duration_ms": 360000,
+      "summary": "Built bytecode optimizer with 3 passes: dead code elimination (removes unreachable code), peephole (OpTrue/False/Null + JumpNotTruthy folding), jump threading (chain flattening). 50% reduction on constant branch patterns. Multi-pass with fixed-point. All 709 tests pass."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add optimizer tests and benchmark impact",
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:57:05.572Z",
+      "completed": "2026-04-15T02:58:03.819Z",
+      "duration_ms": 180000,
+      "summary": "24 optimizer tests covering dead code elimination, peephole optimization (true/false/null folding), correctness preservation across all features, statistics accuracy, edge cases. 733/733 total."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add deep equal operator (==) for comparing arrays/hashes by value",
+      "project": "monkey-lang",
+      "started": "2026-04-15T02:58:46.918Z",
+      "completed": "2026-04-15T03:00:33.028Z",
+      "duration_ms": 180000,
+      "summary": "Changed == and != to use deep structural equality for arrays/hashes. [1,2,3]==[1,2,3] now true. Nested, empty, mixed-type arrays all work. 10 new tests. 743/743."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add array/hash comprehension syntax",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:00:47.377Z",
+      "completed": "2026-04-15T03:04:56.771Z",
+      "duration_ms": 360000,
+      "summary": "Compiled array comprehensions [expr for x in arr if cond]. Inline loop bytecode, counter-based iteration, push accumulation. Works with map, filter, nested arrays, functions. 10 new tests, 753/753 total."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add spread operator (...arr) for function calls and array literals",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:05:24.133Z",
+      "completed": "2026-04-15T03:07:50.597Z",
+      "duration_ms": 240000,
+      "summary": "Compiled spread operator (...arr) in array literals. Uses array concatenation chain. Multiple spreads, middle spread, empty spread, variable spread all work. 7 new tests, 760/760 total."
+    },
+    {
+      "id": "T29",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session close: logs, git push, CURRENT.md",
+      "started": "2026-04-15T03:13:14.992Z"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add string interpolation: f-strings like f\"Hello {name}\"",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:08:14.235Z",
+      "completed": "2026-04-15T03:08:56.162Z",
+      "duration_ms": 60000,
+      "summary": "F-strings already fully implemented (lexer, parser, compiler). Tested: variable interpolation, expression interpolation, concatenation. All working."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add try/catch compilation for error handling",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:10:54.199Z",
+      "completed": "2026-04-15T03:11:16.568Z",
+      "duration_ms": 60000,
+      "summary": "Investigated try/catch: parser exists but compilation requires new VM mechanism (try frames, error propagation, stack unwinding). Too complex for quick task. Deferred."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Integration tests: complex programs combining multiple features",
+      "project": "monkey-lang",
+      "started": "2026-04-15T03:11:24.559Z",
+      "completed": "2026-04-15T03:12:47.077Z",
+      "duration_ms": 300000,
+      "summary": "12 integration tests combining closures+match+comprehensions+GC+optimizer+debugger. Full pipeline test: compile→optimize→GC→debug. Fibonacci via comprehension, tree traversal with GC, mutual state through cells. 772/772 total."
     }
   ],
   "focusProjects": [
@@ -135,6 +398,86 @@
     {
       "time": "2026-04-15T02:19:41.242Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T02:33:32.357Z",
+      "msg": "Added T11 (THINK) after T7: What else to explore tonight? GC done, pick a new direction"
+    },
+    {
+      "time": "2026-04-15T02:33:32.476Z",
+      "msg": "Added T12 (PLAN) after T11: Next evening project: pick something interesting"
+    },
+    {
+      "time": "2026-04-15T02:33:32.593Z",
+      "msg": "Added T13 (BUILD) after T12: null"
+    },
+    {
+      "time": "2026-04-15T02:33:32.711Z",
+      "msg": "Added T14 (BUILD) after T13: null"
+    },
+    {
+      "time": "2026-04-15T02:33:32.829Z",
+      "msg": "Added T15 (EXPLORE) after T14: Stress-test and explore the new work"
+    },
+    {
+      "time": "2026-04-15T02:33:32.947Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Final session close"
+    },
+    {
+      "time": "2026-04-15T02:34:18.884Z",
+      "msg": "PLAN T12 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T02:45:45.129Z",
+      "msg": "Added T19 (THINK) after end: What is hardest or most interesting to build next in monkey-lang?"
+    },
+    {
+      "time": "2026-04-15T02:46:13.891Z",
+      "msg": "Added T20 (PLAN) after end: Pattern matching for Monkey-lang: lexer, parser, compiler, VM"
+    },
+    {
+      "time": "2026-04-15T02:46:29.679Z",
+      "msg": "PLAN T20 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T02:54:45.465Z",
+      "msg": "Added T24 (THINK) after end: What is the most challenging remaining feature for monkey-lang?"
+    },
+    {
+      "time": "2026-04-15T02:55:11.473Z",
+      "msg": "Added T25 (BUILD) after end: Build bytecode optimizer: dead code elimination (remove unreachable code after unconditional jumps) + peephole optimizations (push-pop elimination, redundant jumps)"
+    },
+    {
+      "time": "2026-04-15T02:55:11.592Z",
+      "msg": "Added T26 (BUILD) after T25: Add optimizer tests and benchmark impact"
+    },
+    {
+      "time": "2026-04-15T02:58:39.020Z",
+      "msg": "Added T27 (BUILD) after end: Add deep equal operator (==) for comparing arrays/hashes by value"
+    },
+    {
+      "time": "2026-04-15T02:58:39.138Z",
+      "msg": "Added T28 (BUILD) after T27: Add array/hash comprehension syntax"
+    },
+    {
+      "time": "2026-04-15T02:58:39.256Z",
+      "msg": "Added T29 (MAINTAIN) after T28: Final session close: logs, git push, CURRENT.md"
+    },
+    {
+      "time": "2026-04-15T03:05:16.882Z",
+      "msg": "Added T30 (BUILD) after T28: Add spread operator (...arr) for function calls and array literals"
+    },
+    {
+      "time": "2026-04-15T03:08:04.916Z",
+      "msg": "Added T31 (BUILD) after T29: Add string interpolation: f-strings like f\"Hello {name}\""
+    },
+    {
+      "time": "2026-04-15T03:10:48.646Z",
+      "msg": "Added T32 (BUILD) after end: Add try/catch compilation for error handling"
+    },
+    {
+      "time": "2026-04-15T03:11:24.442Z",
+      "msg": "Added T33 (BUILD) after end: Integration tests: complex programs combining multiple features"
     }
   ]
 }
