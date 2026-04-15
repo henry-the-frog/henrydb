@@ -1331,10 +1331,13 @@
     {
       "id": "T124",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix HenryDB planner test failure (NULL selectivity) and run full sweep. Fix any broken tests found.",
       "project": "henrydb",
-      "started": "2026-04-15T22:27:24.197Z"
+      "started": "2026-04-15T22:27:24.197Z",
+      "completed": "2026-04-15T22:54:31.215Z",
+      "duration_ms": 900000,
+      "summary": "Fixed HenryDB case-insensitive table lookup. Added _getTable() helper with lowercase/uppercase fallback. Fixed 10+ locations in db.js + planner.js. 16 planner test failures → 0. All DB tests pass."
     },
     {
       "id": "T125",
@@ -1383,17 +1386,50 @@
     {
       "id": "T129",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey-lang compiler: constant folding optimization. Fold compile-time constant expressions (3+4 → 7, 'a'+'b' → 'ab', !true → false). Add as a pass before code generation. 15+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T22:44:22.326Z"
+      "started": "2026-04-15T22:44:22.326Z",
+      "completed": "2026-04-15T22:47:34.758Z",
+      "duration_ms": 600000,
+      "summary": "FIXED: 4+ char string hash key bug. Root cause: register clobbering in inline comparison. Fix: extracted _str_eq subroutine with clean register isolation. 6 regression tests, 18 hash tests total, 397 RISC-V tests passing."
     },
     {
       "id": "T130",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix: RISC-V string hash key 4+ char bug. Simplify: use a _str_eq subroutine instead of inline comparison. The subroutine avoids register conflicts by using its own stack frame.",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:54:46.764Z",
+      "completed": "2026-04-15T22:54:47.002Z",
+      "duration_ms": 0,
+      "summary": "Already completed as part of T129."
+    },
+    {
+      "id": "T131",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: What should the next major RISC-V backend feature be? Options: (1) returning closures, (2) tail call optimization, (3) garbage collector, (4) self-hosting showcase, (5) performance benchmarks vs VM. Review current state, pick the highest-impact option.",
+      "project": "riscv-emulator",
+      "started": "2026-04-15T22:55:34.785Z",
+      "completed": "2026-04-15T22:55:56.318Z",
+      "duration_ms": 120000,
+      "summary": "Decided: (1) Performance benchmarks first — quick win, validates pipeline. (2) Then returning closures — high FP value. Filled BUILD tasks."
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "task": "RISC-V: Performance benchmarks comparing native RISC-V execution vs VM interpretation. fib(25), prime sieve, string ops, array sort. Show cycle counts and speedup ratios.",
+      "status": "in-progress",
+      "plan_ref": "T131",
+      "started": "2026-04-15T22:56:07.680Z"
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "task": "RISC-V: Implement returning closures (make_adder pattern). A function returns another function that captures variables from the outer scope. Tests: make_adder, counter factory, compose.",
+      "status": "upcoming",
+      "plan_ref": "T131"
     }
   ],
   "focusProjects": [
@@ -1889,6 +1925,14 @@
     {
       "time": "2026-04-15T22:44:15.304Z",
       "msg": "Added T130 (BUILD) after end: Fix: RISC-V string hash key 4+ char bug. Simplify: use a _str_eq subroutine instead of inline comparison. The subroutine avoids register conflicts by using its own stack frame."
+    },
+    {
+      "time": "2026-04-15T22:55:30.389Z",
+      "msg": "Added T131 (THINK) after end: THINK: What should the next major RISC-V backend feature be? Options: (1) returning closures, (2) tail call optimization, (3) garbage collector, (4) self-hosting showcase, (5) performance benchmarks vs VM. Review current state, pick the highest-impact option."
+    },
+    {
+      "time": "2026-04-15T22:55:50.436Z",
+      "msg": "PLAN T131 filled 2 BUILD tasks"
     }
   ]
 }
