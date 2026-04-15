@@ -16,6 +16,7 @@
 
 ### Monkey-Lang
 - **monkey-let-binding-compilation.md** — Critical let-binding stack ordering bug in bytecode compiler; OpSetLocal vs OpPop order. (uses: 1, created: 2026-04-13)
+- **monkey-try-catch-impl.md** — try/catch/throw/finally implementation: 3 opcodes, handler stack unwinding, evaluator MonkeyThrown pattern. (uses: 0, created: 2026-04-15)
 
 ### Query Compilation & Optimization
 - **copy-and-patch-compilation.md** — Copy-and-patch technique, comparison with HenryDB closure approach, sea-of-nodes verdict. (uses: 1, created: 2026-04-08)

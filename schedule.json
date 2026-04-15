@@ -48,29 +48,52 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, knowledge capture"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard health, knowledge capture",
+      "started": "2026-04-15T14:32:09.107Z",
+      "completed": "2026-04-15T14:32:54.470Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, knowledge captured (monkey-try-catch-impl.md), INDEX.md updated."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Depth check: quality of monkey-lang features. Parser unification status."
+      "status": "done",
+      "task": "Depth check: quality of monkey-lang features. Parser unification status.",
+      "started": "2026-04-15T14:33:04.682Z",
+      "completed": "2026-04-15T14:33:54.266Z",
+      "duration_ms": 90000,
+      "summary": "Depth check passed (3/3 positive). Scoping bug found+fixed in try/catch eval. WASM binary size bloat (1124 vs <1000 bytes) identified. Not in breadth spiral. Direction: stress-test try/catch edge cases, then investigate WASM size."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: fix ROW_NUMBER PARTITION BY bug + NATURAL JOIN column resolution",
-      "task": null
+      "task": null,
+      "started": "2026-04-15T14:34:03.302Z",
+      "completed": "2026-04-15T14:38:40.337Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: 2 BUILD tasks — (1) stress-test try/catch edge cases, (2) fix WASM binary size bloat. Shifted from HenryDB to monkey-lang depth focus based on THINK T5 findings."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Stress-test try/catch edge cases in monkey-lang: throw in loop, return inside try, nested finally, throw from catch",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-15T14:38:49.555Z",
+      "completed": "2026-04-15T14:42:30.102Z",
+      "duration_ms": 600000,
+      "summary": "Stress-tested try/catch edge cases. Found+fixed 2 VM bugs: (1) nested finally propagation, (2) throw through finally-only blocks. Root cause: compiler needed separate exception path for finally-only (emit finally+OpThrow). 12 new edge case tests, 41 total try/catch tests. 1591 passing."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "task": "Fix WASM binary size bloat in monkey-lang (1124 vs <1000 bytes for fib)",
+      "status": "upcoming",
+      "plan_ref": "T6"
     },
     {
       "id": "T8",
@@ -189,6 +212,10 @@
     {
       "time": "2026-04-15T14:16:50.777Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T14:38:28.335Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
