@@ -1148,10 +1148,21 @@
     {
       "id": "T107",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V codegen: string concatenation. InfixExpression with + on strings → allocate new string on heap, copy both operands. Use type inference to detect string operands. Support: str+str, str+int (number to string), multiple concat. 10+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T21:33:43.235Z"
+      "started": "2026-04-15T21:33:43.235Z",
+      "completed": "2026-04-15T21:36:04.770Z",
+      "duration_ms": 600000,
+      "summary": "String concatenation: + on strings allocates new heap string, copies both. Type inference detects string operands. Chained concat + function params work. 12 new tests, 290 total."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V backend showcase: write and run a complex monkey-lang program that exercises all features (strings, arrays, functions, for-in, push, concat, recursion, type inference). Verify it compiles and runs correctly. Update scratch note with final stats.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T21:36:32.858Z"
     }
   ],
   "focusProjects": [
@@ -1559,6 +1570,10 @@
     {
       "time": "2026-04-15T21:33:33.615Z",
       "msg": "Added T107 (BUILD) after end: RISC-V codegen: string concatenation. InfixExpression with + on strings → allocate new string on heap, copy both operands. Use type inference to detect string operands. Support: str+str, str+int (number to string), multiple concat. 10+ tests."
+    },
+    {
+      "time": "2026-04-15T21:36:23.199Z",
+      "msg": "Added T108 (BUILD) after end: RISC-V backend showcase: write and run a complex monkey-lang program that exercises all features (strings, arrays, functions, for-in, push, concat, recursion, type inference). Verify it compiles and runs correctly. Update scratch note with final stats."
     }
   ]
 }

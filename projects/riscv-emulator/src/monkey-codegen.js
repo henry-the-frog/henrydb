@@ -840,7 +840,12 @@ export class RiscVCodeGen {
     // Call the function
     this._emit(`  jal ${funcName}`);
     // Result is in a0
-    this._lastExprType = 'unknown';
+    // Check if we know the return type
+    if (this._typeInfo?.funcTypes?.has(funcName)) {
+      this._lastExprType = this._typeInfo.funcTypes.get(funcName).returnType || 'unknown';
+    } else {
+      this._lastExprType = 'unknown';
+    }
   }
 
   _compileFunctionDef(name, funcLit) {

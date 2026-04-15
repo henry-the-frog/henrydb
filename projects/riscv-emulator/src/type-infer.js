@@ -33,6 +33,40 @@ export function inferTypes(program) {
   // Pass 2: Infer function parameter types from call sites
   walkCallSites(program, funcDefs, funcTypes, varTypes);
 
+  // Pass 3: Infer function return types from body analysis
+  for (const [name, funcLit] of funcDefs) {
+    if (!funcTypes.has(name)) {
+      funcTypes.set(name, { params: new Map(), returnType: 'unknown' });
+    }
+    const info = funcTypes.get(name);
+    
+    // Build local type map including params
+    const localTypes = new Map(varTypes);
+    for (const [pName, pType] of info.params) {
+      localTypes.set(pName, pType);
+    }
+    
+    // Analyze function body for return types and let statements
+    if (funcLit.body?.statements) {
+      for (const stmt of funcLit.body.statements) {
+        if (stmt.constructor.name === 'LetStatement') {
+          localTypes.set(stmt.name.value, exprType(stmt.value, localTypes));
+        }
+        if (stmt.constructor.name === 'SetStatement') {
+          // Track type changes from set
+          const setType = exprType(stmt.value, localTypes);
+          if (setType !== 'unknown') localTypes.set(stmt.name.value, setType);
+        }
+        if (stmt.constructor.name === 'ReturnStatement' && stmt.returnValue) {
+          const retType = exprType(stmt.returnValue, localTypes);
+          if (retType !== 'unknown') {
+            info.returnType = retType;
+          }
+        }
+      }
+    }
+  }
+
   return { varTypes, funcTypes };
 }
 
@@ -52,6 +86,11 @@ function exprType(expr, varTypes) {
     case 'PrefixExpression':
       return 'int'; // -x, !x are always int
     case 'InfixExpression':
+      if (expr.operator === '+') {
+        const lt = exprType(expr.left, varTypes);
+        const rt = exprType(expr.right, varTypes);
+        if (lt === 'string' || rt === 'string') return 'string';
+      }
       return 'int'; // arithmetic/comparison always int
     case 'CallExpression': {
       const funcName = expr.function?.value;
