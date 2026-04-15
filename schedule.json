@@ -219,9 +219,20 @@
     {
       "id": "T21",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Implement inline caching for monkey-lang hash lookups",
-      "task": null
+      "task": null,
+      "started": "2026-04-15T16:07:41.411Z",
+      "completed": "2026-04-15T16:08:14.337Z",
+      "duration_ms": 60000,
+      "summary": "PLAN: 1 BUILD — shape IDs + IC slots in VM OpIndex. Key insight: MonkeyHash.pairs is a Map keyed by fastHashKey string, IC can cache (shapeId, key) → value."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Implement shape IDs on MonkeyHash + inline cache slots in VM OpIndex for hash lookups + benchmarks",
+      "status": "upcoming",
+      "plan_ref": "T21"
     },
     {
       "id": "T22",
@@ -342,6 +353,10 @@
     {
       "time": "2026-04-15T16:07:03.068Z",
       "msg": "Added T23 (MAINTAIN) after T22: Housekeeping: git push, dashboard update"
+    },
+    {
+      "time": "2026-04-15T16:08:06.581Z",
+      "msg": "PLAN T21 filled 1 BUILD tasks"
     }
   ]
 }

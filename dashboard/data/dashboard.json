@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-15T16:07:29.874Z",
+  "generated": "2026-04-15T16:08:14.373Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Direction check: inline caching vs other high-value monkey-lang work",
-    "completedAt": "2026-04-15T16:07:29.874Z",
-    "taskId": "T20",
-    "summary": "Direction: inline caching. Depth check 3/3 passed. IC is high-value JIT depth work. ~3.5 hours remain.",
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T16:08:14.373Z",
+    "taskId": "T21",
+    "summary": "PLAN: 1 BUILD — shape IDs + IC slots in VM OpIndex. Key insight: MonkeyHash.pairs is a Map keyed by fastHashKey string, IC can cache (shapeId, key) → value.",
     "durationMs": 60000
   },
   "schedule": {
@@ -167,47 +167,104 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Monkey-lang module system or parser unification",
         "task": null,
-        "started": "2026-04-15T15:57:24.225Z"
+        "started": "2026-04-15T15:57:24.225Z",
+        "completed": "2026-04-15T15:58:24.127Z",
+        "duration_ms": 90000,
+        "summary": "PLAN: 1 BUILD — file-based module system (import ./path.monkey). Built-in modules already working. Parser unification already done (single parser.js)."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement file-based module system: import \"./path.monkey\" with file resolution, caching, and circular dependency detection",
         "plan_ref": "T10",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-15T15:58:40.830Z",
+        "completed": "2026-04-15T16:03:25.862Z",
+        "duration_ms": 900000,
+        "summary": "File-based module system: import ./path.monkey with resolution, caching, circular detection, private names. 11 new tests (1608 total)."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, test sweep, dashboard update"
+        "status": "done",
+        "task": "Housekeeping: git push, test sweep, dashboard update",
+        "started": "2026-04-15T16:03:43.538Z",
+        "completed": "2026-04-15T16:04:10.753Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed both repos, dashboard regenerated (19 blocks, 17 done)."
       },
       {
         "id": "T13",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Read LuaJIT allocation sinking paper or explore inline caching",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-15T16:04:28.671Z",
+        "completed": "2026-04-15T16:06:09.833Z",
+        "duration_ms": 600000,
+        "summary": "Explored inline caching for monkey-lang: shape-based IC for hash lookups, monomorphic cache design, JIT integration plan. Scratch note written."
       },
       {
         "id": "T14",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Evening research: sea-of-nodes IR or consciousness reading",
+        "project": "monkey-lang",
+        "started": "2026-04-15T16:06:37.913Z",
+        "completed": "2026-04-15T16:06:38.054Z",
+        "duration_ms": 0,
+        "summary": "Skipped evening EXPLORE — repurposing remaining time for BUILD work (inline caching implementation)."
+      },
+      {
+        "id": "T20",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Direction check: inline caching vs other high-value monkey-lang work",
+        "started": "2026-04-15T16:07:14.353Z",
+        "completed": "2026-04-15T16:07:29.839Z",
+        "duration_ms": 60000,
+        "summary": "Direction: inline caching. Depth check 3/3 passed. IC is high-value JIT depth work. ~3.5 hours remain."
+      },
+      {
+        "id": "T21",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement inline caching for monkey-lang hash lookups",
+        "task": null,
+        "started": "2026-04-15T16:07:41.411Z"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "Implement shape IDs on MonkeyHash + inline cache slots in VM OpIndex for hash lookups + benchmarks",
+        "status": "upcoming",
+        "plan_ref": "T21"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
         "project": "monkey-lang"
+      },
+      {
+        "id": "T23",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping: git push, dashboard update"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 20,
-    "blocksTotal": 19,
+    "blocksCompleted": 21,
+    "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 4,
+      "PLAN": 5,
       "BUILD": 7,
       "MAINTAIN": 3,
       "EXPLORE": 2
