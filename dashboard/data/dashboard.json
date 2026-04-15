@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-15T14:42:30.139Z",
+  "generated": "2026-04-15T15:45:59.669Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Stress-test try/catch edge cases in monkey-lang: throw in loop, return inside try, nested finally, throw from catch",
-    "completedAt": "2026-04-15T14:42:30.139Z",
-    "taskId": "T7",
-    "summary": "Stress-tested try/catch edge cases. Found+fixed 2 VM bugs: (1) nested finally propagation, (2) throw through finally-only blocks. Root cause: compiler needed separate exception path for finally-only (emit finally+OpThrow). 12 new edge case tests, 41 total try/catch tests. 1591 passing.",
-    "durationMs": 600000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Housekeeping: git push, email check, GitHub notifications",
+    "startedAt": "2026-04-15T15:45:59.669Z",
+    "taskId": "T8"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -151,12 +149,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 8,
+    "blocksCompleted": 9,
     "blocksTotal": 16,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 3,
+      "BUILD": 4,
       "MAINTAIN": 1
     }
   }
