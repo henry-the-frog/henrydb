@@ -272,3 +272,38 @@ describe('Anonymous inline functions', () => {
     assert.equal(run('let run = fn(f) { f() }; puts(run(fn() { 42 }))'), '42');
   });
 });
+
+describe('Mutual recursion', () => {
+  it('is_even / is_odd', () => {
+    const result = run(`
+      let is_even = fn(n) { if (n == 0) { return 1 }; return is_odd(n - 1) }
+      let is_odd = fn(n) { if (n == 0) { return 0 }; return is_even(n - 1) }
+      puts(is_even(10))
+      puts(is_odd(7))
+      puts(is_even(5))
+    `);
+    assert.equal(result, '110');  // true, true, false
+  });
+
+  it('mutual counting', () => {
+    const result = run(`
+      let count_down_a = fn(n) { if (n <= 0) { return 0 }; return 1 + count_down_b(n - 1) }
+      let count_down_b = fn(n) { if (n <= 0) { return 0 }; return 1 + count_down_a(n - 1) }
+      puts(count_down_a(10))
+    `);
+    assert.equal(result, '10');
+  });
+
+  it('three mutually recursive functions', () => {
+    const result = run(`
+      let fa = fn(n) { if (n <= 0) { return 1 }; return fb(n - 1) }
+      let fb = fn(n) { if (n <= 0) { return 2 }; return fc(n - 1) }
+      let fc = fn(n) { if (n <= 0) { return 3 }; return fa(n - 1) }
+      puts(fa(0))
+      puts(fa(1))
+      puts(fa(2))
+      puts(fa(3))
+    `);
+    assert.equal(result, '1231');  // fa(0)=1, fa(1)=fb(0)=2, fa(2)=fb(1)=fc(0)=3, fa(3)=fb(2)=fc(1)=fa(0)=1
+  });
+});

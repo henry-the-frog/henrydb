@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T23:31:30.327Z",
+  "generated": "2026-04-15T23:36:57.787Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: anonymous function expressions in calls. Currently fn(x){x*2} as an argument fails. Need to compile inline FunctionLiterals as closure objects in call expressions.",
-    "startedAt": "2026-04-15T23:31:30.327Z",
-    "taskId": "T144"
+    "task": "RISC-V: support mutual recursion. Two-pass approach: first pass registers all function labels, second pass compiles bodies. is_even/is_odd pattern. 4+ tests.",
+    "startedAt": "2026-04-15T23:36:57.787Z",
+    "taskId": "T146"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 142,
+    "blocksCompleted": 144,
     "blocksTotal": 133,
     "modeDistribution": {
-      "THINK": 17,
+      "THINK": 18,
       "PLAN": 16,
-      "BUILD": 95,
+      "BUILD": 96,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

@@ -1551,10 +1551,32 @@
     {
       "id": "T144",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: anonymous function expressions in calls. Currently fn(x){x*2} as an argument fails. Need to compile inline FunctionLiterals as closure objects in call expressions.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:31:30.291Z"
+      "started": "2026-04-15T23:31:30.291Z",
+      "completed": "2026-04-15T23:34:33.954Z",
+      "duration_ms": 600000,
+      "summary": "Anonymous inline functions work! fn(x){x*2} as argument, anonymous closures capture outer vars. Sentinel num_captured=-1 distinguishes plain refs from real closures. 5 new tests, 33 closure total."
+    },
+    {
+      "id": "T145",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: RISC-V backend state assessment. What are the biggest remaining gaps? What would make the best demo? Priority ranking for future work.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:35:44.743Z",
+      "completed": "2026-04-15T23:36:38.014Z",
+      "duration_ms": 180000,
+      "summary": "RISC-V backend assessment: 431 tests, ~2200 LOC, highly complete. Top gaps: mutual recursion, recursive closures, GC. Best demos: REPL, FP showcase, performance benchmarks."
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: support mutual recursion. Two-pass approach: first pass registers all function labels, second pass compiles bodies. is_even/is_odd pattern. 4+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:36:57.750Z"
     }
   ],
   "focusProjects": [
@@ -2102,6 +2124,14 @@
     {
       "time": "2026-04-15T23:31:24.827Z",
       "msg": "Added T144 (BUILD) after end: RISC-V: anonymous function expressions in calls. Currently fn(x){x*2} as an argument fails. Need to compile inline FunctionLiterals as closure objects in call expressions."
+    },
+    {
+      "time": "2026-04-15T23:35:37.780Z",
+      "msg": "Added T145 (THINK) after end: THINK: RISC-V backend state assessment. What are the biggest remaining gaps? What would make the best demo? Priority ranking for future work."
+    },
+    {
+      "time": "2026-04-15T23:36:52.406Z",
+      "msg": "Added T146 (BUILD) after end: RISC-V: support mutual recursion. Two-pass approach: first pass registers all function labels, second pass compiles bodies. is_even/is_odd pattern. 4+ tests."
     }
   ]
 }

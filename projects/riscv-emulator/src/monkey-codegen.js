@@ -186,6 +186,15 @@ export class RiscVCodeGen {
     this._emit(`  li gp, ${this.heapBase}`);
     this._emitPrologue();
 
+    // First pass: register all top-level function names (enables mutual recursion)
+    for (const stmt of program.statements) {
+      if (stmt.constructor.name === 'LetStatement' &&
+          stmt.value?.constructor.name === 'FunctionLiteral') {
+        const funcName = stmt.name.value;
+        this.variables.set(funcName, { type: 'func', label: funcName });
+      }
+    }
+
     // Compile program body
     for (const stmt of program.statements) {
       this._compileStatement(stmt);
