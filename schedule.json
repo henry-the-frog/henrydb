@@ -1267,10 +1267,21 @@
     {
       "id": "T118",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V codegen: hash literal support. Store hashes on heap as linear key-value pairs. Hash access via linear scan (type-aware equality). Support: hash literals, hash[key] access, keys() builtin. 15+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T22:09:13.998Z"
+      "started": "2026-04-15T22:09:13.998Z",
+      "completed": "2026-04-15T22:12:35.404Z",
+      "duration_ms": 600000,
+      "summary": "Hash literals + hash access: heap-allocated key-value pairs with linear scan lookup. Type inference dispatches between array/hash indexing. 12 new tests."
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V backend quality: run full test suite sweep, fix any issues found. Then write a comprehensive README for the RISC-V backend documenting all features, limitations, and architecture.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:13:14.478Z"
     }
   ],
   "focusProjects": [
@@ -1718,6 +1729,10 @@
     {
       "time": "2026-04-15T22:09:02.874Z",
       "msg": "Added T118 (BUILD) after end: RISC-V codegen: hash literal support. Store hashes on heap as linear key-value pairs. Hash access via linear scan (type-aware equality). Support: hash literals, hash[key] access, keys() builtin. 15+ tests."
+    },
+    {
+      "time": "2026-04-15T22:13:04.951Z",
+      "msg": "Added T119 (BUILD) after end: RISC-V backend quality: run full test suite sweep, fix any issues found. Then write a comprehensive README for the RISC-V backend documenting all features, limitations, and architecture."
     }
   ]
 }
