@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T21:44:23.873Z",
+  "generated": "2026-04-15T21:46:24.861Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Closure analysis pass: walk AST to identify free variables in nested functions. For each inner fn, compute which outer variables it references. Store in a freeVars map. 10+ tests.",
-    "startedAt": "2026-04-15T21:44:23.873Z",
-    "taskId": "T111"
+    "task": "Closure compilation: (1) allocate closure objects on heap with captured vars, (2) pass closure pointer as implicit arg, (3) access captured vars via closure object inside function body. Support make_adder pattern. 15+ tests.",
+    "startedAt": "2026-04-15T21:46:24.861Z",
+    "taskId": "T112"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1213,12 +1213,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 109,
+    "blocksCompleted": 110,
     "blocksTotal": 112,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 15,
-      "BUILD": 67,
+      "BUILD": 68,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

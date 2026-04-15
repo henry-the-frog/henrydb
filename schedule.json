@@ -1192,16 +1192,20 @@
       "id": "T111",
       "mode": "BUILD",
       "task": "Closure analysis pass: walk AST to identify free variables in nested functions. For each inner fn, compute which outer variables it references. Store in a freeVars map. 10+ tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T110",
-      "started": "2026-04-15T21:44:23.838Z"
+      "started": "2026-04-15T21:44:23.838Z",
+      "completed": "2026-04-15T21:46:14.274Z",
+      "duration_ms": 300000,
+      "summary": "Free variable analysis: walks AST, identifies captured variables in nested functions. Handles outer scope, parameters, nested closures, self-references. 10 tests."
     },
     {
       "id": "T112",
       "mode": "BUILD",
       "task": "Closure compilation: (1) allocate closure objects on heap with captured vars, (2) pass closure pointer as implicit arg, (3) access captured vars via closure object inside function body. Support make_adder pattern. 15+ tests.",
-      "status": "upcoming",
-      "plan_ref": "T110"
+      "status": "in-progress",
+      "plan_ref": "T110",
+      "started": "2026-04-15T21:46:24.826Z"
     }
   ],
   "focusProjects": [

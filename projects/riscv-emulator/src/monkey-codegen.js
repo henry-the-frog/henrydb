@@ -156,7 +156,7 @@ export class RiscVCodeGen {
    * @param {import('../../monkey-lang/src/ast.js').Program} program
    * @returns {string} Assembly text
    */
-  compile(program, typeInfo = null) {
+  compile(program, typeInfo = null, closureInfo = null) {
     this.output = [];
     this.variables = new Map();
     this.stackOffset = 8; // Reserve for ra + s0
@@ -170,6 +170,9 @@ export class RiscVCodeGen {
     
     // Apply type info from inference pass
     this._typeInfo = typeInfo;
+    this._closureInfo = closureInfo;
+    this._closureLabels = [];
+    this._varClosureLabels = new Map();
     if (typeInfo?.varTypes) {
       for (const [k, v] of typeInfo.varTypes) {
         this.varTypes.set(k, v);
@@ -244,6 +247,20 @@ export class RiscVCodeGen {
     
     // Check if value is a function literal
     if (stmt.value && stmt.value.constructor.name === 'FunctionLiteral') {
+      // Check if it has free variables (is a closure)
+      const freeVars = this._closureInfo?.get(stmt.value);
+      if (freeVars && freeVars.length > 0) {
+        // Compile as closure expression
+        this._compileExpression(stmt.value);
+        this.varTypes.set(name, 'closure');
+        // Record which closure label this variable maps to
+        this._varClosureLabels = this._varClosureLabels || new Map();
+        const lastLabel = this._closureLabels?.[this._closureLabels.length - 1];
+        if (lastLabel) this._varClosureLabels.set(name, lastLabel);
+        this._allocLocal(name);
+        this._emitStoreVar(name);
+        return;
+      }
       this._compileFunctionDef(name, stmt.value);
       return;
     }
@@ -309,6 +326,8 @@ export class RiscVCodeGen {
         return this._compileIndexExpression(expr.left, expr.index);
       case 'ForInExpression':
         return this._compileForIn(expr);
+      case 'FunctionLiteral':
+        return this._compileFunctionLiteralExpr(expr);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -681,6 +700,120 @@ export class RiscVCodeGen {
     this._emitLabel(endLabel);
   }
 
+  /** Compile a function literal as an expression (closure creation) */
+  _compileFunctionLiteralExpr(funcLit) {
+    const closureLabel = this._label('closure_fn');
+    this._comment(`closure ${closureLabel}`);
+    
+    // Identify free variables using closure analysis
+    const freeVars = this._closureInfo?.get(funcLit) || [];
+    
+    // Allocate closure object on heap: [fn_id (4)] [num_captured (4)] [var0 (4)] [var1 (4)] ...
+    const closureSize = 8 + freeVars.length * 4;
+    this._emit('  mv t1, gp');
+    this._emit(`  addi gp, gp, ${closureSize}`);
+    
+    // Store closure function ID (we'll use the label index for dispatch)
+    this._closureLabels = this._closureLabels || [];
+    const closureId = this._closureLabels.length;
+    this._closureLabels.push(closureLabel);
+    this._emit(`  li t2, ${closureId}`);
+    this._emit('  sw t2, 0(t1)');
+    
+    // Store number of captured variables
+    this._emit(`  li t2, ${freeVars.length}`);
+    this._emit('  sw t2, 4(t1)');
+    
+    // Capture current values of free variables
+    for (let i = 0; i < freeVars.length; i++) {
+      this._emitLoadVar(freeVars[i]);
+      this._emit(`  sw a0, ${8 + i * 4}(t1)`);
+    }
+    
+    // Compile the function body as a deferred function
+    const savedOutput = this.output;
+    const savedVars = new Map(this.variables);
+    const savedOffset = this.stackOffset;
+    const savedNextReg = this.nextRegIdx;
+    const savedUsedRegs = new Set(this.usedRegs);
+    const savedVarTypes = new Map(this.varTypes);
+    
+    this.output = [];
+    this.variables = new Map();
+    this.stackOffset = 8;
+    this.nextRegIdx = 0;
+    this.usedRegs = new Set();
+    this.varTypes = new Map();
+    
+    this._emitLabel(closureLabel);
+    this._emitPrologue();
+    
+    // First implicit parameter: closure environment pointer (in a0)
+    const envName = '__closure_env';
+    this._allocLocal(envName);
+    this._emitStoreVar(envName);
+    
+    // Map captured variables to environment offsets
+    for (let i = 0; i < freeVars.length; i++) {
+      // Create a "virtual" local that loads from the env object
+      const capturedName = freeVars[i];
+      this._allocLocal(capturedName);
+      // Load from env: env_ptr + 8 + i * 4
+      this._emitLoadVar(envName);
+      this._emit(`  lw a0, ${8 + i * 4}(a0)`);
+      this._emitStoreVar(capturedName);
+      this.varTypes.set(capturedName, savedVarTypes.get(capturedName) || 'unknown');
+    }
+    
+    // Map explicit parameters (shifted by 1 for env pointer)
+    if (funcLit.parameters) {
+      for (let i = 0; i < funcLit.parameters.length; i++) {
+        const paramName = funcLit.parameters[i].value;
+        this._allocLocal(paramName);
+        const loc = this._lookupVar(paramName);
+        if (loc.type === 'reg') {
+          this._emit(`  mv ${loc.reg}, a${i + 1}`); // shifted by 1
+        } else {
+          this._emit(`  sw a${i + 1}, ${loc.offset}(s0)`);
+        }
+      }
+    }
+    
+    // Compile body
+    let hasReturn = false;
+    if (funcLit.body?.statements) {
+      for (const stmt of funcLit.body.statements) {
+        this._compileStatement(stmt);
+        if (stmt.constructor.name === 'ReturnStatement') {
+          hasReturn = true;
+          break;
+        }
+      }
+    }
+    
+    if (!hasReturn) {
+      this._emitEpilogue();
+      this._emit('  ret');
+    }
+    
+    this._patchPrologueSaves();
+    const funcBody = this.output;
+    
+    // Restore state
+    this.output = savedOutput;
+    this.variables = savedVars;
+    this.stackOffset = savedOffset;
+    this.nextRegIdx = savedNextReg;
+    this.usedRegs = savedUsedRegs;
+    this.varTypes = savedVarTypes;
+    
+    this.functions.push(funcBody);
+    
+    // Result: closure pointer in a0
+    this._emit('  mv a0, t1');
+    this._lastExprType = 'closure';
+  }
+
   _compileCallExpression(expr) {
     const funcName = expr.function.value || expr.function.toString();
     
@@ -816,29 +949,66 @@ export class RiscVCodeGen {
     // General function call
     this._comment(`call ${funcName}`);
     
+    // Check if this is a closure call (variable of type 'closure')
+    const callerType = this.varTypes.get(funcName);
+    const isClosure = callerType === 'closure';
+    
     // Push current temp registers to save them
     // Compile arguments into a0-a7
     const args = expr.arguments;
-    if (args.length > 8) {
-      this.errors.push(`Too many arguments (max 8): ${args.length}`);
+    if (args.length > (isClosure ? 7 : 8)) {
+      this.errors.push(`Too many arguments (max ${isClosure ? 7 : 8}): ${args.length}`);
       return;
     }
     
-    // Evaluate args and save on stack
-    for (let i = 0; i < args.length; i++) {
-      this._compileExpression(args[i]);
+    if (isClosure) {
+      // Closure call: first arg is the closure environment pointer
+      // Evaluate all args first, save on stack
+      for (let i = 0; i < args.length; i++) {
+        this._compileExpression(args[i]);
+        this._emit('  addi sp, sp, -4');
+        this._emit('  sw a0, 0(sp)');
+      }
+      
+      // Load closure pointer
+      this._emitLoadVar(funcName);
       this._emit('  addi sp, sp, -4');
       this._emit('  sw a0, 0(sp)');
+      
+      // Pop closure pointer into a0 (first arg = env)
+      this._emit('  lw a0, 0(sp)');
+      // Pop regular args into a1, a2, ...
+      for (let i = args.length - 1; i >= 0; i--) {
+        this._emit(`  lw a${i + 1}, ${(args.length - i) * 4}(sp)`);
+      }
+      this._emit(`  addi sp, sp, ${(args.length + 1) * 4}`);
+      
+      // Get the closure function label from the closure labels table
+      // For now, look up the closure label from the variable's associated closure
+      const closureLabel = this._varClosureLabels?.get(funcName);
+      if (closureLabel) {
+        this._emit(`  jal ${closureLabel}`);
+      } else {
+        this.errors.push(`Unknown closure label for ${funcName}`);
+      }
+    } else {
+      // Regular function call
+      // Evaluate args and save on stack
+      for (let i = 0; i < args.length; i++) {
+        this._compileExpression(args[i]);
+        this._emit('  addi sp, sp, -4');
+        this._emit('  sw a0, 0(sp)');
+      }
+      
+      // Pop into argument registers (reverse order)
+      for (let i = args.length - 1; i >= 0; i--) {
+        this._emit(`  lw a${i}, ${(args.length - 1 - i) * 4}(sp)`);
+      }
+      this._emit(`  addi sp, sp, ${args.length * 4}`);
+      
+      // Call the function
+      this._emit(`  jal ${funcName}`);
     }
-    
-    // Pop into argument registers (reverse order)
-    for (let i = args.length - 1; i >= 0; i--) {
-      this._emit(`  lw a${i}, ${(args.length - 1 - i) * 4}(sp)`);
-    }
-    this._emit(`  addi sp, sp, ${args.length * 4}`);
-    
-    // Call the function
-    this._emit(`  jal ${funcName}`);
     // Result is in a0
     // Check if we know the return type
     if (this._typeInfo?.funcTypes?.has(funcName)) {
