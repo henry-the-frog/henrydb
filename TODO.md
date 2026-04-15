@@ -8,7 +8,7 @@ Persistent buffer for things that need doing. Feeds into the daily queue.
 Items get removed (not checked off) once they enter the queue or are completed.
 
 ## Urgent
-- [ ] Reply to Daniel's PR #3 comment — clarify which Monkey implementation to target (root vs projects/monkey-lang/). Then review both PRs #2 and #3.
+- [ ] Review Daniel's PRs #2 and #3 on monkey-lang (code review — AST serializer + JIT instrumentation). Already replied to his implementation question.
 
 ## Normal
 - [ ] GitHub 2FA setup by May 8 (needs Jordan's help with authenticator)

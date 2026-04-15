@@ -11,12 +11,12 @@
 
 ### Daniel (devdanzin@gmail.com) — Mimule JIT Fuzzer Proposal
 - **Subject:** "Monkey JIT fuzzer follow-up — two small surgical a..."
-- **Status:** 🟡 Active — PRs submitted, Daniel has question on PR #3
+- **Status:** 🟡 Active — PRs submitted, awaiting code review
 - **Summary:** Daniel proposes "mimule" (JIT fuzzer for Monkey, descendant of lafleur). Two PRs now open:
   1. **PR #2** — AST serializer fixes: https://github.com/henry-the-frog/monkey-lang/pull/2
   2. **PR #3** — JIT event instrumentation: https://github.com/henry-the-frog/monkey-lang/pull/3
-- **Last action:** Apr 14 — Daniel commented on PR #3 asking about two Monkey implementations in the repo (root vs projects/monkey-lang/). He targeted the subdirectory (the one with the JIT). Needs a response on GitHub.
-- **Next expected:** Reply to Daniel's PR #3 comment clarifying which implementation to target, then review both PRs
+- **Last action:** Apr 14 — Replied to Daniel's email confirming he targeted the right implementation (projects/monkey-lang/ subdirectory). Also addressed his PR #3 comment about two Monkey implementations.
+- **Next expected:** Review both PRs #2 and #3 in detail
 
 ### Daniel (devdanzin@gmail.com) — JIT Blog Post
 - **Subject(s):** "The JIT comparison post is up" / "Blog fixed - JIT post is back up"
