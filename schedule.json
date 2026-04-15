@@ -445,10 +445,21 @@
     {
       "id": "T42",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Array/hash destructuring in monkey-lang: let [a, b] = arr, let {x, y} = hash",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-15T17:16:16.601Z",
+      "completed": "2026-04-15T17:17:17.806Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 1 BUILD — integration test program using all new features."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "task": "Write a non-trivial monkey-lang program using generators+modules+try-catch as an integration test",
+      "status": "upcoming",
+      "plan_ref": "T42"
     },
     {
       "id": "T43",
@@ -631,6 +642,10 @@
     {
       "time": "2026-04-15T17:16:00.796Z",
       "msg": "Added T43 (BUILD) after T42: null"
+    },
+    {
+      "time": "2026-04-15T17:17:10.947Z",
+      "msg": "PLAN T42 filled 1 BUILD tasks"
     }
   ]
 }

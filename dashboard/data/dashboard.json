@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T17:15:43.335Z",
+  "generated": "2026-04-15T17:17:17.842Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Post-generator reflection + next directions",
-    "completedAt": "2026-04-15T17:15:43.335Z",
-    "taskId": "T41",
-    "summary": "Depth check 3/3 passed. 22 tasks, ~70 new tests. Next: destructuring assignment in monkey-lang.",
-    "durationMs": 60000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T17:17:17.842Z",
+    "taskId": "T42",
+    "summary": "PLAN: 1 BUILD — integration test program using all new features.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -382,54 +382,110 @@
       {
         "id": "T35",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement iterators/generators in monkey-lang (yield, for-in loops)",
         "task": null,
         "project": "monkey-lang",
-        "started": "2026-04-15T17:00:26.057Z"
+        "started": "2026-04-15T17:00:26.057Z",
+        "completed": "2026-04-15T17:01:57.273Z",
+        "duration_ms": 60000,
+        "summary": "PLAN: 3 BUILD tasks for generators — AST+parser, evaluator with suspension, for-in integration. for-in already works with arrays/strings."
       },
       {
         "id": "T38",
         "mode": "BUILD",
         "task": "Add generator AST nodes (gen keyword, yield expression) and parser support",
-        "status": "upcoming",
-        "plan_ref": "T35"
+        "status": "done",
+        "plan_ref": "T35",
+        "started": "2026-04-15T17:02:14.498Z",
+        "completed": "2026-04-15T17:05:26.864Z",
+        "duration_ms": 300000,
+        "summary": "Added gen/yield AST nodes, lexer tokens, parser support. gen(n) { yield i } parses correctly. No regressions (1612 pass)."
       },
       {
         "id": "T39",
         "mode": "BUILD",
         "task": "Implement MonkeyGenerator object with suspension/resumption in evaluator",
-        "status": "upcoming",
-        "plan_ref": "T35"
+        "status": "done",
+        "plan_ref": "T35",
+        "started": "2026-04-15T17:05:57.753Z",
+        "completed": "2026-04-15T17:11:23.990Z",
+        "duration_ms": 600000,
+        "summary": "Generator evaluator: yield collector in env chain, eager execution. Fibonacci, range, conditional, nested generators all work. No regressions."
       },
       {
         "id": "T40",
         "mode": "BUILD",
         "task": "Integrate generators with for-in loops + write comprehensive tests",
-        "status": "upcoming",
-        "plan_ref": "T35"
+        "status": "done",
+        "plan_ref": "T35",
+        "started": "2026-04-15T17:11:52.517Z",
+        "completed": "2026-04-15T17:13:09.537Z",
+        "duration_ms": 600000,
+        "summary": "15 comprehensive generator tests: basic, fibonacci, range, conditional, nested, closures, strings, arrays, empty, early return, type, do-while. All pass. 1631 total tests."
       },
       {
         "id": "T36",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:13:41.985Z",
+        "completed": "2026-04-15T17:13:42.126Z",
+        "duration_ms": 0,
+        "summary": "Skipped — generator work done in T38-T40."
       },
       {
         "id": "T37",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Midday git push + dashboard",
+        "started": "2026-04-15T17:14:01.207Z",
+        "completed": "2026-04-15T17:14:50.876Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard regenerated. 40 blocks, 38 done."
+      },
+      {
+        "id": "T41",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Post-generator reflection + next directions",
+        "started": "2026-04-15T17:15:22.447Z",
+        "completed": "2026-04-15T17:15:43.299Z",
+        "duration_ms": 60000,
+        "summary": "Depth check 3/3 passed. 22 tasks, ~70 new tests. Next: destructuring assignment in monkey-lang."
+      },
+      {
+        "id": "T42",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Array/hash destructuring in monkey-lang: let [a, b] = arr, let {x, y} = hash",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:16:16.601Z"
+      },
+      {
+        "id": "T44",
+        "mode": "BUILD",
+        "task": "Write a non-trivial monkey-lang program using generators+modules+try-catch as an integration test",
         "status": "upcoming",
-        "task": "Midday git push + dashboard"
+        "plan_ref": "T42"
+      },
+      {
+        "id": "T43",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "monkey-lang"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 41,
-    "blocksTotal": 40,
+    "blocksCompleted": 42,
+    "blocksTotal": 44,
     "modeDistribution": {
       "THINK": 7,
-      "PLAN": 7,
+      "PLAN": 8,
       "BUILD": 19,
       "MAINTAIN": 6,
       "EXPLORE": 2
