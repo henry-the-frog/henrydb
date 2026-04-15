@@ -5636,19 +5636,17 @@ export class Database {
           }
           case 'FIRST_VALUE': {
             const fvArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
-            const firstVal = partition.length > 0 ? this._resolveColumn(fvArg, partition[0]) : null;
-            for (const r of partition) r[`__window_${name}`] = firstVal;
+            for (let i = 0; i < partition.length; i++) {
+              const [start] = getFrameBounds(i, partition.length);
+              partition[i][`__window_${name}`] = this._resolveColumn(fvArg, partition[start]);
+            }
             break;
           }
           case 'LAST_VALUE': {
             const lvArg = typeof col.arg === 'object' && col.arg?.name ? col.arg.name : col.arg;
-            if (orderBy) {
-              for (let i = 0; i < partition.length; i++) {
-                partition[i][`__window_${name}`] = this._resolveColumn(lvArg, partition[i]);
-              }
-            } else {
-              const lastVal = partition.length > 0 ? this._resolveColumn(lvArg, partition[partition.length - 1]) : null;
-              for (const r of partition) r[`__window_${name}`] = lastVal;
+            for (let i = 0; i < partition.length; i++) {
+              const [, end] = getFrameBounds(i, partition.length);
+              partition[i][`__window_${name}`] = this._resolveColumn(lvArg, partition[end]);
             }
             break;
           }
