@@ -1644,10 +1644,13 @@
     {
       "id": "T153",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: string operations — len on strings, string indexing in for-in, string comparison improvements. Fix any remaining string edge cases.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:51:21.578Z"
+      "started": "2026-04-15T23:51:21.578Z",
+      "completed": "2026-04-15T23:55:55.864Z",
+      "duration_ms": 600000,
+      "summary": "Fixed puts() runtime type dispatch for strings from functions. bracket(\"ok\")=[ok]. String edge case tests (empty concat, function params). All tests pass."
     }
   ],
   "focusProjects": [
