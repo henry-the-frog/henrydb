@@ -6112,7 +6112,25 @@ export class Database {
             return JSON.stringify(distinct ? [...new Set(values)] : values);
           }
           case 'ARRAY_AGG': {
-            return (distinct ? [...new Set(values)] : values);
+            let items = distinct ? [...new Set(values)] : values;
+            // Apply ORDER BY if specified inside the aggregate
+            if (extra.aggOrderBy && extra.aggOrderBy.length > 0 && extra.groupRows) {
+              const ordered = extra.groupRows.slice();
+              ordered.sort((a, b) => {
+                for (const ob of extra.aggOrderBy) {
+                  const av = this._evalValue(ob.column, a);
+                  const bv = this._evalValue(ob.column, b);
+                  if (av < bv) return ob.direction === 'DESC' ? 1 : -1;
+                  if (av > bv) return ob.direction === 'DESC' ? -1 : 1;
+                }
+                return 0;
+              });
+              items = ordered.map(r => {
+                const v = typeof extra.aggArg === 'string' ? r[extra.aggArg] : this._evalValue(extra.aggArg, r);
+                return v;
+              }).filter(v => v != null);
+            }
+            return items;
           }
           case 'BOOL_AND':
           case 'EVERY': {
@@ -7605,8 +7623,26 @@ export class Database {
         case 'GROUP_CONCAT':
         case 'STRING_AGG': {
           const sep = col.separator || ',';
-          const dedupValues = col.distinct ? [...new Set(values)] : values;
-          result[name] = dedupValues.length ? dedupValues.map(String).join(sep) : null;
+          let items = col.distinct ? [...new Set(values)] : values;
+          // Apply ORDER BY if specified inside the aggregate
+          if (col.aggOrderBy && col.aggOrderBy.length > 0) {
+            const ordered = filteredRows.slice();
+            ordered.sort((a, b) => {
+              for (const ob of col.aggOrderBy) {
+                const av = this._evalValue(ob.column, a);
+                const bv = this._evalValue(ob.column, b);
+                if (av < bv) return ob.direction === 'DESC' ? 1 : -1;
+                if (av > bv) return ob.direction === 'DESC' ? -1 : 1;
+              }
+              return 0;
+            });
+            items = ordered.map(r => {
+              const v = typeof col.arg === 'string' ? r[col.arg] : this._evalValue(col.arg, r);
+              return v;
+            }).filter(v => v != null);
+            if (col.distinct) items = [...new Set(items)];
+          }
+          result[name] = items.length ? items.map(String).join(sep) : null;
           break;
         }
         case 'JSON_AGG':
@@ -7616,7 +7652,26 @@ export class Database {
           break;
         }
         case 'ARRAY_AGG': {
-          result[name] = col.distinct ? [...new Set(values)] : values;
+          let items = col.distinct ? [...new Set(values)] : values;
+          // Apply ORDER BY if specified inside the aggregate
+          if (col.aggOrderBy && col.aggOrderBy.length > 0) {
+            const ordered = filteredRows.slice();
+            ordered.sort((a, b) => {
+              for (const ob of col.aggOrderBy) {
+                const av = this._evalValue(ob.column, a);
+                const bv = this._evalValue(ob.column, b);
+                if (av < bv) return ob.direction === 'DESC' ? 1 : -1;
+                if (av > bv) return ob.direction === 'DESC' ? -1 : 1;
+              }
+              return 0;
+            });
+            items = ordered.map(r => {
+              const v = typeof col.arg === 'string' ? r[col.arg] : this._evalValue(col.arg, r);
+              return v;
+            }).filter(v => v != null);
+            if (col.distinct) items = [...new Set(items)];
+          }
+          result[name] = items;
           break;
         }
         case 'BOOL_AND':
