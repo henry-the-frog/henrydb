@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-15T18:37:22.134Z",
+  "generated": "2026-04-15T18:39:16.330Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "monkey-lang: add toString method support for instances in str() and puts()",
-    "completedAt": "2026-04-15T18:37:22.134Z",
-    "taskId": "T65",
-    "summary": "toString method support: str(instance) and puts(instance) call toString() if present. No regressions.",
+    "task": "monkey-lang: add operator overloading for classes (+, -, *, /, ==, <)",
+    "completedAt": "2026-04-15T18:39:16.330Z",
+    "taskId": "T66",
+    "summary": "Operator overloading: __add__, __sub__, __mul__, __div__, __mod__, __eq__, __ne__, __lt__, __gt__, __le__, __ge__. Vec2 example works.",
     "durationMs": 300000
   },
   "schedule": {
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 65,
+    "blocksCompleted": 66,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 39,
+      "BUILD": 40,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }

@@ -705,6 +705,17 @@
       "completed": "2026-04-15T18:37:22.099Z",
       "duration_ms": 300000,
       "summary": "toString method support: str(instance) and puts(instance) call toString() if present. No regressions."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add operator overloading for classes (+, -, *, /, ==, <)",
+      "project": "monkey-lang",
+      "started": "2026-04-15T18:37:58.101Z",
+      "completed": "2026-04-15T18:39:16.271Z",
+      "duration_ms": 300000,
+      "summary": "Operator overloading: __add__, __sub__, __mul__, __div__, __mod__, __eq__, __ne__, __lt__, __gt__, __le__, __ge__. Vec2 example works."
     }
   ],
   "focusProjects": [
@@ -960,6 +971,10 @@
     {
       "time": "2026-04-15T18:35:22.443Z",
       "msg": "Added T65 (BUILD) after end: monkey-lang: add toString method support for instances in str() and puts()"
+    },
+    {
+      "time": "2026-04-15T18:37:49.578Z",
+      "msg": "Added T66 (BUILD) after end: monkey-lang: add operator overloading for classes (+, -, *, /, ==, <)"
     }
   ]
 }
