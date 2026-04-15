@@ -1614,10 +1614,29 @@
     {
       "id": "T150",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Run updated benchmark suite after all optimizations (closures, mutual recursion, etc). Compare with earlier results. Add new benchmarks for closures and HOF.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:45:58.274Z"
+      "started": "2026-04-15T23:45:58.274Z",
+      "completed": "2026-04-15T23:47:27.561Z",
+      "duration_ms": 300000,
+      "summary": "Expanded benchmarks: closures 1.8x faster, HOF 9.0x faster(!), mutual recursion RISC-V only. Average 2.5x speedup. 9 benchmarks all match."
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "RISC-V: Add source map-style line number tracking. When a compiled program crashes (infinite loop, stack overflow), report which monkey-lang line was executing. Embed line info in assembly comments.",
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: edge case testing. Empty arrays, empty strings, deeply nested closures (3 levels), long chains of function calls, boolean logic chains, negative modulo, zero division. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:48:11.033Z"
     }
   ],
   "focusProjects": [
@@ -2193,6 +2212,18 @@
     {
       "time": "2026-04-15T23:45:46.973Z",
       "msg": "Added T150 (BUILD) after end: RISC-V: Run updated benchmark suite after all optimizations (closures, mutual recursion, etc). Compare with earlier results. Add new benchmarks for closures and HOF."
+    },
+    {
+      "time": "2026-04-15T23:47:43.946Z",
+      "msg": "Added T151 (BUILD) after end: RISC-V: Add source map-style line number tracking. When a compiled program crashes (infinite loop, stack overflow), report which monkey-lang line was executing. Embed line info in assembly comments."
+    },
+    {
+      "time": "2026-04-15T23:47:52.664Z",
+      "msg": "Removed T151: "
+    },
+    {
+      "time": "2026-04-15T23:48:03.588Z",
+      "msg": "Added T152 (BUILD) after end: RISC-V: edge case testing. Empty arrays, empty strings, deeply nested closures (3 levels), long chains of function calls, boolean logic chains, negative modulo, zero division. 10+ tests."
     }
   ]
 }
