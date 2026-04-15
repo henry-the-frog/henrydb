@@ -70,6 +70,16 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null) {
         }
         localScope.add(stmt.name.value);
       }
+      // Check for return statements or expression statements containing function literals
+      const funcLits = [];
+      collectFunctionLiterals(stmt, funcLits);
+      for (const nestedFunc of funcLits) {
+        // Skip already-processed let-bound functions
+        if (stmt.constructor.name === 'LetStatement' && stmt.value === nestedFunc) continue;
+        const combinedScope = new Set([...outerScope, ...localScope]);
+        if (funcName) combinedScope.add(funcName);
+        analyzeFunction(nestedFunc, combinedScope, result);
+      }
     }
   }
   
@@ -96,6 +106,28 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null) {
   }
   
   return freeVars;
+}
+
+/**
+ * Collect all FunctionLiteral nodes in a subtree (but don't recurse into them).
+ */
+function collectFunctionLiterals(node, results) {
+  if (!node) return;
+  if (node.constructor.name === 'FunctionLiteral') {
+    results.push(node);
+    return; // Don't recurse into the function itself
+  }
+  if (node.statements) for (const s of node.statements) collectFunctionLiterals(s, results);
+  if (node.expression) collectFunctionLiterals(node.expression, results);
+  if (node.value) collectFunctionLiterals(node.value, results);
+  if (node.left) collectFunctionLiterals(node.left, results);
+  if (node.right) collectFunctionLiterals(node.right, results);
+  if (node.consequence) collectFunctionLiterals(node.consequence, results);
+  if (node.alternative) collectFunctionLiterals(node.alternative, results);
+  if (node.body) collectFunctionLiterals(node.body, results);
+  if (node.function) collectFunctionLiterals(node.function, results);
+  if (node.arguments) for (const a of node.arguments) collectFunctionLiterals(a, results);
+  if (node.returnValue) collectFunctionLiterals(node.returnValue, results);
 }
 
 /**

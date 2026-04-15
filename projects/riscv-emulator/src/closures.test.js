@@ -131,3 +131,43 @@ describe('Closures — edge cases', () => {
     `), '3691215');
   });
 });
+
+describe('Returning closures (make_adder pattern)', () => {
+  it('make_adder basic', () => {
+    assert.equal(run('let make_adder = fn(x) { fn(y) { x + y } }; let add5 = make_adder(5); puts(add5(3))'), '8');
+  });
+
+  it('make_adder multiple instances', () => {
+    const result = run(`
+      let make_adder = fn(x) { fn(y) { x + y } }
+      let add5 = make_adder(5)
+      let add10 = make_adder(10)
+      puts(add5(3) + add10(7))
+    `);
+    assert.equal(result, '25');  // (5+3) + (10+7) = 8 + 17 = 25
+  });
+
+  it('make_multiplier', () => {
+    assert.equal(run('let make_mul = fn(x) { fn(y) { x * y } }; let double = make_mul(2); puts(double(21))'), '42');
+  });
+
+  it('closure captures computed value', () => {
+    const result = run(`
+      let make_offset = fn(base) { 
+        let offset = base * 2
+        fn(x) { x + offset } 
+      }
+      let f = make_offset(5)
+      puts(f(3))
+    `);
+    assert.equal(result, '13');  // offset = 10, 3 + 10 = 13
+  });
+
+  it('closure over boolean', () => {
+    assert.equal(run('let make_check = fn(threshold) { fn(x) { x > threshold } }; let gt5 = make_check(5); puts(gt5(10))'), '1');
+  });
+
+  it('closure over zero', () => {
+    assert.equal(run('let make_adder = fn(x) { fn(y) { x + y } }; let add0 = make_adder(0); puts(add0(42))'), '42');
+  });
+});

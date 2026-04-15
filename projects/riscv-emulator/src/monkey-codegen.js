@@ -243,6 +243,25 @@ export class RiscVCodeGen {
       this._emit('  ret');
     }
 
+    // Append _closure_dispatch trampoline if needed
+    if (this.needsClosureDispatch && this._closureLabels && this._closureLabels.length > 0) {
+      this._emit('');
+      this._emit('# Closure dispatch: a0=closure_ptr, a1+=args');
+      this._emit('# Reads fn_id from closure[0], tail-calls the correct function');
+      this._emitLabel('_closure_dispatch');
+      this._emit('  lw t0, 0(a0)');    // t0 = fn_id
+      for (let i = 0; i < this._closureLabels.length; i++) {
+        const skipLabel = this._label('_cd_skip');
+        this._emit(`  li t1, ${i}`);
+        this._emit(`  bne t0, t1, ${skipLabel}`);
+        this._emit(`  j ${this._closureLabels[i]}`);  // tail call — ra already set by caller's jal
+        this._emitLabel(skipLabel);
+      }
+      // Fallthrough: unknown closure id — halt
+      this._emit('  li a7, 10');
+      this._emit('  ecall');
+    }
+
     if (this.errors.length > 0) {
       throw new Error(`Compilation errors:\n${this.errors.join('\n')}`);
     }
@@ -1221,6 +1240,39 @@ export class RiscVCodeGen {
         this.errors.push(`Unknown closure label for ${funcName}`);
       }
     } else {
+      // Check if this is a variable that might hold a closure
+      const varInfo = this._lookupVar(funcName);
+      const isVarClosure = varInfo && (varInfo.type === 'stack' || varInfo.type === 'reg');
+      
+      if (isVarClosure) {
+        // Variable-based closure call: load closure ptr, call through dispatch
+        this._comment(`indirect closure call via ${funcName}`);
+        this.needsClosureDispatch = true;
+        
+        // Evaluate args first, save on stack
+        for (let i = 0; i < args.length; i++) {
+          this._compileExpression(args[i]);
+          this._emit('  addi sp, sp, -4');
+          this._emit('  sw a0, 0(sp)');
+        }
+        
+        // Load closure pointer
+        this._emitLoadVar(funcName);
+        this._emit('  addi sp, sp, -4');
+        this._emit('  sw a0, 0(sp)');
+        
+        // Pop closure pointer into a0 (env)
+        this._emit('  lw a0, 0(sp)');
+        // Pop regular args into a1, a2, ...
+        for (let i = args.length - 1; i >= 0; i--) {
+          this._emit(`  lw a${i + 1}, ${(args.length - i) * 4}(sp)`);
+        }
+        this._emit(`  addi sp, sp, ${(args.length + 1) * 4}`);
+        
+        // Call the closure dispatch trampoline
+        // a0 = closure pointer (env), a1+ = args
+        this._emit('  jal _closure_dispatch');
+      } else {
       // Regular function call
       // Evaluate args and save on stack
       for (let i = 0; i < args.length; i++) {
@@ -1237,6 +1289,7 @@ export class RiscVCodeGen {
       
       // Call the function
       this._emit(`  jal ${funcName}`);
+      }
     }
     // Result is in a0
     // Check if we know the return type
@@ -1265,6 +1318,9 @@ export class RiscVCodeGen {
     this.stackOffset = 8; // Reserve for ra + s0
     this.nextRegIdx = 0;
     this.usedRegs = new Set();
+    
+    // Add self-reference for recursive calls
+    this.variables.set(name, { type: 'func', label: name });
     
     this._emitLabel(name);
     this._emitPrologue();
