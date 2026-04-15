@@ -62,6 +62,8 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 
 **Urgent Item Rule:** If an item has been in Urgent for >1 day, it gets the FIRST task slot of the day — before any interesting work. No exceptions. If you keep skipping it, demote it to Normal (it wasn't actually urgent). Boring-but-urgent items rot when they compete with interesting work for attention. Don't let them.
 
+**Urgent Item Date Tags:** Every Urgent item MUST include `(since YYYY-MM-DD)`. Morning standup must either (a) make any >1-day item the FIRST queued task, or (b) explicitly demote it to Normal with a written reason in the daily log. No third option — "acknowledge and queue other stuff first" is not allowed.
+
 ## Work Quality
 
 ### Depth Check (every 5 BUILD tasks)
