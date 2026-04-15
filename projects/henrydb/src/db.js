@@ -781,11 +781,39 @@ export class Database {
       views[name] = view;
     }
     
+    // Serialize sequences
+    const sequences = {};
+    for (const [name, seq] of this.sequences) {
+      sequences[name] = {
+        current: seq.current,
+        increment: seq.increment,
+        min: seq.min,
+        max: seq.max,
+        cycle: seq.cycle,
+        ownedBy: seq.ownedBy,
+      };
+    }
+    
+    // Serialize materialized views
+    const matViews = {};
+    for (const [name, mv] of (this.materializedViews || new Map())) {
+      matViews[name] = mv;
+    }
+    
+    // Serialize comments
+    const comments = {};
+    for (const [key, val] of (this._comments || new Map())) {
+      comments[key] = val;
+    }
+    
     return {
       version: 1,
       tables,
       views,
       triggers: this.triggers,
+      sequences,
+      materializedViews: matViews,
+      comments,
     };
   }
 
@@ -902,6 +930,23 @@ export class Database {
     
     // Restore triggers
     db.triggers = obj.triggers || [];
+    
+    // Restore sequences
+    for (const [name, seq] of Object.entries(obj.sequences || {})) {
+      db.sequences.set(name, { ...seq });
+    }
+    
+    // Restore materialized views
+    for (const [name, mv] of Object.entries(obj.materializedViews || {})) {
+      if (!db.materializedViews) db.materializedViews = new Map();
+      db.materializedViews.set(name, mv);
+    }
+    
+    // Restore comments
+    for (const [key, val] of Object.entries(obj.comments || {})) {
+      if (!db._comments) db._comments = new Map();
+      db._comments.set(key, val);
+    }
     
     return db;
   }
