@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T23:15:35.925Z",
+  "generated": "2026-04-15T23:22:16.982Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: Update RISCV-BACKEND.md with all new features (closures, HOF, string interning, benchmarks, _str_eq, cross-function calls). Update test counts.",
-    "startedAt": "2026-04-15T23:15:35.925Z",
-    "taskId": "T136"
+    "task": "RISC-V: implement map/filter builtins for arrays. map(arr, fn) returns new array. filter(arr, pred) returns filtered array. Both use closure dispatch for the callback. 8+ tests.",
+    "startedAt": "2026-04-15T23:22:16.982Z",
+    "taskId": "T139"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 134,
+    "blocksCompleted": 137,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 17,
       "PLAN": 16,
-      "BUILD": 87,
+      "BUILD": 90,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

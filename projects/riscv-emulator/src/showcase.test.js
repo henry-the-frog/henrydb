@@ -289,3 +289,117 @@ describe('Showcase: Higher-Order Functions', () => {
     assert.equal(result, '5050');
   });
 });
+
+describe('Showcase: Functional Programming Patterns', () => {
+  it('map with double', () => {
+    const result = run(`
+      let map = fn(arr, f) {
+        let result = []
+        let i = 0
+        while (i < len(arr)) {
+          set result = push(result, f(arr[i]))
+          set i = i + 1
+        }
+        return result
+      }
+      let double = fn(x) { x * 2 }
+      let arr = map([1, 2, 3], double)
+      puts(arr[0])
+      puts(arr[1])
+      puts(arr[2])
+    `);
+    assert.equal(result, '246');
+  });
+
+  it('filter with predicate', () => {
+    const { output } = runFull(`
+      let filter = fn(arr, pred) {
+        let result = []
+        let i = 0
+        while (i < len(arr)) {
+          if (pred(arr[i])) {
+            set result = push(result, arr[i])
+          }
+          set i = i + 1
+        }
+        return result
+      }
+      let is_even = fn(x) { x % 2 == 0 }
+      let arr = filter([1, 2, 3, 4, 5, 6], is_even)
+      puts(len(arr))
+    `);
+    assert.equal(output, '3');
+  });
+
+  it('map + filter pipeline', () => {
+    const { output } = runFull(`
+      let map = fn(arr, f) {
+        let result = []
+        let i = 0
+        while (i < len(arr)) {
+          set result = push(result, f(arr[i]))
+          set i = i + 1
+        }
+        return result
+      }
+      let filter = fn(arr, pred) {
+        let result = []
+        let i = 0
+        while (i < len(arr)) {
+          if (pred(arr[i])) { set result = push(result, arr[i]) }
+          set i = i + 1
+        }
+        return result
+      }
+      let square = fn(x) { x * x }
+      let gt10 = fn(x) { x > 10 }
+      let result = filter(map([1, 2, 3, 4, 5], square), gt10)
+      puts(len(result))
+      puts(result[0])
+      puts(result[1])
+    `);
+    assert.equal(output, '21625');  // len=2, 16, 25
+  });
+
+  it('reduce with max', () => {
+    const result = run(`
+      let reduce = fn(arr, init, f) {
+        let acc = init
+        let i = 0
+        while (i < len(arr)) {
+          set acc = f(acc, arr[i])
+          set i = i + 1
+        }
+        return acc
+      }
+      let max = fn(a, b) { if (a > b) { return a }; return b }
+      puts(reduce([3, 7, 2, 9, 1], 0, max))
+    `);
+    assert.equal(result, '9');
+  });
+
+  it('closure-based counter', () => {
+    const result = run(`
+      let make_counter = fn(start) {
+        fn(step) { start + step }
+      }
+      let from10 = make_counter(10)
+      puts(from10(0))
+      puts(from10(5))
+      puts(from10(90))
+    `);
+    assert.equal(result, '1015100');  // 10, 15, 100
+  });
+
+  it('compose two closures', () => {
+    const result = run(`
+      let make_adder = fn(n) { fn(x) { x + n } }
+      let make_mul = fn(n) { fn(x) { x * n } }
+      let compose = fn(f, g, x) { f(g(x)) }
+      let add5 = make_adder(5)
+      let mul3 = make_mul(3)
+      puts(compose(add5, mul3, 4))
+    `);
+    assert.equal(result, '17');  // mul3(4) = 12, add5(12) = 17
+  });
+});

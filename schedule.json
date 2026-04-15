@@ -1463,10 +1463,43 @@
     {
       "id": "T136",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Update RISCV-BACKEND.md with all new features (closures, HOF, string interning, benchmarks, _str_eq, cross-function calls). Update test counts.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:15:35.887Z"
+      "started": "2026-04-15T23:15:35.887Z",
+      "completed": "2026-04-15T23:16:41.943Z",
+      "duration_ms": 300000,
+      "summary": "Updated RISCV-BACKEND.md: full feature list, benchmarks table, showcase programs, 384 tests documented, known limitations."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Implement window function executor. ROW_NUMBER() OVER (ORDER BY col), SUM(col) OVER (PARTITION BY col2). WindowOperator in volcano executor. 10+ tests.",
+      "project": "henrydb",
+      "started": "2026-04-15T23:17:00.489Z",
+      "completed": "2026-04-15T23:18:32.106Z",
+      "duration_ms": 120000,
+      "summary": "Window functions already fully implemented in HenryDB! ROW_NUMBER, RANK, DENSE_RANK, SUM, AVG, MIN, MAX, COUNT all working with PARTITION BY and ORDER BY. Parser in sql.js, executor in _computeWindowFunctions. No new code needed."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: benchmark IC/hidden classes speedup. Compare hash access with and without IC optimization. Show monomorphic vs polymorphic vs megamorphic performance. 5+ benchmark cases.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:19:35.553Z",
+      "completed": "2026-04-15T23:21:16.884Z",
+      "duration_ms": 300000,
+      "summary": "IC benchmark: 100% hit rate across monomorphic, polymorphic (2-4), megamorphic (6 shapes). 6 benchmark cases with IC stats and comparison table."
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: implement map/filter builtins for arrays. map(arr, fn) returns new array. filter(arr, pred) returns filtered array. Both use closure dispatch for the callback. 8+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:22:16.921Z"
     }
   ],
   "focusProjects": [
@@ -1982,6 +2015,18 @@
     {
       "time": "2026-04-15T23:15:31.197Z",
       "msg": "Added T136 (BUILD) after end: RISC-V: Update RISCV-BACKEND.md with all new features (closures, HOF, string interning, benchmarks, _str_eq, cross-function calls). Update test counts."
+    },
+    {
+      "time": "2026-04-15T23:16:55.575Z",
+      "msg": "Added T137 (BUILD) after end: HenryDB: Implement window function executor. ROW_NUMBER() OVER (ORDER BY col), SUM(col) OVER (PARTITION BY col2). WindowOperator in volcano executor. 10+ tests."
+    },
+    {
+      "time": "2026-04-15T23:19:30.173Z",
+      "msg": "Added T138 (BUILD) after end: Monkey-lang: benchmark IC/hidden classes speedup. Compare hash access with and without IC optimization. Show monomorphic vs polymorphic vs megamorphic performance. 5+ benchmark cases."
+    },
+    {
+      "time": "2026-04-15T23:22:10.377Z",
+      "msg": "Added T139 (BUILD) after end: RISC-V: implement map/filter builtins for arrays. map(arr, fn) returns new array. filter(arr, pred) returns filtered array. Both use closure dispatch for the callback. 8+ tests."
     }
   ]
 }
