@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-15T18:39:16.330Z",
+  "generated": "2026-04-15T18:40:50.084Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "monkey-lang: add operator overloading for classes (+, -, *, /, ==, <)",
-    "completedAt": "2026-04-15T18:39:16.330Z",
-    "taskId": "T66",
-    "summary": "Operator overloading: __add__, __sub__, __mul__, __div__, __mod__, __eq__, __ne__, __lt__, __gt__, __le__, __ge__. Vec2 example works.",
+    "task": "monkey-lang: __iter__ protocol for for-in on class instances",
+    "completedAt": "2026-04-15T18:40:50.084Z",
+    "taskId": "T67",
+    "summary": "__iter__ protocol: for-in on class instances calls __iter__() to get elements. Range + LinkedList examples work.",
     "durationMs": 300000
   },
   "schedule": {
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 66,
+    "blocksCompleted": 67,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 40,
+      "BUILD": 41,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }
