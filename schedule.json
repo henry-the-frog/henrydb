@@ -1224,9 +1224,20 @@
     {
       "id": "T114",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session maintenance: update daily log, scratch notes, push code. Then switch to a different project for depth diversity.",
-      "started": "2026-04-15T21:58:02.841Z"
+      "started": "2026-04-15T21:58:02.841Z",
+      "completed": "2026-04-15T21:58:27.716Z",
+      "duration_ms": 60000,
+      "summary": "Mid-session maintenance done. All pushed. Switching domains."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V disassembler: decode 32-bit machine words back to assembly text. Part of the monkey-lang compilation pipeline. Cover RV32I + RV32M instructions. 20+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T22:01:05.038Z"
     }
   ],
   "focusProjects": [
@@ -1658,6 +1669,10 @@
     {
       "time": "2026-04-15T21:57:53.231Z",
       "msg": "Added T114 (MAINTAIN) after end: Mid-session maintenance: update daily log, scratch notes, push code. Then switch to a different project for depth diversity."
+    },
+    {
+      "time": "2026-04-15T22:00:55.572Z",
+      "msg": "Added T115 (BUILD) after end: RISC-V disassembler: decode 32-bit machine words back to assembly text. Part of the monkey-lang compilation pipeline. Cover RV32I + RV32M instructions. 20+ tests."
     }
   ]
 }
