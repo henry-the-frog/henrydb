@@ -33,3 +33,4 @@
 - **cpython-trace-fitness.md** — Mark Shannon's trace quality model for CPython JIT. (uses: 1, created: 2026-04-07)
 ### Monkey-lang WASM
 - **wasm-strip-imports-bug.md** — Never scan raw bytecode by value matching; track instruction positions at emit time. (uses: 1, created: 2026-04-15)
+- **inline-caching-design.md** — IC for monkey-lang hash lookups: shapes, monomorphic cache, JIT integration plan. (uses: 0, created: 2026-04-15)
