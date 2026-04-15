@@ -59,36 +59,74 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-15T00:27:45.669Z"
+      "started": "2026-04-15T00:27:45.669Z",
+      "completed": "2026-04-15T00:28:20.465Z",
+      "duration_ms": 60000,
+      "summary": "Housekeeping: git push, daily log, CURRENT.md updated."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on parser unification, plan next depth work"
+      "status": "done",
+      "task": "Reflect on parser unification, plan next depth work",
+      "started": "2026-04-15T00:28:31.148Z",
+      "completed": "2026-04-15T00:28:47.390Z",
+      "duration_ms": 60000,
+      "summary": "Reflected: 2 bugs found (condition-form switch, brace-optional parser). Key insight: BlockStatement vs raw expression compilation pattern. Parser divergence still exists but root is clean at 608/608. Pivot to HenryDB depth."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: stress-test new features with persistence round-trips",
-      "task": null
+      "task": null,
+      "started": "2026-04-15T00:28:59.797Z",
+      "completed": "2026-04-15T00:29:48.041Z",
+      "duration_ms": 120000,
+      "summary": "Planned: persistence round-trips for sequences/SERIAL and materialized views, plus adversarial stress testing. Expression indexes, generated columns, FKs already covered."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add persistence round-trip tests for sequences/SERIAL",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-15T00:29:58.524Z",
+      "completed": "2026-04-15T00:34:43.737Z",
+      "duration_ms": 360000,
+      "summary": "Found+fixed persistence bug: sequences, materialized views, comments were silently lost on save/restore. Added serialize/fromSerialized for all three. 5 round-trip tests pass."
+    },
+    {
+      "id": "T11",
+      "mode": "BUILD",
+      "task": "Add persistence round-trip tests for materialized views",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-15T00:35:02.593Z",
+      "completed": "2026-04-15T00:35:02.736Z",
+      "duration_ms": 0,
+      "summary": "Already done in T7."
+    },
+    {
+      "id": "T12",
+      "mode": "BUILD",
+      "task": "Stress-test HenryDB: adversarial query patterns that exercise persistence",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-15T00:35:13.937Z",
+      "completed": "2026-04-15T00:38:56.221Z",
+      "duration_ms": 600000,
+      "summary": "Found+fixed table-level composite PRIMARY KEY parser bug. Added table-level UNIQUE, FOREIGN KEY support. 5 adversarial persistence stress tests: 10-table schema, double round-trip, FK+SERIAL+INSERT, mat view mutation, CTE+window."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping + push"
+      "status": "in-progress",
+      "task": "Final housekeeping + push",
+      "started": "2026-04-15T00:39:09.396Z"
     }
   ],
   "focusProjects": [
@@ -136,6 +174,10 @@
     {
       "time": "2026-04-15T00:19:09.986Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-15T00:29:42.715Z",
+      "msg": "PLAN T6 filled 3 BUILD tasks"
     }
   ]
 }
