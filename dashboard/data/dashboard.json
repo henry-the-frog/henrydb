@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T21:30:28.490Z",
+  "generated": "2026-04-15T21:33:43.295Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V codegen: basic type inference pass. Before code generation, walk the AST and infer types for function parameters based on call sites. If greet('Alice') is called, infer name:string. Enables type-correct puts() for function params. 10+ tests.",
-    "startedAt": "2026-04-15T21:30:28.490Z",
-    "taskId": "T106"
+    "task": "RISC-V codegen: string concatenation. InfixExpression with + on strings → allocate new string on heap, copy both operands. Use type inference to detect string operands. Support: str+str, str+int (number to string), multiple concat. 10+ tests.",
+    "startedAt": "2026-04-15T21:33:43.295Z",
+    "taskId": "T107"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1115,12 +1115,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 104,
+    "blocksCompleted": 105,
     "blocksTotal": 103,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 14,
-      "BUILD": 64,
+      "BUILD": 65,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

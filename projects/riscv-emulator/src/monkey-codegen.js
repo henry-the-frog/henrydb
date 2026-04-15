@@ -346,8 +346,16 @@ export class RiscVCodeGen {
   }
 
   _compileInfixExpression(expr) {
-    // Check for comparison operators
     const op = expr.operator;
+    
+    // Check if this is string concatenation
+    if (op === '+') {
+      const leftType = this._inferExprType(expr.left);
+      const rightType = this._inferExprType(expr.right);
+      if (leftType === 'string' || rightType === 'string') {
+        return this._compileStringConcat(expr.left, expr.right);
+      }
+    }
     
     // Compile left, push to stack
     this._compileExpression(expr.left);
@@ -370,8 +378,6 @@ export class RiscVCodeGen {
         this._emit('  sub a0, t0, a0');
         break;
       case '*':
-        // RV32I doesn't have MUL — use software multiply
-        // Actually RV32M extension has mul, let's use it (our emulator supports it)
         this._emit('  mul a0, t0, a0');
         break;
       case '/':
@@ -395,18 +401,106 @@ export class RiscVCodeGen {
         this._emit('  snez a0, a0');
         break;
       case '<=':
-        // a <= b ≡ !(a > b) ≡ !(b < a)
-        this._emit('  slt a0, a0, t0');  // a0 = (right < left)
-        this._emit('  xori a0, a0, 1'); // negate
+        this._emit('  slt a0, a0, t0');
+        this._emit('  xori a0, a0, 1');
         break;
       case '>=':
-        // a >= b ≡ !(a < b)
-        this._emit('  slt a0, t0, a0');  // a0 = (left < right)
-        this._emit('  xori a0, a0, 1'); // negate
+        this._emit('  slt a0, t0, a0');
+        this._emit('  xori a0, a0, 1');
         break;
       default:
         this.errors.push(`Unsupported infix operator: ${op}`);
     }
+    this._lastExprType = 'int';
+  }
+
+  /** Infer the type of an expression from the AST (quick check, no deep analysis) */
+  _inferExprType(expr) {
+    if (!expr) return 'unknown';
+    const name = expr.constructor.name;
+    if (name === 'StringLiteral') return 'string';
+    if (name === 'IntegerLiteral') return 'int';
+    if (name === 'BooleanLiteral') return 'int';
+    if (name === 'ArrayLiteral') return 'array';
+    if (name === 'Identifier') return this.varTypes.get(expr.value) || 'unknown';
+    if (name === 'InfixExpression' && expr.operator === '+') {
+      const lt = this._inferExprType(expr.left);
+      const rt = this._inferExprType(expr.right);
+      if (lt === 'string' || rt === 'string') return 'string';
+    }
+    return 'unknown';
+  }
+
+  /** Compile string concatenation: allocate new string, copy both */
+  _compileStringConcat(left, right) {
+    this._comment('string concat');
+    
+    // Compile left string, push pointer
+    this._compileExpression(left);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');
+    
+    // Compile right string, push pointer
+    this._compileExpression(right);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');
+    
+    // Pop both: t0 = right, t1 = left (reversed because stack is LIFO)
+    this._emit('  lw t0, 0(sp)');    // t0 = right string ptr
+    this._emit('  lw t1, 4(sp)');    // t1 = left string ptr
+    this._emit('  addi sp, sp, 8');
+    
+    // Get lengths
+    this._emit('  lw t2, 0(t1)');    // t2 = left length
+    this._emit('  lw t3, 0(t0)');    // t3 = right length
+    
+    // New length = left + right
+    this._emit('  add t4, t2, t3');   // t4 = total length
+    
+    // Allocate new string: 4 + totalLen * 4
+    this._emit('  mv a0, gp');        // new string base
+    this._emit('  addi t5, t4, 1');   // len + 1 (for header word)
+    this._emit('  slli t5, t5, 2');   // * 4
+    this._emit('  add gp, gp, t5');   // bump allocator
+    
+    // Store new length
+    this._emit('  sw t4, 0(a0)');
+    
+    // Copy left string chars
+    this._emit('  li t5, 0');         // i = 0
+    const copyLeft = this._label('concat_left');
+    const copyLeftEnd = this._label('concat_left_end');
+    this._emitLabel(copyLeft);
+    this._emit(`  bge t5, t2, ${copyLeftEnd}`);
+    this._emit('  slli t6, t5, 2');
+    this._emit('  add t6, t1, t6');
+    this._emit('  lw t6, 4(t6)');     // left[i]
+    this._emit('  slli a1, t5, 2');   // use a1 as temp
+    this._emit('  add a1, a0, a1');
+    this._emit('  sw t6, 4(a1)');     // new[i] = left[i]
+    this._emit('  addi t5, t5, 1');
+    this._emit(`  j ${copyLeft}`);
+    this._emitLabel(copyLeftEnd);
+    
+    // Copy right string chars (starting at offset = left length)
+    this._emit('  li t5, 0');         // j = 0
+    const copyRight = this._label('concat_right');
+    const copyRightEnd = this._label('concat_right_end');
+    this._emitLabel(copyRight);
+    this._emit(`  bge t5, t3, ${copyRightEnd}`);
+    this._emit('  slli t6, t5, 2');
+    this._emit('  add t6, t0, t6');
+    this._emit('  lw t6, 4(t6)');     // right[j]
+    this._emit('  add a1, t2, t5');   // offset = leftLen + j
+    this._emit('  slli a1, a1, 2');
+    this._emit('  add a1, a0, a1');
+    this._emit('  sw t6, 4(a1)');     // new[leftLen+j] = right[j]
+    this._emit('  addi t5, t5, 1');
+    this._emit(`  j ${copyRight}`);
+    this._emitLabel(copyRightEnd);
+    
+    // a0 = new string pointer
+    this._lastExprType = 'string';
   }
 
   _compileIfExpression(expr) {

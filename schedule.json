@@ -1137,10 +1137,21 @@
     {
       "id": "T106",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V codegen: basic type inference pass. Before code generation, walk the AST and infer types for function parameters based on call sites. If greet('Alice') is called, infer name:string. Enables type-correct puts() for function params. 10+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T21:30:28.454Z"
+      "started": "2026-04-15T21:30:28.454Z",
+      "completed": "2026-04-15T21:33:12.345Z",
+      "duration_ms": 600000,
+      "summary": "Type inference pass: analyze call sites to determine function parameter types. greet(\"Alice\") → name:string. Enables type-correct puts() for function params. 16 new tests, 278 total. Connected type theory to practical codegen."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V codegen: string concatenation. InfixExpression with + on strings → allocate new string on heap, copy both operands. Use type inference to detect string operands. Support: str+str, str+int (number to string), multiple concat. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T21:33:43.235Z"
     }
   ],
   "focusProjects": [
@@ -1544,6 +1555,10 @@
     {
       "time": "2026-04-15T21:30:20.898Z",
       "msg": "Added T106 (BUILD) after end: RISC-V codegen: basic type inference pass. Before code generation, walk the AST and infer types for function parameters based on call sites. If greet('Alice') is called, infer name:string. Enables type-correct puts() for function params. 10+ tests."
+    },
+    {
+      "time": "2026-04-15T21:33:33.615Z",
+      "msg": "Added T107 (BUILD) after end: RISC-V codegen: string concatenation. InfixExpression with + on strings → allocate new string on heap, copy both operands. Use type inference to detect string operands. Support: str+str, str+int (number to string), multiple concat. 10+ tests."
     }
   ]
 }
