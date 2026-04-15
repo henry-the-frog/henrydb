@@ -5423,33 +5423,83 @@ export class Database {
         // Helper: get frame bounds for row at index i
         const getFrameBounds = (i, len) => {
           if (!frame) {
-            // Default: with ORDER BY → UNBOUNDED PRECEDING to CURRENT ROW
+            // Default: with ORDER BY → RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
             // Without ORDER BY → entire partition
             return orderBy ? [0, i] : [0, len - 1];
           }
+          
+          // RANGE mode: offset is based on ORDER BY value, not row position
+          const isRange = frame.type === 'RANGE';
+          
           let start = 0, end = len - 1;
-          // Start bound
-          if (frame.start.type === 'UNBOUNDED' && frame.start.direction === 'PRECEDING') {
-            start = 0;
-          } else if (frame.start.type === 'CURRENT ROW') {
-            start = i;
-          } else if (frame.start.type === 'OFFSET') {
-            if (frame.start.direction === 'PRECEDING') {
-              start = Math.max(0, i - frame.start.offset);
-            } else {
-              start = Math.min(len - 1, i + frame.start.offset);
+          
+          if (isRange && orderBy && orderBy.length > 0) {
+            // RANGE mode: find frame bounds by comparing ORDER BY values
+            const orderCol = orderBy[0].column;
+            const currentVal = Number(this._orderByValue(orderCol, partition[i]));
+            
+            // Start bound
+            if (frame.start.type === 'UNBOUNDED' && frame.start.direction === 'PRECEDING') {
+              start = 0;
+            } else if (frame.start.type === 'CURRENT ROW') {
+              // Find first row with same ORDER BY value (peers)
+              start = i;
+              while (start > 0 && Number(this._orderByValue(orderCol, partition[start - 1])) === currentVal) start--;
+            } else if (frame.start.type === 'OFFSET') {
+              const offset = frame.start.offset;
+              const targetVal = frame.start.direction === 'PRECEDING' ? currentVal - offset : currentVal + offset;
+              start = 0;
+              for (let j = 0; j < len; j++) {
+                if (Number(this._orderByValue(orderCol, partition[j])) >= targetVal) {
+                  start = j;
+                  break;
+                }
+              }
             }
-          }
-          // End bound
-          if (frame.end.type === 'UNBOUNDED' && frame.end.direction === 'FOLLOWING') {
-            end = len - 1;
-          } else if (frame.end.type === 'CURRENT ROW') {
-            end = i;
-          } else if (frame.end.type === 'OFFSET') {
-            if (frame.end.direction === 'PRECEDING') {
-              end = Math.max(0, i - frame.end.offset);
-            } else {
-              end = Math.min(len - 1, i + frame.end.offset);
+            
+            // End bound
+            if (frame.end.type === 'UNBOUNDED' && frame.end.direction === 'FOLLOWING') {
+              end = len - 1;
+            } else if (frame.end.type === 'CURRENT ROW') {
+              // Find last row with same ORDER BY value (peers)
+              end = i;
+              while (end < len - 1 && Number(this._orderByValue(orderCol, partition[end + 1])) === currentVal) end++;
+            } else if (frame.end.type === 'OFFSET') {
+              const offset = frame.end.offset;
+              const targetVal = frame.end.direction === 'FOLLOWING' ? currentVal + offset : currentVal - offset;
+              end = len - 1;
+              for (let j = len - 1; j >= 0; j--) {
+                if (Number(this._orderByValue(orderCol, partition[j])) <= targetVal) {
+                  end = j;
+                  break;
+                }
+              }
+            }
+          } else {
+            // ROWS mode: offset is based on row position
+            // Start bound
+            if (frame.start.type === 'UNBOUNDED' && frame.start.direction === 'PRECEDING') {
+              start = 0;
+            } else if (frame.start.type === 'CURRENT ROW') {
+              start = i;
+            } else if (frame.start.type === 'OFFSET') {
+              if (frame.start.direction === 'PRECEDING') {
+                start = Math.max(0, i - frame.start.offset);
+              } else {
+                start = Math.min(len - 1, i + frame.start.offset);
+              }
+            }
+            // End bound
+            if (frame.end.type === 'UNBOUNDED' && frame.end.direction === 'FOLLOWING') {
+              end = len - 1;
+            } else if (frame.end.type === 'CURRENT ROW') {
+              end = i;
+            } else if (frame.end.type === 'OFFSET') {
+              if (frame.end.direction === 'PRECEDING') {
+                end = Math.max(0, i - frame.end.offset);
+              } else {
+                end = Math.min(len - 1, i + frame.end.offset);
+              }
             }
           }
           return [start, end];
