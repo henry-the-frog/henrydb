@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T16:27:37.694Z",
+  "generated": "2026-04-15T16:31:22.896Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-15T16:27:37.694Z",
-    "taskId": "T26",
-    "summary": "PLAN: found 2 window function bugs — RANGE BETWEEN ignores offsets (returns full sum), LAST_VALUE with explicit frame broken. 2 BUILD tasks.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "Fix RANGE BETWEEN window frame boundaries (ignoring range offsets, returns full partition sum)",
+    "completedAt": "2026-04-15T16:31:22.896Z",
+    "taskId": "T29",
+    "summary": "Fixed RANGE BETWEEN window frames — value-based bounds instead of row position. 6 regression tests. All existing window tests pass.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -320,12 +320,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 26,
+    "blocksCompleted": 27,
     "blocksTotal": 30,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 6,
-      "BUILD": 9,
+      "BUILD": 10,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

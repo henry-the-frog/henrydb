@@ -284,8 +284,12 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "Fix RANGE BETWEEN window frame boundaries (ignoring range offsets, returns full partition sum)",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-15T16:27:55.273Z",
+      "completed": "2026-04-15T16:31:22.860Z",
+      "duration_ms": 900000,
+      "summary": "Fixed RANGE BETWEEN window frames — value-based bounds instead of row position. 6 regression tests. All existing window tests pass."
     },
     {
       "id": "T30",
