@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T23:27:53.570Z",
+  "generated": "2026-04-15T23:31:30.327Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: Create monkey-lang standard library (stdlib.monkey). Include: map, filter, reduce, range, sum, max, min, abs, gcd, is_prime, cons/car/cdr, compose, pipe. Add --stdlib flag to CLI. 10+ tests.",
-    "startedAt": "2026-04-15T23:27:53.570Z",
-    "taskId": "T143"
+    "task": "RISC-V: anonymous function expressions in calls. Currently fn(x){x*2} as an argument fails. Need to compile inline FunctionLiterals as closure objects in call expressions.",
+    "startedAt": "2026-04-15T23:31:30.327Z",
+    "taskId": "T144"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 141,
+    "blocksCompleted": 142,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 17,
       "PLAN": 16,
-      "BUILD": 94,
+      "BUILD": 95,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

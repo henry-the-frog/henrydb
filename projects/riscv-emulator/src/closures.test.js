@@ -237,3 +237,38 @@ describe('Higher-order functions', () => {
     assert.equal(run('let id = fn(x) { x }; let apply = fn(f, x) { f(x) }; puts(apply(id, 99))'), '99');
   });
 });
+
+describe('Anonymous inline functions', () => {
+  it('apply anonymous function', () => {
+    assert.equal(run('let apply = fn(f, x) { f(x) }; puts(apply(fn(x) { x * 2 }, 5))'), '10');
+  });
+
+  it('twice with anonymous', () => {
+    assert.equal(run('let twice = fn(f, x) { f(f(x)) }; puts(twice(fn(x) { x + 3 }, 0))'), '6');
+  });
+
+  it('reduce with anonymous combiner', () => {
+    assert.equal(run(`
+      let reduce = fn(arr, init, f) {
+        let acc = init
+        let i = 0
+        while (i < len(arr)) { set acc = f(acc, arr[i]); set i = i + 1 }
+        return acc
+      }
+      puts(reduce([1,2,3,4,5], 0, fn(a, b) { a + b }))
+    `), '15');
+  });
+
+  it('anonymous closure captures outer var', () => {
+    assert.equal(run(`
+      let x = 10
+      let apply = fn(f) { f() }
+      puts(apply(fn() { x }))
+    `), '10');
+  });
+
+  it('IIFE pattern (immediately invoked)', () => {
+    // Can't do IIFE directly in monkey, but can simulate via apply
+    assert.equal(run('let run = fn(f) { f() }; puts(run(fn() { 42 }))'), '42');
+  });
+});

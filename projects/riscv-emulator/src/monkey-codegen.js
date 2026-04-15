@@ -248,14 +248,15 @@ export class RiscVCodeGen {
       this._emit('');
       this._emit('# Closure dispatch: a0=closure_ptr, a1+=args');
       this._emit('# Reads fn_id from closure[0], checks num_captured');
-      this._emit('# If num_captured==0 (function ref), shifts args down (a0=a1, a1=a2, ...)');
+      this._emit('# If num_captured==-1 (function ref), shifts args down (a0=a1, a1=a2, ...)');
       this._emitLabel('_closure_dispatch');
       this._emit('  lw t0, 0(a0)');    // t0 = fn_id
       this._emit('  lw t2, 4(a0)');    // t2 = num_captured
       
-      // If num_captured == 0, shift args down (this is a plain function ref, not a real closure)
+      // If num_captured == -1, shift args down (this is a plain function ref, not a real closure)
       const noShift = this._label('_cd_noshift');
-      this._emit(`  bnez t2, ${noShift}`);
+      this._emit('  li t3, -1');
+      this._emit(`  bne t2, t3, ${noShift}`);
       // Shift: a0=a1, a1=a2, a2=a3, ...
       this._emit('  mv a0, a1');
       this._emit('  mv a1, a2');
@@ -426,12 +427,12 @@ export class RiscVCodeGen {
         this._closureLabels.push(name);
       }
       
-      // Allocate closure object: [fn_id (4), num_captured=0 (4)]
+      // Allocate closure object: [fn_id (4), num_captured=-1 (4)] — -1 means "plain function ref"
       this._emit('  mv t1, gp');
       this._emit('  addi gp, gp, 8');
       this._emit(`  li t2, ${closureId}`);
       this._emit('  sw t2, 0(t1)');
-      this._emit('  li t2, 0');       // no captured vars
+      this._emit('  li t2, -1');       // -1 = plain function ref (needs arg shift)
       this._emit('  sw t2, 4(t1)');
       this._emit('  mv a0, t1');
       this._lastExprType = 'closure';

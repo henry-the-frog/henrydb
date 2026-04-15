@@ -1540,10 +1540,21 @@
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Create monkey-lang standard library (stdlib.monkey). Include: map, filter, reduce, range, sum, max, min, abs, gcd, is_prime, cons/car/cdr, compose, pipe. Add --stdlib flag to CLI. 10+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-15T23:27:53.533Z"
+      "started": "2026-04-15T23:27:53.533Z",
+      "completed": "2026-04-15T23:30:44.574Z",
+      "duration_ms": 600000,
+      "summary": "Standard library: 30+ functions (HOF, math, arrays, linked list, factories). --stdlib CLI flag. 28 tests, all passing."
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: anonymous function expressions in calls. Currently fn(x){x*2} as an argument fails. Need to compile inline FunctionLiterals as closure objects in call expressions.",
+      "project": "monkey-lang",
+      "started": "2026-04-15T23:31:30.291Z"
     }
   ],
   "focusProjects": [
@@ -2087,6 +2098,10 @@
     {
       "time": "2026-04-15T23:27:46.968Z",
       "msg": "Added T143 (BUILD) after end: RISC-V: Create monkey-lang standard library (stdlib.monkey). Include: map, filter, reduce, range, sum, max, min, abs, gcd, is_prime, cons/car/cdr, compose, pipe. Add --stdlib flag to CLI. 10+ tests."
+    },
+    {
+      "time": "2026-04-15T23:31:24.827Z",
+      "msg": "Added T144 (BUILD) after end: RISC-V: anonymous function expressions in calls. Currently fn(x){x*2} as an argument fails. Need to compile inline FunctionLiterals as closure objects in call expressions."
     }
   ]
 }

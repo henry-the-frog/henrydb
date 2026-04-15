@@ -40,6 +40,16 @@ export function analyzeFreeVars(program) {
         stmt.value?.constructor.name === 'FunctionLiteral') {
       analyzeFunction(stmt.value, globalScope, result, stmt.name.value, globalFunctions);
     }
+    // Also scan for anonymous FunctionLiterals in expression statements
+    const anonFuncs = [];
+    collectFunctionLiterals(stmt, anonFuncs);
+    for (const funcLit of anonFuncs) {
+      // Skip already-processed let-bound functions
+      if (stmt.constructor.name === 'LetStatement' && stmt.value === funcLit) continue;
+      // Skip named functions already in globalFunctions
+      if (result.has(funcLit)) continue;
+      analyzeFunction(funcLit, globalScope, result, null, globalFunctions);
+    }
   }
   
   return result;
