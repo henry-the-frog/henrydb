@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T17:44:11.099Z",
+  "generated": "2026-04-15T17:46:50.266Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fix HenryDB ARRAY_AGG ORDER BY + add STRING_AGG aggregate",
-    "completedAt": "2026-04-15T17:44:11.099Z",
-    "taskId": "T48",
-    "summary": "Fixed ARRAY_AGG and STRING_AGG ORDER BY in non-GROUP-BY context. 6 regression tests.",
-    "durationMs": 600000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-15T17:46:50.266Z",
+    "taskId": "T50",
+    "summary": "PLAN: 3 BUILD tasks for classes — syntax, evaluator, tests.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -458,35 +458,131 @@
       {
         "id": "T42",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Array/hash destructuring in monkey-lang: let [a, b] = arr, let {x, y} = hash",
         "task": null,
         "project": "monkey-lang",
-        "started": "2026-04-15T17:16:16.601Z"
+        "started": "2026-04-15T17:16:16.601Z",
+        "completed": "2026-04-15T17:17:17.806Z",
+        "duration_ms": 30000,
+        "summary": "PLAN: 1 BUILD — integration test program using all new features."
       },
       {
         "id": "T44",
         "mode": "BUILD",
         "task": "Write a non-trivial monkey-lang program using generators+modules+try-catch as an integration test",
-        "status": "upcoming",
-        "plan_ref": "T42"
+        "status": "done",
+        "plan_ref": "T42",
+        "started": "2026-04-15T17:17:36.233Z",
+        "completed": "2026-04-15T17:20:04.157Z",
+        "duration_ms": 600000,
+        "summary": "10 integration tests: Sieve of Eratosthenes, try/catch+generators, destructuring, chained generators, memoization, break, hashes, try/catch/finally, rethrow, ranges. 1641 total tests."
       },
       {
         "id": "T43",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:20:55.556Z",
+        "completed": "2026-04-15T17:21:09.062Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
+      },
+      {
+        "id": "T45",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang: add compiler support for generators (VM/bytecode gen/yield opcodes)",
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:21:23.673Z",
+        "completed": "2026-04-15T17:32:41.568Z",
+        "duration_ms": 1200000,
+        "summary": "Generator compiler/VM support: OpYield + OpMakeGenerator opcodes, generator frames with yield collection, len+index support. Both evaluator and compiler paths work. 1641 tests pass."
+      },
+      {
+        "id": "T46",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang: pipe operator (|>) for functional chaining",
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:33:39.001Z",
+        "completed": "2026-04-15T17:34:41.101Z",
+        "duration_ms": 0,
+        "summary": "Pipe operator already exists and works. Skipping."
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang: stress-test generators in compiler/JIT path, find+fix bugs",
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:35:01.697Z",
+        "completed": "2026-04-15T17:36:19.342Z",
+        "duration_ms": 600000,
+        "summary": "10 compiler/VM generator stress tests. All pass including Sieve and sum(1..100)=5050. 1651 total tests."
+      },
+      {
+        "id": "T48",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix HenryDB ARRAY_AGG ORDER BY + add STRING_AGG aggregate",
+        "project": "henrydb",
+        "started": "2026-04-15T17:39:05.852Z",
+        "completed": "2026-04-15T17:44:11.062Z",
+        "duration_ms": 600000,
+        "summary": "Fixed ARRAY_AGG and STRING_AGG ORDER BY in non-GROUP-BY context. 6 regression tests."
+      },
+      {
+        "id": "T49",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add GREATEST/LEAST functions + NULLIF + more string functions",
+        "project": "henrydb",
+        "started": "2026-04-15T17:44:59.645Z",
+        "completed": "2026-04-15T17:45:25.713Z",
+        "duration_ms": 0,
+        "summary": "All functions already exist: GREATEST, LEAST, NULLIF, REVERSE, REPEAT, LEFT, RIGHT, LPAD, RPAD, INITCAP. Skipping."
+      },
+      {
+        "id": "T50",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Add class/struct support to monkey-lang with methods and inheritance",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-15T17:46:19.213Z"
+      },
+      {
+        "id": "T51",
+        "mode": "BUILD",
+        "task": "Add class syntax to lexer+parser+AST (class keyword, self, method definitions)",
+        "status": "upcoming",
+        "plan_ref": "T50"
+      },
+      {
+        "id": "T52",
+        "mode": "BUILD",
+        "task": "Add class evaluator: MonkeyClass + MonkeyInstance objects with method dispatch + self binding",
+        "status": "upcoming",
+        "plan_ref": "T50"
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
+        "task": "Write comprehensive class tests (construction, methods, self, inheritance)",
+        "status": "upcoming",
+        "plan_ref": "T50"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 48,
-    "blocksTotal": 44,
+    "blocksCompleted": 50,
+    "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
-      "PLAN": 8,
-      "BUILD": 25,
+      "PLAN": 9,
+      "BUILD": 26,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }

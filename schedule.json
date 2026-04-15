@@ -519,6 +519,50 @@
       "completed": "2026-04-15T17:44:11.062Z",
       "duration_ms": 600000,
       "summary": "Fixed ARRAY_AGG and STRING_AGG ORDER BY in non-GROUP-BY context. 6 regression tests."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add GREATEST/LEAST functions + NULLIF + more string functions",
+      "project": "henrydb",
+      "started": "2026-04-15T17:44:59.645Z",
+      "completed": "2026-04-15T17:45:25.713Z",
+      "duration_ms": 0,
+      "summary": "All functions already exist: GREATEST, LEAST, NULLIF, REVERSE, REPEAT, LEFT, RIGHT, LPAD, RPAD, INITCAP. Skipping."
+    },
+    {
+      "id": "T50",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add class/struct support to monkey-lang with methods and inheritance",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-15T17:46:19.213Z",
+      "completed": "2026-04-15T17:46:50.231Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 3 BUILD tasks for classes — syntax, evaluator, tests."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "task": "Add class syntax to lexer+parser+AST (class keyword, self, method definitions)",
+      "status": "upcoming",
+      "plan_ref": "T50"
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "task": "Add class evaluator: MonkeyClass + MonkeyInstance objects with method dispatch + self binding",
+      "status": "upcoming",
+      "plan_ref": "T50"
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "task": "Write comprehensive class tests (construction, methods, self, inheritance)",
+      "status": "upcoming",
+      "plan_ref": "T50"
     }
   ],
   "focusProjects": [
@@ -714,6 +758,18 @@
     {
       "time": "2026-04-15T17:38:57.082Z",
       "msg": "Added T48 (BUILD) after end: Fix HenryDB ARRAY_AGG ORDER BY + add STRING_AGG aggregate"
+    },
+    {
+      "time": "2026-04-15T17:44:50.502Z",
+      "msg": "Added T49 (BUILD) after end: HenryDB: add GREATEST/LEAST functions + NULLIF + more string functions"
+    },
+    {
+      "time": "2026-04-15T17:46:08.580Z",
+      "msg": "Added T50 (PLAN) after end: Add class/struct support to monkey-lang with methods and inheritance"
+    },
+    {
+      "time": "2026-04-15T17:46:43.605Z",
+      "msg": "PLAN T50 filled 3 BUILD tasks"
     }
   ]
 }
