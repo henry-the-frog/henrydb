@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-15T17:50:43.422Z",
+  "generated": "2026-04-15T17:55:56.810Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add class syntax to lexer+parser+AST (class keyword, self, method definitions)",
-    "completedAt": "2026-04-15T17:50:43.422Z",
-    "taskId": "T51",
-    "summary": "Class syntax: lexer tokens (class/self/new/extends), parser, AST nodes. Fields + methods parse correctly.",
-    "durationMs": 300000
+    "task": "Add class evaluator: MonkeyClass + MonkeyInstance objects with method dispatch + self binding",
+    "completedAt": "2026-04-15T17:55:56.810Z",
+    "taskId": "T52",
+    "summary": "Class evaluator: MonkeyClass+MonkeyInstance with construction, self binding, field get/set, bound methods. No regressions.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -577,12 +577,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 51,
+    "blocksCompleted": 52,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 27,
+      "BUILD": 28,
       "MAINTAIN": 6,
       "EXPLORE": 2
     }
