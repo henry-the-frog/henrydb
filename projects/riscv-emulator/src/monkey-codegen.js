@@ -792,9 +792,58 @@ export class RiscVCodeGen {
     this._emit('  add t4, t1, t4');     // hash + i * 8
     this._emit('  lw t5, 4(t4)');       // key[i]
     
-    // Compare: for integer keys, use integer ==
-    // For now, assume integer keys (most common)
-    this._emit(`  beq t0, t5, ${found}`);
+    if (keyType === 'string') {
+      // String comparison: compare by value
+      // Save context (t0-t3 used in loop)
+      this._emit('  addi sp, sp, -16');
+      this._emit('  sw t0, 0(sp)');   // save search key
+      this._emit('  sw t1, 4(sp)');   // save hash ptr
+      this._emit('  sw t2, 8(sp)');   // save num_pairs
+      this._emit('  sw t3, 12(sp)');  // save loop index
+      
+      // Compare strings: t0=search key, t5=candidate key
+      // Check lengths
+      this._emit('  lw a0, 0(t0)');   // search key length
+      this._emit('  lw a1, 0(t5)');   // candidate length
+      const skipStr = this._label('hash_skip_str');
+      this._emit(`  bne a0, a1, ${skipStr}`);
+      
+      // Lengths match — compare chars
+      this._emit('  li a2, 0');        // char index
+      const charCmp = this._label('hash_charcmp');
+      const charMatch = this._label('hash_charmatch');
+      this._emitLabel(charCmp);
+      this._emit(`  bge a2, a0, ${charMatch}`);
+      this._emit('  slli a3, a2, 2');
+      this._emit('  add a3, t0, a3');
+      this._emit('  lw a3, 4(a3)');    // search[i]
+      this._emit('  slli a4, a2, 2');
+      this._emit('  add a4, t5, a4');
+      this._emit('  lw a4, 4(a4)');    // candidate[i]
+      this._emit(`  bne a3, a4, ${skipStr}`);
+      this._emit('  addi a2, a2, 1');
+      this._emit(`  j ${charCmp}`);
+      
+      // Strings match!
+      this._emitLabel(charMatch);
+      this._emit('  lw t0, 0(sp)');
+      this._emit('  lw t1, 4(sp)');
+      this._emit('  lw t2, 8(sp)');
+      this._emit('  lw t3, 12(sp)');
+      this._emit('  addi sp, sp, 16');
+      this._emit(`  j ${found}`);
+      
+      // Strings don't match — continue scan
+      this._emitLabel(skipStr);
+      this._emit('  lw t0, 0(sp)');
+      this._emit('  lw t1, 4(sp)');
+      this._emit('  lw t2, 8(sp)');
+      this._emit('  lw t3, 12(sp)');
+      this._emit('  addi sp, sp, 16');
+    } else {
+      // Integer comparison
+      this._emit(`  beq t0, t5, ${found}`);
+    }
     
     this._emit('  addi t3, t3, 1');
     this._emit(`  j ${scanLoop}`);
