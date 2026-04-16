@@ -180,3 +180,15 @@ describe('Combined array operations', () => {
     `), '0112358132134');
   });
 });
+
+describe('For-in — advanced', () => {
+  it('for-in with function call', () => {
+    assert.equal(run('let double = fn(x) { x * 2 }; let arr = [1,2,3]; for (x in arr) { puts(double(x)) }'), '246');
+  });
+  it('for-in accumulate string', () => {
+    assert.equal(run('let words = ["Hello", " ", "World"]; for (w in words) { puts(w) }'), 'Hello World');
+  });
+  it('nested for-in counts', () => {
+    assert.equal(run('let c = 0; for (i in [1,2]) { for (j in [1,2,3]) { set c = c + 1 } }; puts(c)'), '6');
+  });
+});

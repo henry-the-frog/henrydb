@@ -141,3 +141,15 @@ describe('String hash keys — 4+ chars (regression)', () => {
     assert.equal(run('let h = {"ab": 1, "abcde": 2, "x": 3}; puts(h["abcde"])'), '2');
   });
 });
+
+describe('Hash operations — advanced', () => {
+  it('dot access', () => {
+    assert.equal(run('let h = {"name": "test"}; puts(h.name)'), 'test');
+  });
+  it('integer hash with computation', () => {
+    assert.equal(run('let h = {1: 10, 2: 20, 3: 30}; let s = 0; for (i in 1..4) { set s = s + h[i] }; puts(s)'), '60');
+  });
+  it('hash in function', () => {
+    assert.equal(run('let lookup = fn(key) { let t = {"a": 1, "b": 2}; t[key] }; puts(lookup("a")); puts(lookup("b"))'), '12');
+  });
+});
