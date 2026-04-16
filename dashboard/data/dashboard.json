@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T22:00:40.796Z",
+  "generated": "2026-04-16T22:02:27.329Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Stress-test Hindley-Milner: omega combinator, polymorphic let, Church encoding, known tricky cases from the literature.",
-    "startedAt": "2026-04-16T22:00:40.796Z",
-    "taskId": "T225"
+    "completedAt": "2026-04-16T22:02:27.329Z",
+    "taskId": "T225",
+    "summary": "27 Hindley-Milner stress tests, all pass. Verified: omega/Y combinator rejection, let-polymorphism with dual instantiation, S/K/I combinators, Church booleans, composition, unification edge cases, occurs check, substitution composition. Implementation is correct.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -2789,12 +2791,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 223,
+    "blocksCompleted": 224,
     "blocksTotal": 217,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 8,
-      "BUILD": 190,
+      "BUILD": 191,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
