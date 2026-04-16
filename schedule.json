@@ -353,10 +353,13 @@
     {
       "id": "T33",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build algebraic effects system: effect signatures, handlers, state/exception/nondeterminism effects. Based on Plotkin-Power-Pretnar theory. 20+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T15:18:32.249Z"
+      "started": "2026-04-16T15:18:32.249Z",
+      "completed": "2026-04-16T15:22:17.779Z",
+      "duration_ms": 900000,
+      "summary": "Algebraic effects system: Perform/Handle with EffectSignal propagation. Handlers: runExcept, runState, runNondet, runLog. 28 tests. Found equality bug (undefined===undefined was true). All 141 lambda-calculus tests pass."
     }
   ],
   "focusProjects": [
