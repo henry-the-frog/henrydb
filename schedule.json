@@ -331,10 +331,32 @@
     {
       "id": "T31",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Prove theorems using CoC + inductive types: boolean algebra laws, list append properties, Maybe functor. Tests that ARE proofs.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T15:14:25.129Z"
+      "started": "2026-04-16T15:14:25.129Z",
+      "completed": "2026-04-16T15:15:58.244Z",
+      "duration_ms": 900000,
+      "summary": "28 verified theorems: De Morgan laws, boolean distributivity/absorption, nat associativity/commutativity/distributivity, list append+identity, Maybe functor laws, equality proofs via Curry-Howard. All 113 CoC tests pass."
+    },
+    {
+      "id": "T32",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Full test sweep: run ALL test suites across monkey-lang and lambda-calculus. Triage and fix anything broken.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T15:16:38.973Z",
+      "completed": "2026-04-16T15:18:00.723Z",
+      "duration_ms": 300000,
+      "summary": "Full test sweep: 0 failures across ~1,671 tests (945 monkey-lang across 27 files + 726 lambda-calculus across 14 files). Everything clean."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build algebraic effects system: effect signatures, handlers, state/exception/nondeterminism effects. Based on Plotkin-Power-Pretnar theory. 20+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T15:18:32.249Z"
     }
   ],
   "focusProjects": [
@@ -462,6 +484,14 @@
     {
       "time": "2026-04-16T15:14:15.996Z",
       "msg": "Added T31 (BUILD) after end: Prove theorems using CoC + inductive types: boolean algebra laws, list append properties, Maybe functor. Tests that ARE proofs."
+    },
+    {
+      "time": "2026-04-16T15:16:31.665Z",
+      "msg": "Added T32 (MAINTAIN) after end: Full test sweep: run ALL test suites across monkey-lang and lambda-calculus. Triage and fix anything broken."
+    },
+    {
+      "time": "2026-04-16T15:18:24.710Z",
+      "msg": "Added T33 (BUILD) after end: Build algebraic effects system: effect signatures, handlers, state/exception/nondeterminism effects. Based on Plotkin-Power-Pretnar theory. 20+ tests."
     }
   ]
 }
