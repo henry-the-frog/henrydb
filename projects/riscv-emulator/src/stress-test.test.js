@@ -365,3 +365,37 @@ describe('Range and iteration patterns', () => {
     assert.equal(run('let pairs = [[1, 2], [3, 4], [5, 6]]; let sum = 0; for (p in pairs) { set sum = sum + p[0] + p[1] }; puts(sum)'), '21');
   });
 });
+
+describe('Comprehensive coverage tests', () => {
+  it('while with &&', () => { assert.equal(run('let i = 0; while (i < 5 && i >= 0) { set i = i + 1 }; puts(i)'), '5'); });
+  it('for with expression init', () => { assert.equal(run('let s = 0; for (let i = 10; i > 0; set i = i - 2) { set s = s + i }; puts(s)'), '30'); });
+  it('ternary as arg', () => { assert.equal(run('let f = fn(x) { x * 2 }; puts(f(true ? 5 : 10))'), '10'); });
+  it('null in comparison', () => { assert.equal(run('puts(null == null)'), '1'); });
+  it('string in conditional', () => {
+    assert.equal(run('let s = "hello"; if (len(s) > 3) { puts(1) } else { puts(0) }'), '1');
+  });
+  it('empty array in for-in (no iterations)', () => {
+    assert.equal(run('let s = 0; for (x in []) { set s = s + 1 }; puts(s)'), '0');
+  });
+  it('deeply nested function calls', () => {
+    assert.equal(run('let f = fn(x) { x + 1 }; let g = fn(x) { f(x) + 1 }; let h = fn(x) { g(x) + 1 }; puts(h(0))'), '3');
+  });
+  it('variable shadowing in function', () => {
+    assert.equal(run('let x = 10; let f = fn() { let x = 20; x }; puts(f()); puts(x)'), '2010');
+  });
+  it('multiple returns', () => {
+    assert.equal(run(`
+      let classify = fn(n) {
+        if (n < 0) { return -1 }
+        if (n == 0) { return 0 }
+        return 1
+      }
+      puts(classify(-5))
+      puts(classify(0))
+      puts(classify(5))
+    `), '-101');
+  });
+  it('complex arithmetic', () => {
+    assert.equal(run('puts((2 + 3) * (4 - 1) + 10 / 2)'), '20');
+  });
+});
