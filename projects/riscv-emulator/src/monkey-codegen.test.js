@@ -620,3 +620,15 @@ describe('750 milestone tests', () => {
     assert.equal(run('let f = fn(n) { if (n > 0 && n < 10) { return n + f(n - 1) }; return 0 }; puts(f(5))'), '15');
   });
 });
+
+describe('Destructuring let', () => {
+  it('basic destructure', () => {
+    assert.equal(run('let [a, b, c] = [10, 20, 30]; puts(a); puts(b); puts(c)'), '102030');
+  });
+  it('swap via destructure', () => {
+    assert.equal(run('let swap = fn(a, b) { [b, a] }; let [x, y] = swap(10, 20); puts(x); puts(y)'), '2010');
+  });
+  it('destructure from function', () => {
+    assert.equal(run('let divmod = fn(a, b) { [a / b, a % b] }; let [q, r] = divmod(17, 5); puts(q); puts(r)'), '32');
+  });
+});

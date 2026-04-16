@@ -321,6 +321,8 @@ export class RiscVCodeGen {
     switch (type) {
       case 'LetStatement':
         return this._compileLet(stmt);
+      case 'DestructureLetStatement':
+        return this._compileDestructureLet(stmt);
       case 'SetStatement':
         return this._compileSet(stmt);
       case 'ReturnStatement':
@@ -330,6 +332,26 @@ export class RiscVCodeGen {
       default:
         this.errors.push(`Unsupported statement: ${type}`);
     }
+  }
+
+  _compileDestructureLet(stmt) {
+    this._comment('destructure let');
+    // Compile the value expression (should produce an array)
+    this._compileExpression(stmt.value);
+    // a0 = array pointer, save it
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');   // save array ptr
+    
+    // For each name, extract arr[i] and store
+    for (let i = 0; i < stmt.names.length; i++) {
+      const name = stmt.names[i].value;
+      this._allocLocal(name);
+      this._emit('  lw t0, 0(sp)');                   // reload array ptr
+      this._emit(`  lw a0, ${(i + 1) * 4}(t0)`);     // arr[i]
+      this._emitStoreVar(name);
+    }
+    
+    this._emit('  addi sp, sp, 4');  // cleanup saved array ptr
   }
 
   _compileLet(stmt) {
