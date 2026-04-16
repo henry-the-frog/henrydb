@@ -60,7 +60,9 @@ function unifyWithCheck(t1, t2) {
   if (t1.tag === 'TFun' && t2.tag === 'TFun') {
     const r1 = unifyWithCheck(t1.param, t2.param);
     if (!r1.ok) return r1;
-    return unifyWithCheck(applySubst(r1.subst, t1.ret), applySubst(r1.subst, t2.ret));
+    const r2 = unifyWithCheck(applySubst(r1.subst, t1.ret), applySubst(r1.subst, t2.ret));
+    if (!r2.ok) return r2;
+    return { ok: true, subst: new Map([...r1.subst, ...r2.subst]) };
   }
   if (t1.tag === 'TCon' && t2.tag === 'TCon' && t1.name === t2.name && t1.args.length === t2.args.length) {
     let subst = new Map();

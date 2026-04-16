@@ -50,11 +50,16 @@ function etaExpand(expr, targetArity) {
   const currentArity = manifestArity(expr);
   if (currentArity >= targetArity) return expr;
   
-  let result = expr;
-  for (let i = currentArity; i < targetArity; i++) {
-    const param = `_a${i}`;
-    result = new Lam(param, new App(result, new Var(param)));
-  }
+  // Build params and innermost application
+  const params = [];
+  for (let i = currentArity; i < targetArity; i++) params.push(`_a${i}`);
+  
+  let body = expr;
+  for (const p of params) body = new App(body, new Var(p));
+  
+  // Wrap in lambdas (outermost first)
+  let result = body;
+  for (let i = params.length - 1; i >= 0; i--) result = new Lam(params[i], result);
   return result;
 }
 

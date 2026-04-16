@@ -28,20 +28,20 @@ const tBot = new TBase('Bot');
 
 // Base type subtyping relation
 const baseSubtypes = new Map([
-  ['Nat', 'Int'],    // Nat <: Int
-  ['Int', 'Top'],
-  ['Str', 'Top'],
-  ['Bool', 'Top'],
-  ['Bot', 'Nat'], ['Bot', 'Int'], ['Bot', 'Str'], ['Bot', 'Bool'], ['Bot', 'Top'],
+  ['Nat', ['Int']],    // Nat <: Int
+  ['Int', ['Top']],
+  ['Str', ['Top']],
+  ['Bool', ['Top']],
+  ['Bot', ['Nat', 'Int', 'Str', 'Bool', 'Top']],
 ]);
 
 function isBaseSubtype(a, b) {
   if (a === b) return true;
-  if (baseSubtypes.get(a) === b) return true;
+  const parents = baseSubtypes.get(a);
+  if (!parents) return false;
+  if (parents.includes(b)) return true;
   // Transitive closure
-  const parent = baseSubtypes.get(a);
-  if (parent) return isBaseSubtype(parent, b);
-  return false;
+  return parents.some(p => isBaseSubtype(p, b));
 }
 
 function isSubtype(t1, t2) {
