@@ -569,6 +569,17 @@
       "completed": "2026-04-16T16:14:16.034Z",
       "duration_ms": 600000,
       "summary": "DEPTH CHECK passed: found and fixed multi-shot continuation bug (applyCPS for Cont discarded outer k). k(k(2)) gave 3 instead of 4. Added 11 stress tests. 32 total delimited continuation tests."
+    },
+    {
+      "id": "T53",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Full test sweep of lambda-calculus — run every test file, verify exact pass counts, investigate any failures. Quality over breadth.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:14:42.040Z",
+      "completed": "2026-04-16T16:15:31.981Z",
+      "duration_ms": 300000,
+      "summary": "Full lambda-calculus sweep: 24 test files, ALL passing, 0 failures. Accurate count: 569 tests (was reporting 441). 117 TAP + 452 custom reporter."
     }
   ],
   "focusProjects": [
@@ -780,6 +791,10 @@
     {
       "time": "2026-04-16T16:09:31.418Z",
       "msg": "Added T52 (BUILD) after end: DEPTH CHECK: Stress-test delimited continuations. Try to break shift/reset with nested resets, multi-shot continuations, continuation composition, recursive shift. Find at least 1 bug."
+    },
+    {
+      "time": "2026-04-16T16:14:37.752Z",
+      "msg": "Added T53 (MAINTAIN) after end: MAINTAIN: Full test sweep of lambda-calculus — run every test file, verify exact pass counts, investigate any failures. Quality over breadth."
     }
   ]
 }
