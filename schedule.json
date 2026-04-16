@@ -849,10 +849,13 @@
     {
       "id": "T78",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build lambda lifting for lambda-calculus: lift nested lambdas to top level by adding free vars as parameters. Connects closure-convert + defunctionalize. 10+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T17:05:37.586Z"
+      "started": "2026-04-16T17:05:37.586Z",
+      "completed": "2026-04-16T17:07:03.441Z",
+      "duration_ms": 600000,
+      "summary": "Lambda lifting: free vars become extra params, nested λ → top-level defs. Partial application for captured vars. 11 tests. 792 lambda-calculus tests. 35 PL modules."
     }
   ],
   "focusProjects": [

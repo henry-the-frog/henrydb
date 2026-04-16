@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T17:05:37.621Z",
+  "generated": "2026-04-16T17:07:03.476Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Build lambda lifting for lambda-calculus: lift nested lambdas to top level by adding free vars as parameters. Connects closure-convert + defunctionalize. 10+ tests.",
-    "startedAt": "2026-04-16T17:05:37.621Z",
-    "taskId": "T78"
+    "completedAt": "2026-04-16T17:07:03.476Z",
+    "taskId": "T78",
+    "summary": "Lambda lifting: free vars become extra params, nested λ → top-level defs. Partial application for captured vars. 11 tests. 792 lambda-calculus tests. 35 PL modules.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -747,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 77,
+    "blocksCompleted": 78,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 6,
-      "BUILD": 53,
+      "BUILD": 54,
       "MAINTAIN": 9,
       "EXPLORE": 2
     }
