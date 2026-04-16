@@ -192,3 +192,13 @@ describe('For-in — advanced', () => {
     assert.equal(run('let c = 0; for (i in [1,2]) { for (j in [1,2,3]) { set c = c + 1 } }; puts(c)'), '6');
   });
 });
+
+describe('Builtin operations — extensive', () => {
+  it('push creates new array', () => { assert.equal(run('let a = push([1], 2); let b = push(a, 3); puts(b[0]); puts(b[1]); puts(b[2])'), '123'); });
+  it('first of range', () => { assert.equal(run('puts(first(1..10))'), '1'); });
+  it('last of range', () => { assert.equal(run('puts(last(1..10))'), '9'); });
+  it('len of empty', () => { assert.equal(run('puts(len([]))'), '0'); });
+  it('len of pushed', () => { assert.equal(run('puts(len(push(push([], 1), 2)))'), '2'); });
+  it('first after push', () => { assert.equal(run('puts(first(push([5], 10)))'), '5'); });
+  it('last after push', () => { assert.equal(run('puts(last(push([5], 10)))'), '10'); });
+});

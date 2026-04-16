@@ -153,3 +153,11 @@ describe('Hash operations — advanced', () => {
     assert.equal(run('let lookup = fn(key) { let t = {"a": 1, "b": 2}; t[key] }; puts(lookup("a")); puts(lookup("b"))'), '12');
   });
 });
+
+describe('Hash operations — extensive', () => {
+  it('hash with many keys', () => { assert.equal(run('let h = {"a":1,"b":2,"c":3,"d":4}; puts(h["c"])'), '3'); });
+  it('hash in loop', () => { assert.equal(run('let h = {"val":5}; let s = 0; for (let i = 0; i < 3; set i = i + 1) { set s = s + h["val"] }; puts(s)'), '15'); });
+  it('hash dot and bracket', () => { assert.equal(run('let h = {"x":42}; puts(h.x); puts(h["x"])'), '4242'); });
+  it('hash int keys', () => { assert.equal(run('let h = {1:10, 2:20}; puts(h[1] + h[2])'), '30'); });
+  it('hash mixed key types', () => { assert.equal(run('let h = {1:10, "two":20}; puts(h[1]); puts(h["two"])'), '1020'); });
+});

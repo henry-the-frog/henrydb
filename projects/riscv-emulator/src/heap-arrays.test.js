@@ -262,3 +262,16 @@ describe('Array operations — advanced', () => {
     assert.equal(run('let h = {"data": [10, 20, 30]}; puts(h["data"][1])'), '20');
   });
 });
+
+describe('Array operations — extensive', () => {
+  it('nested array access', () => { assert.equal(run('puts([[1,2],[3,4]][1][0])'), '3'); });
+  it('push preserves original', () => { assert.equal(run('let a = [1,2]; let b = push(a, 3); puts(len(a)); puts(len(b))'), '23'); });
+  it('empty array length', () => { assert.equal(run('puts(len([]))'), '0'); });
+  it('single element array', () => { assert.equal(run('let a = [42]; puts(first(a)); puts(last(a))'), '4242'); });
+  it('array in function', () => { assert.equal(run('let f = fn() { [1,2,3] }; let a = f(); puts(a[1])'), '2'); });
+  it('array element arithmetic', () => { assert.equal(run('let a = [10,20]; puts(a[0] + a[1])'), '30'); });
+  it('range to array', () => { assert.equal(run('let a = 1..6; puts(len(a)); puts(a[2])'), '53'); });
+  it('slice preserves values', () => { assert.equal(run('let a = [1,2,3,4,5]; let s = a[1:4]; puts(s[0]); puts(s[2])'), '24'); });
+  it('array comparison', () => { assert.equal(run('puts(len([1,2,3]) == 3)'), '1'); });
+  it('array in conditional', () => { assert.equal(run('let a = [1]; if (len(a) > 0) { puts(1) } else { puts(0) }'), '1'); });
+});

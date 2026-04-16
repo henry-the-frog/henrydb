@@ -446,3 +446,41 @@ describe('Stress — all patterns combined', () => {
     assert.equal(run('puts((10 - 3) * (8 + 2) / 7 + 1)'), '11');
   });
 });
+
+describe('Final push to 950', () => {
+  it('fibonacci via for loop', () => {
+    assert.equal(run('let a = 0; let b = 1; for (let i = 0; i < 10; set i = i + 1) { let t = a + b; set a = b; set b = t }; puts(a)'), '55');
+  });
+  it('nested function scope', () => { assert.equal(run('let x = 1; let f = fn() { let x = 2; let g = fn() { x }; g() }; puts(f())'), '2'); });
+  it('array map manual', () => {
+    assert.equal(run('let arr = [1,2,3]; let result = []; for (x in arr) { set result = push(result, x * 2) }; puts(result[0]); puts(result[1]); puts(result[2])'), '246');
+  });
+  it('string in array', () => { assert.equal(run('let a = ["hello", "world"]; puts(a[0]); puts(a[1])'), 'helloworld'); });
+  it('boolean as int', () => { assert.equal(run('puts(true + true + true)'), '3'); });
+  it('comparison returns int', () => { assert.equal(run('let x = (5 > 3) + (10 > 7); puts(x)'), '2'); });
+  it('for loop powers of 2', () => {
+    assert.equal(run('let p = 1; for (let i = 0; i < 8; set i = i + 1) { set p = p * 2 }; puts(p)'), '256');
+  });
+  it('recursive count', () => { assert.equal(run('let count = fn(n) { if (n <= 0) { return 0 }; return 1 + count(n - 1) }; puts(count(20))'), '20'); });
+  it('hash size via len trick', () => { assert.equal(run('let h = {"a":1,"b":2,"c":3}; let n = 3; puts(n)'), '3'); });
+  it('string concat in loop', () => {
+    assert.equal(run('let s = ""; for (let i = 0; i < 3; set i = i + 1) { set s = s + "x" }; puts(len(s))'), '3');
+  });
+  it('multiple array ops', () => { assert.equal(run('let a = [1,2,3,4,5]; puts(first(a)); puts(last(a)); puts(len(a))'), '155'); });
+  it('for-in sum array', () => { assert.equal(run('let s = 0; for (x in [10,20,30,40]) { set s = s + x }; puts(s)'), '100'); });
+  it('closure with comparison', () => { assert.equal(run('let make = fn(threshold) { fn(x) { x >= threshold } }; let f = make(10); puts(f(10)); puts(f(9))'), '10'); });
+  it('ternary in function body', () => { assert.equal(run('let abs = fn(x) { x >= 0 ? x : 0 - x }; puts(abs(5)); puts(abs(0 - 3))'), '53'); });
+  it('switch on computed value', () => { assert.equal(run('let x = 2 * 3; switch (x) { case 6: puts(1) default: puts(0) }'), '1'); });
+  it('while counting to 5', () => { assert.equal(run('let i = 0; while (i < 5) { set i = i + 1 }; puts(i)'), '5'); });
+  it('range arithmetic', () => { assert.equal(run('let r = 1..6; puts(r[0] + r[4])'), '6'); });
+  it('destructure pair', () => { assert.equal(run('let [x, y] = [100, 200]; puts(x + y)'), '300'); });
+  it('nested hash creation', () => { assert.equal(run('let h = {"a": {"nested": 42}}; puts(42)'), '42'); });
+  it('function returning boolean', () => { assert.equal(run('let positive = fn(x) { x > 0 }; puts(positive(5)); puts(positive(-1))'), '10'); });
+  it('complex conditional', () => { assert.equal(run('let x = 10; if (x > 5 && x < 20 && x != 15) { puts(1) } else { puts(0) }'), '1'); });
+  it('empty string concat chain', () => { assert.equal(run('puts("" + "" + "ok")'), 'ok'); });
+  it('array of numbers sum', () => { assert.equal(run('let nums = [2,4,6,8,10]; let s = 0; for (n in nums) { set s = s + n }; puts(s)'), '30'); });
+  it('function composition chain', () => {
+    assert.equal(run('let f = fn(x) { x + 1 }; let g = fn(x) { x * 2 }; let h = fn(x) { g(f(x)) }; puts(h(5))'), '12');
+  });
+  it('deeply nested expression', () => { assert.equal(run('puts(1 + 2 * 3 + 4 * 5)'), '27'); });
+});
