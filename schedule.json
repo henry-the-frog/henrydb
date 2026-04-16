@@ -867,6 +867,35 @@
       "completed": "2026-04-16T17:09:13.411Z",
       "duration_ms": 600000,
       "summary": "Pattern matching compilation: patterns → decision trees. Constructors, literals, wildcards, multi-column, exhaustiveness. 11 tests. 803 lambda-calculus tests. 36 PL modules."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build bidirectional type checking: check mode and infer mode, switches between them. Handles annotations, lambdas, applications. 10+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T17:09:46.558Z"
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Build occurrence typing: TypeScript-style type narrowing in branches. typeof checks narrow union types. 10+ tests.",
+      "project": "lambda-calculus"
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Build tail call analysis: detect tail position, mark calls as tail-callable. Foundation for TCO. 10+ tests.",
+      "project": "lambda-calculus"
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Build type-directed optimization: use types to optimize (e.g., monomorphization, specialization). 10+ tests.",
+      "project": "lambda-calculus"
     }
   ],
   "focusProjects": [
@@ -1186,6 +1215,22 @@
     {
       "time": "2026-04-16T17:07:31.569Z",
       "msg": "Added T79 (BUILD) after end: Build pattern matching compilation: convert match expressions to decision trees. Handles constructors, wildcards, nested patterns. 12+ tests."
+    },
+    {
+      "time": "2026-04-16T17:09:39.631Z",
+      "msg": "Added T80 (BUILD) after end: Build bidirectional type checking: check mode and infer mode, switches between them. Handles annotations, lambdas, applications. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T17:09:39.751Z",
+      "msg": "Added T81 (BUILD) after end: Build occurrence typing: TypeScript-style type narrowing in branches. typeof checks narrow union types. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T17:09:39.870Z",
+      "msg": "Added T82 (BUILD) after end: Build tail call analysis: detect tail position, mark calls as tail-callable. Foundation for TCO. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T17:09:39.990Z",
+      "msg": "Added T83 (BUILD) after end: Build type-directed optimization: use types to optimize (e.g., monomorphization, specialization). 10+ tests."
     }
   ]
 }
