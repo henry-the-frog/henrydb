@@ -1795,9 +1795,23 @@
     {
       "id": "T167",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "End-of-day housekeeping: git push, knowledge capture, clean state",
-      "started": "2026-04-16T01:46:03.365Z"
+      "started": "2026-04-16T01:46:03.365Z",
+      "completed": "2026-04-16T01:47:40.963Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, dashboard regenerated (167 blocks), daily log updated."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "RISC-V: tail call optimization for recursive functions - detect self-tail-calls and rewrite as loops",
+      "project": "monkey-lang",
+      "started": "2026-04-16T01:47:59.248Z",
+      "completed": "2026-04-16T01:52:59.888Z",
+      "duration_ms": 600000,
+      "summary": "Tail call optimization: detect self-tail-calls in ReturnStatement, rewrite as jump to TCO entry label. 8 new tests (sum, factorial, countdown/500, GCD, tail-fib, computed args, mixed). 208 total, 0 failures. Found pre-existing puts() dispatch bug for large integers (>65536)."
     }
   ],
   "focusProjects": [
@@ -2449,6 +2463,10 @@
     {
       "time": "2026-04-16T01:45:59.473Z",
       "msg": "Added T167 (MAINTAIN) after end: End-of-day housekeeping: git push, knowledge capture, clean state"
+    },
+    {
+      "time": "2026-04-16T01:47:54.851Z",
+      "msg": "Added T168 (BUILD) after end: RISC-V: tail call optimization for recursive functions - detect self-tail-calls and rewrite as loops"
     }
   ]
 }

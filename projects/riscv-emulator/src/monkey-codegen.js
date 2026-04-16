@@ -397,6 +397,33 @@ export class RiscVCodeGen {
   }
 
   _compileReturn(stmt) {
+    // Tail call optimization: if returning a call to current function, jump back
+    if (stmt.returnValue && 
+        stmt.returnValue.constructor.name === 'CallExpression' &&
+        this._currentFuncName &&
+        (stmt.returnValue.function.value || stmt.returnValue.function.toString()) === this._currentFuncName) {
+      
+      this._comment(`tail call to ${this._currentFuncName}`);
+      const args = stmt.returnValue.arguments;
+      
+      // Compile all arguments first, saving to stack to avoid clobbering
+      for (let i = 0; i < args.length; i++) {
+        this._compileExpression(args[i]);
+        this._emit('  addi sp, sp, -4');
+        this._emit('  sw a0, 0(sp)');
+      }
+      
+      // Pop into argument registers (reverse order to match calling convention)
+      for (let i = args.length - 1; i >= 0; i--) {
+        this._emit(`  lw a${i}, ${(args.length - 1 - i) * 4}(sp)`);
+      }
+      this._emit(`  addi sp, sp, ${args.length * 4}`);
+      
+      // Jump back to function entry (after prologue)
+      this._emit(`  j ${this._currentFuncName}_tco_entry`);
+      return;
+    }
+    
     this._comment('return');
     if (stmt.returnValue) {
       this._compileExpression(stmt.returnValue);
@@ -1674,8 +1701,16 @@ export class RiscVCodeGen {
       }
     }
     
+    // Track current function for tail call optimization
+    const savedCurrentFunc = this._currentFuncName;
+    const savedCurrentFuncParams = this._currentFuncParams;
+    this._currentFuncName = name;
+    this._currentFuncParams = funcLit.parameters || [];
+    
     this._emitLabel(name);
     this._emitPrologue();
+    // TCO entry point: after prologue, before param setup
+    this._emitLabel(`${name}_tco_entry`);
     
     // Map parameters to storage (registers or stack)
     if (funcLit.parameters) {
@@ -1729,6 +1764,8 @@ export class RiscVCodeGen {
     this.stackOffset = savedOffset;
     this.nextRegIdx = savedNextReg;
     this.usedRegs = savedUsedRegs;
+    this._currentFuncName = savedCurrentFunc;
+    this._currentFuncParams = savedCurrentFuncParams;
     
     this.functions.push(funcBody);
   }

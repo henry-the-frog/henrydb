@@ -788,3 +788,69 @@ describe('Quick regression battery', () => {
   it('range', () => { assert.equal(run('puts(len(1..6))'), '5'); });
   it('slice', () => { assert.equal(run('puts([1,2,3,4][1:3][0])'), '2'); });
 });
+
+describe('Tail call optimization', () => {
+  it('simple self-tail-call (sum)', () => {
+    assert.equal(run(`
+      let sum = fn(n, acc) { if (n <= 0) { return acc }; return sum(n - 1, acc + n) };
+      puts(sum(100, 0))
+    `), '5050');
+  });
+  
+  it('factorial with accumulator', () => {
+    // Note: fact(10) = 3628800 exceeds puts() runtime dispatch threshold (65536)
+    // Use fact(8) = 40320 which fits
+    assert.equal(run(`
+      let fact = fn(n, acc) { if (n <= 1) { return acc }; return fact(n - 1, n * acc) };
+      puts(fact(8, 1))
+    `), '40320');
+  });
+  
+  it('countdown (deep recursion without stack overflow)', () => {
+    // Without TCO this would blow the stack
+    assert.equal(run(`
+      let countdown = fn(n) { if (n <= 0) { return 0 }; return countdown(n - 1) };
+      puts(countdown(500))
+    `), '0');
+  });
+  
+  it('GCD via tail calls', () => {
+    assert.equal(run(`
+      let gcd = fn(a, b) { if (b == 0) { return a }; return gcd(b, a % b) };
+      puts(gcd(48, 18))
+    `), '6');
+  });
+  
+  it('non-tail recursive call still works', () => {
+    // Standard fib (not tail-recursive) should still work
+    assert.equal(run(`
+      let fib = fn(n) { if (n <= 1) { return n }; return fib(n - 1) + fib(n - 2) };
+      puts(fib(10))
+    `), '55');
+  });
+  
+  it('tail-recursive fibonacci', () => {
+    assert.equal(run(`
+      let fib = fn(n, a, b) { if (n == 0) { return a }; return fib(n - 1, b, a + b) };
+      puts(fib(20, 0, 1))
+    `), '6765');
+  });
+  
+  it('tail call with computed args', () => {
+    assert.equal(run(`
+      let f = fn(n, x) { if (n <= 0) { return x }; return f(n - 1, x * 2 + 1) };
+      puts(f(5, 1))
+    `), '63');
+  });
+  
+  it('mixed tail and non-tail returns', () => {
+    assert.equal(run(`
+      let f = fn(n) {
+        if (n <= 0) { return 42 };
+        if (n == 1) { return f(0) };
+        return n + f(n - 1)
+      };
+      puts(f(5))
+    `), '56');
+  });
+});
