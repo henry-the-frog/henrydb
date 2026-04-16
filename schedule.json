@@ -768,6 +768,17 @@
       "completed": "2026-04-16T16:50:21.135Z",
       "duration_ms": 300000,
       "summary": "Updated README with all 30 modules. Added 9 HM stress tests (compose, flip, Church, S/K combinators, omega rejection). 730 lambda-calculus tests."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build monkey-lang compiler pipeline integration: connect CFG + SSA + ConstProp + Liveness + DCE + Escape into a single optimization pipeline. Run all passes in sequence. 10+ integration tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:50:55.213Z",
+      "completed": "2026-04-16T16:52:11.213Z",
+      "duration_ms": 600000,
+      "summary": "Unified compiler pipeline: 7 passes (Parse→TypeCheck→DCE→CFG→SSA→ConstProp→Liveness→Escape). Configurable, timed, with report. 13 integration tests."
     }
   ],
   "focusProjects": [
@@ -1051,6 +1062,10 @@
     {
       "time": "2026-04-16T16:48:59.466Z",
       "msg": "Added T70 (MAINTAIN) after end: Update lambda-calculus README.md with all 30 modules. Then stress-test the Hindley-Milner implementation with complex programs. 10+ new tests."
+    },
+    {
+      "time": "2026-04-16T16:50:46.396Z",
+      "msg": "Added T71 (BUILD) after end: Build monkey-lang compiler pipeline integration: connect CFG + SSA + ConstProp + Liveness + DCE + Escape into a single optimization pipeline. Run all passes in sequence. 10+ integration tests."
     }
   ]
 }
