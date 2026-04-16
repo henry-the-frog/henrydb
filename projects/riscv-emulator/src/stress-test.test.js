@@ -344,3 +344,24 @@ describe('Edge cases — closures and HOF', () => {
     `), '36');
   });
 });
+
+describe('Range and iteration patterns', () => {
+  it('range creates correct array', () => {
+    assert.equal(run('let r = 0..5; puts(r[0]); puts(r[1]); puts(r[2]); puts(r[3]); puts(r[4])'), '01234');
+  });
+  it('for-in with range', () => {
+    assert.equal(run('for (x in 1..4) { puts(x) }'), '123');
+  });
+  it('slice + for-in', () => {
+    assert.equal(run('let a = [10,20,30,40,50]; for (x in a[1:4]) { puts(x) }'), '203040');
+  });
+  it('nested for-in', () => {
+    assert.equal(run('let s = 0; for (i in 1..4) { for (j in 1..4) { set s = s + i * j } }; puts(s)'), '36');
+  });
+  it('do-while countdown', () => {
+    assert.equal(run('let i = 5; do { puts(i); set i = i - 1 } while (i > 0)'), '54321');
+  });
+  it('destructure in loop body', () => {
+    assert.equal(run('let pairs = [[1, 2], [3, 4], [5, 6]]; let sum = 0; for (p in pairs) { set sum = sum + p[0] + p[1] }; puts(sum)'), '21');
+  });
+});
