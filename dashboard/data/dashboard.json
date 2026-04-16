@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T15:42:33.990Z",
+  "generated": "2026-04-16T15:44:33.113Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Build linear type system: types with use-exactly-once semantics, affine/relevant/linear modalities, resource tracking. Rust-inspired ownership model. 20+ tests.",
-    "startedAt": "2026-04-16T15:42:33.990Z",
-    "taskId": "T41"
+    "completedAt": "2026-04-16T15:44:33.113Z",
+    "taskId": "T41",
+    "summary": "Linear type system: 4 modalities (linear/affine/relevant/unrestricted). Usage tracking, Rust-like ownership, use-after-move detection, resource management patterns. 26 tests. All 232 lambda-calculus tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -747,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 40,
+    "blocksCompleted": 41,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 23,
+      "BUILD": 24,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
