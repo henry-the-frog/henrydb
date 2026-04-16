@@ -557,3 +557,39 @@ describe('Showcase: Meta — Interpreter on RISC-V', () => {
     assert.equal(result, '45');  // (2+3) * (4+5) = 45
   });
 });
+
+describe('Showcase: Algorithms', () => {
+  it('binary search finds element', () => {
+    const result = run(`
+      let binary_search = fn(arr, target) {
+        let low = 0
+        let high = len(arr) - 1
+        while (low <= high) {
+          let mid = (low + high) / 2
+          if (arr[mid] == target) { return mid }
+          if (arr[mid] < target) { set low = mid + 1 } else { set high = mid - 1 }
+        }
+        return -1
+      }
+      puts(binary_search([1, 3, 5, 7, 9, 11, 13, 15], 7))
+    `);
+    assert.equal(result, '3');
+  });
+
+  it('binary search not found', () => {
+    const result = run(`
+      let binary_search = fn(arr, target) {
+        let low = 0
+        let high = len(arr) - 1
+        while (low <= high) {
+          let mid = (low + high) / 2
+          if (arr[mid] == target) { return mid }
+          if (arr[mid] < target) { set low = mid + 1 } else { set high = mid - 1 }
+        }
+        return -1
+      }
+      puts(binary_search([1, 3, 5, 7, 9], 4))
+    `);
+    assert.equal(result, '-1');
+  });
+});

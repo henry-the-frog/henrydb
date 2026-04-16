@@ -1721,10 +1721,21 @@
     {
       "id": "T160",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Add && and || logical operators with short-circuit evaluation. && should skip right side if left is false. || should skip right side if left is true. 8+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:09:12.315Z"
+      "started": "2026-04-16T00:09:12.315Z",
+      "completed": "2026-04-16T00:11:48.629Z",
+      "duration_ms": 300000,
+      "summary": "Logical && and || with short-circuit evaluation. 10 new tests. 701 total RISC-V tests, 0 failures."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: implement binary search on sorted array. Classic algorithm, tests loops, conditionals, functions, arrays. Add as showcase program.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:13:21.299Z"
     }
   ],
   "focusProjects": [
@@ -2344,6 +2355,10 @@
     {
       "time": "2026-04-16T00:09:04.388Z",
       "msg": "Added T160 (BUILD) after end: RISC-V: Add && and || logical operators with short-circuit evaluation. && should skip right side if left is false. || should skip right side if left is true. 8+ tests."
+    },
+    {
+      "time": "2026-04-16T00:13:15.571Z",
+      "msg": "Added T161 (BUILD) after end: RISC-V: implement binary search on sorted array. Classic algorithm, tests loops, conditionals, functions, arrays. Add as showcase program."
     }
   ]
 }
