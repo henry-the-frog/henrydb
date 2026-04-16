@@ -644,3 +644,31 @@ describe('End-to-End Integration Test', () => {
     assert.equal(output, '1542551Hello RISC-V5510508080100115050127517385');
   });
 });
+
+describe('Showcase: Classic Programs', () => {
+  it('FizzBuzz(15)', () => {
+    const result = run(`
+      let fizzbuzz = fn(n) {
+        let i = 1
+        while (i <= n) {
+          if (i % 15 == 0) {
+            puts("FizzBuzz")
+          } else {
+            if (i % 3 == 0) {
+              puts("Fizz")
+            } else {
+              if (i % 5 == 0) {
+                puts("Buzz")
+              } else {
+                puts(i)
+              }
+            }
+          }
+          set i = i + 1
+        }
+      }
+      fizzbuzz(15)
+    `);
+    assert.equal(result, '12Fizz4BuzzFizz78FizzBuzz11Fizz1314FizzBuzz');
+  });
+});
