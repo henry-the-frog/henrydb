@@ -672,3 +672,44 @@ describe('Showcase: Classic Programs', () => {
     assert.equal(result, '12Fizz4BuzzFizz78FizzBuzz11Fizz1314FizzBuzz');
   });
 });
+
+describe('Showcase: Numeric Utilities', () => {
+  it('digits of number', () => {
+    const result = run(`
+      let reverse = fn(arr) {
+        let result = []
+        let i = len(arr) - 1
+        while (i >= 0) { set result = push(result, arr[i]); set i = i - 1 }
+        return result
+      }
+      let digits_of = fn(n) {
+        let result = []
+        while (n > 0) { set result = push(result, n % 10); set n = n / 10 }
+        return reverse(result)
+      }
+      let d = digits_of(12345)
+      let print = fn(x) { puts(x) }
+      let foreach = fn(arr, f) {
+        let i = 0
+        while (i < len(arr)) { f(arr[i]); set i = i + 1 }
+      }
+      foreach(d, print)
+    `);
+    assert.equal(result, '12345');
+  });
+
+  it('array slicing in algorithm', () => {
+    const result = run(`
+      let take = fn(arr, n) { arr[0:n] }
+      let drop = fn(arr, n) { arr[n:len(arr)] }
+      let arr = [10, 20, 30, 40, 50]
+      let front = take(arr, 3)
+      let back = drop(arr, 3)
+      puts(len(front))
+      puts(front[0])
+      puts(len(back))
+      puts(back[0])
+    `);
+    assert.equal(result, '310240');
+  });
+});
