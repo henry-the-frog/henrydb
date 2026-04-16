@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T15:33:08.845Z",
+  "generated": "2026-04-16T15:35:33.006Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Add type system for algebraic effects: effect rows, handler typing, effect polymorphism. Type-check effect programs. 15+ tests.",
-    "startedAt": "2026-04-16T15:33:08.845Z",
-    "taskId": "T38"
+    "completedAt": "2026-04-16T15:35:33.006Z",
+    "taskId": "T38",
+    "summary": "Effect type system: effect rows, handler typing, propagation. Effect signatures for State/Exn/Nondet/Log. 27 tests. Handler removes handled effects, preserves unhandled. All 198 lambda-calculus tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -747,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 37,
+    "blocksCompleted": 38,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
