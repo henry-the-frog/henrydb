@@ -91,3 +91,15 @@ describe('Standard Library: Closure Factories', () => {
     assert.equal(run('puts(compose(make_adder(5), make_multiplier(3), 4))'), '17');
   });
 });
+
+describe('Standard Library: New Functions', () => {
+  it('reverse', () => {
+    const r = run('let rev = reverse([1,2,3]); puts(rev[0]); puts(rev[1]); puts(rev[2])');
+    assert.equal(r, '321');
+  });
+  it('any with primes', () => { assert.equal(run('puts(any(range(2, 10), is_prime))'), '1'); });
+  it('all positive', () => { assert.equal(run('puts(all([1, 2, 3], fn(x) { x > 0 }))'), '1'); });
+  it('all not all positive', () => {
+    assert.equal(run('let pos = fn(x) { x > 0 }; puts(all([1, 0 - 1, 3], pos))'), '0');
+  });
+});
