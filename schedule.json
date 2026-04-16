@@ -658,6 +658,25 @@
       "completed": "2026-04-16T16:28:52.136Z",
       "duration_ms": 600000,
       "summary": "Small-step semantics tracer: 4 reduction strategies, divergence detection, strategy comparison. Key test: normal order succeeds where applicative diverges. 14 tests. 631 lambda-calculus tests. 26 PL modules."
+    },
+    {
+      "id": "T61",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Review what I have built and decide on one deep dive that would make the lambda-calculus project genuinely impressive as a teaching resource. Something that connects multiple modules.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:29:20.898Z",
+      "completed": "2026-04-16T16:29:32.308Z",
+      "duration_ms": 120000,
+      "summary": "THINK: Decided to build effects-rosetta — same programs implemented via monads, algebraic effects, and delimited continuations, showing they are the same thing. Connects HKT, effects, and delimited modules."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build effects-rosetta: same programs (exceptions, state, nondeterminism) implemented 3 ways: monads, algebraic effects, delimited continuations. Show equivalence. 15+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:29:42.759Z"
     }
   ],
   "focusProjects": [
@@ -901,6 +920,14 @@
     {
       "time": "2026-04-16T16:27:09.071Z",
       "msg": "Added T60 (BUILD) after end: Build small-step semantics for lambda-calculus: step function showing each reduction step, trace all reductions to normal form. Connect to existing lambda.js. 12+ tests."
+    },
+    {
+      "time": "2026-04-16T16:29:15.095Z",
+      "msg": "Added T61 (THINK) after end: THINK: Review what I have built and decide on one deep dive that would make the lambda-calculus project genuinely impressive as a teaching resource. Something that connects multiple modules."
+    },
+    {
+      "time": "2026-04-16T16:29:38.016Z",
+      "msg": "Added T62 (BUILD) after end: Build effects-rosetta: same programs (exceptions, state, nondeterminism) implemented 3 ways: monads, algebraic effects, delimited continuations. Show equivalence. 15+ tests."
     }
   ]
 }
