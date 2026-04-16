@@ -542,6 +542,54 @@ export class RiscVCodeGen {
       }
     }
     
+    // Range operator (..) — creates array [start, start+1, ..., end-1]
+    if (op === '..') {
+      this._comment('range');
+      this.needsAlloc = true;
+      
+      // Compile start
+      this._compileExpression(expr.left);
+      this._emit('  addi sp, sp, -4');
+      this._emit('  sw a0, 0(sp)');   // save start
+      
+      // Compile end
+      this._compileExpression(expr.right);
+      this._emit('  mv t2, a0');       // t2 = end
+      this._emit('  lw t0, 0(sp)');    // t0 = start
+      this._emit('  addi sp, sp, 4');
+      
+      // Calculate length
+      this._emit('  sub t3, t2, t0');   // t3 = end - start = length
+      
+      // Allocate array: [length, elem0, elem1, ...]
+      this._emit('  addi t4, t3, 1');
+      this._emit('  slli t4, t4, 2');
+      this._emit('  mv t5, gp');
+      this._emit('  add gp, gp, t4');
+      
+      // Store length
+      this._emit('  sw t3, 0(t5)');
+      
+      // Fill elements
+      this._emit('  li t4, 0');         // i = 0
+      const fillLoop = this._label('range_fill');
+      const fillEnd = this._label('range_end');
+      this._emitLabel(fillLoop);
+      this._emit(`  bge t4, t3, ${fillEnd}`);
+      this._emit('  add t6, t0, t4');   // value = start + i
+      this._emit('  addi a0, t4, 1');
+      this._emit('  slli a0, a0, 2');
+      this._emit('  add a0, t5, a0');
+      this._emit('  sw t6, 0(a0)');     // arr[i+1] = value
+      this._emit('  addi t4, t4, 1');
+      this._emit(`  j ${fillLoop}`);
+      this._emitLabel(fillEnd);
+      
+      this._emit('  mv a0, t5');
+      this._lastExprType = 'array';
+      return;
+    }
+    
     // Logical AND with short-circuit
     if (op === '&&') {
       this._compileExpression(expr.left);

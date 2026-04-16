@@ -632,3 +632,15 @@ describe('Destructuring let', () => {
     assert.equal(run('let divmod = fn(a, b) { [a / b, a % b] }; let [q, r] = divmod(17, 5); puts(q); puts(r)'), '32');
   });
 });
+
+describe('Range operator (..)', () => {
+  it('basic range', () => {
+    assert.equal(run('let r = 1..6; puts(len(r)); puts(r[0]); puts(r[4])'), '515');
+  });
+  it('range in for-in', () => {
+    assert.equal(run('for (x in 1..4) { puts(x) }'), '123');
+  });
+  it('range sum', () => {
+    assert.equal(run('let s = 0; for (x in 1..11) { set s = s + x }; puts(s)'), '55');
+  });
+});
