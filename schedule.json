@@ -779,6 +779,14 @@
       "completed": "2026-04-16T16:52:11.213Z",
       "duration_ms": 600000,
       "summary": "Unified compiler pipeline: 7 passes (Parse→TypeCheck→DCE→CFG→SSA→ConstProp→Liveness→Escape). Configurable, timed, with report. 13 integration tests."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build constraint-based type inference: generate type constraints from AST, then solve by unification. Alternative to Algorithm W, shows same result. 12+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:53:15.924Z"
     }
   ],
   "focusProjects": [
@@ -1066,6 +1074,10 @@
     {
       "time": "2026-04-16T16:50:46.396Z",
       "msg": "Added T71 (BUILD) after end: Build monkey-lang compiler pipeline integration: connect CFG + SSA + ConstProp + Liveness + DCE + Escape into a single optimization pipeline. Run all passes in sequence. 10+ integration tests."
+    },
+    {
+      "time": "2026-04-16T16:53:10.823Z",
+      "msg": "Added T72 (BUILD) after end: Build constraint-based type inference: generate type constraints from AST, then solve by unification. Alternative to Algorithm W, shows same result. 12+ tests."
     }
   ]
 }
