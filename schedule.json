@@ -680,6 +680,17 @@
       "completed": "2026-04-16T16:31:14.649Z",
       "duration_ms": 600000,
       "summary": "Effects Rosetta Stone: 4 programs × 3 encodings (monads, algebraic effects, delimited continuations). Proven equivalent. 23 tests. 654 lambda-calculus tests. 27 PL modules."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build monkey-lang liveness analysis using CFG: compute live variables at each program point, use for register allocation hints. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:31:42.956Z",
+      "completed": "2026-04-16T16:34:14.887Z",
+      "duration_ms": 600000,
+      "summary": "Liveness analysis: backward dataflow, dead assignment detection (with intra-block fix), interference graph. Fixed dead-assignment bug where intra-block uses were missed. 11 tests."
     }
   ],
   "focusProjects": [
@@ -931,6 +942,10 @@
     {
       "time": "2026-04-16T16:29:38.016Z",
       "msg": "Added T62 (BUILD) after end: Build effects-rosetta: same programs (exceptions, state, nondeterminism) implemented 3 ways: monads, algebraic effects, delimited continuations. Show equivalence. 15+ tests."
+    },
+    {
+      "time": "2026-04-16T16:31:36.007Z",
+      "msg": "Added T63 (BUILD) after end: Build monkey-lang liveness analysis using CFG: compute live variables at each program point, use for register allocation hints. 10+ tests."
     }
   ]
 }

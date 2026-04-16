@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T16:31:14.685Z",
+  "generated": "2026-04-16T16:34:14.923Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build effects-rosetta: same programs (exceptions, state, nondeterminism) implemented 3 ways: monads, algebraic effects, delimited continuations. Show equivalence. 15+ tests.",
-    "completedAt": "2026-04-16T16:31:14.685Z",
-    "taskId": "T62",
-    "summary": "Effects Rosetta Stone: 4 programs × 3 encodings (monads, algebraic effects, delimited continuations). Proven equivalent. 23 tests. 654 lambda-calculus tests. 27 PL modules.",
+    "task": "Build monkey-lang liveness analysis using CFG: compute live variables at each program point, use for register allocation hints. 10+ tests.",
+    "completedAt": "2026-04-16T16:34:14.923Z",
+    "taskId": "T63",
+    "summary": "Liveness analysis: backward dataflow, dead assignment detection (with intra-block fix), interference graph. Fixed dead-assignment bug where intra-block uses were missed. 11 tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 62,
+    "blocksCompleted": 63,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 6,
-      "BUILD": 40,
+      "BUILD": 41,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
