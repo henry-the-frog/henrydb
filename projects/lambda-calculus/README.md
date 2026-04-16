@@ -12,7 +12,9 @@ A comprehensive exploration of lambda calculus and type theory, implemented from
 | **stlc.js** | Simply Typed Lambda Calculus: bidirectional type checker, CBV evaluator, pairs, fix/recursion | 82 |
 | **cps.js** | CPS transformation: Fischer/Plotkin, Danvy-Filinski one-pass, A-Normal Form (ANF) | 33 |
 | **systemf.js** | System F (polymorphic λ-calculus): ∀-types, type abstraction/application, Church encodings, existentials, rank-2 | 39 |
-| **Total** | | **362** |
+| **nbe.js** | Normalization by Evaluation: semantic domain, evaluate/readback, beta-eta equality | 29 |
+| **systemf.js** | System F (polymorphic λ-calculus): ∀-types, type abstraction/application, Church encodings, existentials, rank-2 | 39 |
+| **curry-howard.js** | Curry-Howard correspondence: propositions as types, proofs as programs | 40 |
 
 ## Architecture
 
