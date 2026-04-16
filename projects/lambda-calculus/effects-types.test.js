@@ -227,6 +227,76 @@ test('stateful computation types correctly', () => {
 });
 
 // ============================================================
+// Stress tests: complex programs
+// ============================================================
+
+test('nested handlers: inner catches, outer redundant', () => {
+  const inner = new Handle(
+    perform('Raise', s('inner')),
+    { return: fn('x', v('x')), ops: { 'Raise': fn('e', s('caught')) } });
+  const outer = new Handle(inner,
+    { return: fn('x', v('x')), ops: { 'Raise': fn('e', s('caught2')) } });
+  const t = typeOf(outer, env);
+  assert.ok(!t.effects.has('Exn'), 'Both handlers remove Exn');
+});
+
+test('handler composition: except wraps state', () => {
+  const body = let_('_', perform('Get', u()), perform('Raise', s('err')));
+  const handled = new Handle(body, {
+    return: fn('x', v('x')),
+    ops: { 'Raise': fn('e', n(0)) }
+  });
+  const t = typeOf(handled, env);
+  assert.ok(!t.effects.has('Exn'), 'Exn should be handled');
+  assert.ok(t.effects.has('State'), 'State should remain');
+});
+
+test('effectful function call propagates effects', () => {
+  const t = typeOf(app(fn('x', perform('Raise', v('x'))), s('boom')), env);
+  assert.ok(t.effects.has('Exn'));
+});
+
+test('let chain with State', () => {
+  const expr = let_('a', perform('Get', u()),
+    let_('_', perform('Put', binop('+', v('a'), n(1))),
+      let_('b', perform('Get', u()), v('b'))));
+  const t = typeOf(expr, env);
+  assert.ok(t.effects.has('State'));
+  assert.ok(!t.effects.has('Exn'));
+});
+
+test('nondeterministic with Choose', () => {
+  const expr = let_('choice', perform('Choose', u()),
+    if_(v('choice'), n(1), n(2)));
+  const t = typeOf(expr, env);
+  assert.ok(t.effects.has('Nondet'));
+  assert.ok(t.valueType instanceof TNum);
+});
+
+test('multiple effects: Log then Raise', () => {
+  const expr = let_('_', perform('Log', s('starting')),
+    perform('Raise', s('failed')));
+  const t = typeOf(expr, env);
+  assert.ok(t.effects.has('Log'));
+  assert.ok(t.effects.has('Exn'));
+});
+
+test('pure function stays pure when called', () => {
+  const t = typeOf(app(fn('x', binop('*', v('x'), n(2))), n(21)), env);
+  assert.ok(t.effects.isEmpty());
+});
+
+test('handler for all effects results in pure', () => {
+  const body = let_('_', perform('Log', s('hi')), perform('Raise', s('err')));
+  const h1 = new Handle(body, {
+    return: fn('x', v('x')),
+    ops: { 'Raise': fn('e', n(0)), 'Log': fn('m', u()) }
+  });
+  const t = typeOf(h1, env);
+  assert.ok(t.effects.isEmpty(), `Expected pure, got ${t.effects}`);
+});
+
+// ============================================================
 // Report
 // ============================================================
 

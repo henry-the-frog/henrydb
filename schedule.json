@@ -426,6 +426,14 @@
       "completed": "2026-04-16T15:39:37.184Z",
       "duration_ms": 600000,
       "summary": "Type-directed AST optimizer: constant folding ((2+3)*(4+1)→25), strength reduction (x*0→0, x*2→x+x), dead branch elimination (if(true)→then). 27 tests."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Stress-test effect type system: complex programs, edge cases, handler composition. Find bugs.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T15:40:21.484Z"
     }
   ],
   "focusProjects": [
@@ -585,6 +593,10 @@
     {
       "time": "2026-04-16T15:37:46.413Z",
       "msg": "Added T39 (BUILD) after end: Add type-directed optimization pass to monkey-lang: specialize arithmetic when types are known, skip tag checks, inline constants. Measure performance improvement. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T15:40:10.698Z",
+      "msg": "Added T40 (BUILD) after end: Stress-test effect type system: complex programs, edge cases, handler composition. Find bugs."
     }
   ]
 }
