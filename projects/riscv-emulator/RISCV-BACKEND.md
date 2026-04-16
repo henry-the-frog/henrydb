@@ -39,17 +39,28 @@ node src/bench-riscv-vs-vm.js
 ### Control Flow
 - **if/else**: Conditional branching
 - **while**: Loop with condition
+- **do-while**: Execute then check condition
 - **for-in**: Array iteration
+- **switch/case**: Pattern matching with default
+- **Logical operators**: `&&` (short-circuit AND), `||` (short-circuit OR)
+- **Ternary**: `cond ? a : b`
 
 ### Functions
 - **Named functions**: `let f = fn(x) { x * 2 }`
+- **Arrow functions**: `let f = x => x * 2`
 - **Recursive functions**: Full recursion support (self-reference in scope)
+- **Mutual recursion**: Forward declaration pass registers all function names
 - **Cross-function calls**: Functions can call other top-level functions
 - **Multiple parameters**: Up to 8 (a0-a7 registers)
 - **Closures**: Functions that capture outer variables
 - **Returning closures**: `let make_adder = fn(x) { fn(y) { x + y } }` — functions that return functions
+- **Recursive closures**: Nested functions that call themselves
+- **3+ level closures**: Transitive free variable propagation
 - **Higher-order functions**: Functions as arguments — `apply(double, 5)`
+- **Anonymous functions**: Inline function literals as arguments
+- **Pipe operator**: `5 |> double |> puts`
 - **Closure dispatch**: Trampoline-based dispatch for indirect closure calls
+- **Null literal**: `null` compiles to 0
 
 ### Builtins
 - `puts(x)`: Print integer or string (type-directed)
@@ -145,14 +156,17 @@ puts(compose(double, add1, 4))  // 10
 
 ## Test Coverage
 
-- **384 backend tests** (codegen, closures, HOF, strings, hashes, arrays, showcase, peephole, regalloc, type inference, closure analysis)
-- **~2000 LOC** of compiler backend code
-- All tests passing ✅
+- **723 backend tests** (codegen, closures, HOF, strings, hashes, arrays, showcase, stdlib, pipeline, peephole, regalloc, type inference, closure analysis, stress tests)
+- **~2800 LOC** of compiler backend code
+- **0 failures**, 100% pass rate ✅
 
 ## Known Limitations
 
 - No garbage collector (bump allocation only — programs can't free memory)
-- No mutual recursion (forward declarations not supported)
-- Recursive closures (nested function calls itself) not supported
+- Anonymous functions in pipe operator not supported (use named functions)
+- Call chaining `f(1)(2)(3)` syntax not supported (use `let` bindings)
+- Closures capture values, not references (no mutable state in closures)
 - Max 8 function parameters
+- No float/decimal support (RV32I only, no F extension)
 - No tail call optimization (deep recursion uses O(n) stack)
+- 3+ level closure capture works via transitive propagation
