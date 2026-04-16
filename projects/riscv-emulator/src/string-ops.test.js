@@ -104,3 +104,13 @@ describe('String indexing', () => {
     `), '104 105 ');
   });
 });
+
+describe('String operations — advanced', () => {
+  it('empty string comparison', () => { assert.equal(run('puts("" == "")'), '1'); });
+  it('string not equal', () => { assert.equal(run('puts("abc" != "def")'), '1'); });
+  it('string in hash key', () => { assert.equal(run('let h = {"hello": 42}; puts(h["hello"])'), '42'); });
+  it('long string equality', () => { assert.equal(run('puts("abcdefghij" == "abcdefghij")'), '1'); });
+  it('long string inequality', () => { assert.equal(run('puts("abcdefghij" == "abcdefghik")'), '0'); });
+  it('string length after concat', () => { assert.equal(run('let s = "abc" + "def"; puts(len(s))'), '6'); });
+  it('string from function', () => { assert.equal(run('let f = fn() { "result" }; puts(f())'), 'result'); });
+});

@@ -653,3 +653,37 @@ describe('More language features', () => {
     assert.equal(run('let s = 0; for (x in 0..5) { set s = s + x * x }; puts(s)'), '30');
   });
 });
+
+describe('Final milestone tests', () => {
+  it('complex expression', () => {
+    assert.equal(run('puts(2 * 3 + 4 * 5)'), '26');
+  });
+  it('function with local hash', () => {
+    assert.equal(run('let f = fn() { let h = {"x": 42}; h["x"] }; puts(f())'), '42');
+  });
+  it('for loop with array push', () => {
+    assert.equal(run('let a = []; for (let i = 1; i <= 3; set i = i + 1) { set a = push(a, i * 10) }; puts(a[0]); puts(a[1]); puts(a[2])'), '102030');
+  });
+});
+
+describe('🎯 800th test', () => {
+  it('complete program: sum of primes below 50 using higher-order functions', () => {
+    const result = run(`
+      let is_prime = fn(n) {
+        if (n < 2) { return 0 }
+        let i = 2
+        while (i * i <= n) {
+          if (n % i == 0) { return 0 }
+          set i = i + 1
+        }
+        return 1
+      }
+      let sum = 0
+      for (n in 2..50) {
+        if (is_prime(n)) { set sum = sum + n }
+      }
+      puts(sum)
+    `);
+    assert.equal(result, '328');
+  });
+});

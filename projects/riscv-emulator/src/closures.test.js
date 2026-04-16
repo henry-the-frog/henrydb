@@ -430,3 +430,15 @@ describe('Advanced closure patterns', () => {
     assert.equal(result, '7127');
   });
 });
+
+describe('Closure edge cases', () => {
+  it('closure captures 0', () => {
+    assert.equal(run('let make = fn(n) { fn() { n } }; let f = make(0); puts(f())'), '0');
+  });
+  it('closure captures negative', () => {
+    assert.equal(run('let make = fn(n) { fn() { n } }; let f = make(0 - 42); puts(f())'), '-42');
+  });
+  it('HOF with closure result', () => {
+    assert.equal(run('let make_adder = fn(n) { fn(x) { x + n } }; let apply = fn(f, x) { f(x) }; puts(apply(make_adder(100), 23))'), '123');
+  });
+});

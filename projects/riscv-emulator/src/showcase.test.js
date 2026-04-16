@@ -787,3 +787,69 @@ describe('Showcase: Numeric Algorithms', () => {
     assert.equal(result, '9810');
   });
 });
+
+describe('Showcase: Fun Programs', () => {
+  it('count vowels (via char codes)', () => {
+    const result = run(`
+      let is_vowel = fn(c) {
+        if (c == 97) { return 1 }
+        if (c == 101) { return 1 }
+        if (c == 105) { return 1 }
+        if (c == 111) { return 1 }
+        if (c == 117) { return 1 }
+        return 0
+      }
+      let count_vowels = fn(s) {
+        let count = 0
+        let i = 0
+        while (i < len(s)) {
+          if (is_vowel(s[i])) { set count = count + 1 }
+          set i = i + 1
+        }
+        return count
+      }
+      puts(count_vowels("hello world"))
+    `);
+    assert.equal(result, '3');
+  });
+  
+  it('nth fibonacci (iterative)', () => {
+    const result = run(`
+      let fib = fn(n) {
+        let a = 0
+        let b = 1
+        for (let i = 0; i < n; set i = i + 1) {
+          let tmp = a + b
+          set a = b
+          set b = tmp
+        }
+        return a
+      }
+      puts(fib(0))
+      puts(fib(1))
+      puts(fib(10))
+      puts(fib(20))
+    `);
+    assert.equal(result, '01556765');
+  });
+  
+  it('palindrome check (via array)', () => {
+    const result = run(`
+      let is_palindrome = fn(arr) {
+        let i = 0
+        let j = len(arr) - 1
+        while (i < j) {
+          if (arr[i] != arr[j]) { return 0 }
+          set i = i + 1
+          set j = j - 1
+        }
+        return 1
+      }
+      puts(is_palindrome([1, 2, 3, 2, 1]))
+      puts(is_palindrome([1, 2, 3, 4, 5]))
+      puts(is_palindrome([1, 1]))
+      puts(is_palindrome([1]))
+    `);
+    assert.equal(result, '1011');
+  });
+});

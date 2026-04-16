@@ -241,3 +241,24 @@ describe('Arrays — complex programs', () => {
     assert.equal(output, '3');
   });
 });
+
+describe('Array operations — advanced', () => {
+  it('array of arrays', () => {
+    assert.equal(run('let m = [[1,2],[3,4]]; puts(m[0][0]); puts(m[1][1])'), '14');
+  });
+  it('push multiple times', () => {
+    assert.equal(run('let a = push(push(push([], 10), 20), 30); puts(a[0]); puts(a[2])'), '1030');
+  });
+  it('first of singleton', () => {
+    assert.equal(run('puts(first([42]))'), '42');
+  });
+  it('last of singleton', () => {
+    assert.equal(run('puts(last([99]))'), '99');
+  });
+  it('array length after push', () => {
+    assert.equal(run('let a = push([1,2,3], 4); puts(len(a))'), '4');
+  });
+  it('array in hash value', () => {
+    assert.equal(run('let h = {"data": [10, 20, 30]}; puts(h["data"][1])'), '20');
+  });
+});
