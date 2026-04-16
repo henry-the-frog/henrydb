@@ -731,7 +731,7 @@ describe('Comprehensive regression tests', () => {
   it('string len', () => { assert.equal(run('puts(len("test"))'), '4'); });
   it('array len', () => { assert.equal(run('puts(len([1,2,3,4,5]))'), '5'); });
   it('empty array push', () => { assert.equal(run('let a = push([], 99); puts(a[0])'), '99'); });
-  it('function as expression', () => { assert.equal(run('puts(fn(x) { x + 1 })'), '65536'); }); // prints closure address
+  it('function as expression', () => { assert.equal(run('puts(fn(x) { x + 1 })'), '65536'); }); // prints closure address (heap base)
   it('multiple puts', () => { assert.equal(run('puts(1); puts(2); puts(3)'), '123'); });
   it('consecutive lets', () => { assert.equal(run('let a = 10; let b = 20; let c = 30; puts(a + b + c)'), '60'); });
   it('function scope', () => { assert.equal(run('let x = 1; let f = fn() { let x = 2; x }; puts(f()); puts(x)'), '21'); });
@@ -798,12 +798,10 @@ describe('Tail call optimization', () => {
   });
   
   it('factorial with accumulator', () => {
-    // Note: fact(10) = 3628800 exceeds puts() runtime dispatch threshold (65536)
-    // Use fact(8) = 40320 which fits
     assert.equal(run(`
       let fact = fn(n, acc) { if (n <= 1) { return acc }; return fact(n - 1, n * acc) };
-      puts(fact(8, 1))
-    `), '40320');
+      puts(fact(10, 1))
+    `), '3628800');
   });
   
   it('countdown (deep recursion without stack overflow)', () => {

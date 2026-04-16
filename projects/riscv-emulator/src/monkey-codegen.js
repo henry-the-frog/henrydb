@@ -1446,12 +1446,15 @@ export class RiscVCodeGen {
           // String: a0 has heap pointer, print chars
           this._emitPrintString();
         } else if (exprType === 'unknown') {
-          // Runtime type dispatch: check if a0 looks like a heap pointer
-          // Heap starts at gp base (65536 = 0x10000), integers are small
+          // Runtime type dispatch: check if a0 is a valid heap pointer
+          // Valid heap: a0 >= heap_base (0x10000) AND a0 < gp (current heap top)
           const isStr = this._label('puts_is_str');
           const putsEnd = this._label('puts_end');
-          this._emit('  li t0, 65536');
-          this._emit(`  bge a0, t0, ${isStr}`);
+          this._emit('  li t0, 65536');  // heap_base = 0x10000
+          this._emit(`  blt a0, t0, ${putsEnd}_int`);  // below heap → integer
+          this._emit(`  bge a0, gp, ${putsEnd}_int`);   // above allocated heap → integer
+          this._emit(`  j ${isStr}`);
+          this._emitLabel(`${putsEnd}_int`);
           // Must be integer
           this._emit('  li a7, 1');
           this._emit('  ecall');
