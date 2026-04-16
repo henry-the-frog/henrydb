@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-16T16:58:42.892Z",
+  "generated": "2026-04-16T16:59:16.124Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Build defunctionalization for lambda-calculus: transform higher-order programs to first-order by replacing closures with data + apply function. 10+ tests.",
-    "completedAt": "2026-04-16T16:58:42.892Z",
-    "taskId": "T74",
-    "summary": "Defunctionalization: higher-order to first-order. λ→closure tags, app→dispatch. Closure capture works (y=10, λx.x+y(5)=15). 12 tests. 758 lambda-calculus tests. 32 PL modules.",
-    "durationMs": 600000
+    "task": "Build closure conversion for lambda-calculus: make closures explicit by converting λ to code+env pairs. Dual of defunctionalization. 10+ tests.",
+    "startedAt": "2026-04-16T16:59:16.124Z",
+    "taskId": "T75"
   },
   "schedule": {
     "date": "2026-04-16",
