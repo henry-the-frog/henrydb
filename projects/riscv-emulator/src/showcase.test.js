@@ -713,3 +713,40 @@ describe('Showcase: Numeric Utilities', () => {
     assert.equal(result, '310240');
   });
 });
+
+describe('Showcase: Tower of Hanoi', () => {
+  it('3 disks', () => {
+    const result = run(`
+      let hanoi = fn(n, from, to, aux) {
+        if (n == 1) { puts(from); puts(to); return 0 }
+        hanoi(n - 1, from, aux, to)
+        puts(from); puts(to)
+        hanoi(n - 1, aux, to, from)
+        return 0
+      }
+      hanoi(3, 1, 3, 2)
+    `);
+    assert.equal(result, '13123213212313');
+  });
+});
+
+describe('Showcase: Range and Destructuring', () => {
+  it('range in for-in with sum', () => {
+    const result = run(`
+      let s = 0
+      for (x in 1..101) { set s = s + x }
+      puts(s)
+    `);
+    assert.equal(result, '5050');
+  });
+  
+  it('destructure swap', () => {
+    const result = run(`
+      let swap = fn(a, b) { [b, a] }
+      let [x, y] = swap(42, 99)
+      puts(x)
+      puts(y)
+    `);
+    assert.equal(result, '9942');
+  });
+});
