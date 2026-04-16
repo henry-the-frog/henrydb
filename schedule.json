@@ -625,6 +625,17 @@
       "completed": "2026-04-16T16:21:47.745Z",
       "duration_ms": 600000,
       "summary": "Type info provider: LSP-like hover showing inferred types. TypeAnnotator, getTypeInfo, formatHover. 14 tests."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build monkey-lang control flow graph (CFG): extract basic blocks from AST, build CFG with edges for branches/loops, compute dominators. 12+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:22:32.603Z",
+      "completed": "2026-04-16T16:25:13.277Z",
+      "duration_ms": 600000,
+      "summary": "CFG builder: basic blocks, dominators (iterative fixed-point), immediate dominators, natural loop detection, DOT export. Found ConstStatement bug (class doesnt exist). 16 tests."
     }
   ],
   "focusProjects": [
@@ -856,6 +867,10 @@
     {
       "time": "2026-04-16T16:19:50.378Z",
       "msg": "Added T57 (BUILD) after end: Build monkey-lang LSP-lite: hover info showing inferred types for any expression. Use typechecker to annotate AST, then query by position. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T16:22:11.713Z",
+      "msg": "Added T58 (BUILD) after end: Build monkey-lang control flow graph (CFG): extract basic blocks from AST, build CFG with edges for branches/loops, compute dominators. 12+ tests."
     }
   ]
 }

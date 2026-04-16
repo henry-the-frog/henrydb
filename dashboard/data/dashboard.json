@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T16:21:47.781Z",
+  "generated": "2026-04-16T16:25:13.314Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build monkey-lang LSP-lite: hover info showing inferred types for any expression. Use typechecker to annotate AST, then query by position. 10+ tests.",
-    "completedAt": "2026-04-16T16:21:47.781Z",
-    "taskId": "T57",
-    "summary": "Type info provider: LSP-like hover showing inferred types. TypeAnnotator, getTypeInfo, formatHover. 14 tests.",
+    "task": "Build monkey-lang control flow graph (CFG): extract basic blocks from AST, build CFG with edges for branches/loops, compute dominators. 12+ tests.",
+    "completedAt": "2026-04-16T16:25:13.314Z",
+    "taskId": "T58",
+    "summary": "CFG builder: basic blocks, dominators (iterative fixed-point), immediate dominators, natural loop detection, DOT export. Found ConstStatement bug (class doesnt exist). 16 tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 57,
+    "blocksCompleted": 58,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 6,
-      "BUILD": 36,
+      "BUILD": 37,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
