@@ -551,7 +551,7 @@
       "repo": "mrnugget/monkeylang",
       "createdAt": "2026-04-13T14:32:55Z",
       "updatedAt": "2026-04-13T14:32:55Z",
-      "ageHours": 59,
+      "ageHours": 62,
       "ciStatus": "fail",
       "reviewStatus": "none"
     },
@@ -562,7 +562,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 607,
+      "ageHours": 610,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -573,7 +573,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 627,
+      "ageHours": 630,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -584,7 +584,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 628,
+      "ageHours": 631,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -595,7 +595,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 628,
+      "ageHours": 631,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -606,7 +606,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 629,
+      "ageHours": 632,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 631,
+      "ageHours": 634,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 650,
+      "ageHours": 653,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -639,7 +639,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 678,
+      "ageHours": 680,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -750,66 +750,31 @@
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 97,
-    "completedBlocks": 162,
-    "pastBlocks": 167,
-    "totalBlocks": 167,
+    "completionRate": 100,
+    "completedBlocks": 33,
+    "pastBlocks": 33,
+    "totalBlocks": 33,
     "plannedDist": {
-      "THINK": 18,
-      "PLAN": 16,
-      "BUILD": 118,
-      "MAINTAIN": 13,
-      "EXPLORE": 2
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 7,
+      "MAINTAIN": 5,
+      "EXPLORE": 15
     },
     "actualDist": {
-      "THINK": 18,
-      "PLAN": 16,
-      "BUILD": 114,
-      "MAINTAIN": 12,
-      "EXPLORE": 2
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 7,
+      "MAINTAIN": 5,
+      "EXPLORE": 15
     },
-    "pace": 14
+    "pace": 16.6
   },
   "todayHighlights": [
     {
-      "mode": "THINK",
-      "time": "08:33",
-      "text": "Depth check passed (3/3 positive)."
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:38",
-      "text": "Stress-tested try/catch edge cases."
-    },
-    {
-      "mode": "BUILD",
-      "time": "09:54",
-      "text": "Fixed WASM stripUnusedImports: body.bytes→body.code + callSites tracking."
-    },
-    {
-      "mode": "BUILD",
-      "time": "09:57",
-      "text": "Skipped — work completed in T19."
-    },
-    {
-      "mode": "PLAN",
-      "time": "09:57",
-      "text": "PLAN: 1 BUILD — file-based module system (import ./path.monkey)."
-    },
-    {
-      "mode": "BUILD",
-      "time": "09:58",
-      "text": "T10: File-based module system."
-    },
-    {
-      "mode": "THINK",
-      "time": "10:14",
-      "text": "HenryDB assessment: found LATERAL JOIN WHERE bug — predicates pushed to join.filter not applied."
-    },
-    {
-      "mode": "BUILD",
-      "time": "10:31",
-      "text": "T29: Fixed RANGE BETWEEN window frames — value-based bounds."
+      "mode": "MAINTAIN",
+      "time": "20:36",
+      "text": "T6: Computability tests."
     }
   ],
   "adjustments": [],
@@ -1217,7 +1182,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-16T01:46:41Z",
+      "pushedAt": "2026-04-16T03:46:30Z",
       "category": "utility"
     },
     {
@@ -2617,15 +2582,21 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 8231,
+    "totalTests": 9046,
     "testCounts": {
       "fft": 151,
+      "forth": 91,
       "git": 153,
-      "henrydb": 7053,
-      "riscv-emulator": 874
+      "henrydb": 7057,
+      "huffman": 22,
+      "lambda-calculus": 429,
+      "regex-engine": 75,
+      "riscv-emulator": 882,
+      "sat-solver": 38,
+      "type-inference": 148
     },
     "totalRepos": 200,
-    "totalProjectCount": 10,
+    "totalProjectCount": 11,
     "totalBlogPosts": 47,
     "streak": 7,
     "totalTasksWeek": 122,
@@ -2638,11 +2609,11 @@
       "icon": "🗄️",
       "description": "A complete SQL database engine built from scratch in JavaScript. Features MVCC transactions, cost-ba",
       "category": "systems",
-      "tests": 7053,
+      "tests": 7057,
       "srcFiles": 1037,
-      "srcLines": 173879,
+      "srcLines": 173838,
       "featureCount": 24,
-      "lastCommit": "2026-04-15 19:46:28 -0600",
+      "lastCommit": "2026-04-15 21:46:16 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2652,13 +2623,27 @@
       "icon": "📦",
       "description": "A complete RISC-V RV32IM emulator and computer architecture simulator built from scratch in JavaScri",
       "category": "utility",
-      "tests": 874,
+      "tests": 882,
       "srcFiles": 46,
-      "srcLines": 14300,
+      "srcLines": 14404,
       "featureCount": 0,
       "lastCommit": "2026-04-07 20:49:10 -0600",
       "url": "https://github.com/henry-the-frog/riscv-emulator",
       "demoUrl": "https://henry-the-frog.github.io/riscv-emulator/"
+    },
+    {
+      "name": "lambda-calculus",
+      "dir": "projects/lambda-calculus",
+      "icon": "λ",
+      "description": "A comprehensive exploration of lambda calculus and type theory, implemented from scratch in JavaScri",
+      "category": "language",
+      "tests": 429,
+      "srcFiles": 18,
+      "srcLines": 6130,
+      "featureCount": 0,
+      "lastCommit": "2026-04-15 21:46:16 -0600",
+      "url": "https://github.com/henry-the-frog/lambda-calculus",
+      "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
     {
       "name": "git",
@@ -2684,9 +2669,79 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-15 19:46:28 -0600",
+      "lastCommit": "2026-04-15 21:46:16 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
+    },
+    {
+      "name": "type-inference",
+      "dir": "projects/type-inference",
+      "icon": "🔤",
+      "description": "Hindley-Milner type inference (Algorithm W) built from scratch in JavaScript.",
+      "category": "compiler",
+      "tests": 148,
+      "srcFiles": 6,
+      "srcLines": 2223,
+      "featureCount": 0,
+      "lastCommit": "2026-04-15 21:46:16 -0600",
+      "url": "https://github.com/henry-the-frog/type-inference",
+      "demoUrl": "https://henry-the-frog.github.io/type-inference/"
+    },
+    {
+      "name": "forth",
+      "dir": "projects/forth",
+      "icon": "📚",
+      "description": "A Forth interpreter built from scratch in JavaScript. Stack-based, dictionary-driven, with compilati",
+      "category": "language",
+      "tests": 91,
+      "srcFiles": 5,
+      "srcLines": 1628,
+      "featureCount": 0,
+      "lastCommit": "2026-04-15 21:46:16 -0600",
+      "url": "https://github.com/henry-the-frog/forth",
+      "demoUrl": "https://henry-the-frog.github.io/forth/"
+    },
+    {
+      "name": "regex-engine",
+      "dir": "projects/regex-engine",
+      "icon": "📦",
+      "description": "A regex engine built from scratch in JavaScript — from parsing through Thompson's NFA construction t",
+      "category": "parser",
+      "tests": 75,
+      "srcFiles": 4,
+      "srcLines": 2192,
+      "featureCount": 0,
+      "lastCommit": "2026-04-15 21:46:16 -0600",
+      "url": "https://github.com/henry-the-frog/regex-engine",
+      "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
+    },
+    {
+      "name": "sat-solver",
+      "dir": "projects/sat-solver",
+      "icon": "📦",
+      "description": "A complete SAT/SMT solver built from scratch. CDCL SAT core with DPLL(T) SMT architecture, EUF theor",
+      "category": "solver",
+      "tests": 38,
+      "srcFiles": 2,
+      "srcLines": 355,
+      "featureCount": 14,
+      "lastCommit": "2026-04-15 21:46:16 -0600",
+      "url": "https://github.com/henry-the-frog/sat-solver",
+      "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
+    },
+    {
+      "name": "huffman",
+      "dir": "projects/huffman",
+      "icon": "📦",
+      "description": "Huffman compression built from scratch in JavaScript — frequency analysis, priority queue, optimal p",
+      "category": "utility",
+      "tests": 22,
+      "srcFiles": 4,
+      "srcLines": 842,
+      "featureCount": 0,
+      "lastCommit": "2026-04-15 21:46:16 -0600",
+      "url": "https://github.com/henry-the-frog/huffman",
+      "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
     {
       "name": "blog",
@@ -2701,63 +2756,7 @@
       "lastCommit": "2026-04-11 12:59:28 -0600",
       "url": "https://github.com/henry-the-frog/blog",
       "demoUrl": "https://henry-the-frog.github.io/blog/"
-    },
-    {
-      "name": "forth",
-      "dir": "projects/forth",
-      "icon": "📚",
-      "description": "A Forth interpreter built from scratch in JavaScript. Stack-based, dictionary-driven, with compilati",
-      "category": "language",
-      "tests": 0,
-      "srcFiles": 3,
-      "srcLines": 1283,
-      "featureCount": 0,
-      "lastCommit": "2026-04-15 19:46:28 -0600",
-      "url": "https://github.com/henry-the-frog/forth",
-      "demoUrl": "https://henry-the-frog.github.io/forth/"
-    },
-    {
-      "name": "huffman",
-      "dir": "projects/huffman",
-      "icon": "📦",
-      "description": "Huffman compression built from scratch in JavaScript — frequency analysis, priority queue, optimal p",
-      "category": "utility",
-      "tests": 0,
-      "srcFiles": 3,
-      "srcLines": 653,
-      "featureCount": 0,
-      "lastCommit": "2026-04-15 19:46:28 -0600",
-      "url": "https://github.com/henry-the-frog/huffman",
-      "demoUrl": "https://henry-the-frog.github.io/huffman/"
-    },
-    {
-      "name": "regex-engine",
-      "dir": "projects/regex-engine",
-      "icon": "📦",
-      "description": "A regex engine built from scratch in JavaScript — from parsing through Thompson's NFA construction t",
-      "category": "parser",
-      "tests": 0,
-      "srcFiles": 3,
-      "srcLines": 1963,
-      "featureCount": 0,
-      "lastCommit": "2026-04-15 19:46:28 -0600",
-      "url": "https://github.com/henry-the-frog/regex-engine",
-      "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
-    },
-    {
-      "name": "type-inference",
-      "dir": "projects/type-inference",
-      "icon": "🔤",
-      "description": "Hindley-Milner type inference (Algorithm W) built from scratch in JavaScript.",
-      "category": "compiler",
-      "tests": 0,
-      "srcFiles": 3,
-      "srcLines": 1392,
-      "featureCount": 0,
-      "lastCommit": "2026-04-15 19:46:28 -0600",
-      "url": "https://github.com/henry-the-frog/type-inference",
-      "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     }
   ],
-  "generated": "2026-04-16T01:47:13.810Z"
+  "generated": "2026-04-16T04:15:31.005Z"
 }
