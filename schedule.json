@@ -415,6 +415,17 @@
       "completed": "2026-04-16T15:35:32.970Z",
       "duration_ms": 600000,
       "summary": "Effect type system: effect rows, handler typing, propagation. Effect signatures for State/Exn/Nondet/Log. 27 tests. Handler removes handled effects, preserves unhandled. All 198 lambda-calculus tests pass."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add type-directed optimization pass to monkey-lang: specialize arithmetic when types are known, skip tag checks, inline constants. Measure performance improvement. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T15:37:52.582Z",
+      "completed": "2026-04-16T15:39:37.184Z",
+      "duration_ms": 600000,
+      "summary": "Type-directed AST optimizer: constant folding ((2+3)*(4+1)→25), strength reduction (x*0→0, x*2→x+x), dead branch elimination (if(true)→then). 27 tests."
     }
   ],
   "focusProjects": [
@@ -570,6 +581,10 @@
     {
       "time": "2026-04-16T15:32:59.579Z",
       "msg": "Added T38 (BUILD) after end: Add type system for algebraic effects: effect rows, handler typing, effect polymorphism. Type-check effect programs. 15+ tests."
+    },
+    {
+      "time": "2026-04-16T15:37:46.413Z",
+      "msg": "Added T39 (BUILD) after end: Add type-directed optimization pass to monkey-lang: specialize arithmetic when types are known, skip tag checks, inline constants. Measure performance improvement. 10+ tests."
     }
   ]
 }

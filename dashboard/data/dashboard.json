@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T15:35:33.006Z",
+  "generated": "2026-04-16T15:39:37.219Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add type system for algebraic effects: effect rows, handler typing, effect polymorphism. Type-check effect programs. 15+ tests.",
-    "completedAt": "2026-04-16T15:35:33.006Z",
-    "taskId": "T38",
-    "summary": "Effect type system: effect rows, handler typing, propagation. Effect signatures for State/Exn/Nondet/Log. 27 tests. Handler removes handled effects, preserves unhandled. All 198 lambda-calculus tests pass.",
+    "task": "Add type-directed optimization pass to monkey-lang: specialize arithmetic when types are known, skip tag checks, inline constants. Measure performance improvement. 10+ tests.",
+    "completedAt": "2026-04-16T15:39:37.219Z",
+    "taskId": "T39",
+    "summary": "Type-directed AST optimizer: constant folding ((2+3)*(4+1)→25), strength reduction (x*0→0, x*2→x+x), dead branch elimination (if(true)→then). 27 tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 38,
+    "blocksCompleted": 39,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 21,
+      "BUILD": 22,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
