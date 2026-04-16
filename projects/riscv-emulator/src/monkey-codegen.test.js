@@ -498,3 +498,19 @@ describe('Switch/case statement', () => {
     assert.equal(run('let f = fn(x) { x * 2 }; switch (f(5)) { case 10: puts(1) case 20: puts(2) default: puts(0) }'), '1');
   });
 });
+
+describe('Null, ternary, do-while', () => {
+  it('null is 0', () => { assert.equal(run('puts(null)'), '0'); });
+  it('ternary true', () => { assert.equal(run('puts(true ? 42 : 0)'), '42'); });
+  it('ternary false', () => { assert.equal(run('puts(false ? 42 : 99)'), '99'); });
+  it('ternary with expression', () => { assert.equal(run('let x = 5; puts(x > 3 ? 1 : 0)'), '1'); });
+  it('do-while basic', () => {
+    assert.equal(run('let i = 0; do { set i = i + 1 } while (i < 5); puts(i)'), '5');
+  });
+  it('do-while executes at least once', () => {
+    assert.equal(run('let i = 10; do { set i = i + 1 } while (false); puts(i)'), '11');
+  });
+  it('ternary in expression', () => {
+    assert.equal(run('puts((3 > 2 ? 10 : 20) + 5)'), '15');
+  });
+});

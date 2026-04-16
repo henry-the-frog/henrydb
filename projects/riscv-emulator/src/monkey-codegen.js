@@ -423,6 +423,14 @@ export class RiscVCodeGen {
         return this._compileFunctionLiteralExpr(expr);
       case 'SwitchExpression':
         return this._compileSwitchExpr(expr);
+      case 'NullLiteral':
+        this._emit('  li a0, 0');
+        this._lastExprType = 'int';
+        return;
+      case 'TernaryExpression':
+        return this._compileTernary(expr);
+      case 'DoWhileExpression':
+        return this._compileDoWhile(expr);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -985,6 +993,32 @@ export class RiscVCodeGen {
     
     this._emitLabel(endLabel);
     this._lastExprType = 'unknown';
+  }
+
+  _compileTernary(expr) {
+    this._comment('ternary');
+    const falseLabel = this._label('ternary_false');
+    const endLabel = this._label('ternary_end');
+    this._compileExpression(expr.condition);
+    this._emit(`  beqz a0, ${falseLabel}`);
+    this._compileExpression(expr.consequence);
+    this._emit(`  j ${endLabel}`);
+    this._emitLabel(falseLabel);
+    this._compileExpression(expr.alternative);
+    this._emitLabel(endLabel);
+  }
+
+  _compileDoWhile(expr) {
+    this._comment('do-while');
+    const loopStart = this._label('dowhile_start');
+    this._emitLabel(loopStart);
+    if (expr.body?.statements) {
+      for (const stmt of expr.body.statements) {
+        this._compileStatement(stmt);
+      }
+    }
+    this._compileExpression(expr.condition);
+    this._emit(`  bnez a0, ${loopStart}`);
   }
 
   _compileSwitchExpr(expr) {

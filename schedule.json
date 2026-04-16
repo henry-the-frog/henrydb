@@ -1754,10 +1754,21 @@
     {
       "id": "T163",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: add switch/case statement support. Compile monkey switch expressions to RISC-V branch chains. 5+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:18:58.463Z"
+      "started": "2026-04-16T00:18:58.463Z",
+      "completed": "2026-04-16T00:21:24.615Z",
+      "duration_ms": 300000,
+      "summary": "Switch/case statements compiled to branch chains. 5 new tests, 75 codegen total. Supports case matching, default, expressions, function results."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Add null literal, ternary (cond ? a : b), do-while loop, break/continue support. Quick wins — each is simple codegen. 8+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:22:16.826Z"
     }
   ],
   "focusProjects": [
@@ -2389,6 +2400,10 @@
     {
       "time": "2026-04-16T00:18:47.491Z",
       "msg": "Added T163 (BUILD) after end: RISC-V: add switch/case statement support. Compile monkey switch expressions to RISC-V branch chains. 5+ tests."
+    },
+    {
+      "time": "2026-04-16T00:22:10.730Z",
+      "msg": "Added T164 (BUILD) after end: RISC-V: Add null literal, ternary (cond ? a : b), do-while loop, break/continue support. Quick wins — each is simple codegen. 8+ tests."
     }
   ]
 }
