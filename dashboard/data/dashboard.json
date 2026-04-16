@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T15:53:29.590Z",
+  "generated": "2026-04-16T15:55:21.823Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Build refinement types: types with logical predicates ({x:Int | x > 0}), subtyping via SMT-like constraint checking, basic verification. 15+ tests.",
-    "startedAt": "2026-04-16T15:53:29.590Z",
-    "taskId": "T45"
+    "completedAt": "2026-04-16T15:55:21.823Z",
+    "taskId": "T45",
+    "summary": "Refinement types: {x:Int | x>0}, predicate subtyping, value verification, function contravariance. 33 tests. All 337 lambda-calculus tests pass. 18 PL theory modules.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -747,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 44,
+    "blocksCompleted": 45,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 27,
+      "BUILD": 28,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
