@@ -351,3 +351,49 @@ describe('Recursive closures', () => {
     assert.equal(result, '5');
   });
 });
+
+describe('Deep closure chains', () => {
+  it('4-level nested closure', () => {
+    const result = run(`
+      let f4 = fn(a) { fn(b) { fn(c) { fn(d) { a + b + c + d } } } }
+      let g = f4(1)
+      let h = g(2)
+      let i = h(3)
+      puts(i(4))
+    `);
+    assert.equal(result, '10');
+  });
+
+  it('3-level with multiplication', () => {
+    const result = run(`
+      let curry_mul = fn(a) { fn(b) { fn(c) { a * b * c } } }
+      let f = curry_mul(2)
+      let g = f(3)
+      puts(g(4))
+    `);
+    assert.equal(result, '24');
+  });
+
+  it('partial application via wrapper', () => {
+    const result = run(`
+      let add = fn(a, b) { a + b }
+      let add5 = fn(x) { add(5, x) }
+      puts(add5(3))
+    `);
+    assert.equal(result, '8');
+  });
+
+  it('closure factory returning deep closure', () => {
+    const result = run(`
+      let make_poly = fn(a) {
+        fn(b) {
+          fn(x) { a * x * x + b * x }
+        }
+      }
+      let f = make_poly(2)
+      let g = f(3)
+      puts(g(5))
+    `);
+    assert.equal(result, '65');  // 2*25 + 3*5 = 50 + 15 = 65
+  });
+});

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-16T00:02:44.590Z",
+  "generated": "2026-04-16T00:05:06.195Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: Fix 3-level nested closure capture. fn(a) { fn(b) { fn(c) { a + b + c } } }. The innermost function needs transitive free variable analysis — capture vars from grandparent scope.",
-    "startedAt": "2026-04-16T00:02:44.590Z",
-    "taskId": "T157"
+    "task": "RISC-V: test deep closure chains (4-5 levels), currying patterns, partial application. Verify transitive capture works at all depths. 6+ tests.",
+    "startedAt": "2026-04-16T00:05:06.195Z",
+    "taskId": "T158"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 153,
+    "blocksCompleted": 154,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 16,
-      "BUILD": 105,
+      "BUILD": 106,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

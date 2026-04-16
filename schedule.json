@@ -1688,10 +1688,21 @@
     {
       "id": "T157",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Fix 3-level nested closure capture. fn(a) { fn(b) { fn(c) { a + b + c } } }. The innermost function needs transitive free variable analysis — capture vars from grandparent scope.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:02:44.554Z"
+      "started": "2026-04-16T00:02:44.554Z",
+      "completed": "2026-04-16T00:04:31.813Z",
+      "duration_ms": 600000,
+      "summary": "3-level nested closures via transitive free variable propagation! f(10)(20)(30)=60. Middle function now captures vars needed by children. Elegant fix: check nested results, propagate upward."
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: test deep closure chains (4-5 levels), currying patterns, partial application. Verify transitive capture works at all depths. 6+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:05:06.157Z"
     }
   ],
   "focusProjects": [
@@ -2299,6 +2310,10 @@
     {
       "time": "2026-04-16T00:02:38.457Z",
       "msg": "Added T157 (BUILD) after end: RISC-V: Fix 3-level nested closure capture. fn(a) { fn(b) { fn(c) { a + b + c } } }. The innermost function needs transitive free variable analysis — capture vars from grandparent scope."
+    },
+    {
+      "time": "2026-04-16T00:04:59.665Z",
+      "msg": "Added T158 (BUILD) after end: RISC-V: test deep closure chains (4-5 levels), currying patterns, partial application. Verify transitive capture works at all depths. 6+ tests."
     }
   ]
 }
