@@ -392,3 +392,11 @@ Depth > breadth. One excellent thing > four mediocre ones.
   - Rest parameters (fn(a, ...rest))
 - [x] 843/846 tests (from 729 at session start!)
 - [x] Playground updated with all new features
+
+## Session C Accomplishments (2026-04-15 Evening)
+- [x] **Lambda Calculus** → projects/lambda-calculus (NEW)
+  - Pure JS, zero deps, comprehensive PL theory toolkit
+  - 10 modules: untyped LC, computability, SKI combinators, STLC, CPS transforms, System F, Curry-Howard, NbE, property tests
+  - **584 tests | Built in one evening session**
+- [x] Extended type-inference (122 tests), regex-engine (66), SAT solver (23), Forth (91), Huffman (21), HenryDB window functions (15)
+- [x] Found bugs: type-inference resetFresh collision, SMT conflicting bounds

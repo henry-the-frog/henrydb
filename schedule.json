@@ -318,6 +318,25 @@
       "completed": "2026-04-16T03:34:01.867Z",
       "duration_ms": 300000,
       "summary": "HenryDB window functions: 15 new tests verifying ROW_NUMBER (with/without PARTITION BY), RANK and DENSE_RANK (with ties), aggregate window functions (SUM/AVG/COUNT/MIN/MAX OVER PARTITION BY), running totals (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), LAG/LEAD, FIRST_VALUE, NTILE. All window functions confirmed working correctly. Can remove TODO item."
+    },
+    {
+      "id": "T30",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Final exploration: add property-based tests for lambda calculus",
+      "project": "henrydb",
+      "started": "2026-04-16T03:34:51.865Z",
+      "completed": "2026-04-16T03:36:20.824Z",
+      "duration_ms": 300000,
+      "summary": "Property-based tests: alpha-equivalence reflexivity (20 random terms), NbE≡reduction agreement (9 terms), Church addition commutativity (25 pairs), Church addition associativity (64 triples), multiplication distributivity (27 triples), SKI compilation preservation (4 terms), Church-Rosser theorem (normal vs applicative), free variable preservation. 153 new tests, 584 total lambda-calculus tests."
+    },
+    {
+      "id": "T31",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Update lambda-calculus README final tally, add TASKS.md entry for the new project",
+      "project": "henrydb",
+      "started": "2026-04-16T03:36:38.112Z"
     }
   ],
   "focusProjects": [
@@ -445,6 +464,14 @@
     {
       "time": "2026-04-16T03:32:39.173Z",
       "msg": "Added T29 (EXPLORE) after end: Add node:test tests for HenryDB: focus on window functions and stress cases"
+    },
+    {
+      "time": "2026-04-16T03:34:51.634Z",
+      "msg": "Added T30 (EXPLORE) after end: Final exploration: add property-based tests for lambda calculus"
+    },
+    {
+      "time": "2026-04-16T03:36:37.880Z",
+      "msg": "Added T31 (EXPLORE) after end: Update lambda-calculus README final tally, add TASKS.md entry for the new project"
     }
   ]
 }
