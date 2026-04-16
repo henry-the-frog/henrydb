@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-16T02:47:30.899Z",
+  "generated": "2026-04-16T02:55:20.689Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Final housekeeping + git push",
-    "startedAt": "2026-04-16T02:47:30.899Z",
-    "taskId": "T11"
+    "task": "Update daily log, TASKS.md, final git push",
+    "startedAt": "2026-04-16T02:55:20.689Z",
+    "taskId": "T18"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -91,45 +91,94 @@
       {
         "id": "T8",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Build simply typed lambda calculus with type checker",
         "task": null,
         "project": "lambda-calculus",
-        "started": "2026-04-16T02:41:58.690Z"
+        "started": "2026-04-16T02:41:58.690Z",
+        "completed": "2026-04-16T02:42:15.341Z",
+        "duration_ms": 60000,
+        "summary": "PLAN: 2 BUILD tasks — STLC type system with bidirectional checking, then CPS transformation."
       },
       {
         "id": "T9",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Build STLC: type AST (Bool, Int, Arrow), typed terms, bidirectional type checker, type environments, let-bindings, if-then-else. Tests for well-typed and ill-typed terms.",
         "plan_ref": "T8",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-16T02:42:24.314Z",
+        "completed": "2026-04-16T02:44:53.972Z",
+        "duration_ms": 600000,
+        "summary": "Simply Typed Lambda Calculus: types (Bool, Int, Unit, Arrow, Product), bidirectional type checker (infer/check), CBV evaluator, let-bindings, if-then-else, binary ops, pairs (fst/snd), fix-point recursion. Programs: factorial, fibonacci, GCD, sum 1..n. Strong normalization proof for STLC-without-fix. 82 new tests, 290 total across all modules."
       },
       {
         "id": "T10",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "CPS transformation: compile lambda calculus to continuation-passing style. A-normal form. Test CPS equivalence with direct evaluation.",
         "plan_ref": "T8",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-16T02:45:03.977Z",
+        "completed": "2026-04-16T02:47:21.102Z",
+        "duration_ms": 600000,
+        "summary": "CPS transformation module: Fischer/Plotkin CPS, Danvy-Filinski one-pass CPS (fewer administrative redexes), A-Normal Form (ANF), administrative beta reduction, CPS evaluation helper. Size analysis showing CPS blowup. 33 new tests, 323 total."
       },
       {
         "id": "T11",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final housekeeping + git push",
+        "started": "2026-04-16T02:47:30.863Z",
+        "completed": "2026-04-16T02:47:42.592Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, state clean."
+      },
+      {
+        "id": "T12",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Lambda calculus project is 323 tests with 5 modules. What depth check: am I in a breadth spiral? What would genuinely surprise me?",
+        "project": "lambda-calculus",
+        "started": "2026-04-16T02:47:58.885Z",
+        "completed": "2026-04-16T02:48:16.997Z",
+        "duration_ms": 60000,
+        "summary": "Depth check: 2/3 positive (Church exp quirk, Danvy-Filinski technique). NOT breadth spiral. Direction: System F (polymorphic lambda calculus) - genuinely hard, theoretical foundation for generics."
+      },
+      {
+        "id": "T13",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "System F: polymorphic lambda calculus with type abstraction/application",
+        "task": null,
+        "project": "lambda-calculus",
+        "started": "2026-04-16T02:48:30.624Z"
+      },
+      {
+        "id": "T14",
+        "mode": "BUILD",
+        "task": "Build System F: type variables, universal quantification (forall), type abstraction (Λα.t), type application (t[T]), type checker, evaluator. Classic examples: polymorphic identity, Church booleans, existential types via encoding.",
         "status": "upcoming",
-        "task": "Final housekeeping + git push"
+        "plan_ref": "T13"
+      },
+      {
+        "id": "T15",
+        "mode": "BUILD",
+        "task": "System F stress tests: type-level computation, erasure, impredicativity, parametricity free theorems",
+        "status": "upcoming",
+        "plan_ref": "T13"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 10,
-    "blocksTotal": 11,
+    "blocksCompleted": 17,
+    "blocksTotal": 15,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 4,
-      "MAINTAIN": 1,
-      "EXPLORE": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 7,
+      "MAINTAIN": 2,
+      "EXPLORE": 2
     }
   }
 }

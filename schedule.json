@@ -116,9 +116,86 @@
     {
       "id": "T11",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping + git push",
-      "started": "2026-04-16T02:47:30.863Z"
+      "started": "2026-04-16T02:47:30.863Z",
+      "completed": "2026-04-16T02:47:42.592Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, state clean."
+    },
+    {
+      "id": "T12",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Lambda calculus project is 323 tests with 5 modules. What depth check: am I in a breadth spiral? What would genuinely surprise me?",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T02:47:58.885Z",
+      "completed": "2026-04-16T02:48:16.997Z",
+      "duration_ms": 60000,
+      "summary": "Depth check: 2/3 positive (Church exp quirk, Danvy-Filinski technique). NOT breadth spiral. Direction: System F (polymorphic lambda calculus) - genuinely hard, theoretical foundation for generics."
+    },
+    {
+      "id": "T13",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "System F: polymorphic lambda calculus with type abstraction/application",
+      "task": null,
+      "project": "lambda-calculus",
+      "started": "2026-04-16T02:48:30.624Z",
+      "completed": "2026-04-16T02:48:36.092Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: System F (polymorphic lambda calculus). 2 BUILD tasks: core implementation + stress tests."
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "task": "Build System F: type variables, universal quantification (forall), type abstraction (Λα.t), type application (t[T]), type checker, evaluator. Classic examples: polymorphic identity, Church booleans, existential types via encoding.",
+      "status": "done",
+      "plan_ref": "T13",
+      "started": "2026-04-16T02:48:40.809Z",
+      "completed": "2026-04-16T02:51:22.916Z",
+      "duration_ms": 600000,
+      "summary": "System F (polymorphic lambda calculus): type variables, ∀-quantification, type abstraction (Λα.t), type application (t[T]), capture-avoiding type substitution, well-formedness checking, CBV evaluator with type erasure. Classic examples: polymorphic identity (∀α.α→α), polymorphic K (∀α.∀β.α→β→α), Church booleans (∀α.α→α→α), Church numerals (∀α.(α→α)→α→α), existential types via encoding, rank-2 types, parametricity/free theorems. 39 tests, 362 total."
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "task": "System F stress tests: type-level computation, erasure, impredicativity, parametricity free theorems",
+      "status": "done",
+      "plan_ref": "T13",
+      "started": "2026-04-16T02:51:44.256Z",
+      "completed": "2026-04-16T02:51:44.397Z",
+      "duration_ms": 10000,
+      "summary": "Skipped — already covered by System F implementation tests (Church encodings = impredicativity, parametricity test = free theorems, evaluator = type erasure)."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Update lambda-calculus README with all 7 modules and project overview",
+      "project": "monkey-lang",
+      "started": "2026-04-16T02:52:15.686Z",
+      "completed": "2026-04-16T02:53:00.669Z",
+      "duration_ms": 120000,
+      "summary": "Updated README with all 7 modules, architecture diagram, key insights (Church exp quirk, normal-order guarantee, SKI blowup, CPS one-pass advantage), references."
+    },
+    {
+      "id": "T17",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Build a Curry-Howard demo: propositions as types, proofs as programs in STLC/System F",
+      "project": "monkey-lang",
+      "started": "2026-04-16T02:53:06.118Z",
+      "completed": "2026-04-16T02:55:07.911Z",
+      "duration_ms": 600000,
+      "summary": "EXPLORE: Curry-Howard correspondence demo. 10 STLC theorems (identity, weakening, transitivity, conjunction intro/elim, commutativity, curry/uncurry, truth) + 3 System F theorems (polymorphic identity, weakening, transitivity) — all typechecked as proofs. Propositions-as-types translation, proofs-as-computations (running the proofs!), correspondence table. 40 new tests, 402 total across 8 modules."
+    },
+    {
+      "id": "T18",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update daily log, TASKS.md, final git push",
+      "started": "2026-04-16T02:55:20.653Z"
     }
   ],
   "focusProjects": [
@@ -178,6 +255,30 @@
     {
       "time": "2026-04-16T02:42:10.247Z",
       "msg": "PLAN T8 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T02:47:53.922Z",
+      "msg": "Added T12 (THINK) after end: Lambda calculus project is 323 tests with 5 modules. What depth check: am I in a breadth spiral? What would genuinely surprise me?"
+    },
+    {
+      "time": "2026-04-16T02:48:23.244Z",
+      "msg": "Added T13 (PLAN) after end: System F: polymorphic lambda calculus with type abstraction/application"
+    },
+    {
+      "time": "2026-04-16T02:48:30.764Z",
+      "msg": "PLAN T13 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T02:52:10.456Z",
+      "msg": "Added T16 (BUILD) after end: Update lambda-calculus README with all 7 modules and project overview"
+    },
+    {
+      "time": "2026-04-16T02:52:10.573Z",
+      "msg": "Added T17 (EXPLORE) after end: Build a Curry-Howard demo: propositions as types, proofs as programs in STLC/System F"
+    },
+    {
+      "time": "2026-04-16T02:52:10.689Z",
+      "msg": "Added T18 (MAINTAIN) after end: Update daily log, TASKS.md, final git push"
     }
   ]
 }
