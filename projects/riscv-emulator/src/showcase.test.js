@@ -750,3 +750,40 @@ describe('Showcase: Range and Destructuring', () => {
     assert.equal(result, '9942');
   });
 });
+
+describe('Showcase: String Operations', () => {
+  it('string concat chain', () => {
+    const result = run(`
+      let bracket = fn(s) { "[" + s + "]" }
+      let wrap = fn(tag, s) { "<" + tag + ">" + s + "</" + tag + ">" }
+      puts(bracket("hello"))
+      puts(wrap("b", "text"))
+    `);
+    assert.equal(result, '[hello]<b>text</b>');
+  });
+  
+  it('string equality in hash', () => {
+    const result = run(`
+      let config = {"mode": "production", "port": 8080}
+      puts(config["mode"] == "production")
+      puts(config["port"])
+    `);
+    assert.equal(result, '18080');
+  });
+});
+
+describe('Showcase: Numeric Algorithms', () => {
+  it('greatest of three', () => {
+    const result = run(`
+      let max3 = fn(a, b, c) {
+        if (a > b && a > c) { return a }
+        if (b > c) { return b }
+        return c
+      }
+      puts(max3(5, 9, 3))
+      puts(max3(7, 2, 8))
+      puts(max3(10, 10, 5))
+    `);
+    assert.equal(result, '9810');
+  });
+});
