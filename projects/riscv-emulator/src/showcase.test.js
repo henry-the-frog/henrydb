@@ -1105,3 +1105,77 @@ describe('Showcase: Data Processing', () => {
     assert.equal(result, '110330');
   });
 });
+
+describe('Showcase: Complete program suite', () => {
+  it('selection sort', () => {
+    const result = run(`
+      let find_min_idx = fn(arr, start) {
+        let min_idx = start
+        let i = start + 1
+        while (i < len(arr)) {
+          if (arr[i] < arr[min_idx]) { set min_idx = i }
+          set i = i + 1
+        }
+        return min_idx
+      }
+      let selection_sort = fn(arr) {
+        let result = arr
+        let i = 0
+        while (i < len(result)) {
+          let min_i = find_min_idx(result, i)
+          if (min_i != i) {
+            let tmp = result[i]
+            let sorted = []
+            let j = 0
+            while (j < len(result)) {
+              if (j == i) { set sorted = push(sorted, result[min_i]) }
+              else { if (j == min_i) { set sorted = push(sorted, tmp) }
+              else { set sorted = push(sorted, result[j]) } }
+              set j = j + 1
+            }
+            set result = sorted
+          }
+          set i = i + 1
+        }
+        return result
+      }
+      let s = selection_sort([5, 2, 8, 1, 9])
+      for (x in s) { puts(x) }
+    `);
+    assert.equal(result, '12589');
+  });
+
+  it('nth triangular number', () => {
+    assert.equal(run('let tri = fn(n) { n * (n + 1) / 2 }; puts(tri(10)); puts(tri(100))'), '555050');
+  });
+
+  it('power modulo', () => {
+    const result = run(`
+      let pow_mod = fn(base, exp, mod) {
+        let result = 1
+        let i = 0
+        while (i < exp) {
+          set result = result * base % mod
+          set i = i + 1
+        }
+        return result
+      }
+      puts(pow_mod(2, 10, 1000))
+    `);
+    assert.equal(result, '24');
+  });
+  
+  it('sum of array with reduce pattern', () => {
+    assert.equal(run(`
+      let reduce = fn(arr, init, f) {
+        let acc = init; let i = 0
+        while (i < len(arr)) { set acc = f(acc, arr[i]); set i = i + 1 }
+        return acc
+      }
+      let add = fn(a, b) { a + b }
+      let mul = fn(a, b) { a * b }
+      puts(reduce([1,2,3,4,5], 0, add))
+      puts(reduce([1,2,3,4,5], 1, mul))
+    `), '15120');
+  });
+});
