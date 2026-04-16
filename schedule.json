@@ -1732,10 +1732,21 @@
     {
       "id": "T161",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: implement binary search on sorted array. Classic algorithm, tests loops, conditionals, functions, arrays. Add as showcase program.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:13:21.299Z"
+      "started": "2026-04-16T00:13:21.299Z",
+      "completed": "2026-04-16T00:14:09.325Z",
+      "duration_ms": 180000,
+      "summary": "Binary search: O(log n) array search compiled to RISC-V. Found/not-found cases. 2 new tests, 31 showcase total."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: end-to-end integration test. A complex program using ALL features: closures, HOF, recursion, strings, arrays, hashes, for-in, while, if-else, &&/||. Single test that exercises the entire backend.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:14:42.527Z"
     }
   ],
   "focusProjects": [
@@ -2359,6 +2370,10 @@
     {
       "time": "2026-04-16T00:13:15.571Z",
       "msg": "Added T161 (BUILD) after end: RISC-V: implement binary search on sorted array. Classic algorithm, tests loops, conditionals, functions, arrays. Add as showcase program."
+    },
+    {
+      "time": "2026-04-16T00:14:36.540Z",
+      "msg": "Added T162 (BUILD) after end: RISC-V: end-to-end integration test. A complex program using ALL features: closures, HOF, recursion, strings, arrays, hashes, for-in, while, if-else, &&/||. Single test that exercises the entire backend."
     }
   ]
 }
