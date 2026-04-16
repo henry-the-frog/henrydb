@@ -260,15 +260,16 @@ describe('Stress: complex programs', () => {
 
 describe('Edge cases — closures and HOF', () => {
   it('3-level nested closure', () => {
-    // Note: 3-level deep closure capture (grandparent scope) not yet supported
-    // Testing 2-level instead
     assert.equal(run(`
       let f = fn(a) {
-        fn(b) { a + b }
+        fn(b) {
+          fn(c) { a + b + c }
+        }
       }
       let g = f(10)
-      puts(g(20))
-    `), '30');
+      let h = g(20)
+      puts(h(30))
+    `), '60');
   });
 
   it('closure over boolean', () => {

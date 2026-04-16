@@ -101,6 +101,23 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null, globalFun
   const referenced = new Set();
   collectIdentifiers(funcLit.body, referenced);
   
+  // Transitive propagation: if nested functions capture vars from beyond our scope,
+  // we need to capture and pass those vars too
+  const transitiveVars = new Set();
+  // Check all nested function results
+  const allFuncLits = [];
+  collectFunctionLiterals(funcLit.body, allFuncLits);
+  for (const nestedFunc of allFuncLits) {
+    const nestedFree = result.get(nestedFunc);
+    if (nestedFree) {
+      for (const v of nestedFree) {
+        if (!localScope.has(v) && outerScope.has(v)) {
+          transitiveVars.add(v);
+        }
+      }
+    }
+  }
+  
   // Free variables = referenced but not in local scope and not builtins
   const builtins = new Set(['puts', 'len', 'first', 'last', 'push', 'true', 'false']);
   const freeVars = [];
@@ -111,6 +128,13 @@ function analyzeFunction(funcLit, outerScope, result, funcName = null, globalFun
       if (outerScope.has(name)) {
         freeVars.push(name);
       }
+    }
+  }
+  
+  // Add transitive vars
+  for (const v of transitiveVars) {
+    if (!freeVars.includes(v)) {
+      freeVars.push(v);
     }
   }
   

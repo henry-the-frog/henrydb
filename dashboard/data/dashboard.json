@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-15T23:56:45.583Z",
+  "generated": "2026-04-16T00:02:44.590Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: update monkey-riscv.js to add --bench flag that runs all benchmarks. Also add string-heavy benchmark and closure-factory benchmark.",
-    "startedAt": "2026-04-15T23:56:45.583Z",
-    "taskId": "T154"
+    "task": "RISC-V: Fix 3-level nested closure capture. fn(a) { fn(b) { fn(c) { a + b + c } } }. The innermost function needs transitive free variable analysis — capture vars from grandparent scope.",
+    "startedAt": "2026-04-16T00:02:44.590Z",
+    "taskId": "T157"
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1441,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 150,
+    "blocksCompleted": 153,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 16,
-      "BUILD": 102,
+      "BUILD": 105,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }
