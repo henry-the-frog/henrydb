@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T16:41:41.703Z",
+  "generated": "2026-04-16T16:44:03.791Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build lambda-calculus abstract machine: CEK machine (Control, Environment, Continuation). Shows how lambda calculus is actually executed on hardware. 12+ tests.",
-    "completedAt": "2026-04-16T16:41:41.703Z",
-    "taskId": "T66",
-    "summary": "CEK abstract machine: environment-based eval with explicit continuations. Fixed eval() double-dispatch bug. Closures, recursion (5!=120), Church encoding. 22 tests. 676 lambda-calculus tests. 28 PL modules.",
+    "task": "Build monkey-lang escape analysis: determine which variables/closures escape their scope (can be stack-allocated vs heap-allocated). Use with CFG. 10+ tests.",
+    "completedAt": "2026-04-16T16:44:03.791Z",
+    "taskId": "T67",
+    "summary": "Escape analysis: stack vs heap allocation. Closure escape propagation, free variable detection, conservative argument handling. 11 tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 66,
+    "blocksCompleted": 67,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 6,
-      "BUILD": 44,
+      "BUILD": 45,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
