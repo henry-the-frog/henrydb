@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T15:10:17.662Z",
+  "generated": "2026-04-16T15:13:41.848Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Add inductive type declarations to CoC: user-defined types with auto-generated eliminators. Support Bool, List, Maybe as examples. 15+ tests.",
-    "startedAt": "2026-04-16T15:10:17.662Z",
-    "taskId": "T30"
+    "completedAt": "2026-04-16T15:13:41.848Z",
+    "taskId": "T30",
+    "summary": "Inductive types for CoC: Bool, Maybe, Either, List, Pair, Unit, Void. Church-encoded with auto-generated constructors. List fold: sum [1,2,3]=6, length=3. Pair projections work. 24 tests, all 89 CoC tests pass.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -747,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 29,
+    "blocksCompleted": 30,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 13,
+      "BUILD": 14,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
