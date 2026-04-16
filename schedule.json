@@ -371,6 +371,17 @@
       "completed": "2026-04-16T15:25:29.916Z",
       "duration_ms": 900000,
       "summary": "Mini proof assistant: 9 tactics (intro, intros, exact, refl, assumption, simpl, induction, trivial, unfold). Proves polymorphic identity, K combinator, equalities. 23 tests. All 164 lambda-calculus tests pass."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Integrate monkey-lang type checker with RISC-V compiler: type-check before compilation, verify typed programs produce correct output. 10+ integration tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T15:26:06.795Z",
+      "completed": "2026-04-16T15:28:48.709Z",
+      "duration_ms": 600000,
+      "summary": "Type-checked RISC-V integration: 12 tests. Pipeline: type-check → strip annotations → compile → run. Typed fib, factorial, closures all pass. Type errors are advisory (gradual typing). Type-unsafe code crashes at runtime."
     }
   ],
   "focusProjects": [
@@ -510,6 +521,10 @@
     {
       "time": "2026-04-16T15:22:54.238Z",
       "msg": "Added T34 (BUILD) after end: Build mini proof assistant: interactive proof mode with tactics (intro, apply, exact, induction, refl). Uses CoC + inductive types as foundation. 20+ tests."
+    },
+    {
+      "time": "2026-04-16T15:25:59.586Z",
+      "msg": "Added T35 (BUILD) after end: Integrate monkey-lang type checker with RISC-V compiler: type-check before compilation, verify typed programs produce correct output. 10+ integration tests."
     }
   ]
 }
