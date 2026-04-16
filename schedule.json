@@ -713,6 +713,14 @@
       "completed": "2026-04-16T16:38:02.516Z",
       "duration_ms": 600000,
       "summary": "SSA constant propagation: SCCP with lattice (⊤→Const→⊥), worklist algorithm, chained propagation (x=2,y=x*3=6,z=y+1=7). Full pipeline: AST→CFG→SSA→ConstProp→Liveness→DCE. 13 tests."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build lambda-calculus abstract machine: CEK machine (Control, Environment, Continuation). Shows how lambda calculus is actually executed on hardware. 12+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:38:59.953Z"
     }
   ],
   "focusProjects": [
@@ -976,6 +984,10 @@
     {
       "time": "2026-04-16T16:36:39.976Z",
       "msg": "Added T65 (BUILD) after end: Build SSA constant propagation: sparse conditional constant propagation (SCCP) on SSA form. Propagate constants through phi nodes. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T16:38:54.576Z",
+      "msg": "Added T66 (BUILD) after end: Build lambda-calculus abstract machine: CEK machine (Control, Environment, Continuation). Shows how lambda calculus is actually executed on hardware. 12+ tests."
     }
   ]
 }
