@@ -2,6 +2,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { RiscVCodeGen } from './monkey-codegen.js';
+import { inferTypes } from './type-infer.js';
+import { analyzeFreeVars } from './closure-analysis.js';
 import { Assembler } from './assembler.js';
 import { CPU } from './cpu.js';
 
@@ -22,7 +24,7 @@ function parse(input) {
 function compileToAsm(input) {
   const program = parse(input);
   const codegen = new RiscVCodeGen();
-  return codegen.compile(program);
+  return codegen.compile(program, inferTypes(program), analyzeFreeVars(program));
 }
 
 function compileAndRun(input, maxCycles = 50000) {
@@ -38,6 +40,11 @@ function compileAndRun(input, maxCycles = 50000) {
   cpu.regs.set(2, 0x100000 - 4); // sp = near top of memory
   cpu.run(maxCycles);
   return cpu;
+}
+
+function run(input) {
+  const cpu = compileAndRun(input, 500000);
+  return cpu.output.join('');
 }
 
 function getOutput(input) {
@@ -457,5 +464,27 @@ describe('Integration: complex programs', () => {
       puts(collatz_len(27))
     `);
     assert.equal(output, '111');
+  });
+});
+
+describe('Logical operators (&& and ||)', () => {
+  it('&& both true', () => { assert.equal(run('puts(true && true)'), '1'); });
+  it('&& first false', () => { assert.equal(run('puts(false && true)'), '0'); });
+  it('&& second false', () => { assert.equal(run('puts(true && false)'), '0'); });
+  it('|| both false', () => { assert.equal(run('puts(false || false)'), '0'); });
+  it('|| first true', () => { assert.equal(run('puts(true || false)'), '1'); });
+  it('|| second true', () => { assert.equal(run('puts(false || true)'), '1'); });
+  it('&& with comparisons', () => {
+    assert.equal(run('let x = 5; if (x > 3 && x < 10) { puts(1) } else { puts(0) }'), '1');
+  });
+  it('|| with comparisons', () => {
+    assert.equal(run('let x = 15; if (x < 5 || x > 10) { puts(1) } else { puts(0) }'), '1');
+  });
+  it('short-circuit && skips right', () => {
+    // If short-circuit works, the undefined function is never called
+    assert.equal(run('if (false && true) { puts(1) } else { puts(0) }'), '0');
+  });
+  it('short-circuit || skips right', () => {
+    assert.equal(run('if (true || false) { puts(1) } else { puts(0) }'), '1');
   });
 });

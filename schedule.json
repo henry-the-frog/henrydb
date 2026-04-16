@@ -1710,10 +1710,21 @@
     {
       "id": "T159",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: REPL improvements. Auto-load stdlib, show function definitions with .funcs, add .stats for IC/shape stats, add .benchmark for quick perf check.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:06:32.746Z"
+      "started": "2026-04-16T00:06:32.746Z",
+      "completed": "2026-04-16T00:08:22.845Z",
+      "duration_ms": 300000,
+      "summary": "REPL auto-loads stdlib, .bench command (fib(20) benchmark), better help. 691 tests, 0 failures."
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Add && and || logical operators with short-circuit evaluation. && should skip right side if left is false. || should skip right side if left is true. 8+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:09:12.315Z"
     }
   ],
   "focusProjects": [
@@ -2329,6 +2340,10 @@
     {
       "time": "2026-04-16T00:06:25.162Z",
       "msg": "Added T159 (BUILD) after end: RISC-V: REPL improvements. Auto-load stdlib, show function definitions with .funcs, add .stats for IC/shape stats, add .benchmark for quick perf check."
+    },
+    {
+      "time": "2026-04-16T00:09:04.388Z",
+      "msg": "Added T160 (BUILD) after end: RISC-V: Add && and || logical operators with short-circuit evaluation. && should skip right side if left is false. || should skip right side if left is true. 8+ tests."
     }
   ]
 }

@@ -506,6 +506,28 @@ export class RiscVCodeGen {
       }
     }
     
+    // Logical AND with short-circuit
+    if (op === '&&') {
+      this._compileExpression(expr.left);
+      const endLabel = this._label('and_end');
+      this._emit(`  beqz a0, ${endLabel}`); // If left is false (0), skip right
+      this._compileExpression(expr.right);
+      this._emitLabel(endLabel);
+      this._lastExprType = 'int';
+      return;
+    }
+    
+    // Logical OR with short-circuit
+    if (op === '||') {
+      this._compileExpression(expr.left);
+      const endLabel = this._label('or_end');
+      this._emit(`  bnez a0, ${endLabel}`); // If left is true (non-zero), skip right
+      this._compileExpression(expr.right);
+      this._emitLabel(endLabel);
+      this._lastExprType = 'int';
+      return;
+    }
+    
     // Compile left, push to stack
     this._compileExpression(expr.left);
     this._emit('  addi sp, sp, -4');
