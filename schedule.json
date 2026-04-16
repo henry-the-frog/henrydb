@@ -647,6 +647,14 @@
       "completed": "2026-04-16T16:26:47.379Z",
       "duration_ms": 600000,
       "summary": "Dead code elimination: removes code after return, constant-folds if(true/false), dead variable detection (assigned but never read). 13 tests."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build small-step semantics for lambda-calculus: step function showing each reduction step, trace all reductions to normal form. Connect to existing lambda.js. 12+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:27:14.620Z"
     }
   ],
   "focusProjects": [
@@ -886,6 +894,10 @@
     {
       "time": "2026-04-16T16:25:34.923Z",
       "msg": "Added T59 (BUILD) after end: Build dead code elimination pass for monkey-lang using CFG: find unreachable basic blocks, remove dead code after returns. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T16:27:09.071Z",
+      "msg": "Added T60 (BUILD) after end: Build small-step semantics for lambda-calculus: step function showing each reduction step, trace all reductions to normal form. Connect to existing lambda.js. 12+ tests."
     }
   ]
 }
