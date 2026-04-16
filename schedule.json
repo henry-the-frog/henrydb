@@ -48,16 +48,77 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, knowledge capture",
-      "started": "2026-04-16T02:36:33.787Z"
+      "started": "2026-04-16T02:36:33.787Z",
+      "completed": "2026-04-16T02:37:22.182Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard healthy, scratch note (lambda-calculus-quirks.md), daily log updated."
     },
     {
       "id": "T5",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Evening curiosity time",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-16T02:37:32.059Z",
+      "completed": "2026-04-16T02:40:32.172Z",
+      "duration_ms": 600000,
+      "summary": "EXPLORE: Built SKI combinator calculus module. Abstraction elimination (Turner algorithm), optimized with B/C combinators, SKI graph reduction, Unlambda notation, size metrics, Church numeral equivalence verification. Omega divergence test. 49 new SKI tests, 208 total across all lambda-calculus modules."
+    },
+    {
+      "id": "T7",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Lambda calculus depth: what is the hardest reduction case? Can we build a simply typed lambda calculus?",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T02:41:38.727Z",
+      "completed": "2026-04-16T02:41:49.458Z",
+      "duration_ms": 60000,
+      "summary": "THINK: Chose Simply Typed Lambda Calculus (STLC) as next extension. Type checker + strong normalization. Connects to type-inference project."
+    },
+    {
+      "id": "T8",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build simply typed lambda calculus with type checker",
+      "task": null,
+      "project": "lambda-calculus",
+      "started": "2026-04-16T02:41:58.690Z",
+      "completed": "2026-04-16T02:42:15.341Z",
+      "duration_ms": 60000,
+      "summary": "PLAN: 2 BUILD tasks — STLC type system with bidirectional checking, then CPS transformation."
+    },
+    {
+      "id": "T9",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build STLC: type AST (Bool, Int, Arrow), typed terms, bidirectional type checker, type environments, let-bindings, if-then-else. Tests for well-typed and ill-typed terms.",
+      "plan_ref": "T8",
+      "project": "monkey-lang",
+      "started": "2026-04-16T02:42:24.314Z",
+      "completed": "2026-04-16T02:44:53.972Z",
+      "duration_ms": 600000,
+      "summary": "Simply Typed Lambda Calculus: types (Bool, Int, Unit, Arrow, Product), bidirectional type checker (infer/check), CBV evaluator, let-bindings, if-then-else, binary ops, pairs (fst/snd), fix-point recursion. Programs: factorial, fibonacci, GCD, sum 1..n. Strong normalization proof for STLC-without-fix. 82 new tests, 290 total across all modules."
+    },
+    {
+      "id": "T10",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "CPS transformation: compile lambda calculus to continuation-passing style. A-normal form. Test CPS equivalence with direct evaluation.",
+      "plan_ref": "T8",
+      "project": "monkey-lang",
+      "started": "2026-04-16T02:45:03.977Z",
+      "completed": "2026-04-16T02:47:21.102Z",
+      "duration_ms": 600000,
+      "summary": "CPS transformation module: Fischer/Plotkin CPS, Danvy-Filinski one-pass CPS (fewer administrative redexes), A-Normal Form (ANF), administrative beta reduction, CPS evaluation helper. Size analysis showing CPS blowup. 33 new tests, 323 total."
+    },
+    {
+      "id": "T11",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final housekeeping + git push",
+      "started": "2026-04-16T02:47:30.863Z"
     }
   ],
   "focusProjects": [
@@ -93,6 +154,30 @@
     {
       "time": "2026-04-16T02:18:38.735Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T02:41:05.814Z",
+      "msg": "Added T7 (THINK) after end: Lambda calculus depth: what is the hardest reduction case? Can we build a simply typed lambda calculus?"
+    },
+    {
+      "time": "2026-04-16T02:41:12.263Z",
+      "msg": "Added T8 (PLAN) after end: Build simply typed lambda calculus with type checker"
+    },
+    {
+      "time": "2026-04-16T02:41:27.826Z",
+      "msg": "Added T9 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-16T02:41:27.944Z",
+      "msg": "Added T10 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-16T02:41:28.061Z",
+      "msg": "Added T11 (MAINTAIN) after end: Final housekeeping + git push"
+    },
+    {
+      "time": "2026-04-16T02:42:10.247Z",
+      "msg": "PLAN T8 filled 2 BUILD tasks"
     }
   ]
 }
