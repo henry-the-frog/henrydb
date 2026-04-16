@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T22:50:35.724Z",
+  "generated": "2026-04-16T22:52:00.354Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Lambda-calculus: stress test the normalization proof module. Verify strong normalization holds for simply-typed lambda calculus.",
-    "startedAt": "2026-04-16T22:50:35.724Z",
-    "taskId": "T238"
+    "completedAt": "2026-04-16T22:52:00.354Z",
+    "taskId": "T238",
+    "summary": "12 strong normalization stress tests, all pass. Church numerals, 20 nested beta reductions, ill-typed rejection. Strong normalization holds for all well-typed STLC terms.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -2789,12 +2791,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 236,
+    "blocksCompleted": 237,
     "blocksTotal": 217,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 8,
-      "BUILD": 203,
+      "BUILD": 204,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

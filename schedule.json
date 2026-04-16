@@ -2553,10 +2553,13 @@
     {
       "id": "T238",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Lambda-calculus: stress test the normalization proof module. Verify strong normalization holds for simply-typed lambda calculus.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T22:50:35.665Z"
+      "started": "2026-04-16T22:50:35.665Z",
+      "completed": "2026-04-16T22:52:00.318Z",
+      "duration_ms": 300000,
+      "summary": "12 strong normalization stress tests, all pass. Church numerals, 20 nested beta reductions, ill-typed rejection. Strong normalization holds for all well-typed STLC terms."
     }
   ],
   "focusProjects": [
