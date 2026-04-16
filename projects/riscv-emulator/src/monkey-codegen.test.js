@@ -528,3 +528,15 @@ describe('Arrow functions', () => {
     assert.equal(run('let apply = fn(f, x) { f(x) }; puts(apply(x => x * x, 7))'), '49');
   });
 });
+
+describe('C-style for loop', () => {
+  it('basic for', () => {
+    assert.equal(run('let s = 0; for (let i = 1; i <= 5; set i = i + 1) { set s = s + i }; puts(s)'), '15');
+  });
+  it('for with puts', () => {
+    assert.equal(run('for (let i = 0; i < 3; set i = i + 1) { puts(i) }'), '012');
+  });
+  it('for sum to 100', () => {
+    assert.equal(run('let s = 0; for (let i = 1; i <= 100; set i = i + 1) { set s = s + i }; puts(s)'), '5050');
+  });
+});

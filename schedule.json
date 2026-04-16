@@ -1780,6 +1780,14 @@
       "task": "RISC-V: add SetStatement (set x = expr) support for variable mutation in non-while contexts. Also add IndexAssignExpression for array element mutation. 6+ tests.",
       "project": "monkey-lang",
       "skip_reason": ""
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: Add optional chaining (?.) and null coalescing. obj?.key returns 0 if obj is null. Also add AssignExpression (set) compilation. More language coverage.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:33:12.433Z"
     }
   ],
   "focusProjects": [
@@ -2423,6 +2431,10 @@
     {
       "time": "2026-04-16T00:25:09.687Z",
       "msg": "Removed T165: "
+    },
+    {
+      "time": "2026-04-16T00:33:01.372Z",
+      "msg": "Added T166 (BUILD) after end: RISC-V: Add optional chaining (?.) and null coalescing. obj?.key returns 0 if obj is null. Also add AssignExpression (set) compilation. More language coverage."
     }
   ]
 }

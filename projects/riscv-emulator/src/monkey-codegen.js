@@ -431,6 +431,8 @@ export class RiscVCodeGen {
         return this._compileTernary(expr);
       case 'DoWhileExpression':
         return this._compileDoWhile(expr);
+      case 'ForExpression':
+        return this._compileForExpr(expr);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -1019,6 +1021,34 @@ export class RiscVCodeGen {
     }
     this._compileExpression(expr.condition);
     this._emit(`  bnez a0, ${loopStart}`);
+  }
+
+  _compileForExpr(expr) {
+    this._comment('for');
+    // Init
+    if (expr.init) {
+      this._compileStatement(expr.init);
+    }
+    const loopStart = this._label('for_start');
+    const loopEnd = this._label('for_end');
+    this._emitLabel(loopStart);
+    // Condition
+    if (expr.condition) {
+      this._compileExpression(expr.condition);
+      this._emit(`  beqz a0, ${loopEnd}`);
+    }
+    // Body
+    if (expr.body?.statements) {
+      for (const stmt of expr.body.statements) {
+        this._compileStatement(stmt);
+      }
+    }
+    // Update
+    if (expr.update) {
+      this._compileStatement(expr.update);
+    }
+    this._emit(`  j ${loopStart}`);
+    this._emitLabel(loopEnd);
   }
 
   _compileSwitchExpr(expr) {
