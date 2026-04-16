@@ -333,10 +333,32 @@
     {
       "id": "T31",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update lambda-calculus README final tally, add TASKS.md entry for the new project",
       "project": "henrydb",
-      "started": "2026-04-16T03:36:38.112Z"
+      "started": "2026-04-16T03:36:38.112Z",
+      "completed": "2026-04-16T03:38:36.885Z",
+      "duration_ms": 120000,
+      "summary": "Updated README (584 tests, 10 modules), TASKS.md with Session C accomplishments, git pushed."
+    },
+    {
+      "id": "T32",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Lambda calculus: de Bruijn reduction (substitution on indices, no alpha renaming needed)",
+      "project": "henrydb",
+      "started": "2026-04-16T03:38:55.808Z",
+      "completed": "2026-04-16T03:41:14.897Z",
+      "duration_ms": 300000,
+      "summary": "De Bruijn reduction module: shift (adjust free indices under binders), substitution (replace index with term), beta-reduction on nameless terms, normal-order reduction. Church numerals (SUCC, PLUS, MULT) verified. Agreement with named reduction at de Bruijn level. 25 new tests, 609 total."
+    },
+    {
+      "id": "T33",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Push for 1000: add more SAT solver and type-inference tests",
+      "project": "henrydb",
+      "started": "2026-04-16T03:41:48.194Z"
     }
   ],
   "focusProjects": [
@@ -472,6 +494,14 @@
     {
       "time": "2026-04-16T03:36:37.880Z",
       "msg": "Added T31 (EXPLORE) after end: Update lambda-calculus README final tally, add TASKS.md entry for the new project"
+    },
+    {
+      "time": "2026-04-16T03:38:55.576Z",
+      "msg": "Added T32 (EXPLORE) after end: Lambda calculus: de Bruijn reduction (substitution on indices, no alpha renaming needed)"
+    },
+    {
+      "time": "2026-04-16T03:41:47.964Z",
+      "msg": "Added T33 (EXPLORE) after end: Push for 1000: add more SAT solver and type-inference tests"
     }
   ]
 }
