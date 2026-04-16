@@ -520,3 +520,11 @@ describe('Pipe operator (|>)', () => {
   it('pipe to function', () => { assert.equal(run('let double = fn(x) { x * 2 }; puts(5 |> double)'), '10'); });
   it('chained pipes', () => { assert.equal(run('let double = fn(x) { x * 2 }; let add1 = fn(x) { x + 1 }; puts(5 |> double |> add1)'), '11'); });
 });
+
+describe('Arrow functions', () => {
+  it('simple arrow', () => { assert.equal(run('let double = x => x * 2; puts(double(5))'), '10'); });
+  it('arrow with closure', () => { assert.equal(run('let n = 10; let add_n = x => x + n; puts(add_n(5))'), '15'); });
+  it('arrow in HOF', () => {
+    assert.equal(run('let apply = fn(f, x) { f(x) }; puts(apply(x => x * x, 7))'), '49');
+  });
+});
