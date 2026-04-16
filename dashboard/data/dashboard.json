@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-16T22:02:27.329Z",
+  "generated": "2026-04-16T22:17:49.570Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Stress-test Hindley-Milner: omega combinator, polymorphic let, Church encoding, known tricky cases from the literature.",
-    "completedAt": "2026-04-16T22:02:27.329Z",
-    "taskId": "T225",
-    "summary": "27 Hindley-Milner stress tests, all pass. Verified: omega/Y combinator rejection, let-polymorphism with dual instantiation, S/K/I combinators, Church booleans, composition, unification edge cases, occurs check, substitution composition. Implementation is correct.",
-    "durationMs": 600000
+    "task": "RISC-V: implement general tail call optimization (not just self-recursion). Replace jal+epilogue+ret with epilogue+j for any tail call.",
+    "completedAt": "2026-04-16T22:17:49.570Z",
+    "taskId": "T229",
+    "summary": "General tail call requires understanding closure calling convention. Self-recursion TCO already works. Reverted general TCO — closures are heap-allocated structures, not simple function pointers. Needs more investigation.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -2791,12 +2791,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 224,
+    "blocksCompleted": 228,
     "blocksTotal": 217,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 8,
-      "BUILD": 191,
+      "BUILD": 195,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

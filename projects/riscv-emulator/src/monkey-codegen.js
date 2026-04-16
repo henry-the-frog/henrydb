@@ -460,28 +460,36 @@ export class RiscVCodeGen {
     // Tail call optimization: if returning a call to current function, jump back
     if (stmt.returnValue && 
         stmt.returnValue.constructor.name === 'CallExpression' &&
-        this._currentFuncName &&
-        (stmt.returnValue.function.value || stmt.returnValue.function.toString()) === this._currentFuncName) {
+        this._currentFuncName) {
       
-      this._comment(`tail call to ${this._currentFuncName}`);
-      const args = stmt.returnValue.arguments;
+      const callee = stmt.returnValue.function.value || stmt.returnValue.function.toString();
       
-      // Compile all arguments first, saving to stack to avoid clobbering
-      for (let i = 0; i < args.length; i++) {
-        this._compileExpression(args[i]);
-        this._emit('  addi sp, sp, -4');
-        this._emit('  sw a0, 0(sp)');
+      if (callee === this._currentFuncName) {
+        // Self tail call: jump back to function entry
+        this._comment(`tail call to ${this._currentFuncName}`);
+        const args = stmt.returnValue.arguments;
+        
+        // Compile all arguments first, saving to stack to avoid clobbering
+        for (let i = 0; i < args.length; i++) {
+          this._compileExpression(args[i]);
+          this._emit('  addi sp, sp, -4');
+          this._emit('  sw a0, 0(sp)');
+        }
+        
+        // Pop into argument registers (reverse order to match calling convention)
+        for (let i = args.length - 1; i >= 0; i--) {
+          this._emit(`  lw a${i}, ${(args.length - 1 - i) * 4}(sp)`);
+        }
+        this._emit(`  addi sp, sp, ${args.length * 4}`);
+        
+        // Jump back to function entry (after prologue)
+        this._emit(`  j ${this._currentFuncName}_tco_entry`);
+        return;
       }
       
-      // Pop into argument registers (reverse order to match calling convention)
-      for (let i = args.length - 1; i >= 0; i--) {
-        this._emit(`  lw a${i}, ${(args.length - 1 - i) * 4}(sp)`);
-      }
-      this._emit(`  addi sp, sp, ${args.length * 4}`);
-      
-      // Jump back to function entry (after prologue)
-      this._emit(`  j ${this._currentFuncName}_tco_entry`);
-      return;
+      // TODO: General tail call for other named functions
+      // Requires understanding closure calling convention (heap-allocated closures
+      // contain code pointers that need to be extracted before jumping)
     }
     
     this._comment('return');
@@ -1082,7 +1090,7 @@ export class RiscVCodeGen {
     this._emit('  slli a0, a0, 2');        // index * 4
     this._emit('  add a0, t0, a0');        // base + index * 4
     this._emit('  lw a0, 4(a0)');          // load [base + 4 + index * 4]
-    this._lastExprType = 'int'; // element type
+    this._lastExprType = 'unknown'; // Array elements can be any type (int, string, etc.)
   }
 
   _compileHashAccess(hashExpr, keyExpr) {
