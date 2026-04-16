@@ -555,3 +555,53 @@ describe('Array slicing', () => {
     assert.equal(run('let a = [10,20,30]; puts(a[1:2][0])'), '20');
   });
 });
+
+describe('Comprehensive language coverage', () => {
+  it('ternary classification', () => {
+    assert.equal(run('let x = 5; puts(x > 10 ? 3 : 2)'), '2');
+  });
+  it('ternary in function (nested)', () => {
+    assert.equal(run('let sign = fn(x) { if (x > 0) { return 1 }; if (x < 0) { return 0 - 1 }; return 0 }; puts(sign(5)); puts(sign(0 - 3)); puts(sign(0))'), '1-10');
+  });
+  it('do-while with sum', () => {
+    assert.equal(run('let s = 0; let i = 1; do { set s = s + i; set i = i + 1 } while (i <= 10); puts(s)'), '55');
+  });
+  it('for loop factorial', () => {
+    assert.equal(run('let f = 1; for (let i = 1; i <= 10; set i = i + 1) { set f = f * i }; puts(f)'), '3628800');
+  });
+  it('switch with function', () => {
+    assert.equal(run(`
+      let day_type = fn(d) {
+        switch (d) {
+          case 1: "Monday"
+          case 7: "Sunday"
+          default: "Other"
+        }
+      }
+      puts(day_type(1))
+      puts(day_type(7))
+      puts(day_type(3))
+    `), 'MondaySundayOther');
+  });
+  it('complex boolean expression', () => {
+    assert.equal(run('let x = 5; let y = 10; puts(x > 0 && y > 0 && x + y == 15)'), '1');
+  });
+  it('pipe with ternary', () => {
+    assert.equal(run('let check = fn(x) { x > 0 ? x : 0 }; puts(5 |> check)'), '5');
+  });
+  it('null comparison', () => {
+    assert.equal(run('puts(null == 0)'), '1');
+  });
+  it('for-in on push result', () => {
+    assert.equal(run('let a = push(push(push([], 1), 2), 3); for (x in a) { puts(x) }'), '123');
+  });
+  it('slice and sum', () => {
+    assert.equal(run(`
+      let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      let first5 = arr[0:5]
+      let sum = 0
+      for (x in first5) { set sum = sum + x }
+      puts(sum)
+    `), '15');
+  });
+});
