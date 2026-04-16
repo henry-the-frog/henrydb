@@ -397,3 +397,36 @@ describe('Deep closure chains', () => {
     assert.equal(result, '65');  // 2*25 + 3*5 = 50 + 15 = 65
   });
 });
+
+describe('Advanced closure patterns', () => {
+  it('closure as module pattern', () => {
+    const result = run(`
+      let counter_mod = fn() {
+        let count = 0
+        fn(delta) { count + delta }
+      }
+      let c = counter_mod()
+      puts(c(0))
+      puts(c(5))
+      puts(c(10))
+    `);
+    assert.equal(result, '0510');
+  });
+
+  it('closure factory chain', () => {
+    const result = run(`
+      let make_op = fn(op) {
+        if (op == 1) { return fn(a, b) { a + b } }
+        if (op == 2) { return fn(a, b) { a * b } }
+        return fn(a, b) { a - b }
+      }
+      let add = make_op(1)
+      let mul = make_op(2)
+      let sub = make_op(0)
+      puts(add(3, 4))
+      puts(mul(3, 4))
+      puts(sub(10, 3))
+    `);
+    assert.equal(result, '7127');
+  });
+});
