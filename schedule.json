@@ -790,6 +790,17 @@
       "completed": "2026-04-16T16:54:34.772Z",
       "duration_ms": 600000,
       "summary": "Constraint-based type inference: 2-phase (generate + solve), proven equivalent to Algorithm W. 16 tests. 746 lambda-calculus tests. 31 PL modules."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build register allocator for monkey-lang: graph coloring on interference graph. Chaitin-Briggs algorithm. Spill when needed. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:55:12.587Z",
+      "completed": "2026-04-16T16:56:31.109Z",
+      "duration_ms": 600000,
+      "summary": "Register allocator: graph coloring (Chaitin-Briggs) + linear scan. K4 spills, chain shares registers. 10 tests. Pipeline now includes RegAlloc."
     }
   ],
   "focusProjects": [
@@ -1081,6 +1092,10 @@
     {
       "time": "2026-04-16T16:53:10.823Z",
       "msg": "Added T72 (BUILD) after end: Build constraint-based type inference: generate type constraints from AST, then solve by unification. Alternative to Algorithm W, shows same result. 12+ tests."
+    },
+    {
+      "time": "2026-04-16T16:55:07.322Z",
+      "msg": "Added T73 (BUILD) after end: Build register allocator for monkey-lang: graph coloring on interference graph. Chaitin-Briggs algorithm. Spill when needed. 10+ tests."
     }
   ]
 }

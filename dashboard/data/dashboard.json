@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T16:54:34.808Z",
+  "generated": "2026-04-16T16:56:31.145Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build constraint-based type inference: generate type constraints from AST, then solve by unification. Alternative to Algorithm W, shows same result. 12+ tests.",
-    "completedAt": "2026-04-16T16:54:34.808Z",
-    "taskId": "T72",
-    "summary": "Constraint-based type inference: 2-phase (generate + solve), proven equivalent to Algorithm W. 16 tests. 746 lambda-calculus tests. 31 PL modules.",
+    "task": "Build register allocator for monkey-lang: graph coloring on interference graph. Chaitin-Briggs algorithm. Spill when needed. 10+ tests.",
+    "completedAt": "2026-04-16T16:56:31.145Z",
+    "taskId": "T73",
+    "summary": "Register allocator: graph coloring (Chaitin-Briggs) + linear scan. K4 spills, chain shares registers. 10 tests. Pipeline now includes RegAlloc.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 72,
+    "blocksCompleted": 73,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 6,
-      "BUILD": 49,
+      "BUILD": 50,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }
