@@ -805,10 +805,13 @@
     {
       "id": "T74",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build defunctionalization for lambda-calculus: transform higher-order programs to first-order by replacing closures with data + apply function. 10+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T16:57:14.140Z"
+      "started": "2026-04-16T16:57:14.140Z",
+      "completed": "2026-04-16T16:58:42.856Z",
+      "duration_ms": 600000,
+      "summary": "Defunctionalization: higher-order to first-order. λ→closure tags, app→dispatch. Closure capture works (y=10, λx.x+y(5)=15). 12 tests. 758 lambda-calculus tests. 32 PL modules."
     }
   ],
   "focusProjects": [
