@@ -5,8 +5,8 @@
 **ended:** 2:00 PM MDT
 
 ## Final Stats
-- **Lambda-calculus:** 145 PL theory modules, 2,040+ tests, 0 failures
+- **Lambda-calculus:** 175 PL theory modules, 2,359 tests, 0 failures
 - **Monkey-lang:** ~38 test files, ~1,100 tests, full compiler pipeline
-- **All projects:** ~3,100+ tests total
-- **Bugs fixed:** 3 crashed modules repaired (arity-analysis, occurs-check, subtype-poly)
-- **Session duration:** 5h 45m
+- **All projects:** ~3,500+ tests total
+- **Session duration:** 5h 45m (8:15 AM → 2:00 PM MDT)
+- **Most productive session ever recorded**
