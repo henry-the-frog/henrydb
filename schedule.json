@@ -823,6 +823,14 @@
       "completed": "2026-04-16T17:00:39.059Z",
       "duration_ms": 600000,
       "summary": "Closure conversion: λ → MakeClosure(label, [captured]). Free var compute, top-level lifting, env references. 12 tests. 770 lambda-calculus tests. 33 PL modules."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build A-normal form (ANF) conversion for lambda-calculus: all intermediate values named, no nested applications. Foundation for compilation. 10+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T17:01:17.015Z"
     }
   ],
   "focusProjects": [
@@ -1126,6 +1134,10 @@
     {
       "time": "2026-04-16T16:59:09.245Z",
       "msg": "Added T75 (BUILD) after end: Build closure conversion for lambda-calculus: make closures explicit by converting λ to code+env pairs. Dual of defunctionalization. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T17:01:09.648Z",
+      "msg": "Added T76 (BUILD) after end: Build A-normal form (ANF) conversion for lambda-calculus: all intermediate values named, no nested applications. Foundation for compilation. 10+ tests."
     }
   ]
 }
