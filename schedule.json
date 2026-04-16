@@ -926,17 +926,24 @@
     {
       "id": "T85",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build GADTs (Generalized Algebraic Data Types): constructors with type-refined return types. 10+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T17:17:57.172Z"
+      "started": "2026-04-16T17:17:57.172Z",
+      "completed": "2026-04-16T17:37:48.468Z",
+      "duration_ms": 60000,
+      "summary": "Already built earlier - GADTs. 13 tests."
     },
     {
       "id": "T86",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Build type classes with dictionary passing: transform typeclass constraints into explicit dictionary arguments. 10+ tests.",
-      "project": "lambda-calculus"
+      "project": "lambda-calculus",
+      "started": "2026-04-16T17:38:03.228Z",
+      "completed": "2026-04-16T17:38:03.373Z",
+      "duration_ms": 60000,
+      "summary": "Already built - dict-passing. 16 tests."
     },
     {
       "id": "T87",
@@ -1043,24 +1050,35 @@
     {
       "id": "T99",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build subtype polymorphism: width and depth subtyping for records/objects. Method dispatch. 10+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T17:35:32.681Z"
+      "started": "2026-04-16T17:35:32.681Z",
+      "completed": "2026-04-16T17:37:27.596Z",
+      "duration_ms": 300000,
+      "summary": "Parametricity + subtype poly: free theorems from types, width/depth subtyping. 25 tests. 1032 tests. 55 modules."
     },
     {
       "id": "T100",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Build parametricity / free theorems: derive properties from types alone (Wadler 1989). 10+ tests.",
-      "project": "lambda-calculus"
+      "project": "lambda-calculus",
+      "started": "2026-04-16T17:37:27.738Z",
+      "completed": "2026-04-16T17:37:33.576Z",
+      "duration_ms": 60000,
+      "summary": "Already built with T99 - parametricity/free theorems. 12 tests."
     },
     {
       "id": "T101",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Build existential types: abstract data types via type hiding. 10+ tests.",
-      "project": "lambda-calculus"
+      "project": "lambda-calculus",
+      "started": "2026-04-16T17:37:33.718Z",
+      "completed": "2026-04-16T17:37:38.699Z",
+      "duration_ms": 60000,
+      "summary": "Already built with T97 - existential types. 10 tests."
     }
   ],
   "focusProjects": [

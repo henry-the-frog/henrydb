@@ -136,7 +136,12 @@ function kleeneChain(f, bottom, n) {
  */
 function factDenotation() {
   return fix(
-    f => n => n === 0 ? 1 : (f === BOT ? BOT : n * f(n - 1)),
+    f => n => {
+      if (n === 0) return 1;
+      if (f === BOT) return BOT;
+      const r = f(n - 1);
+      return r === BOT ? BOT : n * r;
+    },
     BOT,
     100,
     (a, b) => {

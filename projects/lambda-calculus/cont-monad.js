@@ -58,7 +58,7 @@ function earlyReturn(n) {
 // Exception-like: try/catch
 function tryCatch(tryFn, catchFn) {
   return callcc(handler => {
-    const throwErr = err => handler(catchFn(err));
+    const throwErr = err => cbind(catchFn(err), val => handler(val));
     return tryFn(throwErr);
   });
 }
