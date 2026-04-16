@@ -614,6 +614,17 @@
       "completed": "2026-04-16T16:19:30.859Z",
       "duration_ms": 600000,
       "summary": "Type-level computation: Peano arithmetic, lists, Vec (length-indexed), FizzBuzz at type level. 48 tests. 617 lambda-calculus tests. 25 PL modules."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build monkey-lang LSP-lite: hover info showing inferred types for any expression. Use typechecker to annotate AST, then query by position. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:19:56.179Z",
+      "completed": "2026-04-16T16:21:47.745Z",
+      "duration_ms": 600000,
+      "summary": "Type info provider: LSP-like hover showing inferred types. TypeAnnotator, getTypeInfo, formatHover. 14 tests."
     }
   ],
   "focusProjects": [
@@ -841,6 +852,10 @@
     {
       "time": "2026-04-16T16:17:51.668Z",
       "msg": "Added T56 (BUILD) after end: Build a type-level computation module for lambda-calculus: type-level natural numbers, type-level lists, type-level booleans with computation at the type level (Peano arithmetic). 15+ tests."
+    },
+    {
+      "time": "2026-04-16T16:19:50.378Z",
+      "msg": "Added T57 (BUILD) after end: Build monkey-lang LSP-lite: hover info showing inferred types for any expression. Use typechecker to annotate AST, then query by position. 10+ tests."
     }
   ]
 }
