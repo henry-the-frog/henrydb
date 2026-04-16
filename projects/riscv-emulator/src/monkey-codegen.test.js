@@ -605,3 +605,18 @@ describe('Comprehensive language coverage', () => {
     `), '15');
   });
 });
+
+describe('750 milestone tests', () => {
+  it('closure + for loop', () => {
+    assert.equal(run('let make_adder = fn(n) { fn(x) { x + n } }; let add100 = make_adder(100); let s = 0; for (let i = 1; i <= 3; set i = i + 1) { set s = s + add100(i) }; puts(s)'), '306');
+  });
+  it('hash access in loop', () => {
+    assert.equal(run('let h = {"val": 10}; let s = 0; for (let i = 0; i < 5; set i = i + 1) { set s = s + h["val"] }; puts(s)'), '50');
+  });
+  it('string in ternary', () => {
+    assert.equal(run('puts(true ? "yes" : "no")'), 'yes');
+  });
+  it('recursive with &&', () => {
+    assert.equal(run('let f = fn(n) { if (n > 0 && n < 10) { return n + f(n - 1) }; return 0 }; puts(f(5))'), '15');
+  });
+});
