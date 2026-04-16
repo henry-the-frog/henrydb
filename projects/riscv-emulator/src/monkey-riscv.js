@@ -162,13 +162,26 @@ async function startREPL(optimize) {
 
   console.log('🐒 Monkey → RISC-V REPL');
   console.log('Type monkey-lang code and press Enter to compile and run.');
-  console.log('Use { } for multi-line input. Type .dump to show assembly. Type .quit to exit.\n');
+  console.log('Commands: .dump .stdlib .bench .clear .help .quit\n');
 
   let buffer = '';
   let braceCount = 0;
   let showAsm = false;
+  let useStdlib = false;
   // Accumulated definitions for persistent context
   let definitions = '';
+  
+  // Load stdlib
+  try {
+    const stdlibPath = new URL('./stdlib.monkey', import.meta.url).pathname;
+    const stdlibContent = readFileSync(stdlibPath, 'utf-8');
+    definitions = stdlibContent + '\n';
+    useStdlib = true;
+    console.log('📚 Standard library loaded (30+ functions available)');
+    console.log('   Try: puts(sum(range(1, 11)))  →  55\n');
+  } catch(e) {
+    console.log('⚠️  stdlib.monkey not found — .stdlib to retry\n');
+  }
 
   rl.prompt();
 
@@ -196,8 +209,28 @@ async function startREPL(optimize) {
     if (trimmed === '.help') {
       console.log('Commands:');
       console.log('  .dump    Toggle assembly display');
+      console.log('  .bench   Run quick benchmark (fib(20))');
       console.log('  .clear   Clear accumulated definitions');
       console.log('  .quit    Exit REPL');
+      rl.prompt();
+      return;
+    }
+
+    if (trimmed === '.bench') {
+      const benchCode = definitions + 'let fib = fn(n) { if (n <= 1) { return n }; return fib(n-1) + fib(n-2) }; puts(fib(20))';
+      try {
+        const result = compilePipeline(benchCode, { useRegisters: optimize, optimize });
+        const cpu = new CPU();
+        cpu.loadProgram(result.words);
+        cpu.regs.set(2, 0x100000 - 4);
+        const start = performance.now();
+        cpu.run(10000000);
+        const elapsed = performance.now() - start;
+        console.log(`\x1b[32mfib(20) = ${cpu.output.join('')}\x1b[0m`);
+        console.log(`\x1b[90m[${cpu.cycles.toLocaleString()} cycles, ${elapsed.toFixed(1)}ms, ${result.words.length} instrs]\x1b[0m`);
+      } catch(e) {
+        console.log(`\x1b[31mBenchmark error: ${e.message}\x1b[0m`);
+      }
       rl.prompt();
       return;
     }

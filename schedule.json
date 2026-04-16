@@ -1699,10 +1699,21 @@
     {
       "id": "T158",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: test deep closure chains (4-5 levels), currying patterns, partial application. Verify transitive capture works at all depths. 6+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:05:06.157Z"
+      "started": "2026-04-16T00:05:06.157Z",
+      "completed": "2026-04-16T00:06:01.933Z",
+      "duration_ms": 300000,
+      "summary": "Deep closure chains: 4-level closures, curry_mul, partial application, polynomial factory. 43 closure tests, all passing. Transitive capture works at any depth."
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: REPL improvements. Auto-load stdlib, show function definitions with .funcs, add .stats for IC/shape stats, add .benchmark for quick perf check.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:06:32.746Z"
     }
   ],
   "focusProjects": [
@@ -2314,6 +2325,10 @@
     {
       "time": "2026-04-16T00:04:59.665Z",
       "msg": "Added T158 (BUILD) after end: RISC-V: test deep closure chains (4-5 levels), currying patterns, partial application. Verify transitive capture works at all depths. 6+ tests."
+    },
+    {
+      "time": "2026-04-16T00:06:25.162Z",
+      "msg": "Added T159 (BUILD) after end: RISC-V: REPL improvements. Auto-load stdlib, show function definitions with .funcs, add .stats for IC/shape stats, add .benchmark for quick perf check."
     }
   ]
 }
