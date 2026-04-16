@@ -4,7 +4,7 @@
 
 ### Normal
 - HenryDB window function executor (already exists in sql.js!)
-- Neural net: investigate flaky "loss decreases during training" test
+
 
 ### Low
 - RISC-V: tail call optimization for recursive functions

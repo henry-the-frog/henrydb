@@ -193,9 +193,41 @@
     {
       "id": "T18",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update daily log, TASKS.md, final git push",
-      "started": "2026-04-16T02:55:20.653Z"
+      "started": "2026-04-16T02:55:20.653Z",
+      "completed": "2026-04-16T02:55:45.690Z",
+      "duration_ms": 30000,
+      "summary": "Daily log updated, git pushed."
+    },
+    {
+      "id": "T19",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate neural net flaky test: loss decreases during training. Debug + fix.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T02:56:02.749Z",
+      "completed": "2026-04-16T02:57:07.405Z",
+      "duration_ms": 60000,
+      "summary": "Investigation: neural-net project not found in current workspace. The TODO item appears stale — project may have been in a different workspace or deleted. Removing from TODO."
+    },
+    {
+      "id": "T20",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Extend type-inference: add let-rec inference tests, polymorphic higher-order functions, row polymorphism or type classes",
+      "project": "henrydb",
+      "started": "2026-04-16T03:00:45.980Z",
+      "completed": "2026-04-16T03:05:24.777Z",
+      "duration_ms": 600000,
+      "summary": "Extended type-inference with 42 advanced tests: polymorphic identity/const/flip/compose/apply, let-rec (factorial/fibonacci/GCD/power/isEven), higher-order (twice, church encoding, currying), advanced pairs/lists, operator edge cases, substitution chains, unification edge cases. FOUND BUG: resetFresh() + instantiate() causes infinite recursion when fresh variable names collide with scheme variable names in Subst.apply. 122 total type-inference tests."
+    },
+    {
+      "id": "T21",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session C final: update daily log, evening summary, git push",
+      "started": "2026-04-16T03:05:37.934Z"
     }
   ],
   "focusProjects": [
@@ -279,6 +311,18 @@
     {
       "time": "2026-04-16T02:52:10.689Z",
       "msg": "Added T18 (MAINTAIN) after end: Update daily log, TASKS.md, final git push"
+    },
+    {
+      "time": "2026-04-16T02:55:57.845Z",
+      "msg": "Added T19 (EXPLORE) after end: Investigate neural net flaky test: loss decreases during training. Debug + fix."
+    },
+    {
+      "time": "2026-04-16T03:00:40.906Z",
+      "msg": "Added T20 (EXPLORE) after end: Extend type-inference: add let-rec inference tests, polymorphic higher-order functions, row polymorphism or type classes"
+    },
+    {
+      "time": "2026-04-16T03:00:41.023Z",
+      "msg": "Added T21 (MAINTAIN) after end: Session C final: update daily log, evening summary, git push"
     }
   ]
 }
