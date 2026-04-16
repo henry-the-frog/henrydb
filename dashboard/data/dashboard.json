@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-16T22:30:14.881Z",
+  "generated": "2026-04-16T22:50:35.724Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "RISC-V: stress-test the peephole optimizer. Verify optimizations are correct by comparing optimized vs unoptimized output.",
-    "completedAt": "2026-04-16T22:30:14.881Z",
-    "taskId": "T232",
-    "summary": "31 peephole optimizer stress tests, all pass. 24 semantic equivalence tests (12 programs × 2 backends) confirm optimized output matches unoptimized. 5 pattern unit tests. Peephole optimizer is correct.",
-    "durationMs": 600000
+    "task": "Lambda-calculus: stress test the normalization proof module. Verify strong normalization holds for simply-typed lambda calculus.",
+    "startedAt": "2026-04-16T22:50:35.724Z",
+    "taskId": "T238"
   },
   "schedule": {
     "date": "2026-04-16",
@@ -2791,12 +2789,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 231,
+    "blocksCompleted": 236,
     "blocksTotal": 217,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 8,
-      "BUILD": 198,
+      "BUILD": 203,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }
