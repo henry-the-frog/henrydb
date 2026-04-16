@@ -13,6 +13,9 @@ Things like:
 - Device nicknames
 - Anything environment-specific
 
+## iMessage (BlueBubbles)
+- **Jordan:** `iMessage;-;+18015601333`
+
 ## Examples
 
 ```markdown

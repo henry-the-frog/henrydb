@@ -87,6 +87,9 @@ When you find and fix a bug, or encounter a genuinely surprising result, write â
 ### Sweep Gate (second+ sessions per day)
 Every second session of the day (or any session after a break >1 hour) MUST start with a full test suite sweep of the active project before any new feature work begins. Run all tests, triage what's broken, fix or file everything found. Only then start building. The sweep is the session's opening move, not an afterthought. Rationale (observed Apr 12): Session C's full-suite sweep found 12+ bugs including CRITICAL ROLLBACK no-op. This is consistently the highest-ROI activity for quality.
 
+### Evening Gate (sessions starting after 7 PM)
+Must begin with: (1) read TODO.md, (2) review day's BUILD count â€” if >10 BUILDs already done, evening must be EXPLORE/THINK/depth on ONE project, not new features across multiple, (3) pick ONE project focus, not scatter. Evening sessions without this gate have produced breadth spirals in 3/3 observed instances (Apr 13, 14, 15). The failure mode: morning discipline dissolves into evening momentum, and you build an entire new project instead of going deep on existing work.
+
 ### Blog Cap
 Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
 

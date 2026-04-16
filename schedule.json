@@ -1,510 +1,210 @@
 {
-  "date": "2026-04-15",
+  "date": "2026-04-16",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "done",
-      "task": "Evening C: Review Session B accomplishments (1882+ tests!). Pick 1-2 evening goals. Bias toward EXPLORE/depth.",
-      "started": "2026-04-16T02:16:09.965Z",
-      "completed": "2026-04-16T02:16:28.666Z",
-      "duration_ms": 60000,
-      "summary": "Reviewed Session B (1882+ tests). Evening goals: (1) HenryDB window function depth - investigate existing executor, (2) EXPLORE curiosity project. Bias toward depth."
+      "status": "upcoming",
+      "task": "Review yesterday (1000 tests, lambda calculus, RISC-V backend). Assess bugs found (SMT conflicting bounds, type-inference resetFresh). Set direction."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Evening exploration + depth work",
-      "task": null,
-      "started": "2026-04-16T02:16:36.912Z",
-      "completed": "2026-04-16T02:18:44.690Z",
-      "duration_ms": 120000,
-      "summary": "PLAN: Lambda Calculus interpreter - pure exploration project. Parser, evaluator, Church encodings, Y combinator, de Bruijn indices. 2 BUILD tasks."
+      "status": "upcoming",
+      "goal": "Fix 2 bugs found yesterday: SMT solver conflicting bounds + type-inference resetFresh collision",
+      "task": null
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Build a Lambda Calculus interpreter from scratch - parser, evaluator, Church encodings, Y combinator, de Bruijn indices, normal-order reduction",
+      "status": "upcoming",
+      "task": null,
       "plan_ref": "T2",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:18:53.372Z",
-      "completed": "2026-04-16T02:32:24.720Z",
-      "duration_ms": 600000,
-      "summary": "Lambda Calculus interpreter from scratch: tokenizer, parser (multi-param, left-assoc app), capture-avoiding substitution, 4 reduction strategies (normal/applicative/CBV/CBN), de Bruijn indices, alpha-equivalence, Church encodings (booleans, numerals, pairs, lists), Y/Z combinators, step tracing. 104 tests, 0 failures."
-    },
-    {
-      "id": "T6",
-      "mode": "BUILD",
-      "task": "Write stress tests and explore computability: factorial, fibonacci, pairs, lists all in pure lambda calculus",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-16T02:32:32.660Z",
-      "completed": "2026-04-16T02:36:24.713Z",
-      "duration_ms": 600000,
-      "summary": "Computability tests: Fibonacci via Church pairs, SKI combinators (I=SKK, composition=S(KS)K), Scott-encoded naturals, boolean logic completeness (AND/OR/XOR/NAND/IMPLIES truth tables), divergence detection, stress tests (mult 4*5, exp 2^5=32), fixed-point combinators (Y, Turing theta). 55 new tests, 159 total. Found Church exp 0-exponent quirk."
+      "project": "monkey-lang"
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, knowledge capture",
-      "started": "2026-04-16T02:36:33.787Z",
-      "completed": "2026-04-16T02:37:22.182Z",
-      "duration_ms": 60000,
-      "summary": "Git pushed, dashboard healthy, scratch note (lambda-calculus-quirks.md), daily log updated."
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard check, email scan, GH notifications"
     },
     {
       "id": "T5",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Evening curiosity time",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:37:32.059Z",
-      "completed": "2026-04-16T02:40:32.172Z",
-      "duration_ms": 600000,
-      "summary": "EXPLORE: Built SKI combinator calculus module. Abstraction elimination (Turner algorithm), optimized with B/C combinators, SKI graph reduction, Unlambda notation, size metrics, Church numeral equivalence verification. Omega divergence test. 49 new SKI tests, 208 total across all lambda-calculus modules."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on bug fixes. Consider RISC-V GC vs monkey-lang type checker priority."
+    },
+    {
+      "id": "T6",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Monkey-lang type checker — connect type-inference project to monkey-lang compilation pipeline",
+      "task": null
     },
     {
       "id": "T7",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Lambda calculus depth: what is the hardest reduction case? Can we build a simply typed lambda calculus?",
-      "project": "lambda-calculus",
-      "started": "2026-04-16T02:41:38.727Z",
-      "completed": "2026-04-16T02:41:49.458Z",
-      "duration_ms": 60000,
-      "summary": "THINK: Chose Simply Typed Lambda Calculus (STLC) as next extension. Type checker + strong normalization. Connects to type-inference project."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T6",
+      "project": "monkey-lang"
     },
     {
       "id": "T8",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Build simply typed lambda calculus with type checker",
-      "task": null,
-      "project": "lambda-calculus",
-      "started": "2026-04-16T02:41:58.690Z",
-      "completed": "2026-04-16T02:42:15.341Z",
-      "duration_ms": 60000,
-      "summary": "PLAN: 2 BUILD tasks — STLC type system with bidirectional checking, then CPS transformation."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard regen, knowledge capture"
     },
     {
       "id": "T9",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build STLC: type AST (Bool, Int, Arrow), typed terms, bidirectional type checker, type environments, let-bindings, if-then-else. Tests for well-typed and ill-typed terms.",
-      "plan_ref": "T8",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:42:24.314Z",
-      "completed": "2026-04-16T02:44:53.972Z",
-      "duration_ms": 600000,
-      "summary": "Simply Typed Lambda Calculus: types (Bool, Int, Unit, Arrow, Product), bidirectional type checker (infer/check), CBV evaluator, let-bindings, if-then-else, binary ops, pairs (fst/snd), fix-point recursion. Programs: factorial, fibonacci, GCD, sum 1..n. Strong normalization proof for STLC-without-fix. 82 new tests, 290 total across all modules."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-day reflection. Depth check. Review type checker quality."
     },
     {
       "id": "T10",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "CPS transformation: compile lambda calculus to continuation-passing style. A-normal form. Test CPS equivalence with direct evaluation.",
-      "plan_ref": "T8",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:45:03.977Z",
-      "completed": "2026-04-16T02:47:21.102Z",
-      "duration_ms": 600000,
-      "summary": "CPS transformation module: Fischer/Plotkin CPS, Danvy-Filinski one-pass CPS (fewer administrative redexes), A-Normal Form (ANF), administrative beta reduction, CPS evaluation helper. Size analysis showing CPS blowup. 33 new tests, 323 total."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Lambda calculus extensions — dependent types or effect system",
+      "task": null
     },
     {
       "id": "T11",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final housekeeping + git push",
-      "started": "2026-04-16T02:47:30.863Z",
-      "completed": "2026-04-16T02:47:42.592Z",
-      "duration_ms": 30000,
-      "summary": "Git pushed, state clean."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T10",
+      "project": "lambda-calculus"
     },
     {
       "id": "T12",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Lambda calculus project is 323 tests with 5 modules. What depth check: am I in a breadth spiral? What would genuinely surprise me?",
-      "project": "lambda-calculus",
-      "started": "2026-04-16T02:47:58.885Z",
-      "completed": "2026-04-16T02:48:16.997Z",
-      "duration_ms": 60000,
-      "summary": "Depth check: 2/3 positive (Church exp quirk, Danvy-Filinski technique). NOT breadth spiral. Direction: System F (polymorphic lambda calculus) - genuinely hard, theoretical foundation for generics."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard regen, email check"
     },
     {
       "id": "T13",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "System F: polymorphic lambda calculus with type abstraction/application",
-      "task": null,
-      "project": "lambda-calculus",
-      "started": "2026-04-16T02:48:30.624Z",
-      "completed": "2026-04-16T02:48:36.092Z",
-      "duration_ms": 30000,
-      "summary": "PLAN: System F (polymorphic lambda calculus). 2 BUILD tasks: core implementation + stress tests."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Afternoon reflection. Evaluate lambda calculus extensions. Plan evening exploration."
     },
     {
       "id": "T14",
-      "mode": "BUILD",
-      "task": "Build System F: type variables, universal quantification (forall), type abstraction (Λα.t), type application (t[T]), type checker, evaluator. Classic examples: polymorphic identity, Church booleans, existential types via encoding.",
-      "status": "done",
-      "plan_ref": "T13",
-      "started": "2026-04-16T02:48:40.809Z",
-      "completed": "2026-04-16T02:51:22.916Z",
-      "duration_ms": 600000,
-      "summary": "System F (polymorphic lambda calculus): type variables, ∀-quantification, type abstraction (Λα.t), type application (t[T]), capture-avoiding type substitution, well-formedness checking, CBV evaluator with type erasure. Classic examples: polymorphic identity (∀α.α→α), polymorphic K (∀α.∀β.α→β→α), Church booleans (∀α.α→α→α), Church numerals (∀α.(α→α)→α→α), existential types via encoding, rank-2 types, parametricity/free theorems. 39 tests, 362 total."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix SMT solver conflicting bounds bug + extend SAT solver tests",
+      "task": null
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "task": "System F stress tests: type-level computation, erasure, impredicativity, parametricity free theorems",
-      "status": "done",
-      "plan_ref": "T13",
-      "started": "2026-04-16T02:51:44.256Z",
-      "completed": "2026-04-16T02:51:44.397Z",
-      "duration_ms": 10000,
-      "summary": "Skipped — already covered by System F implementation tests (Church encodings = impredicativity, parametricity test = free theorems, evaluator = type erasure)."
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T14",
+      "project": "monkey-lang"
     },
     {
       "id": "T16",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update lambda-calculus README with all 7 modules and project overview",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:52:15.686Z",
-      "completed": "2026-04-16T02:53:00.669Z",
-      "duration_ms": 120000,
-      "summary": "Updated README with all 7 modules, architecture diagram, key insights (Church exp quirk, normal-order guarantee, SKI blowup, CPS one-pass advantage), references."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard regen"
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Build a Curry-Howard demo: propositions as types, proofs as programs in STLC/System F",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:53:06.118Z",
-      "completed": "2026-04-16T02:55:07.911Z",
-      "duration_ms": 600000,
-      "summary": "EXPLORE: Curry-Howard correspondence demo. 10 STLC theorems (identity, weakening, transitivity, conjunction intro/elim, commutativity, curry/uncurry, truth) + 3 System F theorems (polymorphic identity, weakening, transitivity) — all typechecked as proofs. Propositions-as-types translation, proofs-as-computations (running the proofs!), correspondence table. 40 new tests, 402 total across 8 modules."
+      "status": "upcoming",
+      "task": "Dependent type theory — CoC, LF, Idris/Agda type systems",
+      "project": "lambda-calculus"
     },
     {
       "id": "T18",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update daily log, TASKS.md, final git push",
-      "started": "2026-04-16T02:55:20.653Z",
-      "completed": "2026-04-16T02:55:45.690Z",
-      "duration_ms": 30000,
-      "summary": "Daily log updated, git pushed."
-    },
-    {
-      "id": "T19",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Investigate neural net flaky test: loss decreases during training. Debug + fix.",
-      "project": "monkey-lang",
-      "started": "2026-04-16T02:56:02.749Z",
-      "completed": "2026-04-16T02:57:07.405Z",
-      "duration_ms": 60000,
-      "summary": "Investigation: neural-net project not found in current workspace. The TODO item appears stale — project may have been in a different workspace or deleted. Removing from TODO."
-    },
-    {
-      "id": "T20",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Extend type-inference: add let-rec inference tests, polymorphic higher-order functions, row polymorphism or type classes",
-      "project": "henrydb",
-      "started": "2026-04-16T03:00:45.980Z",
-      "completed": "2026-04-16T03:05:24.777Z",
-      "duration_ms": 600000,
-      "summary": "Extended type-inference with 42 advanced tests: polymorphic identity/const/flip/compose/apply, let-rec (factorial/fibonacci/GCD/power/isEven), higher-order (twice, church encoding, currying), advanced pairs/lists, operator edge cases, substitution chains, unification edge cases. FOUND BUG: resetFresh() + instantiate() causes infinite recursion when fresh variable names collide with scheme variable names in Subst.apply. 122 total type-inference tests."
-    },
-    {
-      "id": "T21",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session C final: update daily log, evening summary, git push",
-      "started": "2026-04-16T03:05:37.934Z",
-      "completed": "2026-04-16T03:05:57.850Z",
-      "duration_ms": 30000,
-      "summary": "Daily log updated, git pushed."
-    },
-    {
-      "id": "T22",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Add proper node:test tests for regex engine: NFA, DFA, minimization, edge cases",
-      "project": "henrydb",
-      "started": "2026-04-16T03:06:53.341Z",
-      "completed": "2026-04-16T03:10:02.949Z",
-      "duration_ms": 600000,
-      "summary": "Regex engine: 66 new node:test tests covering basic matching, alternation, quantifiers (*/+/?/{n,m}), character classes ([abc], [a-z], [^x]), anchors, groups, escape characters (\\d/\\w/\\s), NFA construction, DFA construction+matching, DFA minimization, complex patterns (email, IP, hex color), edge cases. Discovered engine does full-match (not substring) by default."
-    },
-    {
-      "id": "T23",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Explore SAT solver: add node:test suite, stress test with harder formulas",
-      "project": "henrydb",
-      "started": "2026-04-16T03:10:18.484Z",
-      "completed": "2026-04-16T03:17:01.185Z",
-      "duration_ms": 600000,
-      "summary": "SAT solver: 23 new node:test tests covering CDCL (sat/unsat/XOR/5-var), graph coloring (3-color triangle, 2-color triangle UNSAT), N-queens (4-queens via built-in encoder), pigeonhole principle, DIMACS parser, SMT solver (equality, inequalities, simultaneous equations), Simplex (feasibility, infeasibility). FOUND BUG: SMT solver returns SAT for x > 10 AND x < 5 (conflicting bounds not propagated to Simplex)."
-    },
-    {
-      "id": "T24",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Add node:test suite for Forth interpreter",
-      "project": "henrydb",
-      "started": "2026-04-16T03:17:46.219Z",
-      "completed": "2026-04-16T03:21:12.032Z",
-      "duration_ms": 600000,
-      "summary": "Forth interpreter: 60 new node:test tests covering stack operations (DUP/DROP/SWAP/OVER/ROT/2DUP/2DROP/NIP/TUCK), arithmetic (+/-/*/MOD/NEGATE/ABS/MIN/MAX), comparison, logic, output (./EMIT/CR), word definitions (including nested), control flow (IF/ELSE/THEN, DO LOOP, DO +LOOP, BEGIN UNTIL, nested IF), memory (! and @), return stack, strings, recursive factorial (120), iterative fibonacci."
-    },
-    {
-      "id": "T25",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Add node:test suite for Huffman encoding",
-      "project": "henrydb",
-      "started": "2026-04-16T03:21:24.148Z",
-      "completed": "2026-04-16T03:24:13.663Z",
-      "duration_ms": 600000,
-      "summary": "Huffman encoding: 21 new tests covering MinHeap (ordering, duplicates), frequency table (Map API), tree building, code generation (prefix-free property verified), encode/decode round-trips, tree serialization, compress/decompress."
-    },
-    {
-      "id": "T26",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session C final wrap-up: tally, daily log, evening summary, git push",
-      "started": "2026-04-16T03:25:18.273Z",
-      "completed": "2026-04-16T03:26:45.932Z",
-      "duration_ms": 60000,
-      "summary": "Session C final: daily log + evening summary written, CURRENT.md updated. 694 new tests across 6 projects."
-    },
-    {
-      "id": "T27",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Extend Forth test suite: string operations, advanced control flow, variable words, constants",
-      "project": "henrydb",
-      "started": "2026-04-16T03:27:10.829Z",
-      "completed": "2026-04-16T03:29:17.256Z",
-      "duration_ms": 300000,
-      "summary": "Forth advanced tests: VARIABLE/CONSTANT, BEGIN WHILE REPEAT, nested DO LOOPs, RECURSE (factorial + fib), DEPTH, ?DUP, FizzBuzz, GCD, power, sum-of-squares, max3, error handling. 31 new tests, 91 total Forth tests."
-    },
-    {
-      "id": "T28",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Lambda calculus: Normalization by Evaluation (NbE) module",
-      "project": "henrydb",
-      "started": "2026-04-16T03:29:49.360Z",
-      "completed": "2026-04-16T03:31:44.314Z",
-      "duration_ms": 300000,
-      "summary": "Normalization by Evaluation (NbE): semantic domain (VNeutral/VLam), evaluate into host closures, readback into normal-form syntax, beta-eta equality checking, Church numeral normalization (PLUS/MULT/PRED), NbE ≡ reduction equivalence proofs, performance test (100 nested identity apps). 29 new tests, 431 total lambda-calculus tests."
-    },
-    {
-      "id": "T29",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Add node:test tests for HenryDB: focus on window functions and stress cases",
-      "project": "henrydb",
-      "started": "2026-04-16T03:32:39.405Z",
-      "completed": "2026-04-16T03:34:01.867Z",
-      "duration_ms": 300000,
-      "summary": "HenryDB window functions: 15 new tests verifying ROW_NUMBER (with/without PARTITION BY), RANK and DENSE_RANK (with ties), aggregate window functions (SUM/AVG/COUNT/MIN/MAX OVER PARTITION BY), running totals (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), LAG/LEAD, FIRST_VALUE, NTILE. All window functions confirmed working correctly. Can remove TODO item."
-    },
-    {
-      "id": "T30",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Final exploration: add property-based tests for lambda calculus",
-      "project": "henrydb",
-      "started": "2026-04-16T03:34:51.865Z",
-      "completed": "2026-04-16T03:36:20.824Z",
-      "duration_ms": 300000,
-      "summary": "Property-based tests: alpha-equivalence reflexivity (20 random terms), NbE≡reduction agreement (9 terms), Church addition commutativity (25 pairs), Church addition associativity (64 triples), multiplication distributivity (27 triples), SKI compilation preservation (4 terms), Church-Rosser theorem (normal vs applicative), free variable preservation. 153 new tests, 584 total lambda-calculus tests."
-    },
-    {
-      "id": "T31",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Update lambda-calculus README final tally, add TASKS.md entry for the new project",
-      "project": "henrydb",
-      "started": "2026-04-16T03:36:38.112Z",
-      "completed": "2026-04-16T03:38:36.885Z",
-      "duration_ms": 120000,
-      "summary": "Updated README (584 tests, 10 modules), TASKS.md with Session C accomplishments, git pushed."
-    },
-    {
-      "id": "T32",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Lambda calculus: de Bruijn reduction (substitution on indices, no alpha renaming needed)",
-      "project": "henrydb",
-      "started": "2026-04-16T03:38:55.808Z",
-      "completed": "2026-04-16T03:41:14.897Z",
-      "duration_ms": 300000,
-      "summary": "De Bruijn reduction module: shift (adjust free indices under binders), substitution (replace index with term), beta-reduction on nameless terms, normal-order reduction. Church numerals (SUCC, PLUS, MULT) verified. Agreement with named reduction at de Bruijn level. 25 new tests, 609 total."
-    },
-    {
-      "id": "T33",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Push for 1000: add more SAT solver and type-inference tests",
-      "project": "henrydb",
-      "started": "2026-04-16T03:41:48.194Z",
-      "completed": "2026-04-16T03:45:23.782Z",
-      "duration_ms": 600000,
-      "summary": "🎉 1000 NEW TESTS milestone! Added 26 type-inference tests (pattern matching, complex let, recursive functions, higher-order), 15 SAT tests (at-most-one, chain implications, 5/6-queens, graph coloring), 12 HenryDB tests (CTEs, recursive CTEs, subqueries, CASE, ORDER BY+LIMIT). Final count: 609 lambda + 148 type-inf + 66 regex + 38 SAT + 91 Forth + 21 Huffman + 27 HenryDB = 1000."
+      "status": "upcoming",
+      "task": "Research inline caching and hidden classes in V8 — compare with monkey-lang shapes",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
     "monkey-lang",
-    "henrydb"
+    "lambda-calculus"
   ],
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-16T02:15:34.625Z",
-      "msg": "Re-initialized same-day queue. Focus preserved: [monkey-lang, henrydb]"
+      "time": "2026-04-16T14:02:04.720Z",
+      "msg": "Added T1 (THINK) after end: Review yesterday (1000 tests, lambda calculus, RISC-V backend). Assess bugs found (SMT conflicting bounds, type-inference resetFresh). Set direction."
     },
     {
-      "time": "2026-04-16T02:15:50.553Z",
-      "msg": "Added T1 (THINK) after end: Evening C: Review Session B accomplishments (1882+ tests!). Pick 1-2 evening goals. Bias toward EXPLORE/depth."
+      "time": "2026-04-16T14:02:19.057Z",
+      "msg": "Added T2 (PLAN) after T1: Fix 2 bugs found yesterday: SMT solver conflicting bounds + type-inference resetFresh collision"
     },
     {
-      "time": "2026-04-16T02:15:56.803Z",
-      "msg": "Added T2 (PLAN) after end: Evening exploration + depth work"
+      "time": "2026-04-16T14:02:31.774Z",
+      "msg": "Focus set: [monkey-lang, lambda-calculus]"
     },
     {
-      "time": "2026-04-16T02:16:01.518Z",
-      "msg": "Added T3 (BUILD) after end: null"
+      "time": "2026-04-16T14:02:42.930Z",
+      "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-16T02:16:01.635Z",
-      "msg": "Added T4 (MAINTAIN) after end: Housekeeping: git push, knowledge capture"
+      "time": "2026-04-16T14:02:43.047Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: git push, dashboard check, email scan, GH notifications"
     },
     {
-      "time": "2026-04-16T02:16:01.751Z",
-      "msg": "Added T5 (EXPLORE) after end: Evening curiosity time"
+      "time": "2026-04-16T14:02:43.165Z",
+      "msg": "Added T5 (THINK) after T4: Reflect on bug fixes. Consider RISC-V GC vs monkey-lang type checker priority."
     },
     {
-      "time": "2026-04-16T02:18:38.735Z",
-      "msg": "PLAN T2 filled 2 BUILD tasks"
+      "time": "2026-04-16T14:02:43.283Z",
+      "msg": "Added T6 (PLAN) after T5: Monkey-lang type checker — connect type-inference project to monkey-lang compilation pipeline"
     },
     {
-      "time": "2026-04-16T02:41:05.814Z",
-      "msg": "Added T7 (THINK) after end: Lambda calculus depth: what is the hardest reduction case? Can we build a simply typed lambda calculus?"
+      "time": "2026-04-16T14:02:43.400Z",
+      "msg": "Added T7 (BUILD) after T6: null"
     },
     {
-      "time": "2026-04-16T02:41:12.263Z",
-      "msg": "Added T8 (PLAN) after end: Build simply typed lambda calculus with type checker"
+      "time": "2026-04-16T14:02:43.517Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: git push, dashboard regen, knowledge capture"
     },
     {
-      "time": "2026-04-16T02:41:27.826Z",
-      "msg": "Added T9 (BUILD) after end: null"
+      "time": "2026-04-16T14:02:43.635Z",
+      "msg": "Added T9 (THINK) after T8: Mid-day reflection. Depth check. Review type checker quality."
     },
     {
-      "time": "2026-04-16T02:41:27.944Z",
-      "msg": "Added T10 (BUILD) after end: null"
+      "time": "2026-04-16T14:02:43.753Z",
+      "msg": "Added T10 (PLAN) after T9: Lambda calculus extensions — dependent types or effect system"
     },
     {
-      "time": "2026-04-16T02:41:28.061Z",
-      "msg": "Added T11 (MAINTAIN) after end: Final housekeeping + git push"
+      "time": "2026-04-16T14:02:43.872Z",
+      "msg": "Added T11 (BUILD) after T10: null"
     },
     {
-      "time": "2026-04-16T02:42:10.247Z",
-      "msg": "PLAN T8 filled 2 BUILD tasks"
+      "time": "2026-04-16T14:02:43.989Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: git push, dashboard regen, email check"
     },
     {
-      "time": "2026-04-16T02:47:53.922Z",
-      "msg": "Added T12 (THINK) after end: Lambda calculus project is 323 tests with 5 modules. What depth check: am I in a breadth spiral? What would genuinely surprise me?"
+      "time": "2026-04-16T14:02:44.107Z",
+      "msg": "Added T13 (THINK) after T12: Afternoon reflection. Evaluate lambda calculus extensions. Plan evening exploration."
     },
     {
-      "time": "2026-04-16T02:48:23.244Z",
-      "msg": "Added T13 (PLAN) after end: System F: polymorphic lambda calculus with type abstraction/application"
+      "time": "2026-04-16T14:02:44.224Z",
+      "msg": "Added T14 (PLAN) after T13: Fix SMT solver conflicting bounds bug + extend SAT solver tests"
     },
     {
-      "time": "2026-04-16T02:48:30.764Z",
-      "msg": "PLAN T13 filled 2 BUILD tasks"
+      "time": "2026-04-16T14:02:44.344Z",
+      "msg": "Added T15 (BUILD) after T14: null"
     },
     {
-      "time": "2026-04-16T02:52:10.456Z",
-      "msg": "Added T16 (BUILD) after end: Update lambda-calculus README with all 7 modules and project overview"
+      "time": "2026-04-16T14:02:44.461Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping: git push, dashboard regen"
     },
     {
-      "time": "2026-04-16T02:52:10.573Z",
-      "msg": "Added T17 (EXPLORE) after end: Build a Curry-Howard demo: propositions as types, proofs as programs in STLC/System F"
+      "time": "2026-04-16T14:02:44.578Z",
+      "msg": "Added T17 (EXPLORE) after T16: Dependent type theory — CoC, LF, Idris/Agda type systems"
     },
     {
-      "time": "2026-04-16T02:52:10.689Z",
-      "msg": "Added T18 (MAINTAIN) after end: Update daily log, TASKS.md, final git push"
-    },
-    {
-      "time": "2026-04-16T02:55:57.845Z",
-      "msg": "Added T19 (EXPLORE) after end: Investigate neural net flaky test: loss decreases during training. Debug + fix."
-    },
-    {
-      "time": "2026-04-16T03:00:40.906Z",
-      "msg": "Added T20 (EXPLORE) after end: Extend type-inference: add let-rec inference tests, polymorphic higher-order functions, row polymorphism or type classes"
-    },
-    {
-      "time": "2026-04-16T03:00:41.023Z",
-      "msg": "Added T21 (MAINTAIN) after end: Session C final: update daily log, evening summary, git push"
-    },
-    {
-      "time": "2026-04-16T03:06:53.109Z",
-      "msg": "Added T22 (EXPLORE) after end: Add proper node:test tests for regex engine: NFA, DFA, minimization, edge cases"
-    },
-    {
-      "time": "2026-04-16T03:10:18.253Z",
-      "msg": "Added T23 (EXPLORE) after end: Explore SAT solver: add node:test suite, stress test with harder formulas"
-    },
-    {
-      "time": "2026-04-16T03:17:45.989Z",
-      "msg": "Added T24 (EXPLORE) after end: Add node:test suite for Forth interpreter"
-    },
-    {
-      "time": "2026-04-16T03:21:23.916Z",
-      "msg": "Added T25 (EXPLORE) after end: Add node:test suite for Huffman encoding"
-    },
-    {
-      "time": "2026-04-16T03:25:18.041Z",
-      "msg": "Added T26 (MAINTAIN) after end: Session C final wrap-up: tally, daily log, evening summary, git push"
-    },
-    {
-      "time": "2026-04-16T03:27:10.599Z",
-      "msg": "Added T27 (EXPLORE) after end: Extend Forth test suite: string operations, advanced control flow, variable words, constants"
-    },
-    {
-      "time": "2026-04-16T03:29:49.129Z",
-      "msg": "Added T28 (EXPLORE) after end: Lambda calculus: Normalization by Evaluation (NbE) module"
-    },
-    {
-      "time": "2026-04-16T03:32:39.173Z",
-      "msg": "Added T29 (EXPLORE) after end: Add node:test tests for HenryDB: focus on window functions and stress cases"
-    },
-    {
-      "time": "2026-04-16T03:34:51.634Z",
-      "msg": "Added T30 (EXPLORE) after end: Final exploration: add property-based tests for lambda calculus"
-    },
-    {
-      "time": "2026-04-16T03:36:37.880Z",
-      "msg": "Added T31 (EXPLORE) after end: Update lambda-calculus README final tally, add TASKS.md entry for the new project"
-    },
-    {
-      "time": "2026-04-16T03:38:55.576Z",
-      "msg": "Added T32 (EXPLORE) after end: Lambda calculus: de Bruijn reduction (substitution on indices, no alpha renaming needed)"
-    },
-    {
-      "time": "2026-04-16T03:41:47.964Z",
-      "msg": "Added T33 (EXPLORE) after end: Push for 1000: add more SAT solver and type-inference tests"
+      "time": "2026-04-16T14:02:44.695Z",
+      "msg": "Added T18 (EXPLORE) after T17: Research inline caching and hidden classes in V8 — compare with monkey-lang shapes"
     }
   ]
 }
