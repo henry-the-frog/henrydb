@@ -457,3 +457,15 @@ describe('Closure stress — many patterns', () => {
     assert.equal(run('let make_counter = fn(start) { fn(step) { start + step } }; let c = make_counter(100); let s = 0; for (let i = 0; i < 5; set i = i + 1) { set s = s + c(i) }; puts(s)'), '510');
   });
 });
+
+describe('Closure integration patterns', () => {
+  it('make_predicate', () => {
+    assert.equal(run('let gt = fn(n) { fn(x) { x > n } }; let gt5 = gt(5); puts(gt5(3)); puts(gt5(7))'), '01');
+  });
+  it('closure arithmetic', () => {
+    assert.equal(run('let make_fn = fn(op, n) { if (op == 1) { return fn(x) { x + n } }; return fn(x) { x * n } }; let f = make_fn(1, 5); let g = make_fn(2, 3); puts(f(10)); puts(g(10))'), '1530');
+  });
+  it('returned closure called in expression', () => {
+    assert.equal(run('let make = fn(n) { fn(x) { x + n } }; let a = make(10); let b = make(5); puts(a(20) + b(3))'), '38');
+  });
+});
