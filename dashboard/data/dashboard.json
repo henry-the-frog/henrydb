@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-16T14:45:41.361Z",
+  "generated": "2026-04-16T15:10:17.662Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard regen, email check",
-    "startedAt": "2026-04-16T14:45:41.361Z",
-    "taskId": "T12"
+    "mode": "BUILD",
+    "task": "Add inductive type declarations to CoC: user-defined types with auto-generated eliminators. Support Bool, List, Maybe as examples. 15+ tests.",
+    "startedAt": "2026-04-16T15:10:17.662Z",
+    "taskId": "T30"
   },
   "schedule": {
     "date": "2026-04-16",
@@ -596,72 +596,111 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Lambda calculus extensions — dependent types or effect system",
         "task": null,
-        "started": "2026-04-16T14:39:02.631Z"
+        "started": "2026-04-16T14:39:02.631Z",
+        "completed": "2026-04-16T14:39:38.894Z",
+        "duration_ms": 120000,
+        "summary": "Planned CoC (Calculus of Constructions) as natural next step on lambda cube. 2 BUILD tasks: core CoC implementation + proof terms for Curry-Howard."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Build Calculus of Constructions (CoC): dependent types, Pi types, type-level computation. Parser + evaluator + type checker with bidirectional typing. 30+ tests.",
         "plan_ref": "T10",
-        "project": "lambda-calculus"
+        "project": "lambda-calculus",
+        "started": "2026-04-16T14:39:48.127Z",
+        "completed": "2026-04-16T14:42:48.922Z",
+        "duration_ms": 900000,
+        "summary": "Built Calculus of Constructions: Pi types, dependent typing, bidirectional type checking, natElim, Church booleans, parser. 43 tests. Completes lambda cube: untyped→STLC→SystemF→CoC."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Add proof terms for Curry-Howard with CoC: natural number proofs, vector length proofs, existential types. Connect to existing curry-howard module. 15+ tests.",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-16T14:43:00.039Z",
+        "completed": "2026-04-16T14:45:29.996Z",
+        "duration_ms": 600000,
+        "summary": "CoC proof terms: Leibniz equality (refl, symm), sigma types, addition/double proofs, IsZero predicate, Vec type. Fixed natElim motive sort flexibility. 22 tests."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard regen, email check"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard regen, email check",
+        "started": "2026-04-16T14:45:41.326Z",
+        "completed": "2026-04-16T14:45:56.288Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed all repos. Monkey-lang and workspace pushed. Dashboard updates."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon reflection. Evaluate lambda calculus extensions. Plan evening exploration."
+        "status": "done",
+        "task": "Afternoon reflection. Evaluate lambda calculus extensions. Plan evening exploration.",
+        "started": "2026-04-16T14:46:05.427Z",
+        "completed": "2026-04-16T14:46:21.656Z",
+        "duration_ms": 120000,
+        "summary": "12 tasks complete. Depth check passed. Plan: stress-test CoC, then RISC-V GC if time. Quality strong."
       },
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Fix SMT solver conflicting bounds bug + extend SAT solver tests",
-        "task": null
+        "task": null,
+        "started": "2026-04-16T14:46:36.208Z",
+        "completed": "2026-04-16T14:46:36.349Z",
+        "duration_ms": 5000,
+        "summary": "Already completed in T3 (SMT strict inequality fix + tests)."
       },
       {
         "id": "T15",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
         "plan_ref": "T14",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-16T14:46:48.903Z",
+        "completed": "2026-04-16T14:46:49.044Z",
+        "duration_ms": 5000,
+        "summary": "Skipped — parent plan T14 already done in T3."
       },
       {
         "id": "T16",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard regen"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard regen",
+        "started": "2026-04-16T14:46:58.574Z",
+        "completed": "2026-04-16T14:46:58.716Z",
+        "duration_ms": 5000,
+        "summary": "Already pushed in T12. Skipping duplicate maintain."
       },
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Dependent type theory — CoC, LF, Idris/Agda type systems",
-        "project": "lambda-calculus"
+        "project": "lambda-calculus",
+        "started": "2026-04-16T14:47:08.601Z",
+        "completed": "2026-04-16T14:47:26.962Z",
+        "duration_ms": 120000,
+        "summary": "Explored dependent type theory extensions. Key insight: inductive types are the most impactful next step — auto-generated eliminators for user-defined types. Also: universe hierarchy, pattern matching, termination checking."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research inline caching and hidden classes in V8 — compare with monkey-lang shapes",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-16T14:47:36.381Z",
+        "completed": "2026-04-16T14:48:25.143Z",
+        "duration_ms": 120000,
+        "summary": "Monkey-lang already implements V8-style hidden classes + IC (mono/poly/mega). Transition caching exists. Missing: store ICs (only reads are cached). Architecture is solid."
       },
       {
         "id": "T21",
@@ -673,18 +712,49 @@
         "completed": "2026-04-16T14:38:49.487Z",
         "duration_ms": 600000,
         "summary": "Stress-tested type checker: found 2 bugs (let-polymorphism missing — id used with int then string failed; negate-string silently passing). Fixed both. Added let-polymorphism with proper generalization. 51 unit + 14 integration = 65 tests."
+      },
+      {
+        "id": "T23",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "PLAN: Design RISC-V garbage collector — root scanning, GC safe points, heap organization",
+        "task": null,
+        "project": "riscv-emulator",
+        "started": "2026-04-16T14:49:00.051Z"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "Add object headers to heap allocations (tag word: type tag + size). Needed for GC to walk the heap. Update alloc, string, array, closure, hash allocators. 15+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T23"
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "task": "Implement Cheney semi-space copying GC: root scanning (registers + stack), copy-and-forward, pointer update. Trigger on alloc when half-space full. 20+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T23"
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "task": "Stress-test GC: allocation-heavy programs, circular closures, long-lived vs short-lived objects. Fix bugs. 10+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T23"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
-    "blocksTotal": 22,
+    "blocksCompleted": 29,
+    "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 7,
-      "MAINTAIN": 2
+      "THINK": 5,
+      "PLAN": 5,
+      "BUILD": 13,
+      "MAINTAIN": 4,
+      "EXPLORE": 2
     }
   },
   "artifacts": [

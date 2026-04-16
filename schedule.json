@@ -156,50 +156,77 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard regen, email check",
-      "started": "2026-04-16T14:45:41.326Z"
+      "started": "2026-04-16T14:45:41.326Z",
+      "completed": "2026-04-16T14:45:56.288Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed all repos. Monkey-lang and workspace pushed. Dashboard updates."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon reflection. Evaluate lambda calculus extensions. Plan evening exploration."
+      "status": "done",
+      "task": "Afternoon reflection. Evaluate lambda calculus extensions. Plan evening exploration.",
+      "started": "2026-04-16T14:46:05.427Z",
+      "completed": "2026-04-16T14:46:21.656Z",
+      "duration_ms": 120000,
+      "summary": "12 tasks complete. Depth check passed. Plan: stress-test CoC, then RISC-V GC if time. Quality strong."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix SMT solver conflicting bounds bug + extend SAT solver tests",
-      "task": null
+      "task": null,
+      "started": "2026-04-16T14:46:36.208Z",
+      "completed": "2026-04-16T14:46:36.349Z",
+      "duration_ms": 5000,
+      "summary": "Already completed in T3 (SMT strict inequality fix + tests)."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T14",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-16T14:46:48.903Z",
+      "completed": "2026-04-16T14:46:49.044Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — parent plan T14 already done in T3."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard regen"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard regen",
+      "started": "2026-04-16T14:46:58.574Z",
+      "completed": "2026-04-16T14:46:58.716Z",
+      "duration_ms": 5000,
+      "summary": "Already pushed in T12. Skipping duplicate maintain."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Dependent type theory — CoC, LF, Idris/Agda type systems",
-      "project": "lambda-calculus"
+      "project": "lambda-calculus",
+      "started": "2026-04-16T14:47:08.601Z",
+      "completed": "2026-04-16T14:47:26.962Z",
+      "duration_ms": 120000,
+      "summary": "Explored dependent type theory extensions. Key insight: inductive types are the most impactful next step — auto-generated eliminators for user-defined types. Also: universe hierarchy, pattern matching, termination checking."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research inline caching and hidden classes in V8 — compare with monkey-lang shapes",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-16T14:47:36.381Z",
+      "completed": "2026-04-16T14:48:25.143Z",
+      "duration_ms": 120000,
+      "summary": "Monkey-lang already implements V8-style hidden classes + IC (mono/poly/mega). Transition caching exists. Missing: store ICs (only reads are cached). Architecture is solid."
     },
     {
       "id": "T21",
@@ -211,6 +238,92 @@
       "completed": "2026-04-16T14:38:49.487Z",
       "duration_ms": 600000,
       "summary": "Stress-tested type checker: found 2 bugs (let-polymorphism missing — id used with int then string failed; negate-string silently passing). Fixed both. Added let-polymorphism with proper generalization. 51 unit + 14 integration = 65 tests."
+    },
+    {
+      "id": "T23",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Design RISC-V garbage collector — root scanning, GC safe points, heap organization",
+      "task": null,
+      "project": "riscv-emulator",
+      "started": "2026-04-16T14:49:00.051Z",
+      "completed": "2026-04-16T14:49:47.170Z",
+      "duration_ms": 300000,
+      "summary": "Planned RISC-V GC: Cheney semi-space copying collector. 3 BUILD tasks: object headers, core GC, stress tests. Currently bump-only, heap at 0x10000."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Add object headers to heap allocations (tag word: type tag + size). Needed for GC to walk the heap. Update alloc, string, array, closure, hash allocators. 15+ tests.",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-16T14:49:57.250Z",
+      "completed": "2026-04-16T14:56:10.323Z",
+      "duration_ms": 1200000,
+      "summary": "Added GC object headers to all RISC-V heap allocations. Tags: STRING=1, ARRAY=2, HASH=3, CLOSURE=4, FORWARD=F. Header at ptr-4, backward compatible. 208 codegen tests pass, all other test suites pass."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Implement Cheney semi-space copying GC: root scanning (registers + stack), copy-and-forward, pointer update. Trigger on alloc when half-space full. 20+ tests.",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-16T14:56:27.745Z",
+      "completed": "2026-04-16T15:00:26.417Z",
+      "duration_ms": 1200000,
+      "summary": "Implemented Cheney semi-space copying GC: host-assisted via ecall 200, root scanning (registers+stack), copy-and-forward, forwarding pointers. GC trigger in _alloc when from-space full. All 208+ tests pass."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "task": "Stress-test GC: allocation-heavy programs, circular closures, long-lived vs short-lived objects. Fix bugs. 10+ tests.",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-16T15:00:40.348Z",
+      "completed": "2026-04-16T15:02:00.908Z",
+      "duration_ms": 600000,
+      "summary": "13 GC stress tests: allocation pressure, survival (long-lived vars, closures, arrays), correctness (fibonacci, push, string concat), edge cases. All pass."
+    },
+    {
+      "id": "T27",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Design RISC-V tail call optimization — detect tail position calls, reuse frame. Review recursive patterns in monkey-lang.",
+      "project": "riscv-emulator",
+      "started": "2026-04-16T15:03:14.507Z",
+      "completed": "2026-04-16T15:04:02.481Z",
+      "duration_ms": 180000,
+      "summary": "RISC-V already has basic self-recursive TCO (return f(args)). Gaps: implicit tail position, if-else branches, mutual recursion. Most impactful: implicit tail position + if-else."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Extend monkey-lang type checker: handle while/for loops, match expressions, enum types. Improve error messages. 20+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T15:04:41.693Z",
+      "completed": "2026-04-16T15:08:06.037Z",
+      "duration_ms": 600000,
+      "summary": "Extended type checker with 15+ new AST handlers: while, for-in, match, ternary, range, slice, try/catch, array comprehension, enum, destructuring. 64 unit + 14 integration = 78 tests."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test extended type checker: complex programs with while/for/match/try, edge cases, find bugs",
+      "project": "monkey-lang",
+      "started": "2026-04-16T15:08:35.912Z",
+      "completed": "2026-04-16T15:10:01.451Z",
+      "duration_ms": 300000,
+      "summary": "Stress-tested extended type checker: 14 complex patterns (fib+match, accumulator, nested match, while+break, try/catch, comprehension, etc). No bugs found. Ternary chain is parser issue, not type checker. 79 total tests."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add inductive type declarations to CoC: user-defined types with auto-generated eliminators. Support Bool, List, Maybe as examples. 15+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T15:10:17.626Z"
     }
   ],
   "focusProjects": [
@@ -310,6 +423,30 @@
     {
       "time": "2026-04-16T14:39:33.645Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T14:48:49.317Z",
+      "msg": "Added T23 (PLAN) after end: PLAN: Design RISC-V garbage collector — root scanning, GC safe points, heap organization"
+    },
+    {
+      "time": "2026-04-16T14:49:41.099Z",
+      "msg": "PLAN T23 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T15:02:56.339Z",
+      "msg": "Added T27 (THINK) after end: THINK: Design RISC-V tail call optimization — detect tail position calls, reuse frame. Review recursive patterns in monkey-lang."
+    },
+    {
+      "time": "2026-04-16T15:04:33.483Z",
+      "msg": "Added T28 (BUILD) after end: Extend monkey-lang type checker: handle while/for loops, match expressions, enum types. Improve error messages. 20+ tests."
+    },
+    {
+      "time": "2026-04-16T15:08:30.694Z",
+      "msg": "Added T29 (BUILD) after end: Stress-test extended type checker: complex programs with while/for/match/try, edge cases, find bugs"
+    },
+    {
+      "time": "2026-04-16T15:10:10.242Z",
+      "msg": "Added T30 (BUILD) after end: Add inductive type declarations to CoC: user-defined types with auto-generated eliminators. Support Bool, List, Maybe as examples. 15+ tests."
     }
   ]
 }

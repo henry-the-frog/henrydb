@@ -7,7 +7,6 @@
 
 ### Low
 - RISC-V: tail call optimization for recursive functions
-- RISC-V: garbage collector (bump allocation only currently)
 - RISC-V: IIFE pattern (fn(x){x}(5) direct invocation)
 - HenryDB: cost-based optimizer improvements
-- Monkey-lang: type checker integration with existing type-inference project
+- Neural-net CI: 30+ failing tests since Apr 12 — investigate

@@ -40,9 +40,20 @@ export class RiscVCodeGen {
     this.usedRegs = new Set(); // Which s-registers are in use (for save/restore)
     
     // Heap allocation
-    this.heapBase = 0x10000;  // Heap starts at 64KB
+    this.heapBase = options.heapBase || 0x10000;  // Heap starts at 64KB
+    this.heapSize = options.heapSize || 0x10000;  // 64KB heap (32KB per semi-space for GC)
     this.needsHeap = false;   // Set true if any heap allocation needed
     this.needsAlloc = false;  // Set true if _alloc subroutine needed
+    this.needsGC = false;     // Set true if GC subroutine needed
+    
+    // Object type tags for GC headers
+    // Header format: [tag (4 bits) | totalSizeInBytes (28 bits)]
+    // Header is stored at ptr-4, so the object pointer still points to first field
+    this.OBJ_TAG_STRING = 0x1;
+    this.OBJ_TAG_ARRAY = 0x2;
+    this.OBJ_TAG_HASH = 0x3;
+    this.OBJ_TAG_CLOSURE = 0x4;
+    this.OBJ_TAG_FORWARD = 0xF; // Used by GC: forwarding pointer
     
     // Type tracking for type-directed compilation
     this.varTypes = new Map(); // name → 'int' | 'string' | 'array' | 'unknown'
@@ -67,6 +78,18 @@ export class RiscVCodeGen {
   /** Emit a label */
   _emitLabel(label) {
     this._emit(`${label}:`);
+  }
+
+  /** Emit object header before allocation. Header = (tag << 28) | totalSize.
+   *  Header is stored at current gp, then gp bumps by 4.
+   *  Returns the total allocation size (header + object). */
+  _emitObjHeader(tag, objectSize) {
+    const totalSize = objectSize + 4; // +4 for header word
+    const headerVal = (tag << 28) | totalSize;
+    this._emit(`  li t0, ${headerVal >>> 0}`);  // >>> 0 for unsigned
+    this._emit(`  sw t0, 0(gp)`);
+    this._emit(`  addi gp, gp, 4`);  // skip past header
+    return totalSize;
   }
 
   /** Emit code to print string at a0 */
@@ -201,8 +224,15 @@ export class RiscVCodeGen {
     // Prologue: set up main frame
     this._emit('  # Monkey → RISC-V compiled program');
     this._emitLabel('_start');
-    // Initialize heap pointer (gp = x3)
+    // Initialize heap pointer (gp = x3) — from-space starts at heapBase
     this._emit(`  li gp, ${this.heapBase}`);
+    // Store semi-space boundaries in memory for GC
+    // from_start = heapBase
+    // from_end = heapBase + heapSize/2
+    // to_start = heapBase + heapSize/2
+    // to_end = heapBase + heapSize
+    const halfHeap = this.heapSize / 2;
+    this._emit(`  li tp, ${this.heapBase + halfHeap}`);  // tp = from-space limit (used for GC trigger)
     this._emitPrologue();
 
     // First pass: register all top-level function names (enables mutual recursion)
@@ -237,11 +267,41 @@ export class RiscVCodeGen {
     // Append _alloc subroutine if needed
     if (this.needsAlloc) {
       this._emit('');
-      this._emit('# Bump allocator: a0 = size in bytes, returns pointer in a0');
+      this._emit('# Bump allocator with GC header: a1 = size in bytes, a2 = type tag');
+      this._emit('# Returns pointer in a0 (past the header)');
       this._emitLabel('_alloc');
-      this._emit('  mv a0, gp');           // Return current heap pointer
-      this._emit('  add gp, gp, a1');      // Bump by size (a1 = size passed by caller)
-      this._emit('  ret');                   // Return with pointer in a0
+      // Check if we need GC: gp + size + 4 > tp?
+      this._emit('  add t0, gp, a1');
+      this._emit('  addi t0, t0, 4');       // +4 for header
+      this._emit('  blt t0, tp, _alloc_ok'); // if gp+size+4 < tp, proceed
+      // GC trigger: call ecall 200 (gc_collect)
+      // Save caller regs
+      this._emit('  addi sp, sp, -16');
+      this._emit('  sw a1, 0(sp)');
+      this._emit('  sw a2, 4(sp)');
+      this._emit('  sw ra, 8(sp)');
+      const halfHeap = this.heapSize / 2;
+      this._emit(`  li a0, ${this.heapBase}`);         // from_start
+      this._emit(`  li a1, ${this.heapBase + halfHeap}`); // to_start
+      this._emit(`  li a2, ${halfHeap}`);              // half_size
+      this._emit('  li a7, 200');
+      this._emit('  ecall');                            // GC collect!
+      // After GC: gp and tp are updated by the collector
+      // Swap from/to for next GC (the collector swaps the spaces)
+      this._emit('  lw a1, 0(sp)');
+      this._emit('  lw a2, 4(sp)');
+      this._emit('  lw ra, 8(sp)');
+      this._emit('  addi sp, sp, 16');
+      this._emitLabel('_alloc_ok');
+      // Write header: (tag << 28) | (size + 4)
+      this._emit('  addi t0, a1, 4');      // total size = object + header
+      this._emit('  slli t1, a2, 28');      // tag << 28
+      this._emit('  or t0, t1, t0');        // header = tag | total_size
+      this._emit('  sw t0, 0(gp)');         // store header
+      this._emit('  addi gp, gp, 4');       // skip header
+      this._emit('  mv a0, gp');            // Return ptr past header
+      this._emit('  add gp, gp, a1');       // Bump by object size
+      this._emit('  ret');
     }
 
     // Append _str_eq subroutine if needed
@@ -518,7 +578,8 @@ export class RiscVCodeGen {
         this._closureLabels.push(name);
       }
       
-      // Allocate closure object: [fn_id (4), num_captured=-1 (4)] — -1 means "plain function ref"
+      // Allocate closure object: [HEADER][fn_id (4), num_captured=-1 (4)] — -1 means "plain function ref"
+      this._emitObjHeader(this.OBJ_TAG_CLOSURE, 8);
       this._emit('  mv t1, gp');
       this._emit('  addi gp, gp, 8');
       this._emit(`  li t2, ${closureId}`);
@@ -591,6 +652,12 @@ export class RiscVCodeGen {
       // Allocate array: [length, elem0, elem1, ...]
       this._emit('  addi t4, t3, 1');
       this._emit('  slli t4, t4, 2');
+      // Emit GC header for array (dynamic size)
+      this._emit(`  addi t6, t4, 4`);        // total = object + header
+      this._emit(`  li t5, ${this.OBJ_TAG_ARRAY << 28}`);
+      this._emit(`  or t6, t5, t6`);
+      this._emit(`  sw t6, 0(gp)`);
+      this._emit(`  addi gp, gp, 4`);
       this._emit('  mv t5, gp');
       this._emit('  add gp, gp, t4');
       
@@ -740,10 +807,16 @@ export class RiscVCodeGen {
     // New length = left + right
     this._emit('  add t4, t2, t3');   // t4 = total length
     
-    // Allocate new string: 4 + totalLen * 4
-    this._emit('  mv a0, gp');        // new string base
-    this._emit('  addi t5, t4, 1');   // len + 1 (for header word)
-    this._emit('  slli t5, t5, 2');   // * 4
+    // Allocate new string: [HEADER] + 4 + totalLen * 4
+    this._emit('  addi t5, t4, 1');   // len + 1 (for length word)
+    this._emit('  slli t5, t5, 2');   // * 4 = object size
+    // Emit GC header for string (dynamic size)
+    this._emit(`  addi t6, t5, 4`);        // total = object + header
+    this._emit(`  li a0, ${this.OBJ_TAG_STRING << 28}`);
+    this._emit(`  or t6, a0, t6`);
+    this._emit(`  sw t6, 0(gp)`);
+    this._emit(`  addi gp, gp, 4`);
+    this._emit('  mv a0, gp');        // new string base (past header)
     this._emit('  add gp, gp, t5');   // bump allocator
     
     // Store new length
@@ -831,7 +904,7 @@ export class RiscVCodeGen {
     this.needsAlloc = true;
     const elements = expr.elements || [];
     const numElements = elements.length;
-    const totalSize = 4 + numElements * 4; // 4 bytes for length + 4 per element
+    const objectSize = 4 + numElements * 4; // 4 bytes for length + 4 per element
     
     // Evaluate all elements first, push onto stack
     for (let i = 0; i < numElements; i++) {
@@ -840,9 +913,10 @@ export class RiscVCodeGen {
       this._emit('  sw a0, 0(sp)');
     }
     
-    // Allocate heap space: save current gp as array base
+    // Emit object header and allocate heap space
+    this._emitObjHeader(this.OBJ_TAG_ARRAY, objectSize);
     this._emit(`  mv t1, gp`);            // t1 = array base pointer
-    this._emit(`  addi gp, gp, ${totalSize}`); // bump allocator
+    this._emit(`  addi gp, gp, ${objectSize}`); // bump allocator
     
     // Store length at [base+0]
     this._emit(`  li t2, ${numElements}`);
@@ -864,12 +938,13 @@ export class RiscVCodeGen {
     this._comment(`string "${expr.value.slice(0, 20)}${expr.value.length > 20 ? '...' : ''}"`);
     const chars = expr.value;
     const len = chars.length;
-    // String layout: [length (4 bytes)][char0 (4 bytes)][char1 (4 bytes)]...
-    const totalSize = 4 + len * 4;
+    // String layout: [HEADER][length (4 bytes)][char0 (4 bytes)][char1 (4 bytes)]...
+    const objectSize = 4 + len * 4;
     
-    // Allocate on heap
+    // Emit object header and allocate on heap
+    this._emitObjHeader(this.OBJ_TAG_STRING, objectSize);
     this._emit('  mv t1, gp');
-    this._emit(`  addi gp, gp, ${totalSize}`);
+    this._emit(`  addi gp, gp, ${objectSize}`);
     
     // Store length
     this._emit(`  li t2, ${len}`);
@@ -891,8 +966,8 @@ export class RiscVCodeGen {
     this._comment('hash literal');
     const pairs = [...expr.pairs]; // Convert Map to array of [key, value]
     const numPairs = pairs.length;
-    // Hash layout: [num_pairs (4)][key0 (4)][val0 (4)][key1 (4)][val1 (4)]...
-    const totalSize = 4 + numPairs * 8;
+    // Hash layout: [HEADER][num_pairs (4)][key0 (4)][val0 (4)][key1 (4)][val1 (4)]...
+    const objectSize = 4 + numPairs * 8;
     
     // Evaluate all keys and values, push to stack
     for (let i = 0; i < numPairs; i++) {
@@ -905,9 +980,10 @@ export class RiscVCodeGen {
       this._emit('  sw a0, 0(sp)');
     }
     
-    // Allocate on heap
+    // Emit object header and allocate on heap
+    this._emitObjHeader(this.OBJ_TAG_HASH, objectSize);
     this._emit('  mv t1, gp');
-    this._emit(`  addi gp, gp, ${totalSize}`);
+    this._emit(`  addi gp, gp, ${objectSize}`);
     
     // Store num_pairs
     this._emit(`  li t2, ${numPairs}`);
@@ -1146,9 +1222,15 @@ export class RiscVCodeGen {
     // Calculate new length
     this._emit('  sub t3, t2, t0');   // t3 = end - start = new length
     
-    // Allocate new array: [length, elem0, elem1, ...]
+    // Allocate new array: [HEADER][length, elem0, elem1, ...]
     this._emit('  addi t4, t3, 1');   // t4 = length + 1 (for length field)
-    this._emit('  slli t4, t4, 2');   // t4 *= 4
+    this._emit('  slli t4, t4, 2');   // t4 *= 4 = object size
+    // Emit GC header
+    this._emit(`  addi t6, t4, 4`);
+    this._emit(`  li t5, ${this.OBJ_TAG_ARRAY << 28}`);
+    this._emit(`  or t6, t5, t6`);
+    this._emit(`  sw t6, 0(gp)`);
+    this._emit(`  addi gp, gp, 4`);
     this._emit('  mv t5, gp');        // t5 = new array ptr
     this._emit('  add gp, gp, t4');   // bump allocator
     
@@ -1309,8 +1391,9 @@ export class RiscVCodeGen {
     // Identify free variables using closure analysis
     const freeVars = this._closureInfo?.get(funcLit) || [];
     
-    // Allocate closure object on heap: [fn_id (4)] [num_captured (4)] [var0 (4)] [var1 (4)] ...
+    // Allocate closure object on heap: [HEADER][fn_id (4)] [num_captured (4)] [var0 (4)] [var1 (4)] ...
     const closureSize = 8 + freeVars.length * 4;
+    this._emitObjHeader(this.OBJ_TAG_CLOSURE, closureSize);
     this._emit('  mv t1, gp');
     this._emit(`  addi gp, gp, ${closureSize}`);
     
@@ -1531,11 +1614,17 @@ export class RiscVCodeGen {
         // Get old length
         this._emit('  lw t1, 0(t0)');     // t1 = old length
         
-        // Allocate new array: (length + 1 + 1) * 4 bytes (header + old elements + new)
+        // Allocate new array: [HEADER] + (length + 1 + 1) * 4 bytes (length word + old elements + new)
         this._emit('  addi t3, t1, 1');   // t3 = new length
-        this._emit('  addi t4, t3, 1');   // t4 = new length + 1 (header)
-        this._emit('  slli t4, t4, 2');   // t4 * 4 = total size
-        this._emit('  mv a0, gp');        // new array base
+        this._emit('  addi t4, t3, 1');   // t4 = new length + 1 (length word)
+        this._emit('  slli t4, t4, 2');   // t4 * 4 = object size
+        // Emit GC header
+        this._emit(`  addi t6, t4, 4`);
+        this._emit(`  li a0, ${this.OBJ_TAG_ARRAY << 28}`);
+        this._emit(`  or t6, a0, t6`);
+        this._emit(`  sw t6, 0(gp)`);
+        this._emit(`  addi gp, gp, 4`);
+        this._emit('  mv a0, gp');        // new array base (past header)
         this._emit('  add gp, gp, t4');   // bump allocator
         
         // Store new length
