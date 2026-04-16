@@ -897,3 +897,79 @@ describe('Showcase: Advanced algorithms', () => {
     assert.equal(result, '15');
   });
 });
+
+describe('Showcase: More algorithms', () => {
+  it('minimum spanning set (array unique)', () => {
+    const result = run(`
+      let contains = fn(arr, val) {
+        let i = 0
+        while (i < len(arr)) {
+          if (arr[i] == val) { return 1 }
+          set i = i + 1
+        }
+        return 0
+      }
+      let unique = fn(arr) {
+        let result = []
+        for (x in arr) {
+          if (!contains(result, x)) {
+            set result = push(result, x)
+          }
+        }
+        return result
+      }
+      let u = unique([1, 3, 2, 1, 3, 5, 4, 2, 5])
+      puts(len(u))
+      for (x in u) { puts(x) }
+    `);
+    assert.equal(result, '513254');
+  });
+
+  it('two-sum (brute force)', () => {
+    const result = run(`
+      let two_sum = fn(arr, target) {
+        let i = 0
+        while (i < len(arr)) {
+          let j = i + 1
+          while (j < len(arr)) {
+            if (arr[i] + arr[j] == target) {
+              puts(i)
+              puts(j)
+              return 0
+            }
+            set j = j + 1
+          }
+          set i = i + 1
+        }
+        return -1
+      }
+      two_sum([2, 7, 11, 15], 9)
+    `);
+    assert.equal(result, '01');  // indices 0 and 1 (2 + 7 = 9)
+  });
+
+  it('max subarray sum (Kadane)', () => {
+    const result = run(`
+      let max_subarray = fn(arr) {
+        let max_so_far = arr[0]
+        let max_ending = arr[0]
+        let i = 1
+        while (i < len(arr)) {
+          let val = arr[i]
+          if (max_ending + val > val) {
+            set max_ending = max_ending + val
+          } else {
+            set max_ending = val
+          }
+          if (max_ending > max_so_far) {
+            set max_so_far = max_ending
+          }
+          set i = i + 1
+        }
+        return max_so_far
+      }
+      puts(max_subarray([0 - 2, 1, 0 - 3, 4, 0 - 1, 2, 1, 0 - 5, 4]))
+    `);
+    assert.equal(result, '6');  // [4, -1, 2, 1] = 6
+  });
+});
