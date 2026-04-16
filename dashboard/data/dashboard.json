@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T00:22:16.863Z",
+  "generated": "2026-04-16T00:23:57.472Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "RISC-V: Add null literal, ternary (cond ? a : b), do-while loop, break/continue support. Quick wins — each is simple codegen. 8+ tests.",
-    "startedAt": "2026-04-16T00:22:16.863Z",
-    "taskId": "T164"
+    "completedAt": "2026-04-16T00:23:57.472Z",
+    "taskId": "T164",
+    "summary": "Null literal, ternary (cond ? a : b), do-while loop. 7 new tests, 82 codegen total. Quick wins adding more language features.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1443,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 160,
+    "blocksCompleted": 161,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 16,
-      "BUILD": 112,
+      "BUILD": 113,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }

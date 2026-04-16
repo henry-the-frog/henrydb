@@ -514,3 +514,9 @@ describe('Null, ternary, do-while', () => {
     assert.equal(run('puts((3 > 2 ? 10 : 20) + 5)'), '15');
   });
 });
+
+describe('Pipe operator (|>)', () => {
+  it('simple pipe', () => { assert.equal(run('5 |> puts'), '5'); });
+  it('pipe to function', () => { assert.equal(run('let double = fn(x) { x * 2 }; puts(5 |> double)'), '10'); });
+  it('chained pipes', () => { assert.equal(run('let double = fn(x) { x * 2 }; let add1 = fn(x) { x + 1 }; puts(5 |> double |> add1)'), '11'); });
+});

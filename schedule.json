@@ -1765,10 +1765,21 @@
     {
       "id": "T164",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: Add null literal, ternary (cond ? a : b), do-while loop, break/continue support. Quick wins — each is simple codegen. 8+ tests.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:22:16.826Z"
+      "started": "2026-04-16T00:22:16.826Z",
+      "completed": "2026-04-16T00:23:57.435Z",
+      "duration_ms": 300000,
+      "summary": "Null literal, ternary (cond ? a : b), do-while loop. 7 new tests, 82 codegen total. Quick wins adding more language features."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "RISC-V: add SetStatement (set x = expr) support for variable mutation in non-while contexts. Also add IndexAssignExpression for array element mutation. 6+ tests.",
+      "project": "monkey-lang",
+      "skip_reason": ""
     }
   ],
   "focusProjects": [
@@ -2404,6 +2415,14 @@
     {
       "time": "2026-04-16T00:22:10.730Z",
       "msg": "Added T164 (BUILD) after end: RISC-V: Add null literal, ternary (cond ? a : b), do-while loop, break/continue support. Quick wins — each is simple codegen. 8+ tests."
+    },
+    {
+      "time": "2026-04-16T00:24:28.873Z",
+      "msg": "Added T165 (BUILD) after end: RISC-V: add SetStatement (set x = expr) support for variable mutation in non-while contexts. Also add IndexAssignExpression for array element mutation. 6+ tests."
+    },
+    {
+      "time": "2026-04-16T00:25:09.687Z",
+      "msg": "Removed T165: "
     }
   ]
 }
