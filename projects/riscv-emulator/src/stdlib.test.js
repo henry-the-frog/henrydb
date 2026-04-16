@@ -103,3 +103,25 @@ describe('Standard Library: New Functions', () => {
     assert.equal(run('let pos = fn(x) { x > 0 }; puts(all([1, 0 - 1, 3], pos))'), '0');
   });
 });
+
+describe('Standard Library: Comprehensive', () => {
+  it('map and sum', () => { assert.equal(run('puts(sum(map([1,2,3], make_multiplier(10))))'), '60'); });
+  it('filter and count', () => { assert.equal(run('puts(len(filter(range(1, 21), is_prime)))'), '8'); });
+  it('power of 2', () => { assert.equal(run('puts(power(2, 16))'), '65536'); });
+  it('gcd of large', () => { assert.equal(run('puts(gcd(1071, 462))'), '21'); });
+  it('product of range', () => { assert.equal(run('puts(product([1,2,3,4,5,6]))'), '720'); });
+  it('arr_max of range', () => { assert.equal(run('puts(arr_max(range(1, 100)))'), '99'); });
+  it('arr_min of range', () => { assert.equal(run('puts(arr_min(range(1, 100)))'), '1'); });
+  it('contains with HOF', () => { assert.equal(run('puts(contains([2,4,6,8], 6))'), '1'); });
+  it('count_if with closure', () => {
+    assert.equal(run('puts(count_if(range(1, 101), make_checker(50)))'), '50');
+  });
+  it('apply_n power', () => { assert.equal(run('let double = fn(x) { x * 2 }; puts(apply_n(double, 10, 1))'), '1024'); });
+  it('compose with builtins', () => { assert.equal(run('let neg = fn(x) { 0 - x }; let inc = fn(x) { x + 1 }; puts(compose(neg, inc, 5))'), '-6'); });
+  it('twice with adder', () => { assert.equal(run('puts(twice(make_adder(5), 0))'), '10'); });
+  it('abs of computed', () => { assert.equal(run('puts(abs(3 - 10))'), '7'); });
+  it('min max of same', () => { assert.equal(run('puts(min(5, 5)); puts(max(5, 5))'), '55'); });
+  it('list operations', () => {
+    assert.equal(run('let l = cons(1, cons(2, cons(3, []))); puts(list_len(l)); puts(is_nil(l)); puts(is_nil([]))'), '301');
+  });
+});

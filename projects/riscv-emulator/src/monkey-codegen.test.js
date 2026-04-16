@@ -687,3 +687,25 @@ describe('🎯 800th test', () => {
     assert.equal(result, '328');
   });
 });
+
+describe('Language feature matrix', () => {
+  it('if without else', () => { assert.equal(run('if (true) { puts(1) }'), '1'); });
+  it('if false without else', () => { assert.equal(run('if (false) { puts(1) }; puts(2)'), '2'); });
+  it('nested function calls', () => { assert.equal(run('let add = fn(a, b) { a + b }; puts(add(add(1, 2), add(3, 4)))'), '10'); });
+  it('string equality false', () => { assert.equal(run('puts("hello" == "world")'), '0'); });
+  it('array first/last', () => { assert.equal(run('let a = [10, 20, 30]; puts(first(a)); puts(last(a))'), '1030'); });
+  it('negative numbers', () => { assert.equal(run('puts(0 - 42)'), '-42'); });
+  it('modulo', () => { assert.equal(run('puts(17 % 5)'), '2'); });
+  it('multiplication chain', () => { assert.equal(run('puts(2 * 3 * 4 * 5)'), '120'); });
+  it('division', () => { assert.equal(run('puts(100 / 4)'), '25'); });
+  it('comparison chain in variable', () => { assert.equal(run('let x = 5 > 3; puts(x)'), '1'); });
+  it('for-in on literal', () => { assert.equal(run('for (x in [1,2,3]) { puts(x) }'), '123'); });
+  it('while countdown', () => { assert.equal(run('let i = 3; while (i > 0) { puts(i); set i = i - 1 }'), '321'); });
+  it('recursive fibonacci', () => { assert.equal(run('let fib = fn(n) { if (n <= 1) { return n }; return fib(n-1) + fib(n-2) }; puts(fib(7))'), '13'); });
+  it('mutual recursion basic', () => {
+    assert.equal(run('let a = fn(n) { if (n <= 0) { return 0 }; return 1 + b(n-1) }; let b = fn(n) { if (n <= 0) { return 0 }; return 1 + a(n-1) }; puts(a(5))'), '5');
+  });
+  it('closure HOF compose', () => {
+    assert.equal(run('let add1 = fn(x) { x + 1 }; let mul2 = fn(x) { x * 2 }; let compose = fn(f, g, x) { f(g(x)) }; puts(compose(add1, mul2, 10))'), '21');
+  });
+});
