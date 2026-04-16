@@ -1,8 +1,9 @@
 # Algorithm W — Hindley-Milner Type Inference
 
-uses: 1
+uses: 3
 created: 2026-04-07
-tags: type-inference, hindley-milner, unification, polymorphism
+last-used: 2026-04-16
+tags: type-inference, hindley-milner, unification, polymorphism, monkey-lang
 
 ## What It Does
 Infers types for an entire program without type annotations. The algorithm behind Haskell, ML, and Rust's type inference.

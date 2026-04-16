@@ -102,30 +102,49 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard regen, knowledge capture",
-      "started": "2026-04-16T14:33:35.686Z"
+      "started": "2026-04-16T14:33:35.686Z",
+      "completed": "2026-04-16T14:34:01.449Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed all 4 repos. Dashboard regen (running). Knowledge system updated (algorithm-w scratch note). monkey-lang added as embedded repo warning — needs submodule setup later."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection. Depth check. Review type checker quality."
+      "status": "done",
+      "task": "Mid-day reflection. Depth check. Review type checker quality.",
+      "started": "2026-04-16T14:34:13.452Z",
+      "completed": "2026-04-16T14:34:34.357Z",
+      "duration_ms": 120000,
+      "summary": "Depth check passed (surprises + learning). Type checker quality: 45 tests, missing loops/match/enum/modules. Decision: stress-test type checker before building new features (depth > breadth)."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Lambda calculus extensions — dependent types or effect system",
-      "task": null
+      "task": null,
+      "started": "2026-04-16T14:39:02.631Z",
+      "completed": "2026-04-16T14:39:38.894Z",
+      "duration_ms": 120000,
+      "summary": "Planned CoC (Calculus of Constructions) as natural next step on lambda cube. 2 BUILD tasks: core CoC implementation + proof terms for Curry-Howard."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Build Calculus of Constructions (CoC): dependent types, Pi types, type-level computation. Parser + evaluator + type checker with bidirectional typing. 30+ tests.",
       "plan_ref": "T10",
-      "project": "lambda-calculus"
+      "project": "lambda-calculus",
+      "started": "2026-04-16T14:39:48.127Z"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Add proof terms for Curry-Howard with CoC: natural number proofs, vector length proofs, existential types. Connect to existing curry-howard module. 15+ tests.",
+      "status": "upcoming",
+      "plan_ref": "T10"
     },
     {
       "id": "T12",
@@ -173,6 +192,17 @@
       "status": "upcoming",
       "task": "Research inline caching and hidden classes in V8 — compare with monkey-lang shapes",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Stress-test monkey-lang type checker: edge cases, error paths, complex programs, find bugs",
+      "project": "monkey-lang",
+      "started": "2026-04-16T14:34:51.656Z",
+      "completed": "2026-04-16T14:38:49.487Z",
+      "duration_ms": 600000,
+      "summary": "Stress-tested type checker: found 2 bugs (let-polymorphism missing — id used with int then string failed; negate-string silently passing). Fixed both. Added let-polymorphism with proper generalization. 51 unit + 14 integration = 65 tests."
     }
   ],
   "focusProjects": [
@@ -264,6 +294,14 @@
     {
       "time": "2026-04-16T14:24:51.941Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T14:34:46.779Z",
+      "msg": "Added T21 (BUILD) after end: Stress-test monkey-lang type checker: edge cases, error paths, complex programs, find bugs"
+    },
+    {
+      "time": "2026-04-16T14:39:33.645Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }

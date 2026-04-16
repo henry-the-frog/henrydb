@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-16T14:33:35.722Z",
+  "generated": "2026-04-16T14:39:48.163Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard regen, knowledge capture",
-    "startedAt": "2026-04-16T14:33:35.722Z",
-    "taskId": "T8"
+    "mode": "BUILD",
+    "task": "Build Calculus of Constructions (CoC): dependent types, Pi types, type-level computation. Parser + evaluator + type checker with bidirectional typing. 30+ tests.",
+    "startedAt": "2026-04-16T14:39:48.163Z",
+    "taskId": "T11"
   },
   "schedule": {
     "date": "2026-04-16",
@@ -542,52 +542,79 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Monkey-lang type checker — connect type-inference project to monkey-lang compilation pipeline",
         "task": null,
-        "started": "2026-04-16T14:23:26.465Z"
+        "started": "2026-04-16T14:23:26.465Z",
+        "completed": "2026-04-16T14:24:59.526Z",
+        "duration_ms": 120000,
+        "summary": "Monkey-lang already has type annotations in AST (paramTypes, returnType). Need to build checker module using Algorithm W. Planned 2 BUILD tasks: core type checker + pipeline integration."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Build monkey-lang type checker module: walk AST, infer types using Algorithm W, check annotations, report errors. Core types: int, bool, string, array, hash, fn. 20+ tests.",
         "plan_ref": "T6",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-16T14:25:09.613Z",
+        "completed": "2026-04-16T14:31:36.362Z",
+        "duration_ms": 900000,
+        "summary": "Built monkey-lang type checker: Algorithm W inference, parse type annotations (fn(x: int) -> int), 31 tests, all 1365+ existing tests pass. Added -> token to lexer, paramTypes/returnType in parser."
       },
       {
         "id": "T20",
         "mode": "BUILD",
         "task": "Integrate type checker into compilation pipeline: run before compile/eval, flag --typecheck, type error formatting. 10+ integration tests.",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-16T14:31:48.743Z",
+        "completed": "2026-04-16T14:33:24.848Z",
+        "duration_ms": 600000,
+        "summary": "Integrated type checker into REPL with --typecheck flag. Type errors reported before compilation. 14 integration tests. Backward compatible — annotations parsed but not enforced without flag."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard regen, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard regen, knowledge capture",
+        "started": "2026-04-16T14:33:35.686Z",
+        "completed": "2026-04-16T14:34:01.449Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed all 4 repos. Dashboard regen (running). Knowledge system updated (algorithm-w scratch note). monkey-lang added as embedded repo warning — needs submodule setup later."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day reflection. Depth check. Review type checker quality."
+        "status": "done",
+        "task": "Mid-day reflection. Depth check. Review type checker quality.",
+        "started": "2026-04-16T14:34:13.452Z",
+        "completed": "2026-04-16T14:34:34.357Z",
+        "duration_ms": 120000,
+        "summary": "Depth check passed (surprises + learning). Type checker quality: 45 tests, missing loops/match/enum/modules. Decision: stress-test type checker before building new features (depth > breadth)."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Lambda calculus extensions — dependent types or effect system",
-        "task": null
+        "task": null,
+        "started": "2026-04-16T14:39:02.631Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Build Calculus of Constructions (CoC): dependent types, Pi types, type-level computation. Parser + evaluator + type checker with bidirectional typing. 30+ tests.",
         "plan_ref": "T10",
         "project": "lambda-calculus"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Add proof terms for Curry-Howard with CoC: natural number proofs, vector length proofs, existential types. Connect to existing curry-howard module. 15+ tests.",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -635,18 +662,29 @@
         "status": "upcoming",
         "task": "Research inline caching and hidden classes in V8 — compare with monkey-lang shapes",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Stress-test monkey-lang type checker: edge cases, error paths, complex programs, find bugs",
+        "project": "monkey-lang",
+        "started": "2026-04-16T14:34:51.656Z",
+        "completed": "2026-04-16T14:38:49.487Z",
+        "duration_ms": 600000,
+        "summary": "Stress-tested type checker: found 2 bugs (let-polymorphism missing — id used with int then string failed; negate-string silently passing). Fixed both. Added let-polymorphism with proper generalization. 51 unit + 14 integration = 65 tests."
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 9,
-    "blocksTotal": 20,
+    "blocksCompleted": 13,
+    "blocksTotal": 22,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 4,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 5,
+      "MAINTAIN": 2
     }
   },
   "artifacts": [
