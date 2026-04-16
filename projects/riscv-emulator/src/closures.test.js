@@ -442,3 +442,18 @@ describe('Closure edge cases', () => {
     assert.equal(run('let make_adder = fn(n) { fn(x) { x + n } }; let apply = fn(f, x) { f(x) }; puts(apply(make_adder(100), 23))'), '123');
   });
 });
+
+describe('Closure stress — many patterns', () => {
+  it('adder with multiple calls', () => {
+    assert.equal(run('let add = fn(n) { fn(x) { x + n } }; let f = add(100); puts(f(1)); puts(f(2)); puts(f(3))'), '101102103');
+  });
+  it('compose two closures', () => {
+    assert.equal(run('let make_adder = fn(n) { fn(x) { x + n } }; let make_mul = fn(n) { fn(x) { x * n } }; let compose = fn(f, g, x) { f(g(x)) }; puts(compose(make_adder(1), make_mul(10), 5))'), '51');
+  });
+  it('closure with boolean logic', () => {
+    assert.equal(run('let make_range_check = fn(lo, hi) { fn(x) { x >= lo && x <= hi } }; let in_range = make_range_check(10, 20); puts(in_range(15)); puts(in_range(25))'), '10');
+  });
+  it('nested closure with for loop', () => {
+    assert.equal(run('let make_counter = fn(start) { fn(step) { start + step } }; let c = make_counter(100); let s = 0; for (let i = 0; i < 5; set i = i + 1) { set s = s + c(i) }; puts(s)'), '510');
+  });
+});
