@@ -856,6 +856,14 @@
       "completed": "2026-04-16T17:07:03.441Z",
       "duration_ms": 600000,
       "summary": "Lambda lifting: free vars become extra params, nested λ → top-level defs. Partial application for captured vars. 11 tests. 792 lambda-calculus tests. 35 PL modules."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Build pattern matching compilation: convert match expressions to decision trees. Handles constructors, wildcards, nested patterns. 12+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T17:07:41.407Z"
     }
   ],
   "focusProjects": [
@@ -1171,6 +1179,10 @@
     {
       "time": "2026-04-16T17:05:30.888Z",
       "msg": "Added T78 (BUILD) after end: Build lambda lifting for lambda-calculus: lift nested lambdas to top level by adding free vars as parameters. Connects closure-convert + defunctionalize. 10+ tests."
+    },
+    {
+      "time": "2026-04-16T17:07:31.569Z",
+      "msg": "Added T79 (BUILD) after end: Build pattern matching compilation: convert match expressions to decision trees. Handles constructors, wildcards, nested patterns. 12+ tests."
     }
   ]
 }
