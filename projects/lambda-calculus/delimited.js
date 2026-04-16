@@ -155,8 +155,10 @@ function applyCPS(fn, arg, k) {
     return evalCPS(fn.body, fn.env.extend(fn.param, arg), k);
   }
   if (fn.tag === 'Cont') {
-    // Applying a captured continuation
-    return fn.fn(arg);
+    // Applying a captured continuation: result must flow through current k
+    // fn.fn(arg) runs the captured computation fragment, producing a value
+    // That value must then continue through the calling context's continuation
+    return k(fn.fn(arg));
   }
   throw new Error(`Cannot apply: ${fn.tag}`);
 }

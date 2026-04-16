@@ -123,10 +123,14 @@ test('nested resets with abort in inner', () => {
 // First-class continuations
 // ============================================================
 
-test('continuation as function value', () => {
-  // reset(let f = shift(k => k) in f(10)) = 10
+test('continuation as function value (returns captured k)', () => {
+  // reset(let f = shift(k => k) in f(10))
+  // shift captures k = λv. let f = v in f(10), then returns k itself
+  // So reset returns the captured continuation (a Cont value)
   const expr = reset(elet('f', shift('k', evar('k')), app(evar('f'), num(10))));
-  assert.deepStrictEqual(evaluate(expr), new Num(10));
+  const result = evaluate(expr);
+  assert.equal(result.tag, 'Cont');
+  // But we CAN apply the continuation outside: k(id) = let f = id in f(10) = id(10) = 10
 });
 
 test('continuation stored and called later', () => {
@@ -146,6 +150,119 @@ test('shift in multiplication', () => {
   const expr = reset(op('*', num(2), shift('k', 
     op('+', app(evar('k'), num(3)), app(evar('k'), num(5))))));
   assert.deepStrictEqual(evaluate(expr), new Num(16));
+});
+
+// ============================================================
+// Stress tests: multi-shot continuations
+// ============================================================
+
+test('multi-shot: k applied 3 times', () => {
+  // reset(1 + shift(k => k(1) + k(2) + k(3)))
+  // k = λx. 1 + x
+  // k(1) + k(2) + k(3) = 2 + 3 + 4 = 9
+  const expr = reset(op('+', num(1), shift('k', 
+    op('+', op('+', app(evar('k'), num(1)), app(evar('k'), num(2))), app(evar('k'), num(3))))));
+  assert.deepStrictEqual(evaluate(expr), new Num(9));
+});
+
+test('multi-shot: k in nested arithmetic', () => {
+  // reset(3 * shift(k => k(2) * k(4)))
+  // k = λx. 3 * x
+  // k(2) * k(4) = 6 * 12 = 72
+  const expr = reset(op('*', num(3), shift('k',
+    op('*', app(evar('k'), num(2)), app(evar('k'), num(4))))));
+  assert.deepStrictEqual(evaluate(expr), new Num(72));
+});
+
+test('multi-shot: k(k(k(2)))', () => {
+  // reset(1 + shift(k => k(k(k(2)))))
+  // k = λx. 1 + x
+  // k(k(k(2))) = k(k(3)) = k(4) = 5
+  const expr = reset(op('+', num(1), shift('k', 
+    app(evar('k'), app(evar('k'), app(evar('k'), num(2)))))));
+  assert.deepStrictEqual(evaluate(expr), new Num(5));
+});
+
+// ============================================================
+// Stress tests: nested shift/reset
+// ============================================================
+
+test('nested: shift inside shift body', () => {
+  // reset(1 + shift(k => reset(2 + shift(j => j(k(10))))))
+  // k = λx. 1 + x, j = λx. 2 + x
+  // j(k(10)) = j(11) = 13
+  const expr = reset(op('+', num(1), shift('k',
+    reset(op('+', num(2), shift('j',
+      app(evar('j'), app(evar('k'), num(10)))))))));
+  assert.deepStrictEqual(evaluate(expr), new Num(13));
+});
+
+test('nested: abort in nested reset', () => {
+  // reset(10 + reset(20 + shift(k => 99)))
+  // Inner reset: 20 + shift(k => 99) → abort with 99
+  // Outer: 10 + 99 = 109
+  const expr = reset(op('+', num(10), reset(op('+', num(20), shift('_k', num(99))))));
+  assert.deepStrictEqual(evaluate(expr), new Num(109));
+});
+
+test('double nested resets with continuation passing', () => {
+  // reset(reset(shift(k => k(5)) + 1) * 2)
+  // Inner shift captures k = λx. x + 1, returns k(5) = 6
+  // Inner reset returns 6
+  // Outer: 6 * 2 = 12
+  const expr = reset(op('*', reset(op('+', shift('k', app(evar('k'), num(5))), num(1))), num(2)));
+  assert.deepStrictEqual(evaluate(expr), new Num(12));
+});
+
+// ============================================================
+// Stress tests: encoding patterns
+// ============================================================
+
+test('encoding: nondeterministic choice', () => {
+  // Nondeterminism: shift captures "the future" and runs it with each choice
+  // reset(let x = shift(k => [k(1), k(2), k(3)]) in x * x)
+  // k = λx. x * x → [1, 4, 9]
+  // But our evaluator returns the list value from shift body
+  // We need to check the shift body result
+  const expr = reset(
+    elet('x', shift('k', 
+      // Can't build list in our language, so simulate with arithmetic
+      // k(1) + k(2) + k(3)
+      op('+', op('+', app(evar('k'), num(1)), app(evar('k'), num(2))), app(evar('k'), num(3)))
+    ), op('*', evar('x'), evar('x')))
+  );
+  // k(1) + k(2) + k(3) = 1 + 4 + 9 = 14
+  assert.deepStrictEqual(evaluate(expr), new Num(14));
+});
+
+test('encoding: state passing', () => {
+  // Simulate get/put with shift/reset
+  // reset(let x = shift(k => k(42)) in x + x)
+  // k = λv. v + v, k(42) = 84
+  const expr = reset(elet('x', shift('k', app(evar('k'), num(42))), op('+', evar('x'), evar('x'))));
+  assert.deepStrictEqual(evaluate(expr), new Num(84));
+});
+
+test('encoding: exception with handler', () => {
+  // reset(1 + (2 * shift(k => str("error")))) = "error"
+  const expr = reset(op('+', num(1), op('*', num(2), shift('_k', str('error')))));
+  assert.deepStrictEqual(evaluate(expr), new Str('error'));
+});
+
+// ============================================================
+// Edge cases
+// ============================================================
+
+test('shift with identity continuation application', () => {
+  // reset(shift(k => k(42)))  → k = identity, k(42) = 42
+  const expr = reset(shift('k', app(evar('k'), num(42))));
+  assert.deepStrictEqual(evaluate(expr), new Num(42));
+});
+
+test('reset around pure value with outer computation', () => {
+  // 10 + reset(20) = 30
+  const expr = op('+', num(10), reset(num(20)));
+  assert.deepStrictEqual(evaluate(expr), new Num(30));
 });
 
 // ============================================================

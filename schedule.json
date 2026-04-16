@@ -558,6 +558,14 @@
       "completed": "2026-04-16T16:08:56.471Z",
       "duration_ms": 600000,
       "summary": "Higher-kinded types: kind system (★, ★→★, ★→★→★), Functor/Monad typeclasses, 4 Functor instances, 3 Monad instances, all 6 monad laws verified. 28 tests. 441 lambda-calculus tests. 23 PL modules."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "DEPTH CHECK: Stress-test delimited continuations. Try to break shift/reset with nested resets, multi-shot continuations, continuation composition, recursive shift. Find at least 1 bug.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T16:09:35.473Z"
     }
   ],
   "focusProjects": [
@@ -765,6 +773,10 @@
     {
       "time": "2026-04-16T16:06:46.360Z",
       "msg": "Added T51 (BUILD) after end: Build higher-kinded types module: type constructors, Functor/Applicative/Monad typeclasses, kind system. 15+ tests."
+    },
+    {
+      "time": "2026-04-16T16:09:31.418Z",
+      "msg": "Added T52 (BUILD) after end: DEPTH CHECK: Stress-test delimited continuations. Try to break shift/reset with nested resets, multi-shot continuations, continuation composition, recursive shift. Find at least 1 bug."
     }
   ]
 }
