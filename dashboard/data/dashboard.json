@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T16:36:15.250Z",
+  "generated": "2026-04-16T16:38:02.552Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build SSA form conversion for monkey-lang: rename variables so each is assigned exactly once, insert phi nodes at CFG join points. 12+ tests.",
-    "completedAt": "2026-04-16T16:36:15.250Z",
-    "taskId": "T64",
-    "summary": "SSA form: Cytron algorithm, phi node insertion, variable renaming. Pipeline now: AST → CFG → SSA → Liveness → DCE. 11 tests.",
+    "task": "Build SSA constant propagation: sparse conditional constant propagation (SCCP) on SSA form. Propagate constants through phi nodes. 10+ tests.",
+    "completedAt": "2026-04-16T16:38:02.552Z",
+    "taskId": "T65",
+    "summary": "SSA constant propagation: SCCP with lattice (⊤→Const→⊥), worklist algorithm, chained propagation (x=2,y=x*3=6,z=y+1=7). Full pipeline: AST→CFG→SSA→ConstProp→Liveness→DCE. 13 tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 64,
+    "blocksCompleted": 65,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 6,
-      "BUILD": 42,
+      "BUILD": 43,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
