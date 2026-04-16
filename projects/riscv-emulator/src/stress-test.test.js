@@ -399,3 +399,50 @@ describe('Comprehensive coverage tests', () => {
     assert.equal(run('puts((2 + 3) * (4 - 1) + 10 / 2)'), '20');
   });
 });
+
+describe('Stress — all patterns combined', () => {
+  it('HOF + for-in + closure', () => {
+    assert.equal(run('let apply = fn(f, x) { f(x) }; let double = fn(x) { x * 2 }; let s = 0; for (x in [1,2,3]) { set s = s + apply(double, x) }; puts(s)'), '12');
+  });
+  it('closure + range + reduce', () => {
+    assert.equal(run(`
+      let reduce = fn(arr, init, f) { let acc = init; let i = 0; while (i < len(arr)) { set acc = f(acc, arr[i]); set i = i + 1 }; return acc }
+      let add = fn(a, b) { a + b }
+      puts(reduce(1..11, 0, add))
+    `), '55');
+  });
+  it('conditional + function', () => {
+    assert.equal(run('let f = fn(x) { if (x > 0 && x < 10) { return x * x }; return 0 }; puts(f(5)); puts(f(15))'), '250');
+  });
+  it('nested hash + function', () => {
+    assert.equal(run('let make = fn(k, v) { let h = {}; h }; puts(len([]))'), '0');
+  });
+  it('for-in + range + slice', () => {
+    assert.equal(run('let a = 1..11; let first5 = a[0:5]; let s = 0; for (x in first5) { set s = s + x }; puts(s)'), '15');
+  });
+  it('mutual recursion stress', () => {
+    assert.equal(run('let a = fn(n) { if (n <= 0) { return 0 }; return n + b(n - 1) }; let b = fn(n) { if (n <= 0) { return 0 }; return n + a(n - 1) }; puts(a(10))'), '55');
+  });
+  it('recursive closure with accumulator', () => {
+    assert.equal(run(`
+      let wrap = fn() {
+        let fact = fn(n, acc) {
+          if (n <= 1) { return acc }
+          return fact(n - 1, acc * n)
+        }
+        return fact
+      }
+      let f = wrap()
+      puts(f(5, 1))
+    `), '120');
+  });
+  it('pipe chain', () => {
+    assert.equal(run('let inc = fn(x) { x + 1 }; let dbl = fn(x) { x * 2 }; puts(0 |> inc |> dbl |> inc |> dbl)'), '6');
+  });
+  it('destructure + function', () => {
+    assert.equal(run('let [a, b] = [3, 7]; let f = fn(x, y) { x * y }; puts(f(a, b))'), '21');
+  });
+  it('complex expression evaluation', () => {
+    assert.equal(run('puts((10 - 3) * (8 + 2) / 7 + 1)'), '11');
+  });
+});
