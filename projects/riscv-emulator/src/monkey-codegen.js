@@ -433,6 +433,8 @@ export class RiscVCodeGen {
         return this._compileDoWhile(expr);
       case 'ForExpression':
         return this._compileForExpr(expr);
+      case 'SliceExpression':
+        return this._compileSlice(expr);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -1021,6 +1023,63 @@ export class RiscVCodeGen {
     }
     this._compileExpression(expr.condition);
     this._emit(`  bnez a0, ${loopStart}`);
+  }
+
+  _compileSlice(expr) {
+    this._comment('slice');
+    this.needsAlloc = true;
+    
+    // Compile the array
+    this._compileExpression(expr.left);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');   // save array ptr
+    
+    // Compile start index
+    this._compileExpression(expr.start);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');   // save start
+    
+    // Compile end index
+    this._compileExpression(expr.end);
+    this._emit('  mv t2, a0');       // t2 = end
+    this._emit('  lw t0, 0(sp)');    // t0 = start
+    this._emit('  lw t1, 4(sp)');    // t1 = array ptr
+    this._emit('  addi sp, sp, 8');
+    
+    // Calculate new length
+    this._emit('  sub t3, t2, t0');   // t3 = end - start = new length
+    
+    // Allocate new array: [length, elem0, elem1, ...]
+    this._emit('  addi t4, t3, 1');   // t4 = length + 1 (for length field)
+    this._emit('  slli t4, t4, 2');   // t4 *= 4
+    this._emit('  mv t5, gp');        // t5 = new array ptr
+    this._emit('  add gp, gp, t4');   // bump allocator
+    
+    // Store length
+    this._emit('  sw t3, 0(t5)');
+    
+    // Copy elements
+    this._emit('  li t4, 0');         // i = 0
+    const copyLoop = this._label('slice_copy');
+    const copyEnd = this._label('slice_end');
+    this._emitLabel(copyLoop);
+    this._emit(`  bge t4, t3, ${copyEnd}`);
+    this._emit('  add t6, t0, t4');   // src index = start + i
+    this._emit('  addi t6, t6, 1');   // +1 for length field
+    this._emit('  slli t6, t6, 2');
+    this._emit('  add t6, t1, t6');
+    this._emit('  lw a0, 0(t6)');     // load src element
+    this._emit('  addi a1, t4, 1');   // dst index = i + 1 (for length field)
+    this._emit('  slli a1, a1, 2');
+    this._emit('  add a1, t5, a1');
+    this._emit('  sw a0, 0(a1)');     // store dst element
+    this._emit('  addi t4, t4, 1');
+    this._emit(`  j ${copyLoop}`);
+    this._emitLabel(copyEnd);
+    
+    // Result: pointer to new array
+    this._emit('  mv a0, t5');
+    this._lastExprType = 'array';
   }
 
   _compileForExpr(expr) {

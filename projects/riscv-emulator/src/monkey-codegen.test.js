@@ -540,3 +540,18 @@ describe('C-style for loop', () => {
     assert.equal(run('let s = 0; for (let i = 1; i <= 100; set i = i + 1) { set s = s + i }; puts(s)'), '5050');
   });
 });
+
+describe('Array slicing', () => {
+  it('basic slice', () => {
+    assert.equal(run('let a = [10,20,30,40,50]; let s = a[1:3]; puts(s[0]); puts(s[1])'), '2030');
+  });
+  it('slice length', () => {
+    assert.equal(run('let a = [1,2,3,4,5]; puts(len(a[0:3]))'), '3');
+  });
+  it('slice to end', () => {
+    assert.equal(run('let a = [1,2,3,4,5]; let s = a[3:5]; puts(s[0]); puts(s[1])'), '45');
+  });
+  it('single element slice', () => {
+    assert.equal(run('let a = [10,20,30]; puts(a[1:2][0])'), '20');
+  });
+});

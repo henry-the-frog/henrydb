@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T00:33:12.469Z",
+  "generated": "2026-04-16T00:35:03.978Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "RISC-V: Add optional chaining (?.) and null coalescing. obj?.key returns 0 if obj is null. Also add AssignExpression (set) compilation. More language coverage.",
-    "startedAt": "2026-04-16T00:33:12.469Z",
-    "taskId": "T166"
+    "completedAt": "2026-04-16T00:35:03.978Z",
+    "taskId": "T166",
+    "summary": "C-style for loop compilation. for(init; cond; update) { body }. 3 new tests, 91 codegen total. Also added ForExpression to codegen.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-15",
@@ -1441,12 +1443,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 161,
+    "blocksCompleted": 162,
     "blocksTotal": 133,
     "modeDistribution": {
       "THINK": 18,
       "PLAN": 16,
-      "BUILD": 113,
+      "BUILD": 114,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }
