@@ -133,3 +133,18 @@ describe('String edge cases', () => {
     `), '[ok]');
   });
 });
+
+describe('String regression', () => {
+  it('string as hash key', () => { assert.equal(run('let h = {"key": 42}; puts(h["key"])'), '42'); });
+  it('multi-char concat', () => { assert.equal(run('puts("ab" + "cd" + "ef")'), 'abcdef'); });
+  it('string comparison operators', () => {
+    assert.equal(run('puts("abc" == "abc"); puts("abc" != "xyz")'), '11');
+  });
+  it('empty string operations', () => { assert.equal(run('puts(len("")); puts("" + "hi")'), '0hi'); });
+  it('string from closure', () => {
+    assert.equal(run('let greet = fn(name) { "Hello " + name }; puts(greet("World"))'), 'Hello World');
+  });
+  it('string equality in if', () => {
+    assert.equal(run('let s = "yes"; if (s == "yes") { puts(1) } else { puts(0) }'), '1');
+  });
+});

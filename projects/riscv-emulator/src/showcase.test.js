@@ -973,3 +973,135 @@ describe('Showcase: More algorithms', () => {
     assert.equal(result, '6');  // [4, -1, 2, 1] = 6
   });
 });
+
+describe('Showcase: Interview Problems', () => {
+  it('reverse array', () => {
+    const result = run(`
+      let reverse = fn(arr) {
+        let result = []
+        let i = len(arr) - 1
+        while (i >= 0) { set result = push(result, arr[i]); set i = i - 1 }
+        return result
+      }
+      let r = reverse([1,2,3,4,5])
+      for (x in r) { puts(x) }
+    `);
+    assert.equal(result, '54321');
+  });
+
+  it('count occurrences', () => {
+    const result = run(`
+      let count = fn(arr, target) {
+        let c = 0
+        for (x in arr) { if (x == target) { set c = c + 1 } }
+        return c
+      }
+      puts(count([1,2,3,2,1,2,3,2], 2))
+    `);
+    assert.equal(result, '4');
+  });
+
+  it('array flatten (1 level)', () => {
+    const result = run(`
+      let flatten = fn(arr) {
+        let result = []
+        for (sub in arr) {
+          for (x in sub) {
+            set result = push(result, x)
+          }
+        }
+        return result
+      }
+      let f = flatten([[1,2],[3,4],[5,6]])
+      puts(len(f))
+      for (x in f) { puts(x) }
+    `);
+    assert.equal(result, '6123456');
+  });
+  
+  it('sum of digits', () => {
+    const result = run(`
+      let digit_sum = fn(n) {
+        let sum = 0
+        while (n > 0) {
+          set sum = sum + n % 10
+          set n = n / 10
+        }
+        return sum
+      }
+      puts(digit_sum(12345))
+      puts(digit_sum(99999))
+    `);
+    assert.equal(result, '1545');
+  });
+  
+  it('power set size', () => {
+    const result = run(`
+      let pow = fn(base, exp) {
+        if (exp == 0) { return 1 }
+        return base * pow(base, exp - 1)
+      }
+      puts(pow(2, 5))
+    `);
+    assert.equal(result, '32');
+  });
+});
+
+describe('Showcase: Data Processing', () => {
+  it('running average', () => {
+    const result = run(`
+      let running_avg = fn(arr) {
+        let sum = 0
+        let results = []
+        let i = 0
+        while (i < len(arr)) {
+          set sum = sum + arr[i]
+          set results = push(results, sum / (i + 1))
+          set i = i + 1
+        }
+        return results
+      }
+      let avgs = running_avg([10, 20, 30])
+      puts(avgs[0])
+      puts(avgs[1])
+      puts(avgs[2])
+    `);
+    assert.equal(result, '101520');
+  });
+  
+  it('dot product', () => {
+    const result = run(`
+      let dot = fn(a, b) {
+        let sum = 0
+        let i = 0
+        while (i < len(a)) {
+          set sum = sum + a[i] * b[i]
+          set i = i + 1
+        }
+        return sum
+      }
+      puts(dot([1, 2, 3], [4, 5, 6]))
+    `);
+    assert.equal(result, '32');
+  });
+  
+  it('array zip', () => {
+    const result = run(`
+      let zip = fn(a, b) {
+        let result = []
+        let i = 0
+        while (i < len(a) && i < len(b)) {
+          set result = push(result, [a[i], b[i]])
+          set i = i + 1
+        }
+        return result
+      }
+      let z = zip([1,2,3], [10,20,30])
+      puts(z[0][0])
+      puts(z[0][1])
+      puts(z[2][0])
+      puts(z[2][1])
+    `);
+    assert.equal(result, '110330');
+  });
+});

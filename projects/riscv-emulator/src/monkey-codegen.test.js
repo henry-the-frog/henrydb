@@ -709,3 +709,32 @@ describe('Language feature matrix', () => {
     assert.equal(run('let add1 = fn(x) { x + 1 }; let mul2 = fn(x) { x * 2 }; let compose = fn(f, g, x) { f(g(x)) }; puts(compose(add1, mul2, 10))'), '21');
   });
 });
+
+describe('Comprehensive regression tests', () => {
+  it('empty function', () => { assert.equal(run('let f = fn() { 42 }; puts(f())'), '42'); });
+  it('function no args', () => { assert.equal(run('let pi = fn() { 314 }; puts(pi())'), '314'); });
+  it('function 3 args', () => { assert.equal(run('let sum3 = fn(a,b,c) { a+b+c }; puts(sum3(1,2,3))'), '6'); });
+  it('function 4 args', () => { assert.equal(run('let f = fn(a,b,c,d) { a*b+c*d }; puts(f(2,3,4,5))'), '26'); });
+  it('while false body', () => { assert.equal(run('while (false) { puts(1) }; puts(0)'), '0'); });
+  it('if true no else', () => { assert.equal(run('if (true) { puts(42) }'), '42'); });
+  it('nested if', () => { assert.equal(run('if (true) { if (true) { puts(1) } }'), '1'); });
+  it('let chain', () => { assert.equal(run('let a = 1; let b = a + 1; let c = b + 1; puts(c)'), '3'); });
+  it('set chain', () => { assert.equal(run('let x = 1; set x = x * 2; set x = x * 2; set x = x * 2; puts(x)'), '8'); });
+  it('boolean comparison', () => { assert.equal(run('puts(true == true)'), '1'); });
+  it('boolean inequality', () => { assert.equal(run('puts(true == false)'), '0'); });
+  it('not operator', () => { assert.equal(run('puts(!true); puts(!false)'), '01'); });
+  it('unary minus', () => { assert.equal(run('puts(0 - 1)'), '-1'); });
+  it('large integer', () => { assert.equal(run('puts(1000000)'), '1000000'); });
+  it('expression grouping', () => { assert.equal(run('puts((1 + 2) * (3 + 4))'), '21'); });
+  it('hash with int key', () => { assert.equal(run('let h = {42: 100}; puts(h[42])'), '100'); });
+  it('array push chain', () => { assert.equal(run('let a = push(push([], 1), 2); puts(a[0]); puts(a[1])'), '12'); });
+  it('string len', () => { assert.equal(run('puts(len("test"))'), '4'); });
+  it('array len', () => { assert.equal(run('puts(len([1,2,3,4,5]))'), '5'); });
+  it('empty array push', () => { assert.equal(run('let a = push([], 99); puts(a[0])'), '99'); });
+  it('function as expression', () => { assert.equal(run('puts(fn(x) { x + 1 })'), '65536'); }); // prints closure address
+  it('multiple puts', () => { assert.equal(run('puts(1); puts(2); puts(3)'), '123'); });
+  it('consecutive lets', () => { assert.equal(run('let a = 10; let b = 20; let c = 30; puts(a + b + c)'), '60'); });
+  it('function scope', () => { assert.equal(run('let x = 1; let f = fn() { let x = 2; x }; puts(f()); puts(x)'), '21'); });
+  it('comparison operators', () => { assert.equal(run('puts(1 < 2); puts(2 > 1); puts(1 <= 1); puts(1 >= 1); puts(1 == 1); puts(1 != 2)'), '111111'); });
+  it('arithmetic ops', () => { assert.equal(run('puts(10 + 5); puts(10 - 5); puts(10 * 5); puts(10 / 5); puts(10 % 3)'), '1555021'); });
+});
