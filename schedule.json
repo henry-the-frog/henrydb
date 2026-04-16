@@ -827,10 +827,13 @@
     {
       "id": "T76",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build A-normal form (ANF) conversion for lambda-calculus: all intermediate values named, no nested applications. Foundation for compilation. 10+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T17:01:17.015Z"
+      "started": "2026-04-16T17:01:17.015Z",
+      "completed": "2026-04-16T17:03:06.192Z",
+      "duration_ms": 600000,
+      "summary": "ANF conversion: all intermediates named, CPS-based transform. f(g(x))→let t=g(x) in f(t). Validator + evaluator. 11 tests. 781 lambda-calculus tests. 34 PL modules."
     }
   ],
   "focusProjects": [

@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-16T17:01:17.051Z",
+  "generated": "2026-04-16T17:03:06.228Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Build A-normal form (ANF) conversion for lambda-calculus: all intermediate values named, no nested applications. Foundation for compilation. 10+ tests.",
-    "startedAt": "2026-04-16T17:01:17.051Z",
-    "taskId": "T76"
+    "completedAt": "2026-04-16T17:03:06.228Z",
+    "taskId": "T76",
+    "summary": "ANF conversion: all intermediates named, CPS-based transform. f(g(x))→let t=g(x) in f(t). Validator + evaluator. 11 tests. 781 lambda-calculus tests. 34 PL modules.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -747,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 75,
+    "blocksCompleted": 76,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 6,
-      "BUILD": 52,
+      "BUILD": 53,
       "MAINTAIN": 8,
       "EXPLORE": 2
     }
