@@ -853,3 +853,47 @@ describe('Showcase: Fun Programs', () => {
     assert.equal(result, '1011');
   });
 });
+
+describe('Showcase: Advanced algorithms', () => {
+  it('insertion sort (via push)', () => {
+    const result = run(`
+      let insert_sorted = fn(arr, val) {
+        let result = []
+        let inserted = false
+        let i = 0
+        while (i < len(arr)) {
+          if (!inserted && val <= arr[i]) {
+            set result = push(result, val)
+            set inserted = true
+          }
+          set result = push(result, arr[i])
+          set i = i + 1
+        }
+        if (!inserted) { set result = push(result, val) }
+        return result
+      }
+      let sort = fn(arr) {
+        let result = []
+        for (x in arr) {
+          set result = insert_sorted(result, x)
+        }
+        return result
+      }
+      let sorted = sort([5, 3, 8, 1, 9, 2, 7, 4, 6])
+      for (x in sorted) { puts(x) }
+    `);
+    assert.equal(result, '123456789');
+  });
+
+  it('matrix trace (diagonal sum)', () => {
+    const result = run(`
+      let m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+      let trace = 0
+      for (let i = 0; i < 3; set i = i + 1) {
+        set trace = trace + m[i][i]
+      }
+      puts(trace)
+    `);
+    assert.equal(result, '15');
+  });
+});
