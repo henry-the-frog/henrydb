@@ -488,3 +488,13 @@ describe('Logical operators (&& and ||)', () => {
     assert.equal(run('if (true || false) { puts(1) } else { puts(0) }'), '1');
   });
 });
+
+describe('Switch/case statement', () => {
+  it('matches first case', () => { assert.equal(run('let x = 1; switch (x) { case 1: puts(10) case 2: puts(20) default: puts(0) }'), '10'); });
+  it('matches second case', () => { assert.equal(run('let x = 2; switch (x) { case 1: puts(10) case 2: puts(20) default: puts(0) }'), '20'); });
+  it('falls through to default', () => { assert.equal(run('let x = 99; switch (x) { case 1: puts(10) default: puts(0) }'), '0'); });
+  it('switch on expression', () => { assert.equal(run('switch (3 + 4) { case 7: puts(1) default: puts(0) }'), '1'); });
+  it('switch with function call result', () => {
+    assert.equal(run('let f = fn(x) { x * 2 }; switch (f(5)) { case 10: puts(1) case 20: puts(2) default: puts(0) }'), '1');
+  });
+});

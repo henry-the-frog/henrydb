@@ -421,6 +421,8 @@ export class RiscVCodeGen {
         return this._compileForIn(expr);
       case 'FunctionLiteral':
         return this._compileFunctionLiteralExpr(expr);
+      case 'SwitchExpression':
+        return this._compileSwitchExpr(expr);
       default:
         this.errors.push(`Unsupported expression: ${type}`);
     }
@@ -983,6 +985,42 @@ export class RiscVCodeGen {
     
     this._emitLabel(endLabel);
     this._lastExprType = 'unknown';
+  }
+
+  _compileSwitchExpr(expr) {
+    this._comment('switch');
+    const endLabel = this._label('switch_end');
+    
+    // Compile switch value
+    this._compileExpression(expr.value);
+    this._emit('  addi sp, sp, -4');
+    this._emit('  sw a0, 0(sp)');  // Save switch value
+    
+    // Generate case branches
+    for (const c of expr.cases) {
+      const nextCase = this._label('switch_next');
+      
+      // Load switch value
+      this._emit('  lw t0, 0(sp)');
+      // Compile case value
+      this._compileExpression(c.value);
+      // Compare
+      this._emit(`  bne t0, a0, ${nextCase}`);
+      
+      // Match! Execute body
+      this._compileExpression(c.body);
+      this._emit(`  j ${endLabel}`);
+      
+      this._emitLabel(nextCase);
+    }
+    
+    // Default case
+    if (expr.defaultCase) {
+      this._compileExpression(expr.defaultCase);
+    }
+    
+    this._emitLabel(endLabel);
+    this._emit('  addi sp, sp, 4');  // Restore stack
   }
 
   _compileForIn(expr) {

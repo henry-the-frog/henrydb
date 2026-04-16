@@ -1743,10 +1743,21 @@
     {
       "id": "T162",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "RISC-V: end-to-end integration test. A complex program using ALL features: closures, HOF, recursion, strings, arrays, hashes, for-in, while, if-else, &&/||. Single test that exercises the entire backend.",
       "project": "monkey-lang",
-      "started": "2026-04-16T00:14:42.527Z"
+      "started": "2026-04-16T00:14:42.527Z",
+      "completed": "2026-04-16T00:17:27.156Z",
+      "duration_ms": 300000,
+      "summary": "Comprehensive E2E test: closures, HOF, recursion, mutual recursion, strings, arrays, hashes, &&/||, while, recursive closures, 3-level closures, cross-function calls. All 12 features in 1 program."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "RISC-V: add switch/case statement support. Compile monkey switch expressions to RISC-V branch chains. 5+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T00:18:58.463Z"
     }
   ],
   "focusProjects": [
@@ -2374,6 +2385,10 @@
     {
       "time": "2026-04-16T00:14:36.540Z",
       "msg": "Added T162 (BUILD) after end: RISC-V: end-to-end integration test. A complex program using ALL features: closures, HOF, recursion, strings, arrays, hashes, for-in, while, if-else, &&/||. Single test that exercises the entire backend."
+    },
+    {
+      "time": "2026-04-16T00:18:47.491Z",
+      "msg": "Added T163 (BUILD) after end: RISC-V: add switch/case statement support. Compile monkey switch expressions to RISC-V branch chains. 5+ tests."
     }
   ]
 }
