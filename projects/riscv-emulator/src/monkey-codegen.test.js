@@ -644,3 +644,12 @@ describe('Range operator (..)', () => {
     assert.equal(run('let s = 0; for (x in 1..11) { set s = s + x }; puts(s)'), '55');
   });
 });
+
+describe('More language features', () => {
+  it('dot access on hash', () => {
+    assert.equal(run('let obj = {"name": "test", "val": 42}; puts(obj.val)'), '42');
+  });
+  it('for-in on range', () => {
+    assert.equal(run('let s = 0; for (x in 0..5) { set s = s + x * x }; puts(s)'), '30');
+  });
+});
