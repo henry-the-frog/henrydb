@@ -178,6 +178,79 @@ test('substitution composition', () => {
 });
 
 // ============================================================
+// Stress tests: complex programs
+// ============================================================
+
+test('compose: (λf.λg.λx. f(g(x)))', () => {
+  // compose : (b → c) → (a → b) → a → c
+  const compose = elam('f', elam('g', elam('x', eapp(evar('f'), eapp(evar('g'), evar('x'))))));
+  const { subst, type } = infer(compose);
+  const resolved = subst.apply(type);
+  assert.equal(resolved.tag, 'TFun');
+  // Should be (t1 → t2) → (t3 → t1) → t3 → t2
+});
+
+test('flip: λf.λx.λy. f y x', () => {
+  const flip = elam('f', elam('x', elam('y', eapp(eapp(evar('f'), evar('y')), evar('x')))));
+  const { subst, type } = infer(flip);
+  const resolved = subst.apply(type);
+  assert.equal(resolved.tag, 'TFun');
+});
+
+test('church numerals type: λf.λx. f(f(x))', () => {
+  const two = elam('f', elam('x', eapp(evar('f'), eapp(evar('f'), evar('x')))));
+  const { subst, type } = infer(two);
+  const resolved = subst.apply(type);
+  // (a → a) → a → a
+  assert.equal(resolved.tag, 'TFun');
+  assert.equal(resolved.param.tag, 'TFun');
+  // param and return of the inner function should match
+});
+
+test('nested let: let x = 1 in let y = 2 in x', () => {
+  const { subst, type } = infer(elet('x', eint, elet('y', ebool, evar('x'))));
+  assert.equal(subst.apply(type).toString(), 'Int');
+});
+
+test('let with function: let f = λx.x in let g = λy. f y in g 42', () => {
+  const prog = elet('f', elam('x', evar('x')),
+    elet('g', elam('y', eapp(evar('f'), evar('y'))),
+      eapp(evar('g'), eint)));
+  const { subst, type } = infer(prog);
+  assert.equal(subst.apply(type).toString(), 'Int');
+});
+
+test('apply: λf.λx. f x', () => {
+  const apply = elam('f', elam('x', eapp(evar('f'), evar('x'))));
+  const { subst, type } = infer(apply);
+  const resolved = subst.apply(type);
+  // (a → b) → a → b
+  assert.equal(resolved.tag, 'TFun');
+  assert.equal(resolved.param.tag, 'TFun');
+});
+
+test('S combinator: λf.λg.λx. f x (g x)', () => {
+  const S = elam('f', elam('g', elam('x',
+    eapp(eapp(evar('f'), evar('x')), eapp(evar('g'), evar('x'))))));
+  const { subst, type } = infer(S);
+  const resolved = subst.apply(type);
+  assert.equal(resolved.tag, 'TFun');
+});
+
+test('K combinator: λx.λy. x', () => {
+  const K = elam('x', elam('y', evar('x')));
+  const { subst, type } = infer(K);
+  const resolved = subst.apply(type);
+  assert.equal(resolved.tag, 'TFun');
+  // a → b → a
+});
+
+test('omega: cannot type λx. x x (infinite type)', () => {
+  const omega = elam('x', eapp(evar('x'), evar('x')));
+  assert.throws(() => infer(omega), /Infinite|occurs/);
+});
+
+// ============================================================
 // Report
 // ============================================================
 
