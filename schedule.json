@@ -507,10 +507,13 @@
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build delimited continuations: shift/reset operators, CPS transform, answer type modification. Connect to effects. 15+ tests.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T15:57:52.455Z"
+      "started": "2026-04-16T15:57:52.455Z",
+      "completed": "2026-04-16T15:59:27.464Z",
+      "duration_ms": 600000,
+      "summary": "Delimited continuations (shift/reset). CPS evaluator, first-class continuations, encodes exceptions+state+nondet. Classic test 2*shift(k=>k(3)+k(5))=16. 22 tests. 381 lambda-calculus tests. 20 PL modules."
     }
   ],
   "focusProjects": [
