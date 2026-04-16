@@ -250,6 +250,119 @@ test('proved theorem is stored', () => {
 });
 
 // ============================================================
+// Non-trivial theorems
+// ============================================================
+
+test('modus ponens: A → (A → B) → B', () => {
+  const pa = new ProofAssistant();
+  const mpType = new Pi('A', star, new Pi('B', star,
+    arrow(new Var('A'), arrow(arrow(new Var('A'), new Var('B')), new Var('B')))));
+  pa.theorem('modus_ponens', mpType);
+  pa.tactic('intros', ['A', 'B', 'a', 'f']);
+  pa.tactic('apply', 'f');
+  pa.tactic('assumption');
+  const proof = pa.qed();
+  assert.equal(proof.name, 'modus_ponens');
+});
+
+test('transitivity: (A → B) → (B → C) → A → C', () => {
+  const pa = new ProofAssistant();
+  const transType = new Pi('A', star, new Pi('B', star, new Pi('C', star,
+    arrow(arrow(new Var('A'), new Var('B')),
+      arrow(arrow(new Var('B'), new Var('C')),
+        arrow(new Var('A'), new Var('C')))))));
+  pa.theorem('trans', transType);
+  pa.tactic('intros', ['A', 'B', 'C', 'f', 'g', 'a']);
+  // Goal is C, have g:B→C and f:A→B and a:A
+  pa.tactic('apply', 'g');
+  // Goal is B
+  pa.tactic('apply', 'f');
+  // Goal is A
+  pa.tactic('assumption');
+  const proof = pa.qed();
+  assert.ok(proof);
+});
+
+test('function composition type', () => {
+  const pa = new ProofAssistant();
+  // ∀A B C. (B → C) → (A → B) → A → C
+  const compType = new Pi('A', star, new Pi('B', star, new Pi('C', star,
+    arrow(arrow(new Var('B'), new Var('C')),
+      arrow(arrow(new Var('A'), new Var('B')),
+        arrow(new Var('A'), new Var('C')))))));
+  pa.theorem('compose', compType);
+  pa.tactic('intros', ['A', 'B', 'C', 'g', 'f', 'x']);
+  pa.tactic('apply', 'g');
+  pa.tactic('apply', 'f');
+  pa.tactic('assumption');
+  const proof = pa.qed();
+  assert.ok(proof);
+});
+
+test('S combinator: (A → B → C) → (A → B) → A → C', () => {
+  const pa = new ProofAssistant();
+  const sType = new Pi('A', star, new Pi('B', star, new Pi('C', star,
+    arrow(arrow(new Var('A'), arrow(new Var('B'), new Var('C'))),
+      arrow(arrow(new Var('A'), new Var('B')),
+        arrow(new Var('A'), new Var('C')))))));
+  pa.theorem('S_comb', sType);
+  pa.tactic('intros', ['A', 'B', 'C', 'f', 'g', 'x']);
+  // Goal: C with f:A→B→C, g:A→B, x:A
+  // Need: f x (g x)
+  // apply f → goal becomes A, and we get B→C applied to something
+  // This requires a more sophisticated apply that partially applies
+  // For now, use exact with the direct term
+  pa.tactic('exact', new App(new App(new Var('f'), new Var('x')), new App(new Var('g'), new Var('x'))));
+  const proof = pa.qed();
+  assert.ok(proof);
+});
+
+test('double negation introduction: A → ¬¬A', () => {
+  const pa = new ProofAssistant();
+  // ¬A = A → ⊥ where ⊥ = ∀P.P
+  // ¬¬A = (A → ⊥) → ⊥
+  // So A → ¬¬A = A → (A → ∀P.P) → ∀P.P
+  // Simpler: A → (A → B) → B (which is modus ponens specialized)
+  const dblNegType = new Pi('A', star,
+    arrow(new Var('A'), 
+      arrow(arrow(new Var('A'), new Pi('P', star, new Var('P'))),
+        new Pi('P', star, new Var('P')))));
+  pa.theorem('dbl_neg_intro', dblNegType);
+  pa.tactic('intros', ['A', 'a', 'not_a']);
+  // Goal: ∀P.P (bottom) with a:A and not_a:A→⊥
+  // Apply not_a to a
+  pa.tactic('apply', 'not_a');
+  pa.tactic('assumption');
+  const proof = pa.qed();
+  assert.ok(proof);
+});
+
+test('Eq reflexivity: ∀(n:ℕ). Eq ℕ n n', () => {
+  const pa = new ProofAssistant();
+  const goalType = new Pi('n', nat, eqType(nat, new Var('n'), new Var('n')));
+  pa.theorem('eq_refl', goalType);
+  pa.tactic('intro', 'n');
+  pa.tactic('refl');
+  const proof = pa.qed();
+  assert.ok(proof);
+});
+
+test('1 + 1 = 2 via simpl + refl', () => {
+  resetNames();
+  const pa = new ProofAssistant();
+  const sum = new NatElim(
+    new Lam('_', nat, nat), one,
+    new Lam('k', nat, new Lam('ih', nat, new Succ(new Var('ih')))),
+    one);
+  const goal = eqType(nat, sum, two);
+  pa.theorem('one_plus_one', goal);
+  pa.tactic('simpl');
+  pa.tactic('refl');
+  const proof = pa.qed();
+  assert.ok(proof);
+});
+
+// ============================================================
 // Report
 // ============================================================
 
