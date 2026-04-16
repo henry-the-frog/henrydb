@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-16T15:59:27.500Z",
+  "generated": "2026-04-16T16:01:50.976Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build delimited continuations: shift/reset operators, CPS transform, answer type modification. Connect to effects. 15+ tests.",
-    "completedAt": "2026-04-16T15:59:27.500Z",
-    "taskId": "T47",
-    "summary": "Delimited continuations (shift/reset). CPS evaluator, first-class continuations, encodes exceptions+state+nondet. Classic test 2*shift(k=>k(3)+k(5))=16. 22 tests. 381 lambda-calculus tests. 20 PL modules.",
-    "durationMs": 600000
+    "task": "Improve monkey-lang match type inference: infer types from literal patterns, bind pattern variables with correct types, check exhaustiveness. 10+ tests.",
+    "completedAt": "2026-04-16T16:01:50.976Z",
+    "taskId": "T48",
+    "summary": "Match type inference: pattern-based scrutinee narrowing (int/string/bool/null/array patterns). Variable bindings, wildcard support. 68 total type checker tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 48,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 30,
+      "BUILD": 31,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }

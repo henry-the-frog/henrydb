@@ -514,6 +514,17 @@
       "completed": "2026-04-16T15:59:27.464Z",
       "duration_ms": 600000,
       "summary": "Delimited continuations (shift/reset). CPS evaluator, first-class continuations, encodes exceptions+state+nondet. Classic test 2*shift(k=>k(3)+k(5))=16. 22 tests. 381 lambda-calculus tests. 20 PL modules."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Improve monkey-lang match type inference: infer types from literal patterns, bind pattern variables with correct types, check exhaustiveness. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:00:44.585Z",
+      "completed": "2026-04-16T16:01:50.941Z",
+      "duration_ms": 300000,
+      "summary": "Match type inference: pattern-based scrutinee narrowing (int/string/bool/null/array patterns). Variable bindings, wildcard support. 68 total type checker tests."
     }
   ],
   "focusProjects": [
@@ -705,6 +716,10 @@
     {
       "time": "2026-04-16T15:57:45.853Z",
       "msg": "Added T47 (BUILD) after end: Build delimited continuations: shift/reset operators, CPS transform, answer type modification. Connect to effects. 15+ tests."
+    },
+    {
+      "time": "2026-04-16T16:00:38.231Z",
+      "msg": "Added T48 (BUILD) after end: Improve monkey-lang match type inference: infer types from literal patterns, bind pattern variables with correct types, check exhaustiveness. 10+ tests."
     }
   ]
 }
