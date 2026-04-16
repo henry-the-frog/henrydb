@@ -636,6 +636,17 @@
       "completed": "2026-04-16T16:25:13.277Z",
       "duration_ms": 600000,
       "summary": "CFG builder: basic blocks, dominators (iterative fixed-point), immediate dominators, natural loop detection, DOT export. Found ConstStatement bug (class doesnt exist). 16 tests."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build dead code elimination pass for monkey-lang using CFG: find unreachable basic blocks, remove dead code after returns. 10+ tests.",
+      "project": "monkey-lang",
+      "started": "2026-04-16T16:25:39.479Z",
+      "completed": "2026-04-16T16:26:47.379Z",
+      "duration_ms": 600000,
+      "summary": "Dead code elimination: removes code after return, constant-folds if(true/false), dead variable detection (assigned but never read). 13 tests."
     }
   ],
   "focusProjects": [
@@ -871,6 +882,10 @@
     {
       "time": "2026-04-16T16:22:11.713Z",
       "msg": "Added T58 (BUILD) after end: Build monkey-lang control flow graph (CFG): extract basic blocks from AST, build CFG with edges for branches/loops, compute dominators. 12+ tests."
+    },
+    {
+      "time": "2026-04-16T16:25:34.923Z",
+      "msg": "Added T59 (BUILD) after end: Build dead code elimination pass for monkey-lang using CFG: find unreachable basic blocks, remove dead code after returns. 10+ tests."
     }
   ]
 }

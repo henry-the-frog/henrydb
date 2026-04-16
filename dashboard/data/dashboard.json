@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-16T16:25:13.314Z",
+  "generated": "2026-04-16T16:26:47.414Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Build monkey-lang control flow graph (CFG): extract basic blocks from AST, build CFG with edges for branches/loops, compute dominators. 12+ tests.",
-    "completedAt": "2026-04-16T16:25:13.314Z",
-    "taskId": "T58",
-    "summary": "CFG builder: basic blocks, dominators (iterative fixed-point), immediate dominators, natural loop detection, DOT export. Found ConstStatement bug (class doesnt exist). 16 tests.",
+    "task": "Build dead code elimination pass for monkey-lang using CFG: find unreachable basic blocks, remove dead code after returns. 10+ tests.",
+    "completedAt": "2026-04-16T16:26:47.414Z",
+    "taskId": "T59",
+    "summary": "Dead code elimination: removes code after return, constant-folds if(true/false), dead variable detection (assigned but never read). 13 tests.",
     "durationMs": 600000
   },
   "schedule": {
@@ -749,12 +749,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 58,
+    "blocksCompleted": 59,
     "blocksTotal": 26,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 6,
-      "BUILD": 37,
+      "BUILD": 38,
       "MAINTAIN": 7,
       "EXPLORE": 2
     }
