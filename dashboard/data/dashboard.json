@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-16T22:17:49.570Z",
+  "generated": "2026-04-16T22:30:14.881Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "RISC-V: implement general tail call optimization (not just self-recursion). Replace jal+epilogue+ret with epilogue+j for any tail call.",
-    "completedAt": "2026-04-16T22:17:49.570Z",
-    "taskId": "T229",
-    "summary": "General tail call requires understanding closure calling convention. Self-recursion TCO already works. Reverted general TCO — closures are heap-allocated structures, not simple function pointers. Needs more investigation.",
-    "durationMs": 300000
+    "task": "RISC-V: stress-test the peephole optimizer. Verify optimizations are correct by comparing optimized vs unoptimized output.",
+    "completedAt": "2026-04-16T22:30:14.881Z",
+    "taskId": "T232",
+    "summary": "31 peephole optimizer stress tests, all pass. 24 semantic equivalence tests (12 programs × 2 backends) confirm optimized output matches unoptimized. 5 pattern unit tests. Peephole optimizer is correct.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-16",
@@ -2791,12 +2791,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 228,
+    "blocksCompleted": 231,
     "blocksTotal": 217,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 8,
-      "BUILD": 195,
+      "BUILD": 198,
       "MAINTAIN": 10,
       "EXPLORE": 2
     }

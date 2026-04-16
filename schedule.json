@@ -2461,6 +2461,39 @@
       "completed": "2026-04-16T22:17:49.505Z",
       "duration_ms": 300000,
       "summary": "General tail call requires understanding closure calling convention. Self-recursion TCO already works. Reverted general TCO — closures are heap-allocated structures, not simple function pointers. Needs more investigation."
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: stress test GAN training — verify generator and discriminator losses converge correctly.",
+      "project": "neural-net",
+      "started": "2026-04-16T22:18:32.612Z",
+      "completed": "2026-04-16T22:21:24.850Z",
+      "duration_ms": 300000,
+      "summary": "4 GAN stress tests: discriminator convergence, adversarial stability, output ranges, discriminator bounds. All pass. GANs are hard to train (generator loss doesnt monotonically decrease) but the training loop is stable."
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: stress test VAE training — verify reconstruction + KL divergence, latent space properties.",
+      "project": "neural-net",
+      "started": "2026-04-16T22:22:20.819Z",
+      "completed": "2026-04-16T22:25:57.067Z",
+      "duration_ms": 300000,
+      "summary": "5 VAE stress tests, all pass: reconstruction convergence, KL non-negativity, encode/decode shapes, latent space finiteness, training stability."
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "RISC-V: stress-test the peephole optimizer. Verify optimizations are correct by comparing optimized vs unoptimized output.",
+      "project": "riscv-emulator",
+      "started": "2026-04-16T22:26:47.486Z",
+      "completed": "2026-04-16T22:30:14.844Z",
+      "duration_ms": 600000,
+      "summary": "31 peephole optimizer stress tests, all pass. 24 semantic equivalence tests (12 programs × 2 backends) confirm optimized output matches unoptimized. 5 pattern unit tests. Peephole optimizer is correct."
     }
   ],
   "focusProjects": [
@@ -3376,6 +3409,18 @@
     {
       "time": "2026-04-16T22:15:41.512Z",
       "msg": "Added T229 (BUILD) after end: RISC-V: implement general tail call optimization (not just self-recursion). Replace jal+epilogue+ret with epilogue+j for any tail call."
+    },
+    {
+      "time": "2026-04-16T22:18:32.376Z",
+      "msg": "Added T230 (BUILD) after end: Neural-net: stress test GAN training — verify generator and discriminator losses converge correctly."
+    },
+    {
+      "time": "2026-04-16T22:22:20.416Z",
+      "msg": "Added T231 (BUILD) after end: Neural-net: stress test VAE training — verify reconstruction + KL divergence, latent space properties."
+    },
+    {
+      "time": "2026-04-16T22:26:47.083Z",
+      "msg": "Added T232 (BUILD) after end: RISC-V: stress-test the peephole optimizer. Verify optimizations are correct by comparing optimized vs unoptimized output."
     }
   ]
 }
