@@ -157,3 +157,42 @@ let list_len = fn(lst) {
 let make_adder = fn(n) { fn(x) { x + n } }
 let make_multiplier = fn(n) { fn(x) { x * n } }
 let make_checker = fn(threshold) { fn(x) { x > threshold } }
+
+let reverse = fn(arr) {
+  let result = []
+  let i = len(arr) - 1
+  while (i >= 0) {
+    set result = push(result, arr[i])
+    set i = i - 1
+  }
+  return result
+}
+
+let zip_with = fn(arr1, arr2, f) {
+  let result = []
+  let i = 0
+  let n = min(len(arr1), len(arr2))
+  while (i < n) {
+    set result = push(result, f(arr1[i], arr2[i]))
+    set i = i + 1
+  }
+  return result
+}
+
+let any = fn(arr, pred) {
+  let i = 0
+  while (i < len(arr)) {
+    if (pred(arr[i])) { return 1 }
+    set i = i + 1
+  }
+  return 0
+}
+
+let all = fn(arr, pred) {
+  let i = 0
+  while (i < len(arr)) {
+    if (!pred(arr[i])) { return 0 }
+    set i = i + 1
+  }
+  return 1
+}
