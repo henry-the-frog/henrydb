@@ -397,10 +397,21 @@
     {
       "id": "T37",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build proof assistant REPL: interactive command loop, pretty-printed goals, tactic history, definition display. Runnable via node repl.",
       "project": "lambda-calculus",
-      "started": "2026-04-16T15:31:28.902Z"
+      "started": "2026-04-16T15:31:28.902Z",
+      "completed": "2026-04-16T15:32:38.891Z",
+      "duration_ms": 300000,
+      "summary": "Proof assistant REPL: colorized output, context-sensitive prompt, commands for all tactics. Tested with identity proof. Runnable interactively or via pipe."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add type system for algebraic effects: effect rows, handler typing, effect polymorphism. Type-check effect programs. 15+ tests.",
+      "project": "lambda-calculus",
+      "started": "2026-04-16T15:33:08.809Z"
     }
   ],
   "focusProjects": [
@@ -552,6 +563,10 @@
     {
       "time": "2026-04-16T15:31:23.384Z",
       "msg": "Added T37 (BUILD) after end: Build proof assistant REPL: interactive command loop, pretty-printed goals, tactic history, definition display. Runnable via node repl."
+    },
+    {
+      "time": "2026-04-16T15:32:59.579Z",
+      "msg": "Added T38 (BUILD) after end: Add type system for algebraic effects: effect rows, handler typing, effect polymorphism. Type-check effect programs. 15+ tests."
     }
   ]
 }
