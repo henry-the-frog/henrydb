@@ -3,7 +3,6 @@
 ### Urgent
 
 ### Normal
-- HenryDB window function executor (already exists in sql.js!)
 
 
 ### Low

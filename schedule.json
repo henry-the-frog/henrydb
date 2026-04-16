@@ -225,9 +225,99 @@
     {
       "id": "T21",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session C final: update daily log, evening summary, git push",
-      "started": "2026-04-16T03:05:37.934Z"
+      "started": "2026-04-16T03:05:37.934Z",
+      "completed": "2026-04-16T03:05:57.850Z",
+      "duration_ms": 30000,
+      "summary": "Daily log updated, git pushed."
+    },
+    {
+      "id": "T22",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Add proper node:test tests for regex engine: NFA, DFA, minimization, edge cases",
+      "project": "henrydb",
+      "started": "2026-04-16T03:06:53.341Z",
+      "completed": "2026-04-16T03:10:02.949Z",
+      "duration_ms": 600000,
+      "summary": "Regex engine: 66 new node:test tests covering basic matching, alternation, quantifiers (*/+/?/{n,m}), character classes ([abc], [a-z], [^x]), anchors, groups, escape characters (\\d/\\w/\\s), NFA construction, DFA construction+matching, DFA minimization, complex patterns (email, IP, hex color), edge cases. Discovered engine does full-match (not substring) by default."
+    },
+    {
+      "id": "T23",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore SAT solver: add node:test suite, stress test with harder formulas",
+      "project": "henrydb",
+      "started": "2026-04-16T03:10:18.484Z",
+      "completed": "2026-04-16T03:17:01.185Z",
+      "duration_ms": 600000,
+      "summary": "SAT solver: 23 new node:test tests covering CDCL (sat/unsat/XOR/5-var), graph coloring (3-color triangle, 2-color triangle UNSAT), N-queens (4-queens via built-in encoder), pigeonhole principle, DIMACS parser, SMT solver (equality, inequalities, simultaneous equations), Simplex (feasibility, infeasibility). FOUND BUG: SMT solver returns SAT for x > 10 AND x < 5 (conflicting bounds not propagated to Simplex)."
+    },
+    {
+      "id": "T24",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Add node:test suite for Forth interpreter",
+      "project": "henrydb",
+      "started": "2026-04-16T03:17:46.219Z",
+      "completed": "2026-04-16T03:21:12.032Z",
+      "duration_ms": 600000,
+      "summary": "Forth interpreter: 60 new node:test tests covering stack operations (DUP/DROP/SWAP/OVER/ROT/2DUP/2DROP/NIP/TUCK), arithmetic (+/-/*/MOD/NEGATE/ABS/MIN/MAX), comparison, logic, output (./EMIT/CR), word definitions (including nested), control flow (IF/ELSE/THEN, DO LOOP, DO +LOOP, BEGIN UNTIL, nested IF), memory (! and @), return stack, strings, recursive factorial (120), iterative fibonacci."
+    },
+    {
+      "id": "T25",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Add node:test suite for Huffman encoding",
+      "project": "henrydb",
+      "started": "2026-04-16T03:21:24.148Z",
+      "completed": "2026-04-16T03:24:13.663Z",
+      "duration_ms": 600000,
+      "summary": "Huffman encoding: 21 new tests covering MinHeap (ordering, duplicates), frequency table (Map API), tree building, code generation (prefix-free property verified), encode/decode round-trips, tree serialization, compress/decompress."
+    },
+    {
+      "id": "T26",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session C final wrap-up: tally, daily log, evening summary, git push",
+      "started": "2026-04-16T03:25:18.273Z",
+      "completed": "2026-04-16T03:26:45.932Z",
+      "duration_ms": 60000,
+      "summary": "Session C final: daily log + evening summary written, CURRENT.md updated. 694 new tests across 6 projects."
+    },
+    {
+      "id": "T27",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Extend Forth test suite: string operations, advanced control flow, variable words, constants",
+      "project": "henrydb",
+      "started": "2026-04-16T03:27:10.829Z",
+      "completed": "2026-04-16T03:29:17.256Z",
+      "duration_ms": 300000,
+      "summary": "Forth advanced tests: VARIABLE/CONSTANT, BEGIN WHILE REPEAT, nested DO LOOPs, RECURSE (factorial + fib), DEPTH, ?DUP, FizzBuzz, GCD, power, sum-of-squares, max3, error handling. 31 new tests, 91 total Forth tests."
+    },
+    {
+      "id": "T28",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Lambda calculus: Normalization by Evaluation (NbE) module",
+      "project": "henrydb",
+      "started": "2026-04-16T03:29:49.360Z",
+      "completed": "2026-04-16T03:31:44.314Z",
+      "duration_ms": 300000,
+      "summary": "Normalization by Evaluation (NbE): semantic domain (VNeutral/VLam), evaluate into host closures, readback into normal-form syntax, beta-eta equality checking, Church numeral normalization (PLUS/MULT/PRED), NbE ≡ reduction equivalence proofs, performance test (100 nested identity apps). 29 new tests, 431 total lambda-calculus tests."
+    },
+    {
+      "id": "T29",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Add node:test tests for HenryDB: focus on window functions and stress cases",
+      "project": "henrydb",
+      "started": "2026-04-16T03:32:39.405Z",
+      "completed": "2026-04-16T03:34:01.867Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB window functions: 15 new tests verifying ROW_NUMBER (with/without PARTITION BY), RANK and DENSE_RANK (with ties), aggregate window functions (SUM/AVG/COUNT/MIN/MAX OVER PARTITION BY), running totals (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), LAG/LEAD, FIRST_VALUE, NTILE. All window functions confirmed working correctly. Can remove TODO item."
     }
   ],
   "focusProjects": [
@@ -323,6 +413,38 @@
     {
       "time": "2026-04-16T03:00:41.023Z",
       "msg": "Added T21 (MAINTAIN) after end: Session C final: update daily log, evening summary, git push"
+    },
+    {
+      "time": "2026-04-16T03:06:53.109Z",
+      "msg": "Added T22 (EXPLORE) after end: Add proper node:test tests for regex engine: NFA, DFA, minimization, edge cases"
+    },
+    {
+      "time": "2026-04-16T03:10:18.253Z",
+      "msg": "Added T23 (EXPLORE) after end: Explore SAT solver: add node:test suite, stress test with harder formulas"
+    },
+    {
+      "time": "2026-04-16T03:17:45.989Z",
+      "msg": "Added T24 (EXPLORE) after end: Add node:test suite for Forth interpreter"
+    },
+    {
+      "time": "2026-04-16T03:21:23.916Z",
+      "msg": "Added T25 (EXPLORE) after end: Add node:test suite for Huffman encoding"
+    },
+    {
+      "time": "2026-04-16T03:25:18.041Z",
+      "msg": "Added T26 (MAINTAIN) after end: Session C final wrap-up: tally, daily log, evening summary, git push"
+    },
+    {
+      "time": "2026-04-16T03:27:10.599Z",
+      "msg": "Added T27 (EXPLORE) after end: Extend Forth test suite: string operations, advanced control flow, variable words, constants"
+    },
+    {
+      "time": "2026-04-16T03:29:49.129Z",
+      "msg": "Added T28 (EXPLORE) after end: Lambda calculus: Normalization by Evaluation (NbE) module"
+    },
+    {
+      "time": "2026-04-16T03:32:39.173Z",
+      "msg": "Added T29 (EXPLORE) after end: Add node:test tests for HenryDB: focus on window functions and stress cases"
     }
   ]
 }
