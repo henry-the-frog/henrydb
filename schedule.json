@@ -133,18 +133,22 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Build Calculus of Constructions (CoC): dependent types, Pi types, type-level computation. Parser + evaluator + type checker with bidirectional typing. 30+ tests.",
       "plan_ref": "T10",
       "project": "lambda-calculus",
-      "started": "2026-04-16T14:39:48.127Z"
+      "started": "2026-04-16T14:39:48.127Z",
+      "completed": "2026-04-16T14:42:48.922Z",
+      "duration_ms": 900000,
+      "summary": "Built Calculus of Constructions: Pi types, dependent typing, bidirectional type checking, natElim, Church booleans, parser. 43 tests. Completes lambda cube: untyped→STLC→SystemF→CoC."
     },
     {
       "id": "T22",
       "mode": "BUILD",
       "task": "Add proof terms for Curry-Howard with CoC: natural number proofs, vector length proofs, existential types. Connect to existing curry-howard module. 15+ tests.",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "in-progress",
+      "plan_ref": "T10",
+      "started": "2026-04-16T14:43:00.039Z"
     },
     {
       "id": "T12",

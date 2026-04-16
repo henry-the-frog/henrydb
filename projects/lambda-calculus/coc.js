@@ -361,11 +361,14 @@ function infer(ctx, term) {
   
   // NatElim
   if (term instanceof NatElim) {
-    // motive : ℕ → ★
-    const motiveType = infer(ctx, term.motive);
-    const expectedMotiveType = new Pi('_n', new Nat(), new Star());
-    if (!betaEq(motiveType, expectedMotiveType)) {
-      throw new TypeError(`natElim motive must be ℕ → ★, got ${motiveType}`);
+    // motive : ℕ → s  where s is a sort (★ or □)
+    const motiveType = normalize(infer(ctx, term.motive));
+    if (!(motiveType instanceof Pi) || !betaEq(motiveType.paramType, new Nat())) {
+      throw new TypeError(`natElim motive must be ℕ → s (sort), got ${motiveType}`);
+    }
+    const motiveSort = normalize(motiveType.body);
+    if (!(motiveSort instanceof Star) && !(motiveSort instanceof Box)) {
+      throw new TypeError(`natElim motive codomain must be a sort, got ${motiveSort}`);
     }
     
     // zero case : P 0
