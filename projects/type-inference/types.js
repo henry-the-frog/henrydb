@@ -66,7 +66,10 @@ class Subst {
   apply(type) {
     if (type instanceof TVar) {
       const t = this.map.get(type.name);
-      return t ? this.apply(t) : type;
+      if (!t) return type;
+      // Guard against self-referencing substitution (a → TVar(a))
+      if (t instanceof TVar && t.name === type.name) return type;
+      return this.apply(t);
     }
     if (type instanceof TCon) return type;
     if (type instanceof TFun) return new TFun(this.apply(type.param), this.apply(type.result));
@@ -155,7 +158,8 @@ function freeTypeVars(type) {
 let freshCounter = 0;
 function resetFresh() { freshCounter = 0; }
 function freshVar() {
-  const name = String.fromCharCode(97 + (freshCounter % 26)) + (freshCounter >= 26 ? Math.floor(freshCounter / 26) : '');
+  // Use t_ prefix to avoid collisions with scheme-quantified vars (a, b, c...)
+  const name = 't_' + freshCounter;
   freshCounter++;
   return new TVar(name);
 }

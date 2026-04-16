@@ -542,7 +542,7 @@ class SMTSolver {
     for (const t of rightParsed.terms) {
       terms.push({ var: t.var, coeff: -t.coeff });
     }
-    const bound = rightParsed.constant - leftParsed.constant;
+    let bound = rightParsed.constant - leftParsed.constant;
 
     // Handle negation
     if (negated) {
@@ -553,9 +553,11 @@ class SMTSolver {
       else if (op === '=') op = '!=';  // can't easily negate equality in Simplex
     }
 
-    // Convert strict inequalities to non-strict (integers)
-    if (op === '<') { op = '<='; /* bound - 1 but we already have bound on right */ }
-    if (op === '>') { op = '>='; }
+    // Convert strict inequalities to non-strict (integer arithmetic)
+    // x < n  →  x <= n-1  (no integer between n-1 and n)
+    // x > n  →  x >= n+1
+    if (op === '<') { op = '<='; bound -= 1; }
+    if (op === '>') { op = '>='; bound += 1; }
 
     // Check if single-variable (use BoundsSolver) or multi-variable (use Simplex)
     const mergedTerms = new Map();

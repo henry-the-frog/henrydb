@@ -432,6 +432,54 @@ test('SMT+Simplex: equality constraint UNSAT', () => {
 });
 
 // ============================================================
+// Strict Inequality (Integer Arithmetic) Tests
+// ============================================================
+
+test('SMT: strict inequality x > 5 AND x < 6 UNSAT (no integer between)', () => {
+  const smt = new SMTSolver();
+  smt.assert(['>', 'x', 5]);
+  smt.assert(['<', 'x', 6]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT: strict inequality x > 4 AND x < 6 SAT (x=5)', () => {
+  const smt = new SMTSolver();
+  smt.assert(['>', 'x', 4]);
+  smt.assert(['<', 'x', 6]);
+  eq(smt.checkSat(), 'SAT');
+});
+
+test('SMT: strict inequality x > 10 AND x < 5 UNSAT (conflicting bounds)', () => {
+  const smt = new SMTSolver();
+  smt.assert(['>', 'x', 10]);
+  smt.assert(['<', 'x', 5]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT: negated strict inequality not(x > 5) AND x >= 6 UNSAT', () => {
+  const smt = new SMTSolver();
+  smt.assert(['not', ['>', 'x', 5]]);
+  smt.assert(['>=', 'x', 6]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT: negated strict inequality not(x < 5) AND x <= 4 UNSAT', () => {
+  const smt = new SMTSolver();
+  smt.assert(['not', ['<', 'x', 5]]);
+  smt.assert(['<=', 'x', 4]);
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+test('SMT: strict inequality with linear expression (2x + y > 10, x < 3, y < 3) UNSAT', () => {
+  const smt = new SMTSolver();
+  smt.assert(['>', ['+', ['*', 2, 'x'], 'y'], 10]);
+  smt.assert(['<', 'x', 3]);  // x <= 2
+  smt.assert(['<', 'y', 3]);  // y <= 2
+  // max 2*2 + 2 = 6, need > 10 → UNSAT
+  eq(smt.checkSat(), 'UNSAT');
+});
+
+// ============================================================
 // Report
 // ============================================================
 
