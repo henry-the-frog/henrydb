@@ -1,7 +1,7 @@
 # CDCL SAT Solver + SMT — Implementation Notes
-uses: 2
+uses: 3
 created: 2026-04-06
-last-used: 2026-04-06
+last-used: 2026-04-16
 topics: sat, cdcl, watched-literals, 1uip, vsids, smt, euf, conflict-analysis, simplex, lia
 
 ## The Literal Negation Bug (Critical Insight)
