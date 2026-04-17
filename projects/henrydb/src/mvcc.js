@@ -92,12 +92,14 @@ export class MVCCManager {
       
       // Own writes are always visible
       if (v.txId === txId) {
+        this.recordRead(txId, key, v.txId);
         return v.deleted ? undefined : v.value;
       }
       
       // Check snapshot visibility: the writing transaction must have been
       // committed before our snapshot was taken
       if (this._isVisibleToSnapshot(v.txId, tx.snapshot)) {
+        this.recordRead(txId, key, v.txId);
         return v.deleted ? undefined : v.value;
       }
     }
@@ -150,6 +152,7 @@ export class MVCCManager {
     if (!this._versions.has(key)) this._versions.set(key, []);
     this._versions.get(key).push({ value, txId, deleted: false });
     if (tx) tx.writeSet.add(key);
+    this.recordWrite(txId, key);
     this.wal.push({ type: 'write', txId, key, value });
   }
 

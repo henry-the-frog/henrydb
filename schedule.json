@@ -400,6 +400,25 @@
       "completed": "2026-04-17T15:37:34.824Z",
       "duration_ms": 180000,
       "summary": "E2E pipeline verified: Network + Datasets + Preprocessing + Training on moons (90%), circles (80%), sine, linear — all work. XOR NaN was from trainTestSplit on 4-sample dataset (expected). Full pipeline integration is solid."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB MVCC transaction throughput stress test — many small transactions, measure operations/sec. Verify the write-write conflict detection doesn't kill performance for non-conflicting workloads.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:37:57.974Z",
+      "completed": "2026-04-17T15:38:30.620Z",
+      "duration_ms": 120000,
+      "summary": "MVCC throughput: 24K inserts/sec, 17K selects/sec, 1K updates/sec, 481 serial txns/sec. Write-write conflict detection has negligible performance impact on non-conflicting workloads. Batched transactions ~20% faster than auto-commit."
+    },
+    {
+      "id": "T39",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: HenryDB SSI — does the serializable isolation level detect write skew anomalies? Test the classic doctor-on-call write skew scenario.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:38:43.720Z"
     }
   ],
   "focusProjects": [
@@ -575,6 +594,14 @@
     {
       "time": "2026-04-17T15:36:46.942Z",
       "msg": "Added T37 (BUILD) after end: BUILD: Neural-net end-to-end training pipeline — Network + Dataset + Preprocessing + Training + Evaluation. Verify the full pipeline works on each dataset."
+    },
+    {
+      "time": "2026-04-17T15:37:57.857Z",
+      "msg": "Added T38 (BUILD) after end: BUILD: HenryDB MVCC transaction throughput stress test — many small transactions, measure operations/sec. Verify the write-write conflict detection doesn't kill performance for non-conflicting workloads."
+    },
+    {
+      "time": "2026-04-17T15:38:43.604Z",
+      "msg": "Added T39 (EXPLORE) after end: EXPLORE: HenryDB SSI — does the serializable isolation level detect write skew anomalies? Test the classic doctor-on-call write skew scenario."
     }
   ]
 }

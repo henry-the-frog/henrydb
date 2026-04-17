@@ -179,7 +179,8 @@ export class SSIManager extends MVCCStore {
    * and both the in-conflict and out-conflict transactions are committed,
    * then abort this transaction.
    */
-  commit(txId) {
+  commit(txIdOrTx) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
     const tx = this.activeTxns.get(txId);
     if (!tx) throw new Error(`Transaction ${txId} not found`);
     
@@ -235,7 +236,8 @@ export class SSIManager extends MVCCStore {
     this._cleanupOldInfo();
   }
 
-  rollback(txId) {
+  rollback(txIdOrTx) {
+    const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
     super.rollback(txId);
     this._cleanupTx(txId);
   }
