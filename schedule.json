@@ -236,6 +236,25 @@
       "completed": "2026-04-17T15:07:25.179Z",
       "duration_ms": 600000,
       "summary": "Found and fixed GROUP BY + window function bug: window columns silently dropped because _selectWithGroupBy() never called _computeWindowFunctions(). Also fixed aggregate ORDER BY in OVER clause causing TypeError. Now SELECT dept, AVG(salary), RANK() OVER (ORDER BY AVG(salary) DESC) FROM emp GROUP BY dept works correctly."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — test CTE + window function + subquery combinations. Complex SQL that combines multiple features often exposes integration bugs.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:08:04.117Z",
+      "completed": "2026-04-17T15:09:25.211Z",
+      "duration_ms": 300000,
+      "summary": "Tested 15+ complex SQL feature combinations: CTE+window, correlated subquery, self-join, EXISTS, NTILE, CASE+window, UNION+window, INTERSECT, EXCEPT, prepared+window. All work correctly. Only bug was GROUP BY+window (already fixed in T22). HenryDB SQL engine handles feature combos well."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "BUILD: HenryDB — add write tests for GROUP BY + window function fix and MVCC crash recovery. Make today's bug fixes permanent with test coverage.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:09:44.201Z"
     }
   ],
   "focusProjects": [
@@ -351,6 +370,14 @@
     {
       "time": "2026-04-17T15:03:52.224Z",
       "msg": "Added T22 (BUILD) after end: BUILD: HenryDB — investigate window functions + MVCC interaction. Do window functions work correctly inside transactions? Test with OVER clauses in BEGIN/COMMIT blocks."
+    },
+    {
+      "time": "2026-04-17T15:07:54.899Z",
+      "msg": "Added T23 (BUILD) after end: BUILD: HenryDB — test CTE + window function + subquery combinations. Complex SQL that combines multiple features often exposes integration bugs."
+    },
+    {
+      "time": "2026-04-17T15:09:39.080Z",
+      "msg": "Added T24 (BUILD) after end: BUILD: HenryDB — add write tests for GROUP BY + window function fix and MVCC crash recovery. Make today's bug fixes permanent with test coverage."
     }
   ]
 }
