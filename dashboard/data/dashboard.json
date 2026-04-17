@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-17T21:08:40.815Z",
+  "generated": "2026-04-17T21:34:35.366Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push, daily log update",
-    "startedAt": "2026-04-17T21:08:40.815Z",
-    "taskId": "T161"
+    "task": "Git commit+push",
+    "startedAt": "2026-04-17T21:34:35.366Z",
+    "taskId": "T164"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5883,44 +5883,138 @@
       {
         "id": "T149",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "SAT Solver: SMT theory combination (QF_LIA + EUF) — mixed integer+uninterpreted function constraints",
         "task": null,
-        "started": "2026-04-17T20:55:28.202Z"
+        "started": "2026-04-17T20:55:28.202Z",
+        "completed": "2026-04-17T20:56:43.610Z",
+        "duration_ms": 60000,
+        "summary": "Redirected from SAT solver (already fixed in Session A) to neural-net numerical stability audit. SAT solver Nelson-Oppen fix holding. Planned stability tests for activations, losses, and deep gradient flow."
       },
       {
         "id": "T151",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Neural-net numerical stability audit: (1) test all activation functions with extreme inputs (±1000, ±1e-15, NaN, Inf), (2) test loss functions with extreme predictions (0, 1, NaN), (3) test gradient flow through deep networks (vanishing/exploding gradients), (4) find silent NaN/Inf propagation bugs",
         "plan_ref": "T149",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-17T20:56:54.279Z",
+        "completed": "2026-04-17T20:59:56.939Z",
+        "duration_ms": 600000,
+        "summary": "Numerical stability audit: 69 tests covering all activations with extreme inputs, loss edge cases, deep gradient flow, NaN propagation. ALL pass — no stability bugs. Softmax log-sum-exp trick, sigmoid saturation, deep relu gradient flow all correct."
       },
       {
         "id": "T153",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on afternoon depth — VACUUM + trigger/crash results. Patterns? New bugs? What's the weakest remaining HenryDB subsystem?"
+        "status": "done",
+        "task": "Reflect on afternoon depth — VACUUM + trigger/crash results. Patterns? New bugs? What's the weakest remaining HenryDB subsystem?",
+        "started": "2026-04-17T21:00:04.926Z",
+        "completed": "2026-04-17T21:00:20.143Z",
+        "duration_ms": 120000,
+        "summary": "Session B: 8 bugs found (30 total today). Key patterns: (1) shared caches below MVCC must be tx-aware, (2) WAL-skipping breaks crash recovery, (3) constraints must cover ALL write paths (same as trigger pattern), (4) serialization rots when new types added. Weakest: UPSERT constraint validation likely missing."
       },
       {
         "id": "T155",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
         "plan_ref": "T153",
+        "project": "neural-net",
+        "skip_reason": ""
+      },
+      {
+        "id": "T159",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: test UPSERT constraint enforcement — does INSERT ON CONFLICT DO UPDATE validate constraints? Also test REPLACE INTO if supported. Find bugs in write path coverage.",
+        "project": "henrydb",
+        "started": "2026-04-17T21:00:56.212Z",
+        "completed": "2026-04-17T21:07:06.496Z",
+        "duration_ms": 600000,
+        "summary": "UPSERT constraint bypass found and fixed. UPSERT DO UPDATE never called _validateConstraints — CHECK, NOT NULL, FK, UNIQUE all bypassed. Also fixed MVCC duplicate row bug in delete-then-validate approach. New validate-before-delete approach with excludeRid. 7 tests added."
+      },
+      {
+        "id": "T160",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: write-path constraint coverage audit — scan all INSERT/UPDATE/DELETE/UPSERT/MERGE code paths in db.js, verify each calls _validateConstraints. Fix any gaps.",
+        "project": "henrydb",
+        "started": "2026-04-17T21:07:18.883Z",
+        "completed": "2026-04-17T21:08:33.095Z",
+        "duration_ms": 300000,
+        "summary": "Write-path constraint coverage audit. Found and fixed 3 more gaps: MERGE WHEN MATCHED UPDATE, MERGE WHEN NOT MATCHED INSERT, and FK CASCADE SET NULL on NOT NULL columns. CSV import intentionally bypasses for speed. 74 related tests pass."
+      },
+      {
+        "id": "T161",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git commit+push, daily log update",
+        "started": "2026-04-17T21:08:40.779Z",
+        "completed": "2026-04-17T21:08:59.228Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, daily log updated. 12 bugs in Session B, 34 today total."
+      },
+      {
+        "id": "T162",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: B-tree index correctness under concurrent modifications — test index consistency during concurrent INSERT+DELETE+UPDATE",
+        "task": null,
+        "started": "2026-04-17T21:09:08.910Z"
+      },
+      {
+        "id": "T168",
+        "mode": "BUILD",
+        "task": "Write B-tree index depth tests: (1) B-tree PK lookup after UPDATE, (2) range scan correctness after mixed INSERT/DELETE/UPDATE, (3) B-tree structure integrity after 1000 insert+delete cycles, (4) B-tree + MVCC snapshot isolation (reader vs writer), (5) B-tree + VACUUM interaction, (6) B-tree after crash recovery",
+        "status": "upcoming",
+        "plan_ref": "T162"
+      },
+      {
+        "id": "T163",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "henrydb"
+      },
+      {
+        "id": "T164",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit+push"
+      },
+      {
+        "id": "T165",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Neural-net: test optimizer correctness — Adam, RMSProp, Adagrad momentum/adaptive rate computation vs reference implementations",
+        "task": null
+      },
+      {
+        "id": "T166",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "auto",
         "project": "neural-net"
+      },
+      {
+        "id": "T167",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit+push, update daily log"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 159,
-    "blocksTotal": 158,
+    "blocksCompleted": 162,
+    "blocksTotal": 168,
     "modeDistribution": {
       "THINK": 11,
-      "PLAN": 11,
-      "BUILD": 59,
-      "MAINTAIN": 12,
+      "PLAN": 12,
+      "BUILD": 60,
+      "MAINTAIN": 13,
       "EXPLORE": 66
     }
   },
