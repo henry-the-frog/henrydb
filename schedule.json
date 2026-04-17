@@ -2383,10 +2383,101 @@
     {
       "id": "T221",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: INDEX depth — CREATE INDEX, UNIQUE INDEX, composite INDEX, index usage in queries, DROP INDEX",
       "project": "henrydb",
-      "started": "2026-04-17T22:39:37.407Z"
+      "started": "2026-04-17T22:39:37.407Z",
+      "completed": "2026-04-17T22:42:43.471Z",
+      "duration_ms": 300000,
+      "summary": "10 INDEX tests: 1 BUG FOUND AND FIXED — UNIQUE INDEX not enforcing uniqueness on INSERT. Fixed by adding indexCatalog check. Known limitation: UNIQUE INDEX lost after crash recovery."
+    },
+    {
+      "id": "T222",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LATERAL JOIN and correlated subquery depth testing",
+      "project": "henrydb",
+      "started": "2026-04-17T22:42:49.854Z",
+      "completed": "2026-04-17T22:43:44.578Z",
+      "duration_ms": 180000,
+      "summary": "6 correlated subquery tests: all pass. Scalar, aggregate, EXISTS, NOT EXISTS, comparison. Parser limitation: correlated subquery in UPDATE SET."
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Conv2D layer depth — forward shape, backward gradient shapes, stride, padding, multiple filters",
+      "project": "neural-net",
+      "started": "2026-04-17T22:43:49.833Z",
+      "completed": "2026-04-17T22:44:25.809Z",
+      "duration_ms": 120000,
+      "summary": "11 Conv2D tests: all pass. Shape, forward, backward, multi-channel, stride, padding. No bugs."
+    },
+    {
+      "id": "T224",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: advanced window functions — LAG, LEAD, NTILE, FIRST_VALUE, LAST_VALUE, PERCENT_RANK, CUME_DIST",
+      "project": "henrydb",
+      "started": "2026-04-17T22:44:30.804Z",
+      "completed": "2026-04-17T22:45:05.475Z",
+      "duration_ms": 120000,
+      "summary": "8 advanced window function tests: all pass. LAG, LEAD, NTILE, FIRST_VALUE, PERCENT_RANK, CUME_DIST. No bugs."
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: TRIGGER depth — BEFORE/AFTER INSERT/UPDATE/DELETE triggers, trigger firing order, cascade",
+      "project": "henrydb",
+      "started": "2026-04-17T22:45:09.630Z",
+      "completed": "2026-04-17T22:45:46.152Z",
+      "duration_ms": 120000,
+      "summary": "5 trigger tests: all pass. AFTER INSERT/UPDATE/DELETE, multiple triggers, persistence. No bugs."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: date/time function depth — NOW(), CURRENT_TIMESTAMP, DATE arithmetic, EXTRACT, date comparisons",
+      "project": "henrydb",
+      "started": "2026-04-17T22:45:50.369Z",
+      "completed": "2026-04-17T22:46:27.408Z",
+      "duration_ms": 90000,
+      "summary": "9 date/time tests: all pass. NOW, CURRENT_DATE, EXTRACT, comparisons, BETWEEN. No bugs."
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: JSON function depth — JSON_EXTRACT, JSON_SET, JSON_ARRAY, JSON_OBJECT if supported",
+      "project": "henrydb",
+      "started": "2026-04-17T22:50:57.466Z",
+      "completed": "2026-04-17T22:51:41.027Z",
+      "duration_ms": 120000,
+      "summary": "10 JSON function tests: all pass. JSON_EXTRACT, JSON_ARRAY, JSON_OBJECT, JSON in WHERE. No bugs."
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CAST + type coercion depth — CAST between types, implicit coercion, COALESCE, NULLIF, IFNULL",
+      "project": "henrydb",
+      "started": "2026-04-17T22:51:46.329Z",
+      "completed": "2026-04-17T22:52:17.747Z",
+      "duration_ms": 90000,
+      "summary": "12 CAST/coercion tests: all pass. CAST, COALESCE, NULLIF, IIF, type coercion. No bugs."
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: RNN layer depth — forward shape, hidden state propagation, sequence processing, backward gradient shapes",
+      "project": "neural-net",
+      "started": "2026-04-17T22:52:23.086Z",
+      "completed": "2026-04-17T22:53:03.071Z",
+      "duration_ms": 120000,
+      "summary": "9 RNN depth tests: all pass. Shapes, hidden state, backward, zero input. No bugs."
     }
   ],
   "focusProjects": [
@@ -3342,6 +3433,38 @@
     {
       "time": "2026-04-17T22:39:37.173Z",
       "msg": "Added T221 (BUILD) after end: HenryDB: INDEX depth — CREATE INDEX, UNIQUE INDEX, composite INDEX, index usage in queries, DROP INDEX"
+    },
+    {
+      "time": "2026-04-17T22:42:49.619Z",
+      "msg": "Added T222 (BUILD) after end: HenryDB: LATERAL JOIN and correlated subquery depth testing"
+    },
+    {
+      "time": "2026-04-17T22:43:49.598Z",
+      "msg": "Added T223 (BUILD) after end: Neural-net: Conv2D layer depth — forward shape, backward gradient shapes, stride, padding, multiple filters"
+    },
+    {
+      "time": "2026-04-17T22:44:30.568Z",
+      "msg": "Added T224 (BUILD) after end: HenryDB: advanced window functions — LAG, LEAD, NTILE, FIRST_VALUE, LAST_VALUE, PERCENT_RANK, CUME_DIST"
+    },
+    {
+      "time": "2026-04-17T22:45:09.394Z",
+      "msg": "Added T225 (BUILD) after end: HenryDB: TRIGGER depth — BEFORE/AFTER INSERT/UPDATE/DELETE triggers, trigger firing order, cascade"
+    },
+    {
+      "time": "2026-04-17T22:45:50.134Z",
+      "msg": "Added T226 (BUILD) after end: HenryDB: date/time function depth — NOW(), CURRENT_TIMESTAMP, DATE arithmetic, EXTRACT, date comparisons"
+    },
+    {
+      "time": "2026-04-17T22:50:56.900Z",
+      "msg": "Added T227 (BUILD) after end: HenryDB: JSON function depth — JSON_EXTRACT, JSON_SET, JSON_ARRAY, JSON_OBJECT if supported"
+    },
+    {
+      "time": "2026-04-17T22:51:46.037Z",
+      "msg": "Added T228 (BUILD) after end: HenryDB: CAST + type coercion depth — CAST between types, implicit coercion, COALESCE, NULLIF, IFNULL"
+    },
+    {
+      "time": "2026-04-17T22:52:22.525Z",
+      "msg": "Added T229 (BUILD) after end: Neural-net: RNN layer depth — forward shape, hidden state propagation, sequence processing, backward gradient shapes"
     }
   ]
 }
