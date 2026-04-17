@@ -5,15 +5,13 @@
 ## Focus: Depth day — neural-net gradient verification + HenryDB stress testing
 
 ### Current Task
-- T1 THINK: Review yesterday, set depth-first direction
+- Completing T7, moving to next
 
-### Context Files
-- memory/2026-04-16.md
-- memory/failures.md
-- memory/scratch/INDEX.md
-
-### Focus Projects
-- neural-net (gradient verification, training pipeline bugs)
-- henrydb (MVCC+persistence, crash recovery edge cases)
-
-### Tasks Completed This Session: 0
+### Tasks Completed This Session: 5
+- T1 THINK: Review yesterday, set direction
+- T2 PLAN: Gradient verification for 9 untested modules
+- T3 BUILD: Extended gradient check 16→24 modules, fixed 4 backward bugs (KAN, MoE, Capsule, NeuralODE)
+- T4 MAINTAIN: Git push, knowledge capture
+- T5 THINK: Pattern analysis — 11 backward bugs across 2 sessions
+- T6 PLAN: MVCC + crash recovery edge case tests
+- T7 BUILD: CRITICAL ACID bug — BEGIN never set txId, uncommitted data persisted after crash. Fixed + 10 new tests.

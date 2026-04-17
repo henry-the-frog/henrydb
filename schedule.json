@@ -68,17 +68,21 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write MVCC + crash recovery edge case tests: uncommitted tx rollback on crash, partial commit atomicity, interleaved tx recovery (committed visible, in-flight rolled back), WAL replay order correctness. 10+ tests, find bugs.",
       "plan_ref": "T6",
       "project": "henrydb",
-      "started": "2026-04-17T14:29:12.568Z"
+      "started": "2026-04-17T14:29:12.568Z",
+      "completed": "2026-04-17T14:34:48.000Z",
+      "duration_ms": 900000,
+      "summary": "CRITICAL ACID BUG FOUND AND FIXED: BEGIN never set _currentTxId, causing all DML inside transactions to auto-commit to WAL. Crash recovery replayed uncommitted data. Fix: BEGIN assigns txId, COMMIT/ROLLBACK properly write to WAL. 10 new tests, 5 of which exposed the bug. All 103 existing crash/recovery/persistence tests pass."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, dashboard health, check email and GitHub PRs"
+      "status": "in-progress",
+      "task": "Git commit+push, dashboard health, check email and GitHub PRs",
+      "started": "2026-04-17T14:35:18.043Z"
     },
     {
       "id": "T9",
