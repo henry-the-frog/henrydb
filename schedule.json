@@ -2324,6 +2324,28 @@
       "completed": "2026-04-17T22:33:59.488Z",
       "duration_ms": 90000,
       "summary": "20 Matrix depth tests: all pass. Construction, arithmetic, transpose, map, edge cases. No bugs."
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: GROUP BY extensions depth — ROLLUP, CUBE, GROUPING SETS, GROUP BY with expressions",
+      "project": "henrydb",
+      "started": "2026-04-17T22:34:25.238Z",
+      "completed": "2026-04-17T22:35:06.226Z",
+      "duration_ms": 90000,
+      "summary": "5 GROUP BY extension tests: all pass. ROLLUP, CUBE, GROUPING SETS, expressions. No bugs."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: error handling depth — malformed SQL, table not found, column not found, type mismatches, division by zero, constraint error messages",
+      "project": "henrydb",
+      "started": "2026-04-17T22:35:12.283Z",
+      "completed": "2026-04-17T22:35:55.564Z",
+      "duration_ms": 90000,
+      "summary": "14 error handling tests: all pass. Parse errors, not found, constraints, division by zero, recovery. Robust."
     }
   ],
   "focusProjects": [
@@ -3255,6 +3277,14 @@
     {
       "time": "2026-04-17T22:33:16.340Z",
       "msg": "Added T215 (BUILD) after end: Neural-net: Matrix class depth testing — edge cases in matrix operations: empty matrices, single element, very large, incompatible shapes, in-place operations"
+    },
+    {
+      "time": "2026-04-17T22:34:25.001Z",
+      "msg": "Added T216 (BUILD) after end: HenryDB: GROUP BY extensions depth — ROLLUP, CUBE, GROUPING SETS, GROUP BY with expressions"
+    },
+    {
+      "time": "2026-04-17T22:35:12.047Z",
+      "msg": "Added T217 (BUILD) after end: HenryDB: error handling depth — malformed SQL, table not found, column not found, type mismatches, division by zero, constraint error messages"
     }
   ]
 }
