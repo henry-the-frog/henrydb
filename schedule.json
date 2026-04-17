@@ -1552,6 +1552,28 @@
       "completed": "2026-04-17T17:58:13.544Z",
       "duration_ms": 60000,
       "summary": "ALL window functions work: LAG/LEAD (with NULL for edges), FIRST_VALUE/LAST_VALUE with frame, NTILE(4) quartiles, RANK/DENSE_RANK with ties. All correct."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — mega SQL feature test: UNION ALL, HAVING, BETWEEN, LIKE patterns, DISTINCT, subquery in FROM, ORDER BY expression",
+      "project": "henrydb",
+      "started": "2026-04-17T17:58:40.135Z",
+      "completed": "2026-04-17T17:59:02.210Z",
+      "duration_ms": 60000,
+      "summary": "ALL 8 features work: UNION ALL, HAVING, BETWEEN, LIKE (W%, %get), DISTINCT, subquery in FROM, ORDER BY expression. All results correct."
+    },
+    {
+      "id": "T144",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — final inventory: count how many unique ML techniques are implemented in this library",
+      "project": "neural-net",
+      "started": "2026-04-17T17:59:09.077Z",
+      "completed": "2026-04-17T17:59:53.502Z",
+      "duration_ms": 60000,
+      "summary": "75 source modules implementing ~60 unique ML techniques across 11 categories: core (10), advanced (12), generative (5), RL (2), meta-learning (3), contrastive (2), optimization (6), compression (4), search (3), data (5), specialized (8). All functional."
     }
   ],
   "focusProjects": [
@@ -2139,6 +2161,14 @@
     {
       "time": "2026-04-17T17:56:54.360Z",
       "msg": "Added T142 (BUILD) after end: BUILD: HenryDB — test window functions: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE, NTILE"
+    },
+    {
+      "time": "2026-04-17T17:58:33.827Z",
+      "msg": "Added T143 (BUILD) after end: BUILD: HenryDB — mega SQL feature test: UNION ALL, HAVING, BETWEEN, LIKE patterns, DISTINCT, subquery in FROM, ORDER BY expression"
+    },
+    {
+      "time": "2026-04-17T17:58:33.947Z",
+      "msg": "Added T144 (EXPLORE) after end: EXPLORE: Neural-net — final inventory: count how many unique ML techniques are implemented in this library"
     }
   ]
 }
