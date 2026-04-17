@@ -6690,8 +6690,11 @@ export class Database {
   _valuesToRow(values, schema, tableAlias) {
     const row = {};
     for (let i = 0; i < schema.length; i++) {
-      row[schema[i].name] = values[i];
-      row[`${tableAlias}.${schema[i].name}`] = values[i];
+      // If values has fewer elements than schema (e.g., after ALTER TABLE ADD COLUMN),
+      // pad with null (the column's default value for missing data)
+      const val = i < values.length ? values[i] : null;
+      row[schema[i].name] = val;
+      row[`${tableAlias}.${schema[i].name}`] = val;
     }
     return row;
   }
