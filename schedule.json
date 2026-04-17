@@ -2183,6 +2183,28 @@
       "completed": "2026-04-17T22:20:19.049Z",
       "duration_ms": 300000,
       "summary": "12 e-commerce e2e integration tests: all pass. Real-world scenario with all SQL features: JOINs, CTEs, aggregates, window functions, subqueries, transactions, MVCC, crash recovery."
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: VIEW depth testing — CREATE VIEW, SELECT FROM view, nested views, view + JOIN, view + MVCC, DROP VIEW, updatable views",
+      "project": "henrydb",
+      "started": "2026-04-17T22:20:57.040Z",
+      "completed": "2026-04-17T22:21:45.869Z",
+      "duration_ms": 180000,
+      "summary": "10 VIEW depth tests: all pass. CREATE/DROP/query/JOIN/aggregate/MVCC/crash recovery. No bugs."
+    },
+    {
+      "id": "T204",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: DISTINCT + set operations depth — DISTINCT, UNION/UNION ALL, INTERSECT, EXCEPT with NULLs and type mismatches",
+      "project": "henrydb",
+      "started": "2026-04-17T22:21:56.702Z",
+      "completed": "2026-04-17T22:22:41.301Z",
+      "duration_ms": 120000,
+      "summary": "13 DISTINCT+set ops tests: all pass. UNION/INTERSECT/EXCEPT with NULLs. No bugs."
     }
   ],
   "focusProjects": [
@@ -3062,6 +3084,14 @@
     {
       "time": "2026-04-17T22:18:13.986Z",
       "msg": "Added T202 (BUILD) after end: HenryDB: end-to-end SQL feature integration test — real-world scenario: e-commerce database with products, orders, customers, shipping. Complex queries combining JOINs, subqueries, aggregates, window functions, CTEs"
+    },
+    {
+      "time": "2026-04-17T22:20:56.805Z",
+      "msg": "Added T203 (BUILD) after end: HenryDB: VIEW depth testing — CREATE VIEW, SELECT FROM view, nested views, view + JOIN, view + MVCC, DROP VIEW, updatable views"
+    },
+    {
+      "time": "2026-04-17T22:21:56.465Z",
+      "msg": "Added T204 (BUILD) after end: HenryDB: DISTINCT + set operations depth — DISTINCT, UNION/UNION ALL, INTERSECT, EXCEPT with NULLs and type mismatches"
     }
   ]
 }
