@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-17T23:01:23.963Z",
+  "generated": "2026-04-17T23:02:48.349Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "HenryDB: generated/computed column depth — GENERATED ALWAYS AS, virtual vs stored",
-    "completedAt": "2026-04-17T23:01:23.963Z",
-    "taskId": "T237",
-    "summary": "6 generated column tests: all pass. Add, multiply, auto-update, multiple, WHERE, crash recovery. No bugs.",
-    "durationMs": 90000
+    "task": "HenryDB: WAL + crash recovery stress — insert/update/delete during crash, partial writes, checkpoint recovery",
+    "startedAt": "2026-04-17T23:02:48.349Z",
+    "taskId": "T239"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -6279,12 +6277,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 226,
+    "blocksCompleted": 227,
     "blocksTotal": 193,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 19,
-      "BUILD": 107,
+      "BUILD": 108,
       "MAINTAIN": 22,
       "EXPLORE": 66
     }

@@ -2566,6 +2566,25 @@
       "completed": "2026-04-17T23:01:23.926Z",
       "duration_ms": 90000,
       "summary": "6 generated column tests: all pass. Add, multiply, auto-update, multiple, WHERE, crash recovery. No bugs."
+    },
+    {
+      "id": "T238",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: BatchNorm depth — forward shape, running stats, training vs eval behavior",
+      "project": "neural-net",
+      "started": "2026-04-17T23:02:01.501Z",
+      "completed": "2026-04-17T23:02:42.242Z",
+      "duration_ms": 90000,
+      "summary": "9 BatchNorm tests: all pass. Shape, normalization, training/eval, running stats, backward. No bugs."
+    },
+    {
+      "id": "T239",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: WAL + crash recovery stress — insert/update/delete during crash, partial writes, checkpoint recovery",
+      "project": "henrydb",
+      "started": "2026-04-17T23:02:48.312Z"
     }
   ],
   "focusProjects": [
@@ -3585,6 +3604,14 @@
     {
       "time": "2026-04-17T23:00:44.741Z",
       "msg": "Added T237 (BUILD) after end: HenryDB: generated/computed column depth — GENERATED ALWAYS AS, virtual vs stored"
+    },
+    {
+      "time": "2026-04-17T23:02:01.264Z",
+      "msg": "Added T238 (BUILD) after end: Neural-net: BatchNorm depth — forward shape, running stats, training vs eval behavior"
+    },
+    {
+      "time": "2026-04-17T23:02:48.075Z",
+      "msg": "Added T239 (BUILD) after end: HenryDB: WAL + crash recovery stress — insert/update/delete during crash, partial writes, checkpoint recovery"
     }
   ]
 }
