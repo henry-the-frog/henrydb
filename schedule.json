@@ -2478,6 +2478,25 @@
       "completed": "2026-04-17T22:53:03.071Z",
       "duration_ms": 120000,
       "summary": "9 RNN depth tests: all pass. Shapes, hidden state, backward, zero input. No bugs."
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: LIMIT/OFFSET depth — LIMIT 0, negative LIMIT, OFFSET beyond rows, LIMIT with subquery, FETCH FIRST",
+      "project": "henrydb",
+      "started": "2026-04-17T22:53:14.311Z",
+      "completed": "2026-04-17T22:53:52.622Z",
+      "duration_ms": 120000,
+      "summary": "10 LIMIT/OFFSET tests: all pass. Edge cases, pagination, OFFSET beyond rows. No bugs."
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: foreign key constraint depth — FK enforcement on INSERT, DELETE CASCADE, SET NULL, RESTRICT, UPDATE CASCADE",
+      "project": "henrydb",
+      "started": "2026-04-17T22:53:58.350Z"
     }
   ],
   "focusProjects": [
@@ -3465,6 +3484,14 @@
     {
       "time": "2026-04-17T22:52:22.525Z",
       "msg": "Added T229 (BUILD) after end: Neural-net: RNN layer depth — forward shape, hidden state propagation, sequence processing, backward gradient shapes"
+    },
+    {
+      "time": "2026-04-17T22:53:14.012Z",
+      "msg": "Added T230 (BUILD) after end: HenryDB: LIMIT/OFFSET depth — LIMIT 0, negative LIMIT, OFFSET beyond rows, LIMIT with subquery, FETCH FIRST"
+    },
+    {
+      "time": "2026-04-17T22:53:57.698Z",
+      "msg": "Added T231 (BUILD) after end: HenryDB: foreign key constraint depth — FK enforcement on INSERT, DELETE CASCADE, SET NULL, RESTRICT, UPDATE CASCADE"
     }
   ]
 }

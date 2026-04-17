@@ -3988,13 +3988,17 @@ export class Database {
               childTable.heap.delete(pageId, slotIdx);
             }
           } else if (col.references.onDelete === 'SET NULL') {
-            // Set child column to NULL
+            // Set child column to NULL — collect rows first, then update
+            const toUpdate = [];
             for (const { pageId, slotIdx, values } of childTable.heap.scan()) {
               if (values[childColIdx] === parentValue) {
-                values[childColIdx] = null;
-                const encoded = encodeTuple(values);
-                childTable.heap.pages.find(p => p.id === pageId)?.updateTuple(slotIdx, encoded);
+                toUpdate.push({ pageId, slotIdx, values: [...values] });
               }
+            }
+            for (const { pageId, slotIdx, values } of toUpdate) {
+              values[childColIdx] = null;
+              childTable.heap.delete(pageId, slotIdx);
+              childTable.heap.insert(values);
             }
           } else {
             // RESTRICT: check if any child rows exist
