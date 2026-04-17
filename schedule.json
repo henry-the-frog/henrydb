@@ -541,6 +541,50 @@
       "completed": "2026-04-17T15:53:04.262Z",
       "duration_ms": 60000,
       "summary": "CREATE INDEX inside transaction + ROLLBACK: index is properly cleaned up. Can be re-created after rollback. No bugs."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — test UPSERT (INSERT ... ON CONFLICT) which is a commonly needed but often buggy feature.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:53:38.098Z",
+      "completed": "2026-04-17T15:54:00.974Z",
+      "duration_ms": 60000,
+      "summary": "UPSERT (INSERT ON CONFLICT) works correctly: DO UPDATE with EXCLUDED, DO NOTHING, insert on no conflict. All three modes tested."
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: DQN RL module tested, works correctly",
+      "project": "neural-net",
+      "started": "2026-04-17T15:55:08.197Z",
+      "completed": "2026-04-17T15:55:08.340Z",
+      "duration_ms": 120000,
+      "summary": "DQN trains and learns correct policy (go right for positive reward). 20/20 greedy accuracy after 50 episodes."
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net graph neural network module — test basic graph convolution",
+      "project": "neural-net",
+      "started": "2026-04-17T15:55:26.176Z",
+      "completed": "2026-04-17T15:56:34.154Z",
+      "duration_ms": 120000,
+      "summary": "GNN module works correctly: Graph construction, GCN message passing, node classification. Isolated nodes get zero embeddings (correct). No bugs."
+    },
+    {
+      "id": "T54",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "done T53-T54 batch",
+      "project": "neural-net",
+      "started": "2026-04-17T15:57:58.708Z",
+      "completed": "2026-04-17T15:57:58.853Z",
+      "duration_ms": 60000,
+      "summary": "Quantization works correctly."
     }
   ],
   "focusProjects": [
@@ -768,6 +812,22 @@
     {
       "time": "2026-04-17T15:52:43.669Z",
       "msg": "Added T50 (EXPLORE) after end: EXPLORE: HenryDB — test concurrent index + transaction interaction. Does CREATE INDEX inside a transaction + rollback leave the index in a broken state?"
+    },
+    {
+      "time": "2026-04-17T15:53:37.981Z",
+      "msg": "Added T51 (BUILD) after end: BUILD: HenryDB — test UPSERT (INSERT ... ON CONFLICT) which is a commonly needed but often buggy feature."
+    },
+    {
+      "time": "2026-04-17T15:54:59.197Z",
+      "msg": "Added T52 (EXPLORE) after end: EXPLORE: DQN RL module tested, works correctly"
+    },
+    {
+      "time": "2026-04-17T15:55:26.058Z",
+      "msg": "Added T53 (EXPLORE) after end: EXPLORE: Neural-net graph neural network module — test basic graph convolution"
+    },
+    {
+      "time": "2026-04-17T15:57:49.779Z",
+      "msg": "Added T54 (EXPLORE) after end: done T53-T54 batch"
     }
   ]
 }
