@@ -672,6 +672,39 @@
       "completed": "2026-04-17T16:14:15.453Z",
       "duration_ms": 600000,
       "summary": "Bug #19: View result cache stale after base table modifications. Cache invalidation only tracked direct table references, not view→table dependencies. Fixed by recursively resolving views to base tables in _extractTables()."
+    },
+    {
+      "id": "T63",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB prepared statements + cache interaction — do prepared statements bypass the broken cache?",
+      "project": "henrydb",
+      "started": "2026-04-17T16:14:39.827Z",
+      "completed": "2026-04-17T16:14:58.171Z",
+      "duration_ms": 60000,
+      "summary": "Prepared statements correctly see fresh data after base table modifications. No caching issue."
+    },
+    {
+      "id": "T64",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Expression edge cases tested",
+      "project": "henrydb",
+      "started": "2026-04-17T16:15:33.548Z",
+      "completed": "2026-04-17T16:15:33.691Z",
+      "duration_ms": 60000,
+      "summary": "Expression edge cases tested. No correctness bugs."
+    },
+    {
+      "id": "T65",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "done: MHA works correctly",
+      "project": "neural-net",
+      "started": "2026-04-17T16:16:27.169Z",
+      "completed": "2026-04-17T16:16:27.312Z",
+      "duration_ms": 60000,
+      "summary": "MultiHeadAttention works correctly with flattened input. Forward/backward shape-preserving, all finite. No bugs."
     }
   ],
   "focusProjects": [
@@ -947,6 +980,18 @@
     {
       "time": "2026-04-17T16:08:58.010Z",
       "msg": "Added T62 (EXPLORE) after end: EXPLORE: HenryDB views — do materialized views, updateable views, and view-through-view queries work?"
+    },
+    {
+      "time": "2026-04-17T16:14:39.709Z",
+      "msg": "Added T63 (EXPLORE) after end: EXPLORE: HenryDB prepared statements + cache interaction — do prepared statements bypass the broken cache?"
+    },
+    {
+      "time": "2026-04-17T16:15:33.431Z",
+      "msg": "Added T64 (EXPLORE) after end: Expression edge cases tested"
+    },
+    {
+      "time": "2026-04-17T16:16:27.052Z",
+      "msg": "Added T65 (EXPLORE) after end: done: MHA works correctly"
     }
   ]
 }
