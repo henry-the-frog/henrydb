@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-17T17:33:23.763Z",
+  "generated": "2026-04-17T17:36:00.750Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "BUILD: Neural-net — test differential privacy: does adding DP noise preserve model utility while bounding sensitivity?",
-    "completedAt": "2026-04-17T17:33:23.763Z",
-    "taskId": "T114",
-    "summary": "No differential privacy module exists.",
-    "durationMs": 10000
+    "mode": "EXPLORE",
+    "task": "EXPLORE: Neural-net — test the word2vec module: does it learn meaningful word embeddings from a small corpus?",
+    "completedAt": "2026-04-17T17:36:00.750Z",
+    "taskId": "T117",
+    "summary": "Embedding layer works: vocab lookup, batch processing, same-token consistency. Forward output: batch × (seqLen × embedDim). No word2vec-specific module exists.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 114,
+    "blocksCompleted": 117,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 39,
+      "BUILD": 40,
       "MAINTAIN": 9,
-      "EXPLORE": 50
+      "EXPLORE": 52
     }
   },
   "artifacts": [

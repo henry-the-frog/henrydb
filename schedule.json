@@ -1244,6 +1244,39 @@
       "completed": "2026-04-17T17:33:23.726Z",
       "duration_ms": 10000,
       "summary": "No differential privacy module exists."
+    },
+    {
+      "id": "T115",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — what modules have we NOT tested at all? Cross-reference src/ files with test activity to find gaps",
+      "project": "neural-net",
+      "started": "2026-04-17T17:33:52.164Z",
+      "completed": "2026-04-17T17:34:07.719Z",
+      "duration_ms": 60000,
+      "summary": "75 modules total. ~15 untested: autoencoder, automl, darts, hypernetwork, lottery-ticket, knowledge-distillation, rbm, predictive-coding, reinforce, residual, SOM. Most are less critical utility/demo modules."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — write a comprehensive TPC-H-like benchmark: create lineitem/orders/customer tables, run analytical queries, verify correctness",
+      "project": "henrydb",
+      "started": "2026-04-17T17:34:14.159Z",
+      "completed": "2026-04-17T17:34:47.392Z",
+      "duration_ms": 120000,
+      "summary": "TPC-H-like benchmark: 5 tables (nations, regions, customers, orders, lineitems), 4 complex analytical queries all pass. 4-table JOINs with GROUP BY, ORDER BY, LIMIT all correct."
+    },
+    {
+      "id": "T117",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the word2vec module: does it learn meaningful word embeddings from a small corpus?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:34:54.837Z",
+      "completed": "2026-04-17T17:36:00.714Z",
+      "duration_ms": 120000,
+      "summary": "Embedding layer works: vocab lookup, batch processing, same-token consistency. Forward output: batch × (seqLen × embedDim). No word2vec-specific module exists."
     }
   ],
   "focusProjects": [
@@ -1719,6 +1752,18 @@
     {
       "time": "2026-04-17T17:31:34.546Z",
       "msg": "Added T114 (BUILD) after end: BUILD: Neural-net — test differential privacy: does adding DP noise preserve model utility while bounding sensitivity?"
+    },
+    {
+      "time": "2026-04-17T17:33:44.363Z",
+      "msg": "Added T115 (EXPLORE) after end: EXPLORE: Neural-net — what modules have we NOT tested at all? Cross-reference src/ files with test activity to find gaps"
+    },
+    {
+      "time": "2026-04-17T17:33:44.482Z",
+      "msg": "Added T116 (BUILD) after end: BUILD: HenryDB — write a comprehensive TPC-H-like benchmark: create lineitem/orders/customer tables, run analytical queries, verify correctness"
+    },
+    {
+      "time": "2026-04-17T17:33:44.601Z",
+      "msg": "Added T117 (EXPLORE) after end: EXPLORE: Neural-net — test the word2vec module: does it learn meaningful word embeddings from a small corpus?"
     }
   ]
 }
