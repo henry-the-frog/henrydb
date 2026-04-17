@@ -6232,6 +6232,49 @@ export class Database {
       return clean;
     });
 
+    // Apply window functions on grouped results (GROUP BY + window function combo)
+    const hasWindow = ast.columns.some(c => c.type === 'window');
+    if (hasWindow) {
+      // Build a map of aggregate expressions to their aliases in the grouped results
+      const aggAliasMap = new Map();
+      for (const col of ast.columns) {
+        if (col.type === 'aggregate' && col.alias) {
+          aggAliasMap.set(JSON.stringify({ func: col.func, arg: col.arg }), col.alias);
+        }
+      }
+      
+      // Rewrite window ORDER BY columns that reference aggregates to use the alias
+      const rewrittenColumns = ast.columns.map(col => {
+        if (col.type !== 'window' || !col.over?.orderBy) return col;
+        const newOrderBy = col.over.orderBy.map(ob => {
+          if (ob.column && typeof ob.column === 'object' && ob.column.type === 'aggregate_expr') {
+            const key = JSON.stringify({ func: ob.column.func, arg: ob.column.arg?.name || ob.column.arg });
+            const alias = aggAliasMap.get(key);
+            if (alias) {
+              return { ...ob, column: alias };
+            }
+          }
+          return ob;
+        });
+        return { ...col, over: { ...col.over, orderBy: newOrderBy } };
+      });
+      
+      resultRows = this._computeWindowFunctions(rewrittenColumns, resultRows, ast.windowDefs);
+      // Re-project to include window columns
+      resultRows = resultRows.map(row => {
+        const clean = {};
+        for (const col of ast.columns) {
+          const alias = col.alias || col.name || col.func;
+          if (col.type === 'window') {
+            clean[alias] = row[`__window_${alias}`];
+          } else if (alias in row) {
+            clean[alias] = row[alias];
+          }
+        }
+        return clean;
+      });
+    }
+
     return { type: 'ROWS', rows: resultRows };
   }
 

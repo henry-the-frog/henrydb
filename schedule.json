@@ -225,6 +225,14 @@
       "completed": "2026-04-17T14:57:21.648Z",
       "duration_ms": 180000,
       "summary": "JIT tests: 162+96+31=289 tests all passing, 200 fuzz runs no divergences. Coverage is comprehensive: trace recording, optimization passes, deopt, range check elim, induction vars, side traces, type annotations. The JIT is robust — no bugs found via testing or fuzzing. The monkey-lang project is well-tested."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "BUILD: HenryDB — investigate window functions + MVCC interaction. Do window functions work correctly inside transactions? Test with OVER clauses in BEGIN/COMMIT blocks.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:03:58.447Z"
     }
   ],
   "focusProjects": [
@@ -336,6 +344,10 @@
     {
       "time": "2026-04-17T14:53:03.888Z",
       "msg": "Added T21 (THINK) after end: THINK: Monkey JIT depth investigation — what correctness properties should a tracing JIT satisfy? Run the JIT tests, look for edge cases in trace recording, guard invalidation, deoptimization."
+    },
+    {
+      "time": "2026-04-17T15:03:52.224Z",
+      "msg": "Added T22 (BUILD) after end: BUILD: HenryDB — investigate window functions + MVCC interaction. Do window functions work correctly inside transactions? Test with OVER clauses in BEGIN/COMMIT blocks."
     }
   ]
 }
