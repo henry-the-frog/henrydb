@@ -893,6 +893,67 @@
       "completed": "2026-04-17T16:57:43.681Z",
       "duration_ms": 300000,
       "summary": "GC+JIT interaction tested. Generational GC works (minor collections run). Write barrier test with very aggressive threshold causes slowdown but no crashes. GC is fundamentally sound — no bugs found in VM-GC integration."
+    },
+    {
+      "id": "T83",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: What other projects exist in the workspace that haven't been tested today? Check ray-tracer, RISC-V, or other projects for integration boundary bugs.",
+      "started": "2026-04-17T16:58:07.579Z",
+      "completed": "2026-04-17T16:58:56.160Z",
+      "duration_ms": 180000,
+      "summary": "Surveyed all 13 projects. RISC-V emulator (1066 tests), regex-engine (66 tests), type-inference (148 tests) all passing. Best candidates for depth testing: RISC-V emulator (complex pipeline+memory integration), regex-engine (NFA/DFA edge cases)."
+    },
+    {
+      "id": "T84",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test EXPLAIN ANALYZE to verify actual row counts match estimates. Test with skewed data distributions.",
+      "project": "henrydb",
+      "started": "2026-04-17T16:59:13.354Z",
+      "completed": "2026-04-17T16:59:47.775Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN ANALYZE works correctly, showing actual vs estimated rows. Found planner uses 1/distinct selectivity (uniform distribution assumption) rather than per-value histogram. ANALYZE builds histograms but they are only used for numeric range queries, not string equality. Known limitation, not a bug — correct behavior for a cost-based optimizer."
+    },
+    {
+      "id": "T85",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — investigate the neuroevolution module. Does genetic algorithm + neural network selection actually improve fitness over generations?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:00:11.269Z",
+      "completed": "2026-04-17T17:01:22.733Z",
+      "duration_ms": 120000,
+      "summary": "Neuroevolution works: fitness 2.75→3.98/4.0 over 100 generations on XOR. Tournament selection, uniform crossover, Gaussian mutation all functional. No bugs."
+    },
+    {
+      "id": "T86",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test PITR (point-in-time recovery). Can we recover the database to any historical timestamp?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:01:31.760Z",
+      "completed": "2026-04-17T17:02:19.424Z",
+      "duration_ms": 120000,
+      "summary": "PITR works via WAL-level recoverToTimestamp() function, 12 tests all passing. Not exposed as SQL syntax (no AS OF SYSTEM TIME). WAL-based design is correct for educational DB."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — write adversarial input tests for Conv1D+MaxPool+Dense pipeline: NaN propagation, very large/small values, degenerate convolutions",
+      "project": "neural-net",
+      "started": "2026-04-17T17:02:25.788Z",
+      "completed": "2026-04-17T17:03:34.670Z",
+      "duration_ms": 300000,
+      "summary": "Conv1D pipeline tested: forward+backward both produce finite values. Large inputs, NaN, zero inputs all handled correctly. No bugs found — initial false alarm was wrong constructor args."
+    },
+    {
+      "id": "T88",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: HenryDB — test the PostgreSQL wire protocol. Can we connect with pg_isready or a simple TCP client?",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1240,6 +1301,30 @@
     {
       "time": "2026-04-17T16:54:18.095Z",
       "msg": "PLAN T80 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T16:58:04.057Z",
+      "msg": "Added T83 (THINK) after end: THINK: What other projects exist in the workspace that haven't been tested today? Check ray-tracer, RISC-V, or other projects for integration boundary bugs."
+    },
+    {
+      "time": "2026-04-17T16:59:08.710Z",
+      "msg": "Added T84 (EXPLORE) after end: EXPLORE: HenryDB — test EXPLAIN ANALYZE to verify actual row counts match estimates. Test with skewed data distributions."
+    },
+    {
+      "time": "2026-04-17T17:00:00.659Z",
+      "msg": "Added T85 (EXPLORE) after end: EXPLORE: Neural-net — investigate the neuroevolution module. Does genetic algorithm + neural network selection actually improve fitness over generations?"
+    },
+    {
+      "time": "2026-04-17T17:00:00.780Z",
+      "msg": "Added T86 (EXPLORE) after end: EXPLORE: HenryDB — test PITR (point-in-time recovery). Can we recover the database to any historical timestamp?"
+    },
+    {
+      "time": "2026-04-17T17:00:00.899Z",
+      "msg": "Added T87 (BUILD) after end: BUILD: Neural-net — write adversarial input tests for Conv1D+MaxPool+Dense pipeline: NaN propagation, very large/small values, degenerate convolutions"
+    },
+    {
+      "time": "2026-04-17T17:00:01.018Z",
+      "msg": "Added T88 (EXPLORE) after end: EXPLORE: HenryDB — test the PostgreSQL wire protocol. Can we connect with pg_isready or a simple TCP client?"
     }
   ]
 }

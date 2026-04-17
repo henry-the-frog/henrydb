@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-17T16:57:43.717Z",
+  "generated": "2026-04-17T17:03:34.707Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "EXPLORE: Monkey-lang — test GC interaction with JIT-compiled code, closures captured during GC, write barriers",
-    "completedAt": "2026-04-17T16:57:43.717Z",
-    "taskId": "T82",
-    "summary": "GC+JIT interaction tested. Generational GC works (minor collections run). Write barrier test with very aggressive threshold causes slowdown but no crashes. GC is fundamentally sound — no bugs found in VM-GC integration.",
+    "task": "BUILD: Neural-net — write adversarial input tests for Conv1D+MaxPool+Dense pipeline: NaN propagation, very large/small values, degenerate convolutions",
+    "completedAt": "2026-04-17T17:03:34.707Z",
+    "taskId": "T87",
+    "summary": "Conv1D pipeline tested: forward+backward both produce finite values. Large inputs, NaN, zero inputs all handled correctly. No bugs found — initial false alarm was wrong constructor args.",
     "durationMs": 300000
   },
   "schedule": {
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 82,
+    "blocksCompleted": 87,
     "blocksTotal": 82,
     "modeDistribution": {
-      "THINK": 8,
+      "THINK": 9,
       "PLAN": 7,
-      "BUILD": 28,
+      "BUILD": 29,
       "MAINTAIN": 9,
-      "EXPLORE": 30
+      "EXPLORE": 33
     }
   },
   "artifacts": [
