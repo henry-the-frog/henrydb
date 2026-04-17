@@ -3138,6 +3138,55 @@
       "completed": "2026-04-17T01:55:38.935Z",
       "duration_ms": 60000,
       "summary": "MicroGPT.fromConfig factory: tiny/small/medium pre-built configs with override support."
+    },
+    {
+      "id": "T292",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening C session: assess state. Urgent TODO: 112 broken monkey-lang sub-project tests. Also: neural-net momentum from B2, evening EXPLORE ideas.",
+      "started": "2026-04-17T02:15:46.639Z",
+      "completed": "2026-04-17T02:22:28.298Z",
+      "duration_ms": 120000,
+      "summary": "30 broken sub-project test suites (not 112). Mixed failures: import mismatches, missing test files, TypeErrors, assertion errors. Priority: fix these tonight."
+    },
+    {
+      "id": "T293",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "null",
+      "task": null,
+      "started": "2026-04-17T02:22:31.819Z",
+      "completed": "2026-04-17T02:25:03.139Z",
+      "duration_ms": 120000,
+      "summary": "Categorized 30 failures: 6 missing test files, 5 import mismatches, 3 syntax errors, 10 TypeErrors, 6 logic bugs. One BUILD task to batch fix all."
+    },
+    {
+      "id": "T296",
+      "mode": "BUILD",
+      "task": "Fix 30 broken monkey-lang sub-project test suites: batch fix import mismatches, missing files, TypeErrors, and logic bugs",
+      "status": "done",
+      "plan_ref": "T293",
+      "started": "2026-04-17T02:25:11.197Z",
+      "completed": "2026-04-17T03:13:43.781Z",
+      "duration_ms": 5400000,
+      "summary": "Fixed 25 of 30 broken monkey-lang sub-project test suites. Remaining: monkey-lang core (5 deep issues: dunder protocols, OOP super, WASM perf). Categories fixed: missing test globs (6), import mismatches (5), syntax errors (2), TypeErrors (5), logic bugs (7). Total test pass count increased from ~7000 to ~7800+."
+    },
+    {
+      "id": "T294",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-17T02:25:07.572Z",
+      "completed": "2026-04-17T03:14:34.692Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T295",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-17T03:14:39.554Z"
     }
   ],
   "focusProjects": [
@@ -4297,6 +4346,26 @@
     {
       "time": "2026-04-17T01:54:22.856Z",
       "msg": "Added T291 (BUILD) after end: Add residual connection + layer norm pattern as a proper module (PreNorm transformer style)"
+    },
+    {
+      "time": "2026-04-17T02:15:35.172Z",
+      "msg": "Added T292 (THINK) after end: Evening C session: assess state. Urgent TODO: 112 broken monkey-lang sub-project tests. Also: neural-net momentum from B2, evening EXPLORE ideas."
+    },
+    {
+      "time": "2026-04-17T02:15:39.654Z",
+      "msg": "Added T293 (PLAN) after T292: null"
+    },
+    {
+      "time": "2026-04-17T02:15:43.111Z",
+      "msg": "Added T294 (BUILD) after T293: null"
+    },
+    {
+      "time": "2026-04-17T02:15:43.231Z",
+      "msg": "Added T295 (MAINTAIN) after T294: Housekeeping"
+    },
+    {
+      "time": "2026-04-17T02:24:58.505Z",
+      "msg": "PLAN T293 filled 1 BUILD tasks"
     }
   ]
 }
