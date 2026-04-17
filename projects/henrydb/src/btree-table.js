@@ -50,6 +50,10 @@ export class BTreeTable {
     this._ridToPk = new Map();   // rid (number) -> pk
     this._pkToRid = new Map();   // pk -> {pageId, slotIdx}
     
+    // Dead tuples: old versions kept for MVCC snapshot reads.
+    // Maps "pageId:slotIdx" -> values (the old row data before UPDATE replaced it).
+    this._deadTuples = new Map();
+    
     this._syntheticPageSize = 100;
     this._pages = []; // not used but HeapFile compat
   }
@@ -64,15 +68,19 @@ export class BTreeTable {
   insert(values) {
     const pk = makeKey(values, this.pkIndices);
     
-    // Check for duplicate PK (upsert)
+    // Check for duplicate PK
     const existing = this._tree.get(pk);
-    if (existing !== undefined) {
-      this._tree.insert(pk, values);
-      const existingRid = this._pkToRid.get(pk);
-      return existingRid || { pageId: 0, slotIdx: 0 };
+    const oldRid = this._pkToRid.get(pk);
+    
+    if (existing !== undefined && oldRid) {
+      // PK already exists (UPDATE scenario). Save old values as dead tuple
+      // so MVCC snapshot reads can still find the old version.
+      const oldKey = `${oldRid.pageId}:${oldRid.slotIdx}`;
+      this._deadTuples.set(oldKey, [...existing]); // Clone the old values
     }
     
-    // Generate synthetic rid
+    // Always create a new rid — MVCC needs separate physical slots for
+    // old and new versions even when the PK is the same.
     const ridNum = this._nextRid++;
     const pageId = Math.floor(ridNum / this._syntheticPageSize);
     const slotIdx = ridNum % this._syntheticPageSize;
@@ -80,7 +88,10 @@ export class BTreeTable {
     this._tree.insert(pk, values);
     this._ridToPk.set(ridNum, pk);
     this._pkToRid.set(pk, { pageId, slotIdx });
-    this._rowCount++;
+    
+    if (existing === undefined) {
+      this._rowCount++;
+    }
     
     return { pageId, slotIdx };
   }
@@ -89,10 +100,20 @@ export class BTreeTable {
    * Get a row by rid (HeapFile compat).
    */
   get(pageId, slotIdx) {
+    // Check live B+tree entries first
     const ridNum = pageId * this._syntheticPageSize + slotIdx;
     const pk = this._ridToPk.get(ridNum);
-    if (pk === undefined) return null;
-    return this._tree.get(pk) ?? null;
+    if (pk !== undefined) {
+      const live = this._tree.get(pk);
+      if (live !== undefined) return live;
+    }
+    
+    // Fall back to dead tuples (old versions kept for MVCC)
+    const deadKey = `${pageId}:${slotIdx}`;
+    const dead = this._deadTuples.get(deadKey);
+    if (dead) return dead;
+    
+    return null;
   }
 
   /**
@@ -106,6 +127,13 @@ export class BTreeTable {
    * Delete by rid (HeapFile compat).
    */
   delete(pageId, slotIdx) {
+    // Check if this is a dead tuple
+    const deadKey = `${pageId}:${slotIdx}`;
+    if (this._deadTuples.has(deadKey)) {
+      this._deadTuples.delete(deadKey);
+      return true;
+    }
+    
     const ridNum = pageId * this._syntheticPageSize + slotIdx;
     const pk = this._ridToPk.get(ridNum);
     if (pk === undefined) return false;
@@ -137,11 +165,17 @@ export class BTreeTable {
    * This is the key advantage over HeapFile — ordered iteration.
    */
   *scan() {
+    // Yield live B+tree entries
     for (const { key, value } of this._tree) {
       const rid = this._pkToRid.get(key);
       if (rid) {
         yield { pageId: rid.pageId, slotIdx: rid.slotIdx, values: value };
       }
+    }
+    // Also yield dead tuples (old versions kept for MVCC snapshot reads)
+    for (const [key, values] of this._deadTuples) {
+      const [pageId, slotIdx] = key.split(':').map(Number);
+      yield { pageId, slotIdx, values };
     }
   }
 

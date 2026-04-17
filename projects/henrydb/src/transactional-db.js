@@ -582,6 +582,96 @@ export class TransactionalDatabase {
         // Don't physically delete - the row stays in the heap for other snapshots
       };
 
+      // Intercept findByPK: check MVCC visibility on the result
+      if (typeof heap.findByPK === 'function') {
+        const origFindByPK = heap.findByPK.bind(heap);
+        heap._origFindByPK = origFindByPK;
+        heap.findByPK = function(pkValue) {
+          const values = origFindByPK(pkValue);
+          if (!values) {
+            // B+tree doesn't have this key — but under MVCC, an older version
+            // might exist in the heap (e.g., row was updated and B+tree now points
+            // to the new version). Fall back to scan for the PK.
+            const pkIndices = heap.pkIndices || [0];
+            for (const row of heap.scan()) {
+              const rowValues = row.values || row;
+              const pk = pkIndices.length === 1 ? rowValues[pkIndices[0]] : 
+                pkIndices.map(i => String(rowValues[i])).join('\0');
+              if (pk === pkValue) return rowValues;
+            }
+            return null;
+          }
+          
+          // Check version map for the B+tree result
+          const vm = tdb._versionMaps.get(name);
+          if (!vm) return values;
+          
+          // Look up the version map by pageId:slotIdx
+          const pkToRid = heap._pkToRid;
+          if (pkToRid) {
+            const rid = pkToRid.get(pkValue);
+            if (rid !== undefined) {
+              const ridNum = typeof rid === 'number' ? rid : (rid.pageId * (heap._syntheticPageSize || 1000) + rid.slotIdx);
+              const pageId = Math.floor(ridNum / (heap._syntheticPageSize || 1000));
+              const slotIdx = ridNum % (heap._syntheticPageSize || 1000);
+              const key = `${pageId}:${slotIdx}`;
+              const ver = vm.get(key);
+              
+              if (ver) {
+                const tx = tdb._activeTx;
+                if (tx) {
+                  // In transaction — check visibility
+                  const created = tdb._mvcc.isVisible(ver.xmin, tx);
+                  const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
+                  if (!created || deleted) {
+                    // Current B+tree version not visible — scan for an older version
+                    const pkIndices = heap.pkIndices || [0];
+                    for (const row of heap.scan()) {
+                      const rowValues = row.values || row;
+                      const pk = pkIndices.length === 1 ? rowValues[pkIndices[0]] : 
+                        pkIndices.map(i => String(rowValues[i])).join('\0');
+                      if (pk === pkValue) return rowValues;
+                    }
+                    return null;
+                  }
+                } else {
+                  // No transaction — check committed state
+                  if (ver.xmax !== 0 && tdb._mvcc.committedTxns.has(ver.xmax)) return null;
+                }
+              }
+            }
+          }
+          return values;
+        };
+      }
+
+      // Intercept get(pageId, slotIdx): check MVCC visibility
+      if (typeof heap.get === 'function') {
+        const origGet = heap.get.bind(heap);
+        heap._origGet = origGet;
+        heap.get = function(pageId, slotIdx) {
+          const values = origGet(pageId, slotIdx);
+          if (!values) return null;
+          
+          const vm = tdb._versionMaps.get(name);
+          if (!vm) return values;
+          
+          const key = `${pageId}:${slotIdx}`;
+          const ver = vm.get(key);
+          if (ver) {
+            const tx = tdb._activeTx;
+            if (tx) {
+              const created = tdb._mvcc.isVisible(ver.xmin, tx);
+              const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
+              if (!created || deleted) return null;
+            } else {
+              if (ver.xmax !== 0 && tdb._mvcc.committedTxns.has(ver.xmax)) return null;
+            }
+          }
+          return values;
+        };
+      }
+
       heap._mvccWrapped = true;
       heap._origScan = origScan;
       heap._origDelete = origDelete;
