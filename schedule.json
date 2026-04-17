@@ -346,6 +346,27 @@
       "completed": "2026-04-17T15:28:26.855Z",
       "duration_ms": 300000,
       "summary": "12 MVCC isolation tests: dirty read, repeatable read, write-write conflict, lost update prevention, read committed, multiple versions, rollback. All pass. Solid regression coverage for the snapshot isolation fix."
+    },
+    {
+      "id": "T33",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net data augmentation depth — test augmentation pipeline correctness. Do augmented samples still have correct labels? Test random crop, flip, rotation with various image sizes.",
+      "project": "neural-net",
+      "started": "2026-04-17T15:29:34.639Z",
+      "completed": "2026-04-17T15:31:39.628Z",
+      "duration_ms": 180000,
+      "summary": "Found cutmix bug: uses Matrix.scale() which does not exist. cutmix was completely non-functional — any call crashed. Fixed with map(). Also verified mixup, dropout, flip, rotate90, normalize all correct. Bug count for today: 12."
+    },
+    {
+      "id": "T34",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "BUILD: Write today's reflections and update MEMORY.md with key learnings from this incredible depth day.",
+      "started": "2026-04-17T15:33:17.023Z",
+      "completed": "2026-04-17T15:33:51.062Z",
+      "duration_ms": 120000,
+      "summary": "Reflections written. Key insight: Integration Boundary Principle — 12 bugs today, all at the boundary between independently-built subsystems that share a concept but fail to connect."
     }
   ],
   "focusProjects": [
@@ -501,6 +522,14 @@
     {
       "time": "2026-04-17T15:27:35.777Z",
       "msg": "Added T32 (BUILD) after end: BUILD: Write comprehensive MVCC isolation tests — dirty read, repeatable read, phantom read, write-write conflict, write skew, read committed vs repeatable read."
+    },
+    {
+      "time": "2026-04-17T15:29:34.522Z",
+      "msg": "Added T33 (EXPLORE) after end: EXPLORE: Neural-net data augmentation depth — test augmentation pipeline correctness. Do augmented samples still have correct labels? Test random crop, flip, rotation with various image sizes."
+    },
+    {
+      "time": "2026-04-17T15:33:16.906Z",
+      "msg": "Added T34 (MAINTAIN) after end: BUILD: Write today's reflections and update MEMORY.md with key learnings from this incredible depth day."
     }
   ]
 }
