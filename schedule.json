@@ -1442,6 +1442,35 @@
       "completed": "2026-04-17T17:51:57.365Z",
       "duration_ms": 60000,
       "summary": "Predictive coding network trains and tracks prediction errors. No separate predict API — the training IS inference (free energy minimization). History tracks error reduction."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — comprehensive SQL feature verification: test INTERSECT, EXCEPT, CASE, COALESCE, NULLIF, EXISTS, IN subquery, ALL/ANY",
+      "project": "henrydb",
+      "started": "2026-04-17T17:52:27.992Z",
+      "completed": "2026-04-17T17:53:08.173Z",
+      "duration_ms": 60000,
+      "summary": "ALL SQL features work: UNION [1,2,3,4], INTERSECT [2,3], EXCEPT [1], CASE (A/B/F grades), COALESCE, NULLIF, EXISTS, IN subquery. Every result correct."
+    },
+    {
+      "id": "T134",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the lottery ticket hypothesis module: sparse subnetwork discovery",
+      "project": "neural-net",
+      "started": "2026-04-17T17:53:15.806Z",
+      "completed": "2026-04-17T17:54:06.231Z",
+      "duration_ms": 60000,
+      "summary": "Lottery Ticket works: discovers sparse subnetworks at 54% sparsity. Returns winning ticket, random ticket, and hypothesis validation. Full experiment pipeline."
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "BUILD: HenryDB — test cursor operations: DECLARE, FETCH NEXT, FETCH PRIOR, CLOSE",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1989,6 +2018,18 @@
     {
       "time": "2026-04-17T17:49:43.715Z",
       "msg": "Added T132 (EXPLORE) after end: EXPLORE: Neural-net — test the predictive coding network: does it learn to predict sensory input in an unsupervised way?"
+    },
+    {
+      "time": "2026-04-17T17:52:21.013Z",
+      "msg": "Added T133 (BUILD) after end: BUILD: HenryDB — comprehensive SQL feature verification: test INTERSECT, EXCEPT, CASE, COALESCE, NULLIF, EXISTS, IN subquery, ALL/ANY"
+    },
+    {
+      "time": "2026-04-17T17:52:21.133Z",
+      "msg": "Added T134 (EXPLORE) after end: EXPLORE: Neural-net — test the lottery ticket hypothesis module: sparse subnetwork discovery"
+    },
+    {
+      "time": "2026-04-17T17:52:21.253Z",
+      "msg": "Added T135 (BUILD) after end: BUILD: HenryDB — test cursor operations: DECLARE, FETCH NEXT, FETCH PRIOR, CLOSE"
     }
   ]
 }
