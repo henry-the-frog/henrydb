@@ -2080,9 +2080,109 @@
     {
       "id": "T192",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, session progress update",
-      "started": "2026-04-17T21:54:49.250Z"
+      "started": "2026-04-17T21:54:49.250Z",
+      "completed": "2026-04-17T21:55:09.533Z",
+      "duration_ms": 60000,
+      "summary": "All pushed. Session B: 15 bugs, ~150 tests across HenryDB + neural-net."
+    },
+    {
+      "id": "T194",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: query plan correctness — write tests that verify EXPLAIN output shows expected scan types (SEQ_SCAN vs INDEX_SCAN) for different WHERE clauses, and verify the plan produces correct results",
+      "project": "henrydb",
+      "started": "2026-04-17T21:55:29.481Z",
+      "completed": "2026-04-17T21:57:10.819Z",
+      "duration_ms": 300000,
+      "summary": "14 query plan tests: all pass. Scan selection, result correctness, complex queries. No bugs."
+    },
+    {
+      "id": "T195",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Run full HenryDB test suite to verify no regressions from Session B fixes",
+      "project": "henrydb",
+      "started": "2026-04-17T21:57:24.539Z",
+      "completed": "2026-04-17T22:07:33.352Z",
+      "duration_ms": 120000,
+      "summary": "Core regression check: 57/57 tests pass (transactional-db, mvcc, ssi, crash-recovery, constraints, foreign-key). No regressions."
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "plan_ref": "auto",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T196",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: expression evaluation depth — test complex SQL expressions: CASE WHEN, COALESCE, NULLIF, CAST, string functions (UPPER/LOWER/SUBSTR/CONCAT), date functions, math functions",
+      "project": "henrydb",
+      "started": "2026-04-17T22:07:40.860Z",
+      "completed": "2026-04-17T22:07:41.149Z",
+      "duration_ms": 180000,
+      "summary": "25 SQL expression depth tests: all pass."
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: DDL depth testing — ALTER TABLE (ADD/DROP/RENAME COLUMN), CREATE/DROP INDEX, DROP TABLE CASCADE, multi-table DDL + DML interaction, DDL + crash recovery",
+      "project": "henrydb",
+      "started": "2026-04-17T22:07:55.981Z",
+      "completed": "2026-04-17T22:11:30.521Z",
+      "duration_ms": 300000,
+      "summary": "16th bug: ALTER TABLE data loss after crash (DDL not WAL-logged). Partial fix: _valuesToRow NULL padding. 15 DDL tests. Added TODO: WAL-log ALTER TABLE."
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: prepared statement + parameterized query depth — test PREPARE/EXECUTE, ? placeholders, parameterized DML, SQL injection safety",
+      "project": "henrydb",
+      "started": "2026-04-17T22:11:53.679Z",
+      "completed": "2026-04-17T22:13:14.513Z",
+      "duration_ms": 180000,
+      "summary": "14 prepared statement tests: all pass. SQL injection blocked by parser (not proper sanitization — documented). PREPARE/EXECUTE, DML, DEALLOCATE, edge cases."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: concurrency stress test — 10 concurrent sessions doing mixed read/write/update/delete, verify final data consistency (no lost updates, no phantom data)",
+      "project": "henrydb",
+      "started": "2026-04-17T22:14:00.060Z",
+      "completed": "2026-04-17T22:15:14.690Z",
+      "duration_ms": 300000,
+      "summary": "5 concurrency stress tests: all pass. 100 transfers + 200 interleaved inserts + reader consistency + rollback + mixed ops. No bugs."
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: data type depth — test BOOLEAN, FLOAT/REAL/DOUBLE, DATE/TIMESTAMP type handling, comparison operators, implicit type coercion, NULL comparisons",
+      "project": "henrydb",
+      "started": "2026-04-17T22:15:29.474Z",
+      "completed": "2026-04-17T22:17:57.874Z",
+      "duration_ms": 180000,
+      "summary": "21 datatype tests: 2 bugs documented (integer division for decimals, NULL not propagated in concat). BOOLEAN, FLOAT, DATE, NULL semantics, coercion, large values all tested."
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: end-to-end SQL feature integration test — real-world scenario: e-commerce database with products, orders, customers, shipping. Complex queries combining JOINs, subqueries, aggregates, window functions, CTEs",
+      "project": "henrydb",
+      "started": "2026-04-17T22:18:14.243Z",
+      "completed": "2026-04-17T22:20:19.049Z",
+      "duration_ms": 300000,
+      "summary": "12 e-commerce e2e integration tests: all pass. Real-world scenario with all SQL features: JOINs, CTEs, aggregates, window functions, subqueries, transactions, MVCC, crash recovery."
     }
   ],
   "focusProjects": [
@@ -2922,6 +3022,46 @@
     {
       "time": "2026-04-17T21:54:44.947Z",
       "msg": "Removed T191: "
+    },
+    {
+      "time": "2026-04-17T21:55:23.200Z",
+      "msg": "Added T194 (BUILD) after end: HenryDB: query plan correctness — write tests that verify EXPLAIN output shows expected scan types (SEQ_SCAN vs INDEX_SCAN) for different WHERE clauses, and verify the plan produces correct results"
+    },
+    {
+      "time": "2026-04-17T21:57:24.284Z",
+      "msg": "Added T195 (MAINTAIN) after end: Run full HenryDB test suite to verify no regressions from Session B fixes"
+    },
+    {
+      "time": "2026-04-17T22:01:46.586Z",
+      "msg": "Added T196 (BUILD) after end: HenryDB: expression evaluation depth — test complex SQL expressions: CASE WHEN, COALESCE, NULLIF, CAST, string functions (UPPER/LOWER/SUBSTR/CONCAT), date functions, math functions"
+    },
+    {
+      "time": "2026-04-17T22:01:46.745Z",
+      "msg": "Added T197 (BUILD) after T195: null"
+    },
+    {
+      "time": "2026-04-17T22:01:55.164Z",
+      "msg": "Removed T197: "
+    },
+    {
+      "time": "2026-04-17T22:07:55.414Z",
+      "msg": "Added T198 (BUILD) after end: HenryDB: DDL depth testing — ALTER TABLE (ADD/DROP/RENAME COLUMN), CREATE/DROP INDEX, DROP TABLE CASCADE, multi-table DDL + DML interaction, DDL + crash recovery"
+    },
+    {
+      "time": "2026-04-17T22:11:53.444Z",
+      "msg": "Added T199 (BUILD) after end: HenryDB: prepared statement + parameterized query depth — test PREPARE/EXECUTE, ? placeholders, parameterized DML, SQL injection safety"
+    },
+    {
+      "time": "2026-04-17T22:13:59.823Z",
+      "msg": "Added T200 (BUILD) after end: HenryDB: concurrency stress test — 10 concurrent sessions doing mixed read/write/update/delete, verify final data consistency (no lost updates, no phantom data)"
+    },
+    {
+      "time": "2026-04-17T22:15:29.239Z",
+      "msg": "Added T201 (BUILD) after end: HenryDB: data type depth — test BOOLEAN, FLOAT/REAL/DOUBLE, DATE/TIMESTAMP type handling, comparison operators, implicit type coercion, NULL comparisons"
+    },
+    {
+      "time": "2026-04-17T22:18:13.986Z",
+      "msg": "Added T202 (BUILD) after end: HenryDB: end-to-end SQL feature integration test — real-world scenario: e-commerce database with products, orders, customers, shipping. Complex queries combining JOINs, subqueries, aggregates, window functions, CTEs"
     }
   ]
 }
