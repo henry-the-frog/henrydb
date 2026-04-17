@@ -628,6 +628,28 @@
       "completed": "2026-04-17T16:01:24.086Z",
       "duration_ms": 60000,
       "summary": "Knowledge distillation: softmax T scaling correct, KL divergence correct, distillation loss correct. All math verified."
+    },
+    {
+      "id": "T59",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — type coercion edge cases. What happens with NULL arithmetic, string/number comparisons, CAST operations?",
+      "project": "henrydb",
+      "started": "2026-04-17T16:02:07.394Z",
+      "completed": "2026-04-17T16:02:33.067Z",
+      "duration_ms": 60000,
+      "summary": "NULL semantics 100% correct: NULL arithmetic, NULL=NULL is false, IS NULL, COALESCE, type coercion, CAST, aggregate NULL exclusion. PostgreSQL-compatible behavior."
+    },
+    {
+      "id": "T60",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test model save/load for Network class end-to-end: train, serialize, deserialize, verify predictions match",
+      "project": "neural-net",
+      "started": "2026-04-17T16:02:46.095Z",
+      "completed": "2026-04-17T16:03:12.590Z",
+      "duration_ms": 60000,
+      "summary": "Network serialization round-trip: 0 prediction difference, 4383 bytes JSON. Loaded model continues training fine (86% on moons after fine-tune). Perfect save/load."
     }
   ],
   "focusProjects": [
@@ -887,6 +909,14 @@
     {
       "time": "2026-04-17T16:01:23.824Z",
       "msg": "Added T58 (EXPLORE) after end: EXPLORE: distillation module works correctly"
+    },
+    {
+      "time": "2026-04-17T16:02:07.277Z",
+      "msg": "Added T59 (EXPLORE) after end: EXPLORE: HenryDB — type coercion edge cases. What happens with NULL arithmetic, string/number comparisons, CAST operations?"
+    },
+    {
+      "time": "2026-04-17T16:02:45.978Z",
+      "msg": "Added T60 (EXPLORE) after end: EXPLORE: Neural-net — test model save/load for Network class end-to-end: train, serialize, deserialize, verify predictions match"
     }
   ]
 }

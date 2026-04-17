@@ -1962,11 +1962,35 @@ export class Database {
   }
 
   // Validate column constraints (NOT NULL, CHECK) for a row
-  _fireTriggers(timing, event, tableName, rowValues) {
+  _fireTriggers(timing, event, tableName, rowValues, schema, oldRowValues) {
     for (const trigger of this.triggers) {
       if (trigger.timing === timing && trigger.event === event && trigger.table === tableName) {
         try {
-          this.execute(trigger.bodySql);
+          // Build NEW and OLD row objects from values + schema
+          let bodySql = trigger.bodySql;
+          if (schema && rowValues) {
+            for (let i = 0; i < schema.length; i++) {
+              const colName = schema[i].name;
+              const val = rowValues[i];
+              const sqlVal = val === null || val === undefined ? 'NULL' 
+                : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'` 
+                : String(val);
+              // Replace NEW.column references
+              bodySql = bodySql.replace(new RegExp(`NEW\\.${colName}\\b`, 'gi'), sqlVal);
+            }
+          }
+          if (schema && oldRowValues) {
+            for (let i = 0; i < schema.length; i++) {
+              const colName = schema[i].name;
+              const val = oldRowValues[i];
+              const sqlVal = val === null || val === undefined ? 'NULL'
+                : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'`
+                : String(val);
+              // Replace OLD.column references
+              bodySql = bodySql.replace(new RegExp(`OLD\\.${colName}\\b`, 'gi'), sqlVal);
+            }
+          }
+          this.execute(bodySql);
         } catch (e) {
           // Trigger errors propagate
           throw new Error(`Trigger ${trigger.name} failed: ${e.message}`);
@@ -2234,7 +2258,7 @@ export class Database {
 
     // BEFORE INSERT triggers
     const tableName = table.heap?.name || '';
-    this._fireTriggers('BEFORE', 'INSERT', tableName, orderedValues);
+    this._fireTriggers('BEFORE', 'INSERT', tableName, orderedValues, table.schema);
 
     const rid = table.heap.insert(orderedValues);
 
@@ -2264,7 +2288,7 @@ export class Database {
     }
 
     // AFTER INSERT triggers
-    this._fireTriggers('AFTER', 'INSERT', tableName, orderedValues);
+    this._fireTriggers('AFTER', 'INSERT', tableName, orderedValues, table.schema);
 
     return rid;
   }
