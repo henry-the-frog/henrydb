@@ -123,30 +123,42 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, dashboard health, knowledge capture",
-      "started": "2026-04-17T14:41:34.240Z"
+      "started": "2026-04-17T14:41:34.240Z",
+      "completed": "2026-04-17T14:41:39.491Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. Knowledge captured."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon reflection: what did depth work reveal today? Any patterns worth a blog post or lesson file?"
+      "status": "done",
+      "task": "Afternoon reflection: what did depth work reveal today? Any patterns worth a blog post or lesson file?",
+      "started": "2026-04-17T14:41:47.367Z",
+      "completed": "2026-04-17T14:42:03.593Z",
+      "duration_ms": 120000,
+      "summary": "6 bugs today, all at integration boundaries. Meta-pattern: contracts between independently-built subsystems have implicit assumptions that break. Gradient check = forward/backward contract, crash recovery = transaction/WAL contract, convergence = gradient/training contract. Key lesson: test the contract, not just the components."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: investigate cost-based optimizer improvements, test query plan quality on complex joins and subqueries",
-      "task": null
+      "task": null,
+      "started": "2026-04-17T14:42:10.337Z",
+      "completed": "2026-04-17T14:42:54.599Z",
+      "duration_ms": 60000,
+      "summary": "Planned query planner depth testing. Subqueries work at executor but no optimizer support. Focus on join cost estimation and index selection correctness."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Stress-test HenryDB query planner: EXPLAIN on multi-table joins to verify cost estimates are reasonable, test join reordering with ANALYZE statistics, verify index selection for WHERE clauses. Focus on correctness of plans, not optimization.",
       "plan_ref": "T14",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-17T14:43:02.813Z"
     },
     {
       "id": "T16",
@@ -262,6 +274,10 @@
     {
       "time": "2026-04-17T14:36:26.162Z",
       "msg": "PLAN T10 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T14:42:50.396Z",
+      "msg": "PLAN T14 filled 1 BUILD tasks"
     }
   ]
 }
