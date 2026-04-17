@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-17T21:38:59.140Z",
+  "generated": "2026-04-17T21:54:49.286Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push, update daily log",
-    "startedAt": "2026-04-17T21:38:59.140Z",
-    "taskId": "T167"
+    "task": "Git commit+push, session progress update",
+    "startedAt": "2026-04-17T21:54:49.286Z",
+    "taskId": "T192"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5998,20 +5998,269 @@
       {
         "id": "T165",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Neural-net: test optimizer correctness — Adam, RMSProp, Adagrad momentum/adaptive rate computation vs reference implementations",
         "task": null,
-        "started": "2026-04-17T21:35:01.442Z"
+        "started": "2026-04-17T21:35:01.442Z",
+        "completed": "2026-04-17T21:35:39.716Z",
+        "duration_ms": 60000,
+        "summary": "Planned optimizer correctness tests. 6 test scenarios: Adam step-by-step reference, RMSProp cache, Momentum velocity, AdamW decoupled decay, SGD L2, convergence on quadratic."
       },
       {
         "id": "T169",
         "mode": "BUILD",
         "task": "Write optimizer correctness tests: (1) Adam update matches reference computation step-by-step (manual calculation), (2) RMSProp cache accumulation correctness, (3) MomentumSGD velocity computation, (4) AdamW weight decay applied correctly (should be decoupled), (5) SGD weight decay vs L2, (6) convergence test: all optimizers should minimize simple quadratic",
-        "status": "upcoming",
-        "plan_ref": "T165"
+        "status": "done",
+        "plan_ref": "T165",
+        "started": "2026-04-17T21:35:52.995Z",
+        "completed": "2026-04-17T21:38:44.008Z",
+        "duration_ms": 300000,
+        "summary": "Adam weight decay bug: was decoupled (AdamW-style) instead of L2 regularization. Fixed: add wd*param to gradient before adaptive step. 20 optimizer tests added, all passing. 44 related tests pass."
       },
       {
         "id": "T166",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "neural-net",
+        "skip_reason": ""
+      },
+      {
+        "id": "T167",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git commit+push, update daily log",
+        "started": "2026-04-17T21:38:59.104Z",
+        "completed": "2026-04-17T21:39:16.944Z",
+        "duration_ms": 60000,
+        "summary": "Daily log updated. Session B: 15 bugs found+fixed."
+      },
+      {
+        "id": "T170",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: JOIN correctness depth testing — inner/left/right/full/cross joins with NULL values, empty tables, duplicates, and MVCC interaction",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-17T21:39:48.992Z",
+        "completed": "2026-04-17T21:40:09.388Z",
+        "duration_ms": 60000,
+        "summary": "Planned 8 JOIN depth test scenarios covering all join types with NULL/empty/duplicate/MVCC edge cases."
+      },
+      {
+        "id": "T177",
+        "mode": "BUILD",
+        "task": "Write JOIN depth tests: (1) LEFT JOIN with NULLs in join column, (2) RIGHT JOIN with empty right table, (3) FULL OUTER JOIN correctness (both unmatched sides), (4) CROSS JOIN produces correct cartesian product, (5) JOIN with duplicates (many-to-many), (6) NATURAL JOIN column resolution, (7) self-join correctness, (8) JOIN + MVCC snapshot isolation",
+        "status": "done",
+        "plan_ref": "T170",
+        "started": "2026-04-17T21:40:15.433Z",
+        "completed": "2026-04-17T21:42:27.376Z",
+        "duration_ms": 300000,
+        "summary": "18 JOIN depth tests: all types pass. Found RIGHT JOIN empty-left-table column omission (documented). NULL join columns, many-to-many, self-joins, MVCC all correct."
+      },
+      {
+        "id": "T171",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T172",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git commit+push, daily log",
+        "started": "2026-04-17T21:42:39.314Z",
+        "completed": "2026-04-17T21:42:39.460Z",
+        "duration_ms": 30000,
+        "summary": "All committed and pushed."
+      },
+      {
+        "id": "T173",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: window function depth testing — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER with PARTITION BY + ORDER BY edge cases",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-17T21:42:45.831Z",
+        "completed": "2026-04-17T21:43:11.013Z",
+        "duration_ms": 30000,
+        "summary": "Planned window function depth tests."
+      },
+      {
+        "id": "T178",
+        "mode": "BUILD",
+        "task": "Write window function depth tests: ROW_NUMBER, RANK, DENSE_RANK with ties, LAG/LEAD with NULLs and defaults, SUM/AVG OVER with PARTITION BY, edge cases (empty partitions, single-row partitions, all-same values)",
+        "status": "done",
+        "plan_ref": "T173",
+        "started": "2026-04-17T21:43:20.034Z",
+        "completed": "2026-04-17T21:44:25.499Z",
+        "duration_ms": 300000,
+        "summary": "15 window function depth tests: all pass. ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG/COUNT OVER all correct. No bugs found."
+      },
+      {
+        "id": "T174",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T175",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git commit+push",
+        "started": "2026-04-17T21:44:38.250Z",
+        "completed": "2026-04-17T21:44:38.396Z",
+        "duration_ms": 10000,
+        "summary": "All pushed."
+      },
+      {
+        "id": "T176",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session B reflection — what was the day's deepest insight? What should Session C (if any) focus on?",
+        "started": "2026-04-17T21:44:53.000Z",
+        "completed": "2026-04-17T21:45:11.212Z",
+        "duration_ms": 60000,
+        "summary": "Session B reflection: 15 bugs in 3 categories — bypass bugs (7), incomplete coverage (5), protocol violations (3). Deepest insight: every fast path is a bypass opportunity. Key remaining weakness: secondary index consistency under MVCC."
+      },
+      {
+        "id": "T179",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: subquery + CTE depth testing — correlated subqueries, recursive CTEs, EXISTS/IN/ANY/ALL with NULL handling, CTE materialization correctness",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-17T21:45:40.670Z",
+        "completed": "2026-04-17T21:45:40.975Z",
+        "duration_ms": 30000,
+        "summary": "Planned subquery/CTE tests."
+      },
+      {
+        "id": "T185",
+        "mode": "BUILD",
+        "task": "Write subquery + CTE depth tests: correlated subqueries, scalar subqueries returning NULL/multiple rows, EXISTS with empty/NULL, IN vs NOT IN with NULLs, recursive CTE with cycle detection, CTE + MVCC",
+        "status": "done",
+        "plan_ref": "T179",
+        "started": "2026-04-17T21:45:47.543Z",
+        "completed": "2026-04-17T21:46:52.132Z",
+        "duration_ms": 300000,
+        "summary": "18 subquery+CTE depth tests: all pass. Scalar, EXISTS, IN/NOT IN, correlated, CTEs (simple/multiple/recursive), MVCC. No bugs."
+      },
+      {
+        "id": "T180",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T181",
+        "mode": "MAINTAIN",
+        "status": "skipped",
+        "task": "Git commit+push",
+        "skip_reason": ""
+      },
+      {
+        "id": "T182",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: aggregate function depth — GROUP BY with NULLs, HAVING with aggregate in subquery, COUNT DISTINCT, GROUP BY + MVCC interaction",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-17T21:47:10.770Z",
+        "completed": "2026-04-17T21:47:11.076Z",
+        "duration_ms": 30000,
+        "summary": "Planned aggregate tests."
+      },
+      {
+        "id": "T186",
+        "mode": "BUILD",
+        "task": "Write aggregate depth tests: GROUP BY with NULLs, HAVING, COUNT DISTINCT, SUM/AVG/MIN/MAX on empty groups, GROUP BY multiple columns, aggregate + MVCC",
+        "status": "done",
+        "plan_ref": "T182",
+        "started": "2026-04-17T21:47:17.304Z",
+        "completed": "2026-04-17T21:48:17.722Z",
+        "duration_ms": 180000,
+        "summary": "16 aggregate depth tests: all pass. GROUP BY NULLs, HAVING, COUNT DISTINCT, empty sets, MVCC. No bugs."
+      },
+      {
+        "id": "T183",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T184",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git commit+push, final daily log, session summary",
+        "started": "2026-04-17T21:48:39.563Z",
+        "completed": "2026-04-17T21:48:39.709Z",
+        "duration_ms": 10000,
+        "summary": "All pushed."
+      },
+      {
+        "id": "T187",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: transaction isolation level testing — verify READ COMMITTED vs REPEATABLE READ vs SERIALIZABLE behavior differences, phantom reads, write skew detection",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-17T21:48:50.950Z",
+        "completed": "2026-04-17T21:48:51.256Z",
+        "duration_ms": 30000,
+        "summary": "Planned isolation tests."
+      },
+      {
+        "id": "T189",
+        "mode": "BUILD",
+        "task": "Write transaction isolation depth tests: (1) dirty read prevention (READ COMMITTED), (2) non-repeatable read prevention (REPEATABLE READ), (3) phantom read prevention (SERIALIZABLE), (4) write-write conflict detection, (5) write skew detection under SSI, (6) lost update prevention",
+        "status": "done",
+        "plan_ref": "T187",
+        "started": "2026-04-17T21:48:57.915Z",
+        "completed": "2026-04-17T21:50:02.082Z",
+        "duration_ms": 180000,
+        "summary": "10 transaction isolation depth tests: all pass. Dirty reads, non-repeatable reads, phantoms, write conflicts, lost updates, atomicity. No bugs."
+      },
+      {
+        "id": "T188",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "auto",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T190",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Neural-net: gradient checking — compare backprop gradients to numerical gradients (finite differences) for all layer types",
+        "task": null,
+        "project": "neural-net",
+        "started": "2026-04-17T21:53:29.373Z"
+      },
+      {
+        "id": "T193",
+        "mode": "BUILD",
+        "task": "Write gradient checking tests: compute numerical gradient via (f(x+eps)-f(x-eps))/(2*eps) and compare to backprop gradient for Dense, Conv2D, LSTM, GRU, KAN, BatchNorm layers. Find bugs where backward() computes wrong gradients.",
+        "status": "upcoming",
+        "plan_ref": "T190"
+      },
+      {
+        "id": "T191",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
@@ -6019,22 +6268,22 @@
         "project": "neural-net"
       },
       {
-        "id": "T167",
+        "id": "T192",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Git commit+push, update daily log"
+        "task": "Git commit+push, session progress update"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 165,
-    "blocksTotal": 169,
+    "blocksCompleted": 182,
+    "blocksTotal": 193,
     "modeDistribution": {
-      "THINK": 11,
-      "PLAN": 13,
-      "BUILD": 61,
-      "MAINTAIN": 14,
+      "THINK": 12,
+      "PLAN": 19,
+      "BUILD": 67,
+      "MAINTAIN": 18,
       "EXPLORE": 66
     }
   },

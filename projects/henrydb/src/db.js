@@ -2437,10 +2437,12 @@ export class Database {
     
     // RIGHT and FULL: add unmatched right rows
     if (join.joinType === 'RIGHT' || join.joinType === 'RIGHT_OUTER' || join.joinType === 'FULL' || join.joinType === 'FULL_OUTER') {
+      // Get left column names from first row or fall back to empty
+      const leftKeys = leftRows.length > 0 ? Object.keys(leftRows[0]) : [];
       for (let ri = 0; ri < rightRows.length; ri++) {
         if (!rightMatched.has(ri)) {
           const nullRow = {};
-          for (const key of Object.keys(leftRows[0] || {})) {
+          for (const key of leftKeys) {
             nullRow[key] = null;
           }
           result.push({ ...nullRow, ...rightRows[ri] });
