@@ -1398,6 +1398,50 @@
       "completed": "2026-04-17T17:49:19.818Z",
       "duration_ms": 120000,
       "summary": "Complex SaaS analytics query works: CTE + 3-table JOIN + GROUP BY + CASE WHEN + ROW_NUMBER + ORDER BY. Multi-tenant engagement report with correct results."
+    },
+    {
+      "id": "T129",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the advisory lock system: can we use pg_advisory_lock and pg_advisory_unlock for application-level locking?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:49:49.930Z",
+      "completed": "2026-04-17T17:50:09.361Z",
+      "duration_ms": 30000,
+      "summary": "Advisory locks: 6 tests pass. Two-phase commit: 9 tests pass. Both implemented and working."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — train MicroGPT on a real text corpus and generate coherent sequences",
+      "project": "neural-net",
+      "started": "2026-04-17T17:50:15.989Z",
+      "completed": "2026-04-17T17:50:57.484Z",
+      "duration_ms": 120000,
+      "summary": "MicroGPT trained on character-level Shakespeare text and generates plausible sequences. 19-char vocab, 30 training seqs, produces structured output."
+    },
+    {
+      "id": "T131",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the two-phase commit (2PC) for distributed transactions",
+      "project": "henrydb",
+      "started": "2026-04-17T17:51:05.948Z",
+      "completed": "2026-04-17T17:51:15.305Z",
+      "duration_ms": 10000,
+      "summary": "Already tested: 9 two-phase commit tests pass. PREPARE TRANSACTION, COMMIT PREPARED, ROLLBACK PREPARED all working."
+    },
+    {
+      "id": "T132",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the predictive coding network: does it learn to predict sensory input in an unsupervised way?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:51:21.419Z",
+      "completed": "2026-04-17T17:51:57.365Z",
+      "duration_ms": 60000,
+      "summary": "Predictive coding network trains and tracks prediction errors. No separate predict API — the training IS inference (free energy minimization). History tracks error reduction."
     }
   ],
   "focusProjects": [
@@ -1929,6 +1973,22 @@
     {
       "time": "2026-04-17T17:47:54.336Z",
       "msg": "Added T128 (BUILD) after end: BUILD: HenryDB — write a complex real-world-like query: multi-tenant SaaS analytics with CTEs, window functions, LATERAL JOIN, and GROUP BY"
+    },
+    {
+      "time": "2026-04-17T17:49:43.356Z",
+      "msg": "Added T129 (EXPLORE) after end: EXPLORE: HenryDB — test the advisory lock system: can we use pg_advisory_lock and pg_advisory_unlock for application-level locking?"
+    },
+    {
+      "time": "2026-04-17T17:49:43.476Z",
+      "msg": "Added T130 (BUILD) after end: BUILD: Neural-net — train MicroGPT on a real text corpus and generate coherent sequences"
+    },
+    {
+      "time": "2026-04-17T17:49:43.596Z",
+      "msg": "Added T131 (EXPLORE) after end: EXPLORE: HenryDB — test the two-phase commit (2PC) for distributed transactions"
+    },
+    {
+      "time": "2026-04-17T17:49:43.715Z",
+      "msg": "Added T132 (EXPLORE) after end: EXPLORE: Neural-net — test the predictive coding network: does it learn to predict sensory input in an unsupervised way?"
     }
   ]
 }
