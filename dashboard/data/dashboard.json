@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T22:53:58.419Z",
+  "generated": "2026-04-17T23:01:23.963Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: foreign key constraint depth — FK enforcement on INSERT, DELETE CASCADE, SET NULL, RESTRICT, UPDATE CASCADE",
-    "startedAt": "2026-04-17T22:53:58.419Z",
-    "taskId": "T231"
+    "task": "HenryDB: generated/computed column depth — GENERATED ALWAYS AS, virtual vs stored",
+    "completedAt": "2026-04-17T23:01:23.963Z",
+    "taskId": "T237",
+    "summary": "6 generated column tests: all pass. Add, multiply, auto-update, multiple, WHERE, crash recovery. No bugs.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -6277,12 +6279,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 219,
+    "blocksCompleted": 226,
     "blocksTotal": 193,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 19,
-      "BUILD": 100,
+      "BUILD": 107,
       "MAINTAIN": 22,
       "EXPLORE": 66
     }

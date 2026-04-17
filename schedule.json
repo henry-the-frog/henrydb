@@ -2493,10 +2493,79 @@
     {
       "id": "T231",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: foreign key constraint depth — FK enforcement on INSERT, DELETE CASCADE, SET NULL, RESTRICT, UPDATE CASCADE",
       "project": "henrydb",
-      "started": "2026-04-17T22:53:58.350Z"
+      "started": "2026-04-17T22:53:58.350Z",
+      "completed": "2026-04-17T22:56:37.016Z",
+      "duration_ms": 300000,
+      "summary": "7 FK tests: 1 BUG FOUND AND FIXED — ON DELETE SET NULL crash. heap.pages not accessible in all implementations. Fixed with delete+insert pattern."
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: HAVING clause depth — HAVING with aggregates, HAVING with multiple conditions, HAVING without GROUP BY",
+      "project": "henrydb",
+      "started": "2026-04-17T22:56:47.276Z",
+      "completed": "2026-04-17T22:57:25.459Z",
+      "duration_ms": 90000,
+      "summary": "8 HAVING tests: all pass. SUM/COUNT/AVG filters, AND/OR, edge cases. No bugs."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Transformer attention depth — self-attention shape, multi-head attention, causal masking",
+      "project": "neural-net",
+      "started": "2026-04-17T22:57:31.740Z",
+      "completed": "2026-04-17T22:58:17.354Z",
+      "duration_ms": 120000,
+      "summary": "8 Transformer tests: all pass. SelfAttention, MultiHeadAttention, PositionalEncoding, LayerNorm. No bugs."
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: EXPLAIN depth — EXPLAIN SELECT, EXPLAIN with INDEX, query plan accuracy",
+      "project": "henrydb",
+      "started": "2026-04-17T22:58:35.539Z",
+      "completed": "2026-04-17T22:59:12.647Z",
+      "duration_ms": 120000,
+      "summary": "5 EXPLAIN tests: all pass. Plan output, index vs scan, ANALYZE, no side effects. No bugs."
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: MERGE statement depth — MERGE MATCHED UPDATE, NOT MATCHED INSERT, multiple WHEN clauses",
+      "project": "henrydb",
+      "started": "2026-04-17T22:59:18.000Z",
+      "completed": "2026-04-17T22:59:51.203Z",
+      "duration_ms": 90000,
+      "summary": "3 MERGE tests: all pass. UPDATE+INSERT, NOT MATCHED only, idempotent. No bugs."
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: UPDATE FROM depth — UPDATE with FROM clause (multi-table update), UPDATE with JOIN",
+      "project": "henrydb",
+      "started": "2026-04-17T23:00:04.278Z",
+      "completed": "2026-04-17T23:00:38.202Z",
+      "duration_ms": 90000,
+      "summary": "4 UPDATE FROM tests: all pass. Multi-table update, expression, no match, DELETE with IN subquery. No bugs."
+    },
+    {
+      "id": "T237",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: generated/computed column depth — GENERATED ALWAYS AS, virtual vs stored",
+      "project": "henrydb",
+      "started": "2026-04-17T23:00:44.977Z",
+      "completed": "2026-04-17T23:01:23.926Z",
+      "duration_ms": 90000,
+      "summary": "6 generated column tests: all pass. Add, multiply, auto-update, multiple, WHERE, crash recovery. No bugs."
     }
   ],
   "focusProjects": [
@@ -3492,6 +3561,30 @@
     {
       "time": "2026-04-17T22:53:57.698Z",
       "msg": "Added T231 (BUILD) after end: HenryDB: foreign key constraint depth — FK enforcement on INSERT, DELETE CASCADE, SET NULL, RESTRICT, UPDATE CASCADE"
+    },
+    {
+      "time": "2026-04-17T22:56:46.692Z",
+      "msg": "Added T232 (BUILD) after end: HenryDB: HAVING clause depth — HAVING with aggregates, HAVING with multiple conditions, HAVING without GROUP BY"
+    },
+    {
+      "time": "2026-04-17T22:57:31.035Z",
+      "msg": "Added T233 (BUILD) after end: Neural-net: Transformer attention depth — self-attention shape, multi-head attention, causal masking"
+    },
+    {
+      "time": "2026-04-17T22:58:35.111Z",
+      "msg": "Added T234 (BUILD) after end: HenryDB: EXPLAIN depth — EXPLAIN SELECT, EXPLAIN with INDEX, query plan accuracy"
+    },
+    {
+      "time": "2026-04-17T22:59:17.707Z",
+      "msg": "Added T235 (BUILD) after end: HenryDB: MERGE statement depth — MERGE MATCHED UPDATE, NOT MATCHED INSERT, multiple WHEN clauses"
+    },
+    {
+      "time": "2026-04-17T23:00:04.039Z",
+      "msg": "Added T236 (BUILD) after end: HenryDB: UPDATE FROM depth — UPDATE with FROM clause (multi-table update), UPDATE with JOIN"
+    },
+    {
+      "time": "2026-04-17T23:00:44.741Z",
+      "msg": "Added T237 (BUILD) after end: HenryDB: generated/computed column depth — GENERATED ALWAYS AS, virtual vs stored"
     }
   ]
 }
