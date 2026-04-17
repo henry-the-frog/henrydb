@@ -3843,6 +3843,9 @@ export class Database {
         // B+ tree doesn't have delete, so we rebuild affected indexes after
       }
 
+      // BEFORE UPDATE triggers
+      this._fireTriggers('BEFORE', 'UPDATE', ast.table, newValues, table.schema, item.values);
+
       // Delete old, insert new
       table.heap.delete(item.pageId, item.slotIdx);
       const newRid = table.heap.insert(newValues);
@@ -3858,6 +3861,9 @@ export class Database {
 
       // Handle ON UPDATE CASCADE for foreign keys
       this._handleForeignKeyUpdate(ast.table, table, item.values, newValues);
+
+      // AFTER UPDATE triggers
+      this._fireTriggers('AFTER', 'UPDATE', ast.table, newValues, table.schema, item.values);
 
       if (ast.returning) {
         const cleanRow = {};
@@ -4024,12 +4030,22 @@ export class Database {
       if (values) {
         this._handleForeignKeyDelete(ast.table, table, values);
       }
+
+      // BEFORE DELETE triggers
+      if (values) {
+        this._fireTriggers('BEFORE', 'DELETE', ast.table, null, table.schema, values);
+      }
       
       table.heap.delete(pageId, slotIdx);
       
       // WAL: log the delete
       if (values) {
         this.wal.appendDelete(batchTxId, ast.table, pageId, slotIdx, values);
+      }
+
+      // AFTER DELETE triggers
+      if (values) {
+        this._fireTriggers('AFTER', 'DELETE', ast.table, null, table.schema, values);
       }
       
       deleted++;
