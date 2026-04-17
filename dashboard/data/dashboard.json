@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-17T17:36:00.750Z",
+  "generated": "2026-04-17T17:37:47.504Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Neural-net — test the word2vec module: does it learn meaningful word embeddings from a small corpus?",
-    "completedAt": "2026-04-17T17:36:00.750Z",
-    "taskId": "T117",
-    "summary": "Embedding layer works: vocab lookup, batch processing, same-token consistency. Forward output: batch × (seqLen × embedDim). No word2vec-specific module exists.",
-    "durationMs": 120000
+    "task": "EXPLORE: Neural-net — batch test remaining modules: autoencoder, automl, SOM, RBM, predictive-coding, hypernetwork, lottery-ticket",
+    "completedAt": "2026-04-17T17:37:47.504Z",
+    "taskId": "T118",
+    "summary": "All 7 remaining modules tested: SOM (findBMU, train), RBM (encode/decode), Autoencoder (0.027 MSE), HyperNetwork, lottery-ticket, automl, predictive-coding. All import and function correctly.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 117,
+    "blocksCompleted": 118,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
       "BUILD": 40,
       "MAINTAIN": 9,
-      "EXPLORE": 52
+      "EXPLORE": 53
     }
   },
   "artifacts": [

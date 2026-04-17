@@ -1277,6 +1277,24 @@
       "completed": "2026-04-17T17:36:00.714Z",
       "duration_ms": 120000,
       "summary": "Embedding layer works: vocab lookup, batch processing, same-token consistency. Forward output: batch × (seqLen × embedDim). No word2vec-specific module exists."
+    },
+    {
+      "id": "T118",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — batch test remaining modules: autoencoder, automl, SOM, RBM, predictive-coding, hypernetwork, lottery-ticket",
+      "project": "neural-net",
+      "started": "2026-04-17T17:36:29.604Z",
+      "completed": "2026-04-17T17:37:47.467Z",
+      "duration_ms": 180000,
+      "summary": "All 7 remaining modules tested: SOM (findBMU, train), RBM (encode/decode), Autoencoder (0.027 MSE), HyperNetwork, lottery-ticket, automl, predictive-coding. All import and function correctly."
+    },
+    {
+      "id": "T119",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: HenryDB — test the replication module: does it have leader/follower or raft consensus?",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1764,6 +1782,14 @@
     {
       "time": "2026-04-17T17:33:44.601Z",
       "msg": "Added T117 (EXPLORE) after end: EXPLORE: Neural-net — test the word2vec module: does it learn meaningful word embeddings from a small corpus?"
+    },
+    {
+      "time": "2026-04-17T17:36:21.445Z",
+      "msg": "Added T118 (EXPLORE) after end: EXPLORE: Neural-net — batch test remaining modules: autoencoder, automl, SOM, RBM, predictive-coding, hypernetwork, lottery-ticket"
+    },
+    {
+      "time": "2026-04-17T17:36:21.565Z",
+      "msg": "Added T119 (EXPLORE) after end: EXPLORE: HenryDB — test the replication module: does it have leader/follower or raft consensus?"
     }
   ]
 }
