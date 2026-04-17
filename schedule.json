@@ -665,10 +665,13 @@
     {
       "id": "T62",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "EXPLORE: HenryDB views — do materialized views, updateable views, and view-through-view queries work?",
       "project": "henrydb",
-      "started": "2026-04-17T16:08:58.127Z"
+      "started": "2026-04-17T16:08:58.127Z",
+      "completed": "2026-04-17T16:14:15.453Z",
+      "duration_ms": 600000,
+      "summary": "Bug #19: View result cache stale after base table modifications. Cache invalidation only tracked direct table references, not view→table dependencies. Fixed by recursively resolving views to base tables in _extractTables()."
     }
   ],
   "focusProjects": [
