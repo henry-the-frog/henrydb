@@ -2205,6 +2205,24 @@
       "completed": "2026-04-17T22:22:41.301Z",
       "duration_ms": 120000,
       "summary": "13 DISTINCT+set ops tests: all pass. UNION/INTERSECT/EXCEPT with NULLs. No bugs."
+    },
+    {
+      "id": "T205",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: string matching depth — LIKE, ILIKE, GLOB, regex patterns, % and _ wildcards, escape characters, NULL handling in patterns",
+      "project": "henrydb",
+      "started": "2026-04-17T22:23:33.102Z",
+      "completed": "2026-04-17T22:24:14.611Z",
+      "duration_ms": 120000,
+      "summary": "12 string matching tests: all pass. LIKE %/_, NULL, case sensitivity. No bugs."
+    },
+    {
+      "id": "T206",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session push: git commit+push all, update TODO.md, evening summary",
+      "started": "2026-04-17T22:24:27.834Z"
     }
   ],
   "focusProjects": [
@@ -3092,6 +3110,14 @@
     {
       "time": "2026-04-17T22:21:56.465Z",
       "msg": "Added T204 (BUILD) after end: HenryDB: DISTINCT + set operations depth — DISTINCT, UNION/UNION ALL, INTERSECT, EXCEPT with NULLs and type mismatches"
+    },
+    {
+      "time": "2026-04-17T22:23:32.866Z",
+      "msg": "Added T205 (BUILD) after end: HenryDB: string matching depth — LIKE, ILIKE, GLOB, regex patterns, % and _ wildcards, escape characters, NULL handling in patterns"
+    },
+    {
+      "time": "2026-04-17T22:24:27.598Z",
+      "msg": "Added T206 (MAINTAIN) after end: Final session push: git commit+push all, update TODO.md, evening summary"
     }
   ]
 }
