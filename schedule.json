@@ -367,6 +367,39 @@
       "completed": "2026-04-17T15:33:51.062Z",
       "duration_ms": 120000,
       "summary": "Reflections written. Key insight: Integration Boundary Principle — 12 bugs today, all at the boundary between independently-built subsystems that share a concept but fail to connect."
+    },
+    {
+      "id": "T35",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Scan neural-net for dead code bugs — functions that call non-existent methods, untested constructors, broken imports. Systematic sweep of lesser-tested modules.",
+      "project": "neural-net",
+      "started": "2026-04-17T15:34:12.547Z",
+      "completed": "2026-04-17T15:35:47.037Z",
+      "duration_ms": 180000,
+      "summary": "Scanned untested modules: activation, callbacks, conv1d, data-augmentation, loss, digits. All work correctly when called with proper APIs. The cutmix bug (T33) was the real dead code issue. No additional bugs found."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — test WAL checkpoint + recovery with explicit transactions (BEGIN/COMMIT/ROLLBACK). Verify txId tracking survives checkpoint.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:35:58.233Z",
+      "completed": "2026-04-17T15:36:31.014Z",
+      "duration_ms": 120000,
+      "summary": "WAL checkpoint + transaction recovery: txId tracking survives checkpoints correctly. Tested: single checkpoint, multiple checkpoints, committed before/after checkpoint, uncommitted after checkpoint. All correct."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net end-to-end training pipeline — Network + Dataset + Preprocessing + Training + Evaluation. Verify the full pipeline works on each dataset.",
+      "project": "neural-net",
+      "started": "2026-04-17T15:36:47.059Z",
+      "completed": "2026-04-17T15:37:34.824Z",
+      "duration_ms": 180000,
+      "summary": "E2E pipeline verified: Network + Datasets + Preprocessing + Training on moons (90%), circles (80%), sine, linear — all work. XOR NaN was from trainTestSplit on 4-sample dataset (expected). Full pipeline integration is solid."
     }
   ],
   "focusProjects": [
@@ -530,6 +563,18 @@
     {
       "time": "2026-04-17T15:33:16.906Z",
       "msg": "Added T34 (MAINTAIN) after end: BUILD: Write today's reflections and update MEMORY.md with key learnings from this incredible depth day."
+    },
+    {
+      "time": "2026-04-17T15:34:12.430Z",
+      "msg": "Added T35 (EXPLORE) after end: EXPLORE: Scan neural-net for dead code bugs — functions that call non-existent methods, untested constructors, broken imports. Systematic sweep of lesser-tested modules."
+    },
+    {
+      "time": "2026-04-17T15:35:58.115Z",
+      "msg": "Added T36 (BUILD) after end: BUILD: HenryDB — test WAL checkpoint + recovery with explicit transactions (BEGIN/COMMIT/ROLLBACK). Verify txId tracking survives checkpoint."
+    },
+    {
+      "time": "2026-04-17T15:36:46.942Z",
+      "msg": "Added T37 (BUILD) after end: BUILD: Neural-net end-to-end training pipeline — Network + Dataset + Preprocessing + Training + Evaluation. Verify the full pipeline works on each dataset."
     }
   ]
 }
