@@ -705,6 +705,17 @@
       "completed": "2026-04-17T16:16:27.312Z",
       "duration_ms": 60000,
       "summary": "MultiHeadAttention works correctly with flattened input. Forward/backward shape-preserving, all finite. No bugs."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Pruning bugs fixed (#20-21)",
+      "project": "neural-net",
+      "started": "2026-04-17T16:19:54.186Z",
+      "completed": "2026-04-17T16:19:54.331Z",
+      "duration_ms": 30000,
+      "summary": "Pruning bugs fixed. magnitudePrune and structuredPrune now return proper Matrix instances."
     }
   ],
   "focusProjects": [
@@ -992,6 +1003,10 @@
     {
       "time": "2026-04-17T16:16:27.052Z",
       "msg": "Added T65 (EXPLORE) after end: done: MHA works correctly"
+    },
+    {
+      "time": "2026-04-17T16:19:54.068Z",
+      "msg": "Added T66 (BUILD) after end: Pruning bugs fixed (#20-21)"
     }
   ]
 }
