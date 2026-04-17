@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T15:03:58.483Z",
+  "generated": "2026-04-17T15:07:25.216Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "BUILD: HenryDB — investigate window functions + MVCC interaction. Do window functions work correctly inside transactions? Test with OVER clauses in BEGIN/COMMIT blocks.",
-    "startedAt": "2026-04-17T15:03:58.483Z",
-    "taskId": "T22"
+    "completedAt": "2026-04-17T15:07:25.216Z",
+    "taskId": "T22",
+    "summary": "Found and fixed GROUP BY + window function bug: window columns silently dropped because _selectWithGroupBy() never called _computeWindowFunctions(). Also fixed aggregate ORDER BY in OVER clause causing TypeError. Now SELECT dept, AVG(salary), RANK() OVER (ORDER BY AVG(salary) DESC) FROM emp GROUP BY dept works correctly.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -4378,12 +4380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 21,
+    "blocksCompleted": 22,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 4,
+      "BUILD": 5,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
