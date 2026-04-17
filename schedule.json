@@ -269,6 +269,69 @@
       "completed": "2026-04-17T15:13:15.480Z",
       "duration_ms": 300000,
       "summary": "Found autograd mseLoss bug: passing Variable targets produced NaN because constant() received Variable objects and converted to string. Fixed with instanceof check. Also verified autograd correctness: x^2, sin, exp*sin, diamond pattern, chain rule, relu, sigmoid — all exact. Training converges for simple regression."
+    },
+    {
+      "id": "T26",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net GAN/VAE depth — test adversarial training convergence. Can the GAN actually generate samples? Does the VAE's KL divergence computation work?",
+      "project": "neural-net",
+      "started": "2026-04-17T15:13:43.522Z",
+      "completed": "2026-04-17T15:15:53.191Z",
+      "duration_ms": 300000,
+      "summary": "GAN and VAE both work correctly. GAN generates points centered around target distribution. VAE trains with decreasing loss+KL, generates reasonable samples, reparameterization trick works. KL formula correct. No bugs found in generative models."
+    },
+    {
+      "id": "T27",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "BUILD: Neural-net — run full test suite sweep, check for any regressions from today's fixes. Git push final state.",
+      "project": "neural-net",
+      "started": "2026-04-17T15:18:03.524Z",
+      "completed": "2026-04-17T15:20:52.814Z",
+      "duration_ms": 180000,
+      "summary": "Full sweep: 1294 tests, 0-2 flaky failures (stochastic tests, pre-existing). No regressions from today. Pushed to git."
+    },
+    {
+      "id": "T28",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: HenryDB full test suite sweep",
+      "project": "henrydb",
+      "started": "2026-04-17T15:21:04.621Z",
+      "completed": "2026-04-17T15:21:34.398Z",
+      "duration_ms": 60000,
+      "summary": "Core HenryDB tests sweep: db, mvcc, crash-recovery, planner, window functions — all 0 failures."
+    },
+    {
+      "id": "T29",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net optimizer/scheduler depth — test Adam, RMSProp, AdaGrad with various schedulers. Do momentum-based optimizers converge faster than SGD? Does warmup+cosine decay work?",
+      "project": "neural-net",
+      "started": "2026-04-17T15:21:40.851Z",
+      "completed": "2026-04-17T15:22:40.727Z",
+      "duration_ms": 180000,
+      "summary": "All LR schedulers correct: CosineAnnealing, Warmup, StepLR, CyclicLR. Adam/RMSProp optimizers exist but Network.trainBatch defaults to SGD (not a bug, by design). No issues found."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — stress test complex SQL: recursive CTEs, lateral joins, MERGE statements, complex CASE WHEN, JSON operations. Find parser/executor edge cases.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:22:51.594Z",
+      "completed": "2026-04-17T15:23:55.779Z",
+      "duration_ms": 300000,
+      "summary": "Complex SQL stress test: recursive CTEs, CASE+subquery, HAVING, IN+subquery, BETWEEN, LIKE, UPDATE+subquery, JSON_EXTRACT, JSON_ARRAY, GENERATE_SERIES — all work correctly. LATERAL GENERATE_SERIES parser limitation (expected). HenryDB SQL engine is very robust for individual features."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "BUILD: HenryDB — MVCC snapshot isolation correctness. Test that concurrent transactions see correct snapshots, no dirty reads, no lost updates, write skew detection.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:24:12.257Z"
     }
   ],
   "focusProjects": [
@@ -396,6 +459,30 @@
     {
       "time": "2026-04-17T15:11:12.523Z",
       "msg": "Added T25 (EXPLORE) after end: EXPLORE: Neural-net autograd depth — stress test reverse-mode AD with complex computation graphs. Higher-order derivatives, gradient of gradient, non-trivial composition patterns."
+    },
+    {
+      "time": "2026-04-17T15:13:38.433Z",
+      "msg": "Added T26 (EXPLORE) after end: EXPLORE: Neural-net GAN/VAE depth — test adversarial training convergence. Can the GAN actually generate samples? Does the VAE's KL divergence computation work?"
+    },
+    {
+      "time": "2026-04-17T15:17:57.660Z",
+      "msg": "Added T27 (MAINTAIN) after end: BUILD: Neural-net — run full test suite sweep, check for any regressions from today's fixes. Git push final state."
+    },
+    {
+      "time": "2026-04-17T15:21:04.505Z",
+      "msg": "Added T28 (MAINTAIN) after end: MAINTAIN: HenryDB full test suite sweep"
+    },
+    {
+      "time": "2026-04-17T15:21:40.734Z",
+      "msg": "Added T29 (EXPLORE) after end: EXPLORE: Neural-net optimizer/scheduler depth — test Adam, RMSProp, AdaGrad with various schedulers. Do momentum-based optimizers converge faster than SGD? Does warmup+cosine decay work?"
+    },
+    {
+      "time": "2026-04-17T15:22:51.475Z",
+      "msg": "Added T30 (BUILD) after end: BUILD: HenryDB — stress test complex SQL: recursive CTEs, lateral joins, MERGE statements, complex CASE WHEN, JSON operations. Find parser/executor edge cases."
+    },
+    {
+      "time": "2026-04-17T15:24:12.140Z",
+      "msg": "Added T31 (BUILD) after end: BUILD: HenryDB — MVCC snapshot isolation correctness. Test that concurrent transactions see correct snapshots, no dirty reads, no lost updates, write skew detection."
     }
   ]
 }

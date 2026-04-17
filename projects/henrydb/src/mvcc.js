@@ -86,26 +86,69 @@ export class MVCCManager {
     const versions = this._versions.get(key);
     if (!versions) return undefined;
 
-    // Find the latest version visible to this transaction
+    // Find the latest version visible to this transaction's snapshot
     for (let i = versions.length - 1; i >= 0; i--) {
       const v = versions[i];
-      if (v.txId < tx.startTx || v.txId === txId) {
-        // Check if the writing transaction committed
-        const writerTx = this.activeTxns.get(v.txId);
-        if (v.txId === txId || !writerTx || writerTx.committed) {
-          return v.deleted ? undefined : v.value;
-        }
+      
+      // Own writes are always visible
+      if (v.txId === txId) {
+        return v.deleted ? undefined : v.value;
+      }
+      
+      // Check snapshot visibility: the writing transaction must have been
+      // committed before our snapshot was taken
+      if (this._isVisibleToSnapshot(v.txId, tx.snapshot)) {
+        return v.deleted ? undefined : v.value;
       }
     }
     return undefined;
   }
 
+  /**
+   * Check if a transaction's writes are visible to a given snapshot.
+   * A transaction is visible if it committed before the snapshot was taken:
+   * - txId < snapshot.xmin (committed before any active tx)
+   * - txId < snapshot.xmax AND txId not in activeSet (committed, not active at snapshot time)
+   */
+  _isVisibleToSnapshot(writerTxId, snapshot) {
+    // If the writer's txId is before the oldest active tx, it was committed
+    if (writerTxId < snapshot.xmin) return true;
+    // If >= xmax, it started after our snapshot — not visible
+    if (writerTxId >= snapshot.xmax) return false;
+    // Between xmin and xmax: visible if NOT in the active set at snapshot time
+    return !snapshot.activeSet.has(writerTxId);
+  }
+
   /** Write a key in a transaction. Accepts txId or MVCCTransaction. */
   write(txIdOrTx, key, value) {
     const txId = typeof txIdOrTx === 'object' ? txIdOrTx.txId : txIdOrTx;
+    const tx = this.activeTxns.get(txId);
+    
+    // Write-write conflict detection:
+    // If another concurrent transaction has written to this key and committed,
+    // we have a conflict (first-committer-wins / first-updater-wins)
+    const versions = this._versions.get(key);
+    if (versions) {
+      for (let i = versions.length - 1; i >= 0; i--) {
+        const v = versions[i];
+        if (v.txId === txId) break; // Own previous write, OK
+        // Check if this version was written by a concurrent transaction
+        // that committed after our snapshot
+        if (v.txId >= (tx?.snapshot?.xmin || 0)) {
+          const writerTx = this.activeTxns.get(v.txId);
+          if (writerTx && writerTx.committed && v.txId !== txId) {
+            throw new Error(`Write-write conflict on key "${key}": tx ${txId} conflicts with committed tx ${v.txId}`);
+          }
+          // If writer is still active (not committed, not our tx), also conflict
+          if (writerTx && !writerTx.committed && v.txId !== txId) {
+            throw new Error(`Write-write conflict on key "${key}": tx ${txId} conflicts with active tx ${v.txId}`);
+          }
+        }
+      }
+    }
+    
     if (!this._versions.has(key)) this._versions.set(key, []);
     this._versions.get(key).push({ value, txId, deleted: false });
-    const tx = this.activeTxns.get(txId);
     if (tx) tx.writeSet.add(key);
     this.wal.push({ type: 'write', txId, key, value });
   }

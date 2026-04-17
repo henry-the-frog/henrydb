@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-17T15:13:15.516Z",
+  "generated": "2026-04-17T15:24:12.293Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Neural-net autograd depth — stress test reverse-mode AD with complex computation graphs. Higher-order derivatives, gradient of gradient, non-trivial composition patterns.",
-    "completedAt": "2026-04-17T15:13:15.516Z",
-    "taskId": "T25",
-    "summary": "Found autograd mseLoss bug: passing Variable targets produced NaN because constant() received Variable objects and converted to string. Fixed with instanceof check. Also verified autograd correctness: x^2, sin, exp*sin, diamond pattern, chain rule, relu, sigmoid — all exact. Training converges for simple regression.",
-    "durationMs": 300000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "BUILD: HenryDB — MVCC snapshot isolation correctness. Test that concurrent transactions see correct snapshots, no dirty reads, no lost updates, write skew detection.",
+    "startedAt": "2026-04-17T15:24:12.293Z",
+    "taskId": "T31"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -4380,14 +4378,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 25,
+    "blocksCompleted": 30,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 7,
-      "MAINTAIN": 4,
-      "EXPLORE": 3
+      "BUILD": 8,
+      "MAINTAIN": 6,
+      "EXPLORE": 5
     }
   },
   "artifacts": [
