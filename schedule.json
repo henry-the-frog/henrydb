@@ -2581,10 +2581,109 @@
     {
       "id": "T239",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: WAL + crash recovery stress — insert/update/delete during crash, partial writes, checkpoint recovery",
       "project": "henrydb",
-      "started": "2026-04-17T23:02:48.312Z"
+      "started": "2026-04-17T23:02:48.312Z",
+      "completed": "2026-04-17T23:03:59.270Z",
+      "duration_ms": 240000,
+      "summary": "7 WAL recovery tests: all pass. BUG #19 DOCUMENTED: DROP TABLE not surviving recovery. INSERT/UPDATE/DELETE recovery work. Multi-cycle, DDL, stress all pass."
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: RETURNING clause depth — INSERT RETURNING, UPDATE RETURNING, DELETE RETURNING",
+      "project": "henrydb",
+      "started": "2026-04-17T23:04:07.078Z",
+      "completed": "2026-04-17T23:04:41.185Z",
+      "duration_ms": 90000,
+      "summary": "5 RETURNING tests: all pass. INSERT/UPDATE/DELETE RETURNING. No bugs."
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: IF EXISTS/IF NOT EXISTS depth — CREATE TABLE IF NOT EXISTS, DROP TABLE IF EXISTS, CREATE INDEX IF NOT EXISTS",
+      "project": "henrydb",
+      "started": "2026-04-17T23:04:48.297Z",
+      "completed": "2026-04-17T23:05:18.596Z",
+      "duration_ms": 90000,
+      "summary": "6 IF EXISTS tests: all pass. CREATE/DROP TABLE IF [NOT] EXISTS, CREATE INDEX IF NOT EXISTS. No bugs."
+    },
+    {
+      "id": "T242",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: string function depth — UPPER, LOWER, TRIM, SUBSTRING, REPLACE, LENGTH, POSITION, CONCAT_WS",
+      "project": "henrydb",
+      "started": "2026-04-17T23:05:36.183Z",
+      "completed": "2026-04-17T23:06:06.001Z",
+      "duration_ms": 90000,
+      "summary": "10 string function tests: all pass. UPPER, LOWER, TRIM, LENGTH, SUBSTRING, REPLACE, NULL, nested. No bugs."
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Embedding layer depth — lookup correctness, output shape, backward gradients",
+      "project": "neural-net",
+      "started": "2026-04-17T23:06:13.464Z",
+      "completed": "2026-04-17T23:06:52.223Z",
+      "duration_ms": 90000,
+      "summary": "8 Embedding tests: all pass. Shape, lookup, clamping, backward gradients. No bugs."
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: math function depth — ABS, ROUND, CEIL, FLOOR, MOD, POWER, SQRT, LOG, random",
+      "project": "henrydb",
+      "started": "2026-04-17T23:06:57.815Z",
+      "completed": "2026-04-17T23:07:29.364Z",
+      "duration_ms": 90000,
+      "summary": "11 math function tests: all pass. ABS, ROUND, CEIL, FLOOR, POWER, SQRT, MOD, NULL. No bugs."
+    },
+    {
+      "id": "T245",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Flatten + MaxPool2D depth — output shape, forward pass, backward gradients",
+      "project": "neural-net",
+      "started": "2026-04-17T23:07:36.156Z",
+      "completed": "2026-04-17T23:08:25.429Z",
+      "duration_ms": 90000,
+      "summary": "8 MaxPool2D + Flatten tests: all pass. Shapes, max selection, backward, flatten. No bugs."
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: aggregate edge cases — GROUP_CONCAT, COUNT(DISTINCT), MIN/MAX with dates, SUM overflow, empty table aggregates",
+      "project": "henrydb",
+      "started": "2026-04-17T23:08:32.488Z",
+      "completed": "2026-04-17T23:09:09.272Z",
+      "duration_ms": 90000,
+      "summary": "9 aggregate edge case tests: all pass. Empty table, COUNT(DISTINCT), NULLs, GROUP_CONCAT. No bugs."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Dropout layer depth — training vs eval, dropout rate, scaling, shape preservation",
+      "project": "neural-net",
+      "started": "2026-04-17T23:09:16.260Z",
+      "completed": "2026-04-17T23:09:54.850Z",
+      "duration_ms": 90000,
+      "summary": "7 Dropout tests: all pass. Shape, zeroing, eval passthrough, backward mask consistency. No bugs."
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: UPSERT depth — ON CONFLICT DO NOTHING, ON CONFLICT DO UPDATE with complex expressions",
+      "project": "henrydb",
+      "started": "2026-04-17T23:10:00.096Z"
     }
   ],
   "focusProjects": [
@@ -3612,6 +3711,42 @@
     {
       "time": "2026-04-17T23:02:48.075Z",
       "msg": "Added T239 (BUILD) after end: HenryDB: WAL + crash recovery stress — insert/update/delete during crash, partial writes, checkpoint recovery"
+    },
+    {
+      "time": "2026-04-17T23:04:06.842Z",
+      "msg": "Added T240 (BUILD) after end: HenryDB: RETURNING clause depth — INSERT RETURNING, UPDATE RETURNING, DELETE RETURNING"
+    },
+    {
+      "time": "2026-04-17T23:04:48.061Z",
+      "msg": "Added T241 (BUILD) after end: HenryDB: IF EXISTS/IF NOT EXISTS depth — CREATE TABLE IF NOT EXISTS, DROP TABLE IF EXISTS, CREATE INDEX IF NOT EXISTS"
+    },
+    {
+      "time": "2026-04-17T23:05:35.933Z",
+      "msg": "Added T242 (BUILD) after end: HenryDB: string function depth — UPPER, LOWER, TRIM, SUBSTRING, REPLACE, LENGTH, POSITION, CONCAT_WS"
+    },
+    {
+      "time": "2026-04-17T23:06:13.228Z",
+      "msg": "Added T243 (BUILD) after end: Neural-net: Embedding layer depth — lookup correctness, output shape, backward gradients"
+    },
+    {
+      "time": "2026-04-17T23:06:57.579Z",
+      "msg": "Added T244 (BUILD) after end: HenryDB: math function depth — ABS, ROUND, CEIL, FLOOR, MOD, POWER, SQRT, LOG, random"
+    },
+    {
+      "time": "2026-04-17T23:07:35.920Z",
+      "msg": "Added T245 (BUILD) after end: Neural-net: Flatten + MaxPool2D depth — output shape, forward pass, backward gradients"
+    },
+    {
+      "time": "2026-04-17T23:08:32.250Z",
+      "msg": "Added T246 (BUILD) after end: HenryDB: aggregate edge cases — GROUP_CONCAT, COUNT(DISTINCT), MIN/MAX with dates, SUM overflow, empty table aggregates"
+    },
+    {
+      "time": "2026-04-17T23:09:16.024Z",
+      "msg": "Added T247 (BUILD) after end: Neural-net: Dropout layer depth — training vs eval, dropout rate, scaling, shape preservation"
+    },
+    {
+      "time": "2026-04-17T23:09:59.859Z",
+      "msg": "Added T248 (BUILD) after end: HenryDB: UPSERT depth — ON CONFLICT DO NOTHING, ON CONFLICT DO UPDATE with complex expressions"
     }
   ]
 }

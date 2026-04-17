@@ -1863,7 +1863,7 @@ export class Database {
               // Evaluate SET expressions
               const newValues = [...existing];
               for (const set of ast.onConflict.sets) {
-                const colIdx = table.schema.findIndex(c => c.name === set.column);
+                const colIdx = table.schema.findIndex(c => c.name.toLowerCase() === set.column.toLowerCase());
                 if (colIdx >= 0) {
                   newValues[colIdx] = this._evalValue(set.value, existingRow);
                 }
