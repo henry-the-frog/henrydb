@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-17T21:34:35.366Z",
+  "generated": "2026-04-17T21:38:59.140Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push",
-    "startedAt": "2026-04-17T21:34:35.366Z",
-    "taskId": "T164"
+    "task": "Git commit+push, update daily log",
+    "startedAt": "2026-04-17T21:38:59.140Z",
+    "taskId": "T167"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5957,38 +5957,58 @@
       {
         "id": "T162",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: B-tree index correctness under concurrent modifications — test index consistency during concurrent INSERT+DELETE+UPDATE",
         "task": null,
-        "started": "2026-04-17T21:09:08.910Z"
+        "started": "2026-04-17T21:09:08.910Z",
+        "completed": "2026-04-17T21:09:56.478Z",
+        "duration_ms": 120000,
+        "summary": "Planned B-tree depth tests. Key risks: PK lookup after update, range scan after mixed ops, stress test, MVCC isolation, VACUUM, crash recovery. B-tree used for all PK tables (most tables)."
       },
       {
         "id": "T168",
         "mode": "BUILD",
         "task": "Write B-tree index depth tests: (1) B-tree PK lookup after UPDATE, (2) range scan correctness after mixed INSERT/DELETE/UPDATE, (3) B-tree structure integrity after 1000 insert+delete cycles, (4) B-tree + MVCC snapshot isolation (reader vs writer), (5) B-tree + VACUUM interaction, (6) B-tree after crash recovery",
-        "status": "upcoming",
-        "plan_ref": "T162"
+        "status": "done",
+        "plan_ref": "T162",
+        "started": "2026-04-17T21:10:03.078Z",
+        "completed": "2026-04-17T21:34:14.435Z",
+        "duration_ms": 900000,
+        "summary": "B-tree index + MVCC visibility bug: findByPK and heap.get bypassed MVCC checks. Deleted rows returned by PK lookups and BETWEEN scans. Fixed with MVCC interceptors for findByPK and get. BTreeTable dead tuples for version tracking. Known limitation: secondary index + snapshot after UPDATE. 16 depth tests."
       },
       {
         "id": "T163",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
         "plan_ref": "auto",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": ""
       },
       {
         "id": "T164",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push"
+        "status": "done",
+        "task": "Git commit+push",
+        "started": "2026-04-17T21:34:35.330Z",
+        "completed": "2026-04-17T21:34:53.030Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, daily log updated with B-tree and constraint findings."
       },
       {
         "id": "T165",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Neural-net: test optimizer correctness — Adam, RMSProp, Adagrad momentum/adaptive rate computation vs reference implementations",
-        "task": null
+        "task": null,
+        "started": "2026-04-17T21:35:01.442Z"
+      },
+      {
+        "id": "T169",
+        "mode": "BUILD",
+        "task": "Write optimizer correctness tests: (1) Adam update matches reference computation step-by-step (manual calculation), (2) RMSProp cache accumulation correctness, (3) MomentumSGD velocity computation, (4) AdamW weight decay applied correctly (should be decoupled), (5) SGD weight decay vs L2, (6) convergence test: all optimizers should minimize simple quadratic",
+        "status": "upcoming",
+        "plan_ref": "T165"
       },
       {
         "id": "T166",
@@ -6008,13 +6028,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 162,
-    "blocksTotal": 168,
+    "blocksCompleted": 165,
+    "blocksTotal": 169,
     "modeDistribution": {
       "THINK": 11,
-      "PLAN": 12,
-      "BUILD": 60,
-      "MAINTAIN": 13,
+      "PLAN": 13,
+      "BUILD": 61,
+      "MAINTAIN": 14,
       "EXPLORE": 66
     }
   },

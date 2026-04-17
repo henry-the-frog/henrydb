@@ -1790,30 +1790,50 @@
     {
       "id": "T164",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push",
-      "started": "2026-04-17T21:34:35.330Z"
+      "started": "2026-04-17T21:34:35.330Z",
+      "completed": "2026-04-17T21:34:53.030Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, daily log updated with B-tree and constraint findings."
     },
     {
       "id": "T165",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net: test optimizer correctness — Adam, RMSProp, Adagrad momentum/adaptive rate computation vs reference implementations",
-      "task": null
+      "task": null,
+      "started": "2026-04-17T21:35:01.442Z",
+      "completed": "2026-04-17T21:35:39.716Z",
+      "duration_ms": 60000,
+      "summary": "Planned optimizer correctness tests. 6 test scenarios: Adam step-by-step reference, RMSProp cache, Momentum velocity, AdamW decoupled decay, SGD L2, convergence on quadratic."
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "task": "Write optimizer correctness tests: (1) Adam update matches reference computation step-by-step (manual calculation), (2) RMSProp cache accumulation correctness, (3) MomentumSGD velocity computation, (4) AdamW weight decay applied correctly (should be decoupled), (5) SGD weight decay vs L2, (6) convergence test: all optimizers should minimize simple quadratic",
+      "status": "done",
+      "plan_ref": "T165",
+      "started": "2026-04-17T21:35:52.995Z",
+      "completed": "2026-04-17T21:38:44.008Z",
+      "duration_ms": 300000,
+      "summary": "Adam weight decay bug: was decoupled (AdamW-style) instead of L2 regularization. Fixed: add wd*param to gradient before adaptive step. 20 optimizer tests added, all passing. 44 related tests pass."
     },
     {
       "id": "T166",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "auto",
-      "project": "neural-net"
+      "project": "neural-net",
+      "skip_reason": ""
     },
     {
       "id": "T167",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, update daily log"
+      "status": "in-progress",
+      "task": "Git commit+push, update daily log",
+      "started": "2026-04-17T21:38:59.104Z"
     }
   ],
   "focusProjects": [
@@ -2521,6 +2541,14 @@
     {
       "time": "2026-04-17T21:34:31.824Z",
       "msg": "Removed T163: "
+    },
+    {
+      "time": "2026-04-17T21:35:34.472Z",
+      "msg": "PLAN T165 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T21:38:54.392Z",
+      "msg": "Removed T166: "
     }
   ]
 }
