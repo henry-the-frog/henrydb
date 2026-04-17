@@ -31,8 +31,10 @@ function analyzeDemand(expr, varName) {
     case 'App': {
       const fnDemand = analyzeDemand(expr.fn, varName);
       const argDemand = analyzeDemand(expr.arg, varName);
-      // If variable is the function being applied, it's a call demand
-      if (expr.fn.tag === 'Var' && expr.fn.name === varName) {
+      // Walk application spine: if variable is at the head of application chain, it's a call demand
+      let head = expr;
+      while (head.tag === 'App') head = head.fn;
+      if (head.tag === 'Var' && head.name === varName) {
         return new DCall(countAppArgs(expr));
       }
       return lubDemand(fnDemand, argDemand);
