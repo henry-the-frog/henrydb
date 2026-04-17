@@ -34,3 +34,10 @@
 ### Monkey-lang WASM
 - **wasm-strip-imports-bug.md** — Never scan raw bytecode by value matching; track instruction positions at emit time. (uses: 1, created: 2026-04-15)
 - **inline-caching-design.md** — IC for monkey-lang hash lookups: shapes, monomorphic cache, JIT integration plan. (uses: 0, created: 2026-04-15)
+
+## 2026-04-17: Neural-Net Gradient Verification Round 2
+- **KANLayer**: Out-of-range input gradient bug. B-spline basis derivative computed at clamped position when input outside grid range should give 0 (spline is constant). Fix: only compute for in-range.
+- **MoE**: Expert backward used stale caches. Same expert reused for multiple batch samples loses activations. Fix: re-run forward before backward.
+- **CapsuleLayer**: backward() applied weight updates inline (hardcoded lr=0.01). Fix: separate update() method.
+- **NeuralODELayer**: Adjoint never updated during backward walk — returned dOutput unchanged. Fix: accumulate adjoint += h * df/dy * adjoint at each step.
+- **Pattern**: Modules with complex architectures (routing, ODEs, capsules) are where backward bugs hide.

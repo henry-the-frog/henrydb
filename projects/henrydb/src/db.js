@@ -1099,11 +1099,18 @@ export class Database {
       case 'EXPLAIN': return this._explain(ast);
       case 'BEGIN': {
         this._inTransaction = true;
+        // Assign a transaction ID so WAL records are grouped under this tx
+        this._currentTxId = this._nextTxId++;
         // Auto-create internal savepoint for transaction rollback
         this._handleSavepoint('SAVEPOINT __txn_begin__');
         return { type: 'OK', message: 'BEGIN' };
       }
       case 'COMMIT': {
+        // Write COMMIT record to WAL so recovery knows this tx is committed
+        if (this._currentTxId && this.wal) {
+          this.wal.appendCommit(this._currentTxId);
+        }
+        this._currentTxId = 0;
         this._inTransaction = false;
         // Remove internal savepoint on commit
         const idx = this._savepoints.findLastIndex(sp => sp.name === '__txn_begin__');
@@ -1111,12 +1118,17 @@ export class Database {
         return { type: 'OK', message: 'COMMIT' };
       }
       case 'ROLLBACK': {
+        // Write ABORT record to WAL so recovery knows to skip this tx
+        if (this._currentTxId && this.wal) {
+          this.wal.appendAbort(this._currentTxId);
+        }
         // Restore from internal savepoint
         const idx = this._savepoints.findLastIndex(sp => sp.name === '__txn_begin__');
         if (idx >= 0) {
           this._handleRollbackToSavepoint('ROLLBACK TO __txn_begin__');
           this._savepoints.splice(idx, 1);
         }
+        this._currentTxId = 0;
         this._inTransaction = false;
         return { type: 'OK', message: 'ROLLBACK' };
       }

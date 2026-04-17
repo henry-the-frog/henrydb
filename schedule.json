@@ -37,30 +37,42 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, dashboard health, knowledge capture",
-      "started": "2026-04-17T14:25:04.084Z"
+      "started": "2026-04-17T14:25:04.084Z",
+      "completed": "2026-04-17T14:25:40.469Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, knowledge system updated (scratch/INDEX.md, failures.md), dashboard checked."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on neural-net gradient verification results. What patterns emerge? Which module types have the worst backward passes?"
+      "status": "done",
+      "task": "Reflect on neural-net gradient verification results. What patterns emerge? Which module types have the worst backward passes?",
+      "started": "2026-04-17T14:25:50.909Z",
+      "completed": "2026-04-17T14:26:04.563Z",
+      "duration_ms": 120000,
+      "summary": "Pattern analysis: 11 bugs across 2 sessions. Complex forward passes (routing, ODE, multi-step attention) have highest bug rate. Red flags: simplified comments, side effects in backward, cache invalidation in batch processing. Simple layers (Dense, RNN, LSTM) are consistently correct. Neural-net gradient verification now comprehensive at 24 modules."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: stress-test MVCC+persistence integration under concurrent transactions, hunt edge cases in crash recovery and checkpoint",
-      "task": null
+      "task": null,
+      "started": "2026-04-17T14:26:14.623Z",
+      "completed": "2026-04-17T14:28:59.986Z",
+      "duration_ms": 180000,
+      "summary": "Planned MVCC+crash recovery integration tests. Key gap: no existing tests for in-flight MVCC state during crash. 1 BUILD task to write 10+ tests covering uncommitted tx rollback, partial commit atomicity, interleaved tx recovery."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Write MVCC + crash recovery edge case tests: uncommitted tx rollback on crash, partial commit atomicity, interleaved tx recovery (committed visible, in-flight rolled back), WAL replay order correctness. 10+ tests, find bugs.",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-17T14:29:12.568Z"
     },
     {
       "id": "T8",
@@ -222,6 +234,10 @@
     {
       "time": "2026-04-17T14:17:26.073Z",
       "msg": "PLAN T2 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T14:28:53.098Z",
+      "msg": "PLAN T6 filled 1 BUILD tasks"
     }
   ]
 }

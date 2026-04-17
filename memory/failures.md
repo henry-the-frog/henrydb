@@ -157,3 +157,11 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 **RANGE BETWEEN Bug:** getFrameBounds() treated all OFFSET frame specs as ROWS offsets (row-position based). RANGE offsets should be value-based (current ORDER BY value ± offset).
 **FIRST_VALUE/LAST_VALUE Bug:** Both ignored the frame spec entirely. FIRST_VALUE always used partition[0], LAST_VALUE always used current row. Should use getFrameBounds() start/end indices.
 **Key insight:** When adding new functionality to getFrameBounds (like RANGE mode), every function that calls it needs to actually use the bounds — FIRST_VALUE/LAST_VALUE were hardcoded to bypass it.
+
+## 2026-04-17: Four more backward pass bugs (gradient verification round 2)
+- **Root cause pattern**: Complex forward passes (routing, ODE solving, capsule routing) have the highest backward bug rate
+- **KAN**: Clamping in forward without matching boundary handling in backward
+- **MoE**: Weight-sharing cache invalidation — when same module processes multiple inputs, last call overwrites caches
+- **CapsuleLayer**: Side effects in backward (inline weight update) — violates functional contract
+- **NeuralODE**: Adjoint method not implemented correctly — variable never updated in loop
+- **Lesson**: Any module with comments like "simplified" or "approximate" in backward is suspicious
