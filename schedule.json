@@ -1167,6 +1167,50 @@
       "completed": "2026-04-17T17:28:14.175Z",
       "duration_ms": 60000,
       "summary": "WITH RECURSIVE works perfectly: Fibonacci sequence, org tree traversal with path building, correct hierarchical ordering. Both union-based and join-based recursive patterns work."
+    },
+    {
+      "id": "T108",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the SNN (Spiking Neural Network): does it process temporal spike patterns?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:28:40.239Z",
+      "completed": "2026-04-17T17:29:45.559Z",
+      "duration_ms": 120000,
+      "summary": "SNN works: LIF neuron spikes regularly with sufficient current (45 spikes in 500 steps at 11-step intervals). Poisson encoder generates spike trains. Biological voltage parameters (-65mV rest, -55mV thresh)."
+    },
+    {
+      "id": "T109",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test stored procedures: CREATE FUNCTION/PROCEDURE, CALL, dynamic SQL",
+      "project": "henrydb",
+      "started": "2026-04-17T17:29:53.340Z",
+      "completed": "2026-04-17T17:30:09.086Z",
+      "duration_ms": 30000,
+      "summary": "Stored procedures/functions not implemented. Parser does not recognize CREATE FUNCTION or CREATE PROCEDURE syntax."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test the graph optimizer: does it optimize simple computation graphs by folding constants and eliminating dead code?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:30:14.743Z",
+      "completed": "2026-04-17T17:30:28.587Z",
+      "duration_ms": 10000,
+      "summary": "No graph optimizer module exists."
+    },
+    {
+      "id": "T111",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the query cache: does it cache identical queries and return faster on second execution?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:30:35.668Z",
+      "completed": "2026-04-17T17:30:56.101Z",
+      "duration_ms": 60000,
+      "summary": "Query cache works: 50x speedup on repeated queries (9.3ms → 0.19ms for 100 executions). Prepared statement API also available."
     }
   ],
   "focusProjects": [
@@ -1614,6 +1658,22 @@
     {
       "time": "2026-04-17T17:24:41.396Z",
       "msg": "Added T107 (EXPLORE) after end: EXPLORE: HenryDB — test recursive CTE (WITH RECURSIVE): can we compute Fibonacci, tree traversal, or transitive closure?"
+    },
+    {
+      "time": "2026-04-17T17:28:33.482Z",
+      "msg": "Added T108 (EXPLORE) after end: EXPLORE: Neural-net — test the SNN (Spiking Neural Network): does it process temporal spike patterns?"
+    },
+    {
+      "time": "2026-04-17T17:28:33.601Z",
+      "msg": "Added T109 (EXPLORE) after end: EXPLORE: HenryDB — test stored procedures: CREATE FUNCTION/PROCEDURE, CALL, dynamic SQL"
+    },
+    {
+      "time": "2026-04-17T17:28:33.719Z",
+      "msg": "Added T110 (BUILD) after end: BUILD: Neural-net — test the graph optimizer: does it optimize simple computation graphs by folding constants and eliminating dead code?"
+    },
+    {
+      "time": "2026-04-17T17:28:33.839Z",
+      "msg": "Added T111 (EXPLORE) after end: EXPLORE: HenryDB — test the query cache: does it cache identical queries and return faster on second execution?"
     }
   ]
 }

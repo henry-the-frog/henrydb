@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-17T17:28:14.211Z",
+  "generated": "2026-04-17T17:30:56.138Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — test recursive CTE (WITH RECURSIVE): can we compute Fibonacci, tree traversal, or transitive closure?",
-    "completedAt": "2026-04-17T17:28:14.211Z",
-    "taskId": "T107",
-    "summary": "WITH RECURSIVE works perfectly: Fibonacci sequence, org tree traversal with path building, correct hierarchical ordering. Both union-based and join-based recursive patterns work.",
+    "task": "EXPLORE: HenryDB — test the query cache: does it cache identical queries and return faster on second execution?",
+    "completedAt": "2026-04-17T17:30:56.138Z",
+    "taskId": "T111",
+    "summary": "Query cache works: 50x speedup on repeated queries (9.3ms → 0.19ms for 100 executions). Prepared statement API also available.",
     "durationMs": 60000
   },
   "schedule": {
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 107,
+    "blocksCompleted": 111,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 37,
+      "BUILD": 38,
       "MAINTAIN": 9,
-      "EXPLORE": 45
+      "EXPLORE": 48
     }
   },
   "artifacts": [
