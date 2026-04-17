@@ -2680,10 +2680,13 @@
     {
       "id": "T248",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: UPSERT depth — ON CONFLICT DO NOTHING, ON CONFLICT DO UPDATE with complex expressions",
       "project": "henrydb",
-      "started": "2026-04-17T23:10:00.096Z"
+      "started": "2026-04-17T23:10:00.096Z",
+      "completed": "2026-04-17T23:12:44.015Z",
+      "duration_ms": 420000,
+      "summary": "6 UPSERT tests: BUG #20 FOUND AND FIXED — DO UPDATE SET silently failing due to case-sensitive column lookup. Parser uses uppercase, schema lowercase. Fixed with case-insensitive comparison."
     }
   ],
   "focusProjects": [
