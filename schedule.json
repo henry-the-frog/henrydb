@@ -1468,9 +1468,57 @@
     {
       "id": "T135",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "BUILD: HenryDB — test cursor operations: DECLARE, FETCH NEXT, FETCH PRIOR, CLOSE",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-17T17:54:17.225Z",
+      "completed": "2026-04-17T17:54:38.928Z",
+      "duration_ms": 30000,
+      "summary": "Cursor operations work via programmatic API (3 tests pass). Not in SQL parser. Supports DECLARE, FETCH, CLOSE."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — comprehensive NULL handling test: NULL in WHERE, GROUP BY, ORDER BY, aggregate functions, JOIN conditions",
+      "project": "henrydb",
+      "started": "2026-04-17T17:54:55.881Z",
+      "completed": "2026-04-17T17:55:13.637Z",
+      "duration_ms": 60000,
+      "summary": "NULL handling perfect: IS NULL/IS NOT NULL, val=NULL returns 0, COUNT skips NULLs, SUM/AVG skip NULLs, ORDER BY sorts NULLs, GROUP BY groups NULLs, COALESCE replaces NULLs. All correct."
+    },
+    {
+      "id": "T137",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the residual network module: ResNet-style skip connections",
+      "project": "neural-net",
+      "started": "2026-04-17T17:55:24.434Z",
+      "completed": "2026-04-17T17:55:52.195Z",
+      "duration_ms": 60000,
+      "summary": "Residual (skip connection) blocks work: wraps Dense layers with identity shortcut. Sequential+Residual creates ResNet-like architectures. All finite outputs."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — test date/time functions: NOW(), EXTRACT, DATE_TRUNC, interval arithmetic",
+      "project": "henrydb",
+      "started": "2026-04-17T17:55:56.529Z",
+      "completed": "2026-04-17T17:56:10.278Z",
+      "duration_ms": 30000,
+      "summary": "Date/time functions all work: NOW() returns ISO timestamp, CURRENT_DATE, EXTRACT(YEAR/MONTH/DAY), DATE_TRUNC, and date string comparisons in WHERE."
+    },
+    {
+      "id": "T139",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the autoML module: does it automatically select the best hyperparameters?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:56:14.693Z",
+      "completed": "2026-04-17T17:56:34.900Z",
+      "duration_ms": 60000,
+      "summary": "AutoML works: searches architectures over 5 trials, returns bestArchitecture, bestResult, allResults, bestModel. Automatic hyperparameter selection."
     }
   ],
   "focusProjects": [
@@ -2030,6 +2078,22 @@
     {
       "time": "2026-04-17T17:52:21.253Z",
       "msg": "Added T135 (BUILD) after end: BUILD: HenryDB — test cursor operations: DECLARE, FETCH NEXT, FETCH PRIOR, CLOSE"
+    },
+    {
+      "time": "2026-04-17T17:54:50.937Z",
+      "msg": "Added T136 (BUILD) after end: BUILD: HenryDB — comprehensive NULL handling test: NULL in WHERE, GROUP BY, ORDER BY, aggregate functions, JOIN conditions"
+    },
+    {
+      "time": "2026-04-17T17:54:51.058Z",
+      "msg": "Added T137 (EXPLORE) after end: EXPLORE: Neural-net — test the residual network module: ResNet-style skip connections"
+    },
+    {
+      "time": "2026-04-17T17:54:51.178Z",
+      "msg": "Added T138 (BUILD) after end: BUILD: HenryDB — test date/time functions: NOW(), EXTRACT, DATE_TRUNC, interval arithmetic"
+    },
+    {
+      "time": "2026-04-17T17:54:51.297Z",
+      "msg": "Added T139 (EXPLORE) after end: EXPLORE: Neural-net — test the autoML module: does it automatically select the best hyperparameters?"
     }
   ]
 }
