@@ -2,16 +2,17 @@
 
 ## Status: in-progress
 ## Session: A (8:15 AM – 2:15 PM MDT, April 17, 2026)
-## Focus: Depth day — neural-net gradient verification + HenryDB stress testing
+## Focus: Depth day — integration boundary testing
 
-### Current Task
-- Completing T7, moving to next
+### Tasks Completed This Session: 41
+### Bugs Found: 15
+### Critical Bugs: 5 (ACID violation, MVCC isolation x2, SSI non-functional, MoE batch divergence)
 
-### Tasks Completed This Session: 5
-- T1 THINK: Review yesterday, set direction
-- T2 PLAN: Gradient verification for 9 untested modules
-- T3 BUILD: Extended gradient check 16→24 modules, fixed 4 backward bugs (KAN, MoE, Capsule, NeuralODE)
-- T4 MAINTAIN: Git push, knowledge capture
-- T5 THINK: Pattern analysis — 11 backward bugs across 2 sessions
-- T6 PLAN: MVCC + crash recovery edge case tests
-- T7 BUILD: CRITICAL ACID bug — BEGIN never set txId, uncommitted data persisted after crash. Fixed + 10 new tests.
+### Key Accomplishments
+- Neural-net: 6 backward bugs fixed, gradient verification expanded 16→24 modules, 7 convergence tests
+- HenryDB: ACID violation (BEGIN txId), MVCC snapshot isolation (2 bugs), SSI write skew (3 bugs), GROUP BY+window
+- SAT solver: SMT string assertion parsing
+- All bugs at integration boundaries between independently-built subsystems
+
+### Meta-Insight: Integration Boundary Principle
+"Feature exists but isn't wired up" — subsystems pass their own tests but the CONTRACT between them is broken.

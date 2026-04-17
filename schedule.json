@@ -422,6 +422,46 @@
       "completed": "2026-04-17T15:41:47.776Z",
       "duration_ms": 300000,
       "summary": "SSI write skew detection completely non-functional: (1) base class never called recordRead/recordWrite hooks, (2) commit received object not number, (3) same for rollback. After fix, classic doctor write skew correctly detected. Bug count: 15 for today. Same integration boundary pattern."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — test MVCC with DELETE operations. Does snapshot isolation work for deletes? Can a transaction see a row that another concurrent transaction deleted?",
+      "project": "henrydb",
+      "started": "2026-04-17T15:42:10.387Z",
+      "completed": "2026-04-17T15:42:31.935Z",
+      "duration_ms": 60000,
+      "summary": "MVCC DELETE operations work correctly with snapshot isolation: deleted data still visible to earlier transactions, invisible to later ones. No bugs."
+    },
+    {
+      "id": "T41",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net regularization depth — test L1, L2, Dropout, BatchNorm training mode vs eval mode. Does dropout actually drop differently each forward pass? Does BatchNorm use running stats in eval?",
+      "project": "neural-net",
+      "started": "2026-04-17T15:42:46.656Z",
+      "completed": "2026-04-17T15:43:14.388Z",
+      "duration_ms": 120000,
+      "summary": "BatchNorm and Dropout both work correctly. Training/eval mode switching, running stats, inverted dropout scaling, identity in eval — all verified. No bugs in regularization modules."
+    },
+    {
+      "id": "T42",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test that Conv1D backward produces correct gradients. The gradient check for Conv1D was never done (it wasn't in the systematic test). Run numerical gradient verification.",
+      "project": "neural-net",
+      "started": "2026-04-17T15:43:41.748Z",
+      "completed": "2026-04-17T15:44:41.118Z",
+      "duration_ms": 120000,
+      "summary": "Conv1D gradient check: 1.6e-11 error (perfect). Embedding works correctly with Matrix input. No new bugs found in Conv1D or Embedding."
+    },
+    {
+      "id": "T43",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Final commit, push, and session summary",
+      "started": "2026-04-17T15:45:11.135Z"
     }
   ],
   "focusProjects": [
@@ -605,6 +645,22 @@
     {
       "time": "2026-04-17T15:38:43.604Z",
       "msg": "Added T39 (EXPLORE) after end: EXPLORE: HenryDB SSI — does the serializable isolation level detect write skew anomalies? Test the classic doctor-on-call write skew scenario."
+    },
+    {
+      "time": "2026-04-17T15:42:10.269Z",
+      "msg": "Added T40 (BUILD) after end: BUILD: HenryDB — test MVCC with DELETE operations. Does snapshot isolation work for deletes? Can a transaction see a row that another concurrent transaction deleted?"
+    },
+    {
+      "time": "2026-04-17T15:42:46.539Z",
+      "msg": "Added T41 (EXPLORE) after end: EXPLORE: Neural-net regularization depth — test L1, L2, Dropout, BatchNorm training mode vs eval mode. Does dropout actually drop differently each forward pass? Does BatchNorm use running stats in eval?"
+    },
+    {
+      "time": "2026-04-17T15:43:41.630Z",
+      "msg": "Added T42 (EXPLORE) after end: EXPLORE: Neural-net — test that Conv1D backward produces correct gradients. The gradient check for Conv1D was never done (it wasn't in the systematic test). Run numerical gradient verification."
+    },
+    {
+      "time": "2026-04-17T15:45:11.019Z",
+      "msg": "Added T43 (MAINTAIN) after end: MAINTAIN: Final commit, push, and session summary"
     }
   ]
 }
