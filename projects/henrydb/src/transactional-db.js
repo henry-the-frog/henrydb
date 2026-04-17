@@ -189,7 +189,7 @@ export class TransactionalDatabase {
       this._mvcc.commit(tx.txId);
       this._wal.appendCommit(tx.txId);
       // Physicalize committed deletes (physical heap cleanup, no additional WAL)
-      this._physicalizeDeletesNoWal(tx);
+      this._physicalizeDeletes(tx);
       this._activeTx = null;
       this._setHeapTxId(0);
       // Invalidate result cache — DML changed data, cached SELECTs may be stale
@@ -363,7 +363,7 @@ export class TransactionalDatabase {
    * If other transactions are active, defer to VACUUM.
    * WAL records have already been written by _walLogDeletes.
    */
-  _physicalizeDeletesNoWal(tx) {
+  _physicalizeDeletes(tx) {
     // Only safe to physicalize if no other active transactions could see these rows
     const hasOtherActive = this._mvcc.activeTxns.size > 0;
 
@@ -387,12 +387,9 @@ export class TransactionalDatabase {
       const heap = tableObj.heap;
       const origDelete = heap._origDelete;
       if (origDelete) {
-        // Temporarily disable WAL on heap to avoid double-logging
-        const fileHeap = this._heaps.get(tableName);
-        const savedWal = fileHeap?._wal;
-        if (fileHeap) fileHeap._wal = null;
+        // Keep WAL enabled so pageLSN advances — ensures crash recovery
+        // doesn't replay stale INSERT records over physicalized deletes
         try { origDelete(pageId, slotIdx); } catch (e) { /* already deleted */ }
-        if (fileHeap) fileHeap._wal = savedWal;
       }
 
       // Clean up version map
@@ -426,12 +423,9 @@ export class TransactionalDatabase {
         // Use original physical delete (bypass MVCC interceptor)
         const origDelete = heap._origDelete;
         if (origDelete) {
-          // Temporarily disable WAL on heap (VACUUM doesn't need to log deletes)
-          const fileHeap = this._heaps.get(name);
-          const savedWal = fileHeap?._wal;
-          if (fileHeap) fileHeap._wal = null;
+          // Keep WAL enabled so pageLSN advances — ensures recovery doesn't
+          // replay stale INSERT records over vacuum'd pages
           try { origDelete(pageId, slotIdx); } catch (e) { /* already deleted */ }
-          if (fileHeap) fileHeap._wal = savedWal;
         }
         vm.delete(key);
         removed++;
@@ -807,7 +801,7 @@ export class TransactionSession {
     this._tdb._mvcc.commit(this._tx.txId);
     this._tdb._wal.appendCommit(this._tx.txId);
     // Physicalize committed deletes (no additional WAL)
-    this._tdb._physicalizeDeletesNoWal(this._tx);
+    this._tdb._physicalizeDeletes(this._tx);
     this._tx = null;
     // Invalidate result cache — committed data may change query results
     if (this._tdb._db._resultCache) this._tdb._db._resultCache.clear();

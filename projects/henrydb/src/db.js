@@ -256,8 +256,9 @@ export class Database {
     const rowCount = result?.rows?.length || 0;
     this._queryStats.record(sql, elapsed, rowCount);
     
-    // Store SELECT results in cache
-    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN')) {
+    // Store SELECT results in cache (only outside transactions — snapshot-isolated
+    // reads must NOT populate the shared cache, as their results are tx-specific)
+    if (ast.type === 'SELECT' && !sql.trim().toUpperCase().startsWith('EXPLAIN') && this._currentTxId === 0) {
       // Extract table names from the AST for invalidation
       const tables = this._extractTables(ast);
       if (this._resultCache.size >= this._resultCacheMaxSize) {
