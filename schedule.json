@@ -3116,6 +3116,28 @@
       "completed": "2026-04-17T01:50:09.805Z",
       "duration_ms": 60000,
       "summary": "MicroGPT gradient clipping via maxGradNorm. Uses clipByGlobalNorm. All tests pass."
+    },
+    {
+      "id": "T290",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Test causal masking: verify position N output is independent of position N+1 input",
+      "project": "neural-net",
+      "started": "2026-04-17T01:53:35.949Z",
+      "completed": "2026-04-17T01:54:05.818Z",
+      "duration_ms": 60000,
+      "summary": "Causal masking verified: position 0 output is EXACTLY independent of position 1 input. Non-causal: output changes. Causal: output identical."
+    },
+    {
+      "id": "T291",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add residual connection + layer norm pattern as a proper module (PreNorm transformer style)",
+      "project": "neural-net",
+      "started": "2026-04-17T01:54:31.527Z",
+      "completed": "2026-04-17T01:55:38.935Z",
+      "duration_ms": 60000,
+      "summary": "MicroGPT.fromConfig factory: tiny/small/medium pre-built configs with override support."
     }
   ],
   "focusProjects": [
@@ -4267,6 +4289,14 @@
     {
       "time": "2026-04-17T01:48:54.575Z",
       "msg": "Added T289 (BUILD) after end: MicroGPT: add gradient clipping to training loop"
+    },
+    {
+      "time": "2026-04-17T01:53:26.802Z",
+      "msg": "Added T290 (BUILD) after end: Test causal masking: verify position N output is independent of position N+1 input"
+    },
+    {
+      "time": "2026-04-17T01:54:22.856Z",
+      "msg": "Added T291 (BUILD) after end: Add residual connection + layer norm pattern as a proper module (PreNorm transformer style)"
     }
   ]
 }

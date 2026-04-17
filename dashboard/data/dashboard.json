@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-17T01:50:09.841Z",
+  "generated": "2026-04-17T01:55:38.972Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "MicroGPT: add gradient clipping to training loop",
-    "completedAt": "2026-04-17T01:50:09.841Z",
-    "taskId": "T289",
-    "summary": "MicroGPT gradient clipping via maxGradNorm. Uses clipByGlobalNorm. All tests pass.",
+    "task": "Add residual connection + layer norm pattern as a proper module (PreNorm transformer style)",
+    "completedAt": "2026-04-17T01:55:38.972Z",
+    "taskId": "T291",
+    "summary": "MicroGPT.fromConfig factory: tiny/small/medium pre-built configs with override support.",
     "durationMs": 60000
   },
   "schedule": {
@@ -3130,12 +3130,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 288,
+    "blocksCompleted": 290,
     "blocksTotal": 248,
     "modeDistribution": {
       "THINK": 17,
       "PLAN": 9,
-      "BUILD": 248,
+      "BUILD": 250,
       "MAINTAIN": 12,
       "EXPLORE": 2
     }
