@@ -90,6 +90,9 @@ Every second session of the day (or any session after a break >1 hour) MUST star
 ### Evening Gate (sessions starting after 7 PM)
 Must begin with: (1) read TODO.md, (2) review day's BUILD count — if >10 BUILDs already done, evening must be EXPLORE/THINK/depth on ONE project, not new features across multiple, (3) pick ONE project focus, not scatter. Evening sessions without this gate have produced breadth spirals in 3/3 observed instances (Apr 13, 14, 15). The failure mode: morning discipline dissolves into evening momentum, and you build an entire new project instead of going deep on existing work.
 
+### Session BUILD Cap (hard gate)
+No session may execute more than 20 BUILD tasks before a mandatory depth pivot. At task 20: stop. Run a full test sweep of the active project. Spend ≥30 min on EXPLORE/THINK/MAINTAIN (stress testing, bug hunting, investigation). Only then may more BUILDs be queued (cap resets and applies again). This is structural — task 21 cannot be BUILD without clearing the pivot. The queue optimizes for throughput; this is the governor. Four reflections (Apr 13-16) diagnosed breadth spirals; conventions failed because they required in-the-moment discipline. This doesn't.
+
 ### Blog Cap
 Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
 
