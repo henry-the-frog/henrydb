@@ -4,15 +4,36 @@
 ## Session: A (8:15 AM – 2:15 PM MDT, April 17, 2026)
 ## Focus: Depth day — integration boundary testing
 
-### Tasks Completed This Session: 41
-### Bugs Found: 15
-### Critical Bugs: 5 (ACID violation, MVCC isolation x2, SSI non-functional, MoE batch divergence)
+### Tasks Completed This Session: 68+
+### Bugs Found and Fixed: 21
 
-### Key Accomplishments
-- Neural-net: 6 backward bugs fixed, gradient verification expanded 16→24 modules, 7 convergence tests
-- HenryDB: ACID violation (BEGIN txId), MVCC snapshot isolation (2 bugs), SSI write skew (3 bugs), GROUP BY+window
-- SAT solver: SMT string assertion parsing
-- All bugs at integration boundaries between independently-built subsystems
+### Bug Inventory
+**Neural-net (9):**
+1. KANLayer: Out-of-range input gradient
+2. MoE: Stale expert caches (batch weight-sharing)
+3. CapsuleLayer: Inline weight update side effect
+4. NeuralODELayer: Adjoint never updated
+5. MoE: Batch training divergence (gradient overwrite)
+6. Autograd mseLoss: NaN with Variable targets
+7. CutMix: Non-existent Matrix.scale() method
+8. Pruning magnitudePrune: Returned fake Matrix object
+9. Pruning structuredPrune: Array-of-Arrays iteration on Matrix
 
-### Meta-Insight: Integration Boundary Principle
-"Feature exists but isn't wired up" — subsystems pass their own tests but the CONTRACT between them is broken.
+**HenryDB (11):**
+1. CRITICAL: BEGIN never set txId → ACID violation
+2. CRITICAL: MVCC read used simple comparison → dirty reads
+3. CRITICAL: No write-write conflict → lost updates
+4. GROUP BY + window function columns dropped
+5. SSI commit received object not number
+6. SSI rollback received object not number
+7. SSI recordRead/recordWrite never called
+8. Trigger INSERT: NEW.column → NULL
+9. Trigger UPDATE: never fired
+10. Trigger DELETE: never fired
+11. View cache not invalidated on base table changes
+
+**SAT Solver (1):**
+1. SMT string assertions silently ignored
+
+### Key Insight: Integration Boundary Principle
+Every single bug was at the boundary between independently-built subsystems.
