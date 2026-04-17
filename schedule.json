@@ -4,29 +4,42 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday: 175 PL modules built (breadth spiral acknowledged), 8 bugs fixed in depth pivot. Neural-net CI green on latest. Monkeylang PR merged by mrnugget! Set depth-first direction for today."
+      "status": "done",
+      "task": "Review yesterday: 175 PL modules built (breadth spiral acknowledged), 8 bugs fixed in depth pivot. Neural-net CI green on latest. Monkeylang PR merged by mrnugget! Set depth-first direction for today.",
+      "started": "2026-04-17T14:15:18.232Z",
+      "completed": "2026-04-17T14:16:57.581Z",
+      "duration_ms": 180000,
+      "summary": "Reviewed yesterday (175 modules breadth spiral, 8 bugs in depth pivot). Neural-net: 1279 tests all passing, but systematic gradient check only covers 16/26+ backward-implementing modules. Untested: capsule, kan, moe, autoencoder, gan, vae, maml, microgpt, neural-ode. Today: depth-first — extend gradient verification to all untested modules, then HenryDB stress testing."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net depth: systematic numerical gradient verification for all untested modules, find silent backward-pass bugs like yesterdays 7",
-      "task": null
+      "task": null,
+      "started": "2026-04-17T14:17:12.376Z",
+      "completed": "2026-04-17T14:17:30.260Z",
+      "duration_ms": 60000,
+      "summary": "Planned gradient verification for 9 untested modules: CapsuleLayer, KANLayer, KAN, MoE, Autoencoder, VAE, MAMLNetwork, MicroGPT, NeuralODELayer. Single BUILD task to extend systematic-gradient-check.test.js."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Extend systematic-gradient-check.test.js with numerical verification for CapsuleLayer, KANLayer, KAN, MixtureOfExperts, Autoencoder, VAE, MAMLNetwork, MicroGPT, NeuralODELayer — test each backward pass against central differences, fix any bugs found",
       "plan_ref": "T2",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-17T14:17:36.470Z",
+      "completed": "2026-04-17T14:24:46.933Z",
+      "duration_ms": 900000,
+      "summary": "Found and fixed 4 backward pass bugs: KANLayer (out-of-range gradient), MoE (stale expert caches), CapsuleLayer (inline weight updates), NeuralODELayer (adjoint never updated). Extended gradient check from 16 to 24 modules. 1287 tests, 0 failures."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, dashboard health, knowledge capture"
+      "status": "in-progress",
+      "task": "Git commit+push, dashboard health, knowledge capture",
+      "started": "2026-04-17T14:25:04.084Z"
     },
     {
       "id": "T5",
@@ -205,6 +218,10 @@
     {
       "time": "2026-04-17T14:02:50.966Z",
       "msg": "Added T18 (EXPLORE) after T17: Read mrnuggets squash-merge commit, study what other monkey-lang implementations exist in the monkeylang repo"
+    },
+    {
+      "time": "2026-04-17T14:17:26.073Z",
+      "msg": "PLAN T2 filled 1 BUILD tasks"
     }
   ]
 }

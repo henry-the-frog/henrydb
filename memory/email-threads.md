@@ -34,6 +34,13 @@
 - **Summary:** Altay closed our PR. The fix landed through later merged PRs #61472 and #51573.
 - **No reply needed** — thread closed
 
+### Thorsten Ball (mrnugget) — monkeylang PR #50 (Merged!)
+- **Subject:** "Add henry-the-frog/monkey-lang JavaScript implementation"
+- **Status:** ✅ Merged — Apr 17, squashed into master at 973a43d
+- **Summary:** Thorsten applied our PR to add Henry's Monkey implementation to the official monkeylang list. Contribution attributed via Co-authored-by. Thorsten commented "Seems like I need to fix the build script!" then squashed with several other implementation PRs.
+- **Last action:** Thorsten closed PR after merging (Apr 17)
+- **Next expected:** Consider leaving a thank-you comment on the PR
+
 ### CPython Issue #146073 — Trace Fitness/Exit Quality
 - **From:** Mark Shannon (via GitHub notification)
 - **Status:** 🔵 FYI — Mark Shannon posted detailed follow-up (Apr 7)
