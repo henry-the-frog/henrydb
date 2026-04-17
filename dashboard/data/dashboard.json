@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-17T17:17:06.098Z",
+  "generated": "2026-04-17T17:23:31.665Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — test the JSON/JSONB support: can we store, query, and index JSON data?",
-    "completedAt": "2026-04-17T17:17:06.098Z",
-    "taskId": "T101",
-    "summary": "JSON support works: storage, ->> text extraction, -> value extraction, WHERE filtering. Nested path extraction (json_extract_path) not fully implemented.",
-    "durationMs": 60000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "BUILD: HenryDB — write regression tests for all 11 bugs found today: ACID violation, MVCC isolation ×2, GROUP BY+window, SSI ×3, triggers ×3, view cache",
+    "startedAt": "2026-04-17T17:23:31.665Z",
+    "taskId": "T103"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5087,12 +5085,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 101,
+    "blocksCompleted": 102,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 34,
+      "BUILD": 35,
       "MAINTAIN": 9,
       "EXPLORE": 42
     }

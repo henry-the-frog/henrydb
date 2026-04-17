@@ -1101,6 +1101,25 @@
       "completed": "2026-04-17T17:17:06.062Z",
       "duration_ms": 60000,
       "summary": "JSON support works: storage, ->> text extraction, -> value extraction, WHERE filtering. Nested path extraction (json_extract_path) not fully implemented."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — write regression tests for all 9 bugs fixed today: KAN gradient, MoE cache, MoE batch, Capsule inline, NeuralODE adjoint, autograd NaN, cutmix, pruning ×2",
+      "project": "neural-net",
+      "started": "2026-04-17T17:17:37.940Z",
+      "completed": "2026-04-17T17:23:05.555Z",
+      "duration_ms": 600000,
+      "summary": "Wrote 9 regression tests for all bugs, all passing. Fixed autograd mseLoss NaN (bug #23 re-fix). Full suite: 1305 tests, 1304 pass."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "BUILD: HenryDB — write regression tests for all 11 bugs found today: ACID violation, MVCC isolation ×2, GROUP BY+window, SSI ×3, triggers ×3, view cache",
+      "project": "henrydb",
+      "started": "2026-04-17T17:23:31.603Z"
     }
   ],
   "focusProjects": [
@@ -1524,6 +1543,14 @@
     {
       "time": "2026-04-17T17:12:40.391Z",
       "msg": "Added T101 (EXPLORE) after end: EXPLORE: HenryDB — test the JSON/JSONB support: can we store, query, and index JSON data?"
+    },
+    {
+      "time": "2026-04-17T17:17:33.258Z",
+      "msg": "Added T102 (BUILD) after end: BUILD: Neural-net — write regression tests for all 9 bugs fixed today: KAN gradient, MoE cache, MoE batch, Capsule inline, NeuralODE adjoint, autograd NaN, cutmix, pruning ×2"
+    },
+    {
+      "time": "2026-04-17T17:23:25.428Z",
+      "msg": "Added T103 (BUILD) after end: BUILD: HenryDB — write regression tests for all 11 bugs found today: ACID violation, MVCC isolation ×2, GROUP BY+window, SSI ×3, triggers ×3, view cache"
     }
   ]
 }
