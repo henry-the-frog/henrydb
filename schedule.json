@@ -727,6 +727,17 @@
       "completed": "2026-04-17T16:22:11.330Z",
       "duration_ms": 60000,
       "summary": "SNN module works: PoissonEncoder generates correct spike trains, SpikingNetwork simulates without errors. No output spikes with random weights (expected — untrained). No bugs."
+    },
+    {
+      "id": "T68",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Tested explainability module",
+      "project": "neural-net",
+      "started": "2026-04-17T16:23:34.143Z",
+      "completed": "2026-04-17T16:23:34.288Z",
+      "duration_ms": 60000,
+      "summary": "Explainability: featureImportance and integratedGradients both work correctly. Feature 0 more important than feature 1 for moons (correct)."
     }
   ],
   "focusProjects": [
@@ -1022,6 +1033,10 @@
     {
       "time": "2026-04-17T16:22:11.068Z",
       "msg": "Added T67 (EXPLORE) after end: SNN tested, works but untrained"
+    },
+    {
+      "time": "2026-04-17T16:23:34.026Z",
+      "msg": "Added T68 (EXPLORE) after end: Tested explainability module"
     }
   ]
 }
