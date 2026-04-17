@@ -1002,6 +1002,49 @@
       "completed": "2026-04-17T17:07:51.601Z",
       "duration_ms": 180000,
       "summary": "PostgreSQL wire protocol SQL queries work end-to-end. Startup → Auth → Query → RowDescription → DataRow → CommandComplete → ReadyForQuery. SELECT 1+1 returns 2 correctly through the wire."
+    },
+    {
+      "id": "T93",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the normalizing flow module: does it learn to transform a simple distribution to a complex one?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:08:18.578Z",
+      "completed": "2026-04-17T17:09:25.729Z",
+      "duration_ms": 120000,
+      "summary": "NormalizingFlow works: perfect invertibility (roundtrip error 0), finite log-likelihood, forward/inverse correct. No trainStep method but core math is solid."
+    },
+    {
+      "id": "T94",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the LISTEN/NOTIFY mechanism: does notification get delivered when a row is inserted?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:09:37.190Z",
+      "completed": "2026-04-17T17:09:59.579Z",
+      "duration_ms": 60000,
+      "summary": "LISTEN/NOTIFY works through wire protocol (10 tests pass). Not available in direct SQL parser — server-level feature only."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "BUILD: Neural-net — test contrastive learning: train with SimCLR/BYOL objective and verify learned representations are useful",
+      "project": "neural-net"
+    },
+    {
+      "id": "T96",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: HenryDB — test the cost-based optimizer: does it choose hash join over nested loop for equi-joins with large tables?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "BUILD: Neural-net — test NAS (Neural Architecture Search): does it find a better architecture than a random one?",
+      "project": "neural-net"
     }
   ],
   "focusProjects": [
@@ -1389,6 +1432,26 @@
     {
       "time": "2026-04-17T17:05:11.601Z",
       "msg": "Added T92 (EXPLORE) after end: EXPLORE: HenryDB — test the PostgreSQL wire protocol with an actual SQL query through the wire. Start server, send Query message, parse response"
+    },
+    {
+      "time": "2026-04-17T17:08:09.162Z",
+      "msg": "Added T93 (EXPLORE) after end: EXPLORE: Neural-net — test the normalizing flow module: does it learn to transform a simple distribution to a complex one?"
+    },
+    {
+      "time": "2026-04-17T17:08:09.282Z",
+      "msg": "Added T94 (EXPLORE) after end: EXPLORE: HenryDB — test the LISTEN/NOTIFY mechanism: does notification get delivered when a row is inserted?"
+    },
+    {
+      "time": "2026-04-17T17:08:09.401Z",
+      "msg": "Added T95 (BUILD) after end: BUILD: Neural-net — test contrastive learning: train with SimCLR/BYOL objective and verify learned representations are useful"
+    },
+    {
+      "time": "2026-04-17T17:08:09.520Z",
+      "msg": "Added T96 (EXPLORE) after end: EXPLORE: HenryDB — test the cost-based optimizer: does it choose hash join over nested loop for equi-joins with large tables?"
+    },
+    {
+      "time": "2026-04-17T17:08:09.639Z",
+      "msg": "Added T97 (BUILD) after end: BUILD: Neural-net — test NAS (Neural Architecture Search): does it find a better architecture than a random one?"
     }
   ]
 }
