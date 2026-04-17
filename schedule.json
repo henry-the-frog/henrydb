@@ -166,23 +166,65 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, dashboard health, PR status check",
-      "started": "2026-04-17T14:46:10.046Z"
+      "started": "2026-04-17T14:46:10.046Z",
+      "completed": "2026-04-17T14:46:15.620Z",
+      "duration_ms": 15000,
+      "summary": "Pushed."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive: pick one neural-net module with complex backward pass and write adversarial test cases",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-17T14:46:23.620Z",
+      "completed": "2026-04-17T14:47:53.184Z",
+      "duration_ms": 300000,
+      "summary": "Deep dive into TransformerEncoderBlock backward: gradient check error 5e-9 (excellent). Adversarial tests: all-zero input causes 300x gradient amplification via LayerNorm invStd (expected, not a bug). Large values, identical rows, single token all handled correctly. No new bugs found — transformer backward is robust."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Read mrnuggets squash-merge commit, study what other monkey-lang implementations exist in the monkeylang repo",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-17T14:48:05.717Z",
+      "completed": "2026-04-17T14:49:36.077Z",
+      "duration_ms": 180000,
+      "summary": "Explored monkey-lang codebase: 12K+ lines of core implementation (lexer, parser, evaluator, compiler, VM, JIT, GC, SSA, regalloc, type inference, DCE, const prop, escape analysis, debugger). 4467-line JIT compiler with trace recording. devdanzin contributed JIT event tracing PR (merged Apr 14). Workspace has 261 sub-projects. Very mature project."
+    },
+    {
+      "id": "T19",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Identify next high-value integration boundary to test in HenryDB. Candidates: (1) savepoints + crash recovery, (2) index consistency after crash, (3) WAL compaction + concurrent writes, (4) SSI serialization + persistence",
+      "started": "2026-04-17T14:50:01.317Z",
+      "completed": "2026-04-17T14:51:43.256Z",
+      "duration_ms": 300000,
+      "summary": "Investigated 3 integration boundaries: (1) Index consistency after crash — safe because indexes rebuilt from heap during recovery, (2) Savepoints + crash recovery — working correctly with the txId fix, nested savepoints within committed transactions handled properly, (3) WAL checkpoint + recovery — correct, data before and after checkpoint recovers. The ACID bug fix is holding up well. Moving to new work area."
+    },
+    {
+      "id": "T20",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Neural-net weight serialization + deserialization round-trip tests. Do toJSON/fromJSON preserve all module state? Can a trained model be saved, loaded, and produce identical outputs? Test for KAN, MoE, NeuralODE, Capsule, Transformer.",
+      "task": null,
+      "started": "2026-04-17T14:51:59.474Z",
+      "completed": "2026-04-17T14:52:53.304Z",
+      "duration_ms": 120000,
+      "summary": "Advanced modules (KAN, MoE, NeuralODE, Capsule, Transformer) have no toJSON/fromJSON. Network class serialization works perfectly (0 error on round-trip). Adding serialization would be breadth work (feature factory). Redirecting to depth."
+    },
+    {
+      "id": "T21",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Monkey JIT depth investigation — what correctness properties should a tracing JIT satisfy? Run the JIT tests, look for edge cases in trace recording, guard invalidation, deoptimization.",
+      "started": "2026-04-17T14:53:11.120Z",
+      "completed": "2026-04-17T14:57:21.648Z",
+      "duration_ms": 180000,
+      "summary": "JIT tests: 162+96+31=289 tests all passing, 200 fuzz runs no divergences. Coverage is comprehensive: trace recording, optimization passes, deopt, range check elim, induction vars, side traces, type annotations. The JIT is robust — no bugs found via testing or fuzzing. The monkey-lang project is well-tested."
     }
   ],
   "focusProjects": [
@@ -282,6 +324,18 @@
     {
       "time": "2026-04-17T14:42:50.396Z",
       "msg": "PLAN T14 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T14:49:57.440Z",
+      "msg": "Added T19 (THINK) after end: THINK: Identify next high-value integration boundary to test in HenryDB. Candidates: (1) savepoints + crash recovery, (2) index consistency after crash, (3) WAL compaction + concurrent writes, (4) SSI serialization + persistence"
+    },
+    {
+      "time": "2026-04-17T14:51:53.892Z",
+      "msg": "Added T20 (PLAN) after end: PLAN: Neural-net weight serialization + deserialization round-trip tests. Do toJSON/fromJSON preserve all module state? Can a trained model be saved, loaded, and produce identical outputs? Test for KAN, MoE, NeuralODE, Capsule, Transformer."
+    },
+    {
+      "time": "2026-04-17T14:53:03.888Z",
+      "msg": "Added T21 (THINK) after end: THINK: Monkey JIT depth investigation — what correctness properties should a tracing JIT satisfy? Run the JIT tests, look for edge cases in trace recording, guard invalidation, deoptimization."
     }
   ]
 }

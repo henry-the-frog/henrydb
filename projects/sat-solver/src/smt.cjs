@@ -595,6 +595,11 @@ class SMTSolver {
   }
 
   _processAssertion(expr) {
+    // Parse string expressions into arrays
+    if (typeof expr === 'string') {
+      const parsed = parseSmtExpr(expr);
+      expr = parsed.length === 1 ? parsed[0] : parsed;
+    }
     if (!Array.isArray(expr)) return;
     const op = expr[0];
 
@@ -633,6 +638,10 @@ class SMTSolver {
   }
 
   _processNegation(expr) {
+    if (typeof expr === 'string') {
+      const parsed = parseSmtExpr(expr);
+      expr = parsed.length === 1 ? parsed[0] : parsed;
+    }
     if (!Array.isArray(expr)) return;
     const op = expr[0];
 
