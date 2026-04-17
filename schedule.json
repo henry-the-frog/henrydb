@@ -716,6 +716,17 @@
       "completed": "2026-04-17T16:19:54.331Z",
       "duration_ms": 30000,
       "summary": "Pruning bugs fixed. magnitudePrune and structuredPrune now return proper Matrix instances."
+    },
+    {
+      "id": "T67",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "SNN tested, works but untrained",
+      "project": "neural-net",
+      "started": "2026-04-17T16:22:11.186Z",
+      "completed": "2026-04-17T16:22:11.330Z",
+      "duration_ms": 60000,
+      "summary": "SNN module works: PoissonEncoder generates correct spike trains, SpikingNetwork simulates without errors. No output spikes with random weights (expected — untrained). No bugs."
     }
   ],
   "focusProjects": [
@@ -1007,6 +1018,10 @@
     {
       "time": "2026-04-17T16:19:54.068Z",
       "msg": "Added T66 (BUILD) after end: Pruning bugs fixed (#20-21)"
+    },
+    {
+      "time": "2026-04-17T16:22:11.068Z",
+      "msg": "Added T67 (EXPLORE) after end: SNN tested, works but untrained"
     }
   ]
 }
