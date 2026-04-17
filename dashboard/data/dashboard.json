@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T15:24:12.293Z",
+  "generated": "2026-04-17T15:27:13.551Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "BUILD: HenryDB — MVCC snapshot isolation correctness. Test that concurrent transactions see correct snapshots, no dirty reads, no lost updates, write skew detection.",
-    "startedAt": "2026-04-17T15:24:12.293Z",
-    "taskId": "T31"
+    "completedAt": "2026-04-17T15:27:13.551Z",
+    "taskId": "T31",
+    "summary": "CRITICAL: MVCC snapshot isolation completely broken. (1) Repeatable Read violated — read() used simple txId comparison instead of snapshot visibility, allowing dirty reads of committed-after-snapshot data. (2) No write-write conflict detection — lost updates possible. Fixed with proper PostgreSQL-style xmin/xmax/activeSet visibility and first-committer-wins. All 27 existing MVCC + crash recovery tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -4378,12 +4380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
+    "blocksCompleted": 31,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 5,
-      "BUILD": 8,
+      "BUILD": 9,
       "MAINTAIN": 6,
       "EXPLORE": 5
     }
