@@ -1908,6 +1908,37 @@ export class Database {
           }
         }
       }
+
+      // Check UNIQUE INDEX constraints from indexCatalog
+      for (const [idxName, meta] of this.indexCatalog) {
+        if (meta.table === ast.table && meta.unique) {
+          const idxTable = this.tables.get(meta.table);
+          if (!idxTable) continue;
+          const colIndices = meta.columns.map(col => idxTable.schema.findIndex(c => c.name === col));
+          if (colIndices.some(i => i < 0)) continue;
+          // Get the ordered values (map from ast.columns to schema order)
+          const orderedVals = new Array(idxTable.schema.length).fill(null);
+          if (ast.columns) {
+            for (let i = 0; i < ast.columns.length; i++) {
+              const ci = idxTable.schema.findIndex(c => c.name === ast.columns[i]);
+              if (ci >= 0) orderedVals[ci] = values[i];
+            }
+          } else {
+            for (let i = 0; i < values.length; i++) orderedVals[i] = values[i];
+          }
+          const keyValues = colIndices.map(i => orderedVals[i]);
+          // Skip NULL keys (SQL standard: NULLs are not equal)
+          if (keyValues.some(v => v === null || v === undefined)) continue;
+          // Scan existing data for duplicate (index-independent check)
+          for (const tuple of idxTable.heap.scan()) {
+            const tv = tuple.values || tuple;
+            const existingKey = colIndices.map(i => tv[i]);
+            if (keyValues.every((v, i) => v === existingKey[i])) {
+              throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
+            }
+          }
+        }
+      }
       
       const rid = this._insertRow(table, ast.columns, values);
       inserted++;

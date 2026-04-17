@@ -2346,6 +2346,47 @@
       "completed": "2026-04-17T22:35:55.564Z",
       "duration_ms": 90000,
       "summary": "14 error handling tests: all pass. Parse errors, not found, constraints, division by zero, recovery. Robust."
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: information schema + system catalog depth — SHOW TABLES, SHOW COLUMNS, information_schema queries, pg_catalog equivalents",
+      "project": "henrydb",
+      "started": "2026-04-17T22:36:26.906Z",
+      "completed": "2026-04-17T22:37:12.325Z",
+      "duration_ms": 90000,
+      "summary": "7 system catalog tests: all pass. SHOW TABLES/COLUMNS, crash recovery. No bugs."
+    },
+    {
+      "id": "T219",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: miscellaneous SQL features — BETWEEN, LIKE with ESCAPE, CASE with aggregate, nested CASE, multi-value IN list, compound operators",
+      "project": "henrydb",
+      "started": "2026-04-17T22:37:21.562Z",
+      "completed": "2026-04-17T22:38:37.866Z",
+      "duration_ms": 90000,
+      "summary": "12 misc SQL tests: all pass. BETWEEN, CASE, IN, compound operators. No bugs."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: layer output shape testing — verify forward pass output shapes for all layer types with various input dimensions",
+      "project": "neural-net",
+      "started": "2026-04-17T22:38:43.992Z",
+      "completed": "2026-04-17T22:39:31.090Z",
+      "duration_ms": 90000,
+      "summary": "14 layer shape tests: all pass. Dense forward/backward, all activations, dropout, 3-layer pipeline. No bugs."
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: INDEX depth — CREATE INDEX, UNIQUE INDEX, composite INDEX, index usage in queries, DROP INDEX",
+      "project": "henrydb",
+      "started": "2026-04-17T22:39:37.407Z"
     }
   ],
   "focusProjects": [
@@ -3285,6 +3326,22 @@
     {
       "time": "2026-04-17T22:35:12.047Z",
       "msg": "Added T217 (BUILD) after end: HenryDB: error handling depth — malformed SQL, table not found, column not found, type mismatches, division by zero, constraint error messages"
+    },
+    {
+      "time": "2026-04-17T22:36:26.670Z",
+      "msg": "Added T218 (BUILD) after end: HenryDB: information schema + system catalog depth — SHOW TABLES, SHOW COLUMNS, information_schema queries, pg_catalog equivalents"
+    },
+    {
+      "time": "2026-04-17T22:37:21.326Z",
+      "msg": "Added T219 (BUILD) after end: HenryDB: miscellaneous SQL features — BETWEEN, LIKE with ESCAPE, CASE with aggregate, nested CASE, multi-value IN list, compound operators"
+    },
+    {
+      "time": "2026-04-17T22:38:43.757Z",
+      "msg": "Added T220 (BUILD) after end: Neural-net: layer output shape testing — verify forward pass output shapes for all layer types with various input dimensions"
+    },
+    {
+      "time": "2026-04-17T22:39:37.173Z",
+      "msg": "Added T221 (BUILD) after end: HenryDB: INDEX depth — CREATE INDEX, UNIQUE INDEX, composite INDEX, index usage in queries, DROP INDEX"
     }
   ]
 }
