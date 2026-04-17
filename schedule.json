@@ -1332,6 +1332,42 @@
       "completed": "2026-04-17T17:43:45.286Z",
       "duration_ms": 60000,
       "summary": "Table partitioning works via programmatic API: RANGE, LIST, and HASH all tested (16 tests pass). Not yet integrated into SQL parser (no PARTITION BY syntax)."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test the DARTS (Differentiable Architecture Search) module: can it discover a good architecture for a classification task?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:44:17.662Z",
+      "completed": "2026-04-17T17:45:21.602Z",
+      "duration_ms": 120000,
+      "summary": "DARTS architecture search works: DARTSCell + DARTSSearcher produce architecture with alpha values. Returns history, architecture, alphas."
+    },
+    {
+      "id": "T124",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the full-text search: can we create a GIN index, do full-text queries with ts_query and ts_rank?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:45:28.204Z",
+      "completed": "2026-04-17T17:46:15.398Z",
+      "duration_ms": 60000,
+      "summary": "Full-text search works: CREATE FULLTEXT INDEX + MATCH AGAINST syntax. Correctly finds SQL articles (2 results) and neural articles (1 result). 12 SQL fulltext tests pass."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "BUILD: Neural-net — test the Izhikevich neuron model: does it reproduce different biological spiking patterns (regular, bursting, chattering)?",
+      "project": "neural-net"
+    },
+    {
+      "id": "T126",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: HenryDB — test the COPY command: COPY TO CSV and COPY FROM CSV for bulk data import/export",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1839,6 +1875,22 @@
     {
       "time": "2026-04-17T17:38:56.572Z",
       "msg": "Added T122 (EXPLORE) after end: EXPLORE: HenryDB — test partitioned tables: RANGE, LIST, and HASH partitioning"
+    },
+    {
+      "time": "2026-04-17T17:44:11.307Z",
+      "msg": "Added T123 (BUILD) after end: BUILD: Neural-net — test the DARTS (Differentiable Architecture Search) module: can it discover a good architecture for a classification task?"
+    },
+    {
+      "time": "2026-04-17T17:44:11.426Z",
+      "msg": "Added T124 (EXPLORE) after end: EXPLORE: HenryDB — test the full-text search: can we create a GIN index, do full-text queries with ts_query and ts_rank?"
+    },
+    {
+      "time": "2026-04-17T17:44:11.546Z",
+      "msg": "Added T125 (BUILD) after end: BUILD: Neural-net — test the Izhikevich neuron model: does it reproduce different biological spiking patterns (regular, bursting, chattering)?"
+    },
+    {
+      "time": "2026-04-17T17:44:11.665Z",
+      "msg": "Added T126 (EXPLORE) after end: EXPLORE: HenryDB — test the COPY command: COPY TO CSV and COPY FROM CSV for bulk data import/export"
     }
   ]
 }
