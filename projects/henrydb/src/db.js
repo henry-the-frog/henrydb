@@ -4002,6 +4002,11 @@ export class Database {
               childTable.heap.insert(updated);
             }
           } else if (col.references.onUpdate === 'SET NULL') {
+            // Check if the FK column has NOT NULL constraint
+            const childCol = childTable.schema[childColIdx];
+            if (childCol && childCol.notNull) {
+              throw new Error(`Cannot SET NULL on column ${childCol.name}: NOT NULL constraint violated`);
+            }
             const toUpdate = [];
             for (const { pageId, slotIdx, values: childValues } of childTable.heap.scan()) {
               if (childValues[childColIdx] === oldValue) {
@@ -4323,6 +4328,8 @@ export class Database {
                 newValues[colIdx] = this._evalValue(assignment.value, mergedRow);
               }
             }
+            // Validate constraints before modifying
+            this._validateConstraintsForUpdate(targetTable, newValues, { pageId: targetItem.pageId, slotIdx: targetItem.slotIdx });
             targetTable.heap.delete(targetItem.pageId, targetItem.slotIdx);
             targetTable.heap.insert(newValues);
             updated++;
@@ -4336,6 +4343,7 @@ export class Database {
         const notMatchClause = ast.whenClauses.find(c => c.type === 'NOT_MATCHED');
         if (notMatchClause && notMatchClause.action === 'INSERT') {
           const values = notMatchClause.values.map(v => this._evalValue(v, sourceRow));
+          this._validateConstraints(targetTable, values);
           targetTable.heap.insert(values);
           inserted++;
         }
