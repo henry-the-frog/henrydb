@@ -165,3 +165,27 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 - **CapsuleLayer**: Side effects in backward (inline weight update) — violates functional contract
 - **NeuralODE**: Adjoint method not implemented correctly — variable never updated in loop
 - **Lesson**: Any module with comments like "simplified" or "approximate" in backward is suspicious
+
+## 2026-04-17: MVCC Snapshot Isolation Completely Broken + SMT String Assertion
+### HenryDB MVCC (CRITICAL x3)
+1. **BEGIN never set txId**: WAL auto-committed uncommitted DML operations
+2. **Repeatable Read violated**: read() used simple txId comparison instead of snapshot visibility
+3. **No write-write conflict detection**: Lost updates possible with concurrent transactions
+4. **GROUP BY + window function**: Window columns silently dropped
+- **Root cause pattern**: Each subsystem implemented its contract partially:
+  - WAL had txId tracking but BEGIN didn't provide txIds
+  - MVCC had snapshots but read() didn't use them
+  - write() had no conflict check at all
+  - GROUP BY and window functions were independent code paths
+
+### SAT Solver SMT
+- **String assertions silently ignored**: _processAssertion() checked Array.isArray() which is false for strings
+- **Root cause**: Parser and processor used different types (string vs array)
+
+### Meta-lesson
+Three bugs were "the feature exists but isn't wired up":
+1. WAL txId tracking exists but BEGIN doesn't set txId
+2. Snapshot exists but read() doesn't use it
+3. Parser exists but processor doesn't call it
+
+This is a specific failure mode of incremental development: you build the pieces, test them individually, but forget to connect them. The fix is **contract testing at integration boundaries** — which is exactly what found all of these bugs.
