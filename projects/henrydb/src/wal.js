@@ -770,6 +770,7 @@ function recoverFromWAL(wal, db) {
   const txOps = new Map(); // txId -> [records]
   const committedTxs = new Set();
   const activeTxIds = new Set();
+  const autoCommittedOps = []; // DDL records without txId — auto-committed
   let replayed = 0;
 
   for (const rec of replayRecords) {
@@ -788,14 +789,51 @@ function recoverFromWAL(wal, db) {
       txOps.delete(txId);
       activeTxIds.delete(txId);
     } else if (rec.type !== WAL_TYPES.BEGIN_CHECKPOINT && rec.type !== WAL_TYPES.END_CHECKPOINT && rec.type !== RECORD_TYPES.CHECKPOINT) {
-      if (!txOps.has(txId)) txOps.set(txId, []);
-      txOps.get(txId).push(rec);
-      if (txId !== undefined && txId !== null) activeTxIds.add(txId);
+      // DDL records without txId are auto-committed — collect separately
+      if ((txId === undefined || txId === null) && (type === 'DDL' || type === 'DROP_TABLE' || type === 'TRUNCATE' || type === 'CREATE_TABLE' || type === 'CREATE_INDEX')) {
+        autoCommittedOps.push(rec);
+      } else {
+        if (!txOps.has(txId)) txOps.set(txId, []);
+        txOps.get(txId).push(rec);
+        if (txId !== undefined && txId !== null) activeTxIds.add(txId);
+      }
     }
   }
 
   // Remove committed from active set
   for (const txId of committedTxs) activeTxIds.delete(txId);
+
+  // Replay auto-committed DDL ops first (ALTER TABLE, CREATE INDEX, etc.)
+  // These must be replayed before DML that depends on the altered schema.
+  for (const op of autoCommittedOps) {
+    const type = typeof op.type === 'number' ? (RECORD_TYPE_NAMES[op.type] || op.type) : op.type;
+    const table = op.data?.table || op.table;
+    try {
+      if (type === 'DDL') {
+        const sql = op.data?.sql;
+        if (sql && db.execute) {
+          try { db.execute(sql); replayed++; } catch {}
+        }
+      } else if (type === 'DROP_TABLE' && table) {
+        if (db.execute) {
+          try { db.execute(`DROP TABLE IF EXISTS ${table}`); } catch {}
+        } else if (db.tables) {
+          db.tables.delete(table);
+        }
+        replayed++;
+      } else if (type === 'TRUNCATE' && table) {
+        if (db.execute) {
+          try { db.execute(`DELETE FROM ${table} WHERE 1=1`); } catch {}
+        }
+        replayed++;
+      } else if (type === 'CREATE_TABLE' || type === 'CREATE_INDEX') {
+        const sql = op.data?.sql;
+        if (sql && db.execute) {
+          try { db.execute(sql); replayed++; } catch {}
+        }
+      }
+    } catch { /* skip auto-committed DDL replay errors */ }
+  }
 
   for (const txId of committedTxs) {
     const ops = txOps.get(txId) || [];

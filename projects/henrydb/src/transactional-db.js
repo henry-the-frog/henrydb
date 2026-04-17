@@ -14,7 +14,7 @@ import { FileBackedHeap } from './file-backed-heap.js';
 import { MVCCManager, MVCCHeap, MVCCTransaction } from './mvcc.js';
 import { SSIManager } from './ssi.js';
 import { HeapFile } from './page.js';
-import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, existsSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
@@ -130,6 +130,11 @@ export class TransactionalDatabase {
     this._db = db;
     this._dirPath = dirPath;
     this._wal = wal;
+    // Patch logDDL onto the inner Database's WAL so ALTER TABLE/CREATE INDEX/DROP INDEX
+    // get logged to the FileWAL. DML WAL calls continue through the existing no-op WAL.
+    if (db.wal) {
+      db.wal.logDDL = (sql) => wal.logDDL(sql);
+    }
     this._mvcc = mvcc;
     this._visibilityMap = new TableVisibilityMap();
     this._diskManagers = diskManagers;
@@ -172,6 +177,13 @@ export class TransactionalDatabase {
       if (trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')) {
         this._trackCreate(sql);
         this._installScanInterceptors(); // New table needs interceptor
+      } else if (trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('RENAME')) {
+        // ALTER TABLE changes schema — update catalog to match current state
+        this._updateCatalogAfterAlter(sql);
+      } else if (trimmed.startsWith('DROP TABLE')) {
+        const match = sql.match(/DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?(\w+)/i);
+        if (match) this._createSqls.delete(match[1]);
+        this._saveCatalog();
       }
       return result;
     }
@@ -770,6 +782,80 @@ export class TransactionalDatabase {
       }
     }
     this._saveCatalog();
+  }
+
+  /**
+   * After ALTER TABLE, reconstruct the CREATE TABLE SQL from the current in-memory schema
+   * and update the catalog so it persists across close()/open() cycles.
+   */
+  _updateCatalogAfterAlter(sql) {
+    // Handle RENAME TABLE: update the key in _createSqls
+    const renameMatch = sql.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/i);
+    if (renameMatch) {
+      const oldName = renameMatch[1];
+      const newName = renameMatch[2];
+      // Reconstruct from current schema under new name
+      const tableObj = this._db.tables.get(newName);
+      if (tableObj) {
+        this._createSqls.delete(oldName);
+        this._createSqls.set(newName, this._reconstructCreateSQL(newName, tableObj.schema));
+      }
+      // Rename the physical heap file
+      const oldPath = join(this._dirPath, `${oldName}.db`);
+      const newPath = join(this._dirPath, `${newName}.db`);
+      try {
+        if (existsSync(oldPath)) renameSync(oldPath, newPath);
+      } catch { /* ignore rename errors */ }
+      // Update internal maps
+      if (this._heaps.has(oldName)) {
+        const heap = this._heaps.get(oldName);
+        this._heaps.delete(oldName);
+        this._heaps.set(newName, heap);
+        heap.name = newName;
+      }
+      if (this._diskManagers.has(oldName)) {
+        const dm = this._diskManagers.get(oldName);
+        this._diskManagers.delete(oldName);
+        this._diskManagers.set(newName, dm);
+      }
+      if (this._versionMaps.has(oldName)) {
+        const vm = this._versionMaps.get(oldName);
+        this._versionMaps.delete(oldName);
+        this._versionMaps.set(newName, vm);
+      }
+      this._saveCatalog();
+      return;
+    }
+
+    // Handle ALTER TABLE ADD/DROP/RENAME COLUMN
+    const alterMatch = sql.match(/ALTER\s+TABLE\s+(\w+)/i);
+    if (alterMatch) {
+      const tableName = alterMatch[1];
+      const tableObj = this._db.tables.get(tableName);
+      if (tableObj) {
+        this._createSqls.set(tableName, this._reconstructCreateSQL(tableName, tableObj.schema));
+      }
+      this._saveCatalog();
+    }
+  }
+
+  /**
+   * Reconstruct CREATE TABLE SQL from current in-memory schema.
+   */
+  _reconstructCreateSQL(tableName, schema) {
+    const cols = schema.map(col => {
+      let def = `${col.name} ${col.type || 'TEXT'}`;
+      if (col.primaryKey) def += ' PRIMARY KEY';
+      if (col.notNull) def += ' NOT NULL';
+      if (col.unique) def += ' UNIQUE';
+      const dv = col.default !== undefined && col.default !== null ? col.default : col.defaultValue;
+      if (dv !== undefined && dv !== null) {
+        const dvStr = typeof dv === 'string' ? `'${dv}'` : dv;
+        def += ` DEFAULT ${dvStr}`;
+      }
+      return def;
+    });
+    return `CREATE TABLE ${tableName} (${cols.join(', ')})`;
   }
 
   _saveCatalog() {

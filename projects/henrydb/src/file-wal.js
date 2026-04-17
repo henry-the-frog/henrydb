@@ -3,7 +3,7 @@
 // so they survive process crashes.
 
 import { openSync, readSync, writeSync, fsyncSync, closeSync, existsSync, statSync, ftruncateSync } from 'node:fs';
-import { WALRecord, WAL_TYPES, WAL_TYPE_NAMES } from './wal.js';
+import { WALRecord, WAL_TYPES, WAL_TYPE_NAMES, RECORD_TYPES } from './wal.js';
 import { encodeTuple, decodeTuple, FreeSpaceMap } from './page.js';
 import { PAGE_SIZE } from './disk-manager.js';
 
@@ -108,6 +108,21 @@ export class FileWAL {
     const lsn = this._nextLsn++;
     const record = new WALRecord(lsn, txId, WAL_TYPES.ABORT);
     this._writeBuffer.push(record);
+    return lsn;
+  }
+
+  /**
+   * Log a DDL statement (ALTER TABLE, etc.) as an auto-committed record.
+   * These records have no txId and are replayed directly during recovery.
+   */
+  logDDL(sql) {
+    const lsn = this._nextLsn++;
+    // Use a special WALRecord: txId=0 (auto-committed), type=DDL, store SQL in 'after'
+    const record = new WALRecord(lsn, 0, RECORD_TYPES.DDL);
+    record.sql = sql;
+    record.after = { sql };
+    this._writeBuffer.push(record);
+    this.flush();
     return lsn;
   }
 
@@ -273,6 +288,24 @@ export function recoverFromFileWAL(heap, wal) {
   const allRecords = wal.readFromStable(0);
   if (allRecords.length === 0) return { redone: 0, skipped: 0, committedTxns: 0 };
   
+  // Phase 0: Build table name alias map from DDL rename records
+  // Maps old names → new names so we can associate old WAL records with renamed tables
+  const nameAliases = new Map(); // oldName → newName
+  for (const r of allRecords) {
+    if (r.type === RECORD_TYPES.DDL && r.after?.sql) {
+      const m = r.after.sql.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/i);
+      if (m) nameAliases.set(m[1], m[2]);
+    }
+  }
+  
+  // Helper: check if a record's tableName matches this heap (considering renames)
+  const matchesHeap = (tableName) => {
+    if (!tableName) return true; // No table specified = applicable to all
+    if (tableName === heap.name) return true;
+    // Check if tableName was renamed to heap.name
+    return nameAliases.get(tableName) === heap.name;
+  };
+  
   // Phase 1: Analysis — identify committed transactions
   const committedTxns = new Set();
   const abortedTxns = new Set();
@@ -313,7 +346,7 @@ export function recoverFromFileWAL(heap, wal) {
   let needsReplay = false;
   for (const r of allRecords) {
     if (!committedTxns.has(r.txId)) continue;
-    if (r.tableName && r.tableName !== heap.name) continue;
+    if (!matchesHeap(r.tableName)) continue;
     if (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE) {
       const pageLSN = pageLSNMap.get(r.pageId) || 0;
       if (r.lsn > pageLSN) {
@@ -329,7 +362,7 @@ export function recoverFromFileWAL(heap, wal) {
   for (const r of allRecords) {
     if (r.txId !== undefined) allTxIds.add(r.txId);
   }
-  const hasUncommitted = [...allTxIds].some(txId => !committedTxns.has(txId) && !abortedTxns.has(txId)) ||
+  const hasUncommitted = [...allTxIds].some(txId => txId !== 0 && !committedTxns.has(txId) && !abortedTxns.has(txId)) ||
     abortedTxns.size > 0;
   
   if (!needsReplay && !hasUncommitted) {
@@ -360,7 +393,7 @@ export function recoverFromFileWAL(heap, wal) {
     dm._writeHeader();
     heap._fsm = new FreeSpaceMap();
     heap._rowCount = 0;
-    return _replayRecords(heap, allRecords, committedTxns, allRecords, dm);
+    return _replayRecords(heap, allRecords, committedTxns, allRecords, dm, matchesHeap);
   }
   
   // Check the minimum pageLSN across all pages. If 0 for all pages and WAL
@@ -386,7 +419,7 @@ export function recoverFromFileWAL(heap, wal) {
       }
       // Only replay records after lastAppliedLSN
       const replaySet = allRecords.filter(r => r.lsn > lastAppliedLSN);
-      return _replayRecords(heap, replaySet, committedTxns, allRecords, dm);
+      return _replayRecords(heap, replaySet, committedTxns, allRecords, dm, matchesHeap);
     }
     
     // Full redo from scratch: clear pages, replay all committed records
@@ -398,7 +431,7 @@ export function recoverFromFileWAL(heap, wal) {
     dm._writeHeader();
     heap._fsm = new FreeSpaceMap();
     heap._rowCount = 0;
-    return _replayRecords(heap, allRecords, committedTxns, allRecords, dm);
+    return _replayRecords(heap, allRecords, committedTxns, allRecords, dm, matchesHeap);
   }
   
   // Per-page LSN recovery: rebuild state from existing pages, then replay only needed records
@@ -421,7 +454,7 @@ export function recoverFromFileWAL(heap, wal) {
   const recordsByPage = new Map();
   for (const r of allRecords) {
     if (!committedTxns.has(r.txId)) continue;
-    if (r.tableName && r.tableName !== heap.name) continue;
+    if (!matchesHeap(r.tableName)) continue;
     if (r.type !== WAL_TYPES.INSERT && r.type !== WAL_TYPES.UPDATE && r.type !== WAL_TYPES.DELETE) continue;
     
     if (!recordsByPage.has(r.pageId)) recordsByPage.set(r.pageId, []);
@@ -493,15 +526,17 @@ export function recoverFromFileWAL(heap, wal) {
 }
 
 /** Helper: replay WAL records onto heap */
-function _replayRecords(heap, replaySet, committedTxns, allRecords, dm) {
+function _replayRecords(heap, replaySet, committedTxns, allRecords, dm, matchesHeap) {
   let redone = 0;
   let skipped = 0;
   const savedWal = heap._wal;
   heap._wal = null;
   
+  const nameMatch = matchesHeap || ((name) => !name || name === heap.name);
+  
   for (const r of replaySet) {
     if (!committedTxns.has(r.txId)) { skipped++; continue; }
-    if (r.tableName && r.tableName !== heap.name) { skipped++; continue; }
+    if (!nameMatch(r.tableName)) { skipped++; continue; }
     
     if (r.type === WAL_TYPES.INSERT && r.after) {
       try { heap.insert(r.after); redone++; } catch { skipped++; }

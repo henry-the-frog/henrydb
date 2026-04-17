@@ -206,9 +206,8 @@ describe('DDL + Crash Recovery', () => {
   });
 
   it('ALTER TABLE ADD COLUMN survives recovery (structure, not data)', () => {
-    // Known limitation: ALTER TABLE isn't WAL-logged. After crash recovery,
-    // the catalog correctly has the new column, but data inserted after ALTER
-    // for the new column is lost (WAL only has original column values).
+    // ALTER TABLE is now WAL-logged. After crash recovery,
+    // the catalog has the updated schema and data in new columns is preserved.
     db.execute('CREATE TABLE t (id INT)');
     db.execute('INSERT INTO t VALUES (1)');
     db.execute('ALTER TABLE t ADD COLUMN name TEXT');
@@ -221,8 +220,8 @@ describe('DDL + Crash Recovery', () => {
     assert.equal(r.length, 2, 'Both rows should survive');
     assert.equal(r[0].id, 1);
     assert.equal(r[1].id, 2);
-    // Note: r[1].name may be null after recovery (ALTER TABLE not WAL-logged)
-    // This is a known limitation — documenting, not fixing here
+    // After recovery, r[1].name should be 'Bob' (ALTER TABLE now WAL-logged)
+    assert.equal(r[1].name, 'Bob', 'Data in new column should survive recovery');
   });
 
   it('CREATE INDEX survives recovery', () => {
@@ -240,7 +239,7 @@ describe('DDL + Crash Recovery', () => {
   });
 
   it('multiple DDL+DML operations survive recovery (core data)', () => {
-    // Known limitation: ALTER TABLE column data may be lost after crash.
+    // ALTER TABLE column data is now preserved after crash recovery.
     // But table structure, original columns, and basic DML survive.
     db.execute('CREATE TABLE t1 (id INT, val TEXT)');
     db.execute('CREATE TABLE t2 (id INT, t1_id INT)');

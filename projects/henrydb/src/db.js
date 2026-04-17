@@ -1300,7 +1300,16 @@ export class Database {
       case 'ADD_COLUMN': {
         const colName = typeof ast.column === 'string' ? ast.column : (ast.column?.name || 'unknown');
         const type = ast.dataType || (typeof ast.column === 'object' ? ast.column?.type : null) || 'TEXT';
-        this.wal.logDDL(`ALTER TABLE ${ast.table} ADD COLUMN ${colName} ${type}`);
+        let ddl = `ALTER TABLE ${ast.table} ADD COLUMN ${colName} ${type}`;
+        // Extract default value from AST (can be ast.defaultValue or ast.column.default)
+        const defVal = ast.defaultValue ?? (typeof ast.column === 'object' ? ast.column?.default : null);
+        if (defVal !== undefined && defVal !== null) {
+          const dv = typeof defVal === 'object' && defVal.value !== undefined
+            ? (typeof defVal.value === 'string' ? `'${defVal.value}'` : defVal.value)
+            : (typeof defVal === 'string' ? `'${defVal}'` : defVal);
+          ddl += ` DEFAULT ${dv}`;
+        }
+        this.wal.logDDL(ddl);
         break;
       }
       case 'DROP_COLUMN': {
@@ -1327,22 +1336,32 @@ export class Database {
 
     switch (ast.action) {
       case 'ADD_COLUMN': {
+        // ast.column can be a string or an object { name, type, default }
+        const colName = typeof ast.column === 'string' ? ast.column : ast.column?.name;
+        const colType = ast.dataType || (typeof ast.column === 'object' ? ast.column?.type : null) || 'TEXT';
         // Check column doesn't already exist
-        if (table.schema.find(c => c.name === ast.column)) {
-          throw new Error(`Column ${ast.column} already exists`);
+        if (table.schema.find(c => c.name === colName)) {
+          throw new Error(`Column ${colName} already exists`);
         }
-        table.schema.push({ name: ast.column, type: ast.dataType, primaryKey: false });
+        const colDef = { name: colName, type: colType, primaryKey: false };
+        // Extract default value from AST
+        const defNode = ast.defaultValue ?? (typeof ast.column === 'object' ? ast.column?.default : null);
+        const defValue = defNode && typeof defNode === 'object' && defNode.value !== undefined ? defNode.value : defNode;
+        if (defValue !== undefined && defValue !== null) {
+          colDef.defaultValue = defValue;
+        }
+        table.schema.push(colDef);
         
         // Add default value to all existing rows
         const colIdx = table.schema.length - 1;
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
-          values.push(ast.defaultValue ?? null);
+          values.push(defValue ?? null);
           // Re-encode and update the tuple in place
           const encoded = encodeTuple(values);
           table.heap.pages.find(p => p.id === pageId)?.updateTuple(slotIdx, encoded);
         }
         
-        return { type: 'OK', message: `Column ${ast.column} added to ${ast.table}` };
+        return { type: 'OK', message: `Column ${colName} added to ${ast.table}` };
       }
 
       case 'DROP_COLUMN': {
@@ -1707,13 +1726,19 @@ export class Database {
     switch (ast.action) {
       case 'ADD_COLUMN': {
         const col = ast.column;
-        if (table.schema.find(c => c.name === col.name)) {
-          throw new Error(`Column ${col.name} already exists`);
+        const colName = typeof col === 'string' ? col : col.name;
+        const colType = typeof col === 'object' ? col.type : (ast.dataType || 'TEXT');
+        if (table.schema.find(c => c.name === colName)) {
+          throw new Error(`Column ${colName} already exists`);
         }
-        table.schema.push({ name: col.name, type: col.type, primaryKey: false });
+        const colDef = { name: colName, type: colType, primaryKey: false };
+        const defaultVal = typeof col === 'object' && col.default ? col.default.value : (ast.defaultValue ?? null);
+        if (defaultVal !== undefined && defaultVal !== null) {
+          colDef.defaultValue = defaultVal;
+        }
+        table.schema.push(colDef);
 
         // Add default value to all existing rows
-        const defaultVal = col.default ? col.default.value : null;
         const allRows = [];
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
           allRows.push({ pageId, slotIdx, values });
