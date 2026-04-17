@@ -842,16 +842,23 @@
       "id": "T78",
       "mode": "BUILD",
       "task": "BUILD: SAT solver — test DPLL(T) theory propagation and backtracking with complex mixed EUF+LIA formulas",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T77",
-      "started": "2026-04-17T16:50:48.659Z"
+      "started": "2026-04-17T16:50:48.659Z",
+      "completed": "2026-04-17T16:52:48.054Z",
+      "duration_ms": 600000,
+      "summary": "CRITICAL BUG #22: Nelson-Oppen theory combination missing — EUF equalities never propagated to Bounds/Simplex. (a=b AND a>=5 AND b<=3) returned SAT. Fixed with equality propagation. All 112 tests pass."
     },
     {
       "id": "T79",
       "mode": "BUILD",
       "task": "EXPLORE: SAT solver — stress the SMT theory combination, find edge cases in theory interaction",
-      "status": "upcoming",
-      "plan_ref": "T77"
+      "status": "done",
+      "plan_ref": "T77",
+      "started": "2026-04-17T16:52:56.496Z",
+      "completed": "2026-04-17T16:53:11.876Z",
+      "duration_ms": 120000,
+      "summary": "Nelson-Oppen fix verified under stress: 10-chain equalities, independent groups, EUF+Simplex, disequalities, edge cases. All correct."
     }
   ],
   "focusProjects": [

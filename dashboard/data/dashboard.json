@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T16:50:48.695Z",
+  "generated": "2026-04-17T16:53:11.912Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "BUILD: SAT solver — test DPLL(T) theory propagation and backtracking with complex mixed EUF+LIA formulas",
-    "startedAt": "2026-04-17T16:50:48.695Z",
-    "taskId": "T78"
+    "task": "EXPLORE: SAT solver — stress the SMT theory combination, find edge cases in theory interaction",
+    "completedAt": "2026-04-17T16:53:11.912Z",
+    "taskId": "T79",
+    "summary": "Nelson-Oppen fix verified under stress: 10-chain equalities, independent groups, EUF+Simplex, disequalities, edge cases. All correct.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5051,12 +5053,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 77,
+    "blocksCompleted": 79,
     "blocksTotal": 79,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 6,
-      "BUILD": 24,
+      "BUILD": 26,
       "MAINTAIN": 9,
       "EXPLORE": 30
     }
