@@ -1869,6 +1869,10 @@ export class Database {
                 }
               }
               
+              // Validate constraints BEFORE modifying the heap (CHECK, NOT NULL, FK)
+              // For UNIQUE/PK: we need to exclude the row being updated
+              this._validateConstraintsForUpdate(table, newValues, existingRid);
+              
               // Write back to heap: delete old row, insert new one
               if (existingRid) {
                 table.heap.delete(existingRid.pageId, existingRid.slotIdx);
@@ -2016,6 +2020,14 @@ export class Database {
   }
 
   _validateConstraints(table, values) {
+    return this._validateConstraintsForUpdate(table, values, null);
+  }
+
+  /**
+   * Validate constraints, optionally excluding a specific row (for UPDATE/UPSERT
+   * where the old row should not trigger UNIQUE false positives).
+   */
+  _validateConstraintsForUpdate(table, values, excludeRid) {
     for (let i = 0; i < table.schema.length; i++) {
       const col = table.schema[i];
       const val = values[i];
@@ -2034,6 +2046,18 @@ export class Database {
         const result = this._evalExpr(col.check, row);
         if (!result) {
           throw new Error(`CHECK constraint violated for column ${col.name}`);
+        }
+      }
+
+      // UNIQUE and PRIMARY KEY uniqueness check
+      if ((col.unique || col.primaryKey) && val != null) {
+        for (const tuple of table.heap.scan()) {
+          // Skip the row being updated (if any)
+          if (excludeRid && tuple.pageId === excludeRid.pageId && tuple.slotIdx === excludeRid.slotIdx) continue;
+          const tupleValues = tuple.values || tuple;
+          if (tupleValues[i] === val) {
+            throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
+          }
         }
       }
 
@@ -3862,19 +3886,12 @@ export class Database {
       // BEFORE UPDATE triggers
       this._fireTriggers('BEFORE', 'UPDATE', ast.table, newValues, table.schema, item.values);
 
-      // Delete old, insert new — validate between delete and insert so UNIQUE
-      // checks don't see the old row we're replacing
+      // Validate constraints BEFORE modifying the heap
+      // Pass the current row's RID so UNIQUE check skips it
+      this._validateConstraintsForUpdate(table, newValues, { pageId: item.pageId, slotIdx: item.slotIdx });
+
+      // Delete old, insert new
       table.heap.delete(item.pageId, item.slotIdx);
-
-      // Validate constraints on the new values (NOT NULL, CHECK, FK, UNIQUE/PK)
-      try {
-        this._validateConstraints(table, newValues);
-      } catch (e) {
-        // Constraint violation — re-insert old values to undo the delete
-        table.heap.insert(item.values);
-        throw e;
-      }
-
       const newRid = table.heap.insert(newValues);
 
       // WAL: log the update
