@@ -654,10 +654,13 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "BUILD: Test UPDATE/DELETE trigger NEW/OLD references and fix if needed",
       "project": "henrydb",
-      "started": "2026-04-17T16:06:23.508Z"
+      "started": "2026-04-17T16:06:23.508Z",
+      "completed": "2026-04-17T16:08:31.426Z",
+      "duration_ms": 300000,
+      "summary": "Bugs #17-18: UPDATE and DELETE triggers never fired — _update() and _delete() had no _fireTriggers() calls. Also fixed all trigger NEW/OLD references. Now all three trigger types work with proper column access."
     }
   ],
   "focusProjects": [

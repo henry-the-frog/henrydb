@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T16:06:23.544Z",
+  "generated": "2026-04-17T16:08:31.461Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "BUILD: Test UPDATE/DELETE trigger NEW/OLD references and fix if needed",
-    "startedAt": "2026-04-17T16:06:23.544Z",
-    "taskId": "T61"
+    "completedAt": "2026-04-17T16:08:31.461Z",
+    "taskId": "T61",
+    "summary": "Bugs #17-18: UPDATE and DELETE triggers never fired — _update() and _delete() had no _fireTriggers() calls. Also fixed all trigger NEW/OLD references. Now all three trigger types work with proper column access.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -4378,12 +4380,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 60,
+    "blocksCompleted": 61,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 5,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 9,
       "EXPLORE": 19
     }
