@@ -1,7 +1,8 @@
 # DDL WAL Completeness Pattern
 
-uses: 1
+uses: 2
 created: 2026-04-13
+updated: 2026-04-17
 tags: henrydb, persistence, wal, ddl, bug-pattern
 
 ## The Pattern
@@ -12,32 +13,28 @@ Every DDL operation needs BOTH a write path (WAL logging) AND a read path (repla
 |---|---|---|---|
 | CREATE TABLE | ✅ | ✅ | (original) |
 | CREATE INDEX | ✅ | ✅ | (original) |
-| CREATE VIEW | ❌→✅ | ❌→✅ | Bug #14 |
-| CREATE TRIGGER | ❌→✅ | ❌→✅ | Bug #15 |
-| CREATE MATERIALIZED VIEW | ❌→✅ | ❌→✅ | (found with views) |
-| DROP TABLE | ❌→✅ | ❌→✅ | Bug #16 |
-| TRUNCATE TABLE | ❌→✅ | ❌→✅ | Bug #15 (Session B) |
-| ALTER TABLE (all variants) | ❌→✅ | ❌→✅ | Bug #17 |
-| DROP INDEX | ❌→✅ | ❌→✅ | (found with indexes) |
+| CREATE VIEW | ✅ | ✅ | Bug #14 |
+| CREATE TRIGGER | ✅ | ✅ | Bug #15 |
+| CREATE MATERIALIZED VIEW | ✅ | ✅ | (found with views) |
+| DROP TABLE | ✅ | ✅ | Bug #16 |
+| TRUNCATE TABLE | ✅ | ✅ | Bug #15 (Session B) |
+| ALTER TABLE (all variants) | ✅ | ✅ | Bug #17, fixed 2026-04-17 |
+| DROP INDEX | ✅ | ✅ | (found with indexes) |
 
-5 separate bug families from the same root cause: the DDL persistence allowlist only tracked CREATE TABLE and CREATE INDEX.
+## 2026-04-17 Fix: ALTER TABLE WAL Recovery (4 bugs)
 
-## Root Cause
+The ALTER TABLE fix was deeper than expected — 4 separate bugs interacted:
 
-Detection used `trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')` — a positive allowlist that rotted as new DDL types were added to the parser.
+1. **FileWAL missing logDDL**: The file-backed WAL class had no `logDDL()` method, so DDL records were never written. Fixed by adding the method.
 
-## The Fix
+2. **Inner Database had no WAL route**: TransactionalDatabase stores the WAL on `this._wal`, but the inner Database's `this.wal` was a no-op. DDL logging in db.js checked `this.wal.logDDL` which was always undefined. Fixed by patching `logDDL` onto the inner Database's existing no-op WAL.
 
-1. Changed to `trimmed.startsWith('CREATE ')` (catch-all for CREATE statements)
-2. Added generic DDL WAL record type (12) for ALTER TABLE variants
-3. Added specific WAL types for TRUNCATE (11) and DROP TABLE
-4. `_trackAlter()` reconstructs CREATE TABLE SQL from current schema after ALTER
+3. **DDL records treated as uncommitted**: DDL records use `txId=0` (auto-committed), but `recoverFromFileWAL` saw `txId=0` as an "active uncommitted transaction" and triggered full redo mode which only replays committed txn records — DDL records (not associated with any committed txn) were silently dropped. Fixed by excluding `txId=0` from the uncommitted check.
 
-## Prevention Rule
+4. **RENAME TABLE orphaned heap files**: After `ALTER TABLE x RENAME TO y`, the physical `.db` file stayed at `x.db`. On recovery, the catalog created table `y` which opened `y.db` (a new empty file), losing all data from `x.db`. Fixed by renaming the physical file and updating internal maps during ALTER TABLE RENAME.
 
-**When adding a new DDL statement to the SQL parser, IMMEDIATELY add:**
-1. WAL logging in the execution path
-2. WAL replay handling in ALL recovery paths (there are 3 in HenryDB)
-3. A persistence test: execute DDL → close → reopen → verify
-
-**Negative > Positive:** Catch "all DDL except..." rather than "TABLE, INDEX, VIEW, ..." — new types are automatically covered.
+### Additional fixes in same change:
+- Catalog (`_createSqls`) now updated after ALTER TABLE to reflect current schema
+- `_reconstructCreateSQL` generates CREATE TABLE from current schema with DEFAULT clauses
+- ADD_COLUMN now properly extracts column info from object AST (parser returns `{ name, type, default }` not separate fields)
+- Added `matchesHeap` helper for table name aliasing during recovery (maps old→new names from DDL records)

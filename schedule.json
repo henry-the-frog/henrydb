@@ -2874,6 +2874,62 @@
       "completed": "2026-04-17T23:30:27.185Z",
       "duration_ms": 60000,
       "summary": "3 BOOLEAN tests: all pass. TRUE/FALSE, WHERE, expressions. No bugs."
+    },
+    {
+      "id": "T266",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review depth day progress, pick next focus from TODO.md Normal items for remaining 2.5 hours",
+      "started": "2026-04-17T23:32:55.968Z",
+      "completed": "2026-04-17T23:33:13.116Z",
+      "duration_ms": 120000,
+      "summary": "Queue empty at session start. Picked WAL-log ALTER TABLE from TODO Normal — real persistence bug, fits depth day theme. Neural-net mixed precision as stretch goal."
+    },
+    {
+      "id": "T267",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: WAL-log ALTER TABLE operations to prevent data loss on crash for added/dropped/renamed columns",
+      "task": null,
+      "started": "2026-04-17T23:33:30.161Z",
+      "completed": "2026-04-17T23:34:39.801Z",
+      "duration_ms": 120000,
+      "summary": "Root cause: logDDL writes records without txId, recoverFromWAL groups by txId and only replays committed txs — txId=undefined never gets committed so DDL records are silently dropped. Fix: replay txId-less DDL/DROP_TABLE/TRUNCATE records directly. Test plan: 8+ tests."
+    },
+    {
+      "id": "T271",
+      "mode": "BUILD",
+      "task": "Fix recoverFromWAL to replay txId-less DDL records (ALTER TABLE, CREATE INDEX, DROP INDEX) — they are logged but never replayed because they have no txId and thus never appear in committedTxs. Write comprehensive tests covering: ALTER ADD COLUMN + data recovery, ALTER DROP COLUMN recovery, ALTER RENAME COLUMN recovery, RENAME TABLE recovery, multiple ALTER in sequence, ALTER inside explicit transaction, mix of DDL and DML recovery",
+      "status": "done",
+      "plan_ref": "T267",
+      "started": "2026-04-17T23:34:47.508Z",
+      "completed": "2026-04-17T23:49:54.577Z",
+      "duration_ms": 900000,
+      "summary": "Fixed ALTER TABLE WAL recovery. 4 bugs found: (1) FileWAL lacked logDDL method, (2) inner Database WAL had no logDDL route, (3) DDL records with txId=0 treated as uncommitted during recovery, (4) RENAME TABLE orphaned heap files and broke table name matching. Also fixed: catalog not updated after ALTER, ADD_COLUMN didn't extract default from object AST. 12 new tests, 90 existing tests passing."
+    },
+    {
+      "id": "T268",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-17T23:50:08.204Z",
+      "completed": "2026-04-17T23:50:08.353Z",
+      "duration_ms": 0,
+      "summary": "Placeholder BUILD — actual work done in T271."
+    },
+    {
+      "id": "T269",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git commit+push, knowledge capture",
+      "started": "2026-04-17T23:50:20.016Z"
+    },
+    {
+      "id": "T270",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on ALTER TABLE WAL work, decide next focus for remaining time"
     }
   ],
   "focusProjects": [
@@ -4005,6 +4061,30 @@
     {
       "time": "2026-04-17T23:29:56.433Z",
       "msg": "Added T265 (BUILD) after end: HenryDB: BOOLEAN type depth — TRUE/FALSE literals, boolean expressions, boolean columns"
+    },
+    {
+      "time": "2026-04-17T23:32:48.350Z",
+      "msg": "Added T266 (THINK) after end: Review depth day progress, pick next focus from TODO.md Normal items for remaining 2.5 hours"
+    },
+    {
+      "time": "2026-04-17T23:33:18.907Z",
+      "msg": "Added T267 (PLAN) after end: HenryDB: WAL-log ALTER TABLE operations to prevent data loss on crash for added/dropped/renamed columns"
+    },
+    {
+      "time": "2026-04-17T23:33:23.822Z",
+      "msg": "Added T268 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-17T23:33:23.943Z",
+      "msg": "Added T269 (MAINTAIN) after end: Git commit+push, knowledge capture"
+    },
+    {
+      "time": "2026-04-17T23:33:24.064Z",
+      "msg": "Added T270 (THINK) after end: Reflect on ALTER TABLE WAL work, decide next focus for remaining time"
+    },
+    {
+      "time": "2026-04-17T23:34:34.118Z",
+      "msg": "PLAN T267 filled 1 BUILD tasks"
     }
   ]
 }

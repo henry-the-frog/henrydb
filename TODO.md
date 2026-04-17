@@ -3,7 +3,6 @@
 ### Urgent
 
 ### Normal
-- HenryDB: WAL-log ALTER TABLE operations (data loss after crash for added columns)
 - HenryDB: secondary index + MVCC snapshot after UPDATE (needs HOT chains)
 
 ### Low
