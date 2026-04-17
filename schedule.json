@@ -2220,9 +2220,74 @@
     {
       "id": "T206",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session push: git commit+push all, update TODO.md, evening summary",
-      "started": "2026-04-17T22:24:27.834Z"
+      "started": "2026-04-17T22:24:27.834Z",
+      "completed": "2026-04-17T22:25:09.330Z",
+      "duration_ms": 120000,
+      "summary": "Final session push complete. Reflections written, MEMORY.md updated, everything committed and pushed."
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: end-to-end training verification — train on XOR, AND, OR gates. Verify network learns to 99%+ accuracy. Test with different optimizers and architectures.",
+      "project": "neural-net",
+      "started": "2026-04-17T22:25:23.935Z",
+      "completed": "2026-04-17T22:26:14.421Z",
+      "duration_ms": 180000,
+      "summary": "7 training verification tests: all pass. XOR/AND/OR/linear regression learned correctly. Training converges and is stable."
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: INSERT SELECT + CTAS depth — INSERT INTO ... SELECT, CREATE TABLE AS SELECT, with JOINs and aggregates",
+      "project": "henrydb",
+      "started": "2026-04-17T22:26:26.423Z",
+      "completed": "2026-04-17T22:27:09.377Z",
+      "duration_ms": 120000,
+      "summary": "11 INSERT SELECT + CTAS tests: all pass. Basic/WHERE/aggregate/self-dup/JOIN + MVCC. No bugs."
+    },
+    {
+      "id": "T209",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: savepoint depth — SAVEPOINT/RELEASE/ROLLBACK TO, nested savepoints, partial rollback",
+      "project": "henrydb",
+      "started": "2026-04-17T22:27:36.902Z",
+      "completed": "2026-04-17T22:28:20.262Z",
+      "duration_ms": 120000,
+      "summary": "6 savepoint tests: all pass. SAVEPOINT/RELEASE/ROLLBACK TO, nested, partial rollback. No bugs."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: TRUNCATE + bulk operations depth — TRUNCATE TABLE, bulk INSERT performance, DELETE with large result set, COPY FROM/TO",
+      "project": "henrydb",
+      "started": "2026-04-17T22:28:32.383Z",
+      "completed": "2026-04-17T22:29:23.856Z",
+      "duration_ms": 120000,
+      "summary": "9 bulk operations tests: all pass. TRUNCATE, bulk INSERT/DELETE/UPDATE. No bugs."
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: ORDER BY depth — multi-column sort, NULL ordering (NULLS FIRST/LAST), expression ORDER BY, ORDER BY column number, ORDER BY with DISTINCT",
+      "project": "henrydb",
+      "started": "2026-04-17T22:29:47.022Z",
+      "completed": "2026-04-17T22:30:30.578Z",
+      "duration_ms": 90000,
+      "summary": "10 ORDER BY tests: all pass. Multi-column, NULL ordering, expressions, DISTINCT, LIMIT. No bugs."
+    },
+    {
+      "id": "T212",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push, update TODO, session tally",
+      "started": "2026-04-17T22:30:40.931Z"
     }
   ],
   "focusProjects": [
@@ -3118,6 +3183,30 @@
     {
       "time": "2026-04-17T22:24:27.598Z",
       "msg": "Added T206 (MAINTAIN) after end: Final session push: git commit+push all, update TODO.md, evening summary"
+    },
+    {
+      "time": "2026-04-17T22:25:23.699Z",
+      "msg": "Added T207 (BUILD) after end: Neural-net: end-to-end training verification — train on XOR, AND, OR gates. Verify network learns to 99%+ accuracy. Test with different optimizers and architectures."
+    },
+    {
+      "time": "2026-04-17T22:26:26.188Z",
+      "msg": "Added T208 (BUILD) after end: HenryDB: INSERT SELECT + CTAS depth — INSERT INTO ... SELECT, CREATE TABLE AS SELECT, with JOINs and aggregates"
+    },
+    {
+      "time": "2026-04-17T22:27:36.667Z",
+      "msg": "Added T209 (BUILD) after end: HenryDB: savepoint depth — SAVEPOINT/RELEASE/ROLLBACK TO, nested savepoints, partial rollback"
+    },
+    {
+      "time": "2026-04-17T22:28:32.148Z",
+      "msg": "Added T210 (BUILD) after end: HenryDB: TRUNCATE + bulk operations depth — TRUNCATE TABLE, bulk INSERT performance, DELETE with large result set, COPY FROM/TO"
+    },
+    {
+      "time": "2026-04-17T22:29:46.786Z",
+      "msg": "Added T211 (BUILD) after end: HenryDB: ORDER BY depth — multi-column sort, NULL ordering (NULLS FIRST/LAST), expression ORDER BY, ORDER BY column number, ORDER BY with DISTINCT"
+    },
+    {
+      "time": "2026-04-17T22:30:40.695Z",
+      "msg": "Added T212 (MAINTAIN) after end: Final git push, update TODO, session tally"
     }
   ]
 }

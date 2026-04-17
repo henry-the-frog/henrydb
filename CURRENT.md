@@ -2,12 +2,14 @@
 
 ## Status: in-progress
 ## Session: B (2:15 PM – 8:15 PM MDT, April 17, 2026)
-## Focus: Depth day continued — VACUUM/GC, trigger/crash recovery, serialization
-## Current Task: T145 THINK — Session B kickoff
+## Focus: Depth day continued — comprehensive SQL feature testing
+## Current Task: Ongoing depth testing
 
-### Tasks Completed (Session B): 0
-### Tasks Completed (Today Total): 111+
-### Bugs Found and Fixed (Today): 22
+### Tasks Completed (Session B): 67+
+### Tests Written (Session B): 417+
+### Bugs Found and Fixed (Session B): 16
+### Bugs Documented (Session B): 4
+### Today Total (Sessions A+B): 38+ bugs, 417+ depth tests
 
 ### Summary of Bugs
 **Neural-net (9):** KANLayer gradient, MoE caches, CapsuleLayer side-effect, NeuralODE adjoint, MoE batch divergence, autograd NaN, cutmix crash, pruning fake Matrix (×2)
