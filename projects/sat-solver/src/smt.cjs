@@ -450,18 +450,114 @@ class SMTSolver {
     }
 
     const eufResult = this.euf.checkConsistency();
+    if (!eufResult.consistent) {
+      this.euf.pop();
+      this.bounds.pop();
+      return 'UNSAT';
+    }
+
+    // Nelson-Oppen theory combination: propagate equalities from EUF to Bounds/Simplex
+    // When EUF determines a = b, add constraint a - b = 0 to Simplex
+    // and propagate bounds between equal variables
+    this._propagateEqualities();
+
     const boundsResult = this.bounds.checkConsistency();
     let simplexResult = { feasible: true };
     if (this.simplexUsed) {
       simplexResult = this.simplex.check();
     }
 
-    const sat = eufResult.consistent && boundsResult.consistent && simplexResult.feasible;
+    const sat = boundsResult.consistent && simplexResult.feasible;
 
     this.euf.pop();
     this.bounds.pop();
 
     return sat ? 'SAT' : 'UNSAT';
+  }
+
+  // Nelson-Oppen equality propagation: EUF equalities → arithmetic constraints
+  _propagateEqualities() {
+    // Collect all variables mentioned in bounds or simplex
+    const arithVars = new Set();
+    for (const [, atom] of this.atomMap) {
+      if (atom.kind === '<=' || atom.kind === '>=' || atom.kind === 'le' || atom.kind === 'ge') {
+        if (atom.var) arithVars.add(atom.var);
+      }
+    }
+    // Also collect variables from bounds solver
+    if (this.bounds.atoms) {
+      for (const a of this.bounds.atoms) {
+        if (a.var) arithVars.add(a.var);
+      }
+    }
+    // Also collect from assertions that mention variables in equality
+    for (const expr of this.assertions) {
+      this._collectEqualityVars(expr, arithVars);
+    }
+
+    // For each pair of arithmetic variables that EUF says are equal,
+    // add equality constraint to Simplex (a - b = 0) and propagate bounds
+    const varList = [...arithVars];
+    for (let i = 0; i < varList.length; i++) {
+      for (let j = i + 1; j < varList.length; j++) {
+        const a = varList[i];
+        const b = varList[j];
+        if (this.euf.uf.sameClass(a, b)) {
+          // a = b in EUF → add a - b = 0 to Simplex
+          this.simplexUsed = true;
+          this.simplex.addVar(a);
+          this.simplex.addVar(b);
+          this.simplex.addConstraint(
+            [{ var: a, coeff: 1 }, { var: b, coeff: -1 }],
+            '=', 0
+          );
+          // Also propagate bounds: if a >= 5 then b >= 5
+          this._propagateBoundsForEqual(a, b);
+        }
+      }
+    }
+  }
+
+  _collectEqualityVars(expr, vars) {
+    if (typeof expr === 'string') return;
+    if (!Array.isArray(expr)) return;
+    const op = expr[0];
+    if (op === '=') {
+      if (typeof expr[1] === 'string') vars.add(expr[1]);
+      if (typeof expr[2] === 'string') vars.add(expr[2]);
+    }
+    if (op === 'and') {
+      for (let i = 1; i < expr.length; i++) this._collectEqualityVars(expr[i], vars);
+    }
+  }
+
+  _propagateBoundsForEqual(a, b) {
+    // For each bound on a, add the same bound on b, and vice versa
+    if (!this.bounds.atoms) return;
+    const aBounds = [];
+    const bBounds = [];
+    for (const atom of this.bounds.atoms) {
+      if (atom.var === a && atom.asserted !== undefined) {
+        aBounds.push(atom);
+      }
+      if (atom.var === b && atom.asserted !== undefined) {
+        bBounds.push(atom);
+      }
+    }
+    // Propagate a's bounds to b
+    for (const bound of aBounds) {
+      const bv = this._freshBoolVar();
+      this.bounds.addAtom(bound.kind, b, bound.value, bv);
+      if (bound.asserted) this.bounds.assertTrue(bv);
+      else this.bounds.assertFalse(bv);
+    }
+    // Propagate b's bounds to a
+    for (const bound of bBounds) {
+      const bv = this._freshBoolVar();
+      this.bounds.addAtom(bound.kind, a, bound.value, bv);
+      if (bound.asserted) this.bounds.assertTrue(bv);
+      else this.bounds.assertFalse(bv);
+    }
   }
 
   // Parse a linear arithmetic expression into terms [{var, coeff}] + constant

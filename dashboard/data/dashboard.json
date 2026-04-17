@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-17T16:23:34.323Z",
+  "generated": "2026-04-17T16:50:48.695Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "Tested explainability module",
-    "completedAt": "2026-04-17T16:23:34.323Z",
-    "taskId": "T68",
-    "summary": "Explainability: featureImportance and integratedGradients both work correctly. Feature 0 more important than feature 1 for moons (correct).",
-    "durationMs": 60000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "BUILD: SAT solver — test DPLL(T) theory propagation and backtracking with complex mixed EUF+LIA formulas",
+    "startedAt": "2026-04-17T16:50:48.695Z",
+    "taskId": "T78"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -4343,51 +4341,724 @@
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: investigate cost-based optimizer improvements, test query plan quality on complex joins and subqueries",
         "task": null,
-        "started": "2026-04-17T14:42:10.337Z"
+        "started": "2026-04-17T14:42:10.337Z",
+        "completed": "2026-04-17T14:42:54.599Z",
+        "duration_ms": 60000,
+        "summary": "Planned query planner depth testing. Subqueries work at executor but no optimizer support. Focus on join cost estimation and index selection correctness."
       },
       {
         "id": "T15",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Stress-test HenryDB query planner: EXPLAIN on multi-table joins to verify cost estimates are reasonable, test join reordering with ANALYZE statistics, verify index selection for WHERE clauses. Focus on correctness of plans, not optimization.",
         "plan_ref": "T14",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-17T14:43:02.813Z",
+        "completed": "2026-04-17T14:46:00.184Z",
+        "duration_ms": 600000,
+        "summary": "12 planner depth tests: access path selection, row estimation, join ordering, cost model consistency. All pass — planner correctly chooses table scan for 90% selectivity and index scan for 1%. EXPLAIN display was misleading but actual plan decisions are correct. No bugs found in planner cost model."
       },
       {
         "id": "T16",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard health, PR status check"
+        "status": "done",
+        "task": "Git commit+push, dashboard health, PR status check",
+        "started": "2026-04-17T14:46:10.046Z",
+        "completed": "2026-04-17T14:46:15.620Z",
+        "duration_ms": 15000,
+        "summary": "Pushed."
       },
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive: pick one neural-net module with complex backward pass and write adversarial test cases",
-        "project": "neural-net"
+        "project": "neural-net",
+        "started": "2026-04-17T14:46:23.620Z",
+        "completed": "2026-04-17T14:47:53.184Z",
+        "duration_ms": 300000,
+        "summary": "Deep dive into TransformerEncoderBlock backward: gradient check error 5e-9 (excellent). Adversarial tests: all-zero input causes 300x gradient amplification via LayerNorm invStd (expected, not a bug). Large values, identical rows, single token all handled correctly. No new bugs found — transformer backward is robust."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Read mrnuggets squash-merge commit, study what other monkey-lang implementations exist in the monkeylang repo",
-        "project": "neural-net"
+        "project": "neural-net",
+        "started": "2026-04-17T14:48:05.717Z",
+        "completed": "2026-04-17T14:49:36.077Z",
+        "duration_ms": 180000,
+        "summary": "Explored monkey-lang codebase: 12K+ lines of core implementation (lexer, parser, evaluator, compiler, VM, JIT, GC, SSA, regalloc, type inference, DCE, const prop, escape analysis, debugger). 4467-line JIT compiler with trace recording. devdanzin contributed JIT event tracing PR (merged Apr 14). Workspace has 261 sub-projects. Very mature project."
+      },
+      {
+        "id": "T19",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Identify next high-value integration boundary to test in HenryDB. Candidates: (1) savepoints + crash recovery, (2) index consistency after crash, (3) WAL compaction + concurrent writes, (4) SSI serialization + persistence",
+        "started": "2026-04-17T14:50:01.317Z",
+        "completed": "2026-04-17T14:51:43.256Z",
+        "duration_ms": 300000,
+        "summary": "Investigated 3 integration boundaries: (1) Index consistency after crash — safe because indexes rebuilt from heap during recovery, (2) Savepoints + crash recovery — working correctly with the txId fix, nested savepoints within committed transactions handled properly, (3) WAL checkpoint + recovery — correct, data before and after checkpoint recovers. The ACID bug fix is holding up well. Moving to new work area."
+      },
+      {
+        "id": "T20",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "PLAN: Neural-net weight serialization + deserialization round-trip tests. Do toJSON/fromJSON preserve all module state? Can a trained model be saved, loaded, and produce identical outputs? Test for KAN, MoE, NeuralODE, Capsule, Transformer.",
+        "task": null,
+        "started": "2026-04-17T14:51:59.474Z",
+        "completed": "2026-04-17T14:52:53.304Z",
+        "duration_ms": 120000,
+        "summary": "Advanced modules (KAN, MoE, NeuralODE, Capsule, Transformer) have no toJSON/fromJSON. Network class serialization works perfectly (0 error on round-trip). Adding serialization would be breadth work (feature factory). Redirecting to depth."
+      },
+      {
+        "id": "T21",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Monkey JIT depth investigation — what correctness properties should a tracing JIT satisfy? Run the JIT tests, look for edge cases in trace recording, guard invalidation, deoptimization.",
+        "started": "2026-04-17T14:53:11.120Z",
+        "completed": "2026-04-17T14:57:21.648Z",
+        "duration_ms": 180000,
+        "summary": "JIT tests: 162+96+31=289 tests all passing, 200 fuzz runs no divergences. Coverage is comprehensive: trace recording, optimization passes, deopt, range check elim, induction vars, side traces, type annotations. The JIT is robust — no bugs found via testing or fuzzing. The monkey-lang project is well-tested."
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — investigate window functions + MVCC interaction. Do window functions work correctly inside transactions? Test with OVER clauses in BEGIN/COMMIT blocks.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:03:58.447Z",
+        "completed": "2026-04-17T15:07:25.179Z",
+        "duration_ms": 600000,
+        "summary": "Found and fixed GROUP BY + window function bug: window columns silently dropped because _selectWithGroupBy() never called _computeWindowFunctions(). Also fixed aggregate ORDER BY in OVER clause causing TypeError. Now SELECT dept, AVG(salary), RANK() OVER (ORDER BY AVG(salary) DESC) FROM emp GROUP BY dept works correctly."
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — test CTE + window function + subquery combinations. Complex SQL that combines multiple features often exposes integration bugs.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:08:04.117Z",
+        "completed": "2026-04-17T15:09:25.211Z",
+        "duration_ms": 300000,
+        "summary": "Tested 15+ complex SQL feature combinations: CTE+window, correlated subquery, self-join, EXISTS, NTILE, CASE+window, UNION+window, INTERSECT, EXCEPT, prepared+window. All work correctly. Only bug was GROUP BY+window (already fixed in T22). HenryDB SQL engine handles feature combos well."
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — add write tests for GROUP BY + window function fix and MVCC crash recovery. Make today's bug fixes permanent with test coverage.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:09:44.201Z",
+        "completed": "2026-04-17T15:11:00.009Z",
+        "duration_ms": 300000,
+        "summary": "5 window+GROUP BY integration tests written. All pass. Also found that nested aggregates in window OVER clause (SUM(SUM(x))) still crash — known limitation to address later. The main GROUP BY+window fix has solid test coverage now."
+      },
+      {
+        "id": "T25",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net autograd depth — stress test reverse-mode AD with complex computation graphs. Higher-order derivatives, gradient of gradient, non-trivial composition patterns.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:11:17.588Z",
+        "completed": "2026-04-17T15:13:15.480Z",
+        "duration_ms": 300000,
+        "summary": "Found autograd mseLoss bug: passing Variable targets produced NaN because constant() received Variable objects and converted to string. Fixed with instanceof check. Also verified autograd correctness: x^2, sin, exp*sin, diamond pattern, chain rule, relu, sigmoid — all exact. Training converges for simple regression."
+      },
+      {
+        "id": "T26",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net GAN/VAE depth — test adversarial training convergence. Can the GAN actually generate samples? Does the VAE's KL divergence computation work?",
+        "project": "neural-net",
+        "started": "2026-04-17T15:13:43.522Z",
+        "completed": "2026-04-17T15:15:53.191Z",
+        "duration_ms": 300000,
+        "summary": "GAN and VAE both work correctly. GAN generates points centered around target distribution. VAE trains with decreasing loss+KL, generates reasonable samples, reparameterization trick works. KL formula correct. No bugs found in generative models."
+      },
+      {
+        "id": "T27",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "BUILD: Neural-net — run full test suite sweep, check for any regressions from today's fixes. Git push final state.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:18:03.524Z",
+        "completed": "2026-04-17T15:20:52.814Z",
+        "duration_ms": 180000,
+        "summary": "Full sweep: 1294 tests, 0-2 flaky failures (stochastic tests, pre-existing). No regressions from today. Pushed to git."
+      },
+      {
+        "id": "T28",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "MAINTAIN: HenryDB full test suite sweep",
+        "project": "henrydb",
+        "started": "2026-04-17T15:21:04.621Z",
+        "completed": "2026-04-17T15:21:34.398Z",
+        "duration_ms": 60000,
+        "summary": "Core HenryDB tests sweep: db, mvcc, crash-recovery, planner, window functions — all 0 failures."
+      },
+      {
+        "id": "T29",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net optimizer/scheduler depth — test Adam, RMSProp, AdaGrad with various schedulers. Do momentum-based optimizers converge faster than SGD? Does warmup+cosine decay work?",
+        "project": "neural-net",
+        "started": "2026-04-17T15:21:40.851Z",
+        "completed": "2026-04-17T15:22:40.727Z",
+        "duration_ms": 180000,
+        "summary": "All LR schedulers correct: CosineAnnealing, Warmup, StepLR, CyclicLR. Adam/RMSProp optimizers exist but Network.trainBatch defaults to SGD (not a bug, by design). No issues found."
+      },
+      {
+        "id": "T30",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — stress test complex SQL: recursive CTEs, lateral joins, MERGE statements, complex CASE WHEN, JSON operations. Find parser/executor edge cases.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:22:51.594Z",
+        "completed": "2026-04-17T15:23:55.779Z",
+        "duration_ms": 300000,
+        "summary": "Complex SQL stress test: recursive CTEs, CASE+subquery, HAVING, IN+subquery, BETWEEN, LIKE, UPDATE+subquery, JSON_EXTRACT, JSON_ARRAY, GENERATE_SERIES — all work correctly. LATERAL GENERATE_SERIES parser limitation (expected). HenryDB SQL engine is very robust for individual features."
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — MVCC snapshot isolation correctness. Test that concurrent transactions see correct snapshots, no dirty reads, no lost updates, write skew detection.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:24:12.257Z",
+        "completed": "2026-04-17T15:27:13.515Z",
+        "duration_ms": 600000,
+        "summary": "CRITICAL: MVCC snapshot isolation completely broken. (1) Repeatable Read violated — read() used simple txId comparison instead of snapshot visibility, allowing dirty reads of committed-after-snapshot data. (2) No write-write conflict detection — lost updates possible. Fixed with proper PostgreSQL-style xmin/xmax/activeSet visibility and first-committer-wins. All 27 existing MVCC + crash recovery tests pass."
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Write comprehensive MVCC isolation tests — dirty read, repeatable read, phantom read, write-write conflict, write skew, read committed vs repeatable read.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:27:35.893Z",
+        "completed": "2026-04-17T15:28:26.855Z",
+        "duration_ms": 300000,
+        "summary": "12 MVCC isolation tests: dirty read, repeatable read, write-write conflict, lost update prevention, read committed, multiple versions, rollback. All pass. Solid regression coverage for the snapshot isolation fix."
+      },
+      {
+        "id": "T33",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net data augmentation depth — test augmentation pipeline correctness. Do augmented samples still have correct labels? Test random crop, flip, rotation with various image sizes.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:29:34.639Z",
+        "completed": "2026-04-17T15:31:39.628Z",
+        "duration_ms": 180000,
+        "summary": "Found cutmix bug: uses Matrix.scale() which does not exist. cutmix was completely non-functional — any call crashed. Fixed with map(). Also verified mixup, dropout, flip, rotate90, normalize all correct. Bug count for today: 12."
+      },
+      {
+        "id": "T34",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "BUILD: Write today's reflections and update MEMORY.md with key learnings from this incredible depth day.",
+        "started": "2026-04-17T15:33:17.023Z",
+        "completed": "2026-04-17T15:33:51.062Z",
+        "duration_ms": 120000,
+        "summary": "Reflections written. Key insight: Integration Boundary Principle — 12 bugs today, all at the boundary between independently-built subsystems that share a concept but fail to connect."
+      },
+      {
+        "id": "T35",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Scan neural-net for dead code bugs — functions that call non-existent methods, untested constructors, broken imports. Systematic sweep of lesser-tested modules.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:34:12.547Z",
+        "completed": "2026-04-17T15:35:47.037Z",
+        "duration_ms": 180000,
+        "summary": "Scanned untested modules: activation, callbacks, conv1d, data-augmentation, loss, digits. All work correctly when called with proper APIs. The cutmix bug (T33) was the real dead code issue. No additional bugs found."
+      },
+      {
+        "id": "T36",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — test WAL checkpoint + recovery with explicit transactions (BEGIN/COMMIT/ROLLBACK). Verify txId tracking survives checkpoint.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:35:58.233Z",
+        "completed": "2026-04-17T15:36:31.014Z",
+        "duration_ms": 120000,
+        "summary": "WAL checkpoint + transaction recovery: txId tracking survives checkpoints correctly. Tested: single checkpoint, multiple checkpoints, committed before/after checkpoint, uncommitted after checkpoint. All correct."
+      },
+      {
+        "id": "T37",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Neural-net end-to-end training pipeline — Network + Dataset + Preprocessing + Training + Evaluation. Verify the full pipeline works on each dataset.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:36:47.059Z",
+        "completed": "2026-04-17T15:37:34.824Z",
+        "duration_ms": 180000,
+        "summary": "E2E pipeline verified: Network + Datasets + Preprocessing + Training on moons (90%), circles (80%), sine, linear — all work. XOR NaN was from trainTestSplit on 4-sample dataset (expected). Full pipeline integration is solid."
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB MVCC transaction throughput stress test — many small transactions, measure operations/sec. Verify the write-write conflict detection doesn't kill performance for non-conflicting workloads.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:37:57.974Z",
+        "completed": "2026-04-17T15:38:30.620Z",
+        "duration_ms": 120000,
+        "summary": "MVCC throughput: 24K inserts/sec, 17K selects/sec, 1K updates/sec, 481 serial txns/sec. Write-write conflict detection has negligible performance impact on non-conflicting workloads. Batched transactions ~20% faster than auto-commit."
+      },
+      {
+        "id": "T39",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB SSI — does the serializable isolation level detect write skew anomalies? Test the classic doctor-on-call write skew scenario.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:38:43.720Z",
+        "completed": "2026-04-17T15:41:47.776Z",
+        "duration_ms": 300000,
+        "summary": "SSI write skew detection completely non-functional: (1) base class never called recordRead/recordWrite hooks, (2) commit received object not number, (3) same for rollback. After fix, classic doctor write skew correctly detected. Bug count: 15 for today. Same integration boundary pattern."
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — test MVCC with DELETE operations. Does snapshot isolation work for deletes? Can a transaction see a row that another concurrent transaction deleted?",
+        "project": "henrydb",
+        "started": "2026-04-17T15:42:10.387Z",
+        "completed": "2026-04-17T15:42:31.935Z",
+        "duration_ms": 60000,
+        "summary": "MVCC DELETE operations work correctly with snapshot isolation: deleted data still visible to earlier transactions, invisible to later ones. No bugs."
+      },
+      {
+        "id": "T41",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net regularization depth — test L1, L2, Dropout, BatchNorm training mode vs eval mode. Does dropout actually drop differently each forward pass? Does BatchNorm use running stats in eval?",
+        "project": "neural-net",
+        "started": "2026-04-17T15:42:46.656Z",
+        "completed": "2026-04-17T15:43:14.388Z",
+        "duration_ms": 120000,
+        "summary": "BatchNorm and Dropout both work correctly. Training/eval mode switching, running stats, inverted dropout scaling, identity in eval — all verified. No bugs in regularization modules."
+      },
+      {
+        "id": "T42",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net — test that Conv1D backward produces correct gradients. The gradient check for Conv1D was never done (it wasn't in the systematic test). Run numerical gradient verification.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:43:41.748Z",
+        "completed": "2026-04-17T15:44:41.118Z",
+        "duration_ms": 120000,
+        "summary": "Conv1D gradient check: 1.6e-11 error (perfect). Embedding works correctly with Matrix input. No new bugs found in Conv1D or Embedding."
+      },
+      {
+        "id": "T43",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "MAINTAIN: Final commit, push, and session summary",
+        "started": "2026-04-17T15:45:11.135Z",
+        "completed": "2026-04-17T15:45:46.802Z",
+        "duration_ms": 60000,
+        "summary": "Half-point commit. 43 tasks, 15 bugs, comprehensive session summary in daily log. Pushed."
+      },
+      {
+        "id": "T44",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Neural-net — test training with variable batch sizes. Does the Network handle incomplete final batches? Does BatchNorm work with batch_size=1?",
+        "project": "neural-net",
+        "started": "2026-04-17T15:46:00.413Z",
+        "completed": "2026-04-17T15:46:34.061Z",
+        "duration_ms": 120000,
+        "summary": "BatchNorm: batch=1 handled gracefully (outputs zeros), batch=2+ correct. Gradient check error 7.2e-10 (excellent). Variable batch sizes work correctly. No bugs."
+      },
+      {
+        "id": "T45",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Plan next session's depth work. Where are the remaining untested integration boundaries? What project areas haven't been touched by depth testing? Create TODO items.",
+        "started": "2026-04-17T15:46:50.306Z",
+        "completed": "2026-04-17T15:47:31.454Z",
+        "duration_ms": 180000,
+        "summary": "Planned next depth work: VACUUM/GC correctness, trigger+crash recovery, SMT theory combination, GC stress testing. Updated TODO.md with Normal priority items."
+      },
+      {
+        "id": "T46",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB VACUUM — does it clean up dead tuples correctly? Does it interact with active transactions' snapshots?",
+        "project": "henrydb",
+        "started": "2026-04-17T15:47:44.997Z",
+        "completed": "2026-04-17T15:48:02.228Z",
+        "duration_ms": 60000,
+        "summary": "VACUUM works correctly: deletes cleaned up, remaining rows intact, IDs correct. No bugs in VACUUM."
+      },
+      {
+        "id": "T47",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net end-to-end mini-Transformer: Embedding → Positional Encoding → TransformerBlock → Dense output. Does the full stack train on a simple sequence task?",
+        "project": "neural-net",
+        "started": "2026-04-17T15:48:31.659Z",
+        "completed": "2026-04-17T15:49:03.697Z",
+        "duration_ms": 120000,
+        "summary": "Mini-Transformer forward pass (Embedding → PosEnc → TransformerBlock → Dense) works end-to-end: 16 samples, no NaN, reasonable predictions. Full pipeline integration verified."
+      },
+      {
+        "id": "T48",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — verify _nextTxId persistence across crash/recovery. If txId counter resets, duplicate IDs could corrupt MVCC.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:49:18.382Z",
+        "completed": "2026-04-17T15:50:15.227Z",
+        "duration_ms": 120000,
+        "summary": "_nextTxId is implicitly preserved across recovery because WAL replay calls execute() which increments the counter. Not explicit but correct. TxId=11 after 10 transactions, properly continues to 12 after post-recovery insert. Fragile but functional."
+      },
+      {
+        "id": "T49",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Neural-net — stress test the Diffusion model (if it has train/generate). This is the most complex generative model.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:50:29.355Z",
+        "completed": "2026-04-17T15:52:27.492Z",
+        "duration_ms": 180000,
+        "summary": "SimpleDiffusion trains (loss decreases) and generates samples. The initial error was from wrong API usage (passed object instead of number). Pipeline works end-to-end. No code bugs."
+      },
+      {
+        "id": "T50",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB — test concurrent index + transaction interaction. Does CREATE INDEX inside a transaction + rollback leave the index in a broken state?",
+        "project": "henrydb",
+        "started": "2026-04-17T15:52:43.786Z",
+        "completed": "2026-04-17T15:53:04.262Z",
+        "duration_ms": 60000,
+        "summary": "CREATE INDEX inside transaction + ROLLBACK: index is properly cleaned up. Can be re-created after rollback. No bugs."
+      },
+      {
+        "id": "T51",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — test UPSERT (INSERT ... ON CONFLICT) which is a commonly needed but often buggy feature.",
+        "project": "henrydb",
+        "started": "2026-04-17T15:53:38.098Z",
+        "completed": "2026-04-17T15:54:00.974Z",
+        "duration_ms": 60000,
+        "summary": "UPSERT (INSERT ON CONFLICT) works correctly: DO UPDATE with EXCLUDED, DO NOTHING, insert on no conflict. All three modes tested."
+      },
+      {
+        "id": "T52",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: DQN RL module tested, works correctly",
+        "project": "neural-net",
+        "started": "2026-04-17T15:55:08.197Z",
+        "completed": "2026-04-17T15:55:08.340Z",
+        "duration_ms": 120000,
+        "summary": "DQN trains and learns correct policy (go right for positive reward). 20/20 greedy accuracy after 50 episodes."
+      },
+      {
+        "id": "T53",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net graph neural network module — test basic graph convolution",
+        "project": "neural-net",
+        "started": "2026-04-17T15:55:26.176Z",
+        "completed": "2026-04-17T15:56:34.154Z",
+        "duration_ms": 120000,
+        "summary": "GNN module works correctly: Graph construction, GCN message passing, node classification. Isolated nodes get zero embeddings (correct). No bugs."
+      },
+      {
+        "id": "T54",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "done T53-T54 batch",
+        "project": "neural-net",
+        "started": "2026-04-17T15:57:58.708Z",
+        "completed": "2026-04-17T15:57:58.853Z",
+        "duration_ms": 60000,
+        "summary": "Quantization works correctly."
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Neural-net — profile Matrix operations for potential O(n²) where O(n) should suffice. Matrix.dot, add, mul are the hot path.",
+        "project": "neural-net",
+        "started": "2026-04-17T15:58:25.099Z",
+        "completed": "2026-04-17T15:58:55.280Z",
+        "duration_ms": 120000,
+        "summary": "Matrix profiling: dot O(n³) verified (62x for 4x size), add/mul O(n²) verified (13.5x). 100x100 matmul=2.75ms, 500x500=328ms. No performance bugs. Correct algorithmic complexity."
+      },
+      {
+        "id": "T56",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB — test foreign key constraints. Do they work correctly with CASCADE DELETE?",
+        "project": "henrydb",
+        "started": "2026-04-17T15:59:13.288Z",
+        "completed": "2026-04-17T15:59:34.013Z",
+        "duration_ms": 60000,
+        "summary": "Foreign key constraints work: FK violation detected on invalid reference, CASCADE DELETE properly removes dependent rows. No bugs."
+      },
+      {
+        "id": "T57",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "note: FK constraints all work - CASCADE DELETE, CASCADE UPDATE, SET NULL",
+        "started": "2026-04-17T16:00:08.090Z",
+        "completed": "2026-04-17T16:00:08.235Z",
+        "duration_ms": 30000,
+        "summary": "FK constraints complete: CASCADE DELETE, CASCADE UPDATE, SET NULL all working correctly."
+      },
+      {
+        "id": "T58",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: distillation module works correctly",
+        "project": "neural-net",
+        "started": "2026-04-17T16:01:23.941Z",
+        "completed": "2026-04-17T16:01:24.086Z",
+        "duration_ms": 60000,
+        "summary": "Knowledge distillation: softmax T scaling correct, KL divergence correct, distillation loss correct. All math verified."
+      },
+      {
+        "id": "T59",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB — type coercion edge cases. What happens with NULL arithmetic, string/number comparisons, CAST operations?",
+        "project": "henrydb",
+        "started": "2026-04-17T16:02:07.394Z",
+        "completed": "2026-04-17T16:02:33.067Z",
+        "duration_ms": 60000,
+        "summary": "NULL semantics 100% correct: NULL arithmetic, NULL=NULL is false, IS NULL, COALESCE, type coercion, CAST, aggregate NULL exclusion. PostgreSQL-compatible behavior."
+      },
+      {
+        "id": "T60",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Neural-net — test model save/load for Network class end-to-end: train, serialize, deserialize, verify predictions match",
+        "project": "neural-net",
+        "started": "2026-04-17T16:02:46.095Z",
+        "completed": "2026-04-17T16:03:12.590Z",
+        "duration_ms": 60000,
+        "summary": "Network serialization round-trip: 0 prediction difference, 4383 bytes JSON. Loaded model continues training fine (86% on moons after fine-tune). Perfect save/load."
+      },
+      {
+        "id": "T61",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Test UPDATE/DELETE trigger NEW/OLD references and fix if needed",
+        "project": "henrydb",
+        "started": "2026-04-17T16:06:23.508Z",
+        "completed": "2026-04-17T16:08:31.426Z",
+        "duration_ms": 300000,
+        "summary": "Bugs #17-18: UPDATE and DELETE triggers never fired — _update() and _delete() had no _fireTriggers() calls. Also fixed all trigger NEW/OLD references. Now all three trigger types work with proper column access."
+      },
+      {
+        "id": "T62",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB views — do materialized views, updateable views, and view-through-view queries work?",
+        "project": "henrydb",
+        "started": "2026-04-17T16:08:58.127Z",
+        "completed": "2026-04-17T16:14:15.453Z",
+        "duration_ms": 600000,
+        "summary": "Bug #19: View result cache stale after base table modifications. Cache invalidation only tracked direct table references, not view→table dependencies. Fixed by recursively resolving views to base tables in _extractTables()."
+      },
+      {
+        "id": "T63",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB prepared statements + cache interaction — do prepared statements bypass the broken cache?",
+        "project": "henrydb",
+        "started": "2026-04-17T16:14:39.827Z",
+        "completed": "2026-04-17T16:14:58.171Z",
+        "duration_ms": 60000,
+        "summary": "Prepared statements correctly see fresh data after base table modifications. No caching issue."
+      },
+      {
+        "id": "T64",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Expression edge cases tested",
+        "project": "henrydb",
+        "started": "2026-04-17T16:15:33.548Z",
+        "completed": "2026-04-17T16:15:33.691Z",
+        "duration_ms": 60000,
+        "summary": "Expression edge cases tested. No correctness bugs."
+      },
+      {
+        "id": "T65",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "done: MHA works correctly",
+        "project": "neural-net",
+        "started": "2026-04-17T16:16:27.169Z",
+        "completed": "2026-04-17T16:16:27.312Z",
+        "duration_ms": 60000,
+        "summary": "MultiHeadAttention works correctly with flattened input. Forward/backward shape-preserving, all finite. No bugs."
+      },
+      {
+        "id": "T66",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Pruning bugs fixed (#20-21)",
+        "project": "neural-net",
+        "started": "2026-04-17T16:19:54.186Z",
+        "completed": "2026-04-17T16:19:54.331Z",
+        "duration_ms": 30000,
+        "summary": "Pruning bugs fixed. magnitudePrune and structuredPrune now return proper Matrix instances."
+      },
+      {
+        "id": "T67",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "SNN tested, works but untrained",
+        "project": "neural-net",
+        "started": "2026-04-17T16:22:11.186Z",
+        "completed": "2026-04-17T16:22:11.330Z",
+        "duration_ms": 60000,
+        "summary": "SNN module works: PoissonEncoder generates correct spike trains, SpikingNetwork simulates without errors. No output spikes with random weights (expected — untrained). No bugs."
+      },
+      {
+        "id": "T68",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Tested explainability module",
+        "project": "neural-net",
+        "started": "2026-04-17T16:23:34.143Z",
+        "completed": "2026-04-17T16:23:34.288Z",
+        "duration_ms": 60000,
+        "summary": "Explainability: featureImportance and integratedGradients both work correctly. Feature 0 more important than feature 1 for moons (correct)."
+      },
+      {
+        "id": "T69",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: HenryDB stress test — rapid alternation between reads and writes. Does the database maintain consistency under rapid CRUD operations?",
+        "project": "henrydb",
+        "started": "2026-04-17T16:47:01.745Z",
+        "completed": "2026-04-17T16:47:18.007Z",
+        "duration_ms": 60000,
+        "summary": "1000 rapid CRUD ops, 0 errors, correct final state. DB handles rapid read-write alternation perfectly."
+      },
+      {
+        "id": "T70",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB — test materialized views. Do they update on REFRESH? Can they be indexed?",
+        "project": "henrydb",
+        "started": "2026-04-17T16:47:24.684Z",
+        "completed": "2026-04-17T16:47:38.757Z",
+        "duration_ms": 60000,
+        "summary": "Materialized views work correctly: data captured on CREATE, stale before REFRESH, updated after REFRESH. MVCC-compatible."
+      },
+      {
+        "id": "T71",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB ARIES recovery — test the 3-phase recovery (analysis, redo, undo) with complex scenarios",
+        "project": "henrydb",
+        "started": "2026-04-17T16:47:45.930Z",
+        "completed": "2026-04-17T16:48:13.156Z",
+        "duration_ms": 120000,
+        "summary": "ARIES recovery verified: CHECKPOINT, SAVEPOINT, ROLLBACK TO, full ROLLBACK all correct. 3-phase recovery pattern works."
+      },
+      {
+        "id": "T72",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB SQL injection resilience — can malformed SQL crash the parser or corrupt data?",
+        "project": "henrydb",
+        "started": "2026-04-17T16:48:20.766Z",
+        "completed": "2026-04-17T16:48:34.698Z",
+        "duration_ms": 60000,
+        "summary": "SQL injection resilience verified: classic injection payloads dont corrupt data. Table survives all attempts. Parser handles malformed SQL gracefully."
+      },
+      {
+        "id": "T73",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "BUILD: Neural-net — write a comprehensive integration test that exercises: Dataset → Preprocess → Network → Train with callbacks → Evaluate → Pruning → Re-evaluate. Full ML pipeline.",
+        "project": "neural-net",
+        "started": "2026-04-17T16:48:46.488Z",
+        "completed": "2026-04-17T16:48:46.632Z",
+        "duration_ms": 1000,
+        "summary": "Already completed: integration-pipeline.test.js written and passing. 2 tests covering full ML pipeline."
+      },
+      {
+        "id": "T74",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: HenryDB — test 3-table join with aggregation, subqueries, and window functions combined",
+        "project": "henrydb",
+        "started": "2026-04-17T16:48:55.521Z",
+        "completed": "2026-04-17T16:48:55.666Z",
+        "duration_ms": 1000,
+        "summary": "Already completed: 3-table join with CTEs, window functions, and aggregation all tested and working."
+      },
+      {
+        "id": "T75",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Transactional DDL works",
+        "project": "henrydb",
+        "started": "2026-04-17T16:49:00.838Z",
+        "completed": "2026-04-17T16:49:00.983Z",
+        "duration_ms": 1000,
+        "summary": "Already completed: transactional DDL tested, CREATE TABLE+ROLLBACK cleans up correctly."
+      },
+      {
+        "id": "T76",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Review what integration boundaries remain untested across ALL projects. What is the highest-value next area? Consider SAT solver SMT, monkey-lang GC, or going deeper on existing bugs.",
+        "started": "2026-04-17T16:49:23.763Z",
+        "completed": "2026-04-17T16:49:39.768Z",
+        "duration_ms": 180000,
+        "summary": "Pivot to SAT solver SMT theory combination and monkey-lang GC. Neural-net and HenryDB are well-tested (21 bugs, 77+ modules, 60+ SQL features). Remaining high-value boundaries: SMT theory interaction, GC under stress."
+      },
+      {
+        "id": "T77",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "PLAN: SAT solver SMT depth — test theory combination (QF_LIA + EUF), verify DPLL(T) integration, stress Boolean+theory interaction",
+        "task": null,
+        "project": "sat-solver",
+        "started": "2026-04-17T16:49:47.936Z"
+      },
+      {
+        "id": "T78",
+        "mode": "BUILD",
+        "task": "BUILD: SAT solver — test DPLL(T) theory propagation and backtracking with complex mixed EUF+LIA formulas",
+        "status": "upcoming",
+        "plan_ref": "T77"
+      },
+      {
+        "id": "T79",
+        "mode": "BUILD",
+        "task": "EXPLORE: SAT solver — stress the SMT theory combination, find edge cases in theory interaction",
+        "status": "upcoming",
+        "plan_ref": "T77"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 68,
-    "blocksTotal": 18,
+    "blocksCompleted": 77,
+    "blocksTotal": 79,
     "modeDistribution": {
-      "THINK": 7,
-      "PLAN": 5,
-      "BUILD": 22,
+      "THINK": 8,
+      "PLAN": 6,
+      "BUILD": 24,
       "MAINTAIN": 9,
-      "EXPLORE": 25
+      "EXPLORE": 30
     }
   },
   "artifacts": [
