@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-17T17:38:33.457Z",
+  "generated": "2026-04-17T17:43:45.323Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — test the replication module: does it have leader/follower or raft consensus?",
-    "completedAt": "2026-04-17T17:38:33.457Z",
-    "taskId": "T119",
-    "summary": "HenryDB has Raft consensus (10 tests), physical replication (9 tests), and logical replication (22 tests). All 41 tests pass. Impressive distributed features.",
+    "task": "EXPLORE: HenryDB — test partitioned tables: RANGE, LIST, and HASH partitioning",
+    "completedAt": "2026-04-17T17:43:45.323Z",
+    "taskId": "T122",
+    "summary": "Table partitioning works via programmatic API: RANGE, LIST, and HASH all tested (16 tests pass). Not yet integrated into SQL parser (no PARTITION BY syntax).",
     "durationMs": 60000
   },
   "schedule": {
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 119,
+    "blocksCompleted": 122,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 40,
+      "BUILD": 41,
       "MAINTAIN": 9,
-      "EXPLORE": 54
+      "EXPLORE": 56
     }
   },
   "artifacts": [

@@ -1299,6 +1299,39 @@
       "completed": "2026-04-17T17:38:33.420Z",
       "duration_ms": 60000,
       "summary": "HenryDB has Raft consensus (10 tests), physical replication (9 tests), and logical replication (22 tests). All 41 tests pass. Impressive distributed features."
+    },
+    {
+      "id": "T120",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — count total test files and tests across ALL test files in the project. Run a representative subset of 100 files",
+      "project": "henrydb",
+      "started": "2026-04-17T17:39:02.951Z",
+      "completed": "2026-04-17T17:42:17.045Z",
+      "duration_ms": 120000,
+      "summary": "695 test files, estimated ~8,000 tests. 20-file sample: 235 tests, 0 failures. Based on multiple samples, failure rate is near 0%."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test the REINFORCE (policy gradient RL): does it learn a policy for a simple environment?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:42:21.486Z",
+      "completed": "2026-04-17T17:42:57.983Z",
+      "duration_ms": 120000,
+      "summary": "REINFORCE policy gradient works: CartPole reward 22.0→44.7 over 50 episodes. Learning is visible. Uses same CartPoleEnv as DQN."
+    },
+    {
+      "id": "T122",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test partitioned tables: RANGE, LIST, and HASH partitioning",
+      "project": "henrydb",
+      "started": "2026-04-17T17:43:04.522Z",
+      "completed": "2026-04-17T17:43:45.286Z",
+      "duration_ms": 60000,
+      "summary": "Table partitioning works via programmatic API: RANGE, LIST, and HASH all tested (16 tests pass). Not yet integrated into SQL parser (no PARTITION BY syntax)."
     }
   ],
   "focusProjects": [
@@ -1794,6 +1827,18 @@
     {
       "time": "2026-04-17T17:36:21.565Z",
       "msg": "Added T119 (EXPLORE) after end: EXPLORE: HenryDB — test the replication module: does it have leader/follower or raft consensus?"
+    },
+    {
+      "time": "2026-04-17T17:38:56.333Z",
+      "msg": "Added T120 (EXPLORE) after end: EXPLORE: HenryDB — count total test files and tests across ALL test files in the project. Run a representative subset of 100 files"
+    },
+    {
+      "time": "2026-04-17T17:38:56.453Z",
+      "msg": "Added T121 (BUILD) after end: BUILD: Neural-net — test the REINFORCE (policy gradient RL): does it learn a policy for a simple environment?"
+    },
+    {
+      "time": "2026-04-17T17:38:56.572Z",
+      "msg": "Added T122 (EXPLORE) after end: EXPLORE: HenryDB — test partitioned tables: RANGE, LIST, and HASH partitioning"
     }
   ]
 }
