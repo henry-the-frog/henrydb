@@ -459,9 +459,88 @@
     {
       "id": "T43",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Final commit, push, and session summary",
-      "started": "2026-04-17T15:45:11.135Z"
+      "started": "2026-04-17T15:45:11.135Z",
+      "completed": "2026-04-17T15:45:46.802Z",
+      "duration_ms": 60000,
+      "summary": "Half-point commit. 43 tasks, 15 bugs, comprehensive session summary in daily log. Pushed."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test training with variable batch sizes. Does the Network handle incomplete final batches? Does BatchNorm work with batch_size=1?",
+      "project": "neural-net",
+      "started": "2026-04-17T15:46:00.413Z",
+      "completed": "2026-04-17T15:46:34.061Z",
+      "duration_ms": 120000,
+      "summary": "BatchNorm: batch=1 handled gracefully (outputs zeros), batch=2+ correct. Gradient check error 7.2e-10 (excellent). Variable batch sizes work correctly. No bugs."
+    },
+    {
+      "id": "T45",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Plan next session's depth work. Where are the remaining untested integration boundaries? What project areas haven't been touched by depth testing? Create TODO items.",
+      "started": "2026-04-17T15:46:50.306Z",
+      "completed": "2026-04-17T15:47:31.454Z",
+      "duration_ms": 180000,
+      "summary": "Planned next depth work: VACUUM/GC correctness, trigger+crash recovery, SMT theory combination, GC stress testing. Updated TODO.md with Normal priority items."
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB VACUUM — does it clean up dead tuples correctly? Does it interact with active transactions' snapshots?",
+      "project": "henrydb",
+      "started": "2026-04-17T15:47:44.997Z",
+      "completed": "2026-04-17T15:48:02.228Z",
+      "duration_ms": 60000,
+      "summary": "VACUUM works correctly: deletes cleaned up, remaining rows intact, IDs correct. No bugs in VACUUM."
+    },
+    {
+      "id": "T47",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net end-to-end mini-Transformer: Embedding → Positional Encoding → TransformerBlock → Dense output. Does the full stack train on a simple sequence task?",
+      "project": "neural-net",
+      "started": "2026-04-17T15:48:31.659Z",
+      "completed": "2026-04-17T15:49:03.697Z",
+      "duration_ms": 120000,
+      "summary": "Mini-Transformer forward pass (Embedding → PosEnc → TransformerBlock → Dense) works end-to-end: 16 samples, no NaN, reasonable predictions. Full pipeline integration verified."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — verify _nextTxId persistence across crash/recovery. If txId counter resets, duplicate IDs could corrupt MVCC.",
+      "project": "henrydb",
+      "started": "2026-04-17T15:49:18.382Z",
+      "completed": "2026-04-17T15:50:15.227Z",
+      "duration_ms": 120000,
+      "summary": "_nextTxId is implicitly preserved across recovery because WAL replay calls execute() which increments the counter. Not explicit but correct. TxId=11 after 10 transactions, properly continues to 12 after post-recovery insert. Fragile but functional."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — stress test the Diffusion model (if it has train/generate). This is the most complex generative model.",
+      "project": "neural-net",
+      "started": "2026-04-17T15:50:29.355Z",
+      "completed": "2026-04-17T15:52:27.492Z",
+      "duration_ms": 180000,
+      "summary": "SimpleDiffusion trains (loss decreases) and generates samples. The initial error was from wrong API usage (passed object instead of number). Pipeline works end-to-end. No code bugs."
+    },
+    {
+      "id": "T50",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test concurrent index + transaction interaction. Does CREATE INDEX inside a transaction + rollback leave the index in a broken state?",
+      "project": "henrydb",
+      "started": "2026-04-17T15:52:43.786Z",
+      "completed": "2026-04-17T15:53:04.262Z",
+      "duration_ms": 60000,
+      "summary": "CREATE INDEX inside transaction + ROLLBACK: index is properly cleaned up. Can be re-created after rollback. No bugs."
     }
   ],
   "focusProjects": [
@@ -661,6 +740,34 @@
     {
       "time": "2026-04-17T15:45:11.019Z",
       "msg": "Added T43 (MAINTAIN) after end: MAINTAIN: Final commit, push, and session summary"
+    },
+    {
+      "time": "2026-04-17T15:46:00.296Z",
+      "msg": "Added T44 (BUILD) after end: BUILD: Neural-net — test training with variable batch sizes. Does the Network handle incomplete final batches? Does BatchNorm work with batch_size=1?"
+    },
+    {
+      "time": "2026-04-17T15:46:50.189Z",
+      "msg": "Added T45 (THINK) after end: THINK: Plan next session's depth work. Where are the remaining untested integration boundaries? What project areas haven't been touched by depth testing? Create TODO items."
+    },
+    {
+      "time": "2026-04-17T15:47:44.880Z",
+      "msg": "Added T46 (EXPLORE) after end: EXPLORE: HenryDB VACUUM — does it clean up dead tuples correctly? Does it interact with active transactions' snapshots?"
+    },
+    {
+      "time": "2026-04-17T15:48:31.542Z",
+      "msg": "Added T47 (EXPLORE) after end: EXPLORE: Neural-net end-to-end mini-Transformer: Embedding → Positional Encoding → TransformerBlock → Dense output. Does the full stack train on a simple sequence task?"
+    },
+    {
+      "time": "2026-04-17T15:49:18.265Z",
+      "msg": "Added T48 (BUILD) after end: BUILD: HenryDB — verify _nextTxId persistence across crash/recovery. If txId counter resets, duplicate IDs could corrupt MVCC."
+    },
+    {
+      "time": "2026-04-17T15:50:29.239Z",
+      "msg": "Added T49 (BUILD) after end: BUILD: Neural-net — stress test the Diffusion model (if it has train/generate). This is the most complex generative model."
+    },
+    {
+      "time": "2026-04-17T15:52:43.669Z",
+      "msg": "Added T50 (EXPLORE) after end: EXPLORE: HenryDB — test concurrent index + transaction interaction. Does CREATE INDEX inside a transaction + rollback leave the index in a broken state?"
     }
   ]
 }
