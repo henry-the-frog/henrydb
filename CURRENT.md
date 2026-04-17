@@ -1,18 +1,19 @@
 # CURRENT.md — Session State
 
-## Status: between-tasks
-## Session: C (8:15 PM – 10:15 PM MDT, April 16, 2026)
-## Focus: Fix broken monkey-lang sub-project test suites
+## Status: session-ended
+## Session: C (8:15 PM – 10:00 PM MDT, April 16, 2026)
+## Focus: Fix broken test suites across monkey-lang and neural-net
 
-### Progress
-- T292 THINK: Assessed 30 broken sub-projects (not 112 as TODO said)
-- T293 PLAN: Categorized failures into 6 types
-- T296 BUILD: Fixed 25 of 30 broken test suites
+### Completed Tasks
+- T292 THINK: Assessed 30 broken monkey-lang sub-projects
+- T293 PLAN: Categorized failures
+- T296 BUILD: Fixed 25 of 30 sub-project test suites
+- T295 MAINTAIN: Housekeeping, TODO update, git push
+- T297 EXPLORE: Fixed all 5 monkey-lang core failures (1771/1771)
+- T298 EXPLORE: Created 4 neural-net modules, fixed 3/5 stress suites
+- T299 BUILD: Fixed remaining 2 neural-net stress suites (1279/1279)
 
-### Sub-projects Fixed (25):
-astar, automaton, bloom-clock, calc, chess-engine, constraint-solver, datalog, diff, escape, event-emitter, graph-db, interval-tree, lru-cache, option, proof-assistant, pubsub, range, rate-limiter, ray-marcher, regex-builder, repl, router, scheduler, template-engine, trie, type-checker, type-infer, union-find
-
-### Remaining (5 failures in monkey-lang core):
-- Dunder protocols (__getitem__ etc.)
-- OOP super with multiple levels
-- WASM performance tests
+### State
+- monkey-lang: ALL 1771 tests passing ✅
+- neural-net: ALL 1279 tests passing ✅
+- TODO.md: cleared urgent items
