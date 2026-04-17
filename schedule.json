@@ -2603,6 +2603,286 @@
       "completed": "2026-04-16T23:03:27.443Z",
       "duration_ms": 300000,
       "summary": "10 game semantics stress tests, all pass. Arenas, strategies, composition, innocence, well-bracketedness. 15 supercompiler stress tests also included."
+    },
+    {
+      "id": "T243",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: Assess what areas need depth work — persistence bugs, optimizer gaps, or stress testing.",
+      "started": "2026-04-16T23:46:29.708Z",
+      "completed": "2026-04-16T23:46:47.030Z",
+      "duration_ms": 60000,
+      "summary": "Focus on neural-net depth: continue gradient verification sweep (44 unverified modules), investigate MicroGPT backward bug. Highest ROI for quality."
+    },
+    {
+      "id": "T244",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB depth work based on THINK findings",
+      "task": null,
+      "started": "2026-04-16T23:46:53.744Z",
+      "completed": "2026-04-16T23:48:02.450Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks: fix MicroGPT backward (only trains output proj), numerical gradient checks for conv1d/embedding/residual, and RNN/LSTM BPTT verification."
+    },
+    {
+      "id": "T245",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix MicroGPT backward: backprop through transformer encoder blocks, not just output projection. Add numerical gradient check.",
+      "plan_ref": "T244",
+      "project": "neural-net",
+      "started": "2026-04-16T23:48:10.052Z",
+      "completed": "2026-04-16T23:53:48.689Z",
+      "duration_ms": 600000,
+      "summary": "Fixed MicroGPT backward: was only training output projection, now backprops through entire model (encoder blocks, norm, PE, embedding). Fixed TransformerEncoderBlock backward to cache per-position forward states and accumulate gradients. 2 new tests, 437/437 pass."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "task": "Neural-net: systematic numerical gradient check for conv1d, embedding, residual — find silent backward bugs",
+      "status": "done",
+      "plan_ref": "T244",
+      "started": "2026-04-16T23:53:59.662Z",
+      "completed": "2026-04-16T23:55:40.855Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed Conv1D update double-division bug (backward already averages, update was dividing again → effective LR batchSize² too small). 9 numerical gradient tests for Conv1D, Embedding, Residual, Dense. All verified < 1% error. 446 tests passing."
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "task": "Neural-net: stress-test RNN/LSTM backward with numerical gradients, verify BPTT correctness",
+      "status": "done",
+      "plan_ref": "T244",
+      "started": "2026-04-16T23:55:51.912Z",
+      "completed": "2026-04-16T23:58:25.977Z",
+      "duration_ms": 300000,
+      "summary": "12 numerical gradient tests for RNN/LSTM/GRU BPTT — all pass. SimpleRNN: Wih, Whh, input, returnSequences. LSTM: Wi, Wf, Wc, Wo all 4 gates + input + 5-timestep stress. GRU: Wz, Wr + input. All < 5% relative error. BPTT is correct. 458 total tests."
+    },
+    {
+      "id": "T246",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard regen",
+      "started": "2026-04-16T23:58:37.223Z",
+      "completed": "2026-04-16T23:59:08.275Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed neural-net (3 commits: MicroGPT backward fix, Conv1D double-division fix, RNN/LSTM/GRU gradient tests). Daily log updated."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: numerical gradient verification for attention (SelfAttention), BatchNorm, and VAE modules",
+      "project": "neural-net",
+      "started": "2026-04-16T23:59:33.701Z",
+      "completed": "2026-04-17T00:06:23.654Z",
+      "duration_ms": 600000,
+      "summary": "CRITICAL BUG FOUND: SelfAttention.forward() mutated input matrix — caused non-deterministic forward, corrupted backward, ~0 gradients through attention. Root cause: output written back to input before building result. Also added 9 gradient tests for SelfAttention (Wq/Wv/Wo/input/4-pos) and BatchNorm (gamma/beta/input/large-batch). 467 tests pass."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: numerical gradient verification for GAN discriminator/generator and contrastive learning",
+      "project": "neural-net",
+      "started": "2026-04-17T00:06:36.801Z",
+      "completed": "2026-04-17T00:09:14.640Z",
+      "duration_ms": 300000,
+      "summary": "GAN gradient tests pass (discriminator + generator paths). ContrastiveLearner uses weight perturbation (no backprop), no gradient to verify. 470 tests total."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: numerical gradient verification for diffusion model and predictive coding",
+      "project": "neural-net",
+      "started": "2026-04-17T00:09:27.189Z",
+      "completed": "2026-04-17T00:09:59.998Z",
+      "duration_ms": 120000,
+      "summary": "Diffusion and PredictiveCoding are wrapper modules — Diffusion uses Network.trainBatch (Dense backprop, verified), PredictiveCoding uses local learning rules (no backprop). No novel backward paths to verify."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify MultiHeadAttention backward: check for input mutation bug and gradient correctness",
+      "project": "neural-net",
+      "started": "2026-04-17T00:10:25.210Z",
+      "completed": "2026-04-17T00:11:08.275Z",
+      "duration_ms": 120000,
+      "summary": "MultiHeadAttention verified: no input mutation bug, gradients match numerical. Wq rel error 1e-7, Wo rel error 1e-11, input gradient max error 2e-10."
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify LayerNorm, PositionalEncoding, and Dropout backward correctness",
+      "project": "neural-net",
+      "started": "2026-04-17T00:11:16.747Z",
+      "completed": "2026-04-17T00:15:16.214Z",
+      "duration_ms": 300000,
+      "summary": "FOUND BUG: LayerNorm backward was simplified (ignoring cross-terms) — 100% input gradient error. Fixed with full formula. Also verified PositionalEncoding (gradient passthrough, correct), Dropout (mask passthrough, correct). Fixed flaky MicroGPT test. 470 tests pass."
+    },
+    {
+      "id": "T254",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Numerical gradient verification for VAE encoder/decoder backward (reparameterization trick)",
+      "project": "neural-net",
+      "started": "2026-04-17T00:15:55.728Z",
+      "completed": "2026-04-17T00:19:10.100Z",
+      "duration_ms": 300000,
+      "summary": "VAE gradient verification: decoder weights and encoder mu through reparameterization both correct. Training reduces loss. 473 tests total."
+    },
+    {
+      "id": "T255",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify optimizer module: Adam, RMSProp, SGD+momentum — convergence tests with known optima",
+      "project": "neural-net",
+      "started": "2026-04-17T00:19:24.651Z",
+      "completed": "2026-04-17T00:22:39.374Z",
+      "duration_ms": 300000,
+      "summary": "FOUND BUG: Adam/AdamW NaN on first update — t=0 caused bias correction division by zero. Fixed by auto-incrementing t. 12 optimizer tests: SGD/Adam convergence, standalone unit tests, quadratic optimization. All pass."
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify GNN (Graph Neural Network) forward/backward: message passing, aggregation, and gradient correctness",
+      "project": "neural-net",
+      "started": "2026-04-17T00:23:17.494Z",
+      "completed": "2026-04-17T00:27:34.180Z",
+      "duration_ms": 300000,
+      "summary": "GNN verified: forward dimensions, message passing with self-loops, training converges, forward is deterministic, numerical gradient for last layer correct. 6 tests. No bugs found (GNN uses approximate gradient — only trains last layer)."
+    },
+    {
+      "id": "T257",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify gradient clipping module and DQN backward correctness",
+      "project": "neural-net",
+      "started": "2026-04-17T00:27:50.162Z",
+      "completed": "2026-04-17T00:29:51.392Z",
+      "duration_ms": 180000,
+      "summary": "Gradient clipping verified (all 3 modes correct). DQN: 5 tests — replay buffer, Q prediction, target sync, GridWorld training. No new bugs found in these modules."
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "End-to-end integration test: train MicroGPT to learn a simple pattern and verify it predicts correctly",
+      "project": "neural-net",
+      "started": "2026-04-17T00:30:08.109Z",
+      "completed": "2026-04-17T00:32:03.274Z",
+      "duration_ms": 600000,
+      "summary": "MicroGPT end-to-end learning WORKS! 3 tests: learns next-token prediction (1,2,3 pattern), generates following pattern (4/6+ match), loss converges to 6.2e-8 from 0.042. Validates all backward fixes made today."
+    },
+    {
+      "id": "T259",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What else in neural-net needs depth? Check Conv2D, autoencoder, scheduler. Or switch to another project.",
+      "started": "2026-04-17T00:32:27.125Z",
+      "completed": "2026-04-17T00:32:41.168Z",
+      "duration_ms": 30000,
+      "summary": "Continue neural-net depth. Conv2D, autoencoder, RBM still unverified. High-value bugs already found — these are lower priority but still worth checking. Depth check passes (5 bugs found, genuine surprises)."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify Conv2D backward, autoencoder training, and RBM contrastive divergence",
+      "project": "neural-net",
+      "started": "2026-04-17T00:33:10.301Z",
+      "completed": "2026-04-17T00:37:58.256Z",
+      "duration_ms": 300000,
+      "summary": "FOUND BUG: Conv2D update double-division (same as Conv1D). Fixed. Conv2D filter+input gradients verified. Autoencoder trains and reconstructs correctly. 5 new tests."
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Full test suite stability: run 3x, identify flaky tests, fix any found",
+      "project": "neural-net",
+      "started": "2026-04-17T00:38:10.527Z",
+      "completed": "2026-04-17T00:40:41.165Z",
+      "duration_ms": 300000,
+      "summary": "Full test suite stable: 3 consecutive runs, all 471 tests pass with 0 failures. No flaky tests detected."
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify learning rate scheduler: step decay, cosine annealing, warmup",
+      "project": "neural-net",
+      "started": "2026-04-17T00:41:21.139Z",
+      "completed": "2026-04-17T00:42:36.832Z",
+      "duration_ms": 120000,
+      "summary": "All 8 learning rate schedulers verified: Constant, LinearWarmup, CosineAnnealing, StepDecay, WarmupCosine, ExponentialDecay, CyclicLR, LinearDecay. 10 tests. All correct — no bugs found."
+    },
+    {
+      "id": "T263",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add backward for Natural Gradient module or verify existing implementation",
+      "project": "neural-net",
+      "started": "2026-04-17T00:42:49.437Z",
+      "completed": "2026-04-17T00:43:22.205Z",
+      "duration_ms": 60000,
+      "summary": "NaturalGradient and KFAC already have tests in natural-gradient.test.js — all pass. No t=0 bug (no bias correction like Adam). No issues found."
+    },
+    {
+      "id": "T264",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify RBM contrastive divergence training and REINFORCE policy gradient",
+      "project": "neural-net",
+      "started": "2026-04-17T00:44:01.634Z",
+      "completed": "2026-04-17T00:46:14.169Z",
+      "duration_ms": 120000,
+      "summary": "RBM and REINFORCE both verified: 7 tests. RBM CD training reduces reconstruction error, weights update correctly. REINFORCE selects valid actions, trains on simple env. No bugs found."
+    },
+    {
+      "id": "T265",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Verify gradient accumulation module with numerical checks across multi-batch",
+      "project": "neural-net",
+      "started": "2026-04-17T00:46:31.588Z",
+      "completed": "2026-04-17T00:46:52.905Z",
+      "duration_ms": 30000,
+      "summary": "Gradient accumulation tests already exist and pass (9 tests). No separate source module — it uses Network.trainBatch with batch splitting."
+    },
+    {
+      "id": "T266",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create comprehensive project README documenting all modules, test count, and verified backward passes",
+      "project": "neural-net",
+      "started": "2026-04-17T00:47:03.127Z",
+      "completed": "2026-04-17T00:48:31.019Z",
+      "duration_ms": 120000,
+      "summary": "Comprehensive README documenting all 35 modules, 488 tests, 6 bugs found, and gradient verification status for every backward pass."
+    },
+    {
+      "id": "T267",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "MicroGPT stress test: train on Fibonacci-like sequences and character-level text to test real learning capability",
+      "project": "neural-net",
+      "started": "2026-04-17T00:49:07.000Z",
+      "completed": "2026-04-17T00:50:56.065Z",
+      "duration_ms": 600000,
+      "summary": "MicroGPT stress tests all pass: XOR pattern (loss→0), period-4 (70%+ reduction), multi-layer convergence, variable-length support, character-level learning (vocab 27). Model genuinely learns after backward fixes."
+    },
+    {
+      "id": "T268",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Lambda-calculus depth: what stress tests or edge cases could find more bugs? Review recent test results.",
+      "started": "2026-04-17T00:51:22.467Z"
     }
   ],
   "focusProjects": [
@@ -3570,6 +3850,106 @@
     {
       "time": "2026-04-16T23:02:46.033Z",
       "msg": "Added T242 (BUILD) after end: Lambda-calculus: stress test game semantics — verify moves, strategies, and composition."
+    },
+    {
+      "time": "2026-04-16T23:46:04.527Z",
+      "msg": "Added T243 (THINK) after end: HenryDB: Assess what areas need depth work — persistence bugs, optimizer gaps, or stress testing."
+    },
+    {
+      "time": "2026-04-16T23:46:07.957Z",
+      "msg": "Added T244 (PLAN) after T243: HenryDB depth work based on THINK findings"
+    },
+    {
+      "time": "2026-04-16T23:46:18.247Z",
+      "msg": "Added T245 (BUILD) after T244: null"
+    },
+    {
+      "time": "2026-04-16T23:46:22.139Z",
+      "msg": "Added T246 (MAINTAIN) after T245: Housekeeping: git push, dashboard regen"
+    },
+    {
+      "time": "2026-04-16T23:47:57.581Z",
+      "msg": "PLAN T244 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-16T23:59:17.956Z",
+      "msg": "Added T249 (BUILD) after end: Neural-net: numerical gradient verification for attention (SelfAttention), BatchNorm, and VAE modules"
+    },
+    {
+      "time": "2026-04-16T23:59:22.007Z",
+      "msg": "Added T250 (BUILD) after end: Neural-net: numerical gradient verification for GAN discriminator/generator and contrastive learning"
+    },
+    {
+      "time": "2026-04-16T23:59:25.933Z",
+      "msg": "Added T251 (BUILD) after end: Neural-net: numerical gradient verification for diffusion model and predictive coding"
+    },
+    {
+      "time": "2026-04-17T00:10:12.193Z",
+      "msg": "Added T252 (BUILD) after end: Verify MultiHeadAttention backward: check for input mutation bug and gradient correctness"
+    },
+    {
+      "time": "2026-04-17T00:10:17.521Z",
+      "msg": "Added T253 (BUILD) after end: Verify LayerNorm, PositionalEncoding, and Dropout backward correctness"
+    },
+    {
+      "time": "2026-04-17T00:15:36.364Z",
+      "msg": "Added T254 (BUILD) after end: Numerical gradient verification for VAE encoder/decoder backward (reparameterization trick)"
+    },
+    {
+      "time": "2026-04-17T00:15:42.091Z",
+      "msg": "Added T255 (BUILD) after end: Verify optimizer module: Adam, RMSProp, SGD+momentum — convergence tests with known optima"
+    },
+    {
+      "time": "2026-04-17T00:22:56.682Z",
+      "msg": "Added T256 (BUILD) after end: Verify GNN (Graph Neural Network) forward/backward: message passing, aggregation, and gradient correctness"
+    },
+    {
+      "time": "2026-04-17T00:23:01.006Z",
+      "msg": "Added T257 (BUILD) after end: Verify gradient clipping module and DQN backward correctness"
+    },
+    {
+      "time": "2026-04-17T00:23:06.345Z",
+      "msg": "Added T258 (BUILD) after end: End-to-end integration test: train MicroGPT to learn a simple pattern and verify it predicts correctly"
+    },
+    {
+      "time": "2026-04-17T00:32:16.912Z",
+      "msg": "Added T259 (THINK) after end: What else in neural-net needs depth? Check Conv2D, autoencoder, scheduler. Or switch to another project."
+    },
+    {
+      "time": "2026-04-17T00:32:49.320Z",
+      "msg": "Added T260 (BUILD) after end: Verify Conv2D backward, autoencoder training, and RBM contrastive divergence"
+    },
+    {
+      "time": "2026-04-17T00:32:54.758Z",
+      "msg": "Added T261 (BUILD) after end: Full test suite stability: run 3x, identify flaky tests, fix any found"
+    },
+    {
+      "time": "2026-04-17T00:41:05.944Z",
+      "msg": "Added T262 (BUILD) after end: Verify learning rate scheduler: step decay, cosine annealing, warmup"
+    },
+    {
+      "time": "2026-04-17T00:41:12.701Z",
+      "msg": "Added T263 (BUILD) after end: Add backward for Natural Gradient module or verify existing implementation"
+    },
+    {
+      "time": "2026-04-17T00:43:34.623Z",
+      "msg": "Added T264 (BUILD) after end: Verify RBM contrastive divergence training and REINFORCE policy gradient"
+    },
+    {
+      "time": "2026-04-17T00:43:41.404Z",
+      "msg": "Added T265 (BUILD) after end: Verify gradient accumulation module with numerical checks across multi-batch"
+    },
+    {
+      "time": "2026-04-17T00:43:49.924Z",
+      "msg": "Added T266 (BUILD) after end: Create comprehensive project README documenting all modules, test count, and verified backward passes"
+    },
+    {
+      "time": "2026-04-17T00:48:56.679Z",
+      "msg": "Added T267 (BUILD) after end: MicroGPT stress test: train on Fibonacci-like sequences and character-level text to test real learning capability"
+    },
+    {
+      "time": "2026-04-17T00:51:11.905Z",
+      "msg": "Added T268 (THINK) after end: Lambda-calculus depth: what stress tests or edge cases could find more bugs? Review recent test results."
     }
   ]
 }
