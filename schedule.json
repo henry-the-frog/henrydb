@@ -1083,16 +1083,24 @@
     {
       "id": "T100",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "BUILD: Neural-net — test GAN training stability: track generator/discriminator loss balance over 100 epochs",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-17T17:15:19.328Z",
+      "completed": "2026-04-17T17:16:42.388Z",
+      "duration_ms": 120000,
+      "summary": "GAN training stable: D loss 0.107→0.103, G loss 0.115→0.125 over 50 epochs. No divergence or mode collapse. Generation produces finite 2D data."
     },
     {
       "id": "T101",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: HenryDB — test the JSON/JSONB support: can we store, query, and index JSON data?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-17T17:16:46.921Z",
+      "completed": "2026-04-17T17:17:06.062Z",
+      "duration_ms": 60000,
+      "summary": "JSON support works: storage, ->> text extraction, -> value extraction, WHERE filtering. Nested path extraction (json_extract_path) not fully implemented."
     }
   ],
   "focusProjects": [

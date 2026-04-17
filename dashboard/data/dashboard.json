@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-17T17:15:07.902Z",
+  "generated": "2026-04-17T17:17:06.098Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — run the full HenryDB test suite and count total tests. How many passing?",
-    "completedAt": "2026-04-17T17:15:07.902Z",
-    "taskId": "T99",
-    "summary": "HenryDB has 694 test files with ~7,803 test functions. First 50 files: 531 tests, 0 failures. Massive test coverage.",
-    "durationMs": 120000
+    "task": "EXPLORE: HenryDB — test the JSON/JSONB support: can we store, query, and index JSON data?",
+    "completedAt": "2026-04-17T17:17:06.098Z",
+    "taskId": "T101",
+    "summary": "JSON support works: storage, ->> text extraction, -> value extraction, WHERE filtering. Nested path extraction (json_extract_path) not fully implemented.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 99,
+    "blocksCompleted": 101,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 33,
+      "BUILD": 34,
       "MAINTAIN": 9,
-      "EXPLORE": 41
+      "EXPLORE": 42
     }
   },
   "artifacts": [
