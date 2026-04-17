@@ -2890,17 +2890,21 @@
     {
       "id": "T269",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Lambda-calculus: write proper stress tests for demand-analysis module using correct exports",
       "project": "lambda-calculus",
-      "started": "2026-04-17T00:54:07.823Z"
+      "started": "2026-04-17T00:54:07.823Z",
+      "completed": "2026-04-17T00:56:16.377Z",
+      "duration_ms": 240000,
+      "summary": "FOUND BUG: demand analysis call arity wrong for multi-arg applications (f x y gave C(1) instead of C(2)). Fixed by walking application spine. 21 new stress tests, 815 total pass."
     },
     {
       "id": "T270",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Lambda-calculus: write proper stress tests for game-semantics and supercompiler",
-      "project": "lambda-calculus"
+      "project": "lambda-calculus",
+      "started": "2026-04-17T00:56:34.243Z"
     }
   ],
   "focusProjects": [
