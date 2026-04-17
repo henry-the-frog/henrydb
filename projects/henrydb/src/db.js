@@ -284,8 +284,23 @@ export class Database {
     const tables = new Set();
     if (ast.from) {
       for (const f of Array.isArray(ast.from) ? ast.from : [ast.from]) {
-        if (f.table) tables.add(f.table);
-        else if (typeof f === 'string') tables.add(f);
+        if (f.table) {
+          tables.add(f.table);
+          // If this is a view, also track the base tables it references
+          const viewDef = this.views.get(f.table);
+          if (viewDef && viewDef.query) {
+            const baseTables = this._extractTables(viewDef.query);
+            for (const bt of baseTables) tables.add(bt);
+          }
+        }
+        else if (typeof f === 'string') {
+          tables.add(f);
+          const viewDef = this.views.get(f);
+          if (viewDef && viewDef.query) {
+            const baseTables = this._extractTables(viewDef.query);
+            for (const bt of baseTables) tables.add(bt);
+          }
+        }
       }
     }
     if (ast.table) tables.add(ast.table);

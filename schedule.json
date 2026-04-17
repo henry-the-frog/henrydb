@@ -661,6 +661,14 @@
       "completed": "2026-04-17T16:08:31.426Z",
       "duration_ms": 300000,
       "summary": "Bugs #17-18: UPDATE and DELETE triggers never fired — _update() and _delete() had no _fireTriggers() calls. Also fixed all trigger NEW/OLD references. Now all three trigger types work with proper column access."
+    },
+    {
+      "id": "T62",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: HenryDB views — do materialized views, updateable views, and view-through-view queries work?",
+      "project": "henrydb",
+      "started": "2026-04-17T16:08:58.127Z"
     }
   ],
   "focusProjects": [
@@ -932,6 +940,10 @@
     {
       "time": "2026-04-17T16:06:23.390Z",
       "msg": "Added T61 (BUILD) after end: BUILD: Test UPDATE/DELETE trigger NEW/OLD references and fix if needed"
+    },
+    {
+      "time": "2026-04-17T16:08:58.010Z",
+      "msg": "Added T62 (EXPLORE) after end: EXPLORE: HenryDB views — do materialized views, updateable views, and view-through-view queries work?"
     }
   ]
 }
