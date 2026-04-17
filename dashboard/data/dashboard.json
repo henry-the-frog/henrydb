@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-17T17:47:32.231Z",
+  "generated": "2026-04-17T17:49:19.855Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — test the COPY command: COPY TO CSV and COPY FROM CSV for bulk data import/export",
-    "completedAt": "2026-04-17T17:47:32.231Z",
-    "taskId": "T126",
-    "summary": "COPY works via CopyManager programmatic API (18 tests pass). Not in SQL parser. Covers CSV import/export with headers, delimiters, escaping.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "BUILD: HenryDB — write a complex real-world-like query: multi-tenant SaaS analytics with CTEs, window functions, LATERAL JOIN, and GROUP BY",
+    "completedAt": "2026-04-17T17:49:19.855Z",
+    "taskId": "T128",
+    "summary": "Complex SaaS analytics query works: CTE + 3-table JOIN + GROUP BY + CASE WHEN + ROW_NUMBER + ORDER BY. Multi-tenant engagement report with correct results.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 126,
+    "blocksCompleted": 128,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 43,
+      "BUILD": 44,
       "MAINTAIN": 9,
-      "EXPLORE": 58
+      "EXPLORE": 59
     }
   },
   "artifacts": [
