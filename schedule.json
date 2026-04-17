@@ -339,10 +339,13 @@
     {
       "id": "T32",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "BUILD: Write comprehensive MVCC isolation tests — dirty read, repeatable read, phantom read, write-write conflict, write skew, read committed vs repeatable read.",
       "project": "henrydb",
-      "started": "2026-04-17T15:27:35.893Z"
+      "started": "2026-04-17T15:27:35.893Z",
+      "completed": "2026-04-17T15:28:26.855Z",
+      "duration_ms": 300000,
+      "summary": "12 MVCC isolation tests: dirty read, repeatable read, write-write conflict, lost update prevention, read committed, multiple versions, rollback. All pass. Solid regression coverage for the snapshot isolation fix."
     }
   ],
   "focusProjects": [
