@@ -1211,6 +1211,39 @@
       "completed": "2026-04-17T17:30:56.101Z",
       "duration_ms": 60000,
       "summary": "Query cache works: 50x speedup on repeated queries (9.3ms → 0.19ms for 100 executions). Prepared statement API also available."
+    },
+    {
+      "id": "T112",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — test the reservoir computing module: does the echo state network solve a simple time series prediction?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:31:40.708Z",
+      "completed": "2026-04-17T17:32:33.456Z",
+      "duration_ms": 120000,
+      "summary": "ESN train() works but predict() returns empty Matrix data. Potential bug in output readout. LiquidStateMachine also available."
+    },
+    {
+      "id": "T113",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test LATERAL JOIN: does it support correlated subqueries in the FROM clause?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:32:39.544Z",
+      "completed": "2026-04-17T17:32:59.069Z",
+      "duration_ms": 60000,
+      "summary": "LATERAL JOIN and correlated subqueries both work correctly. Product avg scores computed via both methods match perfectly."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test differential privacy: does adding DP noise preserve model utility while bounding sensitivity?",
+      "project": "neural-net",
+      "started": "2026-04-17T17:33:06.052Z",
+      "completed": "2026-04-17T17:33:23.726Z",
+      "duration_ms": 10000,
+      "summary": "No differential privacy module exists."
     }
   ],
   "focusProjects": [
@@ -1674,6 +1707,18 @@
     {
       "time": "2026-04-17T17:28:33.839Z",
       "msg": "Added T111 (EXPLORE) after end: EXPLORE: HenryDB — test the query cache: does it cache identical queries and return faster on second execution?"
+    },
+    {
+      "time": "2026-04-17T17:31:34.306Z",
+      "msg": "Added T112 (EXPLORE) after end: EXPLORE: Neural-net — test the reservoir computing module: does the echo state network solve a simple time series prediction?"
+    },
+    {
+      "time": "2026-04-17T17:31:34.425Z",
+      "msg": "Added T113 (EXPLORE) after end: EXPLORE: HenryDB — test LATERAL JOIN: does it support correlated subqueries in the FROM clause?"
+    },
+    {
+      "time": "2026-04-17T17:31:34.546Z",
+      "msg": "Added T114 (BUILD) after end: BUILD: Neural-net — test differential privacy: does adding DP noise preserve model utility while bounding sensitivity?"
     }
   ]
 }
