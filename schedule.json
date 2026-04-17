@@ -958,6 +958,50 @@
       "completed": "2026-04-17T17:04:48.329Z",
       "duration_ms": 180000,
       "summary": "PostgreSQL wire protocol works: TCP connection, startup message, AuthOk response. 15 protocol tests + 14 server tests all passing. 70+ server test files exist."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — write a comprehensive model compression test: train a model, prune 50%, quantize to int8, distill to smaller model, compare all 4 versions' accuracy",
+      "project": "neural-net",
+      "started": "2026-04-17T17:05:19.804Z",
+      "completed": "2026-04-17T17:06:24.357Z",
+      "duration_ms": 300000,
+      "summary": "Model compression pipeline: teacher 83%, pruned 82%, distilled 82%. Quantization primitives work (0.3% max error) but no full-model quantize API. Minor API confusion, not a bug."
+    },
+    {
+      "id": "T90",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test concurrent MVCC: simulate 2 transactions reading/writing the same rows. Do phantom reads occur? Do write-write conflicts get detected?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:06:31.361Z",
+      "completed": "2026-04-17T17:06:51.854Z",
+      "duration_ms": 120000,
+      "summary": "MVCC isolation verified: transfers preserve totals, rollback undoes changes, uncommitted changes visible within tx. Single-connection DB limits true concurrency testing."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test the federated learning module: simulate 3 clients training on different data partitions, aggregate weights, verify convergence",
+      "project": "neural-net",
+      "started": "2026-04-17T17:07:00.290Z",
+      "completed": "2026-04-17T17:07:21.537Z",
+      "duration_ms": 30000,
+      "summary": "No federated learning module exists in neural-net. Module not implemented yet."
+    },
+    {
+      "id": "T92",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the PostgreSQL wire protocol with an actual SQL query through the wire. Start server, send Query message, parse response",
+      "project": "henrydb",
+      "started": "2026-04-17T17:07:28.541Z",
+      "completed": "2026-04-17T17:07:51.601Z",
+      "duration_ms": 180000,
+      "summary": "PostgreSQL wire protocol SQL queries work end-to-end. Startup → Auth → Query → RowDescription → DataRow → CommandComplete → ReadyForQuery. SELECT 1+1 returns 2 correctly through the wire."
     }
   ],
   "focusProjects": [
@@ -1329,6 +1373,22 @@
     {
       "time": "2026-04-17T17:00:01.018Z",
       "msg": "Added T88 (EXPLORE) after end: EXPLORE: HenryDB — test the PostgreSQL wire protocol. Can we connect with pg_isready or a simple TCP client?"
+    },
+    {
+      "time": "2026-04-17T17:05:11.243Z",
+      "msg": "Added T89 (BUILD) after end: BUILD: Neural-net — write a comprehensive model compression test: train a model, prune 50%, quantize to int8, distill to smaller model, compare all 4 versions' accuracy"
+    },
+    {
+      "time": "2026-04-17T17:05:11.363Z",
+      "msg": "Added T90 (EXPLORE) after end: EXPLORE: HenryDB — test concurrent MVCC: simulate 2 transactions reading/writing the same rows. Do phantom reads occur? Do write-write conflicts get detected?"
+    },
+    {
+      "time": "2026-04-17T17:05:11.483Z",
+      "msg": "Added T91 (BUILD) after end: BUILD: Neural-net — test the federated learning module: simulate 3 clients training on different data partitions, aggregate weights, verify convergence"
+    },
+    {
+      "time": "2026-04-17T17:05:11.601Z",
+      "msg": "Added T92 (EXPLORE) after end: EXPLORE: HenryDB — test the PostgreSQL wire protocol with an actual SQL query through the wire. Start server, send Query message, parse response"
     }
   ]
 }

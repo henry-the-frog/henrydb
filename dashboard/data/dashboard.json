@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-17T17:04:48.366Z",
+  "generated": "2026-04-17T17:07:51.638Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — test the PostgreSQL wire protocol. Can we connect with pg_isready or a simple TCP client?",
-    "completedAt": "2026-04-17T17:04:48.366Z",
-    "taskId": "T88",
-    "summary": "PostgreSQL wire protocol works: TCP connection, startup message, AuthOk response. 15 protocol tests + 14 server tests all passing. 70+ server test files exist.",
+    "task": "EXPLORE: HenryDB — test the PostgreSQL wire protocol with an actual SQL query through the wire. Start server, send Query message, parse response",
+    "completedAt": "2026-04-17T17:07:51.638Z",
+    "taskId": "T92",
+    "summary": "PostgreSQL wire protocol SQL queries work end-to-end. Startup → Auth → Query → RowDescription → DataRow → CommandComplete → ReadyForQuery. SELECT 1+1 returns 2 correctly through the wire.",
     "durationMs": 180000
   },
   "schedule": {
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 88,
+    "blocksCompleted": 92,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 29,
+      "BUILD": 31,
       "MAINTAIN": 9,
-      "EXPLORE": 34
+      "EXPLORE": 36
     }
   },
   "artifacts": [
