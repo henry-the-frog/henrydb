@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-17T17:46:15.436Z",
+  "generated": "2026-04-17T17:47:32.231Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB — test the full-text search: can we create a GIN index, do full-text queries with ts_query and ts_rank?",
-    "completedAt": "2026-04-17T17:46:15.436Z",
-    "taskId": "T124",
-    "summary": "Full-text search works: CREATE FULLTEXT INDEX + MATCH AGAINST syntax. Correctly finds SQL articles (2 results) and neural articles (1 result). 12 SQL fulltext tests pass.",
+    "task": "EXPLORE: HenryDB — test the COPY command: COPY TO CSV and COPY FROM CSV for bulk data import/export",
+    "completedAt": "2026-04-17T17:47:32.231Z",
+    "taskId": "T126",
+    "summary": "COPY works via CopyManager programmatic API (18 tests pass). Not in SQL parser. Covers CSV import/export with headers, delimiters, escaping.",
     "durationMs": 60000
   },
   "schedule": {
@@ -5087,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 124,
+    "blocksCompleted": 126,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 42,
+      "BUILD": 43,
       "MAINTAIN": 9,
-      "EXPLORE": 57
+      "EXPLORE": 58
     }
   },
   "artifacts": [
