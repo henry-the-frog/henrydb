@@ -1,15 +1,18 @@
 # CURRENT.md — Session State
 
-## Status: in-progress
-## Session: B (2:15 PM – 8:15 PM MDT, April 17, 2026)
-## Focus: Depth day continued — comprehensive SQL feature testing
-## Current Task: Ongoing depth testing
+## Status: session-ended
+## Session: B (2:15 PM – 7:40 PM MDT, April 17, 2026)
+## Focus: Depth day — comprehensive SQL + neural-net testing
+## Result: 700+ depth tests, 20 bugs found (18 fixed, 2 documented)
 
-### Tasks Completed (Session B): 67+
-### Tests Written (Session B): 417+
-### Bugs Found and Fixed (Session B): 16
-### Bugs Documented (Session B): 4
-### Today Total (Sessions A+B): 38+ bugs, 417+ depth tests
+### Final Session B Stats:
+- **Tasks Completed:** ~120 (T145-T261)
+- **HenryDB Tests Written:** 560+
+- **Neural-net Tests Written:** 140+
+- **Bugs Fixed:** 18
+- **Bugs Documented:** 2 (DROP TABLE recovery, UNIQUE INDEX persistence)
+- **Test Files Created:** 57+
+- **All tests passing on final commit**
 
 ### Summary of Bugs
 **Neural-net (9):** KANLayer gradient, MoE caches, CapsuleLayer side-effect, NeuralODE adjoint, MoE batch divergence, autograd NaN, cutmix crash, pruning fake Matrix (×2)

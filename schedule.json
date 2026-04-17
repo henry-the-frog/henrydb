@@ -2687,6 +2687,149 @@
       "completed": "2026-04-17T23:12:44.015Z",
       "duration_ms": 420000,
       "summary": "6 UPSERT tests: BUG #20 FOUND AND FIXED — DO UPDATE SET silently failing due to case-sensitive column lookup. Parser uses uppercase, schema lowercase. Fixed with case-insensitive comparison."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: transaction isolation edge cases — phantom reads, write skew, lost updates",
+      "project": "henrydb",
+      "started": "2026-04-17T23:13:05.456Z",
+      "completed": "2026-04-17T23:13:45.169Z",
+      "duration_ms": 120000,
+      "summary": "5 isolation edge tests: all pass. Snapshot, committed visibility, rollback, auto-commit. No bugs."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: loss function depth — MSE, cross-entropy, binary cross-entropy, gradient correctness",
+      "project": "neural-net",
+      "started": "2026-04-17T23:13:51.672Z",
+      "completed": "2026-04-17T23:14:37.089Z",
+      "duration_ms": 90000,
+      "summary": "10 loss function tests: all pass. MSE, cross-entropy, gradient shapes, getLoss. No bugs."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: NULL semantics depth — NULL in JOINs, GROUP BY with NULLs, NULL ordering, three-valued logic",
+      "project": "henrydb",
+      "started": "2026-04-17T23:14:46.652Z",
+      "completed": "2026-04-17T23:15:25.049Z",
+      "duration_ms": 120000,
+      "summary": "8 NULL semantics tests: all pass. Three-valued logic, JOINs, GROUP BY, arithmetic. Correct."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Network class depth — compile, fit, predict, evaluate, save/load round-trip",
+      "project": "neural-net",
+      "started": "2026-04-17T23:15:33.130Z",
+      "completed": "2026-04-17T23:18:18.236Z",
+      "duration_ms": 240000,
+      "summary": "7 Network class tests: all pass. Construction, predict, train, save/load. No bugs."
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: set operations deep dive — UNION ALL duplicate handling, INTERSECT correctness, EXCEPT with NULLs",
+      "project": "henrydb",
+      "started": "2026-04-17T23:18:27.985Z",
+      "completed": "2026-04-17T23:19:02.020Z",
+      "duration_ms": 90000,
+      "summary": "5 set operations deep tests: all pass. UNION ALL, UNION, INTERSECT, EXCEPT. No bugs."
+    },
+    {
+      "id": "T254",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: e2e analytics workload — sales analytics dashboard queries (top products, revenue trends, customer segmentation)",
+      "project": "henrydb",
+      "started": "2026-04-17T23:19:09.178Z",
+      "completed": "2026-04-17T23:20:32.334Z",
+      "duration_ms": 180000,
+      "summary": "5 E2E analytics tests: all pass. Top products, segment analysis, spend ranking, monthly trends, categories. No bugs."
+    },
+    {
+      "id": "T255",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: learning rate schedule depth — step decay, exponential decay, cosine annealing",
+      "project": "neural-net",
+      "started": "2026-04-17T23:20:39.553Z",
+      "completed": "2026-04-17T23:21:27.557Z",
+      "duration_ms": 90000,
+      "summary": "11 LR scheduler tests: all pass. Step, exponential, cosine, warmup, cyclic, OneCycle. No bugs."
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: self-join + recursive CTE depth — self-join for hierarchy, employee-manager tree, recursive CTE",
+      "project": "henrydb",
+      "started": "2026-04-17T23:21:35.199Z",
+      "completed": "2026-04-17T23:22:13.737Z",
+      "duration_ms": 120000,
+      "summary": "4 self-join + recursive CTE tests: all pass. Employee-manager, LEFT JOIN, counts, recursive hierarchy. No bugs."
+    },
+    {
+      "id": "T257",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: aliasing depth — table aliases in JOINs, column aliases in ORDER BY/HAVING, subquery aliases, ambiguous column detection",
+      "project": "henrydb",
+      "started": "2026-04-17T23:22:21.159Z",
+      "completed": "2026-04-17T23:22:59.030Z",
+      "duration_ms": 90000,
+      "summary": "6 aliasing tests: all pass. Table, column, expression, derived table aliases. No bugs."
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: multi-statement script depth — semicolon-separated statements, BEGIN/COMMIT in script",
+      "project": "henrydb",
+      "started": "2026-04-17T23:23:04.888Z",
+      "completed": "2026-04-17T23:23:33.777Z",
+      "duration_ms": 90000,
+      "summary": "3 multi-statement tests: all pass. Sequential, DDL+DML, interleaved. No bugs."
+    },
+    {
+      "id": "T259",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: data augmentation depth — horizontal flip, random crop, noise injection",
+      "project": "neural-net",
+      "started": "2026-04-17T23:23:40.774Z",
+      "completed": "2026-04-17T23:24:17.945Z",
+      "duration_ms": 90000,
+      "summary": "5 augmentation tests: all pass. addNoise, randomFlipH. No bugs."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CROSS JOIN and cartesian product depth",
+      "project": "henrydb",
+      "started": "2026-04-17T23:24:25.310Z",
+      "completed": "2026-04-17T23:24:59.021Z",
+      "duration_ms": 90000,
+      "summary": "4 CROSS JOIN tests: all pass. Cartesian product, empty, single, implicit. No bugs."
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: RENAME TABLE / ALTER TABLE ADD COLUMN depth",
+      "project": "henrydb",
+      "started": "2026-04-17T23:25:07.595Z",
+      "completed": "2026-04-17T23:25:42.533Z",
+      "duration_ms": 90000,
+      "summary": "4 ALTER TABLE tests: all pass. ADD COLUMN, usable, DEFAULT, RENAME. No bugs."
     }
   ],
   "focusProjects": [
@@ -3750,6 +3893,58 @@
     {
       "time": "2026-04-17T23:09:59.859Z",
       "msg": "Added T248 (BUILD) after end: HenryDB: UPSERT depth — ON CONFLICT DO NOTHING, ON CONFLICT DO UPDATE with complex expressions"
+    },
+    {
+      "time": "2026-04-17T23:13:05.218Z",
+      "msg": "Added T249 (BUILD) after end: HenryDB: transaction isolation edge cases — phantom reads, write skew, lost updates"
+    },
+    {
+      "time": "2026-04-17T23:13:51.437Z",
+      "msg": "Added T250 (BUILD) after end: Neural-net: loss function depth — MSE, cross-entropy, binary cross-entropy, gradient correctness"
+    },
+    {
+      "time": "2026-04-17T23:14:46.416Z",
+      "msg": "Added T251 (BUILD) after end: HenryDB: NULL semantics depth — NULL in JOINs, GROUP BY with NULLs, NULL ordering, three-valued logic"
+    },
+    {
+      "time": "2026-04-17T23:15:32.895Z",
+      "msg": "Added T252 (BUILD) after end: Neural-net: Network class depth — compile, fit, predict, evaluate, save/load round-trip"
+    },
+    {
+      "time": "2026-04-17T23:18:27.748Z",
+      "msg": "Added T253 (BUILD) after end: HenryDB: set operations deep dive — UNION ALL duplicate handling, INTERSECT correctness, EXCEPT with NULLs"
+    },
+    {
+      "time": "2026-04-17T23:19:08.942Z",
+      "msg": "Added T254 (BUILD) after end: HenryDB: e2e analytics workload — sales analytics dashboard queries (top products, revenue trends, customer segmentation)"
+    },
+    {
+      "time": "2026-04-17T23:20:39.312Z",
+      "msg": "Added T255 (BUILD) after end: Neural-net: learning rate schedule depth — step decay, exponential decay, cosine annealing"
+    },
+    {
+      "time": "2026-04-17T23:21:34.964Z",
+      "msg": "Added T256 (BUILD) after end: HenryDB: self-join + recursive CTE depth — self-join for hierarchy, employee-manager tree, recursive CTE"
+    },
+    {
+      "time": "2026-04-17T23:22:20.923Z",
+      "msg": "Added T257 (BUILD) after end: HenryDB: aliasing depth — table aliases in JOINs, column aliases in ORDER BY/HAVING, subquery aliases, ambiguous column detection"
+    },
+    {
+      "time": "2026-04-17T23:23:04.651Z",
+      "msg": "Added T258 (BUILD) after end: HenryDB: multi-statement script depth — semicolon-separated statements, BEGIN/COMMIT in script"
+    },
+    {
+      "time": "2026-04-17T23:23:40.533Z",
+      "msg": "Added T259 (BUILD) after end: Neural-net: data augmentation depth — horizontal flip, random crop, noise injection"
+    },
+    {
+      "time": "2026-04-17T23:24:25.072Z",
+      "msg": "Added T260 (BUILD) after end: HenryDB: CROSS JOIN and cartesian product depth"
+    },
+    {
+      "time": "2026-04-17T23:25:07.358Z",
+      "msg": "Added T261 (BUILD) after end: HenryDB: RENAME TABLE / ALTER TABLE ADD COLUMN depth"
     }
   ]
 }
