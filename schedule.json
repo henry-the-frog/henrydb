@@ -859,6 +859,40 @@
       "completed": "2026-04-17T16:53:11.876Z",
       "duration_ms": 120000,
       "summary": "Nelson-Oppen fix verified under stress: 10-chain equalities, independent groups, EUF+Simplex, disequalities, edge cases. All correct."
+    },
+    {
+      "id": "T80",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Monkey-lang GC correctness — stress test garbage collection under allocation pressure, verify no use-after-free or premature collection",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-17T16:53:31.540Z",
+      "completed": "2026-04-17T16:54:25.416Z",
+      "duration_ms": 120000,
+      "summary": "Planned GC stress testing. 50 tests exist, covering mark-sweep, generational, weak refs. Key gap: extreme pressure testing (threshold=1)."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "task": "BUILD: Monkey-lang — test GC correctness under extreme allocation pressure: set threshold=1 so GC triggers every allocation, run complex programs, verify results match non-GC execution",
+      "status": "done",
+      "plan_ref": "T80",
+      "started": "2026-04-17T16:54:34.180Z",
+      "completed": "2026-04-17T16:56:46.950Z",
+      "duration_ms": 300000,
+      "summary": "GC correctness verified under extreme pressure (threshold=1-2). 10+ programs tested, all produce identical results with and without GC. Closures, arrays, hashes, recursion, higher-order functions all survive aggressive collection. No bugs found."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "task": "EXPLORE: Monkey-lang — test GC interaction with JIT-compiled code, closures captured during GC, write barriers",
+      "status": "done",
+      "plan_ref": "T80",
+      "started": "2026-04-17T16:56:56.075Z",
+      "completed": "2026-04-17T16:57:43.681Z",
+      "duration_ms": 300000,
+      "summary": "GC+JIT interaction tested. Generational GC works (minor collections run). Write barrier test with very aggressive threshold causes slowdown but no crashes. GC is fundamentally sound — no bugs found in VM-GC integration."
     }
   ],
   "focusProjects": [
@@ -1198,6 +1232,14 @@
     {
       "time": "2026-04-17T16:50:36.673Z",
       "msg": "PLAN T77 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T16:53:27.797Z",
+      "msg": "Added T80 (PLAN) after end: PLAN: Monkey-lang GC correctness — stress test garbage collection under allocation pressure, verify no use-after-free or premature collection"
+    },
+    {
+      "time": "2026-04-17T16:54:18.095Z",
+      "msg": "PLAN T80 filled 2 BUILD tasks"
     }
   ]
 }
