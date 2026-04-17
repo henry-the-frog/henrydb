@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T22:30:40.968Z",
+  "generated": "2026-04-17T22:33:00.858Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final git push, update TODO, session tally",
-    "startedAt": "2026-04-17T22:30:40.968Z",
-    "taskId": "T212"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "HenryDB: complex multi-table query depth — 5+ table JOINs, deeply nested subqueries, CTE chains, complex WHERE with AND/OR/NOT",
+    "completedAt": "2026-04-17T22:33:00.858Z",
+    "taskId": "T214",
+    "summary": "8 complex query tests: all pass. 5-table JOINs, 3-level subqueries, CTE chains, complex WHERE, aggregate+window+CTE. No bugs.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -6277,13 +6279,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 200,
+    "blocksCompleted": 203,
     "blocksTotal": 193,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 19,
-      "BUILD": 82,
-      "MAINTAIN": 21,
+      "BUILD": 84,
+      "MAINTAIN": 22,
       "EXPLORE": 66
     }
   },
