@@ -1893,9 +1893,9 @@ export class Database {
         }
       }
       
-      // Check UNIQUE constraints
+      // Check UNIQUE constraints (including PRIMARY KEY columns)
       for (let ci = 0; ci < table.schema.length; ci++) {
-        if (table.schema[ci].unique && values[ci] != null) {
+        if ((table.schema[ci].unique || table.schema[ci].primaryKey) && values[ci] != null) {
           for (const tuple of table.heap.scan()) {
             const tv = tuple.values || tuple;
             if (tv[ci] === values[ci]) {
@@ -3862,8 +3862,19 @@ export class Database {
       // BEFORE UPDATE triggers
       this._fireTriggers('BEFORE', 'UPDATE', ast.table, newValues, table.schema, item.values);
 
-      // Delete old, insert new
+      // Delete old, insert new — validate between delete and insert so UNIQUE
+      // checks don't see the old row we're replacing
       table.heap.delete(item.pageId, item.slotIdx);
+
+      // Validate constraints on the new values (NOT NULL, CHECK, FK, UNIQUE/PK)
+      try {
+        this._validateConstraints(table, newValues);
+      } catch (e) {
+        // Constraint violation — re-insert old values to undo the delete
+        table.heap.insert(item.values);
+        throw e;
+      }
+
       const newRid = table.heap.insert(newValues);
 
       // WAL: log the update
