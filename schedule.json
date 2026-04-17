@@ -80,36 +80,52 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, dashboard health, check email and GitHub PRs",
-      "started": "2026-04-17T14:35:18.043Z"
+      "started": "2026-04-17T14:35:18.043Z",
+      "completed": "2026-04-17T14:35:23.362Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, all up to date."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day assessment: are we finding real bugs or just confirming things work? Adjust afternoon toward whatever is yielding the most insight."
+      "status": "done",
+      "task": "Mid-day assessment: are we finding real bugs or just confirming things work? Adjust afternoon toward whatever is yielding the most insight.",
+      "started": "2026-04-17T14:35:31.420Z",
+      "completed": "2026-04-17T14:35:45.483Z",
+      "duration_ms": 120000,
+      "summary": "Mid-day: 5 real bugs found (4 neural-net backward, 1 critical HenryDB ACID). Depth at integration boundaries is highest yield. Afternoon: continue HenryDB depth — savepoints+crash, index consistency after recovery."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net architecture bugs: test full training pipelines end-to-end (embedding to loss), verify convergence on known problems",
-      "task": null
+      "task": null,
+      "started": "2026-04-17T14:35:59.990Z",
+      "completed": "2026-04-17T14:36:30.519Z",
+      "duration_ms": 60000,
+      "summary": "Planned convergence tests for recently-fixed modules: KAN, NeuralODE, MoE. Existing convergence tests only cover basic architectures. This validates the backward fixes actually enable training."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Write convergence tests for recently-fixed modules: KAN should learn XOR, NeuralODE should learn simple function, MoE should outperform single expert on multi-mode data. Verify post-fix backward passes actually produce correct training.",
       "plan_ref": "T10",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-17T14:36:37.874Z",
+      "completed": "2026-04-17T14:41:16.493Z",
+      "duration_ms": 600000,
+      "summary": "Found 5th neural-net bug: MoE batch training diverges because Dense.backward() overwrites dWeights per-sample instead of accumulating. Fixed with manual gradient accumulation. 7 convergence tests added for KAN, NeuralODE, MoE. 1294 tests, 0 failures."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, dashboard health, knowledge capture"
+      "status": "in-progress",
+      "task": "Git commit+push, dashboard health, knowledge capture",
+      "started": "2026-04-17T14:41:34.240Z"
     },
     {
       "id": "T13",
@@ -242,6 +258,10 @@
     {
       "time": "2026-04-17T14:28:53.098Z",
       "msg": "PLAN T6 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T14:36:26.162Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
     }
   ]
 }

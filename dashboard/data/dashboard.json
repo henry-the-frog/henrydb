@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-17T14:35:18.079Z",
+  "generated": "2026-04-17T14:41:34.276Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push, dashboard health, check email and GitHub PRs",
-    "startedAt": "2026-04-17T14:35:18.079Z",
-    "taskId": "T8"
+    "task": "Git commit+push, dashboard health, knowledge capture",
+    "startedAt": "2026-04-17T14:41:34.276Z",
+    "taskId": "T12"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -4255,43 +4255,59 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth: stress-test MVCC+persistence integration under concurrent transactions, hunt edge cases in crash recovery and checkpoint",
         "task": null,
-        "started": "2026-04-17T14:26:14.623Z"
+        "started": "2026-04-17T14:26:14.623Z",
+        "completed": "2026-04-17T14:28:59.986Z",
+        "duration_ms": 180000,
+        "summary": "Planned MVCC+crash recovery integration tests. Key gap: no existing tests for in-flight MVCC state during crash. 1 BUILD task to write 10+ tests covering uncommitted tx rollback, partial commit atomicity, interleaved tx recovery."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Write MVCC + crash recovery edge case tests: uncommitted tx rollback on crash, partial commit atomicity, interleaved tx recovery (committed visible, in-flight rolled back), WAL replay order correctness. 10+ tests, find bugs.",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-17T14:29:12.568Z",
+        "completed": "2026-04-17T14:34:48.000Z",
+        "duration_ms": 900000,
+        "summary": "CRITICAL ACID BUG FOUND AND FIXED: BEGIN never set _currentTxId, causing all DML inside transactions to auto-commit to WAL. Crash recovery replayed uncommitted data. Fix: BEGIN assigns txId, COMMIT/ROLLBACK properly write to WAL. 10 new tests, 5 of which exposed the bug. All 103 existing crash/recovery/persistence tests pass."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard health, check email and GitHub PRs"
+        "status": "done",
+        "task": "Git commit+push, dashboard health, check email and GitHub PRs",
+        "started": "2026-04-17T14:35:18.043Z",
+        "completed": "2026-04-17T14:35:23.362Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, all up to date."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day assessment: are we finding real bugs or just confirming things work? Adjust afternoon toward whatever is yielding the most insight."
+        "status": "done",
+        "task": "Mid-day assessment: are we finding real bugs or just confirming things work? Adjust afternoon toward whatever is yielding the most insight.",
+        "started": "2026-04-17T14:35:31.420Z",
+        "completed": "2026-04-17T14:35:45.483Z",
+        "duration_ms": 120000,
+        "summary": "Mid-day: 5 real bugs found (4 neural-net backward, 1 critical HenryDB ACID). Depth at integration boundaries is highest yield. Afternoon: continue HenryDB depth — savepoints+crash, index consistency after recovery."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Neural-net architecture bugs: test full training pipelines end-to-end (embedding to loss), verify convergence on known problems",
-        "task": null
+        "task": null,
+        "started": "2026-04-17T14:35:59.990Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Write convergence tests for recently-fixed modules: KAN should learn XOR, NeuralODE should learn simple function, MoE should outperform single expert on multi-mode data. Verify post-fix backward passes actually produce correct training.",
         "plan_ref": "T10",
         "project": "neural-net"
       },
@@ -4346,13 +4362,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 7,
+    "blocksCompleted": 11,
     "blocksTotal": 18,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 2,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 3,
+      "MAINTAIN": 2
     }
   },
   "artifacts": [
