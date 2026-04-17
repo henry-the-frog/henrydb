@@ -2830,6 +2830,28 @@
       "completed": "2026-04-17T23:25:42.533Z",
       "duration_ms": 90000,
       "summary": "4 ALTER TABLE tests: all pass. ADD COLUMN, usable, DEFAULT, RENAME. No bugs."
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: NATURAL JOIN depth — natural join finds matching column names",
+      "project": "henrydb",
+      "started": "2026-04-17T23:27:17.169Z",
+      "completed": "2026-04-17T23:27:55.053Z",
+      "duration_ms": 60000,
+      "summary": "2 NATURAL JOIN + USING tests: all pass. No bugs."
+    },
+    {
+      "id": "T263",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: LSTM layer depth — cell state propagation, forget gate, output shape",
+      "project": "neural-net",
+      "started": "2026-04-17T23:28:03.458Z",
+      "completed": "2026-04-17T23:28:46.157Z",
+      "duration_ms": 90000,
+      "summary": "5 LSTM tests: all pass. Output shape, cell state, backward. No bugs."
     }
   ],
   "focusProjects": [
@@ -3945,6 +3967,14 @@
     {
       "time": "2026-04-17T23:25:07.358Z",
       "msg": "Added T261 (BUILD) after end: HenryDB: RENAME TABLE / ALTER TABLE ADD COLUMN depth"
+    },
+    {
+      "time": "2026-04-17T23:27:16.933Z",
+      "msg": "Added T262 (BUILD) after end: HenryDB: NATURAL JOIN depth — natural join finds matching column names"
+    },
+    {
+      "time": "2026-04-17T23:28:03.222Z",
+      "msg": "Added T263 (BUILD) after end: Neural-net: LSTM layer depth — cell state propagation, forget gate, output shape"
     }
   ]
 }
