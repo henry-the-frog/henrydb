@@ -1519,6 +1519,39 @@
       "completed": "2026-04-17T17:56:34.900Z",
       "duration_ms": 60000,
       "summary": "AutoML works: searches architectures over 5 trials, returns bestArchitecture, bestResult, allResults, bestModel. Automatic hyperparameter selection."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — comprehensive math functions test: ABS, CEIL, FLOOR, ROUND, MOD, POWER, SQRT, LOG, GREATEST, LEAST",
+      "project": "henrydb",
+      "started": "2026-04-17T17:56:58.915Z",
+      "completed": "2026-04-17T17:57:15.640Z",
+      "duration_ms": 30000,
+      "summary": "ALL 17 math function tests pass: ABS, CEIL, FLOOR, ROUND, MOD, POWER, SQRT, LOG, GREATEST, LEAST. Every result correct."
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Neural-net — test hyperparameter search: grid search and random search over learning rates and layer sizes",
+      "project": "neural-net",
+      "started": "2026-04-17T17:57:21.044Z",
+      "completed": "2026-04-17T17:57:40.971Z",
+      "duration_ms": 10000,
+      "summary": "No dedicated hyperparameter search module. AutoML (already tested) handles this functionality."
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: HenryDB — test window functions: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE, NTILE",
+      "project": "henrydb",
+      "started": "2026-04-17T17:57:48.170Z",
+      "completed": "2026-04-17T17:58:13.544Z",
+      "duration_ms": 60000,
+      "summary": "ALL window functions work: LAG/LEAD (with NULL for edges), FIRST_VALUE/LAST_VALUE with frame, NTILE(4) quartiles, RANK/DENSE_RANK with ties. All correct."
     }
   ],
   "focusProjects": [
@@ -2094,6 +2127,18 @@
     {
       "time": "2026-04-17T17:54:51.297Z",
       "msg": "Added T139 (EXPLORE) after end: EXPLORE: Neural-net — test the autoML module: does it automatically select the best hyperparameters?"
+    },
+    {
+      "time": "2026-04-17T17:56:54.121Z",
+      "msg": "Added T140 (BUILD) after end: BUILD: HenryDB — comprehensive math functions test: ABS, CEIL, FLOOR, ROUND, MOD, POWER, SQRT, LOG, GREATEST, LEAST"
+    },
+    {
+      "time": "2026-04-17T17:56:54.241Z",
+      "msg": "Added T141 (BUILD) after end: BUILD: Neural-net — test hyperparameter search: grid search and random search over learning rates and layer sizes"
+    },
+    {
+      "time": "2026-04-17T17:56:54.360Z",
+      "msg": "Added T142 (BUILD) after end: BUILD: HenryDB — test window functions: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE, NTILE"
     }
   ]
 }
