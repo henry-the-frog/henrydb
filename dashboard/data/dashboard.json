@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T17:23:31.665Z",
+  "generated": "2026-04-17T17:26:49.969Z",
   "current": {
-    "status": "in-progress",
-    "mode": "BUILD",
-    "task": "BUILD: HenryDB — write regression tests for all 11 bugs found today: ACID violation, MVCC isolation ×2, GROUP BY+window, SSI ×3, triggers ×3, view cache",
-    "startedAt": "2026-04-17T17:23:31.665Z",
-    "taskId": "T103"
+    "status": "done",
+    "mode": "EXPLORE",
+    "task": "EXPLORE: HenryDB — test the pg-dump module: can we export the database schema and data to SQL?",
+    "completedAt": "2026-04-17T17:26:49.969Z",
+    "taskId": "T105",
+    "summary": "pg-dump/restore works perfectly. Generates PostgreSQL-compatible SQL with schema and data. Round-trip restore preserves all tables, indexes, and data.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -5085,14 +5087,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 102,
+    "blocksCompleted": 105,
     "blocksTotal": 82,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 7,
-      "BUILD": 35,
+      "BUILD": 36,
       "MAINTAIN": 9,
-      "EXPLORE": 42
+      "EXPLORE": 44
     }
   },
   "artifacts": [

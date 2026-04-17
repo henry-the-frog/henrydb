@@ -1116,10 +1116,49 @@
     {
       "id": "T103",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "BUILD: HenryDB — write regression tests for all 11 bugs found today: ACID violation, MVCC isolation ×2, GROUP BY+window, SSI ×3, triggers ×3, view cache",
       "project": "henrydb",
-      "started": "2026-04-17T17:23:31.603Z"
+      "started": "2026-04-17T17:23:31.603Z",
+      "completed": "2026-04-17T17:24:23.947Z",
+      "duration_ms": 300000,
+      "summary": "Wrote 11 regression tests for all HenryDB bugs, all passing. Comprehensive coverage of ACID, MVCC, SSI, triggers, views."
+    },
+    {
+      "id": "T104",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Neural-net — deep dive into the VAE module: does the latent space have meaningful structure? Test interpolation between encoded points",
+      "project": "neural-net",
+      "started": "2026-04-17T17:24:47.020Z",
+      "completed": "2026-04-17T17:26:11.754Z",
+      "duration_ms": 180000,
+      "summary": "VAE encode/decode/interpolation all work. Latent space interpolation produces smooth transitions. Untrained outputs are sigmoid-center but structure is correct."
+    },
+    {
+      "id": "T105",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB — test the pg-dump module: can we export the database schema and data to SQL?",
+      "project": "henrydb",
+      "started": "2026-04-17T17:26:18.553Z",
+      "completed": "2026-04-17T17:26:49.932Z",
+      "duration_ms": 60000,
+      "summary": "pg-dump/restore works perfectly. Generates PostgreSQL-compatible SQL with schema and data. Round-trip restore preserves all tables, indexes, and data."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "BUILD: Neural-net — test MAML (meta-learning): does few-shot learning work after meta-training?",
+      "project": "neural-net"
+    },
+    {
+      "id": "T107",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: HenryDB — test recursive CTE (WITH RECURSIVE): can we compute Fibonacci, tree traversal, or transitive closure?",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1551,6 +1590,22 @@
     {
       "time": "2026-04-17T17:23:25.428Z",
       "msg": "Added T103 (BUILD) after end: BUILD: HenryDB — write regression tests for all 11 bugs found today: ACID violation, MVCC isolation ×2, GROUP BY+window, SSI ×3, triggers ×3, view cache"
+    },
+    {
+      "time": "2026-04-17T17:24:41.039Z",
+      "msg": "Added T104 (EXPLORE) after end: EXPLORE: Neural-net — deep dive into the VAE module: does the latent space have meaningful structure? Test interpolation between encoded points"
+    },
+    {
+      "time": "2026-04-17T17:24:41.158Z",
+      "msg": "Added T105 (EXPLORE) after end: EXPLORE: HenryDB — test the pg-dump module: can we export the database schema and data to SQL?"
+    },
+    {
+      "time": "2026-04-17T17:24:41.277Z",
+      "msg": "Added T106 (BUILD) after end: BUILD: Neural-net — test MAML (meta-learning): does few-shot learning work after meta-training?"
+    },
+    {
+      "time": "2026-04-17T17:24:41.396Z",
+      "msg": "Added T107 (EXPLORE) after end: EXPLORE: HenryDB — test recursive CTE (WITH RECURSIVE): can we compute Fibonacci, tree traversal, or transitive closure?"
     }
   ]
 }
