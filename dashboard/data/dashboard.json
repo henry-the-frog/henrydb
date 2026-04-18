@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-18T14:40:15.520Z",
+  "generated": "2026-04-18T14:50:01.889Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final housekeeping: git push all changes, update daily log",
-    "startedAt": "2026-04-18T14:40:15.520Z",
-    "taskId": "T16"
+    "status": "done",
+    "mode": "THINK",
+    "task": "Diagnose pre-existing wal-recovery UPDATE failure and bank-transfer persistence bug",
+    "completedAt": "2026-04-18T14:50:01.889Z",
+    "taskId": "T21",
+    "summary": "CRITICAL BUGS FOUND AND FIXED: (1) WAL recovery INSERT used heap.insert() bypassing indexes — fixed to use db.execute() for proper index maintenance. (2) HOT chain update with FileBackedHeap silently skipped both chain AND index updates — rows became invisible. Fixed: fall through to index update when heap lacks HOT support. Both bank-transfer and wal-recovery tests now pass. 122/123 pass (1 flaky perf test in combined run).",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-18",
@@ -313,13 +315,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 19,
+    "blocksCompleted": 21,
     "blocksTotal": 20,
     "modeDistribution": {
-      "THINK": 4,
+      "THINK": 5,
       "PLAN": 3,
       "BUILD": 7,
-      "MAINTAIN": 3,
+      "MAINTAIN": 4,
       "EXPLORE": 2
     }
   },

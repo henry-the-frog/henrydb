@@ -209,9 +209,57 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping: git push all changes, update daily log",
-      "started": "2026-04-18T14:40:15.484Z"
+      "started": "2026-04-18T14:40:15.484Z",
+      "completed": "2026-04-18T14:40:22.632Z",
+      "duration_ms": 60000,
+      "summary": "Committed and pushed scratch notes, daily log, schedule updates."
+    },
+    {
+      "id": "T21",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Diagnose pre-existing wal-recovery UPDATE failure and bank-transfer persistence bug",
+      "project": "henrydb",
+      "started": "2026-04-18T14:40:50.162Z",
+      "completed": "2026-04-18T14:50:01.853Z",
+      "duration_ms": 900000,
+      "summary": "CRITICAL BUGS FOUND AND FIXED: (1) WAL recovery INSERT used heap.insert() bypassing indexes — fixed to use db.execute() for proper index maintenance. (2) HOT chain update with FileBackedHeap silently skipped both chain AND index updates — rows became invisible. Fixed: fall through to index update when heap lacks HOT support. Both bank-transfer and wal-recovery tests now pass. 122/123 pass (1 flaky perf test in combined run)."
+    },
+    {
+      "id": "T22",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix wal-recovery UPDATE and bank-transfer persistence bugs",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T23",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, commit fixes"
+    },
+    {
+      "id": "T24",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Depth check: 10+ BUILDs done today. What have we learned? What surprised us?"
+    },
+    {
+      "id": "T25",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HOT chains + MVCC integration: ensure HOT works correctly under snapshot isolation",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T26",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push, daily log update, CURRENT.md"
     }
   ],
   "focusProjects": [
@@ -299,6 +347,30 @@
     {
       "time": "2026-04-18T14:36:15.617Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T14:40:41.371Z",
+      "msg": "Added T21 (THINK) after end: Diagnose pre-existing wal-recovery UPDATE failure and bank-transfer persistence bug"
+    },
+    {
+      "time": "2026-04-18T14:40:41.489Z",
+      "msg": "Added T22 (PLAN) after end: Fix wal-recovery UPDATE and bank-transfer persistence bugs"
+    },
+    {
+      "time": "2026-04-18T14:40:41.607Z",
+      "msg": "Added T23 (MAINTAIN) after end: Housekeeping: git push, commit fixes"
+    },
+    {
+      "time": "2026-04-18T14:40:41.733Z",
+      "msg": "Added T24 (THINK) after end: Depth check: 10+ BUILDs done today. What have we learned? What surprised us?"
+    },
+    {
+      "time": "2026-04-18T14:40:41.852Z",
+      "msg": "Added T25 (PLAN) after end: HOT chains + MVCC integration: ensure HOT works correctly under snapshot isolation"
+    },
+    {
+      "time": "2026-04-18T14:40:41.970Z",
+      "msg": "Added T26 (MAINTAIN) after end: Final git push, daily log update, CURRENT.md"
     }
   ]
 }

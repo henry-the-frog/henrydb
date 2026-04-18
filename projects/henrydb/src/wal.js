@@ -845,15 +845,17 @@ function recoverFromWAL(wal, db) {
           const row = op.data?.row?.values || op.data?.row || op.after;
           if (row) {
             const tableObj = db.tables.get(table);
-            if (tableObj.heap) { tableObj.heap.insert(row); replayed++; }
-            else if (db.execute) {
-              // Database object: use SQL to insert
+            if (db.execute) {
+              // Use SQL to insert — maintains indexes and constraints
               const colNames = tableObj.schema.map(c => c.name);
               const vals = (Array.isArray(row) ? row : Object.values(row)).map(v =>
                 v === null ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`
               );
               db.execute(`INSERT INTO ${table} (${colNames.join(', ')}) VALUES (${vals.join(', ')})`);
               replayed++;
+            } else if (tableObj.heap) {
+              // Direct heap insert — no index maintenance (raw recovery only)
+              tableObj.heap.insert(row); replayed++;
             }
           }
         } else if (type === 'UPDATE' && table && db.tables?.get(table)) {

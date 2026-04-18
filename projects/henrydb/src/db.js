@@ -3945,12 +3945,10 @@ export class Database {
       // WAL: log the update
       this.wal.appendUpdate(batchTxId, ast.table, newRid.pageId, newRid.slotIdx, item.values, newValues);
 
-      if (isHotUpdate) {
+      if (isHotUpdate && table.heap.addHotChain) {
         // HOT update: create chain pointer from old RID → new RID
         // Index entries still point to old RID; index scans follow the chain.
-        if (table.heap.addHotChain) {
-          table.heap.addHotChain(item.pageId, item.slotIdx, newRid.pageId, newRid.slotIdx);
-        }
+        table.heap.addHotChain(item.pageId, item.slotIdx, newRid.pageId, newRid.slotIdx);
       } else {
         // Non-HOT update: update all indexes with new entries
         for (const [colName, index] of table.indexes) {
