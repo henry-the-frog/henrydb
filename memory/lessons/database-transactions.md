@@ -85,3 +85,43 @@ Query cache invalidated on DML but NOT on ROLLBACK/COMMIT. After BEGIN→UPDATE�
 - [ ] Any transaction state change must invalidate query cache
 - [ ] Test the "scary" scenarios: tiny buffer pools, crash without close, checkpoint+truncate+reopen
 - [ ] Integration tests > unit tests for database correctness
+
+## Crash Recovery for DDL Operations (Added 2026-04-17)
+
+### 3-Phase Recovery Architecture
+Standard ARIES recovery handles DML (INSERT/UPDATE/DELETE) but DDL (ALTER TABLE, CREATE VIEW, etc.) needs special treatment:
+
+1. **Schema Replay Phase**: Read ALL WAL DDL records, replay schema-only changes (no heap modification)
+2. **DML Replay Phase**: Read WAL from lastCheckpointLsn, replay committed DML per-heap
+3. **Cleanup Phase**: Update catalog, remove orphaned heaps, rebuild version maps
+
+### Schema-Only Replay
+When replaying ALTER TABLE during crash recovery, only modify the table schema — do NOT modify heap data. Heap data will be corrected by the DML replay phase. Using `db.execute(ALTER TABLE)` for replay would double-apply changes because ALTER TABLE both modifies schema AND scans/modifies existing rows.
+
+### txId=0: Auto-Committed DDL Operations
+DDL operations that generate DML side-effects (ALTER TABLE ADD COLUMN backfilling rows with NULL) use txId=0. These records must be treated as always-committed in all recovery paths:
+- `hasUncommitted` check: exclude txId=0
+- `_replayRecords` committed check: skip for txId=0
+- Checkpoint boundary: txId=0 records must not be re-replayed after checkpoint
+
+### Table Rename Cascading Effects
+ALTER TABLE RENAME TO requires updating 5 things:
+1. Physical `.db` heap file (renameSync)
+2. Heap object in heaps Map (rekey + update heap.name)
+3. DiskManager in diskManagers Map
+4. Version map in versionMaps Map  
+5. Table object reference in db.tables (wire new heap into table)
+
+Missing any of these causes data loss or query failures after restart.
+
+### DDL Persistence Checklist
+Every DDL object type needs:
+- [ ] In-memory execution works
+- [ ] WAL logged (logDDL or logDDL in FileWAL)
+- [ ] Catalog persisted (save SQL to catalog.json)
+- [ ] Restored on open (replay SQL from catalog)
+- [ ] Recovered after crash (WAL DDL replay)
+- [ ] Concurrent with transactions (no corruption)
+- [ ] Constraints enforced after restart
+
+As of 2026-04-17: TABLE ✅, INDEX ✅, VIEW ✅, ALTER TABLE ✅. TRIGGER ❌, SEQUENCE ❌, MATERIALIZED VIEW ❌.
