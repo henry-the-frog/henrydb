@@ -13,3 +13,6 @@
 - HenryDB: cost-based optimizer improvements
 - HenryDB: stored procedures (CREATE FUNCTION/PROCEDURE not yet in parser)
 - HenryDB: UNIQUE constraint + SI concurrent transactions (needs unique index locks)
+- HenryDB: UPSERT (INSERT OR REPLACE / ON CONFLICT) — only missing SQL feature
+- HenryDB: aggregates in scalar subqueries in SELECT list (parser limitation)
+- HenryDB: atomic checkpoint (current multi-step leaves inconsistent states)
