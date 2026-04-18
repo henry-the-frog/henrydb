@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T16:17:04.459Z",
+  "generated": "2026-04-18T16:27:38.702Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push all repos",
-    "startedAt": "2026-04-18T16:17:04.459Z",
-    "taskId": "T76"
+    "task": "Knowledge base update",
+    "startedAt": "2026-04-18T16:27:38.702Z",
+    "taskId": "T84"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -854,32 +854,106 @@
       {
         "id": "T70",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement SELECT FOR UPDATE: row-level locking via xmax field for pessimistic concurrency control",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-18T16:04:56.487Z"
+        "started": "2026-04-18T16:04:56.487Z",
+        "completed": "2026-04-18T16:05:20.181Z",
+        "duration_ms": 180000,
+        "summary": "Planned 3 BUILD tasks: parser (FOR UPDATE/SHARE), executor (row locks, conflict detection, release), tests. Simplified design: _rowLocks Map, immediate error on conflict (no wait queues)."
       },
       {
         "id": "T71",
         "mode": "BUILD",
         "task": "Parser: add FOR UPDATE/FOR SHARE clause to SELECT statement",
-        "status": "upcoming",
-        "plan_ref": "T70"
+        "status": "done",
+        "plan_ref": "T70",
+        "started": "2026-04-18T16:05:30.624Z",
+        "completed": "2026-04-18T16:06:27.717Z",
+        "duration_ms": 60000,
+        "summary": "Parser already supports FOR UPDATE/SHARE/NOWAIT/SKIP LOCKED — forUpdate field in SELECT AST. No changes needed."
       },
       {
         "id": "T72",
         "mode": "BUILD",
         "task": "Executor: implement row-level locking — _rowLocks map, lock acquisition, conflict detection on UPDATE/DELETE, release on commit/rollback",
-        "status": "upcoming",
-        "plan_ref": "T70"
+        "status": "done",
+        "plan_ref": "T70",
+        "started": "2026-04-18T16:06:32.288Z",
+        "completed": "2026-04-18T16:11:49.314Z",
+        "duration_ms": 600000,
+        "summary": "Implemented row-level locking: _rowLocks map, lock acquisition via heap scan for PK matching, conflict detection in UPDATE/DELETE, lock release on COMMIT/ROLLBACK. FOR UPDATE and FOR SHARE modes. All existing tests pass."
       },
       {
         "id": "T73",
         "mode": "BUILD",
         "task": "Tests: SELECT FOR UPDATE — basic locking, conflict detection, lock release on commit/rollback, FOR SHARE concurrent reads",
+        "status": "done",
+        "plan_ref": "T70",
+        "started": "2026-04-18T16:12:03.462Z",
+        "completed": "2026-04-18T16:14:50.717Z",
+        "duration_ms": 600000,
+        "summary": "11 row-locking tests all pass. FOR UPDATE, FOR SHARE, NOWAIT, SKIP LOCKED, conflict detection, lock release. Fixed parser keyword issue for NOWAIT/SKIP LOCKED. Committed."
+      },
+      {
+        "id": "T74",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Evaluate: what SQL features are we missing that would make HenryDB more complete? CTEs, window functions, lateral joins?",
+        "project": "henrydb",
+        "started": "2026-04-18T16:15:52.386Z",
+        "completed": "2026-04-18T16:16:45.785Z",
+        "duration_ms": 120000,
+        "summary": "HenryDB is remarkably complete: CTEs, window functions, LATERAL, triggers, views, constraints, UDFs, row locking. Genuinely missing: CALL procedures, JSON functions, MERGE statement. But breadth-adding is less valuable than depth. Switching to RISC-V closure TCO for learning value."
+      },
+      {
+        "id": "T75",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Implement CALL procedure (extends UDFs to multi-statement procedures)",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T76",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push all repos",
+        "started": "2026-04-18T16:17:04.425Z",
+        "completed": "2026-04-18T16:17:33.544Z",
+        "duration_ms": 30000,
+        "summary": "All repos pushed."
+      },
+      {
+        "id": "T78",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement closure TCO in RISC-V codegen: tail calls through closure variables",
+        "task": null,
+        "project": "riscv-emulator",
+        "started": "2026-04-18T16:17:49.462Z"
+      },
+      {
+        "id": "T79",
+        "mode": "BUILD",
+        "task": "Study closure dispatch mechanism: trace a closure call from creation to dispatch to understand the data flow",
         "status": "upcoming",
-        "plan_ref": "T70"
+        "plan_ref": "T78"
+      },
+      {
+        "id": "T80",
+        "mode": "BUILD",
+        "task": "Implement closure TCO: in _compileReturn, when callee is a closure variable, load closure ptr, read fn_id, setup captured vars, tear down frame, jump to closure code",
+        "status": "upcoming",
+        "plan_ref": "T78"
+      },
+      {
+        "id": "T77",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Pre-boundary state assessment and cleanup"
       },
       {
         "id": "T42",
@@ -891,14 +965,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 72,
-    "blocksTotal": 73,
+    "blocksCompleted": 80,
+    "blocksTotal": 80,
     "modeDistribution": {
-      "THINK": 19,
-      "PLAN": 12,
-      "BUILD": 22,
-      "MAINTAIN": 16,
-      "EXPLORE": 3
+      "THINK": 21,
+      "PLAN": 13,
+      "BUILD": 24,
+      "MAINTAIN": 18,
+      "EXPLORE": 4
     }
   },
   "artifacts": [

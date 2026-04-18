@@ -21,6 +21,14 @@
 - **monkey-let-binding-compilation.md** — Critical let-binding stack ordering bug in bytecode compiler; OpSetLocal vs OpPop order. (uses: 1, created: 2026-04-13)
 - **monkey-try-catch-impl.md** — try/catch/throw/finally implementation: 3 opcodes, handler stack unwinding, evaluator MonkeyThrown pattern. (uses: 0, created: 2026-04-15)
 
+### RISC-V Emulator
+- **riscv-register-allocation.md** — Linear sequential allocation (s1-s11, overflow to stack). No liveness analysis. Good enough for Monkey. (uses: 0, created: 2026-04-18)
+
+### HenryDB (new 2026-04-18)
+- **hot-chains.md** — HOT chain implementation, PG comparison (same-page vs Map-based), integration points, MVCC interaction. (uses: 1, created: 2026-04-18)
+- **stored-procedures-design.md** — Phased approach: SQL scalar → JS → table-returning → procedures. All phases 1-3 implemented. (uses: 1, created: 2026-04-18)
+- **mvcc-visibility-comparison.md** — PG vs HenryDB MVCC deep comparison. CORRECTED: HenryDB already has snap.activeSet. Real gaps: CLOG, row-level xmax locking, frozen tuples. (uses: 1, created: 2026-04-18)
+
 ### Query Compilation & Optimization
 - **copy-and-patch-compilation.md** — Copy-and-patch technique, comparison with HenryDB closure approach, sea-of-nodes verdict. (uses: 1, created: 2026-04-08)
 - **query-compilation.md** — HyPer push-based model, Volcano vs push, query compilation strategies. (uses: 1, created: 2026-04-07)

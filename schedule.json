@@ -795,29 +795,100 @@
     {
       "id": "T76",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push all repos",
-      "started": "2026-04-18T16:17:04.425Z"
+      "started": "2026-04-18T16:17:04.425Z",
+      "completed": "2026-04-18T16:17:33.544Z",
+      "duration_ms": 30000,
+      "summary": "All repos pushed."
+    },
+    {
+      "id": "T78",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement closure TCO in RISC-V codegen: tail calls through closure variables",
+      "task": null,
+      "project": "riscv-emulator",
+      "started": "2026-04-18T16:17:49.462Z",
+      "completed": "2026-04-18T16:18:28.011Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 tasks: (1) study closure dispatch data flow, (2) implement closure TCO with fn_id loading and captured var setup."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "task": "Study closure dispatch mechanism: trace a closure call from creation to dispatch to understand the data flow",
+      "status": "done",
+      "plan_ref": "T78",
+      "started": "2026-04-18T16:18:36.118Z",
+      "completed": "2026-04-18T16:20:47.799Z",
+      "duration_ms": 600000,
+      "summary": "Studied closure dispatch: a0=closure_ptr, dispatch reads fn_id from closure[0], jumps to matching label. Implemented closure TCO: compile args, load closure ptr, set up a0=ptr a1+=args, epilogue, j _closure_dispatch. Fixed _loadVar→_emitLoadVar. All 1077 tests pass."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "Implement closure TCO: in _compileReturn, when callee is a closure variable, load closure ptr, read fn_id, setup captured vars, tear down frame, jump to closure code",
+      "status": "done",
+      "plan_ref": "T78",
+      "started": "2026-04-18T16:20:59.629Z",
+      "completed": "2026-04-18T16:20:59.769Z",
+      "duration_ms": 10000,
+      "summary": "Already implemented during T79 — closure TCO working, all 1077 tests pass."
     },
     {
       "id": "T77",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Pre-boundary state assessment and cleanup"
+      "status": "done",
+      "task": "Pre-boundary state assessment and cleanup",
+      "started": "2026-04-18T16:22:16.709Z",
+      "completed": "2026-04-18T16:22:40.393Z",
+      "duration_ms": 120000,
+      "summary": "BUILD cap hit (21). Mandatory depth pivot #2. Session extremely productive: 82+ new tests, 7 bugs, 4 major features across 3 projects. Remaining 3.5h: depth work (sweeps, explore, documentation)."
+    },
+    {
+      "id": "T81",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Full sweep: run all 3 project test suites, record results",
+      "started": "2026-04-18T16:23:17.862Z",
+      "completed": "2026-04-18T16:25:07.856Z",
+      "duration_ms": 300000,
+      "summary": "All 3 projects clean: HenryDB 194/194, RISC-V 1077/1078 (1 skip), Neural-net 1305/1305. Total: 2577 tests, 2576 pass, 0 fail. Best state ever."
+    },
+    {
+      "id": "T82",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep study: register allocation in RISC-V codegen",
+      "project": "henrydb",
+      "started": "2026-04-18T16:25:20.584Z",
+      "completed": "2026-04-18T16:26:51.155Z",
+      "duration_ms": 300000,
+      "summary": "Register allocation study: linear sequential (s1-s11, overflow to stack). Strengths: simple, correct, callee-saved. Weaknesses: no liveness, no spill/reload. 11 regs usually enough for Monkey. Graph coloring would be interesting but low ROI. Captured in scratch."
+    },
+    {
+      "id": "T83",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session learning capture",
+      "started": "2026-04-18T16:26:57.007Z",
+      "completed": "2026-04-18T16:27:31.218Z",
+      "duration_ms": 120000,
+      "summary": "6 key learnings: (1) capability detection must degrade gracefully, (2) TCO=epilogue-before-jump in all variants, (3) build uncertain parts first, (4) DDL must invalidate result cache, (5) pre-existing bugs compound, (6) verify assumptions against code."
+    },
+    {
+      "id": "T84",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Knowledge base update",
+      "started": "2026-04-18T16:27:38.667Z"
     },
     {
       "id": "T42",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final state snapshot: push repos, update daily log with evening summary"
-    },
-    {
-      "id": "T78",
-      "mode": "PLAN",
-      "status": "upcoming",
-      "goal": "Implement closure TCO in RISC-V codegen: tail calls through closure variables",
-      "task": null,
-      "project": "riscv-emulator"
     }
   ],
   "focusProjects": [
@@ -1145,6 +1216,34 @@
     {
       "time": "2026-04-18T16:16:55.391Z",
       "msg": "Added T78 (PLAN) after end: Implement closure TCO in RISC-V codegen: tail calls through closure variables"
+    },
+    {
+      "time": "2026-04-18T16:17:40.376Z",
+      "msg": "Moved T78 after T76"
+    },
+    {
+      "time": "2026-04-18T16:18:20.951Z",
+      "msg": "PLAN T78 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T16:22:51.506Z",
+      "msg": "Added T81 (MAINTAIN) after end: Full sweep: run all 3 project test suites, record results"
+    },
+    {
+      "time": "2026-04-18T16:23:05.887Z",
+      "msg": "Added T82 (EXPLORE) after end: Deep study: register allocation in RISC-V codegen"
+    },
+    {
+      "time": "2026-04-18T16:23:06.004Z",
+      "msg": "Added T83 (THINK) after end: Session learning capture"
+    },
+    {
+      "time": "2026-04-18T16:23:06.121Z",
+      "msg": "Added T84 (MAINTAIN) after end: Knowledge base update"
+    },
+    {
+      "time": "2026-04-18T16:23:06.237Z",
+      "msg": "Moved T42 after T84"
     }
   ]
 }
