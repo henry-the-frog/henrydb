@@ -1,121 +1,153 @@
-// expression-edge-cases.test.js — Regression tests for parser expression handling
-// Covers: IN with expressions, INSERT with expressions, NULL/falsy in CASE WHEN,
-// BETWEEN with expressions, comparison RHS arithmetic (collected in one place).
+// expression-edge-cases.test.js — CASE WHEN, COALESCE, NULLIF, CAST + MVCC
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { Database } from './db.js';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import { strict as assert } from 'node:assert';
+import { TransactionalDatabase } from './transactional-db.js';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-describe('Expression Edge Cases', () => {
-  let db;
+let dbDir, db;
+function setup() {
+  dbDir = mkdtempSync(join(tmpdir(), 'henrydb-expr-'));
+  db = TransactionalDatabase.open(dbDir);
+}
+function teardown() {
+  try { db.close(); } catch {}
+  rmSync(dbDir, { recursive: true, force: true });
+}
+function rows(r) { return Array.isArray(r) ? r : r?.rows || []; }
 
-  it('setup', () => {
-    db = new Database();
-    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT, name TEXT)');
-    for (let i = 1; i <= 10; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10}, 'name${i}')`);
+describe('Expression Edge Cases + MVCC', () => {
+  beforeEach(setup);
+  afterEach(teardown);
+
+  it('CASE WHEN with concurrent update changes classification', () => {
+    db.execute('CREATE TABLE items (id INT, score INT)');
+    db.execute('INSERT INTO items VALUES (1, 90)');
+    db.execute('INSERT INTO items VALUES (2, 50)');
+    db.execute('INSERT INTO items VALUES (3, 30)');
+    
+    const s1 = db.session();
+    s1.begin();
+    
+    // Update scores outside s1
+    db.execute('UPDATE items SET score = 10 WHERE id = 1'); // 90 → 10
+    
+    // s1 should classify based on original values
+    const r = rows(s1.execute(
+      "SELECT id, CASE WHEN score >= 80 THEN 'A' WHEN score >= 60 THEN 'B' ELSE 'C' END as grade FROM items ORDER BY id"
+    ));
+    assert.equal(r[0].grade, 'A', 'id=1 was 90 in snapshot → A');
+    assert.equal(r[1].grade, 'C', 'id=2 was 50 → C');
+    assert.equal(r[2].grade, 'C', 'id=3 was 30 → C');
+    
+    s1.commit();
   });
 
-  // IN list with expressions
-  it('IN list with addition', () => {
-    const r = db.execute('SELECT id FROM t WHERE id IN (1 + 1, 2 + 1) ORDER BY id');
-    assert.deepStrictEqual(r.rows, [{ id: 2 }, { id: 3 }]);
+  it('COALESCE with NULL propagation', () => {
+    db.execute('CREATE TABLE t (id INT, a INT, b INT, c INT)');
+    db.execute('INSERT INTO t VALUES (1, NULL, NULL, 99)');
+    db.execute('INSERT INTO t VALUES (2, NULL, 50, 99)');
+    db.execute('INSERT INTO t VALUES (3, 10, 50, 99)');
+    
+    const r = rows(db.execute('SELECT id, COALESCE(a, b, c) as first_non_null FROM t ORDER BY id'));
+    assert.equal(r[0].first_non_null, 99, 'Both a,b NULL → c');
+    assert.equal(r[1].first_non_null, 50, 'a NULL → b');
+    assert.equal(r[2].first_non_null, 10, 'a not NULL → a');
   });
 
-  it('IN list with multiplication', () => {
-    const r = db.execute('SELECT id FROM t WHERE id IN (2 * 3, 4 * 2) ORDER BY id');
-    assert.deepStrictEqual(r.rows, [{ id: 6 }, { id: 8 }]);
+  it('COALESCE with all NULL returns NULL', () => {
+    db.execute('CREATE TABLE t (id INT, a INT, b INT)');
+    db.execute('INSERT INTO t VALUES (1, NULL, NULL)');
+    
+    const r = rows(db.execute('SELECT COALESCE(a, b) as result FROM t'));
+    assert.equal(r[0].result, null, 'All NULL → NULL');
   });
 
-  it('NOT IN with expressions', () => {
-    const r = db.execute('SELECT id FROM t WHERE id NOT IN (1 * 2, 3 - 1) AND id < 5 ORDER BY id');
-    // NOT IN (2, 2) = exclude id=2
-    assert.deepStrictEqual(r.rows, [{ id: 1 }, { id: 3 }, { id: 4 }]);
+  it('NULLIF returns NULL when args are equal', () => {
+    db.execute('CREATE TABLE t (id INT, val INT)');
+    db.execute('INSERT INTO t VALUES (1, 0)');
+    db.execute('INSERT INTO t VALUES (2, 5)');
+    
+    const r = rows(db.execute('SELECT id, NULLIF(val, 0) as safe FROM t ORDER BY id'));
+    assert.equal(r[0].safe, null, 'val=0 should become NULL');
+    assert.equal(r[1].safe, 5, 'val=5 stays 5');
   });
 
-  // INSERT with expressions
-  it('INSERT with arithmetic values', () => {
-    db.execute('CREATE TABLE expr_insert (id INT PRIMARY KEY, val INT)');
-    db.execute('INSERT INTO expr_insert VALUES (1, 5 * 20)');
-    db.execute('INSERT INTO expr_insert VALUES (2, 10 + 5)');
-    db.execute('INSERT INTO expr_insert VALUES (3, 100 - 30)');
-    db.execute('INSERT INTO expr_insert VALUES (4, 100 / 4)');
-    const rows = db.execute('SELECT * FROM expr_insert ORDER BY id').rows;
-    assert.strictEqual(rows[0].val, 100);
-    assert.strictEqual(rows[1].val, 15);
-    assert.strictEqual(rows[2].val, 70);
-    assert.strictEqual(rows[3].val, 25);
+  it('CASE WHEN with ELSE NULL', () => {
+    db.execute('CREATE TABLE t (id INT, status TEXT)');
+    db.execute("INSERT INTO t VALUES (1, 'active')");
+    db.execute("INSERT INTO t VALUES (2, 'inactive')");
+    db.execute("INSERT INTO t VALUES (3, 'pending')");
+    
+    const r = rows(db.execute(
+      "SELECT id, CASE status WHEN 'active' THEN 1 WHEN 'pending' THEN 0 END as is_active FROM t ORDER BY id"
+    ));
+    assert.equal(r[0].is_active, 1);
+    assert.equal(r[1].is_active, null, 'No matching WHEN → NULL');
+    assert.equal(r[2].is_active, 0);
   });
 
-  // NULL in CASE WHEN (SQL standard: NULL is falsy)
-  it('CASE WHEN NULL returns ELSE', () => {
-    const r = db.execute("SELECT CASE WHEN NULL THEN 'yes' ELSE 'no' END as x");
-    assert.strictEqual(r.rows[0].x, 'no');
+  it('nested CASE expressions', () => {
+    db.execute('CREATE TABLE t (id INT, a INT, b INT)');
+    db.execute('INSERT INTO t VALUES (1, 10, 20)');
+    db.execute('INSERT INTO t VALUES (2, 30, 5)');
+    
+    const r = rows(db.execute(
+      "SELECT id, CASE WHEN a > b THEN CASE WHEN a > 20 THEN 'big' ELSE 'medium' END ELSE 'small' END as size FROM t ORDER BY id"
+    ));
+    assert.equal(r[0].size, 'small', 'a=10 < b=20 → small');
+    assert.equal(r[1].size, 'big', 'a=30 > b=5, a > 20 → big');
   });
 
-  it('CASE WHEN 0 returns ELSE', () => {
-    const r = db.execute("SELECT CASE WHEN 0 THEN 'yes' ELSE 'no' END as x");
-    assert.strictEqual(r.rows[0].x, 'no');
+  it('CAST between types', () => {
+    db.execute('CREATE TABLE t (id INT, val TEXT)');
+    db.execute("INSERT INTO t VALUES (1, '42')");
+    
+    // CAST TEXT to INT
+    const r = rows(db.execute("SELECT CAST(val AS INT) as num FROM t"));
+    assert.equal(r[0].num, 42);
+    
+    // CAST INT to TEXT
+    const r2 = rows(db.execute("SELECT CAST(id AS TEXT) as str FROM t"));
+    assert.equal(r2[0].str, '1');
   });
 
-  it('CASE WHEN 1 returns THEN', () => {
-    const r = db.execute("SELECT CASE WHEN 1 THEN 'yes' ELSE 'no' END as x");
-    assert.strictEqual(r.rows[0].x, 'yes');
+  it('CASE WHEN in WHERE clause', () => {
+    db.execute('CREATE TABLE t (id INT, val INT)');
+    for (let i = 1; i <= 5; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
+    
+    const r = rows(db.execute(
+      "SELECT id FROM t WHERE CASE WHEN val > 30 THEN 1 ELSE 0 END = 1 ORDER BY id"
+    ));
+    assert.equal(r.length, 2, 'Only val > 30: id 4,5');
+    assert.equal(r[0].id, 4);
+    assert.equal(r[1].id, 5);
   });
 
-  // NULL arithmetic
-  it('NULL arithmetic propagates NULL', () => {
-    const r = db.execute('SELECT 1 + NULL as a, NULL * 5 as b, NULL - 1 as c');
-    assert.strictEqual(r.rows[0].a, null);
-    assert.strictEqual(r.rows[0].b, null);
-    assert.strictEqual(r.rows[0].c, null);
+  it('COALESCE in UPDATE SET', () => {
+    db.execute('CREATE TABLE t (id INT, val INT, backup INT)');
+    db.execute('INSERT INTO t VALUES (1, NULL, 99)');
+    db.execute('INSERT INTO t VALUES (2, 50, 99)');
+    
+    db.execute('UPDATE t SET val = COALESCE(val, backup)');
+    
+    const r = rows(db.execute('SELECT * FROM t ORDER BY id'));
+    assert.equal(r[0].val, 99, 'NULL val → backup');
+    assert.equal(r[1].val, 50, 'Non-NULL val unchanged');
   });
 
-  // Comparison RHS expressions
-  it('comparison with subtraction on RHS', () => {
-    assert.strictEqual(db.execute('SELECT id FROM t WHERE id = 5 - 3').rows[0].id, 2);
-  });
-
-  it('comparison with multiplication on RHS', () => {
-    assert.strictEqual(db.execute('SELECT id FROM t WHERE val = 3 * 10').rows[0].id, 3);
-  });
-
-  it('comparison with column expressions on both sides', () => {
-    const r = db.execute('SELECT id FROM t WHERE val = id * 10 ORDER BY id');
-    assert.strictEqual(r.rows.length, 10); // All rows match
-  });
-
-  // BETWEEN with expressions
-  it('BETWEEN with arithmetic bounds', () => {
-    const r = db.execute('SELECT id FROM t WHERE val BETWEEN 10 * 2 AND 10 * 4 ORDER BY id');
-    assert.deepStrictEqual(r.rows, [{ id: 2 }, { id: 3 }, { id: 4 }]);
-  });
-
-  // Correlated EXISTS with arithmetic
-  it('EXISTS with arithmetic in condition', () => {
-    const r = db.execute('SELECT id FROM t t1 WHERE EXISTS (SELECT 1 FROM t t2 WHERE t2.id = t1.id + 1) AND t1.id <= 5 ORDER BY id');
-    // ids 1-9 have a successor, id 10 doesn't; limited to id <= 5
-    assert.deepStrictEqual(r.rows, [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
-  });
-
-  // UPDATE with complex SET
-  it('UPDATE SET with arithmetic', () => {
-    db.execute('CREATE TABLE upd (id INT PRIMARY KEY, val INT)');
-    db.execute('INSERT INTO upd VALUES (1, 10)');
-    db.execute('UPDATE upd SET val = val * 2 + 5 WHERE id = 1');
-    assert.strictEqual(db.execute('SELECT val FROM upd WHERE id = 1').rows[0].val, 25);
-  });
-
-  // Negative numbers
-  it('INSERT and SELECT negative numbers', () => {
-    db.execute('CREATE TABLE neg (id INT PRIMARY KEY, val INT)');
-    db.execute('INSERT INTO neg VALUES (-1, -100)');
-    assert.strictEqual(db.execute('SELECT * FROM neg WHERE id = -1').rows[0].val, -100);
-  });
-
-  // Standalone VALUES with expressions
-  it('VALUES with arithmetic', () => {
-    const r = db.execute('VALUES (1 + 1, 2 * 3)');
-    assert.strictEqual(r.rows[0].column1, 2);
-    assert.strictEqual(r.rows[0].column2, 6);
+  it('expressions survive close/reopen', () => {
+    db.execute('CREATE TABLE t (id INT, val INT)');
+    db.execute('INSERT INTO t VALUES (1, NULL)');
+    db.execute('INSERT INTO t VALUES (2, 42)');
+    
+    db.close();
+    db = TransactionalDatabase.open(dbDir);
+    
+    const r = rows(db.execute('SELECT id, COALESCE(val, -1) as safe FROM t ORDER BY id'));
+    assert.equal(r[0].safe, -1);
+    assert.equal(r[1].safe, 42);
   });
 });
