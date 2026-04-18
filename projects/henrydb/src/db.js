@@ -2094,7 +2094,7 @@ export class Database {
               
               // Validate constraints BEFORE modifying the heap (CHECK, NOT NULL, FK)
               // For UNIQUE/PK: we need to exclude the row being updated
-              this._validateConstraintsForUpdate(table, newValues, existingRid);
+              this._validateConstraintsForUpdate(table, newValues, existingRid, existing);
               
               // Write back to heap: delete old row, insert new one
               if (existingRid) {
@@ -2281,10 +2281,16 @@ export class Database {
    * Validate constraints, optionally excluding a specific row (for UPDATE/UPSERT
    * where the old row should not trigger UNIQUE false positives).
    */
-  _validateConstraintsForUpdate(table, values, excludeRid) {
+  _validateConstraintsForUpdate(table, values, excludeRid, oldValues) {
     for (let i = 0; i < table.schema.length; i++) {
       const col = table.schema[i];
       const val = values[i];
+
+      // Skip UNIQUE check if value hasn't changed (UPDATE with same PK/UNIQUE value)
+      // This avoids false positives when HOT chains make index RIDs stale
+      if (excludeRid && oldValues && (col.unique || col.primaryKey) && val === oldValues[i]) {
+        continue;  // Value unchanged — it was already validated when first inserted
+      }
 
       // NOT NULL constraint (PRIMARY KEY columns are implicitly NOT NULL)
       if ((col.notNull || col.primaryKey) && val == null) {
@@ -2310,15 +2316,17 @@ export class Database {
         if (index && typeof index.search === 'function') {
           const found = index.search(val);
           if (found !== undefined && found !== null) {
-            if (excludeRid) {
-              const rids = Array.isArray(found) ? found : [found];
-              const hasOther = rids.some(r =>
-                r.pageId !== excludeRid.pageId || r.slotIdx !== excludeRid.slotIdx
-              );
-              if (hasOther) {
-                throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
-              }
-            } else {
+            const rids = Array.isArray(found) ? found : [found];
+            // Filter out stale index entries (deleted rows, HOT chain ghosts)
+            const liveRids = rids.filter(r => {
+              if (excludeRid && r.pageId === excludeRid.pageId && r.slotIdx === excludeRid.slotIdx) return false;
+              // Verify the row actually exists in the heap
+              try {
+                const row = table.heap.get(r.pageId, r.slotIdx);
+                return row !== null && row !== undefined;
+              } catch { return false; }
+            });
+            if (liveRids.length > 0) {
               throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
             }
           }
@@ -4226,8 +4234,7 @@ export class Database {
 
       // Validate constraints BEFORE modifying the heap
       // Pass the current row's RID so UNIQUE check skips it
-      this._validateConstraintsForUpdate(table, newValues, { pageId: item.pageId, slotIdx: item.slotIdx });
-
+      this._validateConstraintsForUpdate(table, newValues, { pageId: item.pageId, slotIdx: item.slotIdx }, item.values);
       // HOT chain detection: check if any indexed column values changed.
       // If no indexed columns changed, this is a HOT (Heap-Only Tuple) update:
       // we skip index updates and create a HOT chain pointer from old → new.
@@ -4706,7 +4713,7 @@ export class Database {
               }
             }
             // Validate constraints before modifying
-            this._validateConstraintsForUpdate(targetTable, newValues, { pageId: targetItem.pageId, slotIdx: targetItem.slotIdx });
+            this._validateConstraintsForUpdate(targetTable, newValues, { pageId: targetItem.pageId, slotIdx: targetItem.slotIdx }, targetItem.values);
             targetTable.heap.delete(targetItem.pageId, targetItem.slotIdx);
             targetTable.heap.insert(newValues);
             updated++;
