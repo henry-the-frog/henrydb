@@ -2444,19 +2444,22 @@ export class Database {
   }
 
   _vacuum(ast) {
-    // If no MVCC manager attached, just return
-    if (!this._mvcc) {
-      return { type: 'OK', message: 'VACUUM (no MVCC)' };
-    }
-
     const tables = ast.table ? [ast.table] : [...this.tables.keys()];
     let totalDead = 0, totalBytes = 0, totalPages = 0, totalPagesProcessed = 0;
     let allDone = true;
     const cursors = {};
+    let hotPruned = 0;
 
     for (const tableName of tables) {
       const table = this.tables.get(tableName);
-      if (!table || !table.mvccHeap) continue;
+      if (!table) continue;
+      
+      // Prune HOT chains (works on regular heaps too)
+      if (table.heap && table.heap.pruneHotChains) {
+        hotPruned += table.heap.pruneHotChains();
+      }
+
+      if (!table.mvccHeap || !this._mvcc) continue;
 
       if (ast.incremental) {
         // Incremental VACUUM: process maxPages per table
@@ -2487,11 +2490,12 @@ export class Database {
     const mode = ast.incremental ? 'VACUUM INCREMENTAL' : 'VACUUM';
     return {
       type: 'OK',
-      message: `${mode}: ${totalDead} dead tuples removed, ${totalBytes} bytes freed, ${totalPages} pages compacted${ast.incremental ? `, ${totalPagesProcessed} pages processed, ${allDone ? 'COMPLETE' : 'IN PROGRESS'}` : ''}`,
+      message: `${mode}: ${totalDead} dead tuples removed, ${totalBytes} bytes freed, ${totalPages} pages compacted${hotPruned ? `, ${hotPruned} HOT chains pruned` : ''}${ast.incremental ? `, ${totalPagesProcessed} pages processed, ${allDone ? 'COMPLETE' : 'IN PROGRESS'}` : ''}`,
       details: { 
         deadTuplesRemoved: totalDead, 
         bytesFreed: totalBytes, 
         pagesCompacted: totalPages,
+        hotPruned,
         ...(ast.incremental && { pagesProcessed: totalPagesProcessed, done: allDone }),
       },
     };
