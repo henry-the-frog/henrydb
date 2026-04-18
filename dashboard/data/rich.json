@@ -683,24 +683,13 @@
   ],
   "prs": [
     {
-      "number": 50,
-      "title": "Add henry-the-frog/monkey-lang JavaScript implementation",
-      "url": "https://github.com/mrnugget/monkeylang/pull/50",
-      "repo": "mrnugget/monkeylang",
-      "createdAt": "2026-04-13T14:32:55Z",
-      "updatedAt": "2026-04-13T14:32:55Z",
-      "ageHours": 86,
-      "ciStatus": "fail",
-      "reviewStatus": "none"
-    },
-    {
       "number": 51803,
       "title": "fix: persist followup queues across gateway restart",
       "url": "https://github.com/openclaw/openclaw/pull/51803",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 634,
+      "ageHours": 658,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -711,7 +700,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 654,
+      "ageHours": 678,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -722,7 +711,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 655,
+      "ageHours": 679,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -733,7 +722,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 655,
+      "ageHours": 679,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -744,7 +733,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 656,
+      "ageHours": 680,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -755,7 +744,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 658,
+      "ageHours": 682,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -766,7 +755,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 677,
+      "ageHours": 701,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -777,12 +766,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 704,
+      "ageHours": 728,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-16",
+      "blocksCompleted": 2,
+      "summary": "",
+      "highlights": [
+        "Built 18-task queue",
+        "2,583 total tests across all projects, all passing",
+        "Yesterday: 1000 new tests in evening session, lambda",
+        "2 bugs found: SMT solver conflicting bounds, type-inference",
+        "No outstanding commitments (COMMITMENTS.md doesn't exist)"
+      ],
+      "modeDistribution": {
+        "BUILD": 1,
+        "EXPLORE": 1,
+        "THINK": 1,
+        "MAINTAIN": 1
+      }
+    },
     {
       "date": "2026-04-15",
       "blocksCompleted": 4,
@@ -863,88 +870,43 @@
         "BUILD": 2,
         "MAINTAIN": 1
       }
-    },
-    {
-      "date": "2026-04-10",
-      "blocksCompleted": 60,
-      "summary": "",
-      "highlights": [
-        "Built queue (15 tasks)",
-        "Depth check — ran all core test suites in projects/henrydb/",
-        "ACID already passes",
-        "Fixed HLL — added estimate() alias, merge() returns this",
-        "Full test sweep across 530 test files: 5550 tests, 5492"
-      ],
-      "modeDistribution": {
-        "THINK": 7,
-        "BUILD": 41,
-        "MAINTAIN": 5,
-        "EXPLORE": 2
-      }
     }
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 298,
-    "pastBlocks": 299,
-    "totalBlocks": 299,
+    "completionRate": 75,
+    "completedBlocks": 6,
+    "pastBlocks": 8,
+    "totalBlocks": 8,
     "plannedDist": {
-      "THINK": 18,
-      "PLAN": 10,
-      "BUILD": 254,
-      "MAINTAIN": 13,
-      "EXPLORE": 4
+      "THINK": 2,
+      "PLAN": 1,
+      "BUILD": 4,
+      "MAINTAIN": 1
     },
     "actualDist": {
-      "THINK": 18,
-      "PLAN": 10,
-      "BUILD": 253,
-      "MAINTAIN": 13,
-      "EXPLORE": 4
+      "THINK": 1,
+      "PLAN": 1,
+      "BUILD": 3,
+      "MAINTAIN": 1
     },
-    "pace": 21.3
+    "pace": 1.6
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:16",
-      "text": "Fixed both bugs."
+      "time": "18:32",
+      "text": "Built CDCL SAT solver: 2-watched-literal propagation, 1UIP conflict analysis,…"
     },
     {
       "mode": "BUILD",
-      "time": "08:21",
-      "text": "T3: Fixed 2 bugs."
+      "time": "18:46",
+      "text": "Built SMT solver (DPLL(T)) on top of CDCL: backtrackable union-find, EUF theory…"
     },
     {
       "mode": "BUILD",
-      "time": "08:25",
-      "text": "Built monkey-lang type checker: Algorithm W inference, parse type annotations…"
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:39",
-      "text": "Built Calculus of Constructions: Pi types, dependent typing, bidirectional type…"
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:43",
-      "text": "CoC proof terms: Leibniz equality (refl, symm), sigma types, addition/double…"
-    },
-    {
-      "mode": "PLAN",
-      "time": "08:46",
-      "text": "Already completed in T3 (SMT strict inequality fix + tests)."
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:34",
-      "text": "Stress-tested type checker: found 2 bugs (let-polymorphism missing — id used…"
-    },
-    {
-      "mode": "MAINTAIN",
-      "time": "10:02",
-      "text": "Final quality pass: all tests pass across all 5 projects."
+      "time": "18:49",
+      "text": "Built interactive CLI: sudoku, queens, pigeonhole, random 3-SAT, SMT mode."
     }
   ],
   "adjustments": [],
@@ -956,7 +918,7 @@
       "url": "https://github.com/henry-the-frog/neural-net",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-17T03:42:36Z",
+      "pushedAt": "2026-04-18T00:15:53Z",
       "category": "featured"
     },
     {
@@ -1352,7 +1314,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-17T03:54:28Z",
+      "pushedAt": "2026-04-18T04:15:44Z",
       "category": "utility"
     },
     {
@@ -2752,16 +2714,16 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 23041,
+    "totalTests": 24048,
     "testCounts": {
       "fft": 151,
       "forth": 91,
       "git": 153,
-      "henrydb": 7057,
+      "henrydb": 7805,
       "huffman": 22,
       "lambda-calculus": 3121,
       "monkey-lang": 9989,
-      "neural-net": 1280,
+      "neural-net": 1539,
       "regex-engine": 75,
       "riscv-emulator": 916,
       "sat-solver": 38,
@@ -2771,7 +2733,7 @@
     "totalProjectCount": 13,
     "totalBlogPosts": 61,
     "streak": 7,
-    "totalTasksWeek": 74,
+    "totalTasksWeek": 16,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2795,11 +2757,11 @@
       "icon": "🗄️",
       "description": "A complete SQL database engine built from scratch in JavaScript. Features MVCC transactions, cost-ba",
       "category": "systems",
-      "tests": 7057,
-      "srcFiles": 1037,
-      "srcLines": 173838,
+      "tests": 7805,
+      "srcFiles": 1118,
+      "srcLines": 189037,
       "featureCount": 24,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2813,7 +2775,7 @@
       "srcFiles": 388,
       "srcLines": 43588,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/lambda-calculus",
       "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
@@ -2823,11 +2785,11 @@
       "icon": "🧠",
       "description": "A comprehensive neural network library built from scratch in JavaScript. No dependencies. 71 source ",
       "category": "ml",
-      "tests": 1280,
-      "srcFiles": 192,
-      "srcLines": 34007,
+      "tests": 1539,
+      "srcFiles": 215,
+      "srcLines": 38221,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:42:17 -0600",
+      "lastCommit": "2026-04-17 18:15:26 -0600",
       "url": "https://github.com/henry-the-frog/neural-net",
       "demoUrl": "https://henry-the-frog.github.io/neural-net/"
     },
@@ -2869,7 +2831,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2883,7 +2845,7 @@
       "srcFiles": 6,
       "srcLines": 2227,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     },
@@ -2897,7 +2859,7 @@
       "srcFiles": 5,
       "srcLines": 1628,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2911,7 +2873,7 @@
       "srcFiles": 4,
       "srcLines": 2192,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2925,7 +2887,7 @@
       "srcFiles": 2,
       "srcLines": 355,
       "featureCount": 14,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/sat-solver",
       "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
     },
@@ -2939,7 +2901,7 @@
       "srcFiles": 4,
       "srcLines": 842,
       "featureCount": 0,
-      "lastCommit": "2026-04-16 21:54:10 -0600",
+      "lastCommit": "2026-04-17 22:15:22 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2958,5 +2920,5 @@
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     }
   ],
-  "generated": "2026-04-17T04:15:31.918Z"
+  "generated": "2026-04-18T04:15:32.209Z"
 }

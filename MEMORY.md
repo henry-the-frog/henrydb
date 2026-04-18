@@ -34,6 +34,8 @@
 - **Integration boundaries are where bugs live:** MVCC+persistence, query cache+transactions, parser+executor, BufferPool+FileBackedHeap. Unit tests per-component pass; integration/stress tests find everything significant.
 - **Full test suite sweeps are highest-ROI:** Running all 642 files found 12+ bugs that targeted tests never surfaced (Apr 12). Do this at least twice/week.
 - **JS database footguns:** `null >= -10` → true (coercion); `Date.now()` sub-ms collisions; extra args silently ignored; `Object.values()` picks up qualified+unqualified keys; `_evalExpr` vs `_evalValue` silent type mismatch.
+- **Fast-path bypass (proven Apr 17):** Every performance optimization (cache, index scan, WAL-skipping) is a potential correctness bypass. If it doesn't go through the same checks as the slow path, it's a bug. Found 10+ instances in one day.
+- **Write-path coverage must be exhaustive:** If constraints are checked on INSERT, they MUST be checked on UPDATE, UPSERT, MERGE, FK CASCADE, and ALTER TABLE. Found 5 write paths missing constraint validation in one session.
 - **Layer boundary bugs (proven Apr 17):** When N abstraction layers exist, bugs cluster at boundaries. DDL crossing TransactionalDB→Database→FileWAL had 4 bugs from missing wiring. Cross-layer integration tests >> per-layer unit tests.
 - **Crash recovery needs 3 phases:** (1) Load catalog, (2) DDL schema-only replay, (3) Per-heap DML replay from lastCheckpointLsn. Missing any phase = silent data loss.
 - **Query shortcuts MUST check transaction state:** Any optimization (cache, adaptive engine, rewriter) must gate on txStatus.

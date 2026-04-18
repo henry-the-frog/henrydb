@@ -1,82 +1,187 @@
 {
-  "date": "2026-04-06",
+  "date": "2026-04-18",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "done",
-      "task": "Evening session direction: queue empty, 1h45m left. Review TASKS.md ideas/backlog, recent work. What has the highest learning value right now? Consider: HenryDB has 2017 tests and massive feature set — is there still depth to find? Or is a different project more interesting? Check memory/scratch/INDEX.md for knowledge gaps.",
-      "started": "2026-04-07T00:30:59.983Z",
-      "completed": "2026-04-07T00:31:53.224Z",
-      "duration_ms": 60000,
-      "summary": "Direction: build CDCL SAT solver. HenryDB at natural plateau (40K lines, 2017 tests). SAT solver is genuinely deep: different algorithmic domain, connects to type inference/SMT, well-bounded, blog-worthy. 1.5 hours available."
+      "status": "upcoming",
+      "task": "Review yesterday's 34-bug depth day. Set direction: HOT chains, file-wal fix, neural-net CI"
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Build CDCL SAT solver from scratch: DIMACS parser, unit propagation, DPLL backtracking, conflict-driven clause learning, watched literals, VSIDS decision heuristic, model extraction. Test with classic problems (pigeonhole, graph coloring, Sudoku). Blog post.",
-      "task": null,
-      "started": "2026-04-07T00:32:19.269Z",
-      "completed": "2026-04-07T00:32:42.835Z",
-      "duration_ms": 30000,
-      "summary": "Planned 2 BUILD tasks for CDCL SAT solver. Loaded constraint-solving scratch notes with 1UIP, watched-lit, and VSIDS details."
-    },
-    {
-      "id": "T7",
-      "mode": "BUILD",
-      "task": "Build complete CDCL SAT solver: DIMACS parser, Clause+Literal types, 2-watched-literal propagation (qhead pattern), 1UIP conflict analysis (MiniSat-style single walk), VSIDS decision heuristic, non-chronological backtracking, model extraction. Test: simple SAT/UNSAT, unit clauses, pure literals, pigeonhole (UNSAT proof), random 3-SAT at phase transition, graph coloring. Target: 60+ tests.",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-07T00:32:51.805Z",
-      "completed": "2026-04-07T00:45:58.980Z",
-      "duration_ms": 1200000,
-      "summary": "Built CDCL SAT solver: 2-watched-literal propagation, 1UIP conflict analysis, VSIDS heuristic, non-chronological backjumping, clause minimization, restarts. 5 problem encoders (pigeonhole, N-queens, graph coloring, sudoku, random 3-SAT) + DIMACS parser. Found and fixed critical bug: literal negation in analyze was inverting lower-level literals, causing unsound learned clauses. 52 tests pass including 12-queens, Petersen graph 3-coloring, hard sudoku."
-    },
-    {
-      "id": "T8",
-      "mode": "BUILD",
-      "task": "Build SAT applications: Sudoku-to-SAT encoder, N-Queens encoder, graph coloring encoder. Interactive CLI that reads DIMACS or accepts problem descriptions. Add clause minimization to learned clauses.",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-07T00:46:11.228Z",
-      "completed": "2026-04-07T00:48:58.880Z",
-      "duration_ms": 600000,
-      "summary": "Built SMT solver (DPLL(T)) on top of CDCL: backtrackable union-find, EUF theory solver with congruence closure, bounds-based LIA solver, S-expression parser. Encoders already done in T7. 83 total tests (52 SAT + 31 SMT), all passing."
+      "status": "upcoming",
+      "goal": "HenryDB HOT chains: secondary index + MVCC snapshot after UPDATE",
+      "task": null
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "done",
-      "task": "placeholder",
-      "project": "sat-solver",
-      "started": "2026-04-07T00:49:10.159Z",
-      "completed": "2026-04-07T00:49:54.057Z",
-      "duration_ms": 300000,
-      "summary": "Built interactive CLI: sudoku, queens, pigeonhole, random 3-SAT, SMT mode. All using the CDCL solver. 8-Queens solves in 15ms with 22 conflicts."
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T2",
+      "project": "henrydb"
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard, knowledge capture, daily log",
-      "started": "2026-04-07T00:50:04.306Z",
-      "completed": "2026-04-18T04:15:07.409Z",
-      "summary": " [auto-resolved: orphaned in-progress task]"
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard health, email check"
     },
     {
       "id": "T5",
       "mode": "THINK",
       "status": "upcoming",
-      "task": "Reflect on SAT solver: what was hard, what connects to SMT/type inference, what would I build next?"
+      "task": "Reflect on HOT chains progress. Assess complexity and next steps"
     },
     {
       "id": "T6",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix file-wal.test.js double-logging + HenryDB regression sweep",
+      "task": null
+    },
+    {
+      "id": "T7",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": "Write blog post about building a SAT solver from scratch",
-      "project": "sat-solver"
+      "task": null,
+      "plan_ref": "T6",
+      "project": "henrydb"
+    },
+    {
+      "id": "T8",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard, knowledge capture"
+    },
+    {
+      "id": "T9",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-day check-in. Are we going deep enough? Review test coverage gaps"
+    },
+    {
+      "id": "T10",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Neural-net CI failures: diagnose and fix ongoing test failures on main",
+      "task": null
+    },
+    {
+      "id": "T11",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T10",
+      "project": "neural-net"
+    },
+    {
+      "id": "T12",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard, check PRs"
+    },
+    {
+      "id": "T13",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Research HOT chains in PostgreSQL source — how does pg decide HOT vs non-HOT update?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T14",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Evening reflection: what patterns emerged today? Any new scratch notes needed?"
+    },
+    {
+      "id": "T15",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Explore stored procedure / CREATE FUNCTION design for HenryDB — survey approaches",
+      "project": "henrydb"
+    },
+    {
+      "id": "T16",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping: git push all changes, update daily log"
     }
   ],
-  "updated_at": "2026-04-07T00:50:04.306Z"
+  "focusProjects": [
+    "henrydb",
+    "neural-net"
+  ],
+  "backlog": [],
+  "adjustments": [
+    {
+      "time": "2026-04-18T14:01:21.137Z",
+      "msg": "Added T1 (THINK) after end: Review yesterday's 34-bug depth day. Set direction: HOT chains, file-wal fix, neural-net CI"
+    },
+    {
+      "time": "2026-04-18T14:01:28.315Z",
+      "msg": "Added T2 (PLAN) after T1: HenryDB HOT chains: secondary index + MVCC snapshot after UPDATE"
+    },
+    {
+      "time": "2026-04-18T14:01:39.000Z",
+      "msg": "Focus set: [henrydb, neural-net]"
+    },
+    {
+      "time": "2026-04-18T14:01:50.028Z",
+      "msg": "Added T3 (BUILD) after T2: null"
+    },
+    {
+      "time": "2026-04-18T14:01:50.146Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: git push, dashboard health, email check"
+    },
+    {
+      "time": "2026-04-18T14:01:50.264Z",
+      "msg": "Added T5 (THINK) after T4: Reflect on HOT chains progress. Assess complexity and next steps"
+    },
+    {
+      "time": "2026-04-18T14:01:50.381Z",
+      "msg": "Added T6 (PLAN) after T5: Fix file-wal.test.js double-logging + HenryDB regression sweep"
+    },
+    {
+      "time": "2026-04-18T14:01:50.498Z",
+      "msg": "Added T7 (BUILD) after T6: null"
+    },
+    {
+      "time": "2026-04-18T14:01:50.618Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: git push, dashboard, knowledge capture"
+    },
+    {
+      "time": "2026-04-18T14:01:50.736Z",
+      "msg": "Added T9 (THINK) after T8: Mid-day check-in. Are we going deep enough? Review test coverage gaps"
+    },
+    {
+      "time": "2026-04-18T14:01:50.854Z",
+      "msg": "Added T10 (PLAN) after T9: Neural-net CI failures: diagnose and fix ongoing test failures on main"
+    },
+    {
+      "time": "2026-04-18T14:01:50.971Z",
+      "msg": "Added T11 (BUILD) after T10: null"
+    },
+    {
+      "time": "2026-04-18T14:01:51.089Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: git push, dashboard, check PRs"
+    },
+    {
+      "time": "2026-04-18T14:01:51.207Z",
+      "msg": "Added T13 (EXPLORE) after T12: Research HOT chains in PostgreSQL source — how does pg decide HOT vs non-HOT update?"
+    },
+    {
+      "time": "2026-04-18T14:01:51.324Z",
+      "msg": "Added T14 (THINK) after T13: Evening reflection: what patterns emerged today? Any new scratch notes needed?"
+    },
+    {
+      "time": "2026-04-18T14:01:51.443Z",
+      "msg": "Added T15 (EXPLORE) after T14: Explore stored procedure / CREATE FUNCTION design for HenryDB — survey approaches"
+    },
+    {
+      "time": "2026-04-18T14:01:51.560Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Final housekeeping: git push all changes, update daily log"
+    }
+  ]
 }
