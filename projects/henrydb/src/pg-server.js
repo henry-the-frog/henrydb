@@ -834,6 +834,71 @@ function handleConnection(socket, db) {
     socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
   }
 
+  function copyOutResponse(numColumns) {
+    const len = 4 + 1 + 2 + numColumns * 2;
+    const buf = Buffer.alloc(1 + len);
+    buf[0] = 0x48; // 'H' — CopyOutResponse
+    writeInt32BE(buf, len, 1);
+    buf[5] = 0; // text format
+    buf[6] = (numColumns >> 8) & 0xff;
+    buf[7] = numColumns & 0xff;
+    for (let i = 0; i < numColumns; i++) {
+      buf[8 + i * 2] = 0;
+      buf[9 + i * 2] = 0;
+    }
+    return buf;
+  }
+
+  function copyDataMsg(data) {
+    const dataBuf = Buffer.from(data, 'utf8');
+    const len = 4 + dataBuf.length;
+    const buf = Buffer.alloc(1 + len);
+    buf[0] = 0x64; // 'd' — CopyData
+    writeInt32BE(buf, len, 1);
+    dataBuf.copy(buf, 5);
+    return buf;
+  }
+
+  function copyDoneMsg() {
+    const buf = Buffer.alloc(5);
+    buf[0] = 0x63; // 'c' — CopyDone
+    writeInt32BE(buf, 4, 1);
+    return buf;
+  }
+
+  function handleCopyOut(socket, db, tableName, columns) {
+    const table = db.tables?.get(tableName) || db.tables?.get(tableName.toLowerCase());
+    if (!table) {
+      socket.write(errorResponse('ERROR', '42P01', `Table "${tableName}" does not exist`));
+      return;
+    }
+
+    const colNames = columns || table.schema.map(c => c.name);
+    const colIndices = colNames.map(name => table.schema.findIndex(c => c.name === name));
+
+    try {
+      socket.write(copyOutResponse(colNames.length));
+
+      let rowCount = 0;
+      const result = executeWithIntercept(`SELECT ${colNames.join(', ')} FROM ${tableName}`);
+      if (result.rows) {
+        for (const row of result.rows) {
+          const values = colNames.map(c => {
+            const val = row[c];
+            return val === null || val === undefined ? '\\N' : String(val);
+          });
+          socket.write(copyDataMsg(values.join('\t') + '\n'));
+          rowCount++;
+        }
+      }
+
+      socket.write(copyDoneMsg());
+      socket.write(commandComplete(`COPY ${rowCount}`));
+    } catch (err) {
+      socket.write(errorResponse('ERROR', '42000', err.message));
+    }
+  }
+
   function handleQuery(payload, socket, db) {
     // payload is the query string, null-terminated
     const query = payload.slice(0, payload.length - 1).toString('utf8').trim();
@@ -856,6 +921,15 @@ function handleConnection(socket, db) {
           const columns = copyMatch[2] ? copyMatch[2].split(',').map(c => c.trim()) : null;
           handleCopyIn(socket, db, tableName, columns);
           return; // COPY takes over the connection until CopyDone
+        }
+
+        // Detect COPY TO STDOUT
+        const copyOutMatch = sql.match(/^COPY\s+(\w+)\s*(?:\(([^)]+)\))?\s+TO\s+STDOUT/i);
+        if (copyOutMatch) {
+          const tableName = copyOutMatch[1];
+          const columns = copyOutMatch[2] ? copyOutMatch[2].split(',').map(c => c.trim()) : null;
+          handleCopyOut(socket, db, tableName, columns);
+          continue;
         }
         // Track transaction state
         const upper = sql.toUpperCase().trim();
