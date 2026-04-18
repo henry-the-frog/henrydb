@@ -3,13 +3,14 @@
 ### Urgent
 
 ### Normal
-- HenryDB: Write path optimization (INSERT 167/sec, UPDATE 59/sec — bottleneck)
 - HenryDB: PG wire protocol (~200 lines, enables psql/pg client connection)
 - HenryDB: Persistent catalog (schema survives restart without catalog.json)
-- HenryDB: VACUUM should do incremental HOT chain pruning (currently rebuilds all indexes)
+- HenryDB: Histogram-based selectivity estimation (currently linear interpolation for ranges)
 - HenryDB: FileBackedHeap needs HOT chain support (currently falls back to index update)
+- HenryDB: VACUUM incremental HOT chain pruning (currently rebuilds all indexes)
 
 ### Low
+- HenryDB: btree.js/bplus-tree.js API inconsistency (search vs get) — unify
 - RISC-V: Liveness-based register allocation (current linear sequential, low priority)
 - Neural-net: Architecture exploration (attention mechanisms, new optimizers)
 
