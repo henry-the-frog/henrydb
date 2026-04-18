@@ -166,7 +166,7 @@ describe('Crash Recovery', () => {
     }
   });
 
-  it.skip('uncommitted transactions are NOT recovered — test double-logs WAL records', () => {
+  it('uncommitted transactions are NOT recovered', () => {
     const dbFile = testFile('db');
     const walFile = testFile('wal');
     files.push(dbFile, walFile);
@@ -177,20 +177,21 @@ describe('Crash Recovery', () => {
       const wal = new FileWAL(walFile);
       const heap = new FileBackedHeap('test', dm, bp, wal);
       
-      // Committed tx
+      // Committed tx — heap auto-logs inserts to WAL
       const tx1 = wal.allocateTxId();
       wal.beginTransaction(tx1);
+      heap._currentTxId = tx1;
       heap.insert([1, 'committed']);
-      wal.appendInsert(tx1, 'test', 0, 0, [1, 'committed']);
       wal.appendCommit(tx1);
       
-      // Uncommitted tx (data written to WAL buffer but no commit)
+      // Uncommitted tx (data written but no commit)
       const tx2 = wal.allocateTxId();
       wal.beginTransaction(tx2);
+      heap._currentTxId = tx2;
       heap.insert([2, 'uncommitted']);
-      wal.appendInsert(tx2, 'test', 0, 1, [2, 'uncommitted']);
       // No commit!
       
+      heap._currentTxId = 0;
       wal.close();
       dm.close();
     }
