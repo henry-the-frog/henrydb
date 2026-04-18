@@ -445,6 +445,9 @@ export class Database {
       case 'LISTEN': return this._listen(ast);
       case 'NOTIFY': return this._notify(ast);
       case 'UNLISTEN': return this._unlisten(ast);
+      case 'DECLARE_CURSOR': return this._declareCursor(ast);
+      case 'FETCH': return this._fetch(ast);
+      case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -2721,6 +2724,70 @@ export class Database {
     const pending = this._pendingNotifications || [];
     this._pendingNotifications = [];
     return pending;
+  }
+
+  // CURSOR support
+  _declareCursor(ast) {
+    if (!this._cursors) this._cursors = new Map();
+    const name = ast.name.toLowerCase();
+    if (this._cursors.has(name)) {
+      throw new Error(`Cursor "${name}" already exists`);
+    }
+    
+    // Execute the query and materialize all rows
+    const result = this.execute(ast.query);
+    this._cursors.set(name, {
+      rows: result.rows,
+      columns: result.rows.length > 0 ? Object.keys(result.rows[0]) : [],
+      position: 0,
+    });
+    
+    return { type: 'OK', message: `DECLARE CURSOR "${name}"` };
+  }
+
+  _fetch(ast) {
+    if (!this._cursors) this._cursors = new Map();
+    const name = ast.name.toLowerCase();
+    const cursor = this._cursors.get(name);
+    if (!cursor) {
+      throw new Error(`Cursor "${name}" does not exist`);
+    }
+
+    let rows;
+    if (ast.direction === 'FIRST') {
+      cursor.position = 0;
+      rows = cursor.rows.slice(0, 1);
+      cursor.position = 1;
+    } else if (ast.count === Infinity) {
+      // FETCH ALL
+      rows = cursor.rows.slice(cursor.position);
+      cursor.position = cursor.rows.length;
+    } else {
+      // FETCH n
+      const count = ast.count || 1;
+      rows = cursor.rows.slice(cursor.position, cursor.position + count);
+      cursor.position += rows.length;
+    }
+
+    return {
+      type: 'SELECT',
+      rows,
+      columns: cursor.columns,
+    };
+  }
+
+  _closeCursor(ast) {
+    if (!this._cursors) this._cursors = new Map();
+    if (ast.name === 'ALL') {
+      this._cursors.clear();
+    } else {
+      const name = ast.name.toLowerCase();
+      if (!this._cursors.has(name)) {
+        throw new Error(`Cursor "${name}" does not exist`);
+      }
+      this._cursors.delete(name);
+    }
+    return { type: 'OK', message: `CLOSE "${ast.name}"` };
   }
 
   _parseCsvLine(line, delimiter = ',') {

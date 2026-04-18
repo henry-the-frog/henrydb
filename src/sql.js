@@ -32,7 +32,7 @@ const KEYWORDS = new Set([
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
   'IF', 'EXISTS', 'PREPARE', 'DEALLOCATE', 'COPY', 'STDIN', 'STDOUT',
   'FORMAT', 'CSV', 'HEADER', 'DELIMITER', 'CURSOR', 'DECLARE', 'FETCH',
-  'CLOSE', 'LISTEN', 'NOTIFY',
+  'CLOSE', 'LISTEN', 'NOTIFY', 'FORWARD', 'NEXT', 'FIRST', 'SCROLL', 'FOR',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
@@ -336,6 +336,52 @@ export function parse(sql) {
     if (isKeyword('ALL')) { advance(); return { type: 'DEALLOCATE', name: 'ALL' }; }
     const name = (advance().originalValue || tokens[pos-1].value);
     return { type: 'DEALLOCATE', name };
+  }
+
+  // DECLARE name CURSOR FOR query
+  if (isKeyword('DECLARE')) {
+    advance();
+    const name = (advance().originalValue || tokens[pos-1].value);
+    // Skip optional SCROLL / NO SCROLL
+    while (isKeyword('SCROLL') || (peek().type === 'IDENT' && peek().value === 'NO')) advance();
+    if (isKeyword('CURSOR')) advance();
+    if (isKeyword('FOR')) advance();
+    // Collect remaining tokens as query SQL
+    const queryOpMap = { 'EQ': '=', 'NE': '!=', 'LT': '<', 'GT': '>', 'LE': '<=', 'GE': '>=' };
+    const queryTokens = [];
+    while (peek().type !== 'EOF') queryTokens.push(advance());
+    const querySql = queryTokens.map(t => {
+      if (t.type === 'STRING') return `'${t.value}'`;
+      if (t.type === 'NUMBER') return String(t.value);
+      if (t.type === 'PARAM') return `$${t.index}`;
+      if (queryOpMap[t.type]) return queryOpMap[t.type];
+      return t.originalValue || t.value || t.type;
+    }).join(' ');
+    return { type: 'DECLARE_CURSOR', name, query: querySql };
+  }
+
+  // FETCH [FORWARD|NEXT|ALL|n] [FROM|IN] name
+  if (isKeyword('FETCH')) {
+    advance();
+    let count = 1;
+    let direction = 'FORWARD';
+    if (isKeyword('ALL')) { advance(); count = Infinity; }
+    else if (isKeyword('FORWARD')) { advance(); if (peek().type === 'NUMBER') count = parseInt(advance().value, 10); }
+    else if (isKeyword('NEXT')) { advance(); count = 1; }
+    else if (isKeyword('FIRST')) { advance(); count = 1; direction = 'FIRST'; }
+    else if (peek().type === 'NUMBER') { count = parseInt(advance().value, 10); }
+    
+    if (isKeyword('FROM') || isKeyword('IN')) advance();
+    const name = (advance().originalValue || tokens[pos-1].value);
+    return { type: 'FETCH', name, count, direction };
+  }
+
+  // CLOSE name | ALL
+  if (isKeyword('CLOSE')) {
+    advance();
+    if (isKeyword('ALL')) { advance(); return { type: 'CLOSE_CURSOR', name: 'ALL' }; }
+    const name = (advance().originalValue || tokens[pos-1].value);
+    return { type: 'CLOSE_CURSOR', name };
   }
 
   // LISTEN channel
