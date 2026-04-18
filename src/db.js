@@ -2127,7 +2127,41 @@ export class Database {
       // Validate constraints (including FK) on the new values
       this._validateConstraints(table, newValues);
 
-      // Remove old index entries
+      // Determine if this is a HOT-eligible update (no indexed columns changed)
+      const indexedColumns = new Set();
+      for (const [colName] of table.indexes) {
+        if (colName.includes(',')) {
+          // Composite index
+          for (const c of colName.split(',').map(s => s.trim())) indexedColumns.add(c);
+        } else {
+          indexedColumns.add(colName);
+        }
+      }
+      
+      const updatedColumns = ast.assignments.map(a => a.column);
+      const indexedColumnsChanged = updatedColumns.some(col => indexedColumns.has(col));
+
+      // Try HOT update if no indexed columns changed
+      if (!indexedColumnsChanged && table.heap.hotUpdate) {
+        const hotRid = table.heap.hotUpdate(item.pageId, item.slotIdx, newValues);
+        if (hotRid) {
+          // HOT update successful — no index changes needed!
+          const txId = this._currentTxId || this._nextTxId++;
+          this.wal.appendUpdate(txId, ast.table, hotRid.pageId, hotRid.slotIdx, item.values, newValues);
+          if (!this._currentTxId) this.wal.appendCommit(txId);
+
+          updated++;
+          if (ast.returning) {
+            const retRow = {};
+            table.schema.forEach((c, i) => { retRow[c.name] = newValues[i]; });
+            returnedRows.push(retRow);
+          }
+          continue; // Skip regular update path
+        }
+        // HOT update failed (no space on page) — fall through to regular update
+      }
+
+      // Regular update: Remove old index entries
       for (const [colName, index] of table.indexes) {
         const oldKey = this._computeIndexKey(colName, item.values, table, ast.table);
         try { index.delete(oldKey, { pageId: item.pageId, slotIdx: item.slotIdx }); } catch {}
