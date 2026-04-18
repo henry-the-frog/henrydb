@@ -3014,6 +3014,99 @@ export class Database {
   }
 
     _checkpoint() {
+
+  // Serialization
+  toJSON() {
+    const data = {
+      tables: {},
+      views: {},
+      sequences: {},
+      indexCatalog: {},
+    };
+
+    for (const [name, table] of this.tables) {
+      const rows = [...table.heap.scan()].map(r => r.values);
+      data.tables[name] = {
+        schema: table.schema,
+        rows,
+        indexes: [...table.indexes.keys()],
+      };
+    }
+
+    for (const [name, view] of this.views) {
+      data.views[name] = view;
+    }
+
+    if (this._sequences) {
+      for (const [name, seq] of this._sequences) {
+        data.sequences[name] = { ...seq };
+      }
+    }
+
+    for (const [name, meta] of this.indexCatalog) {
+      data.indexCatalog[name] = meta;
+    }
+
+    return data;
+  }
+
+  static fromJSON(json) {
+    const db = new Database();
+    
+    // Recreate tables
+    for (const [name, tableData] of Object.entries(json.tables || {})) {
+      // Build CREATE TABLE SQL from schema
+      const cols = tableData.schema.map(c => {
+        let def = `${c.name} ${c.type || 'TEXT'}`;
+        if (c.primaryKey) def += ' PRIMARY KEY';
+        if (c.notNull) def += ' NOT NULL';
+        if (c.unique) def += ' UNIQUE';
+        if (c.defaultValue !== undefined && c.defaultValue !== null) def += ` DEFAULT ${typeof c.defaultValue === 'string' ? `'${c.defaultValue}'` : c.defaultValue}`;
+        return def;
+      }).join(', ');
+      
+      db.execute(`CREATE TABLE ${name} (${cols})`);
+      
+      // Insert rows
+      for (const row of tableData.rows) {
+        const vals = row.map(v => {
+          if (v === null) return 'NULL';
+          if (typeof v === 'string') return `'${v.replace(/'/g, "''")}'`;
+          return String(v);
+        }).join(', ');
+        db.execute(`INSERT INTO ${name} VALUES (${vals})`);
+      }
+      
+      // Recreate indexes
+      for (const colName of tableData.indexes) {
+        // Skip PK index (auto-created)
+        const isPk = tableData.schema.some(c => c.name === colName && c.primaryKey);
+        if (!isPk) {
+          db.execute(`CREATE INDEX idx_${name}_${colName} ON ${name} (${colName})`);
+        }
+      }
+    }
+
+    // Recreate views
+    for (const [name, viewData] of Object.entries(json.views || {})) {
+      if (viewData.sql) {
+        db.execute(`CREATE VIEW ${name} AS ${viewData.sql}`);
+      }
+    }
+
+    // Recreate sequences
+    for (const [name, seqData] of Object.entries(json.sequences || {})) {
+      db.execute(`CREATE SEQUENCE ${name} START WITH ${seqData.start} INCREMENT BY ${seqData.increment}${seqData.cycle ? ' CYCLE' : ''}`);
+      if (seqData.called) {
+        db._sequences.get(name).current = seqData.current;
+        db._sequences.get(name).called = true;
+      }
+    }
+
+    return db;
+  }
+
+  _checkpoint() {
     // CHECKPOINT command — creates a WAL checkpoint for durability
     // In the base Database class (no WAL), this is a no-op but still valid SQL.
     // TransactionalDatabase overrides this with real fuzzy checkpoint logic.
