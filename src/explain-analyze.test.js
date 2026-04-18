@@ -38,11 +38,12 @@ describe('EXPLAIN ANALYZE', () => {
     for (let i = 0; i < 50; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i})`);
     
     const result = db.execute('EXPLAIN ANALYZE SELECT * FROM t WHERE val > 25');
-    const scanOp = result.plan.find(p => p.operation === 'TABLE_SCAN');
-    assert.ok(scanOp);
-    assert.strictEqual(scanOp.table, 't');
-    assert.strictEqual(scanOp.total_table_rows, 50);
-    assert.strictEqual(scanOp.actual_rows, 24);
+    const scanOp = result.plan.find(p => p.node && p.node.includes('Scan'));
+    assert.ok(scanOp, 'Should have scan node');
+    assert.strictEqual(scanOp.relation, 't');
+    assert.ok(scanOp.actual_time_ms >= 0);
+    assert.ok(result.text.includes('Filter'));
+    assert.strictEqual(result.actual_rows, 24);
   });
 
   it('shows GROUP BY info', () => {
@@ -51,9 +52,10 @@ describe('EXPLAIN ANALYZE', () => {
     for (let i = 0; i < 100; i++) db.execute(`INSERT INTO data VALUES (${i}, 'g${i % 5}', ${i})`);
     
     const result = db.execute('EXPLAIN ANALYZE SELECT grp, COUNT(*) FROM data GROUP BY grp');
-    const groupOp = result.plan.find(p => p.operation === 'GROUP_BY');
-    assert.ok(groupOp);
-    assert.strictEqual(groupOp.groups, 5);
+    const groupOp = result.plan.find(p => p.node === 'HashAggregate');
+    assert.ok(groupOp, 'Should have HashAggregate node');
+    assert.strictEqual(groupOp.actual_groups, 5);
+    assert.ok(result.text.includes('HashAggregate'));
   });
 
   it('shows SORT info', () => {
@@ -62,9 +64,10 @@ describe('EXPLAIN ANALYZE', () => {
     for (let i = 0; i < 20; i++) db.execute(`INSERT INTO t VALUES (${i}, ${20 - i})`);
     
     const result = db.execute('EXPLAIN ANALYZE SELECT * FROM t ORDER BY val');
-    const sortOp = result.plan.find(p => p.operation === 'SORT');
-    assert.ok(sortOp);
-    assert.strictEqual(sortOp.rows_sorted, 20);
+    const sortOp = result.plan.find(p => p.node === 'Sort');
+    assert.ok(sortOp, 'Should have Sort node');
+    assert.strictEqual(sortOp.actual_rows, 20);
+    assert.ok(result.text.includes('Sort Key'));
   });
 
   it('regular EXPLAIN returns plan without execution', () => {

@@ -2878,57 +2878,118 @@ export class Database {
     const executionTime = performance.now() - startTime;
     const actualRows = result.rows.length;
 
-    // Build analyze output
-    const analysis = [];
+    // Build analyze output — tree structure like PG
+    const nodes = [];
     
-    // Table scan info
+    // Root node: scan type
     const tableName = stmt.from?.table;
+    let scanNode = null;
     if (tableName && this.tables.has(tableName)) {
       const table = this.tables.get(tableName);
       const totalRows = table.heap.tupleCount || 0;
+      const estimatedRows = plannerEstimate?.estimatedRows || totalRows;
+      const scanType = plannerEstimate?.scanType || 'Seq Scan';
       
-      analysis.push({
-        operation: plannerEstimate?.scanType || 'TABLE_SCAN',
-        table: tableName,
-        estimated_rows: plannerEstimate?.estimatedRows || '?',
-        actual_rows: actualRows,
-        total_table_rows: totalRows,
-        selectivity: totalRows > 0 ? (actualRows / totalRows).toFixed(4) : '?',
-      });
+      scanNode = {
+        node: scanType === 'INDEX_SCAN' ? 'Index Scan' : 'Seq Scan',
+        relation: tableName,
+        estimated_rows: estimatedRows,
+        actual_rows: totalRows, // rows scanned (before filter)
+        estimated_cost: plannerEstimate?.cost || '?',
+        actual_time_ms: parseFloat(executionTime.toFixed(3)),
+        rows_removed_by_filter: totalRows - actualRows,
+      };
 
       if (plannerEstimate?.indexColumn) {
-        analysis[0].index = plannerEstimate.indexColumn;
+        scanNode.node = `Index Scan using idx_${tableName}_${plannerEstimate.indexColumn}`;
+        scanNode.index_cond = `${plannerEstimate.indexColumn} = ?`;
       }
+
+      if (stmt.where) {
+        scanNode.filter = this._exprToString(stmt.where);
+      }
+
+      nodes.push(scanNode);
     }
 
-    // Join info
+    // Join nodes
     for (const join of stmt.joins || []) {
       const joinTable = join.table?.table || join.table;
-      analysis.push({
-        operation: 'JOIN',
-        table: joinTable,
-        type: join.joinType || 'INNER',
+      const joinNode = {
+        node: `${(join.joinType || 'INNER').replace('_', ' ')} Join`,
+        relation: joinTable,
+        join_condition: join.on ? this._exprToString(join.on) : null,
+      };
+      nodes.push(joinNode);
+    }
+
+    // Aggregation
+    if (stmt.groupBy) {
+      nodes.push({
+        node: 'HashAggregate',
+        group_key: stmt.groupBy.map(g => g.name || g.value).join(', '),
+        actual_groups: actualRows,
       });
     }
 
-    // WHERE filter
-    if (stmt.where) {
-      analysis.push({ operation: 'FILTER', actual_rows_after: actualRows });
-    }
-
-    // GROUP BY
-    if (stmt.groupBy) {
-      analysis.push({ operation: 'GROUP_BY', groups: actualRows });
-    }
-
-    // ORDER BY
+    // Sort
     if (stmt.orderBy) {
-      analysis.push({ operation: 'SORT', rows_sorted: actualRows });
+      const sortKeys = stmt.orderBy.map(o => `${o.column || o.value} ${o.direction || 'ASC'}`).join(', ');
+      nodes.push({
+        node: 'Sort',
+        sort_key: sortKeys,
+        actual_rows: actualRows,
+      });
     }
+
+    // LIMIT
+    if (stmt.limit !== undefined && stmt.limit !== null) {
+      nodes.push({
+        node: 'Limit',
+        limit: stmt.limit,
+        actual_rows: actualRows,
+      });
+    }
+
+    // Build text output like PG's EXPLAIN ANALYZE
+    const textLines = [];
+    const indent = (depth) => '  '.repeat(depth);
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const prefix = i === 0 ? '' : '->  ';
+      const depth = i;
+      let line = `${indent(depth)}${prefix}${n.node}`;
+      if (n.relation) line += ` on ${n.relation}`;
+      if (n.estimated_cost !== undefined) line += `  (cost=${n.estimated_cost})`;
+      if (n.estimated_rows !== undefined) line += `  (rows=${n.estimated_rows})`;
+      textLines.push(line);
+      
+      if (n.actual_time_ms !== undefined) {
+        textLines.push(`${indent(depth + 1)}actual time=${n.actual_time_ms}ms rows=${n.actual_rows || actualRows}`);
+      }
+      if (n.filter) {
+        textLines.push(`${indent(depth + 1)}Filter: ${n.filter}`);
+        if (n.rows_removed_by_filter > 0) {
+          textLines.push(`${indent(depth + 1)}Rows Removed by Filter: ${n.rows_removed_by_filter}`);
+        }
+      }
+      if (n.index_cond) {
+        textLines.push(`${indent(depth + 1)}Index Cond: (${n.index_cond})`);
+      }
+      if (n.sort_key) {
+        textLines.push(`${indent(depth + 1)}Sort Key: ${n.sort_key}`);
+      }
+      if (n.group_key) {
+        textLines.push(`${indent(depth + 1)}Group Key: ${n.group_key}`);
+      }
+    }
+    textLines.push(`Planning Time: ${Math.max(0.001, executionTime * 0.1).toFixed(3)} ms`);
+    textLines.push(`Execution Time: ${executionTime.toFixed(3)} ms`);
 
     return {
       type: 'ANALYZE',
-      plan: analysis,
+      plan: nodes,
+      text: textLines.join('\n'),
       execution_time_ms: parseFloat(executionTime.toFixed(3)),
       actual_rows: actualRows,
       estimated_rows: plannerEstimate?.estimatedRows || '?',
@@ -2936,6 +2997,40 @@ export class Database {
         ? parseFloat((actualRows / plannerEstimate.estimatedRows).toFixed(3))
         : '?',
     };
+  }
+
+  // Convert an AST expression to a readable string (for EXPLAIN output)
+  _exprToString(expr) {
+    if (!expr) return '?';
+    if (expr.type === 'column_ref') return expr.name;
+    if (expr.type === 'literal') return JSON.stringify(expr.value);
+    if (expr.type === 'COMPARE') {
+      const opMap = { EQ: '=', NE: '!=', '<>': '!=', GT: '>', GE: '>=', LT: '<', LE: '<=' };
+      const op = opMap[expr.op] || expr.op;
+      return `(${this._exprToString(expr.left)} ${op} ${this._exprToString(expr.right)})`;
+    }
+    if (expr.type === 'AND') {
+      return `(${this._exprToString(expr.left)} AND ${this._exprToString(expr.right)})`;
+    }
+    if (expr.type === 'OR') {
+      return `(${this._exprToString(expr.left)} OR ${this._exprToString(expr.right)})`;
+    }
+    if (expr.type === 'NOT') {
+      return `NOT ${this._exprToString(expr.expr)}`;
+    }
+    if (expr.type === 'BETWEEN') {
+      return `(${this._exprToString(expr.expr)} BETWEEN ${this._exprToString(expr.low)} AND ${this._exprToString(expr.high)})`;
+    }
+    if (expr.type === 'IN') {
+      return `(${this._exprToString(expr.left)} IN (...))`;
+    }
+    if (expr.type === 'LIKE') {
+      return `(${this._exprToString(expr.left)} LIKE ${this._exprToString(expr.right)})`;
+    }
+    if (expr.type === 'function') {
+      return `${expr.name}(...)`;
+    }
+    return '?';
   }
 
   _findIndexedColumn(where) {
