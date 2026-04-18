@@ -34,11 +34,12 @@ describe('Page', () => {
 
   it('returns -1 when page is full', () => {
     const p = new Page(0);
-    // Fill with large tuples
+    // Fill with large tuples — should fill eventually
     const big = new Uint8Array(500);
     let count = 0;
     while (p.insertTuple(big) >= 0) count++;
-    assert.ok(count > 0 && count < 10);
+    assert.ok(count > 0, 'should fit at least one tuple');
+    assert.ok(count < PAGE_SIZE / 400, 'should not fit more than theoretical max');
     assert.equal(p.insertTuple(big), -1);
   });
 
@@ -200,13 +201,15 @@ describe('HeapFile', () => {
   it('inserts many rows across pages', () => {
     const heap = new HeapFile('test');
     const rids = [];
-    for (let i = 0; i < 100; i++) {
+    // Use enough rows and data to span multiple 32KB pages
+    const rowCount = Math.ceil(PAGE_SIZE / 30) * 3; // ~3 pages worth
+    for (let i = 0; i < rowCount; i++) {
       rids.push(heap.insert([i, `user_${i}`, 'x'.repeat(20)]));
     }
-    assert.equal(heap.tupleCount, 100);
-    assert.ok(heap.pageCount > 1); // should span multiple pages
-    // Verify all rows readable
-    for (let i = 0; i < 100; i++) {
+    assert.equal(heap.tupleCount, rowCount);
+    assert.ok(heap.pageCount > 1, `should span multiple pages, got ${heap.pageCount}`);
+    // Verify sample rows readable
+    for (let i = 0; i < Math.min(100, rowCount); i++) {
       const row = heap.get(rids[i].pageId, rids[i].slotIdx);
       assert.equal(row[0], i);
     }

@@ -1,7 +1,8 @@
 // page.js — Page-based storage engine for HenryDB
-// Fixed-size 4KB pages with slotted page layout
+// Configurable page size (default 32KB) with slotted page layout
 
-export const PAGE_SIZE = 4096;
+export let PAGE_SIZE = 32768; // 32KB default — supports rows up to ~30KB
+export function setPageSize(size) { PAGE_SIZE = size; }
 const HEADER_SIZE = 16; // pageId(4) + numSlots(2) + freeSpaceEnd(2) + flags(2) + reserved(6)
 
 // ===== Page =====
