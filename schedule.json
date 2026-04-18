@@ -1637,6 +1637,17 @@
       "completed": "2026-04-18T19:43:07.549Z",
       "duration_ms": 600000,
       "summary": "17 comprehensive PG integration tests: RETURNING, ON CONFLICT, aggregates, GROUP BY/HAVING, window functions, subqueries, JOINs, LEFT JOIN, UDFs, information_schema, SET/SHOW, version(), EXPLAIN, string functions. All pass through pg npm client."
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add LATERAL join support to HenryDB",
+      "project": "henrydb",
+      "started": "2026-04-18T19:45:06.050Z",
+      "completed": "2026-04-18T19:45:45.823Z",
+      "duration_ms": 60000,
+      "summary": "LATERAL join already implemented! Parser + executor both handle it. Tested with LATERAL subquery referencing outer columns. Works correctly."
     }
   ],
   "focusProjects": [
@@ -2252,6 +2263,10 @@
     {
       "time": "2026-04-18T19:39:23.343Z",
       "msg": "Added T153 (BUILD) after end: Write comprehensive PG integration test: RETURNING, ON CONFLICT, COPY, aggregates, window functions, CTEs, subqueries, joins, all through pg npm client"
+    },
+    {
+      "time": "2026-04-18T19:45:01.510Z",
+      "msg": "Added T154 (BUILD) after end: Add LATERAL join support to HenryDB"
     }
   ]
 }
