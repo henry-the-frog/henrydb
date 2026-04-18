@@ -1690,8 +1690,15 @@ export function parse(sql) {
       }
       throw new Error('INTERVAL requires a string literal');
     }
-    // Parenthesized expression
+    // Parenthesized expression or scalar subquery
     if (t.type === '(') {
+      // Check for scalar subquery: (SELECT ...)
+      if (tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'SELECT') {
+        advance(); // consume '('
+        const subquery = parseSelect();
+        expect(')');
+        return { type: 'scalar_subquery', subquery };
+      }
       advance(); // consume '('
       const expr = parseExpr();
       expect(')');

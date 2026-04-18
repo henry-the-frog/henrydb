@@ -7239,6 +7239,12 @@ export class Database {
       const firstRow = result[0];
       return Object.values(firstRow)[0];
     }
+    if (node.type === 'scalar_subquery') {
+      const result = this._evalSubquery(node.subquery, row);
+      if (result.length === 0) return null;
+      const firstRow = result[0];
+      return Object.values(firstRow)[0];
+    }
     if (node.type === 'function_call' || node.type === 'function') {
       return this._evalFunction(node.func, node.args, row);
     }
