@@ -30,7 +30,9 @@ const KEYWORDS = new Set([
   'ANALYZE', 'RETURNING',
   'MATERIALIZED', 'REFRESH',
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
-  'IF', 'EXISTS', 'PREPARE', 'DEALLOCATE',
+  'IF', 'EXISTS', 'PREPARE', 'DEALLOCATE', 'COPY', 'STDIN', 'STDOUT',
+  'FORMAT', 'CSV', 'HEADER', 'DELIMITER', 'CURSOR', 'DECLARE', 'FETCH',
+  'CLOSE', 'LISTEN', 'NOTIFY',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
@@ -223,6 +225,62 @@ export function parse(sql) {
   if (isKeyword('ROLLBACK')) { advance(); return { type: 'ROLLBACK' }; }
   if (isKeyword('VACUUM')) { advance(); let table = null; let incremental = false; let maxPages = null; if (peek().type === 'IDENT' && peek().value === 'INCREMENTAL') { advance(); incremental = true; if (peek().type === 'NUMBER') { maxPages = parseInt(advance().value, 10); } } if (peek().type === 'IDENT' || peek().type === 'KEYWORD') table = (advance().originalValue || tokens[pos-1].value); return { type: 'VACUUM', table, incremental, maxPages }; }
   if (isKeyword('CHECKPOINT')) { advance(); return { type: 'CHECKPOINT' }; }
+
+  // COPY table FROM 'data' | STDIN [WITH (FORMAT CSV, HEADER true, DELIMITER ',')]
+  // COPY table TO STDOUT [WITH (FORMAT CSV, HEADER true)]
+  // COPY (query) TO STDOUT [WITH ...]
+  if (isKeyword('COPY')) {
+    advance();
+    let table = null, query = null;
+    if (peek().type === '(' || peek().value === '(') {
+      // COPY (query) TO ...
+      advance(); // (
+      // Simple: collect tokens until matching )
+      const queryTokens = [];
+      let depth = 1;
+      while (depth > 0 && peek().type !== 'EOF') {
+        if (peek().type === '(' || peek().value === '(') depth++;
+        if (peek().type === ')' || peek().value === ')') depth--;
+        if (depth > 0) queryTokens.push(advance());
+      }
+      if (peek().type === ')' || peek().value === ')') advance();
+      const queryOpMap = { 'EQ': '=', 'NE': '!=', 'LT': '<', 'GT': '>', 'LE': '<=', 'GE': '>=' };
+      query = queryTokens.map(t => {
+        if (t.type === 'STRING') return `'${t.value}'`;
+        if (t.type === 'NUMBER') return String(t.value);
+        if (queryOpMap[t.type]) return queryOpMap[t.type];
+        return t.originalValue || t.value || t.type;
+      }).join(' ');
+    } else {
+      table = (advance().originalValue || tokens[pos-1].value);
+    }
+    
+    let direction = null, source = null;
+    if (isKeyword('FROM')) { advance(); direction = 'FROM'; }
+    else if (isKeyword('TO')) { advance(); direction = 'TO'; }
+    
+    if (isKeyword('STDIN')) { advance(); source = 'STDIN'; }
+    else if (isKeyword('STDOUT')) { advance(); source = 'STDOUT'; }
+    else if (peek().type === 'STRING') { source = advance().value; }
+    
+    // Parse WITH options
+    const options = { format: 'text', header: false, delimiter: '\t' };
+    if (isKeyword('WITH')) {
+      advance();
+      if (peek().type === '(' || peek().value === '(') advance();
+      while (peek().type !== ')' && peek().value !== ')' && peek().type !== 'EOF') {
+        if (isKeyword('FORMAT')) { advance(); options.format = (advance().value || '').toLowerCase(); if (options.format === 'csv') options.delimiter = ','; }
+        else if (isKeyword('CSV')) { options.format = 'csv'; options.delimiter = ','; }
+        else if (isKeyword('HEADER')) { advance(); options.header = true; if (peek().value === 'true' || peek().value === 'TRUE') advance(); }
+        else if (isKeyword('DELIMITER')) { advance(); options.delimiter = advance().value; }
+        else advance();
+        if (peek().type === ',' || peek().value === ',') advance();
+      }
+      if (peek().type === ')' || peek().value === ')') advance();
+    }
+    
+    return { type: 'COPY', table, query, direction, source, options };
+  }
 
   // PREPARE name [(type, type, ...)] AS statement
   if (isKeyword('PREPARE')) {

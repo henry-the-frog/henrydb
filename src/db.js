@@ -441,6 +441,7 @@ export class Database {
       case 'PREPARE': return this._prepare(ast);
       case 'EXECUTE_PREPARED': return this._executePrepared(ast);
       case 'DEALLOCATE': return this._deallocate(ast);
+      case 'COPY': return this._copy(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -2556,6 +2557,136 @@ export class Database {
       this._prepared.delete(name);
     }
     return { type: 'OK', message: 'DEALLOCATE' };
+  }
+
+  // COPY command: bulk import/export
+  _copy(ast) {
+    if (ast.direction === 'TO') {
+      return this._copyTo(ast);
+    } else if (ast.direction === 'FROM') {
+      return this._copyFrom(ast);
+    }
+    throw new Error('COPY requires FROM or TO direction');
+  }
+
+  _copyTo(ast) {
+    const { format, header, delimiter } = ast.options;
+    let rows;
+    
+    if (ast.query) {
+      // COPY (query) TO
+      const result = this.execute(ast.query);
+      rows = result.rows;
+    } else if (ast.table) {
+      const result = this.execute(`SELECT * FROM ${ast.table}`);
+      rows = result.rows;
+    } else {
+      throw new Error('COPY TO requires a table or query');
+    }
+
+    if (!rows || rows.length === 0) {
+      return { type: 'COPY', data: '', rowCount: 0 };
+    }
+
+    const columns = Object.keys(rows[0]);
+    const lines = [];
+
+    if (header) {
+      lines.push(columns.join(delimiter));
+    }
+
+    for (const row of rows) {
+      const values = columns.map(col => {
+        const val = row[col];
+        if (val === null || val === undefined) return '\\N';
+        const str = String(val);
+        if (format === 'csv' && (str.includes(delimiter) || str.includes('"') || str.includes('\n'))) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      });
+      lines.push(values.join(delimiter));
+    }
+
+    return { type: 'COPY', data: lines.join('\n'), rowCount: rows.length };
+  }
+
+  _copyFrom(ast) {
+    if (!ast.table) throw new Error('COPY FROM requires a table name');
+    const table = this.tables.get(ast.table);
+    if (!table) throw new Error(`Table '${ast.table}' does not exist`);
+
+    const data = ast.source;
+    if (!data || data === 'STDIN') {
+      return { type: 'COPY', message: 'COPY FROM STDIN ready', rowCount: 0 };
+    }
+
+    const { format, header, delimiter } = ast.options;
+    const lines = data.split('\n').filter(l => l.trim());
+    
+    let startIdx = 0;
+    let columnNames = table.schema.map(c => c.name);
+    
+    if (header && lines.length > 0) {
+      const headerLine = lines[0];
+      columnNames = this._parseCsvLine(headerLine, delimiter);
+      startIdx = 1;
+    }
+
+    let rowCount = 0;
+    for (let i = startIdx; i < lines.length; i++) {
+      const values = this._parseCsvLine(lines[i], delimiter);
+      // Build INSERT statement
+      const insertValues = values.map((v, idx) => {
+        if (v === '\\N' || v === '') return 'NULL';
+        const col = table.schema[idx];
+        if (!col) return `'${v.replace(/'/g, "''")}'`;
+        const type = (col.type || '').toUpperCase();
+        if (['INT', 'INTEGER', 'FLOAT', 'DOUBLE', 'REAL', 'NUMERIC', 'DECIMAL', 'BIGINT', 'SMALLINT', 'SERIAL'].includes(type)) {
+          const num = Number(v);
+          return isNaN(num) ? `'${v.replace(/'/g, "''")}'` : String(num);
+        }
+        return `'${v.replace(/'/g, "''")}'`;
+      }).join(', ');
+
+      this.execute(`INSERT INTO ${ast.table} VALUES (${insertValues})`);
+      rowCount++;
+    }
+
+    return { type: 'COPY', message: `COPY ${rowCount}`, rowCount };
+  }
+
+  _parseCsvLine(line, delimiter = ',') {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQuotes) {
+        if (ch === '"') {
+          if (i + 1 < line.length && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          current += ch;
+        }
+      } else {
+        if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === delimiter) {
+          values.push(current);
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+    }
+    values.push(current);
+    return values;
   }
 
     _checkpoint() {
