@@ -85,6 +85,27 @@ class BufferedPage {
     return true;
   }
 
+  /**
+   * Update a tuple in-place: delete old slot, insert new data at current free space.
+   * Returns true on success, false if no space.
+   */
+  updateTuple(slotIdx, newData) {
+    const numSlots = this.getNumSlots();
+    if (slotIdx < 0 || slotIdx >= numSlots) return false;
+    // Mark old slot as deleted
+    const slotOffset = HEADER_SIZE + slotIdx * SLOT_SIZE;
+    this._view.setUint16(slotOffset + 2, 0, true);
+    // Insert new data at free space end
+    const freeEnd = this.freeSpaceEnd();
+    const offset = freeEnd - newData.length;
+    if (offset < HEADER_SIZE + numSlots * SLOT_SIZE) return false; // No space
+    this.buf.set(newData, offset);
+    this._view.setUint16(slotOffset, offset, true);
+    this._view.setUint16(slotOffset + 2, newData.length, true);
+    this.setFreeSpaceEnd(offset);
+    return true;
+  }
+
   *scanTuples() {
     const numSlots = this.getNumSlots();
     for (let i = 0; i < numSlots; i++) {
@@ -199,6 +220,26 @@ export class FileBackedHeap {
     this._unpinPage(pageId, false);
     if (!tuple) return null;
     return decodeTuple(tuple);
+  }
+
+  /**
+   * Update a tuple in-place without WAL logging.
+   * Used by ALTER TABLE backfill — schema changes are logged via DDL WAL records,
+   * and recovery replays schema-only changes, so the data doesn't need separate WAL entries.
+   * Updates pageLSN to prevent stale-page redo.
+   */
+  updateInPlace(pageId, slotIdx, newValues) {
+    const encoded = encodeTuple(newValues);
+    const page = this._fetchPage(pageId);
+    const ok = page.updateTuple(slotIdx, encoded);
+    if (ok && this._wal) {
+      // Advance pageLSN without adding a WAL record — this ensures recovery
+      // knows the page is up-to-date and won't re-insert the old tuple
+      const lsn = this._wal._nextLsn || 0;
+      this.setPageLSN(pageId, lsn);
+    }
+    this._unpinPage(pageId, ok);
+    return ok;
   }
 
   /** Delete a tuple by marking its slot as empty. */

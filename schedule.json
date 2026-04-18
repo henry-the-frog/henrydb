@@ -3235,6 +3235,90 @@
       "completed": "2026-04-18T01:13:56.593Z",
       "duration_ms": 300000,
       "summary": "Cross-project layer boundary analysis: HenryDB (DDL crossing 5 layers), RISC-V (IR→codegen assumptions), neural-net (forward→backward cache), monkey-lang (compiler→VM bytecode). Common pattern: bugs cluster at layer boundaries, cross-layer integration tests are highest ROI."
+    },
+    {
+      "id": "T300",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review DDL lifecycle harness design, assess scope for evening session, decide what to build",
+      "started": "2026-04-18T02:15:45.511Z",
+      "completed": "2026-04-18T02:15:57.306Z",
+      "duration_ms": 120000,
+      "summary": "Reviewed DDL lifecycle harness design. 4 DDL types persist fully (TABLE, INDEX, VIEW, ALTER TABLE) — get 7-phase testing. 5 types lack persistence — harness will expose exact gaps. Build framework + all 9 specs in one BUILD task."
+    },
+    {
+      "id": "T301",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build DDL lifecycle test harness for HenryDB — 9 DDL types × 7 phases",
+      "task": null,
+      "started": "2026-04-18T02:16:04.411Z",
+      "completed": "2026-04-18T02:16:52.203Z",
+      "duration_ms": 120000,
+      "summary": "Planned DDL lifecycle harness. One BUILD task: generator framework + 9 DDL specs × 7 phases. Uses TransactionalDatabase, simulateCrash pattern from alter-table-crash.test.js."
+    },
+    {
+      "id": "T308",
+      "mode": "BUILD",
+      "task": "Build DDL lifecycle test harness: generator function + 9 DDL specs (CREATE TABLE, CREATE INDEX, CREATE VIEW, ALTER TABLE ADD/DROP/RENAME COLUMN, DROP TABLE, CREATE TRIGGER, CREATE SEQUENCE) × 7 phases (in-memory, clean restart, crash, stale catalog crash, checkpoint+crash, concurrent tx, DDL+DML race). Fix any bugs the harness exposes.",
+      "status": "done",
+      "plan_ref": "T301",
+      "started": "2026-04-18T02:16:58.366Z",
+      "completed": "2026-04-18T02:28:03.699Z",
+      "duration_ms": 900000,
+      "summary": "DDL lifecycle test harness: 70/70 pass. 4 bugs fixed: (1) triggers not persisted in TransactionalDatabase, (2) sequences not persisted, (3) CREATE TABLE/VIEW/DROP TABLE/TRIGGER/SEQUENCE not WAL-logged for stale catalog recovery, (4) dropped tables not cleaned from _createSqls during crash recovery. 9 DDL types × 7+ phases."
+    },
+    {
+      "id": "T302",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T02:28:17.374Z",
+      "completed": "2026-04-18T02:28:17.522Z",
+      "duration_ms": 0,
+      "summary": "Skipped — placeholder BUILD, work done in T308."
+    },
+    {
+      "id": "T303",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git commit+push, knowledge capture",
+      "started": "2026-04-18T02:28:21.715Z",
+      "completed": "2026-04-18T02:28:56.353Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, knowledge captured in lessons/database-transactions.md, daily log updated."
+    },
+    {
+      "id": "T304",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Reflect on DDL harness results. What bugs did it catch? What else needs depth?",
+      "started": "2026-04-18T02:29:03.228Z",
+      "completed": "2026-04-18T02:29:22.629Z",
+      "duration_ms": 120000,
+      "summary": "Reflected: 4 bugs from harness all same pattern (wrapper persistence gap). TODO cleaned. Next: ALTER TABLE backfill duplicate tuples bug — genuine data corruption, high priority."
+    },
+    {
+      "id": "T305",
+      "mode": "PLAN",
+      "status": "in-progress",
+      "goal": "Fix ALTER TABLE backfill duplicate tuples — investigate updateTuple vs heap INSERT with buffer pool",
+      "task": null,
+      "started": "2026-04-18T02:29:30.223Z"
+    },
+    {
+      "id": "T306",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T307",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push, session closeout"
     }
   ],
   "focusProjects": [
@@ -3242,7 +3326,6 @@
     "henrydb"
   ],
   "backlog": [
-    "Implement DDL lifecycle test harness from scratch/ddl-lifecycle-harness.md design — 9 DDL types × 7 phases = 63 generated tests",
     "Fix ALTER TABLE backfill duplicate tuples in data file — investigate updateTuple vs heap INSERT interaction with buffer pool",
     "HenryDB: unit test cost-model.js (260 lines, no dedicated tests) — verify cost estimates for different query plans"
   ],
@@ -4510,6 +4593,42 @@
     {
       "time": "2026-04-18T01:13:37.755Z",
       "msg": "Added T299 (THINK) after end: Explore: what other projects have similar layer boundary bugs? RISC-V compiler has pipeline→memory, neural-net has forward→backward, monkey-lang has compiler→VM"
+    },
+    {
+      "time": "2026-04-18T02:15:23.703Z",
+      "msg": "Added T300 (THINK) after end: Review DDL lifecycle harness design, assess scope for evening session, decide what to build"
+    },
+    {
+      "time": "2026-04-18T02:15:28.261Z",
+      "msg": "Added T301 (PLAN) after T300: Build DDL lifecycle test harness for HenryDB — 9 DDL types × 7 phases"
+    },
+    {
+      "time": "2026-04-18T02:15:32.351Z",
+      "msg": "Added T302 (BUILD) after T301: null"
+    },
+    {
+      "time": "2026-04-18T02:15:32.472Z",
+      "msg": "Added T303 (MAINTAIN) after T302: Git commit+push, knowledge capture"
+    },
+    {
+      "time": "2026-04-18T02:15:37.492Z",
+      "msg": "Added T304 (THINK) after T303: Reflect on DDL harness results. What bugs did it catch? What else needs depth?"
+    },
+    {
+      "time": "2026-04-18T02:15:37.615Z",
+      "msg": "Added T305 (PLAN) after T304: Fix ALTER TABLE backfill duplicate tuples — investigate updateTuple vs heap INSERT with buffer pool"
+    },
+    {
+      "time": "2026-04-18T02:15:37.737Z",
+      "msg": "Added T306 (BUILD) after T305: null"
+    },
+    {
+      "time": "2026-04-18T02:15:37.857Z",
+      "msg": "Added T307 (MAINTAIN) after T306: Final git push, session closeout"
+    },
+    {
+      "time": "2026-04-18T02:16:46.136Z",
+      "msg": "PLAN T301 filled 1 BUILD tasks"
     }
   ]
 }

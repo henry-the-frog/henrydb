@@ -5,8 +5,7 @@
 ### Normal
 - HenryDB: secondary index + MVCC snapshot after UPDATE (needs HOT chains)
 - HenryDB: ALTER TABLE backfill creates duplicate tuples in data file — updateTuple + later UPDATE INSERT both survive checkpoint (heap/buffer-pool interaction bug)
-- HenryDB: DDL lifecycle integration test suite — test every DDL op through full lifecycle (execute, persist, crash recover, concurrent with DML)
-- HenryDB: persistence for triggers, sequences, materialized views — same pattern as views (save SQL to catalog, replay on open)
+- HenryDB: materialized view persistence (triggers+sequences now fixed, matviews still missing)
 
 ### Low
 - RISC-V: general tail call optimization (closures need special handling)

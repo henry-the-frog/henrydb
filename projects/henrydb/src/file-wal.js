@@ -462,10 +462,17 @@ export function recoverFromFileWAL(heap, wal, fromLsn = 0) {
     recordsByPage.get(r.pageId).push(r);
   }
   
-  // For each page, decide: skip (all applied) or clear+replay (some need replay)
-  // Since inserts pick the first available page, we can't incrementally add inserts
-  // to existing pages without risking slot conflicts. So for any page that needs 
-  // replay, we clear it and replay all its committed records.
+  // For each page, decide: skip (all applied) or replay (some need replay)
+  // IMPORTANT: Do NOT clear pages that have pageLSN > 0 — they contain valid data
+  // from before the last checkpoint. Only replay records with LSN > pageLSN.
+  // Clearing would destroy checkpointed data not in the current WAL.
+  
+  // Find the checkpoint LSN (if any) — records before this are already on disk
+  let checkpointLSN = 0;
+  for (const r of allRecords) {
+    if (r.type === WAL_TYPES.CHECKPOINT) checkpointLSN = r.lsn;
+  }
+  
   for (const [pageId, records] of recordsByPage) {
     const pageLSN = pageLSNMap.get(pageId) || 0;
     const maxRecordLSN = Math.max(...records.map(r => r.lsn));
@@ -474,10 +481,11 @@ export function recoverFromFileWAL(heap, wal, fromLsn = 0) {
       continue; // All records for this page already applied
     }
     
-    // Clear this page and replay its records
-    if (pageId < dm.pageCount) {
+    // If page has no LSN (pageLSN === 0) and no checkpoint, safe to clear and replay
+    if (pageLSN === 0 && checkpointLSN === 0 && pageId < dm.pageCount) {
       dm.writePage(pageId, Buffer.alloc(PAGE_SIZE));
     }
+    // If page has a valid pageLSN, keep existing data and only replay newer records
   }
   
   // Rebuild state from surviving pages
@@ -506,6 +514,9 @@ export function recoverFromFileWAL(heap, wal, fromLsn = 0) {
     }
     
     for (const r of records) {
+      // Skip records already applied to this page (LSN <= pageLSN)
+      if (r.lsn <= pageLSN) { skipped++; continue; }
+      
       if (r.type === WAL_TYPES.INSERT && r.after) {
         try { heap.insert(r.after); redone++; } catch { skipped++; }
       } else if (r.type === WAL_TYPES.DELETE && r.pageId !== undefined) {

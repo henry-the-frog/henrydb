@@ -1746,13 +1746,22 @@ export class Database {
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
           allRows.push({ pageId, slotIdx, values });
         }
-        for (const row of allRows) {
-          table.heap.delete(row.pageId, row.slotIdx);
-          table.heap.insert([...row.values, defaultVal]);
+        if (table.heap.updateInPlace) {
+          // FileBackedHeap: update tuples in-place without WAL logging.
+          // Schema change is persisted via DDL WAL record + catalog save.
+          // Recovery replays schema-only, so data doesn't need separate WAL entries.
+          for (const row of allRows) {
+            table.heap.updateInPlace(row.pageId, row.slotIdx, [...row.values, defaultVal]);
+          }
+        } else {
+          // In-memory HeapFile: delete + re-insert (no WAL concerns)
+          for (const row of allRows) {
+            table.heap.delete(row.pageId, row.slotIdx);
+            table.heap.insert([...row.values, defaultVal]);
+          }
+          // Rebuild all indexes (RIDs changed from delete+re-insert)
+          this._rebuildIndexes(table);
         }
-
-        // Rebuild all indexes (RIDs changed)
-        this._rebuildIndexes(table);
 
         // Update catalog
         const catEntry = this.catalog.find(c => c.name === ast.table);
@@ -1785,15 +1794,22 @@ export class Database {
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
           allRows.push({ pageId, slotIdx, values });
         }
-        for (const row of allRows) {
-          table.heap.delete(row.pageId, row.slotIdx);
-          const newValues = [...row.values];
-          newValues.splice(colIdx, 1);
-          table.heap.insert(newValues);
+        if (table.heap.updateInPlace) {
+          for (const row of allRows) {
+            const newValues = [...row.values];
+            newValues.splice(colIdx, 1);
+            table.heap.updateInPlace(row.pageId, row.slotIdx, newValues);
+          }
+        } else {
+          for (const row of allRows) {
+            table.heap.delete(row.pageId, row.slotIdx);
+            const newValues = [...row.values];
+            newValues.splice(colIdx, 1);
+            table.heap.insert(newValues);
+          }
+          // Rebuild remaining indexes (RIDs changed from delete+re-insert)
+          this._rebuildIndexes(table);
         }
-
-        // Rebuild remaining indexes (RIDs changed)
-        this._rebuildIndexes(table);
 
         // Update catalog
         const catEntry = this.catalog.find(c => c.name === ast.table);

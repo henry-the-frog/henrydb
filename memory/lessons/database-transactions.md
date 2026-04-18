@@ -125,3 +125,20 @@ Every DDL object type needs:
 - [ ] Constraints enforced after restart
 
 As of 2026-04-17: TABLE ✅, INDEX ✅, VIEW ✅, ALTER TABLE ✅. TRIGGER ❌, SEQUENCE ❌, MATERIALIZED VIEW ❌.
+
+## Catalog Persistence Layer Gaps (Apr 17 evening)
+
+### The Pattern: Subsystems Built Independently, Never Connected
+When TransactionalDatabase wraps Database, it maintains its own catalog persistence layer. New features added to Database (triggers, sequences, materialized views) are NOT automatically persisted by TransactionalDatabase.
+
+**Concrete bugs found:**
+1. `_saveCatalog()` only saved tables + views — triggers and sequences silently lost on restart
+2. WAL only logged ALTER TABLE and CREATE/DROP INDEX — CREATE TABLE, CREATE VIEW, DROP TABLE, CREATE TRIGGER, CREATE SEQUENCE had no WAL records
+3. Result: stale catalog after crash couldn't recover any DDL except ALTER TABLE and indexes
+
+**Detection strategy:** DDL lifecycle test harness — test each DDL through 7 phases:
+- In-memory, clean restart, crash, stale catalog crash, checkpoint+crash, concurrent tx, DDL+DML race
+- 9 DDL types × 7+ phases = 70 tests from ~300 lines of specs
+- Generator pattern makes adding new DDL types trivial
+
+**Lesson:** When a wrapper layer (TransactionalDatabase) maintains its own persistence, EVERY new feature in the inner layer needs explicit persistence support in the wrapper. This is the same "two subsystems not connected" pattern seen with BEGIN/COMMIT and WAL.

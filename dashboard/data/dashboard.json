@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-18T01:13:56.630Z",
+  "generated": "2026-04-18T02:29:30.260Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "Explore: what other projects have similar layer boundary bugs? RISC-V compiler has pipeline→memory, neural-net has forward→backward, monkey-lang has compiler→VM",
-    "completedAt": "2026-04-18T01:13:56.630Z",
-    "taskId": "T299",
-    "summary": "Cross-project layer boundary analysis: HenryDB (DDL crossing 5 layers), RISC-V (IR→codegen assumptions), neural-net (forward→backward cache), monkey-lang (compiler→VM bytecode). Common pattern: bugs cluster at layer boundaries, cross-layer integration tests are highest ROI.",
-    "durationMs": 300000
+    "status": "in-progress",
+    "mode": "PLAN",
+    "task": "",
+    "startedAt": "2026-04-18T02:29:30.260Z",
+    "taskId": "T305"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -7151,36 +7149,366 @@
       {
         "id": "T273",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Neural-net mixed precision / numerical stability audit",
         "task": null,
-        "started": "2026-04-18T00:11:03.731Z"
+        "started": "2026-04-18T00:11:03.731Z",
+        "completed": "2026-04-18T00:12:23.875Z",
+        "duration_ms": 120000,
+        "summary": "Scoped audit to BatchNorm, Adam, Attention, GradClip — highest NaN-risk areas not covered by existing 69-test numerical stability suite. Single BUILD task."
       },
       {
         "id": "T275",
         "mode": "BUILD",
         "task": "Write numerical stability stress tests for: (1) BatchNorm with near-zero variance, single-sample batch, extreme inputs (2) Adam optimizer with extreme gradients, near-zero gradients, NaN gradients, very many steps (3) Attention with extreme Q/K values, very long sequences, scaled dot-product overflow (4) Gradient clipping interaction with NaN/Inf. Run tests, find bugs, fix.",
-        "status": "upcoming",
-        "plan_ref": "T273"
+        "status": "done",
+        "plan_ref": "T273",
+        "started": "2026-04-18T00:12:31.523Z",
+        "completed": "2026-04-18T00:15:40.404Z",
+        "duration_ms": 600000,
+        "summary": "Mixed-precision audit complete. 31 new tests across BatchNorm (7), Adam (9), Attention (7), GradClip (8). All pass — no numerical stability bugs found. Neural-net handles edge cases (NaN/Inf inputs, extreme values, zero variance, 10K training steps) cleanly."
       },
       {
         "id": "T274",
         "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "neural-net",
+        "started": "2026-04-18T00:15:57.078Z",
+        "completed": "2026-04-18T00:15:57.225Z",
+        "duration_ms": 0,
+        "summary": "Placeholder BUILD — actual work done in T275."
+      },
+      {
+        "id": "T276",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "RISC-V compiler: IIFE pattern support — fn(x){x}(5) direct invocation",
+        "task": null,
+        "skip_reason": ""
+      },
+      {
+        "id": "T277",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What henrydb depth work fits 1.5 hours? Options: stored procedures, unique constraint + SI, cost-based optimizer, or stress-test an existing feature until it breaks",
+        "started": "2026-04-18T00:16:37.327Z",
+        "completed": "2026-04-18T00:16:49.518Z",
+        "duration_ms": 60000,
+        "summary": "Going deep: stress-test ALTER TABLE crash recovery (process death without close). Current tests only cover clean close/open — need to test stale catalog + WAL replay path."
+      },
+      {
+        "id": "T278",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write ALTER TABLE crash-simulation tests: simulate process death (skip close, leave stale catalog) and verify WAL replay recovers schema + data correctly",
+        "project": "henrydb",
+        "started": "2026-04-18T00:17:00.113Z",
+        "completed": "2026-04-18T00:28:07.087Z",
+        "duration_ms": 900000,
+        "summary": "Crash recovery for ALTER TABLE with stale catalog now works. 3 new bugs found: (1) no DDL replay phase in crash recovery — schema-only replay added, (2) RENAME TABLE crash recovery lost heap association — rekey + rewire heap to table, (3) txId=0 records (DDL backfill) silently skipped during recovery — treat as always-committed. 8 crash-simulation tests, 154 total tests passing."
+      },
+      {
+        "id": "T279",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Analyze txId=0 checkpoint boundary issue: should txId=0 records be given explicit LSN tracking, or should checkpoint truncate WAL to prevent re-replay?",
+        "started": "2026-04-18T00:28:36.530Z",
+        "completed": "2026-04-18T00:29:17.574Z",
+        "duration_ms": 120000,
+        "summary": "Analysis: fix is to read DML records from lastCheckpointLsn (not 0) in per-heap recovery, while continuing to read ALL DDL records for schema replay. This prevents txId=0 backfill records from being re-replayed after checkpoint. Clean ARIES-style approach."
+      },
+      {
+        "id": "T280",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix checkpoint boundary: recoverFromFileWAL should read from lastCheckpointLsn, DDL replay reads all. Write test for UPDATE after ALTER + checkpoint + crash.",
+        "project": "henrydb",
+        "started": "2026-04-18T00:29:30.870Z",
+        "completed": "2026-04-18T00:33:00.993Z",
+        "duration_ms": 600000,
+        "summary": "Partial fix: (1) Fixed FileWAL.truncate() not resetting _fileSize — post-checkpoint records were unreadable. (2) Added checkpoint marker re-write after truncate so recovery knows the checkpoint LSN. (3) Per-heap recovery now reads from lastCheckpointLsn. BUT found deeper bug: ALTER TABLE backfill creates duplicate tuples in the data file — in-place updateTuple + new INSERT from UPDATE both survive checkpoint. This is a heap/buffer-pool interaction bug, not a WAL issue. Filed as TODO."
+      },
+      {
+        "id": "T281",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test concurrent transactions with ALTER TABLE — does MVCC handle schema changes mid-transaction correctly?",
+        "project": "henrydb",
+        "started": "2026-04-18T00:34:21.780Z",
+        "completed": "2026-04-18T00:36:22.351Z",
+        "duration_ms": 300000,
+        "summary": "9 concurrent ALTER TABLE + transaction tests written. All pass — no bugs found. HenryDB uses read-committed DDL semantics (schema changes immediately visible). Tested: ADD/DROP/RENAME COLUMN mid-tx, RENAME TABLE mid-tx, 5 concurrent sessions, rapid 10x ALTER TABLE sequence."
+      },
+      {
+        "id": "T282",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test window functions with MVCC — complex OVER() clauses with concurrent transactions, verify determinism",
+        "project": "henrydb",
+        "started": "2026-04-18T00:36:58.997Z",
+        "completed": "2026-04-18T00:38:26.036Z",
+        "duration_ms": 300000,
+        "summary": "8 window function + MVCC tests. All pass — no bugs found. Window functions correctly see transaction snapshots: ROW_NUMBER, RANK, SUM, LAG/LEAD, ROWS BETWEEN, NTILE all respect snapshot isolation with concurrent inserts/updates/deletes."
+      },
+      {
+        "id": "T283",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test correlated subqueries with MVCC — EXISTS, IN, scalar subquery with concurrent modifications",
+        "project": "henrydb",
+        "started": "2026-04-18T00:38:39.531Z",
+        "completed": "2026-04-18T00:40:05.437Z",
+        "duration_ms": 300000,
+        "summary": "8 subquery + MVCC tests. All pass — snapshot isolation correct for IN, EXISTS, NOT IN, scalar, nested, and correlated subqueries. Found parser limitation: aggregates inside scalar subqueries not supported."
+      },
+      {
+        "id": "T284",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test complex JOINs with MVCC — LEFT/RIGHT/FULL OUTER JOIN + concurrent modifications, JOIN predicate vs WHERE clause snapshot consistency",
+        "project": "henrydb",
+        "started": "2026-04-18T00:40:36.403Z",
+        "completed": "2026-04-18T00:41:39.532Z",
+        "duration_ms": 300000,
+        "summary": "8 JOIN + MVCC tests. All pass — INNER, LEFT, self-JOIN, 3-way, CROSS, and WHERE-filtered JOINs all correctly see transaction snapshots with concurrent modifications."
+      },
+      {
+        "id": "T285",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: adversarial SQL edge cases with MVCC — GROUP BY + HAVING + DISTINCT + UNION + ORDER BY + LIMIT with concurrent mods",
+        "project": "henrydb",
+        "started": "2026-04-18T00:41:54.301Z",
+        "completed": "2026-04-18T00:43:05.676Z",
+        "duration_ms": 300000,
+        "summary": "9 adversarial MVCC tests. All pass — GROUP BY/HAVING, DISTINCT, top-N, pagination, aggregates, write skew, phantom reads, read-your-writes all correct under snapshot isolation. No bugs found."
+      },
+      {
+        "id": "T286",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: fix parser to support aggregate functions in scalar subqueries — SELECT * FROM t WHERE val > (SELECT MAX(x) FROM t2)",
+        "project": "henrydb",
+        "started": "2026-04-18T00:43:23.276Z",
+        "completed": "2026-04-18T00:47:52.969Z",
+        "duration_ms": 600000,
+        "summary": "Fixed parser + evaluator for scalar subqueries with aggregates. Parser: parsePrimary now recognizes (SELECT ...) patterns. Evaluator: _evalValue handles scalar_subquery nodes. 10 new tests. Previously: WHERE val > (SELECT MAX(x)) would throw parser error."
+      },
+      {
+        "id": "T287",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: fix CTE (WITH clause) producing duplicate columns — WITH cte AS (SELECT * FROM t) SELECT * FROM cte gives both cte.col and col",
+        "project": "henrydb",
+        "started": "2026-04-18T00:48:13.432Z",
+        "completed": "2026-04-18T00:54:32.256Z",
+        "duration_ms": 600000,
+        "summary": "Fixed CTE/view SELECT * duplicate columns. Two separate paths in _selectInner needed the fix: view-specific path and general _applySelectColumns. Both now strip qualified column names (table.col) from SELECT * output. 126 tests pass."
+      },
+      {
+        "id": "T288",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: fix DROP VIEW IF EXISTS to not throw on non-existent view + fix view crash recovery",
+        "project": "henrydb",
+        "started": "2026-04-18T00:54:46.043Z",
+        "completed": "2026-04-18T00:57:49.160Z",
+        "duration_ms": 600000,
+        "summary": "Fixed 3 bugs: (1) DROP VIEW IF EXISTS parser+executor, (2) View persistence in catalog — views now survive restarts, (3) View crash recovery. 40 view tests pass (2 previously failing now fixed)."
+      },
+      {
+        "id": "T289",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Run full regression suite on all today's changes, update daily log, commit knowledge captures",
+        "project": "henrydb",
+        "started": "2026-04-18T00:58:05.974Z",
+        "completed": "2026-04-18T00:59:31.198Z",
+        "duration_ms": 300000,
+        "summary": "Full regression: 313/313 pass. Daily log updated with all Session B work."
+      },
+      {
+        "id": "T290",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test edge cases in DELETE + UPDATE with MVCC — cascading deletes, self-referencing updates, DELETE WHERE IN (SELECT ...)",
+        "project": "henrydb",
+        "started": "2026-04-18T00:59:46.015Z",
+        "completed": "2026-04-18T01:00:45.488Z",
+        "duration_ms": 300000,
+        "summary": "10 DML edge case tests. All pass — DELETE/UPDATE with subqueries, concurrent modifications, self-referencing, arithmetic, orphan cleanup. No bugs found."
+      },
+      {
+        "id": "T291",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test CONSTRAINT enforcement — CHECK constraints, NOT NULL, UNIQUE, PRIMARY KEY edge cases with MVCC",
+        "project": "henrydb",
+        "started": "2026-04-18T01:00:59.501Z",
+        "completed": "2026-04-18T01:02:56.942Z",
+        "duration_ms": 300000,
+        "summary": "Found bug: PRIMARY KEY accepting NULL values. NOT NULL check explicitly skipped PK columns. Fixed. 10 new constraint tests, 44 total pass. Also tested: UNIQUE allows multiple NULLs, CHECK constraints, constraint violation + rollback, concurrent PK enforcement."
+      },
+      {
+        "id": "T292",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: stress-test index operations — CREATE INDEX, DROP INDEX, index-accelerated queries, index + MVCC",
+        "project": "henrydb",
+        "started": "2026-04-18T01:03:11.375Z",
+        "completed": "2026-04-18T01:04:10.276Z",
+        "duration_ms": 300000,
+        "summary": "9 index + MVCC tests. All pass — index queries correctly respect transaction snapshots with concurrent inserts/deletes, CREATE/DROP INDEX during open transactions works."
+      },
+      {
+        "id": "T293",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: test CASE WHEN expressions + COALESCE + NULLIF + CAST edge cases with MVCC",
+        "project": "henrydb",
+        "started": "2026-04-18T01:04:25.207Z",
+        "completed": "2026-04-18T01:05:32.607Z",
+        "duration_ms": 300000,
+        "summary": "10 expression edge case tests. All pass — CASE WHEN, COALESCE, NULLIF, CAST all correct including with MVCC."
+      },
+      {
+        "id": "T294",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: write a chaos test — rapid interleaved DDL+DML+concurrent txs — 100 random operations, verify consistency at the end",
+        "project": "henrydb",
+        "started": "2026-04-18T01:05:50.584Z",
+        "completed": "2026-04-18T01:06:48.392Z",
+        "duration_ms": 300000,
+        "summary": "3 chaos tests: 100 random operations, 3 concurrent sessions, close/reopen — all maintain consistency. No bugs found. Database is rock solid under randomized workloads."
+      },
+      {
+        "id": "T295",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: test string functions (UPPER, LOWER, TRIM, SUBSTR, LENGTH, CONCAT) and edge cases",
+        "project": "henrydb",
+        "started": "2026-04-18T01:07:04.326Z",
+        "completed": "2026-04-18T01:08:00.703Z",
+        "duration_ms": 300000,
+        "summary": "11 string function edge case tests. All pass — NULL handling, empty string, boundary values, LIKE wildcards, concatenation."
+      },
+      {
+        "id": "T296",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session B closeout: full regression, evening summary, knowledge capture, final git push",
+        "started": "2026-04-18T01:08:13.807Z",
+        "completed": "2026-04-18T01:09:53.051Z",
+        "duration_ms": 300000,
+        "summary": "Session B closeout complete. 151/151 new tests pass. 14 bugs fixed. Evening summary written. Git pushed."
+      },
+      {
+        "id": "T297",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Review today's 14 bugs — what patterns connect them? What architecture improvements would prevent entire categories?",
+        "started": "2026-04-18T01:10:08.241Z",
+        "completed": "2026-04-18T01:10:52.874Z",
+        "duration_ms": 300000,
+        "summary": "Analyzed 14 bugs into 5 categories: layer boundary (4), recovery model gaps (3), non-atomic checkpoint (3), parser context blindness (2), incomplete features (2). Key insight: a DDL lifecycle integration test suite would catch 12/14 bugs. Wrote scratch/bug-patterns-2026-04-17.md."
+      },
+      {
+        "id": "T298",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Design the DDL lifecycle test harness — what would a generic framework look like that tests any DDL operation through all 7 lifecycle phases?",
+        "started": "2026-04-18T01:11:55.048Z",
+        "completed": "2026-04-18T01:12:32.661Z",
+        "duration_ms": 300000,
+        "summary": "Designed DDL lifecycle test harness: 9 DDL types × 7 phases = 63 tests from ~200 lines of specs. Single framework catches 12/14 of today's bug categories. Design written to scratch/ddl-lifecycle-harness.md."
+      },
+      {
+        "id": "T299",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Explore: what other projects have similar layer boundary bugs? RISC-V compiler has pipeline→memory, neural-net has forward→backward, monkey-lang has compiler→VM",
+        "started": "2026-04-18T01:13:37.993Z",
+        "completed": "2026-04-18T01:13:56.593Z",
+        "duration_ms": 300000,
+        "summary": "Cross-project layer boundary analysis: HenryDB (DDL crossing 5 layers), RISC-V (IR→codegen assumptions), neural-net (forward→backward cache), monkey-lang (compiler→VM bytecode). Common pattern: bugs cluster at layer boundaries, cross-layer integration tests are highest ROI."
+      },
+      {
+        "id": "T300",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Review DDL lifecycle harness design, assess scope for evening session, decide what to build",
+        "started": "2026-04-18T02:15:45.511Z",
+        "completed": "2026-04-18T02:15:57.306Z",
+        "duration_ms": 120000,
+        "summary": "Reviewed DDL lifecycle harness design. 4 DDL types persist fully (TABLE, INDEX, VIEW, ALTER TABLE) — get 7-phase testing. 5 types lack persistence — harness will expose exact gaps. Build framework + all 9 specs in one BUILD task."
+      },
+      {
+        "id": "T301",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Build DDL lifecycle test harness for HenryDB — 9 DDL types × 7 phases",
+        "task": null,
+        "started": "2026-04-18T02:16:04.411Z"
+      },
+      {
+        "id": "T308",
+        "mode": "BUILD",
+        "task": "Build DDL lifecycle test harness: generator function + 9 DDL specs (CREATE TABLE, CREATE INDEX, CREATE VIEW, ALTER TABLE ADD/DROP/RENAME COLUMN, DROP TABLE, CREATE TRIGGER, CREATE SEQUENCE) × 7 phases (in-memory, clean restart, crash, stale catalog crash, checkpoint+crash, concurrent tx, DDL+DML race). Fix any bugs the harness exposes.",
+        "status": "upcoming",
+        "plan_ref": "T301"
+      },
+      {
+        "id": "T302",
+        "mode": "BUILD",
         "status": "upcoming",
         "task": null,
-        "project": "neural-net"
+        "project": "henrydb"
+      },
+      {
+        "id": "T303",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit+push, knowledge capture"
+      },
+      {
+        "id": "T304",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Reflect on DDL harness results. What bugs did it catch? What else needs depth?"
+      },
+      {
+        "id": "T305",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Fix ALTER TABLE backfill duplicate tuples — investigate updateTuple vs heap INSERT with buffer pool",
+        "task": null
+      },
+      {
+        "id": "T306",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T307",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final git push, session closeout"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 287,
-    "blocksTotal": 275,
+    "blocksCompleted": 293,
+    "blocksTotal": 308,
     "modeDistribution": {
-      "THINK": 19,
-      "PLAN": 21,
-      "BUILD": 155,
-      "MAINTAIN": 26,
+      "THINK": 21,
+      "PLAN": 22,
+      "BUILD": 157,
+      "MAINTAIN": 27,
       "EXPLORE": 66
     }
   },

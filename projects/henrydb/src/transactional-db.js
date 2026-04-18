@@ -340,6 +340,13 @@ export class TransactionalDatabase {
       } else if (trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('RENAME')) {
         // ALTER TABLE changes schema — update catalog to match current state
         this._updateCatalogAfterAlter(sql);
+        // Checkpoint after ALTER TABLE ADD/DROP COLUMN to establish a clean WAL boundary.
+        // Without this, recovery replays old INSERT records with pre-alter tuple widths,
+        // creating duplicate rows with wrong column counts.
+        if (trimmed.startsWith('ALTER TABLE') && 
+            (trimmed.includes('ADD COLUMN') || trimmed.includes('DROP COLUMN'))) {
+          try { this.checkpoint(); } catch (e) { /* checkpoint best-effort — fails if txs open */ }
+        }
       } else if (trimmed.startsWith('DROP TABLE')) {
         const match = sql.match(/DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?(\w+)/i);
         if (match) this._createSqls.delete(match[1]);
