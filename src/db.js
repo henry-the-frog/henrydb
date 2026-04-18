@@ -2802,7 +2802,7 @@ export class Database {
         for (const [colName, index] of table.indexes) {
           const colIdx = table.schema.findIndex(c => c.name === colName);
           if (colIdx !== -1) {
-            index.insert(row.values[colIdx], `${rid.pageId}:${rid.slotIdx}`);
+            index.insert(row.values[colIdx], rid);
           }
         }
       }
