@@ -230,30 +230,61 @@
     {
       "id": "T22",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix wal-recovery UPDATE and bank-transfer persistence bugs",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T14:50:39.693Z",
+      "completed": "2026-04-18T14:50:39.839Z",
+      "duration_ms": 10000,
+      "summary": "Already completed during T21 THINK — both bugs diagnosed and fixed."
     },
     {
       "id": "T23",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, commit fixes"
+      "status": "done",
+      "task": "Housekeeping: git push, commit fixes",
+      "started": "2026-04-18T14:50:48.364Z",
+      "completed": "2026-04-18T14:50:53.169Z",
+      "duration_ms": 30000,
+      "summary": "Pushed critical bug fixes to GitHub."
     },
     {
       "id": "T24",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Depth check: 10+ BUILDs done today. What have we learned? What surprised us?"
+      "status": "done",
+      "task": "Depth check: 10+ BUILDs done today. What have we learned? What surprised us?",
+      "started": "2026-04-18T14:51:02.621Z",
+      "completed": "2026-04-18T14:51:17.465Z",
+      "duration_ms": 120000,
+      "summary": "Depth check passes. Key learnings: (1) Feature capability detection must degrade gracefully (HOT chain guard clause caused data loss), (2) Recovery code needs index-based lookup tests not just row existence tests, (3) PG same-page constraint simplifies chain management. Most valuable work today was depth bug-finding."
     },
     {
       "id": "T25",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HOT chains + MVCC integration: ensure HOT works correctly under snapshot isolation",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T14:51:24.183Z",
+      "completed": "2026-04-18T14:51:56.957Z",
+      "duration_ms": 300000,
+      "summary": "Planned 2 BUILD tasks: MVCC+HOT visibility tests (concurrent tx seeing correct versions through chains), VACUUM chain pruning tests."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Write HOT chains + MVCC tests: HOT update visibility across concurrent transactions, snapshot isolation through HOT chains",
+      "status": "in-progress",
+      "plan_ref": "T25",
+      "started": "2026-04-18T14:52:05.155Z"
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Write HOT chains + VACUUM test: chain pruning after all old versions are invisible",
+      "status": "upcoming",
+      "plan_ref": "T25"
     },
     {
       "id": "T26",
@@ -371,6 +402,10 @@
     {
       "time": "2026-04-18T14:40:41.970Z",
       "msg": "Added T26 (MAINTAIN) after end: Final git push, daily log update, CURRENT.md"
+    },
+    {
+      "time": "2026-04-18T14:51:52.423Z",
+      "msg": "PLAN T25 filled 2 BUILD tasks"
     }
   ]
 }
