@@ -217,8 +217,9 @@ export class TransactionalDatabase {
    * 1. Flush all dirty buffer pool pages to disk
    * 2. Write CHECKPOINT record to WAL
    * 3. Save catalog and MVCC state
+   * 4. Optionally truncate old WAL entries
    */
-  checkpoint() {
+  checkpoint({ truncateWal = false } = {}) {
     // Flush all heaps' buffer pools to disk
     for (const heap of this._heaps.values()) {
       heap.flush();
@@ -233,7 +234,13 @@ export class TransactionalDatabase {
     
     this._walCountSinceCheckpoint = 0;
     
-    return { checkpointLsn: lsn, beginLsn: lsn, endLsn: lsn };
+    // Truncate WAL if requested
+    let truncateResult = null;
+    if (truncateWal && this._wal.truncate) {
+      truncateResult = this._wal.truncate(lsn);
+    }
+    
+    return { checkpointLsn: lsn, beginLsn: lsn, endLsn: lsn, truncation: truncateResult };
   }
 
   close() {

@@ -138,6 +138,51 @@ export class FileWAL {
     }
   }
 
+  /**
+   * Truncate WAL records before a given LSN.
+   * Rewrites the WAL file keeping only records >= keepFromLsn.
+   * Must be called after checkpoint when dirty pages are flushed.
+   * @param {number} keepFromLsn - Keep records with LSN >= this value
+   * @returns {{ removed: number, kept: number, savedBytes: number }}
+   */
+  truncate(keepFromLsn) {
+    // Flush any pending writes first
+    if (this._writeBuffer.length > 0) this.flush();
+    
+    const allRecords = this._readAllRecords();
+    const kept = allRecords.filter(r => r.lsn >= keepFromLsn);
+    const removed = allRecords.length - kept.length;
+    
+    if (removed === 0) return { removed: 0, kept: kept.length, savedBytes: 0 };
+    
+    // Serialize kept records
+    const buffers = kept.map(r => r.serialize());
+    const totalSize = buffers.reduce((acc, b) => acc + b.length, 0);
+    const combined = Buffer.alloc(totalSize);
+    let offset = 0;
+    for (const buf of buffers) {
+      buf.copy(combined, offset);
+      offset += buf.length;
+    }
+    
+    const oldSize = this._fileSize;
+    
+    // Rewrite file from beginning
+    writeSync(this._fd, combined, 0, combined.length, 0);
+    ftruncateSync(this._fd, totalSize);
+    fsyncSync(this._fd);
+    
+    this._fileSize = totalSize;
+    this._flushedLsn = kept.length > 0 ? kept[kept.length - 1].lsn : this._flushedLsn;
+    
+    return { removed, kept: kept.length, savedBytes: oldSize - totalSize };
+  }
+
+  /** Get size info for the WAL file */
+  getSize() {
+    return { fileSize: this._fileSize, recordCount: this._readAllRecords().length };
+  }
+
   // --- Internal ---
 
   _readAllRecords() {
@@ -188,34 +233,61 @@ export function recoverFromFileWAL(heap, wal) {
   // Phase 1: Analysis — identify committed transactions
   const committedTxns = new Set();
   const abortedTxns = new Set();
+  let lastCheckpointLsn = 0;
   for (const r of allRecords) {
     if (r.type === WAL_TYPES.COMMIT) committedTxns.add(r.txId);
     if (r.type === WAL_TYPES.ABORT) abortedTxns.add(r.txId);
+    if (r.type === WAL_TYPES.CHECKPOINT) lastCheckpointLsn = r.lsn;
+  }
+  
+  // Check if WAL was truncated: no data records exist before checkpoint
+  // In that case, heap file is already consistent — skip destructive replay
+  const hasDataRecordsBeforeCheckpoint = lastCheckpointLsn > 0 && allRecords.some(
+    r => r.lsn < lastCheckpointLsn && (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE)
+  );
+  const walTruncated = lastCheckpointLsn > 0 && !hasDataRecordsBeforeCheckpoint;
+  
+  if (walTruncated) {
+    // WAL was truncated after checkpoint — heap file has all data
+    // Only replay data records after checkpoint (if any)
+    const recordsAfterCheckpoint = allRecords.filter(
+      r => r.lsn > lastCheckpointLsn && (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE)
+    );
+    
+    if (recordsAfterCheckpoint.length === 0) {
+      // No new data — heap is fully consistent
+      const hDm = heap._dm;
+      if (hDm) hDm.lastAppliedLSN = maxWalLSN;
+      return { redone: 0, skipped: 0, committedTxns: committedTxns.size };
+    }
+    // Otherwise, fall through to incremental replay (no clear)
   }
   
   // Phase 2: Clear heap data and rebuild from WAL
-  // This ensures page/slot assignments match the original layout exactly
-  // We need to clear all pages and replay from scratch for this table
+  // Skip destructive clear if WAL was truncated (data already on disk)
   const dm = heap._dm;
   const bp = heap._bp;
   
-  // Evict all pages from buffer pool first
-  if (bp && bp.flushAll) {
-    bp.flushAll((pid, data) => dm.writePage(pid, data));
+  if (!walTruncated) {
+    // Full replay: clear heap and rebuild from WAL
+    // Evict all pages from buffer pool first
+    if (bp && bp.flushAll) {
+      bp.flushAll((pid, data) => dm.writePage(pid, data));
+    }
+    
+    // Clear all data pages (write zeroed pages)
+    for (let i = 0; i < dm.pageCount; i++) {
+      const zeroBuf = Buffer.alloc(PAGE_SIZE);
+      dm.writePage(i, zeroBuf);
+    }
+    // Reset page count to 0
+    dm._pageCount = 0;
+    dm._freeListHead = -1;
+    dm._writeHeader();
+    
+    // Re-initialize FSM
+    heap._fsm = new FreeSpaceMap();
   }
-  
-  // Clear all data pages (write zeroed pages)
-  for (let i = 0; i < dm.pageCount; i++) {
-    const zeroBuf = Buffer.alloc(PAGE_SIZE);
-    dm.writePage(i, zeroBuf);
-  }
-  // Reset page count to 0
-  dm._pageCount = 0;
-  dm._freeListHead = -1;
-  dm._writeHeader();
-  
-  // Re-initialize FSM
-  heap._fsm = new FreeSpaceMap();
   
   // Phase 3: Redo — replay committed operations for this heap's table only
   let redone = 0;
@@ -225,7 +297,8 @@ export function recoverFromFileWAL(heap, wal) {
   const savedWal = heap._wal;
   heap._wal = null;
   
-  for (const r of allRecords) {
+  const replayRecords = allRecords;
+  for (const r of replayRecords) {
     if (!committedTxns.has(r.txId)) {
       skipped++;
       continue;
