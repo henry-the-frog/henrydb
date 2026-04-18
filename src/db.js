@@ -1582,11 +1582,18 @@ export class Database {
       const pgName = tableName.replace('pg_catalog.', '');
       const pgRows = this._getPgCatalog(pgName);
       if (pgRows !== null) {
-        let rows = pgRows;
-        if (ast.where) rows = rows.filter(row => this._evalExpr(ast.where, row));
+        const alias = ast.from.alias || tableName;
+        let rows = pgRows.map(r => {
+          const row = { ...r };
+          for (const [k, v] of Object.entries(r)) {
+            if (!k.includes('.')) row[`${alias}.${k}`] = v;
+          }
+          return row;
+        });
         for (const join of ast.joins || []) {
-          rows = this._executeJoin(rows, join, ast.from.alias || tableName);
+          rows = this._executeJoin(rows, join, alias);
         }
+        if (ast.where) rows = rows.filter(row => this._evalExpr(ast.where, row));
         return this._applySelectColumns(ast, rows);
       }
     }
@@ -1924,6 +1931,42 @@ export class Database {
       return this._executeLateralJoin(leftRows, join);
     }
     
+    // Check for pg_catalog virtual tables
+    const joinTable = join.table;
+    if (joinTable && (joinTable.startsWith('pg_catalog.') || joinTable.startsWith('pg_'))) {
+      const pgName = joinTable.replace('pg_catalog.', '');
+      const pgRows = this._getPgCatalog(pgName);
+      if (pgRows !== null) {
+        const rightAlias = join.alias || joinTable;
+        const rightRows = pgRows.map(r => {
+          const row = {};
+          for (const [k, v] of Object.entries(r)) {
+            row[k] = v;
+            row[`${rightAlias}.${k}`] = v;
+          }
+          return row;
+        });
+        return this._executeJoinWithRows(leftRows, rightRows, join, rightAlias);
+      }
+    }
+    
+    // Check for information_schema virtual tables
+    if (joinTable && (joinTable.startsWith('information_schema.') || joinTable === 'information_schema')) {
+      const isRows = this._getInformationSchema(joinTable);
+      if (isRows !== null) {
+        const rightAlias = join.alias || joinTable;
+        const rightRows = isRows.map(r => {
+          const row = {};
+          for (const [k, v] of Object.entries(r)) {
+            row[k] = v;
+            row[`${rightAlias}.${k}`] = v;
+          }
+          return row;
+        });
+        return this._executeJoinWithRows(leftRows, rightRows, join, rightAlias);
+      }
+    }
+
     const rightTable = this.tables.get(join.table);
     const rightView = this.views.get(join.table);
 
