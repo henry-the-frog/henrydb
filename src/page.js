@@ -335,6 +335,8 @@ export class HeapFile {
     this.pages = [];
     this.nextPageId = 0;
     this.fsm = new FreeSpaceMap();
+    this._hotChains = new Map(); // "pageId:slotIdx" → { pageId, slotIdx } (redirect to latest version)
+    this._hotRedirected = new Set(); // Set of "pageId:slotIdx" that are OLD versions (have been redirected FROM)
   }
 
   _allocPage() {
@@ -376,11 +378,148 @@ export class HeapFile {
   }
 
   get(pageId, slotIdx) {
-    const page = this.pages.find(p => p.id === pageId);
+    // Follow HOT chain to latest version
+    let key = `${pageId}:${slotIdx}`;
+    let currentPageId = pageId;
+    let currentSlotIdx = slotIdx;
+    let hops = 0;
+    while (this._hotChains.has(key) && hops < 100) {
+      const redirect = this._hotChains.get(key);
+      currentPageId = redirect.pageId;
+      currentSlotIdx = redirect.slotIdx;
+      key = `${currentPageId}:${currentSlotIdx}`;
+      hops++;
+    }
+
+    const page = this.pages.find(p => p.id === currentPageId);
     if (!page) return null;
-    const tuple = page.getTuple(slotIdx);
+    const tuple = page.getTuple(currentSlotIdx);
     if (!tuple) return null;
     return decodeTuple(tuple);
+  }
+
+  /**
+   * HOT update: store new version on the same page as the original.
+   * Returns { pageId, slotIdx, isHot: true } if successful (same page),
+   * or null if the new tuple doesn't fit on the same page.
+   */
+  hotUpdate(pageId, slotIdx, newValues) {
+    // Follow chain to find current page
+    let key = `${pageId}:${slotIdx}`;
+    let currentPageId = pageId;
+    let currentSlotIdx = slotIdx;
+    while (this._hotChains.has(key)) {
+      const redirect = this._hotChains.get(key);
+      currentPageId = redirect.pageId;
+      currentSlotIdx = redirect.slotIdx;
+      key = `${currentPageId}:${currentSlotIdx}`;
+    }
+
+    const page = this.pages.find(p => p.id === currentPageId);
+    if (!page) return null;
+
+    const tupleBytes = encodeTuple(newValues);
+    // Try to insert on the same page
+    const newSlotIdx = page.insertTuple(tupleBytes);
+    if (newSlotIdx < 0) return null; // Doesn't fit — caller should do regular update
+
+    this.fsm.update(page.id, page.freeSpace());
+
+    // Set up redirect: old location → new location
+    this._hotChains.set(key, { pageId: currentPageId, slotIdx: newSlotIdx });
+    this._hotRedirected.add(key);
+
+    return { pageId: currentPageId, slotIdx: newSlotIdx, isHot: true };
+  }
+
+  /**
+   * Prune HOT chains: remove intermediate versions, keep chain head → latest redirect.
+   * Called during VACUUM. Returns number of tuples pruned.
+   */
+  pruneHotChains() {
+    let pruned = 0;
+    // Find chain heads: entries in _hotRedirected that are not themselves targets of another redirect
+    // A chain head is the first entry that was redirected
+    const chainHeads = new Set();
+    for (const oldKey of this._hotRedirected) {
+      // Walk backwards to find the earliest redirected slot
+      // The chain head is the one NOT in _hotChains as a target
+      chainHeads.add(oldKey);
+    }
+
+    // For each chain head, find the latest version
+    const processed = new Set();
+    for (const headKey of chainHeads) {
+      if (processed.has(headKey)) continue;
+      
+      // Walk the chain from head to end
+      const chainKeys = [headKey];
+      let key = headKey;
+      while (this._hotChains.has(key)) {
+        const redirect = this._hotChains.get(key);
+        key = `${redirect.pageId}:${redirect.slotIdx}`;
+        chainKeys.push(key);
+      }
+      
+      // Last key is the latest version — keep it
+      // Delete all intermediate slots (everything except the latest)
+      for (let i = 0; i < chainKeys.length - 1; i++) {
+        const intermediateKey = chainKeys[i];
+        if (i === 0) {
+          // Chain head: don't delete the physical tuple if it's the index pointer
+          // Instead, keep the redirect from head → latest
+          const latestKey = chainKeys[chainKeys.length - 1];
+          const [latestPageId, latestSlotIdx] = latestKey.split(':').map(Number);
+          // Update head to point directly to latest (skip intermediates)
+          this._hotChains.set(intermediateKey, { pageId: latestPageId, slotIdx: latestSlotIdx });
+          // But still delete the physical tuple at the head
+          // (The redirect is enough — no need to keep old data)
+          const [pageIdStr, slotIdxStr] = intermediateKey.split(':');
+          const page = this.pages.find(p => p.id === parseInt(pageIdStr, 10));
+          if (page) {
+            page.deleteTuple(parseInt(slotIdxStr, 10));
+            this.fsm.update(page.id, page.freeSpace());
+          }
+        } else {
+          // Intermediate entry: delete physical tuple AND remove from chain
+          const [pageIdStr, slotIdxStr] = intermediateKey.split(':');
+          const page = this.pages.find(p => p.id === parseInt(pageIdStr, 10));
+          if (page) {
+            page.deleteTuple(parseInt(slotIdxStr, 10));
+            this.fsm.update(page.id, page.freeSpace());
+          }
+          this._hotChains.delete(intermediateKey);
+          this._hotRedirected.delete(intermediateKey);
+        }
+        pruned++;
+        processed.add(intermediateKey);
+      }
+    }
+
+    return pruned;
+  }
+
+  /**
+   * Check if a location is the head of a HOT chain (has redirects pointing away from it)
+   */
+  isHotChainHead(pageId, slotIdx) {
+    return this._hotRedirected.has(`${pageId}:${slotIdx}`);
+  }
+
+  /**
+   * Get the final (latest) location following any HOT chain
+   */
+  resolveHotChain(pageId, slotIdx) {
+    let key = `${pageId}:${slotIdx}`;
+    let currentPageId = pageId;
+    let currentSlotIdx = slotIdx;
+    while (this._hotChains.has(key)) {
+      const redirect = this._hotChains.get(key);
+      currentPageId = redirect.pageId;
+      currentSlotIdx = redirect.slotIdx;
+      key = `${currentPageId}:${currentSlotIdx}`;
+    }
+    return { pageId: currentPageId, slotIdx: currentSlotIdx };
   }
 
   delete(pageId, slotIdx) {
@@ -392,6 +531,9 @@ export class HeapFile {
   *scan() {
     for (const page of this.pages) {
       for (const { slotIdx, data } of page.scanTuples()) {
+        const key = `${page.id}:${slotIdx}`;
+        // Skip intermediate HOT chain entries (old versions that redirect elsewhere)
+        if (this._hotRedirected.has(key)) continue;
         yield { pageId: page.id, slotIdx, values: decodeTuple(data) };
       }
     }
@@ -400,7 +542,9 @@ export class HeapFile {
   get tupleCount() {
     let count = 0;
     for (const page of this.pages) {
-      for (const _ of page.scanTuples()) count++;
+      for (const { slotIdx } of page.scanTuples()) {
+        if (!this._hotRedirected.has(`${page.id}:${slotIdx}`)) count++;
+      }
     }
     return count;
   }
