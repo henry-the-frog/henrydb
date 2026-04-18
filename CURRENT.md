@@ -1,14 +1,15 @@
 # CURRENT.md
 
-## Status: in-progress
-## Session: B
+## Status: session-ended
+## Session: B (afternoon)
 ## Date: 2026-04-18
-## Time: 1:53 PM MDT
-## Tasks Completed: ~30 (T100-T157)
-## Builds: ~20
-## Major Features: PG wire protocol (simple + extended), persistent server, parametric cost model, merge join, COPY, information_schema, SHOW TABLES/INDEXES/ALL, DESCRIBE
-## Bugs Fixed: 4 (heap overflow, UNIQUE+HOT, column naming, Describe side effects)
-## Next: SHOW CREATE TABLE column naming fix, TOAST overflow pages
+## Time: 1:57 PM MDT
+## Tasks Completed: ~35 (T100-T157)
+## Builds: ~22
+## Major Features: PG wire protocol (simple + extended), persistent server, parametric cost model, merge join, COPY FROM/TO, information_schema, SHOW TABLES/INDEXES/ALL/CREATE TABLE, DESCRIBE, SET cost params
+## Bugs Fixed: 4 (CRITICAL heap overflow, UNIQUE+HOT, column naming, Describe side effects)
+## Test Count: 200+ pass, 0 fail across 13 test files
+## Next Session Focus: SHOW CREATE TABLE column fix was last item. TOAST overflow pages, system catalog tables.
 
 ## Context Files
 - memory/2026-04-17.md
