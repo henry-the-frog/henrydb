@@ -60,8 +60,9 @@ export function tokenize(sql) {
     if (src[i] === "'") {
       i++;
       let str = '';
-      while (i < src.length && src[i] !== "'") {
+      while (i < src.length) {
         if (src[i] === "'" && src[i + 1] === "'") { str += "'"; i += 2; continue; }
+        if (src[i] === "'") break;
         str += src[i++];
       }
       if (i >= src.length) throw new Error('Unterminated string literal');

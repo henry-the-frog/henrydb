@@ -3089,6 +3089,9 @@ export class Database {
     for (const [name, viewData] of Object.entries(json.views || {})) {
       if (viewData.sql) {
         db.execute(`CREATE VIEW ${name} AS ${viewData.sql}`);
+      } else if (viewData.query) {
+        // Views stored as AST — restore directly
+        db.views.set(name, viewData);
       }
     }
 
