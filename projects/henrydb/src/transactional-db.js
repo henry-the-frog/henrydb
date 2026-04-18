@@ -87,6 +87,16 @@ export class TransactionalDatabase {
           } catch (e) { /* ignore view creation errors — underlying table may not exist yet */ }
         }
       }
+      // Restore triggers from catalog
+      if (catalog.triggers && Array.isArray(catalog.triggers)) {
+        db.triggers = catalog.triggers;
+      }
+      // Restore sequences from catalog
+      if (catalog.sequences) {
+        for (const [name, seq] of Object.entries(catalog.sequences)) {
+          db.sequences.set(name, { ...seq });
+        }
+      }
       // Crash recovery
       if (recover) {
         // Phase 1: Replay DDL WAL records (ALTER TABLE, CREATE INDEX, etc.)
@@ -102,8 +112,28 @@ export class TransactionalDatabase {
               const trimmedUpper = sql.trim().toUpperCase();
               if (trimmedUpper.startsWith('ALTER TABLE')) {
                 tdb._replayDDLSchemaOnly(db, sql);
+              } else if (trimmedUpper.startsWith('CREATE TRIGGER')) {
+                // Deduplicate: only add trigger if not already loaded from catalog
+                const nameMatch = sql.match(/CREATE\s+TRIGGER\s+(\w+)/i);
+                if (nameMatch && !db.triggers.some(t => t.name === nameMatch[1])) {
+                  db.execute(sql);
+                }
+              } else if (trimmedUpper.startsWith('CREATE SEQUENCE')) {
+                // Deduplicate: only add sequence if not already loaded from catalog
+                const nameMatch = sql.match(/CREATE\s+SEQUENCE\s+(\w+)/i);
+                if (nameMatch && !db.sequences.has(nameMatch[1])) {
+                  db.execute(sql);
+                }
+              } else if (trimmedUpper.startsWith('CREATE VIEW') || trimmedUpper.startsWith('CREATE OR REPLACE VIEW')) {
+                // Deduplicate: skip if view already exists from catalog
+                const nameMatch = sql.match(/CREATE\s+(?:OR\s+REPLACE\s+)?VIEW\s+(\w+)/i);
+                if (nameMatch && !db.views.has(nameMatch[1])) {
+                  db.execute(sql);
+                  const viewDef = db.views.get(nameMatch[1]);
+                  if (viewDef) viewDef.sql = sql;
+                }
               } else {
-                // For CREATE INDEX, DROP INDEX, etc., full replay is safe
+                // For CREATE TABLE, CREATE INDEX, DROP TABLE, DROP INDEX, etc., full replay is safe
                 db.execute(sql);
               }
             } catch { /* ignore replay errors for idempotent DDL */ }
@@ -112,6 +142,10 @@ export class TransactionalDatabase {
         // Update catalog with any DDL changes
         for (const [name, tableObj] of db.tables) {
           tdb._createSqls.set(name, tdb._reconstructCreateSQL(name, tableObj.schema));
+        }
+        // Remove tables from _createSqls that were dropped during DDL replay
+        for (const name of [...tdb._createSqls.keys()]) {
+          if (!db.tables.has(name)) tdb._createSqls.delete(name);
         }
         // Handle heap rekeying for renamed tables
         // DDL replay may have renamed tables — need to match heaps to new names
@@ -289,6 +323,17 @@ export class TransactionalDatabase {
     // DDL and utility: bypass MVCC
     if (this._isDDL(trimmed)) {
       const result = this._db.execute(sql);
+      // Log DDL to WAL for crash recovery with stale catalog
+      // NOTE: ALTER TABLE and CREATE/DROP INDEX are already logged by the inner Database
+      // via the patched db.wal.logDDL interceptor. Only log DDL types NOT covered there.
+      const isReadOnly = trimmed.startsWith('SHOW') || trimmed.startsWith('DESCRIBE') || 
+                         trimmed.startsWith('EXPLAIN') || trimmed.startsWith('VACUUM') ||
+                         trimmed.startsWith('ANALYZE');
+      const alreadyLoggedByInner = trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('RENAME') ||
+                                    trimmed.startsWith('CREATE INDEX') || trimmed.startsWith('DROP INDEX');
+      if (!isReadOnly && !alreadyLoggedByInner && this._wal && this._wal.logDDL) {
+        this._wal.logDDL(sql);
+      }
       if (trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')) {
         this._trackCreate(sql);
         this._installScanInterceptors(); // New table needs interceptor
@@ -308,6 +353,10 @@ export class TransactionalDatabase {
         }
         this._saveCatalog();
       } else if (trimmed.startsWith('DROP VIEW')) {
+        this._saveCatalog();
+      } else if (trimmed.startsWith('CREATE TRIGGER') || trimmed.startsWith('DROP TRIGGER') ||
+                 trimmed.startsWith('CREATE SEQUENCE') || trimmed.startsWith('DROP SEQUENCE') ||
+                 trimmed.startsWith('CREATE MATERIALIZED') || trimmed.startsWith('REFRESH MATERIALIZED')) {
         this._saveCatalog();
       }
       return result;
@@ -1062,7 +1111,21 @@ export class TransactionalDatabase {
         views.push({ name, sql: viewDef.sql });
       }
     }
-    writeFileSync(this._catalogPath, JSON.stringify({ tables, views }, null, 2), 'utf8');
+    // Save triggers
+    const triggers = this._db.triggers || [];
+    // Save sequences
+    const sequences = {};
+    for (const [name, seq] of (this._db.sequences || new Map())) {
+      sequences[name] = {
+        current: seq.current,
+        increment: seq.increment,
+        min: seq.min,
+        max: seq.max,
+        cycle: seq.cycle,
+        ownedBy: seq.ownedBy,
+      };
+    }
+    writeFileSync(this._catalogPath, JSON.stringify({ tables, views, triggers, sequences }, null, 2), 'utf8');
   }
 
   _saveMvccState() {
