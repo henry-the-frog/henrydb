@@ -236,10 +236,87 @@ function getColumns(result, db, sql) {
   return [];
 }
 
-// --- Connection handler ---
+// --- pg_catalog query interceptor for psql/client compatibility ---
+function interceptPgCatalog(sql, db) {
+  const upper = sql.trim().toUpperCase();
+  
+  // psql startup: SET client_encoding, DateStyle, etc
+  if (upper.startsWith('SET ')) {
+    return { type: 'OK', message: 'SET' };
+  }
+  
+  // psql: SHOW search_path / server_version etc
+  if (upper.startsWith('SHOW ')) {
+    const param = upper.replace('SHOW ', '').replace(';', '').trim();
+    switch (param) {
+      case 'SERVER_VERSION':
+        return { type: 'ROWS', rows: [{ server_version: '14.0 (HenryDB)' }] };
+      case 'SERVER_ENCODING':
+        return { type: 'ROWS', rows: [{ server_encoding: 'UTF8' }] };
+      case 'CLIENT_ENCODING':
+        return { type: 'ROWS', rows: [{ client_encoding: 'UTF8' }] };
+      case 'SEARCH_PATH':
+        return { type: 'ROWS', rows: [{ search_path: '"$user", public' }] };
+      case 'STANDARD_CONFORMING_STRINGS':
+        return { type: 'ROWS', rows: [{ standard_conforming_strings: 'on' }] };
+      case 'IS_SUPERUSER':
+        return { type: 'ROWS', rows: [{ is_superuser: 'on' }] };
+      default:
+        return { type: 'ROWS', rows: [{ [param.toLowerCase()]: '' }] };
+    }
+  }
+  
+  // psql: version()
+  if (upper.includes('VERSION()')) {
+    return { type: 'ROWS', rows: [{ version: 'HenryDB 0.1.0 on Node.js' }] };
+  }
+  
+  // pg_catalog.pg_type query (common on connection)
+  if (upper.includes('PG_TYPE') || upper.includes('PG_CATALOG')) {
+    // Return empty result set for catalog queries
+    return { type: 'ROWS', rows: [] };
+  }
+  
+  // current_schema() / current_database() / current_user
+  if (upper.includes('CURRENT_SCHEMA')) {
+    return { type: 'ROWS', rows: [{ current_schema: 'public' }] };
+  }
+  if (upper.includes('CURRENT_DATABASE')) {
+    return { type: 'ROWS', rows: [{ current_database: 'henrydb' }] };
+  }
+  if (upper.includes('CURRENT_USER') || upper.includes('SESSION_USER')) {
+    return { type: 'ROWS', rows: [{ current_user: 'henrydb' }] };
+  }
+  
+  // \\dt (list tables) — psql sends query to pg_catalog
+  // We handle it by returning table info from the database
+  if (upper.includes('PG_CLASS') && upper.includes('RELKIND')) {
+    const tables = [];
+    if (db.tables) {
+      for (const [name, table] of db.tables) {
+        tables.push({
+          schemaname: 'public',
+          tablename: name,
+          tableowner: 'henrydb',
+          tablespace: null,
+        });
+      }
+    }
+    return { type: 'ROWS', rows: tables };
+  }
+  
+  return null; // Not intercepted
+}
+
 function handleConnection(socket, db) {
   let buffer = Buffer.alloc(0);
   let startupDone = false;
+
+  function executeWithIntercept(sql) {
+    const intercepted = interceptPgCatalog(sql, db);
+    if (intercepted) return intercepted;
+    return db.execute(sql);
+  }
   let inTransaction = false;
   const preparedStatements = new Map(); // name → { sql, paramTypes }
   const portals = new Map(); // name → { sql (with params substituted), result (if already executed) }
@@ -590,7 +667,7 @@ function handleConnection(socket, db) {
       if (upper === 'BEGIN' || upper === 'START TRANSACTION') inTransaction = true;
       if (upper === 'COMMIT' || upper === 'ROLLBACK' || upper === 'END') inTransaction = false;
 
-      const result = db.execute(sql);
+      const result = executeWithIntercept(sql);
       const tag = getCommandTag(sql, result);
 
       if (result.rows && result.rows.length > 0) {
@@ -650,7 +727,7 @@ function handleConnection(socket, db) {
         if (upper === 'BEGIN' || upper === 'START TRANSACTION') inTransaction = true;
         if (upper === 'COMMIT' || upper === 'ROLLBACK' || upper === 'END') inTransaction = false;
 
-        const result = db.execute(sql);
+        const result = executeWithIntercept(sql);
         const tag = getCommandTag(sql, result);
 
         if (result.rows && result.rows.length > 0) {
@@ -702,17 +779,29 @@ export function createPgServer(db, port = 5433) {
 
 // --- CLI entry point ---
 if (process.argv[1]?.endsWith('pg-server.js')) {
+  const { PersistentDatabase } = await import('./persistent-db.js');
+  const { join } = await import('node:path');
+  
   const args = process.argv.slice(2);
   const portIdx = args.indexOf('--port');
+  const dirIdx = args.indexOf('--dir');
   const port = portIdx >= 0 ? parseInt(args[portIdx + 1], 10) : 5433;
+  const dataDir = dirIdx >= 0 ? args[dirIdx + 1] : null;
 
-  const db = new Database();
-  console.log('HenryDB in-memory instance created');
+  let db;
+  if (dataDir) {
+    db = PersistentDatabase.open(dataDir, { poolSize: 64 });
+    console.log(`HenryDB persistent storage: ${dataDir}`);
+  } else {
+    db = new Database();
+    console.log('HenryDB in-memory instance (use --dir for persistence)');
+  }
 
   const server = createPgServer(db, port);
 
   process.on('SIGINT', () => {
     console.log('\nShutting down...');
+    if (db.close) db.close();
     server.close();
     process.exit(0);
   });
