@@ -16,3 +16,7 @@
 - HenryDB: aggregates in scalar subqueries in SELECT list (parser limitation)
 - HenryDB: atomic checkpoint (current multi-step leaves inconsistent states)
 - Neural-net: matrix-depth.test.js -0 vs 0 strict equality, learning tests need seed pinning
+
+### Low
+- HenryDB: checkpoint-explore.test.js expects WAL size=0 after checkpoint but checkpoint writes a CHECKPOINT record (129 bytes). Pre-existing test expectation mismatch.
+- HenryDB: 4 AUTOINCREMENT tests in sequence-depth.test.js fail (pre-existing)
