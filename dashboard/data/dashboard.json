@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-18T17:18:57.249Z",
+  "generated": "2026-04-18T18:15:44.314Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Benchmark: re-run INSERT/UPDATE benchmarks after optimization",
-    "completedAt": "2026-04-18T17:18:57.249Z",
-    "taskId": "T103",
-    "summary": "Fixed index-based constraint check: was calling .get() (wrong method) instead of .search(). Now properly O(log N). 1000 constraint checks in 1ms (vs 4000ms before). INSERT at 7K rows: ~240/sec. Remaining overhead is genuine heap/index/WAL work.",
-    "durationMs": 600000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Push optimized write path to GitHub",
+    "startedAt": "2026-04-18T18:15:44.314Z",
+    "taskId": "T100"
   },
   "schedule": {
     "date": "2026-04-18",
