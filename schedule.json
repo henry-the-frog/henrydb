@@ -880,9 +880,58 @@
     {
       "id": "T84",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Knowledge base update",
-      "started": "2026-04-18T16:27:38.667Z"
+      "started": "2026-04-18T16:27:38.667Z",
+      "completed": "2026-04-18T16:29:17.311Z",
+      "duration_ms": 300000,
+      "summary": "Updated scratch INDEX with 4 new entries, created lessons/2026-04-18.md with 4 key lessons, committed and pushed."
+    },
+    {
+      "id": "T85",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test: HenryDB UDFs with complex nested queries, table functions in joins, row locking edge cases",
+      "project": "henrydb",
+      "started": "2026-04-18T16:30:13.221Z",
+      "completed": "2026-04-18T16:32:01.641Z",
+      "duration_ms": 600000,
+      "summary": "Stress tested: (1) complex UDF combos (table func + scalar + JS + aggregation + WHERE) — all work, (2) row locking with BETWEEN and mixed locked/unlocked rows — correct, (3) SQL recursive functions work (emergent from db.execute architecture), (4) JS recursive functions cant self-reference (sandboxed). No bugs found."
+    },
+    {
+      "id": "T86",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What would make HenryDB genuinely usable? Missing features that matter vs features that are just cool",
+      "started": "2026-04-18T16:32:08.898Z",
+      "completed": "2026-04-18T16:32:28.687Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB usability assessment: remarkably feature-complete for SQL. #1 gap is wire protocol (HTTP/JSON or PG wire) — transforms from learning project to usable DB. Also: persistent catalog, query planner cost model, prepared statements. Deprioritize: stored procedures, materialized views, JSON functions."
+    },
+    {
+      "id": "T87",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add CALL procedure support (multi-statement body execution)",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T16:32:52.756Z",
+      "completed": "2026-04-18T16:32:52.898Z",
+      "duration_ms": 60000,
+      "summary": "REDIRECTED: Based on usability analysis, deprioritized CALL procedures. Wire protocol (HTTP/JSON API) is the highest-impact next feature. Deferred to next session."
+    },
+    {
+      "id": "T88",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Afternoon push and daily log",
+      "started": "2026-04-18T16:33:07.356Z"
+    },
+    {
+      "id": "T89",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Pre-boundary session wrap-up"
     },
     {
       "id": "T42",
@@ -1244,6 +1293,30 @@
     {
       "time": "2026-04-18T16:23:06.237Z",
       "msg": "Moved T42 after T84"
+    },
+    {
+      "time": "2026-04-18T16:29:57.402Z",
+      "msg": "Added T85 (EXPLORE) after end: Stress test: HenryDB UDFs with complex nested queries, table functions in joins, row locking edge cases"
+    },
+    {
+      "time": "2026-04-18T16:29:57.520Z",
+      "msg": "Added T86 (THINK) after end: What would make HenryDB genuinely usable? Missing features that matter vs features that are just cool"
+    },
+    {
+      "time": "2026-04-18T16:29:57.638Z",
+      "msg": "Added T87 (PLAN) after end: Add CALL procedure support (multi-statement body execution)"
+    },
+    {
+      "time": "2026-04-18T16:29:57.755Z",
+      "msg": "Added T88 (MAINTAIN) after end: Afternoon push and daily log"
+    },
+    {
+      "time": "2026-04-18T16:29:57.873Z",
+      "msg": "Added T89 (THINK) after end: Pre-boundary session wrap-up"
+    },
+    {
+      "time": "2026-04-18T16:29:57.990Z",
+      "msg": "Moved T42 after T89"
     }
   ]
 }
