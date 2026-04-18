@@ -3563,6 +3563,11 @@ export class Database {
         if (hashResult) return hashResult;
       }
       
+      if (joinCost.method === 'merge') {
+        const mergeResult = this._mergeJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType);
+        if (mergeResult) return mergeResult;
+      }
+      
       if (joinCost.method === 'index_nl' && rightIndex) {
         // Index nested-loop join: for each left row, look up matching right rows via index
         for (const leftRow of leftRows) {
@@ -3599,10 +3604,14 @@ export class Database {
         return result;
       }
       
-      // If preferred method failed, try hash join as fallback
+      // If preferred method failed, try alternatives as fallback
       if (joinCost.method !== 'hash') {
         const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType, join.filter);
         if (hashResult) return hashResult;
+      }
+      if (joinCost.method !== 'merge') {
+        const mergeResult = this._mergeJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType);
+        if (mergeResult) return mergeResult;
       }
     }
 
@@ -3754,6 +3763,59 @@ export class Database {
     return result;
   }
 
+  _mergeJoin(leftRows, rightTable, keys, rightAlias, joinType) {
+    const { leftKey, rightKey } = keys;
+    
+    const rightKeyIdx = rightTable.schema.findIndex(c => c.name === rightKey);
+    if (rightKeyIdx < 0) return null;
+    
+    const rightRows = [];
+    for (const item of rightTable.heap.scan()) {
+      rightRows.push(this._valuesToRow(item.values, rightTable.schema, rightAlias));
+    }
+    
+    const compare = (va, vb) => {
+      if (va === vb) return 0;
+      if (va == null) return -1;
+      if (vb == null) return 1;
+      return va < vb ? -1 : va > vb ? 1 : 0;
+    };
+    
+    const getLeftKey = (row) => row[leftKey] ?? row[Object.keys(row).find(k => k.endsWith('.' + leftKey))];
+    const getRightKey = (row) => row[rightKey] ?? row[`${rightAlias}.${rightKey}`];
+    
+    const sortedLeft = [...leftRows].sort((a, b) => compare(getLeftKey(a), getLeftKey(b)));
+    const sortedRight = [...rightRows].sort((a, b) => compare(getRightKey(a), getRightKey(b)));
+    
+    const result = [];
+    let ri = 0;
+    
+    for (const leftRow of sortedLeft) {
+      const lv = getLeftKey(leftRow);
+      let matched = false;
+      
+      while (ri < sortedRight.length && compare(getRightKey(sortedRight[ri]), lv) < 0) ri++;
+      
+      let rj = ri;
+      while (rj < sortedRight.length && getRightKey(sortedRight[rj]) === lv) {
+        result.push({ ...leftRow, ...sortedRight[rj] });
+        matched = true;
+        rj++;
+      }
+      
+      if (!matched && joinType === 'LEFT') {
+        const nullRow = {};
+        for (const col of rightTable.schema) {
+          nullRow[col.name] = null;
+          nullRow[`${rightAlias}.${col.name}`] = null;
+        }
+        result.push({ ...leftRow, ...nullRow });
+      }
+    }
+    
+    return result;
+  }
+
   _estimateRowCount(table) {
     // Use tracked row count if available
     if (table.heap?.rowCount !== undefined) return table.heap.rowCount;
@@ -3834,6 +3896,15 @@ export class Database {
     costs.nested_loop = leftRows * rightRows * C.cpu_operator_cost +
                         (leftRows + rightRows) * C.cpu_tuple_cost;
     
+    // Merge join: sort both sides + linear merge
+    // Cost: sort(left) + sort(right) + merge
+    if (hasEquiJoin) {
+      const sortLeft = leftRows > 1 ? leftRows * Math.log2(leftRows) * C.cpu_operator_cost : 0;
+      const sortRight = rightRows > 1 ? rightRows * Math.log2(rightRows) * C.cpu_operator_cost : 0;
+      const mergeCost = (leftRows + rightRows) * C.cpu_tuple_cost;
+      costs.merge = sortLeft + sortRight + mergeCost;
+    }
+    
     // Pick cheapest
     let bestMethod = 'nested_loop';
     let bestCost = costs.nested_loop;
@@ -3845,6 +3916,10 @@ export class Database {
     if (costs.index_nl !== undefined && costs.index_nl < bestCost) {
       bestMethod = 'index_nl';
       bestCost = costs.index_nl;
+    }
+    if (costs.merge !== undefined && costs.merge < bestCost) {
+      bestMethod = 'merge';
+      bestCost = costs.merge;
     }
     
     return {
