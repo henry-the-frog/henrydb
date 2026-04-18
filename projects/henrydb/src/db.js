@@ -1329,81 +1329,8 @@ export class Database {
     }
   }
 
-  _alterTable(ast) {
-    const table = this.tables.get(ast.table);
-    if (!table) throw new Error(`Table ${ast.table} not found`);
-    this._logAlterTableDDL(ast);
-
-    switch (ast.action) {
-      case 'ADD_COLUMN': {
-        // ast.column can be a string or an object { name, type, default }
-        const colName = typeof ast.column === 'string' ? ast.column : ast.column?.name;
-        const colType = ast.dataType || (typeof ast.column === 'object' ? ast.column?.type : null) || 'TEXT';
-        // Check column doesn't already exist
-        if (table.schema.find(c => c.name === colName)) {
-          throw new Error(`Column ${colName} already exists`);
-        }
-        const colDef = { name: colName, type: colType, primaryKey: false };
-        // Extract default value from AST
-        const defNode = ast.defaultValue ?? (typeof ast.column === 'object' ? ast.column?.default : null);
-        const defValue = defNode && typeof defNode === 'object' && defNode.value !== undefined ? defNode.value : defNode;
-        if (defValue !== undefined && defValue !== null) {
-          colDef.defaultValue = defValue;
-        }
-        table.schema.push(colDef);
-        
-        // Add default value to all existing rows
-        const colIdx = table.schema.length - 1;
-        for (const { pageId, slotIdx, values } of table.heap.scan()) {
-          values.push(defValue ?? null);
-          // Re-encode and update the tuple in place
-          const encoded = encodeTuple(values);
-          table.heap.pages.find(p => p.id === pageId)?.updateTuple(slotIdx, encoded);
-        }
-        
-        return { type: 'OK', message: `Column ${colName} added to ${ast.table}` };
-      }
-
-      case 'DROP_COLUMN': {
-        const colIdx = table.schema.findIndex(c => c.name === ast.column);
-        if (colIdx === -1) throw new Error(`Column ${ast.column} not found`);
-        if (table.schema[colIdx].primaryKey) throw new Error(`Cannot drop primary key column`);
-        
-        // Remove from schema
-        table.schema.splice(colIdx, 1);
-        
-        // Remove from all existing rows
-        for (const { pageId, slotIdx, values } of table.heap.scan()) {
-          values.splice(colIdx, 1);
-          const encoded = encodeTuple(values);
-          table.heap.pages.find(p => p.id === pageId)?.updateTuple(slotIdx, encoded);
-        }
-        
-        // Remove index if exists
-        table.indexes.delete(ast.column);
-        
-        return { type: 'OK', message: `Column ${ast.column} dropped from ${ast.table}` };
-      }
-
-      case 'RENAME_COLUMN': {
-        const col = table.schema.find(c => c.name === ast.oldName);
-        if (!col) throw new Error(`Column ${ast.oldName} not found`);
-        col.name = ast.newName;
-        
-        // Update index if exists
-        if (table.indexes.has(ast.oldName)) {
-          const idx = table.indexes.get(ast.oldName);
-          table.indexes.delete(ast.oldName);
-          table.indexes.set(ast.newName, idx);
-        }
-        
-        return { type: 'OK', message: `Column ${ast.oldName} renamed to ${ast.newName}` };
-      }
-
-      default:
-        throw new Error(`Unknown ALTER TABLE action: ${ast.action}`);
-    }
-  }
+  // NOTE: _alterTable is defined later (line ~1729) with the full implementation
+  // that handles FileBackedHeap correctly (using updateInPlace + delete/re-insert).
 
   _dropTable(ast) {
     if (!this.tables.has(ast.table)) {

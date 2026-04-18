@@ -161,3 +161,15 @@ When TransactionalDatabase wraps Database, it maintains its own catalog persiste
 **The lesson:** In-place data modification and WAL-based recovery are fundamentally in tension. WAL recovery assumes it can replay records from empty state. In-place modifications create data that bypasses WAL. The resolution: use checkpoints as synchronization points between the two systems.
 
 **Secondary lesson:** Always check for duplicate method definitions in large files. Two `_alterTable` methods existed — the second silently overrode the first, using a completely different backfill strategy (delete+re-insert vs in-place updateTuple). The first was dead code.
+
+### Recovery with Uncommitted Transactions (Apr 17 evening)
+
+**Bug:** Committed rows lost after close with uncommitted transactions.
+
+**Root cause:** The "hasUncommitted" recovery path cleared ALL pages and replayed only committed WAL records. But `dm._writeHeader()` with `_pageCount=0` truncated the data file to 0 bytes. The subsequent `heap.insert()` during replay allocated new pages, but the DiskManager's internal state was inconsistent.
+
+**Fix:** Hybrid recovery strategy:
+1. If pages already have data → just delete uncommitted tuples in-place
+2. If pages are empty (unflushed crash) → traditional clear + replay
+
+**Insight:** "Clear and replay" recovery is dangerous when the WAL might not have all records (e.g., after checkpoint or non-flush close). In-place deletion of uncommitted records is safer when page data exists.
