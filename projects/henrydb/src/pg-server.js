@@ -356,6 +356,24 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: [] };
   }
   
+  // DESCRIBE table (MySQL-style, also common in tools)
+  const describeMatch = upper.match(/^DESCRIBE\s+(\w+)/);
+  if (describeMatch) {
+    const tableName = describeMatch[1].toLowerCase();
+    const table = db.tables?.get(tableName);
+    if (table && table.schema) {
+      const rows = table.schema.map(col => ({
+        column_name: col.name,
+        data_type: (col.type || 'TEXT').toUpperCase(),
+        nullable: col.primaryKey ? 'NO' : 'YES',
+        key: col.primaryKey ? 'PRI' : (col.unique ? 'UNI' : ''),
+        default_value: col.defaultValue != null ? String(col.defaultValue) : null,
+      }));
+      return { type: 'ROWS', rows };
+    }
+    return { type: 'ROWS', rows: [] };
+  }
+  
   // current_schema() / current_database() / current_user
   if (upper.includes('CURRENT_SCHEMA')) {
     return { type: 'ROWS', rows: [{ current_schema: 'public' }] };
