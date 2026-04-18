@@ -1072,6 +1072,7 @@ export class Database {
       case 'CREATE_MATVIEW': return this._createMatView(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'DROP_FUNCTION': return this._dropFunction(ast);
+      case 'ANALYZE': return this._analyzeTable(ast);
       case 'CREATE_TRIGGER': {
         this.triggers.push({
           name: ast.name,
@@ -1661,6 +1662,84 @@ export class Database {
         this._rowLocks.delete(key);
       }
     }
+  }
+
+  /**
+   * ANALYZE: gather table statistics for query optimization.
+   * Computes per-column: ndistinct, nullFraction, min, max, mostCommonValues.
+   */
+  _analyzeTable(ast) {
+    const tablesToAnalyze = ast.table ? [ast.table] : [...this.tables.keys()];
+    const results = {};
+    
+    for (const tableName of tablesToAnalyze) {
+      const table = this.tables.get(tableName);
+      if (!table) throw new Error(`Table "${tableName}" does not exist`);
+      
+      let rowCount = 0;
+      const columnValues = {};
+      for (const col of table.schema) {
+        columnValues[col.name] = [];
+      }
+      
+      // Scan the heap and collect values (sample up to 10000 rows)
+      const maxSample = 10000;
+      for (const item of table.heap.scan()) {
+        if (rowCount >= maxSample) { rowCount++; continue; }
+        const values = item.values || item;
+        for (let i = 0; i < table.schema.length; i++) {
+          columnValues[table.schema[i].name].push(values[i]);
+        }
+        rowCount++;
+      }
+      
+      const stats = { rowCount, columns: {} };
+      
+      for (const col of table.schema) {
+        const vals = columnValues[col.name];
+        const nonNull = vals.filter(v => v !== null && v !== undefined);
+        const distinct = new Set(nonNull);
+        
+        // Most common values (top 10)
+        const freq = new Map();
+        for (const v of nonNull) {
+          freq.set(v, (freq.get(v) || 0) + 1);
+        }
+        const mostCommon = [...freq.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10)
+          .map(([value, count]) => ({ value, frequency: count / vals.length }));
+        
+        // Numeric stats
+        let min = null, max = null, avg = null;
+        if (nonNull.length > 0 && typeof nonNull[0] === 'number') {
+          const nums = nonNull.filter(v => typeof v === 'number');
+          min = Math.min(...nums);
+          max = Math.max(...nums);
+          avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+        }
+        
+        stats.columns[col.name] = {
+          ndistinct: distinct.size,
+          nullFraction: (vals.length - nonNull.length) / Math.max(vals.length, 1),
+          mostCommonValues: mostCommon,
+          min,
+          max,
+          avg,
+        };
+      }
+      
+      // Store stats on the table
+      table._stats = stats;
+      results[tableName] = stats;
+    }
+    
+    const count = tablesToAnalyze.length;
+    return {
+      type: 'OK',
+      message: `ANALYZE: ${count} table(s) analyzed`,
+      stats: results,
+    };
   }
 
   _createFunction(ast) {
