@@ -298,6 +298,25 @@ function interceptPgCatalog(sql, db) {
     return { type: 'OK', message: 'SET' };
   }
   
+  // SHOW TABLES — list all tables with metadata
+  if (upper === 'SHOW TABLES' || upper === 'SHOW TABLES;') {
+    const tables = [];
+    if (db.tables) {
+      for (const [name, table] of db.tables) {
+        const rowCount = table.heap?.rowCount ?? '?';
+        const colCount = table.schema?.length ?? 0;
+        const indexCount = table.indexes?.size ?? 0;
+        tables.push({
+          table_name: name,
+          columns: colCount,
+          rows: rowCount,
+          indexes: indexCount,
+        });
+      }
+    }
+    return { type: 'ROWS', rows: tables };
+  }
+  
   // psql: SHOW search_path / server_version etc
   if (upper.startsWith('SHOW ')) {
     const param = upper.replace('SHOW ', '').replace(';', '').trim();
