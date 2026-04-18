@@ -221,7 +221,7 @@ export function parse(sql) {
   if (isKeyword('BEGIN')) { advance(); if (isKeyword('TRANSACTION')) advance(); return { type: 'BEGIN' }; }
   if (isKeyword('COMMIT')) { advance(); return { type: 'COMMIT' }; }
   if (isKeyword('ROLLBACK')) { advance(); return { type: 'ROLLBACK' }; }
-  if (isKeyword('VACUUM')) { advance(); let table = null; if (peek().type === 'IDENT' || peek().type === 'KEYWORD') table = (advance().originalValue || tokens[pos-1].value); return { type: 'VACUUM', table }; }
+  if (isKeyword('VACUUM')) { advance(); let table = null; let incremental = false; let maxPages = null; if (peek().type === 'IDENT' && peek().value === 'INCREMENTAL') { advance(); incremental = true; if (peek().type === 'NUMBER') { maxPages = parseInt(advance().value, 10); } } if (peek().type === 'IDENT' || peek().type === 'KEYWORD') table = (advance().originalValue || tokens[pos-1].value); return { type: 'VACUUM', table, incremental, maxPages }; }
   if (isKeyword('CHECKPOINT')) { advance(); return { type: 'CHECKPOINT' }; }
   if (isKeyword('ANALYZE') && !isKeyword('EXPLAIN')) {
     advance();

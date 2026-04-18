@@ -347,50 +347,84 @@ export class MVCCHeap {
 
   /** VACUUM: remove dead tuples that no active transaction can see. */
   vacuum(mgr) {
+    return this._vacuumPages(mgr, Infinity);
+  }
+
+  /**
+   * Incremental VACUUM: process at most maxPages pages, then stop.
+   * Returns { ...stats, cursor, done } where cursor can be passed to resume.
+   * @param {object} mgr - MVCC manager
+   * @param {number} maxPages - max pages to process per call
+   * @param {number} [cursor=0] - page to start from (0 = beginning)
+   */
+  vacuumIncremental(mgr, maxPages = 10, cursor = 0) {
+    return this._vacuumPages(mgr, maxPages, cursor);
+  }
+
+  /**
+   * Internal vacuum implementation shared by full and incremental modes.
+   * @private
+   */
+  _vacuumPages(mgr, maxPages, startPage = 0) {
     const horizon = mgr.computeXminHorizon();
     let deadTuplesRemoved = 0;
     let bytesFreed = 0;
-    let pagesCompacted = 0;
     const pagesAffected = new Set();
+    let pagesProcessed = 0;
+    let lastPageProcessed = startPage;
+    const totalPages = this.heap.pageCount;
 
+    // Group _rowMeta keys by page for efficient page-based processing
+    const pageKeys = new Map(); // pageId -> [{ key, meta }]
     for (const [key, meta] of this._rowMeta) {
-      // A tuple is dead if:
-      // 1. It was deleted (xmax != 0)
-      // 2. The deleter committed (xmax is in committedTxns)
-      // 3. No active transaction can see it (xmax < horizon)
-      if (meta.xmax === 0) continue; // Not deleted
-      
-      const deleterCommitted = mgr.committedTxns.has(meta.xmax) ||
-        (mgr.activeTxns.get(meta.xmax)?.committed ?? false);
-      if (!deleterCommitted) continue; // Deleter hasn't committed
-      
-      if (meta.xmax >= horizon) continue; // Active tx might still see it
-
-      // Also check xmin < horizon (creator committed before horizon)
-      const creatorCommitted = mgr.committedTxns.has(meta.xmin) ||
-        (mgr.activeTxns.get(meta.xmin)?.committed ?? false);
-      if (!creatorCommitted) continue;
-
-      // Safe to remove this tuple
-      const [pageIdStr, slotIdxStr] = key.split(':');
-      const pageId = parseInt(pageIdStr, 10);
-      const slotIdx = parseInt(slotIdxStr, 10);
-      
-      // Delete from physical heap
-      const deleted = this.heap.delete(pageId, slotIdx);
-      if (deleted) {
-        deadTuplesRemoved++;
-        bytesFreed += meta.values ? JSON.stringify(meta.values).length : 32;
-        pagesAffected.add(pageId);
-      }
-      // Remove MVCC metadata
-      this._rowMeta.delete(key);
+      const pageId = parseInt(key.split(':')[0], 10);
+      if (pageId < startPage) continue; // Skip pages before cursor
+      if (!pageKeys.has(pageId)) pageKeys.set(pageId, []);
+      pageKeys.get(pageId).push({ key, meta });
     }
+
+    // Sort pages so we process them in order
+    const sortedPages = [...pageKeys.keys()].sort((a, b) => a - b);
+
+    for (const pageId of sortedPages) {
+      if (pagesProcessed >= maxPages) break;
+      pagesProcessed++;
+      lastPageProcessed = pageId + 1; // Next cursor position
+
+      const entries = pageKeys.get(pageId);
+      for (const { key, meta } of entries) {
+        if (meta.xmax === 0) continue;
+        
+        const deleterCommitted = mgr.committedTxns.has(meta.xmax) ||
+          (mgr.activeTxns.get(meta.xmax)?.committed ?? false);
+        if (!deleterCommitted) continue;
+        
+        if (meta.xmax >= horizon) continue;
+
+        const creatorCommitted = mgr.committedTxns.has(meta.xmin) ||
+          (mgr.activeTxns.get(meta.xmin)?.committed ?? false);
+        if (!creatorCommitted) continue;
+
+        const slotIdx = parseInt(key.split(':')[1], 10);
+        const deleted = this.heap.delete(pageId, slotIdx);
+        if (deleted) {
+          deadTuplesRemoved++;
+          bytesFreed += meta.values ? JSON.stringify(meta.values).length : 32;
+          pagesAffected.add(pageId);
+        }
+        this._rowMeta.delete(key);
+      }
+    }
+
+    const done = pagesProcessed < maxPages || lastPageProcessed >= totalPages;
 
     return {
       deadTuplesRemoved,
       bytesFreed,
-      pagesCompacted: pagesAffected.size
+      pagesCompacted: pagesAffected.size,
+      pagesProcessed,
+      cursor: done ? 0 : lastPageProcessed,
+      done,
     };
   }
 

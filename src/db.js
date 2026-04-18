@@ -2408,27 +2408,55 @@ export class Database {
 
   _vacuum(ast) {
     // If no MVCC manager attached, just return
-    if (!this._mvccManager) {
+    if (!this._mvcc) {
       return { type: 'OK', message: 'VACUUM (no MVCC)' };
     }
 
     const tables = ast.table ? [ast.table] : [...this.tables.keys()];
-    let totalDead = 0, totalBytes = 0, totalPages = 0;
+    let totalDead = 0, totalBytes = 0, totalPages = 0, totalPagesProcessed = 0;
+    let allDone = true;
+    const cursors = {};
 
     for (const tableName of tables) {
       const table = this.tables.get(tableName);
       if (!table || !table.mvccHeap) continue;
 
-      const result = table.mvccHeap.vacuum(this._mvccManager);
-      totalDead += result.deadTuplesRemoved;
-      totalBytes += result.bytesFreed;
-      totalPages += result.pagesCompacted;
+      if (ast.incremental) {
+        // Incremental VACUUM: process maxPages per table
+        const maxPages = ast.maxPages || 10;
+        const cursor = (this._vacuumCursors && this._vacuumCursors[tableName]) || 0;
+        const result = table.mvccHeap.vacuumIncremental(this._mvcc, maxPages, cursor);
+        totalDead += result.deadTuplesRemoved;
+        totalBytes += result.bytesFreed;
+        totalPages += result.pagesCompacted;
+        totalPagesProcessed += result.pagesProcessed;
+        cursors[tableName] = result.cursor;
+        if (!result.done) allDone = false;
+      } else {
+        const result = table.mvccHeap.vacuum(this._mvcc);
+        totalDead += result.deadTuplesRemoved;
+        totalBytes += result.bytesFreed;
+        totalPages += result.pagesCompacted;
+      }
     }
 
+    // Store cursors for resuming incremental VACUUM
+    if (ast.incremental) {
+      if (!this._vacuumCursors) this._vacuumCursors = {};
+      Object.assign(this._vacuumCursors, cursors);
+      if (allDone) this._vacuumCursors = {};
+    }
+
+    const mode = ast.incremental ? 'VACUUM INCREMENTAL' : 'VACUUM';
     return {
       type: 'OK',
-      message: `VACUUM: ${totalDead} dead tuples removed, ${totalBytes} bytes freed, ${totalPages} pages compacted`,
-      details: { deadTuplesRemoved: totalDead, bytesFreed: totalBytes, pagesCompacted: totalPages },
+      message: `${mode}: ${totalDead} dead tuples removed, ${totalBytes} bytes freed, ${totalPages} pages compacted${ast.incremental ? `, ${totalPagesProcessed} pages processed, ${allDone ? 'COMPLETE' : 'IN PROGRESS'}` : ''}`,
+      details: { 
+        deadTuplesRemoved: totalDead, 
+        bytesFreed: totalBytes, 
+        pagesCompacted: totalPages,
+        ...(ast.incremental && { pagesProcessed: totalPagesProcessed, done: allDone }),
+      },
     };
   }
 
