@@ -289,6 +289,25 @@ function interceptPgCatalog(sql, db) {
   // psql: SHOW search_path / server_version etc
   if (upper.startsWith('SHOW ')) {
     const param = upper.replace('SHOW ', '').replace(';', '').trim();
+    
+    if (param === 'ALL') {
+      // Return all settings including cost model
+      const C = db.constructor?.COST_MODEL || {};
+      const settings = [
+        { name: 'server_version', setting: '14.0 (HenryDB)', description: 'Server version' },
+        { name: 'server_encoding', setting: 'UTF8', description: 'Server encoding' },
+        { name: 'client_encoding', setting: 'UTF8', description: 'Client encoding' },
+        { name: 'search_path', setting: '"$user", public', description: 'Schema search path' },
+        { name: 'seq_page_cost', setting: String(C.seq_page_cost || 1.0), description: 'Sequential page fetch cost' },
+        { name: 'random_page_cost', setting: String(C.random_page_cost || 1.1), description: 'Random page fetch cost' },
+        { name: 'cpu_tuple_cost', setting: String(C.cpu_tuple_cost || 0.01), description: 'Per-tuple processing cost' },
+        { name: 'cpu_index_tuple_cost', setting: String(C.cpu_index_tuple_cost || 0.005), description: 'Per-index-tuple processing cost' },
+        { name: 'cpu_operator_cost', setting: String(C.cpu_operator_cost || 0.0025), description: 'Per-operator evaluation cost' },
+        { name: 'page_size', setting: '32768', description: 'Page size in bytes' },
+      ];
+      return { type: 'ROWS', rows: settings };
+    }
+    
     switch (param) {
       case 'SERVER_VERSION':
         return { type: 'ROWS', rows: [{ server_version: '14.0 (HenryDB)' }] };
