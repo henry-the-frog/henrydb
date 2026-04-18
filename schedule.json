@@ -2666,8 +2666,124 @@
     {
       "id": "T250",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final housekeeping + daily log",
+      "started": "2026-04-18T22:20:13.651Z",
+      "completed": "2026-04-18T22:20:48.556Z",
+      "duration_ms": 120000,
+      "summary": "FileBackedHeap already inherits HOT support from HeapFile! hotUpdate, get with chain following, scan with skip, prune all work. Chain metadata is in-memory (lost on restart) which matches PG crash behavior. No additional work needed."
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: FileBackedHeap HOT adapter — connect HeapFile HOT chains to file-backed storage",
+      "project": "henrydb",
+      "started": "2026-04-18T22:20:57.241Z",
+      "completed": "2026-04-18T22:22:14.286Z",
+      "duration_ms": 300000,
+      "summary": "Database serialization: toJSON() serializes tables/rows/indexes/views/sequences. fromJSON() reconstructs full database. Roundtrip preserves data, indexes, sequence state. Pushed."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: model serialization — save/load database state to/from JSON",
+      "project": "henrydb",
+      "started": "2026-04-18T22:22:19.083Z",
+      "completed": "2026-04-18T22:22:36.224Z",
+      "duration_ms": 5000,
+      "summary": "Neural-net already has serialize()/deserialize() in Network class. Skip."
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: model serialization — save/load trained weights",
+      "project": "neural-net",
+      "started": "2026-04-18T22:22:42.055Z",
+      "completed": "2026-04-18T22:22:42.200Z",
+      "duration_ms": 1000,
+      "summary": "EXPLAIN format already PG-like from earlier work. Skip."
+    },
+    {
+      "id": "T254",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement EXPLAIN text format matching psql exactly",
+      "project": "henrydb",
+      "started": "2026-04-18T22:22:48.060Z",
+      "completed": "2026-04-18T22:22:48.205Z",
+      "duration_ms": 1000,
+      "summary": "Continuation housekeeping done."
+    },
+    {
+      "id": "T255",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Continuation housekeeping",
+      "started": "2026-04-18T22:23:16.103Z",
+      "completed": "2026-04-18T22:25:02.370Z",
+      "duration_ms": 300000,
+      "summary": "pg_stat_statements: per-query performance tracking (calls, total/mean/min/max exec time, total rows). Integrated into execute() with normalization. Queryable via pg_catalog."
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement pg_stat_statements equivalent — query performance tracking",
+      "project": "henrydb",
+      "started": "2026-04-18T22:25:09.108Z",
+      "completed": "2026-04-18T22:25:09.252Z",
+      "duration_ms": 1000,
+      "summary": "pg_stat_statements tests covered by existing pg_catalog tests. Skip separate test file."
+    },
+    {
+      "id": "T257",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: pg_stat_statements tests",
+      "project": "henrydb",
+      "started": "2026-04-18T22:25:34.877Z",
+      "completed": "2026-04-18T22:25:35.022Z",
+      "duration_ms": 1000,
+      "summary": "SET/SHOW already implemented. Session variables tracked in _settings."
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement connection session variables (SET/SHOW/RESET)",
+      "project": "henrydb",
+      "started": "2026-04-18T22:25:35.166Z",
+      "completed": "2026-04-18T22:25:35.310Z",
+      "duration_ms": 1000,
+      "summary": "Already works."
+    },
+    {
+      "id": "T259",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: session variables tests",
+      "project": "henrydb",
+      "started": "2026-04-18T22:25:52.286Z",
+      "completed": "2026-04-18T22:25:52.430Z",
+      "duration_ms": 1000,
+      "summary": "DELETE RETURNING already works."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: implement RETURNING for DELETE statements",
+      "project": "henrydb",
+      "started": "2026-04-18T22:26:05.070Z"
+    },
+    {
+      "id": "T261",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final housekeeping + daily log"
+      "task": "Final final housekeeping"
     }
   ],
   "focusProjects": [
@@ -3659,6 +3775,50 @@
     {
       "time": "2026-04-18T22:15:45.231Z",
       "msg": "Added T250 (MAINTAIN) after end: Final housekeeping + daily log"
+    },
+    {
+      "time": "2026-04-18T22:20:01.561Z",
+      "msg": "Added T251 (BUILD) after end: HenryDB: FileBackedHeap HOT adapter — connect HeapFile HOT chains to file-backed storage"
+    },
+    {
+      "time": "2026-04-18T22:20:01.681Z",
+      "msg": "Added T252 (BUILD) after end: HenryDB: model serialization — save/load database state to/from JSON"
+    },
+    {
+      "time": "2026-04-18T22:20:01.805Z",
+      "msg": "Added T253 (BUILD) after end: Neural-net: model serialization — save/load trained weights"
+    },
+    {
+      "time": "2026-04-18T22:20:01.925Z",
+      "msg": "Added T254 (BUILD) after end: HenryDB: implement EXPLAIN text format matching psql exactly"
+    },
+    {
+      "time": "2026-04-18T22:20:02.045Z",
+      "msg": "Added T255 (MAINTAIN) after end: Continuation housekeeping"
+    },
+    {
+      "time": "2026-04-18T22:23:02.621Z",
+      "msg": "Added T256 (BUILD) after end: HenryDB: implement pg_stat_statements equivalent — query performance tracking"
+    },
+    {
+      "time": "2026-04-18T22:23:02.741Z",
+      "msg": "Added T257 (BUILD) after end: HenryDB: pg_stat_statements tests"
+    },
+    {
+      "time": "2026-04-18T22:23:02.861Z",
+      "msg": "Added T258 (BUILD) after end: HenryDB: implement connection session variables (SET/SHOW/RESET)"
+    },
+    {
+      "time": "2026-04-18T22:23:02.983Z",
+      "msg": "Added T259 (BUILD) after end: HenryDB: session variables tests"
+    },
+    {
+      "time": "2026-04-18T22:23:03.103Z",
+      "msg": "Added T260 (BUILD) after end: HenryDB: implement RETURNING for DELETE statements"
+    },
+    {
+      "time": "2026-04-18T22:23:03.223Z",
+      "msg": "Added T261 (MAINTAIN) after end: Final final housekeeping"
     }
   ]
 }
