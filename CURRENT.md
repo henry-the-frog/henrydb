@@ -1,11 +1,12 @@
 # CURRENT.md
 
 ## Status: session-ended
-## Session: A (morning)
+## Session: A (morning+afternoon)
 ## Date: 2026-04-18
-## Time: 10:48 AM MDT
-## Tasks Completed: ~46
-## Next Session Focus: Write path optimization, PG wire protocol
+## Time: 11:35 AM MDT
+## Tasks Completed: ~55+
+## Builds: ~26 (across 2 BUILD cap resets)
+## Next Session Focus: PG wire protocol, cost-based optimizer, persistent catalog
 
 ## Context Files
 - memory/2026-04-17.md
