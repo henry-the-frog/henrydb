@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-18T19:16:43.904Z",
+  "generated": "2026-04-18T19:22:10.397Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add string functions (LENGTH, UPPER, LOWER, TRIM, SUBSTRING, CONCAT, REPLACE) for PG compatibility",
-    "completedAt": "2026-04-18T19:16:43.904Z",
-    "taskId": "T143",
-    "summary": "Fixed extended query column naming bug! Functions like LENGTH(val) as len were returning full SQL expression as column name. Root cause: getColumns used raw SQL fragments. Fixed with parseSelectColumns parser + table schema type lookup. Also fixed Execute to send RowDescription when Describe returned NoData. All 26 PG tests pass.",
-    "durationMs": 1200000
+    "task": "Fix heap page overflow: add value size check at INSERT time, throw error if row exceeds page capacity",
+    "completedAt": "2026-04-18T19:22:10.397Z",
+    "taskId": "T145",
+    "summary": "Fixed CRITICAL heap page overflow bug! Silent data corruption when row >4KB. insertTuple returned -1 but rowCount was incremented and corrupted RID stored. Now throws clear error. Also fixed scan-path insert missing rowCount increment. Found via stress test.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-18",
@@ -1608,14 +1608,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 141,
+    "blocksCompleted": 143,
     "blocksTotal": 140,
     "modeDistribution": {
       "THINK": 31,
       "PLAN": 21,
-      "BUILD": 50,
+      "BUILD": 51,
       "MAINTAIN": 30,
-      "EXPLORE": 9
+      "EXPLORE": 10
     }
   },
   "artifacts": [

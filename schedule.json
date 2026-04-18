@@ -1528,6 +1528,28 @@
       "completed": "2026-04-18T19:16:43.868Z",
       "duration_ms": 1200000,
       "summary": "Fixed extended query column naming bug! Functions like LENGTH(val) as len were returning full SQL expression as column name. Root cause: getColumns used raw SQL fragments. Fixed with parseSelectColumns parser + table schema type lookup. Also fixed Execute to send RowDescription when Describe returned NoData. All 26 PG tests pass."
+    },
+    {
+      "id": "T144",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Re-run stress test and try even more extreme edge cases: very large batch inserts, long SQL queries, unicode in column names, concurrent parameterized queries with functions",
+      "project": "henrydb",
+      "started": "2026-04-18T19:17:17.595Z",
+      "completed": "2026-04-18T19:19:57.321Z",
+      "duration_ms": 600000,
+      "summary": "Stress test v2: 9/10 pass. Found deep HenryDB bug: heap page overflow with values >4KB. INSERT succeeds (rowCount increments) but row is unreadable via scan() — page slot corruption when value exceeds page size. Filed in TODO.md. This is a storage engine bug, not wire protocol."
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix heap page overflow: add value size check at INSERT time, throw error if row exceeds page capacity",
+      "project": "henrydb",
+      "started": "2026-04-18T19:20:20.211Z",
+      "completed": "2026-04-18T19:22:10.361Z",
+      "duration_ms": 600000,
+      "summary": "Fixed CRITICAL heap page overflow bug! Silent data corruption when row >4KB. insertTuple returned -1 but rowCount was incremented and corrupted RID stored. Now throws clear error. Also fixed scan-path insert missing rowCount increment. Found via stress test."
     }
   ],
   "focusProjects": [
@@ -2103,6 +2125,14 @@
     {
       "time": "2026-04-18T19:06:58.364Z",
       "msg": "Added T143 (BUILD) after end: Add string functions (LENGTH, UPPER, LOWER, TRIM, SUBSTRING, CONCAT, REPLACE) for PG compatibility"
+    },
+    {
+      "time": "2026-04-18T19:17:13.077Z",
+      "msg": "Added T144 (EXPLORE) after end: Re-run stress test and try even more extreme edge cases: very large batch inserts, long SQL queries, unicode in column names, concurrent parameterized queries with functions"
+    },
+    {
+      "time": "2026-04-18T19:20:12.623Z",
+      "msg": "Added T145 (BUILD) after end: Fix heap page overflow: add value size check at INSERT time, throw error if row exceeds page capacity"
     }
   ]
 }

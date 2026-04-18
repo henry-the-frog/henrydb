@@ -19,3 +19,4 @@
 - HenryDB: atomic checkpoint (current multi-step leaves inconsistent states)
 - Neural-net: matrix-depth.test.js -0 vs 0 strict equality, learning tests need seed pinning
 - HenryDB: checkpoint-explore.test.js expects WAL size=0 after checkpoint but checkpoint writes a CHECKPOINT record (129 bytes). Pre-existing test expectation mismatch.
+- HenryDB: heap page overflow with large values (>4KB). INSERT succeeds but row unreadable via scan(). rowCount=1 but scan returns 0. Likely page slot corruption when value exceeds page size. Need: (a) value size check at INSERT time, or (b) overflow page support.
