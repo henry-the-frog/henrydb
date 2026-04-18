@@ -1,13 +1,12 @@
 # CURRENT.md
 
-## Status: session-ended
-## Session: A (full day)
+## Status: in-progress
+## Session: B
 ## Date: 2026-04-18
-## Time: 11:42 AM MDT
-## Tasks Completed: ~58
-## Builds: ~28 (across 2 BUILD cap resets)
-## Major Features: HOT chains, UDFs, row locking, TCO (all 3 types), HTTP server, ANALYZE + cost-based optimizer
-## Next Session Focus: PG wire protocol, persistent catalog, histogram-based selectivity
+## Time: 12:16 PM MDT
+## Tasks Completed: 1 (T100)
+## Builds: 0
+## Next: T104 — HenryDB README
 
 ## Context Files
 - memory/2026-04-17.md

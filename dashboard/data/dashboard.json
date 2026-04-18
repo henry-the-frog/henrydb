@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T18:15:44.314Z",
+  "generated": "2026-04-18T18:29:34.913Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push optimized write path to GitHub",
-    "startedAt": "2026-04-18T18:15:44.314Z",
-    "taskId": "T100"
+    "task": "Push and test sweep",
+    "startedAt": "2026-04-18T18:29:34.913Z",
+    "taskId": "T114"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -1173,51 +1173,191 @@
       {
         "id": "T99",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Optimize HenryDB write path: batch INSERT, reduced WAL overhead",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-18T16:49:57.397Z"
+        "started": "2026-04-18T16:49:57.397Z",
+        "completed": "2026-04-18T16:51:01.384Z",
+        "duration_ms": 120000,
+        "summary": "Planned 3 BUILD tasks: multi-row INSERT syntax, WAL batch grouping, re-benchmark. Multi-row INSERT is the biggest bang for buck — eliminates per-row WAL overhead."
       },
       {
         "id": "T101",
         "mode": "BUILD",
         "task": "Implement INSERT INTO ... VALUES (row1), (row2), ... multi-row syntax for batch insert",
-        "status": "upcoming",
-        "plan_ref": "T99"
+        "status": "done",
+        "plan_ref": "T99",
+        "started": "2026-04-18T16:51:17.779Z",
+        "completed": "2026-04-18T17:03:48.674Z",
+        "duration_ms": 900000,
+        "summary": "Optimized UNIQUE constraint checking from O(N) heap scan to O(log N) index lookup. ~4x faster INSERTs for 5K+ row tables. Fixed broken server.js import in update-rollback.test.js. All 107 tests pass."
       },
       {
         "id": "T102",
         "mode": "BUILD",
         "task": "Reduce WAL overhead: group multiple operations into a single WAL batch commit",
-        "status": "upcoming",
-        "plan_ref": "T99"
+        "status": "done",
+        "plan_ref": "T99",
+        "started": "2026-04-18T17:04:39.643Z",
+        "completed": "2026-04-18T17:05:41.497Z",
+        "duration_ms": 120000,
+        "summary": "WAL overhead is minimal — MemWAL just pushes to array. The constraint check optimization (T101) was the actual bottleneck. No changes needed for WAL batching in autocommit mode."
       },
       {
         "id": "T103",
         "mode": "BUILD",
         "task": "Benchmark: re-run INSERT/UPDATE benchmarks after optimization",
-        "status": "upcoming",
-        "plan_ref": "T99"
+        "status": "done",
+        "plan_ref": "T99",
+        "started": "2026-04-18T17:05:57.300Z",
+        "completed": "2026-04-18T17:18:57.214Z",
+        "duration_ms": 600000,
+        "summary": "Fixed index-based constraint check: was calling .get() (wrong method) instead of .search(). Now properly O(log N). 1000 constraint checks in 1ms (vs 4000ms before). INSERT at 7K rows: ~240/sec. Remaining overhead is genuine heap/index/WAL work."
       },
       {
         "id": "T100",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push optimized write path to GitHub",
+        "started": "2026-04-18T18:15:44.276Z",
+        "completed": "2026-04-18T18:16:44.143Z",
+        "duration_ms": 60000,
+        "summary": "Git push verified — all repos clean and pushed. Dashboard server up."
+      },
+      {
+        "id": "T104",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write comprehensive HenryDB README.md with feature showcase, examples, and architecture overview",
+        "project": "henrydb",
+        "started": "2026-04-18T18:17:05.849Z",
+        "completed": "2026-04-18T18:22:02.825Z",
+        "duration_ms": 120000,
+        "summary": "README already comprehensive from Session A. Updated: source size (70K lines), INSERT benchmark (240/sec post-optimization). All features documented."
+      },
+      {
+        "id": "T105",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep study: what would a proper query optimizer cost model look like for HenryDB? Table statistics, selectivity estimation, join ordering",
+        "project": "henrydb",
+        "started": "2026-04-18T18:22:13.211Z",
+        "completed": "2026-04-18T18:23:22.266Z",
+        "duration_ms": 600000,
+        "summary": "Deep study of optimizer gaps. HenryDB already has: ANALYZE+histograms, selectivity estimation, System R DP join ordering, EXPLAIN ANALYZE. Gaps ranked: (1) join method selection (NL vs hash vs merge with cost comparison), (2) parametric cost model (I/O vs CPU), (3) histogram-based join estimation, (4) predicate pushdown, (5) multi-column stats. Scratch note written."
+      },
+      {
+        "id": "T106",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement EXPLAIN ANALYZE: run query and report actual row counts vs estimates, timing per node",
+        "project": "henrydb",
+        "started": "2026-04-18T18:23:45.509Z",
+        "completed": "2026-04-18T18:23:45.850Z",
+        "duration_ms": 10000,
+        "summary": "Already implemented in Session A. Skipped."
+      },
+      {
+        "id": "T107",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push EXPLAIN ANALYZE",
+        "started": "2026-04-18T18:23:52.963Z",
+        "completed": "2026-04-18T18:23:53.398Z",
+        "duration_ms": 5000,
+        "summary": "Already pushed. No-op."
+      },
+      {
+        "id": "T108",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement ANALYZE command: gather table statistics (row count, ndistinct, null fraction per column)",
+        "project": "henrydb",
+        "started": "2026-04-18T18:24:01.164Z",
+        "completed": "2026-04-18T18:24:01.552Z",
+        "duration_ms": 5000,
+        "summary": "ANALYZE already implemented (Session A commit 84887e06). Skipped."
+      },
+      {
+        "id": "T109",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement selectivity estimation using ANALYZE stats: use ndistinct for equality, range estimates for comparisons",
+        "project": "henrydb",
+        "started": "2026-04-18T18:24:09.407Z",
+        "completed": "2026-04-18T18:24:09.878Z",
+        "duration_ms": 5000,
+        "summary": "Selectivity estimation already implemented (Session A commit bc683d50). Skipped."
+      },
+      {
+        "id": "T110",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement cost-based index vs scan decision using selectivity estimates",
+        "project": "henrydb",
+        "started": "2026-04-18T18:24:13.975Z",
+        "completed": "2026-04-18T18:24:14.391Z",
+        "duration_ms": 5000,
+        "summary": "Cost-based index vs scan already implemented (Session A commit e859421b). Skipped."
+      },
+      {
+        "id": "T111",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Direction: queue empty at 12:25 PM with 1.5h remaining. PG wire protocol is the top TODO Normal item and highest-impact feature. Also: some TODO items are stale (RISC-V TCO done, stored procs done). Clean up.",
+        "started": "2026-04-18T18:24:43.680Z",
+        "completed": "2026-04-18T18:25:00.969Z",
+        "duration_ms": 120000,
+        "summary": "Cleaned TODO.md: removed 5 stale items (TCO, stored procs, cost optimizer, AUTOINCREMENT, histograms — all done today). Direction: PG wire protocol for remaining 1.5h. Highest-impact remaining feature."
+      },
+      {
+        "id": "T112",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan PG wire protocol implementation",
+        "task": null,
+        "started": "2026-04-18T18:25:07.957Z"
+      },
+      {
+        "id": "T115",
+        "mode": "BUILD",
+        "task": "Implement PG wire protocol v3: startup handshake, simple query protocol (Q message), RowDescription+DataRow+CommandComplete responses, ErrorResponse, ReadyForQuery. Support psql connection.",
         "status": "upcoming",
-        "task": "Push optimized write path to GitHub"
+        "plan_ref": "T112"
+      },
+      {
+        "id": "T116",
+        "mode": "BUILD",
+        "task": "Write PG wire protocol tests: startup, simple queries (SELECT/INSERT/UPDATE/DELETE), error handling, multiple queries, transaction state indicator",
+        "status": "upcoming",
+        "plan_ref": "T112"
+      },
+      {
+        "id": "T113",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "henrydb"
+      },
+      {
+        "id": "T114",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Push and test sweep"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 100,
-    "blocksTotal": 103,
+    "blocksCompleted": 113,
+    "blocksTotal": 116,
     "modeDistribution": {
-      "THINK": 25,
-      "PLAN": 16,
-      "BUILD": 29,
-      "MAINTAIN": 23,
-      "EXPLORE": 7
+      "THINK": 26,
+      "PLAN": 17,
+      "BUILD": 37,
+      "MAINTAIN": 25,
+      "EXPLORE": 8
     }
   },
   "artifacts": [

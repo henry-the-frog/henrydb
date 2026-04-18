@@ -1094,57 +1094,149 @@
     {
       "id": "T100",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push optimized write path to GitHub",
-      "started": "2026-04-18T18:15:44.276Z"
+      "started": "2026-04-18T18:15:44.276Z",
+      "completed": "2026-04-18T18:16:44.143Z",
+      "duration_ms": 60000,
+      "summary": "Git push verified — all repos clean and pushed. Dashboard server up."
     },
     {
       "id": "T104",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write comprehensive HenryDB README.md with feature showcase, examples, and architecture overview",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T18:17:05.849Z",
+      "completed": "2026-04-18T18:22:02.825Z",
+      "duration_ms": 120000,
+      "summary": "README already comprehensive from Session A. Updated: source size (70K lines), INSERT benchmark (240/sec post-optimization). All features documented."
     },
     {
       "id": "T105",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep study: what would a proper query optimizer cost model look like for HenryDB? Table statistics, selectivity estimation, join ordering",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T18:22:13.211Z",
+      "completed": "2026-04-18T18:23:22.266Z",
+      "duration_ms": 600000,
+      "summary": "Deep study of optimizer gaps. HenryDB already has: ANALYZE+histograms, selectivity estimation, System R DP join ordering, EXPLAIN ANALYZE. Gaps ranked: (1) join method selection (NL vs hash vs merge with cost comparison), (2) parametric cost model (I/O vs CPU), (3) histogram-based join estimation, (4) predicate pushdown, (5) multi-column stats. Scratch note written."
     },
     {
       "id": "T106",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement EXPLAIN ANALYZE: run query and report actual row counts vs estimates, timing per node",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T18:23:45.509Z",
+      "completed": "2026-04-18T18:23:45.850Z",
+      "duration_ms": 10000,
+      "summary": "Already implemented in Session A. Skipped."
     },
     {
       "id": "T107",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push EXPLAIN ANALYZE"
+      "status": "done",
+      "task": "Push EXPLAIN ANALYZE",
+      "started": "2026-04-18T18:23:52.963Z",
+      "completed": "2026-04-18T18:23:53.398Z",
+      "duration_ms": 5000,
+      "summary": "Already pushed. No-op."
     },
     {
       "id": "T108",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement ANALYZE command: gather table statistics (row count, ndistinct, null fraction per column)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T18:24:01.164Z",
+      "completed": "2026-04-18T18:24:01.552Z",
+      "duration_ms": 5000,
+      "summary": "ANALYZE already implemented (Session A commit 84887e06). Skipped."
     },
     {
       "id": "T109",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement selectivity estimation using ANALYZE stats: use ndistinct for equality, range estimates for comparisons",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T18:24:09.407Z",
+      "completed": "2026-04-18T18:24:09.878Z",
+      "duration_ms": 5000,
+      "summary": "Selectivity estimation already implemented (Session A commit bc683d50). Skipped."
     },
     {
       "id": "T110",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement cost-based index vs scan decision using selectivity estimates",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T18:24:13.975Z",
+      "completed": "2026-04-18T18:24:14.391Z",
+      "duration_ms": 5000,
+      "summary": "Cost-based index vs scan already implemented (Session A commit e859421b). Skipped."
+    },
+    {
+      "id": "T111",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: queue empty at 12:25 PM with 1.5h remaining. PG wire protocol is the top TODO Normal item and highest-impact feature. Also: some TODO items are stale (RISC-V TCO done, stored procs done). Clean up.",
+      "started": "2026-04-18T18:24:43.680Z",
+      "completed": "2026-04-18T18:25:00.969Z",
+      "duration_ms": 120000,
+      "summary": "Cleaned TODO.md: removed 5 stale items (TCO, stored procs, cost optimizer, AUTOINCREMENT, histograms — all done today). Direction: PG wire protocol for remaining 1.5h. Highest-impact remaining feature."
+    },
+    {
+      "id": "T112",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan PG wire protocol implementation",
+      "task": null,
+      "started": "2026-04-18T18:25:07.957Z",
+      "completed": "2026-04-18T18:25:21.947Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILD tasks for PG wire protocol. Read design doc. Key: startup handshake, simple query protocol (Q→T+D+C+Z), type mapping (HenryDB types → PG OIDs), error responses. ~200 lines target."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "task": "Implement PG wire protocol v3: startup handshake, simple query protocol (Q message), RowDescription+DataRow+CommandComplete responses, ErrorResponse, ReadyForQuery. Support psql connection.",
+      "status": "done",
+      "plan_ref": "T112",
+      "started": "2026-04-18T18:25:34.364Z",
+      "completed": "2026-04-18T18:29:07.585Z",
+      "duration_ms": 900000,
+      "summary": "PG wire protocol v3 implemented! Startup handshake, simple query protocol (Q→T+D+C+Z), SSL negotiation refusal, type mapping (INT/FLOAT/TEXT/BOOLEAN→PG OIDs), error responses with SQLSTATE codes, transaction state tracking (I/T), multi-statement queries, EmptyQueryResponse. 13 tests all pass. ~300 lines."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "task": "Write PG wire protocol tests: startup, simple queries (SELECT/INSERT/UPDATE/DELETE), error handling, multiple queries, transaction state indicator",
+      "status": "done",
+      "plan_ref": "T112",
+      "started": "2026-04-18T18:29:17.952Z",
+      "completed": "2026-04-18T18:29:18.096Z",
+      "duration_ms": 10000,
+      "summary": "Tests already written in T115 — 13 tests covering startup, SSL, CRUD, errors, NULL, multi-statement, concurrent connections, params, aggregates, UDFs, transactions. All pass."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "henrydb",
+      "started": "2026-04-18T18:29:27.297Z",
+      "completed": "2026-04-18T18:29:27.440Z",
+      "duration_ms": 5000,
+      "summary": "Placeholder BUILD — no work needed."
+    },
+    {
+      "id": "T114",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push and test sweep",
+      "started": "2026-04-18T18:29:34.877Z"
     }
   ],
   "focusProjects": [
@@ -1608,6 +1700,26 @@
     {
       "time": "2026-04-18T17:42:58.551Z",
       "msg": "Added T110 (BUILD) after end: Implement cost-based index vs scan decision using selectivity estimates"
+    },
+    {
+      "time": "2026-04-18T18:24:31.535Z",
+      "msg": "Added T111 (THINK) after end: Direction: queue empty at 12:25 PM with 1.5h remaining. PG wire protocol is the top TODO Normal item and highest-impact feature. Also: some TODO items are stale (RISC-V TCO done, stored procs done). Clean up."
+    },
+    {
+      "time": "2026-04-18T18:24:35.978Z",
+      "msg": "Added T112 (PLAN) after T111: Plan PG wire protocol implementation"
+    },
+    {
+      "time": "2026-04-18T18:24:40.255Z",
+      "msg": "Added T113 (BUILD) after T112: placeholder"
+    },
+    {
+      "time": "2026-04-18T18:24:40.503Z",
+      "msg": "Added T114 (MAINTAIN) after T113: Push and test sweep"
+    },
+    {
+      "time": "2026-04-18T18:25:17.121Z",
+      "msg": "PLAN T112 filled 2 BUILD tasks"
     }
   ]
 }
