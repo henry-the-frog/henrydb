@@ -617,15 +617,19 @@
       "id": "T62",
       "mode": "BUILD",
       "task": "Test VACUUM + HOT chains: verify index correctness after vacuum of HOT-updated rows",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T57",
-      "started": "2026-04-18T15:52:42.460Z"
+      "started": "2026-04-18T15:52:42.460Z",
+      "completed": "2026-04-18T15:53:33.288Z",
+      "duration_ms": 300000,
+      "summary": "6 VACUUM+HOT MVCC tests all pass. Covers: index correctness post-vacuum, chain clearing, snapshot visibility preservation, bulk operations, ghost entry cleanup."
     },
     {
       "id": "T58",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push and daily log"
+      "status": "in-progress",
+      "task": "Git push and daily log",
+      "started": "2026-04-18T15:53:58.361Z"
     },
     {
       "id": "T59",
