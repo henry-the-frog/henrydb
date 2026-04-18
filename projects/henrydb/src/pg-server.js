@@ -361,6 +361,7 @@ function handleConnection(socket, db) {
   let inTransaction = false;
   const preparedStatements = new Map(); // name → { sql, paramTypes }
   const portals = new Map(); // name → { sql (with params substituted), result (if already executed) }
+  let copyState = null; // { tableName, columns, rows: [] }
 
   socket.on('data', (chunk) => {
     buffer = Buffer.concat([buffer, chunk]);
@@ -462,6 +463,24 @@ function handleConnection(socket, db) {
           break;
         case 0x48: // 'H' — Flush
           // No-op, just ensure output is flushed (Node does this automatically)
+          break;
+        case 0x64: // 'd' — CopyData
+          if (copyState) {
+            // Parse tab-separated row from copy data
+            const line = payload.toString('utf8').trim();
+            if (line.length > 0) {
+              copyState.rows.push(line);
+            }
+          }
+          break;
+        case 0x63: // 'c' — CopyDone
+          if (copyState) {
+            handleCopyDone(socket, db);
+          }
+          break;
+        case 0x66: // 'f' — CopyFail
+          copyState = null;
+          socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
           break;
 
         default:
@@ -759,6 +778,62 @@ function handleConnection(socket, db) {
 
   // --- Simple Query Protocol ---
 
+  function copyInResponse(numColumns) {
+    // CopyInResponse: format(1=text) + numColumns + format-per-column
+    const len = 4 + 1 + 2 + numColumns * 2;
+    const buf = Buffer.alloc(1 + len);
+    buf[0] = 0x47; // 'G' — CopyInResponse
+    writeInt32BE(buf, len, 1);
+    buf[5] = 0; // overall format: 0=text
+    buf[6] = (numColumns >> 8) & 0xff;
+    buf[7] = numColumns & 0xff;
+    for (let i = 0; i < numColumns; i++) {
+      buf[8 + i * 2] = 0;
+      buf[9 + i * 2] = 0; // text format per column
+    }
+    return buf;
+  }
+
+  function handleCopyIn(socket, db, tableName, columns) {
+    // Validate table exists
+    const table = db.tables?.get(tableName) || db.tables?.get(tableName.toLowerCase());
+    if (!table) {
+      socket.write(errorResponse('ERROR', '42P01', `Table "${tableName}" does not exist`));
+      socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+      return;
+    }
+
+    const colNames = columns || table.schema.map(c => c.name);
+    copyState = { tableName, columns: colNames, rows: [] };
+    socket.write(copyInResponse(colNames.length));
+  }
+
+  function handleCopyDone(socket, db) {
+    const state = copyState;
+    copyState = null;
+
+    if (!state) {
+      socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+      return;
+    }
+
+    try {
+      let inserted = 0;
+      for (const line of state.rows) {
+        if (line === '\\.' || line === '') continue; // End marker or empty
+        const values = line.split('\t').map(v => v === '\\N' ? 'NULL' : "'" + v.replace(/'/g, "''") + "'");
+        const colList = state.columns.join(', ');
+        const valList = values.join(', ');
+        executeWithIntercept(`INSERT INTO ${state.tableName} (${colList}) VALUES (${valList})`);
+        inserted++;
+      }
+      socket.write(commandComplete(`COPY ${inserted}`));
+    } catch (err) {
+      socket.write(errorResponse('ERROR', '42000', err.message));
+    }
+    socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+  }
+
   function handleQuery(payload, socket, db) {
     // payload is the query string, null-terminated
     const query = payload.slice(0, payload.length - 1).toString('utf8').trim();
@@ -774,6 +849,14 @@ function handleConnection(socket, db) {
 
     for (const sql of statements) {
       try {
+        // Detect COPY FROM STDIN
+        const copyMatch = sql.match(/^COPY\s+(\w+)\s*(?:\(([^)]+)\))?\s+FROM\s+STDIN/i);
+        if (copyMatch) {
+          const tableName = copyMatch[1];
+          const columns = copyMatch[2] ? copyMatch[2].split(',').map(c => c.trim()) : null;
+          handleCopyIn(socket, db, tableName, columns);
+          return; // COPY takes over the connection until CopyDone
+        }
         // Track transaction state
         const upper = sql.toUpperCase().trim();
         if (upper === 'BEGIN' || upper === 'START TRANSACTION') inTransaction = true;
