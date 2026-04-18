@@ -1,4 +1,13 @@
-# CURRENT.md — Session State
+# CURRENT.md
+
+## Status
+status: session-ended
+
+## Last Session
+- **Session B** (5:30 PM - 8:00 PM MDT, April 17 2026)
+- **Project:** HenryDB (primary) + Neural-net (secondary)
+- **Theme:** Depth day — bug hunting and fixing
+- **Result:** 14 bugs fixed, 151 new tests, 313 total passing — Session State
 
 ## Status: session-ended
 ## Session: B (2:15 PM – 8:00 PM MDT, April 17, 2026)
