@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-18T00:33:01.031Z",
+  "generated": "2026-04-18T00:58:06.012Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Fix checkpoint boundary: recoverFromFileWAL should read from lastCheckpointLsn, DDL replay reads all. Write test for UPDATE after ALTER + checkpoint + crash.",
-    "completedAt": "2026-04-18T00:33:01.031Z",
-    "taskId": "T280",
-    "summary": "Partial fix: (1) Fixed FileWAL.truncate() not resetting _fileSize — post-checkpoint records were unreadable. (2) Added checkpoint marker re-write after truncate so recovery knows the checkpoint LSN. (3) Per-heap recovery now reads from lastCheckpointLsn. BUT found deeper bug: ALTER TABLE backfill creates duplicate tuples in the data file — in-place updateTuple + new INSERT from UPDATE both survive checkpoint. This is a heap/buffer-pool interaction bug, not a WAL issue. Filed as TODO.",
-    "durationMs": 600000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Run full regression suite on all today's changes, update daily log, commit knowledge captures",
+    "startedAt": "2026-04-18T00:58:06.011Z",
+    "taskId": "T289"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -7174,12 +7172,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 268,
+    "blocksCompleted": 276,
     "blocksTotal": 275,
     "modeDistribution": {
       "THINK": 16,
       "PLAN": 21,
-      "BUILD": 141,
+      "BUILD": 149,
       "MAINTAIN": 24,
       "EXPLORE": 66
     }
