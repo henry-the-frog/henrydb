@@ -338,6 +338,40 @@ export function parse(sql) {
     return { type: 'DEALLOCATE', name };
   }
 
+  // LISTEN channel
+  if (isKeyword('LISTEN')) {
+    advance();
+    const channel = (advance().originalValue || tokens[pos-1].value);
+    return { type: 'LISTEN', channel };
+  }
+
+  // NOTIFY channel [, 'payload']
+  if (isKeyword('NOTIFY')) {
+    advance();
+    const channel = (advance().originalValue || tokens[pos-1].value);
+    let payload = '';
+    if (peek().type === ',' || peek().value === ',') {
+      advance(); // skip comma
+      if (peek().type === 'STRING') {
+        payload = advance().value;
+      } else {
+        payload = (advance().originalValue || tokens[pos-1].value);
+      }
+    }
+    return { type: 'NOTIFY', channel, payload };
+  }
+
+  // UNLISTEN channel | *
+  if (peek().type === 'IDENT' && (peek().value === 'UNLISTEN' || peek().value === 'unlisten')) {
+    advance();
+    let channel = '*';
+    if (peek().value === '*') { advance(); }
+    else if (peek().type === 'IDENT' || peek().type === 'KEYWORD') {
+      channel = (advance().originalValue || tokens[pos-1].value);
+    }
+    return { type: 'UNLISTEN', channel };
+  }
+
   if (isKeyword('ANALYZE') && !isKeyword('EXPLAIN')) {
     advance();
     let table = null;

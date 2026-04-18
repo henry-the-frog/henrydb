@@ -442,6 +442,9 @@ export class Database {
       case 'EXECUTE_PREPARED': return this._executePrepared(ast);
       case 'DEALLOCATE': return this._deallocate(ast);
       case 'COPY': return this._copy(ast);
+      case 'LISTEN': return this._listen(ast);
+      case 'NOTIFY': return this._notify(ast);
+      case 'UNLISTEN': return this._unlisten(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -2654,6 +2657,70 @@ export class Database {
     }
 
     return { type: 'COPY', message: `COPY ${rowCount}`, rowCount };
+  }
+
+  // LISTEN/NOTIFY/UNLISTEN
+  _listen(ast) {
+    if (!this._channels) this._channels = new Map();
+    if (!this._channels.has(ast.channel)) {
+      this._channels.set(ast.channel, new Set());
+    }
+    // Track that this session/connection is listening
+    // For now, just register the channel
+    if (!this._notifications) this._notifications = [];
+    return { type: 'OK', message: `LISTEN "${ast.channel}"` };
+  }
+
+  _notify(ast) {
+    if (!this._channels) this._channels = new Map();
+    const channel = ast.channel;
+    const payload = ast.payload || '';
+    
+    // Queue notification for listeners
+    if (!this._pendingNotifications) this._pendingNotifications = [];
+    this._pendingNotifications.push({
+      channel,
+      payload,
+      pid: process.pid || 0,
+      timestamp: Date.now(),
+    });
+
+    // Emit to any registered callbacks
+    const callbacks = this._channels.get(channel);
+    if (callbacks) {
+      for (const cb of callbacks) {
+        try { cb({ channel, payload }); } catch (e) { /* ignore */ }
+      }
+    }
+
+    return { type: 'OK', message: 'NOTIFY' };
+  }
+
+  _unlisten(ast) {
+    if (!this._channels) this._channels = new Map();
+    if (ast.channel === '*') {
+      this._channels.clear();
+    } else {
+      this._channels.delete(ast.channel);
+    }
+    return { type: 'OK', message: `UNLISTEN "${ast.channel}"` };
+  }
+
+  // Register a callback for LISTEN notifications (programmatic API)
+  onNotify(channel, callback) {
+    if (!this._channels) this._channels = new Map();
+    if (!this._channels.has(channel)) {
+      this._channels.set(channel, new Set());
+    }
+    this._channels.get(channel).add(callback);
+    return () => this._channels.get(channel)?.delete(callback); // Return unsubscribe function
+  }
+
+  // Get pending notifications (for polling mode)
+  getNotifications() {
+    const pending = this._pendingNotifications || [];
+    this._pendingNotifications = [];
+    return pending;
   }
 
   _parseCsvLine(line, delimiter = ',') {
