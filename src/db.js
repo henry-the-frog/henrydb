@@ -449,6 +449,7 @@ export class Database {
       case 'EXPLAIN': return this._explain(ast);
       case 'BEGIN': 
         this._inTransaction = true;
+        this._txWriteLog = []; // Track writes for rollback
         if (this._mvccEnabled) {
           this._currentTx = this._mvcc.begin(ast.options || {});
           this._currentTxId = this._currentTx.txId;
@@ -464,6 +465,65 @@ export class Database {
         return { type: 'OK', message: 'COMMIT' };
       case 'ROLLBACK': 
         this._inTransaction = false;
+        // Undo physical changes from the write log (reverse order)
+        if (this._txWriteLog) {
+          for (let i = this._txWriteLog.length - 1; i >= 0; i--) {
+            const entry = this._txWriteLog[i];
+            try {
+              if (entry.type === 'INSERT') {
+                // Remove the inserted row from heap
+                const table = this._getTable(entry.table);
+                if (table && table.heap) {
+                  table.heap.delete(entry.rid.pageId, entry.rid.slotIdx);
+                }
+                // Remove from all indexes
+                if (table && table.indexes) {
+                  for (const [colName, index] of table.indexes) {
+                    const colIdx = table.schema.findIndex(c => c.name === colName);
+                    if (colIdx >= 0 && entry.values[colIdx] !== null && entry.values[colIdx] !== undefined) {
+                      index.delete(entry.values[colIdx]);
+                    }
+                  }
+                }
+              } else if (entry.type === 'DELETE') {
+                // Re-insert the deleted row
+                const table = this._getTable(entry.table);
+                if (table && table.heap) {
+                  // Re-insert at the same position if possible, otherwise new position
+                  table.heap.insert(entry.values);
+                  // Re-add to indexes
+                  for (const [colName, index] of table.indexes) {
+                    const colIdx = table.schema.findIndex(c => c.name === colName);
+                    if (colIdx >= 0 && entry.values[colIdx] !== null && entry.values[colIdx] !== undefined) {
+                      index.insert(entry.values[colIdx], entry.rid);
+                    }
+                  }
+                }
+              } else if (entry.type === 'UPDATE') {
+                // Restore old values
+                const table = this._getTable(entry.table);
+                if (table && table.heap) {
+                  table.heap.update(entry.rid.pageId, entry.rid.slotIdx, entry.oldValues);
+                  // Restore indexes
+                  for (const [colName, index] of table.indexes) {
+                    const colIdx = table.schema.findIndex(c => c.name === colName);
+                    if (colIdx >= 0) {
+                      const oldVal = entry.oldValues[colIdx];
+                      const newVal = entry.newValues[colIdx];
+                      if (oldVal !== newVal) {
+                        if (newVal !== null && newVal !== undefined) index.delete(newVal);
+                        if (oldVal !== null && oldVal !== undefined) index.insert(oldVal, entry.rid);
+                      }
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+              // Best-effort undo — log but don't fail
+            }
+          }
+          this._txWriteLog = null;
+        }
         if (this._currentTx) {
           this._currentTx.rollback();
           this._currentTx = null;
@@ -1450,6 +1510,11 @@ export class Database {
     }
 
     const rid = table.heap.insert(orderedValues);
+
+    // Log for transaction rollback
+    if (this._txWriteLog) {
+      this._txWriteLog.push({ type: 'INSERT', table: tableName, rid, values: orderedValues });
+    }
 
     // WAL: log the insert
     const txId = this._currentTxId || this._nextTxId++;
