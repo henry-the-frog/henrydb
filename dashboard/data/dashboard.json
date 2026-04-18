@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-18T03:32:14.924Z",
+  "generated": "2026-04-18T03:35:11.617Z",
   "current": {
-    "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Remove dead code: first _alterTable at line 1332 in db.js is overridden by second at line 1725. Clean up the dead implementation.",
-    "startedAt": "2026-04-18T03:32:14.924Z",
-    "taskId": "T330"
+    "status": "done",
+    "mode": "EXPLORE",
+    "task": "Run the existing 'generated column depth' and 'sequence depth' test suites to find if any are broken, now that we've changed persistence",
+    "completedAt": "2026-04-18T03:35:11.617Z",
+    "taskId": "T331",
+    "summary": "25/25 pass for generated columns, triggers, views. 4/4 AUTOINCREMENT failures are pre-existing.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -7635,14 +7637,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 315,
+    "blocksCompleted": 317,
     "blocksTotal": 319,
     "modeDistribution": {
       "THINK": 25,
       "PLAN": 25,
-      "BUILD": 167,
+      "BUILD": 168,
       "MAINTAIN": 32,
-      "EXPLORE": 66
+      "EXPLORE": 67
     }
   },
   "artifacts": [
