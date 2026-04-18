@@ -3234,7 +3234,7 @@ export class Database {
             const entries = rightIndex.range ? rightIndex.range(lookupVal, lookupVal) : [];
             for (const entry of entries) {
               const rid = entry.value || entry;
-              const values = rightTable.heap.get(rid.pageId, rid.slotIdx);
+              const values = this._heapGetFollowHot(rightTable.heap, rid.pageId, rid.slotIdx);
               if (!values) continue;
               const rightRow = this._valuesToRow(values, rightTable.schema, rightAlias);
               if (join.filter && !this._evalExpr(join.filter, rightRow)) continue;
@@ -3923,6 +3923,21 @@ export class Database {
       // Pass the current row's RID so UNIQUE check skips it
       this._validateConstraintsForUpdate(table, newValues, { pageId: item.pageId, slotIdx: item.slotIdx });
 
+      // HOT chain detection: check if any indexed column values changed.
+      // If no indexed columns changed, this is a HOT (Heap-Only Tuple) update:
+      // we skip index updates and create a HOT chain pointer from old → new.
+      let isHotUpdate = false;
+      if (table.indexes.size > 0) {
+        isHotUpdate = true;
+        for (const [colName, index] of table.indexes) {
+          const colIdx = table.schema.findIndex(c => c.name === colName);
+          if (colIdx >= 0 && item.values[colIdx] !== newValues[colIdx]) {
+            isHotUpdate = false;
+            break;
+          }
+        }
+      }
+
       // Delete old, insert new
       table.heap.delete(item.pageId, item.slotIdx);
       const newRid = table.heap.insert(newValues);
@@ -3930,10 +3945,18 @@ export class Database {
       // WAL: log the update
       this.wal.appendUpdate(batchTxId, ast.table, newRid.pageId, newRid.slotIdx, item.values, newValues);
 
-      // Update indexes with new entries
-      for (const [colName, index] of table.indexes) {
-        const colIdx = table.schema.findIndex(c => c.name === colName);
-        index.insert(newValues[colIdx], newRid);
+      if (isHotUpdate) {
+        // HOT update: create chain pointer from old RID → new RID
+        // Index entries still point to old RID; index scans follow the chain.
+        if (table.heap.addHotChain) {
+          table.heap.addHotChain(item.pageId, item.slotIdx, newRid.pageId, newRid.slotIdx);
+        }
+      } else {
+        // Non-HOT update: update all indexes with new entries
+        for (const [colName, index] of table.indexes) {
+          const colIdx = table.schema.findIndex(c => c.name === colName);
+          index.insert(newValues[colIdx], newRid);
+        }
       }
 
       // Handle ON UPDATE CASCADE for foreign keys
@@ -5932,6 +5955,31 @@ export class Database {
       }
       table.indexes.set(colName, newIndex);
     }
+    // Clear HOT chains after rebuild — all index entries now point to current RIDs
+    if (table.heap._hotChains) {
+      table.heap._hotChains.clear();
+    }
+  }
+
+  /**
+   * Get a row from heap, following HOT chains if the original RID is stale.
+   * When an UPDATE doesn't change indexed columns, the index still points to the old RID.
+   * The HOT chain links old RID → new RID so we can find the current version.
+   */
+  _heapGetFollowHot(heap, pageId, slotIdx) {
+    // Try direct lookup first
+    let values = heap.get(pageId, slotIdx);
+    if (values) return values;
+
+    // If direct lookup failed, try following HOT chain
+    if (heap.followHotChain) {
+      const latest = heap.followHotChain(pageId, slotIdx);
+      if (latest.pageId !== pageId || latest.slotIdx !== slotIdx) {
+        values = heap.get(latest.pageId, latest.slotIdx);
+        if (values) return values;
+      }
+    }
+    return null;
   }
 
     _applyPivot(result, pivot) {
@@ -6548,7 +6596,7 @@ export class Database {
               }
             }
             // Fall back to heap access
-            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            const values = this._heapGetFollowHot(table.heap, rid.pageId, rid.slotIdx);
             if (values) {
               rows.push(this._valuesToRow(values, table.schema, tableAlias));
             }
@@ -6589,7 +6637,7 @@ export class Database {
             }
             if (!passes) continue;
             const rid = entry.value;
-            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            const values = this._heapGetFollowHot(table.heap, rid.pageId, rid.slotIdx);
             if (values) {
               rows.push(this._valuesToRow(values, table.schema, tableAlias));
             }
@@ -6627,7 +6675,7 @@ export class Database {
           const rows = [];
           for (const entry of entries) {
             const rid = entry.value;
-            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            const values = this._heapGetFollowHot(table.heap, rid.pageId, rid.slotIdx);
             if (values) {
               rows.push(this._valuesToRow(values, table.schema, tableAlias));
             }
@@ -6662,7 +6710,7 @@ export class Database {
             const key = `${rid.pageId}:${rid.slotIdx}`;
             if (seen.has(key)) continue;
             seen.add(key);
-            const values = table.heap.get(rid.pageId, rid.slotIdx);
+            const values = this._heapGetFollowHot(table.heap, rid.pageId, rid.slotIdx);
             if (values) {
               rows.push(this._valuesToRow(values, table.schema, tableAlias));
             }

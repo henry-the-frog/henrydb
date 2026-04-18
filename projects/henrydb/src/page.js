@@ -336,6 +336,11 @@ export class HeapFile {
     this.nextPageId = 0;
     this.fsm = new FreeSpaceMap();
     this._rowCount = 0;
+    // HOT chain: maps "oldPageId:oldSlotIdx" → {pageId, slotIdx} of the new version.
+    // When an UPDATE doesn't change indexed columns, the new tuple is a HOT tuple
+    // and the old index entries still point to the old location. Index scans follow
+    // the chain to find the latest version.
+    this._hotChains = new Map();
   }
 
   get rowCount() { return this._rowCount; }
@@ -414,4 +419,52 @@ export class HeapFile {
   }
 
   get pageCount() { return this.pages.length; }
+
+  /**
+   * Record a HOT chain link: old RID → new RID.
+   * Called during UPDATE when no indexed columns changed.
+   */
+  addHotChain(oldPageId, oldSlotIdx, newPageId, newSlotIdx) {
+    const oldKey = `${oldPageId}:${oldSlotIdx}`;
+    this._hotChains.set(oldKey, { pageId: newPageId, slotIdx: newSlotIdx });
+  }
+
+  /**
+   * Follow HOT chain from a given RID to find the latest version.
+   * Returns the final RID in the chain (which holds the newest tuple).
+   * If no chain exists, returns the original RID.
+   */
+  followHotChain(pageId, slotIdx) {
+    let key = `${pageId}:${slotIdx}`;
+    let current = { pageId, slotIdx };
+    const visited = new Set();
+    while (this._hotChains.has(key)) {
+      if (visited.has(key)) break; // prevent infinite loop
+      visited.add(key);
+      current = this._hotChains.get(key);
+      key = `${current.pageId}:${current.slotIdx}`;
+    }
+    return current;
+  }
+
+  /**
+   * Check if a RID is a HOT chain root (has a chain pointer to a newer version).
+   */
+  hasHotChain(pageId, slotIdx) {
+    return this._hotChains.has(`${pageId}:${slotIdx}`);
+  }
+
+  /**
+   * Remove a HOT chain entry (used by VACUUM when pruning dead tuples).
+   */
+  removeHotChain(pageId, slotIdx) {
+    this._hotChains.delete(`${pageId}:${slotIdx}`);
+  }
+
+  /**
+   * Get all HOT chain entries (for debugging/testing).
+   */
+  getHotChains() {
+    return new Map(this._hotChains);
+  }
 }

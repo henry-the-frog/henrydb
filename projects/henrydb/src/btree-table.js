@@ -54,6 +54,9 @@ export class BTreeTable {
     // Maps "pageId:slotIdx" -> values (the old row data before UPDATE replaced it).
     this._deadTuples = new Map();
     
+    // HOT chain: maps "oldPageId:oldSlotIdx" → {pageId, slotIdx} of the new version.
+    this._hotChains = new Map();
+    
     this._syntheticPageSize = 100;
     this._pages = []; // not used but HeapFile compat
   }
@@ -228,5 +231,35 @@ export class BTreeTable {
       pkIndices: this.pkIndices,
       syntheticPages: this.pageCount,
     };
+  }
+
+  // HOT chain methods (same interface as HeapFile)
+  addHotChain(oldPageId, oldSlotIdx, newPageId, newSlotIdx) {
+    this._hotChains.set(`${oldPageId}:${oldSlotIdx}`, { pageId: newPageId, slotIdx: newSlotIdx });
+  }
+
+  followHotChain(pageId, slotIdx) {
+    let key = `${pageId}:${slotIdx}`;
+    let current = { pageId, slotIdx };
+    const visited = new Set();
+    while (this._hotChains.has(key)) {
+      if (visited.has(key)) break;
+      visited.add(key);
+      current = this._hotChains.get(key);
+      key = `${current.pageId}:${current.slotIdx}`;
+    }
+    return current;
+  }
+
+  hasHotChain(pageId, slotIdx) {
+    return this._hotChains.has(`${pageId}:${slotIdx}`);
+  }
+
+  removeHotChain(pageId, slotIdx) {
+    this._hotChains.delete(`${pageId}:${slotIdx}`);
+  }
+
+  getHotChains() {
+    return new Map(this._hotChains);
   }
 }
