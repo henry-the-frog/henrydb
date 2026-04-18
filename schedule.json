@@ -1615,6 +1615,28 @@
       "completed": "2026-04-18T19:36:46.474Z",
       "duration_ms": 600000,
       "summary": "Merge join implemented! Sort both inputs + linear merge. Cost model updated. Join method trifecta complete: hash, merge, index NL, nested loop — all with cost-based selection. 57/57 tests pass."
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add RETURNING clause support for INSERT/UPDATE/DELETE statements",
+      "project": "henrydb",
+      "started": "2026-04-18T19:38:08.271Z",
+      "completed": "2026-04-18T19:38:40.339Z",
+      "duration_ms": 60000,
+      "summary": "RETURNING already implemented for INSERT/UPDATE/DELETE. Works with *, specific columns. Skipped."
+    },
+    {
+      "id": "T153",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive PG integration test: RETURNING, ON CONFLICT, COPY, aggregates, window functions, CTEs, subqueries, joins, all through pg npm client",
+      "project": "henrydb",
+      "started": "2026-04-18T19:39:29.183Z",
+      "completed": "2026-04-18T19:43:07.549Z",
+      "duration_ms": 600000,
+      "summary": "17 comprehensive PG integration tests: RETURNING, ON CONFLICT, aggregates, GROUP BY/HAVING, window functions, subqueries, JOINs, LEFT JOIN, UDFs, information_schema, SET/SHOW, version(), EXPLAIN, string functions. All pass through pg npm client."
     }
   ],
   "focusProjects": [
@@ -2222,6 +2244,14 @@
     {
       "time": "2026-04-18T19:33:25.720Z",
       "msg": "Added T151 (BUILD) after end: Implement merge join: sort both inputs on join key, then merge. Add to _compareJoinCosts. Useful for pre-sorted data and range joins."
+    },
+    {
+      "time": "2026-04-18T19:38:01.326Z",
+      "msg": "Added T152 (BUILD) after end: Add RETURNING clause support for INSERT/UPDATE/DELETE statements"
+    },
+    {
+      "time": "2026-04-18T19:39:23.343Z",
+      "msg": "Added T153 (BUILD) after end: Write comprehensive PG integration test: RETURNING, ON CONFLICT, COPY, aggregates, window functions, CTEs, subqueries, joins, all through pg npm client"
     }
   ]
 }

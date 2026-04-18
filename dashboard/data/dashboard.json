@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-18T19:36:46.511Z",
+  "generated": "2026-04-18T19:43:07.586Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Implement merge join: sort both inputs on join key, then merge. Add to _compareJoinCosts. Useful for pre-sorted data and range joins.",
-    "completedAt": "2026-04-18T19:36:46.511Z",
-    "taskId": "T151",
-    "summary": "Merge join implemented! Sort both inputs + linear merge. Cost model updated. Join method trifecta complete: hash, merge, index NL, nested loop — all with cost-based selection. 57/57 tests pass.",
+    "task": "Write comprehensive PG integration test: RETURNING, ON CONFLICT, COPY, aggregates, window functions, CTEs, subqueries, joins, all through pg npm client",
+    "completedAt": "2026-04-18T19:43:07.586Z",
+    "taskId": "T153",
+    "summary": "17 comprehensive PG integration tests: RETURNING, ON CONFLICT, aggregates, GROUP BY/HAVING, window functions, subqueries, JOINs, LEFT JOIN, UDFs, information_schema, SET/SHOW, version(), EXPLAIN, string functions. All pass through pg npm client.",
     "durationMs": 600000
   },
   "schedule": {
@@ -1608,12 +1608,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 149,
+    "blocksCompleted": 151,
     "blocksTotal": 140,
     "modeDistribution": {
       "THINK": 31,
       "PLAN": 21,
-      "BUILD": 56,
+      "BUILD": 58,
       "MAINTAIN": 31,
       "EXPLORE": 10
     }
