@@ -2216,7 +2216,20 @@ export class Database {
     // Apply SELECT columns
     const isStar = ast.columns.length === 1 && (ast.columns[0].name === '*' || ast.columns[0].type === 'star');
     const hasQualifiedStar = ast.columns.some(c => c.type === 'qualified_star');
-    if (!isStar) {
+    if (isStar) {
+      // For SELECT *, strip qualified column names (table.col) to avoid duplicates
+      // These are added for alias-prefixed references but shouldn't appear in output
+      rows = rows.map(row => {
+        const clean = {};
+        for (const [key, val] of Object.entries(row)) {
+          if (!key.includes('.') && !key.startsWith('__')) {
+            clean[key] = val;
+          }
+        }
+        return clean;
+      });
+    } else {
+      // Non-star SELECT: project specific columns
       rows = rows.map(row => {
         const result = {};
         for (const col of ast.columns) {
@@ -2727,8 +2740,19 @@ export class Database {
       if (ast.offset) rows = rows.slice(ast.offset);
       if (ast.limit != null) rows = rows.slice(0, ast.limit);
 
-      // Project if not star
-      if (ast.columns[0]?.type !== 'star') {
+      // Project columns
+      if (ast.columns[0]?.type === 'star') {
+        // For SELECT *, strip qualified column names (table.col) to avoid duplicates
+        rows = rows.map(row => {
+          const clean = {};
+          for (const [key, val] of Object.entries(row)) {
+            if (!key.includes('.') && !key.startsWith('__')) {
+              clean[key] = val;
+            }
+          }
+          return clean;
+        });
+      } else {
         rows = rows.map(row => {
           const result = {};
           let viewExprIdx = 0;
