@@ -21,13 +21,14 @@ import { QueryStatsCollector } from './query-stats.js';
 
 export class Database {
   // PostgreSQL-compatible cost model parameters
+  // Tuned for in-memory database (lower random_page_cost since no disk seeks)
   static COST_MODEL = {
     seq_page_cost: 1.0,       // Sequential I/O per page
-    random_page_cost: 4.0,    // Random I/O per page (4x sequential)
+    random_page_cost: 1.1,    // Random I/O per page (nearly same as seq for in-memory)
     cpu_tuple_cost: 0.01,     // Process one row
     cpu_index_tuple_cost: 0.005, // Process one index entry
     cpu_operator_cost: 0.0025,   // Evaluate one WHERE clause
-    effective_cache_size: 1000,  // Pages in cache (affects random I/O discount)
+    effective_cache_size: 1000,  // Pages in cache
   };
 
   constructor(options = {}) {
