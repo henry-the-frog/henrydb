@@ -204,12 +204,34 @@ function getCommandTag(sql, result) {
 }
 
 // --- Column info from result ---
-function getColumns(result, db) {
+function getColumns(result, db, sql) {
   if (result.columns && result.columns.length > 0) {
     return result.columns.map(c => typeof c === 'string' ? { name: c, type: 'TEXT' } : c);
   }
   if (result.rows && result.rows.length > 0) {
     return Object.keys(result.rows[0]).map(name => ({ name, type: 'TEXT' }));
+  }
+  // Try to infer columns from SQL for SELECT * FROM table
+  if (sql && db) {
+    const m = sql.match(/SELECT\s+\*\s+FROM\s+(\w+)/i);
+    if (m) {
+      const table = db.tables.get(m[1]) || db.tables.get(m[1].toLowerCase());
+      if (table && table.schema) {
+        return table.schema.map(c => ({ name: c.name, type: c.type || 'TEXT' }));
+      }
+    }
+    // SELECT col1, col2 FROM table — try to match column names
+    const colMatch = sql.match(/SELECT\s+(.+?)\s+FROM\s+(\w+)/i);
+    if (colMatch) {
+      const table = db.tables.get(colMatch[2]) || db.tables.get(colMatch[2].toLowerCase());
+      if (table && table.schema) {
+        const cols = colMatch[1].split(',').map(c => c.trim());
+        return cols.map(c => {
+          const schemaCol = table.schema.find(s => s.name === c || s.name === c.toLowerCase());
+          return { name: c, type: schemaCol?.type || 'TEXT' };
+        });
+      }
+    }
   }
   return [];
 }
@@ -219,6 +241,8 @@ function handleConnection(socket, db) {
   let buffer = Buffer.alloc(0);
   let startupDone = false;
   let inTransaction = false;
+  const preparedStatements = new Map(); // name → { sql, paramTypes }
+  const portals = new Map(); // name → { sql (with params substituted), result (if already executed) }
 
   socket.on('data', (chunk) => {
     buffer = Buffer.concat([buffer, chunk]);
@@ -300,14 +324,26 @@ function handleConnection(socket, db) {
           socket.end();
           return;
 
-        case 0x50: // 'P' — Parse (extended query — send error: not supported)
+        case 0x50: // 'P' — Parse
+          handleParse(payload, socket);
+          break;
         case 0x42: // 'B' — Bind
+          handleBind(payload, socket);
+          break;
         case 0x44: // 'D' — Describe
+          handleDescribe(payload, socket, db);
+          break;
         case 0x45: // 'E' — Execute
+          handleExecute(payload, socket, db);
+          break;
         case 0x53: // 'S' — Sync
-          // For extended query protocol, just send error and ready
-          socket.write(errorResponse('ERROR', '0A000', 'Extended query protocol not yet supported. Use simple query mode.'));
           socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+          break;
+        case 0x43: // 'C' — Close (statement or portal)
+          handleClose(payload, socket);
+          break;
+        case 0x48: // 'H' — Flush
+          // No-op, just ensure output is flushed (Node does this automatically)
           break;
 
         default:
@@ -316,6 +352,283 @@ function handleConnection(socket, db) {
       }
     }
   }
+
+  // --- Extended Query Protocol Handlers ---
+
+  function parseComplete() {
+    const buf = Buffer.alloc(5);
+    buf[0] = 0x31; // '1' — ParseComplete
+    writeInt32BE(buf, 4, 1);
+    return buf;
+  }
+
+  function bindComplete() {
+    const buf = Buffer.alloc(5);
+    buf[0] = 0x32; // '2' — BindComplete
+    writeInt32BE(buf, 4, 1);
+    return buf;
+  }
+
+  function closeComplete() {
+    const buf = Buffer.alloc(5);
+    buf[0] = 0x33; // '3' — CloseComplete
+    writeInt32BE(buf, 4, 1);
+    return buf;
+  }
+
+  function noData() {
+    const buf = Buffer.alloc(5);
+    buf[0] = 0x6e; // 'n' — NoData
+    writeInt32BE(buf, 4, 1);
+    return buf;
+  }
+
+  function handleParse(payload, socket) {
+    try {
+      let offset = 0;
+      // Statement name (empty string = unnamed)
+      const nameEnd = payload.indexOf(0, offset);
+      const stmtName = payload.slice(offset, nameEnd).toString('utf8');
+      offset = nameEnd + 1;
+
+      // Query string
+      const queryEnd = payload.indexOf(0, offset);
+      const sql = payload.slice(offset, queryEnd).toString('utf8');
+      offset = queryEnd + 1;
+
+      // Number of parameter type OIDs
+      const numParams = readInt16BE(payload, offset); offset += 2;
+      const paramTypes = [];
+      for (let i = 0; i < numParams; i++) {
+        paramTypes.push(readInt32BE(payload, offset)); offset += 4;
+      }
+
+      preparedStatements.set(stmtName, { sql, paramTypes });
+      socket.write(parseComplete());
+    } catch (err) {
+      socket.write(errorResponse('ERROR', '42000', 'Parse error: ' + err.message));
+    }
+  }
+
+  function handleBind(payload, socket) {
+    try {
+      let offset = 0;
+      // Portal name
+      const portalEnd = payload.indexOf(0, offset);
+      const portalName = payload.slice(offset, portalEnd).toString('utf8');
+      offset = portalEnd + 1;
+
+      // Statement name
+      const stmtEnd = payload.indexOf(0, offset);
+      const stmtName = payload.slice(offset, stmtEnd).toString('utf8');
+      offset = stmtEnd + 1;
+
+      const stmt = preparedStatements.get(stmtName);
+      if (!stmt) {
+        socket.write(errorResponse('ERROR', '26000', `Prepared statement "${stmtName}" does not exist`));
+        return;
+      }
+
+      // Number of parameter format codes
+      const numFormats = readInt16BE(payload, offset); offset += 2;
+      const formats = [];
+      for (let i = 0; i < numFormats; i++) {
+        formats.push(readInt16BE(payload, offset)); offset += 2;
+      }
+
+      // Number of parameter values
+      const numParams = readInt16BE(payload, offset); offset += 2;
+      const params = [];
+      for (let i = 0; i < numParams; i++) {
+        const len = readInt32BE(payload, offset); offset += 4;
+        if (len === -1) {
+          params.push(null);
+        } else {
+          // Text format (format 0) — read as string
+          params.push(payload.slice(offset, offset + len).toString('utf8'));
+          offset += len;
+        }
+      }
+
+      // Substitute $1, $2, ... with actual parameter values in the SQL
+      let boundSql = stmt.sql;
+      // Replace from highest to lowest to avoid $1 matching part of $10
+      for (let i = params.length; i >= 1; i--) {
+        const val = params[i - 1];
+        const regex = new RegExp('\\$' + i + '(?![0-9])', 'g');
+        if (val === null) {
+          boundSql = boundSql.replace(regex, 'NULL');
+        } else if (/^-?\d+(\.\d+)?$/.test(val)) {
+          boundSql = boundSql.replace(regex, val);
+        } else {
+          // Escape single quotes
+          boundSql = boundSql.replace(regex, "'" + val.replace(/'/g, "''") + "'");
+        }
+      }
+
+      portals.set(portalName, { sql: boundSql, stmt });
+      socket.write(bindComplete());
+    } catch (err) {
+      socket.write(errorResponse('ERROR', '42000', 'Bind error: ' + err.message));
+    }
+  }
+
+  function handleDescribe(payload, socket, db) {
+    try {
+      const describeType = payload[0]; // 'S' = statement, 'P' = portal
+      const name = payload.slice(1, payload.indexOf(0, 1)).toString('utf8');
+
+      if (describeType === 0x53) { // 'S' — Statement
+        const stmt = preparedStatements.get(name);
+        if (!stmt) {
+          socket.write(errorResponse('ERROR', '26000', `Prepared statement "${name}" does not exist`));
+          return;
+        }
+        // ParameterDescription — describe parameter types
+        const numParams = stmt.paramTypes.length;
+        const paramDescBuf = Buffer.alloc(1 + 4 + 2 + numParams * 4);
+        paramDescBuf[0] = 0x74; // 't' — ParameterDescription
+        writeInt32BE(paramDescBuf, 4 + 2 + numParams * 4, 1);
+        paramDescBuf[5] = (numParams >> 8) & 0xff;
+        paramDescBuf[6] = numParams & 0xff;
+        for (let i = 0; i < numParams; i++) {
+          writeInt32BE(paramDescBuf, stmt.paramTypes[i] || 0, 7 + i * 4);
+        }
+        socket.write(paramDescBuf);
+
+        // Try to determine the output columns by running a describe
+        // For simplicity, we'll try to execute the query and report NoData for non-SELECT
+        const sql = stmt.sql.trim().toUpperCase();
+        if (sql.startsWith('SELECT') || sql.startsWith('WITH') || sql.startsWith('EXPLAIN')) {
+          // We need to describe the columns without actually running it.
+          // Try executing with NULLs and LIMIT 0 to get column structure
+          let testSql = stmt.sql;
+          for (let i = stmt.paramTypes.length; i >= 1; i--) {
+            testSql = testSql.replace(new RegExp('\\$' + i + '(?![0-9])', 'g'), 'NULL');
+          }
+          try {
+            // Add LIMIT 0 to avoid side effects
+            const limitedSql = testSql.replace(/;?\s*$/, '') + ' LIMIT 0';
+            const testResult = db.execute(limitedSql);
+            // Even with no rows, if we can determine columns from the result, use them
+            const columns = getColumns(testResult, db);
+            if (columns.length > 0) {
+              socket.write(rowDescription(columns));
+            } else {
+              // Fallback: run without LIMIT 0 to see if we get column info
+              try {
+                const fullResult = db.execute(testSql);
+                const fullCols = getColumns(fullResult, db);
+                if (fullCols.length > 0) {
+                  socket.write(rowDescription(fullCols));
+                } else {
+                  socket.write(noData());
+                }
+              } catch {
+                socket.write(noData());
+              }
+            }
+          } catch {
+            socket.write(noData());
+          }
+        } else {
+          socket.write(noData());
+        }
+      } else if (describeType === 0x50) { // 'P' — Portal
+        const portal = portals.get(name);
+        if (!portal) {
+          socket.write(errorResponse('ERROR', '34000', `Portal "${name}" does not exist`));
+          return;
+        }
+        // For portal describe, check if it's a SELECT-type query
+        const upper = portal.sql.trim().toUpperCase();
+        if (upper.startsWith('SELECT') || upper.startsWith('WITH') || upper.startsWith('EXPLAIN')) {
+          // Need to describe columns without executing
+          // Substitute test values to get column info
+          try {
+            // Use a dry run: wrap in a subquery with LIMIT 0 to avoid side effects
+            const testSql = portal.sql.replace(/;?\s*$/, ' LIMIT 0');
+            const testResult = db.execute(testSql);
+            const columns = getColumns(testResult, db, portal.sql);
+            if (columns.length > 0) {
+              socket.write(rowDescription(columns));
+            } else {
+              socket.write(noData());
+            }
+          } catch {
+            socket.write(noData());
+          }
+        } else {
+          socket.write(noData());
+        }
+      }
+    } catch (err) {
+      socket.write(errorResponse('ERROR', '42000', 'Describe error: ' + err.message));
+    }
+  }
+
+  function handleExecute(payload, socket, db) {
+    try {
+      const portalEnd = payload.indexOf(0);
+      const portalName = payload.slice(0, portalEnd).toString('utf8');
+      // int32 max rows (0 = no limit)
+      // const maxRows = readInt32BE(payload, portalEnd + 1);
+
+      const portal = portals.get(portalName);
+      if (!portal) {
+        socket.write(errorResponse('ERROR', '34000', `Portal "${portalName}" does not exist`));
+        return;
+      }
+
+      const sql = portal.sql.trim();
+      if (!sql) {
+        socket.write(emptyQueryResponse());
+        return;
+      }
+
+      const upper = sql.toUpperCase().trim();
+      if (upper === 'BEGIN' || upper === 'START TRANSACTION') inTransaction = true;
+      if (upper === 'COMMIT' || upper === 'ROLLBACK' || upper === 'END') inTransaction = false;
+
+      const result = db.execute(sql);
+      const tag = getCommandTag(sql, result);
+
+      if (result.rows && result.rows.length > 0) {
+        const columns = getColumns(result, db);
+        // Don't send RowDescription here — it was sent during Describe
+        for (const row of result.rows) {
+          const values = columns.map(c => {
+            const val = row[c.name];
+            return val === null || val === undefined ? null : val;
+          });
+          socket.write(dataRow(values));
+        }
+      }
+
+      socket.write(commandComplete(tag));
+    } catch (err) {
+      const code = err.message.includes('syntax') ? '42601' :
+                   err.message.includes('not found') || err.message.includes('does not exist') ? '42P01' :
+                   err.message.includes('already exists') ? '42P07' :
+                   err.message.includes('violates') ? '23505' :
+                   '42000';
+      socket.write(errorResponse('ERROR', code, err.message));
+      if (inTransaction) inTransaction = false;
+    }
+  }
+
+  function handleClose(payload, socket) {
+    const closeType = payload[0]; // 'S' = statement, 'P' = portal
+    const name = payload.slice(1, payload.indexOf(0, 1)).toString('utf8');
+    if (closeType === 0x53) {
+      preparedStatements.delete(name);
+    } else if (closeType === 0x50) {
+      portals.delete(name);
+    }
+    socket.write(closeComplete());
+  }
+
+  // --- Simple Query Protocol ---
 
   function handleQuery(payload, socket, db) {
     // payload is the query string, null-terminated
