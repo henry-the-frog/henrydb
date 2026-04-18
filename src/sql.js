@@ -1157,7 +1157,7 @@ export function parse(sql) {
     }
 
     // Built-in string/null functions
-    if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
+    if (t.type === 'KEYWORD' &&
       SCALAR_FUNCTIONS.has(t.value)) {
       const func = advance().value;
       expect('(');

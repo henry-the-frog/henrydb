@@ -3013,8 +3013,6 @@ export class Database {
     return values;
   }
 
-    _checkpoint() {
-
   // Serialization
   toJSON() {
     const data = {
