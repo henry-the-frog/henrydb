@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-18T18:33:37.145Z",
+  "generated": "2026-04-18T18:44:34.155Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push and test sweep",
-    "completedAt": "2026-04-18T18:33:37.145Z",
-    "taskId": "T114",
-    "summary": "Pushed PG wire protocol + UNIQUE constraint fix. Bug found: index-based constraint check didnt verify rows existed in heap, causing false UNIQUE violations after HOT update+DELETE. Fixed by adding heap.get() liveness check. 139/139 pass across 10 test files.",
-    "durationMs": 600000
+    "task": "Push and commit",
+    "startedAt": "2026-04-18T18:44:34.155Z",
+    "taskId": "T120"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -1316,48 +1314,112 @@
       {
         "id": "T112",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Plan PG wire protocol implementation",
         "task": null,
-        "started": "2026-04-18T18:25:07.957Z"
+        "started": "2026-04-18T18:25:07.957Z",
+        "completed": "2026-04-18T18:25:21.947Z",
+        "duration_ms": 120000,
+        "summary": "Planned 2 BUILD tasks for PG wire protocol. Read design doc. Key: startup handshake, simple query protocol (Q→T+D+C+Z), type mapping (HenryDB types → PG OIDs), error responses. ~200 lines target."
       },
       {
         "id": "T115",
         "mode": "BUILD",
         "task": "Implement PG wire protocol v3: startup handshake, simple query protocol (Q message), RowDescription+DataRow+CommandComplete responses, ErrorResponse, ReadyForQuery. Support psql connection.",
-        "status": "upcoming",
-        "plan_ref": "T112"
+        "status": "done",
+        "plan_ref": "T112",
+        "started": "2026-04-18T18:25:34.364Z",
+        "completed": "2026-04-18T18:29:07.585Z",
+        "duration_ms": 900000,
+        "summary": "PG wire protocol v3 implemented! Startup handshake, simple query protocol (Q→T+D+C+Z), SSL negotiation refusal, type mapping (INT/FLOAT/TEXT/BOOLEAN→PG OIDs), error responses with SQLSTATE codes, transaction state tracking (I/T), multi-statement queries, EmptyQueryResponse. 13 tests all pass. ~300 lines."
       },
       {
         "id": "T116",
         "mode": "BUILD",
         "task": "Write PG wire protocol tests: startup, simple queries (SELECT/INSERT/UPDATE/DELETE), error handling, multiple queries, transaction state indicator",
-        "status": "upcoming",
-        "plan_ref": "T112"
+        "status": "done",
+        "plan_ref": "T112",
+        "started": "2026-04-18T18:29:17.952Z",
+        "completed": "2026-04-18T18:29:18.096Z",
+        "duration_ms": 10000,
+        "summary": "Tests already written in T115 — 13 tests covering startup, SSL, CRUD, errors, NULL, multi-statement, concurrent connections, params, aggregates, UDFs, transactions. All pass."
       },
       {
         "id": "T113",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-18T18:29:27.297Z",
+        "completed": "2026-04-18T18:29:27.440Z",
+        "duration_ms": 5000,
+        "summary": "Placeholder BUILD — no work needed."
+      },
+      {
+        "id": "T114",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and test sweep",
+        "started": "2026-04-18T18:29:34.877Z",
+        "completed": "2026-04-18T18:33:37.108Z",
+        "duration_ms": 600000,
+        "summary": "Pushed PG wire protocol + UNIQUE constraint fix. Bug found: index-based constraint check didnt verify rows existed in heap, causing false UNIQUE violations after HOT update+DELETE. Fixed by adding heap.get() liveness check. 139/139 pass across 10 test files."
+      },
+      {
+        "id": "T117",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Direction: 1.5h remaining. PG wire protocol done. What has highest learning value? Options: (1) test psql actually connects to HenryDB, (2) persistent catalog, (3) switch to different project for variety, (4) stress-test PG wire with real PG client library",
+        "started": "2026-04-18T18:34:05.004Z",
+        "completed": "2026-04-18T18:34:21.561Z",
+        "duration_ms": 60000,
+        "summary": "Direction: test PG wire protocol with real pg npm client. This will likely require implementing extended query protocol (Parse/Bind/Execute/Sync). Highest learning value — real-world protocol compatibility."
+      },
+      {
+        "id": "T118",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement extended query protocol + test with pg npm client",
+        "task": null,
+        "started": "2026-04-18T18:34:32.196Z"
+      },
+      {
+        "id": "T121",
+        "mode": "BUILD",
+        "task": "Implement extended query protocol (Parse/Bind/Describe/Execute/Sync) for PG wire server to support parameterized queries from pg npm client",
+        "status": "upcoming",
+        "plan_ref": "T118"
+      },
+      {
+        "id": "T122",
+        "mode": "BUILD",
+        "task": "Test extended query protocol with pg npm parameterized queries, pool, and transactions",
+        "status": "upcoming",
+        "plan_ref": "T118"
+      },
+      {
+        "id": "T119",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "henrydb"
       },
       {
-        "id": "T114",
+        "id": "T120",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Push and test sweep"
+        "task": "Push and commit"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 114,
-    "blocksTotal": 116,
+    "blocksCompleted": 119,
+    "blocksTotal": 122,
     "modeDistribution": {
-      "THINK": 26,
-      "PLAN": 17,
-      "BUILD": 37,
+      "THINK": 27,
+      "PLAN": 18,
+      "BUILD": 40,
       "MAINTAIN": 26,
       "EXPLORE": 8
     }

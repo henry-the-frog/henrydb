@@ -1240,6 +1240,67 @@
       "completed": "2026-04-18T18:33:37.108Z",
       "duration_ms": 600000,
       "summary": "Pushed PG wire protocol + UNIQUE constraint fix. Bug found: index-based constraint check didnt verify rows existed in heap, causing false UNIQUE violations after HOT update+DELETE. Fixed by adding heap.get() liveness check. 139/139 pass across 10 test files."
+    },
+    {
+      "id": "T117",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: 1.5h remaining. PG wire protocol done. What has highest learning value? Options: (1) test psql actually connects to HenryDB, (2) persistent catalog, (3) switch to different project for variety, (4) stress-test PG wire with real PG client library",
+      "started": "2026-04-18T18:34:05.004Z",
+      "completed": "2026-04-18T18:34:21.561Z",
+      "duration_ms": 60000,
+      "summary": "Direction: test PG wire protocol with real pg npm client. This will likely require implementing extended query protocol (Parse/Bind/Execute/Sync). Highest learning value — real-world protocol compatibility."
+    },
+    {
+      "id": "T118",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement extended query protocol + test with pg npm client",
+      "task": null,
+      "started": "2026-04-18T18:34:32.196Z",
+      "completed": "2026-04-18T18:35:12.351Z",
+      "duration_ms": 120000,
+      "summary": "Planned extended query protocol. Simple query already works with pg client. Parameterized queries need Parse/Bind/Describe/Execute/Sync. 2 BUILD tasks."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "task": "Implement extended query protocol (Parse/Bind/Describe/Execute/Sync) for PG wire server to support parameterized queries from pg npm client",
+      "status": "done",
+      "plan_ref": "T118",
+      "started": "2026-04-18T18:35:19.366Z",
+      "completed": "2026-04-18T18:40:10.531Z",
+      "duration_ms": 1200000,
+      "summary": "Extended query protocol implemented! Parse/Bind/Describe/Execute/Sync/Close/Flush handlers. Parameter substitution ($1, $2...) with proper quoting. Statement + portal caches per connection. Column inference from table schema for empty result sets. Tested: pg.Client parameterized SELECT/INSERT/UPDATE/DELETE, pg.Pool with concurrent queries, transactions with client checkout. All passing."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "task": "Test extended query protocol with pg npm parameterized queries, pool, and transactions",
+      "status": "done",
+      "plan_ref": "T118",
+      "started": "2026-04-18T18:40:19.092Z",
+      "completed": "2026-04-18T18:44:16.277Z",
+      "duration_ms": 900000,
+      "summary": "13 pg client tests: simple queries, parameterized SELECT/INSERT/UPDATE/DELETE, NULL params, pg.Pool basic + concurrent, transactions, error handling, sequential params, aggregates, window functions. All pass."
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "henrydb",
+      "started": "2026-04-18T18:44:24.814Z",
+      "completed": "2026-04-18T18:44:24.956Z",
+      "duration_ms": 5000,
+      "summary": "Placeholder — no work."
+    },
+    {
+      "id": "T120",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push and commit",
+      "started": "2026-04-18T18:44:34.119Z"
     }
   ],
   "focusProjects": [
@@ -1723,6 +1784,26 @@
     {
       "time": "2026-04-18T18:25:17.121Z",
       "msg": "PLAN T112 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T18:34:00.924Z",
+      "msg": "Added T117 (THINK) after end: Direction: 1.5h remaining. PG wire protocol done. What has highest learning value? Options: (1) test psql actually connects to HenryDB, (2) persistent catalog, (3) switch to different project for variety, (4) stress-test PG wire with real PG client library"
+    },
+    {
+      "time": "2026-04-18T18:34:27.923Z",
+      "msg": "Added T118 (PLAN) after end: Implement extended query protocol + test with pg npm client"
+    },
+    {
+      "time": "2026-04-18T18:34:28.041Z",
+      "msg": "Added T119 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-18T18:34:28.159Z",
+      "msg": "Added T120 (MAINTAIN) after end: Push and commit"
+    },
+    {
+      "time": "2026-04-18T18:35:08.147Z",
+      "msg": "PLAN T118 filled 2 BUILD tasks"
     }
   ]
 }
