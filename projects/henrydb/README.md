@@ -66,8 +66,12 @@ const result = await client.query('SELECT * FROM users WHERE id = $1', [1]);
 - **Index-Based Constraint Checking**: O(log N) UNIQUE/PK validation instead of O(N) heap scan
 - **ANALYZE**: Gather table statistics (ndistinct, null fraction, most common values, histograms)
 - **Selectivity Estimation**: Predict query selectivity from statistics (equality, range, IN, BETWEEN)
-- **Cost-Based Optimizer**: Choose between index scan and sequential scan based on estimated selectivity
-- **EXPLAIN / EXPLAIN ANALYZE**: View query plans with estimated and actual row counts + timing
+- **Cost-Based Optimizer**: Parametric cost model (seq_page_cost, random_page_cost, cpu_tuple_cost) for index vs scan selection
+- **Join Method Selection**: Hash join, merge join, index nested loop, nested loop — cost-based choice
+- **System R Join Ordering**: Dynamic programming optimizer for multi-table joins (up to 6 tables)
+- **EXPLAIN / EXPLAIN ANALYZE**: View query plans with estimated and actual row counts + timing + costs
+- **COPY FROM STDIN / COPY TO STDOUT**: Bulk data loading and export via PG wire protocol
+- **information_schema**: Tables and columns discovery (information_schema.tables, information_schema.columns)
 
 ### MVCC & Transactions
 - **Snapshot Isolation**: Each transaction sees a consistent snapshot
