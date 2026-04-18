@@ -102,3 +102,15 @@ const specs = [
 
 ### Priority
 This should be the FIRST build task of the next depth session. It's high-ROI infrastructure that catches entire bug categories.
+
+### Persistence Status (as of 2026-04-17)
+| Object | In-Memory | Catalog | WAL | Restart | Crash Recovery |
+|--------|-----------|---------|-----|---------|----------------|
+| TABLE | ✅ | ✅ | ✅ | ✅ | ✅ |
+| INDEX | ✅ | ✅ (as separate entry) | ✅ | ✅ | ✅ |
+| VIEW | ✅ | ✅ (fixed today) | ✅ | ✅ | ✅ |
+| ALTER TABLE | ✅ | ✅ (fixed today) | ✅ (fixed today) | ✅ | ✅ (fixed today) |
+| TRIGGER | ✅ | ❌ | ❌ | ❌ | ❌ |
+| SEQUENCE | ✅ | ❌ | ❌ | ❌ | ❌ |
+| MATERIALIZED VIEW | ✅ | ❌ | ❌ | ❌ | ❌ |
+| GENERATED COLUMN | ✅ (but value null) | partial | ❌ | ❌ | ❌ |
