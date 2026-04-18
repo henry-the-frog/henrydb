@@ -30,7 +30,7 @@ const KEYWORDS = new Set([
   'ANALYZE', 'RETURNING',
   'MATERIALIZED', 'REFRESH',
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
-  'IF', 'EXISTS',
+  'IF', 'EXISTS', 'PREPARE', 'DEALLOCATE',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
@@ -223,6 +223,63 @@ export function parse(sql) {
   if (isKeyword('ROLLBACK')) { advance(); return { type: 'ROLLBACK' }; }
   if (isKeyword('VACUUM')) { advance(); let table = null; let incremental = false; let maxPages = null; if (peek().type === 'IDENT' && peek().value === 'INCREMENTAL') { advance(); incremental = true; if (peek().type === 'NUMBER') { maxPages = parseInt(advance().value, 10); } } if (peek().type === 'IDENT' || peek().type === 'KEYWORD') table = (advance().originalValue || tokens[pos-1].value); return { type: 'VACUUM', table, incremental, maxPages }; }
   if (isKeyword('CHECKPOINT')) { advance(); return { type: 'CHECKPOINT' }; }
+
+  // PREPARE name [(type, type, ...)] AS statement
+  if (isKeyword('PREPARE')) {
+    advance();
+    const name = (advance().originalValue || tokens[pos-1].value);
+    let paramTypes = [];
+    if (peek().value === '(') {
+      advance(); // (
+      while (peek().value !== ')' && peek().type !== 'EOF') {
+        paramTypes.push(advance().value);
+        if (peek().value === ',') advance();
+      }
+      if (peek().value === ')') advance();
+    }
+    if (isKeyword('AS')) advance();
+    // Collect remaining tokens as the statement SQL
+    const stmtTokens = [];
+    while (peek().type !== 'EOF') {
+      stmtTokens.push(advance());
+    }
+    // Reconstruct SQL from tokens
+    const opMap = { 'EQ': '=', 'NE': '!=', 'LT': '<', 'GT': '>', 'LE': '<=', 'GE': '>=' };
+    const stmtSql = stmtTokens.map(t => {
+      if (t.type === 'STRING') return `'${t.value}'`;
+      if (t.type === 'PARAM') return `$${t.index}`;
+      if (t.type === 'NUMBER') return String(t.value);
+      if (opMap[t.type]) return opMap[t.type];
+      return t.originalValue || t.value || t.type;
+    }).join(' ');
+    return { type: 'PREPARE', name, paramTypes, sql: stmtSql };
+  }
+
+  // EXECUTE name [(param, param, ...)]
+  if (isKeyword('EXECUTE')) {
+    advance();
+    const name = (advance().originalValue || tokens[pos-1].value);
+    let params = [];
+    if (peek().type === '(' || peek().value === '(') {
+      advance(); // (
+      while (peek().type !== ')' && peek().value !== ')' && peek().type !== 'EOF') {
+        params.push(parseExpr());
+        if (peek().type === ',' || peek().value === ',') advance();
+      }
+      if (peek().type === ')' || peek().value === ')') advance();
+    }
+    return { type: 'EXECUTE_PREPARED', name, params };
+  }
+
+  // DEALLOCATE [PREPARE] name | ALL
+  if (isKeyword('DEALLOCATE')) {
+    advance();
+    if (isKeyword('PREPARE')) advance();
+    if (isKeyword('ALL')) { advance(); return { type: 'DEALLOCATE', name: 'ALL' }; }
+    const name = (advance().originalValue || tokens[pos-1].value);
+    return { type: 'DEALLOCATE', name };
+  }
+
   if (isKeyword('ANALYZE') && !isKeyword('EXPLAIN')) {
     advance();
     let table = null;

@@ -438,6 +438,9 @@ export class Database {
         }
         return { type: 'OK', message: 'ROLLBACK' };
       case 'VACUUM': return this._vacuum(ast);
+      case 'PREPARE': return this._prepare(ast);
+      case 'EXECUTE_PREPARED': return this._executePrepared(ast);
+      case 'DEALLOCATE': return this._deallocate(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -2494,7 +2497,64 @@ export class Database {
     };
   }
 
-  _checkpoint() {
+  // Prepared statements
+  _prepare(ast) {
+    if (!this._prepared) this._prepared = new Map();
+    const name = ast.name.toLowerCase();
+    if (this._prepared.has(name)) {
+      throw new Error(`Prepared statement "${name}" already exists`);
+    }
+    this._prepared.set(name, {
+      sql: ast.sql,
+      paramTypes: ast.paramTypes || [],
+    });
+    return { type: 'OK', message: 'PREPARE' };
+  }
+
+  _executePrepared(ast) {
+    if (!this._prepared) this._prepared = new Map();
+    const name = ast.name.toLowerCase();
+    const prepared = this._prepared.get(name);
+    if (!prepared) {
+      throw new Error(`Prepared statement "${name}" does not exist`);
+    }
+
+    // Evaluate parameter expressions — extract literal values
+    const params = (ast.params || []).map(p => {
+      if (p.type === 'literal') return p.value;
+      if (p.type === 'column_ref') return p.name; // treat bare identifiers as strings
+      return this._evalValue(p, {});
+    });
+    
+    // Substitute $1, $2, etc. in the SQL with actual values
+    let sql = prepared.sql;
+    for (let i = params.length; i >= 1; i--) {
+      const val = params[i - 1];
+      let replacement;
+      if (val === null) replacement = 'NULL';
+      else if (typeof val === 'string') replacement = `'${val.replace(/'/g, "''")}'`;
+      else replacement = String(val);
+      sql = sql.replace(new RegExp(`\\$${i}`, 'g'), replacement);
+    }
+
+    return this.execute(sql);
+  }
+
+  _deallocate(ast) {
+    if (!this._prepared) this._prepared = new Map();
+    if (ast.name === 'ALL') {
+      this._prepared.clear();
+    } else {
+      const name = ast.name.toLowerCase();
+      if (!this._prepared.has(name)) {
+        throw new Error(`Prepared statement "${name}" does not exist`);
+      }
+      this._prepared.delete(name);
+    }
+    return { type: 'OK', message: 'DEALLOCATE' };
+  }
+
+    _checkpoint() {
     // CHECKPOINT command — creates a WAL checkpoint for durability
     // In the base Database class (no WAL), this is a no-op but still valid SQL.
     // TransactionalDatabase overrides this with real fuzzy checkpoint logic.
