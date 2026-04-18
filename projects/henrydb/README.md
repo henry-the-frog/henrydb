@@ -202,7 +202,7 @@ SELECT * FROM tree ORDER BY depth, name;
 
 ## Tests
 
-778 test files, ~70K lines of source code. Run with:
+782 test files, ~70K lines of source code. Run with:
 
 ```bash
 node --test src/hot-chains.test.js src/udf.test.js src/table-func.test.js src/row-locking.test.js

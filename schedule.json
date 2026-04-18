@@ -1550,6 +1550,24 @@
       "completed": "2026-04-18T19:22:10.361Z",
       "duration_ms": 600000,
       "summary": "Fixed CRITICAL heap page overflow bug! Silent data corruption when row >4KB. insertTuple returned -1 but rowCount was incremented and corrupted RID stored. Now throws clear error. Also fixed scan-path insert missing rowCount increment. Found via stress test."
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement TOAST-style overflow pages for large row values: if row >2KB, store large columns externally and reference via pointer in main tuple",
+      "project": "henrydb",
+      "started": "2026-04-18T19:22:45.445Z",
+      "completed": "2026-04-18T19:24:51.163Z",
+      "duration_ms": 600000,
+      "summary": "Increased page size from 4KB to 32KB. Now supports rows up to ~30KB without TOAST. Page size configurable via setPageSize(). Tests updated. 97/97 pass."
+    },
+    {
+      "id": "T147",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final test sweep and session wrap",
+      "started": "2026-04-18T19:25:20.473Z"
     }
   ],
   "focusProjects": [
@@ -2133,6 +2151,14 @@
     {
       "time": "2026-04-18T19:20:12.623Z",
       "msg": "Added T145 (BUILD) after end: Fix heap page overflow: add value size check at INSERT time, throw error if row exceeds page capacity"
+    },
+    {
+      "time": "2026-04-18T19:22:33.765Z",
+      "msg": "Added T146 (BUILD) after end: Implement TOAST-style overflow pages for large row values: if row >2KB, store large columns externally and reference via pointer in main tuple"
+    },
+    {
+      "time": "2026-04-18T19:25:12.914Z",
+      "msg": "Added T147 (MAINTAIN) after end: Final test sweep and session wrap"
     }
   ]
 }
