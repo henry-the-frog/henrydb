@@ -1565,9 +1565,56 @@
     {
       "id": "T147",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final test sweep and session wrap",
-      "started": "2026-04-18T19:25:20.473Z"
+      "started": "2026-04-18T19:25:20.473Z",
+      "completed": "2026-04-18T19:26:45.692Z",
+      "duration_ms": 300000,
+      "summary": "183/183 pass across 12 test files. All pushed. Daily log updated."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add COPY FROM STDIN support to PG wire protocol for bulk data loading",
+      "project": "henrydb",
+      "started": "2026-04-18T19:27:01.262Z",
+      "completed": "2026-04-18T19:29:41.246Z",
+      "duration_ms": 600000,
+      "summary": "COPY FROM STDIN implemented! Supports table with/without column list, tab-separated values, \\N for NULL. CopyInResponse/CopyData/CopyDone/CopyFail protocol. Tested with manual TCP client: 3 rows loaded. All 26 PG tests still pass."
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add COPY TO STDOUT support for bulk data export through PG wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-18T19:30:07.971Z",
+      "completed": "2026-04-18T19:31:35.794Z",
+      "duration_ms": 300000,
+      "summary": "COPY TO STDOUT implemented. CopyOutResponse → CopyData rows → CopyDone. Tab-separated with \\N for NULL. Tested: 3 rows exported correctly. All 26 PG tests pass."
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add information_schema support for table/column discovery via PG wire",
+      "project": "henrydb",
+      "started": "2026-04-18T19:32:04.370Z",
+      "completed": "2026-04-18T19:33:00.866Z",
+      "duration_ms": 300000,
+      "summary": "information_schema.tables (table_catalog, table_schema, table_name, table_type) and information_schema.columns (all standard fields including data_type, is_nullable, ordinal_position) implemented. Works with pg npm client."
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement merge join: sort both inputs on join key, then merge. Add to _compareJoinCosts. Useful for pre-sorted data and range joins.",
+      "project": "henrydb",
+      "started": "2026-04-18T19:33:33.101Z",
+      "completed": "2026-04-18T19:36:46.474Z",
+      "duration_ms": 600000,
+      "summary": "Merge join implemented! Sort both inputs + linear merge. Cost model updated. Join method trifecta complete: hash, merge, index NL, nested loop — all with cost-based selection. 57/57 tests pass."
     }
   ],
   "focusProjects": [
@@ -2159,6 +2206,22 @@
     {
       "time": "2026-04-18T19:25:12.914Z",
       "msg": "Added T147 (MAINTAIN) after end: Final test sweep and session wrap"
+    },
+    {
+      "time": "2026-04-18T19:26:56.314Z",
+      "msg": "Added T148 (BUILD) after end: Add COPY FROM STDIN support to PG wire protocol for bulk data loading"
+    },
+    {
+      "time": "2026-04-18T19:30:00.736Z",
+      "msg": "Added T149 (BUILD) after end: Add COPY TO STDOUT support for bulk data export through PG wire protocol"
+    },
+    {
+      "time": "2026-04-18T19:31:58.340Z",
+      "msg": "Added T150 (BUILD) after end: Add information_schema support for table/column discovery via PG wire"
+    },
+    {
+      "time": "2026-04-18T19:33:25.720Z",
+      "msg": "Added T151 (BUILD) after end: Implement merge join: sort both inputs on join key, then merge. Add to _compareJoinCosts. Useful for pre-sorted data and range joins."
     }
   ]
 }
