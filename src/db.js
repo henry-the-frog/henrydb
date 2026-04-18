@@ -489,13 +489,12 @@ export class Database {
                 // Re-insert the deleted row
                 const table = this._getTable(entry.table);
                 if (table && table.heap) {
-                  // Re-insert at the same position if possible, otherwise new position
-                  table.heap.insert(entry.values);
-                  // Re-add to indexes
+                  const newRid = table.heap.insert(entry.values);
+                  // Re-add to indexes with the NEW rid
                   for (const [colName, index] of table.indexes) {
                     const colIdx = table.schema.findIndex(c => c.name === colName);
                     if (colIdx >= 0 && entry.values[colIdx] !== null && entry.values[colIdx] !== undefined) {
-                      index.insert(entry.values[colIdx], entry.rid);
+                      index.insert(entry.values[colIdx], newRid);
                     }
                   }
                 }
@@ -503,16 +502,30 @@ export class Database {
                 // Restore old values
                 const table = this._getTable(entry.table);
                 if (table && table.heap) {
-                  table.heap.update(entry.rid.pageId, entry.rid.slotIdx, entry.oldValues);
-                  // Restore indexes
-                  for (const [colName, index] of table.indexes) {
-                    const colIdx = table.schema.findIndex(c => c.name === colName);
-                    if (colIdx >= 0) {
-                      const oldVal = entry.oldValues[colIdx];
-                      const newVal = entry.newValues[colIdx];
-                      if (oldVal !== newVal) {
-                        if (newVal !== null && newVal !== undefined) index.delete(newVal);
-                        if (oldVal !== null && oldVal !== undefined) index.insert(oldVal, entry.rid);
+                  if (entry.hot) {
+                    // HOT update: values are at original position, just overwrite
+                    table.heap.update(entry.rid.pageId, entry.rid.slotIdx, entry.oldValues);
+                  } else {
+                    // Regular update: new row at newRid, need to delete it and re-insert old
+                    if (entry.newRid) {
+                      table.heap.delete(entry.newRid.pageId, entry.newRid.slotIdx);
+                      // Remove new index entries
+                      for (const [colName, index] of table.indexes) {
+                        const colIdx = table.schema.findIndex(c => c.name === colName);
+                        if (colIdx >= 0) {
+                          const newVal = entry.newValues[colIdx];
+                          if (newVal !== null && newVal !== undefined) try { index.delete(newVal); } catch {}
+                        }
+                      }
+                    }
+                    // Re-insert old values
+                    const restoredRid = table.heap.insert(entry.oldValues);
+                    // Re-add old index entries
+                    for (const [colName, index] of table.indexes) {
+                      const colIdx = table.schema.findIndex(c => c.name === colName);
+                      if (colIdx >= 0) {
+                        const oldVal = entry.oldValues[colIdx];
+                        if (oldVal !== null && oldVal !== undefined) index.insert(oldVal, restoredRid);
                       }
                     }
                   }
@@ -2265,6 +2278,9 @@ export class Database {
         const hotRid = table.heap.hotUpdate(item.pageId, item.slotIdx, newValues);
         if (hotRid) {
           // HOT update successful — no index changes needed!
+          if (this._txWriteLog) {
+            this._txWriteLog.push({ type: 'UPDATE', table: ast.table, rid: { pageId: item.pageId, slotIdx: item.slotIdx }, oldValues: item.values, newValues, hot: true });
+          }
           const txId = this._currentTxId || this._nextTxId++;
           this.wal.appendUpdate(txId, ast.table, hotRid.pageId, hotRid.slotIdx, item.values, newValues);
           if (!this._currentTxId) this.wal.appendCommit(txId);
@@ -2289,6 +2305,11 @@ export class Database {
       // Delete old, insert new
       table.heap.delete(item.pageId, item.slotIdx);
       const newRid = table.heap.insert(newValues);
+
+      // Log for transaction rollback
+      if (this._txWriteLog) {
+        this._txWriteLog.push({ type: 'UPDATE', table: ast.table, rid: { pageId: item.pageId, slotIdx: item.slotIdx }, newRid, oldValues: item.values, newValues });
+      }
 
       // WAL: log the update
       const txId = this._currentTxId || this._nextTxId++;
@@ -2487,6 +2508,11 @@ export class Database {
       }
       
       table.heap.delete(pageId, slotIdx);
+      
+      // Log for transaction rollback
+      if (this._txWriteLog && values) {
+        this._txWriteLog.push({ type: 'DELETE', table: ast.table, rid: { pageId, slotIdx }, values });
+      }
       
       // Remove from indexes
       if (values) {
