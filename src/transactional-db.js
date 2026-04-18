@@ -79,11 +79,33 @@ export class TransactionalDatabase {
         for (const [name, heap] of heaps) {
           recoverFromFileWAL(heap, wal);
         }
-        // Rebuild version maps: all recovered rows are always-visible
-        for (const [name, heap] of heaps) {
-          const vm = versionMaps.get(name);
-          for (const { pageId, slotIdx } of heap.scan()) {
-            vm.set(`${pageId}:${slotIdx}`, { xmin: 0, xmax: 0 });
+        
+        // Try to load saved version maps from mvcc-state.json
+        let savedVersionMaps = null;
+        if (existsSync(mvccStatePath)) {
+          try {
+            const mvccState = JSON.parse(readFileSync(mvccStatePath, 'utf8'));
+            if (mvccState.versionMaps) savedVersionMaps = mvccState.versionMaps;
+          } catch {}
+        }
+        
+        if (savedVersionMaps) {
+          // Restore version maps from saved state
+          for (const [name, entries] of Object.entries(savedVersionMaps)) {
+            const vm = versionMaps.get(name);
+            if (vm) {
+              for (const [key, value] of entries) {
+                vm.set(key, value);
+              }
+            }
+          }
+        } else {
+          // No saved version maps — rebuild from heap (all rows visible)
+          for (const [name, heap] of heaps) {
+            const vm = versionMaps.get(name);
+            for (const { pageId, slotIdx } of heap.scan()) {
+              vm.set(`${pageId}:${slotIdx}`, { xmin: 0, xmax: 0 });
+            }
           }
         }
         // Rebuild indexes from recovered heap data
@@ -111,7 +133,13 @@ export class TransactionalDatabase {
     if (existsSync(mvccStatePath)) {
       try {
         const state = JSON.parse(readFileSync(mvccStatePath, 'utf8'));
-        mvcc.nextTxId = state.nextTxId || 1;
+        mvcc._nextTx = state.nextTxId || 1;
+        if (state.committedTxns) {
+          if (!mvcc.committedTxns) mvcc.committedTxns = new Set();
+          for (const txId of state.committedTxns) {
+            mvcc.committedTxns.add(txId);
+          }
+        }
       } catch (e) { /* best effort */ }
     }
 
@@ -620,8 +648,15 @@ export class TransactionalDatabase {
   }
 
   _saveMvccState() {
+    // Save version maps along with MVCC state
+    const versionMapsData = {};
+    for (const [name, vm] of this._versionMaps) {
+      versionMapsData[name] = [...vm.entries()].map(([k, v]) => [k, v]);
+    }
     writeFileSync(this._mvccStatePath, JSON.stringify({
-      nextTxId: this._mvcc.nextTxId
+      nextTxId: this._mvcc.nextTxId,
+      committedTxns: this._mvcc.committedTxns ? [...this._mvcc.committedTxns] : [],
+      versionMaps: versionMapsData
     }), 'utf8');
   }
 }
