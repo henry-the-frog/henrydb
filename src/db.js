@@ -452,6 +452,8 @@ export class Database {
       case 'DECLARE_CURSOR': return this._declareCursor(ast);
       case 'FETCH': return this._fetch(ast);
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
+      case 'CREATE_SEQUENCE': return this._createSequence(ast);
+      case 'DROP_SEQUENCE': return this._dropSequence(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -1077,7 +1079,11 @@ export class Database {
     const returnedRows = [];
     
     for (const row of ast.rows) {
-      const values = row.map(r => r.value);
+      const values = row.map(r => {
+        if (r.type === 'literal') return r.value;
+        if (r.type === 'function_call') return this._evalFunction(r.func, r.args, {});
+        return this._evalValue(r, {});
+      });
       
       // INSERT OR REPLACE: delete conflicting row if exists
       if (ast.orReplace) {
@@ -2816,6 +2822,74 @@ export class Database {
     }
     
     return { type: 'OK', message: `ROLLBACK TO SAVEPOINT "${name}"` };
+  }
+
+  // CURSOR support
+
+  // SEQUENCE support
+  _createSequence(ast) {
+    if (!this._sequences) this._sequences = new Map();
+    const name = ast.name.toLowerCase();
+    if (this._sequences.has(name)) {
+      throw new Error(`Sequence "${name}" already exists`);
+    }
+    this._sequences.set(name, {
+      current: ast.options.start - ast.options.increment, // Will be incremented on first nextval
+      start: ast.options.start,
+      increment: ast.options.increment,
+      minValue: ast.options.minValue,
+      maxValue: ast.options.maxValue,
+      cycle: ast.options.cycle,
+      called: false,
+    });
+    return { type: 'OK', message: `CREATE SEQUENCE "${name}"` };
+  }
+
+  _dropSequence(ast) {
+    if (!this._sequences) this._sequences = new Map();
+    const name = ast.name.toLowerCase();
+    if (!this._sequences.has(name) && !ast.ifExists) {
+      throw new Error(`Sequence "${name}" does not exist`);
+    }
+    this._sequences.delete(name);
+    return { type: 'OK', message: `DROP SEQUENCE "${name}"` };
+  }
+
+  _nextval(seqName) {
+    if (!this._sequences) this._sequences = new Map();
+    const name = seqName.toLowerCase();
+    const seq = this._sequences.get(name);
+    if (!seq) throw new Error(`Sequence "${name}" does not exist`);
+    
+    seq.current += seq.increment;
+    if (seq.current > seq.maxValue) {
+      if (seq.cycle) {
+        seq.current = seq.minValue;
+      } else {
+        throw new Error(`Sequence "${name}" reached maximum value`);
+      }
+    }
+    seq.called = true;
+    return seq.current;
+  }
+
+  _currval(seqName) {
+    if (!this._sequences) this._sequences = new Map();
+    const name = seqName.toLowerCase();
+    const seq = this._sequences.get(name);
+    if (!seq) throw new Error(`Sequence "${name}" does not exist`);
+    if (!seq.called) throw new Error(`currval of sequence "${name}" is not yet defined in this session`);
+    return seq.current;
+  }
+
+  _setval(seqName, value) {
+    if (!this._sequences) this._sequences = new Map();
+    const name = seqName.toLowerCase();
+    const seq = this._sequences.get(name);
+    if (!seq) throw new Error(`Sequence "${name}" does not exist`);
+    seq.current = value;
+    seq.called = true;
+    return value;
   }
 
   // CURSOR support
@@ -4735,6 +4809,13 @@ export class Database {
 
   _evalFunction(func, args, row) {
     switch (func) {
+      case 'NEXTVAL': { const v = this._evalValue(args[0], row); return this._nextval(String(v)); }
+      case 'CURRVAL': { const v = this._evalValue(args[0], row); return this._currval(String(v)); }
+      case 'SETVAL': { const v = this._evalValue(args[0], row); const n = this._evalValue(args[1], row); return this._setval(String(v), Number(n)); }
+      case 'COALESCE': { for (const arg of args) { const v = this._evalValue(arg, row); if (v !== null && v !== undefined) return v; } return null; }
+      case 'NULLIF': { const a = this._evalValue(args[0], row); const b = this._evalValue(args[1], row); return a === b ? null : a; }
+      case 'GREATEST': { return Math.max(...args.map(a => this._evalValue(a, row)).filter(v => v !== null)); }
+      case 'LEAST': { return Math.min(...args.map(a => this._evalValue(a, row)).filter(v => v !== null)); }
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
       case 'LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }

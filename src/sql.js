@@ -21,6 +21,8 @@ const KEYWORDS = new Set([
   'SHOW', 'TABLES', 'COLUMNS',
   'TRUNCATE', 'RENAME', 'DESCRIBE',
   'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT', 'SAVEPOINT', 'RELEASE',
+  'SEQUENCE', 'START', 'INCREMENT', 'MINVALUE', 'MAXVALUE', 'CYCLE',
+  'NEXTVAL', 'CURRVAL', 'SETVAL', 'TRUNCATE',
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
@@ -606,6 +608,23 @@ export function parse(sql) {
       return { type: 'scalar_subquery', subquery, alias };
     }
 
+    // Check for general function call: FUNC(args)
+    if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
+      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH',
+      'NEXTVAL', 'CURRVAL', 'SETVAL'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
+      const func = advance().value;
+      expect('(');
+      const args = [];
+      if (peek().type !== ')' && peek().value !== ')') {
+        args.push(parseExpr());
+        while (match(',')) args.push(parseExpr());
+      }
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'function', func, args, alias: alias || `${func}(...)` };
+    }
+
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
     if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUP_CONCAT', 'STRING_AGG', 'ARRAY_AGG', 'JSON_AGG', 'BOOL_AND', 'BOOL_OR'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
@@ -1117,7 +1136,8 @@ export function parse(sql) {
 
     // Built-in string/null functions
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
-      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH'].includes(t.value)) {
+      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH',
+      'NEXTVAL', 'CURRVAL', 'SETVAL'].includes(t.value)) {
       const func = advance().value;
       expect('(');
       const args = [];
@@ -1538,6 +1558,21 @@ export function parse(sql) {
     }
     if (isKeyword('INDEX')) return parseCreateIndex(unique);
     if (isKeyword('VIEW')) return parseCreateView();
+    if (isKeyword('SEQUENCE')) {
+      advance(); // SEQUENCE
+      const name = (advance().originalValue || tokens[pos-1].value);
+      const options = { start: 1, increment: 1, minValue: 1, maxValue: Number.MAX_SAFE_INTEGER, cycle: false };
+      while (peek().type !== 'EOF' && peek().type !== ';') {
+        if (isKeyword('START')) { advance(); if (isKeyword('WITH')) advance(); options.start = parseInt(advance().value, 10); }
+        else if (isKeyword('INCREMENT')) { advance(); if (isKeyword('BY')) advance(); options.increment = parseInt(advance().value, 10); }
+        else if (isKeyword('MINVALUE')) { advance(); options.minValue = parseInt(advance().value, 10); }
+        else if (isKeyword('MAXVALUE')) { advance(); options.maxValue = parseInt(advance().value, 10); }
+        else if (isKeyword('CYCLE')) { advance(); options.cycle = true; }
+        else if (peek().type === 'IDENT' && peek().value === 'NO') { advance(); if (isKeyword('CYCLE')) { advance(); options.cycle = false; } else if (isKeyword('MINVALUE')) advance(); else if (isKeyword('MAXVALUE')) advance(); }
+        else advance();
+      }
+      return { type: 'CREATE_SEQUENCE', name, options };
+    }
     if (isKeyword('TRIGGER')) {
       advance(); // TRIGGER
       const name = advance().value;
@@ -1787,6 +1822,13 @@ export function parse(sql) {
       advance();
       const name = advance().value;
       return { type: 'DROP_VIEW', name };
+    }
+    if (isKeyword('SEQUENCE')) {
+      advance();
+      let ifExists = false;
+      if (isKeyword('IF')) { advance(); if (isKeyword('EXISTS')) advance(); ifExists = true; }
+      const name = (advance().originalValue || tokens[pos-1].value);
+      return { type: 'DROP_SEQUENCE', name, ifExists };
     }
     expect('KEYWORD', 'TABLE');
     let ifExists = false;
