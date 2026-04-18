@@ -1234,9 +1234,12 @@
     {
       "id": "T114",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push and test sweep",
-      "started": "2026-04-18T18:29:34.877Z"
+      "started": "2026-04-18T18:29:34.877Z",
+      "completed": "2026-04-18T18:33:37.108Z",
+      "duration_ms": 600000,
+      "summary": "Pushed PG wire protocol + UNIQUE constraint fix. Bug found: index-based constraint check didnt verify rows existed in heap, causing false UNIQUE violations after HOT update+DELETE. Fixed by adding heap.get() liveness check. 139/139 pass across 10 test files."
     }
   ],
   "focusProjects": [
