@@ -3507,16 +3507,31 @@
     {
       "id": "T326",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix committed rows lost during full redo recovery — don't truncate file, clear pages in-place",
       "project": "henrydb",
-      "started": "2026-04-18T03:14:05.756Z"
+      "started": "2026-04-18T03:14:05.756Z",
+      "completed": "2026-04-18T03:21:49.009Z",
+      "duration_ms": 900000,
+      "summary": "Fixed pre-existing bug: committed rows lost during recovery with uncommitted tx. Hybrid recovery: if pages have data, delete uncommitted in-place; if empty, full redo from WAL. 130/134 pass, 0 failures, 4 expected skips."
     },
     {
       "id": "T327",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Session end: commit, push, final log"
+      "status": "done",
+      "task": "Session end: commit, push, final log",
+      "started": "2026-04-18T03:21:57.958Z",
+      "completed": "2026-04-18T03:22:08.822Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed. Continuing session."
+    },
+    {
+      "id": "T328",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add generated column DDL lifecycle spec to test harness",
+      "project": "henrydb",
+      "started": "2026-04-18T03:22:29.427Z"
     }
   ],
   "focusProjects": [
@@ -4908,6 +4923,10 @@
     {
       "time": "2026-04-18T03:13:59.204Z",
       "msg": "Added T327 (MAINTAIN) after T326: Session end: commit, push, final log"
+    },
+    {
+      "time": "2026-04-18T03:22:24.731Z",
+      "msg": "Added T328 (BUILD) after end: Add generated column DDL lifecycle spec to test harness"
     }
   ]
 }

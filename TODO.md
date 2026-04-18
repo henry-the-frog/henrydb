@@ -4,7 +4,7 @@
 
 ### Normal
 - HenryDB: secondary index + MVCC snapshot after UPDATE (needs HOT chains)
-- HenryDB: committed rows lost after close with uncommitted tx — full redo recovery truncates file, later insert goes to page 1 but only page 0 survives (pre-existing, found Apr 17)
+- HenryDB: fix file-wal.test.js "uncommitted transactions are NOT recovered" test — test double-logs WAL records (heap.insert auto-logs + manual wal.appendInsert). Need to update test to not double-log.
 
 ### Low
 - RISC-V: general tail call optimization (closures need special handling)

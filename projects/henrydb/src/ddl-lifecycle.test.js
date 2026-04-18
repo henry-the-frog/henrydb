@@ -544,3 +544,32 @@ ddlLifecycleTests({
   },
   skipConcurrency: true, // Matview creation involves table creation
 });
+
+// 11. GENERATED COLUMN (via CREATE TABLE)
+ddlLifecycleTests({
+  name: 'CREATE TABLE WITH GENERATED COLUMN',
+  setup: (db) => {},
+  ddl: (db) => {
+    db.execute('CREATE TABLE gen_t (a INT, b INT, c INT GENERATED ALWAYS AS (a + b) STORED)');
+  },
+  verify: (db) => {
+    // Table should exist; inserting should auto-compute c
+    db.execute('INSERT INTO gen_t (a, b) VALUES (10, 20)');
+    const r = rows(db.execute('SELECT * FROM gen_t'));
+    assert.strictEqual(r.length, 1);
+    assert.strictEqual(r[0].c, 30, 'Generated column should compute a+b=30');
+    // Clean up for re-verify
+    db.execute('DELETE FROM gen_t');
+  },
+  dmlAfterDDL: (db) => {
+    db.execute('INSERT INTO gen_t (a, b) VALUES (3, 7)');
+    db.execute('INSERT INTO gen_t (a, b) VALUES (5, 5)');
+  },
+  verifyWithDML: (db) => {
+    const r = rows(db.execute('SELECT * FROM gen_t ORDER BY a'));
+    assert.strictEqual(r.length, 2);
+    assert.strictEqual(r[0].c, 10); // 3+7
+    assert.strictEqual(r[1].c, 10); // 5+5
+  },
+  skipConcurrency: true, // Complex DDL, skip concurrency tests
+});
