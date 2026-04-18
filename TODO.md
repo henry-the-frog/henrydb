@@ -16,3 +16,4 @@
 - HenryDB: UPSERT (INSERT OR REPLACE / ON CONFLICT) — only missing SQL feature
 - HenryDB: aggregates in scalar subqueries in SELECT list (parser limitation)
 - HenryDB: atomic checkpoint (current multi-step leaves inconsistent states)
+- Neural-net: matrix-depth.test.js -0 vs 0 strict equality, learning tests need seed pinning
