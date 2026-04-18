@@ -220,20 +220,61 @@ function getColumns(result, db, sql) {
         return table.schema.map(c => ({ name: c.name, type: c.type || 'TEXT' }));
       }
     }
-    // SELECT col1, col2 FROM table — try to match column names
-    const colMatch = sql.match(/SELECT\s+(.+?)\s+FROM\s+(\w+)/i);
-    if (colMatch) {
-      const table = db.tables.get(colMatch[2]) || db.tables.get(colMatch[2].toLowerCase());
-      if (table && table.schema) {
-        const cols = colMatch[1].split(',').map(c => c.trim());
-        return cols.map(c => {
-          const schemaCol = table.schema.find(s => s.name === c || s.name === c.toLowerCase());
-          return { name: c, type: schemaCol?.type || 'TEXT' };
-        });
+    // Use parseSelectColumns for expressions, aliases, functions
+    const columnNames = parseSelectColumns(sql);
+    if (columnNames.length > 0) {
+      // Try to find table and infer types
+      const tableMatch = sql.match(/FROM\s+(\w+)/i);
+      let schema = null;
+      if (tableMatch && db.tables) {
+        const table = db.tables.get(tableMatch[1]) || db.tables.get(tableMatch[1].toLowerCase());
+        if (table) schema = table.schema;
       }
+      return columnNames.map(n => {
+        if (schema) {
+          const col = schema.find(c => c.name === n || c.name === n.toLowerCase());
+          if (col) return { name: n, type: col.type || 'TEXT' };
+        }
+        return { name: n, type: 'TEXT' };
+      });
     }
   }
   return [];
+}
+
+// --- Parse column names/aliases from SELECT statement ---
+function parseSelectColumns(sql) {
+  // Extract: SELECT col1, col2 as alias, func(x) as name FROM ...
+  const match = sql.match(/SELECT\s+(.*?)\s+FROM\s/i);
+  if (!match) return [];
+  
+  const selectList = match[1];
+  if (selectList.trim() === '*') return []; // Can't determine without table
+  
+  const columns = [];
+  // Split by commas (handle nested parentheses)
+  let depth = 0, start = 0;
+  for (let i = 0; i <= selectList.length; i++) {
+    if (i < selectList.length && selectList[i] === '(') depth++;
+    if (i < selectList.length && selectList[i] === ')') depth--;
+    if ((i === selectList.length || (selectList[i] === ',' && depth === 0))) {
+      const part = selectList.slice(start, i).trim();
+      start = i + 1;
+      
+      // Check for AS alias
+      const asMatch = part.match(/\bAS\s+(\w+)\s*$/i);
+      if (asMatch) {
+        columns.push(asMatch[1]);
+      } else {
+        // Use the last identifier (column name or function result)
+        const idMatch = part.match(/(\w+)\s*$/);
+        if (idMatch) {
+          columns.push(idMatch[1]);
+        }
+      }
+    }
+  }
+  return columns;
 }
 
 // --- pg_catalog query interceptor for psql/client compatibility ---
@@ -543,7 +584,7 @@ function handleConnection(socket, db) {
         }
       }
 
-      portals.set(portalName, { sql: boundSql, stmt });
+      portals.set(portalName, { sql: boundSql, stmt, rowDescSent: false });
       socket.write(bindComplete());
     } catch (err) {
       socket.write(errorResponse('ERROR', '42000', 'Bind error: ' + err.message));
@@ -592,16 +633,11 @@ function handleConnection(socket, db) {
             if (columns.length > 0) {
               socket.write(rowDescription(columns));
             } else {
-              // Fallback: run without LIMIT 0 to see if we get column info
-              try {
-                const fullResult = db.execute(testSql);
-                const fullCols = getColumns(fullResult, db);
-                if (fullCols.length > 0) {
-                  socket.write(rowDescription(fullCols));
-                } else {
-                  socket.write(noData());
-                }
-              } catch {
+              // Fallback: parse column aliases from SELECT list
+              const columnNames = parseSelectColumns(stmt.sql);
+              if (columnNames.length > 0) {
+                socket.write(rowDescription(columnNames.map(n => ({ name: n, type: 'TEXT' }))));
+              } else {
                 socket.write(noData());
               }
             }
@@ -629,11 +665,24 @@ function handleConnection(socket, db) {
             const columns = getColumns(testResult, db, portal.sql);
             if (columns.length > 0) {
               socket.write(rowDescription(columns));
+              portal.rowDescSent = true;
+            } else {
+              const columnNames = parseSelectColumns(portal.sql);
+              if (columnNames.length > 0) {
+                socket.write(rowDescription(columnNames.map(n => ({ name: n, type: 'TEXT' }))));
+                portal.rowDescSent = true;
+              } else {
+                socket.write(noData());
+              }
+            }
+          } catch {
+            const columnNames = parseSelectColumns(portal.sql);
+            if (columnNames.length > 0) {
+              socket.write(rowDescription(columnNames.map(n => ({ name: n, type: 'TEXT' }))));
+              portal.rowDescSent = true;
             } else {
               socket.write(noData());
             }
-          } catch {
-            socket.write(noData());
           }
         } else {
           socket.write(noData());
@@ -671,8 +720,11 @@ function handleConnection(socket, db) {
       const tag = getCommandTag(sql, result);
 
       if (result.rows && result.rows.length > 0) {
-        const columns = getColumns(result, db);
-        // Don't send RowDescription here — it was sent during Describe
+        const columns = getColumns(result, db, sql);
+        // Send RowDescription if not already sent during Describe
+        if (!portal.rowDescSent && columns.length > 0) {
+          socket.write(rowDescription(columns));
+        }
         for (const row of result.rows) {
           const values = columns.map(c => {
             const val = row[c.name];
