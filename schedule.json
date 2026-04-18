@@ -275,16 +275,20 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "Write HOT chains + MVCC tests: HOT update visibility across concurrent transactions, snapshot isolation through HOT chains",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T25",
-      "started": "2026-04-18T14:52:05.155Z"
+      "started": "2026-04-18T14:52:05.155Z",
+      "completed": "2026-04-18T14:53:04.645Z",
+      "duration_ms": 600000,
+      "summary": "7 HOT+MVCC integration tests all pass. Snapshot isolation through HOT chains works correctly: older snapshots see old versions, concurrent updates preserved, rollback restores visibility."
     },
     {
       "id": "T28",
       "mode": "BUILD",
       "task": "Write HOT chains + VACUUM test: chain pruning after all old versions are invisible",
-      "status": "upcoming",
-      "plan_ref": "T25"
+      "status": "in-progress",
+      "plan_ref": "T25",
+      "started": "2026-04-18T14:53:25.518Z"
     },
     {
       "id": "T26",
