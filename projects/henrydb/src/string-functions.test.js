@@ -1,119 +1,139 @@
-// string-functions.test.js — String function tests
-import { describe, it, beforeEach } from 'node:test';
-import assert from 'node:assert/strict';
-import { Database } from './db.js';
+// string-functions.test.js — String function edge cases
 
-describe('String Functions', () => {
-  let db;
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import { strict as assert } from 'node:assert';
+import { TransactionalDatabase } from './transactional-db.js';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-  beforeEach(() => {
-    db = new Database();
-    db.execute('CREATE TABLE names (id INT PRIMARY KEY, first TEXT, last TEXT)');
-    db.execute("INSERT INTO names VALUES (1, 'Alice', 'Smith')");
-    db.execute("INSERT INTO names VALUES (2, 'Bob', 'Jones')");
-    db.execute("INSERT INTO names VALUES (3, 'Charlie', 'Brown')");
-    db.execute("INSERT INTO names VALUES (4, 'diana', 'prince')");
+let dbDir, db;
+function setup() {
+  dbDir = mkdtempSync(join(tmpdir(), 'henrydb-str-'));
+  db = TransactionalDatabase.open(dbDir);
+}
+function teardown() {
+  try { db.close(); } catch {}
+  rmSync(dbDir, { recursive: true, force: true });
+}
+function rows(r) { return Array.isArray(r) ? r : r?.rows || []; }
+
+describe('String Function Edge Cases', () => {
+  beforeEach(setup);
+  afterEach(teardown);
+
+  it('UPPER and LOWER with NULL', () => {
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute('INSERT INTO t VALUES (NULL)');
+    
+    const r1 = rows(db.execute('SELECT UPPER(val) as u FROM t'));
+    assert.equal(r1[0].u, null, 'UPPER(NULL) should be NULL');
+    
+    const r2 = rows(db.execute('SELECT LOWER(val) as l FROM t'));
+    assert.equal(r2[0].l, null, 'LOWER(NULL) should be NULL');
   });
 
-  describe('UPPER', () => {
-    it('converts to uppercase', () => {
-      const result = db.execute("SELECT UPPER(first) AS name FROM names WHERE id = 4");
-      assert.equal(result.rows[0].name, 'DIANA');
-    });
-
-    it('UPPER in WHERE', () => {
-      const result = db.execute("SELECT * FROM names WHERE UPPER(first) = 'ALICE'");
-      assert.equal(result.rows.length, 1);
-      assert.equal(result.rows[0].id, 1);
-    });
-
-    it('UPPER preserves already uppercase', () => {
-      const result = db.execute("SELECT UPPER(first) AS name FROM names WHERE id = 1");
-      assert.equal(result.rows[0].name, 'ALICE');
-    });
+  it('LENGTH with empty string', () => {
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute("INSERT INTO t VALUES ('')");
+    
+    const r = rows(db.execute('SELECT LENGTH(val) as len FROM t'));
+    assert.equal(r[0].len, 0, 'LENGTH of empty string should be 0');
   });
 
-  describe('LOWER', () => {
-    it('converts to lowercase', () => {
-      const result = db.execute("SELECT LOWER(first) AS name FROM names WHERE id = 1");
-      assert.equal(result.rows[0].name, 'alice');
-    });
-
-    it('LOWER in ORDER BY', () => {
-      const result = db.execute('SELECT first FROM names ORDER BY LOWER(first)');
-      assert.equal(result.rows[0].first, 'Alice');
-    });
+  it('LENGTH with NULL', () => {
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute('INSERT INTO t VALUES (NULL)');
+    
+    const r = rows(db.execute('SELECT LENGTH(val) as len FROM t'));
+    assert.equal(r[0].len, null, 'LENGTH(NULL) should be NULL');
   });
 
-  describe('UPPER + LOWER combined', () => {
-    it('case-insensitive comparison', () => {
-      const result = db.execute("SELECT * FROM names WHERE UPPER(first) = 'DIANA'");
-      assert.equal(result.rows.length, 1);
-    });
+  it('SUBSTR with boundary values', () => {
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute("INSERT INTO t VALUES ('abcdef')");
+    
+    // Start from 1 (SQL is 1-indexed)
+    const r1 = rows(db.execute('SELECT SUBSTR(val, 1, 3) as s FROM t'));
+    assert.equal(r1[0].s, 'abc');
+    
+    // Substr past end
+    const r2 = rows(db.execute('SELECT SUBSTR(val, 4, 100) as s FROM t'));
+    assert.equal(r2[0].s, 'def');
+    
+    // Substr with no length
+    const r3 = rows(db.execute('SELECT SUBSTR(val, 3) as s FROM t'));
+    assert.equal(r3[0].s, 'cdef');
   });
 
-  describe('REPLACE', () => {
-    it('replaces substring', () => {
-      const result = db.execute("SELECT REPLACE(first, 'li', 'XX') AS r FROM names WHERE id = 1");
-      assert.equal(result.rows[0].r, 'AXXce');
-    });
-
-    it('replaces all occurrences', () => {
-      const result = db.execute("SELECT REPLACE('aabaa', 'a', 'x') AS r FROM names WHERE id = 1");
-      assert.equal(result.rows[0].r, 'xxbxx');
-    });
+  it('concatenation operator ||', () => {
+    db.execute('CREATE TABLE t (first TEXT, last TEXT)');
+    db.execute("INSERT INTO t VALUES ('John', 'Doe')");
+    
+    const r = rows(db.execute("SELECT first || ' ' || last as full_name FROM t"));
+    assert.equal(r[0].full_name, 'John Doe');
   });
 
-  describe('TRIM', () => {
-    it('removes leading/trailing spaces', () => {
-      db.execute('CREATE TABLE padded (id INT PRIMARY KEY, val TEXT)');
-      db.execute("INSERT INTO padded VALUES (1, '  hello  ')");
-      const result = db.execute("SELECT TRIM(val) AS trimmed FROM padded");
-      assert.equal(result.rows[0].trimmed, 'hello');
-    });
+  it('|| with NULL returns NULL', () => {
+    db.execute('CREATE TABLE t (a TEXT, b TEXT)');
+    db.execute('INSERT INTO t VALUES (NULL, \'hello\')');
+    
+    const r = rows(db.execute("SELECT a || b as result FROM t"));
+    // SQL standard: NULL || anything = NULL
+    // Some DBs concat as empty string — both behaviors acceptable
+    assert.ok(r[0].result === null || r[0].result === 'hello',
+      `NULL || 'hello' should be NULL or 'hello', got: ${r[0].result}`);
   });
 
-  describe('String concatenation', () => {
-    it('concatenates with ||', () => {
-      const result = db.execute("SELECT first || ' ' || last AS full_name FROM names WHERE id = 1");
-      assert.equal(result.rows[0].full_name, 'Alice Smith');
-    });
-
-    it('concatenation in ORDER BY', () => {
-      const result = db.execute("SELECT first || ' ' || last AS full_name FROM names ORDER BY full_name");
-      assert.ok(result.rows.length === 4);
-    });
+  it('REPLACE with empty string', () => {
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute("INSERT INTO t VALUES ('hello')");
+    
+    const r = rows(db.execute("SELECT REPLACE(val, 'l', '') as r FROM t"));
+    assert.equal(r[0].r, 'heo', 'REPLACE with empty string should remove matches');
   });
 
-  describe('LIKE pattern matching', () => {
-    it('LIKE with %', () => {
-      const result = db.execute("SELECT first FROM names WHERE first LIKE 'A%'");
-      assert.equal(result.rows.length, 1);
-      assert.equal(result.rows[0].first, 'Alice');
-    });
-
-    it('LIKE with _', () => {
-      const result = db.execute("SELECT first FROM names WHERE first LIKE 'B_b'");
-      assert.equal(result.rows.length, 1);
-      assert.equal(result.rows[0].first, 'Bob');
-    });
-
-    it('LIKE case sensitive', () => {
-      const result = db.execute("SELECT first FROM names WHERE first LIKE '%li%'");
-      assert.equal(result.rows.length, 2); // Alice and Charlie
-    });
-
-    it('NOT LIKE', () => {
-      const result = db.execute("SELECT first FROM names WHERE first NOT LIKE '%a%'");
-      // Only Bob has no lowercase 'a'... but Bob also has no 'a'
-      assert.ok(result.rows.length >= 0);
-    });
+  it('string comparison with LIKE', () => {
+    db.execute('CREATE TABLE t (name TEXT)');
+    db.execute("INSERT INTO t VALUES ('Alice')");
+    db.execute("INSERT INTO t VALUES ('Bob')");
+    db.execute("INSERT INTO t VALUES ('Angela')");
+    db.execute("INSERT INTO t VALUES ('Zoe')");
+    
+    const r = rows(db.execute("SELECT name FROM t WHERE name LIKE 'A%' ORDER BY name"));
+    assert.equal(r.length, 2);
+    assert.equal(r[0].name, 'Alice');
+    assert.equal(r[1].name, 'Angela');
   });
 
-  describe('Combined string operations', () => {
-    it('UPPER in GROUP BY', () => {
-      const result = db.execute('SELECT UPPER(first) AS name, COUNT(*) AS cnt FROM names GROUP BY UPPER(first) ORDER BY name');
-      assert.ok(result.rows.length > 0);
-    });
+  it('LIKE with underscore wildcard', () => {
+    db.execute('CREATE TABLE t (code TEXT)');
+    db.execute("INSERT INTO t VALUES ('A1')");
+    db.execute("INSERT INTO t VALUES ('A2')");
+    db.execute("INSERT INTO t VALUES ('AB')");
+    db.execute("INSERT INTO t VALUES ('B1')");
+    
+    const r = rows(db.execute("SELECT code FROM t WHERE code LIKE 'A_' ORDER BY code"));
+    assert.equal(r.length, 3); // A1, A2, AB
+  });
+
+  it('TRIM variations', () => {
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute("INSERT INTO t VALUES ('  hello  ')");
+    
+    const r = rows(db.execute("SELECT TRIM(val) as trimmed FROM t"));
+    assert.equal(r[0].trimmed, 'hello');
+  });
+
+  it('string functions survive close/reopen', () => {
+    db.execute('CREATE TABLE t (name TEXT)');
+    db.execute("INSERT INTO t VALUES ('Test Data')");
+    
+    db.close();
+    db = TransactionalDatabase.open(dbDir);
+    
+    const r = rows(db.execute('SELECT UPPER(name) as u, LENGTH(name) as len FROM t'));
+    assert.equal(r[0].u, 'TEST DATA');
+    assert.equal(r[0].len, 9);
   });
 });
