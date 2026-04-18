@@ -10,6 +10,8 @@
 - **savepoint-physicalization.md** — xmax=-2 in-memory markers lost on recovery; must physicalize before durable storage. (uses: 1, created: 2026-04-13)
 - **ddl-wal-completeness.md** — 5 DDL bug families from positive allowlist rot; ALTER TABLE WAL fix (4 bugs, 2026-04-17), crash recovery architecture (3 phases). (uses: 2, created: 2026-04-13, updated: 2026-04-17)
 - **bug-patterns-2026-04-17.md** — Analysis of 14 bugs from depth day: 5 categories (layer boundary, recovery gaps, non-atomic checkpoint, parser context, incomplete features). DDL lifecycle test insight. (uses: 1, created: 2026-04-17)
+- **ddl-lifecycle-harness.md** — Design for DDL lifecycle test generator: 9 DDL types × 7 phases = 63 tests from ~200 lines. High-ROI infrastructure. (uses: 0, created: 2026-04-17)
+- **alter-table-backfill-bug.md** — Root cause: ALTER TABLE ADD COLUMN backfill uses page-level updateTuple() instead of MVCC-aware path. Causes duplicate tuples after UPDATE + checkpoint. (uses: 0, created: 2026-04-17)
 - **mvcc-strategies.md** — MVCC implementation comparison (Pavlo framework), version storage, GC, concurrency control. (uses: 1, created: 2026-04-10)
 - **buffer-pool-research.md** — Buffer pool manager design from CMU 15-445, LRU-K, clock sweep. (uses: 0, created: 2026-04-09)
 - **sqlite-architecture.md** — SQLite vs HenryDB architecture differences, query planner, bytecode. (uses: 1, created: 2026-04-09)
