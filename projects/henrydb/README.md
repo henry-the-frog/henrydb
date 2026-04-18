@@ -24,6 +24,23 @@ curl -X POST http://localhost:3000/query \
   -d '{"sql": "SELECT * FROM users"}'
 ```
 
+```bash
+# PostgreSQL wire protocol server (connect with psql or any PG client!)
+node src/pg-server.js --port 5433
+
+# In-memory mode (default)
+node src/pg-server.js --port 5433
+
+# Persistent mode (data survives restarts)
+node src/pg-server.js --port 5433 --dir ./data
+
+# Connect with pg npm client
+import pg from 'pg';
+const client = new pg.Client({ host: 'localhost', port: 5433 });
+await client.connect();
+const result = await client.query('SELECT * FROM users WHERE id = $1', [1]);
+```
+
 ## Features
 
 ### Core SQL
@@ -76,7 +93,8 @@ curl -X POST http://localhost:3000/query \
 
 ```
 ┌─────────────────────────────────┐
-│          HTTP Server            │  ← src/server.js (optional)
+│     PG Wire Protocol Server     │  ← src/pg-server.js (psql/pg compatible)
+│          HTTP Server            │  ← src/server.js (REST API)
 ├─────────────────────────────────┤
 │         SQL Parser              │  ← src/sql.js (2700+ lines)
 ├─────────────────────────────────┤
@@ -113,6 +131,18 @@ curl -X POST http://localhost:3000/query \
 │     Buffer Pool                 │  ← src/buffer-pool.js
 └─────────────────────────────────┘
 ```
+
+## PostgreSQL Wire Protocol
+
+Full PG wire protocol v3 implementation — connect with `psql`, `pg` npm client, or any PostgreSQL driver:
+
+- **Simple query protocol**: Direct SQL execution
+- **Extended query protocol**: Prepared statements, parameterized queries ($1, $2...)
+- **pg_catalog interceptor**: SET, SHOW, version(), current_database()
+- **Persistent mode**: `--dir ./data` flag for crash-safe storage
+- **Connection pooling**: Works with `pg.Pool` for concurrent connections
+- **Transaction state tracking**: Idle (I), In-Transaction (T), Error (E) indicators
+- **SSL negotiation**: Graceful refusal (sends 'N')
 
 ## HTTP API
 
