@@ -33,6 +33,9 @@ export class Database {
     this._mvccEnabled = !!options.mvcc;
     this._mvcc = this._mvccEnabled ? new MVCCManager() : null;
     this._currentTx = null;  // Current MVCC transaction
+    
+    // pg_stat_statements tracking
+    this._queryStats = new Map(); // normalized_query -> { query, calls, total_exec_time, min_exec_time, max_exec_time, rows }
   }
 
   /** Case-insensitive table lookup */
@@ -40,7 +43,18 @@ export class Database {
     return this.tables.get(name) || this.tables.get(name.toLowerCase()) || this.tables.get(name.toUpperCase());
   }
 
+  /** Normalize a SQL query for pg_stat_statements grouping: replace string and numeric literals with $? */
+  _normalizeQuery(sql) {
+    // Replace string literals (including escaped quotes)
+    let normalized = sql.replace(/'(?:[^']|'')*'/g, '$?');
+    // Replace numeric literals (integers and floats, but not identifiers)
+    normalized = normalized.replace(/\b\d+(?:\.\d+)?\b/g, '$?');
+    return normalized;
+  }
+
   execute(sql) {
+    const startTime = performance.now();
+    
     // Check plan cache first (only for SELECT)
     let ast = this._planCache.get(sql);
     if (!ast) {
@@ -50,7 +64,26 @@ export class Database {
         this._planCache.put(sql, ast);
       }
     }
-    return this.execute_ast(ast);
+    const result = this.execute_ast(ast);
+    
+    // Track query stats
+    const elapsed = performance.now() - startTime;
+    const normalized = this._normalizeQuery(sql);
+    const rowCount = result && result.rows ? result.rows.length : 
+                     result && result.changes !== undefined ? result.changes : 0;
+    
+    let stats = this._queryStats.get(normalized);
+    if (!stats) {
+      stats = { query: normalized, calls: 0, total_exec_time: 0, min_exec_time: Infinity, max_exec_time: 0, rows: 0 };
+      this._queryStats.set(normalized, stats);
+    }
+    stats.calls++;
+    stats.total_exec_time += elapsed;
+    stats.min_exec_time = Math.min(stats.min_exec_time, elapsed);
+    stats.max_exec_time = Math.max(stats.max_exec_time, elapsed);
+    stats.rows += rowCount;
+    
+    return result;
   }
 
   checkpoint() {
@@ -4574,6 +4607,26 @@ export class Database {
         return rows;
       }
 
+      case 'pg_stat_statements': {
+        const rows = [];
+        for (const [, stats] of this._queryStats) {
+          const row = {
+            query: stats.query,
+            calls: stats.calls,
+            total_exec_time: Math.round(stats.total_exec_time * 1000) / 1000,
+            mean_exec_time: stats.calls > 0 ? Math.round((stats.total_exec_time / stats.calls) * 1000) / 1000 : 0,
+            min_exec_time: stats.min_exec_time === Infinity ? 0 : Math.round(stats.min_exec_time * 1000) / 1000,
+            max_exec_time: Math.round(stats.max_exec_time * 1000) / 1000,
+            rows: stats.rows,
+          };
+          for (const [k, v] of Object.entries(row)) {
+            row[`pg_stat_statements.${k}`] = v;
+          }
+          rows.push(row);
+        }
+        return rows;
+      }
+
       default:
         return null;
     }
@@ -4930,6 +4983,7 @@ export class Database {
       case 'NEXTVAL': { const v = this._evalValue(args[0], row); return this._nextval(String(v)); }
       case 'CURRVAL': { const v = this._evalValue(args[0], row); return this._currval(String(v)); }
       case 'SETVAL': { const v = this._evalValue(args[0], row); const n = this._evalValue(args[1], row); return this._setval(String(v), Number(n)); }
+      case 'PG_STAT_STATEMENTS_RESET': { this._queryStats.clear(); return true; }
       case 'COALESCE': { for (const arg of args) { const v = this._evalValue(arg, row); if (v !== null && v !== undefined) return v; } return null; }
       case 'NULLIF': { const a = this._evalValue(args[0], row); const b = this._evalValue(args[1], row); return a === b ? null : a; }
       case 'GREATEST': { return Math.max(...args.map(a => this._evalValue(a, row)).filter(v => v !== null)); }

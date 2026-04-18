@@ -142,6 +142,7 @@ const SCALAR_FUNCTIONS = new Set([
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG',
   'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS',
   'REGEXP_REPLACE', 'REGEXP_MATCH', 'NEXTVAL', 'CURRVAL', 'SETVAL',
+  'PG_STAT_STATEMENTS_RESET',
 ]);
 
 export function parse(sql) {
@@ -636,6 +637,21 @@ export function parse(sql) {
     // Check for general function call: FUNC(args)
     if (peek().type === 'KEYWORD' && SCALAR_FUNCTIONS.has(peek().value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
+      expect('(');
+      const args = [];
+      if (peek().type !== ')' && peek().value !== ')') {
+        args.push(parseExpr());
+        while (match(',')) args.push(parseExpr());
+      }
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'function', func, args, alias: alias || `${func}(...)` };
+    }
+
+    // Check for identifier function call: ident(args) — e.g., pg_stat_statements_reset()
+    if (peek().type === 'IDENT' && tokens[pos + 1]?.type === '(') {
+      const func = advance().value.toUpperCase();
       expect('(');
       const args = [];
       if (peek().type !== ')' && peek().value !== ')') {
@@ -1183,7 +1199,21 @@ export function parse(sql) {
       return { type: 'aggregate_expr', func, arg, distinct };
     }
 
-    if (t.type === 'IDENT') { advance(); return { type: 'column_ref', name: t.value }; }
+    if (t.type === 'IDENT') {
+      // Check if this is a function call: identifier followed by (
+      if (tokens[pos + 1]?.type === '(') {
+        const func = advance().value.toUpperCase();
+        expect('(');
+        const args = [];
+        if (!match(')')) {
+          args.push(parseExpr());
+          while (match(',')) args.push(parseExpr());
+          expect(')');
+        }
+        return { type: 'function_call', func, args };
+      }
+      advance(); return { type: 'column_ref', name: t.value };
+    }
     // Allow keywords used as column names (e.g., column named "count")
     if (t.type === 'KEYWORD' && tokens[pos + 1]?.type !== '(') {
       advance();
