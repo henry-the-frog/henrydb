@@ -181,8 +181,10 @@ export class TransactionalDatabase {
         }
         
         // Phase 2: Per-heap DML recovery (INSERT/UPDATE/DELETE replay)
+        // Only replay records AFTER the last checkpoint — earlier records are already applied
+        const checkpointLsn = wal.lastCheckpointLsn || 0;
         for (const [name, heap] of heaps) {
-          recoverFromFileWAL(heap, wal);
+          recoverFromFileWAL(heap, wal, checkpointLsn);
         }
         // Rebuild version maps: all recovered rows are always-visible
         // Use xmin=1 (a "bootstrap" txId that's always committed)
@@ -366,6 +368,9 @@ export class TransactionalDatabase {
 
     // 5. Truncate WAL (all data is safely on disk)
     this._wal.truncate();
+    
+    // 6. Re-write checkpoint marker so recovery knows where to start
+    this._wal.checkpoint();
 
     return { walSizeBefore: walSize };
   }

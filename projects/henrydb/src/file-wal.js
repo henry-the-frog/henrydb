@@ -144,6 +144,7 @@ export class FileWAL {
     if (this._fd !== null && this._fd !== undefined) {
       ftruncateSync(this._fd, 0);
       this._flushedLsn = 0;
+      this._fileSize = 0;
       this._writeBuffer = [];
       this._pendingSync = false;
     }
@@ -284,8 +285,8 @@ export class FileWAL {
  * @param {FileWAL} wal
  * @returns {{ redone: number, skipped: number }}
  */
-export function recoverFromFileWAL(heap, wal) {
-  const allRecords = wal.readFromStable(0);
+export function recoverFromFileWAL(heap, wal, fromLsn = 0) {
+  const allRecords = wal.readFromStable(fromLsn);
   if (allRecords.length === 0) return { redone: 0, skipped: 0, committedTxns: 0 };
   
   // Phase 0: Build table name alias map from DDL rename records

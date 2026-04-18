@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-17T23:50:20.053Z",
+  "generated": "2026-04-18T00:33:01.031Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git commit+push, knowledge capture",
-    "startedAt": "2026-04-17T23:50:20.053Z",
-    "taskId": "T269"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "Fix checkpoint boundary: recoverFromFileWAL should read from lastCheckpointLsn, DDL replay reads all. Write test for UPDATE after ALTER + checkpoint + crash.",
+    "completedAt": "2026-04-18T00:33:01.031Z",
+    "taskId": "T280",
+    "summary": "Partial fix: (1) Fixed FileWAL.truncate() not resetting _fileSize — post-checkpoint records were unreadable. (2) Added checkpoint marker re-write after truncate so recovery knows the checkpoint LSN. (3) Per-heap recovery now reads from lastCheckpointLsn. BUT found deeper bug: ALTER TABLE backfill creates duplicate tuples in the data file — in-place updateTuple + new INSERT from UPDATE both survive checkpoint. This is a heap/buffer-pool interaction bug, not a WAL issue. Filed as TODO.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-17",
@@ -7086,48 +7088,99 @@
       {
         "id": "T267",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: WAL-log ALTER TABLE operations to prevent data loss on crash for added/dropped/renamed columns",
         "task": null,
-        "started": "2026-04-17T23:33:30.161Z"
+        "started": "2026-04-17T23:33:30.161Z",
+        "completed": "2026-04-17T23:34:39.801Z",
+        "duration_ms": 120000,
+        "summary": "Root cause: logDDL writes records without txId, recoverFromWAL groups by txId and only replays committed txs — txId=undefined never gets committed so DDL records are silently dropped. Fix: replay txId-less DDL/DROP_TABLE/TRUNCATE records directly. Test plan: 8+ tests."
       },
       {
         "id": "T271",
         "mode": "BUILD",
         "task": "Fix recoverFromWAL to replay txId-less DDL records (ALTER TABLE, CREATE INDEX, DROP INDEX) — they are logged but never replayed because they have no txId and thus never appear in committedTxs. Write comprehensive tests covering: ALTER ADD COLUMN + data recovery, ALTER DROP COLUMN recovery, ALTER RENAME COLUMN recovery, RENAME TABLE recovery, multiple ALTER in sequence, ALTER inside explicit transaction, mix of DDL and DML recovery",
-        "status": "upcoming",
-        "plan_ref": "T267"
+        "status": "done",
+        "plan_ref": "T267",
+        "started": "2026-04-17T23:34:47.508Z",
+        "completed": "2026-04-17T23:49:54.577Z",
+        "duration_ms": 900000,
+        "summary": "Fixed ALTER TABLE WAL recovery. 4 bugs found: (1) FileWAL lacked logDDL method, (2) inner Database WAL had no logDDL route, (3) DDL records with txId=0 treated as uncommitted during recovery, (4) RENAME TABLE orphaned heap files and broke table name matching. Also fixed: catalog not updated after ALTER, ADD_COLUMN didn't extract default from object AST. 12 new tests, 90 existing tests passing."
       },
       {
         "id": "T268",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-17T23:50:08.204Z",
+        "completed": "2026-04-17T23:50:08.353Z",
+        "duration_ms": 0,
+        "summary": "Placeholder BUILD — actual work done in T271."
       },
       {
         "id": "T269",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, knowledge capture"
+        "status": "done",
+        "task": "Git commit+push, knowledge capture",
+        "started": "2026-04-17T23:50:20.016Z",
+        "completed": "2026-04-17T23:51:27.375Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, knowledge captured in scratch/ddl-wal-completeness.md (updated with 4-bug fix details), TODO.md cleaned, daily log updated with learning capture."
       },
       {
         "id": "T270",
         "mode": "THINK",
+        "status": "done",
+        "task": "Reflect on ALTER TABLE WAL work, decide next focus for remaining time",
+        "started": "2026-04-17T23:51:34.881Z",
+        "completed": "2026-04-17T23:51:53.384Z",
+        "duration_ms": 60000,
+        "summary": "Reflected: 4-bug ALTER TABLE fix was genuine depth work. ~2 hours remain. Next: comprehensive HenryDB stress test sweep to validate no regressions, then neural-net mixed precision audit as stretch."
+      },
+      {
+        "id": "T272",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "HenryDB full test suite sweep — run ALL test files, triage failures, fix or file",
+        "started": "2026-04-17T23:52:06.334Z",
+        "completed": "2026-04-18T00:10:55.813Z",
+        "duration_ms": 600000,
+        "summary": "Full HenryDB test sweep: 673 tests across WAL/DDL/ALTER/ACID/transaction/MVCC/isolation/concurrent/join/aggregate/subquery/index/window/stress. 672 pass, 1 pre-existing PG backend test failure (unrelated). Zero regressions from ALTER TABLE WAL fix."
+      },
+      {
+        "id": "T273",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Neural-net mixed precision / numerical stability audit",
+        "task": null,
+        "started": "2026-04-18T00:11:03.731Z"
+      },
+      {
+        "id": "T275",
+        "mode": "BUILD",
+        "task": "Write numerical stability stress tests for: (1) BatchNorm with near-zero variance, single-sample batch, extreme inputs (2) Adam optimizer with extreme gradients, near-zero gradients, NaN gradients, very many steps (3) Attention with extreme Q/K values, very long sequences, scaled dot-product overflow (4) Gradient clipping interaction with NaN/Inf. Run tests, find bugs, fix.",
         "status": "upcoming",
-        "task": "Reflect on ALTER TABLE WAL work, decide next focus for remaining time"
+        "plan_ref": "T273"
+      },
+      {
+        "id": "T274",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "neural-net"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 258,
-    "blocksTotal": 271,
+    "blocksCompleted": 268,
+    "blocksTotal": 275,
     "modeDistribution": {
-      "THINK": 13,
-      "PLAN": 20,
-      "BUILD": 137,
-      "MAINTAIN": 22,
+      "THINK": 16,
+      "PLAN": 21,
+      "BUILD": 141,
+      "MAINTAIN": 24,
       "EXPLORE": 66
     }
   },

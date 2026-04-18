@@ -2921,15 +2921,115 @@
     {
       "id": "T269",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, knowledge capture",
-      "started": "2026-04-17T23:50:20.016Z"
+      "started": "2026-04-17T23:50:20.016Z",
+      "completed": "2026-04-17T23:51:27.375Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, knowledge captured in scratch/ddl-wal-completeness.md (updated with 4-bug fix details), TODO.md cleaned, daily log updated with learning capture."
     },
     {
       "id": "T270",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on ALTER TABLE WAL work, decide next focus for remaining time"
+      "status": "done",
+      "task": "Reflect on ALTER TABLE WAL work, decide next focus for remaining time",
+      "started": "2026-04-17T23:51:34.881Z",
+      "completed": "2026-04-17T23:51:53.384Z",
+      "duration_ms": 60000,
+      "summary": "Reflected: 4-bug ALTER TABLE fix was genuine depth work. ~2 hours remain. Next: comprehensive HenryDB stress test sweep to validate no regressions, then neural-net mixed precision audit as stretch."
+    },
+    {
+      "id": "T272",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "HenryDB full test suite sweep — run ALL test files, triage failures, fix or file",
+      "started": "2026-04-17T23:52:06.334Z",
+      "completed": "2026-04-18T00:10:55.813Z",
+      "duration_ms": 600000,
+      "summary": "Full HenryDB test sweep: 673 tests across WAL/DDL/ALTER/ACID/transaction/MVCC/isolation/concurrent/join/aggregate/subquery/index/window/stress. 672 pass, 1 pre-existing PG backend test failure (unrelated). Zero regressions from ALTER TABLE WAL fix."
+    },
+    {
+      "id": "T273",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net mixed precision / numerical stability audit",
+      "task": null,
+      "started": "2026-04-18T00:11:03.731Z",
+      "completed": "2026-04-18T00:12:23.875Z",
+      "duration_ms": 120000,
+      "summary": "Scoped audit to BatchNorm, Adam, Attention, GradClip — highest NaN-risk areas not covered by existing 69-test numerical stability suite. Single BUILD task."
+    },
+    {
+      "id": "T275",
+      "mode": "BUILD",
+      "task": "Write numerical stability stress tests for: (1) BatchNorm with near-zero variance, single-sample batch, extreme inputs (2) Adam optimizer with extreme gradients, near-zero gradients, NaN gradients, very many steps (3) Attention with extreme Q/K values, very long sequences, scaled dot-product overflow (4) Gradient clipping interaction with NaN/Inf. Run tests, find bugs, fix.",
+      "status": "done",
+      "plan_ref": "T273",
+      "started": "2026-04-18T00:12:31.523Z",
+      "completed": "2026-04-18T00:15:40.404Z",
+      "duration_ms": 600000,
+      "summary": "Mixed-precision audit complete. 31 new tests across BatchNorm (7), Adam (9), Attention (7), GradClip (8). All pass — no numerical stability bugs found. Neural-net handles edge cases (NaN/Inf inputs, extreme values, zero variance, 10K training steps) cleanly."
+    },
+    {
+      "id": "T274",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "neural-net",
+      "started": "2026-04-18T00:15:57.078Z",
+      "completed": "2026-04-18T00:15:57.225Z",
+      "duration_ms": 0,
+      "summary": "Placeholder BUILD — actual work done in T275."
+    },
+    {
+      "id": "T276",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "RISC-V compiler: IIFE pattern support — fn(x){x}(5) direct invocation",
+      "task": null,
+      "skip_reason": ""
+    },
+    {
+      "id": "T277",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What henrydb depth work fits 1.5 hours? Options: stored procedures, unique constraint + SI, cost-based optimizer, or stress-test an existing feature until it breaks",
+      "started": "2026-04-18T00:16:37.327Z",
+      "completed": "2026-04-18T00:16:49.518Z",
+      "duration_ms": 60000,
+      "summary": "Going deep: stress-test ALTER TABLE crash recovery (process death without close). Current tests only cover clean close/open — need to test stale catalog + WAL replay path."
+    },
+    {
+      "id": "T278",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write ALTER TABLE crash-simulation tests: simulate process death (skip close, leave stale catalog) and verify WAL replay recovers schema + data correctly",
+      "project": "henrydb",
+      "started": "2026-04-18T00:17:00.113Z",
+      "completed": "2026-04-18T00:28:07.087Z",
+      "duration_ms": 900000,
+      "summary": "Crash recovery for ALTER TABLE with stale catalog now works. 3 new bugs found: (1) no DDL replay phase in crash recovery — schema-only replay added, (2) RENAME TABLE crash recovery lost heap association — rekey + rewire heap to table, (3) txId=0 records (DDL backfill) silently skipped during recovery — treat as always-committed. 8 crash-simulation tests, 154 total tests passing."
+    },
+    {
+      "id": "T279",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Analyze txId=0 checkpoint boundary issue: should txId=0 records be given explicit LSN tracking, or should checkpoint truncate WAL to prevent re-replay?",
+      "started": "2026-04-18T00:28:36.530Z",
+      "completed": "2026-04-18T00:29:17.574Z",
+      "duration_ms": 120000,
+      "summary": "Analysis: fix is to read DML records from lastCheckpointLsn (not 0) in per-heap recovery, while continuing to read ALL DDL records for schema replay. This prevents txId=0 backfill records from being re-replayed after checkpoint. Clean ARIES-style approach."
+    },
+    {
+      "id": "T280",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix checkpoint boundary: recoverFromFileWAL should read from lastCheckpointLsn, DDL replay reads all. Write test for UPDATE after ALTER + checkpoint + crash.",
+      "project": "henrydb",
+      "started": "2026-04-18T00:29:30.870Z",
+      "completed": "2026-04-18T00:33:00.993Z",
+      "duration_ms": 600000,
+      "summary": "Partial fix: (1) Fixed FileWAL.truncate() not resetting _fileSize — post-checkpoint records were unreadable. (2) Added checkpoint marker re-write after truncate so recovery knows the checkpoint LSN. (3) Per-heap recovery now reads from lastCheckpointLsn. BUT found deeper bug: ALTER TABLE backfill creates duplicate tuples in the data file — in-place updateTuple + new INSERT from UPDATE both survive checkpoint. This is a heap/buffer-pool interaction bug, not a WAL issue. Filed as TODO."
     }
   ],
   "focusProjects": [
@@ -4085,6 +4185,46 @@
     {
       "time": "2026-04-17T23:34:34.118Z",
       "msg": "PLAN T267 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-17T23:51:58.640Z",
+      "msg": "Added T272 (MAINTAIN) after end: HenryDB full test suite sweep — run ALL test files, triage failures, fix or file"
+    },
+    {
+      "time": "2026-04-17T23:51:58.762Z",
+      "msg": "Added T273 (PLAN) after end: Neural-net mixed precision / numerical stability audit"
+    },
+    {
+      "time": "2026-04-17T23:52:03.001Z",
+      "msg": "Added T274 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-18T00:12:18.456Z",
+      "msg": "PLAN T273 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T00:16:20.825Z",
+      "msg": "Added T276 (PLAN) after end: RISC-V compiler: IIFE pattern support — fn(x){x}(5) direct invocation"
+    },
+    {
+      "time": "2026-04-18T00:16:26.908Z",
+      "msg": "Removed T276: "
+    },
+    {
+      "time": "2026-04-18T00:16:33.621Z",
+      "msg": "Added T277 (THINK) after end: What henrydb depth work fits 1.5 hours? Options: stored procedures, unique constraint + SI, cost-based optimizer, or stress-test an existing feature until it breaks"
+    },
+    {
+      "time": "2026-04-18T00:16:55.737Z",
+      "msg": "Added T278 (BUILD) after end: Write ALTER TABLE crash-simulation tests: simulate process death (skip close, leave stale catalog) and verify WAL replay recovers schema + data correctly"
+    },
+    {
+      "time": "2026-04-18T00:28:31.727Z",
+      "msg": "Added T279 (THINK) after end: Analyze txId=0 checkpoint boundary issue: should txId=0 records be given explicit LSN tracking, or should checkpoint truncate WAL to prevent re-replay?"
+    },
+    {
+      "time": "2026-04-18T00:29:23.334Z",
+      "msg": "Added T280 (BUILD) after end: Fix checkpoint boundary: recoverFromFileWAL should read from lastCheckpointLsn, DDL replay reads all. Write test for UPDATE after ALTER + checkpoint + crash."
     }
   ]
 }

@@ -185,10 +185,10 @@ describe('ALTER TABLE Crash Recovery (simulated process death)', () => {
     db2.close();
   });
 
-  it('crash after checkpoint: ALTER TABLE schema preserved', () => {
+  it('crash after checkpoint: ALTER TABLE schema and post-checkpoint data preserved', () => {
     const db = TransactionalDatabase.open(dbDir);
     db.execute('CREATE TABLE t (id INT, val TEXT)');
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 5; i++) {
       db.execute(`INSERT INTO t VALUES (${i}, 'row-${i}')`);
     }
     db.execute('ALTER TABLE t ADD COLUMN extra INT');
@@ -197,15 +197,19 @@ describe('ALTER TABLE Crash Recovery (simulated process death)', () => {
     db.checkpoint();
     
     // Do more work after checkpoint
-    db.execute("INSERT INTO t VALUES (11, 'after-cp', 11)");
+    db.execute("INSERT INTO t VALUES (6, 'after-cp', 66)");
     
     simulateCrash(db);
     
     const db2 = TransactionalDatabase.open(dbDir);
     const r = rows(db2.execute('SELECT * FROM t ORDER BY id'));
-    assert.ok(r.length >= 10, 'Should have at least the checkpointed rows');
+    assert.ok(r.length >= 5, 'Should have at least the checkpointed rows');
     // Verify the extra column exists (ALTER TABLE survived)
     assert.ok('extra' in r[0], 'ALTER TABLE column should survive checkpoint + crash');
+    // Verify post-checkpoint data survived
+    const row6 = r.find(x => x.id === 6);
+    assert.ok(row6, 'Post-checkpoint INSERT should survive crash');
+    assert.equal(row6.extra, 66, 'Post-checkpoint data should be correct');
     db2.close();
   });
 
