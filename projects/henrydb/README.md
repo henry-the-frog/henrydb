@@ -172,7 +172,7 @@ SELECT * FROM tree ORDER BY depth, name;
 
 ## Tests
 
-778 test files covering all features. Run with:
+778 test files, ~70K lines of source code. Run with:
 
 ```bash
 node --test src/hot-chains.test.js src/udf.test.js src/table-func.test.js src/row-locking.test.js
@@ -185,7 +185,7 @@ node --test src/hot-chains.test.js src/udf.test.js src/table-func.test.js src/ro
 | PK SELECT | ~13,000 q/sec |
 | Index SELECT | ~34,000 q/sec |
 | Aggregate scan | ~5,500 q/sec |
-| INSERT | ~300 rows/sec |
+| INSERT | ~240 rows/sec |
 | UPDATE | ~100 rows/sec |
 | UDF call | ~9,000 q/sec |
 
