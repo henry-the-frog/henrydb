@@ -1,12 +1,13 @@
 # CURRENT.md
 
 ## Status: session-ended
-## Session: A (morning+afternoon)
+## Session: A (full day)
 ## Date: 2026-04-18
-## Time: 11:35 AM MDT
-## Tasks Completed: ~55+
-## Builds: ~26 (across 2 BUILD cap resets)
-## Next Session Focus: PG wire protocol, cost-based optimizer, persistent catalog
+## Time: 11:42 AM MDT
+## Tasks Completed: ~58
+## Builds: ~28 (across 2 BUILD cap resets)
+## Major Features: HOT chains, UDFs, row locking, TCO (all 3 types), HTTP server, ANALYZE + cost-based optimizer
+## Next Session Focus: PG wire protocol, persistent catalog, histogram-based selectivity
 
 ## Context Files
 - memory/2026-04-17.md
