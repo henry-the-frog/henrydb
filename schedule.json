@@ -1426,9 +1426,73 @@
     {
       "id": "T132",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push all changes and verify tests pass",
-      "started": "2026-04-18T18:59:41.662Z"
+      "started": "2026-04-18T18:59:41.662Z",
+      "completed": "2026-04-18T18:59:54.356Z",
+      "duration_ms": 60000,
+      "summary": "All pushed."
+    },
+    {
+      "id": "T135",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: 1h left. Session B BUILDs so far: ~10. Approaching BUILD cap of 20 but several were placeholders/skips. Genuine depth: UNIQUE constraint fix, cost model crossover tuning, PG wire protocol debugging. Next: could do join method selection (NL vs hash vs merge with cost comparison) or switch projects for variety.",
+      "started": "2026-04-18T19:00:15.903Z",
+      "completed": "2026-04-18T19:00:22.290Z",
+      "duration_ms": 60000,
+      "summary": "Direction: join method selection (NL vs hash join with cost comparison). Builds on parametric cost model. 1h remaining, good scope for implementation."
+    },
+    {
+      "id": "T136",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan join method selection: NL vs hash join cost comparison",
+      "task": null,
+      "started": "2026-04-18T19:00:31.570Z",
+      "completed": "2026-04-18T19:01:01.216Z",
+      "duration_ms": 120000,
+      "summary": "Planned: cost-based join method selection with 3 methods (hash, index NL, NL). Currently always prefers hash for equi-joins. Need cost comparison using parametric model."
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "task": "Add cost-based join method selection: compare hash join, index nested loop, and nested loop costs using parametric model. Choose cheapest. Show chosen method in EXPLAIN.",
+      "status": "done",
+      "plan_ref": "T136",
+      "started": "2026-04-18T19:01:08.422Z",
+      "completed": "2026-04-18T19:03:40.630Z",
+      "duration_ms": 900000,
+      "summary": "Cost-based join method selection implemented. _compareJoinCosts compares hash, index NL, nested loop using parametric model. Hash join: build+probe cost. Index NL: tree traversal + match cost. Nested loop: quadratic scan cost. Wired into execution path. EXPLAIN shows costs. 84 tests pass across 6 test files."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "task": "Test join method selection: verify hash join for large equi-joins, index NL for selective joins, nested loop for non-equi. EXPLAIN shows method choice and cost.",
+      "status": "done",
+      "plan_ref": "T136",
+      "started": "2026-04-18T19:03:51.359Z",
+      "completed": "2026-04-18T19:04:30.489Z",
+      "duration_ms": 300000,
+      "summary": "10 join cost tests: structure, NL-only, hash-only, index NL, large joins, actual correctness (LEFT JOIN, multi-table), EXPLAIN output, large cross-product cost. All pass."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "henrydb",
+      "started": "2026-04-18T19:04:40.393Z",
+      "completed": "2026-04-18T19:04:40.536Z",
+      "duration_ms": 5000,
+      "summary": "Placeholder."
+    },
+    {
+      "id": "T138",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push changes and run test sweep",
+      "started": "2026-04-18T19:04:47.693Z"
     }
   ],
   "focusProjects": [
@@ -1972,6 +2036,26 @@
     {
       "time": "2026-04-18T18:53:04.660Z",
       "msg": "PLAN T130 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T19:00:11.363Z",
+      "msg": "Added T135 (THINK) after end: Direction: 1h left. Session B BUILDs so far: ~10. Approaching BUILD cap of 20 but several were placeholders/skips. Genuine depth: UNIQUE constraint fix, cost model crossover tuning, PG wire protocol debugging. Next: could do join method selection (NL vs hash vs merge with cost comparison) or switch projects for variety."
+    },
+    {
+      "time": "2026-04-18T19:00:27.640Z",
+      "msg": "Added T136 (PLAN) after end: Plan join method selection: NL vs hash join cost comparison"
+    },
+    {
+      "time": "2026-04-18T19:00:27.758Z",
+      "msg": "Added T137 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-18T19:00:27.877Z",
+      "msg": "Added T138 (MAINTAIN) after end: Push changes and run test sweep"
+    },
+    {
+      "time": "2026-04-18T19:00:56.279Z",
+      "msg": "PLAN T136 filled 2 BUILD tasks"
     }
   ]
 }
