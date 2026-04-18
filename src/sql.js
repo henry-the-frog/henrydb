@@ -229,13 +229,13 @@ export function parse(sql) {
     advance();
     const name = (advance().originalValue || tokens[pos-1].value);
     let paramTypes = [];
-    if (peek().value === '(') {
+    if (peek().type === '(' || peek().value === '(') {
       advance(); // (
-      while (peek().value !== ')' && peek().type !== 'EOF') {
-        paramTypes.push(advance().value);
-        if (peek().value === ',') advance();
+      while (peek().type !== ')' && peek().value !== ')' && peek().type !== 'EOF') {
+        paramTypes.push(advance().value || advance().type);
+        if (peek().type === ',' || peek().value === ',') advance();
       }
-      if (peek().value === ')') advance();
+      if (peek().type === ')' || peek().value === ')') advance();
     }
     if (isKeyword('AS')) advance();
     // Collect remaining tokens as the statement SQL

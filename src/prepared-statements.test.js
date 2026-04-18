@@ -1,182 +1,142 @@
-// prepared-statements.test.js — Tests for prepared statements
-import { describe, it, beforeEach } from 'node:test';
+// prepared-statements.test.js — Tests for PREPARE/EXECUTE/DEALLOCATE
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
-import { PreparedStatementManager } from './prepared-statements.js';
 
 describe('Prepared Statements', () => {
-  let db, psm;
-
-  beforeEach(() => {
-    db = new Database();
-    psm = new PreparedStatementManager();
-    db.execute('CREATE TABLE users (id INT, name TEXT, age INT)');
-    db.execute("INSERT INTO users VALUES (1, 'Alice', 30)");
-    db.execute("INSERT INTO users VALUES (2, 'Bob', 25)");
-    db.execute("INSERT INTO users VALUES (3, 'Charlie', 35)");
-  });
-
-  // ===== PREPARE =====
-
-  it('PREPARE creates a named statement', () => {
-    const result = psm.prepare('get_user', 'SELECT * FROM users WHERE id = $1');
-    assert.equal(result.message, 'PREPARE');
-    assert.ok(psm.has('get_user'));
-  });
-
-  it('PREPARE rejects duplicate name', () => {
-    psm.prepare('q1', 'SELECT 1');
-    assert.throws(() => psm.prepare('q1', 'SELECT 2'), /already exists/);
-  });
-
-  it('PREPARE counts parameters correctly', () => {
-    psm.prepare('q1', 'SELECT * FROM users WHERE age > $1 AND name = $2');
-    assert.equal(psm.get('q1').paramCount, 2);
-  });
-
-  // ===== EXECUTE =====
-
-  it('EXECUTE substitutes parameters and returns SQL', () => {
-    psm.prepare('get_user', 'SELECT * FROM users WHERE id = $1');
-    const sql = psm.execute('get_user', [42]);
-    assert.equal(sql, 'SELECT * FROM users WHERE id = 42');
-  });
-
-  it('EXECUTE with string parameters escapes quotes', () => {
-    psm.prepare('find_name', "SELECT * FROM users WHERE name = $1");
-    const sql = psm.execute('find_name', ['Alice']);
-    assert.equal(sql, "SELECT * FROM users WHERE name = 'Alice'");
-  });
-
-  it('EXECUTE with multiple parameters', () => {
-    psm.prepare('range', 'SELECT * FROM users WHERE age > $1 AND age < $2');
-    const sql = psm.execute('range', [25, 35]);
-    assert.equal(sql, 'SELECT * FROM users WHERE age > 25 AND age < 35');
-  });
-
-  it('EXECUTE runs correctly through Database', () => {
-    psm.prepare('get_user', 'SELECT name FROM users WHERE id = $1');
-    const sql = psm.execute('get_user', [2]);
-    const result = db.execute(sql);
-    assert.equal(result.rows[0].name, 'Bob');
-  });
-
-  it('EXECUTE with different parameters each time', () => {
-    psm.prepare('get_user', 'SELECT name FROM users WHERE id = $1');
+  it('PREPARE and EXECUTE SELECT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT, age INT)');
+    db.execute("INSERT INTO users VALUES (1, 'Alice', 30), (2, 'Bob', 25)");
     
-    const sql1 = psm.execute('get_user', [1]);
-    assert.equal(db.execute(sql1).rows[0].name, 'Alice');
+    db.execute('PREPARE get_user AS SELECT * FROM users WHERE id = $1');
     
-    const sql2 = psm.execute('get_user', [3]);
-    assert.equal(db.execute(sql2).rows[0].name, 'Charlie');
+    const r1 = db.execute('EXECUTE get_user (1)');
+    assert.equal(r1.rows.length, 1);
+    assert.equal(r1.rows[0].name, 'Alice');
+    
+    const r2 = db.execute('EXECUTE get_user (2)');
+    assert.equal(r2.rows.length, 1);
+    assert.equal(r2.rows[0].name, 'Bob');
+    
+    const r3 = db.execute('EXECUTE get_user (99)');
+    assert.equal(r3.rows.length, 0);
   });
 
-  it('EXECUTE rejects non-existent statement', () => {
-    assert.throws(() => psm.execute('nonexistent', []), /does not exist/);
+  it('PREPARE and EXECUTE INSERT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE items (id INT PRIMARY KEY, name TEXT)');
+    db.execute('PREPARE add_item AS INSERT INTO items VALUES ( $1 , $2 )');
+    
+    db.execute("EXECUTE add_item (1, 'Widget')");
+    db.execute("EXECUTE add_item (2, 'Gadget')");
+    
+    const r = db.execute('SELECT * FROM items ORDER BY id');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].name, 'Widget');
+    assert.equal(r.rows[1].name, 'Gadget');
   });
 
-  it('EXECUTE rejects insufficient parameters', () => {
-    psm.prepare('q', 'SELECT * FROM users WHERE id = $1 AND age = $2');
-    assert.throws(() => psm.execute('q', [1]), /Expected 2 parameters/);
+  it('PREPARE and EXECUTE UPDATE', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val TEXT)');
+    db.execute("INSERT INTO t VALUES (1, 'a'), (2, 'b')");
+    
+    db.execute('PREPARE upd AS UPDATE t SET val = $2 WHERE id = $1');
+    db.execute("EXECUTE upd (1, 'updated')");
+    
+    const r = db.execute('SELECT * FROM t WHERE id = 1');
+    assert.equal(r.rows[0].val, 'updated');
   });
 
-  // ===== DEALLOCATE =====
+  it('PREPARE and EXECUTE DELETE', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val TEXT)');
+    db.execute("INSERT INTO t VALUES (1, 'a'), (2, 'b'), (3, 'c')");
+    
+    db.execute('PREPARE del AS DELETE FROM t WHERE id = $1');
+    db.execute('EXECUTE del (2)');
+    
+    const r = db.execute('SELECT COUNT(*) as cnt FROM t');
+    assert.equal(r.rows[0].cnt, 2);
+  });
 
-  it('DEALLOCATE removes a statement', () => {
-    psm.prepare('q1', 'SELECT 1');
-    psm.deallocate('q1');
-    assert.ok(!psm.has('q1'));
+  it('multiple parameters', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, a INT, b INT, c INT)');
+    db.execute('INSERT INTO t VALUES (1, 10, 20, 30), (2, 40, 50, 60)');
+    
+    db.execute('PREPARE q AS SELECT * FROM t WHERE a >= $1 AND b <= $2');
+    const r = db.execute('EXECUTE q (10, 25)');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].id, 1);
+  });
+
+  it('DEALLOCATE removes statement', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT)');
+    db.execute('PREPARE q AS SELECT * FROM t');
+    db.execute('DEALLOCATE q');
+    
+    assert.throws(() => db.execute('EXECUTE q ()'), /does not exist/);
   });
 
   it('DEALLOCATE ALL removes all statements', () => {
-    psm.prepare('q1', 'SELECT 1');
-    psm.prepare('q2', 'SELECT 2');
-    psm.deallocate('ALL');
-    assert.ok(!psm.has('q1'));
-    assert.ok(!psm.has('q2'));
-  });
-
-  // ===== SQL parsing =====
-
-  it('parseCommand recognizes PREPARE', () => {
-    const cmd = PreparedStatementManager.parseCommand("PREPARE get_user (INT) AS SELECT * FROM users WHERE id = $1");
-    assert.equal(cmd.type, 'PREPARE');
-    assert.equal(cmd.name, 'get_user');
-    assert.deepEqual(cmd.paramTypes, ['INT']);
-    assert.ok(cmd.sql.includes('SELECT'));
-  });
-
-  it('parseCommand recognizes PREPARE without types', () => {
-    const cmd = PreparedStatementManager.parseCommand("PREPARE q1 AS SELECT 1");
-    assert.equal(cmd.type, 'PREPARE');
-    assert.equal(cmd.name, 'q1');
-    assert.deepEqual(cmd.paramTypes, []);
-  });
-
-  it('parseCommand recognizes EXECUTE', () => {
-    const cmd = PreparedStatementManager.parseCommand("EXECUTE get_user(42)");
-    assert.equal(cmd.type, 'EXECUTE');
-    assert.equal(cmd.name, 'get_user');
-    assert.deepEqual(cmd.params, [42]);
-  });
-
-  it('parseCommand recognizes EXECUTE with string params', () => {
-    const cmd = PreparedStatementManager.parseCommand("EXECUTE find_name('Alice', 25)");
-    assert.equal(cmd.type, 'EXECUTE');
-    assert.deepEqual(cmd.params, ['Alice', 25]);
-  });
-
-  it('parseCommand recognizes DEALLOCATE', () => {
-    const cmd = PreparedStatementManager.parseCommand("DEALLOCATE get_user");
-    assert.equal(cmd.type, 'DEALLOCATE');
-    assert.equal(cmd.name, 'get_user');
-  });
-
-  it('parseCommand recognizes DEALLOCATE PREPARE', () => {
-    const cmd = PreparedStatementManager.parseCommand("DEALLOCATE PREPARE q1");
-    assert.equal(cmd.type, 'DEALLOCATE');
-    assert.equal(cmd.name, 'q1');
-  });
-
-  it('parseCommand recognizes DEALLOCATE ALL', () => {
-    const cmd = PreparedStatementManager.parseCommand("DEALLOCATE ALL");
-    assert.equal(cmd.type, 'DEALLOCATE');
-    assert.equal(cmd.name, 'ALL');
-  });
-
-  it('parseCommand returns null for non-prepared commands', () => {
-    assert.equal(PreparedStatementManager.parseCommand("SELECT * FROM users"), null);
-    assert.equal(PreparedStatementManager.parseCommand("INSERT INTO t VALUES (1)"), null);
-  });
-
-  // ===== End-to-end =====
-
-  it('full PREPARE/EXECUTE/DEALLOCATE cycle', () => {
-    psm.prepare('ins', "INSERT INTO users VALUES ($1, $2, $3)");
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT)');
+    db.execute('PREPARE q1 AS SELECT * FROM t');
+    db.execute('PREPARE q2 AS SELECT * FROM t');
+    db.execute('DEALLOCATE ALL');
     
-    const sql1 = psm.execute('ins', [4, 'Diana', 28]);
-    db.execute(sql1);
-    
-    const sql2 = psm.execute('ins', [5, 'Eve', 22]);
-    db.execute(sql2);
-    
-    const result = db.execute('SELECT * FROM users ORDER BY id');
-    assert.equal(result.rows.length, 5);
-    assert.equal(result.rows[3].name, 'Diana');
-    assert.equal(result.rows[4].name, 'Eve');
-    
-    psm.deallocate('ins');
-    assert.ok(!psm.has('ins'));
+    assert.throws(() => db.execute('EXECUTE q1 ()'), /does not exist/);
+    assert.throws(() => db.execute('EXECUTE q2 ()'), /does not exist/);
   });
 
-  it('handles SQL injection attempt via parameters', () => {
-    psm.prepare('find', "SELECT * FROM users WHERE name = $1");
-    const sql = psm.execute('find', ["'; DROP TABLE users; --"]);
-    // The parameter should be properly quoted
-    assert.ok(sql.includes("''"));
-    // Execute should work without dropping the table
-    db.execute(sql);
-    const result = db.execute('SELECT COUNT(*) as cnt FROM users');
-    assert.equal(result.rows[0].cnt, 3); // Table still exists with 3 rows
+  it('duplicate PREPARE name throws', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT)');
+    db.execute('PREPARE q AS SELECT * FROM t');
+    assert.throws(() => db.execute('PREPARE q AS SELECT * FROM t'), /already exists/);
+  });
+
+  it('EXECUTE nonexistent throws', () => {
+    const db = new Database();
+    assert.throws(() => db.execute('EXECUTE nonexistent (1)'), /does not exist/);
+  });
+
+  it('DEALLOCATE nonexistent throws', () => {
+    const db = new Database();
+    assert.throws(() => db.execute('DEALLOCATE nonexistent'), /does not exist/);
+  });
+
+  it('reuse same prepared statement many times', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    for (let i = 0; i < 20; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
+    
+    db.execute('PREPARE q AS SELECT val FROM t WHERE id = $1');
+    for (let i = 0; i < 20; i++) {
+      const r = db.execute(`EXECUTE q (${i})`);
+      assert.equal(r.rows[0].val, i * 10);
+    }
+  });
+
+  it('string parameters with quotes', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, name TEXT)');
+    db.execute("INSERT INTO t VALUES (1, 'test')");
+    
+    db.execute('PREPARE q AS SELECT * FROM t WHERE name = $1');
+    const r = db.execute("EXECUTE q ('test')");
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].name, 'test');
+  });
+
+  it('PREPARE with parameter types (ignored but parsed)', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT)');
+    db.execute('PREPARE q (INT) AS SELECT * FROM t WHERE id = $1');
+    const r = db.execute('EXECUTE q (42)');
+    assert.equal(r.rows.length, 0); // No data, but no error
   });
 });
