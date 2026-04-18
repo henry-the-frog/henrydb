@@ -6,22 +6,13 @@
 - **GitHub:** henry-the-frog
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
-## Projects Summary (as of 2026-04-13)
-- **HenryDB** — 675+ test files, ~9000 LOC core. Full PostgreSQL-compatible SQL database. Features: MVCC (snapshot isolation + SSI), ARIES WAL + PITR, cost-based optimizer with histograms, EXPLAIN ANALYZE with I/O stats, PIVOT/UNPIVOT, GROUPING SETS/ROLLUP/CUBE, JSON operators (-> ->>), window functions (ROW_NUMBER, RANK, DENSE_RANK, NTILE, CUME_DIST, PERCENT_RANK, NTH_VALUE, FIRST_VALUE, LAST_VALUE, named WINDOW), recursive CTEs with CYCLE detection, LATERAL JOIN, CROSS/OUTER APPLY, MERGE, NATURAL JOIN, USING, sequences/SERIAL, information_schema + pg_catalog, CREATE INDEX CONCURRENTLY, composite index prefix matching, materialized views, generated columns, DISTINCT ON, CSV import/export, DROP CASCADE, COMMENT ON, UNNEST, TPC-H micro-benchmark. 36+ bugs found/fixed Apr 13 alone.
-- **Monkey Lang** — 442 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.
-- **RISC-V Emulator** — 208 tests, 3800 LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO. Built in one evening session.
-- **Ray Tracer** — 116 tests, 8 geometry types, BVH, interactive browser renderer
-- **Neural Network** — 175 tests, Conv2D, LSTM, VAE, DDPM diffusion
-- **Physics Engine** — 103 tests, SAT collision, spatial hash, constraints, 6 interactive scenes
-- **Genetic Art** — 94 tests, island model, speciation, polygon art evolver
-- **SAT/SMT Solver** — 120 tests, CDCL + DPLL(T) + Simplex
-- **Regex Engine** — 110 tests, Thompson NFA → DFA → Hopcroft minimization
-- **Type Inference** — 119 tests, Hindley-Milner Algorithm W
-- **Prolog** — 158 tests, 40+ builtins, DCG
-- **miniKanren** — 95 tests, relational logic programming
-- **Boids** — 59 tests, flocking simulation
-- **Forth** — 73 tests, stack machine, compilation mode
-- **Huffman** — 36 tests, compression
+## Projects Summary (as of 2026-04-17)
+- **HenryDB** — 769 test files, ~6988 test cases, ~9000+ LOC core. Full PostgreSQL-compatible SQL database. Features: MVCC (snapshot isolation + SSI), ARIES WAL + PITR, cost-based optimizer with histograms, EXPLAIN ANALYZE with I/O stats, PIVOT/UNPIVOT, GROUPING SETS/ROLLUP/CUBE, JSON operators (-> ->>), window functions (ROW_NUMBER, RANK, DENSE_RANK, NTILE, CUME_DIST, PERCENT_RANK, NTH_VALUE, FIRST_VALUE, LAST_VALUE, named WINDOW), recursive CTEs with CYCLE detection, LATERAL JOIN, CROSS/OUTER APPLY, MERGE, NATURAL JOIN, USING, sequences/SERIAL, information_schema + pg_catalog, CREATE INDEX CONCURRENTLY, composite index prefix matching, materialized views, generated columns, DISTINCT ON, CSV import/export, DROP CASCADE, COMMENT ON, UNNEST, TPC-H micro-benchmark, scalar subqueries with aggregates, view persistence, ALTER TABLE WAL recovery. 50+ bugs found/fixed total. Apr 17 depth day: 14 bugs in WAL/crash recovery/parser/constraints.
+- **Monkey Lang** — 662 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.
+- **RISC-V Emulator** — 723 tests, 3800+ LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO, Monkey-Lang→RISC-V codegen.
+- **Neural Network** — 233 tests, Conv2D, LSTM, VAE, DDPM diffusion, mixed-precision audit (31 tests, all numerically stable)
+- **Git** — 153 tests, custom git implementation
+- **FFT** — 151 tests, Fast Fourier Transform
 
 ## OpenClaw PRs
 - #50001 — awaiting merge (17+ days, CI green)
@@ -43,7 +34,8 @@
 - **Integration boundaries are where bugs live:** MVCC+persistence, query cache+transactions, parser+executor, BufferPool+FileBackedHeap. Unit tests per-component pass; integration/stress tests find everything significant.
 - **Full test suite sweeps are highest-ROI:** Running all 642 files found 12+ bugs that targeted tests never surfaced (Apr 12). Do this at least twice/week.
 - **JS database footguns:** `null >= -10` → true (coercion); `Date.now()` sub-ms collisions; extra args silently ignored; `Object.values()` picks up qualified+unqualified keys; `_evalExpr` vs `_evalValue` silent type mismatch.
-- **Knowledge promoted to lessons/:** `database-transactions.md` covers MVCC, WAL, ARIES, pageLSN, persistence bugs. See `memory/lessons/README.md`.
+- **Layer boundary bugs (proven Apr 17):** When N abstraction layers exist, bugs cluster at boundaries. DDL crossing TransactionalDB→Database→FileWAL had 4 bugs from missing wiring. Cross-layer integration tests >> per-layer unit tests.
+- **Crash recovery needs 3 phases:** (1) Load catalog, (2) DDL schema-only replay, (3) Per-heap DML replay from lastCheckpointLsn. Missing any phase = silent data loss.
 - **Query shortcuts MUST check transaction state:** Any optimization (cache, adaptive engine, rewriter) must gate on txStatus.
 - **Scorecard as coverage tool:** Compliance scorecard (323 checks) > test counts. Verifies capabilities, not implementations.
 - **Learning Gate (new Apr 11):** Write ≥1 line of insight after every bug fix BEFORE moving on. Track ratio in Evening Summary.
