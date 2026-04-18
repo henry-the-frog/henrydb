@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T14:26:09.732Z",
+  "generated": "2026-04-18T14:40:15.520Z",
   "current": {
     "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Fix file-wal.test.js: remove manual wal.appendInsert calls (heap auto-logs) and unskip the test",
-    "startedAt": "2026-04-18T14:26:09.732Z",
-    "taskId": "T7"
+    "mode": "MAINTAIN",
+    "task": "Final housekeeping: git push all changes, update daily log",
+    "startedAt": "2026-04-18T14:40:15.520Z",
+    "taskId": "T16"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -203,52 +203,79 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix file-wal.test.js double-logging + HenryDB regression sweep",
         "task": null,
-        "started": "2026-04-18T14:25:34.651Z"
+        "started": "2026-04-18T14:25:34.651Z",
+        "completed": "2026-04-18T14:26:01.570Z",
+        "duration_ms": 120000,
+        "summary": "Diagnosed file-wal double-logging: FileBackedHeap.insert() auto-logs to WAL, test also manually called wal.appendInsert(). Fix: remove manual WAL calls from test. 2 BUILD tasks."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix file-wal.test.js: remove manual wal.appendInsert calls (heap auto-logs) and unskip the test",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-18T14:26:09.696Z",
+        "completed": "2026-04-18T14:26:53.699Z",
+        "duration_ms": 300000,
+        "summary": "Fixed file-wal.test.js: removed manual wal.appendInsert() calls (heap auto-logs), set heap._currentTxId for correct tx tracking, unskipped the test. 8/8 pass, 0 skipped."
       },
       {
         "id": "T19",
         "mode": "BUILD",
         "task": "Run HenryDB regression sweep on file-wal and persistence test suites",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-18T14:27:09.693Z",
+        "completed": "2026-04-18T14:31:48.720Z",
+        "duration_ms": 300000,
+        "summary": "Regression sweep: 156 tests across 9 file-wal/persistence suites. 153 pass, 3 pre-existing failures (bank-transfer persistence bug, wal-recovery UPDATE, WALManager perf). All 3 confirmed pre-existing via git stash test. No regressions from HOT chains."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, knowledge capture",
+        "started": "2026-04-18T14:32:04.994Z",
+        "completed": "2026-04-18T14:32:28.260Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, captured HOT chains knowledge to scratch/hot-chains.md"
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day check-in. Are we going deep enough? Review test coverage gaps"
+        "status": "done",
+        "task": "Mid-day check-in. Are we going deep enough? Review test coverage gaps",
+        "started": "2026-04-18T14:32:39.774Z",
+        "completed": "2026-04-18T14:32:54.536Z",
+        "duration_ms": 120000,
+        "summary": "Depth check passes: found real bug (file-wal double-logging), learned HOT chains touch 5 index paths, surprised by test result interface. 3 pre-existing persistence failures worth investigating. Neural-net CI still pending."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Neural-net CI failures: diagnose and fix ongoing test failures on main",
-        "task": null
+        "task": null,
+        "started": "2026-04-18T14:33:02.283Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix neural-net CI: structuredPrune array flattening bug (DONE)",
         "plan_ref": "T10",
         "project": "neural-net"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "Investigate flaky Transformer convergence test in training-benchmark",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -286,13 +313,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 8,
-    "blocksTotal": 19,
+    "blocksCompleted": 19,
+    "blocksTotal": 20,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 3,
-      "MAINTAIN": 1
+      "THINK": 4,
+      "PLAN": 3,
+      "BUILD": 7,
+      "MAINTAIN": 3,
+      "EXPLORE": 2
     }
   },
   "artifacts": [
