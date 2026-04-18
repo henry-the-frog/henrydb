@@ -2227,11 +2227,10 @@ export class Database {
       // UNIQUE and PRIMARY KEY uniqueness check
       if ((col.unique || col.primaryKey) && val != null) {
         // Try fast index-based lookup first (O(log N) instead of O(N))
-        const indexName = col.primaryKey ? col.name : `unique_${col.name}`;
-        const index = table.indexes?.get(col.name) || table.indexes?.get(indexName);
-        if (index && typeof index.get === 'function') {
-          const found = index.get(val);
-          if (found !== undefined) {
+        const index = table.indexes?.get(col.name);
+        if (index && typeof index.search === 'function') {
+          const found = index.search(val);
+          if (found !== undefined && found !== null) {
             if (excludeRid) {
               const rids = Array.isArray(found) ? found : [found];
               const hasOther = rids.some(r =>
