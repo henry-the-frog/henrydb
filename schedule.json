@@ -1298,9 +1298,73 @@
     {
       "id": "T120",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push and commit",
-      "started": "2026-04-18T18:44:34.119Z"
+      "started": "2026-04-18T18:44:34.119Z",
+      "completed": "2026-04-18T18:44:46.926Z",
+      "duration_ms": 60000,
+      "summary": "All pushed. henrydb and workspace repos up to date."
+    },
+    {
+      "id": "T123",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: 1h15m remaining. PG wire protocol done including extended query. BUILD count this session: ~5 (README, PG wire, extended protocol, pg tests, UNIQUE fix). Depth check: the UNIQUE constraint fix was a genuine bug find and surprise. What next? Options: (1) persistent catalog, (2) stress-test extended protocol, (3) join method selection (from optimizer gaps), (4) parametric cost model",
+      "started": "2026-04-18T18:45:03.764Z",
+      "completed": "2026-04-18T18:45:16.877Z",
+      "duration_ms": 60000,
+      "summary": "Depth check PASSES (3/3 criteria met): UNIQUE constraint bug was surprising, learned HOT+index interaction and PG extended protocol flow, found 2 bugs. Direction: persistent catalog next — complements PG wire protocol by making server restartable."
+    },
+    {
+      "id": "T124",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan persistent catalog for HenryDB",
+      "task": null,
+      "started": "2026-04-18T18:45:28.264Z",
+      "completed": "2026-04-18T18:46:06.601Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILDs: (1) integrate PersistentDatabase with pg-server + add pg_catalog virtual tables, (2) test restart persistence. Current catalog.json approach works but pg-server uses in-memory DB. Need to wire them together."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "task": "Integrate PersistentDatabase with pg-server.js: --dir flag uses persistent storage, tables survive restart. Add pg_catalog virtual tables (pg_class, pg_attribute) for basic psql compatibility",
+      "status": "done",
+      "plan_ref": "T124",
+      "started": "2026-04-18T18:46:17.381Z",
+      "completed": "2026-04-18T18:48:59.825Z",
+      "duration_ms": 600000,
+      "summary": "PG server now supports --dir for persistent storage via PersistentDatabase. Added pg_catalog interceptor for SET/SHOW/version()/current_database()/current_schema()/pg_type queries. Data verified to survive restart cycle."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "task": "Test PersistentDatabase + PG wire: create table, insert data, restart server, verify data persists through pg client",
+      "status": "done",
+      "plan_ref": "T124",
+      "started": "2026-04-18T18:49:09.722Z",
+      "completed": "2026-04-18T18:49:51.023Z",
+      "duration_ms": 300000,
+      "summary": "4 persistent PG tests: (1) data survives 3-phase restart cycle (create→stop→verify→insert→stop→verify), (2) SET/SHOW interceptors, (3) parameterized queries with PersistentDB, (4) pg.Pool concurrent inserts with PersistentDB. All pass."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "henrydb",
+      "started": "2026-04-18T18:50:00.663Z",
+      "completed": "2026-04-18T18:50:00.825Z",
+      "duration_ms": 5000,
+      "summary": "Placeholder."
+    },
+    {
+      "id": "T126",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push and test",
+      "started": "2026-04-18T18:50:09.760Z"
     }
   ],
   "focusProjects": [
@@ -1804,6 +1868,26 @@
     {
       "time": "2026-04-18T18:35:08.147Z",
       "msg": "PLAN T118 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T18:44:59.571Z",
+      "msg": "Added T123 (THINK) after end: Direction: 1h15m remaining. PG wire protocol done including extended query. BUILD count this session: ~5 (README, PG wire, extended protocol, pg tests, UNIQUE fix). Depth check: the UNIQUE constraint fix was a genuine bug find and surprise. What next? Options: (1) persistent catalog, (2) stress-test extended protocol, (3) join method selection (from optimizer gaps), (4) parametric cost model"
+    },
+    {
+      "time": "2026-04-18T18:45:23.350Z",
+      "msg": "Added T124 (PLAN) after end: Plan persistent catalog for HenryDB"
+    },
+    {
+      "time": "2026-04-18T18:45:23.469Z",
+      "msg": "Added T125 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-18T18:45:23.587Z",
+      "msg": "Added T126 (MAINTAIN) after end: Push and test"
+    },
+    {
+      "time": "2026-04-18T18:45:56.245Z",
+      "msg": "PLAN T124 filled 2 BUILD tasks"
     }
   ]
 }

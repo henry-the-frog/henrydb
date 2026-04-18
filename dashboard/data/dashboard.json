@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T18:44:34.155Z",
+  "generated": "2026-04-18T18:50:09.796Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push and commit",
-    "startedAt": "2026-04-18T18:44:34.155Z",
-    "taskId": "T120"
+    "task": "Push and test",
+    "startedAt": "2026-04-18T18:50:09.796Z",
+    "taskId": "T126"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -1378,49 +1378,113 @@
       {
         "id": "T118",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement extended query protocol + test with pg npm client",
         "task": null,
-        "started": "2026-04-18T18:34:32.196Z"
+        "started": "2026-04-18T18:34:32.196Z",
+        "completed": "2026-04-18T18:35:12.351Z",
+        "duration_ms": 120000,
+        "summary": "Planned extended query protocol. Simple query already works with pg client. Parameterized queries need Parse/Bind/Describe/Execute/Sync. 2 BUILD tasks."
       },
       {
         "id": "T121",
         "mode": "BUILD",
         "task": "Implement extended query protocol (Parse/Bind/Describe/Execute/Sync) for PG wire server to support parameterized queries from pg npm client",
-        "status": "upcoming",
-        "plan_ref": "T118"
+        "status": "done",
+        "plan_ref": "T118",
+        "started": "2026-04-18T18:35:19.366Z",
+        "completed": "2026-04-18T18:40:10.531Z",
+        "duration_ms": 1200000,
+        "summary": "Extended query protocol implemented! Parse/Bind/Describe/Execute/Sync/Close/Flush handlers. Parameter substitution ($1, $2...) with proper quoting. Statement + portal caches per connection. Column inference from table schema for empty result sets. Tested: pg.Client parameterized SELECT/INSERT/UPDATE/DELETE, pg.Pool with concurrent queries, transactions with client checkout. All passing."
       },
       {
         "id": "T122",
         "mode": "BUILD",
         "task": "Test extended query protocol with pg npm parameterized queries, pool, and transactions",
-        "status": "upcoming",
-        "plan_ref": "T118"
+        "status": "done",
+        "plan_ref": "T118",
+        "started": "2026-04-18T18:40:19.092Z",
+        "completed": "2026-04-18T18:44:16.277Z",
+        "duration_ms": 900000,
+        "summary": "13 pg client tests: simple queries, parameterized SELECT/INSERT/UPDATE/DELETE, NULL params, pg.Pool basic + concurrent, transactions, error handling, sequential params, aggregates, window functions. All pass."
       },
       {
         "id": "T119",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-18T18:44:24.814Z",
+        "completed": "2026-04-18T18:44:24.956Z",
+        "duration_ms": 5000,
+        "summary": "Placeholder — no work."
+      },
+      {
+        "id": "T120",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and commit",
+        "started": "2026-04-18T18:44:34.119Z",
+        "completed": "2026-04-18T18:44:46.926Z",
+        "duration_ms": 60000,
+        "summary": "All pushed. henrydb and workspace repos up to date."
+      },
+      {
+        "id": "T123",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Direction: 1h15m remaining. PG wire protocol done including extended query. BUILD count this session: ~5 (README, PG wire, extended protocol, pg tests, UNIQUE fix). Depth check: the UNIQUE constraint fix was a genuine bug find and surprise. What next? Options: (1) persistent catalog, (2) stress-test extended protocol, (3) join method selection (from optimizer gaps), (4) parametric cost model",
+        "started": "2026-04-18T18:45:03.764Z",
+        "completed": "2026-04-18T18:45:16.877Z",
+        "duration_ms": 60000,
+        "summary": "Depth check PASSES (3/3 criteria met): UNIQUE constraint bug was surprising, learned HOT+index interaction and PG extended protocol flow, found 2 bugs. Direction: persistent catalog next — complements PG wire protocol by making server restartable."
+      },
+      {
+        "id": "T124",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan persistent catalog for HenryDB",
+        "task": null,
+        "started": "2026-04-18T18:45:28.264Z"
+      },
+      {
+        "id": "T127",
+        "mode": "BUILD",
+        "task": "Integrate PersistentDatabase with pg-server.js: --dir flag uses persistent storage, tables survive restart. Add pg_catalog virtual tables (pg_class, pg_attribute) for basic psql compatibility",
+        "status": "upcoming",
+        "plan_ref": "T124"
+      },
+      {
+        "id": "T128",
+        "mode": "BUILD",
+        "task": "Test PersistentDatabase + PG wire: create table, insert data, restart server, verify data persists through pg client",
+        "status": "upcoming",
+        "plan_ref": "T124"
+      },
+      {
+        "id": "T125",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "henrydb"
       },
       {
-        "id": "T120",
+        "id": "T126",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Push and commit"
+        "task": "Push and test"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 119,
-    "blocksTotal": 122,
+    "blocksCompleted": 125,
+    "blocksTotal": 128,
     "modeDistribution": {
-      "THINK": 27,
-      "PLAN": 18,
-      "BUILD": 40,
-      "MAINTAIN": 26,
+      "THINK": 28,
+      "PLAN": 19,
+      "BUILD": 43,
+      "MAINTAIN": 27,
       "EXPLORE": 8
     }
   },
