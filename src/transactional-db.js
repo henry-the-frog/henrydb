@@ -143,6 +143,10 @@ export class TransactionalDatabase {
     // This is set by session.execute() to provide MVCC context during heap scans
     this._activeTx = null;
     
+    // Auto-checkpoint: trigger checkpoint every N WAL records
+    this._autoCheckpointInterval = 1000; // default: every 1000 WAL entries
+    this._walCountSinceCheckpoint = 0;
+    
     // Monkey-patch each table's heap scan to apply MVCC visibility
     this._installScanInterceptors();
   }
@@ -206,6 +210,30 @@ export class TransactionalDatabase {
 
   flush() {
     for (const heap of this._heaps.values()) heap.flush();
+  }
+
+  /**
+   * Perform a checkpoint:
+   * 1. Flush all dirty buffer pool pages to disk
+   * 2. Write CHECKPOINT record to WAL
+   * 3. Save catalog and MVCC state
+   */
+  checkpoint() {
+    // Flush all heaps' buffer pools to disk
+    for (const heap of this._heaps.values()) {
+      heap.flush();
+    }
+    
+    // Write checkpoint record to WAL
+    const lsn = this._wal.checkpoint();
+    
+    // Persist catalog and MVCC state
+    this._saveCatalog();
+    this._saveMvccState();
+    
+    this._walCountSinceCheckpoint = 0;
+    
+    return { checkpointLsn: lsn, beginLsn: lsn, endLsn: lsn };
   }
 
   close() {
