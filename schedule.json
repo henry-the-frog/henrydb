@@ -987,16 +987,20 @@
       "id": "T97",
       "mode": "BUILD",
       "task": "Build HTTP/JSON server for HenryDB: POST /query, POST /execute, GET /health",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T93",
-      "started": "2026-04-18T16:37:32.036Z"
+      "started": "2026-04-18T16:37:32.036Z",
+      "completed": "2026-04-18T16:39:14.702Z",
+      "duration_ms": 600000,
+      "summary": "HTTP/JSON server for HenryDB! 4 endpoints: /health, /query, /execute, /tables. CORS, graceful shutdown, error handling, timing. ~120 lines, zero dependencies. Tested with curl: CREATE TABLE, INSERT, SELECT all work perfectly."
     },
     {
       "id": "T98",
       "mode": "BUILD",
       "task": "Write tests for HTTP API: query, execute, error handling, health check",
-      "status": "upcoming",
-      "plan_ref": "T93"
+      "status": "in-progress",
+      "plan_ref": "T93",
+      "started": "2026-04-18T16:39:41.325Z"
     },
     {
       "id": "T94",
