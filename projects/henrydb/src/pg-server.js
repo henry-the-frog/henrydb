@@ -401,6 +401,26 @@ function interceptPgCatalog(sql, db) {
   
   // DESCRIBE table (MySQL-style, also common in tools)
   const describeMatch = upper.match(/^DESCRIBE\s+(\w+)/);
+  const showCreateMatch = upper.match(/^SHOW\s+CREATE\s+TABLE\s+(\w+)/);
+  
+  if (showCreateMatch) {
+    const tableName = showCreateMatch[1].toLowerCase();
+    const table = db.tables?.get(tableName);
+    if (table && table.schema) {
+      const cols = table.schema.map(col => {
+        let def = `  ${col.name} ${(col.type || 'TEXT').toUpperCase()}`;
+        if (col.primaryKey) def += ' PRIMARY KEY';
+        else if (col.unique) def += ' UNIQUE';
+        if (col.notNull) def += ' NOT NULL';
+        if (col.defaultValue != null) def += ` DEFAULT ${col.defaultValue}`;
+        return def;
+      });
+      const createSql = `CREATE TABLE ${tableName} (\n${cols.join(',\n')}\n)`;
+      return { type: 'ROWS', rows: [{ table_name: tableName, create_statement: createSql }] };
+    }
+    return { type: 'ROWS', rows: [] };
+  }
+  
   if (describeMatch) {
     const tableName = describeMatch[1].toLowerCase();
     const table = db.tables?.get(tableName);
