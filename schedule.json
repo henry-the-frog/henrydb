@@ -3420,22 +3420,103 @@
       "id": "T319",
       "mode": "BUILD",
       "task": "Add materialized view persistence: save view query in catalog, restore on open, add DDL lifecycle tests for CREATE MATERIALIZED VIEW and REFRESH MATERIALIZED VIEW",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T316",
-      "started": "2026-04-18T02:56:03.121Z"
+      "started": "2026-04-18T02:56:03.121Z",
+      "completed": "2026-04-18T03:01:06.234Z",
+      "duration_ms": 900000,
+      "summary": "Materialized view persistence + REFRESH fix. 6 changes: catalog save/load for matviews, checkpoint after CREATE/REFRESH, FileBackedHeap.truncate(), REFRESH uses truncate instead of new heap, DDL lifecycle tests (73/73 pass). Root cause: _saveCatalog() explicitly excluded matviews, REFRESH created new heap for same disk file without clearing pages."
     },
     {
       "id": "T317",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T03:01:19.402Z",
+      "completed": "2026-04-18T03:01:19.549Z",
+      "duration_ms": 0,
+      "summary": "Skipped — placeholder."
     },
     {
       "id": "T318",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit, push, daily log",
+      "started": "2026-04-18T03:01:24.968Z",
+      "completed": "2026-04-18T03:01:49.410Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, daily log updated, TODO cleaned."
+    },
+    {
+      "id": "T320",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Full regression sweep: run ALL HenryDB persistence/crash tests to check for regressions from tonight's 6+ changes to transactional-db.js, file-wal.js, file-backed-heap.js, db.js",
+      "started": "2026-04-18T03:02:19.568Z",
+      "completed": "2026-04-18T03:02:29.784Z",
+      "duration_ms": 60000,
+      "summary": "Tonight touched 4 core files. Highest risk: file-wal.js recovery logic change (per-page LSN), transactional-db.js catalog changes. Need to run ALL persistence/crash tests."
+    },
+    {
+      "id": "T321",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run all persistence, crash recovery, DDL, and lifecycle test files. Fix any regressions found.",
+      "project": "henrydb",
+      "started": "2026-04-18T03:02:30.048Z",
+      "completed": "2026-04-18T03:06:54.789Z",
+      "duration_ms": 600000,
+      "summary": "Full regression sweep: 229/234 pass (2 pre-existing failures, 3 expected skips). NO regressions from tonight's changes. Additional tests: 55/59 pass (4 pre-existing AUTOINCREMENT failures). All clean."
+    },
+    {
+      "id": "T322",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session commit + push + daily log summary",
+      "started": "2026-04-18T03:07:05.618Z",
+      "completed": "2026-04-18T03:07:14.327Z",
+      "duration_ms": 60000,
+      "summary": "Push confirmed up to date. Adding pre-existing bugs to TODO."
+    },
+    {
+      "id": "T323",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate pre-existing bug: committed row lost after close/reopen with uncommitted tx in same session. mixed committed+uncommitted test.",
+      "started": "2026-04-18T03:07:26.143Z",
+      "completed": "2026-04-18T03:13:33.762Z",
+      "duration_ms": 600000,
+      "summary": "Deep investigation of pre-existing bug: committed rows lost with uncommitted tx in same session. Root cause: hasUncommitted=true triggers full redo which calls dm._pageCount=0 + _writeHeader (truncates file), then _replayRecords inserts into new pages. Issue is likely in how page allocation interacts with the truncated file during recovery. Complex fix needed — filed for future session."
+    },
+    {
+      "id": "T324",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Fix committed row lost after close with uncommitted tx — likely checkpoint rollback issue",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T325",
+      "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Commit, push, session end",
+      "skip_reason": ""
+    },
+    {
+      "id": "T326",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix committed rows lost during full redo recovery — don't truncate file, clear pages in-place",
+      "project": "henrydb",
+      "started": "2026-04-18T03:14:05.756Z"
+    },
+    {
+      "id": "T327",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Commit, push, daily log"
+      "task": "Session end: commit, push, final log"
     }
   ],
   "focusProjects": [
@@ -4787,6 +4868,46 @@
     {
       "time": "2026-04-18T02:55:57.843Z",
       "msg": "PLAN T316 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T03:02:13.841Z",
+      "msg": "Added T320 (THINK) after end: Full regression sweep: run ALL HenryDB persistence/crash tests to check for regressions from tonight's 6+ changes to transactional-db.js, file-wal.js, file-backed-heap.js, db.js"
+    },
+    {
+      "time": "2026-04-18T03:02:13.964Z",
+      "msg": "Added T321 (BUILD) after T320: Run all persistence, crash recovery, DDL, and lifecycle test files. Fix any regressions found."
+    },
+    {
+      "time": "2026-04-18T03:02:14.106Z",
+      "msg": "Added T322 (MAINTAIN) after T321: Final session commit + push + daily log summary"
+    },
+    {
+      "time": "2026-04-18T03:07:21.790Z",
+      "msg": "Added T323 (THINK) after end: Investigate pre-existing bug: committed row lost after close/reopen with uncommitted tx in same session. mixed committed+uncommitted test."
+    },
+    {
+      "time": "2026-04-18T03:07:21.913Z",
+      "msg": "Added T324 (BUILD) after T323: Fix committed row lost after close with uncommitted tx — likely checkpoint rollback issue"
+    },
+    {
+      "time": "2026-04-18T03:07:22.062Z",
+      "msg": "Added T325 (MAINTAIN) after T324: Commit, push, session end"
+    },
+    {
+      "time": "2026-04-18T03:13:40.042Z",
+      "msg": "Removed T324: "
+    },
+    {
+      "time": "2026-04-18T03:13:40.162Z",
+      "msg": "Removed T325: "
+    },
+    {
+      "time": "2026-04-18T03:13:59.083Z",
+      "msg": "Added T326 (BUILD) after end: Fix committed rows lost during full redo recovery — don't truncate file, clear pages in-place"
+    },
+    {
+      "time": "2026-04-18T03:13:59.204Z",
+      "msg": "Added T327 (MAINTAIN) after T326: Session end: commit, push, final log"
     }
   ]
 }

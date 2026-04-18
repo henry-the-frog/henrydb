@@ -385,13 +385,59 @@ export function recoverFromFileWAL(heap, wal, fromLsn = 0) {
   // If there are uncommitted/aborted transactions, pages may contain dirty data.
   // In that case, we must do full redo (clear + replay committed only).
   if (hasUncommitted) {
-    // Full redo: clear all pages and replay only committed records
+    // Full redo: pages may contain uncommitted data.
+    // Strategy: check if pages actually have data. If yes, just remove uncommitted
+    // records. If pages are empty/corrupt, do traditional clear + replay.
+    
+    // Check if pages have any data
+    let existingTupleCount = 0;
+    for (let i = 0; i < dm.pageCount; i++) {
+      try {
+        const page = heap._fetchPage(i);
+        for (const _ of page.scanTuples()) existingTupleCount++;
+        heap._unpinPage(i, false);
+      } catch { /* skip */ }
+    }
+    
+    if (existingTupleCount > 0) {
+      // Pages have data — delete only uncommitted records
+      const uncommittedInserts = [];
+      for (const r of allRecords) {
+        if (!matchesHeap(r.tableName)) continue;
+        if (r.type === WAL_TYPES.INSERT && r.txId !== 0 && !committedTxns.has(r.txId)) {
+          uncommittedInserts.push({ pageId: r.pageId, slotIdx: r.slotIdx });
+        }
+      }
+      
+      for (const { pageId, slotIdx } of uncommittedInserts) {
+        try { heap.delete(pageId, slotIdx); } catch { /* may already be deleted */ }
+      }
+      
+      // Rebuild FSM and rowCount
+      heap._fsm = new FreeSpaceMap();
+      heap._rowCount = 0;
+      for (let i = 0; i < dm.pageCount; i++) {
+        try {
+          const page = heap._fetchPage(i);
+          heap._fsm.update(i, page.freeSpace());
+          for (const _ of page.scanTuples()) heap._rowCount++;
+          heap._unpinPage(i, false);
+        } catch { /* skip */ }
+      }
+      
+      heap.flush();
+      const maxLSN = allRecords[allRecords.length - 1].lsn;
+      if (dm) dm.lastAppliedLSN = maxLSN;
+      
+      return { redone: uncommittedInserts.length, skipped: allRecords.length - uncommittedInserts.length, committedTxns: committedTxns.size };
+    }
+    
+    // Pages are empty — traditional full redo (clear + replay committed only)
     for (let i = 0; i < dm.pageCount; i++) {
       dm.writePage(i, Buffer.alloc(PAGE_SIZE));
     }
-    dm._pageCount = 0;
-    dm._freeListHead = -1;
-    dm._writeHeader();
+    dm._nextPageId = 0;
+    dm._numPages = 0;
     heap._fsm = new FreeSpaceMap();
     heap._rowCount = 0;
     return _replayRecords(heap, allRecords, committedTxns, allRecords, dm, matchesHeap);

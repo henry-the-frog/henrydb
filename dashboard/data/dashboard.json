@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T02:56:03.159Z",
+  "generated": "2026-04-18T03:14:05.793Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Add materialized view persistence: save view query in catalog, restore on open, add DDL lifecycle tests for CREATE MATERIALIZED VIEW and REFRESH MATERIALIZED VIEW",
-    "startedAt": "2026-04-18T02:56:03.159Z",
-    "taskId": "T319"
+    "task": "Fix committed rows lost during full redo recovery — don't truncate file, clear pages in-place",
+    "startedAt": "2026-04-18T03:14:05.793Z",
+    "taskId": "T326"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -7635,13 +7635,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 304,
+    "blocksCompleted": 311,
     "blocksTotal": 319,
     "modeDistribution": {
-      "THINK": 23,
+      "THINK": 25,
       "PLAN": 25,
-      "BUILD": 161,
-      "MAINTAIN": 29,
+      "BUILD": 164,
+      "MAINTAIN": 31,
       "EXPLORE": 66
     }
   },
