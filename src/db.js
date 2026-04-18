@@ -450,6 +450,17 @@ export class Database {
       case 'BEGIN': 
         this._inTransaction = true;
         this._txWriteLog = []; // Track writes for rollback
+        // Take a snapshot of all table data for rollback
+        this._txSnapshot = new Map();
+        for (const [name, table] of this.tables) {
+          const rows = [...table.heap.scan()].map(r => ({ ...r, values: [...r.values] }));
+          const indexKeys = new Map();
+          for (const [colName, index] of table.indexes) {
+            // Save index state by storing all keys
+            indexKeys.set(colName, { unique: index.unique });
+          }
+          this._txSnapshot.set(name, { rows, indexKeys });
+        }
         if (this._mvccEnabled) {
           this._currentTx = this._mvcc.begin(ast.options || {});
           this._currentTxId = this._currentTx.txId;
@@ -465,76 +476,38 @@ export class Database {
         return { type: 'OK', message: 'COMMIT' };
       case 'ROLLBACK': 
         this._inTransaction = false;
-        // Undo physical changes from the write log (reverse order)
-        if (this._txWriteLog) {
-          for (let i = this._txWriteLog.length - 1; i >= 0; i--) {
-            const entry = this._txWriteLog[i];
-            try {
-              if (entry.type === 'INSERT') {
-                // Remove the inserted row from heap
-                const table = this._getTable(entry.table);
-                if (table && table.heap) {
-                  table.heap.delete(entry.rid.pageId, entry.rid.slotIdx);
-                }
-                // Remove from all indexes
-                if (table && table.indexes) {
-                  for (const [colName, index] of table.indexes) {
-                    const colIdx = table.schema.findIndex(c => c.name === colName);
-                    if (colIdx >= 0 && entry.values[colIdx] !== null && entry.values[colIdx] !== undefined) {
-                      index.delete(entry.values[colIdx]);
-                    }
-                  }
-                }
-              } else if (entry.type === 'DELETE') {
-                // Re-insert the deleted row
-                const table = this._getTable(entry.table);
-                if (table && table.heap) {
-                  const newRid = table.heap.insert(entry.values);
-                  // Re-add to indexes with the NEW rid
-                  for (const [colName, index] of table.indexes) {
-                    const colIdx = table.schema.findIndex(c => c.name === colName);
-                    if (colIdx >= 0 && entry.values[colIdx] !== null && entry.values[colIdx] !== undefined) {
-                      index.insert(entry.values[colIdx], newRid);
-                    }
-                  }
-                }
-              } else if (entry.type === 'UPDATE') {
-                // Restore old values
-                const table = this._getTable(entry.table);
-                if (table && table.heap) {
-                  if (entry.hot) {
-                    // HOT update: values are at original position, just overwrite
-                    table.heap.update(entry.rid.pageId, entry.rid.slotIdx, entry.oldValues);
-                  } else {
-                    // Regular update: new row at newRid, need to delete it and re-insert old
-                    if (entry.newRid) {
-                      table.heap.delete(entry.newRid.pageId, entry.newRid.slotIdx);
-                      // Remove new index entries
-                      for (const [colName, index] of table.indexes) {
-                        const colIdx = table.schema.findIndex(c => c.name === colName);
-                        if (colIdx >= 0) {
-                          const newVal = entry.newValues[colIdx];
-                          if (newVal !== null && newVal !== undefined) try { index.delete(newVal); } catch {}
-                        }
-                      }
-                    }
-                    // Re-insert old values
-                    const restoredRid = table.heap.insert(entry.oldValues);
-                    // Re-add old index entries
-                    for (const [colName, index] of table.indexes) {
-                      const colIdx = table.schema.findIndex(c => c.name === colName);
-                      if (colIdx >= 0) {
-                        const oldVal = entry.oldValues[colIdx];
-                        if (oldVal !== null && oldVal !== undefined) index.insert(oldVal, restoredRid);
-                      }
-                    }
+        // Restore table state from snapshot (taken at BEGIN)
+        if (this._txSnapshot) {
+          for (const [tableName, snapshot] of this._txSnapshot) {
+            const table = this._getTable(tableName);
+            if (!table) continue;
+            
+            // Clear current heap by deleting all rows
+            const currentRows = [...table.heap.scan()];
+            for (const { pageId, slotIdx } of currentRows) {
+              try { table.heap.delete(pageId, slotIdx); } catch {}
+            }
+            
+            // Replace indexes with fresh instances
+            for (const [colName, oldIndex] of table.indexes) {
+              table.indexes.set(colName, new BPlusTree(32, { unique: oldIndex.unique }));
+            }
+            
+            // Re-insert snapshot rows and rebuild indexes
+            for (const row of snapshot.rows) {
+              const rid = table.heap.insert(row.values);
+              for (const [colName, index] of table.indexes) {
+                const colIdx = table.schema.findIndex(c => c.name === colName);
+                if (colIdx >= 0) {
+                  const key = row.values[colIdx];
+                  if (key !== null && key !== undefined) {
+                    try { index.insert(key, rid); } catch {}
                   }
                 }
               }
-            } catch (e) {
-              // Best-effort undo — log but don't fail
             }
           }
+          this._txSnapshot = null;
           this._txWriteLog = null;
         }
         if (this._currentTx) {
@@ -3204,7 +3177,16 @@ export class Database {
         // Skip PK index (auto-created)
         const isPk = tableData.schema.some(c => c.name === colName && c.primaryKey);
         if (!isPk) {
-          db.execute(`CREATE INDEX idx_${name}_${colName} ON ${name} (${colName})`);
+          // Check indexCatalog for uniqueness info
+          const isUnique = Object.values(json.indexCatalog || {}).some(
+            meta => meta.table === name && meta.unique && (
+              meta.columns === colName ||
+              (Array.isArray(meta.columns) && meta.columns.length === 1 && meta.columns[0] === colName) ||
+              (Array.isArray(meta.columns) && meta.columns.join(',') === colName)
+            )
+          );
+          const uniqueKw = isUnique ? 'UNIQUE ' : '';
+          db.execute(`CREATE ${uniqueKw}INDEX idx_${name}_${colName} ON ${name} (${colName})`);
         }
       }
     }
