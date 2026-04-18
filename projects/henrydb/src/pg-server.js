@@ -341,6 +341,26 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: indexes };
   }
   
+  // SHOW CREATE TABLE tablename
+  const showCreateMatch = upper.match(/^SHOW\s+CREATE\s+TABLE\s+(\w+)/);
+  if (showCreateMatch) {
+    const tableName = showCreateMatch[1].toLowerCase();
+    const table = db.tables?.get(tableName);
+    if (table && table.schema) {
+      const cols = table.schema.map(col => {
+        let def = `  ${col.name} ${(col.type || 'TEXT').toUpperCase()}`;
+        if (col.primaryKey) def += ' PRIMARY KEY';
+        else if (col.unique) def += ' UNIQUE';
+        if (col.notNull) def += ' NOT NULL';
+        if (col.defaultValue != null) def += ` DEFAULT ${col.defaultValue}`;
+        return def;
+      });
+      const createSql = `CREATE TABLE ${tableName} (\n${cols.join(',\n')}\n)`;
+      return { type: 'ROWS', rows: [{ table_name: tableName, create_statement: createSql }] };
+    }
+    return { type: 'ROWS', rows: [] };
+  }
+  
   // psql: SHOW search_path / server_version etc
   if (upper.startsWith('SHOW ')) {
     const param = upper.replace('SHOW ', '').replace(';', '').trim();
@@ -401,25 +421,6 @@ function interceptPgCatalog(sql, db) {
   
   // DESCRIBE table (MySQL-style, also common in tools)
   const describeMatch = upper.match(/^DESCRIBE\s+(\w+)/);
-  const showCreateMatch = upper.match(/^SHOW\s+CREATE\s+TABLE\s+(\w+)/);
-  
-  if (showCreateMatch) {
-    const tableName = showCreateMatch[1].toLowerCase();
-    const table = db.tables?.get(tableName);
-    if (table && table.schema) {
-      const cols = table.schema.map(col => {
-        let def = `  ${col.name} ${(col.type || 'TEXT').toUpperCase()}`;
-        if (col.primaryKey) def += ' PRIMARY KEY';
-        else if (col.unique) def += ' UNIQUE';
-        if (col.notNull) def += ' NOT NULL';
-        if (col.defaultValue != null) def += ` DEFAULT ${col.defaultValue}`;
-        return def;
-      });
-      const createSql = `CREATE TABLE ${tableName} (\n${cols.join(',\n')}\n)`;
-      return { type: 'ROWS', rows: [{ table_name: tableName, create_statement: createSql }] };
-    }
-    return { type: 'ROWS', rows: [] };
-  }
   
   if (describeMatch) {
     const tableName = describeMatch[1].toLowerCase();
@@ -1099,7 +1100,7 @@ function handleConnection(socket, db) {
         const tag = getCommandTag(sql, result);
 
         if (result.rows && result.rows.length > 0) {
-          const columns = getColumns(result, db);
+          const columns = getColumns(result, db, sql);
           socket.write(rowDescription(columns));
           for (const row of result.rows) {
             const values = columns.map(c => {
@@ -1110,7 +1111,7 @@ function handleConnection(socket, db) {
           }
         } else if (result.columns && result.columns.length > 0) {
           // Query returned columns but no rows
-          const columns = getColumns(result, db);
+          const columns = getColumns(result, db, sql);
           socket.write(rowDescription(columns));
         }
 
