@@ -283,6 +283,18 @@ function interceptPgCatalog(sql, db) {
   
   // psql startup: SET client_encoding, DateStyle, etc
   if (upper.startsWith('SET ')) {
+    // Check for cost model parameter SET
+    const setMatch = sql.match(/^SET\s+(\w+)\s*(?:=|TO)\s*['"]?([^'";\s]+)/i);
+    if (setMatch) {
+      const param = setMatch[1].toLowerCase();
+      const value = parseFloat(setMatch[2]);
+      
+      const costParams = ['seq_page_cost', 'random_page_cost', 'cpu_tuple_cost', 'cpu_index_tuple_cost', 'cpu_operator_cost'];
+      if (costParams.includes(param) && !isNaN(value) && db.constructor?.COST_MODEL) {
+        db.constructor.COST_MODEL[param] = value;
+        return { type: 'OK', message: 'SET' };
+      }
+    }
     return { type: 'OK', message: 'SET' };
   }
   
@@ -322,6 +334,13 @@ function interceptPgCatalog(sql, db) {
       case 'IS_SUPERUSER':
         return { type: 'ROWS', rows: [{ is_superuser: 'on' }] };
       default:
+        // Check cost model parameters
+        const costParams = ['SEQ_PAGE_COST', 'RANDOM_PAGE_COST', 'CPU_TUPLE_COST', 'CPU_INDEX_TUPLE_COST', 'CPU_OPERATOR_COST'];
+        if (costParams.includes(param)) {
+          const C = db.constructor?.COST_MODEL || {};
+          const val = C[param.toLowerCase()];
+          return { type: 'ROWS', rows: [{ [param.toLowerCase()]: val != null ? String(val) : '' }] };
+        }
         return { type: 'ROWS', rows: [{ [param.toLowerCase()]: '' }] };
     }
   }
