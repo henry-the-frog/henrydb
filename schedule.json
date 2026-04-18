@@ -1648,6 +1648,28 @@
       "completed": "2026-04-18T19:45:45.823Z",
       "duration_ms": 60000,
       "summary": "LATERAL join already implemented! Parser + executor both handle it. Tested with LATERAL subquery referencing outer columns. Works correctly."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add SHOW ALL / pg_settings support to expose HenryDB cost model parameters",
+      "project": "henrydb",
+      "started": "2026-04-18T19:46:39.740Z",
+      "completed": "2026-04-18T19:47:19.780Z",
+      "duration_ms": 180000,
+      "summary": "SHOW ALL returns 10 settings including all cost model parameters (seq_page_cost, random_page_cost, cpu_tuple_cost, etc.) and page_size."
+    },
+    {
+      "id": "T156",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add SET support for cost model parameters through PG wire (SET seq_page_cost = 2.0 etc.)",
+      "project": "henrydb",
+      "started": "2026-04-18T19:47:41.648Z",
+      "completed": "2026-04-18T19:48:43.807Z",
+      "duration_ms": 180000,
+      "summary": "SET seq_page_cost/random_page_cost/cpu_tuple_cost etc. via PG wire updates live cost model. SHOW returns current values. Users can tune optimizer behavior at runtime."
     }
   ],
   "focusProjects": [
@@ -2267,6 +2289,14 @@
     {
       "time": "2026-04-18T19:45:01.510Z",
       "msg": "Added T154 (BUILD) after end: Add LATERAL join support to HenryDB"
+    },
+    {
+      "time": "2026-04-18T19:46:31.614Z",
+      "msg": "Added T155 (BUILD) after end: Add SHOW ALL / pg_settings support to expose HenryDB cost model parameters"
+    },
+    {
+      "time": "2026-04-18T19:47:33.073Z",
+      "msg": "Added T156 (BUILD) after end: Add SET support for cost model parameters through PG wire (SET seq_page_cost = 2.0 etc.)"
     }
   ]
 }
