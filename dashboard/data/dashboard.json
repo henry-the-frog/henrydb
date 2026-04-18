@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T18:50:09.796Z",
+  "generated": "2026-04-18T18:59:41.699Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push and test",
-    "startedAt": "2026-04-18T18:50:09.796Z",
-    "taskId": "T126"
+    "task": "Push all changes and verify tests pass",
+    "startedAt": "2026-04-18T18:59:41.699Z",
+    "taskId": "T132"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -1442,49 +1442,113 @@
       {
         "id": "T124",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Plan persistent catalog for HenryDB",
         "task": null,
-        "started": "2026-04-18T18:45:28.264Z"
+        "started": "2026-04-18T18:45:28.264Z",
+        "completed": "2026-04-18T18:46:06.601Z",
+        "duration_ms": 120000,
+        "summary": "Planned 2 BUILDs: (1) integrate PersistentDatabase with pg-server + add pg_catalog virtual tables, (2) test restart persistence. Current catalog.json approach works but pg-server uses in-memory DB. Need to wire them together."
       },
       {
         "id": "T127",
         "mode": "BUILD",
         "task": "Integrate PersistentDatabase with pg-server.js: --dir flag uses persistent storage, tables survive restart. Add pg_catalog virtual tables (pg_class, pg_attribute) for basic psql compatibility",
-        "status": "upcoming",
-        "plan_ref": "T124"
+        "status": "done",
+        "plan_ref": "T124",
+        "started": "2026-04-18T18:46:17.381Z",
+        "completed": "2026-04-18T18:48:59.825Z",
+        "duration_ms": 600000,
+        "summary": "PG server now supports --dir for persistent storage via PersistentDatabase. Added pg_catalog interceptor for SET/SHOW/version()/current_database()/current_schema()/pg_type queries. Data verified to survive restart cycle."
       },
       {
         "id": "T128",
         "mode": "BUILD",
         "task": "Test PersistentDatabase + PG wire: create table, insert data, restart server, verify data persists through pg client",
-        "status": "upcoming",
-        "plan_ref": "T124"
+        "status": "done",
+        "plan_ref": "T124",
+        "started": "2026-04-18T18:49:09.722Z",
+        "completed": "2026-04-18T18:49:51.023Z",
+        "duration_ms": 300000,
+        "summary": "4 persistent PG tests: (1) data survives 3-phase restart cycle (create→stop→verify→insert→stop→verify), (2) SET/SHOW interceptors, (3) parameterized queries with PersistentDB, (4) pg.Pool concurrent inserts with PersistentDB. All pass."
       },
       {
         "id": "T125",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-18T18:50:00.663Z",
+        "completed": "2026-04-18T18:50:00.825Z",
+        "duration_ms": 5000,
+        "summary": "Placeholder."
+      },
+      {
+        "id": "T126",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and test",
+        "started": "2026-04-18T18:50:09.760Z",
+        "completed": "2026-04-18T18:51:20.718Z",
+        "duration_ms": 300000,
+        "summary": "Pushed all changes. Updated README with PG wire section. All tests pass."
+      },
+      {
+        "id": "T129",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Direction: ~1h left. BUILD count: ~8. Depth check passes. PG wire + persistent done. Next high-value: parametric cost model (foundational for optimizer). Or: COPY command (bulk loading through PG wire), or: stress test with realistic workload to find bugs",
+        "started": "2026-04-18T18:51:34.785Z",
+        "completed": "2026-04-18T18:51:41.573Z",
+        "duration_ms": 60000,
+        "summary": "Direction: parametric cost model. Foundation for all optimizer improvements. Models seq_page_cost, random_page_cost, cpu_tuple_cost etc. ~50 lines to replace raw row count with parametric formula."
+      },
+      {
+        "id": "T130",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan parametric cost model for HenryDB query optimizer",
+        "task": null,
+        "started": "2026-04-18T18:51:57.023Z"
+      },
+      {
+        "id": "T133",
+        "mode": "BUILD",
+        "task": "Implement parametric cost model: replace binary index-vs-scan choice with cost comparison. Sequential scan cost = pages * seq_page_cost + rows * cpu_tuple_cost. Index scan cost = rows_fetched * random_page_cost + rows_fetched * cpu_index_tuple_cost. Choose lower cost. Show costs in EXPLAIN.",
+        "status": "upcoming",
+        "plan_ref": "T130"
+      },
+      {
+        "id": "T134",
+        "mode": "BUILD",
+        "task": "Test parametric cost model: verify optimizer chooses seq scan when selectivity > 30% even with index, chooses index when selectivity < 10%. EXPLAIN shows cost numbers.",
+        "status": "upcoming",
+        "plan_ref": "T130"
+      },
+      {
+        "id": "T131",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "henrydb"
       },
       {
-        "id": "T126",
+        "id": "T132",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Push and test"
+        "task": "Push all changes and verify tests pass"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 125,
-    "blocksTotal": 128,
+    "blocksCompleted": 131,
+    "blocksTotal": 134,
     "modeDistribution": {
-      "THINK": 28,
-      "PLAN": 19,
-      "BUILD": 43,
-      "MAINTAIN": 27,
+      "THINK": 29,
+      "PLAN": 20,
+      "BUILD": 46,
+      "MAINTAIN": 28,
       "EXPLORE": 8
     }
   },
