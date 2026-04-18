@@ -20,7 +20,7 @@ const KEYWORDS = new Set([
   'CURRENT_TIMESTAMP', 'CURRENT_DATE', 'NOW', 'STRFTIME',
   'SHOW', 'TABLES', 'COLUMNS',
   'TRUNCATE', 'RENAME', 'DESCRIBE',
-  'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT',
+  'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT', 'SAVEPOINT', 'RELEASE',
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
@@ -32,7 +32,7 @@ const KEYWORDS = new Set([
   'TRIGGER', 'BEFORE', 'AFTER', 'EACH', 'ROW', 'EXECUTE',
   'IF', 'EXISTS', 'PREPARE', 'DEALLOCATE', 'COPY', 'STDIN', 'STDOUT',
   'FORMAT', 'CSV', 'HEADER', 'DELIMITER', 'CURSOR', 'DECLARE', 'FETCH',
-  'CLOSE', 'LISTEN', 'NOTIFY', 'FORWARD', 'NEXT', 'FIRST', 'SCROLL', 'FOR',
+  'CLOSE', 'LISTEN', 'NOTIFY', 'FORWARD', 'NEXT', 'FIRST', 'SCROLL', 'FOR', 'TO',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY',
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL',
@@ -222,7 +222,31 @@ export function parse(sql) {
   if (isKeyword('DESCRIBE')) { advance(); return { type: 'DESCRIBE', table: advance().value }; }
   if (isKeyword('BEGIN')) { advance(); if (isKeyword('TRANSACTION')) advance(); return { type: 'BEGIN' }; }
   if (isKeyword('COMMIT')) { advance(); return { type: 'COMMIT' }; }
-  if (isKeyword('ROLLBACK')) { advance(); return { type: 'ROLLBACK' }; }
+  if (isKeyword('ROLLBACK')) {
+    advance();
+    if (isKeyword('TO')) {
+      advance();
+      if (isKeyword('SAVEPOINT')) advance();
+      const name = (advance().originalValue || tokens[pos-1].value);
+      return { type: 'ROLLBACK_TO', savepoint: name };
+    }
+    return { type: 'ROLLBACK' };
+  }
+  
+  // SAVEPOINT name
+  if (isKeyword('SAVEPOINT')) {
+    advance();
+    const name = (advance().originalValue || tokens[pos-1].value);
+    return { type: 'SAVEPOINT', name };
+  }
+  
+  // RELEASE [SAVEPOINT] name
+  if (isKeyword('RELEASE')) {
+    advance();
+    if (isKeyword('SAVEPOINT')) advance();
+    const name = (advance().originalValue || tokens[pos-1].value);
+    return { type: 'RELEASE_SAVEPOINT', name };
+  }
   if (isKeyword('VACUUM')) { advance(); let table = null; let incremental = false; let maxPages = null; if (peek().type === 'IDENT' && peek().value === 'INCREMENTAL') { advance(); incremental = true; if (peek().type === 'NUMBER') { maxPages = parseInt(advance().value, 10); } } if (peek().type === 'IDENT' || peek().type === 'KEYWORD') table = (advance().originalValue || tokens[pos-1].value); return { type: 'VACUUM', table, incremental, maxPages }; }
   if (isKeyword('CHECKPOINT')) { advance(); return { type: 'CHECKPOINT' }; }
 

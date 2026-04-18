@@ -436,7 +436,11 @@ export class Database {
           this._currentTx = null;
           this._currentTxId = 0;
         }
+        this._savepoints = null;
         return { type: 'OK', message: 'ROLLBACK' };
+      case 'SAVEPOINT': return this._savepoint(ast);
+      case 'RELEASE_SAVEPOINT': return this._releaseSavepoint(ast);
+      case 'ROLLBACK_TO': return this._rollbackTo(ast);
       case 'VACUUM': return this._vacuum(ast);
       case 'PREPARE': return this._prepare(ast);
       case 'EXECUTE_PREPARED': return this._executePrepared(ast);
@@ -2724,6 +2728,94 @@ export class Database {
     const pending = this._pendingNotifications || [];
     this._pendingNotifications = [];
     return pending;
+  }
+
+    // SAVEPOINT support
+  _savepoint(ast) {
+    if (!this._inTransaction) {
+      throw new Error('SAVEPOINT can only be used within a transaction');
+    }
+    if (!this._savepoints) this._savepoints = new Map();
+    const name = ast.name.toLowerCase();
+    
+    // Snapshot current table data
+    const snapshot = new Map();
+    for (const [tableName, table] of this.tables) {
+      const rows = [...table.heap.scan()].map(r => ({
+        pageId: r.pageId,
+        slotIdx: r.slotIdx,
+        values: [...r.values],
+      }));
+      snapshot.set(tableName, {
+        schema: [...table.schema],
+        rows,
+      });
+    }
+    
+    this._savepoints.set(name, snapshot);
+    return { type: 'OK', message: `SAVEPOINT "${name}"` };
+  }
+
+  _releaseSavepoint(ast) {
+    if (!this._savepoints) this._savepoints = new Map();
+    const name = ast.name.toLowerCase();
+    if (!this._savepoints.has(name)) {
+      throw new Error(`Savepoint "${name}" does not exist`);
+    }
+    this._savepoints.delete(name);
+    return { type: 'OK', message: `RELEASE SAVEPOINT "${name}"` };
+  }
+
+  _rollbackTo(ast) {
+    if (!this._savepoints) this._savepoints = new Map();
+    const name = ast.savepoint.toLowerCase();
+    if (!this._savepoints.has(name)) {
+      throw new Error(`Savepoint "${name}" does not exist`);
+    }
+    
+    const snapshot = this._savepoints.get(name);
+    
+    // Restore table data from snapshot
+    for (const [tableName, tableSnapshot] of snapshot) {
+      const table = this.tables.get(tableName);
+      if (!table) continue;
+      
+      // Clear current heap
+      table.heap.pages = [];
+      table.heap.nextPageId = 0;
+      if (table.heap._hotChains) table.heap._hotChains.clear();
+      if (table.heap._hotRedirected) table.heap._hotRedirected.clear();
+      
+      // Re-insert snapshot rows (this will auto-update indexes through normal insert path)
+      // First, temporarily disable indexes to avoid stale entries
+      const savedIndexes = new Map(table.indexes);
+      
+      // Clear all indexes by recreating them
+      for (const [colName] of table.indexes) {
+        table.indexes.set(colName, new BPlusTree());
+      }
+      
+      // Re-insert all rows
+      for (const row of tableSnapshot.rows) {
+        const rid = table.heap.insert(row.values);
+        // Re-index each column
+        for (const [colName, index] of table.indexes) {
+          const colIdx = table.schema.findIndex(c => c.name === colName);
+          if (colIdx !== -1) {
+            index.insert(row.values[colIdx], `${rid.pageId}:${rid.slotIdx}`);
+          }
+        }
+      }
+    }
+    
+    // Delete all savepoints AFTER this one (PostgreSQL behavior)
+    const spNames = [...this._savepoints.keys()];
+    const idx = spNames.indexOf(name);
+    for (let i = idx + 1; i < spNames.length; i++) {
+      this._savepoints.delete(spNames[i]);
+    }
+    
+    return { type: 'OK', message: `ROLLBACK TO SAVEPOINT "${name}"` };
   }
 
   // CURSOR support
