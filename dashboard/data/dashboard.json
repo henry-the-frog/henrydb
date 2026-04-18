@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T16:04:14.685Z",
+  "generated": "2026-04-18T16:12:03.497Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Commit progress and push to GitHub",
-    "startedAt": "2026-04-18T16:04:14.685Z",
-    "taskId": "T67"
+    "mode": "BUILD",
+    "task": "Tests: SELECT FOR UPDATE — basic locking, conflict detection, lock release on commit/rollback, FOR SHARE concurrent reads",
+    "startedAt": "2026-04-18T16:12:03.497Z",
+    "taskId": "T73"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -717,43 +717,169 @@
       {
         "id": "T57",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement proper VACUUM HOT chain pruning with index entry updates",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-18T15:50:18.473Z"
+        "started": "2026-04-18T15:50:18.473Z",
+        "completed": "2026-04-18T15:50:46.709Z",
+        "duration_ms": 120000,
+        "summary": "Planned 2 BUILD tasks. Simplified approach: VACUUM calls _rebuildIndexes after removing dead tuples (VACUUM FULL style). Incremental pruning deferred."
       },
       {
         "id": "T61",
         "mode": "BUILD",
         "task": "Add HOT chain cleanup to VACUUM: after removing dead tuples, rebuild indexes and clear chains",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-18T15:51:01.216Z",
+        "completed": "2026-04-18T15:52:32.030Z",
+        "duration_ms": 300000,
+        "summary": "VACUUM now rebuilds indexes and clears HOT chains after removing dead tuples. Both MVCC and non-MVCC paths updated. 30/30 vacuum+HOT tests pass. Committed."
       },
       {
         "id": "T62",
         "mode": "BUILD",
         "task": "Test VACUUM + HOT chains: verify index correctness after vacuum of HOT-updated rows",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-18T15:52:42.460Z",
+        "completed": "2026-04-18T15:53:33.288Z",
+        "duration_ms": 300000,
+        "summary": "6 VACUUM+HOT MVCC tests all pass. Covers: index correctness post-vacuum, chain clearing, snapshot visibility preservation, bulk operations, ghost entry cleanup."
       },
       {
         "id": "T58",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push and daily log"
+        "status": "done",
+        "task": "Git push and daily log",
+        "started": "2026-04-18T15:53:58.361Z",
+        "completed": "2026-04-18T15:54:05.277Z",
+        "duration_ms": 30000,
+        "summary": "Pushed henrydb and workspace."
       },
       {
         "id": "T59",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon depth check and session direction"
+        "status": "done",
+        "task": "Afternoon depth check and session direction",
+        "started": "2026-04-18T15:54:16.315Z",
+        "completed": "2026-04-18T15:54:30.969Z",
+        "duration_ms": 120000,
+        "summary": "BUILD cap reached (18/20). Mandatory depth pivot: full test sweep then EXPLORE/THINK. Session has been extremely productive — 67 new tests, 6 bugs fixed, 2 major features (UDFs, HOT chains) across 3 projects."
+      },
+      {
+        "id": "T63",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Full test sweep: run all critical HenryDB test files and triage any failures",
+        "started": "2026-04-18T15:55:00.055Z",
+        "completed": "2026-04-18T15:58:25.678Z",
+        "duration_ms": 300000,
+        "summary": "Full sweep: 23 test files, 255 tests, 254 pass, 1 known flaky (WALManager 10K perf under load). Zero regressions from all todays work."
+      },
+      {
+        "id": "T64",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep study: PostgreSQL MVCC visibility rules and how they differ from HenryDB implementation",
+        "project": "henrydb",
+        "started": "2026-04-18T15:58:43.332Z",
+        "completed": "2026-04-18T15:59:52.624Z",
+        "duration_ms": 300000,
+        "summary": "Deep study of PG MVCC vs HenryDB. Key gap: HenryDB uses simplified snapshot (startTx only, no in-progress list). PG uses xmin+xmax+xip[] range for correct concurrent visibility. Also missing: row-level locking via xmax, persistent commit log, frozen tuples. Captured in scratch/mvcc-visibility-comparison.md."
       },
       {
         "id": "T60",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Verify all project test suites pass and push final state",
+        "started": "2026-04-18T16:00:17.573Z",
+        "completed": "2026-04-18T16:01:22.802Z",
+        "duration_ms": 120000,
+        "summary": "All projects verified: HenryDB 254/255 (1 known flaky), RISC-V 1077/1078 (1 skip), Neural-net 1304/1305 (1 flaky convergence). All pushed to GitHub."
+      },
+      {
+        "id": "T65",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Post-pivot direction: what single thing would have the highest learning value right now?",
+        "started": "2026-04-18T16:01:59.137Z",
+        "completed": "2026-04-18T16:03:20.860Z",
+        "duration_ms": 300000,
+        "summary": "IMPORTANT: HenryDB already has proper snapshot isolation with activeSet (equivalent to PGs xip[]). My earlier gap analysis was wrong. Verified: concurrent tx correctly excluded from snapshots. Lesson: always verify assumptions against code before planning improvements."
+      },
+      {
+        "id": "T66",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Add in-progress transaction list to HenryDB snapshots for correct concurrent MVCC visibility",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T16:03:50.961Z",
+        "completed": "2026-04-18T16:03:51.207Z",
+        "duration_ms": 10000,
+        "summary": "CANCELLED — HenryDB already has snap.activeSet (in-progress list). No changes needed. Verified with concurrent transaction test."
+      },
+      {
+        "id": "T67",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Commit progress and push to GitHub",
+        "started": "2026-04-18T16:04:14.648Z",
+        "completed": "2026-04-18T16:04:23.184Z",
+        "duration_ms": 30000,
+        "summary": "Pushed corrected MVCC analysis and queue state."
+      },
+      {
+        "id": "T68",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Afternoon BUILD count check and quality assessment",
+        "started": "2026-04-18T16:04:31.372Z",
+        "completed": "2026-04-18T16:04:31.519Z",
+        "duration_ms": 60000,
+        "summary": "Post-pivot BUILD count reset to 0. Quality assessment: 67+ new tests, 6 bugs fixed, 2 major features, 1 corrected analysis. High depth, good quality. Ready for SELECT FOR UPDATE."
+      },
+      {
+        "id": "T69",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Verify session state consistency: all projects in clean git state and pushed",
+        "started": "2026-04-18T16:04:40.642Z",
+        "completed": "2026-04-18T16:04:40.783Z",
+        "duration_ms": 10000,
+        "summary": "Already verified and pushed in T60 and T67."
+      },
+      {
+        "id": "T70",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement SELECT FOR UPDATE: row-level locking via xmax field for pessimistic concurrency control",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T16:04:56.487Z"
+      },
+      {
+        "id": "T71",
+        "mode": "BUILD",
+        "task": "Parser: add FOR UPDATE/FOR SHARE clause to SELECT statement",
         "status": "upcoming",
-        "task": "Verify all project test suites pass and push final state"
+        "plan_ref": "T70"
+      },
+      {
+        "id": "T72",
+        "mode": "BUILD",
+        "task": "Executor: implement row-level locking — _rowLocks map, lock acquisition, conflict detection on UPDATE/DELETE, release on commit/rollback",
+        "status": "upcoming",
+        "plan_ref": "T70"
+      },
+      {
+        "id": "T73",
+        "mode": "BUILD",
+        "task": "Tests: SELECT FOR UPDATE — basic locking, conflict detection, lock release on commit/rollback, FOR SHARE concurrent reads",
+        "status": "upcoming",
+        "plan_ref": "T70"
       },
       {
         "id": "T42",
@@ -765,13 +891,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 64,
-    "blocksTotal": 62,
+    "blocksCompleted": 70,
+    "blocksTotal": 73,
     "modeDistribution": {
-      "THINK": 17,
-      "PLAN": 11,
-      "BUILD": 19,
-      "MAINTAIN": 14,
+      "THINK": 18,
+      "PLAN": 12,
+      "BUILD": 21,
+      "MAINTAIN": 16,
       "EXPLORE": 3
     }
   },

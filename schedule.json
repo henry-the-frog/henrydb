@@ -700,35 +700,80 @@
     {
       "id": "T67",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit progress and push to GitHub",
-      "started": "2026-04-18T16:04:14.648Z"
+      "started": "2026-04-18T16:04:14.648Z",
+      "completed": "2026-04-18T16:04:23.184Z",
+      "duration_ms": 30000,
+      "summary": "Pushed corrected MVCC analysis and queue state."
     },
     {
       "id": "T68",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon BUILD count check and quality assessment"
+      "status": "done",
+      "task": "Afternoon BUILD count check and quality assessment",
+      "started": "2026-04-18T16:04:31.372Z",
+      "completed": "2026-04-18T16:04:31.519Z",
+      "duration_ms": 60000,
+      "summary": "Post-pivot BUILD count reset to 0. Quality assessment: 67+ new tests, 6 bugs fixed, 2 major features, 1 corrected analysis. High depth, good quality. Ready for SELECT FOR UPDATE."
     },
     {
       "id": "T69",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Verify session state consistency: all projects in clean git state and pushed"
+      "status": "done",
+      "task": "Verify session state consistency: all projects in clean git state and pushed",
+      "started": "2026-04-18T16:04:40.642Z",
+      "completed": "2026-04-18T16:04:40.783Z",
+      "duration_ms": 10000,
+      "summary": "Already verified and pushed in T60 and T67."
+    },
+    {
+      "id": "T70",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement SELECT FOR UPDATE: row-level locking via xmax field for pessimistic concurrency control",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T16:04:56.487Z",
+      "completed": "2026-04-18T16:05:20.181Z",
+      "duration_ms": 180000,
+      "summary": "Planned 3 BUILD tasks: parser (FOR UPDATE/SHARE), executor (row locks, conflict detection, release), tests. Simplified design: _rowLocks Map, immediate error on conflict (no wait queues)."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "task": "Parser: add FOR UPDATE/FOR SHARE clause to SELECT statement",
+      "status": "done",
+      "plan_ref": "T70",
+      "started": "2026-04-18T16:05:30.624Z",
+      "completed": "2026-04-18T16:06:27.717Z",
+      "duration_ms": 60000,
+      "summary": "Parser already supports FOR UPDATE/SHARE/NOWAIT/SKIP LOCKED — forUpdate field in SELECT AST. No changes needed."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "task": "Executor: implement row-level locking — _rowLocks map, lock acquisition, conflict detection on UPDATE/DELETE, release on commit/rollback",
+      "status": "done",
+      "plan_ref": "T70",
+      "started": "2026-04-18T16:06:32.288Z",
+      "completed": "2026-04-18T16:11:49.314Z",
+      "duration_ms": 600000,
+      "summary": "Implemented row-level locking: _rowLocks map, lock acquisition via heap scan for PK matching, conflict detection in UPDATE/DELETE, lock release on COMMIT/ROLLBACK. FOR UPDATE and FOR SHARE modes. All existing tests pass."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "task": "Tests: SELECT FOR UPDATE — basic locking, conflict detection, lock release on commit/rollback, FOR SHARE concurrent reads",
+      "status": "in-progress",
+      "plan_ref": "T70",
+      "started": "2026-04-18T16:12:03.462Z"
     },
     {
       "id": "T42",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final state snapshot: push repos, update daily log with evening summary"
-    },
-    {
-      "id": "T70",
-      "mode": "PLAN",
-      "status": "upcoming",
-      "goal": "Implement SELECT FOR UPDATE: row-level locking via xmax field for pessimistic concurrency control",
-      "task": null,
-      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1020,6 +1065,14 @@
     {
       "time": "2026-04-18T16:04:07.671Z",
       "msg": "Added T70 (PLAN) after end: Implement SELECT FOR UPDATE: row-level locking via xmax field for pessimistic concurrency control"
+    },
+    {
+      "time": "2026-04-18T16:04:48.279Z",
+      "msg": "Moved T70 after T69"
+    },
+    {
+      "time": "2026-04-18T16:05:11.614Z",
+      "msg": "PLAN T70 filled 3 BUILD tasks"
     }
   ]
 }

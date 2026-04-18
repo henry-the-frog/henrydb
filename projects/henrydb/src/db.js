@@ -23,6 +23,7 @@ export class Database {
   constructor(options = {}) {
     this.tables = new Map();  // name -> { heap, schema, indexes }
     this._functions = new Map(); // name -> { params, returnType, language, body, volatility, isProcedure }
+    this._rowLocks = new Map(); // "table:pageId:slotIdx" -> { txId, mode: 'UPDATE'|'SHARE', lockCount }
     this._prepared = new Map(); // name -> { ast, sql }
     this.catalog = [];
     this.indexCatalog = new Map();  // indexName -> { table, columns, unique }
@@ -1102,7 +1103,14 @@ export class Database {
       case 'DROP_VIEW': return this._dropView(ast);
       case 'INSERT': return this._insert(ast);
       case 'INSERT_SELECT': return this._insertSelect(ast);
-      case 'SELECT': return this._select(ast);
+      case 'SELECT': {
+        const result = this._select(ast);
+        // FOR UPDATE/SHARE: acquire row-level locks after selecting
+        if (ast.forUpdate && result.rows && result.rows.length > 0) {
+          this._acquireRowLocks(ast, result.rows);
+        }
+        return result;
+      }
       case 'VALUES': return this._values(ast);
       case 'UNION': return this._union(ast);
       case 'INTERSECT': return this._intersect(ast);
@@ -1126,9 +1134,12 @@ export class Database {
       }
       case 'COMMIT': {
         // Write COMMIT record to WAL so recovery knows this tx is committed
+        const commitTxId = this._currentTxId;
         if (this._currentTxId && this.wal) {
           this.wal.appendCommit(this._currentTxId);
         }
+        // Release row locks held by this transaction
+        if (commitTxId) this._releaseRowLocks(commitTxId);
         this._currentTxId = 0;
         this._inTransaction = false;
         // Remove internal savepoint on commit
@@ -1138,6 +1149,7 @@ export class Database {
       }
       case 'ROLLBACK': {
         // Write ABORT record to WAL so recovery knows to skip this tx
+        const rollbackTxId = this._currentTxId;
         if (this._currentTxId && this.wal) {
           this.wal.appendAbort(this._currentTxId);
         }
@@ -1147,6 +1159,8 @@ export class Database {
           this._handleRollbackToSavepoint('ROLLBACK TO __txn_begin__');
           this._savepoints.splice(idx, 1);
         }
+        // Release row locks held by this transaction
+        if (rollbackTxId) this._releaseRowLocks(rollbackTxId);
         this._currentTxId = 0;
         this._inTransaction = false;
         return { type: 'OK', message: 'ROLLBACK' };
@@ -1573,6 +1587,80 @@ export class Database {
 
     this.indexCatalog.delete(ast.name);
     return { type: 'OK', message: `Index ${ast.name} dropped` };
+  }
+
+  /**
+   * Acquire row-level locks for SELECT FOR UPDATE/SHARE.
+   * Re-scans the heap to find RIDs for the selected rows.
+   */
+  _acquireRowLocks(ast, rows) {
+    const tableName = ast.from?.table || ast.from?.name;
+    if (!tableName || tableName.startsWith('__')) return;
+    
+    const forMode = ast.forUpdate.includes('SHARE') ? 'SHARE' : 'UPDATE';
+    const nowait = ast.forUpdate.includes('NOWAIT');
+    const skipLocked = ast.forUpdate.includes('SKIP LOCKED');
+    const txId = this._currentTxId || 0;
+    
+    const table = this.tables.get(tableName);
+    if (!table) return;
+    
+    // Build a set of PKs from result rows to lock
+    const pkIndices = table.schema
+      .map((c, i) => c.primaryKey ? i : -1)
+      .filter(i => i >= 0);
+    const pkNames = pkIndices.map(i => table.schema[i].name);
+    
+    // For each result row, find its heap location and lock it
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const row = rows[i];
+      
+      // Find the heap RID by scanning for matching PK
+      let rid = null;
+      for (const item of table.heap.scan()) {
+        const vals = item.values || item;
+        let match = true;
+        for (const pi of pkIndices) {
+          if (vals[pi] !== row[table.schema[pi].name]) { match = false; break; }
+        }
+        if (match) {
+          rid = { pageId: item.pageId, slotIdx: item.slotIdx };
+          break;
+        }
+      }
+      
+      if (!rid) continue;
+      
+      const lockKey = `${tableName}:${rid.pageId}:${rid.slotIdx}`;
+      const existingLock = this._rowLocks.get(lockKey);
+      
+      if (existingLock && existingLock.txId !== txId) {
+        if (existingLock.mode === 'UPDATE' || forMode === 'UPDATE') {
+          if (skipLocked) {
+            rows.splice(i, 1);
+            continue;
+          }
+          if (nowait) {
+            throw new Error(`Could not obtain lock on row in "${tableName}": locked by transaction ${existingLock.txId}`);
+          }
+          throw new Error(`Row locked by transaction ${existingLock.txId} in "${tableName}"`);
+        }
+        // SHARE + SHARE is compatible
+      }
+      
+      this._rowLocks.set(lockKey, { txId, mode: forMode });
+    }
+  }
+
+  /**
+   * Release all row locks held by a transaction.
+   */
+  _releaseRowLocks(txId) {
+    for (const [key, lock] of this._rowLocks) {
+      if (lock.txId === txId) {
+        this._rowLocks.delete(key);
+      }
+    }
   }
 
   _createFunction(ast) {
@@ -4057,6 +4145,13 @@ export class Database {
         }
       }
 
+      // Check row-level locks before modifying
+      const lockKey = `${ast.table}:${item.pageId}:${item.slotIdx}`;
+      const existingLock = this._rowLocks.get(lockKey);
+      if (existingLock && existingLock.txId !== (this._currentTxId || 0) && existingLock.mode === 'UPDATE') {
+        throw new Error(`Cannot UPDATE: row locked by transaction ${existingLock.txId} in "${ast.table}"`);
+      }
+
       // Delete old, insert new
       table.heap.delete(item.pageId, item.slotIdx);
       const newRid = table.heap.insert(newValues);
@@ -4260,6 +4355,13 @@ export class Database {
       // BEFORE DELETE triggers
       if (values) {
         this._fireTriggers('BEFORE', 'DELETE', ast.table, null, table.schema, values);
+      }
+      
+      // Check row-level locks before deleting
+      const delLockKey = `${ast.table}:${pageId}:${slotIdx}`;
+      const delLock = this._rowLocks.get(delLockKey);
+      if (delLock && delLock.txId !== (this._currentTxId || 0) && delLock.mode === 'UPDATE') {
+        throw new Error(`Cannot DELETE: row locked by transaction ${delLock.txId} in "${ast.table}"`);
       }
       
       table.heap.delete(pageId, slotIdx);
