@@ -10,6 +10,7 @@ import { DiskManager } from './disk-manager.js';
 import { BufferPool } from './buffer-pool.js';
 import { TableVisibilityMap } from './visibility-map.js';
 import { FileWAL, recoverFromFileWAL } from './file-wal.js';
+import { RECORD_TYPES } from './wal.js';
 import { FileBackedHeap } from './file-backed-heap.js';
 import { MVCCManager, MVCCHeap, MVCCTransaction } from './mvcc.js';
 import { SSIManager } from './ssi.js';
@@ -78,6 +79,108 @@ export class TransactionalDatabase {
       }
       // Crash recovery
       if (recover) {
+        // Phase 1: Replay DDL WAL records (ALTER TABLE, CREATE INDEX, etc.)
+        // These modify the schema and must be replayed BEFORE per-heap DML recovery.
+        // NOTE: We only modify schema, NOT heap data — heap data will be corrected by
+        // per-heap DML recovery in Phase 2. Using db.execute() would double-apply changes.
+        const allWalRecords = wal.readFromStable(0);
+        for (const r of allWalRecords) {
+          if (r.type === RECORD_TYPES.DDL && r.after?.sql) {
+            const sql = r.after.sql;
+            try {
+              // For ALTER TABLE, we need schema-only replay (no heap modification)
+              const trimmedUpper = sql.trim().toUpperCase();
+              if (trimmedUpper.startsWith('ALTER TABLE')) {
+                tdb._replayDDLSchemaOnly(db, sql);
+              } else {
+                // For CREATE INDEX, DROP INDEX, etc., full replay is safe
+                db.execute(sql);
+              }
+            } catch { /* ignore replay errors for idempotent DDL */ }
+          }
+        }
+        // Update catalog with any DDL changes
+        for (const [name, tableObj] of db.tables) {
+          tdb._createSqls.set(name, tdb._reconstructCreateSQL(name, tableObj.schema));
+        }
+        // Handle heap rekeying for renamed tables
+        // DDL replay may have renamed tables — need to match heaps to new names
+        const ddlRenames = new Map(); // oldName → newName
+        for (const r of allWalRecords) {
+          if (r.type === RECORD_TYPES.DDL && r.after?.sql) {
+            const m = r.after.sql.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/i);
+            if (m) ddlRenames.set(m[1], m[2]);
+          }
+        }
+        for (const [oldName, newName] of ddlRenames) {
+          if (heaps.has(oldName) && !heaps.has(newName)) {
+            // The heap was created from stale catalog with old_name.db (new empty file)
+            // But actual data is in new_name.db (renamed by original session before crash)
+            // Create a fresh heap pointing at new_name.db
+            const dbPath = join(dirPath, `${newName}.db`);
+            if (existsSync(dbPath)) {
+              const dm = new DiskManager(dbPath);
+              const tableBp = new BufferPool(Math.max(8, Math.floor(poolSize / 4)));
+              const fileHeap = new FileBackedHeap(newName, dm, tableBp, wal);
+              heaps.delete(oldName);
+              heaps.set(newName, fileHeap);
+              diskManagers.delete(oldName);
+              diskManagers.set(newName, dm);
+              if (versionMaps.has(oldName)) {
+                versionMaps.set(newName, versionMaps.get(oldName));
+                versionMaps.delete(oldName);
+              } else {
+                versionMaps.set(newName, new Map());
+              }
+              // Update the table object to use the new heap
+              const tableObj = db.tables.get(newName);
+              if (tableObj) tableObj.heap = fileHeap;
+            } else {
+              // new_name.db doesn't exist — just rekey the old heap
+              const heap = heaps.get(oldName);
+              heaps.delete(oldName);
+              heap.name = newName;
+              heaps.set(newName, heap);
+              // Update the table object to use this heap
+              const tableObj = db.tables.get(newName);
+              if (tableObj) tableObj.heap = heap;
+              if (diskManagers.has(oldName)) {
+                diskManagers.set(newName, diskManagers.get(oldName));
+                diskManagers.delete(oldName);
+              }
+              if (versionMaps.has(oldName)) {
+                versionMaps.set(newName, versionMaps.get(oldName));
+                versionMaps.delete(oldName);
+              }
+            }
+          }
+        }
+        
+        // Remove catalog entries for tables that no longer exist (dropped or renamed)
+        for (const name of [...tdb._createSqls.keys()]) {
+          if (!db.tables.has(name)) {
+            tdb._createSqls.delete(name);
+            heaps.delete(name);
+            diskManagers.delete(name);
+            versionMaps.delete(name);
+          }
+        }
+        // Ensure heaps exist for any newly created/renamed tables
+        for (const [name, tableObj] of db.tables) {
+          if (!heaps.has(name)) {
+            const dbPath = join(dirPath, `${name}.db`);
+            const dm = new DiskManager(dbPath);
+            diskManagers.set(name, dm);
+            const tableBp = new BufferPool(Math.max(8, Math.floor(poolSize / 4)));
+            const fileHeap = new FileBackedHeap(name, dm, tableBp, wal);
+            heaps.set(name, fileHeap);
+            versionMaps.set(name, new Map());
+            // Wire heap into table object
+            tableObj.heap = fileHeap;
+          }
+        }
+        
+        // Phase 2: Per-heap DML recovery (INSERT/UPDATE/DELETE replay)
         for (const [name, heap] of heaps) {
           recoverFromFileWAL(heap, wal);
         }
@@ -856,6 +959,70 @@ export class TransactionalDatabase {
       return def;
     });
     return `CREATE TABLE ${tableName} (${cols.join(', ')})`;
+  }
+
+  /**
+   * Replay ALTER TABLE DDL during crash recovery — modifies schema only, NOT heap data.
+   * Heap data is handled by per-heap DML recovery.
+   */
+  _replayDDLSchemaOnly(db, sql) {
+    const trimmed = sql.trim();
+    
+    // ALTER TABLE t ADD COLUMN name TYPE [DEFAULT val]
+    const addMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)\s+(\w+)(?:\s+DEFAULT\s+(.+))?/i);
+    if (addMatch) {
+      const [, tableName, colName, colType, defaultStr] = addMatch;
+      const table = db.tables.get(tableName);
+      if (!table) return;
+      if (table.schema.find(c => c.name === colName)) return; // Already exists (idempotent)
+      const colDef = { name: colName, type: colType.toUpperCase(), primaryKey: false };
+      if (defaultStr) {
+        const dv = defaultStr.replace(/^'|'$/g, '');
+        colDef.defaultValue = isNaN(Number(dv)) ? dv : Number(dv);
+      }
+      table.schema.push(colDef);
+      return;
+    }
+    
+    // ALTER TABLE t DROP COLUMN name
+    const dropMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+DROP\s+COLUMN\s+(\w+)/i);
+    if (dropMatch) {
+      const [, tableName, colName] = dropMatch;
+      const table = db.tables.get(tableName);
+      if (!table) return;
+      const idx = table.schema.findIndex(c => c.name === colName);
+      if (idx >= 0) table.schema.splice(idx, 1);
+      return;
+    }
+    
+    // ALTER TABLE t RENAME COLUMN old TO new
+    const renameColMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+COLUMN\s+(\w+)\s+TO\s+(\w+)/i);
+    if (renameColMatch) {
+      const [, tableName, oldName, newName] = renameColMatch;
+      const table = db.tables.get(tableName);
+      if (!table) return;
+      const col = table.schema.find(c => c.name === oldName);
+      if (col) col.name = newName;
+      return;
+    }
+    
+    // ALTER TABLE t RENAME TO new_name
+    const renameMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/i);
+    if (renameMatch) {
+      const [, oldName, newName] = renameMatch;
+      const table = db.tables.get(oldName);
+      if (!table) return;
+      db.tables.delete(oldName);
+      db.tables.set(newName, table);
+      table.name = newName;
+      // Also need to reassociate the heap with the new table name
+      // The heap file may be under either old or new name on disk
+      if (table.heap) table.heap.name = newName;
+      return;
+    }
+    
+    // Fallback: try full execute for unrecognized ALTER patterns
+    try { db.execute(sql); } catch {}
   }
 
   _saveCatalog() {

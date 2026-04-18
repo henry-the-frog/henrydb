@@ -345,7 +345,7 @@ export function recoverFromFileWAL(heap, wal) {
   // For INSERT records that allocate new pages, pageLSN will be 0
   let needsReplay = false;
   for (const r of allRecords) {
-    if (!committedTxns.has(r.txId)) continue;
+    if (r.txId !== 0 && !committedTxns.has(r.txId)) continue;
     if (!matchesHeap(r.tableName)) continue;
     if (r.type === WAL_TYPES.INSERT || r.type === WAL_TYPES.UPDATE || r.type === WAL_TYPES.DELETE) {
       const pageLSN = pageLSNMap.get(r.pageId) || 0;
@@ -453,7 +453,7 @@ export function recoverFromFileWAL(heap, wal) {
   // Group WAL records by page
   const recordsByPage = new Map();
   for (const r of allRecords) {
-    if (!committedTxns.has(r.txId)) continue;
+    if (r.txId !== 0 && !committedTxns.has(r.txId)) continue;
     if (!matchesHeap(r.tableName)) continue;
     if (r.type !== WAL_TYPES.INSERT && r.type !== WAL_TYPES.UPDATE && r.type !== WAL_TYPES.DELETE) continue;
     
@@ -535,7 +535,7 @@ function _replayRecords(heap, replaySet, committedTxns, allRecords, dm, matchesH
   const nameMatch = matchesHeap || ((name) => !name || name === heap.name);
   
   for (const r of replaySet) {
-    if (!committedTxns.has(r.txId)) { skipped++; continue; }
+    if (r.txId !== 0 && !committedTxns.has(r.txId)) { skipped++; continue; }
     if (!nameMatch(r.tableName)) { skipped++; continue; }
     
     if (r.type === WAL_TYPES.INSERT && r.after) {
