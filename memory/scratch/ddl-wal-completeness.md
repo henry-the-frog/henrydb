@@ -38,3 +38,17 @@ The ALTER TABLE fix was deeper than expected — 4 separate bugs interacted:
 - `_reconstructCreateSQL` generates CREATE TABLE from current schema with DEFAULT clauses
 - ADD_COLUMN now properly extracts column info from object AST (parser returns `{ name, type, default }` not separate fields)
 - Added `matchesHeap` helper for table name aliasing during recovery (maps old→new names from DDL records)
+
+### Crash Recovery Architecture Insight (2026-04-17)
+
+The crash recovery flow in TransactionalDatabase has 3 phases:
+1. **Load catalog** → recreate tables from CREATE TABLE SQL
+2. **DDL replay** → schema-only replay of ALTER TABLE from WAL (no heap modification!)
+3. **Per-heap DML recovery** → INSERT/UPDATE/DELETE replay from lastCheckpointLsn
+
+Key learnings:
+- DDL replay must be **schema-only** (don't modify heap data) to avoid double-applying changes
+- Per-heap recovery must read from **lastCheckpointLsn**, not LSN 0
+- txId=0 records (DDL auto-committed ops) must be treated as always-committed
+- RENAME TABLE needs heap rekeying + DiskManager association + table object wiring
+- FileWAL.truncate() must reset _fileSize or post-truncate records become unreadable

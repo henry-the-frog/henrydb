@@ -3122,10 +3122,86 @@
     {
       "id": "T289",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Run full regression suite on all today's changes, update daily log, commit knowledge captures",
       "project": "henrydb",
-      "started": "2026-04-18T00:58:05.974Z"
+      "started": "2026-04-18T00:58:05.974Z",
+      "completed": "2026-04-18T00:59:31.198Z",
+      "duration_ms": 300000,
+      "summary": "Full regression: 313/313 pass. Daily log updated with all Session B work."
+    },
+    {
+      "id": "T290",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: stress-test edge cases in DELETE + UPDATE with MVCC — cascading deletes, self-referencing updates, DELETE WHERE IN (SELECT ...)",
+      "project": "henrydb",
+      "started": "2026-04-18T00:59:46.015Z",
+      "completed": "2026-04-18T01:00:45.488Z",
+      "duration_ms": 300000,
+      "summary": "10 DML edge case tests. All pass — DELETE/UPDATE with subqueries, concurrent modifications, self-referencing, arithmetic, orphan cleanup. No bugs found."
+    },
+    {
+      "id": "T291",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: stress-test CONSTRAINT enforcement — CHECK constraints, NOT NULL, UNIQUE, PRIMARY KEY edge cases with MVCC",
+      "project": "henrydb",
+      "started": "2026-04-18T01:00:59.501Z",
+      "completed": "2026-04-18T01:02:56.942Z",
+      "duration_ms": 300000,
+      "summary": "Found bug: PRIMARY KEY accepting NULL values. NOT NULL check explicitly skipped PK columns. Fixed. 10 new constraint tests, 44 total pass. Also tested: UNIQUE allows multiple NULLs, CHECK constraints, constraint violation + rollback, concurrent PK enforcement."
+    },
+    {
+      "id": "T292",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: stress-test index operations — CREATE INDEX, DROP INDEX, index-accelerated queries, index + MVCC",
+      "project": "henrydb",
+      "started": "2026-04-18T01:03:11.375Z",
+      "completed": "2026-04-18T01:04:10.276Z",
+      "duration_ms": 300000,
+      "summary": "9 index + MVCC tests. All pass — index queries correctly respect transaction snapshots with concurrent inserts/deletes, CREATE/DROP INDEX during open transactions works."
+    },
+    {
+      "id": "T293",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: test CASE WHEN expressions + COALESCE + NULLIF + CAST edge cases with MVCC",
+      "project": "henrydb",
+      "started": "2026-04-18T01:04:25.207Z",
+      "completed": "2026-04-18T01:05:32.607Z",
+      "duration_ms": 300000,
+      "summary": "10 expression edge case tests. All pass — CASE WHEN, COALESCE, NULLIF, CAST all correct including with MVCC."
+    },
+    {
+      "id": "T294",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: write a chaos test — rapid interleaved DDL+DML+concurrent txs — 100 random operations, verify consistency at the end",
+      "project": "henrydb",
+      "started": "2026-04-18T01:05:50.584Z",
+      "completed": "2026-04-18T01:06:48.392Z",
+      "duration_ms": 300000,
+      "summary": "3 chaos tests: 100 random operations, 3 concurrent sessions, close/reopen — all maintain consistency. No bugs found. Database is rock solid under randomized workloads."
+    },
+    {
+      "id": "T295",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: test string functions (UPPER, LOWER, TRIM, SUBSTR, LENGTH, CONCAT) and edge cases",
+      "project": "henrydb",
+      "started": "2026-04-18T01:07:04.326Z",
+      "completed": "2026-04-18T01:08:00.703Z",
+      "duration_ms": 300000,
+      "summary": "11 string function edge case tests. All pass — NULL handling, empty string, boundary values, LIKE wildcards, concatenation."
+    },
+    {
+      "id": "T296",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session B closeout: full regression, evening summary, knowledge capture, final git push",
+      "started": "2026-04-18T01:08:13.807Z"
     }
   ],
   "focusProjects": [
@@ -4357,6 +4433,34 @@
     {
       "time": "2026-04-18T00:58:05.737Z",
       "msg": "Added T289 (MAINTAIN) after end: Run full regression suite on all today's changes, update daily log, commit knowledge captures"
+    },
+    {
+      "time": "2026-04-18T00:59:45.779Z",
+      "msg": "Added T290 (BUILD) after end: HenryDB: stress-test edge cases in DELETE + UPDATE with MVCC — cascading deletes, self-referencing updates, DELETE WHERE IN (SELECT ...)"
+    },
+    {
+      "time": "2026-04-18T01:00:59.264Z",
+      "msg": "Added T291 (BUILD) after end: HenryDB: stress-test CONSTRAINT enforcement — CHECK constraints, NOT NULL, UNIQUE, PRIMARY KEY edge cases with MVCC"
+    },
+    {
+      "time": "2026-04-18T01:03:11.139Z",
+      "msg": "Added T292 (BUILD) after end: HenryDB: stress-test index operations — CREATE INDEX, DROP INDEX, index-accelerated queries, index + MVCC"
+    },
+    {
+      "time": "2026-04-18T01:04:24.970Z",
+      "msg": "Added T293 (BUILD) after end: HenryDB: test CASE WHEN expressions + COALESCE + NULLIF + CAST edge cases with MVCC"
+    },
+    {
+      "time": "2026-04-18T01:05:50.345Z",
+      "msg": "Added T294 (BUILD) after end: HenryDB: write a chaos test — rapid interleaved DDL+DML+concurrent txs — 100 random operations, verify consistency at the end"
+    },
+    {
+      "time": "2026-04-18T01:07:04.083Z",
+      "msg": "Added T295 (BUILD) after end: HenryDB: test string functions (UPPER, LOWER, TRIM, SUBSTR, LENGTH, CONCAT) and edge cases"
+    },
+    {
+      "time": "2026-04-18T01:08:13.568Z",
+      "msg": "Added T296 (MAINTAIN) after end: Session B closeout: full regression, evening summary, knowledge capture, final git push"
     }
   ]
 }
