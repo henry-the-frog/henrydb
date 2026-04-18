@@ -346,6 +346,46 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: tables };
   }
   
+  // information_schema.tables
+  if (upper.includes('INFORMATION_SCHEMA') && upper.includes('TABLES')) {
+    const tables = [];
+    if (db.tables) {
+      for (const [name] of db.tables) {
+        tables.push({
+          table_catalog: 'henrydb',
+          table_schema: 'public',
+          table_name: name,
+          table_type: 'BASE TABLE',
+        });
+      }
+    }
+    return { type: 'ROWS', rows: tables };
+  }
+  
+  // information_schema.columns
+  if (upper.includes('INFORMATION_SCHEMA') && upper.includes('COLUMNS')) {
+    const columns = [];
+    if (db.tables) {
+      for (const [tableName, table] of db.tables) {
+        if (table.schema) {
+          table.schema.forEach((col, i) => {
+            columns.push({
+              table_catalog: 'henrydb',
+              table_schema: 'public',
+              table_name: tableName,
+              column_name: col.name,
+              ordinal_position: i + 1,
+              data_type: (col.type || 'TEXT').toUpperCase(),
+              is_nullable: col.primaryKey ? 'NO' : 'YES',
+              column_default: col.defaultValue != null ? String(col.defaultValue) : null,
+            });
+          });
+        }
+      }
+    }
+    return { type: 'ROWS', rows: columns };
+  }
+  
   return null; // Not intercepted
 }
 
