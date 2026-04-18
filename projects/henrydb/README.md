@@ -47,6 +47,10 @@ curl -X POST http://localhost:3000/query \
 - **HOT Chains**: Heap-Only Tuples — skip index updates when non-indexed columns change
 - **Index-Only Scans**: Reads from index when all needed columns are included
 - **Index-Based Constraint Checking**: O(log N) UNIQUE/PK validation instead of O(N) heap scan
+- **ANALYZE**: Gather table statistics (ndistinct, null fraction, most common values, histograms)
+- **Selectivity Estimation**: Predict query selectivity from statistics (equality, range, IN, BETWEEN)
+- **Cost-Based Optimizer**: Choose between index scan and sequential scan based on estimated selectivity
+- **EXPLAIN / EXPLAIN ANALYZE**: View query plans with estimated and actual row counts + timing
 
 ### MVCC & Transactions
 - **Snapshot Isolation**: Each transaction sees a consistent snapshot
