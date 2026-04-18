@@ -7,17 +7,8 @@ status: session-ended
 - **Session B** (5:30 PM - 8:00 PM MDT, April 17 2026)
 - **Project:** HenryDB (primary) + Neural-net (secondary)
 - **Theme:** Depth day — bug hunting and fixing
-- **Result:** 14 bugs fixed, 151 new tests, 313 total passing — Session State
-
-## Status: session-ended
-## Session: B (2:15 PM – 8:00 PM MDT, April 17, 2026)
-## Focus: Depth day — comprehensive SQL + neural-net testing
-## Result: ~730 depth tests written, 20 bugs found (18 fixed, 2 documented)
-
-### Final Session B Stats:
-- **Tasks Completed:** ~125 (T145-T265)
-- **HenryDB Tests Written:** 580+ across 45+ test files
-- **Neural-net Tests Written:** 150+ across 17+ test files
-- **Bugs Fixed:** 18
-- **Bugs Documented:** 2 (DROP TABLE recovery, UNIQUE INDEX persistence)
-- **All tests passing on final commit**
+- **Tasks Completed:** 33 (T266-T299) — 20 BUILD, 4 THINK, 4 MAINTAIN, 5 other
+- **Bugs Fixed:** 14 (ALTER TABLE WAL recovery ×4, crash recovery ×3, checkpoint ×3, parser ×1, CTE columns ×1, view persistence ×1, PK NULL ×1)
+- **Bugs Found Not Fixed:** 4 (trigger/sequence/matview persistence, ALTER TABLE backfill duplicate, generated column null)
+- **Tests Written:** 151 new tests across 14 test files
+- **Total Tests Passing:** 313 (Session B suites), 9534+ across all projects
