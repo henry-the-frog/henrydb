@@ -454,6 +454,7 @@ export class Database {
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'DROP_SEQUENCE': return this._dropSequence(ast);
+      case 'TRUNCATE': return this._truncate(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
       case 'ANALYZE_TABLE': return this._analyzeTable(ast);
       default: throw new Error(`Unknown statement: ${ast.type}`);
@@ -2736,7 +2737,30 @@ export class Database {
     return pending;
   }
 
-    // SAVEPOINT support
+    // TRUNCATE support
+  _truncate(ast) {
+    let totalRows = 0;
+    for (const tableName of ast.tables) {
+      const table = this.tables.get(tableName);
+      if (!table) throw new Error(`Table '${tableName}' does not exist`);
+      
+      totalRows += table.heap.tupleCount;
+      
+      // Clear heap
+      table.heap.pages = [];
+      table.heap.nextPageId = 0;
+      if (table.heap._hotChains) table.heap._hotChains.clear();
+      if (table.heap._hotRedirected) table.heap._hotRedirected.clear();
+      
+      // Clear all indexes
+      for (const [colName] of table.indexes) {
+        table.indexes.set(colName, new BPlusTree());
+      }
+    }
+    return { type: 'OK', message: `TRUNCATE TABLE (${totalRows} rows removed)` };
+  }
+
+  // SAVEPOINT support
   _savepoint(ast) {
     if (!this._inTransaction) {
       throw new Error('SAVEPOINT can only be used within a transaction');

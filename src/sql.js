@@ -364,6 +364,21 @@ export function parse(sql) {
     return { type: 'DEALLOCATE', name };
   }
 
+  // TRUNCATE [TABLE] name [, name2, ...]
+  if (isKeyword('TRUNCATE')) {
+    advance();
+    if (isKeyword('TABLE')) advance();
+    const tables = [];
+    tables.push((advance().originalValue || tokens[pos-1].value));
+    while (peek().type === ',' || peek().value === ',') {
+      advance();
+      tables.push((advance().originalValue || tokens[pos-1].value));
+    }
+    let cascade = false;
+    if (isKeyword('CASCADE')) { advance(); cascade = true; }
+    return { type: 'TRUNCATE', tables, cascade };
+  }
+
   // DECLARE name CURSOR FOR query
   if (isKeyword('DECLARE')) {
     advance();
