@@ -2540,8 +2540,10 @@ export function parse(sql) {
     }
     if (isKeyword('VIEW')) {
       advance();
+      let ifExists = false;
+      if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
       const name = advance().value;
-      return { type: 'DROP_VIEW', name };
+      return { type: 'DROP_VIEW', name, ifExists };
     }
     expect('KEYWORD', 'TABLE');
     let ifExists = false;

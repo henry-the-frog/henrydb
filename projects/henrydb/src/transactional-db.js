@@ -77,6 +77,16 @@ export class TransactionalDatabase {
         tdb._createSqls.set(table.name, table.createSql);
         try { db.execute(table.createSql); } catch (e) { /* ignore */ }
       }
+      // Restore views from catalog
+      if (catalog.views) {
+        for (const view of catalog.views) {
+          try { db.execute(view.sql); 
+            // Store the SQL on the view def for re-persistence
+            const viewDef = db.views.get(view.name);
+            if (viewDef) viewDef.sql = view.sql;
+          } catch (e) { /* ignore view creation errors — underlying table may not exist yet */ }
+        }
+      }
       // Crash recovery
       if (recover) {
         // Phase 1: Replay DDL WAL records (ALTER TABLE, CREATE INDEX, etc.)
@@ -288,6 +298,16 @@ export class TransactionalDatabase {
       } else if (trimmed.startsWith('DROP TABLE')) {
         const match = sql.match(/DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?(\w+)/i);
         if (match) this._createSqls.delete(match[1]);
+        this._saveCatalog();
+      } else if (trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE OR REPLACE VIEW')) {
+        // Store original SQL for catalog persistence
+        const viewMatch = sql.match(/CREATE\s+(?:OR\s+REPLACE\s+)?VIEW\s+(\w+)/i);
+        if (viewMatch) {
+          const viewDef = this._db.views.get(viewMatch[1]);
+          if (viewDef) viewDef.sql = sql;
+        }
+        this._saveCatalog();
+      } else if (trimmed.startsWith('DROP VIEW')) {
         this._saveCatalog();
       }
       return result;
@@ -1035,7 +1055,14 @@ export class TransactionalDatabase {
     for (const [name, sql] of this._createSqls) {
       tables.push({ name, createSql: sql });
     }
-    writeFileSync(this._catalogPath, JSON.stringify({ tables }, null, 2), 'utf8');
+    // Save view definitions (non-CTE, non-materialized views)
+    const views = [];
+    for (const [name, viewDef] of this._db.views) {
+      if (!viewDef.isCTE && viewDef.sql) {
+        views.push({ name, sql: viewDef.sql });
+      }
+    }
+    writeFileSync(this._catalogPath, JSON.stringify({ tables, views }, null, 2), 'utf8');
   }
 
   _saveMvccState() {

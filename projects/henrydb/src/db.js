@@ -1713,7 +1713,10 @@ export class Database {
   }
 
   _dropView(ast) {
-    if (!this.views.has(ast.name)) throw new Error(`View ${ast.name} not found`);
+    if (!this.views.has(ast.name)) {
+      if (ast.ifExists) return { type: 'OK', message: `View ${ast.name} does not exist (IF EXISTS)` };
+      throw new Error(`View ${ast.name} not found`);
+    }
     this.views.delete(ast.name);
     return { type: 'OK', message: `View ${ast.name} dropped` };
   }
