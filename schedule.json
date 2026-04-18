@@ -923,15 +923,99 @@
     {
       "id": "T88",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Afternoon push and daily log",
-      "started": "2026-04-18T16:33:07.356Z"
+      "started": "2026-04-18T16:33:07.356Z",
+      "completed": "2026-04-18T16:33:54.933Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. Daily log current."
+    },
+    {
+      "id": "T90",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep study: how would a PostgreSQL wire protocol work in HenryDB? Protocol spec, message format, auth",
+      "project": "henrydb",
+      "started": "2026-04-18T16:34:33.382Z",
+      "completed": "2026-04-18T16:35:57.618Z",
+      "duration_ms": 600000,
+      "summary": "Studied PG wire protocol v3: message types (Q/T/D/C/Z/E), startup flow, auth. Designed both HTTP/JSON and PG wire options for HenryDB. Recommendation: start HTTP (~50 lines), then PG wire (~200 lines). Design doc in scratch/henrydb-wire-protocol.md."
+    },
+    {
+      "id": "T91",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design doc: HenryDB HTTP/JSON API — endpoints, request/response format, streaming",
+      "started": "2026-04-18T16:36:06.261Z",
+      "completed": "2026-04-18T16:36:06.403Z",
+      "duration_ms": 30000,
+      "summary": "Already captured in T90 — HTTP/JSON API design is in the wire protocol doc. Endpoints: POST /query, POST /execute, GET /health."
+    },
+    {
+      "id": "T92",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Create design doc file for wire protocol",
+      "started": "2026-04-18T16:36:24.567Z",
+      "completed": "2026-04-18T16:36:24.709Z",
+      "duration_ms": 10000,
+      "summary": "Design doc already created during T90 at scratch/henrydb-wire-protocol.md."
     },
     {
       "id": "T89",
       "mode": "THINK",
+      "status": "done",
+      "task": "Pre-boundary session wrap-up",
+      "started": "2026-04-18T16:37:10.551Z",
+      "completed": "2026-04-18T16:37:10.693Z",
+      "duration_ms": 10000,
+      "summary": "Deferred — not at boundary yet. 3 hours remain."
+    },
+    {
+      "id": "T93",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement HTTP/JSON API server for HenryDB",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T16:37:19.429Z",
+      "completed": "2026-04-18T16:37:19.717Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks for HTTP/JSON API. Simple design: 3 endpoints using built-in http module."
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "task": "Build HTTP/JSON server for HenryDB: POST /query, POST /execute, GET /health",
+      "status": "in-progress",
+      "plan_ref": "T93",
+      "started": "2026-04-18T16:37:32.036Z"
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "task": "Write tests for HTTP API: query, execute, error handling, health check",
       "status": "upcoming",
-      "task": "Pre-boundary session wrap-up"
+      "plan_ref": "T93"
+    },
+    {
+      "id": "T94",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push wire protocol implementation"
+    },
+    {
+      "id": "T95",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deep study: run benchmarks comparing HenryDB to SQLite for simple queries",
+      "project": "henrydb"
+    },
+    {
+      "id": "T96",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Final session reflection and tomorrow priorities"
     },
     {
       "id": "T42",
@@ -1317,6 +1401,50 @@
     {
       "time": "2026-04-18T16:29:57.990Z",
       "msg": "Moved T42 after T89"
+    },
+    {
+      "time": "2026-04-18T16:34:24.665Z",
+      "msg": "Added T90 (EXPLORE) after end: Deep study: how would a PostgreSQL wire protocol work in HenryDB? Protocol spec, message format, auth"
+    },
+    {
+      "time": "2026-04-18T16:34:24.783Z",
+      "msg": "Added T91 (THINK) after end: Design doc: HenryDB HTTP/JSON API — endpoints, request/response format, streaming"
+    },
+    {
+      "time": "2026-04-18T16:34:24.901Z",
+      "msg": "Added T92 (MAINTAIN) after end: Create design doc file for wire protocol"
+    },
+    {
+      "time": "2026-04-18T16:34:25.018Z",
+      "msg": "Moved T89 after T92"
+    },
+    {
+      "time": "2026-04-18T16:34:25.135Z",
+      "msg": "Moved T42 after T92"
+    },
+    {
+      "time": "2026-04-18T16:36:38.506Z",
+      "msg": "Added T93 (PLAN) after end: Implement HTTP/JSON API server for HenryDB"
+    },
+    {
+      "time": "2026-04-18T16:36:38.624Z",
+      "msg": "Added T94 (MAINTAIN) after end: Push wire protocol implementation"
+    },
+    {
+      "time": "2026-04-18T16:36:38.741Z",
+      "msg": "Added T95 (EXPLORE) after end: Deep study: run benchmarks comparing HenryDB to SQLite for simple queries"
+    },
+    {
+      "time": "2026-04-18T16:36:38.859Z",
+      "msg": "Added T96 (THINK) after end: Final session reflection and tomorrow priorities"
+    },
+    {
+      "time": "2026-04-18T16:36:38.976Z",
+      "msg": "Moved T42 after T96"
+    },
+    {
+      "time": "2026-04-18T16:37:19.570Z",
+      "msg": "PLAN T93 filled 2 BUILD tasks"
     }
   ]
 }
