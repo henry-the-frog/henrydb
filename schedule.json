@@ -606,16 +606,20 @@
       "id": "T61",
       "mode": "BUILD",
       "task": "Add HOT chain cleanup to VACUUM: after removing dead tuples, rebuild indexes and clear chains",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T57",
-      "started": "2026-04-18T15:51:01.216Z"
+      "started": "2026-04-18T15:51:01.216Z",
+      "completed": "2026-04-18T15:52:32.030Z",
+      "duration_ms": 300000,
+      "summary": "VACUUM now rebuilds indexes and clears HOT chains after removing dead tuples. Both MVCC and non-MVCC paths updated. 30/30 vacuum+HOT tests pass. Committed."
     },
     {
       "id": "T62",
       "mode": "BUILD",
       "task": "Test VACUUM + HOT chains: verify index correctness after vacuum of HOT-updated rows",
-      "status": "upcoming",
-      "plan_ref": "T57"
+      "status": "in-progress",
+      "plan_ref": "T57",
+      "started": "2026-04-18T15:52:42.460Z"
     },
     {
       "id": "T58",

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T15:51:01.313Z",
+  "generated": "2026-04-18T15:52:42.503Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Add HOT chain cleanup to VACUUM: after removing dead tuples, rebuild indexes and clear chains",
-    "startedAt": "2026-04-18T15:51:01.313Z",
-    "taskId": "T61"
+    "task": "Test VACUUM + HOT chains: verify index correctness after vacuum of HOT-updated rows",
+    "startedAt": "2026-04-18T15:52:42.503Z",
+    "taskId": "T62"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -765,12 +765,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 55,
+    "blocksCompleted": 56,
     "blocksTotal": 62,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 10,
-      "BUILD": 17,
+      "BUILD": 18,
       "MAINTAIN": 11,
       "EXPLORE": 2
     }
