@@ -2440,6 +2440,8 @@ export function parse(sql) {
       // Parse column constraints
       while (true) {
         if (isKeyword('PRIMARY')) { advance(); expect('KEYWORD', 'KEY'); primaryKey = true; }
+        else if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'AUTOINCREMENT') { advance(); isSerial = true; }
+        else if (peek().type === 'IDENT' && peek().value.toUpperCase() === 'AUTO_INCREMENT') { advance(); isSerial = true; }
         else if (isKeyword('UNIQUE')) { advance(); unique = true; }
         else if (isKeyword('NOT')) { advance(); expect('KEYWORD', 'NULL'); notNull = true; }
         else if (isKeyword('CHECK')) {

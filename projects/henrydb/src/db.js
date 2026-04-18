@@ -2364,6 +2364,12 @@ export class Database {
         }
         table._serialCounters[i]++;
         orderedValues[i] = table._serialCounters[i];
+      } else if (table.schema[i].type === 'SERIAL' && typeof orderedValues[i] === 'number') {
+        // Explicit value provided — update counter to at least this value
+        if (!table._serialCounters) table._serialCounters = {};
+        if (!table._serialCounters[i] || orderedValues[i] > table._serialCounters[i]) {
+          table._serialCounters[i] = orderedValues[i];
+        }
       }
     }
 
@@ -2376,6 +2382,13 @@ export class Database {
         if (seq) {
           seq.current += seq.increment;
           orderedValues[i] = seq.current;
+        }
+      } else if (table.schema[i].serial && typeof orderedValues[i] === 'number') {
+        // Explicit value — advance sequence past it
+        const seqName = table.schema[i].serial.toLowerCase();
+        const seq = this.sequences.get(seqName);
+        if (seq && orderedValues[i] > seq.current) {
+          seq.current = orderedValues[i];
         }
       }
     }

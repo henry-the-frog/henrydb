@@ -373,21 +373,63 @@
     {
       "id": "T31",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping: git push, commit",
-      "started": "2026-04-18T15:29:49.477Z"
+      "started": "2026-04-18T15:29:49.477Z",
+      "completed": "2026-04-18T15:29:57.611Z",
+      "duration_ms": 30000,
+      "summary": "Pushed henrydb (UDFs) + workspace to GitHub."
     },
     {
       "id": "T32",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "BUILD count check — if 15+ BUILDs, flush state to files. Depth check."
+      "status": "done",
+      "task": "BUILD count check — if 15+ BUILDs, flush state to files. Depth check.",
+      "started": "2026-04-18T15:30:05.443Z",
+      "completed": "2026-04-18T15:30:23.575Z",
+      "duration_ms": 120000,
+      "summary": "BUILD count 10/20. Depth check passes (HOT+FileBackedHeap bug was genuine surprise). State flushed. Next: fix pre-existing AUTOINCREMENT failures for quality depth."
     },
     {
       "id": "T33",
       "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final git push, daily log, CURRENT.md",
+      "skip_reason": ""
+    },
+    {
+      "id": "T38",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Diagnose 4 pre-existing AUTOINCREMENT test failures in sequence-depth.test.js",
+      "project": "henrydb",
+      "started": "2026-04-18T15:31:00.749Z"
+    },
+    {
+      "id": "T39",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Final git push, daily log, CURRENT.md"
+      "goal": "Fix AUTOINCREMENT failures",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T40",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push after AUTOINCREMENT fixes"
+    },
+    {
+      "id": "T41",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Pick next deep work: RISC-V tail calls, neural-net depth, or HenryDB table-returning functions"
+    },
+    {
+      "id": "T42",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final state snapshot: push repos, update daily log with evening summary"
     }
   ],
   "focusProjects": [
@@ -535,6 +577,30 @@
     {
       "time": "2026-04-18T15:19:21.026Z",
       "msg": "PLAN T30 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T15:30:39.288Z",
+      "msg": "Added T38 (THINK) after end: Diagnose 4 pre-existing AUTOINCREMENT test failures in sequence-depth.test.js"
+    },
+    {
+      "time": "2026-04-18T15:30:39.441Z",
+      "msg": "Added T39 (PLAN) after end: Fix AUTOINCREMENT failures"
+    },
+    {
+      "time": "2026-04-18T15:30:39.564Z",
+      "msg": "Added T40 (MAINTAIN) after end: Git push after AUTOINCREMENT fixes"
+    },
+    {
+      "time": "2026-04-18T15:30:39.679Z",
+      "msg": "Added T41 (THINK) after end: Pick next deep work: RISC-V tail calls, neural-net depth, or HenryDB table-returning functions"
+    },
+    {
+      "time": "2026-04-18T15:30:45.847Z",
+      "msg": "Added T42 (MAINTAIN) after end: Final state snapshot: push repos, update daily log with evening summary"
+    },
+    {
+      "time": "2026-04-18T15:30:51.732Z",
+      "msg": "Removed T33: "
     }
   ]
 }
