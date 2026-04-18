@@ -553,21 +553,87 @@
       "id": "T55",
       "mode": "BUILD",
       "task": "Tests: table-returning functions — basic, with params, in JOINs, nested",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T50",
-      "started": "2026-04-18T15:47:15.258Z"
+      "started": "2026-04-18T15:47:15.258Z",
+      "completed": "2026-04-18T15:48:06.331Z",
+      "duration_ms": 300000,
+      "summary": "12 table-returning function tests all pass. WHERE, ORDER BY, LIMIT, aliases, aggregation, error handling, combined scalar+table funcs. Committed."
     },
     {
       "id": "T51",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push and housekeeping"
+      "status": "done",
+      "task": "Git push and housekeeping",
+      "started": "2026-04-18T15:48:32.855Z",
+      "completed": "2026-04-18T15:48:40.522Z",
+      "duration_ms": 30000,
+      "summary": "Pushed henrydb and workspace to GitHub."
     },
     {
       "id": "T52",
       "mode": "THINK",
+      "status": "done",
+      "task": "Session reflection: what patterns emerged across HenryDB, RISC-V, and neural-net today?",
+      "started": "2026-04-18T15:49:01.325Z",
+      "completed": "2026-04-18T15:49:20.100Z",
+      "duration_ms": 120000,
+      "summary": "Cross-project patterns: (1) bugs at interface boundaries, (2) small impls with wide integration, (3) testing patterns (helpers, assembly verification, tolerance thresholds), (4) defensive feature detection."
+    },
+    {
+      "id": "T56",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Next deep work direction: HenryDB VACUUM chain pruning, or RISC-V closure TCO, or stress testing across projects",
+      "started": "2026-04-18T15:49:59.689Z",
+      "completed": "2026-04-18T15:50:10.341Z",
+      "duration_ms": 60000,
+      "summary": "Direction: VACUUM HOT chain pruning. Completes the HOT feature. BUILD count ~17, nearing 20-cap — focus on depth not breadth."
+    },
+    {
+      "id": "T57",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement proper VACUUM HOT chain pruning with index entry updates",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T15:50:18.473Z",
+      "completed": "2026-04-18T15:50:46.709Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILD tasks. Simplified approach: VACUUM calls _rebuildIndexes after removing dead tuples (VACUUM FULL style). Incremental pruning deferred."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "task": "Add HOT chain cleanup to VACUUM: after removing dead tuples, rebuild indexes and clear chains",
+      "status": "in-progress",
+      "plan_ref": "T57",
+      "started": "2026-04-18T15:51:01.216Z"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "task": "Test VACUUM + HOT chains: verify index correctness after vacuum of HOT-updated rows",
       "status": "upcoming",
-      "task": "Session reflection: what patterns emerged across HenryDB, RISC-V, and neural-net today?"
+      "plan_ref": "T57"
+    },
+    {
+      "id": "T58",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push and daily log"
+    },
+    {
+      "id": "T59",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Afternoon depth check and session direction"
+    },
+    {
+      "id": "T60",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Verify all project test suites pass and push final state"
     },
     {
       "id": "T42",
@@ -793,6 +859,34 @@
     {
       "time": "2026-04-18T15:42:59.455Z",
       "msg": "PLAN T50 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T15:49:43.638Z",
+      "msg": "Added T56 (THINK) after end: Next deep work direction: HenryDB VACUUM chain pruning, or RISC-V closure TCO, or stress testing across projects"
+    },
+    {
+      "time": "2026-04-18T15:49:43.828Z",
+      "msg": "Added T57 (PLAN) after end: Implement proper VACUUM HOT chain pruning with index entry updates"
+    },
+    {
+      "time": "2026-04-18T15:49:43.951Z",
+      "msg": "Added T58 (MAINTAIN) after end: Git push and daily log"
+    },
+    {
+      "time": "2026-04-18T15:49:44.082Z",
+      "msg": "Added T59 (THINK) after end: Afternoon depth check and session direction"
+    },
+    {
+      "time": "2026-04-18T15:49:50.353Z",
+      "msg": "Added T60 (MAINTAIN) after end: Verify all project test suites pass and push final state"
+    },
+    {
+      "time": "2026-04-18T15:49:50.474Z",
+      "msg": "Moved T42 after T60"
+    },
+    {
+      "time": "2026-04-18T15:50:37.815Z",
+      "msg": "PLAN T57 filled 2 BUILD tasks"
     }
   ]
 }

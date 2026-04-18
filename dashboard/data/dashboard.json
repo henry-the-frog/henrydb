@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T15:47:15.319Z",
+  "generated": "2026-04-18T15:51:01.313Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Tests: table-returning functions — basic, with params, in JOINs, nested",
-    "startedAt": "2026-04-18T15:47:15.319Z",
-    "taskId": "T55"
+    "task": "Add HOT chain cleanup to VACUUM: after removing dead tuples, rebuild indexes and clear chains",
+    "startedAt": "2026-04-18T15:51:01.313Z",
+    "taskId": "T61"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -642,44 +642,118 @@
       {
         "id": "T50",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement HenryDB table-returning functions (CREATE FUNCTION ... RETURNS TABLE)",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-18T15:42:49.277Z"
+        "started": "2026-04-18T15:42:49.277Z",
+        "completed": "2026-04-18T15:43:10.084Z",
+        "duration_ms": 120000,
+        "summary": "Planned 3 BUILD tasks: (1) parser+executor for RETURNS TABLE, (2) FROM clause function call support, (3) comprehensive tests."
       },
       {
         "id": "T53",
         "mode": "BUILD",
         "task": "Parser + executor: RETURNS TABLE syntax and table-returning function execution",
-        "status": "upcoming",
-        "plan_ref": "T50"
+        "status": "done",
+        "plan_ref": "T50",
+        "started": "2026-04-18T15:43:23.216Z",
+        "completed": "2026-04-18T15:46:47.094Z",
+        "duration_ms": 600000,
+        "summary": "Parser supports RETURNS TABLE(col type,...). Executor handles table-returning functions via __func_call→__subquery pipeline. Works with WHERE, ORDER BY, aliases. All existing tests pass."
       },
       {
         "id": "T54",
         "mode": "BUILD",
         "task": "FROM clause: support function calls as table sources (SELECT * FROM func(args))",
-        "status": "upcoming",
-        "plan_ref": "T50"
+        "status": "done",
+        "plan_ref": "T50",
+        "started": "2026-04-18T15:47:02.931Z",
+        "completed": "2026-04-18T15:47:03.112Z",
+        "duration_ms": 10000,
+        "summary": "Already implemented in T53 — FROM clause function call support works."
       },
       {
         "id": "T55",
         "mode": "BUILD",
         "task": "Tests: table-returning functions — basic, with params, in JOINs, nested",
-        "status": "upcoming",
-        "plan_ref": "T50"
+        "status": "done",
+        "plan_ref": "T50",
+        "started": "2026-04-18T15:47:15.258Z",
+        "completed": "2026-04-18T15:48:06.331Z",
+        "duration_ms": 300000,
+        "summary": "12 table-returning function tests all pass. WHERE, ORDER BY, LIMIT, aliases, aggregation, error handling, combined scalar+table funcs. Committed."
       },
       {
         "id": "T51",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push and housekeeping"
+        "status": "done",
+        "task": "Git push and housekeeping",
+        "started": "2026-04-18T15:48:32.855Z",
+        "completed": "2026-04-18T15:48:40.522Z",
+        "duration_ms": 30000,
+        "summary": "Pushed henrydb and workspace to GitHub."
       },
       {
         "id": "T52",
         "mode": "THINK",
+        "status": "done",
+        "task": "Session reflection: what patterns emerged across HenryDB, RISC-V, and neural-net today?",
+        "started": "2026-04-18T15:49:01.325Z",
+        "completed": "2026-04-18T15:49:20.100Z",
+        "duration_ms": 120000,
+        "summary": "Cross-project patterns: (1) bugs at interface boundaries, (2) small impls with wide integration, (3) testing patterns (helpers, assembly verification, tolerance thresholds), (4) defensive feature detection."
+      },
+      {
+        "id": "T56",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Next deep work direction: HenryDB VACUUM chain pruning, or RISC-V closure TCO, or stress testing across projects",
+        "started": "2026-04-18T15:49:59.689Z",
+        "completed": "2026-04-18T15:50:10.341Z",
+        "duration_ms": 60000,
+        "summary": "Direction: VACUUM HOT chain pruning. Completes the HOT feature. BUILD count ~17, nearing 20-cap — focus on depth not breadth."
+      },
+      {
+        "id": "T57",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement proper VACUUM HOT chain pruning with index entry updates",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T15:50:18.473Z"
+      },
+      {
+        "id": "T61",
+        "mode": "BUILD",
+        "task": "Add HOT chain cleanup to VACUUM: after removing dead tuples, rebuild indexes and clear chains",
         "status": "upcoming",
-        "task": "Session reflection: what patterns emerged across HenryDB, RISC-V, and neural-net today?"
+        "plan_ref": "T57"
+      },
+      {
+        "id": "T62",
+        "mode": "BUILD",
+        "task": "Test VACUUM + HOT chains: verify index correctness after vacuum of HOT-updated rows",
+        "status": "upcoming",
+        "plan_ref": "T57"
+      },
+      {
+        "id": "T58",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push and daily log"
+      },
+      {
+        "id": "T59",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Afternoon depth check and session direction"
+      },
+      {
+        "id": "T60",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Verify all project test suites pass and push final state"
       },
       {
         "id": "T42",
@@ -691,13 +765,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 50,
-    "blocksTotal": 55,
+    "blocksCompleted": 55,
+    "blocksTotal": 62,
     "modeDistribution": {
-      "THINK": 13,
-      "PLAN": 9,
-      "BUILD": 16,
-      "MAINTAIN": 10,
+      "THINK": 15,
+      "PLAN": 10,
+      "BUILD": 17,
+      "MAINTAIN": 11,
       "EXPLORE": 2
     }
   },

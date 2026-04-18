@@ -4579,6 +4579,12 @@ export class Database {
           totalDead += result.deadTuplesRemoved || 0;
           totalBytes += result.bytesFreed || 0;
           totalPages += result.pagesCompacted || 0;
+          
+          // After removing dead tuples, rebuild indexes to clear stale HOT chain entries
+          // and ensure all index entries point to live tuples
+          if (result.deadTuplesRemoved > 0 && table.indexes && table.indexes.size > 0) {
+            this._rebuildIndexes(table);
+          }
         } catch (e) {
           // Table-level vacuum not supported, skip
         }
@@ -4606,6 +4612,11 @@ export class Database {
       // For file-backed heaps, flush dirty pages
       if (typeof heap.flush === 'function') {
         heap.flush();
+      }
+      
+      // Clear HOT chains and rebuild indexes after vacuum
+      if (heap._hotChains && heap._hotChains.size > 0 && table.indexes && table.indexes.size > 0) {
+        this._rebuildIndexes(table);
       }
     }
 
