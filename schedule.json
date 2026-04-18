@@ -1008,28 +1008,40 @@
     {
       "id": "T94",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push wire protocol implementation",
-      "started": "2026-04-18T16:43:19.763Z"
+      "started": "2026-04-18T16:43:19.763Z",
+      "completed": "2026-04-18T16:43:34.302Z",
+      "duration_ms": 30000,
+      "summary": "All pushed."
     },
     {
       "id": "T95",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep study: run benchmarks comparing HenryDB to SQLite for simple queries",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-18T16:43:40.687Z",
+      "completed": "2026-04-18T16:46:07.812Z",
+      "duration_ms": 300000,
+      "summary": "Benchmarks: PK SELECT 13K/sec, Index SELECT 34K/sec, aggregate 5.5K/sec, UDF 9K/sec. INSERT 167/sec, UPDATE 59/sec (bottleneck: per-row WAL+index). 100-1000x slower than SQLite — expected for pure JS. Bottleneck is write path."
     },
     {
       "id": "T96",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Final session reflection and tomorrow priorities"
+      "status": "done",
+      "task": "Final session reflection and tomorrow priorities",
+      "started": "2026-04-18T16:46:16.743Z",
+      "completed": "2026-04-18T16:46:38.968Z",
+      "duration_ms": 180000,
+      "summary": "Epic session: 4 major features, 7 bug fixes, HTTP server, ~94 new tests, 6 scratch notes, 4 lessons. Tomorrow: write path optimization (INSERT/UPDATE bottleneck), PG wire protocol, persistent catalog."
     },
     {
       "id": "T42",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final state snapshot: push repos, update daily log with evening summary"
+      "status": "in-progress",
+      "task": "Final state snapshot: push repos, update daily log with evening summary",
+      "started": "2026-04-18T16:46:48.165Z"
     }
   ],
   "focusProjects": [
