@@ -317,6 +317,30 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: tables };
   }
   
+  // SHOW INDEXES — list all indexes across all tables
+  const showIdxMatch = upper.match(/^SHOW\s+INDEXES?\s*(?:FROM\s+(\w+))?/);
+  if (showIdxMatch) {
+    const filterTable = showIdxMatch[1]?.toLowerCase();
+    const indexes = [];
+    if (db.tables) {
+      for (const [tableName, table] of db.tables) {
+        if (filterTable && tableName !== filterTable) continue;
+        if (table.indexes) {
+          for (const [colName, idx] of table.indexes) {
+            indexes.push({
+              table_name: tableName,
+              index_name: `idx_${tableName}_${colName}`,
+              column_name: colName,
+              unique: table.schema?.find(c => c.name === colName)?.primaryKey ? 'YES' : (table.schema?.find(c => c.name === colName)?.unique ? 'YES' : 'NO'),
+              primary: table.schema?.find(c => c.name === colName)?.primaryKey ? 'YES' : 'NO',
+            });
+          }
+        }
+      }
+    }
+    return { type: 'ROWS', rows: indexes };
+  }
+  
   // psql: SHOW search_path / server_version etc
   if (upper.startsWith('SHOW ')) {
     const param = upper.replace('SHOW ', '').replace(';', '').trim();
