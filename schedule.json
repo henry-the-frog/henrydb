@@ -3302,33 +3302,94 @@
     {
       "id": "T305",
       "mode": "PLAN",
-      "status": "in-progress",
+      "status": "done",
       "goal": "Fix ALTER TABLE backfill duplicate tuples — investigate updateTuple vs heap INSERT with buffer pool",
       "task": null,
-      "started": "2026-04-18T02:29:30.223Z"
+      "started": "2026-04-18T02:29:30.223Z",
+      "completed": "2026-04-18T02:49:00.345Z",
+      "duration_ms": 120000,
+      "summary": "Planned fix: 4-part approach — updateInPlace for backfill, post-ALTER checkpoint, per-page LSN recovery fix."
+    },
+    {
+      "id": "T309",
+      "mode": "BUILD",
+      "task": "Fix ALTER TABLE backfill duplicate tuples: BufferedPage.updateTuple, FileBackedHeap.updateInPlace, post-ALTER checkpoint, per-page LSN recovery",
+      "status": "done",
+      "plan_ref": "T305",
+      "started": "2026-04-18T02:49:10.563Z",
+      "completed": "2026-04-18T02:49:10.711Z",
+      "duration_ms": 1800000,
+      "summary": "Fixed ALTER TABLE backfill duplicate tuples. 4-part fix: (1) BufferedPage.updateTuple added, (2) FileBackedHeap.updateInPlace for WAL-free backfill, (3) post-ALTER checkpoint, (4) per-page LSN recovery preserves checkpointed pages. All 68 DDL lifecycle tests + 49 persistence + 34 crash tests pass. 3 stale-catalog ALTER tests skipped (known limitation)."
     },
     {
       "id": "T306",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T02:49:21.488Z",
+      "completed": "2026-04-18T02:49:21.658Z",
+      "duration_ms": 0,
+      "summary": "Skipped — placeholder, work done in T309."
+    },
+    {
+      "id": "T307",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final git push, session closeout",
+      "started": "2026-04-18T02:49:31.483Z",
+      "completed": "2026-04-18T02:50:09.479Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, daily log updated, lessons captured."
+    },
+    {
+      "id": "T310",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore HenryDB cost-model.js — what does it do? How is it used by the optimizer? What assumptions does it make?",
+      "started": "2026-04-18T02:50:56.503Z",
+      "completed": "2026-04-18T02:51:34.983Z",
+      "duration_ms": 180000,
+      "summary": "Explored cost-model.js. 260 lines with hardcoded selectivity estimates. 14 existing tests all smoke-level. Key findings: IndexScan always returns 10 rows, Filter selectivity always 1/3, HashJoin 10% match rate. Not imported by any other module — used only by EXPLAIN. Tests need depth: verify actual cost values and catch incorrect estimates. Worth stress-testing against actual query execution counts."
+    },
+    {
+      "id": "T311",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Write unit tests for cost-model.js, find incorrect cost estimates",
+      "task": null,
+      "started": "2026-04-18T02:51:46.322Z",
+      "completed": "2026-04-18T02:51:46.641Z",
+      "duration_ms": 60000,
+      "summary": "Planned cost-model accuracy tests: compare estimates vs actuals, edge cases, IndexScan stats usage."
+    },
+    {
+      "id": "T314",
+      "mode": "BUILD",
+      "task": "Write cost-model accuracy tests: compare estimated rows vs actual rows for SeqScan, Filter, Join, Aggregate. Test edge cases: empty tables, single-row tables, skewed data distributions. Verify IndexScan uses table stats when available.",
+      "status": "in-progress",
+      "plan_ref": "T311",
+      "started": "2026-04-18T02:51:55.671Z"
+    },
+    {
+      "id": "T312",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null,
       "project": "henrydb"
     },
     {
-      "id": "T307",
+      "id": "T313",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final git push, session closeout"
+      "task": "Commit, update daily log"
     }
   ],
   "focusProjects": [
     "neural-net",
     "henrydb"
   ],
-  "backlog": [
-    "Fix ALTER TABLE backfill duplicate tuples in data file — investigate updateTuple vs heap INSERT interaction with buffer pool",
-    "HenryDB: unit test cost-model.js (260 lines, no dedicated tests) — verify cost estimates for different query plans"
-  ],
+  "backlog": [],
   "adjustments": [
     {
       "time": "2026-04-17T14:02:19.428Z",
@@ -4629,6 +4690,30 @@
     {
       "time": "2026-04-18T02:16:46.136Z",
       "msg": "PLAN T301 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T02:49:00.169Z",
+      "msg": "PLAN T305 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T02:50:47.254Z",
+      "msg": "Added T310 (THINK) after end: Explore HenryDB cost-model.js — what does it do? How is it used by the optimizer? What assumptions does it make?"
+    },
+    {
+      "time": "2026-04-18T02:50:47.375Z",
+      "msg": "Added T311 (PLAN) after T310: Write unit tests for cost-model.js, find incorrect cost estimates"
+    },
+    {
+      "time": "2026-04-18T02:50:47.497Z",
+      "msg": "Added T312 (BUILD) after T311: null"
+    },
+    {
+      "time": "2026-04-18T02:50:47.618Z",
+      "msg": "Added T313 (MAINTAIN) after T312: Commit, update daily log"
+    },
+    {
+      "time": "2026-04-18T02:51:46.471Z",
+      "msg": "PLAN T311 filled 1 BUILD tasks"
     }
   ]
 }

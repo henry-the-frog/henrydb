@@ -21,7 +21,7 @@ function _estimate(node, stats) {
     case 'SeqScan': {
       const tableName = desc.details.table;
       const tableInfo = stats.get(tableName) || stats.get(tableName?.toLowerCase());
-      const rows = tableInfo?.rowCount || 1000; // Default estimate
+      const rows = tableInfo ? (tableInfo.rowCount ?? 1000) : 1000; // Use stats if available, else default
       return { type, rows, cost: rows, ioOps: Math.ceil(rows / 100) };
     }
     

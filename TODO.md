@@ -4,7 +4,6 @@
 
 ### Normal
 - HenryDB: secondary index + MVCC snapshot after UPDATE (needs HOT chains)
-- HenryDB: ALTER TABLE backfill creates duplicate tuples in data file — updateTuple + later UPDATE INSERT both survive checkpoint (heap/buffer-pool interaction bug)
 - HenryDB: materialized view persistence (triggers+sequences now fixed, matviews still missing)
 
 ### Low

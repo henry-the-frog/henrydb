@@ -142,3 +142,22 @@ When TransactionalDatabase wraps Database, it maintains its own catalog persiste
 - Generator pattern makes adding new DDL types trivial
 
 **Lesson:** When a wrapper layer (TransactionalDatabase) maintains its own persistence, EVERY new feature in the inner layer needs explicit persistence support in the wrapper. This is the same "two subsystems not connected" pattern seen with BEGIN/COMMIT and WAL.
+
+### ALTER TABLE Backfill + WAL Recovery Conflict (Apr 17 evening)
+
+**The bug:** ALTER TABLE ADD/DROP COLUMN creates duplicate rows on crash recovery.
+
+**Root cause chain:**
+1. ALTER TABLE backfill modifies tuples in-place (or via delete+re-insert)
+2. The old INSERT WAL records for the original data still exist
+3. On crash recovery, WAL replays old INSERT records alongside the backfilled data
+4. Result: each original row appears 2-3 times
+
+**The fix hierarchy:**
+- `updateInPlace()` — modify tuples without creating WAL INSERT/DELETE records
+- Post-ALTER checkpoint — truncate WAL to remove old INSERT records
+- Per-page LSN recovery — don't destroy checkpointed pages during recovery
+
+**The lesson:** In-place data modification and WAL-based recovery are fundamentally in tension. WAL recovery assumes it can replay records from empty state. In-place modifications create data that bypasses WAL. The resolution: use checkpoints as synchronization points between the two systems.
+
+**Secondary lesson:** Always check for duplicate method definitions in large files. Two `_alterTable` methods existed — the second silently overrode the first, using a completely different backfill strategy (delete+re-insert vs in-place updateTuple). The first was dead code.

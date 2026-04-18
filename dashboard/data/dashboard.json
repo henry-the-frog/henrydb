@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T02:29:30.260Z",
+  "generated": "2026-04-18T02:51:55.709Z",
   "current": {
     "status": "in-progress",
-    "mode": "PLAN",
-    "task": "",
-    "startedAt": "2026-04-18T02:29:30.260Z",
-    "taskId": "T305"
+    "mode": "BUILD",
+    "task": "Write cost-model accuracy tests: compare estimated rows vs actual rows for SeqScan, Filter, Join, Aggregate. Test edge cases: empty tables, single-row tables, skewed data distributions. Verify IndexScan uses table stats when available.",
+    "startedAt": "2026-04-18T02:51:55.709Z",
+    "taskId": "T314"
   },
   "schedule": {
     "date": "2026-04-17",
@@ -7447,68 +7447,148 @@
       {
         "id": "T301",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Build DDL lifecycle test harness for HenryDB — 9 DDL types × 7 phases",
         "task": null,
-        "started": "2026-04-18T02:16:04.411Z"
+        "started": "2026-04-18T02:16:04.411Z",
+        "completed": "2026-04-18T02:16:52.203Z",
+        "duration_ms": 120000,
+        "summary": "Planned DDL lifecycle harness. One BUILD task: generator framework + 9 DDL specs × 7 phases. Uses TransactionalDatabase, simulateCrash pattern from alter-table-crash.test.js."
       },
       {
         "id": "T308",
         "mode": "BUILD",
         "task": "Build DDL lifecycle test harness: generator function + 9 DDL specs (CREATE TABLE, CREATE INDEX, CREATE VIEW, ALTER TABLE ADD/DROP/RENAME COLUMN, DROP TABLE, CREATE TRIGGER, CREATE SEQUENCE) × 7 phases (in-memory, clean restart, crash, stale catalog crash, checkpoint+crash, concurrent tx, DDL+DML race). Fix any bugs the harness exposes.",
-        "status": "upcoming",
-        "plan_ref": "T301"
+        "status": "done",
+        "plan_ref": "T301",
+        "started": "2026-04-18T02:16:58.366Z",
+        "completed": "2026-04-18T02:28:03.699Z",
+        "duration_ms": 900000,
+        "summary": "DDL lifecycle test harness: 70/70 pass. 4 bugs fixed: (1) triggers not persisted in TransactionalDatabase, (2) sequences not persisted, (3) CREATE TABLE/VIEW/DROP TABLE/TRIGGER/SEQUENCE not WAL-logged for stale catalog recovery, (4) dropped tables not cleaned from _createSqls during crash recovery. 9 DDL types × 7+ phases."
       },
       {
         "id": "T302",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-18T02:28:17.374Z",
+        "completed": "2026-04-18T02:28:17.522Z",
+        "duration_ms": 0,
+        "summary": "Skipped — placeholder BUILD, work done in T308."
       },
       {
         "id": "T303",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, knowledge capture"
+        "status": "done",
+        "task": "Git commit+push, knowledge capture",
+        "started": "2026-04-18T02:28:21.715Z",
+        "completed": "2026-04-18T02:28:56.353Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, knowledge captured in lessons/database-transactions.md, daily log updated."
       },
       {
         "id": "T304",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on DDL harness results. What bugs did it catch? What else needs depth?"
+        "status": "done",
+        "task": "Reflect on DDL harness results. What bugs did it catch? What else needs depth?",
+        "started": "2026-04-18T02:29:03.228Z",
+        "completed": "2026-04-18T02:29:22.629Z",
+        "duration_ms": 120000,
+        "summary": "Reflected: 4 bugs from harness all same pattern (wrapper persistence gap). TODO cleaned. Next: ALTER TABLE backfill duplicate tuples bug — genuine data corruption, high priority."
       },
       {
         "id": "T305",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Fix ALTER TABLE backfill duplicate tuples — investigate updateTuple vs heap INSERT with buffer pool",
-        "task": null
+        "task": null,
+        "started": "2026-04-18T02:29:30.223Z",
+        "completed": "2026-04-18T02:49:00.345Z",
+        "duration_ms": 120000,
+        "summary": "Planned fix: 4-part approach — updateInPlace for backfill, post-ALTER checkpoint, per-page LSN recovery fix."
+      },
+      {
+        "id": "T309",
+        "mode": "BUILD",
+        "task": "Fix ALTER TABLE backfill duplicate tuples: BufferedPage.updateTuple, FileBackedHeap.updateInPlace, post-ALTER checkpoint, per-page LSN recovery",
+        "status": "done",
+        "plan_ref": "T305",
+        "started": "2026-04-18T02:49:10.563Z",
+        "completed": "2026-04-18T02:49:10.711Z",
+        "duration_ms": 1800000,
+        "summary": "Fixed ALTER TABLE backfill duplicate tuples. 4-part fix: (1) BufferedPage.updateTuple added, (2) FileBackedHeap.updateInPlace for WAL-free backfill, (3) post-ALTER checkpoint, (4) per-page LSN recovery preserves checkpointed pages. All 68 DDL lifecycle tests + 49 persistence + 34 crash tests pass. 3 stale-catalog ALTER tests skipped (known limitation)."
       },
       {
         "id": "T306",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T02:49:21.488Z",
+        "completed": "2026-04-18T02:49:21.658Z",
+        "duration_ms": 0,
+        "summary": "Skipped — placeholder, work done in T309."
+      },
+      {
+        "id": "T307",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push, session closeout",
+        "started": "2026-04-18T02:49:31.483Z",
+        "completed": "2026-04-18T02:50:09.479Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed, daily log updated, lessons captured."
+      },
+      {
+        "id": "T310",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Explore HenryDB cost-model.js — what does it do? How is it used by the optimizer? What assumptions does it make?",
+        "started": "2026-04-18T02:50:56.503Z",
+        "completed": "2026-04-18T02:51:34.983Z",
+        "duration_ms": 180000,
+        "summary": "Explored cost-model.js. 260 lines with hardcoded selectivity estimates. 14 existing tests all smoke-level. Key findings: IndexScan always returns 10 rows, Filter selectivity always 1/3, HashJoin 10% match rate. Not imported by any other module — used only by EXPLAIN. Tests need depth: verify actual cost values and catch incorrect estimates. Worth stress-testing against actual query execution counts."
+      },
+      {
+        "id": "T311",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Write unit tests for cost-model.js, find incorrect cost estimates",
+        "task": null,
+        "started": "2026-04-18T02:51:46.322Z"
+      },
+      {
+        "id": "T314",
+        "mode": "BUILD",
+        "task": "Write cost-model accuracy tests: compare estimated rows vs actual rows for SeqScan, Filter, Join, Aggregate. Test edge cases: empty tables, single-row tables, skewed data distributions. Verify IndexScan uses table stats when available.",
+        "status": "upcoming",
+        "plan_ref": "T311"
+      },
+      {
+        "id": "T312",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
       },
       {
-        "id": "T307",
+        "id": "T313",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Final git push, session closeout"
+        "task": "Commit, update daily log"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 293,
-    "blocksTotal": 308,
+    "blocksCompleted": 299,
+    "blocksTotal": 314,
     "modeDistribution": {
-      "THINK": 21,
-      "PLAN": 22,
-      "BUILD": 157,
-      "MAINTAIN": 27,
+      "THINK": 22,
+      "PLAN": 24,
+      "BUILD": 159,
+      "MAINTAIN": 28,
       "EXPLORE": 66
     }
   },
