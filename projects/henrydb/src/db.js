@@ -2091,8 +2091,8 @@ export class Database {
       const col = table.schema[i];
       const val = values[i];
 
-      // NOT NULL constraint
-      if (col.notNull && val == null && !col.primaryKey) {
+      // NOT NULL constraint (PRIMARY KEY columns are implicitly NOT NULL)
+      if ((col.notNull || col.primaryKey) && val == null) {
         throw new Error(`NOT NULL constraint violated for column ${col.name}`);
       }
 
