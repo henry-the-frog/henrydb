@@ -3367,22 +3367,75 @@
       "id": "T314",
       "mode": "BUILD",
       "task": "Write cost-model accuracy tests: compare estimated rows vs actual rows for SeqScan, Filter, Join, Aggregate. Test edge cases: empty tables, single-row tables, skewed data distributions. Verify IndexScan uses table stats when available.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T311",
-      "started": "2026-04-18T02:51:55.671Z"
+      "started": "2026-04-18T02:51:55.671Z",
+      "completed": "2026-04-18T02:54:26.025Z",
+      "duration_ms": 600000,
+      "summary": "22 cost-model accuracy tests. Found 2 bugs: (1) empty table estimates 1000 rows instead of 0 (falsy 0 fell through), (2) planner never uses IndexScan (cost model code is academic). Bug 1 fixed. Also documented 4 known limitations: hardcoded selectivity, GROUP BY underestimate, HashJoin overestimate, no IndexScan in planner."
     },
     {
       "id": "T312",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T02:54:37.041Z",
+      "completed": "2026-04-18T02:54:37.190Z",
+      "duration_ms": 0,
+      "summary": "Skipped — placeholder, work done in T314."
+    },
+    {
+      "id": "T313",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit, update daily log",
+      "started": "2026-04-18T02:54:42.815Z",
+      "completed": "2026-04-18T02:54:58.166Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, daily log updated."
+    },
+    {
+      "id": "T315",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate materialized view implementation in HenryDB. How are they created? Stored? Refreshed?",
+      "started": "2026-04-18T02:55:21.542Z",
+      "completed": "2026-04-18T02:55:50.106Z",
+      "duration_ms": 120000,
+      "summary": "Investigated matviews: creates real table + view metadata with isMaterialized flag. TransactionalDatabase._saveCatalog explicitly skips matviews. Fix: add materializedViews section to catalog, save query + isMaterialized flag. Table data already persists via FileBackedHeap. Need to also track in _createSqls for table schema persistence."
+    },
+    {
+      "id": "T316",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add materialized view persistence to TransactionalDatabase + DDL lifecycle tests",
+      "task": null,
+      "started": "2026-04-18T02:55:57.695Z",
+      "completed": "2026-04-18T02:55:58.013Z",
+      "duration_ms": 60000,
+      "summary": "Planned matview persistence: catalog storage for query, restore on open, DDL lifecycle tests."
+    },
+    {
+      "id": "T319",
+      "mode": "BUILD",
+      "task": "Add materialized view persistence: save view query in catalog, restore on open, add DDL lifecycle tests for CREATE MATERIALIZED VIEW and REFRESH MATERIALIZED VIEW",
+      "status": "in-progress",
+      "plan_ref": "T316",
+      "started": "2026-04-18T02:56:03.121Z"
+    },
+    {
+      "id": "T317",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null,
       "project": "henrydb"
     },
     {
-      "id": "T313",
+      "id": "T318",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Commit, update daily log"
+      "task": "Commit, push, daily log"
     }
   ],
   "focusProjects": [
@@ -4714,6 +4767,26 @@
     {
       "time": "2026-04-18T02:51:46.471Z",
       "msg": "PLAN T311 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T02:55:17.204Z",
+      "msg": "Added T315 (THINK) after end: Investigate materialized view implementation in HenryDB. How are they created? Stored? Refreshed?"
+    },
+    {
+      "time": "2026-04-18T02:55:17.325Z",
+      "msg": "Added T316 (PLAN) after T315: Add materialized view persistence to TransactionalDatabase + DDL lifecycle tests"
+    },
+    {
+      "time": "2026-04-18T02:55:17.447Z",
+      "msg": "Added T317 (BUILD) after T316: null"
+    },
+    {
+      "time": "2026-04-18T02:55:17.568Z",
+      "msg": "Added T318 (MAINTAIN) after T317: Commit, push, daily log"
+    },
+    {
+      "time": "2026-04-18T02:55:57.843Z",
+      "msg": "PLAN T316 filled 1 BUILD tasks"
     }
   ]
 }

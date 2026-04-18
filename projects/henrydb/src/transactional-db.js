@@ -97,6 +97,28 @@ export class TransactionalDatabase {
           db.sequences.set(name, { ...seq });
         }
       }
+      // Restore materialized views from catalog
+      if (catalog.materializedViews) {
+        for (const mv of catalog.materializedViews) {
+          // Create the backing table if it doesn't already exist
+          if (!db.tables.has(mv.name)) {
+            const schema = mv.schema || [];
+            // Build a CREATE TABLE SQL from schema for heapFactory
+            const colDefs = schema.map(c => {
+              let def = `${c.name} ${c.type || 'TEXT'}`;
+              if (c.primaryKey) def += ' PRIMARY KEY';
+              return def;
+            }).join(', ');
+            const createSql = `CREATE TABLE ${mv.name} (${colDefs})`;
+            try {
+              db.execute(createSql);
+              tdb._createSqls.set(mv.name, createSql);
+            } catch (e) { /* ignore */ }
+          }
+          // Set view metadata
+          db.views.set(mv.name, { query: mv.query, isMaterialized: true });
+        }
+      }
       // Crash recovery
       if (recover) {
         // Phase 1: Replay DDL WAL records (ALTER TABLE, CREATE INDEX, etc.)
@@ -361,9 +383,31 @@ export class TransactionalDatabase {
         this._saveCatalog();
       } else if (trimmed.startsWith('DROP VIEW')) {
         this._saveCatalog();
+      } else if (trimmed.startsWith('CREATE MATERIALIZED')) {
+        // Track matview backing table in _createSqls
+        const nameMatch = sql.match(/CREATE\s+MATERIALIZED\s+VIEW\s+(\w+)/i);
+        if (nameMatch) {
+          const mvName = nameMatch[1];
+          const table = this._db.tables.get(mvName);
+          if (table) {
+            const colDefs = table.schema.map(c => {
+              let def = `${c.name} ${c.type || 'TEXT'}`;
+              if (c.primaryKey) def += ' PRIMARY KEY';
+              return def;
+            }).join(', ');
+            this._createSqls.set(mvName, `CREATE TABLE ${mvName} (${colDefs})`);
+            this._installScanInterceptors();
+          }
+        }
+        this._saveCatalog();
+        // Checkpoint to prevent WAL replay duplicating matview data
+        try { this.checkpoint(); } catch (e) { /* best effort */ }
+      } else if (trimmed.startsWith('REFRESH MATERIALIZED')) {
+        this._saveCatalog();
+        // Checkpoint after refresh too
+        try { this.checkpoint(); } catch (e) { /* best effort */ }
       } else if (trimmed.startsWith('CREATE TRIGGER') || trimmed.startsWith('DROP TRIGGER') ||
-                 trimmed.startsWith('CREATE SEQUENCE') || trimmed.startsWith('DROP SEQUENCE') ||
-                 trimmed.startsWith('CREATE MATERIALIZED') || trimmed.startsWith('REFRESH MATERIALIZED')) {
+                 trimmed.startsWith('CREATE SEQUENCE') || trimmed.startsWith('DROP SEQUENCE')) {
         this._saveCatalog();
       }
       return result;
@@ -1107,9 +1151,16 @@ export class TransactionalDatabase {
   }
 
   _saveCatalog() {
+    // Collect matview names to exclude from regular tables
+    const matViewNames = new Set();
+    for (const [name, viewDef] of this._db.views) {
+      if (viewDef.isMaterialized) matViewNames.add(name);
+    }
     const tables = [];
     for (const [name, sql] of this._createSqls) {
-      tables.push({ name, createSql: sql });
+      if (!matViewNames.has(name)) {
+        tables.push({ name, createSql: sql });
+      }
     }
     // Save view definitions (non-CTE, non-materialized views)
     const views = [];
@@ -1132,7 +1183,16 @@ export class TransactionalDatabase {
         ownedBy: seq.ownedBy,
       };
     }
-    writeFileSync(this._catalogPath, JSON.stringify({ tables, views, triggers, sequences }, null, 2), 'utf8');
+    // Save materialized view definitions
+    const materializedViews = [];
+    for (const [name, viewDef] of this._db.views) {
+      if (viewDef.isMaterialized && viewDef.query) {
+        const table = this._db.tables.get(name);
+        const schema = table ? table.schema : [];
+        materializedViews.push({ name, query: viewDef.query, schema });
+      }
+    }
+    writeFileSync(this._catalogPath, JSON.stringify({ tables, views, triggers, sequences, materializedViews }, null, 2), 'utf8');
   }
 
   _saveMvccState() {

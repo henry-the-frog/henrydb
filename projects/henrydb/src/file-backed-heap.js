@@ -242,6 +242,20 @@ export class FileBackedHeap {
     return ok;
   }
 
+  /**
+   * Truncate all data — clear all pages. Used by REFRESH MATERIALIZED VIEW.
+   */
+  truncate() {
+    for (let i = 0; i < this._dm.pageCount; i++) {
+      this._dm.writePage(i, Buffer.alloc(PAGE_SIZE));
+    }
+    this._dm._pageCount = 0;
+    this._bp.invalidateAll();
+    this._fsm = new FreeSpaceMap();
+    this._rowCount = 0;
+    this._pageLSNs.clear();
+  }
+
   /** Delete a tuple by marking its slot as empty. */
   delete(pageId, slotIdx) {
     // WAL: log delete before modifying page

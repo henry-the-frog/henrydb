@@ -1696,8 +1696,13 @@ export class Database {
     // Replace the table data
     const table = this.tables.get(ast.name);
     if (table) {
-      // Clear old data
-      table.heap = this._heapFactory(ast.name);
+      // Clear old data — delete all existing rows
+      if (table.heap.truncate) {
+        table.heap.truncate(); // FileBackedHeap: clear all pages
+      } else {
+        // In-memory HeapFile: replace with new one
+        table.heap = this._heapFactory(ast.name);
+      }
       
       // Re-insert new data
       for (const row of result.rows) {

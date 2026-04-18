@@ -511,3 +511,36 @@ ddlLifecycleTests({
   },
   skipConcurrency: true, // Sequences don't interact with row-level txs the same way
 });
+
+// 10. CREATE MATERIALIZED VIEW
+ddlLifecycleTests({
+  name: 'CREATE MATERIALIZED VIEW',
+  skipStaleCatalog: true, // Checkpoint after matview creation truncates WAL
+  setup: (db) => {
+    db.execute('CREATE TABLE mv_source (id INT PRIMARY KEY, category TEXT, amount INT)');
+    db.execute("INSERT INTO mv_source VALUES (1, 'X', 100)");
+    db.execute("INSERT INTO mv_source VALUES (2, 'Y', 200)");
+    db.execute("INSERT INTO mv_source VALUES (3, 'X', 300)");
+  },
+  ddl: (db) => {
+    db.execute('CREATE MATERIALIZED VIEW mv_summary AS SELECT category, SUM(amount) AS total FROM mv_source GROUP BY category');
+  },
+  verify: (db) => {
+    const r = rows(db.execute('SELECT * FROM mv_summary ORDER BY category'));
+    assert.strictEqual(r.length, 2, `Expected 2 rows, got ${r.length}`);
+    assert.strictEqual(r[0].category, 'X');
+    assert.strictEqual(r[0].total, 400);
+    assert.strictEqual(r[1].category, 'Y');
+    assert.strictEqual(r[1].total, 200);
+  },
+  dmlAfterDDL: (db) => {
+    // Insert more source data (matview is NOT auto-refreshed)
+    db.execute("INSERT INTO mv_source VALUES (4, 'Z', 500)");
+  },
+  verifyWithDML: (db) => {
+    // Matview should still have old data (not refreshed)
+    const r = rows(db.execute('SELECT * FROM mv_summary ORDER BY category'));
+    assert.strictEqual(r.length, 2, 'Matview should not auto-refresh');
+  },
+  skipConcurrency: true, // Matview creation involves table creation
+});
