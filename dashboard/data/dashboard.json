@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-18T19:48:43.844Z",
+  "generated": "2026-04-18T19:50:32.480Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add SET support for cost model parameters through PG wire (SET seq_page_cost = 2.0 etc.)",
-    "completedAt": "2026-04-18T19:48:43.844Z",
-    "taskId": "T156",
-    "summary": "SET seq_page_cost/random_page_cost/cpu_tuple_cost etc. via PG wire updates live cost model. SHOW returns current values. Users can tune optimizer behavior at runtime.",
-    "durationMs": 180000
+    "task": "Add DESCRIBE TABLE / \\d support via pg_catalog.pg_attribute intercept",
+    "completedAt": "2026-04-18T19:50:32.480Z",
+    "taskId": "T157",
+    "summary": "DESCRIBE table implemented. Returns column_name, data_type, nullable, key (PRI/UNI), default_value. Works through pg npm client.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-18",
@@ -1608,12 +1608,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 154,
+    "blocksCompleted": 155,
     "blocksTotal": 140,
     "modeDistribution": {
       "THINK": 31,
       "PLAN": 21,
-      "BUILD": 61,
+      "BUILD": 62,
       "MAINTAIN": 31,
       "EXPLORE": 10
     }

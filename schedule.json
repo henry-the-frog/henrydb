@@ -1670,6 +1670,17 @@
       "completed": "2026-04-18T19:48:43.807Z",
       "duration_ms": 180000,
       "summary": "SET seq_page_cost/random_page_cost/cpu_tuple_cost etc. via PG wire updates live cost model. SHOW returns current values. Users can tune optimizer behavior at runtime."
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add DESCRIBE TABLE / \\d support via pg_catalog.pg_attribute intercept",
+      "project": "henrydb",
+      "started": "2026-04-18T19:49:35.252Z",
+      "completed": "2026-04-18T19:50:32.444Z",
+      "duration_ms": 120000,
+      "summary": "DESCRIBE table implemented. Returns column_name, data_type, nullable, key (PRI/UNI), default_value. Works through pg npm client."
     }
   ],
   "focusProjects": [
@@ -2297,6 +2308,10 @@
     {
       "time": "2026-04-18T19:47:33.073Z",
       "msg": "Added T156 (BUILD) after end: Add SET support for cost model parameters through PG wire (SET seq_page_cost = 2.0 etc.)"
+    },
+    {
+      "time": "2026-04-18T19:49:28.649Z",
+      "msg": "Added T157 (BUILD) after end: Add DESCRIBE TABLE / \\d support via pg_catalog.pg_attribute intercept"
     }
   ]
 }
