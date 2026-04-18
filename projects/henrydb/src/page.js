@@ -375,12 +375,17 @@ export class HeapFile {
       const slotIdx = page.insertTuple(tupleBytes);
       if (slotIdx >= 0) {
         this.fsm.update(page.id, page.freeSpace());
+        this._rowCount++;
         return { pageId: page.id, slotIdx };
       }
     }
     // Allocate new page
     const page = this._allocPage();
     const slotIdx = page.insertTuple(tupleBytes);
+    if (slotIdx < 0) {
+      // Tuple exceeds page capacity (>4KB) — cannot store
+      throw new Error(`Row too large: ${tupleBytes.length} bytes exceeds page capacity of ${PAGE_SIZE} bytes`);
+    }
     this.fsm.update(page.id, page.freeSpace());
     this._rowCount++;
     return { pageId: page.id, slotIdx };
