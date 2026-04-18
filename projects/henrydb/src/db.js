@@ -22,6 +22,7 @@ import { QueryStatsCollector } from './query-stats.js';
 export class Database {
   constructor(options = {}) {
     this.tables = new Map();  // name -> { heap, schema, indexes }
+    this._functions = new Map(); // name -> { params, returnType, language, body, volatility, isProcedure }
     this._prepared = new Map(); // name -> { ast, sql }
     this.catalog = [];
     this.indexCatalog = new Map();  // indexName -> { table, columns, unique }
@@ -1068,6 +1069,8 @@ export class Database {
       case 'ALTER_TABLE': return this._alterTable(ast);
       case 'CREATE_VIEW': return this._createView(ast);
       case 'CREATE_MATVIEW': return this._createMatView(ast);
+      case 'CREATE_FUNCTION': return this._createFunction(ast);
+      case 'DROP_FUNCTION': return this._dropFunction(ast);
       case 'CREATE_TRIGGER': {
         this.triggers.push({
           name: ast.name,
@@ -1570,6 +1573,81 @@ export class Database {
 
     this.indexCatalog.delete(ast.name);
     return { type: 'OK', message: `Index ${ast.name} dropped` };
+  }
+
+  _createFunction(ast) {
+    if (this._functions.has(ast.name) && !ast.orReplace) {
+      throw new Error(`Function ${ast.name} already exists`);
+    }
+    this._functions.set(ast.name, {
+      params: ast.params,
+      returnType: ast.returnType,
+      language: ast.language,
+      body: ast.body.trim(),
+      volatility: ast.volatility,
+      isProcedure: ast.isProcedure,
+    });
+    // Invalidate result cache — queries using this function may return different results
+    this._resultCache.clear();
+    const kind = ast.isProcedure ? 'Procedure' : 'Function';
+    return { type: 'OK', message: `${kind} ${ast.name} ${ast.orReplace ? 'replaced' : 'created'}` };
+  }
+
+  _dropFunction(ast) {
+    if (!this._functions.has(ast.name)) {
+      if (ast.ifExists) return { type: 'OK', message: `Function ${ast.name} does not exist (IF EXISTS)` };
+      throw new Error(`Function ${ast.name} does not exist`);
+    }
+    this._functions.delete(ast.name);
+    this._resultCache.clear();
+    return { type: 'OK', message: `Function ${ast.name} dropped` };
+  }
+
+  /**
+   * Evaluate a user-defined SQL function call.
+   * Substitutes parameter values into the body expression and evaluates it.
+   */
+  _callUserFunction(funcDef, args) {
+    if (funcDef.language === 'sql') {
+      // Parse the body as a SQL expression/query
+      let body = funcDef.body;
+      // If body starts with SELECT, execute as a query and return first column of first row
+      if (body.toUpperCase().startsWith('SELECT')) {
+        // Substitute params: replace param names with values in the SQL
+        for (let i = 0; i < funcDef.params.length; i++) {
+          const param = funcDef.params[i];
+          const val = args[i];
+          // Replace parameter references with literal values
+          const regex = new RegExp('\\b' + param.name + '\\b', 'gi');
+          if (val === null) {
+            body = body.replace(regex, 'NULL');
+          } else if (typeof val === 'number') {
+            body = body.replace(regex, String(val));
+          } else {
+            body = body.replace(regex, `'${String(val).replace(/'/g, "''")}'`);
+          }
+        }
+        const result = this.execute(body);
+        const rows = result.rows || result;
+        if (!rows || rows.length === 0) return null;
+        // Return first column of first row
+        const firstRow = rows[0];
+        const keys = Object.keys(firstRow);
+        return firstRow[keys[0]];
+      }
+      // Otherwise, try to evaluate as an expression (not a full query)
+      throw new Error(`Function body must start with SELECT: ${body}`);
+    } else if (funcDef.language === 'js') {
+      // JavaScript function: execute in a sandboxed context
+      const paramNames = funcDef.params.map(p => p.name);
+      try {
+        const fn = new Function(...paramNames, `return ${funcDef.body}`);
+        return fn(...args);
+      } catch (e) {
+        throw new Error(`Error in JS function: ${e.message}`);
+      }
+    }
+    throw new Error(`Unsupported function language: ${funcDef.language}`);
   }
 
   _createView(ast) {
@@ -7359,6 +7437,13 @@ export class Database {
   }
 
   _evalFunction(func, args, row) {
+    // Check user-defined functions first
+    const udfName = func.toLowerCase();
+    if (this._functions && this._functions.has(udfName)) {
+      const funcDef = this._functions.get(udfName);
+      const evaluatedArgs = args.map(a => this._evalValue(a, row));
+      return this._callUserFunction(funcDef, evaluatedArgs);
+    }
     switch (func) {
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }

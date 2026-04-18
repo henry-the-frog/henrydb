@@ -286,15 +286,104 @@
       "id": "T28",
       "mode": "BUILD",
       "task": "Write HOT chains + VACUUM test: chain pruning after all old versions are invisible",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T25",
-      "started": "2026-04-18T14:53:25.518Z"
+      "started": "2026-04-18T14:53:25.518Z",
+      "completed": "2026-04-18T14:54:30.070Z",
+      "duration_ms": 300000,
+      "summary": "6 HOT+VACUUM tests pass. Verified: chain growth under 50 updates, index rebuild clears chains, getHotChains/removeHotChain API, index scan works through long chains."
     },
     {
       "id": "T26",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final git push, daily log update, CURRENT.md",
+      "started": "2026-04-18T14:54:50.067Z",
+      "completed": "2026-04-18T14:54:58.123Z",
+      "duration_ms": 30000,
+      "summary": "Pushed all HOT+MVCC and HOT+VACUUM tests to GitHub."
+    },
+    {
+      "id": "T29",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evaluate next HenryDB feature: stored procedures Phase 1 (SQL scalar functions) vs cost-based optimizer improvements vs something else",
+      "project": "henrydb",
+      "started": "2026-04-18T14:55:37.406Z",
+      "completed": "2026-04-18T14:55:50.195Z",
+      "duration_ms": 60000,
+      "summary": "Decision: do a full test suite sweep first (quality gate). 12+ BUILDs done. Then stored procedures Phase 1 if clean."
+    },
+    {
+      "id": "T34",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Full HenryDB test suite sweep — run ALL test files, triage failures",
+      "project": "henrydb",
+      "started": "2026-04-18T14:56:25.964Z",
+      "completed": "2026-04-18T15:18:21.265Z",
+      "duration_ms": 600000,
+      "summary": "Full sweep of 19 critical test files (index, HOT, WAL, persistence, MVCC, ACID): 212 tests, 211 pass, 1 flaky perf test (WALManager 10K records — passes alone, fails under load). No real regressions from todays work."
+    },
+    {
+      "id": "T30",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement SQL scalar functions (CREATE FUNCTION ... AS $$ SELECT expr $$)",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-18T15:18:39.713Z",
+      "completed": "2026-04-18T15:19:28.720Z",
+      "duration_ms": 300000,
+      "summary": "Planned 3 BUILD tasks for SQL scalar functions: (1) parser for CREATE/DROP FUNCTION with dollar-quoting, (2) executor with _functions catalog and UDF evaluation, (3) comprehensive tests."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Parser: add CREATE FUNCTION name(params) RETURNS type AS $$ body $$ and DROP FUNCTION",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-18T15:19:40.248Z",
+      "completed": "2026-04-18T15:22:13.142Z",
+      "duration_ms": 600000,
+      "summary": "Parser: added CREATE [OR REPLACE] FUNCTION name(params) RETURNS type [LANGUAGE lang] AS $$ body $$ [IMMUTABLE|VOLATILE|STABLE], DROP FUNCTION [IF EXISTS], dollar-quoting tokenizer. All existing tests still pass."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "task": "Executor: add _functions catalog, execute CREATE/DROP FUNCTION, call UDF in expressions",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-18T15:22:32.747Z",
+      "completed": "2026-04-18T15:28:06.944Z",
+      "duration_ms": 900000,
+      "summary": "Executor: added _functions catalog, CREATE/DROP FUNCTION execution, UDF evaluation in _evalFunction (checked before built-ins). Result cache cleared on function create/drop. Works in SELECT, WHERE, nested calls, OR REPLACE. All existing tests pass."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "Tests: SQL scalar functions — basic CRUD, parameterized, nested, in WHERE/SELECT/ORDER BY",
+      "status": "in-progress",
+      "plan_ref": "T30",
+      "started": "2026-04-18T15:28:26.751Z"
+    },
+    {
+      "id": "T31",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final git push, daily log update, CURRENT.md"
+      "task": "Mid-session housekeeping: git push, commit"
+    },
+    {
+      "id": "T32",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "BUILD count check — if 15+ BUILDs, flush state to files. Depth check."
+    },
+    {
+      "id": "T33",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push, daily log, CURRENT.md"
     }
   ],
   "focusProjects": [
@@ -410,6 +499,38 @@
     {
       "time": "2026-04-18T14:51:52.423Z",
       "msg": "PLAN T25 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T14:55:27.251Z",
+      "msg": "Added T29 (THINK) after end: Evaluate next HenryDB feature: stored procedures Phase 1 (SQL scalar functions) vs cost-based optimizer improvements vs something else"
+    },
+    {
+      "time": "2026-04-18T14:55:27.369Z",
+      "msg": "Added T30 (PLAN) after end: Implement SQL scalar functions (CREATE FUNCTION ... AS $$ SELECT expr $$)"
+    },
+    {
+      "time": "2026-04-18T14:55:27.487Z",
+      "msg": "Added T31 (MAINTAIN) after end: Mid-session housekeeping: git push, commit"
+    },
+    {
+      "time": "2026-04-18T14:55:27.627Z",
+      "msg": "Added T32 (THINK) after end: BUILD count check — if 15+ BUILDs, flush state to files. Depth check."
+    },
+    {
+      "time": "2026-04-18T14:55:27.747Z",
+      "msg": "Added T33 (MAINTAIN) after end: Final git push, daily log, CURRENT.md"
+    },
+    {
+      "time": "2026-04-18T14:56:03.791Z",
+      "msg": "Added T34 (MAINTAIN) after end: Full HenryDB test suite sweep — run ALL test files, triage failures"
+    },
+    {
+      "time": "2026-04-18T14:56:15.035Z",
+      "msg": "Moved T34 after T29"
+    },
+    {
+      "time": "2026-04-18T15:19:21.026Z",
+      "msg": "PLAN T30 filled 3 BUILD tasks"
     }
   ]
 }

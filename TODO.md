@@ -3,8 +3,8 @@
 ### Urgent
 
 ### Normal
-- HenryDB: secondary index + MVCC snapshot after UPDATE (needs HOT chains)
-- HenryDB: fix file-wal.test.js "uncommitted transactions are NOT recovered" test — test double-logs WAL records (heap.insert auto-logs + manual wal.appendInsert). Need to update test to not double-log.
+- HenryDB: VACUUM should prune HOT chains and update index entries (currently chains grow unbounded)
+- HenryDB: FileBackedHeap needs HOT chain support (currently falls back to index update)
 
 ### Low
 - RISC-V: general tail call optimization (closures need special handling)

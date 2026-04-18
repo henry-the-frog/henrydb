@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T14:53:25.554Z",
+  "generated": "2026-04-18T15:28:26.786Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Write HOT chains + VACUUM test: chain pruning after all old versions are invisible",
-    "startedAt": "2026-04-18T14:53:25.554Z",
-    "taskId": "T28"
+    "task": "Tests: SQL scalar functions — basic CRUD, parameterized, nested, in WHERE/SELECT/ORDER BY",
+    "startedAt": "2026-04-18T15:28:26.786Z",
+    "taskId": "T37"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -386,43 +386,128 @@
       {
         "id": "T25",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HOT chains + MVCC integration: ensure HOT works correctly under snapshot isolation",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-18T14:51:24.183Z"
+        "started": "2026-04-18T14:51:24.183Z",
+        "completed": "2026-04-18T14:51:56.957Z",
+        "duration_ms": 300000,
+        "summary": "Planned 2 BUILD tasks: MVCC+HOT visibility tests (concurrent tx seeing correct versions through chains), VACUUM chain pruning tests."
       },
       {
         "id": "T27",
         "mode": "BUILD",
         "task": "Write HOT chains + MVCC tests: HOT update visibility across concurrent transactions, snapshot isolation through HOT chains",
-        "status": "upcoming",
-        "plan_ref": "T25"
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-18T14:52:05.155Z",
+        "completed": "2026-04-18T14:53:04.645Z",
+        "duration_ms": 600000,
+        "summary": "7 HOT+MVCC integration tests all pass. Snapshot isolation through HOT chains works correctly: older snapshots see old versions, concurrent updates preserved, rollback restores visibility."
       },
       {
         "id": "T28",
         "mode": "BUILD",
         "task": "Write HOT chains + VACUUM test: chain pruning after all old versions are invisible",
-        "status": "upcoming",
-        "plan_ref": "T25"
+        "status": "done",
+        "plan_ref": "T25",
+        "started": "2026-04-18T14:53:25.518Z",
+        "completed": "2026-04-18T14:54:30.070Z",
+        "duration_ms": 300000,
+        "summary": "6 HOT+VACUUM tests pass. Verified: chain growth under 50 updates, index rebuild clears chains, getHotChains/removeHotChain API, index scan works through long chains."
       },
       {
         "id": "T26",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push, daily log update, CURRENT.md",
+        "started": "2026-04-18T14:54:50.067Z",
+        "completed": "2026-04-18T14:54:58.123Z",
+        "duration_ms": 30000,
+        "summary": "Pushed all HOT+MVCC and HOT+VACUUM tests to GitHub."
+      },
+      {
+        "id": "T29",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Evaluate next HenryDB feature: stored procedures Phase 1 (SQL scalar functions) vs cost-based optimizer improvements vs something else",
+        "project": "henrydb",
+        "started": "2026-04-18T14:55:37.406Z",
+        "completed": "2026-04-18T14:55:50.195Z",
+        "duration_ms": 60000,
+        "summary": "Decision: do a full test suite sweep first (quality gate). 12+ BUILDs done. Then stored procedures Phase 1 if clean."
+      },
+      {
+        "id": "T34",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Full HenryDB test suite sweep — run ALL test files, triage failures",
+        "project": "henrydb",
+        "started": "2026-04-18T14:56:25.964Z",
+        "completed": "2026-04-18T15:18:21.265Z",
+        "duration_ms": 600000,
+        "summary": "Full sweep of 19 critical test files (index, HOT, WAL, persistence, MVCC, ACID): 212 tests, 211 pass, 1 flaky perf test (WALManager 10K records — passes alone, fails under load). No real regressions from todays work."
+      },
+      {
+        "id": "T30",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement SQL scalar functions (CREATE FUNCTION ... AS $$ SELECT expr $$)",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T15:18:39.713Z"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "Parser: add CREATE FUNCTION name(params) RETURNS type AS $$ body $$ and DROP FUNCTION",
         "status": "upcoming",
-        "task": "Final git push, daily log update, CURRENT.md"
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T36",
+        "mode": "BUILD",
+        "task": "Executor: add _functions catalog, execute CREATE/DROP FUNCTION, call UDF in expressions",
+        "status": "upcoming",
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T37",
+        "mode": "BUILD",
+        "task": "Tests: SQL scalar functions — basic CRUD, parameterized, nested, in WHERE/SELECT/ORDER BY",
+        "status": "upcoming",
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T31",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Mid-session housekeeping: git push, commit"
+      },
+      {
+        "id": "T32",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "BUILD count check — if 15+ BUILDs, flush state to files. Depth check."
+      },
+      {
+        "id": "T33",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final git push, daily log, CURRENT.md"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 26,
-    "blocksTotal": 28,
+    "blocksCompleted": 33,
+    "blocksTotal": 37,
     "modeDistribution": {
-      "THINK": 6,
-      "PLAN": 5,
-      "BUILD": 8,
-      "MAINTAIN": 5,
+      "THINK": 7,
+      "PLAN": 6,
+      "BUILD": 11,
+      "MAINTAIN": 7,
       "EXPLORE": 2
     }
   },

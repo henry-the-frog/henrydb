@@ -41,6 +41,7 @@ const KEYWORDS = new Set([
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
   'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
   'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW', 'COMMENT',
+  'FUNCTION', 'RETURNS', 'LANGUAGE', 'PROCEDURE', 'CALL', 'IMMUTABLE', 'VOLATILE', 'STABLE',
 ]);
 
 export function tokenize(sql) {
@@ -51,6 +52,30 @@ export function tokenize(sql) {
   while (i < src.length) {
     // Whitespace
     if (/\s/.test(src[i])) { i++; continue; }
+
+    // Dollar-quoted string ($$ body $$ or $tag$ body $tag$)
+    if (src[i] === '$') {
+      let tag = '$';
+      let j = i + 1;
+      // Read optional tag between $ chars
+      while (j < src.length && src[j] !== '$') {
+        if (/[a-zA-Z0-9_]/.test(src[j])) { tag += src[j]; j++; }
+        else break;
+      }
+      if (j < src.length && src[j] === '$') {
+        tag += '$';
+        j++;
+        // Now find the closing tag
+        const endIdx = src.indexOf(tag, j);
+        if (endIdx !== -1) {
+          const body = src.substring(j, endIdx);
+          i = endIdx + tag.length;
+          tokens.push({ type: 'DOLLAR_STRING', value: body });
+          continue;
+        }
+      }
+      // Not a dollar-quote — fall through to operator handling
+    }
 
     // String literal
     if (src[i] === "'") {
@@ -1132,6 +1157,32 @@ export function parse(sql) {
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
     }
+    // User-defined or unknown function call: ident(args) in SELECT columns
+    if (peek().type === 'IDENT' && tokens[pos + 1]?.type === '(') {
+      const func = advance().value;
+      expect('(');
+      const args = [];
+      if (!match(')')) {
+        args.push(parseExpr());
+        while (match(',')) args.push(parseExpr());
+        expect(')');
+      }
+      let node = { type: 'function_call', func: func.toUpperCase(), args };
+      // Handle arithmetic after function call
+      while (['PLUS', 'MINUS', 'SLASH', 'MOD'].includes(peek().type) || (peek().type === '*' && tokens[pos+1]?.type !== ')')) {
+        const t = peek().type;
+        const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
+        advance();
+        const right = parsePrimary();
+        node = { type: 'arith', op, left: node, right };
+      }
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      if (node.type === 'function_call') {
+        return { type: 'function', func: func.toUpperCase(), args, alias };
+      }
+      return { type: 'expression', expr: node, alias };
+    }
     const colTok = advance();
     const col = colTok.originalValue || colTok.value;
     // Check for || concatenation or arithmetic operators
@@ -1788,7 +1839,21 @@ export function parse(sql) {
       return { type: 'aggregate_expr', func, arg, distinct };
     }
 
-    if (t.type === 'IDENT') { advance(); return { type: 'column_ref', name: t.value }; }
+    if (t.type === 'IDENT') {
+      // Check if this is a function call: IDENT followed by (
+      if (tokens[pos + 1]?.type === '(') {
+        const func = advance().value;
+        expect('(');
+        const args = [];
+        if (!match(')')) {
+          args.push(parseExpr());
+          while (match(',')) args.push(parseExpr());
+          expect(')');
+        }
+        return { type: 'function_call', func: func.toUpperCase(), args };
+      }
+      advance(); return { type: 'column_ref', name: t.value };
+    }
     // Allow keywords used as column names (e.g., column named "count")
     if (t.type === 'KEYWORD' && tokens[pos + 1]?.type !== '(') {
       advance();
@@ -2232,6 +2297,9 @@ export function parse(sql) {
     let orReplace = false;
     if (isKeyword('OR')) { advance(); expect('KEYWORD', 'REPLACE'); orReplace = true; }
     if (isKeyword('VIEW')) return parseCreateView(orReplace);
+    if (isKeyword('FUNCTION') || isKeyword('PROCEDURE')) {
+      return parseCreateFunction(orReplace);
+    }
     if (isKeyword('TRIGGER')) {
       advance(); // TRIGGER
       const name = advance().value;
@@ -2526,6 +2594,77 @@ export function parse(sql) {
     return { type: 'CREATE_VIEW', name, query, orReplace };
   }
 
+  function parseCreateFunction(orReplace = false) {
+    const kind = peek().value; // FUNCTION or PROCEDURE
+    advance();
+    const name = advance().value;
+    
+    // Parse parameters: (param_name type, ...)
+    const params = [];
+    expect('(');
+    while (peek().type !== ')') {
+      const paramName = advance().value;
+      const paramType = advance().value;
+      params.push({ name: paramName.toLowerCase(), type: paramType.toUpperCase() });
+      if (peek().type === ',') advance();
+    }
+    expect(')');
+    
+    // RETURNS type (optional for PROCEDURE)
+    let returnType = null;
+    if (isKeyword('RETURNS')) {
+      advance();
+      returnType = advance().value.toUpperCase();
+    }
+    
+    // Optional: LANGUAGE js|sql
+    let language = 'sql'; // default
+    if (isKeyword('LANGUAGE')) {
+      advance();
+      language = advance().value.toLowerCase();
+    }
+    
+    // Optional: IMMUTABLE | VOLATILE | STABLE
+    let volatility = 'volatile';
+    if (isKeyword('IMMUTABLE')) { volatility = 'immutable'; advance(); }
+    else if (isKeyword('VOLATILE')) { volatility = 'volatile'; advance(); }
+    else if (isKeyword('STABLE')) { volatility = 'stable'; advance(); }
+    
+    // AS $$ body $$ or AS 'body'
+    expect('KEYWORD', 'AS');
+    let body;
+    if (peek().type === 'DOLLAR_STRING') {
+      body = advance().value;
+    } else if (peek().type === 'STRING') {
+      body = advance().value;
+    } else {
+      throw new Error('Expected function body as dollar-quoted or single-quoted string');
+    }
+    
+    // Optional trailing LANGUAGE (PostgreSQL allows before or after body)
+    if (isKeyword('LANGUAGE')) {
+      advance();
+      language = advance().value.toLowerCase();
+    }
+    
+    // Optional trailing volatility
+    if (isKeyword('IMMUTABLE')) { volatility = 'immutable'; advance(); }
+    else if (isKeyword('VOLATILE')) { volatility = 'volatile'; advance(); }
+    else if (isKeyword('STABLE')) { volatility = 'stable'; advance(); }
+
+    return {
+      type: 'CREATE_FUNCTION',
+      name: name.toLowerCase(),
+      params,
+      returnType,
+      language,
+      volatility,
+      body,
+      orReplace,
+      isProcedure: kind === 'PROCEDURE',
+    };
+  }
+
   function parseDrop() {
     advance(); // DROP
     if (isKeyword('INDEX')) {
@@ -2544,6 +2683,13 @@ export function parse(sql) {
       if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
       const name = advance().value;
       return { type: 'DROP_VIEW', name, ifExists };
+    }
+    if (isKeyword('FUNCTION') || isKeyword('PROCEDURE')) {
+      advance();
+      let ifExists = false;
+      if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
+      const name = advance().value;
+      return { type: 'DROP_FUNCTION', name: name.toLowerCase(), ifExists };
     }
     expect('KEYWORD', 'TABLE');
     let ifExists = false;
