@@ -1582,6 +1582,7 @@ export class Database {
     this._functions.set(ast.name, {
       params: ast.params,
       returnType: ast.returnType,
+      returnColumns: ast.returnColumns,
       language: ast.language,
       body: ast.body.trim(),
       volatility: ast.volatility,
@@ -1609,15 +1610,12 @@ export class Database {
    */
   _callUserFunction(funcDef, args) {
     if (funcDef.language === 'sql') {
-      // Parse the body as a SQL expression/query
       let body = funcDef.body;
-      // If body starts with SELECT, execute as a query and return first column of first row
       if (body.toUpperCase().startsWith('SELECT')) {
-        // Substitute params: replace param names with values in the SQL
+        // Substitute params
         for (let i = 0; i < funcDef.params.length; i++) {
           const param = funcDef.params[i];
           const val = args[i];
-          // Replace parameter references with literal values
           const regex = new RegExp('\\b' + param.name + '\\b', 'gi');
           if (val === null) {
             body = body.replace(regex, 'NULL');
@@ -1629,16 +1627,20 @@ export class Database {
         }
         const result = this.execute(body);
         const rows = result.rows || result;
+
+        // Table-returning function: return the full result set
+        if (funcDef.returnType === 'TABLE') {
+          return { type: 'TABLE_RESULT', rows: rows || [] };
+        }
+
+        // Scalar function: return first column of first row
         if (!rows || rows.length === 0) return null;
-        // Return first column of first row
         const firstRow = rows[0];
         const keys = Object.keys(firstRow);
         return firstRow[keys[0]];
       }
-      // Otherwise, try to evaluate as an expression (not a full query)
       throw new Error(`Function body must start with SELECT: ${body}`);
     } else if (funcDef.language === 'js') {
-      // JavaScript function: execute in a sandboxed context
       const paramNames = funcDef.params.map(p => p.name);
       try {
         const fn = new Function(...paramNames, `return ${funcDef.body}`);
@@ -2590,7 +2592,7 @@ export class Database {
     }
 
     // Check if FROM is GENERATE_SERIES
-    const tableName = ast.from.table;
+    let tableName = ast.from.table;
     if (tableName === '__generate_series') {
       const start = this._evalValue(ast.from.start, {});
       const stop = this._evalValue(ast.from.stop, {});
@@ -2646,14 +2648,40 @@ export class Database {
       return { type: 'ROWS', rows };
     }
 
+    // Check if FROM is a function call (table-returning function)
+    if (tableName === '__func_call') {
+      const funcName = ast.from.func;
+      const funcDef = this._functions?.get(funcName);
+      if (!funcDef) throw new Error(`Function ${funcName} does not exist`);
+      if (funcDef.returnType !== 'TABLE') throw new Error(`Function ${funcName} does not return TABLE`);
+      
+      // Evaluate arguments
+      const evalArgs = ast.from.args.map(a => this._evalValue(a, {}));
+      const result = this._callUserFunction(funcDef, evalArgs);
+      let funcRows = result.rows || [];
+      
+      // Transform to a subquery-style result and process as subquery
+      const funcAlias = ast.from.alias || funcName;
+      ast.from.subquery = { _virtualRows: funcRows };
+      ast.from.alias = funcAlias;
+      // Fall through to the __subquery handler
+      tableName = '__subquery';
+    }
+
     // Check if FROM is a subquery
     if (tableName === '__subquery') {
       const subAst = ast.from.subquery;
       // Handle UNION/INTERSECT/EXCEPT in derived tables
-      const subResult = (subAst.type === 'UNION' || subAst.type === 'INTERSECT' || subAst.type === 'EXCEPT')
-        ? this.execute_ast(subAst)
-        : this._select(subAst);
-      let rows = subResult.rows || [];
+            // Handle virtual rows from table-returning functions
+      let rows;
+      if (subAst._virtualRows) {
+        rows = subAst._virtualRows;
+      } else {
+        const subResult = (subAst.type === 'UNION' || subAst.type === 'INTERSECT' || subAst.type === 'EXCEPT')
+          ? this.execute_ast(subAst)
+          : this._select(subAst);
+        rows = subResult.rows || [];
+      }
       
       // Add qualified column names (sub.col) so alias-prefixed references work
       const subAlias = ast.from.alias;

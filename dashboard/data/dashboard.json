@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T15:31:00.785Z",
+  "generated": "2026-04-18T15:47:15.319Z",
   "current": {
     "status": "in-progress",
-    "mode": "THINK",
-    "task": "Diagnose 4 pre-existing AUTOINCREMENT test failures in sequence-depth.test.js",
-    "startedAt": "2026-04-18T15:31:00.785Z",
-    "taskId": "T38"
+    "mode": "BUILD",
+    "task": "Tests: table-returning functions — basic, with params, in JOINs, nested",
+    "startedAt": "2026-04-18T15:47:15.319Z",
+    "taskId": "T55"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -452,62 +452,252 @@
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement SQL scalar functions (CREATE FUNCTION ... AS $$ SELECT expr $$)",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-18T15:18:39.713Z"
+        "started": "2026-04-18T15:18:39.713Z",
+        "completed": "2026-04-18T15:19:28.720Z",
+        "duration_ms": 300000,
+        "summary": "Planned 3 BUILD tasks for SQL scalar functions: (1) parser for CREATE/DROP FUNCTION with dollar-quoting, (2) executor with _functions catalog and UDF evaluation, (3) comprehensive tests."
       },
       {
         "id": "T35",
         "mode": "BUILD",
         "task": "Parser: add CREATE FUNCTION name(params) RETURNS type AS $$ body $$ and DROP FUNCTION",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-18T15:19:40.248Z",
+        "completed": "2026-04-18T15:22:13.142Z",
+        "duration_ms": 600000,
+        "summary": "Parser: added CREATE [OR REPLACE] FUNCTION name(params) RETURNS type [LANGUAGE lang] AS $$ body $$ [IMMUTABLE|VOLATILE|STABLE], DROP FUNCTION [IF EXISTS], dollar-quoting tokenizer. All existing tests still pass."
       },
       {
         "id": "T36",
         "mode": "BUILD",
         "task": "Executor: add _functions catalog, execute CREATE/DROP FUNCTION, call UDF in expressions",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-18T15:22:32.747Z",
+        "completed": "2026-04-18T15:28:06.944Z",
+        "duration_ms": 900000,
+        "summary": "Executor: added _functions catalog, CREATE/DROP FUNCTION execution, UDF evaluation in _evalFunction (checked before built-ins). Result cache cleared on function create/drop. Works in SELECT, WHERE, nested calls, OR REPLACE. All existing tests pass."
       },
       {
         "id": "T37",
         "mode": "BUILD",
         "task": "Tests: SQL scalar functions — basic CRUD, parameterized, nested, in WHERE/SELECT/ORDER BY",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-18T15:28:26.751Z",
+        "completed": "2026-04-18T15:29:26.794Z",
+        "duration_ms": 600000,
+        "summary": "21 UDF tests all pass. Full coverage: basics, WHERE/ORDER BY/SELECT, nested calls, DROP, OR REPLACE, LANGUAGE js, dollar-quoting, NULL, case-insensitive. Committed."
       },
       {
         "id": "T31",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-session housekeeping: git push, commit"
+        "status": "done",
+        "task": "Mid-session housekeeping: git push, commit",
+        "started": "2026-04-18T15:29:49.477Z",
+        "completed": "2026-04-18T15:29:57.611Z",
+        "duration_ms": 30000,
+        "summary": "Pushed henrydb (UDFs) + workspace to GitHub."
       },
       {
         "id": "T32",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "BUILD count check — if 15+ BUILDs, flush state to files. Depth check."
+        "status": "done",
+        "task": "BUILD count check — if 15+ BUILDs, flush state to files. Depth check.",
+        "started": "2026-04-18T15:30:05.443Z",
+        "completed": "2026-04-18T15:30:23.575Z",
+        "duration_ms": 120000,
+        "summary": "BUILD count 10/20. Depth check passes (HOT+FileBackedHeap bug was genuine surprise). State flushed. Next: fix pre-existing AUTOINCREMENT failures for quality depth."
       },
       {
         "id": "T33",
         "mode": "MAINTAIN",
+        "status": "skipped",
+        "task": "Final git push, daily log, CURRENT.md",
+        "skip_reason": ""
+      },
+      {
+        "id": "T38",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Diagnose 4 pre-existing AUTOINCREMENT test failures in sequence-depth.test.js",
+        "project": "henrydb",
+        "started": "2026-04-18T15:31:00.749Z",
+        "completed": "2026-04-18T15:33:04.861Z",
+        "duration_ms": 300000,
+        "summary": "Diagnosed and fixed 4 AUTOINCREMENT failures: (1) parser didnt recognize AUTOINCREMENT keyword — mapped to SERIAL, (2) explicit INSERT values didnt update auto-increment counter — next auto-generated ID was too low. 8/8 sequence tests pass."
+      },
+      {
+        "id": "T39",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Fix AUTOINCREMENT failures",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T15:33:27.816Z",
+        "completed": "2026-04-18T15:33:27.957Z",
+        "duration_ms": 10000,
+        "summary": "Already fixed during T38 — combined THINK and fix in one step."
+      },
+      {
+        "id": "T40",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push after AUTOINCREMENT fixes",
+        "started": "2026-04-18T15:33:41.528Z",
+        "completed": "2026-04-18T15:33:48.210Z",
+        "duration_ms": 15000,
+        "summary": "Pushed AUTOINCREMENT fix to GitHub."
+      },
+      {
+        "id": "T41",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Pick next deep work: RISC-V tail calls, neural-net depth, or HenryDB table-returning functions",
+        "started": "2026-04-18T15:33:58.288Z",
+        "completed": "2026-04-18T15:35:36.695Z",
+        "duration_ms": 180000,
+        "summary": "Decision: Switch to RISC-V emulator for depth variety. Project has 1065/1066 tests passing. Target: implement general tail call optimization (currently only self-recursion TCO exists)."
+      },
+      {
+        "id": "T43",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Study RISC-V codegen tail call implementation: understand current self-TCO, design general TCO for named function calls",
+        "project": "riscv-emulator",
+        "started": "2026-04-18T15:36:07.704Z",
+        "completed": "2026-04-18T15:37:24.377Z",
+        "duration_ms": 300000,
+        "summary": "Studied RISC-V codegen: self-TCO jumps to function_tco_entry after arg setup. General TCO needs: (1) compile args to temps, (2) move to a0-a7, (3) emit full epilogue to tear down frame, (4) jump (not jal) to target function. Key: must restore ra+s0 and fix sp before jumping. Closure calls more complex (need dispatch)."
+      },
+      {
+        "id": "T44",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Implement general tail call optimization in Monkey RISC-V codegen",
+        "task": null,
+        "project": "riscv-emulator",
+        "started": "2026-04-18T15:37:37.271Z",
+        "completed": "2026-04-18T15:37:47.201Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 BUILD tasks: implement general TCO in _compileReturn, write mutual recursion + stack overflow tests."
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "task": "Implement general TCO for named function calls in _compileReturn",
+        "status": "done",
+        "plan_ref": "T44",
+        "started": "2026-04-18T15:37:58.311Z",
+        "completed": "2026-04-18T15:39:34.249Z",
+        "duration_ms": 600000,
+        "summary": "Implemented general TCO for named function calls. Mutual recursion (is_even/is_odd) works at 1000+ depth without stack overflow. All 1065 existing tests pass. Assembly shows correct pattern: args to regs, epilogue, j target."
+      },
+      {
+        "id": "T48",
+        "mode": "BUILD",
+        "task": "Write tests: mutual recursion with TCO (is_even/is_odd), tail call to different function, verify no stack overflow",
+        "status": "done",
+        "plan_ref": "T44",
+        "started": "2026-04-18T15:39:54.626Z",
+        "completed": "2026-04-18T15:40:54.465Z",
+        "duration_ms": 300000,
+        "summary": "12 TCO tests all pass. Self-recursive, mutual recursion (is_even/is_odd at 1000 depth), three-way (A→B→C→A), different arg counts, return value preservation, assembly verification (j vs jal). Committed."
+      },
+      {
+        "id": "T45",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push RISC-V changes and update daily log",
+        "started": "2026-04-18T15:41:11.330Z",
+        "completed": "2026-04-18T15:41:18.297Z",
+        "duration_ms": 30000,
+        "summary": "Pushed RISC-V TCO to GitHub."
+      },
+      {
+        "id": "T46",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check after RISC-V work — what did we learn about tail calls and RISC-V codegen?",
+        "started": "2026-04-18T15:41:27.373Z",
+        "completed": "2026-04-18T15:41:49.719Z",
+        "duration_ms": 120000,
+        "summary": "Depth check passes. Key learning: TCO is epilogue-before-jump (25 lines). Self-TCO skips prologue, general TCO includes it. Closure TCO is the remaining gap. 13 BUILDs done."
+      },
+      {
+        "id": "T49",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Pick next focus area: HenryDB table-returning functions, RISC-V closure TCO, or cross-project depth work",
+        "started": "2026-04-18T15:42:23.906Z",
+        "completed": "2026-04-18T15:42:35.492Z",
+        "duration_ms": 60000,
+        "summary": "Decision: stress-test HenryDB. 774 test files, never run all. Target feature areas changed today: UDFs, HOT chains, AUTOINCREMENT, WAL recovery."
+      },
+      {
+        "id": "T50",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement HenryDB table-returning functions (CREATE FUNCTION ... RETURNS TABLE)",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-18T15:42:49.277Z"
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
+        "task": "Parser + executor: RETURNS TABLE syntax and table-returning function execution",
         "status": "upcoming",
-        "task": "Final git push, daily log, CURRENT.md"
+        "plan_ref": "T50"
+      },
+      {
+        "id": "T54",
+        "mode": "BUILD",
+        "task": "FROM clause: support function calls as table sources (SELECT * FROM func(args))",
+        "status": "upcoming",
+        "plan_ref": "T50"
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "task": "Tests: table-returning functions — basic, with params, in JOINs, nested",
+        "status": "upcoming",
+        "plan_ref": "T50"
+      },
+      {
+        "id": "T51",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push and housekeeping"
+      },
+      {
+        "id": "T52",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Session reflection: what patterns emerged across HenryDB, RISC-V, and neural-net today?"
+      },
+      {
+        "id": "T42",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final state snapshot: push repos, update daily log with evening summary"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 36,
-    "blocksTotal": 37,
+    "blocksCompleted": 50,
+    "blocksTotal": 55,
     "modeDistribution": {
-      "THINK": 8,
-      "PLAN": 6,
-      "BUILD": 12,
-      "MAINTAIN": 8,
+      "THINK": 13,
+      "PLAN": 9,
+      "BUILD": 16,
+      "MAINTAIN": 10,
       "EXPLORE": 2
     }
   },

@@ -1390,6 +1390,21 @@ export function parse(sql) {
       else if (peek().type === 'IDENT') alias = advance().value;
       return { table: '__subquery', alias, subquery };
     }
+    // Function call in FROM: func_name(args) [AS alias]
+    if (peek().type === 'IDENT' && tokens[pos + 1]?.type === '(') {
+      const func = advance().value;
+      expect('(');
+      const args = [];
+      if (!match(')')) {
+        args.push(parseExpr());
+        while (match(',')) args.push(parseExpr());
+        expect(')');
+      }
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      else if (peek().type === 'IDENT') alias = advance().value;
+      return { table: '__func_call', func: func.toLowerCase(), args, alias };
+    }
     const fromTok = advance();
     const table = fromTok.originalValue || fromTok.value;
     let alias = null;
@@ -2612,11 +2627,26 @@ export function parse(sql) {
     }
     expect(')');
     
-    // RETURNS type (optional for PROCEDURE)
+    // RETURNS type or RETURNS TABLE(col type, ...) (optional for PROCEDURE)
     let returnType = null;
+    let returnColumns = null;
     if (isKeyword('RETURNS')) {
       advance();
-      returnType = advance().value.toUpperCase();
+      if (isKeyword('TABLE')) {
+        advance();
+        returnType = 'TABLE';
+        returnColumns = [];
+        expect('(');
+        while (peek().type !== ')') {
+          const colName = advance().value;
+          const colType = advance().value;
+          returnColumns.push({ name: colName.toLowerCase(), type: colType.toUpperCase() });
+          if (peek().type === ',') advance();
+        }
+        expect(')');
+      } else {
+        returnType = advance().value.toUpperCase();
+      }
     }
     
     // Optional: LANGUAGE js|sql
@@ -2659,6 +2689,7 @@ export function parse(sql) {
       name: name.toLowerCase(),
       params,
       returnType,
+      returnColumns,
       language,
       volatility,
       body,
