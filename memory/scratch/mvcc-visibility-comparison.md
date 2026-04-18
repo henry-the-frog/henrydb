@@ -61,11 +61,11 @@ if (created && !deleted) yield row;
 | Subtransactions | Full savepoint support | Basic savepoints |
 | xid wraparound | Handled via epoch | Not an issue (JS numbers) |
 
-### Gap Analysis
-1. **Snapshot simplification**: HenryDB uses only `startTx` without an explicit in-progress list.
-   This means it can't distinguish between "committed before snapshot" and "committed after
-   snapshot started but before read". PG's xip[] handles this correctly.
-   
+### Gap Analysis (CORRECTED after code verification)
+1. **~~Snapshot simplification~~**: ACTUALLY, HenryDB has `snap.activeSet` (equivalent to PG's `xip[]`).
+   The snapshot correctly excludes in-progress transactions. Originally thought this was missing
+   but code review proved otherwise. **Lesson: verify before planning improvements.**
+
 2. **No CLOG**: HenryDB tracks committed txns in a Set. PG uses a persistent commit log
    (pg_clog/pg_xact) that survives restarts.
 
