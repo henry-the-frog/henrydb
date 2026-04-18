@@ -2226,12 +2226,32 @@ export class Database {
 
       // UNIQUE and PRIMARY KEY uniqueness check
       if ((col.unique || col.primaryKey) && val != null) {
-        for (const tuple of table.heap.scan()) {
-          // Skip the row being updated (if any)
-          if (excludeRid && tuple.pageId === excludeRid.pageId && tuple.slotIdx === excludeRid.slotIdx) continue;
-          const tupleValues = tuple.values || tuple;
-          if (tupleValues[i] === val) {
-            throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
+        // Try fast index-based lookup first (O(log N) instead of O(N))
+        const indexName = col.primaryKey ? col.name : `unique_${col.name}`;
+        const index = table.indexes?.get(col.name) || table.indexes?.get(indexName);
+        if (index && typeof index.get === 'function') {
+          const found = index.get(val);
+          if (found !== undefined) {
+            if (excludeRid) {
+              const rids = Array.isArray(found) ? found : [found];
+              const hasOther = rids.some(r =>
+                r.pageId !== excludeRid.pageId || r.slotIdx !== excludeRid.slotIdx
+              );
+              if (hasOther) {
+                throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
+              }
+            } else {
+              throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
+            }
+          }
+        } else {
+          // Fallback: full heap scan (slow, O(N))
+          for (const tuple of table.heap.scan()) {
+            if (excludeRid && tuple.pageId === excludeRid.pageId && tuple.slotIdx === excludeRid.slotIdx) continue;
+            const tupleValues = tuple.values || tuple;
+            if (tupleValues[i] === val) {
+              throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
+            }
           }
         }
       }

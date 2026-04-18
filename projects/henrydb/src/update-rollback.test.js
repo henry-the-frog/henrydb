@@ -8,7 +8,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { TransactionalDatabase } from './transactional-db.js';
-import { HenryDBServer } from './server.js';
+// import { HenryDBServer } from './server.js'; // TODO: re-enable when PG wire protocol is implemented
 
 const { Client } = pg;
 

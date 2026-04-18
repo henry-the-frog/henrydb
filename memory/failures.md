@@ -158,6 +158,26 @@ if (av == null) return -1; // for ORDER BY (null is smallest)
 **FIRST_VALUE/LAST_VALUE Bug:** Both ignored the frame spec entirely. FIRST_VALUE always used partition[0], LAST_VALUE always used current row. Should use getFrameBounds() start/end indices.
 **Key insight:** When adding new functionality to getFrameBounds (like RANGE mode), every function that calls it needs to actually use the bounds — FIRST_VALUE/LAST_VALUE were hardcoded to bypass it.
 
+## 2026-04-18: Feature Capability Detection → Data Loss
+
+### HOT Chain + FileBackedHeap (CRITICAL)
+**Bug:** `isHotUpdate = true` but `table.heap.addHotChain` didn't exist (FileBackedHeap). Code entered HOT path, silently failed to create chain, AND skipped index updates. Rows became invisible to all index-based lookups.
+
+**Root cause:** Guard clause `if (table.heap.addHotChain) { ... }` inside the `if (isHotUpdate)` branch. When the condition was false, execution fell out of the HOT block without entering the `else` (non-HOT) block that updates indexes.
+
+**Fix:** Changed to `if (isHotUpdate && table.heap.addHotChain)` — the capability check gates the entire HOT path, not just the chain creation.
+
+**Pattern:** Feature detection that only guards the optimization but not the fallback = data loss.
+
+### WAL Recovery INSERT Bypassing Indexes (CRITICAL)  
+**Bug:** `recoverFromWAL()` used `tableObj.heap.insert(row)` which bypasses B-tree index maintenance. After recovery, PK lookups returned empty despite rows existing in heap.
+
+**Root cause:** The recovery code checked `if (tableObj.heap)` first (always true), making the `else if (db.execute)` SQL path dead code.
+
+**Fix:** Reversed priority: prefer `db.execute('INSERT...')` when available, fall back to heap.insert only for raw heap objects.
+
+**Pattern:** "Always true" conditions before more specific conditions make later branches dead code. Order matters.
+
 ## 2026-04-17: Four more backward pass bugs (gradient verification round 2)
 - **Root cause pattern**: Complex forward passes (routing, ODE solving, capsule routing) have the highest backward bug rate
 - **KAN**: Clamping in forward without matching boundary handling in backward
