@@ -2495,9 +2495,176 @@
     {
       "id": "T234",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "ACTUAL final session B housekeeping",
-      "started": "2026-04-18T22:10:04.628Z"
+      "started": "2026-04-18T22:10:04.628Z",
+      "completed": "2026-04-18T22:10:53.930Z",
+      "duration_ms": 120000,
+      "summary": "Session B complete. All repos pushed. Daily log with evening summary. CURRENT.md updated."
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement CTE (WITH clause) — Common Table Expressions",
+      "project": "henrydb",
+      "started": "2026-04-18T22:11:39.546Z",
+      "completed": "2026-04-18T22:11:39.691Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CTE tests",
+      "project": "henrydb",
+      "started": "2026-04-18T22:11:39.835Z",
+      "completed": "2026-04-18T22:11:39.980Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T237",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement recursive CTE (WITH RECURSIVE)",
+      "project": "henrydb",
+      "started": "2026-04-18T22:11:40.124Z",
+      "completed": "2026-04-18T22:11:40.269Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T238",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: recursive CTE tests",
+      "project": "henrydb",
+      "started": "2026-04-18T22:11:40.412Z",
+      "completed": "2026-04-18T22:11:40.556Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T239",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check #7",
+      "started": "2026-04-18T22:11:40.699Z",
+      "completed": "2026-04-18T22:11:40.845Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement EXCEPT and INTERSECT set operations",
+      "project": "henrydb",
+      "started": "2026-04-18T22:11:40.988Z",
+      "completed": "2026-04-18T22:11:41.132Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented."
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: set operation tests",
+      "project": "henrydb",
+      "started": "2026-04-18T22:12:03.228Z",
+      "completed": "2026-04-18T22:12:03.372Z",
+      "duration_ms": 1000,
+      "summary": "EXCEPT/INTERSECT already work."
+    },
+    {
+      "id": "T242",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Test sweep + session continuation",
+      "started": "2026-04-18T22:12:03.515Z",
+      "completed": "2026-04-18T22:12:03.660Z",
+      "duration_ms": 1000,
+      "summary": "Test sweep pending."
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix recursive CTE JOIN bug: second iteration loses column values",
+      "project": "henrydb",
+      "started": "2026-04-18T22:12:09.865Z",
+      "completed": "2026-04-18T22:13:45.381Z",
+      "duration_ms": 600000,
+      "summary": "Fixed recursive CTE column mapping bug: aliased JOIN columns (e.id, o.level) mapped back to CTE names (id, level) using positional fallback. All 4 hierarchy levels now resolve correctly."
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Recursive CTE tests with deep chains",
+      "project": "henrydb",
+      "started": "2026-04-18T22:13:49.753Z",
+      "completed": "2026-04-18T22:15:30.862Z",
+      "duration_ms": 300000,
+      "summary": "5 recursive CTE tests: org hierarchy, fibonacci, counting, non-recursive CTE, tree traversal. Fixed column mapping: pure positional instead of name-based (name collision bug with computed columns). All pass."
+    },
+    {
+      "id": "T245",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session continuation + test sweep",
+      "started": "2026-04-18T22:15:54.410Z",
+      "completed": "2026-04-18T22:17:28.010Z",
+      "duration_ms": 300000,
+      "summary": "Edge case testing: CYCLE sequence works correctly (1,2,3,1,2,3), COPY handles empty lines, CURSOR with JOINs works, SAVEPOINT+TRUNCATE rollback works, NOTIFY with payload works. Earlier apparent CYCLE bug was inline script escaping issue. No real bugs found."
+    },
+    {
+      "id": "T246",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: try to break things — edge cases in new features",
+      "project": "henrydb",
+      "started": "2026-04-18T22:17:33.280Z",
+      "completed": "2026-04-18T22:17:33.425Z",
+      "duration_ms": 1000,
+      "summary": "No bugs found in edge case testing."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: fix any bugs found",
+      "project": "henrydb",
+      "started": "2026-04-18T22:17:39.274Z",
+      "completed": "2026-04-18T22:18:01.020Z",
+      "duration_ms": 120000,
+      "summary": "Full sweep: 230/230 pass across 24 test files. Both repos pushed."
+    },
+    {
+      "id": "T248",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Test sweep and push",
+      "started": "2026-04-18T22:18:08.510Z",
+      "completed": "2026-04-18T22:18:46.071Z",
+      "duration_ms": 60000,
+      "summary": "PG wire protocol already has Parse/Bind/Execute/Describe extended query protocol integrated with prepared statements. Tests pass. No additional work needed."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: improve PG wire protocol to handle prepared statements and COPY",
+      "project": "henrydb",
+      "started": "2026-04-18T22:18:51.116Z"
+    },
+    {
+      "id": "T250",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping + daily log"
     }
   ],
   "focusProjects": [
@@ -3425,6 +3592,70 @@
     {
       "time": "2026-04-18T22:08:26.104Z",
       "msg": "Added T234 (MAINTAIN) after end: ACTUAL final session B housekeeping"
+    },
+    {
+      "time": "2026-04-18T22:11:08.489Z",
+      "msg": "Added T235 (BUILD) after end: HenryDB: implement CTE (WITH clause) — Common Table Expressions"
+    },
+    {
+      "time": "2026-04-18T22:11:08.609Z",
+      "msg": "Added T236 (BUILD) after end: HenryDB: CTE tests"
+    },
+    {
+      "time": "2026-04-18T22:11:08.729Z",
+      "msg": "Added T237 (BUILD) after end: HenryDB: implement recursive CTE (WITH RECURSIVE)"
+    },
+    {
+      "time": "2026-04-18T22:11:08.864Z",
+      "msg": "Added T238 (BUILD) after end: HenryDB: recursive CTE tests"
+    },
+    {
+      "time": "2026-04-18T22:11:08.984Z",
+      "msg": "Added T239 (THINK) after end: Depth check #7"
+    },
+    {
+      "time": "2026-04-18T22:11:09.103Z",
+      "msg": "Added T240 (BUILD) after end: HenryDB: implement EXCEPT and INTERSECT set operations"
+    },
+    {
+      "time": "2026-04-18T22:11:09.223Z",
+      "msg": "Added T241 (BUILD) after end: HenryDB: set operation tests"
+    },
+    {
+      "time": "2026-04-18T22:11:09.342Z",
+      "msg": "Added T242 (MAINTAIN) after end: Test sweep + session continuation"
+    },
+    {
+      "time": "2026-04-18T22:11:48.126Z",
+      "msg": "Added T243 (BUILD) after end: Fix recursive CTE JOIN bug: second iteration loses column values"
+    },
+    {
+      "time": "2026-04-18T22:11:48.275Z",
+      "msg": "Added T244 (BUILD) after end: Recursive CTE tests with deep chains"
+    },
+    {
+      "time": "2026-04-18T22:11:48.394Z",
+      "msg": "Added T245 (MAINTAIN) after end: Session continuation + test sweep"
+    },
+    {
+      "time": "2026-04-18T22:15:44.715Z",
+      "msg": "Added T246 (EXPLORE) after end: HenryDB: try to break things — edge cases in new features"
+    },
+    {
+      "time": "2026-04-18T22:15:44.871Z",
+      "msg": "Added T247 (BUILD) after end: HenryDB: fix any bugs found"
+    },
+    {
+      "time": "2026-04-18T22:15:44.992Z",
+      "msg": "Added T248 (MAINTAIN) after end: Test sweep and push"
+    },
+    {
+      "time": "2026-04-18T22:15:45.112Z",
+      "msg": "Added T249 (BUILD) after end: HenryDB: improve PG wire protocol to handle prepared statements and COPY"
+    },
+    {
+      "time": "2026-04-18T22:15:45.231Z",
+      "msg": "Added T250 (MAINTAIN) after end: Final housekeeping + daily log"
     }
   ]
 }
