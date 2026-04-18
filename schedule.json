@@ -3225,6 +3225,16 @@
       "completed": "2026-04-18T01:12:32.661Z",
       "duration_ms": 300000,
       "summary": "Designed DDL lifecycle test harness: 9 DDL types × 7 phases = 63 tests from ~200 lines of specs. Single framework catches 12/14 of today's bug categories. Design written to scratch/ddl-lifecycle-harness.md."
+    },
+    {
+      "id": "T299",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what other projects have similar layer boundary bugs? RISC-V compiler has pipeline→memory, neural-net has forward→backward, monkey-lang has compiler→VM",
+      "started": "2026-04-18T01:13:37.993Z",
+      "completed": "2026-04-18T01:13:56.593Z",
+      "duration_ms": 300000,
+      "summary": "Cross-project layer boundary analysis: HenryDB (DDL crossing 5 layers), RISC-V (IR→codegen assumptions), neural-net (forward→backward cache), monkey-lang (compiler→VM bytecode). Common pattern: bugs cluster at layer boundaries, cross-layer integration tests are highest ROI."
     }
   ],
   "focusProjects": [
@@ -4492,6 +4502,10 @@
     {
       "time": "2026-04-18T01:11:54.810Z",
       "msg": "Added T298 (THINK) after end: Design the DDL lifecycle test harness — what would a generic framework look like that tests any DDL operation through all 7 lifecycle phases?"
+    },
+    {
+      "time": "2026-04-18T01:13:37.755Z",
+      "msg": "Added T299 (THINK) after end: Explore: what other projects have similar layer boundary bugs? RISC-V compiler has pipeline→memory, neural-net has forward→backward, monkey-lang has compiler→VM"
     }
   ]
 }
