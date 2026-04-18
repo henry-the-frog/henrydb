@@ -20,6 +20,16 @@ import { IndexAdvisor } from './index-advisor.js';
 import { QueryStatsCollector } from './query-stats.js';
 
 export class Database {
+  // PostgreSQL-compatible cost model parameters
+  static COST_MODEL = {
+    seq_page_cost: 1.0,       // Sequential I/O per page
+    random_page_cost: 4.0,    // Random I/O per page (4x sequential)
+    cpu_tuple_cost: 0.01,     // Process one row
+    cpu_index_tuple_cost: 0.005, // Process one index entry
+    cpu_operator_cost: 0.0025,   // Evaluate one WHERE clause
+    effective_cache_size: 1000,  // Pages in cache (affects random I/O discount)
+  };
+
   constructor(options = {}) {
     this.tables = new Map();  // name -> { heap, schema, indexes }
     this._functions = new Map(); // name -> { params, returnType, language, body, volatility, isProcedure }
@@ -3080,7 +3090,17 @@ export class Database {
         });
       const indexScan = this._tryIndexScan(table, ast.where, ast.from.alias || ast.from.table);
       this._requestedColumns = null;
-      if (indexScan) {
+      
+      // Cost-based decision: should we use the index or do a seq scan?
+      let useIndexScan = !!indexScan;
+      if (indexScan && !indexScan.btreeLookup) {
+        const totalRows = this._estimateRowCount(table);
+        const estimatedResultRows = indexScan.rows.length;
+        const costComparison = this._compareScanCosts(totalRows, estimatedResultRows);
+        useIndexScan = costComparison.useIndex;
+      }
+      
+      if (useIndexScan) {
         rows = indexScan.rows;
         // Apply remaining where conditions (if any beyond what the index handled)
         if (indexScan.residual) {
@@ -3727,6 +3747,47 @@ export class Database {
     let count = 0;
     for (const _ of table.heap.scan()) count++;
     return count;
+  }
+
+  /**
+   * Parametric cost model — compares sequential scan vs index scan costs.
+   * Returns { useIndex: boolean, seqCost, indexCost, selectivity } 
+   */
+  _compareScanCosts(totalRows, estimatedResultRows) {
+    const C = Database.COST_MODEL;
+    
+    // Estimate pages: assume ~100 rows per page (8KB page, ~80 byte rows)
+    const ROWS_PER_PAGE = 100;
+    const totalPages = Math.max(1, Math.ceil(totalRows / ROWS_PER_PAGE));
+    
+    // Sequential scan cost: read all pages sequentially + process all rows + filter each row
+    const seqCost = totalPages * C.seq_page_cost + 
+                    totalRows * C.cpu_tuple_cost + 
+                    totalRows * C.cpu_operator_cost;
+    
+    // Index scan cost: random I/O for each matching row + process index entries + process rows
+    const selectivity = totalRows > 0 ? estimatedResultRows / totalRows : 0;
+    const indexPages = Math.max(1, Math.ceil(estimatedResultRows / ROWS_PER_PAGE));
+    
+    // Mackert-Lohman formula: effective random pages based on correlation
+    // For simplicity, use: min(indexPages, totalPages) * random_page_cost
+    const effectivePages = Math.min(indexPages, totalPages);
+    
+    const indexCost = effectivePages * C.random_page_cost + 
+                      estimatedResultRows * C.cpu_index_tuple_cost + 
+                      estimatedResultRows * C.cpu_tuple_cost;
+    
+    // Index startup cost (B-tree traversal: log2(totalRows) * cpu_operator_cost)
+    const indexStartup = Math.log2(Math.max(2, totalRows)) * C.cpu_operator_cost;
+    
+    const totalIndexCost = indexStartup + indexCost;
+    
+    return {
+      useIndex: totalIndexCost < seqCost,
+      seqCost: Math.round(seqCost * 100) / 100,
+      indexCost: Math.round(totalIndexCost * 100) / 100,
+      selectivity: Math.round(selectivity * 10000) / 10000,
+    };
   }
 
   /**
@@ -5181,11 +5242,20 @@ export class Database {
       if (!hasJoins && stmt.where) {
         const indexScan = this._tryIndexScan(table, stmt.where, stmt.from.alias || tableName);
         if (indexScan !== null) {
+          const estimatedResultRows = filterEst?.estimated || (indexScan.btreeLookup ? 1 : indexScan.rows.length);
+          const costComparison = this._compareScanCosts(estRows, estimatedResultRows);
+          
           if (indexScan.btreeLookup) {
-            plan.push({ operation: 'BTREE_PK_LOOKUP', table: tableName, engine, estimated_rows: filterEst?.estimated || 1, estimation_method: filterEst?.method });
-          } else {
+            // BTree PK lookup is always fast (O(log N)), always use it
+            plan.push({ operation: 'BTREE_PK_LOOKUP', table: tableName, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost });
+          } else if (costComparison.useIndex) {
+            // Index scan is cheaper
             const colName = this._findIndexedColumn(stmt.where);
-            plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: filterEst?.estimated || indexScan.rows.length, estimation_method: filterEst?.method });
+            plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost, cost_comparison: `idx=${costComparison.indexCost} seq=${costComparison.seqCost} sel=${costComparison.selectivity}` });
+          } else {
+            // Sequential scan is cheaper despite available index
+            plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows, filtered_estimate: filterEst?.estimated, estimation_method: filterEst?.method, cost: costComparison.seqCost, cost_comparison: `seq=${costComparison.seqCost} idx=${costComparison.indexCost} sel=${costComparison.selectivity}`, index_available: true, index_rejected: 'seq scan cheaper' });
+            plan.push({ operation: 'FILTER', condition: 'WHERE' });
           }
         } else {
           plan.push({ operation: 'TABLE_SCAN', table: tableName, engine, estimated_rows: estRows, filtered_estimate: filterEst?.estimated, estimation_method: filterEst?.method });
