@@ -3545,18 +3545,25 @@ export class Database {
     }
 
     // INNER or LEFT JOIN
-    // Try hash join for equi-join conditions
+    // Cost-based join method selection
     const equiJoinKey = this._extractEquiJoinKey(join.on, leftAlias, rightAlias);
-    if (equiJoinKey) {
-      const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType, join.filter);
-      if (hashResult) return hashResult;
-    }
-
-    // Try index nested-loop join for equi-join conditions
+    
     if (equiJoinKey) {
       const rightColName = equiJoinKey.rightKey;
       const rightIndex = rightTable.indexes?.get(rightColName);
-      if (rightIndex) {
+      const rightRows = this._estimateRowCount(rightTable);
+      
+      const joinCost = this._compareJoinCosts(
+        leftRows.length, rightRows,
+        true, !!rightIndex
+      );
+      
+      if (joinCost.method === 'hash') {
+        const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType, join.filter);
+        if (hashResult) return hashResult;
+      }
+      
+      if (joinCost.method === 'index_nl' && rightIndex) {
         // Index nested-loop join: for each left row, look up matching right rows via index
         for (const leftRow of leftRows) {
           const lookupVal = leftRow[equiJoinKey.leftKey] !== undefined
@@ -3590,6 +3597,12 @@ export class Database {
           }
         }
         return result;
+      }
+      
+      // If preferred method failed, try hash join as fallback
+      if (joinCost.method !== 'hash') {
+        const hashResult = this._hashJoin(leftRows, rightTable, equiJoinKey, rightAlias, join.joinType, join.filter);
+        if (hashResult) return hashResult;
       }
     }
 
@@ -3788,6 +3801,56 @@ export class Database {
       seqCost: Math.round(seqCost * 100) / 100,
       indexCost: Math.round(totalIndexCost * 100) / 100,
       selectivity: Math.round(selectivity * 10000) / 10000,
+    };
+  }
+
+  /**
+   * Compare join method costs: hash join, index nested loop, nested loop.
+   * Returns { method: 'hash'|'index_nl'|'nested_loop', costs: {...} }
+   */
+  _compareJoinCosts(leftRows, rightRows, hasEquiJoin, hasRightIndex) {
+    const C = Database.COST_MODEL;
+    
+    const costs = {};
+    
+    // Hash join: build hash table on right, probe with left
+    // Cost: build = rightRows * cpu_tuple + memory. Probe = leftRows * cpu_tuple + leftRows * cpu_operator
+    if (hasEquiJoin) {
+      costs.hash = rightRows * C.cpu_tuple_cost +          // Build hash table
+                   leftRows * C.cpu_tuple_cost +            // Scan left and probe
+                   leftRows * C.cpu_operator_cost;          // Hash comparison per left row
+    }
+    
+    // Index nested loop: for each left row, index lookup on right
+    // Cost: leftRows * (tree_height * cpu_index + matches * cpu_tuple)
+    if (hasEquiJoin && hasRightIndex) {
+      const treeHeight = Math.max(1, Math.ceil(Math.log2(Math.max(2, rightRows))));
+      const estimatedMatches = Math.max(1, rightRows / Math.max(1, rightRows)); // ~1 for unique
+      costs.index_nl = leftRows * (treeHeight * C.cpu_index_tuple_cost + estimatedMatches * C.cpu_tuple_cost);
+    }
+    
+    // Nested loop: for each left row, scan all right rows
+    // Cost: leftRows * rightRows * cpu_operator (worst case)
+    costs.nested_loop = leftRows * rightRows * C.cpu_operator_cost +
+                        (leftRows + rightRows) * C.cpu_tuple_cost;
+    
+    // Pick cheapest
+    let bestMethod = 'nested_loop';
+    let bestCost = costs.nested_loop;
+    
+    if (costs.hash !== undefined && costs.hash < bestCost) {
+      bestMethod = 'hash';
+      bestCost = costs.hash;
+    }
+    if (costs.index_nl !== undefined && costs.index_nl < bestCost) {
+      bestMethod = 'index_nl';
+      bestCost = costs.index_nl;
+    }
+    
+    return {
+      method: bestMethod,
+      bestCost: Math.round(bestCost * 100) / 100,
+      costs: Object.fromEntries(Object.entries(costs).map(([k, v]) => [k, Math.round(v * 100) / 100])),
     };
   }
 
