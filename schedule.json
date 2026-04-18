@@ -765,15 +765,59 @@
       "id": "T73",
       "mode": "BUILD",
       "task": "Tests: SELECT FOR UPDATE — basic locking, conflict detection, lock release on commit/rollback, FOR SHARE concurrent reads",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T70",
-      "started": "2026-04-18T16:12:03.462Z"
+      "started": "2026-04-18T16:12:03.462Z",
+      "completed": "2026-04-18T16:14:50.717Z",
+      "duration_ms": 600000,
+      "summary": "11 row-locking tests all pass. FOR UPDATE, FOR SHARE, NOWAIT, SKIP LOCKED, conflict detection, lock release. Fixed parser keyword issue for NOWAIT/SKIP LOCKED. Committed."
+    },
+    {
+      "id": "T74",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evaluate: what SQL features are we missing that would make HenryDB more complete? CTEs, window functions, lateral joins?",
+      "project": "henrydb",
+      "started": "2026-04-18T16:15:52.386Z",
+      "completed": "2026-04-18T16:16:45.785Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB is remarkably complete: CTEs, window functions, LATERAL, triggers, views, constraints, UDFs, row locking. Genuinely missing: CALL procedures, JSON functions, MERGE statement. But breadth-adding is less valuable than depth. Switching to RISC-V closure TCO for learning value."
+    },
+    {
+      "id": "T75",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "Implement CALL procedure (extends UDFs to multi-statement procedures)",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push all repos",
+      "started": "2026-04-18T16:17:04.425Z"
+    },
+    {
+      "id": "T77",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Pre-boundary state assessment and cleanup"
     },
     {
       "id": "T42",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final state snapshot: push repos, update daily log with evening summary"
+    },
+    {
+      "id": "T78",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Implement closure TCO in RISC-V codegen: tail calls through closure variables",
+      "task": null,
+      "project": "riscv-emulator"
     }
   ],
   "focusProjects": [
@@ -1073,6 +1117,34 @@
     {
       "time": "2026-04-18T16:05:11.614Z",
       "msg": "PLAN T70 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-18T16:15:42.397Z",
+      "msg": "Added T74 (THINK) after end: Evaluate: what SQL features are we missing that would make HenryDB more complete? CTEs, window functions, lateral joins?"
+    },
+    {
+      "time": "2026-04-18T16:15:42.515Z",
+      "msg": "Added T75 (PLAN) after end: Implement CALL procedure (extends UDFs to multi-statement procedures)"
+    },
+    {
+      "time": "2026-04-18T16:15:42.633Z",
+      "msg": "Added T76 (MAINTAIN) after end: Git push all repos"
+    },
+    {
+      "time": "2026-04-18T16:15:42.752Z",
+      "msg": "Added T77 (THINK) after end: Pre-boundary state assessment and cleanup"
+    },
+    {
+      "time": "2026-04-18T16:15:42.870Z",
+      "msg": "Moved T42 after T77"
+    },
+    {
+      "time": "2026-04-18T16:16:55.272Z",
+      "msg": "Removed T75: "
+    },
+    {
+      "time": "2026-04-18T16:16:55.391Z",
+      "msg": "Added T78 (PLAN) after end: Implement closure TCO in RISC-V codegen: tail calls through closure variables"
     }
   ]
 }
