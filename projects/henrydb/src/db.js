@@ -3,6 +3,7 @@
 
 import { HeapFile, encodeTuple, decodeTuple } from './page.js';
 import { BPlusTree } from './btree.js';
+import { exprContains, exprCollect } from './expr-walker.js';
 import { BTreeTable } from './btree-table.js';
 import { ExtendibleHashTable } from './extendible-hash.js';
 import { optimizeSelect } from './decorrelate.js';
@@ -6288,24 +6289,7 @@ export class Database {
 
   // Helper: check if an expression tree contains a window function node
   _exprContainsWindow(node) {
-    if (!node || typeof node !== 'object') return false;
-    if (node.type === 'window') return true;
-    // Check common expression tree structures
-    if (node.type === 'arith' || node.type === 'COMPARE') return this._exprContainsWindow(node.left) || this._exprContainsWindow(node.right);
-    if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL') return this._exprContainsWindow(node.left);
-    if (node.type === 'NOT') return this._exprContainsWindow(node.expr);
-    if (node.type === 'unary_minus') return this._exprContainsWindow(node.operand);
-    if (node.type === 'function_call' && node.args) return node.args.some(a => this._exprContainsWindow(a));
-    if (node.type === 'cast') return this._exprContainsWindow(node.expr);
-    if (node.type === 'case' || node.type === 'case_expr') {
-      if (node.whens) {
-        const found = node.whens.some(w => 
-          this._exprContainsWindow(w.then || w.result) || this._exprContainsWindow(w.when || w.condition));
-        if (found) return true;
-      }
-      return this._exprContainsWindow(node.else || node.elseResult);
-    }
-    return false;
+    return exprContains(node, n => n.type === 'window');
   }
 
   // Helper: extract all window function nodes from an expression tree, assigning each a unique key

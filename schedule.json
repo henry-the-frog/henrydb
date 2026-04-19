@@ -655,16 +655,20 @@
       "id": "T63",
       "mode": "BUILD",
       "task": "Implement getExprChildren + walkExpr in a new module expr-walker.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T62",
-      "started": "2026-04-19T15:52:42.875Z"
+      "started": "2026-04-19T15:52:42.875Z",
+      "completed": "2026-04-19T15:53:49.039Z",
+      "duration_ms": 180000,
+      "summary": "Created expr-walker.js with getExprChildren, exprContains, exprCollect, exprMap. 10 unit tests. Covers all AST node types. Foundation for refactoring 6 ad-hoc walkers."
     },
     {
       "id": "T64",
       "mode": "BUILD",
       "task": "Refactor _exprContainsWindow to use walkExpr",
-      "status": "upcoming",
-      "plan_ref": "T62"
+      "status": "in-progress",
+      "plan_ref": "T62",
+      "started": "2026-04-19T15:53:55.878Z"
     },
     {
       "id": "T65",
