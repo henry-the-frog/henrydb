@@ -2348,6 +2348,11 @@ export class Database {
         for (let j = 0; j < table.schema.length; j++) {
           row[table.schema[j].name] = values[j];
         }
+        // Per SQL standard: CHECK passes when result is TRUE or NULL (unknown)
+        // NULL values in the check expression should cause it to pass
+        // Check if the column being checked is NULL — if so, skip the check
+        const colIdx = table.schema.indexOf(col);
+        if (colIdx >= 0 && values[colIdx] == null) continue;
         const result = this._evalExpr(col.check, row);
         if (!result) {
           throw new Error(`CHECK constraint violated for column ${col.name}`);

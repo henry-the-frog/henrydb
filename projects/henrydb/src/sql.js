@@ -2550,7 +2550,16 @@ export function parse(sql) {
       if (tc.type === 'PRIMARY_KEY') {
         for (const colName of tc.columns) {
           const col = columns.find(c => c.name.toLowerCase() === colName.toLowerCase());
-          if (col) { col.primaryKey = true; col.notNull = true; }
+          if (col) { col.notNull = true; }
+        }
+        if (tc.columns.length === 1) {
+          const col = columns.find(c => c.name.toLowerCase() === tc.columns[0].toLowerCase());
+          if (col) col.primaryKey = true;
+        } else {
+          // Multi-column PK: don't mark individual columns as PK to avoid
+          // per-column uniqueness checks. Create composite unique index instead.
+          if (!tableConstraints._compositeUniques) tableConstraints._compositeUniques = [];
+          tableConstraints._compositeUniques.push(tc.columns);
         }
       } else if (tc.type === 'UNIQUE') {
         if (tc.columns.length === 1) {
