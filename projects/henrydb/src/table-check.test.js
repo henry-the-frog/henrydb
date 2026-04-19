@@ -43,10 +43,7 @@ describe('Table-level CHECK Constraints (2026-04-19)', () => {
     assert.throws(() => db.execute('INSERT INTO t VALUES (3, 15, 10)'), /CHECK/i);
   });
 
-  // TODO: SQL standard says NULL in CHECK should pass (three-valued logic)
-  // Currently NULL < x returns false instead of null
-  // This test documents current behavior — fix NULL comparison later
-  it.skip('CHECK allows NULL values (SQL standard)', () => {
+  it('CHECK allows NULL values (SQL standard)', () => {
     const db = new Database();
     db.execute('CREATE TABLE t (a INT, b INT, CHECK (a < b))');
     // NULL in check should pass (three-valued logic)

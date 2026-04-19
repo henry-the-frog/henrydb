@@ -8083,8 +8083,14 @@ export class Database {
       case 'COMPARE': {
         let left = this._evalValue(expr.left, row);
         let right = this._evalValue(expr.right, row);
-        // SQL NULL semantics: any comparison with NULL returns false
-        if (left === null || left === undefined || right === null || right === undefined) return false;
+        // SQL NULL semantics: any comparison with NULL returns NULL (unknown)
+        // This is correct for three-valued logic in WHERE, HAVING, CHECK, etc.
+        if (left === null || left === undefined || right === null || right === undefined) {
+          // Special case: IS / IS NOT operators handle NULL directly
+          if (expr.op === 'IS') return left === right;
+          if (expr.op === 'IS_NOT') return left !== right;
+          return null;
+        }
         // Implicit type coercion: if one is number and other is string, try numeric comparison
         if (typeof left === 'number' && typeof right === 'string') {
           const n = Number(right);

@@ -753,9 +753,27 @@
     {
       "id": "T72",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session push, daily log update",
-      "started": "2026-04-19T16:12:08.344Z"
+      "started": "2026-04-19T16:12:08.344Z",
+      "completed": "2026-04-19T16:12:53.124Z",
+      "duration_ms": 30000,
+      "summary": "Both repos pushed. Daily log updated with session stats."
+    },
+    {
+      "id": "T73",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Investigate NULL comparison semantics: NULL < x should return NULL, not false",
+      "project": "henrydb",
+      "started": "2026-04-19T16:13:08.036Z"
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix NULL comparison semantics in _evalExpr",
+      "project": "henrydb"
     },
     {
       "id": "T33",
@@ -1109,6 +1127,18 @@
     {
       "time": "2026-04-19T16:10:37.337Z",
       "msg": "Moved T33 after T72"
+    },
+    {
+      "time": "2026-04-19T16:13:07.566Z",
+      "msg": "Added T73 (THINK) after end: Investigate NULL comparison semantics: NULL < x should return NULL, not false"
+    },
+    {
+      "time": "2026-04-19T16:13:07.685Z",
+      "msg": "Added T74 (BUILD) after end: Fix NULL comparison semantics in _evalExpr"
+    },
+    {
+      "time": "2026-04-19T16:13:07.803Z",
+      "msg": "Moved T33 after T74"
     }
   ]
 }
