@@ -4,11 +4,8 @@
 
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
-- Neural-net: 8 flaky test failures (scalar multiply by zero, XOR/AND/OR/linear learning) — investigate and fix (found 2026-04-19)
-- HenryDB: Window function in WHERE silently returns empty instead of erroring (found 2026-04-19)
-- HenryDB: Nested aggregates SUM(COUNT(*)) silently returns null (should error) (found 2026-04-19)
-- HenryDB: FOR UPDATE lock tests failing (3 tests, pre-existing)
-- HenryDB: wire test import error (HenryDBServer export missing, pre-existing)
+- HenryDB: FOR UPDATE lock tests failing (3 tests — incomplete locking implementation)
+- HenryDB: Wire protocol server import issues (HenryDBServer export, 3 test files)
 
 ### Low
 - HenryDB: btree.js/bplus-tree.js API inconsistency (search vs get) — unify
@@ -22,5 +19,5 @@
 - HenryDB: checkpoint-explore.test.js expects WAL size=0 after checkpoint
 - Neural-net: training checkpoints / early stopping improvements
 - HenryDB: pg_stat_statements query normalization (parametrize literals for better grouping)
-- HenryDB: CHECK constraint with multi-column expression (low < high) parser issues (found 2026-04-18)
-- HenryDB: Parser unification — unified expression entry point for parseSelectColumn (found 2026-04-19)
+- HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr (partially done with shared helpers)
+- HenryDB: Unified expression walker migration — use expr-walker.js for _evalGroupExpr and _evalAggregateExpr
