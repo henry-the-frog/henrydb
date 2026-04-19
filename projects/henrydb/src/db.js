@@ -5579,8 +5579,9 @@ export class Database {
           
           if (indexScan.btreeLookup) {
             // BTree PK lookup is always fast (O(log N)), always use it
-            plan.push({ operation: 'BTREE_PK_LOOKUP', table: tableName, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost });
-          } else if (costComparison.useIndex) {
+            const pkCol = table.schema.find(c => c.primaryKey)?.name || 'id';
+            plan.push({ operation: 'INDEX_SCAN', table: tableName, index: pkCol, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost });
+          } else if (costComparison.useIndex || costComparison.selectivity <= 0.5) {
             // Index scan is cheaper
             const colName = this._findIndexedColumn(stmt.where);
             plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost, cost_comparison: `idx=${costComparison.indexCost} seq=${costComparison.seqCost} sel=${costComparison.selectivity}` });

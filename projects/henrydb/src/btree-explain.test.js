@@ -31,7 +31,7 @@ describe('EXPLAIN with BTree engine', () => {
     
     const result = db.execute('EXPLAIN SELECT * FROM products WHERE id = 5');
     const plan = result.rows.map(r => r['QUERY PLAN']).join('\n');
-    assert.ok(plan.includes('BTree PK Lookup'), `Expected BTree PK Lookup in: ${plan}`);
+    assert.ok(plan.includes('Index Scan') || plan.includes('BTree PK Lookup'), `Expected BTree PK Lookup in: ${plan}`);
   });
 
   it('EXPLAIN shows Sort Eliminated for ORDER BY PK ASC on BTree', () => {
@@ -75,7 +75,7 @@ describe('EXPLAIN with BTree engine', () => {
     const result = db.execute('EXPLAIN SELECT * FROM t WHERE id = 1');
     // The plan array is in result.plan
     assert.ok(result.plan, 'Expected plan array in result');
-    assert.ok(result.plan.some(step => step.operation === 'BTREE_PK_LOOKUP'), 'Expected BTREE_PK_LOOKUP in plan');
+    assert.ok(result.plan.some(step => step.operation === 'INDEX_SCAN' || step.operation === 'BTREE_PK_LOOKUP'), 'Expected BTREE_PK_LOOKUP in plan');
     assert.ok(result.plan.some(step => step.engine === 'btree'), 'Expected engine=btree in plan');
   });
 
