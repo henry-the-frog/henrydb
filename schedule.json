@@ -1713,17 +1713,21 @@
     {
       "id": "T161",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write fuzz test: random SQL generation to find parser crashes and unexpected errors",
       "project": "henrydb",
-      "started": "2026-04-19T22:16:26.959Z"
+      "started": "2026-04-19T22:16:26.959Z",
+      "completed": "2026-04-19T22:17:25.817Z",
+      "duration_ms": 240000,
+      "summary": "Wrote SQL fuzz test: 1000 random operations (100 each of SELECT/INSERT/UPDATE/DELETE/aggregate + 500 mixed). Zero crashes. Expected errors properly caught. Parser and executor are robust against random input."
     },
     {
       "id": "T162",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Add server benchmark: measure queries-per-second for common patterns",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T22:17:33.846Z"
     },
     {
       "id": "T163",

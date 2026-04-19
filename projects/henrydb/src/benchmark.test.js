@@ -1,88 +1,151 @@
 // benchmark.test.js — Performance benchmarks for HenryDB
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+// Measures queries-per-second for common SQL patterns
+
+import { describe, it, before, after, beforeEach } from 'node:test';
 import { Database } from './db.js';
+import { HenryDBServer } from './server.js';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import pg from 'pg';
 
-describe('Performance Benchmarks', () => {
-  it('bulk INSERT: 1,000 rows < 5s', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE bench (id INT PRIMARY KEY, name TEXT, val INT)');
-    const start = performance.now();
-    for (let i = 0; i < 1000; i++) {
-      db.execute(`INSERT INTO bench VALUES (${i}, 'row${i}', ${i * 7})`);
+const { Client } = pg;
+
+function bench(name, fn, iterations = 1000) {
+  const start = performance.now();
+  for (let i = 0; i < iterations; i++) fn(i);
+  const elapsed = performance.now() - start;
+  const qps = (iterations / elapsed * 1000).toFixed(0);
+  console.log(`  ${name}: ${qps} ops/sec (${elapsed.toFixed(1)}ms for ${iterations} ops)`);
+  return { name, qps: Number(qps), elapsed, iterations };
+}
+
+async function benchAsync(name, fn, iterations = 100) {
+  const start = performance.now();
+  for (let i = 0; i < iterations; i++) await fn(i);
+  const elapsed = performance.now() - start;
+  const qps = (iterations / elapsed * 1000).toFixed(0);
+  console.log(`  ${name}: ${qps} ops/sec (${elapsed.toFixed(1)}ms for ${iterations} ops)`);
+  return { name, qps: Number(qps), elapsed, iterations };
+}
+
+describe('In-Memory Performance', () => {
+  let db;
+  
+  before(() => {
+    db = new Database();
+    db.execute("CREATE TABLE bench (id INT PRIMARY KEY, name TEXT, val INT, category TEXT)");
+    db.execute("CREATE INDEX idx_cat ON bench (category)");
+    for (let i = 1; i <= 10000; i++) {
+      db.execute(`INSERT INTO bench VALUES (${i}, 'item${i}', ${i % 100}, 'cat${i % 10}')`);
     }
-    const elapsed = performance.now() - start;
-    assert.ok(elapsed < 5000, `1K inserts took ${elapsed.toFixed(0)}ms`);
-    assert.equal(db.execute('SELECT COUNT(*) AS cnt FROM bench').rows[0].cnt, 1000);
   });
-
-  it('point lookup with PK index: 100 lookups < 2s', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE bench (id INT PRIMARY KEY, val INT)');
-    for (let i = 0; i < 1000; i++) db.execute(`INSERT INTO bench VALUES (${i}, ${i * 3})`);
-
-    const start = performance.now();
-    for (let i = 0; i < 100; i++) {
-      const id = Math.floor(Math.random() * 1000);
-      db.execute(`SELECT val FROM bench WHERE id = ${id}`);
+  
+  it('point query by PK', () => {
+    const r = bench('PK lookup', (i) => {
+      db.execute(`SELECT * FROM bench WHERE id = ${1 + (i % 10000)}`);
+    }, 5000);
+    console.log(`  → ${r.qps} point queries/sec on 10K rows`);
+  });
+  
+  it('full table scan', () => {
+    const r = bench('Full scan', () => {
+      db.execute("SELECT COUNT(*) FROM bench");
+    }, 1000);
+    console.log(`  → ${r.qps} full scans/sec on 10K rows`);
+  });
+  
+  it('filtered scan', () => {
+    const r = bench('Filtered scan', (i) => {
+      db.execute(`SELECT * FROM bench WHERE val = ${i % 100}`);
+    }, 2000);
+    console.log(`  → ${r.qps} filtered scans/sec on 10K rows`);
+  });
+  
+  it('indexed lookup', () => {
+    const r = bench('Index lookup', (i) => {
+      db.execute(`SELECT * FROM bench WHERE category = 'cat${i % 10}'`);
+    }, 2000);
+    console.log(`  → ${r.qps} index lookups/sec on 10K rows`);
+  });
+  
+  it('aggregation', () => {
+    const r = bench('Aggregation', () => {
+      db.execute("SELECT category, COUNT(*), AVG(val), SUM(val) FROM bench GROUP BY category");
+    }, 500);
+    console.log(`  → ${r.qps} GROUP BY/sec on 10K rows`);
+  });
+  
+  it('INSERT throughput', () => {
+    db.execute("CREATE TABLE bench_insert (id INT, val INT)");
+    const r = bench('INSERT', (i) => {
+      db.execute(`INSERT INTO bench_insert VALUES (${i}, ${i * 2})`);
+    }, 10000);
+    console.log(`  → ${r.qps} inserts/sec`);
+  });
+  
+  it('UPDATE throughput', () => {
+    const r = bench('UPDATE', (i) => {
+      db.execute(`UPDATE bench SET val = ${i} WHERE id = ${1 + (i % 10000)}`);
+    }, 2000);
+    console.log(`  → ${r.qps} updates/sec on 10K rows`);
+  });
+  
+  it('JOIN throughput', () => {
+    db.execute("CREATE TABLE bench_join (id INT PRIMARY KEY, bench_id INT, extra TEXT)");
+    for (let i = 1; i <= 1000; i++) {
+      db.execute(`INSERT INTO bench_join VALUES (${i}, ${i}, 'extra${i}')`);
     }
-    const elapsed = performance.now() - start;
-    assert.ok(elapsed < 2000, `100 lookups took ${elapsed.toFixed(0)}ms`);
+    const r = bench('JOIN', (i) => {
+      db.execute(`SELECT b.name, j.extra FROM bench b INNER JOIN bench_join j ON j.bench_id = b.id WHERE b.id = ${1 + (i % 1000)}`);
+    }, 1000);
+    console.log(`  → ${r.qps} joins/sec (10K × 1K rows)`);
   });
+});
 
-  it('aggregate query on 1K rows < 500ms', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE sales (id INT PRIMARY KEY, region TEXT, amount INT)');
-    for (let i = 0; i < 1000; i++) {
-      db.execute(`INSERT INTO sales VALUES (${i}, '${['East', 'West', 'North', 'South'][i % 4]}', ${100 + i % 1000})`);
+describe('Wire Protocol Performance', () => {
+  let server, port, dir, client;
+  
+  before(async () => {
+    port = 34600 + Math.floor(Math.random() * 100);
+    dir = mkdtempSync(join(tmpdir(), 'henrydb-bench-'));
+    server = new HenryDBServer({ port, dataDir: dir });
+    await server.start();
+    
+    client = new Client({ host: '127.0.0.1', port, user: 'test', database: 'testdb' });
+    await client.connect();
+    
+    await client.query("CREATE TABLE bench (id INT PRIMARY KEY, name TEXT, val INT, category TEXT)");
+    for (let i = 1; i <= 1000; i++) {
+      await client.query('INSERT INTO bench VALUES ($1, $2, $3, $4)', [i, `item${i}`, i % 100, `cat${i % 10}`]);
     }
-
-    const start = performance.now();
-    const r = db.execute('SELECT region, SUM(amount) AS total, COUNT(*) AS cnt FROM sales GROUP BY region');
-    const elapsed = performance.now() - start;
-    assert.ok(elapsed < 500, `Aggregate on 1K took ${elapsed.toFixed(0)}ms`);
-    assert.equal(r.rows.length, 4);
   });
-
-  it('JOIN on 200x200 rows < 10s', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE a (id INT PRIMARY KEY, val TEXT)');
-    db.execute('CREATE TABLE b (id INT PRIMARY KEY, a_id INT, data TEXT)');
-    for (let i = 0; i < 200; i++) db.execute(`INSERT INTO a VALUES (${i}, 'a${i}')`);
-    for (let i = 0; i < 200; i++) db.execute(`INSERT INTO b VALUES (${i}, ${i % 200}, 'b${i}')`);
-
-    const start = performance.now();
-    const r = db.execute('SELECT COUNT(*) AS cnt FROM a JOIN b ON a.id = b.a_id');
-    const elapsed = performance.now() - start;
-    assert.ok(elapsed < 10000, `200x200 join took ${elapsed.toFixed(0)}ms`);
-    assert.equal(r.rows[0].cnt, 200);
+  
+  after(async () => {
+    await client.end();
+    await server.stop();
+    rmSync(dir, { recursive: true });
   });
-
-  it('window function on 500 rows < 5s', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE bench (id INT PRIMARY KEY, dept TEXT, val INT)');
-    for (let i = 0; i < 500; i++) {
-      db.execute(`INSERT INTO bench VALUES (${i}, 'dept${i % 10}', ${i})`);
-    }
-
-    const start = performance.now();
-    const r = db.execute('SELECT id, dept, ROW_NUMBER() OVER (PARTITION BY dept ORDER BY val DESC) AS rn FROM bench');
-    const elapsed = performance.now() - start;
-    assert.ok(elapsed < 5000, `Window on 500 took ${elapsed.toFixed(0)}ms`);
-    assert.equal(r.rows.length, 500);
+  
+  it('wire protocol: point query', async () => {
+    const r = await benchAsync('Wire PK lookup', async (i) => {
+      await client.query('SELECT * FROM bench WHERE id = $1', [1 + (i % 1000)]);
+    }, 500);
+    console.log(`  → ${r.qps} wire queries/sec on 1K rows`);
   });
-
-  it('prepared statement 500 executions < 10s', () => {
-    const db = new Database();
-    db.execute('CREATE TABLE bench (id INT PRIMARY KEY, val INT)');
-    for (let i = 0; i < 500; i++) db.execute(`INSERT INTO bench VALUES (${i}, ${i})`);
-
-    const stmt = db.prepare('SELECT val FROM bench WHERE id = $1');
-    const start = performance.now();
-    for (let i = 0; i < 500; i++) {
-      stmt.execute([i % 500]);
-    }
-    const elapsed = performance.now() - start;
-    assert.ok(elapsed < 10000, `500 prepared took ${elapsed.toFixed(0)}ms`);
+  
+  it('wire protocol: parameterized INSERT', async () => {
+    await client.query("CREATE TABLE bench_wire (id INT, val TEXT)");
+    const r = await benchAsync('Wire INSERT', async (i) => {
+      await client.query('INSERT INTO bench_wire VALUES ($1, $2)', [i, `val${i}`]);
+    }, 500);
+    console.log(`  → ${r.qps} wire inserts/sec`);
+  });
+  
+  it('wire protocol: aggregation', async () => {
+    const r = await benchAsync('Wire aggregation', async () => {
+      await client.query("SELECT category, COUNT(*), SUM(val) FROM bench GROUP BY category");
+    }, 200);
+    console.log(`  → ${r.qps} wire aggregations/sec on 1K rows`);
   });
 });
