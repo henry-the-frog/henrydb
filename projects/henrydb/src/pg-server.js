@@ -222,6 +222,13 @@ function getCommandTag(sql, result) {
 }
 
 // --- Column info from result ---
+function inferTypeFromValue(val) {
+  if (val === null || val === undefined) return 'TEXT';
+  if (typeof val === 'number') return Number.isInteger(val) ? 'INTEGER' : 'FLOAT';
+  if (typeof val === 'boolean') return 'BOOLEAN';
+  return 'TEXT';
+}
+
 function getColumns(result, db, sql) {
   if (result.columns && result.columns.length > 0) {
     // Try to infer types from table schema for string-only columns
@@ -233,11 +240,15 @@ function getColumns(result, db, sql) {
         if (table) schema = table.schema;
       }
     }
-    return result.columns.map(c => {
+    return result.columns.map((c, i) => {
       if (typeof c === 'string') {
         if (schema) {
           const col = schema.find(sc => sc.name === c || sc.name === c.toLowerCase());
           if (col) return { name: c, type: col.type || 'TEXT' };
+        }
+        // Infer from first row if available
+        if (result.rows && result.rows.length > 0) {
+          return { name: c, type: inferTypeFromValue(result.rows[0][c]) };
         }
         return { name: c, type: 'TEXT' };
       }
@@ -259,7 +270,8 @@ function getColumns(result, db, sql) {
         const col = schema.find(c => c.name === name || c.name === name.toLowerCase());
         if (col) return { name, type: col.type || 'TEXT' };
       }
-      return { name, type: 'TEXT' };
+      // Infer type from actual values
+      return { name, type: inferTypeFromValue(result.rows[0][name]) };
     });
   }
   // Try to infer columns from SQL for SELECT * FROM table
