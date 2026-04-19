@@ -3,6 +3,7 @@
 // Connect: psql -h localhost -p 5433 -U henrydb
 
 import { createServer } from 'node:net';
+import { createHash } from 'node:crypto';
 import { Database } from './db.js';
 
 // --- PG Type OIDs ---
@@ -63,6 +64,15 @@ function authOk() {
   buf[0] = 0x52; // 'R'
   writeInt32BE(buf, 8, 1); // length
   writeInt32BE(buf, 0, 5); // AuthenticationOk
+  return buf;
+}
+
+function authMD5Password(salt) {
+  const buf = Buffer.alloc(13);
+  buf[0] = 0x52; // 'R'
+  writeInt32BE(buf, 12, 1); // length
+  writeInt32BE(buf, 5, 5); // AuthenticationMD5Password
+  salt.copy(buf, 9);
   return buf;
 }
 
@@ -585,9 +595,10 @@ function interceptPgCatalog(sql, db) {
   return null; // Not intercepted
 }
 
-function handleConnection(socket, db, connId = 0, channels = new Map()) {
+function handleConnection(socket, db, connId = 0, channels = new Map(), users = null) {
   let buffer = Buffer.alloc(0);
   let startupDone = false;
+  let authState = null; // { userName, userEntry, salt } when waiting for password
 
   // Connection-scoped cursor state
   const cursors = new Map(); // name → { rows, columns, pos }
@@ -788,6 +799,27 @@ function handleConnection(socket, db, connId = 0, channels = new Map()) {
         }
 
         buffer = buffer.slice(len);
+
+        // Authentication
+        if (users && users.size > 0) {
+          const userName = params.user;
+          const userEntry = users.get(userName);
+          if (!userEntry) {
+            socket.write(errorResponse('FATAL', '28P01', `password authentication failed for user "${userName}"`));
+            socket.end();
+            return;
+          }
+          // MD5 auth: send salt, wait for password
+          const salt = Buffer.alloc(4);
+          for (let s = 0; s < 4; s++) salt[s] = Math.floor(Math.random() * 256);
+          socket.write(authMD5Password(salt));
+          
+          // Store auth state for password message handling
+          authState = { userName, userEntry, salt };
+          startupDone = true;
+          continue;
+        }
+
         startupDone = true;
 
         // Send auth + params + ready
@@ -810,6 +842,35 @@ function handleConnection(socket, db, connId = 0, channels = new Map()) {
 
       const payload = buffer.slice(5, totalLen);
       buffer = buffer.slice(totalLen);
+
+      // Handle password message during auth
+      if (authState && msgType === 0x70) { // 'p' — PasswordMessage
+        const passwordStr = payload.slice(0, payload.indexOf(0)).toString('utf8');
+        // Verify MD5: md5(md5(password + user) + salt)
+        const inner = createHash('md5')
+          .update(authState.userEntry.password + authState.userName)
+          .digest('hex');
+        const expected = 'md5' + createHash('md5')
+          .update(Buffer.concat([Buffer.from(inner, 'utf8'), authState.salt]))
+          .digest('hex');
+        
+        if (passwordStr === expected) {
+          authState = null;
+          socket.write(authOk());
+          socket.write(parameterStatus('server_version', '14.0 (HenryDB)'));
+          socket.write(parameterStatus('server_encoding', 'UTF8'));
+          socket.write(parameterStatus('client_encoding', 'UTF8'));
+          socket.write(parameterStatus('DateStyle', 'ISO, MDY'));
+          socket.write(parameterStatus('integer_datetimes', 'on'));
+          socket.write(readyForQuery('I'));
+        } else {
+          socket.write(errorResponse('FATAL', '28P01', 
+            `password authentication failed for user "${authState.userName}"`));
+          socket.end();
+          return;
+        }
+        continue;
+      }
 
       switch (msgType) {
         case 0x51: // 'Q' — Simple Query
@@ -1392,13 +1453,13 @@ class AdvisoryLockManager {
 const _advisoryLocks = new AdvisoryLockManager();
 let _nextConnId = 1;
 
-export function createPgServer(db, port = 5433) {
+export function createPgServer(db, port = 5433, options = {}) {
   // Global channel subscriptions: channel → Map<connId, socket>
   const channels = new Map();
   
   const server = createServer((socket) => {
     const connId = _nextConnId++;
-    handleConnection(socket, db, connId, channels);
+    handleConnection(socket, db, connId, channels, options.users);
   });
 
   // Expose channels for test access

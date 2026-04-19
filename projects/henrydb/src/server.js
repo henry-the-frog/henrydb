@@ -94,7 +94,7 @@ export class HenryDBServer {
     return new Promise((resolve, reject) => {
       // Use createPgServer if available, otherwise build our own net server
       if (pgMod.createPgServer) {
-        this._server = pgMod.createPgServer(this.db, this._port);
+        this._server = pgMod.createPgServer(this.db, this._port, { users: this._opts.users });
         // Expose channels for test access
         this._channels = this._server._channels;
         // Track connections for clean shutdown
