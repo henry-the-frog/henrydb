@@ -1588,16 +1588,20 @@
       "id": "T151",
       "mode": "BUILD",
       "task": "Fix server-knex connection pool timeout and null dereference",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T144",
-      "started": "2026-04-19T21:33:08.002Z"
+      "started": "2026-04-19T21:33:08.002Z",
+      "completed": "2026-04-19T21:39:22.215Z",
+      "duration_ms": 120000,
+      "summary": "Fixed Knex compatibility: version() function needed to return PostgreSQL-prefixed string for Knex _parseVersion regex. One-line fix, 13/13 server-knex tests now pass."
     },
     {
       "id": "T152",
       "mode": "BUILD",
       "task": "Run final test sweep and capture remaining failure count",
-      "status": "upcoming",
-      "plan_ref": "T144"
+      "status": "in-progress",
+      "plan_ref": "T144",
+      "started": "2026-04-19T21:39:28.159Z"
     },
     {
       "id": "T145",

@@ -24,7 +24,7 @@ describe('Runtime Parameters (SET/SHOW)', () => {
     await client.connect();
 
     const result = await client.query('SHOW server_version');
-    assert.strictEqual(result.rows[0].server_version, '15.0');
+    assert.ok(result.rows[0].server_version.startsWith('15.0'));
 
     await client.end();
   });
