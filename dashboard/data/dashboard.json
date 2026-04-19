@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-19T16:22:50.580Z",
+  "generated": "2026-04-19T16:26:14.012Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Fix SUM(arithmetic_expr) OVER window aggregate with non-column arg",
-    "startedAt": "2026-04-19T16:22:50.580Z",
-    "taskId": "T79"
+    "completedAt": "2026-04-19T16:26:14.012Z",
+    "taskId": "T79",
+    "summary": "Fixed window aggregates with arithmetic args: SUM(a*b) OVER. Added resolveArg helper. Sales analytics Q8 now passes (10/10). 197 tests pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-19",
@@ -5367,12 +5369,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 77,
+    "blocksCompleted": 78,
     "blocksTotal": 67,
     "modeDistribution": {
       "THINK": 24,
       "PLAN": 8,
-      "BUILD": 32,
+      "BUILD": 33,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }
