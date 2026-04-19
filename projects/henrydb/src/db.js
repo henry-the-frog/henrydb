@@ -1131,6 +1131,7 @@ export class Database {
       case 'CREATE_VIEW': return this._createView(ast);
       case 'CREATE_MATVIEW': return this._createMatView(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
+      case 'CALL': return this._callProcedure(ast);
       case 'DROP_FUNCTION': return this._dropFunction(ast);
       case 'ANALYZE': return this._analyzeTable(ast);
       case 'CREATE_TRIGGER': {
@@ -1842,6 +1843,30 @@ export class Database {
     return { type: 'OK', message: `Function ${ast.name} dropped` };
   }
 
+  _callProcedure(ast) {
+    const funcDef = this._functions.get(ast.name.toLowerCase());
+    if (!funcDef) throw new Error(`Procedure ${ast.name} not found`);
+    
+    const args = ast.args.map(a => this._evalValue(a, {}));
+    
+    // Execute procedure body
+    let body = funcDef.body;
+    for (let i = 0; i < funcDef.params.length; i++) {
+      const param = funcDef.params[i];
+      const val = args[i];
+      const regex = new RegExp('\\b' + param.name + '\\b', 'gi');
+      if (val === null) {
+        body = body.replace(regex, 'NULL');
+      } else if (typeof val === 'number') {
+        body = body.replace(regex, String(val));
+      } else {
+        body = body.replace(regex, `'${String(val).replace(/'/g, "''")}'`);
+      }
+    }
+    
+    return this.execute(body);
+  }
+
   /**
    * Evaluate a user-defined SQL function call.
    * Substitutes parameter values into the body expression and evaluates it.
@@ -1849,6 +1874,12 @@ export class Database {
   _callUserFunction(funcDef, args) {
     if (funcDef.language === 'sql') {
       let body = funcDef.body;
+      
+      // Handle RETURN expr → SELECT expr
+      if (body.toUpperCase().startsWith('RETURN ')) {
+        body = 'SELECT ' + body.substring(7);
+      }
+      
       if (body.toUpperCase().startsWith('SELECT')) {
         // Substitute params
         for (let i = 0; i < funcDef.params.length; i++) {
@@ -2694,11 +2725,13 @@ export class Database {
     });
   }
 
-  _orderValues(table, columns, values) {
+  _orderValues(table, columns, values, resolveDefaults = false) {
     if (columns) {
       const ordered = new Array(table.schema.length).fill(null);
-      for (let i = 0; i < table.schema.length; i++) {
-        if (table.schema[i].defaultValue != null) ordered[i] = this._resolveDefault(table.schema[i].defaultValue);
+      if (resolveDefaults) {
+        for (let i = 0; i < table.schema.length; i++) {
+          if (table.schema[i].defaultValue != null) ordered[i] = this._resolveDefault(table.schema[i].defaultValue);
+        }
       }
       for (let i = 0; i < columns.length; i++) {
         const colIdx = table.schema.findIndex(c => c.name.toLowerCase() === columns[i].toLowerCase());

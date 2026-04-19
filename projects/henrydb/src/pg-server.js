@@ -607,6 +607,41 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: [{ version: 'HenryDB 0.1.0 on Node.js' }] };
   }
   
+  // pg_catalog.pg_class — table OIDs
+  if (upper.includes('PG_CLASS') || upper.includes('PG_ATTRIBUTE')) {
+    // Handle pg_class subquery for pg_attribute
+    if (upper.includes('PG_ATTRIBUTE')) {
+      // Extract table name from WHERE clause
+      const tableMatch = sql.match(/relname\s*=\s*'([^']+)'/i);
+      if (tableMatch && db.tables) {
+        const tableName = tableMatch[1];
+        const table = db.tables.get(tableName);
+        if (table && table.schema) {
+          const rows = table.schema.map((col, i) => ({
+            attname: col.name,
+            attnum: i + 1,
+            attnotnull: col.primaryKey || col.notNull || false,
+            attisdropped: false,
+            attrelid: tableName.length, // Fake OID
+            atttypid: col.type === 'INT' || col.type === 'INTEGER' ? 23 : col.type === 'TEXT' ? 25 : 0,
+          }));
+          return { type: 'ROWS', rows };
+        }
+      }
+      return { type: 'ROWS', rows: [] };
+    }
+    // pg_class query
+    const relMatch = sql.match(/relname\s*=\s*'([^']+)'/i);
+    if (relMatch) {
+      const tableName = relMatch[1];
+      const exists = db.tables?.has(tableName);
+      if (exists) {
+        return { type: 'ROWS', rows: [{ oid: tableName.length, relname: tableName, relkind: 'r', relnamespace: 0 }] };
+      }
+      return { type: 'ROWS', rows: [] };
+    }
+  }
+
   // pg_catalog.pg_type query (common on connection)
   if (upper.includes('PG_TYPE') || upper.includes('PG_CATALOG')) {
     // Return empty result set for catalog queries
@@ -622,8 +657,11 @@ function interceptPgCatalog(sql, db) {
     if (table && table.schema) {
       const rows = table.schema.map(col => ({
         column_name: col.name,
-        data_type: (col.type || 'TEXT').toUpperCase(),
-        nullable: col.primaryKey ? 'NO' : 'YES',
+        type: col.serial ? 'SERIAL' : (col.type || 'TEXT').toUpperCase(),
+        data_type: col.serial ? 'SERIAL' : (col.type || 'TEXT').toUpperCase(),
+        nullable: col.primaryKey || col.notNull ? 'NO' : 'YES',
+        not_null: col.primaryKey || col.notNull || false,
+        primary_key: col.primaryKey || false,
         key: col.primaryKey ? 'PRI' : (col.unique ? 'UNI' : ''),
         default_value: col.defaultValue != null ? String(col.defaultValue) : null,
       }));
@@ -694,8 +732,8 @@ function interceptPgCatalog(sql, db) {
               table_name: tableName,
               column_name: col.name,
               ordinal_position: i + 1,
-              data_type: (col.type || 'TEXT').toUpperCase(),
-              is_nullable: col.primaryKey ? 'NO' : 'YES',
+              data_type: col.serial ? 'SERIAL' : (col.type || 'TEXT').toUpperCase(),
+              is_nullable: col.primaryKey || col.notNull ? 'NO' : 'YES',
               column_default: col.defaultValue != null ? String(col.defaultValue) : null,
             });
           });
@@ -757,12 +795,15 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       return { type: 'ROWS', rows };
     }
     
-    // SHOW parameter
+    // SHOW parameter (but not SHOW TABLES, SHOW TABLE STATUS, SHOW INDEXES, SHOW CREATE)
     const showMatch = sql.match(/^SHOW\s+(\w+)\s*$/i);
     if (showMatch) {
       const param = showMatch[1].toLowerCase();
-      const value = connectionParams.get(param) || connectionParams.get(showMatch[1]) || '';
-      return { type: 'ROWS', rows: [{ [param]: value }], columns: [{ name: param, type: 'TEXT' }] };
+      // These are handled by interceptPgCatalog
+      if (!['tables', 'table', 'indexes', 'index', 'create'].includes(param)) {
+        const value = connectionParams.get(param) || connectionParams.get(showMatch[1]) || '';
+        return { type: 'ROWS', rows: [{ [param]: value }], columns: [{ name: param, type: 'TEXT' }] };
+      }
     }
     
     // RESET parameter

@@ -368,6 +368,19 @@ export function parse(sql) {
     return { type: 'EXECUTE_PREPARED', name, params };
   }
   // DEALLOCATE name
+  if (isKeyword('CALL')) {
+    advance(); // CALL
+    const funcTok = advance();
+    const name = funcTok.originalValue || funcTok.value;
+    expect('(');
+    const args = [];
+    if (!match(')')) {
+      do { args.push(parseExpr()); } while (match(','));
+      expect(')');
+    }
+    return { type: 'CALL', name, args };
+  }
+
   if (isKeyword('DEALLOCATE')) {
     advance();
     if (isKeyword('ALL')) { advance(); return { type: 'DEALLOCATE', name: null, all: true }; }
