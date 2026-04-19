@@ -431,9 +431,19 @@
     {
       "id": "T42",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "More stress testing: edge cases with HAVING, lateral joins, complex subqueries",
-      "started": "2026-04-19T15:17:25.217Z"
+      "started": "2026-04-19T15:17:25.217Z",
+      "completed": "2026-04-19T15:18:50.382Z",
+      "duration_ms": 180000,
+      "summary": "Extensive stress testing: Window over GROUP BY, CASE counting, CAST/COUNT ratio all pass. Fixed GROUP_CONCAT comma-separated delimiter syntax. 94 tests pass. Total session: 14 bugs fixed."
+    },
+    {
+      "id": "T43",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Fix HAVING with function-wrapped aggregates (COALESCE(SUM(x),0) > 0 in HAVING)",
+      "started": "2026-04-19T15:19:23.354Z"
     },
     {
       "id": "T33",
@@ -619,6 +629,14 @@
     {
       "time": "2026-04-19T15:17:19.196Z",
       "msg": "Moved T33 after T42"
+    },
+    {
+      "time": "2026-04-19T15:19:17.200Z",
+      "msg": "Added T43 (THINK) after end: Fix HAVING with function-wrapped aggregates (COALESCE(SUM(x),0) > 0 in HAVING)"
+    },
+    {
+      "time": "2026-04-19T15:19:17.317Z",
+      "msg": "Moved T33 after T43"
     }
   ]
 }

@@ -7599,8 +7599,23 @@ export class Database {
     if (!expr) return [];
     if (expr.type === 'aggregate_expr') return [expr];
     const results = [];
-    for (const key of ['left', 'right', 'expr']) {
+    // Walk common expression tree structures
+    for (const key of ['left', 'right', 'expr', 'operand']) {
       if (expr[key]) results.push(...this._collectAggregateExprs(expr[key]));
+    }
+    // Walk function arguments (COALESCE(SUM(x), 0))
+    if (expr.args) {
+      for (const arg of expr.args) {
+        results.push(...this._collectAggregateExprs(arg));
+      }
+    }
+    // Walk CASE expressions
+    if (expr.whens) {
+      for (const w of expr.whens) {
+        results.push(...this._collectAggregateExprs(w.condition || w.when));
+        results.push(...this._collectAggregateExprs(w.result || w.then));
+      }
+      results.push(...this._collectAggregateExprs(expr.elseResult || expr.else));
     }
     return results;
   }
