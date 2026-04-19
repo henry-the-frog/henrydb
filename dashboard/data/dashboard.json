@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-19T00:47:53.509Z",
+  "generated": "2026-04-19T01:09:41.555Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: implement ILIKE (case-insensitive LIKE) and fix LIKE pattern matching",
-    "completedAt": "2026-04-19T00:47:53.509Z",
-    "taskId": "T293",
-    "summary": "ILIKE already implemented. Fixed string.test to use ILIKE for case-insensitive matching (LIKE is case-sensitive per SQL standard). 21/21 string tests, 15/15 window-advanced pass.",
+    "task": "HenryDB: implement EXPLAIN — show query execution plan",
+    "completedAt": "2026-04-19T01:09:41.555Z",
+    "taskId": "T294",
+    "summary": "EXPLAIN already implemented! Wrote 6 tests (INDEX_SCAN detection, SEQ_SCAN, ANALYZE timing, JOIN/aggregate plans, text output). All pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -3163,12 +3163,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 288,
+    "blocksCompleted": 289,
     "blocksTotal": 285,
     "modeDistribution": {
       "THINK": 45,
       "PLAN": 27,
-      "BUILD": 146,
+      "BUILD": 147,
       "MAINTAIN": 57,
       "EXPLORE": 13
     }

@@ -3131,6 +3131,17 @@
       "completed": "2026-04-19T00:47:53.472Z",
       "duration_ms": 300000,
       "summary": "ILIKE already implemented. Fixed string.test to use ILIKE for case-insensitive matching (LIKE is case-sensitive per SQL standard). 21/21 string tests, 15/15 window-advanced pass."
+    },
+    {
+      "id": "T294",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement EXPLAIN — show query execution plan",
+      "project": "henrydb",
+      "started": "2026-04-19T01:08:08.477Z",
+      "completed": "2026-04-19T01:09:41.518Z",
+      "duration_ms": 300000,
+      "summary": "EXPLAIN already implemented! Wrote 6 tests (INDEX_SCAN detection, SEQ_SCAN, ANALYZE timing, JOIN/aggregate plans, text output). All pass."
     }
   ],
   "focusProjects": [
@@ -4310,6 +4321,10 @@
     {
       "time": "2026-04-19T00:46:24.130Z",
       "msg": "Added T293 (BUILD) after end: HenryDB: implement ILIKE (case-insensitive LIKE) and fix LIKE pattern matching"
+    },
+    {
+      "time": "2026-04-19T01:08:03.286Z",
+      "msg": "Added T294 (BUILD) after end: HenryDB: implement EXPLAIN — show query execution plan"
     }
   ]
 }
