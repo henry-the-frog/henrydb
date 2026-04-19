@@ -18,3 +18,10 @@
 - HenryDB: checkpoint-explore.test.js expects WAL size=0 after checkpoint
 - Neural-net: training checkpoints / early stopping improvements
 - HenryDB: pg_stat_statements query normalization (parametrize literals for better grouping)
+
+## HenryDB Known Issues (found Session C, 2026-04-18)
+- Parser: `SELECT *, window_function()` fails — comma after * not handled
+- Parser: `val - LAG(val) OVER (...)` fails — window functions not recognized in arithmetic expressions
+- WAL recovery includes uncommitted transactions
+- ALTER TABLE ADD COLUMN NOT NULL with DEFAULT doesn't backfill existing rows
+- CHECK constraint with multi-column expression (low < high) has parser issues
