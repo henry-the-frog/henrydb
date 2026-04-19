@@ -6294,28 +6294,11 @@ export class Database {
 
   // Helper: extract all window function nodes from an expression tree, assigning each a unique key
   _extractWindowNodes(node, results = [], prefix = '__wexpr') {
-    if (!node || typeof node !== 'object') return results;
-    if (node.type === 'window') {
-      const key = `${prefix}_${results.length}`;
-      node._windowKey = key;
-      results.push(node);
-      return results;
-    }
-    if (node.type === 'arith' || node.type === 'COMPARE') { this._extractWindowNodes(node.left, results, prefix); this._extractWindowNodes(node.right, results, prefix); }
-    if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL') this._extractWindowNodes(node.left, results, prefix);
-    if (node.type === 'NOT') this._extractWindowNodes(node.expr, results, prefix);
-    if (node.type === 'unary_minus') this._extractWindowNodes(node.operand, results, prefix);
-    if (node.type === 'function_call' && node.args) node.args.forEach(a => this._extractWindowNodes(a, results, prefix));
-    if (node.type === 'cast') this._extractWindowNodes(node.expr, results, prefix);
-    if (node.type === 'case' || node.type === 'case_expr') {
-      if (node.whens) {
-        node.whens.forEach(w => {
-          this._extractWindowNodes(w.then || w.result, results, prefix);
-          this._extractWindowNodes(w.when || w.condition, results, prefix);
-        });
-      }
-      this._extractWindowNodes(node.else || node.elseResult, results, prefix);
-    }
+    const found = exprCollect(node, n => n.type === 'window');
+    found.forEach((wn, i) => {
+      wn._windowKey = `${prefix}_${results.length + i}`;
+      results.push(wn);
+    });
     return results;
   }
 
@@ -7618,28 +7601,7 @@ export class Database {
   }
 
   _collectAggregateExprs(expr) {
-    if (!expr) return [];
-    if (expr.type === 'aggregate_expr') return [expr];
-    const results = [];
-    // Walk common expression tree structures
-    for (const key of ['left', 'right', 'expr', 'operand']) {
-      if (expr[key]) results.push(...this._collectAggregateExprs(expr[key]));
-    }
-    // Walk function arguments (COALESCE(SUM(x), 0))
-    if (expr.args) {
-      for (const arg of expr.args) {
-        results.push(...this._collectAggregateExprs(arg));
-      }
-    }
-    // Walk CASE expressions
-    if (expr.whens) {
-      for (const w of expr.whens) {
-        results.push(...this._collectAggregateExprs(w.condition || w.when));
-        results.push(...this._collectAggregateExprs(w.result || w.then));
-      }
-      results.push(...this._collectAggregateExprs(expr.elseResult || expr.else));
-    }
-    return results;
+    return exprCollect(expr, n => n.type === 'aggregate_expr');
   }
 
   /**
