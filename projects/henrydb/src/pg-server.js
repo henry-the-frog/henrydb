@@ -367,6 +367,42 @@ function parseSelectColumns(sql) {
 function interceptPgCatalog(sql, db) {
   const upper = sql.trim().toUpperCase();
   
+  // pg_stat_activity
+  if (upper.includes('PG_STAT_ACTIVITY')) {
+    const rows = [];
+    for (const [id, info] of _activeConnections) {
+      rows.push({
+        pid: info.pid,
+        datname: info.datname || 'henrydb',
+        usename: info.user,
+        query: info.query,
+        query_count: info.queryCount || 0,
+        state: info.state || 'idle',
+        backend_start: info.startTime,
+      });
+    }
+    return { type: 'ROWS', rows };
+  }
+  
+  // pg_stat_user_tables
+  if (upper.includes('PG_STAT_USER_TABLES')) {
+    const rows = [];
+    if (db.tables) {
+      for (const [name, table] of db.tables) {
+        rows.push({
+          relname: name,
+          schemaname: 'public',
+          n_live_tup: table.heap?.rowCount ?? table.rows?.length ?? 0,
+          seq_scan: 0,
+          seq_tup_read: 0,
+          idx_scan: 0,
+          idx_tup_fetch: 0,
+        });
+      }
+    }
+    return { type: 'ROWS', rows };
+  }
+  
   // psql startup: SET client_encoding, DateStyle, etc
   if (upper.startsWith('SET ')) {
     // Check for cost model parameter SET
@@ -599,12 +635,30 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
   let buffer = Buffer.alloc(0);
   let startupDone = false;
   let authState = null; // { userName, userEntry, salt } when waiting for password
+  
+  // Register connection for pg_stat_activity
+  _activeConnections.set(connId, {
+    pid: connId,
+    user: 'unknown',
+    query: '',
+    queryCount: 0,
+    startTime: new Date().toISOString(),
+    datname: 'henrydb',
+    state: 'idle',
+  });
 
   // Connection-scoped cursor state
   const cursors = new Map(); // name → { rows, columns, pos }
   const tempTables = new Set(); // names of temp tables created by this connection
 
   function executeWithIntercept(sql) {
+    // Track query for pg_stat_activity
+    const connInfo = _activeConnections.get(connId);
+    if (connInfo) {
+      connInfo.query = sql;
+      connInfo.queryCount = (connInfo.queryCount || 0) + 1;
+      connInfo.state = 'active';
+    }
     // Advisory lock functions
     const advisoryMatch = sql.match(/SELECT\s+pg_(advisory_lock|advisory_unlock|try_advisory_lock)\s*\(\s*(\d+)\s*\)/i);
     if (advisoryMatch) {
@@ -753,6 +807,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
 
   socket.on('error', () => { 
     _advisoryLocks.releaseAll(connId);
+    _activeConnections.delete(connId);
     for (const [ch, subs] of channels) {
       subs.delete(connId);
       if (subs.size === 0) channels.delete(ch);
@@ -765,6 +820,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
   });
   socket.on('close', () => {
     _advisoryLocks.releaseAll(connId);
+    _activeConnections.delete(connId);
     for (const [ch, subs] of channels) {
       subs.delete(connId);
       if (subs.size === 0) channels.delete(ch);
@@ -1477,6 +1533,9 @@ class AdvisoryLockManager {
 // Global advisory lock manager shared across all connections
 const _advisoryLocks = new AdvisoryLockManager();
 let _nextConnId = 1;
+
+// Active connection tracking for pg_stat_activity
+const _activeConnections = new Map(); // connId → { pid, user, query, queryCount, startTime, socket }
 
 export function createPgServer(db, port = 5433, options = {}) {
   // Global channel subscriptions: channel → Map<connId, socket>
