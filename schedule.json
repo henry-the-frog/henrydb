@@ -1500,17 +1500,36 @@
     {
       "id": "T140",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: file-backed persistence or major missing feature area",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T20:45:11.541Z",
+      "completed": "2026-04-19T20:45:44.261Z",
+      "duration_ms": 60000,
+      "summary": "Planned depth work: stress testing critical paths (SERIAL, correlated subqueries, JOINs, persistence), fixing full scan failures, adding concurrent server tests"
     },
     {
       "id": "T141",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Run targeted stress tests on critical paths: INSERT with SERIAL, correlated subqueries, JOIN with complex WHERE, persistence round-trip",
       "plan_ref": "T140",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T20:45:48.882Z"
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "task": "Fix any new failures from full test suite scan (currently running)",
+      "status": "upcoming",
+      "plan_ref": "T140"
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "task": "Add comprehensive server integration test: multi-client concurrent SERIAL inserts",
+      "status": "upcoming",
+      "plan_ref": "T140"
     },
     {
       "id": "T142",
@@ -2191,6 +2210,10 @@
     {
       "time": "2026-04-19T20:20:37.226Z",
       "msg": "PLAN T136 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T20:45:38.764Z",
+      "msg": "PLAN T140 filled 3 BUILD tasks"
     }
   ]
 }

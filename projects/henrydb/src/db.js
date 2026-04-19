@@ -2144,16 +2144,29 @@ export class Database {
       
       // UPSERT: ON CONFLICT handling
       if (ast.onConflict) {
-        const pkIdx = table.schema.findIndex(c => c.primaryKey);
         const orderedValues = this._orderValues(table, ast.columns, values);
         
-        if (pkIdx >= 0) {
-          // Check if PK already exists
+        // Determine conflict column(s) — could be PK or specified UNIQUE column
+        let conflictIdx = -1;
+        if (ast.onConflict.column) {
+          // ON CONFLICT (column) — use specified column
+          conflictIdx = table.schema.findIndex(c => c.name.toLowerCase() === ast.onConflict.column.toLowerCase());
+        } else if (ast.onConflict.columns && ast.onConflict.columns.length > 0) {
+          // ON CONFLICT (col1, col2, ...) — use first column for now
+          conflictIdx = table.schema.findIndex(c => c.name.toLowerCase() === ast.onConflict.columns[0].toLowerCase());
+        }
+        if (conflictIdx < 0) {
+          // Fallback to PK
+          conflictIdx = table.schema.findIndex(c => c.primaryKey);
+        }
+        
+        if (conflictIdx >= 0 && orderedValues[conflictIdx] != null) {
+          // Check if conflict column value already exists
           let existing = null;
           let existingRid = null;
           for (const tuple of table.heap.scan()) {
             const tupleValues = tuple.values || tuple;
-            if (tupleValues[pkIdx] === orderedValues[pkIdx]) { 
+            if (tupleValues[conflictIdx] === orderedValues[conflictIdx]) { 
               existing = tupleValues; 
               existingRid = { pageId: tuple.pageId, slotIdx: tuple.slotIdx };
               break; 
@@ -2189,10 +2202,15 @@ export class Database {
                 table.heap.delete(existingRid.pageId, existingRid.slotIdx);
                 const newRid = table.heap.insert(newValues);
                 
-                // Update primary key index
+                // Update conflict column index
+                const pkIdx = table.schema.findIndex(c => c.primaryKey);
                 if (pkIdx >= 0 && table.indexes.has(table.schema[pkIdx].name)) {
                   const idx = table.indexes.get(table.schema[pkIdx].name);
                   idx.insert(newValues[pkIdx], newRid);
+                }
+                if (conflictIdx !== pkIdx && table.indexes.has(table.schema[conflictIdx].name)) {
+                  const idx = table.indexes.get(table.schema[conflictIdx].name);
+                  idx.insert(newValues[conflictIdx], newRid);
                 }
               }
               
@@ -2209,6 +2227,8 @@ export class Database {
       }
       
       // Check UNIQUE constraints (including PRIMARY KEY columns)
+      // Skip if UPSERT (ON CONFLICT) is in play — conflicts are handled above
+      if (!ast.onConflict) {
       // Must use schema-ordered values, not insert-column-ordered values
       const orderedValsForCheck = this._orderValues(table, ast.columns, values);
       // Apply SERIAL auto-increment for the check
@@ -2225,6 +2245,7 @@ export class Database {
             }
           }
         }
+      }
       }
 
       // Check UNIQUE INDEX constraints from indexCatalog
@@ -2680,7 +2701,7 @@ export class Database {
         if (table.schema[i].defaultValue != null) ordered[i] = this._resolveDefault(table.schema[i].defaultValue);
       }
       for (let i = 0; i < columns.length; i++) {
-        const colIdx = table.schema.findIndex(c => c.name === columns[i]);
+        const colIdx = table.schema.findIndex(c => c.name.toLowerCase() === columns[i].toLowerCase());
         if (colIdx >= 0) ordered[colIdx] = values[i];
       }
       return ordered;
@@ -2699,7 +2720,7 @@ export class Database {
         }
       }
       for (let i = 0; i < columns.length; i++) {
-        const colIdx = table.schema.findIndex(c => c.name === columns[i]);
+        const colIdx = table.schema.findIndex(c => c.name.toLowerCase() === columns[i].toLowerCase());
         if (colIdx === -1) throw new Error(`Column ${columns[i]} not found`);
         orderedValues[colIdx] = values[i];
       }

@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-19T20:44:53.973Z",
+  "generated": "2026-04-19T20:45:48.919Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "Assess progress - what area of HenryDB needs most depth?",
-    "completedAt": "2026-04-19T20:44:53.973Z",
-    "taskId": "T139",
-    "summary": "Fixed 3 more bugs: (1) Correlated subquery comparison in WHERE - parser returned SUBQUERY node without parsing following comparison operator (> 1), (2) Composite PK case sensitivity - CREATE INDEX column names uppercased by tokenizer, (3) indexCatalog lost on serialization round-trip. Tests: complex-query-depth 9/9, composite-pk 8/8.",
-    "durationMs": 300000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Run targeted stress tests on critical paths: INSERT with SERIAL, correlated subqueries, JOIN with complex WHERE, persistence round-trip",
+    "startedAt": "2026-04-19T20:45:48.919Z",
+    "taskId": "T141"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -6133,44 +6131,75 @@
       {
         "id": "T137",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix EXPLAIN index detection for small tables - always prefer explicit secondary index for equality",
         "plan_ref": "T136",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-19T20:20:43.154Z",
+        "completed": "2026-04-19T20:22:09.063Z",
+        "duration_ms": 180000,
+        "summary": "Fixed EXPLAIN index detection for small tables: added estRows <= 100 override to always prefer explicit secondary index for equality lookups. Hash index test 9/9, all EXPLAIN tests 54/54 passing."
       },
       {
         "id": "T147",
         "mode": "BUILD",
         "task": "Fix remaining test failures from full suite scan (correlated subqueries, error handling, stress isolation)",
-        "status": "upcoming",
-        "plan_ref": "T136"
+        "status": "done",
+        "plan_ref": "T136",
+        "started": "2026-04-19T20:22:15.077Z",
+        "completed": "2026-04-19T20:36:30.992Z",
+        "duration_ms": 600000,
+        "summary": "Fixed 3 critical bugs: (1) INSERT UNIQUE constraint false positive - _insert() UNIQUE check used column-list-ordered values instead of schema-ordered orderedValues, causing SERIAL columns to match wrong values. Root cause of stress-all-features failure. (2) SELECT column validation - added column existence checks for non-existent columns in SELECT and WHERE. (3) SHOW TABLE STATUS server intercept. Tests fixed: error-edge 20/20, error-handling-depth 16/16, stress-all-features 1/1, hash-index 9/9."
       },
       {
         "id": "T138",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard health, knowledge capture"
+        "status": "done",
+        "task": "Git commit+push, dashboard health, knowledge capture",
+        "started": "2026-04-19T20:36:37.304Z",
+        "completed": "2026-04-19T20:37:06.386Z",
+        "duration_ms": 120000,
+        "summary": "Git commit+push, daily log updated with critical SERIAL bug findings, learning captured"
       },
       {
         "id": "T139",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Assess progress - what area of HenryDB needs most depth?"
+        "status": "done",
+        "task": "Assess progress - what area of HenryDB needs most depth?",
+        "started": "2026-04-19T20:37:12.637Z",
+        "completed": "2026-04-19T20:44:53.936Z",
+        "duration_ms": 300000,
+        "summary": "Fixed 3 more bugs: (1) Correlated subquery comparison in WHERE - parser returned SUBQUERY node without parsing following comparison operator (> 1), (2) Composite PK case sensitivity - CREATE INDEX column names uppercased by tokenizer, (3) indexCatalog lost on serialization round-trip. Tests: complex-query-depth 9/9, composite-pk 8/8."
       },
       {
         "id": "T140",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: file-backed persistence or major missing feature area",
-        "task": null
+        "task": null,
+        "started": "2026-04-19T20:45:11.541Z"
       },
       {
         "id": "T141",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Run targeted stress tests on critical paths: INSERT with SERIAL, correlated subqueries, JOIN with complex WHERE, persistence round-trip",
         "plan_ref": "T140",
         "project": "henrydb"
+      },
+      {
+        "id": "T148",
+        "mode": "BUILD",
+        "task": "Fix any new failures from full test suite scan (currently running)",
+        "status": "upcoming",
+        "plan_ref": "T140"
+      },
+      {
+        "id": "T149",
+        "mode": "BUILD",
+        "task": "Add comprehensive server integration test: multi-client concurrent SERIAL inserts",
+        "status": "upcoming",
+        "plan_ref": "T140"
       },
       {
         "id": "T142",
@@ -6209,11 +6238,11 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 139,
-    "blocksTotal": 147,
+    "blocksCompleted": 140,
+    "blocksTotal": 149,
     "modeDistribution": {
       "THINK": 33,
-      "PLAN": 12,
+      "PLAN": 13,
       "BUILD": 71,
       "MAINTAIN": 20,
       "EXPLORE": 3

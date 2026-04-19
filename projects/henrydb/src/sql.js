@@ -2286,7 +2286,7 @@ export function parse(sql) {
     let columns = null;
     if (match('(')) {
       columns = [];
-      do { columns.push(advance().value); } while (match(','));
+      do { const tok = advance(); columns.push(tok.originalValue || tok.value); } while (match(','));
       expect(')');
     }
 
