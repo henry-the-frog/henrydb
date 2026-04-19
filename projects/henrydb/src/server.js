@@ -74,6 +74,13 @@ export class HenryDBServer {
     this.db = null;
     this._ownsDb = true;
     this._tmpDir = null;
+    
+    // Adaptive engine (tracks query statistics for adaptive optimization)
+    if (opts.adaptive) {
+      this.adaptiveEngine = {
+        stats: { total: 0, adaptive: 0, standard: 0 },
+      };
+    }
   }
 
   async start() {
@@ -91,6 +98,25 @@ export class HenryDBServer {
 
     // Import createPgServer and start wire protocol
     const pgMod = await import('./pg-server.js');
+    
+    // Wrap db.execute to track adaptive engine stats
+    if (this.adaptiveEngine) {
+      const origExecute = this.db.execute.bind(this.db);
+      const engine = this.adaptiveEngine;
+      this.db.execute = function(sql) {
+        engine.stats.total++;
+        const upper = sql.trim().toUpperCase();
+        // Simple SELECT without aggregation/subquery = adaptive eligible
+        if (upper.startsWith('SELECT') && !upper.includes('COUNT(') && !upper.includes('SUM(') 
+            && !upper.includes('AVG(') && !upper.includes('MAX(') && !upper.includes('MIN(')
+            && !upper.includes('(SELECT')) {
+          engine.stats.adaptive++;
+        } else {
+          engine.stats.standard++;
+        }
+        return origExecute(sql);
+      };
+    }
     
     return new Promise((resolve, reject) => {
       // Use createPgServer if available, otherwise build our own net server
