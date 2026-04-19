@@ -15,7 +15,7 @@ describe('EXPLAIN ANALYZE', () => {
     
     const plan = result.rows.map(r => r['QUERY PLAN']).join('\n');
     assert.ok(plan.includes('Execution Time'));
-    assert.ok(plan.includes('Actual Rows: 1'));
+    assert.ok(plan.includes('Rows Returned: 1'), `Expected Rows Returned in plan: ${plan}`);
   });
 
   it('shows engine type in plan', () => {
