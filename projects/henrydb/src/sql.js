@@ -973,6 +973,20 @@ export function parse(sql) {
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();
+        let node = { type: 'window', func, arg, distinct, over };
+        // Check for trailing arithmetic: SUM(x) OVER (...) - val
+        if (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+          while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+            const opType = peek().type;
+            const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
+            advance();
+            const right = parsePrimary();
+            node = { type: 'arith', op, left: node, right };
+          }
+          let alias = null;
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          return { type: 'expression', expr: node, alias };
+        }
         let alias = null;
         if (isKeyword('AS')) { advance(); alias = readAlias(); }
         return { type: 'window', func, arg, distinct, over, alias };
@@ -1020,6 +1034,20 @@ export function parse(sql) {
       expect('(');
       expect(')');
       const over = parseOverClause();
+      let node = { type: 'window', func, arg: null, over };
+      // Check for trailing arithmetic: ROW_NUMBER() OVER (...) * 10
+      if (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+        while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+          const opType = peek().type;
+          const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
+          advance();
+          const right = parsePrimary();
+          node = { type: 'arith', op, left: node, right };
+        }
+        let alias = null;
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr: node, alias };
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'window', func, arg: null, over, alias };
@@ -1043,6 +1071,20 @@ export function parse(sql) {
         expect(')');
       }
       const over = parseOverClause();
+      let node = { type: 'window', func, arg, offset, defaultValue, over };
+      // Check for trailing arithmetic: LAG(val) OVER (...) - val
+      if (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+        while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+          const opType = peek().type;
+          const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
+          advance();
+          const right = parsePrimary();
+          node = { type: 'arith', op, left: node, right };
+        }
+        let alias = null;
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr: node, alias };
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'window', func, arg, offset, defaultValue, over, alias };

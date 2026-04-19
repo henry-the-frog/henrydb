@@ -25,18 +25,22 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix parser bugs: double NOT, window funcs in arithmetic, SELECT * with window, WAL uncommitted tx rejection",
       "plan_ref": "T2",
       "project": "henrydb",
-      "started": "2026-04-19T14:16:37.708Z"
+      "started": "2026-04-19T14:16:37.708Z",
+      "completed": "2026-04-19T14:29:35.202Z",
+      "duration_ms": 600000,
+      "summary": "Fixed 3 parser/executor bugs: double NOT, window funcs in arithmetic (val-LAG), SELECT * with extra columns. All passing, 150+ regression tests clear."
     },
     {
       "id": "T19",
       "mode": "BUILD",
       "task": "Write regression tests for all 4 fixes",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "in-progress",
+      "plan_ref": "T2",
+      "started": "2026-04-19T14:29:42.802Z"
     },
     {
       "id": "T4",
