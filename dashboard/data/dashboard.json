@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-19T17:34:06.070Z",
+  "generated": "2026-04-19T17:59:54.035Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit, push",
-    "startedAt": "2026-04-19T17:34:06.070Z",
-    "taskId": "T87"
+    "task": "Git push, verify test suite integrity, update daily log",
+    "startedAt": "2026-04-19T17:59:54.035Z",
+    "taskId": "T91"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -5606,57 +5606,106 @@
       {
         "id": "T85",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB parser unification — parseSelectColumn should delegate to parseExpr",
         "task": null,
-        "started": "2026-04-19T17:26:10.931Z"
+        "started": "2026-04-19T17:26:10.931Z",
+        "completed": "2026-04-19T17:26:55.945Z",
+        "duration_ms": 120000,
+        "summary": "Planned parser unification: 3 tasks — assess delegation feasibility, implement incremental delegation, regression test. Risk: 900+ tests depending on exact column AST shape."
       },
       {
         "id": "T95",
         "mode": "BUILD",
         "task": "Assess parseSelectColumn delegation feasibility — identify what cases need special handling vs. what can delegate to parseExpr",
-        "status": "upcoming",
-        "plan_ref": "T85"
+        "status": "done",
+        "plan_ref": "T85",
+        "started": "2026-04-19T17:27:03.897Z",
+        "completed": "2026-04-19T17:27:49.493Z",
+        "duration_ms": 300000,
+        "summary": "Assessed parser delegation: parseSelectColumn is 560 lines duplicating parseExpr but with different AST types (aggregate vs aggregate_expr, window with filter/separator). Delegation feasible but high-risk (900+ tests). Better approach: keep fixing specific bugs as they arise, gradually unify AST types. The expr-walker.js already provides unified walking."
       },
       {
         "id": "T96",
         "mode": "BUILD",
         "task": "Implement incremental delegation: make parseSelectColumn call parseExpr for non-special cases",
-        "status": "upcoming",
-        "plan_ref": "T85"
+        "status": "done",
+        "plan_ref": "T85",
+        "started": "2026-04-19T17:28:00.669Z",
+        "completed": "2026-04-19T17:28:00.812Z",
+        "duration_ms": 1000,
+        "summary": "DEFERRED: risk too high for remaining session time. Parser unification should be a dedicated project."
       },
       {
         "id": "T97",
         "mode": "BUILD",
         "task": "Full regression test after delegation",
-        "status": "upcoming",
-        "plan_ref": "T85"
+        "status": "done",
+        "plan_ref": "T85",
+        "started": "2026-04-19T17:28:11.203Z",
+        "completed": "2026-04-19T17:28:11.453Z",
+        "duration_ms": 1000,
+        "summary": "SKIP: delegation deferred."
       },
       {
         "id": "T86",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-19T17:28:20.821Z",
+        "completed": "2026-04-19T17:33:46.230Z",
+        "duration_ms": 600000,
+        "summary": "MAJOR BUG FIX: Wire protocol was sending TEXT OID (25) for all column types because PG_OIDS map was missing INTEGER/BOOLEAN/FLOAT/VARCHAR etc. Extended the OID map from 8 to 25 types. Also fixed: getColumns type inference from table schema, connection tracking for clean shutdown. server-json 6/6 pass."
       },
       {
         "id": "T87",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit, push"
+        "status": "done",
+        "task": "Git commit, push",
+        "started": "2026-04-19T17:34:06.032Z",
+        "completed": "2026-04-19T17:34:30.773Z",
+        "duration_ms": 15000,
+        "summary": "Git push both repos. HenryDB pushed successfully."
       },
       {
         "id": "T88",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on parser unification, explore what other SQL features are weak"
+        "status": "done",
+        "task": "Reflect on parser unification, explore what other SQL features are weak",
+        "started": "2026-04-19T17:34:36.891Z",
+        "completed": "2026-04-19T17:36:24.414Z",
+        "duration_ms": 300000,
+        "summary": "THINK: Stress-tested 28 SQL features. Found JSON ->> bug (objects became [object Object]). Fixed. Also verified: CTEs, recursive CTEs, all joins, window functions, subqueries, DISTINCT ON, LATERAL, INTERSECT/EXCEPT all work correctly."
       },
       {
         "id": "T89",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB aggregates in scalar subqueries + other parser limitations from TODO",
-        "task": null
+        "task": null,
+        "started": "2026-04-19T17:36:30.996Z"
+      },
+      {
+        "id": "T98",
+        "mode": "BUILD",
+        "task": "Run full test suite sweep and triage failures",
+        "status": "upcoming",
+        "plan_ref": "T89"
+      },
+      {
+        "id": "T99",
+        "mode": "BUILD",
+        "task": "Fix any failures found",
+        "status": "upcoming",
+        "plan_ref": "T89"
+      },
+      {
+        "id": "T100",
+        "mode": "BUILD",
+        "task": "Run wire protocol test suite",
+        "status": "upcoming",
+        "plan_ref": "T89"
       },
       {
         "id": "T90",
@@ -5675,13 +5724,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 91,
-    "blocksTotal": 97,
+    "blocksCompleted": 98,
+    "blocksTotal": 100,
     "modeDistribution": {
-      "THINK": 26,
-      "PLAN": 10,
-      "BUILD": 41,
-      "MAINTAIN": 11,
+      "THINK": 27,
+      "PLAN": 11,
+      "BUILD": 45,
+      "MAINTAIN": 12,
       "EXPLORE": 3
     }
   },

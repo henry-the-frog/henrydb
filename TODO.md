@@ -11,7 +11,7 @@
 - RISC-V: Liveness-based register allocation (current linear sequential, low priority)
 - Neural-net: Architecture exploration (attention, model serialization already done)
 - RISC-V: IIFE pattern (fn(x){x}(5) direct invocation)
-- HenryDB: aggregates in scalar subqueries in SELECT list (parser limitation)
+- HenryDB: aggregates in scalar subqueries — VERIFIED WORKING (remove this item)
 - HenryDB: heap page overflow with very large values (>30KB). Need TOAST-style overflow pages.
 - HenryDB: checkpoint-explore.test.js expects WAL size=0 after checkpoint
 - Neural-net: training checkpoints / early stopping improvements

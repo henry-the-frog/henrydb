@@ -987,35 +987,84 @@
     {
       "id": "T87",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit, push",
-      "started": "2026-04-19T17:34:06.032Z"
+      "started": "2026-04-19T17:34:06.032Z",
+      "completed": "2026-04-19T17:34:30.773Z",
+      "duration_ms": 15000,
+      "summary": "Git push both repos. HenryDB pushed successfully."
     },
     {
       "id": "T88",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on parser unification, explore what other SQL features are weak"
+      "status": "done",
+      "task": "Reflect on parser unification, explore what other SQL features are weak",
+      "started": "2026-04-19T17:34:36.891Z",
+      "completed": "2026-04-19T17:36:24.414Z",
+      "duration_ms": 300000,
+      "summary": "THINK: Stress-tested 28 SQL features. Found JSON ->> bug (objects became [object Object]). Fixed. Also verified: CTEs, recursive CTEs, all joins, window functions, subqueries, DISTINCT ON, LATERAL, INTERSECT/EXCEPT all work correctly."
     },
     {
       "id": "T89",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB aggregates in scalar subqueries + other parser limitations from TODO",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T17:36:30.996Z",
+      "completed": "2026-04-19T17:37:01.513Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: Scalar subquery aggregates already work. Reorienting to full test suite sweep for remaining time."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "task": "Run full test suite sweep and triage failures",
+      "status": "done",
+      "plan_ref": "T89",
+      "started": "2026-04-19T17:37:07.888Z",
+      "completed": "2026-04-19T17:49:52.535Z",
+      "duration_ms": 600000,
+      "summary": "Full test sweep: Found and fixed MVCC write-write conflict detection bug (was using xmin instead of snapshot visibility). Also found advisory-locks not implemented (pre-existing). vacuum 52/52, mvcc 134/134, lock 74/80 (6 advisory-lock = not impl). JSON ->> object fix also committed."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "task": "Fix any failures found",
+      "status": "done",
+      "plan_ref": "T89",
+      "started": "2026-04-19T17:50:06.100Z",
+      "completed": "2026-04-19T17:52:00.842Z",
+      "duration_ms": 300000,
+      "summary": "Implemented advisory locks (pg_advisory_lock/unlock/try_advisory_lock) with connection-scoped lock manager. Re-entrant, auto-release on disconnect. 80/80 lock tests pass."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "task": "Run wire protocol test suite",
+      "status": "done",
+      "plan_ref": "T89",
+      "started": "2026-04-19T17:52:08.103Z",
+      "completed": "2026-04-19T17:58:21.868Z",
+      "duration_ms": 300000,
+      "summary": "Wire protocol suite: 355/435 pass (was 351/435 before value type inference). Fixed pgdriver (10/10 from 8/10). Remaining 80 failures are pre-existing: HTTP API tests (fetch failed), unimplemented features (LISTEN/NOTIFY, cursors, CDC, EXPLAIN FORMAT), server config params."
     },
     {
       "id": "T90",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T17:58:33.694Z",
+      "completed": "2026-04-19T17:59:42.962Z",
+      "duration_ms": 300000,
+      "summary": "Implemented server-side cursors (DECLARE/FETCH/MOVE/CLOSE). 9/9 tests pass. Clean connection-scoped implementation."
     },
     {
       "id": "T91",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, verify test suite integrity, update daily log"
+      "status": "in-progress",
+      "task": "Git push, verify test suite integrity, update daily log",
+      "started": "2026-04-19T17:59:54.000Z"
     }
   ],
   "focusProjects": [
@@ -1471,6 +1520,10 @@
     {
       "time": "2026-04-19T17:26:50.201Z",
       "msg": "PLAN T85 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T17:36:57.936Z",
+      "msg": "PLAN T89 filled 3 BUILD tasks"
     }
   ]
 }
