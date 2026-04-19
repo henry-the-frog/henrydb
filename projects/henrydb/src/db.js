@@ -1283,6 +1283,14 @@ export class Database {
     this.tables.set(ast.table, { heap, schema, indexes });
     this.catalog.push({ name: ast.table, columns: schema });
     
+    // Create composite unique indexes
+    if (ast.compositeUniques && ast.compositeUniques.length > 0) {
+      for (const cols of ast.compositeUniques) {
+        const idxName = `${ast.table}_${cols.join('_')}_unique`;
+        this.execute(`CREATE UNIQUE INDEX ${idxName} ON ${ast.table}(${cols.join(', ')})`);
+      }
+    }
+    
     // Log DDL to WAL for crash recovery
     if (this._dataDir && this.wal && this.wal.logCreateTable) {
       this.wal.logCreateTable(ast.table, schema.map(c => ({ name: c.name, type: c.type })));

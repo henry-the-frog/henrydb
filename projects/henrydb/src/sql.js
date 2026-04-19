@@ -2553,9 +2553,15 @@ export function parse(sql) {
           if (col) { col.primaryKey = true; col.notNull = true; }
         }
       } else if (tc.type === 'UNIQUE') {
-        for (const colName of tc.columns) {
-          const col = columns.find(c => c.name.toLowerCase() === colName.toLowerCase());
+        if (tc.columns.length === 1) {
+          // Single-column UNIQUE: mark on column
+          const col = columns.find(c => c.name.toLowerCase() === tc.columns[0].toLowerCase());
           if (col) col.unique = true;
+        } else {
+          // Multi-column UNIQUE: store as composite constraint
+          // Will be handled as a composite unique index at CREATE TABLE time
+          if (!tableConstraints._compositeUniques) tableConstraints._compositeUniques = [];
+          tableConstraints._compositeUniques.push(tc.columns);
         }
       } else if (tc.type === 'FOREIGN_KEY') {
         for (let i = 0; i < tc.columns.length; i++) {
@@ -2572,7 +2578,7 @@ export function parse(sql) {
       const engineTok = advance();
       engine = (engineTok.originalValue || engineTok.value).toUpperCase();
     }
-    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine, temporary };
+    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine, temporary, compositeUniques: tableConstraints._compositeUniques || [] };
   }
 
   function parseCreateIndex(unique) {
