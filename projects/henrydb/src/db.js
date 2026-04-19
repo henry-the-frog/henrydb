@@ -3302,6 +3302,9 @@ export class Database {
     // Validate no nested aggregates
     this._validateNoNestedAggregates(ast.columns);
     
+    // Validate no window functions in WHERE/HAVING
+    this._validateNoWindowInWhere(ast.where, 'WHERE');
+    
     // Aggregates / GROUP BY / Window functions
     const hasAggregates = ast.columns.some(c =>
       c.type === 'aggregate' || 
@@ -6337,6 +6340,14 @@ export class Database {
           throw new Error(`Aggregate function calls cannot be nested: ${col.func}(${col.arg.func || '...'}(...))`);
         }
       }
+    }
+  }
+
+  // Validation: window functions cannot appear in WHERE or HAVING clauses
+  _validateNoWindowInWhere(where, clause = 'WHERE') {
+    if (!where) return;
+    if (this._exprContainsWindow(where)) {
+      throw new Error(`Window functions are not allowed in ${clause} clause`);
     }
   }
 

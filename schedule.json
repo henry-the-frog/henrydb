@@ -513,10 +513,21 @@
     {
       "id": "T50",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add nested aggregate validation and tests",
       "project": "henrydb",
-      "started": "2026-04-19T15:31:02.769Z"
+      "started": "2026-04-19T15:31:02.769Z",
+      "completed": "2026-04-19T15:33:09.811Z",
+      "duration_ms": 180000,
+      "summary": "8 nested aggregate tests + fixed CAST/function_call in _evalAggregateExpr (whole-table aggregate). CAST(SUM)/COUNT now works without GROUP BY. 117 tests pass."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add window function in WHERE clause validation (should error)",
+      "project": "henrydb",
+      "started": "2026-04-19T15:33:26.367Z"
     },
     {
       "id": "T33",
@@ -750,6 +761,14 @@
     {
       "time": "2026-04-19T15:29:18.391Z",
       "msg": "Moved T33 after T50"
+    },
+    {
+      "time": "2026-04-19T15:33:22.035Z",
+      "msg": "Added T51 (BUILD) after end: Add window function in WHERE clause validation (should error)"
+    },
+    {
+      "time": "2026-04-19T15:33:22.152Z",
+      "msg": "Moved T33 after T51"
     }
   ]
 }
