@@ -1524,16 +1524,20 @@
       "id": "T148",
       "mode": "BUILD",
       "task": "Fix any new failures from full test suite scan (currently running)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T140",
-      "started": "2026-04-19T20:50:31.736Z"
+      "started": "2026-04-19T20:50:31.736Z",
+      "completed": "2026-04-19T21:19:19.587Z",
+      "duration_ms": 600000,
+      "summary": "Full 810-file test suite scan. Fixed: (1) NEXTVAL double-increment in defaults (2) UDF RETURN bodies (3) CALL statement (4) DESCRIBE/pg_attribute metadata (5) SHOW TABLES handler conflict (6) pg-client/pg-integration type assertions. Remaining known failures: savepoints MVCC undo (3), ORM compat missing features (6), table-changes notifications (4), update-rollback isolation (1), server-knex type mismatches (~13)."
     },
     {
       "id": "T149",
       "mode": "BUILD",
       "task": "Add comprehensive server integration test: multi-client concurrent SERIAL inserts",
-      "status": "upcoming",
-      "plan_ref": "T140"
+      "status": "in-progress",
+      "plan_ref": "T140",
+      "started": "2026-04-19T21:19:33.369Z"
     },
     {
       "id": "T142",
