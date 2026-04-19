@@ -4,23 +4,39 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday - assess quality of 100+ tasks, direction for Sunday depth day"
+      "status": "done",
+      "task": "Review yesterday - assess quality of 100+ tasks, direction for Sunday depth day",
+      "started": "2026-04-19T14:15:22.157Z",
+      "completed": "2026-04-19T14:15:39.037Z",
+      "duration_ms": 120000,
+      "summary": "Reviewed yesterday: 349 tests, 13 bugs, 15 new funcs. Direction: Sunday depth on HenryDB parser bugs + write path. Queue structure good for 6hr session."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: fix parser bugs from TODO (double NOT, window funcs in arithmetic, SELECT * with window), WAL uncommitted tx rejection",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T14:15:51.521Z",
+      "completed": "2026-04-19T14:16:31.474Z",
+      "duration_ms": 60000,
+      "summary": "Planned 4 parser/WAL fixes into 2 BUILD tasks: fix all bugs + regression tests"
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Fix parser bugs: double NOT, window funcs in arithmetic, SELECT * with window, WAL uncommitted tx rejection",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T14:16:37.708Z"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Write regression tests for all 4 fixes",
+      "status": "upcoming",
+      "plan_ref": "T2"
     },
     {
       "id": "T4",
@@ -205,6 +221,10 @@
     {
       "time": "2026-04-19T14:01:24.699Z",
       "msg": "Added T18 (EXPLORE) after T17: Research: query optimization papers or WASM GC"
+    },
+    {
+      "time": "2026-04-19T14:16:25.560Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }

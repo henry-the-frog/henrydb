@@ -2877,7 +2877,7 @@ export class Database {
       
       // Handle aggregates / GROUP BY on GENERATE_SERIES results
       const gsHasAggregates = ast.columns.some(c => c.type === 'aggregate');
-      const gsHasWindow = ast.columns.some(c => c.type === 'window');
+      const gsHasWindow = this._columnsHaveWindow(ast.columns);
       if (ast.groupBy) {
         return this._selectWithGroupBy(ast, rows);
       }
@@ -2981,7 +2981,7 @@ export class Database {
       }
       // Handle aggregates / GROUP BY on subquery results
       const sqHasAggregates = ast.columns.some(c => c.type === 'aggregate');
-      const sqHasWindow = ast.columns.some(c => c.type === 'window');
+      const sqHasWindow = this._columnsHaveWindow(ast.columns);
       if (ast.groupBy) {
         return this._selectWithGroupBy(ast, rows);
       }
@@ -3048,7 +3048,7 @@ export class Database {
 
       // Handle aggregates / GROUP BY on view results
       const hasAggregates = ast.columns.some(c => c.type === 'aggregate');
-      const hasWindow = ast.columns.some(c => c.type === 'window');
+      const hasWindow = this._columnsHaveWindow(ast.columns);
       if (ast.groupBy) {
         return this._selectWithGroupBy(ast, rows);
       }
@@ -3081,8 +3081,8 @@ export class Database {
       if (ast.limit != null) rows = rows.slice(0, ast.limit);
 
       // Project columns
-      if (ast.columns[0]?.type === 'star') {
-        // For SELECT *, strip qualified column names (table.col) to avoid duplicates
+      if (ast.columns.length === 1 && ast.columns[0]?.type === 'star') {
+        // Simple SELECT * — just strip qualified columns
         rows = rows.map(row => {
           const clean = {};
           for (const [key, val] of Object.entries(row)) {
@@ -3097,7 +3097,11 @@ export class Database {
           const result = {};
           let viewExprIdx = 0;
           for (const col of ast.columns) {
-            if (col.type === 'function') {
+            if (col.type === 'star') {
+              for (const [key, val] of Object.entries(row)) {
+                if (!key.includes('.') && !key.startsWith('__')) result[key] = val;
+              }
+            } else if (col.type === 'function') {
               const name = col.alias || `${col.func}(...)`;
               result[name] = this._evalFunction(col.func, col.args, row);
             } else if (col.type === 'expression') {
@@ -3176,7 +3180,7 @@ export class Database {
         // Full table scan with optional early LIMIT
         // Can push limit into scan when: no ORDER BY, no GROUP BY, no DISTINCT, no HAVING, no windows
         const canEarlyLimit = ast.limit != null && !ast.orderBy && !ast.groupBy && !ast.distinct &&
-          !ast.having && !ast.columns.some(c => c.type === 'window');
+          !ast.having && !this._columnsHaveWindow(ast.columns);
         const earlyLimit = canEarlyLimit ? (ast.limit + (ast.offset || 0)) : Infinity;
         
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
@@ -3225,7 +3229,7 @@ export class Database {
     const hasAggregates = ast.columns.some(c =>
       c.type === 'aggregate' || this._exprContainsAggregate(c.expr)
     );
-    const hasWindow = ast.columns.some(c => c.type === 'window');
+    const hasWindow = this._columnsHaveWindow(ast.columns);
 
     if (ast.groupBy) {
       return this._selectWithGroupBy(ast, rows);
@@ -3328,18 +3332,25 @@ export class Database {
 
     // Project columns
     const projected = rows.map(row => {
-      if (ast.columns[0]?.type === 'star') {
-        // Strip qualified column names (table.col) for clean output
-        const clean = {};
-        for (const [key, val] of Object.entries(row)) {
-          if (!key.includes('.') && !key.startsWith('__')) clean[key] = val;
-        }
-        return clean;
-      }
       const result = {};
       let exprIdx = 0;
+      let hadStar = false;
       for (const col of ast.columns) {
-        if (col.type === 'function') {
+        if (col.type === 'star') {
+          // Include all non-qualified, non-internal columns
+          hadStar = true;
+          for (const [key, val] of Object.entries(row)) {
+            if (!key.includes('.') && !key.startsWith('__')) result[key] = val;
+          }
+        } else if (col.type === 'qualified_star') {
+          // Include all columns from specified table
+          const prefix = col.table + '.';
+          for (const [key, val] of Object.entries(row)) {
+            if (key.startsWith(prefix)) {
+              result[key.slice(prefix.length)] = val;
+            }
+          }
+        } else if (col.type === 'function') {
           const name = col.alias || `${col.func}(...)`;
           result[name] = this._evalFunction(col.func, col.args, row);
         } else if (col.type === 'expression') {
@@ -5544,7 +5555,7 @@ export class Database {
     }
 
     // Window functions
-    if (stmt.columns.some(c => c.type === 'window')) {
+    if (this._columnsHaveWindow(stmt.columns)) {
       plan.push({ operation: 'WINDOW_FUNCTION' });
     }
 
@@ -6176,11 +6187,59 @@ export class Database {
     return null;
   }
 
+  // Helper: check if an expression tree contains a window function node
+  _exprContainsWindow(node) {
+    if (!node || typeof node !== 'object') return false;
+    if (node.type === 'window') return true;
+    // Check common expression tree structures
+    if (node.type === 'arith' || node.type === 'COMPARE') return this._exprContainsWindow(node.left) || this._exprContainsWindow(node.right);
+    if (node.type === 'NOT') return this._exprContainsWindow(node.expr);
+    if (node.type === 'unary_minus') return this._exprContainsWindow(node.operand);
+    if (node.type === 'function_call' && node.args) return node.args.some(a => this._exprContainsWindow(a));
+    if (node.type === 'cast') return this._exprContainsWindow(node.expr);
+    if (node.type === 'case' && node.whens) return node.whens.some(w => this._exprContainsWindow(w.then) || this._exprContainsWindow(w.when)) || this._exprContainsWindow(node.else);
+    return false;
+  }
+
+  // Helper: extract all window function nodes from an expression tree, assigning each a unique key
+  _extractWindowNodes(node, results = [], prefix = '__wexpr') {
+    if (!node || typeof node !== 'object') return results;
+    if (node.type === 'window') {
+      const key = `${prefix}_${results.length}`;
+      node._windowKey = key;
+      results.push(node);
+      return results;
+    }
+    if (node.type === 'arith' || node.type === 'COMPARE') { this._extractWindowNodes(node.left, results, prefix); this._extractWindowNodes(node.right, results, prefix); }
+    if (node.type === 'NOT') this._extractWindowNodes(node.expr, results, prefix);
+    if (node.type === 'unary_minus') this._extractWindowNodes(node.operand, results, prefix);
+    if (node.type === 'function_call' && node.args) node.args.forEach(a => this._extractWindowNodes(a, results, prefix));
+    if (node.type === 'cast') this._extractWindowNodes(node.expr, results, prefix);
+    return results;
+  }
+
+  // Helper: check if columns list contains any window function (top-level or nested in expressions)
+  _columnsHaveWindow(columns) {
+    return columns.some(c => c.type === 'window' || (c.type === 'expression' && this._exprContainsWindow(c.expr)));
+  }
+
   _computeWindowFunctions(columns, rows, windowDefs) {
+    // Collect both top-level window columns AND window functions nested in expressions
     const windowCols = columns.filter(c => c.type === 'window');
+    // Also extract window nodes from expression columns
+    const exprWindowNodes = [];
+    for (const col of columns) {
+      if (col.type === 'expression' && col.expr) {
+        this._extractWindowNodes(col.expr, exprWindowNodes, `__wexpr_${col.alias || 'e'}`);
+      }
+    }
+    // Process extracted expression window nodes as if they were top-level
+    for (const wNode of exprWindowNodes) {
+      windowCols.push(wNode);
+    }
 
     for (const col of windowCols) {
-      const name = col.alias || `${col.func}(${col.arg || ''})`;
+      const name = col._windowKey || col.alias || `${col.func}(${col.arg || ''})`;
       
       // Resolve named window reference
       let overSpec = col.over;
@@ -7019,7 +7078,7 @@ export class Database {
     });
 
     // Apply window functions on grouped results (GROUP BY + window function combo)
-    const hasWindow = ast.columns.some(c => c.type === 'window');
+    const hasWindow = this._columnsHaveWindow(ast.columns);
     if (hasWindow) {
       // Build a map of aggregate expressions to their aliases in the grouped results
       const aggAliasMap = new Map();
@@ -7878,6 +7937,11 @@ export class Database {
   _evalValue(node, row) {
     if (node.type === 'literal') return node.value;
     if (node.type === 'column_ref') return this._resolveColumn(node.name, row);
+    // Window function node — resolve pre-computed value
+    if (node.type === 'window') {
+      const key = node._windowKey || node.alias || `${node.func}(${node.arg || ''})`;
+      return row[`__window_${key}`];
+    }
     // Boolean expression types — delegate to _evalExpr and return true/false as values
     if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' ||
         node.type === 'COMPARE' || node.type === 'BETWEEN' ||

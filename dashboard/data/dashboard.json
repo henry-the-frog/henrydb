@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-19T14:01:44.900Z",
+  "generated": "2026-04-19T14:16:37.744Z",
   "current": {
-    "status": "session-ended",
-    "mode": "THINK",
-    "task": "",
-    "context": "",
-    "next": "",
-    "startedAt": "2026-04-19T04:15:19.588Z",
-    "estimatedBlocks": 0
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Fix parser bugs: double NOT, window funcs in arithmetic, SELECT * with window, WAL uncommitted tx rejection",
+    "startedAt": "2026-04-19T14:16:37.744Z",
+    "taskId": "T3"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -4680,23 +4678,35 @@
       {
         "id": "T1",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Review yesterday - assess quality of 100+ tasks, direction for Sunday depth day"
+        "status": "done",
+        "task": "Review yesterday - assess quality of 100+ tasks, direction for Sunday depth day",
+        "started": "2026-04-19T14:15:22.157Z",
+        "completed": "2026-04-19T14:15:39.037Z",
+        "duration_ms": 120000,
+        "summary": "Reviewed yesterday: 349 tests, 13 bugs, 15 new funcs. Direction: Sunday depth on HenryDB parser bugs + write path. Queue structure good for 6hr session."
       },
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB depth: fix parser bugs from TODO (double NOT, window funcs in arithmetic, SELECT * with window), WAL uncommitted tx rejection",
-        "task": null
+        "task": null,
+        "started": "2026-04-19T14:15:51.521Z"
       },
       {
         "id": "T3",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix parser bugs: double NOT, window funcs in arithmetic, SELECT * with window, WAL uncommitted tx rejection",
         "plan_ref": "T2",
         "project": "henrydb"
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "task": "Write regression tests for all 4 fixes",
+        "status": "upcoming",
+        "plan_ref": "T2"
       },
       {
         "id": "T4",
@@ -4803,9 +4813,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 0,
-    "blocksTotal": 18,
-    "modeDistribution": {}
+    "blocksCompleted": 2,
+    "blocksTotal": 19,
+    "modeDistribution": {
+      "THINK": 1,
+      "PLAN": 1
+    }
   },
   "artifacts": [
     {

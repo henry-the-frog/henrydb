@@ -806,7 +806,18 @@ export function parse(sql) {
   // UNION not yet handled at this layer — keeping for later
 
   function parseSelectList() {
-    if (match('*')) return [{ type: 'star' }];
+    if (match('*')) {
+      const cols = [{ type: 'star' }];
+      while (match(',')) {
+        if (peek().type === 'QUALIFIED_STAR') {
+          const t = advance();
+          cols.push({ type: 'qualified_star', table: t.table });
+        } else {
+          cols.push(parseSelectColumn());
+        }
+      }
+      return cols;
+    }
     if (peek().type === 'QUALIFIED_STAR') {
       const t = advance();
       const cols = [{ type: 'qualified_star', table: t.table }];
@@ -879,8 +890,8 @@ export function parse(sql) {
       return { type: 'expression', expr: castNode, alias };
     }
 
-    // Check for EXISTS / NOT EXISTS / NOT expression in SELECT
-    if (isKeyword('EXISTS') || (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && (tokens[pos + 1]?.value === 'EXISTS' || tokens[pos + 1]?.value === 'NULL' || tokens[pos + 1]?.value === 'TRUE' || tokens[pos + 1]?.value === 'FALSE'))) {
+    // Check for EXISTS / NOT expression in SELECT (handles NOT EXISTS, NOT NULL, NOT NOT TRUE, etc.)
+    if (isKeyword('EXISTS') || isKeyword('NOT')) {
       const expr = parseExpr();
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
@@ -1900,6 +1911,48 @@ export function parse(sql) {
       if (peek().type === '*') { advance(); arg = '*'; } else { arg = parseExpr(); }
       expect(')');
       return { type: 'aggregate_expr', func, arg, distinct };
+    }
+
+    // Window functions in expressions: ROW_NUMBER(), RANK(), DENSE_RANK(), LAG(), LEAD(), etc.
+    if (t.type === 'KEYWORD' && ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'].includes(t.value) && tokens[pos + 1]?.type === '(') {
+      const func = advance().value;
+      expect('(');
+      expect(')');
+      const over = parseOverClause();
+      return { type: 'window', func, arg: null, over };
+    }
+    if (t.type === 'KEYWORD' && ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'].includes(t.value) && tokens[pos + 1]?.type === '(') {
+      const func = advance().value;
+      expect('(');
+      const arg = parseExpr();
+      let offset = null, defaultValue = null;
+      if (match(',')) { offset = parseExpr(); }
+      if (match(',')) { defaultValue = parseExpr(); }
+      expect(')');
+      const over = parseOverClause();
+      return { type: 'window', func, arg, offset, defaultValue, over };
+    }
+    // Aggregate OVER (...) — window aggregate in expression context
+    if (t.type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX'].includes(t.value) && tokens[pos + 1]?.type === '(') {
+      // Peek ahead to see if there's an OVER after the closing paren
+      let lookahead = pos + 2;
+      let depth = 1;
+      while (lookahead < tokens.length && depth > 0) {
+        if (tokens[lookahead].type === '(') depth++;
+        else if (tokens[lookahead].type === ')') depth--;
+        lookahead++;
+      }
+      if (lookahead < tokens.length && tokens[lookahead]?.type === 'KEYWORD' && tokens[lookahead]?.value === 'OVER') {
+        const func = advance().value;
+        expect('(');
+        let distinct = false;
+        if (isKeyword('DISTINCT')) { distinct = true; advance(); }
+        let arg;
+        if (peek().type === '*') { advance(); arg = '*'; } else { arg = parseExpr(); }
+        expect(')');
+        const over = parseOverClause();
+        return { type: 'window', func, arg, distinct, over };
+      }
     }
 
     if (t.type === 'IDENT') {
