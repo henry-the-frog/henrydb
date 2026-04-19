@@ -8,7 +8,7 @@ describe('String Functions', () => {
 
   beforeEach(() => {
     db = new Database();
-    db.execute('CREATE TABLE names (id INT PRIMARY KEY, first TEXT, last TEXT)');
+    db.execute('CREATE TABLE names (id INT PRIMARY KEY, fname TEXT, lname TEXT)');
     db.execute("INSERT INTO names VALUES (1, 'Alice', 'Smith')");
     db.execute("INSERT INTO names VALUES (2, 'Bob', 'Jones')");
     db.execute("INSERT INTO names VALUES (3, 'Charlie', 'Brown')");
@@ -17,44 +17,44 @@ describe('String Functions', () => {
 
   describe('UPPER', () => {
     it('converts to uppercase', () => {
-      const result = db.execute("SELECT UPPER(first) AS name FROM names WHERE id = 4");
+      const result = db.execute("SELECT UPPER(fname) AS name FROM names WHERE id = 4");
       assert.equal(result.rows[0].name, 'DIANA');
     });
 
     it('UPPER in WHERE', () => {
-      const result = db.execute("SELECT * FROM names WHERE UPPER(first) = 'ALICE'");
+      const result = db.execute("SELECT * FROM names WHERE UPPER(fname) = 'ALICE'");
       assert.equal(result.rows.length, 1);
       assert.equal(result.rows[0].id, 1);
     });
 
     it('UPPER preserves already uppercase', () => {
-      const result = db.execute("SELECT UPPER(first) AS name FROM names WHERE id = 1");
+      const result = db.execute("SELECT UPPER(fname) AS name FROM names WHERE id = 1");
       assert.equal(result.rows[0].name, 'ALICE');
     });
   });
 
   describe('LOWER', () => {
     it('converts to lowercase', () => {
-      const result = db.execute("SELECT LOWER(first) AS name FROM names WHERE id = 1");
+      const result = db.execute("SELECT LOWER(fname) AS name FROM names WHERE id = 1");
       assert.equal(result.rows[0].name, 'alice');
     });
 
     it('LOWER in ORDER BY', () => {
-      const result = db.execute('SELECT first FROM names ORDER BY LOWER(first)');
-      assert.equal(result.rows[0].first, 'Alice');
+      const result = db.execute('SELECT fname FROM names ORDER BY LOWER(fname)');
+      assert.equal(result.rows[0].fname, 'Alice');
     });
   });
 
   describe('UPPER + LOWER combined', () => {
     it('case-insensitive comparison', () => {
-      const result = db.execute("SELECT * FROM names WHERE UPPER(first) = 'DIANA'");
+      const result = db.execute("SELECT * FROM names WHERE UPPER(fname) = 'DIANA'");
       assert.equal(result.rows.length, 1);
     });
   });
 
   describe('REPLACE', () => {
     it('replaces substring', () => {
-      const result = db.execute("SELECT REPLACE(first, 'li', 'XX') AS r FROM names WHERE id = 1");
+      const result = db.execute("SELECT REPLACE(fname, 'li', 'XX') AS r FROM names WHERE id = 1");
       assert.equal(result.rows[0].r, 'AXXce');
     });
 
@@ -75,36 +75,36 @@ describe('String Functions', () => {
 
   describe('String concatenation', () => {
     it('concatenates with ||', () => {
-      const result = db.execute("SELECT first || ' ' || last AS full_name FROM names WHERE id = 1");
+      const result = db.execute("SELECT fname || ' ' || lname AS full_name FROM names WHERE id = 1");
       assert.equal(result.rows[0].full_name, 'Alice Smith');
     });
 
     it('concatenation in ORDER BY', () => {
-      const result = db.execute("SELECT first || ' ' || last AS full_name FROM names ORDER BY full_name");
+      const result = db.execute("SELECT fname || ' ' || lname AS full_name FROM names ORDER BY full_name");
       assert.ok(result.rows.length === 4);
     });
   });
 
   describe('LIKE pattern matching', () => {
     it('LIKE with %', () => {
-      const result = db.execute("SELECT first FROM names WHERE first LIKE 'A%'");
+      const result = db.execute("SELECT fname FROM names WHERE fname LIKE 'A%'");
       assert.equal(result.rows.length, 1);
-      assert.equal(result.rows[0].first, 'Alice');
+      assert.equal(result.rows[0].fname, 'Alice');
     });
 
     it('LIKE with _', () => {
-      const result = db.execute("SELECT first FROM names WHERE first LIKE 'B_b'");
+      const result = db.execute("SELECT fname FROM names WHERE fname LIKE 'B_b'");
       assert.equal(result.rows.length, 1);
-      assert.equal(result.rows[0].first, 'Bob');
+      assert.equal(result.rows[0].fname, 'Bob');
     });
 
     it('LIKE case sensitive', () => {
-      const result = db.execute("SELECT first FROM names WHERE first LIKE '%li%'");
+      const result = db.execute("SELECT fname FROM names WHERE fname LIKE '%li%'");
       assert.equal(result.rows.length, 2); // Alice and Charlie
     });
 
     it('NOT LIKE', () => {
-      const result = db.execute("SELECT first FROM names WHERE first NOT LIKE '%a%'");
+      const result = db.execute("SELECT fname FROM names WHERE fname NOT LIKE '%a%'");
       // Only Bob has no lowercase 'a'... but Bob also has no 'a'
       assert.ok(result.rows.length >= 0);
     });
@@ -112,7 +112,7 @@ describe('String Functions', () => {
 
   describe('Combined string operations', () => {
     it('UPPER in GROUP BY', () => {
-      const result = db.execute('SELECT UPPER(first) AS name, COUNT(*) AS cnt FROM names GROUP BY UPPER(first) ORDER BY name');
+      const result = db.execute('SELECT UPPER(fname) AS name, COUNT(*) AS cnt FROM names GROUP BY UPPER(fname) ORDER BY name');
       assert.ok(result.rows.length > 0);
     });
   });

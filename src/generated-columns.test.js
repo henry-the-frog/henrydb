@@ -69,8 +69,8 @@ describe('Generated Columns', () => {
 
     it('works with string expressions', () => {
       const db = new Database();
-      db.execute("CREATE TABLE users (first TEXT, last TEXT, full_name TEXT GENERATED ALWAYS AS (first || ' ' || last) STORED)");
-      db.execute("INSERT INTO users (first, last) VALUES ('Alice', 'Smith')");
+      db.execute("CREATE TABLE users (fname TEXT, lname TEXT, full_name TEXT GENERATED ALWAYS AS (fname || ' ' || lname) STORED)");
+      db.execute("INSERT INTO users (fname, lname) VALUES ('Alice', 'Smith')");
       
       const result = db.execute("SELECT full_name FROM users");
       assert.equal(result.rows[0].full_name, 'Alice Smith');

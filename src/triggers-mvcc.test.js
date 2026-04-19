@@ -34,22 +34,22 @@ describe('Triggers Through MVCC', () => {
   it('trigger fires for each insert', () => {
     db = fresh();
     db.execute('CREATE TABLE t (id INT)');
-    db.execute('CREATE TABLE log (msg TEXT)');
-    db.execute("CREATE TRIGGER after_ins AFTER INSERT ON t INSERT INTO log VALUES ('fired')");
+    db.execute('CREATE TABLE audit_log (msg TEXT)');
+    db.execute("CREATE TRIGGER after_ins AFTER INSERT ON t INSERT INTO audit_log VALUES ('fired')");
     db.execute('INSERT INTO t VALUES (1)');
     db.execute('INSERT INTO t VALUES (2)');
     db.execute('INSERT INTO t VALUES (3)');
-    assert.equal(db.execute('SELECT COUNT(*) as cnt FROM log').rows[0].cnt, 3);
+    assert.equal(db.execute('SELECT COUNT(*) as cnt FROM audit_log').rows[0].cnt, 3);
   });
 
   it('trigger with UPDATE action', () => {
     db = fresh();
     db.execute('CREATE TABLE t (id INT, val INT)');
-    db.execute('CREATE TABLE log (msg TEXT)');
-    db.execute("CREATE TRIGGER after_ins AFTER INSERT ON t INSERT INTO log VALUES ('row added')");
+    db.execute('CREATE TABLE audit_log (msg TEXT)');
+    db.execute("CREATE TRIGGER after_ins AFTER INSERT ON t INSERT INTO audit_log VALUES ('row added')");
     db.execute('INSERT INTO t VALUES (1, 100)');
     db.execute('INSERT INTO t VALUES (2, 200)');
-    assert.equal(db.execute('SELECT COUNT(*) as cnt FROM log').rows[0].cnt, 2);
+    assert.equal(db.execute('SELECT COUNT(*) as cnt FROM audit_log').rows[0].cnt, 2);
   });
 
   it('trigger persists across close/reopen', () => {
