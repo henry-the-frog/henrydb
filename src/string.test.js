@@ -49,8 +49,8 @@ describe('String Functions & Patterns', () => {
       assert.equal(result.rows.length, 0);
     });
 
-    it('LIKE case insensitive', () => {
-      const result = db.execute("SELECT * FROM users WHERE name LIKE '%alice%'");
+    it('ILIKE case insensitive', () => {
+      const result = db.execute("SELECT * FROM users WHERE name ILIKE '%alice%'");
       assert.equal(result.rows.length, 1);
     });
   });
