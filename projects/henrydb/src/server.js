@@ -95,6 +95,12 @@ export class HenryDBServer {
       // Use createPgServer if available, otherwise build our own net server
       if (pgMod.createPgServer) {
         this._server = pgMod.createPgServer(this.db, this._port);
+        // Track connections for clean shutdown
+        this._connections = new Set();
+        this._server.on('connection', (sock) => {
+          this._connections.add(sock);
+          sock.on('close', () => this._connections.delete(sock));
+        });
         // createPgServer calls listen internally, wait for it
         // Check if already listening
         if (this._server.listening) {
@@ -111,10 +117,15 @@ export class HenryDBServer {
 
   async stop() {
     if (this._server) {
+      // Force-close all open connections
+      if (this._connections) {
+        for (const sock of this._connections) {
+          sock.destroy();
+        }
+        this._connections.clear();
+      }
       await new Promise((resolve) => {
         this._server.close(() => resolve());
-        // Force-close any open connections
-        if (this._server.unref) this._server.unref();
       });
       this._server = null;
     }

@@ -8,12 +8,30 @@ import { Database } from './db.js';
 // --- PG Type OIDs ---
 const PG_OIDS = {
   INT: 23,        // int4
+  INTEGER: 23,    // int4
+  INT4: 23,       // int4
+  SMALLINT: 21,   // int2
+  INT2: 21,       // int2
   FLOAT: 701,     // float8
+  FLOAT4: 700,    // float4
+  FLOAT8: 701,    // float8
+  DOUBLE: 701,    // float8
+  REAL: 700,      // float4
+  NUMERIC: 1700,  // numeric
+  DECIMAL: 1700,  // numeric
   TEXT: 25,       // text
+  VARCHAR: 1043,  // varchar
+  CHAR: 18,       // char
   BOOLEAN: 16,    // bool
+  BOOL: 16,       // bool
   DATE: 1082,     // date
+  TIMESTAMP: 1114, // timestamp
   SERIAL: 23,     // serial → int4
   BIGINT: 20,     // int8
+  INT8: 20,       // int8
+  BIGSERIAL: 20,  // bigserial → int8
+  JSON: 114,      // json
+  JSONB: 3802,    // jsonb
   UNKNOWN: 0,
 };
 
@@ -206,10 +224,43 @@ function getCommandTag(sql, result) {
 // --- Column info from result ---
 function getColumns(result, db, sql) {
   if (result.columns && result.columns.length > 0) {
-    return result.columns.map(c => typeof c === 'string' ? { name: c, type: 'TEXT' } : c);
+    // Try to infer types from table schema for string-only columns
+    let schema = null;
+    if (sql && db) {
+      const tableMatch = sql.match(/FROM\s+(\w+)/i);
+      if (tableMatch && db.tables) {
+        const table = db.tables.get(tableMatch[1]) || db.tables.get(tableMatch[1].toLowerCase());
+        if (table) schema = table.schema;
+      }
+    }
+    return result.columns.map(c => {
+      if (typeof c === 'string') {
+        if (schema) {
+          const col = schema.find(sc => sc.name === c || sc.name === c.toLowerCase());
+          if (col) return { name: c, type: col.type || 'TEXT' };
+        }
+        return { name: c, type: 'TEXT' };
+      }
+      return c;
+    });
   }
   if (result.rows && result.rows.length > 0) {
-    return Object.keys(result.rows[0]).map(name => ({ name, type: 'TEXT' }));
+    // Try to infer types from table schema
+    let schema = null;
+    if (sql && db) {
+      const tableMatch = sql.match(/FROM\s+(\w+)/i);
+      if (tableMatch && db.tables) {
+        const table = db.tables.get(tableMatch[1]) || db.tables.get(tableMatch[1].toLowerCase());
+        if (table) schema = table.schema;
+      }
+    }
+    return Object.keys(result.rows[0]).map(name => {
+      if (schema) {
+        const col = schema.find(c => c.name === name || c.name === name.toLowerCase());
+        if (col) return { name, type: col.type || 'TEXT' };
+      }
+      return { name, type: 'TEXT' };
+    });
   }
   // Try to infer columns from SQL for SELECT * FROM table
   if (sql && db) {
@@ -808,7 +859,7 @@ function handleConnection(socket, db) {
             const limitedSql = testSql.replace(/;?\s*$/, '') + ' LIMIT 0';
             const testResult = db.execute(limitedSql);
             // Even with no rows, if we can determine columns from the result, use them
-            const columns = getColumns(testResult, db);
+            const columns = getColumns(testResult, db, stmt.sql);
             if (columns.length > 0) {
               socket.write(rowDescription(columns));
             } else {
