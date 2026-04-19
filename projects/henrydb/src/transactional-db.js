@@ -1299,14 +1299,17 @@ export class TransactionSession {
 
   commit() {
     if (!this._tx) throw new Error('No transaction in progress');
+    const txId = this._tx.txId;
     // Track any new rows from this transaction
     this._tdb._trackNewRows(this._tx);
     // Write WAL delete records before commit
     this._tdb._walLogDeletes(this._tx);
-    this._tdb._mvcc.commit(this._tx.txId);
-    this._tdb._wal.appendCommit(this._tx.txId);
+    this._tdb._mvcc.commit(txId);
+    this._tdb._wal.appendCommit(txId);
     // Physicalize committed deletes (no additional WAL)
     this._tdb._physicalizeDeletes(this._tx);
+    // Release row-level locks held by this transaction
+    this._tdb._db._releaseRowLocks(txId);
     this._tx = null;
     // Invalidate result cache — committed data may change query results
     if (this._tdb._db._resultCache) this._tdb._db._resultCache.clear();
@@ -1319,9 +1322,12 @@ export class TransactionSession {
 
   rollback() {
     if (!this._tx) throw new Error('No transaction in progress');
+    const txId = this._tx.txId;
     this._tdb._rollbackNewRows(this._tx);
-    this._tdb._mvcc.rollback(this._tx.txId);
-    this._tdb._wal.appendAbort(this._tx.txId);
+    this._tdb._mvcc.rollback(txId);
+    this._tdb._wal.appendAbort(txId);
+    // Release row-level locks held by this transaction
+    this._tdb._db._releaseRowLocks(txId);
     this._tx = null;
     return { type: 'OK', message: 'ROLLBACK' };
   }

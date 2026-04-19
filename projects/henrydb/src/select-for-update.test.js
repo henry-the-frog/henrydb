@@ -54,8 +54,8 @@ describe('SELECT FOR UPDATE', () => {
     
     console.log('Conflict:', conflictError?.message);
     assert.ok(conflictError, 'Should get write-write conflict');
-    assert.ok(conflictError.message.includes('conflict') || conflictError.message.includes('conflict'), 
-      'Error should mention conflict');
+    assert.ok(conflictError.message.includes('locked') || conflictError.message.includes('conflict'), 
+      'Error should mention lock conflict');
     
     s1.commit();
     s1.close();
