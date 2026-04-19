@@ -632,8 +632,11 @@ function interceptPgCatalog(sql, db) {
   // information_schema.tables
   if (upper.includes('INFORMATION_SCHEMA') && upper.includes('TABLES')) {
     const tables = [];
+    // Parse WHERE table_name = 'xxx' filter
+    const whereMatch = sql.match(/WHERE\s+table_name\s*=\s*'([^']+)'/i);
     if (db.tables) {
       for (const [name] of db.tables) {
+        if (whereMatch && name !== whereMatch[1]) continue;
         tables.push({
           table_catalog: 'henrydb',
           table_schema: 'public',
@@ -648,8 +651,10 @@ function interceptPgCatalog(sql, db) {
   // information_schema.columns
   if (upper.includes('INFORMATION_SCHEMA') && upper.includes('COLUMNS')) {
     const columns = [];
+    const whereMatch = sql.match(/WHERE\s+table_name\s*=\s*'([^']+)'/i);
     if (db.tables) {
       for (const [tableName, table] of db.tables) {
+        if (whereMatch && tableName !== whereMatch[1]) continue;
         if (table.schema) {
           table.schema.forEach((col, i) => {
             columns.push({
