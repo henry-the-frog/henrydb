@@ -1790,17 +1790,21 @@
     {
       "id": "T168",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix secondary index UPDATE performance or improve HOT chain detection",
       "project": "henrydb",
-      "started": "2026-04-19T22:42:37.258Z"
+      "started": "2026-04-19T22:42:37.258Z",
+      "completed": "2026-04-19T22:46:12.227Z",
+      "duration_ms": 600000,
+      "summary": "Added in-place HOT UPDATE path using heap.update(). For most workloads, the index-based scan optimization (220x speedup) is the primary win. Page-level in-place update reduces tombstone creation but page compaction still needed for heavy UPDATE workloads. All tests pass."
     },
     {
       "id": "T169",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Write stress test: 1000 concurrent transactions with savepoints and rollbacks",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T22:46:37.187Z"
     },
     {
       "id": "T170",
