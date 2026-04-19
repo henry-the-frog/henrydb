@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-19T23:06:45.498Z",
+  "generated": "2026-04-19T23:10:03.210Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Session end: final daily log, git push, CURRENT.md update",
-    "startedAt": "2026-04-19T23:06:45.498Z",
-    "taskId": "T174"
+    "mode": "BUILD",
+    "task": "Wire lock manager into UPDATE/DELETE for implicit row locking",
+    "startedAt": "2026-04-19T23:10:03.210Z",
+    "taskId": "T189"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -6528,13 +6528,6 @@
         "summary": "Added PostgreSQL :: type cast syntax in all contexts: column refs, literals, expressions. Full parity with CAST() function. All tests pass."
       },
       {
-        "id": "T174",
-        "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Session end: final daily log, git push, CURRENT.md update",
-        "project": "henrydb"
-      },
-      {
         "id": "T175",
         "mode": "THINK",
         "status": "done",
@@ -6571,10 +6564,47 @@
       {
         "id": "T178",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "No BUILD needed - WAL already complete and tested",
         "plan_ref": "T177",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-19T23:03:24.736Z",
+        "completed": "2026-04-19T23:03:24.881Z",
+        "duration_ms": 1000,
+        "summary": "Skipped - WAL already implemented"
+      },
+      {
+        "id": "T180",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add VACUUM command to compact heap and reclaim space from deleted rows",
+        "project": "henrydb",
+        "started": "2026-04-19T23:03:34.799Z",
+        "completed": "2026-04-19T23:04:11.712Z",
+        "duration_ms": 120000,
+        "summary": "VACUUM already fully implemented with MVCC GC, page compaction, index rebuild, and stats update. For non-MVCC mode, DELETE removes rows immediately so no dead tuples. For MVCC mode, vacuum.gc() cleans old versions. No new work needed."
+      },
+      {
+        "id": "T181",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add connection pool limits and idle timeout to wire protocol server",
+        "project": "henrydb",
+        "started": "2026-04-19T23:04:16.412Z",
+        "completed": "2026-04-19T23:06:12.353Z",
+        "duration_ms": 300000,
+        "summary": "Added connection pool limits (maxConnections: 100 default) and idle timeout (idleTimeoutMs). Rejects new connections with proper PostgreSQL error when at limit. Idle timer resets per query. All server tests pass."
+      },
+      {
+        "id": "T182",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What remaining improvements would be most impactful? Prioritize for tomorrow",
+        "project": "henrydb",
+        "started": "2026-04-19T23:06:28.058Z",
+        "completed": "2026-04-19T23:06:40.319Z",
+        "duration_ms": 120000,
+        "summary": "Prioritized improvements for tomorrow: (1) Lock manager for concurrent writes - most impactful for correctness, (2) Statement caching - most impactful for performance, (3) Heap compaction during VACUUM, (4) Memory limits. Recommended: lock manager first."
       },
       {
         "id": "T179",
@@ -6582,18 +6612,92 @@
         "status": "upcoming",
         "task": "Session B final wrap-up: daily log, git push, CURRENT.md",
         "project": "henrydb"
+      },
+      {
+        "id": "T174",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session end: final daily log, git push, CURRENT.md update",
+        "project": "henrydb",
+        "started": "2026-04-19T23:06:45.462Z",
+        "completed": "2026-04-19T23:07:38.408Z",
+        "duration_ms": 180000,
+        "summary": "Session B maintain: daily log complete, git push done, CURRENT.md updated. 30+ tasks, 22+ bugs, 70+ new tests."
+      },
+      {
+        "id": "T183",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Design row-level locking: FOR UPDATE, SELECT FOR UPDATE, deadlock detection",
+        "project": "henrydb",
+        "started": "2026-04-19T23:07:56.616Z",
+        "completed": "2026-04-19T23:08:11.411Z",
+        "duration_ms": 180000,
+        "summary": "Designed row-level locking: FOR UPDATE/FOR SHARE/implicit UPDATE locks, per-row granularity, transaction-scoped lifecycle, wait-for graph deadlock detection. Implementation: LockManager class integrated into SELECT FOR UPDATE and UPDATE/DELETE paths."
+      },
+      {
+        "id": "T184",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement row-level lock manager for HenryDB concurrent writes",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-19T23:08:16.395Z"
+      },
+      {
+        "id": "T185",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Implement LockManager class with acquire/release/deadlock detection",
+        "plan_ref": "T184",
+        "project": "henrydb"
+      },
+      {
+        "id": "T188",
+        "mode": "BUILD",
+        "task": "Add SELECT FOR UPDATE support (parser + executor)",
+        "status": "upcoming",
+        "plan_ref": "T184"
+      },
+      {
+        "id": "T189",
+        "mode": "BUILD",
+        "task": "Wire lock manager into UPDATE/DELETE for implicit row locking",
+        "status": "upcoming",
+        "plan_ref": "T184"
+      },
+      {
+        "id": "T190",
+        "mode": "BUILD",
+        "task": "Write concurrent locking tests",
+        "status": "upcoming",
+        "plan_ref": "T184"
+      },
+      {
+        "id": "T186",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Add statement caching for parsed ASTs to improve throughput",
+        "project": "henrydb"
+      },
+      {
+        "id": "T187",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Pre-session-end push at 8 PM",
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 177,
-    "blocksTotal": 179,
+    "blocksCompleted": 184,
+    "blocksTotal": 190,
     "modeDistribution": {
-      "THINK": 43,
-      "PLAN": 15,
-      "BUILD": 90,
-      "MAINTAIN": 26,
+      "THINK": 44,
+      "PLAN": 16,
+      "BUILD": 93,
+      "MAINTAIN": 28,
       "EXPLORE": 3
     }
   },
