@@ -818,10 +818,21 @@
     {
       "id": "T78",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write real-world SQL scenario test: sales analytics dashboard queries",
       "project": "henrydb",
-      "started": "2026-04-19T16:20:36.868Z"
+      "started": "2026-04-19T16:20:36.868Z",
+      "completed": "2026-04-19T16:22:32.424Z",
+      "duration_ms": 180000,
+      "summary": "10 real-world sales analytics tests (9 pass, 1 skip). Found bug: SUM(arith_expr) OVER fails when aggregate arg is arithmetic. Multi-table JOIN, CTE, window, CASE, COALESCE all working."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix SUM(arithmetic_expr) OVER window aggregate with non-column arg",
+      "project": "henrydb",
+      "started": "2026-04-19T16:22:50.544Z"
     },
     {
       "id": "T33",
@@ -1215,6 +1226,14 @@
     {
       "time": "2026-04-19T16:20:36.636Z",
       "msg": "Moved T33 after T78"
+    },
+    {
+      "time": "2026-04-19T16:22:50.193Z",
+      "msg": "Added T79 (BUILD) after end: Fix SUM(arithmetic_expr) OVER window aggregate with non-column arg"
+    },
+    {
+      "time": "2026-04-19T16:22:50.311Z",
+      "msg": "Moved T33 after T79"
     }
   ]
 }

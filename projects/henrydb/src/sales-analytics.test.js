@@ -135,9 +135,7 @@ describe('Sales Analytics Dashboard (2026-04-19)', () => {
     assert.ok(r.rows.every(row => row.total_items > 0));
   });
 
-  // TODO: SUM(o.quantity * p.price) OVER (...) fails because window aggregate
-  // with arithmetic arg tries to resolve expression as column name
-  it.skip('Q8: Running total for a customer', () => {
+  it('Q8: Running total for a customer', () => {
     const r = db.execute(`
       SELECT o.id, o.order_date, o.quantity * p.price AS order_value,
         SUM(o.quantity * p.price) OVER (ORDER BY o.order_date) AS running_total

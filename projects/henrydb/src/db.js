@@ -6480,6 +6480,17 @@ export class Database {
           return [start, end];
         };
 
+        // Helper: resolve window function argument value from a row
+        const resolveArg = (arg, row) => {
+          if (arg === '*') return 1;
+          if (typeof arg === 'string') return this._resolveColumn(arg, row);
+          if (arg && typeof arg === 'object') {
+            if (arg.type === 'column_ref') return this._resolveColumn(arg.name, row);
+            return this._evalValue(arg, row);
+          }
+          return this._resolveColumn(arg, row);
+        };
+
         switch (col.func) {
           case 'ROW_NUMBER': {
             for (let i = 0; i < partition.length; i++) {
@@ -6525,7 +6536,8 @@ export class Database {
               const [start, end] = getFrameBounds(i, partition.length);
               let sum = 0;
               for (let j = start; j <= end; j++) {
-                sum += (this._resolveColumn(col.arg, partition[j]) || 0);
+                const val = resolveArg(col.arg, partition[j]);
+                sum += (val || 0);
               }
               partition[i][`__window_${name}`] = sum;
             }
@@ -6537,7 +6549,7 @@ export class Database {
               let sum = 0;
               const count = end - start + 1;
               for (let j = start; j <= end; j++) {
-                sum += (this._resolveColumn(col.arg, partition[j]) || 0);
+                sum += (resolveArg(col.arg, partition[j]) || 0);
               }
               partition[i][`__window_${name}`] = count > 0 ? sum / count : null;
             }
@@ -6548,7 +6560,7 @@ export class Database {
               const [start, end] = getFrameBounds(i, partition.length);
               let min = Infinity;
               for (let j = start; j <= end; j++) {
-                const v = this._resolveColumn(col.arg, partition[j]);
+                const v = resolveArg(col.arg, partition[j]);
                 if (v != null && v < min) min = v;
               }
               partition[i][`__window_${name}`] = min === Infinity ? null : min;
@@ -6560,7 +6572,7 @@ export class Database {
               const [start, end] = getFrameBounds(i, partition.length);
               let max = -Infinity;
               for (let j = start; j <= end; j++) {
-                const v = this._resolveColumn(col.arg, partition[j]);
+                const v = resolveArg(col.arg, partition[j]);
                 if (v != null && v > max) max = v;
               }
               partition[i][`__window_${name}`] = max === -Infinity ? null : max;
