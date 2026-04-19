@@ -2284,10 +2284,16 @@ export class Database {
       const indexedColumns = new Set();
       for (const [colName] of table.indexes) {
         if (colName.includes(',')) {
-          // Composite index
           for (const c of colName.split(',').map(s => s.trim())) indexedColumns.add(c);
         } else {
           indexedColumns.add(colName);
+        }
+        // For expression indexes, also check referenced columns
+        const meta = table.indexMeta && table.indexMeta.get(colName);
+        if (meta && meta.expressions) {
+          for (const expr of meta.expressions) {
+            if (expr) this._collectColumnRefs(expr).forEach(c => indexedColumns.add(c));
+          }
         }
       }
       
@@ -4334,6 +4340,18 @@ export class Database {
         throw new Error(`Cannot INSERT or UPDATE generated column '${colName}'`);
       }
     }
+  }
+
+  /** Collect all column_ref names from an expression AST */
+  _collectColumnRefs(expr) {
+    if (!expr) return [];
+    if (expr.type === 'column_ref') return [expr.name];
+    const refs = [];
+    if (expr.left) refs.push(...this._collectColumnRefs(expr.left));
+    if (expr.right) refs.push(...this._collectColumnRefs(expr.right));
+    if (expr.args) for (const a of expr.args) refs.push(...this._collectColumnRefs(a));
+    if (expr.expr) refs.push(...this._collectColumnRefs(expr.expr));
+    return refs;
   }
 
   // Compute index key for a given set of values, handling both column and expression indexes
