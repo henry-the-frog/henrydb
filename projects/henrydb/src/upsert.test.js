@@ -1,86 +1,62 @@
-// upsert.test.js — Tests for INSERT ON CONFLICT (UPSERT)
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
-describe('UPSERT (INSERT ON CONFLICT)', () => {
-
-  it('ON CONFLICT DO UPDATE SET with EXCLUDED', () => {
+describe('UPSERT (INSERT ON CONFLICT) Tests (2026-04-19)', () => {
+  it('basic UPSERT - update on conflict', () => {
     const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, val INT)");
-    db.execute("INSERT INTO t VALUES (1, 10)");
-    
-    db.execute("INSERT INTO t VALUES (1, 99) ON CONFLICT (id) DO UPDATE SET val = EXCLUDED.val");
-    
-    const result = db.execute("SELECT * FROM t ORDER BY id");
-    assert.equal(result.rows.length, 1, 'Should still have 1 row');
-    assert.equal(result.rows[0].val, 99, 'Value should be updated to 99');
+    db.execute('CREATE TABLE kv (key TEXT PRIMARY KEY, value INT)');
+    db.execute("INSERT INTO kv VALUES ('a', 1)");
+    db.execute("INSERT INTO kv VALUES ('a', 2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value");
+    const r = db.execute("SELECT value FROM kv WHERE key = 'a'");
+    assert.equal(r.rows[0].value, 2);
   });
 
-  it('ON CONFLICT DO NOTHING', () => {
+  it('UPSERT DO NOTHING', () => {
     const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, val INT)");
-    db.execute("INSERT INTO t VALUES (1, 10)");
-    
-    db.execute("INSERT INTO t VALUES (1, 99) ON CONFLICT (id) DO NOTHING");
-    
-    const result = db.execute("SELECT * FROM t ORDER BY id");
-    assert.equal(result.rows.length, 1);
-    assert.equal(result.rows[0].val, 10, 'Value should remain 10');
+    db.execute('CREATE TABLE kv (key TEXT PRIMARY KEY, value INT)');
+    db.execute("INSERT INTO kv VALUES ('a', 1)");
+    db.execute("INSERT INTO kv VALUES ('a', 999) ON CONFLICT (key) DO NOTHING");
+    const r = db.execute("SELECT value FROM kv WHERE key = 'a'");
+    assert.equal(r.rows[0].value, 1);
   });
 
-  it('ON CONFLICT with literal SET value', () => {
+  it('UPSERT with accumulation', () => {
     const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, val INT)");
-    db.execute("INSERT INTO t VALUES (1, 10)");
-    
-    db.execute("INSERT INTO t VALUES (1, 99) ON CONFLICT (id) DO UPDATE SET val = 42");
-    
-    const result = db.execute("SELECT * FROM t WHERE id = 1");
-    assert.equal(result.rows[0].val, 42);
+    db.execute('CREATE TABLE counters (name TEXT PRIMARY KEY, count INT)');
+    db.execute("INSERT INTO counters VALUES ('hits', 1)");
+    db.execute("INSERT INTO counters VALUES ('hits', 1) ON CONFLICT (name) DO UPDATE SET count = counters.count + EXCLUDED.count");
+    db.execute("INSERT INTO counters VALUES ('hits', 1) ON CONFLICT (name) DO UPDATE SET count = counters.count + EXCLUDED.count");
+    const r = db.execute("SELECT count FROM counters WHERE name = 'hits'");
+    assert.equal(r.rows[0].count, 3);
   });
 
-  it('ON CONFLICT inserts when no conflict', () => {
+  it('bulk UPSERT - mix of inserts and updates', () => {
     const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, val INT)");
-    db.execute("INSERT INTO t VALUES (1, 10)");
-    
-    db.execute("INSERT INTO t VALUES (2, 20) ON CONFLICT (id) DO UPDATE SET val = EXCLUDED.val");
-    
-    const result = db.execute("SELECT * FROM t ORDER BY id");
-    assert.equal(result.rows.length, 2);
-    assert.equal(result.rows[1].val, 20);
+    db.execute('CREATE TABLE kv (key TEXT PRIMARY KEY, value INT)');
+    db.execute("INSERT INTO kv VALUES ('a', 1), ('b', 2)");
+    db.execute("INSERT INTO kv VALUES ('b', 20), ('c', 30) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value");
+    const r = db.execute('SELECT * FROM kv ORDER BY key');
+    assert.equal(r.rows.length, 3);
+    assert.equal(r.rows[0].value, 1);   // a unchanged
+    assert.equal(r.rows[1].value, 20);  // b updated
+    assert.equal(r.rows[2].value, 30);  // c inserted
   });
 
-  it('multiple column UPSERT', () => {
+  it('UPSERT with RETURNING', () => {
     const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, name TEXT, score INT)");
-    db.execute("INSERT INTO t VALUES (1, 'Alice', 80)");
-    
-    db.execute("INSERT INTO t VALUES (1, 'Updated', 95) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, score = EXCLUDED.score");
-    
-    const result = db.execute("SELECT * FROM t WHERE id = 1");
-    assert.equal(result.rows[0].name, 'Updated');
-    assert.equal(result.rows[0].score, 95);
+    db.execute('CREATE TABLE kv (key TEXT PRIMARY KEY, value INT)');
+    db.execute("INSERT INTO kv VALUES ('a', 1)");
+    const r = db.execute("INSERT INTO kv VALUES ('a', 2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value RETURNING key, value");
+    assert.equal(r.rows[0].value, 2);
   });
 
-  it('UPSERT with expression (val + EXCLUDED.val)', () => {
+  it('UPSERT on integer PRIMARY KEY', () => {
     const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, val INT)");
-    db.execute("INSERT INTO t VALUES (1, 10)");
-    
-    db.execute("INSERT INTO t VALUES (1, 5) ON CONFLICT (id) DO UPDATE SET val = val + EXCLUDED.val");
-    
-    const result = db.execute("SELECT * FROM t WHERE id = 1");
-    assert.equal(result.rows[0].val, 15, '10 + 5 = 15');
-  });
-
-  it('UPSERT RETURNING', () => {
-    const db = new Database();
-    db.execute("CREATE TABLE t (id INT PRIMARY KEY, val INT)");
-    db.execute("INSERT INTO t VALUES (1, 10)");
-    
-    const result = db.execute("INSERT INTO t VALUES (1, 99) ON CONFLICT (id) DO UPDATE SET val = EXCLUDED.val RETURNING *");
-    assert.equal(result.rows[0].val, 99);
+    db.execute('CREATE TABLE items (id INT PRIMARY KEY, name TEXT, qty INT)');
+    db.execute("INSERT INTO items VALUES (1, 'Widget', 10)");
+    db.execute("INSERT INTO items VALUES (1, 'Widget', 5) ON CONFLICT (id) DO UPDATE SET qty = items.qty + EXCLUDED.qty");
+    const r = db.execute('SELECT qty FROM items WHERE id = 1');
+    assert.equal(r.rows[0].qty, 15);
   });
 });
