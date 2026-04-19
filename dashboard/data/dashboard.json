@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-18T23:19:22.354Z",
+  "generated": "2026-04-19T00:22:29.047Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Mid-session housekeeping",
-    "startedAt": "2026-04-18T23:19:22.354Z",
-    "taskId": "T271"
+    "task": "HenryDB: final regression sweep, git push, update workspace",
+    "startedAt": "2026-04-19T00:22:29.047Z",
+    "taskId": "T290"
   },
   "schedule": {
     "date": "2026-04-18",
@@ -3004,77 +3004,170 @@
       {
         "id": "T270",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB depth: stress-test recent features (serialization, pg_stat_statements, HOT+MVCC, VACUUM) to find real bugs",
         "task": null,
-        "started": "2026-04-18T23:10:19.371Z"
+        "started": "2026-04-18T23:10:19.371Z",
+        "completed": "2026-04-18T23:10:58.180Z",
+        "duration_ms": 120000,
+        "summary": "Planned depth testing: (1) serialization roundtrip stress test, (2) implement real pg_stat_statements (was claimed done but code missing), (3) HOT+VACUUM stress test. Prior session breadth spiral left phantom features."
       },
       {
         "id": "T275",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: comprehensive serialization roundtrip tests (complex schemas, edge cases, verify data integrity)",
         "plan_ref": "T270",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-18T23:11:04.816Z",
+        "completed": "2026-04-18T23:14:29.936Z",
+        "duration_ms": 600000,
+        "summary": "14 serialization roundtrip tests, found 2 real bugs: (1) parser escaped quotes dead code (while loop exited before escape check), (2) views stored as AST not SQL but fromJSON expected SQL. Both fixed. 14/14 pass, 137 existing tests no regressions."
       },
       {
         "id": "T277",
         "mode": "BUILD",
         "task": "HenryDB: implement real pg_stat_statements (query tracking + normalization) — claimed done but missing",
-        "status": "upcoming",
-        "plan_ref": "T270"
+        "status": "done",
+        "plan_ref": "T270",
+        "started": "2026-04-18T23:14:40.705Z",
+        "completed": "2026-04-18T23:18:03.538Z",
+        "duration_ms": 600000,
+        "summary": "Implemented real pg_stat_statements: query timing in execute(), literal normalization ($?), tracks calls/time/rows. Added identifier function call parsing in SELECT columns. pg_stat_statements_reset() clears stats. 8/8 tests pass, 95 existing tests no regressions."
       },
       {
         "id": "T278",
         "mode": "BUILD",
         "task": "HenryDB: HOT chain + VACUUM stress test — concurrent updates, chain pruning correctness",
-        "status": "upcoming",
-        "plan_ref": "T270"
+        "status": "done",
+        "plan_ref": "T270",
+        "started": "2026-04-18T23:18:12.074Z",
+        "completed": "2026-04-18T23:19:14.253Z",
+        "duration_ms": 600000,
+        "summary": "9 HOT+VACUUM stress tests all pass. Covers rapid sequential HOT (50 updates), mixed HOT/non-HOT, VACUUM chain pruning (50 rows × 3 rounds), DELETE after HOT, interleaved multi-row updates, insert-after-VACUUM, update-delete-insert cycles. No bugs found — HOT implementation is solid."
       },
       {
         "id": "T271",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-session housekeeping"
+        "status": "done",
+        "task": "Mid-session housekeeping",
+        "started": "2026-04-18T23:19:22.317Z",
+        "completed": "2026-04-18T23:19:52.177Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed workspace+henrydb. Wrote scratch note on serialization bugs (escaped quotes dead code, view format mismatch, ident function parsing)."
       },
       {
         "id": "T272",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on depth testing results, decide next direction"
+        "status": "done",
+        "task": "Reflect on depth testing results, decide next direction",
+        "started": "2026-04-18T23:19:59.368Z",
+        "completed": "2026-04-18T23:20:13.876Z",
+        "duration_ms": 60000,
+        "summary": "Depth testing was high-ROI: 4 bugs, 1 phantom feature, 1 parser gap. HOT+VACUUM solid. Next: UNIQUE constraint enforcement under SI — touches indexes, MVCC, transactions."
       },
       {
         "id": "T273",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Pick a meaty HenryDB feature from TODO backlog and go deep",
-        "task": null
+        "task": null,
+        "started": "2026-04-18T23:20:19.864Z",
+        "completed": "2026-04-18T23:20:40.811Z",
+        "duration_ms": 120000,
+        "summary": "Planned UNIQUE + MVCC: (1) audit + expose race condition test, (2) implement MVCC-aware uniqueness (write-write conflict detection), (3) comprehensive SI tests. Current UNIQUE is non-MVCC-aware."
       },
       {
         "id": "T276",
         "mode": "BUILD",
-        "status": "upcoming",
-        "task": null,
+        "status": "done",
+        "task": "HenryDB: audit UNIQUE enforcement, write test exposing MVCC race condition",
         "plan_ref": "T273",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-18T23:20:48.204Z",
+        "completed": "2026-04-18T23:23:46.815Z",
+        "duration_ms": 900000,
+        "summary": "Found real bug: ROLLBACK did not undo physical heap+index changes. After BEGIN→INSERT→ROLLBACK, index still had key blocking re-insert. Fixed with _txWriteLog that tracks INSERTs and undoes them on ROLLBACK. 14 UNIQUE constraint tests (basic, MVCC, edge cases) all pass."
+      },
+      {
+        "id": "T279",
+        "mode": "BUILD",
+        "task": "HenryDB: implement MVCC-aware UNIQUE constraint (write-write conflict detection on unique keys)",
+        "status": "done",
+        "plan_ref": "T273",
+        "started": "2026-04-18T23:24:00.012Z",
+        "completed": "2026-04-18T23:26:51.191Z",
+        "duration_ms": 600000,
+        "summary": "Extended ROLLBACK to fully undo UPDATE+DELETE (not just INSERT). Found DELETE rollback bug: re-insert used stale RID for index entries. UPDATE rollback: separate paths for HOT (in-place overwrite) vs regular (delete new + re-insert old). 9 MVCC UNIQUE tests all pass."
+      },
+      {
+        "id": "T280",
+        "mode": "BUILD",
+        "task": "HenryDB: comprehensive UNIQUE + SI tests (concurrent inserts, updates, rollbacks)",
+        "status": "done",
+        "plan_ref": "T273",
+        "started": "2026-04-18T23:26:59.478Z",
+        "completed": "2026-04-18T23:30:38.211Z",
+        "duration_ms": 600000,
+        "summary": "9 comprehensive UNIQUE+SI tests. Found 3 bugs: (1) snapshot-based ROLLBACK needed — undo-log failed on chained ops (stale RIDs), (2) fromJSON lost UNIQUE flag (indexCatalog.columns was array not string), (3) keyword collision (RANK as column). All 145 tests pass."
       },
       {
         "id": "T274",
         "mode": "MAINTAIN",
+        "status": "skipped",
+        "task": "Final housekeeping + push",
+        "skip_reason": ""
+      },
+      {
+        "id": "T281",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess HenryDB checkpoint/crash-recovery status, plan atomic checkpoint implementation",
+        "started": "2026-04-18T23:31:14.529Z",
+        "completed": "2026-04-18T23:31:45.133Z",
+        "duration_ms": 120000,
+        "summary": "Assessed checkpoint status: ARIES recovery module exists (141 lines) with checkpoint/recover methods, WAL has checkpoint record types, but TransactionalDatabase has no checkpoint integration. Need to: connect ARIES to TransactionalDB, add periodic auto-checkpoint, test crash recovery."
+      },
+      {
+        "id": "T282",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Atomic checkpoint for HenryDB: WAL checkpoint, dirty page flush, crash recovery",
+        "task": null,
+        "started": "2026-04-18T23:31:49.506Z"
+      },
+      {
+        "id": "T283",
+        "mode": "BUILD",
+        "task": "HenryDB: implement checkpoint() in TransactionalDatabase — flush buffer pools + WAL marker",
         "status": "upcoming",
-        "task": "Final housekeeping + push"
+        "plan_ref": "T282"
+      },
+      {
+        "id": "T284",
+        "mode": "BUILD",
+        "task": "HenryDB: WAL truncation after checkpoint — discard entries before checkpoint LSN",
+        "status": "upcoming",
+        "plan_ref": "T282"
+      },
+      {
+        "id": "T285",
+        "mode": "BUILD",
+        "task": "HenryDB: crash recovery tests — write, checkpoint, simulate crash, recover, verify",
+        "status": "upcoming",
+        "plan_ref": "T282"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 270,
-    "blocksTotal": 278,
+    "blocksCompleted": 285,
+    "blocksTotal": 285,
     "modeDistribution": {
-      "THINK": 43,
-      "PLAN": 25,
-      "BUILD": 134,
-      "MAINTAIN": 55,
+      "THINK": 45,
+      "PLAN": 27,
+      "BUILD": 144,
+      "MAINTAIN": 56,
       "EXPLORE": 13
     }
   },
