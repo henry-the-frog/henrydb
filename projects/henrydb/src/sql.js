@@ -1273,7 +1273,7 @@ export function parse(sql) {
     // Check for || concatenation or arithmetic operators
     const nextTok = peek();
     const nextType = nextTok ? nextTok.type : null;
-    if (nextType === 'CONCAT_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
+    if (nextType === 'CONCAT_OP' || nextType === 'CAST_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
       let seed = colTok.type === 'STRING' || colTok.type === 'NUMBER'
         ? { type: 'literal', value: col }
         : { type: 'column_ref', name: col };
@@ -1315,11 +1315,28 @@ export function parse(sql) {
           left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
         } else break;
       }
+      // Handle :: type cast after expression
+      if (peek().type === 'CAST_OP') {
+        advance(); // ::
+        const typeTok = advance();
+        const targetType = (typeTok.originalValue || typeTok.value).toUpperCase();
+        left = { type: 'cast', expr: left, targetType };
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr: left, alias };
     }
     let alias = null;
+    
+    // Check for :: type cast after bare column name
+    if (peek().type === 'CAST_OP') {
+      advance(); // ::
+      const typeTok = advance();
+      const targetType = (typeTok.originalValue || typeTok.value).toUpperCase();
+      let expr = { type: 'cast', expr: { type: 'column_ref', name: col }, targetType };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
     
     // Check for JSON operators after column name
     if (peek() && ['JSON_ARROW', 'JSON_ARROW_TEXT', 'JSON_PATH', 'JSON_PATH_TEXT'].includes(peek().type)) {
@@ -1418,6 +1435,16 @@ export function parse(sql) {
       while (match(',')) values.push(parseExpr());
       expect(')');
       const expr = { type: 'IN_LIST', left: { type: 'column_ref', name: col }, values };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
+    
+    // Check for :: type cast after column
+    if (!alias && peek().type === 'CAST_OP') {
+      advance(); // ::
+      const typeTok = advance();
+      const targetType = (typeTok.originalValue || typeTok.value).toUpperCase();
+      let expr = { type: 'cast', expr: { type: 'column_ref', name: col }, targetType };
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
     }
@@ -1778,6 +1805,11 @@ export function parse(sql) {
         advance();
         const right = parseAddSub();
         left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
+      } else if (t === 'CAST_OP') {
+        advance(); // ::
+        const typeTok = advance();
+        const targetType = typeTok.originalValue || typeTok.value;
+        left = { type: 'cast', expr: left, targetType: targetType.toUpperCase() };
       } else break;
     }
     return left;
