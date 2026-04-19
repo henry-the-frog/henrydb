@@ -2643,6 +2643,17 @@ export class Database {
       }
     } else {
       orderedValues = values;
+      // Pad short value arrays with defaults (e.g., after ALTER TABLE ADD COLUMN)
+      if (orderedValues.length < table.schema.length) {
+        orderedValues = [...orderedValues];
+        for (let i = orderedValues.length; i < table.schema.length; i++) {
+          if (table.schema[i].defaultValue !== undefined && table.schema[i].defaultValue !== null) {
+            orderedValues[i] = this._resolveDefault(table.schema[i].defaultValue);
+          } else {
+            orderedValues[i] = null;
+          }
+        }
+      }
     }
 
     // SERIAL auto-increment: assign next value for SERIAL columns with null value
