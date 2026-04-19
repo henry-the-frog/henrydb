@@ -25,3 +25,4 @@
 - WAL recovery includes uncommitted transactions
 - ALTER TABLE ADD COLUMN NOT NULL with DEFAULT doesn't backfill existing rows
 - CHECK constraint with multi-column expression (low < high) has parser issues
+- INSERT INTO table (col) SELECT ... puts values in wrong columns (maps by position, ignores column list)
