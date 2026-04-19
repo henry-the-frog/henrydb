@@ -1935,10 +1935,13 @@
     {
       "id": "T179",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session B final wrap-up: daily log, git push, CURRENT.md",
       "project": "henrydb",
-      "started": "2026-04-19T23:46:21.124Z"
+      "started": "2026-04-19T23:46:21.124Z",
+      "completed": "2026-04-19T23:46:47.001Z",
+      "duration_ms": 60000,
+      "summary": "Git push both repos. Workspace clean."
     },
     {
       "id": "T174",
@@ -2088,28 +2091,74 @@
     {
       "id": "T195",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess remaining session time (2.5hrs). Pick high-impact work from TODO Normal items and tomorrow priorities. Focus: HenryDB depth."
+      "status": "done",
+      "task": "Assess remaining session time (2.5hrs). Pick high-impact work from TODO Normal items and tomorrow priorities. Focus: HenryDB depth.",
+      "started": "2026-04-19T23:46:53.686Z",
+      "completed": "2026-04-19T23:47:09.671Z",
+      "duration_ms": 60000,
+      "summary": "2.5hrs remaining. Focus: FIRST_VALUE/LAST_VALUE window funcs, then lock manager stress tests, then savepoint bug if time allows."
     },
     {
       "id": "T196",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB depth: FIRST_VALUE/LAST_VALUE window functions + lock manager stress testing",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T23:47:17.392Z",
+      "completed": "2026-04-19T23:48:05.175Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks: lock manager stress tests, NTH_VALUE window function, savepoint ROLLBACK TO fix. FIRST_VALUE/LAST_VALUE already implemented."
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "task": "Lock manager stress tests: multi-resource deadlock, lock upgrades, intention lock compat, queue fairness, release-and-grant chaining",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-19T23:48:12.367Z",
+      "completed": "2026-04-19T23:50:33.175Z",
+      "duration_ms": 600000,
+      "summary": "32 lock manager stress tests. Found & fixed REAL BUG: deadlock detection BFS walked held resources instead of waited-on resources — AB-BA deadlocks went undetected. Also fixed stats.deadlocks/waits counters (never incremented)."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "task": "Implement NTH_VALUE window function with tests",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-19T23:50:49.495Z",
+      "completed": "2026-04-19T23:52:09.675Z",
+      "duration_ms": 300000,
+      "summary": "NTH_VALUE window function already in db.js, added to window-functions.js standalone path. 6 tests: basic, PARTITION BY, n>size, no ORDER BY, FIRST_VALUE equivalence, 3rd-row. All pass."
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "task": "Fix savepoint ROLLBACK TO — undo log too aggressive (removes rows instead of restoring)",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-19T23:52:16.416Z",
+      "completed": "2026-04-19T23:59:00.833Z",
+      "duration_ms": 900000,
+      "summary": "Fixed 2 ROLLBACK TO SAVEPOINT bugs: (1) result cache not cleared after rollback (stale SELECT results), (2) restore used DELETE+INSERT through SQL. Now directly replaces heap contents. 12 tests all pass."
     },
     {
       "id": "T197",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "BUILD placeholder for PLAN T196",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T23:59:23.648Z",
+      "completed": "2026-04-19T23:59:23.795Z",
+      "duration_ms": 1000,
+      "summary": "Placeholder - work covered by T199-T201"
     },
     {
       "id": "T198",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session push + dashboard check"
+      "status": "in-progress",
+      "task": "Mid-session push + dashboard check",
+      "started": "2026-04-19T23:59:30.755Z"
     }
   ],
   "focusProjects": [
@@ -2961,6 +3010,10 @@
     {
       "time": "2026-04-19T23:46:14.226Z",
       "msg": "Added T198 (MAINTAIN) after end: Mid-session push + dashboard check"
+    },
+    {
+      "time": "2026-04-19T23:48:00.770Z",
+      "msg": "PLAN T196 filled 3 BUILD tasks"
     }
   ]
 }
