@@ -2117,8 +2117,17 @@ export class Database {
     }
     
     for (const row of ast.rows) {
-      const values = row.map(r => {
+      const values = row.map((r, colIdx) => {
         if (r.type === 'literal') return r.value;
+        // Handle DEFAULT keyword
+        if (r.type === 'column_ref' && r.name === 'DEFAULT') {
+          // Resolve the column's default value
+          const schema = ast.columns ? 
+            table.schema.find(s => s.name === ast.columns[colIdx]) :
+            table.schema[colIdx];
+          if (schema?.defaultValue != null) return this._resolveDefault(schema.defaultValue);
+          return null;
+        }
         // Evaluate expression (for INSERT VALUES with arithmetic, CASE, etc.)
         try { return this._evalValue(r, {}); } catch { return r.value; }
       });

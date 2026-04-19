@@ -524,10 +524,31 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add window function in WHERE clause validation (should error)",
       "project": "henrydb",
-      "started": "2026-04-19T15:33:26.367Z"
+      "started": "2026-04-19T15:33:26.367Z",
+      "completed": "2026-04-19T15:34:13.153Z",
+      "duration_ms": 60000,
+      "summary": "Window functions in WHERE now throw clear error. 87 tests pass."
+    },
+    {
+      "id": "T52",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigation: what are the most impactful remaining TODOs for HenryDB quality",
+      "started": "2026-04-19T15:34:47.652Z",
+      "completed": "2026-04-19T15:35:17.203Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB feature coverage is impressive: CTAS, UPDATE FROM, recursive CTE, UPSERT, EXCEPT, INTERSECT, LATERAL all work. Found: INSERT with DEFAULT keyword gets null. Low remaining bug count."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix INSERT with DEFAULT keyword to resolve column default values",
+      "project": "henrydb",
+      "started": "2026-04-19T15:35:32.790Z"
     },
     {
       "id": "T33",
@@ -769,6 +790,22 @@
     {
       "time": "2026-04-19T15:33:22.152Z",
       "msg": "Moved T33 after T51"
+    },
+    {
+      "time": "2026-04-19T15:34:40.879Z",
+      "msg": "Added T52 (THINK) after end: Investigation: what are the most impactful remaining TODOs for HenryDB quality"
+    },
+    {
+      "time": "2026-04-19T15:34:40.996Z",
+      "msg": "Moved T33 after T52"
+    },
+    {
+      "time": "2026-04-19T15:35:23.645Z",
+      "msg": "Added T53 (BUILD) after end: Fix INSERT with DEFAULT keyword to resolve column default values"
+    },
+    {
+      "time": "2026-04-19T15:35:23.762Z",
+      "msg": "Moved T33 after T53"
     }
   ]
 }
