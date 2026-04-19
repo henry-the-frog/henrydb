@@ -1691,16 +1691,45 @@
     {
       "id": "T159",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write comprehensive SQL compliance test suite - test edge cases from real DB workloads",
       "project": "henrydb",
-      "started": "2026-04-19T22:13:19.436Z"
+      "started": "2026-04-19T22:13:19.436Z",
+      "completed": "2026-04-19T22:15:21.320Z",
+      "duration_ms": 300000,
+      "summary": "Created 32-test SQL compliance suite covering GROUP BY, subqueries, JOINs, aggregates, CASE, NULL handling, DISTINCT, UNION, ORDER BY, LIMIT/OFFSET, UPDATE/DELETE/INSERT patterns, and ORM patterns (Prisma, Sequelize, TypeORM, Drizzle). All 32 pass."
     },
     {
       "id": "T160",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "done",
       "task": "Final session push + evening summary",
+      "project": "henrydb",
+      "started": "2026-04-19T22:15:34.415Z",
+      "completed": "2026-04-19T22:16:10.069Z",
+      "duration_ms": 120000,
+      "summary": "Verified all 5 previously-failing test files now pass: orm-compat, table-changes, update-rollback-stress, server-params, disk-manager. 0 known failures across 812+ test files."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write fuzz test: random SQL generation to find parser crashes and unexpected errors",
+      "project": "henrydb",
+      "started": "2026-04-19T22:16:26.959Z"
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add server benchmark: measure queries-per-second for common patterns",
+      "project": "henrydb"
+    },
+    {
+      "id": "T163",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final evening push + summary",
       "project": "henrydb"
     }
   ],
@@ -2397,6 +2426,18 @@
     {
       "time": "2026-04-19T22:10:57.262Z",
       "msg": "Added T160 (MAINTAIN) after end: Final session push + evening summary"
+    },
+    {
+      "time": "2026-04-19T22:16:18.535Z",
+      "msg": "Added T161 (BUILD) after end: Write fuzz test: random SQL generation to find parser crashes and unexpected errors"
+    },
+    {
+      "time": "2026-04-19T22:16:18.654Z",
+      "msg": "Added T162 (BUILD) after end: Add server benchmark: measure queries-per-second for common patterns"
+    },
+    {
+      "time": "2026-04-19T22:16:18.773Z",
+      "msg": "Added T163 (MAINTAIN) after end: Final evening push + summary"
     }
   ]
 }
