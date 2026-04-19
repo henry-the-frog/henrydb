@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-19T14:59:04.971Z",
+  "generated": "2026-04-19T14:59:33.805Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "HenryDB stress test: find bugs at feature intersection boundaries",
-    "completedAt": "2026-04-19T14:59:04.971Z",
-    "taskId": "T30",
-    "summary": "Stress testing found 2 bugs: (1) Window functions in CASE - _exprContainsWindow/_extractWindowNodes didnt handle case_expr type. Fixed. (2) Nested aggregates SUM(COUNT(*)) silently returns null instead of erroring - noted for later.",
-    "durationMs": 180000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Write comprehensive stress test: window+CASE, CTE+window, subquery+aggregate, multi-feature chains",
+    "startedAt": "2026-04-19T14:59:33.805Z",
+    "taskId": "T34"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -4928,53 +4926,120 @@
       {
         "id": "T24",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Plan ALTER TABLE backfill + INSERT SELECT column mapping fixes",
         "task": null,
-        "started": "2026-04-19T14:51:01.971Z"
+        "started": "2026-04-19T14:51:01.971Z",
+        "completed": "2026-04-19T14:51:06.358Z",
+        "duration_ms": 30000,
+        "summary": "3 BUILD tasks: INSERT SELECT positional mapping, ALTER TABLE backfill, regression tests"
       },
       {
         "id": "T27",
         "mode": "BUILD",
         "task": "Fix INSERT SELECT column mapping: use positional mapping when explicit columns provided",
-        "status": "upcoming",
-        "plan_ref": "T24"
+        "status": "done",
+        "plan_ref": "T24",
+        "started": "2026-04-19T14:51:13.435Z",
+        "completed": "2026-04-19T14:52:08.029Z",
+        "duration_ms": 180000,
+        "summary": "Fixed INSERT SELECT column mapping to use positional instead of name-based lookup. Works for matching names, reordered columns, and partial column lists with defaults."
       },
       {
         "id": "T28",
         "mode": "BUILD",
         "task": "Fix ALTER TABLE ADD COLUMN NOT NULL DEFAULT to backfill existing rows",
-        "status": "upcoming",
-        "plan_ref": "T24"
+        "status": "done",
+        "plan_ref": "T24",
+        "started": "2026-04-19T14:52:15.808Z",
+        "completed": "2026-04-19T14:53:41.403Z",
+        "duration_ms": 180000,
+        "summary": "Fixed ALTER TABLE ADD COLUMN NOT NULL DEFAULT: parser wasnt parsing NOT NULL before DEFAULT. Both parseAlter functions updated. Backfill already worked in executor."
       },
       {
         "id": "T29",
         "mode": "BUILD",
         "task": "Write regression tests for both fixes",
-        "status": "upcoming",
-        "plan_ref": "T24"
+        "status": "done",
+        "plan_ref": "T24",
+        "started": "2026-04-19T14:53:48.788Z",
+        "completed": "2026-04-19T14:55:33.636Z",
+        "duration_ms": 180000,
+        "summary": "9 regression tests for INSERT SELECT mapping + ALTER TABLE backfill. Found and fixed additional bug: INSERT after ALTER TABLE ADD COLUMN didnt pad values with defaults. All 106 tests pass."
       },
       {
         "id": "T25",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit + push + broader test sweep"
+        "status": "done",
+        "task": "Git commit + push + broader test sweep",
+        "started": "2026-04-19T14:55:58.667Z",
+        "completed": "2026-04-19T14:56:13.740Z",
+        "duration_ms": 30000,
+        "summary": "Both repos pushed. Daily log updated."
       },
       {
         "id": "T26",
         "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: 10 BUILDs done, assess learning",
+        "started": "2026-04-19T14:56:21.959Z",
+        "completed": "2026-04-19T14:56:38.696Z",
+        "duration_ms": 60000,
+        "summary": "Depth check: 3/3 criteria met. 6 real bugs, multiple insights (var hoisting pattern, parser duality, aggregate list divergence, batch WAL vs index cost). Systemic: parser needs unified expression entry point."
+      },
+      {
+        "id": "T30",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB stress test: find bugs at feature intersection boundaries",
+        "started": "2026-04-19T14:57:16.332Z",
+        "completed": "2026-04-19T14:59:04.935Z",
+        "duration_ms": 180000,
+        "summary": "Stress testing found 2 bugs: (1) Window functions in CASE - _exprContainsWindow/_extractWindowNodes didnt handle case_expr type. Fixed. (2) Nested aggregates SUM(COUNT(*)) silently returns null instead of erroring - noted for later."
+      },
+      {
+        "id": "T31",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Design stress test suite for parser edge cases and feature interactions",
+        "task": null,
+        "started": "2026-04-19T14:59:22.473Z"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "task": "Write comprehensive stress test: window+CASE, CTE+window, subquery+aggregate, multi-feature chains",
         "status": "upcoming",
-        "task": "Depth check: 10 BUILDs done, assess learning"
+        "plan_ref": "T31"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "Continue stress testing: find more intersection bugs",
+        "status": "upcoming",
+        "plan_ref": "T31"
+      },
+      {
+        "id": "T32",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push + update TODO with completed items"
+      },
+      {
+        "id": "T33",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Session wrapup: evening summary, MEMORY.md update"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
-    "blocksTotal": 29,
+    "blocksCompleted": 31,
+    "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 7,
-      "PLAN": 5,
+      "PLAN": 6,
       "BUILD": 11,
       "MAINTAIN": 5,
       "EXPLORE": 2

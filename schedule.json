@@ -326,9 +326,28 @@
     {
       "id": "T31",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Design stress test suite for parser edge cases and feature interactions",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T14:59:22.473Z",
+      "completed": "2026-04-19T14:59:28.417Z",
+      "duration_ms": 15000,
+      "summary": "Planned 2 BUILD tasks for stress test suite."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Write comprehensive stress test: window+CASE, CTE+window, subquery+aggregate, multi-feature chains",
+      "status": "in-progress",
+      "plan_ref": "T31",
+      "started": "2026-04-19T14:59:33.769Z"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Continue stress testing: find more intersection bugs",
+      "status": "upcoming",
+      "plan_ref": "T31"
     },
     {
       "id": "T32",
@@ -472,6 +491,10 @@
     {
       "time": "2026-04-19T14:57:08.709Z",
       "msg": "Added T33 (THINK) after end: Session wrapup: evening summary, MEMORY.md update"
+    },
+    {
+      "time": "2026-04-19T14:59:22.616Z",
+      "msg": "PLAN T31 filled 2 BUILD tasks"
     }
   ]
 }

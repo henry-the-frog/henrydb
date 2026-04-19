@@ -2264,6 +2264,7 @@ export class Database {
 
     const result = this.execute_ast(ast.query);
     let inserted = 0;
+    const returnedRows = [];
     
     // Batch autocommit: use a single WAL transaction for all rows
     const isBatch = result.rows.length > 1 && !this._currentTxId;
@@ -2318,6 +2319,23 @@ export class Database {
         }
       }
       this._insertRow(table, ast.columns || null, values);
+      if (ast.returning) {
+        // Build the row from ordered values mapped to schema
+        const retRow = {};
+        if (ast.columns) {
+          // Map values to specified columns, fill rest with defaults/null
+          for (let i = 0; i < table.schema.length; i++) {
+            const colIdx = ast.columns.indexOf(table.schema[i].name);
+            retRow[table.schema[i].name] = colIdx >= 0 && colIdx < values.length ? values[colIdx] : null;
+          }
+        } else {
+          const rowKeys = Object.keys(row);
+          for (let i = 0; i < table.schema.length; i++) {
+            retRow[table.schema[i].name] = i < rowKeys.length ? row[rowKeys[i]] : null;
+          }
+        }
+        returnedRows.push(retRow);
+      }
       inserted++;
     }
 
@@ -2327,6 +2345,10 @@ export class Database {
       this._batchTxId = undefined;
     }
 
+    if (ast.returning) {
+      const filteredRows = this._resolveReturning(ast.returning, returnedRows);
+      return { type: 'ROWS', rows: filteredRows, count: inserted };
+    }
     return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
   }
 
@@ -5300,6 +5322,14 @@ export class Database {
   }
 
   _union(ast) {
+    // If the UNION has CTEs (from WITH clause), use _withCTEs to materialize them
+    if (ast.ctes && ast.ctes.length > 0) {
+      return this._withCTEs(ast, () => this._unionInner(ast));
+    }
+    return this._unionInner(ast);
+  }
+
+  _unionInner(ast) {
     const leftResult = this.execute_ast(ast.left);
     const rightResult = this.execute_ast(ast.right);
     
@@ -6238,6 +6268,7 @@ export class Database {
     if (node.type === 'window') return true;
     // Check common expression tree structures
     if (node.type === 'arith' || node.type === 'COMPARE') return this._exprContainsWindow(node.left) || this._exprContainsWindow(node.right);
+    if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL') return this._exprContainsWindow(node.left);
     if (node.type === 'NOT') return this._exprContainsWindow(node.expr);
     if (node.type === 'unary_minus') return this._exprContainsWindow(node.operand);
     if (node.type === 'function_call' && node.args) return node.args.some(a => this._exprContainsWindow(a));
@@ -6263,6 +6294,7 @@ export class Database {
       return results;
     }
     if (node.type === 'arith' || node.type === 'COMPARE') { this._extractWindowNodes(node.left, results, prefix); this._extractWindowNodes(node.right, results, prefix); }
+    if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL') this._extractWindowNodes(node.left, results, prefix);
     if (node.type === 'NOT') this._extractWindowNodes(node.expr, results, prefix);
     if (node.type === 'unary_minus') this._extractWindowNodes(node.operand, results, prefix);
     if (node.type === 'function_call' && node.args) node.args.forEach(a => this._extractWindowNodes(a, results, prefix));

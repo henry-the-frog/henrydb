@@ -2278,7 +2278,11 @@ export function parse(sql) {
     // INSERT INTO ... SELECT
     if (isKeyword('SELECT') || isKeyword('WITH')) {
       const selectStmt = isKeyword('WITH') ? parseWith() : parseSelect();
-      return { type: 'INSERT_SELECT', table, columns, query: selectStmt };
+      let returning = null;
+      if (isKeyword('RETURNING')) {
+        returning = parseReturningClause();
+      }
+      return { type: 'INSERT_SELECT', table, columns, query: selectStmt, returning };
     }
 
     expect('KEYWORD', 'VALUES');
