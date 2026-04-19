@@ -240,6 +240,7 @@ export function parse(sql) {
     // Window function keyword lists (shared between parseSelectColumn and parsePrimary)
   var ZERO_ARG_WINDOW_FUNCS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'];
   var ARG_WINDOW_FUNCS = ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'];
+  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'];
 
 // SELECT or WITH
   if (isKeyword('WITH')) return parseWith();
@@ -923,7 +924,7 @@ export function parse(sql) {
     }
 
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
-    if (peek().type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(peek().value) && tokens[pos + 1]?.type === '(') {
+    if (peek().type === 'KEYWORD' && AGGREGATE_FUNCS.includes(peek().value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
       expect('(');
       let distinct = false;
@@ -1908,7 +1909,7 @@ export function parse(sql) {
     }
 
     // Aggregate functions in expressions (HAVING, subqueries) — only if followed by (
-    if (t.type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY'].includes(t.value) && tokens[pos + 1]?.type === '(') {
+    if (t.type === 'KEYWORD' && AGGREGATE_FUNCS.includes(t.value) && tokens[pos + 1]?.type === '(') {
       const func = advance().value;
       expect('(');
       let distinct = false;
@@ -1927,7 +1928,7 @@ export function parse(sql) {
       return parseWindowCall();
     }
     // Aggregate OVER (...) — window aggregate in expression context
-    if (t.type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX'].includes(t.value) && tokens[pos + 1]?.type === '(') {
+    if (t.type === 'KEYWORD' && AGGREGATE_FUNCS.includes(t.value) && tokens[pos + 1]?.type === '(') {
       // Peek ahead to see if there's an OVER after the closing paren
       let lookahead = pos + 2;
       let depth = 1;
