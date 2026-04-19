@@ -1432,6 +1432,111 @@
       "completed": "2026-04-19T19:49:56.065Z",
       "duration_ms": 120000,
       "summary": "Optimizer fully passing: cost 54/54, optimizer 206/206, planner 29/29, statistics 18/18, histogram 18/18, cardinality 7/7. Zero failures."
+    },
+    {
+      "id": "T135",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B kickoff: assess remaining HenryDB gaps (savepoint ROLLBACK TO, hash-index perf, correlated subquery) + pick depth direction for 6hr session",
+      "started": "2026-04-19T20:15:57.131Z",
+      "completed": "2026-04-19T20:16:13.122Z",
+      "duration_ms": 60000,
+      "summary": "Assessed remaining gaps: 12 failing tests across 6 categories. Priority: (1) Savepoint ROLLBACK TO MVCC undo - 3 tests, (2) correlated subquery aggregates - 1 test, (3) hash-index perf + EXPLAIN - 3 tests, (4) error handling depth - 3 tests, (5) stress test isolation - 2 tests. Deep session focus on MVCC undo correctness first."
+    },
+    {
+      "id": "T136",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix remaining HenryDB test failures: savepoint ROLLBACK TO (MVCC undo), correlated subquery aggregates, error handling depth",
+      "task": null,
+      "started": "2026-04-19T20:16:19.262Z",
+      "completed": "2026-04-19T20:20:32.800Z",
+      "duration_ms": 120000,
+      "summary": "Planned fixes: (1) EXPLAIN always prefer index scan for equality on secondary indexes (small table override), (2) find and fix remaining test failures from full suite scan. Two concrete BUILD tasks."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix EXPLAIN index detection for small tables - always prefer explicit secondary index for equality",
+      "plan_ref": "T136",
+      "project": "henrydb",
+      "started": "2026-04-19T20:20:43.154Z",
+      "completed": "2026-04-19T20:22:09.063Z",
+      "duration_ms": 180000,
+      "summary": "Fixed EXPLAIN index detection for small tables: added estRows <= 100 override to always prefer explicit secondary index for equality lookups. Hash index test 9/9, all EXPLAIN tests 54/54 passing."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "task": "Fix remaining test failures from full suite scan (correlated subqueries, error handling, stress isolation)",
+      "status": "done",
+      "plan_ref": "T136",
+      "started": "2026-04-19T20:22:15.077Z",
+      "completed": "2026-04-19T20:36:30.992Z",
+      "duration_ms": 600000,
+      "summary": "Fixed 3 critical bugs: (1) INSERT UNIQUE constraint false positive - _insert() UNIQUE check used column-list-ordered values instead of schema-ordered orderedValues, causing SERIAL columns to match wrong values. Root cause of stress-all-features failure. (2) SELECT column validation - added column existence checks for non-existent columns in SELECT and WHERE. (3) SHOW TABLE STATUS server intercept. Tests fixed: error-edge 20/20, error-handling-depth 16/16, stress-all-features 1/1, hash-index 9/9."
+    },
+    {
+      "id": "T138",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git commit+push, dashboard health, knowledge capture",
+      "started": "2026-04-19T20:36:37.304Z"
+    },
+    {
+      "id": "T139",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess progress - what area of HenryDB needs most depth?"
+    },
+    {
+      "id": "T140",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: file-backed persistence or major missing feature area",
+      "task": null
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T140",
+      "project": "henrydb"
+    },
+    {
+      "id": "T142",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session git push + knowledge capture"
+    },
+    {
+      "id": "T143",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on depth vs breadth - are we building quality?"
+    },
+    {
+      "id": "T144",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Evening depth work: stress testing, benchmarking, or architectural improvement",
+      "task": null
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T143",
+      "project": "henrydb"
+    },
+    {
+      "id": "T146",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push + wrap-up"
     }
   ],
   "focusProjects": [
@@ -2027,6 +2132,58 @@
     {
       "time": "2026-04-19T19:46:34.858Z",
       "msg": "Added T134 (BUILD) after end: Investigate optimizer edge cases"
+    },
+    {
+      "time": "2026-04-19T20:15:39.014Z",
+      "msg": "Added T135 (THINK) after end: Session B kickoff: assess remaining HenryDB gaps (savepoint ROLLBACK TO, hash-index perf, correlated subquery) + pick depth direction for 6hr session"
+    },
+    {
+      "time": "2026-04-19T20:15:43.874Z",
+      "msg": "Added T136 (PLAN) after end: Fix remaining HenryDB test failures: savepoint ROLLBACK TO (MVCC undo), correlated subquery aggregates, error handling depth"
+    },
+    {
+      "time": "2026-04-19T20:15:50.288Z",
+      "msg": "Added T137 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-19T20:15:50.408Z",
+      "msg": "Added T138 (MAINTAIN) after end: Git commit+push, dashboard health, knowledge capture"
+    },
+    {
+      "time": "2026-04-19T20:15:50.526Z",
+      "msg": "Added T139 (THINK) after end: Assess progress - what area of HenryDB needs most depth?"
+    },
+    {
+      "time": "2026-04-19T20:15:50.647Z",
+      "msg": "Added T140 (PLAN) after end: HenryDB: file-backed persistence or major missing feature area"
+    },
+    {
+      "time": "2026-04-19T20:15:50.765Z",
+      "msg": "Added T141 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-19T20:15:50.884Z",
+      "msg": "Added T142 (MAINTAIN) after end: Mid-session git push + knowledge capture"
+    },
+    {
+      "time": "2026-04-19T20:15:51.003Z",
+      "msg": "Added T143 (THINK) after end: Reflect on depth vs breadth - are we building quality?"
+    },
+    {
+      "time": "2026-04-19T20:15:51.122Z",
+      "msg": "Added T144 (PLAN) after end: Evening depth work: stress testing, benchmarking, or architectural improvement"
+    },
+    {
+      "time": "2026-04-19T20:15:51.242Z",
+      "msg": "Added T145 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-19T20:15:51.360Z",
+      "msg": "Added T146 (MAINTAIN) after end: Final session push + wrap-up"
+    },
+    {
+      "time": "2026-04-19T20:20:37.226Z",
+      "msg": "PLAN T136 filled 2 BUILD tasks"
     }
   ]
 }

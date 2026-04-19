@@ -489,6 +489,28 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: tables };
   }
   
+  // SHOW TABLE STATUS — MySQL-compatible table status (used by stress test)
+  if (upper === 'SHOW TABLE STATUS' || upper === 'SHOW TABLE STATUS;') {
+    const tables = [];
+    if (db.tables) {
+      for (const [name, table] of db.tables) {
+        const rowCount = table.heap?.rowCount ?? 0;
+        const colCount = table.schema?.length ?? 0;
+        const indexCount = table.indexes?.size ?? 0;
+        const engine = table.heap?.constructor?.name || 'HeapFile';
+        tables.push({
+          Name: name,
+          Engine: engine,
+          Rows: rowCount,
+          Columns: colCount,
+          Indexes: indexCount,
+          Auto_increment: null,
+        });
+      }
+    }
+    return { type: 'ROWS', rows: tables };
+  }
+  
   // SHOW INDEXES — list all indexes across all tables
   const showIdxMatch = upper.match(/^SHOW\s+INDEXES?\s*(?:FROM\s+(\w+))?/);
   if (showIdxMatch) {

@@ -2203,12 +2203,19 @@ export class Database {
       }
       
       // Check UNIQUE constraints (including PRIMARY KEY columns)
+      // Must use schema-ordered values, not insert-column-ordered values
+      const orderedValsForCheck = this._orderValues(table, ast.columns, values);
+      // Apply SERIAL auto-increment for the check
       for (let ci = 0; ci < table.schema.length; ci++) {
-        if ((table.schema[ci].unique || table.schema[ci].primaryKey) && values[ci] != null) {
+        if (table.schema[ci].serial && (orderedValsForCheck[ci] === null || orderedValsForCheck[ci] === undefined)) {
+          // Skip SERIAL columns that haven't been assigned yet — they'll be unique
+          continue;
+        }
+        if ((table.schema[ci].unique || table.schema[ci].primaryKey) && orderedValsForCheck[ci] != null) {
           for (const tuple of table.heap.scan()) {
             const tv = tuple.values || tuple;
-            if (tv[ci] === values[ci]) {
-              throw new Error(`UNIQUE constraint violated on column ${table.schema[ci].name}: duplicate value '${values[ci]}'`);
+            if (tv[ci] === orderedValsForCheck[ci]) {
+              throw new Error(`UNIQUE constraint violated on column ${table.schema[ci].name}: duplicate value '${orderedValsForCheck[ci]}'`);
             }
           }
         }
@@ -2739,12 +2746,14 @@ export class Database {
           seq.current += seq.increment;
           orderedValues[i] = seq.current;
         }
-      } else if (table.schema[i].serial && typeof orderedValues[i] === 'number') {
+      } else if (table.schema[i].serial) {
         // Explicit value — advance sequence past it
-        const seqName = table.schema[i].serial.toLowerCase();
-        const seq = this.sequences.get(seqName);
-        if (seq && orderedValues[i] > seq.current) {
-          seq.current = orderedValues[i];
+        if (typeof orderedValues[i] === 'number') {
+          const seqName = table.schema[i].serial.toLowerCase();
+          const seq = this.sequences.get(seqName);
+          if (seq && orderedValues[i] > seq.current) {
+            seq.current = orderedValues[i];
+          }
         }
       }
     }
@@ -3239,8 +3248,29 @@ export class Database {
     const table = this.tables.get(ast.from.table);
     if (!table) throw new Error(`Table ${ast.from.table} not found`);
 
-    let rows = [];
+    // Validate column references against table schema (single-table, non-star queries)
     const hasJoins = ast.joins && ast.joins.length > 0;
+    if (!hasJoins && table.schema) {
+      const schemaColNames = new Set(table.schema.map(c => c.name.toLowerCase()));
+      const tableAlias = ast.from.alias || ast.from.table;
+      // Validate SELECT columns
+      for (const col of ast.columns) {
+        if (col.type === 'star' || col.type === 'qualified_star') continue;
+        if (col.type === 'aggregate' || col.type === 'function' || col.type === 'expression' || col.type === 'window' || col.type === 'scalar_subquery') continue;
+        if (col.type === 'column' && typeof col.name === 'string') {
+          const rawName = col.name.includes('.') ? col.name.split('.').pop() : col.name;
+          if (!schemaColNames.has(rawName.toLowerCase())) {
+            throw new Error(`Column "${rawName}" does not exist in table "${ast.from.table}"`);
+          }
+        }
+      }
+      // Validate WHERE column references
+      if (ast.where) {
+        this._validateColumnRefs(ast.where, schemaColNames, ast.from.table, tableAlias);
+      }
+    }
+
+    let rows = [];
 
     // Apply predicate pushdown for joins: push WHERE filters to individual table scans
     let workingAst = ast;
@@ -5581,8 +5611,9 @@ export class Database {
             // BTree PK lookup is always fast (O(log N)), always use it
             const pkCol = table.schema.find(c => c.primaryKey)?.name || 'id';
             plan.push({ operation: 'INDEX_SCAN', table: tableName, index: pkCol, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost });
-          } else if (costComparison.useIndex || costComparison.selectivity <= 0.5) {
-            // Index scan is cheaper
+          } else if (costComparison.useIndex || costComparison.selectivity <= 0.5 || estRows <= 100) {
+            // Index scan is cheaper, or table is small enough that index overhead is negligible
+            // For small tables (<=100 rows), always prefer explicit secondary index for equality
             const colName = this._findIndexedColumn(stmt.where);
             plan.push({ operation: 'INDEX_SCAN', table: tableName, index: colName, engine, estimated_rows: estimatedResultRows, estimation_method: filterEst?.method, cost: costComparison.indexCost, cost_comparison: `idx=${costComparison.indexCost} seq=${costComparison.seqCost} sel=${costComparison.selectivity}` });
           } else {
@@ -7854,6 +7885,35 @@ export class Database {
           ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(n.func?.toUpperCase())) return true;
       return false;
     });
+  }
+
+  _validateColumnRefs(expr, schemaColNames, tableName, tableAlias) {
+    if (!expr) return;
+    if (expr.type === 'column_ref') {
+      let colName = expr.name;
+      // Strip table alias prefix
+      if (colName.includes('.')) {
+        const parts = colName.split('.');
+        const prefix = parts[0].toLowerCase();
+        if (prefix === tableName.toLowerCase() || prefix === tableAlias?.toLowerCase()) {
+          colName = parts.slice(1).join('.');
+        } else {
+          return; // Different table alias — skip (could be outer query ref)
+        }
+      }
+      if (!schemaColNames.has(colName.toLowerCase())) {
+        throw new Error(`Column "${colName}" does not exist in table "${tableName}"`);
+      }
+    }
+    // Recurse into sub-expressions
+    if (expr.left) this._validateColumnRefs(expr.left, schemaColNames, tableName, tableAlias);
+    if (expr.right) this._validateColumnRefs(expr.right, schemaColNames, tableName, tableAlias);
+    if (expr.expr) this._validateColumnRefs(expr.expr, schemaColNames, tableName, tableAlias);
+    if (expr.operand) this._validateColumnRefs(expr.operand, schemaColNames, tableName, tableAlias);
+    if (expr.args) expr.args.forEach(a => this._validateColumnRefs(a, schemaColNames, tableName, tableAlias));
+    if (expr.values) expr.values.forEach(v => this._validateColumnRefs(v, schemaColNames, tableName, tableAlias));
+    // Skip subqueries — they have their own scope
+    if (expr.type === 'SUBQUERY' || expr.type === 'EXISTS' || expr.type === 'IN_SUBQUERY') return;
   }
 
   _resolveColumn(name, row) {

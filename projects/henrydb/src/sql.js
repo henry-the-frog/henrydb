@@ -811,6 +811,12 @@ export function parse(sql) {
   // UNION not yet handled at this layer — keeping for later
 
   function parseSelectList() {
+    // SELECT requires at least one column expression
+    const nxt = peek();
+    if (!nxt || nxt.type === 'EOF' || nxt.type === ';' || 
+        (nxt.type === 'KEYWORD' && ['FROM', 'WHERE', 'ORDER', 'GROUP', 'HAVING', 'LIMIT', 'OFFSET', 'UNION', 'INTERSECT', 'EXCEPT', 'INTO', 'FOR'].includes(nxt.value))) {
+      throw new Error('Parse error: SELECT requires at least one column or expression');
+    }
     if (match('*')) {
       const cols = [{ type: 'star' }];
       while (match(',')) {
