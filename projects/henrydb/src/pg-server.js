@@ -604,7 +604,7 @@ function interceptPgCatalog(sql, db) {
   
   // psql: version()
   if (upper.includes('VERSION()')) {
-    return { type: 'ROWS', rows: [{ version: 'HenryDB 0.1.0 on Node.js' }] };
+    return { type: 'ROWS', rows: [{ version: 'PostgreSQL 15.0 (HenryDB 0.1.0) on Node.js' }] };
   }
   
   // pg_catalog.pg_class — table OIDs

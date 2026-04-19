@@ -1577,16 +1577,20 @@
       "id": "T150",
       "mode": "BUILD",
       "task": "Investigate and fix ROLLBACK TO SAVEPOINT MVCC undo - undoes too much",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T144",
-      "started": "2026-04-19T21:23:01.854Z"
+      "started": "2026-04-19T21:23:01.854Z",
+      "completed": "2026-04-19T21:32:51.573Z",
+      "duration_ms": 900000,
+      "summary": "Fixed MVCC ROLLBACK TO SAVEPOINT undo - replaced scorched-earth approach (delete ALL rows + re-insert snapshot) with targeted undo that only affects rows changed by the specific UPDATE. Root cause: undo closure captured pre-transaction state instead of pre-UPDATE state, and nuked entire table instead of targeted rows. All 10 savepoint tests + all transaction tests pass."
     },
     {
       "id": "T151",
       "mode": "BUILD",
       "task": "Fix server-knex connection pool timeout and null dereference",
-      "status": "upcoming",
-      "plan_ref": "T144"
+      "status": "in-progress",
+      "plan_ref": "T144",
+      "started": "2026-04-19T21:33:08.002Z"
     },
     {
       "id": "T152",
