@@ -76,6 +76,15 @@ function authMD5Password(salt) {
   return buf;
 }
 
+function backendKeyData(pid, secretKey) {
+  const buf = Buffer.alloc(13);
+  buf[0] = 0x4B; // 'K'
+  writeInt32BE(buf, 12, 1); // length
+  writeInt32BE(buf, pid, 5); // process ID
+  writeInt32BE(buf, secretKey, 9); // secret key
+  return buf;
+}
+
 function parameterStatus(name, value) {
   const nameBytes = Buffer.from(name + '\0', 'utf8');
   const valBytes = Buffer.from(value + '\0', 'utf8');
@@ -1049,6 +1058,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
 
         // Send auth + params + ready
         socket.write(authOk());
+        socket.write(backendKeyData(connId, connId * 37));
         socket.write(parameterStatus('server_version', '14.0 (HenryDB)'));
         socket.write(parameterStatus('server_encoding', 'UTF8'));
         socket.write(parameterStatus('client_encoding', 'UTF8'));
@@ -1082,6 +1092,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
         if (passwordStr === expected) {
           authState = null;
           socket.write(authOk());
+          socket.write(backendKeyData(connId, connId * 37));
           socket.write(parameterStatus('server_version', '14.0 (HenryDB)'));
           socket.write(parameterStatus('server_encoding', 'UTF8'));
           socket.write(parameterStatus('client_encoding', 'UTF8'));
