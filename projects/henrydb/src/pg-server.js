@@ -149,6 +149,19 @@ function dataRow(values) {
   return buf;
 }
 
+function notificationResponse(processId, channel, payload) {
+  const channelBuf = Buffer.from(channel + '\0', 'utf8');
+  const payloadBuf = Buffer.from((payload || '') + '\0', 'utf8');
+  const len = 4 + 4 + channelBuf.length + payloadBuf.length;
+  const buf = Buffer.alloc(1 + len);
+  buf[0] = 0x41; // 'A'
+  buf.writeInt32BE(len, 1);
+  buf.writeInt32BE(processId, 5);
+  channelBuf.copy(buf, 9);
+  payloadBuf.copy(buf, 9 + channelBuf.length);
+  return buf;
+}
+
 function commandComplete(tag) {
   const tagBytes = Buffer.from(tag + '\0', 'utf8');
   const len = 4 + tagBytes.length;
@@ -572,7 +585,7 @@ function interceptPgCatalog(sql, db) {
   return null; // Not intercepted
 }
 
-function handleConnection(socket, db, connId = 0) {
+function handleConnection(socket, db, connId = 0, channels = new Map()) {
   let buffer = Buffer.alloc(0);
   let startupDone = false;
 
@@ -662,6 +675,50 @@ function handleConnection(socket, db, connId = 0) {
       return { type: 'COMMAND', command: 'CLOSE CURSOR' };
     }
     
+    // LISTEN/NOTIFY/UNLISTEN
+    const listenMatch = sql.match(/^LISTEN\s+(\w+)\s*$/i);
+    if (listenMatch) {
+      const channel = listenMatch[1].toLowerCase();
+      if (!channels.has(channel)) channels.set(channel, new Map());
+      channels.get(channel).set(connId, socket);
+      return { type: 'COMMAND', command: 'LISTEN' };
+    }
+    
+    const unlistenMatch = sql.match(/^UNLISTEN\s+(\*|\w+)\s*$/i);
+    if (unlistenMatch) {
+      const target = unlistenMatch[1];
+      if (target === '*') {
+        // Remove this connection from all channels
+        for (const [ch, subs] of channels) {
+          subs.delete(connId);
+          if (subs.size === 0) channels.delete(ch);
+        }
+      } else {
+        const channel = target.toLowerCase();
+        const subs = channels.get(channel);
+        if (subs) {
+          subs.delete(connId);
+          if (subs.size === 0) channels.delete(channel);
+        }
+      }
+      return { type: 'COMMAND', command: 'UNLISTEN' };
+    }
+    
+    const notifyMatch = sql.match(/^NOTIFY\s+(\w+)(?:\s*,\s*'([^']*)')?\s*$/i);
+    if (notifyMatch) {
+      const channel = notifyMatch[1].toLowerCase();
+      const payload = notifyMatch[2] || '';
+      const subs = channels.get(channel);
+      if (subs) {
+        for (const [subConnId, subSocket] of subs) {
+          try {
+            subSocket.write(notificationResponse(subConnId, channel, payload));
+          } catch (e) { /* socket may be closed */ }
+        }
+      }
+      return { type: 'COMMAND', command: 'NOTIFY' };
+    }
+    
     const intercepted = interceptPgCatalog(sql, db);
     if (intercepted) return intercepted;
     return db.execute(sql);
@@ -676,8 +733,20 @@ function handleConnection(socket, db, connId = 0) {
     processBuffer();
   });
 
-  socket.on('error', () => { _advisoryLocks.releaseAll(connId); });
-  socket.on('close', () => { _advisoryLocks.releaseAll(connId); });
+  socket.on('error', () => { 
+    _advisoryLocks.releaseAll(connId);
+    for (const [ch, subs] of channels) {
+      subs.delete(connId);
+      if (subs.size === 0) channels.delete(ch);
+    }
+  });
+  socket.on('close', () => {
+    _advisoryLocks.releaseAll(connId);
+    for (const [ch, subs] of channels) {
+      subs.delete(connId);
+      if (subs.size === 0) channels.delete(ch);
+    }
+  });
 
   function processBuffer() {
     while (buffer.length >= 4) {
@@ -1324,11 +1393,17 @@ const _advisoryLocks = new AdvisoryLockManager();
 let _nextConnId = 1;
 
 export function createPgServer(db, port = 5433) {
+  // Global channel subscriptions: channel → Map<connId, socket>
+  const channels = new Map();
+  
   const server = createServer((socket) => {
     const connId = _nextConnId++;
-    handleConnection(socket, db, connId);
+    handleConnection(socket, db, connId, channels);
   });
 
+  // Expose channels for test access
+  server._channels = channels;
+  
   server.listen(port, () => {
     console.log(`HenryDB PG wire protocol server listening on port ${port}`);
     console.log(`Connect: psql -h localhost -p ${port}`);
