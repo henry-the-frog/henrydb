@@ -1022,7 +1022,7 @@ export function parse(sql) {
     }
 
     // Window functions: ROW_NUMBER, RANK, DENSE_RANK, CUME_DIST, PERCENT_RANK
-    if (peek().type === 'KEYWORD' && ZERO_ARG_WINDOW_FUNCS.includes(peek().value)) {
+    if (peek().type === 'KEYWORD' && ZERO_ARG_WINDOW_FUNCS.includes(peek().value) && tokens[pos + 1]?.type === '(') {
       let node = parseWindowCall();
       const withArith = parseTrailingArithmetic(node);
       if (withArith !== node) {
@@ -1036,7 +1036,7 @@ export function parse(sql) {
     }
 
     // LAG/LEAD window functions with arguments
-    if (peek().type === 'KEYWORD' && ARG_WINDOW_FUNCS.includes(peek().value)) {
+    if (peek().type === 'KEYWORD' && ARG_WINDOW_FUNCS.includes(peek().value) && tokens[pos + 1]?.type === '(') {
       let node = parseWindowCall();
       const withArith = parseTrailingArithmetic(node);
       if (withArith !== node) {

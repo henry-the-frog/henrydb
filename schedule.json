@@ -707,6 +707,21 @@
       "summary": "Full sweep: 964/980 pass. 7 failures all pre-existing (FOR UPDATE, wire protocol, timeouts). Zero new regressions from expr-walker refactoring."
     },
     {
+      "id": "T68",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Stress test: complex SQL patterns - CTEs, recursive queries, lateral joins",
+      "project": "henrydb",
+      "started": "2026-04-19T16:00:17.141Z"
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write comprehensive CTE + recursive CTE tests",
+      "project": "henrydb"
+    },
+    {
       "id": "T33",
       "mode": "THINK",
       "status": "upcoming",
@@ -1026,6 +1041,18 @@
     {
       "time": "2026-04-19T15:52:29.419Z",
       "msg": "PLAN T62 filled 5 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T16:00:09.605Z",
+      "msg": "Added T68 (THINK) after end: Stress test: complex SQL patterns - CTEs, recursive queries, lateral joins"
+    },
+    {
+      "time": "2026-04-19T16:00:09.723Z",
+      "msg": "Added T69 (BUILD) after end: Write comprehensive CTE + recursive CTE tests"
+    },
+    {
+      "time": "2026-04-19T16:00:09.840Z",
+      "msg": "Moved T33 after T69"
     }
   ]
 }
