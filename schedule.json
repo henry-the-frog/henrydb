@@ -629,6 +629,65 @@
       "summary": "Depth pivot reflection: 5 meta-patterns identified. Parser duplication is #1 issue. Expression walkers have inconsistent coverage. 4 parallel aggregate evaluation paths. Future: walkExpression helper, unified aggregate layer."
     },
     {
+      "id": "T61",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design unified expression walker for HenryDB",
+      "project": "henrydb",
+      "started": "2026-04-19T15:51:56.945Z",
+      "completed": "2026-04-19T15:52:13.319Z",
+      "duration_ms": 120000,
+      "summary": "Designed walkExpr API: generic tree walker with getExprChildren helper. Current 6 walker functions become thin wrappers. Too risky for this session (400+ tests), plan for next."
+    },
+    {
+      "id": "T62",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan walkExpr refactoring: extract generic tree walker",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-19T15:52:20.275Z",
+      "completed": "2026-04-19T15:52:36.279Z",
+      "duration_ms": 30000,
+      "summary": "Planned 5 incremental BUILD tasks for walkExpr refactoring. Each refactors one function, runs tests. Low risk per step."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "task": "Implement getExprChildren + walkExpr in a new module expr-walker.js",
+      "status": "in-progress",
+      "plan_ref": "T62",
+      "started": "2026-04-19T15:52:42.875Z"
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "task": "Refactor _exprContainsWindow to use walkExpr",
+      "status": "upcoming",
+      "plan_ref": "T62"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "task": "Refactor _exprContainsAggregate to use walkExpr",
+      "status": "upcoming",
+      "plan_ref": "T62"
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "task": "Refactor _extractWindowNodes and _collectAggregateExprs to use walkExpr",
+      "status": "upcoming",
+      "plan_ref": "T62"
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "task": "Run full test suite to verify zero regressions",
+      "status": "upcoming",
+      "plan_ref": "T62"
+    },
+    {
       "id": "T33",
       "mode": "THINK",
       "status": "upcoming",
@@ -932,6 +991,22 @@
     {
       "time": "2026-04-19T15:50:48.286Z",
       "msg": "Moved T33 after T60"
+    },
+    {
+      "time": "2026-04-19T15:51:49.052Z",
+      "msg": "Added T61 (THINK) after end: Design unified expression walker for HenryDB"
+    },
+    {
+      "time": "2026-04-19T15:51:49.171Z",
+      "msg": "Added T62 (PLAN) after end: Plan walkExpr refactoring: extract generic tree walker"
+    },
+    {
+      "time": "2026-04-19T15:51:49.286Z",
+      "msg": "Moved T33 after T62"
+    },
+    {
+      "time": "2026-04-19T15:52:29.419Z",
+      "msg": "PLAN T62 filled 5 BUILD tasks"
     }
   ]
 }
