@@ -1,123 +1,161 @@
-// window-comprehensive.test.js — Window function stress tests
-import { describe, it, before } from 'node:test';
+// window-functions-comprehensive.test.js
+
+import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
-describe('Window functions (comprehensive)', () => {
+describe('Window Functions — Ranking', () => {
   let db;
-  before(() => {
+
+  beforeEach(() => {
     db = new Database();
-    db.execute('CREATE TABLE employees (id INT, name TEXT, dept TEXT, salary INT)');
-    db.execute("INSERT INTO employees VALUES (1, 'Alice', 'eng', 100)");
-    db.execute("INSERT INTO employees VALUES (2, 'Bob', 'eng', 120)");
-    db.execute("INSERT INTO employees VALUES (3, 'Carol', 'sales', 80)");
-    db.execute("INSERT INTO employees VALUES (4, 'Dave', 'sales', 90)");
-    db.execute("INSERT INTO employees VALUES (5, 'Eve', 'eng', 110)");
-    db.execute("INSERT INTO employees VALUES (6, 'Frank', 'hr', 95)");
-    db.execute("INSERT INTO employees VALUES (7, 'Grace', 'hr', 85)");
-    db.execute("INSERT INTO employees VALUES (8, 'Hank', 'sales', 75)");
+    db.execute('CREATE TABLE emp (id INT PRIMARY KEY, dept TEXT, name TEXT, salary INT)');
+    db.execute("INSERT INTO emp VALUES (1, 'Sales', 'Alice', 50000)");
+    db.execute("INSERT INTO emp VALUES (2, 'Sales', 'Bob', 60000)");
+    db.execute("INSERT INTO emp VALUES (3, 'Sales', 'Carol', 60000)"); // tie with Bob
+    db.execute("INSERT INTO emp VALUES (4, 'Eng', 'Dan', 80000)");
+    db.execute("INSERT INTO emp VALUES (5, 'Eng', 'Eve', 90000)");
+    db.execute("INSERT INTO emp VALUES (6, 'Eng', 'Frank', 70000)");
   });
 
-  describe('ROW_NUMBER', () => {
-    it('ROW_NUMBER() OVER (ORDER BY salary DESC)', () => {
-      const r = db.execute('SELECT name, salary, ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn FROM employees');
-      assert.equal(r.rows.length, 8);
-      assert.equal(r.rows[0].rn, 1);
-      assert.equal(r.rows[0].salary, 120); // Bob
-      assert.equal(r.rows[7].rn, 8);
-    });
-
-    it('ROW_NUMBER with PARTITION BY', () => {
-      const r = db.execute('SELECT name, dept, salary, ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC) AS dept_rank FROM employees ORDER BY dept, dept_rank');
-      // eng: Bob(120)→1, Eve(110)→2, Alice(100)→3
-      const eng = r.rows.filter(row => row.dept === 'eng');
-      assert.equal(eng[0].dept_rank, 1);
-      assert.equal(eng[0].name, 'Bob');
-      assert.equal(eng[2].dept_rank, 3);
-    });
+  it('ROW_NUMBER partitioned by dept', () => {
+    const r = db.execute('SELECT name, dept, salary, ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC) as rn FROM emp ORDER BY dept, rn');
+    // Eng: Eve(1), Dan(2), Frank(3)
+    // Sales: Bob(1 or 2), Carol(1 or 2), Alice(3)
+    const eng = r.rows.filter(r => r.dept === 'Eng');
+    assert.equal(eng[0].rn, 1);
+    assert.equal(eng[0].salary, 90000);
+    assert.equal(eng[2].rn, 3);
   });
 
-  describe('RANK', () => {
-    it('RANK() with ties', () => {
-      db.execute('CREATE TABLE scores (name TEXT, score INT)');
-      db.execute("INSERT INTO scores VALUES ('A', 100), ('B', 90), ('C', 90), ('D', 80)");
-      const r = db.execute('SELECT name, score, RANK() OVER (ORDER BY score DESC) AS rank FROM scores');
-      // A→1, B→2, C→2, D→4 (ties get same rank, next rank skips)
-      const bRow = r.rows.find(row => row.name === 'B');
-      const cRow = r.rows.find(row => row.name === 'C');
-      const dRow = r.rows.find(row => row.name === 'D');
-      assert.equal(bRow.rank, cRow.rank); // B and C tied
-      assert.equal(dRow.rank, 4); // D skips to 4
-    });
+  it('RANK with ties', () => {
+    const r = db.execute('SELECT name, salary, RANK() OVER (ORDER BY salary DESC) as rnk FROM emp ORDER BY rnk, name');
+    assert.equal(r.rows[0].rnk, 1); // Eve 90000
+    assert.equal(r.rows[1].rnk, 2); // Dan 80000
+    // Bob and Carol at 60000 should both be rank 4 (tied)
+    const tied = r.rows.filter(r => r.salary === 60000);
+    assert.equal(tied.length, 2);
+    assert.ok(tied.every(r => r.rnk === tied[0].rnk), 'Tied salaries have same rank');
   });
 
-  describe('DENSE_RANK', () => {
-    it('DENSE_RANK() without gaps', () => {
-      db.execute('CREATE TABLE dr (name TEXT, val INT)');
-      db.execute("INSERT INTO dr VALUES ('A', 100), ('B', 90), ('C', 90), ('D', 80)");
-      const r = db.execute('SELECT name, val, DENSE_RANK() OVER (ORDER BY val DESC) AS dr FROM dr');
-      const dRow = r.rows.find(row => row.name === 'D');
-      assert.equal(dRow.dr, 3); // Dense rank: no gap (1, 2, 2, 3)
-    });
+  it('DENSE_RANK — no gaps', () => {
+    const r = db.execute('SELECT name, salary, DENSE_RANK() OVER (ORDER BY salary DESC) as drnk FROM emp ORDER BY drnk');
+    // 90000→1, 80000→2, 70000→3, 60000→4 (both Bob and Carol), 50000→5
+    const ranks = [...new Set(r.rows.map(r => r.drnk))];
+    assert.deepStrictEqual(ranks, [1, 2, 3, 4, 5], 'No gaps in dense rank');
   });
 
-  describe('SUM OVER', () => {
-    it('running total', () => {
-      const r = db.execute('SELECT name, salary, SUM(salary) OVER (ORDER BY id) AS running_total FROM employees ORDER BY id');
-      assert.equal(r.rows[0].running_total, 100); // Alice
-      assert.equal(r.rows[1].running_total, 220); // + Bob
-      assert.equal(r.rows[2].running_total, 300); // + Carol
-    });
+  it('NTILE distributes rows evenly', () => {
+    const r = db.execute('SELECT name, NTILE(3) OVER (ORDER BY salary) as bucket FROM emp ORDER BY bucket, salary');
+    // 6 rows into 3 buckets: 2 per bucket
+    const counts = [0, 0, 0];
+    for (const row of r.rows) counts[row.bucket - 1]++;
+    assert.deepStrictEqual(counts, [2, 2, 2]);
+  });
+});
 
-    it('SUM OVER with PARTITION BY and ORDER BY', () => {
-      const r = db.execute('SELECT name, dept, salary, SUM(salary) OVER (PARTITION BY dept ORDER BY salary) AS running_dept_total FROM employees ORDER BY dept, salary');
-      // eng: Alice(100)→100, Eve(110)→210, Bob(120)→330
-      const eng = r.rows.filter(row => row.dept === 'eng');
-      assert.equal(eng[eng.length - 1].running_dept_total, 330);
-    });
+describe('Window Functions — Value', () => {
+  let db;
+
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE ts (id INT PRIMARY KEY, val INT, grp TEXT)');
+    db.execute("INSERT INTO ts VALUES (1, 10, 'A'), (2, 20, 'A'), (3, 30, 'A'), (4, 40, 'B'), (5, 50, 'B')");
   });
 
-  describe('AVG OVER', () => {
-    it('running average', () => {
-      const r = db.execute('SELECT name, salary, AVG(salary) OVER (ORDER BY id) AS running_avg FROM employees ORDER BY id');
-      assert.equal(r.rows[0].running_avg, 100); // Alice alone
-    });
+  it('LAG gets previous row value', () => {
+    const r = db.execute('SELECT id, val, LAG(val, 1) OVER (ORDER BY id) as prev_val FROM ts ORDER BY id');
+    assert.equal(r.rows[0].prev_val, null); // First row has no previous
+    assert.equal(r.rows[1].prev_val, 10);
+    assert.equal(r.rows[4].prev_val, 40);
   });
 
-  describe('COUNT OVER', () => {
-    it('COUNT(*) partitioned', () => {
-      const r = db.execute('SELECT name, dept, COUNT(*) OVER (PARTITION BY dept) AS dept_size FROM employees ORDER BY dept, name');
-      const eng = r.rows.filter(row => row.dept === 'eng');
-      assert.ok(eng.every(row => row.dept_size === 3));
-      const hr = r.rows.filter(row => row.dept === 'hr');
-      assert.ok(hr.every(row => row.dept_size === 2));
-    });
+  it('LEAD gets next row value', () => {
+    const r = db.execute('SELECT id, val, LEAD(val, 1) OVER (ORDER BY id) as next_val FROM ts ORDER BY id');
+    assert.equal(r.rows[0].next_val, 20);
+    assert.equal(r.rows[4].next_val, null); // Last row has no next
   });
 
-  describe('Multiple window functions', () => {
-    it('ROW_NUMBER + SUM + AVG in same query', () => {
-      const r = db.execute(`
-        SELECT name, dept, salary,
-          ROW_NUMBER() OVER (ORDER BY salary DESC) AS global_rank,
-          SUM(salary) OVER (PARTITION BY dept) AS dept_total
-        FROM employees
-        ORDER BY salary DESC
-      `);
-      assert.equal(r.rows.length, 8);
-      assert.equal(r.rows[0].global_rank, 1);
-      assert.ok(r.rows[0].dept_total > 0);
-    });
+  it('LAG partitioned', () => {
+    const r = db.execute('SELECT grp, id, val, LAG(val, 1) OVER (PARTITION BY grp ORDER BY id) as prev FROM ts ORDER BY grp, id');
+    const a = r.rows.filter(r => r.grp === 'A');
+    assert.equal(a[0].prev, null); // First in partition
+    assert.equal(a[1].prev, 10);
+    assert.equal(a[2].prev, 20);
   });
 
-  describe('Window with WHERE', () => {
-    it('window function after WHERE filter', () => {
-      const r = db.execute(`
-        SELECT name, salary, ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn
-        FROM employees
-        WHERE dept = 'eng'
-      `);
-      assert.equal(r.rows.length, 3);
-      assert.equal(r.rows[0].rn, 1);
-    });
+  it('FIRST_VALUE', () => {
+    const r = db.execute('SELECT grp, val, FIRST_VALUE(val) OVER (PARTITION BY grp ORDER BY val) as first_val FROM ts ORDER BY grp, val');
+    const a = r.rows.filter(r => r.grp === 'A');
+    assert.ok(a.every(r => r.first_val === 10));
+  });
+});
+
+describe('Window Functions — Aggregate', () => {
+  let db;
+
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    for (let i = 1; i <= 5; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
+  });
+
+  it('SUM running total', () => {
+    const r = db.execute('SELECT id, val, SUM(val) OVER (ORDER BY id) as running FROM t ORDER BY id');
+    assert.equal(r.rows[0].running, 10);
+    assert.equal(r.rows[1].running, 30);
+    assert.equal(r.rows[4].running, 150);
+  });
+
+  it('AVG moving average (3 rows)', () => {
+    const r = db.execute('SELECT id, val, AVG(val) OVER (ORDER BY id ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as ma FROM t ORDER BY id');
+    assert.equal(r.rows[0].ma, 15);    // avg(10, 20)
+    assert.equal(r.rows[1].ma, 20);    // avg(10, 20, 30)
+    assert.equal(r.rows[2].ma, 30);    // avg(20, 30, 40)
+    assert.equal(r.rows[4].ma, 45);    // avg(40, 50)
+  });
+
+  it('COUNT running count', () => {
+    const r = db.execute('SELECT id, COUNT(*) OVER (ORDER BY id) as cnt FROM t ORDER BY id');
+    assert.equal(r.rows[0].cnt, 1);
+    assert.equal(r.rows[4].cnt, 5);
+  });
+
+  it('SUM over entire partition (no ORDER BY)', () => {
+    const r = db.execute('SELECT id, val, SUM(val) OVER () as total FROM t');
+    assert.ok(r.rows.every(row => row.total === 150), 'All rows see total 150');
+  });
+
+  it('multiple window functions', () => {
+    const r = db.execute(`
+      SELECT id, val,
+        SUM(val) OVER (ORDER BY id) as running,
+        AVG(val) OVER () as overall_avg,
+        ROW_NUMBER() OVER (ORDER BY val DESC) as rank_desc
+      FROM t ORDER BY id
+    `);
+    assert.equal(r.rows[0].running, 10);
+    assert.equal(r.rows[0].overall_avg, 30);
+    assert.equal(r.rows[4].rank_desc, 1); // id=5, val=50 is highest
+  });
+});
+
+describe('Window Functions — Statistics', () => {
+  it('PERCENT_RANK', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    for (let i = 1; i <= 5; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
+    const r = db.execute('SELECT id, PERCENT_RANK() OVER (ORDER BY val) as pct FROM t ORDER BY val');
+    assert.equal(r.rows[0].pct, 0); // First: 0
+    assert.equal(r.rows[4].pct, 1); // Last: 1
+  });
+
+  it('CUME_DIST', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    for (let i = 1; i <= 5; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
+    const r = db.execute('SELECT id, CUME_DIST() OVER (ORDER BY val) as cd FROM t ORDER BY val');
+    assert.equal(r.rows[0].cd, 0.2);
+    assert.equal(r.rows[4].cd, 1);
   });
 });
