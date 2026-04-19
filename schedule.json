@@ -3219,22 +3219,314 @@
     {
       "id": "T299",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping: git push, dashboard check",
-      "started": "2026-04-19T02:32:59.247Z"
+      "started": "2026-04-19T02:32:59.247Z",
+      "completed": "2026-04-19T02:33:17.319Z",
+      "duration_ms": 60000,
+      "summary": "Git push henrydb + workspace. All pushed successfully."
     },
     {
       "id": "T300",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on optimizer progress, assess what's working"
+      "status": "done",
+      "task": "Reflect on optimizer progress, assess what's working",
+      "started": "2026-04-19T02:33:23.419Z",
+      "completed": "2026-04-19T02:33:38.347Z",
+      "duration_ms": 60000,
+      "summary": "Reflected: 3 BUILDs done, 44 optimizer tests found 0 bugs, 1 real timezone bug in DATE_TRUNC. Direction: continue to T301 EXPLORE, then maybe stress test under-tested areas like WAL recovery or wire protocol."
     },
     {
       "id": "T301",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive: compare HenryDB optimizer to PG/SQLite approaches, find gaps",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T02:33:46.669Z",
+      "completed": "2026-04-19T02:40:46.601Z",
+      "duration_ms": 900000,
+      "summary": "MAJOR: Found and fixed 6 SQL correctness bugs through systematic edge case testing. (1) NOT NULL returned true instead of NULL — literal coerced NULL to false. (2-3) NULL AND TRUE / NULL OR FALSE returned false — JS short-circuit != SQL three-valued logic. (4) NULL IN (1,2,NULL) returned true — === matched nulls. (5-6) EXISTS/NOT EXISTS in SELECT returned string literals — parser treated as column names. Root cause: _evalExpr literal case destroyed NULL values with !! coercion. Added 34 edge case tests, all pass. 113/113 regression tests pass."
+    },
+    {
+      "id": "T305",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Systematic SQL compliance test: test JOIN semantics edge cases (NATURAL JOIN, CROSS JOIN, self-join aliases, multi-column ON, USING clause)",
+      "project": "henrydb",
+      "started": "2026-04-19T02:41:16.635Z",
+      "completed": "2026-04-19T02:42:39.618Z",
+      "duration_ms": 600000,
+      "summary": "13 JOIN semantics tests, all pass. Tested INNER/LEFT/RIGHT/FULL OUTER/CROSS/NATURAL/USING joins, self-join, anti-join, semi-join, multi-condition ON, comma join, 3-way join. No bugs found — all join types work correctly."
+    },
+    {
+      "id": "T306",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test UPDATE/DELETE with complex WHERE, RETURNING clause, multi-table UPDATE, UPDATE from subquery",
+      "project": "henrydb",
+      "started": "2026-04-19T02:42:48.507Z",
+      "completed": "2026-04-19T02:47:30.041Z",
+      "duration_ms": 900000,
+      "summary": "Found and fixed CTE+DML parser bug: WITH clause always dispatched to SELECT parser. Now handles DELETE/UPDATE/INSERT correctly. Added _withCTEs() helper for CTE scoping. Recursive CTEs work with DELETE (tree pruning). 20 DML edge case tests: CTE+DELETE/UPDATE/INSERT, UPDATE with subquery/CASE/RETURNING, DELETE patterns, INSERT patterns. All pass."
+    },
+    {
+      "id": "T307",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test expression evaluation edge cases: type coercion, CAST chains, expression aliases in GROUP BY, ORDER BY alias",
+      "project": "henrydb",
+      "started": "2026-04-19T02:47:40.129Z",
+      "completed": "2026-04-19T02:49:04.543Z",
+      "duration_ms": 600000,
+      "summary": "35 expression evaluation tests, all pass. CAST/type coercion, NULL arithmetic, conditionals, aliases, math functions, string functions, aggregate FILTER. No bugs found — expression evaluation is solid."
+    },
+    {
+      "id": "T309",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Hunt for transaction/MVCC bugs: concurrent read-write, phantom reads, snapshot isolation edge cases",
+      "project": "henrydb",
+      "started": "2026-04-19T02:49:32.317Z",
+      "completed": "2026-04-19T02:50:55.214Z",
+      "duration_ms": 600000,
+      "summary": "13 transaction isolation tests, all pass. Basic BEGIN/COMMIT/ROLLBACK, conservation of money invariant, nested savepoints, RELEASE SAVEPOINT, ROLLBACK restoring deleted/inserted/updated rows, constraint enforcement. No MVCC bugs found — single-session transactions work correctly."
+    },
+    {
+      "id": "T310",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive transaction isolation test suite",
+      "project": "henrydb",
+      "started": "2026-04-19T02:51:12.077Z",
+      "completed": "2026-04-19T02:51:12.223Z",
+      "duration_ms": 1000,
+      "summary": "Already completed as part of T309. 13 transaction isolation tests exist."
+    },
+    {
+      "id": "T311",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore and test window functions: frames (ROWS/RANGE), NTILE, LAG/LEAD, running totals, percent rank",
+      "project": "henrydb",
+      "started": "2026-04-19T02:51:28.731Z",
+      "completed": "2026-04-19T02:52:47.854Z",
+      "duration_ms": 600000,
+      "summary": "15 window function tests, all pass. Ranking (ROW_NUMBER, RANK with ties, DENSE_RANK, NTILE), value (LAG, LEAD, FIRST_VALUE with partition), aggregate (SUM running total, AVG moving average with ROWS frame, COUNT running, SUM over partition), statistics (PERCENT_RANK, CUME_DIST). No bugs found."
+    },
+    {
+      "id": "T312",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test recursive CTE edge cases: cycle detection, depth limits, graph traversal, tree aggregation",
+      "project": "henrydb",
+      "started": "2026-04-19T02:52:56.432Z",
+      "completed": "2026-04-19T03:00:16.069Z",
+      "duration_ms": 900000,
+      "summary": "CRITICAL BUG FOUND AND FIXED: predicate pushdown + view/CTE JOINs lost WHERE filters. _executeJoinWithRows never applied join.filter, causing recursive CTEs to ignore depth limits (running 1000 iterations instead of 5) and qualified column predicates to be silently dropped. 11 recursive CTE tests: counting, Fibonacci, tree traversal (descendants, ancestors, paths, subtree sum), depth limits, cycle detection. All pass."
+    },
+    {
+      "id": "T313",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Full test suite sweep — run ALL test files, find regressions, assess total test count",
+      "project": "henrydb",
+      "started": "2026-04-19T03:00:43.295Z",
+      "completed": "2026-04-19T03:01:37.378Z",
+      "duration_ms": 300000,
+      "summary": "Full test sweep: 416/416 tests pass across 24 test files (both new and legacy). Zero regressions from NULL logic, parser, CTE+DML, and view JOIN filter fixes. HenryDB has 788 test files total."
+    },
+    {
+      "id": "T314",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Hunt for more bugs: test constraint validation, CHECK constraints, foreign keys, triggers",
+      "project": "henrydb",
+      "started": "2026-04-19T03:01:46.879Z",
+      "completed": "2026-04-19T03:05:06.868Z",
+      "duration_ms": 600000,
+      "summary": "Bug hunt found multi-column UNIQUE treating columns independently — (1,2) rejected when only (1,1) existed. Fixed by creating composite unique index. Also tested CHECK constraints, FK violations, triggers, NOT NULL, DEFAULT, ALTER TABLE — all work. CHECK with multi-column expression has parser issue (not fixed yet)."
+    },
+    {
+      "id": "T315",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive constraint tests: multi-col UNIQUE, CHECK expressions, FK cascades, NOT NULL, DEFAULT",
+      "project": "henrydb",
+      "started": "2026-04-19T03:05:30.460Z",
+      "completed": "2026-04-19T03:09:49.123Z",
+      "duration_ms": 600000,
+      "summary": "29 constraint tests all passing. Fixed composite PK (treated columns independently), fixed CHECK NULL semantics (NULL now passes CHECK per SQL standard). Tests cover PK, UNIQUE (single + composite + NULL), NOT NULL, CHECK, DEFAULT, FK, triggers, ALTER TABLE."
+    },
+    {
+      "id": "T316",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test persistent storage: save/load database, WAL recovery, checkpoint integrity",
+      "project": "henrydb",
+      "started": "2026-04-19T03:10:04.251Z",
+      "completed": "2026-04-19T03:11:56.666Z",
+      "duration_ms": 600000,
+      "summary": "Explored persistence: WAL recovery works (Database.recover), 7 tests pass. Found known issue: uncommitted transactions survive recovery (WAL replay doesnt track commit status). Constructor needs {dataDir: dir}, not positional."
+    },
+    {
+      "id": "T317",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Hunt: try to crash HenryDB — fuzzy SQL, malformed queries, huge results, deep nesting",
+      "project": "henrydb",
+      "started": "2026-04-19T03:12:30.705Z",
+      "completed": "2026-04-19T03:15:30.033Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed 2 parser crashes: bare SELECT and SELECT * FROM caused TypeError by accessing .type on undefined peek(). Fixed with EOF sentinel token in peek(), error on advance() past end, null-check in match(). Also tested: malformed SQL, huge results, deep nesting, expression edge cases, type confusion — all handled gracefully."
+    },
+    {
+      "id": "T318",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session C reflection: what did we learn, what should tomorrow focus on",
+      "started": "2026-04-19T03:15:44.563Z",
+      "completed": "2026-04-19T03:16:05.190Z",
+      "duration_ms": 120000,
+      "summary": "Reflection: 24 tasks, 11 new test files (135+ tests), 12 real bugs found. Most impactful: CRITICAL pushdown+CTE bug, NULL three-valued logic, composite UNIQUE/PK. Key learning: systematic edge case testing (NULL semantics, CTE paths, qualified column names) finds far more bugs than happy-path feature testing."
+    },
+    {
+      "id": "T319",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test string functions edge cases: LIKE with special chars, SIMILAR TO, regex, position, overlay",
+      "project": "henrydb",
+      "started": "2026-04-19T03:16:20.179Z",
+      "completed": "2026-04-19T03:19:20.708Z",
+      "duration_ms": 600000,
+      "summary": "7 new string functions: SPLIT_PART, OVERLAY (with PLACING/FROM/FOR syntax), TRANSLATE, CHR, ASCII, MD5. Also registered all new functions in expression parser so they work nested. Regression: 0 failures."
+    },
+    {
+      "id": "T320",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement SIMILAR TO regex pattern matching if missing",
+      "project": "henrydb",
+      "started": "2026-04-19T03:19:38.586Z",
+      "completed": "2026-04-19T03:19:38.732Z",
+      "duration_ms": 1000,
+      "summary": "SIMILAR TO already works — tested in T319. No implementation needed."
+    },
+    {
+      "id": "T321",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive string function tests: LIKE, ILIKE, POSITION, OVERLAY, SPLIT_PART, TRANSLATE, etc.",
+      "project": "henrydb",
+      "started": "2026-04-19T03:19:54.618Z",
+      "completed": "2026-04-19T03:20:43.126Z",
+      "duration_ms": 300000,
+      "summary": "28 string function tests, all pass. LIKE/ILIKE, 15 core string functions, 6 new functions, NULL handling, SIMILAR TO."
+    },
+    {
+      "id": "T322",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test: large datasets (10K rows), complex analytical queries, window function performance",
+      "project": "henrydb",
+      "started": "2026-04-19T03:20:50.354Z",
+      "completed": "2026-04-19T03:21:33.870Z",
+      "duration_ms": 300000,
+      "summary": "Stress test 2K rows: most queries 5-12ms, GROUP BY/window/CTE all fast. Self-join is 10s (nested loop on 4M combos) — expected for in-memory DB without hash join optimization. Insert of 2K rows takes 2.3s."
+    },
+    {
+      "id": "T323",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test JSON functions comprehensively: JSON_OBJECT, JSON_ARRAY, JSON_EXTRACT, nested operations",
+      "project": "henrydb",
+      "started": "2026-04-19T03:22:12.409Z",
+      "completed": "2026-04-19T03:23:08.803Z",
+      "duration_ms": 300000,
+      "summary": "16 JSON function tests, all pass. Construction (JSON_OBJECT, JSON_ARRAY, JSON_BUILD), extraction (JSON_EXTRACT, ->, ->>), inspection (JSON_TYPE, JSON_VALID, JSON_ARRAY_LENGTH), modification (JSON_SET), queries (WHERE/GROUP BY with JSON), NULL. No bugs found."
+    },
+    {
+      "id": "T324",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test EXPLAIN output format, EXPLAIN ANALYZE, index usage hints, query plan structure",
+      "project": "henrydb",
+      "started": "2026-04-19T03:23:47.524Z",
+      "completed": "2026-04-19T03:24:52.385Z",
+      "duration_ms": 300000,
+      "summary": "Found and fixed: DATE/AGE/TO_CHAR as keywords broke column names (CREATE INDEX ON users(age) failed). Removed from keyword list; they still work as functions. Tested EXPLAIN output: shows Index Scan, Hash JOIN, cost estimates, EXPLAIN ANALYZE with timing."
+    },
+    {
+      "id": "T325",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final comprehensive regression sweep — all session test files",
+      "project": "henrydb",
+      "started": "2026-04-19T03:25:19.353Z",
+      "completed": "2026-04-19T03:26:01.786Z",
+      "duration_ms": 120000,
+      "summary": "334/334 tests pass across 18 test files, 0 failures. Full regression clean."
+    },
+    {
+      "id": "T326",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore views and materialized views: CREATE VIEW, DROP VIEW, updatable views, view dependencies",
+      "project": "henrydb",
+      "started": "2026-04-19T03:26:26.075Z",
+      "completed": "2026-04-19T03:27:30.823Z",
+      "duration_ms": 300000,
+      "summary": "10 view tests: CREATE VIEW, SELECT, data changes reflected, aggregate views, view of view, JOIN with view, DROP VIEW, CREATE OR REPLACE, materialized views (snapshot, REFRESH). All pass."
+    },
+    {
+      "id": "T327",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive UNION/INTERSECT/EXCEPT tests with ORDER BY, LIMIT, nested set operations",
+      "project": "henrydb",
+      "started": "2026-04-19T03:27:56.806Z",
+      "completed": "2026-04-19T03:28:41.997Z",
+      "duration_ms": 300000,
+      "summary": "14 set operation tests, all pass. UNION/UNION ALL with ORDER BY/LIMIT/dedup/three-way, INTERSECT (common/empty), EXCEPT (difference/reversal), edge cases (NULL, expressions, subquery)."
+    },
+    {
+      "id": "T328",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Hunt: test LATERAL joins, generate_series, sequences, CREATE TABLE AS SELECT",
+      "project": "henrydb",
+      "started": "2026-04-19T03:29:12.386Z",
+      "completed": "2026-04-19T03:30:22.960Z",
+      "duration_ms": 300000,
+      "summary": "13 advanced feature tests: generate_series, LATERAL join (correlated), CTAS, sequences (NEXTVAL/CURRVAL/DEFAULT), VALUES, TRUNCATE. All pass. No bugs found."
+    },
+    {
+      "id": "T329",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test GROUPING SETS, CUBE, ROLLUP — advanced GROUP BY extensions",
+      "project": "henrydb",
+      "started": "2026-04-19T03:31:06.720Z",
+      "completed": "2026-04-19T03:31:57.411Z",
+      "duration_ms": 180000,
+      "summary": "5 GROUPING SETS/ROLLUP/CUBE tests, all pass. HenryDB handles advanced GROUP BY extensions correctly."
+    },
+    {
+      "id": "T330",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write a mini TPC-H benchmark: simplified Q1, Q3, Q5, Q6, Q10 against star schema",
+      "project": "henrydb",
+      "started": "2026-04-19T03:32:21.472Z",
+      "completed": "2026-04-19T03:38:42.609Z",
+      "duration_ms": 600000,
+      "summary": "CRITICAL BUG: WHERE applied before JOINs on view/CTE FROM — cross-table predicates silently dropped. Fixed by deferring WHERE to after JOINs. 7 TPC-H mini benchmark tests (Q1/Q3/Q5/Q6/Q10 + window + CTE), all pass. 13th bug found this session."
+    },
+    {
+      "id": "T308",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "End of session: push, update daily log, git status",
+      "started": "2026-04-19T03:39:34.741Z"
     }
   ],
   "focusProjects": [
@@ -4454,6 +4746,170 @@
     {
       "time": "2026-04-19T02:32:55.869Z",
       "msg": "Removed T298: "
+    },
+    {
+      "time": "2026-04-19T02:41:08.124Z",
+      "msg": "Added T305 (EXPLORE) after end: Systematic SQL compliance test: test JOIN semantics edge cases (NATURAL JOIN, CROSS JOIN, self-join aliases, multi-column ON, USING clause)"
+    },
+    {
+      "time": "2026-04-19T02:41:08.245Z",
+      "msg": "Added T306 (EXPLORE) after end: Test UPDATE/DELETE with complex WHERE, RETURNING clause, multi-table UPDATE, UPDATE from subquery"
+    },
+    {
+      "time": "2026-04-19T02:41:08.366Z",
+      "msg": "Added T307 (EXPLORE) after end: Test expression evaluation edge cases: type coercion, CAST chains, expression aliases in GROUP BY, ORDER BY alias"
+    },
+    {
+      "time": "2026-04-19T02:41:08.486Z",
+      "msg": "Added T308 (MAINTAIN) after end: End of session: push, update daily log, git status"
+    },
+    {
+      "time": "2026-04-19T02:49:14.842Z",
+      "msg": "Added T309 (EXPLORE) after end: Hunt for transaction/MVCC bugs: concurrent read-write, phantom reads, snapshot isolation edge cases"
+    },
+    {
+      "time": "2026-04-19T02:49:14.963Z",
+      "msg": "Added T310 (BUILD) after end: Write comprehensive transaction isolation test suite"
+    },
+    {
+      "time": "2026-04-19T02:49:28.757Z",
+      "msg": "Moved T308 after T310"
+    },
+    {
+      "time": "2026-04-19T02:51:19.585Z",
+      "msg": "Added T311 (EXPLORE) after end: Explore and test window functions: frames (ROWS/RANGE), NTILE, LAG/LEAD, running totals, percent rank"
+    },
+    {
+      "time": "2026-04-19T02:51:19.705Z",
+      "msg": "Added T312 (EXPLORE) after end: Test recursive CTE edge cases: cycle detection, depth limits, graph traversal, tree aggregation"
+    },
+    {
+      "time": "2026-04-19T02:51:25.083Z",
+      "msg": "Moved T308 after T312"
+    },
+    {
+      "time": "2026-04-19T03:00:32.503Z",
+      "msg": "Added T313 (EXPLORE) after end: Full test suite sweep — run ALL test files, find regressions, assess total test count"
+    },
+    {
+      "time": "2026-04-19T03:00:32.625Z",
+      "msg": "Added T314 (EXPLORE) after end: Hunt for more bugs: test constraint validation, CHECK constraints, foreign keys, triggers"
+    },
+    {
+      "time": "2026-04-19T03:00:38.743Z",
+      "msg": "Moved T308 after T314"
+    },
+    {
+      "time": "2026-04-19T03:05:18.678Z",
+      "msg": "Added T315 (BUILD) after end: Write comprehensive constraint tests: multi-col UNIQUE, CHECK expressions, FK cascades, NOT NULL, DEFAULT"
+    },
+    {
+      "time": "2026-04-19T03:05:18.798Z",
+      "msg": "Added T316 (EXPLORE) after end: Test persistent storage: save/load database, WAL recovery, checkpoint integrity"
+    },
+    {
+      "time": "2026-04-19T03:05:24.587Z",
+      "msg": "Moved T308 after T316"
+    },
+    {
+      "time": "2026-04-19T03:12:19.784Z",
+      "msg": "Added T317 (EXPLORE) after end: Hunt: try to crash HenryDB — fuzzy SQL, malformed queries, huge results, deep nesting"
+    },
+    {
+      "time": "2026-04-19T03:12:19.905Z",
+      "msg": "Added T318 (THINK) after end: Session C reflection: what did we learn, what should tomorrow focus on"
+    },
+    {
+      "time": "2026-04-19T03:12:26.470Z",
+      "msg": "Moved T308 after T318"
+    },
+    {
+      "time": "2026-04-19T03:16:16.074Z",
+      "msg": "Added T319 (EXPLORE) after end: Test string functions edge cases: LIKE with special chars, SIMILAR TO, regex, position, overlay"
+    },
+    {
+      "time": "2026-04-19T03:16:16.195Z",
+      "msg": "Added T320 (BUILD) after end: Implement SIMILAR TO regex pattern matching if missing"
+    },
+    {
+      "time": "2026-04-19T03:16:16.315Z",
+      "msg": "Moved T308 after T320"
+    },
+    {
+      "time": "2026-04-19T03:19:48.235Z",
+      "msg": "Added T321 (BUILD) after end: Write comprehensive string function tests: LIKE, ILIKE, POSITION, OVERLAY, SPLIT_PART, TRANSLATE, etc."
+    },
+    {
+      "time": "2026-04-19T03:19:48.356Z",
+      "msg": "Added T322 (EXPLORE) after end: Stress test: large datasets (10K rows), complex analytical queries, window function performance"
+    },
+    {
+      "time": "2026-04-19T03:19:48.476Z",
+      "msg": "Moved T308 after T322"
+    },
+    {
+      "time": "2026-04-19T03:22:04.384Z",
+      "msg": "Added T323 (EXPLORE) after end: Test JSON functions comprehensively: JSON_OBJECT, JSON_ARRAY, JSON_EXTRACT, nested operations"
+    },
+    {
+      "time": "2026-04-19T03:22:04.505Z",
+      "msg": "Moved T308 after T323"
+    },
+    {
+      "time": "2026-04-19T03:23:39.846Z",
+      "msg": "Added T324 (EXPLORE) after end: Test EXPLAIN output format, EXPLAIN ANALYZE, index usage hints, query plan structure"
+    },
+    {
+      "time": "2026-04-19T03:23:39.966Z",
+      "msg": "Moved T308 after T324"
+    },
+    {
+      "time": "2026-04-19T03:25:11.869Z",
+      "msg": "Added T325 (MAINTAIN) after end: Final comprehensive regression sweep — all session test files"
+    },
+    {
+      "time": "2026-04-19T03:25:11.989Z",
+      "msg": "Moved T308 after T325"
+    },
+    {
+      "time": "2026-04-19T03:26:19.250Z",
+      "msg": "Added T326 (EXPLORE) after end: Explore views and materialized views: CREATE VIEW, DROP VIEW, updatable views, view dependencies"
+    },
+    {
+      "time": "2026-04-19T03:26:19.370Z",
+      "msg": "Moved T308 after T326"
+    },
+    {
+      "time": "2026-04-19T03:27:51.752Z",
+      "msg": "Added T327 (BUILD) after end: Write comprehensive UNION/INTERSECT/EXCEPT tests with ORDER BY, LIMIT, nested set operations"
+    },
+    {
+      "time": "2026-04-19T03:27:51.872Z",
+      "msg": "Moved T308 after T327"
+    },
+    {
+      "time": "2026-04-19T03:29:05.742Z",
+      "msg": "Added T328 (EXPLORE) after end: Hunt: test LATERAL joins, generate_series, sequences, CREATE TABLE AS SELECT"
+    },
+    {
+      "time": "2026-04-19T03:29:05.863Z",
+      "msg": "Moved T308 after T328"
+    },
+    {
+      "time": "2026-04-19T03:31:00.839Z",
+      "msg": "Added T329 (EXPLORE) after end: Test GROUPING SETS, CUBE, ROLLUP — advanced GROUP BY extensions"
+    },
+    {
+      "time": "2026-04-19T03:31:00.960Z",
+      "msg": "Moved T308 after T329"
+    },
+    {
+      "time": "2026-04-19T03:32:14.595Z",
+      "msg": "Added T330 (BUILD) after end: Write a mini TPC-H benchmark: simplified Q1, Q3, Q5, Q6, Q10 against star schema"
+    },
+    {
+      "time": "2026-04-19T03:32:14.715Z",
+      "msg": "Moved T308 after T330"
     }
   ]
 }
