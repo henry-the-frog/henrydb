@@ -2452,6 +2452,7 @@ export class Database {
       }
       for (const checkExpr of table.tableChecks) {
         const result = this._evalExpr(checkExpr, row);
+        // Per SQL standard: CHECK passes when result is TRUE or NULL (unknown)
         if (result === false) {
           throw new Error('CHECK constraint violated');
         }

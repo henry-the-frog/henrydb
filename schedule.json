@@ -731,10 +731,27 @@
     {
       "id": "T70",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Investigate CHECK constraint with multi-column expressions",
       "project": "henrydb",
-      "started": "2026-04-19T16:05:37.562Z"
+      "started": "2026-04-19T16:05:37.562Z",
+      "completed": "2026-04-19T16:10:16.353Z",
+      "duration_ms": 300000,
+      "summary": "Implemented table-level CHECK constraints with multi-column expressions. Parser + executor. CHECK (low < high) works. 113 tests pass."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write table-level CHECK constraint tests",
+      "project": "henrydb",
+      "started": "2026-04-19T16:10:37.570Z"
+    },
+    {
+      "id": "T72",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session push, daily log update"
     },
     {
       "id": "T33",
@@ -1076,6 +1093,18 @@
     {
       "time": "2026-04-19T16:05:37.332Z",
       "msg": "Moved T33 after T70"
+    },
+    {
+      "time": "2026-04-19T16:10:37.103Z",
+      "msg": "Added T71 (BUILD) after end: Write table-level CHECK constraint tests"
+    },
+    {
+      "time": "2026-04-19T16:10:37.221Z",
+      "msg": "Added T72 (MAINTAIN) after end: Mid-session push, daily log update"
+    },
+    {
+      "time": "2026-04-19T16:10:37.337Z",
+      "msg": "Moved T33 after T72"
     }
   ]
 }
