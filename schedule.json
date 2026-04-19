@@ -79,24 +79,32 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Batch autocommit for multi-row INSERT: single WAL commit per statement",
       "plan_ref": "T6",
       "project": "henrydb",
-      "started": "2026-04-19T14:33:55.754Z"
+      "started": "2026-04-19T14:33:55.754Z",
+      "completed": "2026-04-19T14:36:50.537Z",
+      "duration_ms": 300000,
+      "summary": "Batch autocommit for multi-row INSERT: single WAL commit per statement instead of per-row. Applied to both INSERT VALUES and INSERT SELECT. All tests pass."
     },
     {
       "id": "T20",
       "mode": "BUILD",
       "task": "Benchmark write path before/after optimization",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-19T14:36:57.706Z",
+      "completed": "2026-04-19T14:37:19.410Z",
+      "duration_ms": 120000,
+      "summary": "Benchmarked: no-index 3.5x faster (23K→82K/sec), with PK index 1.2x (3.2K→3.8K/sec). Index maintenance dominates write cost."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit, push, test sweep"
+      "status": "in-progress",
+      "task": "Git commit, push, test sweep",
+      "started": "2026-04-19T14:37:27.213Z"
     },
     {
       "id": "T9",
