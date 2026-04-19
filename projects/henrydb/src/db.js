@@ -3114,7 +3114,11 @@ export class Database {
       }
 
       // Handle aggregates / GROUP BY on view results
-      const hasAggregates = ast.columns.some(c => c.type === 'aggregate');
+      const hasAggregates = ast.columns.some(c => 
+        c.type === 'aggregate' || 
+        this._exprContainsAggregate(c.expr) ||
+        (c.type === 'function' && c.args && c.args.some(a => this._exprContainsAggregate(a)))
+      );
       const hasWindow = this._columnsHaveWindow(ast.columns);
       if (ast.groupBy) {
         return this._selectWithGroupBy(ast, rows);
@@ -3294,7 +3298,9 @@ export class Database {
 
     // Aggregates / GROUP BY / Window functions
     const hasAggregates = ast.columns.some(c =>
-      c.type === 'aggregate' || this._exprContainsAggregate(c.expr)
+      c.type === 'aggregate' || 
+      this._exprContainsAggregate(c.expr) ||
+      (c.type === 'function' && c.args && c.args.some(a => this._exprContainsAggregate(a)))
     );
     const hasWindow = this._columnsHaveWindow(ast.columns);
 
@@ -7750,7 +7756,23 @@ export class Database {
     if (expr.type === 'arith') {
       return this._exprContainsAggregate(expr.left) || this._exprContainsAggregate(expr.right);
     }
-    if (expr.type === 'function_call' && ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX'].includes(expr.func?.toUpperCase())) return true;
+    if (expr.type === 'COMPARE') {
+      return this._exprContainsAggregate(expr.left) || this._exprContainsAggregate(expr.right);
+    }
+    if (expr.type === 'function_call') {
+      if (['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(expr.func?.toUpperCase())) return true;
+      // Check inside function arguments (e.g., COALESCE(SUM(x), 0))
+      if (expr.args) return expr.args.some(a => this._exprContainsAggregate(a));
+    }
+    if (expr.type === 'case_expr' || expr.type === 'case') {
+      if (expr.whens) {
+        if (expr.whens.some(w => this._exprContainsAggregate(w.then || w.result) || this._exprContainsAggregate(w.when || w.condition))) return true;
+      }
+      return this._exprContainsAggregate(expr.else || expr.elseResult);
+    }
+    if (expr.type === 'cast') return this._exprContainsAggregate(expr.expr);
+    if (expr.type === 'NOT') return this._exprContainsAggregate(expr.expr);
+    if (expr.type === 'IS_NULL' || expr.type === 'IS_NOT_NULL') return this._exprContainsAggregate(expr.left);
     return false;
   }
 
@@ -8790,6 +8812,30 @@ export class Database {
       if (col.type === 'expression' && this._exprContainsAggregate(col.expr)) {
         const name = col.alias || 'expr';
         result[name] = this._evalAggregateExpr(col.expr, rows);
+        continue;
+      }
+      // Handle function columns that contain aggregates (e.g., COALESCE(SUM(a), 0))
+      if (col.type === 'function' && col.args && col.args.some(a => this._exprContainsAggregate(a))) {
+        const name = col.alias || `${col.func}(...)`;
+        // Evaluate each argument, replacing aggregate expressions with their computed values
+        const evaluatedArgs = col.args.map(arg => {
+          if (this._exprContainsAggregate(arg)) {
+            return this._evalAggregateExpr(arg, rows);
+          }
+          return arg.type === 'literal' ? arg.value : this._evalValue(arg, rows[0] || {});
+        });
+        // Evaluate the function with computed args
+        if (col.func.toUpperCase() === 'COALESCE') {
+          result[name] = evaluatedArgs.find(v => v !== null && v !== undefined) ?? null;
+        } else if (col.func.toUpperCase() === 'NULLIF') {
+          result[name] = evaluatedArgs[0] === evaluatedArgs[1] ? null : evaluatedArgs[0];
+        } else if (col.func.toUpperCase() === 'IFNULL' || col.func.toUpperCase() === 'NVL') {
+          result[name] = evaluatedArgs[0] ?? evaluatedArgs[1];
+        } else {
+          // Try evaluating as a regular function with a synthetic row
+          result[name] = this._evalFunction(col.func, evaluatedArgs.map((v, i) => 
+            ({ type: 'literal', value: v })), rows[0] || {});
+        }
         continue;
       }
       if (col.type !== 'aggregate') continue;
