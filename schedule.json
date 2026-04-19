@@ -286,15 +286,19 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "Write regression tests for both fixes",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T24",
-      "started": "2026-04-19T14:53:48.788Z"
+      "started": "2026-04-19T14:53:48.788Z",
+      "completed": "2026-04-19T14:55:33.636Z",
+      "duration_ms": 180000,
+      "summary": "9 regression tests for INSERT SELECT mapping + ALTER TABLE backfill. Found and fixed additional bug: INSERT after ALTER TABLE ADD COLUMN didnt pad values with defaults. All 106 tests pass."
     },
     {
       "id": "T25",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit + push + broader test sweep"
+      "status": "in-progress",
+      "task": "Git commit + push + broader test sweep",
+      "started": "2026-04-19T14:55:58.667Z"
     },
     {
       "id": "T26",
