@@ -179,16 +179,22 @@ export function parse(sql) {
   const tokens = tokenize(sql);
   let pos = 0;
 
-  function peek() { return tokens[pos]; }
-  function advance() { return tokens[pos++]; }
+  const EOF_TOKEN = { type: 'EOF', value: 'EOF' };
+  function peek() { return tokens[pos] || EOF_TOKEN; }
+  function advance() { 
+    if (pos >= tokens.length) throw new Error('Unexpected end of SQL');
+    return tokens[pos++]; 
+  }
   function expect(type, value) {
+    if (pos >= tokens.length) throw new Error(`Expected ${type} ${value || ''}, got end of SQL`);
     const t = advance();
     if (t.type !== type || (value && t.value !== value))
       throw new Error(`Expected ${type} ${value || ''}, got ${t.type} ${t.value || ''}`);
     return t;
   }
   function match(type, value) {
-    if (peek().type === type && (!value || peek().value === value)) { advance(); return true; }
+    const p = peek();
+    if (p && p.type === type && (!value || p.value === value)) { advance(); return true; }
     return false;
   }
   // Read an alias name after AS — preserves original case even for keywords
@@ -1202,9 +1208,11 @@ export function parse(sql) {
       return { type: 'expression', expr: node, alias };
     }
     const colTok = advance();
+    if (!colTok) throw new Error('Unexpected end of SQL: expected column or expression');
     const col = colTok.originalValue || colTok.value;
     // Check for || concatenation or arithmetic operators
-    const nextType = peek().type;
+    const nextTok = peek();
+    const nextType = nextTok ? nextTok.type : null;
     if (nextType === 'CONCAT_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
       let seed = colTok.type === 'STRING' || colTok.type === 'NUMBER'
         ? { type: 'literal', value: col }
