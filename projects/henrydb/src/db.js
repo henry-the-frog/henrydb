@@ -2280,8 +2280,14 @@ export class Database {
       const values = [];
       if (ast.columns) {
         // Explicit column list: INSERT INTO t (col1, col2) SELECT ...
-        for (const col of ast.columns) {
-          values.push(row[col] !== undefined ? row[col] : null);
+        // Map SELECT results POSITIONALLY (by order, not by name)
+        const rowKeys = Object.keys(row);
+        for (let i = 0; i < ast.columns.length; i++) {
+          if (i < rowKeys.length) {
+            values.push(row[rowKeys[i]]);
+          } else {
+            values.push(null);
+          }
         }
       } else {
         // No explicit column list: map SELECT result to table schema by column name or position
@@ -2311,7 +2317,7 @@ export class Database {
           }
         }
       }
-      this._insertRow(table, null, values);
+      this._insertRow(table, ast.columns || null, values);
       inserted++;
     }
 

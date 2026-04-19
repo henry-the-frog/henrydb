@@ -231,10 +231,68 @@
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Research: query optimization papers or WASM GC",
       "project": "henrydb",
-      "started": "2026-04-19T14:47:33.907Z"
+      "started": "2026-04-19T14:47:33.907Z",
+      "completed": "2026-04-19T14:49:30.501Z",
+      "duration_ms": 180000,
+      "summary": "Found EXPLAIN+aggregates bug (AGGREGATE_FUNCS undefined due to var hoisting + early return). Fixed by moving declarations to top of parse(). Learning: var declarations must be before ALL early returns, not just some."
+    },
+    {
+      "id": "T23",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Plan HenryDB bug fixes: ALTER TABLE ADD COLUMN NOT NULL DEFAULT backfill, INSERT SELECT column mapping",
+      "started": "2026-04-19T14:50:21.962Z",
+      "completed": "2026-04-19T14:50:52.532Z",
+      "duration_ms": 90000,
+      "summary": "Confirmed both bugs. INSERT SELECT uses INSERT column names as keys into SELECT result (should be positional). ALTER TABLE ADD doesnt backfill existing rows with DEFAULT."
+    },
+    {
+      "id": "T24",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan ALTER TABLE backfill + INSERT SELECT column mapping fixes",
+      "task": null,
+      "started": "2026-04-19T14:51:01.971Z",
+      "completed": "2026-04-19T14:51:06.358Z",
+      "duration_ms": 30000,
+      "summary": "3 BUILD tasks: INSERT SELECT positional mapping, ALTER TABLE backfill, regression tests"
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Fix INSERT SELECT column mapping: use positional mapping when explicit columns provided",
+      "status": "in-progress",
+      "plan_ref": "T24",
+      "started": "2026-04-19T14:51:13.435Z"
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Fix ALTER TABLE ADD COLUMN NOT NULL DEFAULT to backfill existing rows",
+      "status": "upcoming",
+      "plan_ref": "T24"
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Write regression tests for both fixes",
+      "status": "upcoming",
+      "plan_ref": "T24"
+    },
+    {
+      "id": "T25",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit + push + broader test sweep"
+    },
+    {
+      "id": "T26",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Depth check: 10 BUILDs done, assess learning"
     }
   ],
   "focusProjects": [
@@ -330,6 +388,26 @@
     {
       "time": "2026-04-19T14:39:30.449Z",
       "msg": "PLAN T14 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T14:50:05.009Z",
+      "msg": "Added T23 (THINK) after end: Plan HenryDB bug fixes: ALTER TABLE ADD COLUMN NOT NULL DEFAULT backfill, INSERT SELECT column mapping"
+    },
+    {
+      "time": "2026-04-19T14:50:08.639Z",
+      "msg": "Added T24 (PLAN) after end: Plan ALTER TABLE backfill + INSERT SELECT column mapping fixes"
+    },
+    {
+      "time": "2026-04-19T14:50:13.840Z",
+      "msg": "Added T25 (MAINTAIN) after end: Git commit + push + broader test sweep"
+    },
+    {
+      "time": "2026-04-19T14:50:13.958Z",
+      "msg": "Added T26 (THINK) after end: Depth check: 10 BUILDs done, assess learning"
+    },
+    {
+      "time": "2026-04-19T14:51:02.114Z",
+      "msg": "PLAN T24 filled 3 BUILD tasks"
     }
   ]
 }
