@@ -871,20 +871,14 @@ export function parse(sql) {
       const targetType = advance().value;
       expect(')');
       let castNode = { type: 'cast', expr, targetType };
-      // Handle operator chaining after CAST: CAST(x AS TEXT) || 'suffix'
+      // Handle operator chaining after CAST
+      castNode = parseTrailingArithmetic(castNode);
+      // Handle CONCAT
       if (peek().type === 'CONCAT_OP' || peek().type === 'CONCAT') {
         let left = castNode;
         while (match('CONCAT_OP') || match('CONCAT')) {
           const right = parsePrimaryWithConcat();
           left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
-        }
-        castNode = left;
-      } else if (peek().type === 'PLUS' || peek().type === 'MINUS') {
-        let left = castNode;
-        while (peek().type === 'PLUS' || peek().type === 'MINUS') {
-          const op = advance().type === 'PLUS' ? '+' : '-';
-          const right = parsePrimaryWithConcat();
-          left = { type: 'arith', op, left, right };
         }
         castNode = left;
       }

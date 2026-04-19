@@ -7672,6 +7672,25 @@ export class Database {
       const args = (expr.args || []).map(a => this._evalGroupExpr(a, groupRows, result, computeAgg));
       return this._evalFunction(expr.func, args.map(v => ({ type: 'literal', value: v })), groupRows[0]);
     }
+    if (expr.type === 'cast') {
+      const val = this._evalGroupExpr(expr.expr, groupRows, result, computeAgg);
+      if (val == null) return null;
+      switch (expr.targetType?.toUpperCase()) {
+        case 'INT': case 'INTEGER': case 'BIGINT': case 'SMALLINT': return Math.trunc(Number(val));
+        case 'FLOAT': case 'DOUBLE': case 'REAL': case 'DECIMAL': case 'NUMERIC': return Number(val);
+        case 'TEXT': case 'VARCHAR': case 'CHAR': return String(val);
+        case 'BOOLEAN': case 'BOOL': return !!val;
+        default: return val;
+      }
+    }
+    if (expr.type === 'IS_NULL') {
+      const val = this._evalGroupExpr(expr.left, groupRows, result, computeAgg);
+      return val === null || val === undefined;
+    }
+    if (expr.type === 'IS_NOT_NULL') {
+      const val = this._evalGroupExpr(expr.left, groupRows, result, computeAgg);
+      return val !== null && val !== undefined;
+    }
     // Fallback: try regular eval on first row
     return this._evalValue(expr, groupRows[0]);
   }
