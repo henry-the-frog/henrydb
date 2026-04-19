@@ -7855,29 +7855,12 @@ export class Database {
    * Check if an expression tree contains any aggregate function calls.
    */
   _exprContainsAggregate(expr) {
-    if (!expr) return false;
-    if (expr.type === 'aggregate_expr') return true;
-    if (expr.type === 'arith') {
-      return this._exprContainsAggregate(expr.left) || this._exprContainsAggregate(expr.right);
-    }
-    if (expr.type === 'COMPARE') {
-      return this._exprContainsAggregate(expr.left) || this._exprContainsAggregate(expr.right);
-    }
-    if (expr.type === 'function_call') {
-      if (['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(expr.func?.toUpperCase())) return true;
-      // Check inside function arguments (e.g., COALESCE(SUM(x), 0))
-      if (expr.args) return expr.args.some(a => this._exprContainsAggregate(a));
-    }
-    if (expr.type === 'case_expr' || expr.type === 'case') {
-      if (expr.whens) {
-        if (expr.whens.some(w => this._exprContainsAggregate(w.then || w.result) || this._exprContainsAggregate(w.when || w.condition))) return true;
-      }
-      return this._exprContainsAggregate(expr.else || expr.elseResult);
-    }
-    if (expr.type === 'cast') return this._exprContainsAggregate(expr.expr);
-    if (expr.type === 'NOT') return this._exprContainsAggregate(expr.expr);
-    if (expr.type === 'IS_NULL' || expr.type === 'IS_NOT_NULL') return this._exprContainsAggregate(expr.left);
-    return false;
+    return exprContains(expr, n => {
+      if (n.type === 'aggregate_expr') return true;
+      if ((n.type === 'function_call' || n.type === 'function') && 
+          ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(n.func?.toUpperCase())) return true;
+      return false;
+    });
   }
 
   _resolveColumn(name, row) {
