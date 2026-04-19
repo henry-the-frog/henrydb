@@ -904,10 +904,14 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
           break;
         case 0x64: // 'd' — CopyData
           if (copyState) {
-            // Parse tab-separated row from copy data
-            const line = payload.toString('utf8').trim();
-            if (line.length > 0) {
-              copyState.rows.push(line);
+            // Parse tab-separated rows from copy data (may contain multiple rows)
+            const data = payload.toString('utf8');
+            const lines = data.split('\n');
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (trimmed.length > 0 && trimmed !== '\\.') {
+                copyState.rows.push(trimmed);
+              }
             }
           }
           break;
@@ -917,8 +921,12 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
           }
           break;
         case 0x66: // 'f' — CopyFail
-          copyState = null;
-          socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+          if (copyState) {
+            const reason = payload.toString('utf8').replace(/\0/g, '').trim();
+            copyState = null;
+            socket.write(errorResponse('ERROR', '57014', reason || 'COPY cancelled'));
+            socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+          }
           break;
 
         default:
