@@ -560,11 +560,30 @@ function interceptPgCatalog(sql, db) {
   return null; // Not intercepted
 }
 
-function handleConnection(socket, db) {
+function handleConnection(socket, db, connId = 0) {
   let buffer = Buffer.alloc(0);
   let startupDone = false;
 
   function executeWithIntercept(sql) {
+    // Advisory lock functions
+    const advisoryMatch = sql.match(/SELECT\s+pg_(advisory_lock|advisory_unlock|try_advisory_lock)\s*\(\s*(\d+)\s*\)/i);
+    if (advisoryMatch) {
+      const func = advisoryMatch[1].toLowerCase();
+      const key = parseInt(advisoryMatch[2], 10);
+      const colName = 'pg_' + func;
+      
+      if (func === 'advisory_lock') {
+        _advisoryLocks.lock(connId, key);
+        return { type: 'ROWS', rows: [{ [colName]: '' }], columns: [{ name: colName, type: 'TEXT' }] };
+      } else if (func === 'try_advisory_lock') {
+        const success = _advisoryLocks.tryLock(connId, key);
+        return { type: 'ROWS', rows: [{ [colName]: success ? 't' : 'f' }], columns: [{ name: colName, type: 'TEXT' }] };
+      } else if (func === 'advisory_unlock') {
+        const success = _advisoryLocks.unlock(connId, key);
+        return { type: 'ROWS', rows: [{ [colName]: success ? 't' : 'f' }], columns: [{ name: colName, type: 'TEXT' }] };
+      }
+    }
+    
     const intercepted = interceptPgCatalog(sql, db);
     if (intercepted) return intercepted;
     return db.execute(sql);
@@ -579,8 +598,8 @@ function handleConnection(socket, db) {
     processBuffer();
   });
 
-  socket.on('error', () => { /* client disconnected */ });
-  socket.on('close', () => { /* cleanup */ });
+  socket.on('error', () => { _advisoryLocks.releaseAll(connId); });
+  socket.on('close', () => { _advisoryLocks.releaseAll(connId); });
 
   function processBuffer() {
     while (buffer.length >= 4) {
@@ -1184,9 +1203,52 @@ function handleConnection(socket, db) {
 }
 
 // --- Server creation ---
+// --- Advisory Lock Manager (connection-scoped) ---
+class AdvisoryLockManager {
+  constructor() {
+    this._locks = new Map(); // key -> { holder: connectionId, count: number }
+  }
+  
+  lock(connId, key) {
+    const existing = this._locks.get(key);
+    if (existing) {
+      if (existing.holder === connId) {
+        existing.count++;
+        return true; // Re-entrant
+      }
+      return false; // Held by another connection
+    }
+    this._locks.set(key, { holder: connId, count: 1 });
+    return true;
+  }
+  
+  tryLock(connId, key) {
+    return this.lock(connId, key);
+  }
+  
+  unlock(connId, key) {
+    const existing = this._locks.get(key);
+    if (!existing || existing.holder !== connId) return false;
+    existing.count--;
+    if (existing.count <= 0) this._locks.delete(key);
+    return true;
+  }
+  
+  releaseAll(connId) {
+    for (const [key, info] of this._locks) {
+      if (info.holder === connId) this._locks.delete(key);
+    }
+  }
+}
+
+// Global advisory lock manager shared across all connections
+const _advisoryLocks = new AdvisoryLockManager();
+let _nextConnId = 1;
+
 export function createPgServer(db, port = 5433) {
   const server = createServer((socket) => {
-    handleConnection(socket, db);
+    const connId = _nextConnId++;
+    handleConnection(socket, db, connId);
   });
 
   server.listen(port, () => {
