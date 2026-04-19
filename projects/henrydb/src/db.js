@@ -7117,6 +7117,37 @@ export class Database {
           const expr = col.expr;
           // Check if expression contains aggregate references — if so, compute them
           result[name] = this._evalGroupExpr(expr, groupRows, result, computeAgg);
+        } else if (col.type === 'function') {
+          // Function columns (COALESCE, ROUND, etc.) — may contain aggregates
+          const name = col.alias || `${col.func}(...)`;
+          if (col.args && col.args.some(a => this._exprContainsAggregate(a))) {
+            // Evaluate each argument, computing aggregates
+            const evaluatedArgs = col.args.map(arg => {
+              if (this._exprContainsAggregate(arg)) {
+                if (arg.type === 'aggregate_expr') {
+                  return computeAgg(arg.func, arg.arg, arg.distinct);
+                }
+                return this._evalGroupExpr(arg, groupRows, result, computeAgg);
+              }
+              return arg.type === 'literal' ? arg.value : this._evalValue(arg, groupRows[0]);
+            });
+            // Apply the function
+            if (col.func.toUpperCase() === 'COALESCE') {
+              result[name] = evaluatedArgs.find(v => v !== null && v !== undefined) ?? null;
+            } else if (col.func.toUpperCase() === 'ROUND') {
+              result[name] = evaluatedArgs[1] !== undefined ? 
+                Number(Number(evaluatedArgs[0]).toFixed(evaluatedArgs[1])) :
+                Math.round(evaluatedArgs[0]);
+            } else if (col.func.toUpperCase() === 'NULLIF') {
+              result[name] = evaluatedArgs[0] === evaluatedArgs[1] ? null : evaluatedArgs[0];
+            } else if (col.func.toUpperCase() === 'IFNULL' || col.func.toUpperCase() === 'NVL') {
+              result[name] = evaluatedArgs[0] ?? evaluatedArgs[1];
+            } else {
+              result[name] = this._evalFunction(col.func, evaluatedArgs.map(v => ({ type: 'literal', value: v })), groupRows[0]);
+            }
+          } else {
+            result[name] = this._evalFunction(col.func, col.args, groupRows[0]);
+          }
         }
       }
 

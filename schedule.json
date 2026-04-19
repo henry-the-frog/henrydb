@@ -369,16 +369,43 @@
     {
       "id": "T36",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Design COALESCE aggregate detection fix",
-      "started": "2026-04-19T15:06:52.824Z"
+      "started": "2026-04-19T15:06:52.824Z",
+      "completed": "2026-04-19T15:10:15.427Z",
+      "duration_ms": 300000,
+      "summary": "Fixed COALESCE(SUM(val),0): _exprContainsAggregate didnt recurse into function args, and _computeAggregates didnt handle function-type columns. Both fixed, COALESCE/NULLIF/IFNULL with aggregates now work. 120 tests pass."
     },
     {
       "id": "T37",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan aggregate-inside-function detection",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T15:10:28.241Z",
+      "completed": "2026-04-19T15:10:28.383Z",
+      "duration_ms": 1000,
+      "summary": "Already done in T36 — COALESCE(SUM) fix was the aggregate-inside-function detection."
+    },
+    {
+      "id": "T38",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Stress test COALESCE+aggregate with GROUP BY and HAVING",
+      "started": "2026-04-19T15:10:57.150Z"
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write COALESCE+aggregate regression tests",
+      "project": "henrydb"
+    },
+    {
+      "id": "T40",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session push and log update"
     },
     {
       "id": "T33",
@@ -532,6 +559,22 @@
     {
       "time": "2026-04-19T15:06:43.505Z",
       "msg": "Moved T33 after T37"
+    },
+    {
+      "time": "2026-04-19T15:10:45.169Z",
+      "msg": "Added T38 (THINK) after end: Stress test COALESCE+aggregate with GROUP BY and HAVING"
+    },
+    {
+      "time": "2026-04-19T15:10:45.300Z",
+      "msg": "Added T39 (BUILD) after end: Write COALESCE+aggregate regression tests"
+    },
+    {
+      "time": "2026-04-19T15:10:45.424Z",
+      "msg": "Added T40 (MAINTAIN) after end: Mid-session push and log update"
+    },
+    {
+      "time": "2026-04-19T15:10:51.259Z",
+      "msg": "Moved T33 after T40"
     }
   ]
 }
