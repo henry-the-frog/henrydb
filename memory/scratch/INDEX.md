@@ -28,6 +28,8 @@
 - **hot-chains.md** — HOT chain implementation, PG comparison (same-page vs Map-based), integration points, MVCC interaction. (uses: 1, created: 2026-04-18)
 - **stored-procedures-design.md** — Phased approach: SQL scalar → JS → table-returning → procedures. All phases 1-3 implemented. (uses: 1, created: 2026-04-18)
 - **mvcc-visibility-comparison.md** — PG vs HenryDB MVCC deep comparison. CORRECTED: HenryDB already has snap.activeSet. Real gaps: CLOG, row-level xmax locking, frozen tuples. (uses: 1, created: 2026-04-18)
+- **serialization-bugs.md** — Escaped quotes dead code, view format mismatch, ident function parsing. Pattern: roundtrip tests catch seam bugs. (uses: 1, created: 2026-04-18)
+- **mvcc-persistence-bugs.md** — 3-bug chain: version maps not saved, committedTxns not saved, getter-only property silently failed. Pattern: try-catch + property-order deps. (uses: 1, created: 2026-04-18)
 
 ### Query Compilation & Optimization
 - **copy-and-patch-compilation.md** — Copy-and-patch technique, comparison with HenryDB closure approach, sea-of-nodes verdict. (uses: 1, created: 2026-04-08)
