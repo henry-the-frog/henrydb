@@ -602,6 +602,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
 
   // Connection-scoped cursor state
   const cursors = new Map(); // name → { rows, columns, pos }
+  const tempTables = new Set(); // names of temp tables created by this connection
 
   function executeWithIntercept(sql) {
     // Advisory lock functions
@@ -732,6 +733,12 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     
     const intercepted = interceptPgCatalog(sql, db);
     if (intercepted) return intercepted;
+    // Track temp table creation
+    const tempMatch = sql.match(/CREATE\s+(?:TEMPORARY|TEMP)\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i);
+    if (tempMatch) {
+      tempTables.add(tempMatch[1].toLowerCase());
+    }
+    
     return db.execute(sql);
   }
   let inTransaction = false;
@@ -750,6 +757,11 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       subs.delete(connId);
       if (subs.size === 0) channels.delete(ch);
     }
+    // Drop temp tables
+    for (const tbl of tempTables) {
+      try { db.execute(`DROP TABLE IF EXISTS ${tbl}`); } catch(e) {}
+    }
+    tempTables.clear();
   });
   socket.on('close', () => {
     _advisoryLocks.releaseAll(connId);
@@ -757,6 +769,11 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       subs.delete(connId);
       if (subs.size === 0) channels.delete(ch);
     }
+    // Drop temp tables
+    for (const tbl of tempTables) {
+      try { db.execute(`DROP TABLE IF EXISTS ${tbl}`); } catch(e) {}
+    }
+    tempTables.clear();
   });
 
   function processBuffer() {
