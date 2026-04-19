@@ -634,34 +634,27 @@ export function parse(sql) {
       return { type: 'scalar_subquery', subquery, alias };
     }
 
-    // Check for general function call: FUNC(args)
+    // Check for general function call: FUNC(args) — may be part of larger expression
     if (peek().type === 'KEYWORD' && SCALAR_FUNCTIONS.has(peek().value) && tokens[pos + 1]?.type === '(') {
-      const func = advance().value;
-      expect('(');
-      const args = [];
-      if (peek().type !== ')' && peek().value !== ')') {
-        args.push(parseExpr());
-        while (match(',')) args.push(parseExpr());
-      }
-      expect(')');
+      // Parse as expression to handle FUNC(...) + expr, FUNC(...) * expr, etc.
+      const expr = parseExpr();
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'function', func, args, alias: alias || `${func}(...)` };
+      if (expr.type === 'function_call') {
+        return { type: 'function', func: expr.func, args: expr.args, alias: alias || `${expr.func}(...)` };
+      }
+      return { type: 'expression', expr, alias: alias || null };
     }
 
-    // Check for identifier function call: ident(args) — e.g., pg_stat_statements_reset()
+    // Check for identifier function call: ident(args) — may be part of larger expression
     if (peek().type === 'IDENT' && tokens[pos + 1]?.type === '(') {
-      const func = advance().value.toUpperCase();
-      expect('(');
-      const args = [];
-      if (peek().type !== ')' && peek().value !== ')') {
-        args.push(parseExpr());
-        while (match(',')) args.push(parseExpr());
-      }
-      expect(')');
+      const expr = parseExpr();
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'function', func, args, alias: alias || `${func}(...)` };
+      if (expr.type === 'function_call') {
+        return { type: 'function', func: expr.func, args: expr.args, alias: alias || `${expr.func}(...)` };
+      }
+      return { type: 'expression', expr, alias: alias || null };
     }
 
     // Check for aggregate: COUNT, SUM, AVG, MIN, MAX
