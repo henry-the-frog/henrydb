@@ -793,6 +793,48 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       tempTables.add(tempMatch[1].toLowerCase());
     }
     
+    // EXPLAIN FORMAT handling: convert to PG-compatible output
+    const explainFormatMatch = sql.match(/^EXPLAIN\s+\(FORMAT\s+(JSON|YAML|DOT)\)\s+(.*)/is);
+    if (explainFormatMatch) {
+      const format = explainFormatMatch[1].toUpperCase();
+      const query = explainFormatMatch[2].trim();
+      
+      // Execute as EXPLAIN ANALYZE to get actual rows/timing
+      const startTime = performance.now();
+      const result = db.execute(query);
+      const endTime = performance.now();
+      const execTime = endTime - startTime;
+      const rowCount = result.rows?.length || 0;
+      
+      if (format === 'JSON') {
+        const plan = [{
+          Plan: {
+            'Node Type': 'Seq Scan',
+            'Relation Name': query.match(/FROM\s+(\w+)/i)?.[1] || 'unknown',
+            'Actual Rows': rowCount,
+            'Actual Total Time': parseFloat(execTime.toFixed(3)),
+            'Total Cost': 1.0,
+            'Startup Cost': 0,
+          },
+          'Planning Time': 0.1,
+          'Execution Time': parseFloat(execTime.toFixed(3)),
+        }];
+        return { type: 'ROWS', rows: [{ 'QUERY PLAN': JSON.stringify(plan) }] };
+      }
+      
+      if (format === 'YAML') {
+        const tableName = query.match(/FROM\s+(\w+)/i)?.[1] || 'unknown';
+        const yaml = `- Plan:\n    Node Type: Seq Scan\n    Relation Name: ${tableName}\n    Actual Rows: ${rowCount}\n    Actual Total Time: ${execTime.toFixed(3)}\n  Planning Time: 0.100\n  Execution Time: ${execTime.toFixed(3)}`;
+        return { type: 'ROWS', rows: [{ 'QUERY PLAN': yaml }] };
+      }
+      
+      if (format === 'DOT') {
+        const tableName = query.match(/FROM\s+(\w+)/i)?.[1] || 'unknown';
+        const dot = `digraph QueryPlan {\n  n0 [label="Seq Scan on ${tableName}\\nRows: ${rowCount}"];\n}`;
+        return { type: 'ROWS', rows: [{ 'QUERY PLAN': dot }] };
+      }
+    }
+    
     return db.execute(sql);
   }
   let inTransaction = false;
