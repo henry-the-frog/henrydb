@@ -127,24 +127,27 @@ export class MVCCManager {
     const tx = this.activeTxns.get(txId);
     
     // Write-write conflict detection:
-    // If another concurrent transaction has written to this key and committed,
-    // we have a conflict (first-committer-wins / first-updater-wins)
+    // If another concurrent transaction has written to this key and committed
+    // AFTER our snapshot was taken, we have a conflict (first-committer-wins).
+    // Versions committed BEFORE our snapshot are visible to us and can be overwritten.
     const versions = this._versions.get(key);
-    if (versions) {
+    if (versions && tx?.snapshot) {
       for (let i = versions.length - 1; i >= 0; i--) {
         const v = versions[i];
         if (v.txId === txId) break; // Own previous write, OK
-        // Check if this version was written by a concurrent transaction
-        // that committed after our snapshot
-        if (v.txId >= (tx?.snapshot?.xmin || 0)) {
-          const writerTx = this.activeTxns.get(v.txId);
-          if (writerTx && writerTx.committed && v.txId !== txId) {
-            throw new Error(`Write-write conflict on key "${key}": tx ${txId} conflicts with committed tx ${v.txId}`);
-          }
-          // If writer is still active (not committed, not our tx), also conflict
-          if (writerTx && !writerTx.committed && v.txId !== txId) {
-            throw new Error(`Write-write conflict on key "${key}": tx ${txId} conflicts with active tx ${v.txId}`);
-          }
+        // Only check versions from transactions that were concurrent with us
+        // A tx is concurrent if: (a) its txId >= our xmax (started after snapshot),
+        // or (b) its txId is in our activeSet (was active at snapshot time)
+        const isConcurrent = v.txId >= tx.snapshot.xmax || tx.snapshot.activeSet.has(v.txId);
+        if (!isConcurrent) continue; // Committed before our snapshot — safe to overwrite
+        
+        const writerTx = this.activeTxns.get(v.txId);
+        if (writerTx && writerTx.committed && v.txId !== txId) {
+          throw new Error(`Write-write conflict on key "${key}": tx ${txId} conflicts with committed tx ${v.txId}`);
+        }
+        // If writer is still active (not committed, not our tx), also conflict
+        if (writerTx && !writerTx.committed && v.txId !== txId) {
+          throw new Error(`Write-write conflict on key "${key}": tx ${txId} conflicts with active tx ${v.txId}`);
         }
       }
     }
