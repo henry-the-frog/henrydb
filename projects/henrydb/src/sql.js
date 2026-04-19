@@ -2588,6 +2588,32 @@ export function parse(sql) {
         continue;
       }
       
+      // Table-level CHECK constraint: CHECK (expr)
+      if (isKeyword('CHECK')) {
+        advance(); // CHECK
+        expect('(');
+        const checkExpr = parseExpr();
+        expect(')');
+        tableConstraints.push({ type: 'CHECK', expr: checkExpr });
+        continue;
+      }
+      
+      // Named constraint: CONSTRAINT name ...
+      if (isKeyword('CONSTRAINT')) {
+        advance(); // CONSTRAINT
+        const constraintName = advance().value; // constraint name
+        // The actual constraint follows (CHECK, UNIQUE, etc.)
+        if (isKeyword('CHECK')) {
+          advance();
+          expect('(');
+          const checkExpr = parseExpr();
+          expect(')');
+          tableConstraints.push({ type: 'CHECK', name: constraintName, expr: checkExpr });
+          continue;
+        }
+        // Could be other named constraints...
+      }
+
       const tok = advance();
       const name = tok.originalValue || tok.value;
       let dataType = advance().value;
@@ -2719,7 +2745,7 @@ export function parse(sql) {
       const engineTok = advance();
       engine = (engineTok.originalValue || engineTok.value).toUpperCase();
     }
-    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine, temporary, compositeUniques: tableConstraints._compositeUniques || [] };
+    return { type: 'CREATE_TABLE', table, columns, ifNotExists, engine, temporary, compositeUniques: tableConstraints._compositeUniques || [], tableConstraints: tableConstraints.filter(c => c.type === 'CHECK') };
   }
 
   function parseCreateIndex(unique) {

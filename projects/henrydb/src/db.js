@@ -1297,7 +1297,10 @@ export class Database {
       }
     }
 
-    this.tables.set(ast.table, { heap, schema, indexes });
+    // Extract table-level CHECK constraints
+    const tableChecks = (ast.tableConstraints || []).filter(c => c.type === 'CHECK').map(c => c.expr);
+
+    this.tables.set(ast.table, { heap, schema, indexes, tableChecks });
     this.catalog.push({ name: ast.table, columns: schema });
     
     // Create composite unique indexes
@@ -2440,6 +2443,20 @@ export class Database {
           throw new Error(`CHECK constraint violated for column ${col.name}`);
         }
       }
+
+    // Table-level CHECK constraints
+    if (table.tableChecks && table.tableChecks.length > 0) {
+      const row = {};
+      for (let j = 0; j < table.schema.length; j++) {
+        row[table.schema[j].name] = values[j];
+      }
+      for (const checkExpr of table.tableChecks) {
+        const result = this._evalExpr(checkExpr, row);
+        if (result === false) {
+          throw new Error('CHECK constraint violated');
+        }
+      }
+    }
 
       // UNIQUE and PRIMARY KEY uniqueness check
       if ((col.unique || col.primaryKey) && val != null) {

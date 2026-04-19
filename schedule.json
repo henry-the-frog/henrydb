@@ -720,10 +720,21 @@
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write comprehensive CTE + recursive CTE tests",
       "project": "henrydb",
-      "started": "2026-04-19T16:04:34.034Z"
+      "started": "2026-04-19T16:04:34.034Z",
+      "completed": "2026-04-19T16:05:17.914Z",
+      "duration_ms": 120000,
+      "summary": "11 CTE tests: basic, aggregate, multi-CTE, chains, Fibonacci, tree traversal, CTE+JOIN, CTE+UPDATE, keyword collision. All pass."
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Investigate CHECK constraint with multi-column expressions",
+      "project": "henrydb",
+      "started": "2026-04-19T16:05:37.562Z"
     },
     {
       "id": "T33",
@@ -1057,6 +1068,14 @@
     {
       "time": "2026-04-19T16:00:09.840Z",
       "msg": "Moved T33 after T69"
+    },
+    {
+      "time": "2026-04-19T16:05:37.214Z",
+      "msg": "Added T70 (THINK) after end: Investigate CHECK constraint with multi-column expressions"
+    },
+    {
+      "time": "2026-04-19T16:05:37.332Z",
+      "msg": "Moved T33 after T70"
     }
   ]
 }
