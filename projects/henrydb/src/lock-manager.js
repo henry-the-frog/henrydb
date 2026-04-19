@@ -74,10 +74,14 @@ export class LockManager {
     }
 
     // Would block — check for deadlock
-    if (this._wouldDeadlock(txId, resource)) return false;
+    if (this._wouldDeadlock(txId, resource)) {
+      this.stats.deadlocks++;
+      return false; // Deadlock — abort, do NOT queue
+    }
 
     // Queue the request (in real impl, would block)
     lock.queue.push({ txId, mode });
+    this.stats.waits++;
     return false; // Would block
   }
 
@@ -120,28 +124,26 @@ export class LockManager {
     const lock = this._locks.get(resource);
     if (!lock) return false;
 
-    // BFS from holders to see if any path leads back to txId
+    // Build waits-for: txId would wait on all current holders of resource.
+    // BFS: follow the chain of "who is each holder waiting on?"
     const visited = new Set();
-    const queue = [...lock.holders];
+    const bfsQueue = [...lock.holders];
     
-    while (queue.length > 0) {
-      const holder = queue.shift();
-      if (holder === txId) return true; // Cycle!
+    while (bfsQueue.length > 0) {
+      const holder = bfsQueue.shift();
+      if (holder === txId) return true; // Cycle found!
       if (visited.has(holder)) continue;
       visited.add(holder);
       
-      // What resources does this holder want?
-      const holderResources = this._txLocks.get(holder);
-      if (holderResources) {
-        for (const res of holderResources) {
-          const resLock = this._locks.get(res);
-          if (resLock) {
-            for (const { txId: waitingTx } of resLock.queue) {
-              if (waitingTx === holder) {
-                // This holder is waiting on someone
-                for (const h of resLock.holders) queue.push(h);
-              }
+      // Find what resources this holder is waiting on (i.e., in which queues it appears)
+      for (const [res, resLock] of this._locks) {
+        for (const entry of resLock.queue) {
+          if (entry.txId === holder) {
+            // This holder is waiting on 'res' — add all holders of 'res' to BFS
+            for (const h of resLock.holders) {
+              bfsQueue.push(h);
             }
+            break; // Only need to find the holder once per resource
           }
         }
       }
