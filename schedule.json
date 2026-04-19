@@ -48,30 +48,49 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit, dashboard health, push",
-      "started": "2026-04-19T14:32:02.216Z"
+      "started": "2026-04-19T14:32:02.216Z",
+      "completed": "2026-04-19T14:32:22.116Z",
+      "duration_ms": 60000,
+      "summary": "Git push, dashboard up, TODO cleanup."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on parser fixes - any systemic patterns?"
+      "status": "done",
+      "task": "Reflect on parser fixes - any systemic patterns?",
+      "started": "2026-04-19T14:32:33.045Z",
+      "completed": "2026-04-19T14:32:47.147Z",
+      "duration_ms": 60000,
+      "summary": "3 systemic patterns: (1) parseSelectColumn parallel universe vs parseExpr, (2) trailing arithmetic after complex exprs, (3) star early return blocking extended cases. Root cause is duplicated expression parsing."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB write path optimization - batch INSERT, reduced WAL overhead per row",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T14:32:55.321Z",
+      "completed": "2026-04-19T14:33:46.690Z",
+      "duration_ms": 60000,
+      "summary": "Plan: batch autocommit for multi-row INSERT (single WAL commit per statement). Currently each row gets its own WAL commit in autocommit mode."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Batch autocommit for multi-row INSERT: single WAL commit per statement",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T14:33:55.754Z"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Benchmark write path before/after optimization",
+      "status": "upcoming",
+      "plan_ref": "T6"
     },
     {
       "id": "T8",
@@ -233,6 +252,10 @@
     {
       "time": "2026-04-19T14:16:25.560Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T14:33:41.003Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }

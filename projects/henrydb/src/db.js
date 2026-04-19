@@ -2108,6 +2108,14 @@ export class Database {
     let inserted = 0;
     const returnedRows = [];
     
+    // Batch autocommit: use a single WAL transaction for all rows
+    const isBatch = ast.rows.length > 1 && !this._currentTxId;
+    let batchTxId;
+    if (isBatch) {
+      batchTxId = this._nextTxId++;
+      this._batchTxId = batchTxId;
+    }
+    
     for (const row of ast.rows) {
       const values = row.map(r => {
         if (r.type === 'literal') return r.value;
@@ -2237,6 +2245,12 @@ export class Database {
       }
     }
 
+    // Batch autocommit: commit the batch transaction after all rows
+    if (isBatch && batchTxId !== undefined) {
+      this.wal.appendCommit(batchTxId);
+      this._batchTxId = undefined;
+    }
+
     if (ast.returning) {
       const filteredRows = this._resolveReturning(ast.returning, returnedRows);
       return { type: 'ROWS', rows: filteredRows, count: inserted };
@@ -2250,6 +2264,14 @@ export class Database {
 
     const result = this.execute_ast(ast.query);
     let inserted = 0;
+    
+    // Batch autocommit: use a single WAL transaction for all rows
+    const isBatch = result.rows.length > 1 && !this._currentTxId;
+    let batchTxId;
+    if (isBatch) {
+      batchTxId = this._nextTxId++;
+      this._batchTxId = batchTxId;
+    }
     
     // Determine how many SELECT columns we expect
     const selectCols = ast.query?.columns?.length || table.schema.length;
@@ -2291,6 +2313,12 @@ export class Database {
       }
       this._insertRow(table, null, values);
       inserted++;
+    }
+
+    // Batch autocommit: commit the batch transaction after all rows
+    if (isBatch && batchTxId !== undefined) {
+      this.wal.appendCommit(batchTxId);
+      this._batchTxId = undefined;
     }
 
     return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
@@ -2676,10 +2704,10 @@ export class Database {
     const rid = table.heap.insert(orderedValues);
 
     // WAL: log the insert
-    const txId = this._currentTxId || this._nextTxId++;
+    const txId = this._currentTxId || this._batchTxId || this._nextTxId++;
     this.wal.appendInsert(txId, tableName, rid.pageId, rid.slotIdx, orderedValues);
-    if (!this._currentTxId) {
-      // Auto-commit mode: immediately commit
+    if (!this._currentTxId && !this._batchTxId) {
+      // Auto-commit mode (single row): immediately commit
       this.wal.appendCommit(txId);
     }
 
