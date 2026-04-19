@@ -766,6 +766,14 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
   // Connection-scoped cursor state
   const cursors = new Map(); // name → { rows, columns, pos }
   const tempTables = new Set(); // names of temp tables created by this connection
+  
+  // Per-connection MVCC session (if db supports it)
+  let txSession = null; // TransactionalDatabase session
+  const hasTransactional = typeof db.session === 'function';
+  if (hasTransactional) {
+    txSession = db.session();
+  }
+  
   const connectionParams = new Map([
     ['server_version', '15.0 (HenryDB)'],
     ['server_encoding', 'UTF8'],
@@ -1002,7 +1010,33 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     }
     
     const _execStart = performance.now();
-    const _result = db.execute(sql);
+    
+    // Handle transaction commands when using TransactionalDatabase
+    const upperTrimmed = sql.trim().toUpperCase();
+    let _result;
+    if (hasTransactional && txSession) {
+      if (upperTrimmed === 'BEGIN' || upperTrimmed === 'START TRANSACTION') {
+        txSession.begin();
+        _result = { type: 'COMMAND', command: 'BEGIN' };
+      } else if (upperTrimmed === 'COMMIT' || upperTrimmed === 'END') {
+        txSession.commit();
+        _result = { type: 'COMMAND', command: 'COMMIT' };
+      } else if (upperTrimmed === 'ROLLBACK') {
+        try { txSession.rollback(); } catch(e) { /* ignore if no active tx */ }
+        _result = { type: 'COMMAND', command: 'ROLLBACK' };
+      } else if (upperTrimmed.startsWith('SAVEPOINT ')) {
+        _result = txSession.execute(sql);
+      } else if (upperTrimmed.startsWith('ROLLBACK TO')) {
+        _result = txSession.execute(sql);
+      } else if (inTransaction) {
+        _result = txSession.execute(sql);
+      } else {
+        _result = db.execute(sql);
+      }
+    } else {
+      _result = db.execute(sql);
+    }
+    
     const _execDuration = performance.now() - _execStart;
     
     // Log query for slow query log and stat_statements
@@ -1044,6 +1078,11 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     tempTables.clear();
   });
   socket.on('close', () => {
+    // Clean up MVCC session
+    if (txSession) {
+      try { txSession.close(); } catch(e) { /* ignore */ }
+      txSession = null;
+    }
     _advisoryLocks.releaseAll(connId);
     _activeConnections.delete(connId);
     for (const [ch, subs] of channels) {
