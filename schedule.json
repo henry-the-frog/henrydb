@@ -763,17 +763,39 @@
     {
       "id": "T73",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Investigate NULL comparison semantics: NULL < x should return NULL, not false",
       "project": "henrydb",
-      "started": "2026-04-19T16:13:08.036Z"
+      "started": "2026-04-19T16:13:08.036Z",
+      "completed": "2026-04-19T16:16:09.501Z",
+      "duration_ms": 180000,
+      "summary": "Fixed NULL comparison: returns NULL instead of false per SQL standard. Also preserves IS/IS_NOT for NULL. 626 tests pass, zero new regressions."
     },
     {
       "id": "T74",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix NULL comparison semantics in _evalExpr",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T16:16:18.161Z",
+      "completed": "2026-04-19T16:16:18.305Z",
+      "duration_ms": 1000,
+      "summary": "Merged into T73 - NULL comparison fix."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write NULL handling comprehensive test suite",
+      "project": "henrydb",
+      "started": "2026-04-19T16:17:06.613Z"
+    },
+    {
+      "id": "T76",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Investigate neural-net: deeper training quality analysis",
+      "project": "neural-net"
     },
     {
       "id": "T33",
@@ -1139,6 +1161,18 @@
     {
       "time": "2026-04-19T16:13:07.803Z",
       "msg": "Moved T33 after T74"
+    },
+    {
+      "time": "2026-04-19T16:16:55.427Z",
+      "msg": "Added T75 (BUILD) after end: Write NULL handling comprehensive test suite"
+    },
+    {
+      "time": "2026-04-19T16:16:55.545Z",
+      "msg": "Added T76 (THINK) after end: Investigate neural-net: deeper training quality analysis"
+    },
+    {
+      "time": "2026-04-19T16:16:55.661Z",
+      "msg": "Moved T33 after T76"
     }
   ]
 }
