@@ -1642,7 +1642,9 @@ export class Database {
       const row = {};
       for (const col of ast.columns) {
         if (col.type === 'expression') {
-          const name = col.alias || 'expr';
+          let name = col.alias || (col.expr?.left?.type === 'column_ref' ? col.expr.left.name : 'expr');
+          let base = name; let suf = 1;
+          while (row.hasOwnProperty(name)) name = `${base}_${suf++}`;
           row[name] = this._evalValue(col.expr, {});
         } else if (col.type === 'scalar_subquery') {
           const name = col.alias || 'subquery';
@@ -1805,11 +1807,21 @@ export class Database {
               const name = col.alias || `${col.func}(...)`;
               result[name] = this._evalFunction(col.func, col.args, row);
             } else if (col.type === 'expression') {
-              const name = col.alias || 'expr';
+              let name = col.alias;
+              if (!name) {
+                name = col.expr?.left?.type === 'column_ref' ? col.expr.left.name : 'expr';
+                let base = name; let suf = 1;
+                while (result.hasOwnProperty(name)) name = `${base}_${suf++}`;
+              }
               result[name] = this._evalValue(col.expr, row);
             } else {
-              const name = col.alias || col.name;
-              result[name] = row[col.name] !== undefined ? row[col.name] : row[name];
+              let name = col.alias || col.name;
+              const colName = String(col.name);
+              const baseName = colName.includes('.') ? colName.split('.').pop() : colName;
+              if (!col.alias) name = baseName;
+              let base = name; let suf = 1;
+              while (result.hasOwnProperty(name)) name = `${base}_${suf++}`;
+              result[name] = row[col.name] !== undefined ? row[col.name] : row[baseName];
             }
           }
           return result;
@@ -1979,7 +1991,22 @@ export class Database {
           const name = col.alias || `${col.func}(...)`;
           result[name] = this._evalFunction(col.func, col.args, row);
         } else if (col.type === 'expression') {
-          const name = col.alias || 'expr';
+          // Generate unique name for unaliased expressions
+          let name = col.alias;
+          if (!name) {
+            // Try to derive a meaningful name from the expression
+            if (col.expr?.type === 'arith' && col.expr.left?.type === 'column_ref') {
+              name = col.expr.left.name;
+            } else {
+              name = 'expr';
+            }
+            // Ensure uniqueness by appending suffix if key exists
+            let baseName = name;
+            let suffix = 1;
+            while (result.hasOwnProperty(name)) {
+              name = `${baseName}_${suffix++}`;
+            }
+          }
           result[name] = this._evalValue(col.expr, row);
         } else if (col.type === 'scalar_subquery') {
           const name = col.alias || 'subquery';
