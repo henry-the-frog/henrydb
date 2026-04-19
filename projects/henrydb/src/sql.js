@@ -8,7 +8,7 @@ const KEYWORDS = new Set([
   'INT', 'INTEGER', 'TEXT', 'VARCHAR', 'FLOAT', 'BOOL', 'BOOLEAN',
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
-  'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
+  'INDEX', 'INDEXES', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVERLAY', 'PLACING', 'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE', 'VIEW', 'DISTINCT',
@@ -262,14 +262,15 @@ export function parse(sql) {
       advance();
       return { type: 'SHOW_TABLES' };
     }
-    if (isKeyword('COLUMNS') || isKeyword('CREATE')) {
+    if (isKeyword('COLUMNS') || isKeyword('CREATE') || isKeyword('INDEXES')) {
       const what = advance().value;
       if (what === 'CREATE') { expect('KEYWORD', 'TABLE'); }
       else { expect('KEYWORD', 'FROM'); }
       const table = advance().value;
+      if (what === 'INDEXES') return { type: 'SHOW_INDEXES', table };
       return { type: what === 'CREATE' ? 'SHOW_CREATE_TABLE' : 'SHOW_COLUMNS', table };
     }
-    throw new Error('Expected TABLES, COLUMNS, or CREATE after SHOW');
+    throw new Error('Expected TABLES, COLUMNS, INDEXES, or CREATE after SHOW');
   }
   if (isKeyword('TRUNCATE')) {
     advance(); if (isKeyword('TABLE')) advance();

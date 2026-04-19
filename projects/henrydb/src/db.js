@@ -1102,6 +1102,22 @@ export class Database {
         }));
         return { type: 'ROWS', rows };
       }
+      case 'SHOW_INDEXES': {
+        const tableName = ast.table;
+        const rows = [];
+        for (const [name, idx] of this.indexCatalog.entries()) {
+          if (idx.table === tableName) {
+            rows.push({
+              index_name: name,
+              table_name: idx.table,
+              columns: idx.columns.join(', '),
+              unique: idx.unique || false,
+              type: 'btree',
+            });
+          }
+        }
+        return { type: 'ROWS', rows };
+      }
       case 'CREATE_INDEX': return this._createIndex(ast);
       case 'DROP_INDEX': return this._dropIndex(ast);
       case 'ALTER_TABLE': return this._alterTable(ast);
