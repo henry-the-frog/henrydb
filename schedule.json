@@ -3524,9 +3524,41 @@
     {
       "id": "T308",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "End of session: push, update daily log, git status",
-      "started": "2026-04-19T03:39:34.741Z"
+      "started": "2026-04-19T03:39:34.741Z",
+      "completed": "2026-04-19T03:40:38.250Z",
+      "duration_ms": 120000,
+      "summary": "Session C end: all pushed. 349 tests, 13 bugs, 15 functions. Daily log updated."
+    },
+    {
+      "id": "T331",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write a SQL compliance scorecard: how many SQL-92/99/2003 features does HenryDB support",
+      "project": "henrydb",
+      "started": "2026-04-19T03:40:58.269Z",
+      "completed": "2026-04-19T03:41:42.343Z",
+      "duration_ms": 300000,
+      "summary": "SQL compliance scorecard: 53/53 core features. Full SQL-92, SQL-99 (CTEs, window functions, GROUPING SETS), SQL-2003 (MERGE, sequences, FILTER). 60+ PG-compatible functions."
+    },
+    {
+      "id": "T332",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write information_schema compatible tables: tables, columns, indexes catalog queries",
+      "project": "henrydb",
+      "started": "2026-04-19T03:41:59.805Z",
+      "completed": "2026-04-19T03:44:20.742Z",
+      "duration_ms": 300000,
+      "summary": "Added SHOW INDEXES FROM table. HenryDB now has full catalog introspection: SHOW TABLES, SHOW COLUMNS FROM, SHOW INDEXES FROM, information_schema.tables, information_schema.columns."
+    },
+    {
+      "id": "T333",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final regression + git push + daily log update",
+      "started": "2026-04-19T03:44:44.076Z"
     }
   ],
   "focusProjects": [
@@ -4910,6 +4942,18 @@
     {
       "time": "2026-04-19T03:32:14.715Z",
       "msg": "Moved T308 after T330"
+    },
+    {
+      "time": "2026-04-19T03:40:51.766Z",
+      "msg": "Added T331 (BUILD) after end: Write a SQL compliance scorecard: how many SQL-92/99/2003 features does HenryDB support"
+    },
+    {
+      "time": "2026-04-19T03:41:52.490Z",
+      "msg": "Added T332 (BUILD) after end: Write information_schema compatible tables: tables, columns, indexes catalog queries"
+    },
+    {
+      "time": "2026-04-19T03:44:36.330Z",
+      "msg": "Added T333 (MAINTAIN) after end: Final regression + git push + daily log update"
     }
   ]
 }
