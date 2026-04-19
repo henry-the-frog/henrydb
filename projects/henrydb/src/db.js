@@ -8455,7 +8455,7 @@ export class Database {
               current = current?.[part];
             }
           }
-          return current === undefined ? null : String(current);
+          return current === undefined ? null : (typeof current === 'object' && current !== null ? JSON.stringify(current) : String(current));
         } catch { return null; }
       }
       case 'JSON_SET': {
