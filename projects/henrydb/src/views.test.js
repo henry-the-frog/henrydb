@@ -1,4 +1,5 @@
-// views.test.js — Tests for CREATE VIEW
+// views.test.js — Views and materialized views
+
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
@@ -8,95 +9,96 @@ describe('Views', () => {
 
   beforeEach(() => {
     db = new Database();
-    db.execute('CREATE TABLE users (id INT, name TEXT, age INT, dept TEXT)');
-    db.execute("INSERT INTO users VALUES (1, 'Alice', 30, 'Engineering')");
-    db.execute("INSERT INTO users VALUES (2, 'Bob', 25, 'Sales')");
-    db.execute("INSERT INTO users VALUES (3, 'Charlie', 35, 'Engineering')");
-    db.execute("INSERT INTO users VALUES (4, 'Diana', 28, 'Marketing')");
-    
-    db.execute('CREATE TABLE orders (id INT, user_id INT, amount INT)');
-    db.execute('INSERT INTO orders VALUES (1, 1, 100)');
-    db.execute('INSERT INTO orders VALUES (2, 2, 200)');
-    db.execute('INSERT INTO orders VALUES (3, 1, 50)');
+    db.execute('CREATE TABLE emp (id INT PRIMARY KEY, name TEXT, dept TEXT, salary INT)');
+    db.execute("INSERT INTO emp VALUES (1, 'Alice', 'Eng', 80000)");
+    db.execute("INSERT INTO emp VALUES (2, 'Bob', 'Sales', 60000)");
+    db.execute("INSERT INTO emp VALUES (3, 'Charlie', 'Eng', 90000)");
+    db.execute("INSERT INTO emp VALUES (4, 'Diana', 'Sales', 70000)");
   });
 
-  it('CREATE VIEW and SELECT from view', () => {
-    db.execute('CREATE VIEW engineers AS SELECT * FROM users WHERE dept = \'Engineering\'');
-    const result = db.execute('SELECT * FROM engineers ORDER BY id');
-    assert.equal(result.rows.length, 2);
-    assert.equal(result.rows[0].name, 'Alice');
-    assert.equal(result.rows[1].name, 'Charlie');
+  it('CREATE VIEW and SELECT', () => {
+    db.execute("CREATE VIEW eng AS SELECT * FROM emp WHERE dept = 'Eng'");
+    const r = db.execute('SELECT * FROM eng ORDER BY salary');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].name, 'Alice');
   });
 
-  it('view reflects live data (not materialized)', () => {
-    db.execute('CREATE VIEW all_users AS SELECT * FROM users');
-    
-    const before = db.execute('SELECT COUNT(*) as cnt FROM all_users');
-    assert.equal(before.rows[0].cnt, 4);
-    
-    db.execute("INSERT INTO users VALUES (5, 'Eve', 22, 'Sales')");
-    
-    const after = db.execute('SELECT COUNT(*) as cnt FROM all_users');
-    assert.equal(after.rows[0].cnt, 5); // View sees new row
+  it('view reflects underlying data changes', () => {
+    db.execute("CREATE VIEW eng AS SELECT * FROM emp WHERE dept = 'Eng'");
+    db.execute("INSERT INTO emp VALUES (5, 'Eve', 'Eng', 95000)");
+    const r = db.execute('SELECT COUNT(*) as cnt FROM eng');
+    assert.equal(r.rows[0].cnt, 3);
   });
 
-  it('view with specific columns', () => {
-    db.execute('CREATE VIEW user_names AS SELECT id, name FROM users');
-    const result = db.execute('SELECT * FROM user_names ORDER BY id');
-    assert.equal(result.rows.length, 4);
-    assert.ok('name' in result.rows[0]);
+  it('aggregate view', () => {
+    db.execute('CREATE VIEW stats AS SELECT dept, COUNT(*) as cnt, SUM(salary) as total FROM emp GROUP BY dept');
+    const r = db.execute('SELECT * FROM stats ORDER BY dept');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].dept, 'Eng');
+    assert.equal(r.rows[0].cnt, 2);
   });
 
-  it('view with aggregate', () => {
-    db.execute('CREATE VIEW dept_counts AS SELECT dept, COUNT(*) as cnt FROM users GROUP BY dept');
-    const result = db.execute('SELECT * FROM dept_counts ORDER BY cnt DESC');
-    assert.ok(result.rows.length > 0);
-    assert.equal(result.rows[0].dept, 'Engineering');
-    assert.equal(result.rows[0].cnt, 2);
+  it('view of view', () => {
+    db.execute("CREATE VIEW eng AS SELECT * FROM emp WHERE dept = 'Eng'");
+    db.execute('CREATE VIEW rich_eng AS SELECT * FROM eng WHERE salary > 85000');
+    const r = db.execute('SELECT name FROM rich_eng');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].name, 'Charlie');
   });
 
-  it('view with WHERE filter on top', () => {
-    db.execute('CREATE VIEW adults AS SELECT * FROM users WHERE age >= 25');
-    const result = db.execute('SELECT name FROM adults WHERE dept = \'Engineering\'');
-    assert.equal(result.rows.length, 2); // Alice (30) and Charlie (35)
-  });
-
-  it('view used in subquery', () => {
-    db.execute("CREATE VIEW engineers AS SELECT * FROM users WHERE dept = 'Engineering'");
-    const result = db.execute('SELECT name FROM engineers WHERE age > 30');
-    assert.equal(result.rows.length, 1);
-    assert.equal(result.rows[0].name, 'Charlie');
+  it('JOIN with view', () => {
+    db.execute('CREATE VIEW dept_avg AS SELECT dept, AVG(salary) as avg_sal FROM emp GROUP BY dept');
+    const r = db.execute('SELECT e.name, d.avg_sal FROM emp e JOIN dept_avg d ON e.dept = d.dept WHERE e.name = \'Alice\'');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].avg_sal, 85000);
   });
 
   it('DROP VIEW', () => {
-    db.execute('CREATE VIEW v AS SELECT * FROM users');
-    db.execute('SELECT * FROM v'); // Works
-    db.execute('DROP VIEW v');
-    assert.throws(() => db.execute('SELECT * FROM v'));
+    db.execute("CREATE VIEW eng AS SELECT * FROM emp WHERE dept = 'Eng'");
+    db.execute('DROP VIEW eng');
+    assert.throws(() => db.execute('SELECT * FROM eng'), /not found|does not exist/i);
   });
 
-  it('views survive across queries', () => {
-    db.execute('CREATE VIEW v AS SELECT * FROM users WHERE age > 25');
-    const r1 = db.execute('SELECT * FROM v');
-    const r2 = db.execute('SELECT COUNT(*) as cnt FROM v');
-    assert.equal(r1.rows.length, 3);
-    assert.equal(r2.rows[0].cnt, 3);
-  });
-
-  it('multiple views on same table', () => {
-    db.execute("CREATE VIEW eng AS SELECT * FROM users WHERE dept = 'Engineering'");
-    db.execute("CREATE VIEW sales AS SELECT * FROM users WHERE dept = 'Sales'");
+  it('CREATE OR REPLACE VIEW', () => {
+    db.execute("CREATE VIEW v AS SELECT name FROM emp WHERE dept = 'Eng'");
+    assert.equal(db.execute('SELECT * FROM v').rows.length, 2);
     
-    const engResult = db.execute('SELECT * FROM eng');
-    const salesResult = db.execute('SELECT * FROM sales');
-    
-    assert.equal(engResult.rows.length, 2);
-    assert.equal(salesResult.rows.length, 1);
+    db.execute("CREATE OR REPLACE VIEW v AS SELECT name FROM emp WHERE dept = 'Sales'");
+    assert.equal(db.execute('SELECT * FROM v').rows.length, 2);
+    assert.equal(db.execute("SELECT name FROM v WHERE name = 'Bob'").rows.length, 1);
+  });
+});
+
+describe('Materialized Views', () => {
+  let db;
+
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE sales (id INT PRIMARY KEY, region TEXT, amount INT)');
+    db.execute("INSERT INTO sales VALUES (1, 'East', 100), (2, 'West', 200), (3, 'East', 150)");
   });
 
-  it('view with ORDER BY', () => {
-    db.execute('CREATE VIEW sorted_users AS SELECT * FROM users ORDER BY age DESC');
-    const result = db.execute('SELECT name FROM sorted_users');
-    assert.equal(result.rows[0].name, 'Charlie'); // 35
+  it('CREATE MATERIALIZED VIEW', () => {
+    db.execute('CREATE MATERIALIZED VIEW mv AS SELECT region, SUM(amount) as total FROM sales GROUP BY region');
+    const r = db.execute('SELECT * FROM mv ORDER BY region');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].total, 250); // East
+    assert.equal(r.rows[1].total, 200); // West
+  });
+
+  it('materialized view is snapshot — does not reflect changes', () => {
+    db.execute('CREATE MATERIALIZED VIEW mv AS SELECT COUNT(*) as cnt FROM sales');
+    db.execute("INSERT INTO sales VALUES (4, 'North', 300)");
+    // Without REFRESH, still shows old data
+    const r = db.execute('SELECT cnt FROM mv');
+    assert.equal(r.rows[0].cnt, 3); // Old count
+  });
+
+  it('REFRESH MATERIALIZED VIEW', () => {
+    db.execute('CREATE MATERIALIZED VIEW mv AS SELECT region, SUM(amount) as total FROM sales GROUP BY region');
+    db.execute("INSERT INTO sales VALUES (4, 'East', 50)");
+    db.execute('REFRESH MATERIALIZED VIEW mv');
+    const r = db.execute('SELECT total FROM mv WHERE region = \'East\'');
+    assert.equal(r.rows[0].total, 300); // Updated
   });
 });
