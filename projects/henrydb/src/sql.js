@@ -453,8 +453,17 @@ export function parse(sql) {
       ctes.push({ name, query: baseQuery, unionQuery, recursive, columns: cteColumns, cycle, search });
     } while (match(','));
 
-    // Main query
-    const mainQuery = parseSelect();
+    // Main query — can be SELECT, DELETE, UPDATE, or INSERT
+    let mainQuery;
+    if (isKeyword('DELETE')) {
+      mainQuery = parseDelete();
+    } else if (isKeyword('UPDATE')) {
+      mainQuery = parseUpdate();
+    } else if (isKeyword('INSERT')) {
+      mainQuery = parseInsert();
+    } else {
+      mainQuery = parseSelect();
+    }
     mainQuery.ctes = ctes;
     return mainQuery;
   }

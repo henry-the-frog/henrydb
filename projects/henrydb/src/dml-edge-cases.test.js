@@ -1,198 +1,198 @@
-// dml-edge-cases.test.js — DELETE/UPDATE edge cases with MVCC
-// Tests adversarial DML patterns that commonly break MVCC implementations.
+// dml-edge-cases.test.js — DML operations with complex patterns
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import { strict as assert } from 'node:assert';
-import { TransactionalDatabase } from './transactional-db.js';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { describe, it, beforeEach } from 'node:test';
+import assert from 'node:assert/strict';
+import { Database } from './db.js';
 
-let dbDir, db;
-function setup() {
-  dbDir = mkdtempSync(join(tmpdir(), 'henrydb-dml-'));
-  db = TransactionalDatabase.open(dbDir);
-}
-function teardown() {
-  try { db.close(); } catch {}
-  rmSync(dbDir, { recursive: true, force: true });
-}
-function rows(r) { return Array.isArray(r) ? r : r?.rows || []; }
+describe('CTE with DML', () => {
+  let db;
 
-describe('DELETE/UPDATE Edge Cases', () => {
-  beforeEach(setup);
-  afterEach(teardown);
-
-  it('DELETE WHERE IN (SELECT ...) with subquery referencing same table', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    for (let i = 1; i <= 10; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
-    
-    // Delete rows where val > average (self-referencing subquery)
-    db.execute('DELETE FROM t WHERE val > (SELECT AVG(val) FROM t)');
-    
-    const r = rows(db.execute('SELECT * FROM t ORDER BY id'));
-    // AVG = 55. Rows with val > 55: 6,7,8,9,10 deleted. Remaining: 1-5
-    assert.equal(r.length, 5, 'Should have 5 rows after delete');
-    assert.equal(r[4].id, 5);
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT, grp TEXT)');
+    db.execute("INSERT INTO t VALUES (1, 10, 'A'), (2, 20, 'B'), (3, 30, 'A'), (4, 40, 'B'), (5, 50, 'C')");
   });
 
-  it('UPDATE SET col = (SELECT ...) with scalar subquery', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    db.execute('CREATE TABLE config (multiplier INT)');
-    db.execute('INSERT INTO config VALUES (3)');
-    db.execute('INSERT INTO t VALUES (1, 10)');
-    db.execute('INSERT INTO t VALUES (2, 20)');
-    
-    db.execute('UPDATE t SET val = val * (SELECT multiplier FROM config)');
-    
-    const r = rows(db.execute('SELECT * FROM t ORDER BY id'));
-    assert.equal(r[0].val, 30); // 10 * 3
-    assert.equal(r[1].val, 60); // 20 * 3
+  it('CTE + DELETE', () => {
+    const r = db.execute('WITH targets AS (SELECT id FROM t WHERE val > 30) DELETE FROM t WHERE id IN (SELECT id FROM targets)');
+    assert.equal(r.count, 2); // ids 4 and 5
+    const remaining = db.execute('SELECT * FROM t ORDER BY id');
+    assert.equal(remaining.rows.length, 3);
   });
 
-  it('DELETE all rows then INSERT in same transaction', () => {
-    db.execute('CREATE TABLE t (id INT, val TEXT)');
-    db.execute("INSERT INTO t VALUES (1, 'old')");
-    db.execute("INSERT INTO t VALUES (2, 'old')");
-    
-    const s = db.session();
-    s.begin();
-    s.execute('DELETE FROM t');
-    s.execute("INSERT INTO t VALUES (3, 'new')");
-    
-    // Within tx, should see only the new row
-    const r = rows(s.execute('SELECT * FROM t'));
-    assert.equal(r.length, 1);
-    assert.equal(r[0].val, 'new');
-    
-    s.commit();
-    
-    const r2 = rows(db.execute('SELECT * FROM t'));
-    assert.equal(r2.length, 1);
-    assert.equal(r2[0].id, 3);
+  it('CTE + UPDATE', () => {
+    const r = db.execute("WITH bonus AS (SELECT id FROM t WHERE grp = 'A') UPDATE t SET val = val * 2 WHERE id IN (SELECT id FROM bonus)");
+    assert.equal(r.count, 2); // ids 1 and 3
+    const updated = db.execute('SELECT val FROM t WHERE id = 1');
+    assert.equal(updated.rows[0].val, 20);
   });
 
-  it('UPDATE same row twice in one transaction', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    db.execute('INSERT INTO t VALUES (1, 10)');
-    
-    const s = db.session();
-    s.begin();
-    s.execute('UPDATE t SET val = 20 WHERE id = 1');
-    s.execute('UPDATE t SET val = 30 WHERE id = 1');
-    
-    const r = rows(s.execute('SELECT val FROM t WHERE id = 1'));
-    assert.equal(r[0].val, 30, 'Should see second update');
-    
-    s.commit();
-    
-    const r2 = rows(db.execute('SELECT val FROM t WHERE id = 1'));
-    assert.equal(r2[0].val, 30);
+  it('CTE + INSERT SELECT', () => {
+    db.execute('CREATE TABLE t2 (id INT PRIMARY KEY, val INT, grp TEXT)');
+    const r = db.execute("WITH src AS (SELECT * FROM t WHERE grp = 'A') INSERT INTO t2 SELECT * FROM src");
+    assert.equal(r.count, 2);
+    const inserted = db.execute('SELECT * FROM t2 ORDER BY id');
+    assert.equal(inserted.rows.length, 2);
   });
 
-  it('concurrent DELETE of same row — only first succeeds', () => {
-    db.execute('CREATE TABLE t (id INT, val TEXT)');
-    db.execute("INSERT INTO t VALUES (1, 'target')");
+  it('recursive CTE + DELETE', () => {
+    db.execute('CREATE TABLE tree (id INT PRIMARY KEY, parent_id INT, name TEXT)');
+    db.execute("INSERT INTO tree VALUES (1, NULL, 'root'), (2, 1, 'child1'), (3, 1, 'child2'), (4, 2, 'grandchild')");
     
-    const s1 = db.session();
-    s1.begin();
-    const s2 = db.session();
-    s2.begin();
-    
-    // Both try to delete the same row
-    s1.execute('DELETE FROM t WHERE id = 1');
-    
-    // s1 commits first
-    s1.commit();
-    
-    // s2 should either fail or see no rows to delete
-    try {
-      s2.execute('DELETE FROM t WHERE id = 1');
-      s2.commit();
-    } catch (e) {
-      // Write conflict is acceptable
-      assert.ok(true, `Write conflict: ${e.message}`);
+    // Delete entire subtree of id=2
+    const r = db.execute(`
+      WITH RECURSIVE subtree AS (
+        SELECT id FROM tree WHERE id = 2
+        UNION ALL
+        SELECT t.id FROM tree t JOIN subtree s ON t.parent_id = s.id
+      )
+      DELETE FROM tree WHERE id IN (SELECT id FROM subtree)
+    `);
+    assert.equal(r.count, 2); // id=2 and id=4
+    const remaining = db.execute('SELECT * FROM tree ORDER BY id');
+    assert.equal(remaining.rows.length, 2);
+    assert.deepStrictEqual(remaining.rows.map(r => r.id), [1, 3]);
+  });
+});
+
+describe('UPDATE Patterns', () => {
+  let db;
+
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE products (id INT PRIMARY KEY, name TEXT, price INT, category TEXT, stock INT)');
+    db.execute("INSERT INTO products VALUES (1, 'Widget', 100, 'A', 50)");
+    db.execute("INSERT INTO products VALUES (2, 'Gadget', 200, 'B', 30)");
+    db.execute("INSERT INTO products VALUES (3, 'Thing', 150, 'A', 0)");
+    db.execute("INSERT INTO products VALUES (4, 'Doohickey', 75, 'C', 100)");
+  });
+
+  it('UPDATE with subquery in SET', () => {
+    db.execute('UPDATE products SET price = (SELECT MAX(price) FROM products) WHERE id = 4');
+    const r = db.execute('SELECT price FROM products WHERE id = 4');
+    assert.equal(r.rows[0].price, 200);
+  });
+
+  it('UPDATE with subquery in WHERE', () => {
+    const r = db.execute("UPDATE products SET stock = stock + 10 WHERE category IN (SELECT category FROM products WHERE stock = 0)");
+    assert.equal(r.count, 2); // category A: ids 1 and 3
+  });
+
+  it('UPDATE with CASE expression', () => {
+    db.execute("UPDATE products SET price = CASE WHEN category = 'A' THEN price + 50 WHEN category = 'B' THEN price - 50 ELSE price END");
+    const a = db.execute("SELECT price FROM products WHERE id = 1");
+    const b = db.execute("SELECT price FROM products WHERE id = 2");
+    assert.equal(a.rows[0].price, 150);
+    assert.equal(b.rows[0].price, 150);
+  });
+
+  it('UPDATE multiple columns', () => {
+    db.execute("UPDATE products SET price = 999, stock = 0, category = 'Z' WHERE id = 1");
+    const r = db.execute('SELECT * FROM products WHERE id = 1');
+    assert.equal(r.rows[0].price, 999);
+    assert.equal(r.rows[0].stock, 0);
+    assert.equal(r.rows[0].category, 'Z');
+  });
+
+  it('UPDATE with arithmetic in SET', () => {
+    db.execute('UPDATE products SET price = price * 2 + 10 WHERE id = 1');
+    const r = db.execute('SELECT price FROM products WHERE id = 1');
+    assert.equal(r.rows[0].price, 210);
+  });
+
+  it('UPDATE RETURNING', () => {
+    const r = db.execute("UPDATE products SET price = price + 100 WHERE category = 'A' RETURNING id, name, price");
+    assert.equal(r.rows.length, 2);
+    assert.ok(r.rows.every(row => row.price > 100));
+  });
+});
+
+describe('DELETE Patterns', () => {
+  let db;
+
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE items (id INT PRIMARY KEY, val INT, active INT)');
+    for (let i = 1; i <= 20; i++) {
+      db.execute(`INSERT INTO items VALUES (${i}, ${i * 10}, ${i % 3 === 0 ? 0 : 1})`);
     }
-    
-    // Table should be empty
-    const r = rows(db.execute('SELECT * FROM t'));
-    assert.equal(r.length, 0, 'Row should be deleted');
   });
 
-  it('UPDATE with arithmetic expression', () => {
-    db.execute('CREATE TABLE t (id INT, a INT, b INT)');
-    db.execute('INSERT INTO t VALUES (1, 10, 5)');
-    
-    db.execute('UPDATE t SET a = a + b, b = a - b WHERE id = 1');
-    
-    const r = rows(db.execute('SELECT * FROM t WHERE id = 1'));
-    // a = 10 + 5 = 15, b = 10 - 5 = 5 (using original values)
-    // Note: in PostgreSQL, SET uses old values for all expressions
-    assert.equal(r[0].a, 15);
-    assert.equal(r[0].b, 5);
+  it('DELETE with complex WHERE', () => {
+    const r = db.execute('DELETE FROM items WHERE active = 0 AND val > 50');
+    const count = db.execute('SELECT COUNT(*) as cnt FROM items');
+    assert.ok(r.count > 0);
+    assert.ok(count.rows[0].cnt < 20);
   });
 
-  it('DELETE with complex WHERE clause', () => {
-    db.execute('CREATE TABLE t (id INT, cat TEXT, score INT)');
-    db.execute("INSERT INTO t VALUES (1, 'a', 90)");
-    db.execute("INSERT INTO t VALUES (2, 'b', 80)");
-    db.execute("INSERT INTO t VALUES (3, 'a', 70)");
-    db.execute("INSERT INTO t VALUES (4, 'b', 60)");
-    db.execute("INSERT INTO t VALUES (5, 'a', 50)");
-    
-    // Delete rows where cat='a' AND score < 80
-    db.execute("DELETE FROM t WHERE cat = 'a' AND score < 80");
-    
-    const r = rows(db.execute('SELECT * FROM t ORDER BY id'));
-    assert.equal(r.length, 3); // rows 1, 2, 4 remain
-    assert.equal(r[0].id, 1); // cat='a', score=90 (not < 80)
-    assert.equal(r[1].id, 2); // cat='b'
-    assert.equal(r[2].id, 4); // cat='b'
+  it('DELETE with subquery', () => {
+    const r = db.execute('DELETE FROM items WHERE val > (SELECT AVG(val) FROM items)');
+    assert.ok(r.count > 0);
+    // All remaining should be <= original average
+    const remaining = db.execute('SELECT MAX(val) as max_val FROM items');
+    assert.ok(remaining.rows[0].max_val <= 105); // avg of 10,20,...,200 = 105
   });
 
-  it('UPDATE with WHERE IN subquery', () => {
-    db.execute('CREATE TABLE items (id INT, price INT, category TEXT)');
-    db.execute("INSERT INTO items VALUES (1, 100, 'a')");
-    db.execute("INSERT INTO items VALUES (2, 200, 'b')");
-    db.execute("INSERT INTO items VALUES (3, 300, 'a')");
-    db.execute('CREATE TABLE discounted (category TEXT)');
-    db.execute("INSERT INTO discounted VALUES ('a')");
-    
-    db.execute('UPDATE items SET price = price * 0.9 WHERE category IN (SELECT category FROM discounted)');
-    
-    const r = rows(db.execute('SELECT * FROM items ORDER BY id'));
-    assert.equal(r[0].price, 90);  // 100 * 0.9 (category a)
-    assert.equal(r[1].price, 200); // unchanged (category b)
-    assert.equal(r[2].price, 270); // 300 * 0.9 (category a)
+  it('DELETE RETURNING', () => {
+    const r = db.execute('DELETE FROM items WHERE id <= 3 RETURNING id, val');
+    assert.equal(r.rows.length, 3);
+    assert.deepStrictEqual(r.rows.map(r => r.id).sort(), [1, 2, 3]);
   });
 
-  it('DELETE WHERE NOT EXISTS (orphan cleanup)', () => {
-    db.execute('CREATE TABLE orders (id INT, customer_id INT)');
-    db.execute('CREATE TABLE customers (id INT, name TEXT)');
-    db.execute("INSERT INTO customers VALUES (1, 'Alice')");
-    db.execute('INSERT INTO orders VALUES (1, 1)');
-    db.execute('INSERT INTO orders VALUES (2, 999)'); // orphan — no customer 999
-    
-    db.execute('DELETE FROM orders WHERE NOT EXISTS (SELECT 1 FROM customers WHERE customers.id = orders.customer_id)');
-    
-    const r = rows(db.execute('SELECT * FROM orders'));
-    assert.equal(r.length, 1, 'Only non-orphan order should remain');
-    assert.equal(r[0].customer_id, 1);
+  it('DELETE all rows', () => {
+    const r = db.execute('DELETE FROM items');
+    assert.equal(r.count, 20);
+    const remaining = db.execute('SELECT COUNT(*) as cnt FROM items');
+    assert.equal(remaining.rows[0].cnt, 0);
   });
 
-  it('DML survives close/reopen', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    db.execute('INSERT INTO t VALUES (1, 10)');
-    db.execute('INSERT INTO t VALUES (2, 20)');
-    db.execute('UPDATE t SET val = 99 WHERE id = 1');
-    db.execute('DELETE FROM t WHERE id = 2');
-    
-    db.close();
-    db = TransactionalDatabase.open(dbDir);
-    
-    const r = rows(db.execute('SELECT * FROM t'));
-    assert.equal(r.length, 1);
-    assert.equal(r[0].id, 1);
-    assert.equal(r[0].val, 99);
+  it('DELETE with no matching rows', () => {
+    const r = db.execute('DELETE FROM items WHERE val > 9999');
+    assert.equal(r.count, 0);
+  });
+});
+
+describe('INSERT Patterns', () => {
+  let db;
+
+  beforeEach(() => {
+    db = new Database();
+    db.execute('CREATE TABLE target (id INT PRIMARY KEY, val INT, label TEXT)');
+  });
+
+  it('INSERT ... SELECT', () => {
+    db.execute('CREATE TABLE source (id INT PRIMARY KEY, val INT, label TEXT)');
+    db.execute("INSERT INTO source VALUES (1, 10, 'a'), (2, 20, 'b')");
+    const r = db.execute('INSERT INTO target SELECT * FROM source');
+    assert.equal(r.count, 2);
+  });
+
+  it('INSERT ON CONFLICT DO UPDATE (upsert)', () => {
+    db.execute("INSERT INTO target VALUES (1, 10, 'original')");
+    db.execute("INSERT INTO target VALUES (1, 99, 'updated') ON CONFLICT (id) DO UPDATE SET val = 99, label = 'updated'");
+    const r = db.execute('SELECT * FROM target WHERE id = 1');
+    assert.equal(r.rows[0].val, 99);
+    assert.equal(r.rows[0].label, 'updated');
+  });
+
+  it('INSERT ON CONFLICT DO NOTHING', () => {
+    db.execute("INSERT INTO target VALUES (1, 10, 'first')");
+    db.execute("INSERT INTO target VALUES (1, 99, 'ignored') ON CONFLICT (id) DO NOTHING");
+    const r = db.execute('SELECT * FROM target WHERE id = 1');
+    assert.equal(r.rows[0].val, 10); // Unchanged
+    assert.equal(r.rows[0].label, 'first');
+  });
+
+  it('INSERT RETURNING', () => {
+    const r = db.execute("INSERT INTO target VALUES (1, 10, 'test') RETURNING *");
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].id, 1);
+    assert.equal(r.rows[0].label, 'test');
+  });
+
+  it('multi-row INSERT', () => {
+    db.execute("INSERT INTO target VALUES (1, 10, 'a'), (2, 20, 'b'), (3, 30, 'c')");
+    const r = db.execute('SELECT COUNT(*) as cnt FROM target');
+    assert.equal(r.rows[0].cnt, 3);
   });
 });

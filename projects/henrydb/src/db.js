@@ -1008,6 +1008,32 @@ export class Database {
     };
   }
 
+  // Execute a function with CTEs registered as temporary views
+  _withCTEs(ast, fn) {
+    if (!ast.ctes || ast.ctes.length === 0) return fn();
+    const tempViews = [];
+    for (const cte of ast.ctes) {
+      if (this.views.has(cte.name)) throw new Error(`CTE name ${cte.name} conflicts with existing view`);
+      if (cte.recursive && (cte.unionQuery || cte.query.type === 'UNION')) {
+        const allRows = this._executeRecursiveCTE(cte);
+        this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
+      } else if (cte.unionQuery || cte.query.type === 'UNION') {
+        const leftResult = this._select(cte.query);
+        const rightResult = this.execute_ast(cte.unionQuery);
+        const allRows = [...leftResult.rows, ...rightResult.rows];
+        this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
+      } else {
+        this.views.set(cte.name, { query: cte.query, isCTE: true });
+      }
+      tempViews.push(cte.name);
+    }
+    try {
+      return fn();
+    } finally {
+      for (const name of tempViews) this.views.delete(name);
+    }
+  }
+
   execute_ast(ast) {
     switch (ast.type) {
       case 'CREATE_TABLE': this._planCache.invalidateAll(); return this._createTable(ast);
@@ -1113,8 +1139,8 @@ export class Database {
       }
       case 'REFRESH_MATVIEW': return this._refreshMatView(ast);
       case 'DROP_VIEW': return this._dropView(ast);
-      case 'INSERT': return this._insert(ast);
-      case 'INSERT_SELECT': return this._insertSelect(ast);
+      case 'INSERT': return this._withCTEs(ast, () => this._insert(ast));
+      case 'INSERT_SELECT': return this._withCTEs(ast, () => this._insertSelect(ast));
       case 'SELECT': {
         const result = this._select(ast);
         // FOR UPDATE/SHARE: acquire row-level locks after selecting
@@ -1127,8 +1153,8 @@ export class Database {
       case 'UNION': return this._union(ast);
       case 'INTERSECT': return this._intersect(ast);
       case 'EXCEPT': return this._except(ast);
-      case 'UPDATE': return this._update(ast);
-      case 'DELETE': return this._delete(ast);
+      case 'UPDATE': return this._withCTEs(ast, () => this._update(ast));
+      case 'DELETE': return this._withCTEs(ast, () => this._delete(ast));
       case 'TRUNCATE': return this._truncate(ast);
       case 'MERGE': return this._merge(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
