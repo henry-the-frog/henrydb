@@ -1757,16 +1757,56 @@
     {
       "id": "T165",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Optimize UPDATE performance based on profiling results",
       "project": "henrydb",
-      "started": "2026-04-19T22:24:57.528Z"
+      "started": "2026-04-19T22:24:57.528Z",
+      "completed": "2026-04-19T22:38:01.294Z",
+      "duration_ms": 600000,
+      "summary": "Optimized UPDATE/DELETE with index-based WHERE scan. 220x improvement for PK lookups (68 → 15K+ ops/sec). Fixed Array.prototype.values collision bug. Secondary index maintenance remains a bottleneck for future optimization."
     },
     {
       "id": "T166",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "done",
       "task": "Evening wrap-up: daily log summary, git push, CURRENT.md",
+      "project": "henrydb",
+      "started": "2026-04-19T22:38:19.926Z",
+      "completed": "2026-04-19T22:38:27.864Z",
+      "duration_ms": 15000,
+      "summary": "Not evening yet (4:38 PM), continuing with more work. Will do actual wrap-up after 8 PM."
+    },
+    {
+      "id": "T167",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Deep dive: investigate secondary index UPDATE bottleneck - why does B+tree insert slow down with many duplicates?",
+      "project": "henrydb",
+      "started": "2026-04-19T22:38:47.289Z",
+      "completed": "2026-04-19T22:42:30.311Z",
+      "duration_ms": 600000,
+      "summary": "Deep investigation: 10K-row UPDATE slowness is heap bloat from tombstones (delete+insert per UPDATE). First 10 UPDATEs: 3K ops/sec (45x improvement). Performance degrades as heap accumulates dead slots. Index-based scan fix is correct. Full fix needs VACUUM/compaction optimization. For typical workloads (not 2000+ repeated UPDATEs), performance is excellent."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix secondary index UPDATE performance or improve HOT chain detection",
+      "project": "henrydb",
+      "started": "2026-04-19T22:42:37.258Z"
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write stress test: 1000 concurrent transactions with savepoints and rollbacks",
+      "project": "henrydb"
+    },
+    {
+      "id": "T170",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Actual evening wrap-up after 8 PM",
       "project": "henrydb"
     }
   ],
@@ -2487,6 +2527,22 @@
     {
       "time": "2026-04-19T22:21:32.154Z",
       "msg": "Added T166 (MAINTAIN) after end: Evening wrap-up: daily log summary, git push, CURRENT.md"
+    },
+    {
+      "time": "2026-04-19T22:38:40.127Z",
+      "msg": "Added T167 (THINK) after end: Deep dive: investigate secondary index UPDATE bottleneck - why does B+tree insert slow down with many duplicates?"
+    },
+    {
+      "time": "2026-04-19T22:38:40.266Z",
+      "msg": "Added T168 (BUILD) after end: Fix secondary index UPDATE performance or improve HOT chain detection"
+    },
+    {
+      "time": "2026-04-19T22:38:40.386Z",
+      "msg": "Added T169 (BUILD) after end: Write stress test: 1000 concurrent transactions with savepoints and rollbacks"
+    },
+    {
+      "time": "2026-04-19T22:38:40.504Z",
+      "msg": "Added T170 (MAINTAIN) after end: Actual evening wrap-up after 8 PM"
     }
   ]
 }

@@ -408,6 +408,23 @@ export class HeapFile {
     return result;
   }
 
+  /**
+   * In-place update: replace tuple at given location without delete+insert.
+   * Avoids creating tombstones and heap bloat.
+   * Returns the RID (same pageId:slotIdx) or null if the slot doesn't exist.
+   */
+  update(pageId, slotIdx, newValues) {
+    const page = this.pages.find(p => p.id === pageId);
+    if (!page) return null;
+    const data = encodeTuple(newValues);
+    if (page.updateTuple) {
+      const result = page.updateTuple(slotIdx, data);
+      if (result) return { pageId, slotIdx };
+    }
+    // Fallback: if page doesn't support in-place update, use delete+insert
+    return null;
+  }
+
   *scan() {
     for (const page of this.pages) {
       for (const { slotIdx, data } of page.scanTuples()) {

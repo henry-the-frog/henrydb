@@ -4779,9 +4779,17 @@ export class Database {
         throw new Error(`Cannot UPDATE: row locked by transaction ${existingLock.txId} in "${ast.table}"`);
       }
 
-      // Delete old, insert new
-      table.heap.delete(item.pageId, item.slotIdx);
-      const newRid = table.heap.insert(newValues);
+      // Try in-place update first (avoids tombstones and heap bloat)
+      let newRid = null;
+      if (isHotUpdate && table.heap.update) {
+        newRid = table.heap.update(item.pageId, item.slotIdx, newValues);
+      }
+      
+      if (!newRid) {
+        // Fallback: delete old, insert new
+        table.heap.delete(item.pageId, item.slotIdx);
+        newRid = table.heap.insert(newValues);
+      }
 
       // WAL: log the update
       this.wal.appendUpdate(batchTxId, ast.table, newRid.pageId, newRid.slotIdx, item.values, newValues);
