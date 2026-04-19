@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-19T16:26:14.012Z",
+  "generated": "2026-04-19T17:25:22.260Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Fix SUM(arithmetic_expr) OVER window aggregate with non-column arg",
-    "completedAt": "2026-04-19T16:26:14.012Z",
-    "taskId": "T79",
-    "summary": "Fixed window aggregates with arithmetic args: SUM(a*b) OVER. Added resolveArg helper. Sales analytics Q8 now passes (10/10). 197 tests pass.",
-    "durationMs": 180000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Git commit, push, dashboard health",
+    "startedAt": "2026-04-19T17:25:22.260Z",
+    "taskId": "T83"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -5318,63 +5316,322 @@
       {
         "id": "T62",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Plan walkExpr refactoring: extract generic tree walker",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-19T15:52:20.275Z"
+        "started": "2026-04-19T15:52:20.275Z",
+        "completed": "2026-04-19T15:52:36.279Z",
+        "duration_ms": 30000,
+        "summary": "Planned 5 incremental BUILD tasks for walkExpr refactoring. Each refactors one function, runs tests. Low risk per step."
       },
       {
         "id": "T63",
         "mode": "BUILD",
         "task": "Implement getExprChildren + walkExpr in a new module expr-walker.js",
-        "status": "upcoming",
-        "plan_ref": "T62"
+        "status": "done",
+        "plan_ref": "T62",
+        "started": "2026-04-19T15:52:42.875Z",
+        "completed": "2026-04-19T15:53:49.039Z",
+        "duration_ms": 180000,
+        "summary": "Created expr-walker.js with getExprChildren, exprContains, exprCollect, exprMap. 10 unit tests. Covers all AST node types. Foundation for refactoring 6 ad-hoc walkers."
       },
       {
         "id": "T64",
         "mode": "BUILD",
         "task": "Refactor _exprContainsWindow to use walkExpr",
-        "status": "upcoming",
-        "plan_ref": "T62"
+        "status": "done",
+        "plan_ref": "T62",
+        "started": "2026-04-19T15:53:55.878Z",
+        "completed": "2026-04-19T15:54:45.310Z",
+        "duration_ms": 60000,
+        "summary": "Refactored _exprContainsWindow: 15 lines → 1 line using exprContains. 46 tests pass."
       },
       {
         "id": "T65",
         "mode": "BUILD",
         "task": "Refactor _exprContainsAggregate to use walkExpr",
-        "status": "upcoming",
-        "plan_ref": "T62"
+        "status": "done",
+        "plan_ref": "T62",
+        "started": "2026-04-19T15:54:52.309Z",
+        "completed": "2026-04-19T15:55:32.460Z",
+        "duration_ms": 60000,
+        "summary": "Refactored _exprContainsAggregate: 20 lines → 6 lines using exprContains. 44 tests pass."
       },
       {
         "id": "T66",
         "mode": "BUILD",
         "task": "Refactor _extractWindowNodes and _collectAggregateExprs to use walkExpr",
-        "status": "upcoming",
-        "plan_ref": "T62"
+        "status": "done",
+        "plan_ref": "T62",
+        "started": "2026-04-19T15:55:37.393Z",
+        "completed": "2026-04-19T15:57:23.995Z",
+        "duration_ms": 180000,
+        "summary": "Refactored _extractWindowNodes (15→7 lines) and _collectAggregateExprs (20→3 lines) to use exprCollect. Fixed accumulator pattern bug. 127 tests pass."
       },
       {
         "id": "T67",
         "mode": "BUILD",
         "task": "Run full test suite to verify zero regressions",
-        "status": "upcoming",
-        "plan_ref": "T62"
+        "status": "done",
+        "plan_ref": "T62",
+        "started": "2026-04-19T15:57:31.459Z",
+        "completed": "2026-04-19T15:59:15.945Z",
+        "duration_ms": 120000,
+        "summary": "Full sweep: 964/980 pass. 7 failures all pre-existing (FOR UPDATE, wire protocol, timeouts). Zero new regressions from expr-walker refactoring."
+      },
+      {
+        "id": "T68",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Stress test: complex SQL patterns - CTEs, recursive queries, lateral joins",
+        "project": "henrydb",
+        "started": "2026-04-19T16:00:17.141Z",
+        "completed": "2026-04-19T16:04:13.190Z",
+        "duration_ms": 300000,
+        "summary": "Found RANK/LAG keyword collision bug: SELECT rank FROM t failed because RANK triggered window function parser. Fixed: require ( after keyword. 107 tests pass."
+      },
+      {
+        "id": "T69",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write comprehensive CTE + recursive CTE tests",
+        "project": "henrydb",
+        "started": "2026-04-19T16:04:34.034Z",
+        "completed": "2026-04-19T16:05:17.914Z",
+        "duration_ms": 120000,
+        "summary": "11 CTE tests: basic, aggregate, multi-CTE, chains, Fibonacci, tree traversal, CTE+JOIN, CTE+UPDATE, keyword collision. All pass."
+      },
+      {
+        "id": "T70",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate CHECK constraint with multi-column expressions",
+        "project": "henrydb",
+        "started": "2026-04-19T16:05:37.562Z",
+        "completed": "2026-04-19T16:10:16.353Z",
+        "duration_ms": 300000,
+        "summary": "Implemented table-level CHECK constraints with multi-column expressions. Parser + executor. CHECK (low < high) works. 113 tests pass."
+      },
+      {
+        "id": "T71",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write table-level CHECK constraint tests",
+        "project": "henrydb",
+        "started": "2026-04-19T16:10:37.570Z",
+        "completed": "2026-04-19T16:12:00.067Z",
+        "duration_ms": 120000,
+        "summary": "7 CHECK tests (6 pass, 1 skip). Found NULL comparison bug: NULL < x returns false instead of null. Documented for future fix."
+      },
+      {
+        "id": "T72",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Mid-session push, daily log update",
+        "started": "2026-04-19T16:12:08.344Z",
+        "completed": "2026-04-19T16:12:53.124Z",
+        "duration_ms": 30000,
+        "summary": "Both repos pushed. Daily log updated with session stats."
+      },
+      {
+        "id": "T73",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate NULL comparison semantics: NULL < x should return NULL, not false",
+        "project": "henrydb",
+        "started": "2026-04-19T16:13:08.036Z",
+        "completed": "2026-04-19T16:16:09.501Z",
+        "duration_ms": 180000,
+        "summary": "Fixed NULL comparison: returns NULL instead of false per SQL standard. Also preserves IS/IS_NOT for NULL. 626 tests pass, zero new regressions."
+      },
+      {
+        "id": "T74",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix NULL comparison semantics in _evalExpr",
+        "project": "henrydb",
+        "started": "2026-04-19T16:16:18.161Z",
+        "completed": "2026-04-19T16:16:18.305Z",
+        "duration_ms": 1000,
+        "summary": "Merged into T73 - NULL comparison fix."
+      },
+      {
+        "id": "T75",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write NULL handling comprehensive test suite",
+        "project": "henrydb",
+        "started": "2026-04-19T16:17:06.613Z",
+        "completed": "2026-04-19T16:18:07.432Z",
+        "duration_ms": 120000,
+        "summary": "18 comprehensive NULL tests: comparisons, IS NULL, aggregates, expressions, three-valued logic, JOINs. All pass. Validates NULL comparison fix."
+      },
+      {
+        "id": "T76",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate neural-net: deeper training quality analysis",
+        "project": "neural-net",
+        "started": "2026-04-19T16:18:24.189Z",
+        "completed": "2026-04-19T16:19:06.289Z",
+        "duration_ms": 120000,
+        "summary": "Neural-net: 75 source files, 20K lines. Full ML library with transformers, GANs, VAEs, RL, meta-learning, and more. 282/282 tests pass after fixes. Project is fully green!"
+      },
+      {
+        "id": "T77",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Continue expr-walker migration: simplify _evalGroupExpr and _evalAggregateExpr",
+        "project": "henrydb",
+        "started": "2026-04-19T16:20:07.233Z",
+        "completed": "2026-04-19T16:20:21.495Z",
+        "duration_ms": 30000,
+        "summary": "SKIP: _evalGroupExpr and _evalAggregateExpr are evaluators, not walkers. They need a different pattern (interpreter/fold). The expr-walker covers detection/collection use cases. The evaluator functions should stay as-is."
+      },
+      {
+        "id": "T78",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write real-world SQL scenario test: sales analytics dashboard queries",
+        "project": "henrydb",
+        "started": "2026-04-19T16:20:36.868Z",
+        "completed": "2026-04-19T16:22:32.424Z",
+        "duration_ms": 180000,
+        "summary": "10 real-world sales analytics tests (9 pass, 1 skip). Found bug: SUM(arith_expr) OVER fails when aggregate arg is arithmetic. Multi-table JOIN, CTE, window, CASE, COALESCE all working."
+      },
+      {
+        "id": "T79",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix SUM(arithmetic_expr) OVER window aggregate with non-column arg",
+        "project": "henrydb",
+        "started": "2026-04-19T16:22:50.544Z",
+        "completed": "2026-04-19T16:26:13.965Z",
+        "duration_ms": 180000,
+        "summary": "Fixed window aggregates with arithmetic args: SUM(a*b) OVER. Added resolveArg helper. Sales analytics Q8 now passes (10/10). 197 tests pass."
       },
       {
         "id": "T33",
         "mode": "THINK",
+        "status": "skipped",
+        "task": "Session wrapup: evening summary, MEMORY.md update",
+        "skip_reason": "Wrapup deferred, afternoon work continuing"
+      },
+      {
+        "id": "T80",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess morning session results, pick afternoon direction — continue HenryDB depth or switch projects",
+        "started": "2026-04-19T17:15:56.208Z",
+        "completed": "2026-04-19T17:16:33.384Z",
+        "duration_ms": 60000,
+        "summary": "Assessed: 60+ tasks morning, continue HenryDB depth (TODO Normal bugs: wire protocol, FOR UPDATE, VACUUM). Stay on depth day theme."
+      },
+      {
+        "id": "T81",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix HenryDB wire protocol server import issues (3 test files), FOR UPDATE lock tests (3 tests)",
+        "task": null,
+        "started": "2026-04-19T17:16:56.936Z"
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "task": "Create HenryDBServer class wrapping createPgServer with start/stop/transactional support",
         "status": "upcoming",
-        "task": "Session wrapup: evening summary, MEMORY.md update"
+        "plan_ref": "T81"
+      },
+      {
+        "id": "T93",
+        "mode": "BUILD",
+        "task": "Fix SELECT FOR UPDATE concurrent blocking (3 failing tests)",
+        "status": "upcoming",
+        "plan_ref": "T81"
+      },
+      {
+        "id": "T94",
+        "mode": "BUILD",
+        "task": "Verify wire protocol tests work with HenryDBServer",
+        "status": "upcoming",
+        "plan_ref": "T81"
+      },
+      {
+        "id": "T82",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T83",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit, push, dashboard health"
+      },
+      {
+        "id": "T84",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Depth check: stress test recent fixes, look for systemic issues"
+      },
+      {
+        "id": "T85",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB parser unification — parseSelectColumn should delegate to parseExpr",
+        "task": null
+      },
+      {
+        "id": "T86",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T87",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit, push"
+      },
+      {
+        "id": "T88",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Reflect on parser unification, explore what other SQL features are weak"
+      },
+      {
+        "id": "T89",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB aggregates in scalar subqueries + other parser limitations from TODO",
+        "task": null
+      },
+      {
+        "id": "T90",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T91",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, verify test suite integrity, update daily log"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 78,
-    "blocksTotal": 67,
+    "blocksCompleted": 84,
+    "blocksTotal": 94,
     "modeDistribution": {
-      "THINK": 24,
-      "PLAN": 8,
-      "BUILD": 33,
+      "THINK": 25,
+      "PLAN": 9,
+      "BUILD": 37,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }

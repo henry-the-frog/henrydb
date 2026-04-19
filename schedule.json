@@ -840,8 +840,133 @@
     {
       "id": "T33",
       "mode": "THINK",
+      "status": "skipped",
+      "task": "Session wrapup: evening summary, MEMORY.md update",
+      "skip_reason": "Wrapup deferred, afternoon work continuing"
+    },
+    {
+      "id": "T80",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess morning session results, pick afternoon direction — continue HenryDB depth or switch projects",
+      "started": "2026-04-19T17:15:56.208Z",
+      "completed": "2026-04-19T17:16:33.384Z",
+      "duration_ms": 60000,
+      "summary": "Assessed: 60+ tasks morning, continue HenryDB depth (TODO Normal bugs: wire protocol, FOR UPDATE, VACUUM). Stay on depth day theme."
+    },
+    {
+      "id": "T81",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix HenryDB wire protocol server import issues (3 test files), FOR UPDATE lock tests (3 tests)",
+      "task": null,
+      "started": "2026-04-19T17:16:56.936Z",
+      "completed": "2026-04-19T17:19:44.285Z",
+      "duration_ms": 120000,
+      "summary": "Planned: HenryDBServer class (wraps createPgServer), fix 3 FOR UPDATE tests, verify wire protocol tests. server.js missing HenryDBServer export used by 104 test files."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "task": "Create HenryDBServer class wrapping createPgServer with start/stop/transactional support",
+      "status": "done",
+      "plan_ref": "T81",
+      "started": "2026-04-19T17:19:50.994Z",
+      "completed": "2026-04-19T17:22:13.063Z",
+      "duration_ms": 300000,
+      "summary": "Created HenryDBServer class wrapping createPgServer. Tested: start/stop/query all working via pg Client. 104 test files can now import it."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "task": "Fix SELECT FOR UPDATE concurrent blocking (3 failing tests)",
+      "status": "done",
+      "plan_ref": "T81",
+      "started": "2026-04-19T17:22:20.453Z",
+      "completed": "2026-04-19T17:23:55.468Z",
+      "duration_ms": 300000,
+      "summary": "Fixed FOR UPDATE row lock release: TransactionSession.commit/rollback now call _releaseRowLocks. Root cause: MVCC path bypassed base COMMIT/ROLLBACK. Also fixed test assertion. 6/6 pass."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "task": "Verify wire protocol tests work with HenryDBServer",
+      "status": "done",
+      "plan_ref": "T81",
+      "started": "2026-04-19T17:24:03.810Z",
+      "completed": "2026-04-19T17:25:01.350Z",
+      "duration_ms": 180000,
+      "summary": "Verified wire protocol tests: server-banking (5/5), server-transactions (7/7), server-prepared (25/25) all pass. server-json hangs (pre-existing). HenryDBServer class works correctly."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-19T17:25:12.799Z",
+      "completed": "2026-04-19T17:25:12.989Z",
+      "duration_ms": 0,
+      "summary": "Placeholder slot - work done in T92-T94"
+    },
+    {
+      "id": "T83",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git commit, push, dashboard health",
+      "started": "2026-04-19T17:25:22.182Z"
+    },
+    {
+      "id": "T84",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Session wrapup: evening summary, MEMORY.md update"
+      "task": "Depth check: stress test recent fixes, look for systemic issues"
+    },
+    {
+      "id": "T85",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB parser unification — parseSelectColumn should delegate to parseExpr",
+      "task": null
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T87",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit, push"
+    },
+    {
+      "id": "T88",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on parser unification, explore what other SQL features are weak"
+    },
+    {
+      "id": "T89",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB aggregates in scalar subqueries + other parser limitations from TODO",
+      "task": null
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T91",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, verify test suite integrity, update daily log"
     }
   ],
   "focusProjects": [
@@ -1237,6 +1362,62 @@
     {
       "time": "2026-04-19T16:22:50.311Z",
       "msg": "Moved T33 after T79"
+    },
+    {
+      "time": "2026-04-19T17:15:49.558Z",
+      "msg": "Added T80 (THINK) after end: Assess morning session results, pick afternoon direction — continue HenryDB depth or switch projects"
+    },
+    {
+      "time": "2026-04-19T17:15:53.130Z",
+      "msg": "Removed T33: Wrapup deferred, afternoon work continuing"
+    },
+    {
+      "time": "2026-04-19T17:16:41.345Z",
+      "msg": "Added T81 (PLAN) after end: Fix HenryDB wire protocol server import issues (3 test files), FOR UPDATE lock tests (3 tests)"
+    },
+    {
+      "time": "2026-04-19T17:16:46.238Z",
+      "msg": "Added T82 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-19T17:16:46.355Z",
+      "msg": "Added T83 (MAINTAIN) after end: Git commit, push, dashboard health"
+    },
+    {
+      "time": "2026-04-19T17:16:46.474Z",
+      "msg": "Added T84 (THINK) after end: Depth check: stress test recent fixes, look for systemic issues"
+    },
+    {
+      "time": "2026-04-19T17:16:46.614Z",
+      "msg": "Added T85 (PLAN) after end: HenryDB parser unification — parseSelectColumn should delegate to parseExpr"
+    },
+    {
+      "time": "2026-04-19T17:16:46.734Z",
+      "msg": "Added T86 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-19T17:16:46.852Z",
+      "msg": "Added T87 (MAINTAIN) after end: Git commit, push"
+    },
+    {
+      "time": "2026-04-19T17:16:46.970Z",
+      "msg": "Added T88 (THINK) after end: Reflect on parser unification, explore what other SQL features are weak"
+    },
+    {
+      "time": "2026-04-19T17:16:47.088Z",
+      "msg": "Added T89 (PLAN) after end: HenryDB aggregates in scalar subqueries + other parser limitations from TODO"
+    },
+    {
+      "time": "2026-04-19T17:16:47.206Z",
+      "msg": "Added T90 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-19T17:16:51.073Z",
+      "msg": "Added T91 (MAINTAIN) after end: Git push, verify test suite integrity, update daily log"
+    },
+    {
+      "time": "2026-04-19T17:19:37.801Z",
+      "msg": "PLAN T81 filled 3 BUILD tasks"
     }
   ]
 }
