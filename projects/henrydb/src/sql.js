@@ -44,6 +44,7 @@ const KEYWORDS = new Set([
   'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW', 'COMMENT',
   'FUNCTION', 'RETURNS', 'LANGUAGE', 'PROCEDURE', 'CALL', 'IMMUTABLE', 'VOLATILE', 'STABLE',
   'NOWAIT', 'LOCKED', 'SKIP',
+  'EXTENSION', 'SCHEMA', 'GRANT', 'REVOKE', 'AUTHORIZATION', 'PRIVILEGES',
 ]);
 
 export function tokenize(sql) {
@@ -368,6 +369,13 @@ export function parse(sql) {
     return { type: 'EXECUTE_PREPARED', name, params };
   }
   // DEALLOCATE name
+  if (isKeyword('GRANT') || isKeyword('REVOKE')) {
+    const action = advance().value; // GRANT or REVOKE
+    // Skip everything until end of statement — these are no-ops in HenryDB
+    while (peek() && peek().type !== ';' && peek().type !== 'EOF') advance();
+    return { type: action };
+  }
+
   if (isKeyword('CALL')) {
     advance(); // CALL
     const funcTok = advance();
@@ -2490,6 +2498,24 @@ export function parse(sql) {
     let orReplace = false;
     if (isKeyword('OR')) { advance(); expect('KEYWORD', 'REPLACE'); orReplace = true; }
     if (isKeyword('VIEW')) return parseCreateView(orReplace);
+    if (isKeyword('EXTENSION')) {
+      advance(); // EXTENSION
+      let ifNotExists = false;
+      if (isKeyword('IF')) { advance(); expect('KEYWORD', 'NOT'); expect('KEYWORD', 'EXISTS'); ifNotExists = true; }
+      const name = advance().originalValue || advance().value;
+      // Skip optional WITH SCHEMA, VERSION, CASCADE etc.
+      while (peek() && peek().type !== ';' && peek().type !== 'EOF') advance();
+      return { type: 'CREATE_EXTENSION', name: name || 'unknown', ifNotExists };
+    }
+    if (isKeyword('SCHEMA')) {
+      advance(); // SCHEMA
+      let ifNotExists = false;
+      if (isKeyword('IF')) { advance(); expect('KEYWORD', 'NOT'); expect('KEYWORD', 'EXISTS'); ifNotExists = true; }
+      const name = advance().originalValue || advance().value;
+      // Skip optional AUTHORIZATION etc.
+      while (peek() && peek().type !== ';' && peek().type !== 'EOF') advance();
+      return { type: 'CREATE_SCHEMA', name: name || 'public', ifNotExists };
+    }
     if (isKeyword('FUNCTION') || isKeyword('PROCEDURE')) {
       return parseCreateFunction(orReplace);
     }
@@ -2919,6 +2945,23 @@ export function parse(sql) {
 
   function parseDrop() {
     advance(); // DROP
+    if (isKeyword('EXTENSION')) {
+      advance(); // EXTENSION
+      let ifExists = false;
+      if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
+      const name = advance().originalValue || advance().value;
+      // Skip CASCADE/RESTRICT
+      while (peek() && peek().type !== ';' && peek().type !== 'EOF') advance();
+      return { type: 'DROP_EXTENSION', name: name || 'unknown', ifExists };
+    }
+    if (isKeyword('SCHEMA')) {
+      advance(); // SCHEMA
+      let ifExists = false;
+      if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
+      const name = advance().originalValue || advance().value;
+      while (peek() && peek().type !== ';' && peek().type !== 'EOF') advance();
+      return { type: 'DROP_SCHEMA', name: name || 'public', ifExists };
+    }
     if (isKeyword('INDEX')) {
       advance();
       let ifExists = false;

@@ -1132,6 +1132,12 @@ export class Database {
       case 'CREATE_MATVIEW': return this._createMatView(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'CALL': return this._callProcedure(ast);
+      case 'CREATE_EXTENSION': return { type: 'OK', message: `CREATE EXTENSION ${ast.name}` };
+      case 'DROP_EXTENSION': return { type: 'OK', message: `DROP EXTENSION ${ast.name}` };
+      case 'CREATE_SCHEMA': return { type: 'OK', message: `CREATE SCHEMA ${ast.name}` };
+      case 'DROP_SCHEMA': return { type: 'OK', message: `DROP SCHEMA ${ast.name}` };
+      case 'GRANT': return { type: 'OK', message: 'GRANT' };
+      case 'REVOKE': return { type: 'OK', message: 'REVOKE' };
       case 'DROP_FUNCTION': return this._dropFunction(ast);
       case 'ANALYZE': return this._analyzeTable(ast);
       case 'CREATE_TRIGGER': {

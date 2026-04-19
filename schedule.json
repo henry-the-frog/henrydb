@@ -1599,23 +1599,61 @@
       "id": "T152",
       "mode": "BUILD",
       "task": "Run final test sweep and capture remaining failure count",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T144",
-      "started": "2026-04-19T21:39:28.159Z"
+      "started": "2026-04-19T21:39:28.159Z",
+      "completed": "2026-04-19T22:02:28.056Z",
+      "duration_ms": 300000,
+      "summary": "Final sweep running (812 files). Confirmed failures now down to: orm-compat (6, missing features), table-changes (4, missing feature), update-rollback-stress (1, isolation bug). Saved 2 more: server-params (version assertion), disk-manager (was flaky)."
     },
     {
       "id": "T145",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "T143",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": ""
     },
     {
       "id": "T146",
       "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final session push + wrap-up",
+      "skip_reason": ""
+    },
+    {
+      "id": "T153",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Decide next depth focus: (a) fix ORM compat missing features (CREATE EXTENSION/SCHEMA/GRANT), (b) tackle transaction isolation bug, (c) add table change notifications",
+      "project": "henrydb",
+      "started": "2026-04-19T22:03:09.513Z",
+      "completed": "2026-04-19T22:03:20.976Z",
+      "duration_ms": 30000,
+      "summary": "Focus: ORM compat stubs (quick win) then transaction isolation (deep MVCC fix)"
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add ORM compat stubs: CREATE EXTENSION, CREATE SCHEMA, GRANT/REVOKE, ALTER TABLE operations",
+      "project": "henrydb",
+      "started": "2026-04-19T22:03:35.070Z"
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session push + wrap-up"
+      "task": "Fix transaction isolation: uncommitted changes visible to other connections",
+      "project": "henrydb"
+    },
+    {
+      "id": "T156",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, final daily log, test count update",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2271,6 +2309,30 @@
     {
       "time": "2026-04-19T21:22:50.512Z",
       "msg": "PLAN T144 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T22:02:44.168Z",
+      "msg": "Added T153 (THINK) after end: Decide next depth focus: (a) fix ORM compat missing features (CREATE EXTENSION/SCHEMA/GRANT), (b) tackle transaction isolation bug, (c) add table change notifications"
+    },
+    {
+      "time": "2026-04-19T22:03:01.834Z",
+      "msg": "Removed T145: "
+    },
+    {
+      "time": "2026-04-19T22:03:01.953Z",
+      "msg": "Removed T146: "
+    },
+    {
+      "time": "2026-04-19T22:03:27.890Z",
+      "msg": "Added T154 (BUILD) after end: Add ORM compat stubs: CREATE EXTENSION, CREATE SCHEMA, GRANT/REVOKE, ALTER TABLE operations"
+    },
+    {
+      "time": "2026-04-19T22:03:28.008Z",
+      "msg": "Added T155 (BUILD) after end: Fix transaction isolation: uncommitted changes visible to other connections"
+    },
+    {
+      "time": "2026-04-19T22:03:28.128Z",
+      "msg": "Added T156 (MAINTAIN) after end: Git push, final daily log, test count update"
     }
   ]
 }
