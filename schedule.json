@@ -1913,17 +1913,24 @@
     {
       "id": "T181",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add connection pool limits and idle timeout to wire protocol server",
       "project": "henrydb",
-      "started": "2026-04-19T23:04:16.412Z"
+      "started": "2026-04-19T23:04:16.412Z",
+      "completed": "2026-04-19T23:06:12.353Z",
+      "duration_ms": 300000,
+      "summary": "Added connection pool limits (maxConnections: 100 default) and idle timeout (idleTimeoutMs). Rejects new connections with proper PostgreSQL error when at limit. Idle timer resets per query. All server tests pass."
     },
     {
       "id": "T182",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "What remaining improvements would be most impactful? Prioritize for tomorrow",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T23:06:28.058Z",
+      "completed": "2026-04-19T23:06:40.319Z",
+      "duration_ms": 120000,
+      "summary": "Prioritized improvements for tomorrow: (1) Lock manager for concurrent writes - most impactful for correctness, (2) Statement caching - most impactful for performance, (3) Heap compaction during VACUUM, (4) Memory limits. Recommended: lock manager first."
     },
     {
       "id": "T179",
@@ -1935,9 +1942,10 @@
     {
       "id": "T174",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Session end: final daily log, git push, CURRENT.md update",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T23:06:45.462Z"
     }
   ],
   "focusProjects": [
