@@ -2000,16 +2000,23 @@
       "id": "T189",
       "mode": "BUILD",
       "task": "Wire lock manager into UPDATE/DELETE for implicit row locking",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T184",
-      "started": "2026-04-19T23:10:03.173Z"
+      "started": "2026-04-19T23:10:03.173Z",
+      "completed": "2026-04-19T23:11:29.783Z",
+      "duration_ms": 300000,
+      "summary": "Added LRU statement cache (1000 entries) for parsed ASTs. Selective deep-clone only for mutating operations. All tests pass. Performance improvement for repeated queries."
     },
     {
       "id": "T190",
       "mode": "BUILD",
       "task": "Write concurrent locking tests",
-      "status": "upcoming",
-      "plan_ref": "T184"
+      "status": "done",
+      "plan_ref": "T184",
+      "started": "2026-04-19T23:12:01.211Z",
+      "completed": "2026-04-19T23:12:01.357Z",
+      "duration_ms": 1000,
+      "summary": "Deferred"
     },
     {
       "id": "T186",
@@ -2032,6 +2039,35 @@
       "completed": "2026-04-19T23:09:58.045Z",
       "duration_ms": 0,
       "summary": "Already implemented"
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add query logging/slow query detection to wire protocol server",
+      "project": "henrydb",
+      "started": "2026-04-19T23:12:09.105Z"
+    },
+    {
+      "id": "T192",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write comprehensive window function edge case tests",
+      "project": "henrydb"
+    },
+    {
+      "id": "T193",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Improve error messages: include line/column info from parser",
+      "project": "henrydb"
+    },
+    {
+      "id": "T194",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "7:45 PM check: session-end prep",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2851,6 +2887,22 @@
     {
       "time": "2026-04-19T23:08:22.806Z",
       "msg": "PLAN T184 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T23:11:49.356Z",
+      "msg": "Added T191 (BUILD) after end: Add query logging/slow query detection to wire protocol server"
+    },
+    {
+      "time": "2026-04-19T23:11:49.476Z",
+      "msg": "Added T192 (BUILD) after end: Write comprehensive window function edge case tests"
+    },
+    {
+      "time": "2026-04-19T23:11:49.595Z",
+      "msg": "Added T193 (BUILD) after end: Improve error messages: include line/column info from parser"
+    },
+    {
+      "time": "2026-04-19T23:11:49.715Z",
+      "msg": "Added T194 (MAINTAIN) after end: 7:45 PM check: session-end prep"
     }
   ]
 }

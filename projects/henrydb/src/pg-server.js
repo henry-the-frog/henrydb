@@ -489,6 +489,11 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows: tables };
   }
   
+  // SHOW SLOW QUERIES — recent slow query log
+  if (upper === 'SHOW SLOW QUERIES' || upper === 'SHOW SLOW QUERIES;') {
+    return { type: 'ROWS', rows: (_slowQueryLog || []).slice().reverse() };
+  }
+
   // SHOW TABLE STATUS — MySQL-compatible table status (used by stress test)
   if (upper === 'SHOW TABLE STATUS' || upper === 'SHOW TABLE STATUS;') {
     const tables = [];
@@ -820,7 +825,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     if (showMatch) {
       const param = showMatch[1].toLowerCase();
       // These are handled by interceptPgCatalog
-      if (!['tables', 'table', 'indexes', 'index', 'create'].includes(param)) {
+      if (!['tables', 'table', 'indexes', 'index', 'create', 'slow'].includes(param)) {
         const value = connectionParams.get(param) || connectionParams.get(showMatch[1]) || '';
         return { type: 'ROWS', rows: [{ [param]: value }], columns: [{ name: param, type: 'TEXT' }] };
       }
@@ -1061,6 +1066,20 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     _stat.min_time_ms = Math.min(_stat.min_time_ms, _execDuration);
     _stat.max_time_ms = Math.max(_stat.max_time_ms, _execDuration);
     _queryStats.set(_normalized, _stat);
+    
+    // Slow query logging (threshold: 100ms by default, configurable)
+    const slowThresholdMs = options.slowQueryThresholdMs || 100;
+    if (_execDuration >= slowThresholdMs) {
+      if (!_slowQueryLog) _slowQueryLog = [];
+      _slowQueryLog.push({
+        sql: sql.substring(0, 500),
+        duration_ms: Math.round(_execDuration * 100) / 100,
+        timestamp: Date.now(),
+        connection: connId,
+      });
+      // Keep last 100 slow queries
+      if (_slowQueryLog.length > 100) _slowQueryLog.shift();
+    }
     
     // Auto-notify table_changes listeners on DML
     if (_result && channels.has('table_changes')) {
