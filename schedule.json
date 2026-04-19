@@ -1724,16 +1724,49 @@
     {
       "id": "T162",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add server benchmark: measure queries-per-second for common patterns",
       "project": "henrydb",
-      "started": "2026-04-19T22:17:33.846Z"
+      "started": "2026-04-19T22:17:33.846Z",
+      "completed": "2026-04-19T22:20:58.137Z",
+      "duration_ms": 180000,
+      "summary": "Added 11-benchmark performance suite. In-memory: 12K pk-lookups/s, 56K index-lookups/s, 30K inserts/s, 18K group-by/s. Wire: 22-43 ops/s. Update (67 ops/s) and JOIN (59 ops/s) are optimization targets."
     },
     {
       "id": "T163",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "done",
       "task": "Final evening push + summary",
+      "project": "henrydb",
+      "started": "2026-04-19T22:21:14.195Z",
+      "completed": "2026-04-19T22:21:24.225Z",
+      "duration_ms": 60000,
+      "summary": "Mid-session maintain done. BUILD count ~12, within cap. Next: optimize UPDATE performance (67 ops/sec bottleneck)."
+    },
+    {
+      "id": "T164",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate UPDATE bottleneck: why 67 ops/sec on 10K rows when INSERT is 30K? Profile execution",
+      "project": "henrydb",
+      "started": "2026-04-19T22:21:38.347Z",
+      "completed": "2026-04-19T22:24:51.115Z",
+      "duration_ms": 120000,
+      "summary": "Found bottleneck: UPDATE does full table scan (O(N)) even when WHERE clause matches PK index. With 10K rows, each single-row UPDATE scans all 10K. Fix: use index for UPDATE WHERE clause, like SELECT does."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Optimize UPDATE performance based on profiling results",
+      "project": "henrydb",
+      "started": "2026-04-19T22:24:57.528Z"
+    },
+    {
+      "id": "T166",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Evening wrap-up: daily log summary, git push, CURRENT.md",
       "project": "henrydb"
     }
   ],
@@ -2442,6 +2475,18 @@
     {
       "time": "2026-04-19T22:16:18.773Z",
       "msg": "Added T163 (MAINTAIN) after end: Final evening push + summary"
+    },
+    {
+      "time": "2026-04-19T22:21:31.916Z",
+      "msg": "Added T164 (THINK) after end: Investigate UPDATE bottleneck: why 67 ops/sec on 10K rows when INSERT is 30K? Profile execution"
+    },
+    {
+      "time": "2026-04-19T22:21:32.036Z",
+      "msg": "Added T165 (BUILD) after end: Optimize UPDATE performance based on profiling results"
+    },
+    {
+      "time": "2026-04-19T22:21:32.154Z",
+      "msg": "Added T166 (MAINTAIN) after end: Evening wrap-up: daily log summary, git push, CURRENT.md"
     }
   ]
 }

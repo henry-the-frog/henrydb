@@ -4670,10 +4670,51 @@ export class Database {
         }
       }
     } else {
-      for (const { pageId, slotIdx, values } of table.heap.scan()) {
-        const row = this._valuesToRow(values, table.schema, ast.table);
-        if (!ast.where || this._evalExpr(ast.where, row)) {
-          toUpdate.push({ pageId, slotIdx, values: [...values], mergedRow: row });
+      // Try index scan for simple equality WHERE (e.g., WHERE id = 5)
+      let usedIndex = false;
+      if (ast.where && !ast.from && ast.where.type === 'COMPARE' && ast.where.op === 'EQ') {
+        const left = ast.where.left;
+        const right = ast.where.right;
+        let colName = null, val = null;
+        if (left.type === 'column_ref' && (right.type === 'number' || right.type === 'string' || right.type === 'literal')) {
+          colName = left.name.includes('.') ? left.name.split('.').pop() : left.name;
+          val = right.value;
+        } else if (right.type === 'column_ref' && (left.type === 'number' || left.type === 'string' || left.type === 'literal')) {
+          colName = right.name.includes('.') ? right.name.split('.').pop() : right.name;
+          val = left.value;
+        }
+        if (colName) {
+          const colNameLower = colName.toLowerCase();
+          const index = table.indexes.get(colName) || table.indexes.get(colNameLower);
+          if (index && typeof index.search === 'function') {
+            const results = index.search(val);
+            if (results !== undefined && results !== null) {
+              const rids = Array.isArray(results) ? results : [results];
+              for (const rid of rids) {
+                try {
+                  const tuple = table.heap.get(rid.pageId, rid.slotIdx);
+                  if (tuple) {
+                    const values = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
+                    const row = this._valuesToRow(values, table.schema, ast.table);
+                    if (this._evalExpr(ast.where, row)) {
+                      toUpdate.push({ pageId: rid.pageId, slotIdx: rid.slotIdx, values: [...values], mergedRow: row });
+                    }
+                  }
+                } catch(e) { /* stale index entry */ }
+              }
+              usedIndex = true;
+            }
+          }
+        }
+      }
+      
+      if (!usedIndex) {
+        // Fallback: full table scan
+        for (const { pageId, slotIdx, values } of table.heap.scan()) {
+          const row = this._valuesToRow(values, table.schema, ast.table);
+          if (!ast.where || this._evalExpr(ast.where, row)) {
+            toUpdate.push({ pageId, slotIdx, values: [...values], mergedRow: row });
+          }
         }
       }
     }
@@ -4908,10 +4949,49 @@ export class Database {
         }
       }
     } else {
-      for (const { pageId, slotIdx, values } of table.heap.scan()) {
-        const row = this._valuesToRow(values, table.schema, ast.table);
-        if (!ast.where || this._evalExpr(ast.where, row)) {
-          toDelete.push({ pageId, slotIdx });
+      // Try index scan for simple equality WHERE
+      let usedIndex = false;
+      if (ast.where && ast.where.type === 'COMPARE' && ast.where.op === 'EQ') {
+        const left = ast.where.left;
+        const right = ast.where.right;
+        let colName = null, val = null;
+        if (left.type === 'column_ref' && (right.type === 'number' || right.type === 'string' || right.type === 'literal')) {
+          colName = left.name.includes('.') ? left.name.split('.').pop() : left.name;
+          val = right.value;
+        } else if (right.type === 'column_ref' && (left.type === 'number' || left.type === 'string' || left.type === 'literal')) {
+          colName = right.name.includes('.') ? right.name.split('.').pop() : right.name;
+          val = left.value;
+        }
+        if (colName) {
+          const index = table.indexes.get(colName);
+          if (index && typeof index.search === 'function') {
+            const results = index.search(val);
+            if (results !== undefined && results !== null) {
+              const rids = Array.isArray(results) ? results : [results];
+              for (const rid of rids) {
+                try {
+                  const tuple = table.heap.get(rid.pageId, rid.slotIdx);
+                  if (tuple) {
+                    const values = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
+                    const row = this._valuesToRow(values, table.schema, ast.table);
+                    if (this._evalExpr(ast.where, row)) {
+                      toDelete.push({ pageId: rid.pageId, slotIdx: rid.slotIdx });
+                    }
+                  }
+                } catch(e) { /* stale index entry */ }
+              }
+              usedIndex = true;
+            }
+          }
+        }
+      }
+      
+      if (!usedIndex) {
+        for (const { pageId, slotIdx, values } of table.heap.scan()) {
+          const row = this._valuesToRow(values, table.schema, ast.table);
+          if (!ast.where || this._evalExpr(ast.where, row)) {
+            toDelete.push({ pageId, slotIdx });
+          }
         }
       }
     }
