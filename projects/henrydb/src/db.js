@@ -8226,12 +8226,12 @@ export class Database {
         const date = this._evalValue(args[0], row);
         const interval = this._evalValue(args[1], row);
         const unit = (this._evalValue(args[2], row) || 'day').toLowerCase();
-        const d = new Date(date);
+        const d = new Date(date + 'T00:00:00Z');
         switch (unit) {
-          case 'day': case 'days': d.setDate(d.getDate() + interval); break;
-          case 'month': case 'months': d.setMonth(d.getMonth() + interval); break;
-          case 'year': case 'years': d.setFullYear(d.getFullYear() + interval); break;
-          case 'hour': case 'hours': d.setHours(d.getHours() + interval); break;
+          case 'day': case 'days': d.setUTCDate(d.getUTCDate() + interval); break;
+          case 'month': case 'months': d.setUTCMonth(d.getUTCMonth() + interval); break;
+          case 'year': case 'years': d.setUTCFullYear(d.getUTCFullYear() + interval); break;
+          case 'hour': case 'hours': d.setUTCHours(d.getUTCHours() + interval); break;
           default: throw new Error(`Unknown date unit: ${unit}`);
         }
         return d.toISOString().split('T')[0];
@@ -8258,14 +8258,127 @@ export class Database {
         const matches = str.match(regex);
         return matches ? JSON.stringify(matches) : null;
       }
+      case 'DATE': {
+        // DATE(value) — cast to date string (YYYY-MM-DD)
+        const v = this._evalValue(args[0], row);
+        if (v == null) return null;
+        const s = String(v);
+        // If it already looks like YYYY-MM-DD, extract directly
+        const dateMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+        if (dateMatch) return dateMatch[1];
+        const d = new Date(s);
+        if (isNaN(d.getTime())) return null;
+        return d.toISOString().split('T')[0];
+      }
+      case 'AGE': {
+        // AGE(date1, date2) — interval between two dates (PG-style)
+        // AGE(date) — interval from date to CURRENT_DATE
+        const d1 = args.length >= 2
+          ? new Date(String(this._evalValue(args[0], row)))
+          : new Date();
+        const d2 = args.length >= 2
+          ? new Date(String(this._evalValue(args[1], row)))
+          : new Date(String(this._evalValue(args[0], row)));
+        if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return null;
+        let years = d1.getUTCFullYear() - d2.getUTCFullYear();
+        let months = d1.getUTCMonth() - d2.getUTCMonth();
+        let days = d1.getUTCDate() - d2.getUTCDate();
+        if (days < 0) { months--; days += 30; }
+        if (months < 0) { years--; months += 12; }
+        const parts = [];
+        if (years) parts.push(`${years} year${years !== 1 ? 's' : ''}`);
+        if (months) parts.push(`${months} mon${months !== 1 ? 's' : ''}`);
+        if (days || parts.length === 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+        return parts.join(' ');
+      }
+      case 'TO_CHAR': {
+        // TO_CHAR(value, format) — format a number or date as string
+        const val = this._evalValue(args[0], row);
+        const fmt = args.length > 1 ? String(this._evalValue(args[1], row)) : '';
+        if (val == null) return null;
+        // Try as date first
+        const d = new Date(String(val));
+        if (!isNaN(d.getTime()) && typeof val === 'string' && val.includes('-')) {
+          // Date formatting
+          return fmt
+            .replace('YYYY', String(d.getUTCFullYear()))
+            .replace('YY', String(d.getUTCFullYear()).slice(-2))
+            .replace('MM', String(d.getUTCMonth() + 1).padStart(2, '0'))
+            .replace('DD', String(d.getUTCDate()).padStart(2, '0'))
+            .replace('HH24', String(d.getUTCHours()).padStart(2, '0'))
+            .replace('HH', String(d.getUTCHours() % 12 || 12).padStart(2, '0'))
+            .replace('MI', String(d.getUTCMinutes()).padStart(2, '0'))
+            .replace('SS', String(d.getUTCSeconds()).padStart(2, '0'))
+            .replace('Month', d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }))
+            .replace('Mon', d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }))
+            .replace('Day', d.toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC' }))
+            .replace('Dy', d.toLocaleString('en-US', { weekday: 'short', timeZone: 'UTC' }));
+        }
+        // Number formatting
+        const num = Number(val);
+        if (!isNaN(num)) {
+          if (fmt.includes(',')) {
+            // Thousands separator
+            const fmtDigits = fmt.replace(/[^9]/g, '').length;
+            const formatted = num.toLocaleString('en-US', { minimumIntegerDigits: 1, maximumFractionDigits: 0 });
+            return formatted.padStart(fmt.length);
+          }
+          if (fmt.includes('.')) {
+            const decimals = fmt.split('.')[1]?.length || 0;
+            return num.toFixed(decimals);
+          }
+          return String(num).padStart(fmt.length);
+        }
+        return String(val);
+      }
+      case 'DATE_FORMAT': {
+        // DATE_FORMAT(date, format) — alias for TO_CHAR for dates
+        return this._evalFunction('TO_CHAR', args, row);
+      }
+      case 'MAKE_DATE': {
+        // MAKE_DATE(year, month, day)
+        const y = this._evalValue(args[0], row);
+        const m = this._evalValue(args[1], row);
+        const d = this._evalValue(args[2], row);
+        return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      }
+      case 'MAKE_TIMESTAMP': {
+        // MAKE_TIMESTAMP(year, month, day, hour, min, sec)
+        const y = this._evalValue(args[0], row);
+        const mo = this._evalValue(args[1], row);
+        const d = this._evalValue(args[2], row);
+        const h = args.length > 3 ? this._evalValue(args[3], row) : 0;
+        const mi = args.length > 4 ? this._evalValue(args[4], row) : 0;
+        const s = args.length > 5 ? this._evalValue(args[5], row) : 0;
+        const dt = new Date(Date.UTC(y, mo - 1, d, h, mi, s));
+        return dt.toISOString();
+      }
+      case 'EPOCH': case 'TO_TIMESTAMP': {
+        // TO_TIMESTAMP(epoch_seconds) or EPOCH(date)
+        if (func === 'EPOCH') {
+          const v = this._evalValue(args[0], row);
+          const d = new Date(String(v));
+          return isNaN(d.getTime()) ? null : Math.floor(d.getTime() / 1000);
+        }
+        const epoch = this._evalValue(args[0], row);
+        return new Date(epoch * 1000).toISOString();
+      }
       case 'DATE_TRUNC': {
         // DATE_TRUNC(unit, date)
         const unit = (this._evalValue(args[0], row) || 'day').toLowerCase();
-        const d = new Date(this._evalValue(args[1], row));
+        const dateVal = this._evalValue(args[1], row);
+        const dateStr = String(dateVal);
+        // Parse as UTC to avoid timezone issues
+        const d = dateStr.includes('T') ? new Date(dateStr) : new Date(dateStr + 'T00:00:00Z');
+        if (isNaN(d.getTime())) return null;
         switch (unit) {
-          case 'year': return `${d.getFullYear()}-01-01`;
-          case 'month': return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+          case 'year': return `${d.getUTCFullYear()}-01-01`;
+          case 'month': return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-01`;
           case 'day': return d.toISOString().split('T')[0];
+          case 'hour': { const iso = d.toISOString(); return iso.slice(0, 14) + '00:00.000Z'; }
+          case 'minute': { const iso = d.toISOString(); return iso.slice(0, 17) + '00.000Z'; }
+          case 'week': { const dayOfWeek = d.getUTCDay(); d.setUTCDate(d.getUTCDate() - dayOfWeek); return d.toISOString().split('T')[0]; }
+          case 'quarter': { const q = Math.floor(d.getUTCMonth() / 3) * 3; return `${d.getUTCFullYear()}-${String(q + 1).padStart(2, '0')}-01`; }
           default: throw new Error(`Unknown date trunc unit: ${unit}`);
         }
       }
