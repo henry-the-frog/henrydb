@@ -131,22 +131,19 @@ describe('Window Function Edge Cases', () => {
     assert.ok(r.rows[0].amount >= r.rows[1].amount);
   });
   
-  it('LAG/LEAD window functions (skip if not supported)', () => {
-    try {
-      const r = db.execute(`
-        SELECT rep, month, amount,
-               LAG(amount) OVER (PARTITION BY rep ORDER BY month) AS prev_amount
-        FROM sales
-        ORDER BY rep, month
-      `);
-      // Alice month 1 should have null prev, month 2 should have prev = 100
-      const alice = r.rows.filter(x => x.rep === 'Alice');
-      assert.equal(alice[0].prev_amount, null);
-      assert.equal(alice[1].prev_amount, 100);
-    } catch (e) {
-      // LAG/LEAD might not be supported yet
-      assert.ok(e.message.includes('not supported') || e.message.includes('Unexpected') || e.message.includes('Unknown'),
-        'Expected unsupported error for LAG/LEAD');
-    }
+  it('LAG/LEAD window functions', () => {
+    const r = db.execute(`
+      SELECT rep, month, amount,
+             LAG(amount) OVER (PARTITION BY rep ORDER BY month) AS prev_amount,
+             LEAD(amount) OVER (PARTITION BY rep ORDER BY month) AS next_amount
+      FROM sales
+      ORDER BY rep, month
+    `);
+    // Alice: month 1 (100) → prev null, next 150; month 2 (150) → prev 100, next null
+    const alice = r.rows.filter(x => x.rep === 'Alice');
+    assert.equal(alice[0].prev_amount, null);
+    assert.equal(alice[0].next_amount, alice[1].amount);
+    assert.equal(alice[1].prev_amount, alice[0].amount);
+    assert.equal(alice[1].next_amount, null);
   });
 });
