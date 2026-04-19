@@ -384,6 +384,47 @@ function interceptPgCatalog(sql, db) {
     return { type: 'ROWS', rows };
   }
   
+  // pg_stat_slow_queries (custom)
+  if (upper.includes('PG_STAT_SLOW_QUERIES')) {
+    const rows = _queryLog.slice().reverse().map(entry => ({
+      query: entry.query,
+      timestamp: entry.timestamp,
+      duration_ms: entry.duration_ms,
+      pid: entry.pid || 0,
+    }));
+    return { type: 'ROWS', rows };
+  }
+  
+  // pg_stat_server (aggregate server metrics)
+  if (upper.includes('PG_STAT_SERVER')) {
+    const totalQueries = _queryLog.length;
+    const totalTime = _queryLog.reduce((sum, e) => sum + e.duration_ms, 0);
+    return { type: 'ROWS', rows: [{
+      total_queries: totalQueries,
+      total_time_ms: parseFloat(totalTime.toFixed(3)),
+      active_connections: _activeConnections.size,
+      uptime_seconds: Math.floor(process.uptime()),
+    }] };
+  }
+  
+  // pg_stat_statements
+  if (upper.includes('PG_STAT_STATEMENTS')) {
+    const rows = [];
+    for (const [normalized, stat] of _queryStats) {
+      rows.push({
+        query: stat.query,
+        calls: stat.calls,
+        total_time_ms: parseFloat(stat.total_time_ms.toFixed(3)),
+        mean_time_ms: parseFloat((stat.total_time_ms / stat.calls).toFixed(3)),
+        min_time_ms: parseFloat((stat.min_time_ms || 0).toFixed(3)),
+        max_time_ms: parseFloat((stat.max_time_ms || stat.total_time_ms / stat.calls).toFixed(3)),
+      });
+    }
+    // Sort by total_time descending
+    rows.sort((a, b) => b.total_time_ms - a.total_time_ms);
+    return { type: 'ROWS', rows };
+  }
+  
   // pg_stat_user_tables
   if (upper.includes('PG_STAT_USER_TABLES')) {
     const rows = [];
@@ -830,7 +871,10 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     }
     
     const intercepted = interceptPgCatalog(sql, db);
-    if (intercepted) return intercepted;
+    if (intercepted) {
+      if (connInfo) connInfo.state = 'idle';
+      return intercepted;
+    }
     // Track temp table creation
     const tempMatch = sql.match(/CREATE\s+(?:TEMPORARY|TEMP)\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i);
     if (tempMatch) {
@@ -879,7 +923,24 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       }
     }
     
-    return db.execute(sql);
+    const _execStart = performance.now();
+    const _result = db.execute(sql);
+    const _execDuration = performance.now() - _execStart;
+    
+    // Log query for slow query log and stat_statements
+    _queryLog.push({ query: sql, timestamp: new Date().toISOString(), duration_ms: parseFloat(_execDuration.toFixed(3)), pid: connId });
+    if (_queryLog.length > 1000) _queryLog.splice(0, _queryLog.length - 500);
+    
+    const _normalized = sql.trim().toLowerCase();
+    const _stat = _queryStats.get(_normalized) || { query: sql, calls: 0, total_time_ms: 0, min_time_ms: Infinity, max_time_ms: 0 };
+    _stat.calls++;
+    _stat.total_time_ms += _execDuration;
+    _stat.min_time_ms = Math.min(_stat.min_time_ms, _execDuration);
+    _stat.max_time_ms = Math.max(_stat.max_time_ms, _execDuration);
+    _queryStats.set(_normalized, _stat);
+    
+    if (connInfo) connInfo.state = 'idle';
+    return _result;
   }
   let inTransaction = false;
   const preparedStatements = new Map(); // name → { sql, paramTypes }
@@ -1622,6 +1683,10 @@ let _nextConnId = 1;
 
 // Active connection tracking for pg_stat_activity
 const _activeConnections = new Map(); // connId → { pid, user, query, queryCount, startTime, socket }
+
+// Query statistics (global across all connections)
+const _queryLog = []; // [{ query, timestamp, duration_ms }] (recent queries, capped)
+const _queryStats = new Map(); // normalized query → { calls, total_time_ms }
 
 export function createPgServer(db, port = 5433, options = {}) {
   // Global channel subscriptions: channel → Map<connId, socket>
