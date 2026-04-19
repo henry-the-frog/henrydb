@@ -1179,22 +1179,75 @@
     {
       "id": "T111",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push mid-session",
-      "started": "2026-04-19T18:16:53.495Z"
+      "started": "2026-04-19T18:16:53.495Z",
+      "completed": "2026-04-19T18:16:55.564Z",
+      "duration_ms": 10000,
+      "summary": "Pushed."
     },
     {
       "id": "T112",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement EXPLAIN FORMAT JSON and YAML output",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T18:17:06.623Z",
+      "completed": "2026-04-19T18:17:54.368Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN FORMAT JSON/YAML/DOT implemented. PG-compatible output. 4/4 pass."
     },
     {
       "id": "T113",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix server-params GUC variables (server_version, work_mem, etc)",
+      "project": "henrydb",
+      "started": "2026-04-19T18:18:04.410Z",
+      "completed": "2026-04-19T18:19:03.980Z",
+      "duration_ms": 180000,
+      "summary": "Connection-scoped SET/SHOW/RESET with PG defaults. 8/8 pass (was 0/8)."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Query stats: pg_stat_statements + slow_queries + SET/SHOW",
+      "project": "henrydb",
+      "started": "2026-04-19T18:25:23.843Z",
+      "completed": "2026-04-19T18:25:23.988Z",
+      "duration_ms": 300000,
+      "summary": "pg_stat_statements 3/3, slow_queries 3/3, SET/SHOW 8/8. +14 tests."
+    },
+    {
+      "id": "T115",
+      "mode": "THINK",
+      "status": "done",
+      "task": "BUILD cap depth pivot: review all changes, stress test, look for systemic issues",
+      "started": "2026-04-19T18:28:01.739Z",
+      "completed": "2026-04-19T18:32:47.942Z",
+      "duration_ms": 300000,
+      "summary": "Depth pivot: stress tested wire protocol (mixed ops, types, cursors, explain, params). All core categories green: MVCC 134/134, TX 20/20, vacuum 52/52, lock 80/80. Server 417/435 (95.9%). Hash-index timeout (pre-existing)."
+    },
+    {
+      "id": "T116",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push, daily log, session wrap",
+      "started": "2026-04-19T18:33:09.774Z"
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix server-introspection (information_schema table count issue)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix server-cdc tests if feasible",
       "project": "henrydb"
     }
   ],
@@ -1707,6 +1760,26 @@
     {
       "time": "2026-04-19T18:13:03.014Z",
       "msg": "Added T113 (BUILD) after end: Fix server-params GUC variables (server_version, work_mem, etc)"
+    },
+    {
+      "time": "2026-04-19T18:25:17.899Z",
+      "msg": "Added T114 (BUILD) after end: Query stats: pg_stat_statements + slow_queries + SET/SHOW"
+    },
+    {
+      "time": "2026-04-19T18:27:52.112Z",
+      "msg": "Added T115 (THINK) after end: BUILD cap depth pivot: review all changes, stress test, look for systemic issues"
+    },
+    {
+      "time": "2026-04-19T18:27:52.230Z",
+      "msg": "Added T116 (MAINTAIN) after end: Final git push, daily log, session wrap"
+    },
+    {
+      "time": "2026-04-19T18:32:54.766Z",
+      "msg": "Added T117 (BUILD) after end: Fix server-introspection (information_schema table count issue)"
+    },
+    {
+      "time": "2026-04-19T18:32:54.885Z",
+      "msg": "Added T118 (BUILD) after end: Fix server-cdc tests if feasible"
     }
   ]
 }
