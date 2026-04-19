@@ -105,6 +105,22 @@ function applyOneWindow(rows, spec) {
         break;
       }
 
+      case 'NTH_VALUE': {
+        const col = args[0];
+        const n = Number(args[1]) || 1; // 1-based index
+        // NTH_VALUE returns the value at the nth row in the window frame
+        // Default frame: ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        group.forEach((row, i) => {
+          // nth row is at index n-1 (1-based → 0-based)
+          if (n - 1 <= i && n - 1 < group.length) {
+            row[alias] = group[n - 1][col];
+          } else {
+            row[alias] = null; // nth row not yet in frame
+          }
+        });
+        break;
+      }
+
       case 'SUM':
       case 'AVG':
       case 'MIN':
