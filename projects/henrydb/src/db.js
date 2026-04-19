@@ -7826,6 +7826,23 @@ export class Database {
     }
     if (expr.type === 'literal') return expr.value;
     if (expr.type === 'number') return expr.value;
+    if (expr.type === 'cast') {
+      const val = this._evalAggregateExpr(expr.expr, rows);
+      if (val == null) return null;
+      switch (expr.targetType?.toUpperCase()) {
+        case 'INT': case 'INTEGER': case 'BIGINT': case 'SMALLINT': return Math.trunc(Number(val));
+        case 'FLOAT': case 'DOUBLE': case 'REAL': case 'DECIMAL': case 'NUMERIC': return Number(val);
+        case 'TEXT': case 'VARCHAR': case 'CHAR': return String(val);
+        case 'BOOLEAN': case 'BOOL': return !!val;
+        default: return val;
+      }
+    }
+    if (expr.type === 'function_call' || expr.type === 'function') {
+      const args = (expr.args || []).map(a => this._evalAggregateExpr(a, rows));
+      if (expr.func?.toUpperCase() === 'COALESCE') return args.find(v => v !== null && v !== undefined) ?? null;
+      if (expr.func?.toUpperCase() === 'NULLIF') return args[0] === args[1] ? null : args[0];
+      return this._evalFunction(expr.func, args.map(v => ({ type: 'literal', value: v })), rows[0] || {});
+    }
     // For non-aggregate expressions, evaluate against first row
     return rows.length ? this._evalValue(expr, rows[0]) : null;
   }
