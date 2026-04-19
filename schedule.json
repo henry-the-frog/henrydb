@@ -493,9 +493,26 @@
     {
       "id": "T48",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final git push and daily log update",
-      "started": "2026-04-19T15:28:19.213Z"
+      "started": "2026-04-19T15:28:19.213Z",
+      "completed": "2026-04-19T15:28:58.210Z",
+      "duration_ms": 30000,
+      "summary": "Both repos pushed. Daily log updated with session stats."
+    },
+    {
+      "id": "T49",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Investigate nested aggregates: SUM(COUNT(*)) should error",
+      "started": "2026-04-19T15:29:25.741Z"
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add nested aggregate validation and tests",
+      "project": "henrydb"
     },
     {
       "id": "T33",
@@ -717,6 +734,18 @@
     {
       "time": "2026-04-19T15:26:25.400Z",
       "msg": "Moved T33 after T48"
+    },
+    {
+      "time": "2026-04-19T15:29:18.157Z",
+      "msg": "Added T49 (THINK) after end: Investigate nested aggregates: SUM(COUNT(*)) should error"
+    },
+    {
+      "time": "2026-04-19T15:29:18.275Z",
+      "msg": "Added T50 (BUILD) after end: Add nested aggregate validation and tests"
+    },
+    {
+      "time": "2026-04-19T15:29:18.391Z",
+      "msg": "Moved T33 after T50"
     }
   ]
 }

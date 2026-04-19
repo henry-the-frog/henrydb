@@ -3114,6 +3114,9 @@ export class Database {
       }
 
       // Handle aggregates / GROUP BY on view results
+      // Validate no nested aggregates (e.g., SUM(COUNT(*)))
+      this._validateNoNestedAggregates(ast.columns);
+      
       const hasAggregates = ast.columns.some(c => 
         c.type === 'aggregate' || 
         this._exprContainsAggregate(c.expr) ||
@@ -3296,6 +3299,9 @@ export class Database {
       rows = rows.filter(row => this._evalExpr(workingAst.where, row));
     }
 
+    // Validate no nested aggregates
+    this._validateNoNestedAggregates(ast.columns);
+    
     // Aggregates / GROUP BY / Window functions
     const hasAggregates = ast.columns.some(c =>
       c.type === 'aggregate' || 
@@ -6320,6 +6326,18 @@ export class Database {
   // Helper: check if columns list contains any window function (top-level or nested in expressions)
   _columnsHaveWindow(columns) {
     return columns.some(c => c.type === 'window' || (c.type === 'expression' && this._exprContainsWindow(c.expr)));
+  }
+
+  // Validation: detect nested aggregate function calls (e.g., SUM(COUNT(*)))
+  _validateNoNestedAggregates(columns) {
+    for (const col of columns) {
+      if (col.type === 'aggregate') {
+        // Check if the argument contains another aggregate
+        if (col.arg && typeof col.arg === 'object' && this._exprContainsAggregate(col.arg)) {
+          throw new Error(`Aggregate function calls cannot be nested: ${col.func}(${col.arg.func || '...'}(...))`);
+        }
+      }
+    }
   }
 
   _computeWindowFunctions(columns, rows, windowDefs) {
