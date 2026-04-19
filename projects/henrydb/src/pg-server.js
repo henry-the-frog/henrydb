@@ -1051,6 +1051,31 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     _stat.max_time_ms = Math.max(_stat.max_time_ms, _execDuration);
     _queryStats.set(_normalized, _stat);
     
+    // Auto-notify table_changes listeners on DML
+    if (_result && channels.has('table_changes')) {
+      const dmlMatch = sql.match(/^\s*(INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+(\w+)/i);
+      if (dmlMatch) {
+        const operation = dmlMatch[1].toUpperCase().startsWith('INSERT') ? 'INSERT' 
+          : dmlMatch[1].toUpperCase().startsWith('UPDATE') ? 'UPDATE' : 'DELETE';
+        const tableName = dmlMatch[2];
+        const payload = JSON.stringify({ 
+          table: tableName, 
+          action: operation,
+          operation, 
+          timestamp: Date.now(),
+          rows_affected: _result.rowCount || _result.changes || 1
+        });
+        const subs = channels.get('table_changes');
+        for (const [subConnId, subSocket] of subs) {
+          if (subConnId !== connId) { // Don't notify the writer
+            try {
+              subSocket.write(notificationResponse(subConnId, 'table_changes', payload));
+            } catch (e) { /* socket may be closed */ }
+          }
+        }
+      }
+    }
+    
     if (connInfo) connInfo.state = 'idle';
     return _result;
   }
