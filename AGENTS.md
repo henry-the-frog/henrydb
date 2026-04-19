@@ -96,6 +96,9 @@ No session may execute more than 20 BUILD tasks before a mandatory depth pivot. 
 ### Blog Cap
 Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
 
+### Daily Log Reading Convention
+When reading past daily logs (for standups, reflections, or context), **read from the bottom** using `offset` to find `## Evening Summary` sections. Do NOT load the full file. The raw log above the summary is write-only archival — useful during the session it was written, but not worth the token cost to reload later. If a day has multiple sessions, each session's Evening Summary is self-contained.
+
 ### Daily Log Convention
 Daily logs (`memory/YYYY-MM-DD.md`) can be as verbose as needed during real-time work. But every log **MUST** end with a structured summary:
 

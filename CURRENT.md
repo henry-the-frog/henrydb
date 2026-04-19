@@ -1,12 +1,12 @@
 # CURRENT.md
-status: session-ended
-session: C (evening)
-date: 2026-04-18
-ended: 2026-04-19T03:57:00Z
-tasks_completed_this_session: 39
-new_test_files: 20
-new_tests: 356
-bugs_fixed: 13 (2 CRITICAL, 3 HIGH)
-features_added: 16 functions + SHOW INDEXES
+status: active
+session: A (morning)
+date: 2026-04-19
+task: T1
+mode: THINK
+goal: Review yesterday - assess quality of 100+ tasks, direction for Sunday depth day
 project: henrydb
-commits: 20+
+context-files:
+  - memory/scratch/bug-patterns-2026-04-17.md
+  - lessons/integration-boundary-testing.md
+  - memory/scratch/ddl-wal-completeness.md
