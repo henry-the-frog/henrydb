@@ -736,21 +736,42 @@ export class Database {
   _createTableAs(ast) {
     // Execute the query to get the schema and data
     const result = this.execute_ast(ast.query);
-    if (!result.rows || result.rows.length === 0) {
-      // Empty result — create table with no rows but infer schema from query
-      // For now, create with no columns (this is a limitation)
-      throw new Error('CREATE TABLE AS with empty result set requires at least one row to infer schema');
-    }
     
-    // Infer schema from first row
-    const firstRow = result.rows[0];
-    const columns = Object.keys(firstRow).filter(k => !k.includes('.')).map(name => {
-      const val = firstRow[name];
-      let type = 'TEXT';
-      if (typeof val === 'number') type = Number.isInteger(val) ? 'INTEGER' : 'REAL';
-      else if (typeof val === 'boolean') type = 'INTEGER';
-      return { name, type, primaryKey: false, notNull: false, check: null, defaultValue: null, references: null, generated: null };
-    });
+    let columns;
+    if (!result.rows || result.rows.length === 0) {
+      // Empty result — infer schema from query AST columns
+      const queryCols = ast.query.columns;
+      if (queryCols && queryCols.length > 0 && queryCols[0].type !== 'star') {
+        columns = queryCols.map(col => {
+          let name = col.alias || col.name || 'column';
+          if (col.type === 'function') name = col.alias || `${col.func}`;
+          if (col.type === 'expression') name = col.alias || 'expr';
+          return { name, type: 'TEXT', primaryKey: false, notNull: false, check: null, defaultValue: null, references: null, generated: null };
+        });
+      } else {
+        // Fallback: try to get column names from source table schema
+        const fromTable = ast.query.from?.table || ast.query.from?.name;
+        if (fromTable) {
+          const srcTable = this._getTable(fromTable);
+          if (srcTable) {
+            columns = srcTable.schema.map(c => ({ ...c, primaryKey: false }));
+          }
+        }
+        if (!columns) {
+          throw new Error('CREATE TABLE AS with empty result set: cannot infer schema from SELECT *');
+        }
+      }
+    } else {
+      // Infer schema from first row
+      const firstRow = result.rows[0];
+      columns = Object.keys(firstRow).filter(k => !k.includes('.')).map(name => {
+        const val = firstRow[name];
+        let type = 'TEXT';
+        if (typeof val === 'number') type = Number.isInteger(val) ? 'INTEGER' : 'REAL';
+        else if (typeof val === 'boolean') type = 'INTEGER';
+        return { name, type, primaryKey: false, notNull: false, check: null, defaultValue: null, references: null, generated: null };
+      });
+    }
     
     // Create the table
     const createAst = { type: 'CREATE_TABLE', table: ast.table, columns, ifNotExists: ast.ifNotExists };
