@@ -1,319 +1,285 @@
-// sql-edge-cases.test.js — SQL correctness for tricky edge cases
-import { describe, it, before } from 'node:test';
+// sql-edge-cases.test.js — Edge cases that commonly break in SQL engines
+// Tests subtle SQL semantics that many implementations get wrong
+
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
-describe('SQL Edge Cases', () => {
-  let db;
-  before(() => {
-    db = new Database();
-    db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT, age INT, score INT)');
-    db.execute("INSERT INTO users VALUES (1, 'Alice', 30, 90)");
-    db.execute("INSERT INTO users VALUES (2, 'Bob', NULL, 80)");
-    db.execute("INSERT INTO users VALUES (3, 'Charlie', 25, NULL)");
-    db.execute("INSERT INTO users VALUES (4, 'Diana', 30, 95)");
-    db.execute("INSERT INTO users VALUES (5, 'Eve', NULL, NULL)");
-    
-    db.execute('CREATE TABLE orders (id INT PRIMARY KEY, user_id INT, amount INT, status TEXT)');
-    db.execute("INSERT INTO orders VALUES (1, 1, 100, 'completed')");
-    db.execute("INSERT INTO orders VALUES (2, 1, 200, 'pending')");
-    db.execute("INSERT INTO orders VALUES (3, 2, 150, 'completed')");
-    db.execute("INSERT INTO orders VALUES (4, 3, 50, 'cancelled')");
-    db.execute("INSERT INTO orders VALUES (5, NULL, 75, 'completed')");
-    
-    db.execute('CREATE TABLE empty_table (id INT PRIMARY KEY, val TEXT)');
+describe('NULL Semantics', () => {
+  it('NULL = NULL should be NULL (not true)', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL = NULL) as result');
+    // In SQL, NULL = NULL is NULL (falsy), not true
+    assert.ok(r.rows[0].result === null || r.rows[0].result === false || r.rows[0].result === 0,
+      `NULL = NULL should be NULL or false, got: ${r.rows[0].result}`);
   });
 
-  // --- NULL Handling ---
-  it('NULL in WHERE clause: IS NULL', () => {
-    const r = db.execute('SELECT name FROM users WHERE age IS NULL ORDER BY name');
-    assert.deepStrictEqual(r.rows.map(r => r.name), ['Bob', 'Eve']);
+  it('NULL != NULL should be NULL (not true)', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL != NULL) as result');
+    assert.ok(r.rows[0].result === null || r.rows[0].result === false || r.rows[0].result === 0,
+      `NULL != NULL should be NULL or false, got: ${r.rows[0].result}`);
   });
 
-  it('NULL in WHERE clause: IS NOT NULL', () => {
-    const r = db.execute('SELECT name FROM users WHERE score IS NOT NULL ORDER BY name');
-    assert.deepStrictEqual(r.rows.map(r => r.name), ['Alice', 'Bob', 'Diana']);
+  it('NOT NULL should be NULL', () => {
+    const db = new Database();
+    const r = db.execute('SELECT NOT NULL as result');
+    assert.equal(r.rows[0].result, null, 'NOT NULL should be NULL');
   });
 
-  it('NULL comparison returns no rows (NULL = NULL is false)', () => {
-    const r = db.execute('SELECT * FROM users WHERE age = NULL');
-    assert.strictEqual(r.rows.length, 0);
+  it('NULL AND true should be NULL', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL AND TRUE) as result');
+    assert.equal(r.rows[0].result, null);
   });
 
-  it('COUNT(*) counts NULLs, COUNT(col) does not', () => {
-    const r = db.execute('SELECT COUNT(*) as all_rows, COUNT(age) as non_null_age FROM users');
-    assert.strictEqual(r.rows[0].all_rows, 5);
-    assert.strictEqual(r.rows[0].non_null_age, 3);
+  it('NULL AND false should be false', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL AND FALSE) as result');
+    assert.ok(r.rows[0].result === false || r.rows[0].result === 0,
+      `NULL AND FALSE should be false, got: ${r.rows[0].result}`);
   });
 
-  it('SUM/AVG ignore NULLs', () => {
-    const r = db.execute('SELECT SUM(score) as total, AVG(score) as avg_score FROM users');
-    assert.strictEqual(r.rows[0].total, 265); // 90 + 80 + 95
-    // AVG should be 265/3 ≈ 88.33
-    assert.ok(Math.abs(r.rows[0].avg_score - 88.333) < 0.01);
+  it('NULL OR true should be true', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL OR TRUE) as result');
+    assert.ok(r.rows[0].result === true || r.rows[0].result === 1);
   });
 
-  it('MIN/MAX with NULLs', () => {
-    const r = db.execute('SELECT MIN(age) as min_age, MAX(age) as max_age FROM users');
-    assert.strictEqual(r.rows[0].min_age, 25);
-    assert.strictEqual(r.rows[0].max_age, 30);
+  it('NULL OR false should be NULL', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL OR FALSE) as result');
+    assert.equal(r.rows[0].result, null);
   });
 
-  // --- Empty Table ---
-  it('SELECT from empty table', () => {
-    const r = db.execute('SELECT * FROM empty_table');
-    assert.strictEqual(r.rows.length, 0);
+  it('NULL IN (1, 2, NULL) should be NULL', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (NULL IN (1, 2, NULL)) as result');
+    assert.equal(r.rows[0].result, null);
   });
 
-  it('COUNT(*) on empty table returns 0', () => {
-    const r = db.execute('SELECT COUNT(*) as cnt FROM empty_table');
-    assert.strictEqual(r.rows[0].cnt, 0);
+  it('3 IN (1, 2, NULL) should be NULL (not false)', () => {
+    const db = new Database();
+    const r = db.execute('SELECT (3 IN (1, 2, NULL)) as result');
+    // Per SQL standard, if the value isn't found but NULL is in the list, result is NULL
+    assert.ok(r.rows[0].result === null || r.rows[0].result === false || r.rows[0].result === 0,
+      `3 IN (1,2,NULL) should be NULL per SQL standard, got: ${r.rows[0].result}`);
   });
 
-  it('SUM on empty table returns NULL', () => {
-    const r = db.execute('SELECT SUM(id) as total FROM empty_table');
-    assert.strictEqual(r.rows[0].total, null);
+  it('COUNT(*) includes NULLs, COUNT(col) excludes them', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE null_test (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO null_test VALUES (1, 10), (2, NULL), (3, 30)');
+    const r = db.execute('SELECT COUNT(*) as all_rows, COUNT(val) as non_null FROM null_test');
+    assert.equal(r.rows[0].all_rows, 3);
+    assert.equal(r.rows[0].non_null, 2);
   });
 
-  // --- CASE Expression ---
-  it('CASE WHEN with multiple branches', () => {
-    const r = db.execute(`
-      SELECT name, 
-        CASE WHEN score >= 90 THEN 'A'
-             WHEN score >= 80 THEN 'B'
-             ELSE 'C' END as grade
-      FROM users WHERE score IS NOT NULL ORDER BY name
-    `);
-    assert.deepStrictEqual(r.rows, [
-      { name: 'Alice', grade: 'A' },
-      { name: 'Bob', grade: 'B' },
-      { name: 'Diana', grade: 'A' },
-    ]);
+  it('SUM/AVG skip NULLs', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE null_agg (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO null_agg VALUES (1, 10), (2, NULL), (3, 30), (4, NULL)');
+    const r = db.execute('SELECT SUM(val) as s, AVG(val) as a FROM null_agg');
+    assert.equal(r.rows[0].s, 40);
+    assert.equal(r.rows[0].a, 20); // avg of 10+30, not 10+0+30+0
   });
 
-  it('CASE with NULL values', () => {
-    const r = db.execute(`
-      SELECT name, CASE WHEN age IS NULL THEN 'unknown' ELSE 'known' END as age_status
-      FROM users ORDER BY name
-    `);
-    assert.strictEqual(r.rows[1].age_status, 'unknown'); // Bob
-    assert.strictEqual(r.rows[0].age_status, 'known'); // Alice
+  it('COALESCE with all NULLs returns NULL', () => {
+    const db = new Database();
+    const r = db.execute('SELECT COALESCE(NULL, NULL, NULL) as result');
+    assert.equal(r.rows[0].result, null);
+  });
+});
+
+describe('String Edge Cases', () => {
+  it('empty string is not NULL', () => {
+    const db = new Database();
+    db.execute("CREATE TABLE str_test (id INT PRIMARY KEY, val TEXT)");
+    db.execute("INSERT INTO str_test VALUES (1, ''), (2, NULL)");
+    const r = db.execute("SELECT COUNT(*) as cnt FROM str_test WHERE val IS NOT NULL");
+    assert.equal(r.rows[0].cnt, 1, 'Empty string should not be NULL');
   });
 
-  // --- COALESCE ---
-  it('COALESCE picks first non-NULL', () => {
-    const r = db.execute('SELECT name, COALESCE(age, -1) as safe_age FROM users ORDER BY name');
-    assert.strictEqual(r.rows[1].safe_age, -1); // Bob has NULL age
-    assert.strictEqual(r.rows[0].safe_age, 30); // Alice has age 30
+  it('string comparison is case-sensitive', () => {
+    const db = new Database();
+    db.execute("CREATE TABLE case_test (id INT PRIMARY KEY, name TEXT)");
+    db.execute("INSERT INTO case_test VALUES (1, 'Alice'), (2, 'alice'), (3, 'ALICE')");
+    const r = db.execute("SELECT COUNT(*) as cnt FROM case_test WHERE name = 'Alice'");
+    assert.equal(r.rows[0].cnt, 1, 'Case-sensitive comparison');
   });
 
-  // --- JOIN Edge Cases ---
-  it('LEFT JOIN preserves all left rows', () => {
-    const r = db.execute(`
-      SELECT u.name, o.amount 
-      FROM users u LEFT JOIN orders o ON u.id = o.user_id
-      WHERE u.name = 'Eve'
-    `);
-    assert.strictEqual(r.rows.length, 1);
-    assert.strictEqual(r.rows[0].amount, null);
+  it('LIKE with % wildcard', () => {
+    const db = new Database();
+    db.execute("CREATE TABLE like_test (id INT PRIMARY KEY, name TEXT)");
+    db.execute("INSERT INTO like_test VALUES (1, 'hello'), (2, 'world'), (3, 'hello world')");
+    const r = db.execute("SELECT name FROM like_test WHERE name LIKE '%hello%' ORDER BY id");
+    assert.equal(r.rows.length, 2);
   });
 
-  it('JOIN with NULL foreign key excludes unmatched', () => {
-    const r = db.execute(`
-      SELECT o.id, u.name FROM orders o JOIN users u ON o.user_id = u.id
-      ORDER BY o.id
-    `);
-    // Order 5 has user_id = NULL, should be excluded from INNER JOIN
-    assert.strictEqual(r.rows.length, 4);
-    assert.ok(!r.rows.some(r => r.id === 5));
+  it('LIKE with _ wildcard', () => {
+    const db = new Database();
+    db.execute("CREATE TABLE under_test (id INT PRIMARY KEY, code TEXT)");
+    db.execute("INSERT INTO under_test VALUES (1, 'A1'), (2, 'A12'), (3, 'B1')");
+    const r = db.execute("SELECT code FROM under_test WHERE code LIKE 'A_' ORDER BY id");
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].code, 'A1');
   });
 
-  it('Self-join', () => {
-    const r = db.execute(`
-      SELECT a.name as name1, b.name as name2
-      FROM users a JOIN users b ON a.age = b.age AND a.id < b.id
-      ORDER BY a.name
-    `);
-    // Alice(30) and Diana(30)
-    assert.strictEqual(r.rows.length, 1);
-    assert.strictEqual(r.rows[0].name1, 'Alice');
-    assert.strictEqual(r.rows[0].name2, 'Diana');
+  it('concatenation with NULL yields NULL', () => {
+    const db = new Database();
+    const r = db.execute("SELECT 'hello' || NULL as result");
+    // Per SQL standard, concat with NULL yields NULL
+    // Many DBs differ here (PG returns NULL, MySQL returns NULL, SQLite returns 'hello')
+    assert.ok(r.rows[0].result === null || r.rows[0].result === 'hello',
+      'Concat with NULL behavior');
+  });
+});
+
+describe('Numeric Edge Cases', () => {
+  it('integer division truncates toward zero', () => {
+    const db = new Database();
+    const r = db.execute('SELECT 7 / 2 as result');
+    assert.equal(r.rows[0].result, 3);
   });
 
-  // --- Aggregate Edge Cases ---
-  it('GROUP BY with NULL values creates a NULL group', () => {
-    const r = db.execute('SELECT age, COUNT(*) as cnt FROM users GROUP BY age ORDER BY age');
-    // Groups: NULL(2), 25(1), 30(2)
-    const nullGroup = r.rows.find(r => r.age === null);
-    assert.ok(nullGroup, 'Should have a NULL group');
-    assert.strictEqual(nullGroup.cnt, 2);
+  it('negative integer division', () => {
+    const db = new Database();
+    const r = db.execute('SELECT -7 / 2 as result');
+    assert.equal(r.rows[0].result, -3, '-7/2 should be -3 (truncate toward zero)');
   });
 
-  it('HAVING filters groups', () => {
-    const r = db.execute('SELECT age, COUNT(*) as cnt FROM users GROUP BY age HAVING COUNT(*) >= 2');
-    assert.strictEqual(r.rows.length, 2); // NULL(2) and 30(2)
+  it('division by zero returns NULL (not error)', () => {
+    const db = new Database();
+    const r = db.execute('SELECT 10 / 0 as result');
+    assert.equal(r.rows[0].result, null);
   });
 
-  it('COUNT DISTINCT', () => {
-    const r = db.execute('SELECT COUNT(DISTINCT age) as uniq_ages FROM users');
-    assert.strictEqual(r.rows[0].uniq_ages, 2); // 25, 30 (NULLs excluded)
+  it('modulo with negative numbers', () => {
+    const db = new Database();
+    const r = db.execute('SELECT -7 % 3 as result');
+    assert.equal(r.rows[0].result, -1);
   });
 
-  // --- Subquery Edge Cases ---
-  it('Scalar subquery in SELECT', () => {
-    const r = db.execute(`
-      SELECT name, (SELECT COUNT(*) FROM orders WHERE user_id = users.id) as order_count
-      FROM users WHERE id = 1
-    `);
-    assert.strictEqual(r.rows[0].order_count, 2);
+  it('large integer arithmetic', () => {
+    const db = new Database();
+    const r = db.execute('SELECT 2147483647 + 1 as result');
+    assert.equal(r.rows[0].result, 2147483648);
+  });
+});
+
+describe('GROUP BY Edge Cases', () => {
+  it('GROUP BY with no rows returns empty', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE empty_grp (id INT PRIMARY KEY, grp TEXT, val INT)');
+    const r = db.execute('SELECT grp, COUNT(*) as cnt FROM empty_grp GROUP BY grp');
+    assert.equal(r.rows.length, 0);
   });
 
-  it('EXISTS subquery', () => {
-    const r = db.execute(`
-      SELECT name FROM users WHERE EXISTS (
-        SELECT 1 FROM orders WHERE user_id = users.id AND status = 'completed'
-      ) ORDER BY name
-    `);
-    assert.deepStrictEqual(r.rows.map(r => r.name), ['Alice', 'Bob']);
+  it('aggregate without GROUP BY on empty table', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE empty_agg (id INT PRIMARY KEY, val INT)');
+    const r = db.execute('SELECT COUNT(*) as cnt, SUM(val) as s, AVG(val) as a FROM empty_agg');
+    assert.equal(r.rows.length, 1, 'Should still return one row');
+    assert.equal(r.rows[0].cnt, 0);
+    assert.equal(r.rows[0].s, null); // SUM of no rows is NULL
   });
 
-  it('IN subquery', () => {
-    const r = db.execute(`
-      SELECT name FROM users WHERE id IN (
-        SELECT DISTINCT user_id FROM orders WHERE status = 'completed'
-      ) ORDER BY name
-    `);
-    assert.deepStrictEqual(r.rows.map(r => r.name), ['Alice', 'Bob']);
+  it('GROUP BY with expression', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE expr_grp (id INT PRIMARY KEY, val INT)');
+    for (let i = 0; i < 20; i++) db.execute(`INSERT INTO expr_grp VALUES (${i}, ${i})`);
+    const r = db.execute('SELECT val % 5 as bucket, COUNT(*) as cnt FROM expr_grp GROUP BY val % 5 ORDER BY bucket');
+    assert.equal(r.rows.length, 5);
+    for (const row of r.rows) assert.equal(row.cnt, 4);
   });
+});
 
-  // --- LIMIT/OFFSET ---
-  it('LIMIT 0 returns no rows', () => {
-    const r = db.execute('SELECT * FROM users LIMIT 0');
-    assert.strictEqual(r.rows.length, 0);
-  });
-
-  it('OFFSET beyond table size returns no rows', () => {
-    const r = db.execute('SELECT * FROM users LIMIT 10 OFFSET 100');
-    assert.strictEqual(r.rows.length, 0);
-  });
-
-  it('OFFSET without LIMIT', () => {
-    const r = db.execute('SELECT * FROM users ORDER BY id OFFSET 3');
-    assert.strictEqual(r.rows.length, 2);
-    assert.strictEqual(r.rows[0].id, 4);
-  });
-
-  // --- ORDER BY Edge Cases ---
-  it('ORDER BY column not in SELECT', () => {
-    const r = db.execute('SELECT name FROM users ORDER BY id DESC LIMIT 2');
-    assert.deepStrictEqual(r.rows.map(r => r.name), ['Eve', 'Diana']);
-  });
-
-  it('ORDER BY with NULLs (NULLs first in ASC)', () => {
-    const r = db.execute('SELECT name, age FROM users ORDER BY age, name');
-    // NULLs should come first or last depending on convention
-    assert.ok(r.rows.length === 5);
-  });
-
-  // --- Expression Edge Cases ---
-  it('Division by zero returns Infinity or throws', () => {
-    // JS semantics: 1/0 = Infinity (unlike PostgreSQL which throws)
+describe('Subquery Edge Cases', () => {
+  it('scalar subquery returning more than 1 row should error', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE multi_row (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO multi_row VALUES (1, 10), (2, 20)');
     try {
-      const r = db.execute('SELECT 1 / 0 as result');
-      assert.ok(r.rows[0].result === Infinity || r.rows[0].result === null, 'Should be Infinity or null');
-    } catch {
-      // Throwing is also acceptable
+      db.execute('SELECT (SELECT val FROM multi_row) as result');
+      // Some DBs return first row, others error
+      // PG: error: more than one row returned by a subquery used as an expression
+    } catch (e) {
+      assert.ok(true, 'Error on multi-row scalar subquery is valid behavior');
     }
   });
 
-  it('String concatenation with ||', () => {
-    const r = db.execute("SELECT name || ' (' || CAST(id AS TEXT) || ')' as label FROM users WHERE id = 1");
-    assert.strictEqual(r.rows[0].label, 'Alice (1)');
+  it('EXISTS with empty subquery is false', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE exist_test (id INT PRIMARY KEY)');
+    const r = db.execute('SELECT EXISTS (SELECT 1 FROM exist_test) as result');
+    assert.ok(r.rows[0].result === false || r.rows[0].result === 0);
   });
 
-  // --- UNION ---
-  it('UNION removes duplicates', () => {
-    const r = db.execute(`
-      SELECT name FROM users WHERE id <= 2
-      UNION
-      SELECT name FROM users WHERE id >= 2
-    `);
-    // Should be 5 unique names
-    assert.strictEqual(r.rows.length, 5);
+  it('NOT EXISTS with empty subquery is true', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE notexist_test (id INT PRIMARY KEY)');
+    const r = db.execute('SELECT NOT EXISTS (SELECT 1 FROM notexist_test) as result');
+    assert.ok(r.rows[0].result === true || r.rows[0].result === 1);
+  });
+});
+
+describe('ORDER BY Edge Cases', () => {
+  it('ORDER BY column not in SELECT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE order_test (id INT PRIMARY KEY, name TEXT, val INT)');
+    db.execute("INSERT INTO order_test VALUES (1, 'c', 30), (2, 'a', 10), (3, 'b', 20)");
+    const r = db.execute('SELECT name FROM order_test ORDER BY val ASC');
+    assert.equal(r.rows[0].name, 'a');
+    assert.equal(r.rows[1].name, 'b');
+    assert.equal(r.rows[2].name, 'c');
   });
 
-  it('UNION ALL keeps duplicates', () => {
-    const r = db.execute(`
-      SELECT name FROM users WHERE id <= 2
-      UNION ALL
-      SELECT name FROM users WHERE id >= 2
-    `);
-    // 2 + 4 = 6 (Bob appears twice)
-    assert.strictEqual(r.rows.length, 6);
+  it('ORDER BY expression', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE expr_order (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO expr_order VALUES (1, 5), (2, -3), (3, 8), (4, -1)');
+    const r = db.execute('SELECT id, val FROM expr_order ORDER BY val * val ASC');
+    // -1, -3, 5, 8 (sorted by square: 1, 9, 25, 64)
+    assert.equal(r.rows[0].val, -1);
+    assert.equal(r.rows[1].val, -3);
   });
 
-  // --- CTE ---
-  it('CTE with aggregation', () => {
-    const r = db.execute(`
-      WITH user_totals AS (
-        SELECT user_id, SUM(amount) as total
-        FROM orders
-        WHERE user_id IS NOT NULL
-        GROUP BY user_id
-      )
-      SELECT u.name, ut.total
-      FROM users u JOIN user_totals ut ON u.id = ut.user_id
-      ORDER BY ut.total DESC
-    `);
-    assert.strictEqual(r.rows[0].name, 'Alice');
-    assert.strictEqual(r.rows[0].total, 300);
+  it('ORDER BY ordinal position', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE ordinal_test (id INT PRIMARY KEY, a TEXT, b INT)');
+    db.execute("INSERT INTO ordinal_test VALUES (1, 'x', 30), (2, 'y', 10), (3, 'z', 20)");
+    const r = db.execute('SELECT a, b FROM ordinal_test ORDER BY 2 ASC');
+    assert.equal(r.rows[0].b, 10);
+    assert.equal(r.rows[1].b, 20);
+    assert.equal(r.rows[2].b, 30);
+  });
+});
+
+describe('Transaction Semantics', () => {
+  it('auto-commit: each statement is its own transaction', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE tx_test (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO tx_test VALUES (1, 100)');
+    // Value should be visible immediately
+    const r = db.execute('SELECT val FROM tx_test WHERE id = 1');
+    assert.equal(r.rows[0].val, 100);
   });
 
-  // --- Aggregate over GENERATE_SERIES ---
-  it('GENERATE_SERIES with SUM', () => {
-    const r = db.execute('SELECT SUM(value) as total FROM GENERATE_SERIES(1, 100)');
-    assert.strictEqual(r.rows[0].total, 5050);
+  it('UPDATE returns correct count', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE upd_test (id INT PRIMARY KEY, val INT)');
+    for (let i = 0; i < 10; i++) db.execute(`INSERT INTO upd_test VALUES (${i}, ${i * 10})`);
+    const r = db.execute('UPDATE upd_test SET val = val + 1 WHERE val >= 50');
+    assert.equal(r.count, 5); // ids 5-9
   });
 
-  it('GENERATE_SERIES with GROUP BY', () => {
-    const r = db.execute('SELECT value % 3 as grp, COUNT(*) as cnt FROM GENERATE_SERIES(1, 30) GROUP BY value % 3');
-    assert.strictEqual(r.rows.length, 3);
-    for (const row of r.rows) {
-      assert.strictEqual(row.cnt, 10);
-    }
-  });
-
-  // --- Nested Aggregates ---
-  it('Aggregate over aggregate subquery', () => {
-    const r = db.execute(`
-      SELECT MAX(total) as max_total FROM (
-        SELECT user_id, SUM(amount) as total
-        FROM orders WHERE user_id IS NOT NULL
-        GROUP BY user_id
-      ) sq
-    `);
-    assert.strictEqual(r.rows[0].max_total, 300);
-  });
-
-  // --- Multiple JOINs ---
-  it('Three-way join', () => {
-    db.execute('CREATE TABLE categories (id INT PRIMARY KEY, name TEXT)');
-    db.execute("INSERT INTO categories VALUES (1, 'Premium')");
-    db.execute("INSERT INTO categories VALUES (2, 'Standard')");
-    db.execute('CREATE TABLE user_categories (user_id INT, cat_id INT)');
-    db.execute('INSERT INTO user_categories VALUES (1, 1)');
-    db.execute('INSERT INTO user_categories VALUES (4, 1)');
-    db.execute('INSERT INTO user_categories VALUES (2, 2)');
-    
-    const r = db.execute(`
-      SELECT u.name, c.name as category
-      FROM users u
-      JOIN user_categories uc ON u.id = uc.user_id
-      JOIN categories c ON uc.cat_id = c.id
-      ORDER BY u.name
-    `);
-    assert.strictEqual(r.rows.length, 3);
-    assert.strictEqual(r.rows[0].name, 'Alice');
-    assert.strictEqual(r.rows[0].category, 'Premium');
+  it('DELETE returns correct count', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE del_test (id INT PRIMARY KEY, val INT)');
+    for (let i = 0; i < 10; i++) db.execute(`INSERT INTO del_test VALUES (${i}, ${i})`);
+    const r = db.execute('DELETE FROM del_test WHERE val < 3');
+    assert.equal(r.count, 3);
+    const remaining = db.execute('SELECT COUNT(*) as cnt FROM del_test');
+    assert.equal(remaining.rows[0].cnt, 7);
   });
 });

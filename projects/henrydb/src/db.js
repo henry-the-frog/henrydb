@@ -7603,10 +7603,33 @@ export class Database {
   _evalExpr(expr, row) {
     if (!expr) return true;
     switch (expr.type) {
-      case 'literal': return !!expr.value; // NULL/0/false → false, others → true
-      case 'AND': return this._evalExpr(expr.left, row) && this._evalExpr(expr.right, row);
-      case 'OR': return this._evalExpr(expr.left, row) || this._evalExpr(expr.right, row);
-      case 'NOT': return !this._evalExpr(expr.expr, row);
+      case 'literal': {
+        if (expr.value == null) return null; // Preserve NULL for three-valued logic
+        return !!expr.value; // 0/false → false, others → true
+      }
+      case 'AND': {
+        const left = this._evalExpr(expr.left, row);
+        const right = this._evalExpr(expr.right, row);
+        // Three-valued logic: NULL AND false = false, NULL AND true = NULL
+        if (left === false || left === 0) return false;
+        if (right === false || right === 0) return false;
+        if (left == null || right == null) return null;
+        return left && right;
+      }
+      case 'OR': {
+        const left = this._evalExpr(expr.left, row);
+        const right = this._evalExpr(expr.right, row);
+        // Three-valued logic: NULL OR true = true, NULL OR false = NULL
+        if (left === true || left === 1) return true;
+        if (right === true || right === 1) return true;
+        if (left == null || right == null) return null;
+        return left || right;
+      }
+      case 'NOT': {
+        const val = this._evalExpr(expr.expr, row);
+        if (val == null) return null;
+        return !val;
+      }
       case 'MATCH_AGAINST': {
         // Find the fulltext index for this column
         const searchText = this._evalValue(expr.search, row);
@@ -7649,7 +7672,14 @@ export class Database {
       }
       case 'IN_LIST': {
         const leftVal = this._evalValue(expr.left, row);
-        return expr.values.some(v => this._evalValue(v, row) === leftVal);
+        if (leftVal == null) return null; // NULL IN (...) is NULL
+        let hasNull = false;
+        for (const v of expr.values) {
+          const rightVal = this._evalValue(v, row);
+          if (rightVal == null) { hasNull = true; continue; }
+          if (rightVal === leftVal) return true;
+        }
+        return hasNull ? null : false; // If no match but NULLs present, result is NULL
       }
       case 'IS_NULL': {
         const val = this._evalValue(expr.left, row);
@@ -7794,7 +7824,9 @@ export class Database {
         node.type === 'IS_DISTINCT_FROM' || node.type === 'IS_NOT_DISTINCT_FROM' ||
         node.type === 'AND' || node.type === 'OR' || node.type === 'NOT' ||
         node.type === 'EXISTS') {
-      return this._evalExpr(node, row) ? true : false;
+      const result = this._evalExpr(node, row);
+      if (result == null) return null;
+      return result ? true : false;
     }
     if (node.type === 'MATCH_AGAINST') {
       // Return relevance score

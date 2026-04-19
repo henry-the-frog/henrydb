@@ -862,6 +862,14 @@ export function parse(sql) {
       return { type: 'expression', expr: castNode, alias };
     }
 
+    // Check for EXISTS / NOT EXISTS / NOT expression in SELECT
+    if (isKeyword('EXISTS') || (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && (tokens[pos + 1]?.value === 'EXISTS' || tokens[pos + 1]?.value === 'NULL' || tokens[pos + 1]?.value === 'TRUE' || tokens[pos + 1]?.value === 'FALSE'))) {
+      const expr = parseExpr();
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr, alias };
+    }
+
     // Check for scalar subquery: (SELECT ...)
     if (peek().type === '(' && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'SELECT') {
       advance(); // (
