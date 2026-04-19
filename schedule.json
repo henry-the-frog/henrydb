@@ -296,15 +296,51 @@
     {
       "id": "T25",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit + push + broader test sweep",
-      "started": "2026-04-19T14:55:58.667Z"
+      "started": "2026-04-19T14:55:58.667Z",
+      "completed": "2026-04-19T14:56:13.740Z",
+      "duration_ms": 30000,
+      "summary": "Both repos pushed. Daily log updated."
     },
     {
       "id": "T26",
       "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 10 BUILDs done, assess learning",
+      "started": "2026-04-19T14:56:21.959Z",
+      "completed": "2026-04-19T14:56:38.696Z",
+      "duration_ms": 60000,
+      "summary": "Depth check: 3/3 criteria met. 6 real bugs, multiple insights (var hoisting pattern, parser duality, aggregate list divergence, batch WAL vs index cost). Systemic: parser needs unified expression entry point."
+    },
+    {
+      "id": "T30",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB stress test: find bugs at feature intersection boundaries",
+      "started": "2026-04-19T14:57:16.332Z",
+      "completed": "2026-04-19T14:59:04.935Z",
+      "duration_ms": 180000,
+      "summary": "Stress testing found 2 bugs: (1) Window functions in CASE - _exprContainsWindow/_extractWindowNodes didnt handle case_expr type. Fixed. (2) Nested aggregates SUM(COUNT(*)) silently returns null instead of erroring - noted for later."
+    },
+    {
+      "id": "T31",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Depth check: 10 BUILDs done, assess learning"
+      "goal": "Design stress test suite for parser edge cases and feature interactions",
+      "task": null
+    },
+    {
+      "id": "T32",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push + update TODO with completed items"
+    },
+    {
+      "id": "T33",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Session wrapup: evening summary, MEMORY.md update"
     }
   ],
   "focusProjects": [
@@ -420,6 +456,22 @@
     {
       "time": "2026-04-19T14:51:02.114Z",
       "msg": "PLAN T24 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T14:56:51.752Z",
+      "msg": "Added T30 (THINK) after end: HenryDB stress test: find bugs at feature intersection boundaries"
+    },
+    {
+      "time": "2026-04-19T14:56:51.870Z",
+      "msg": "Added T31 (PLAN) after end: Design stress test suite for parser edge cases and feature interactions"
+    },
+    {
+      "time": "2026-04-19T14:56:58.370Z",
+      "msg": "Added T32 (MAINTAIN) after end: Git push + update TODO with completed items"
+    },
+    {
+      "time": "2026-04-19T14:57:08.709Z",
+      "msg": "Added T33 (THINK) after end: Session wrapup: evening summary, MEMORY.md update"
     }
   ]
 }

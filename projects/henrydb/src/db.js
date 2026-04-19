@@ -6242,7 +6242,14 @@ export class Database {
     if (node.type === 'unary_minus') return this._exprContainsWindow(node.operand);
     if (node.type === 'function_call' && node.args) return node.args.some(a => this._exprContainsWindow(a));
     if (node.type === 'cast') return this._exprContainsWindow(node.expr);
-    if (node.type === 'case' && node.whens) return node.whens.some(w => this._exprContainsWindow(w.then) || this._exprContainsWindow(w.when)) || this._exprContainsWindow(node.else);
+    if (node.type === 'case' || node.type === 'case_expr') {
+      if (node.whens) {
+        const found = node.whens.some(w => 
+          this._exprContainsWindow(w.then || w.result) || this._exprContainsWindow(w.when || w.condition));
+        if (found) return true;
+      }
+      return this._exprContainsWindow(node.else || node.elseResult);
+    }
     return false;
   }
 
@@ -6260,6 +6267,15 @@ export class Database {
     if (node.type === 'unary_minus') this._extractWindowNodes(node.operand, results, prefix);
     if (node.type === 'function_call' && node.args) node.args.forEach(a => this._extractWindowNodes(a, results, prefix));
     if (node.type === 'cast') this._extractWindowNodes(node.expr, results, prefix);
+    if (node.type === 'case' || node.type === 'case_expr') {
+      if (node.whens) {
+        node.whens.forEach(w => {
+          this._extractWindowNodes(w.then || w.result, results, prefix);
+          this._extractWindowNodes(w.when || w.condition, results, prefix);
+        });
+      }
+      this._extractWindowNodes(node.else || node.elseResult, results, prefix);
+    }
     return results;
   }
 

@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-19T14:55:58.702Z",
+  "generated": "2026-04-19T14:59:04.971Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git commit + push + broader test sweep",
-    "startedAt": "2026-04-19T14:55:58.702Z",
-    "taskId": "T25"
+    "status": "done",
+    "mode": "THINK",
+    "task": "HenryDB stress test: find bugs at feature intersection boundaries",
+    "completedAt": "2026-04-19T14:59:04.971Z",
+    "taskId": "T30",
+    "summary": "Stress testing found 2 bugs: (1) Window functions in CASE - _exprContainsWindow/_extractWindowNodes didnt handle case_expr type. Fixed. (2) Nested aggregates SUM(COUNT(*)) silently returns null instead of erroring - noted for later.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-19",
@@ -4968,13 +4970,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 27,
+    "blocksCompleted": 30,
     "blocksTotal": 29,
     "modeDistribution": {
-      "THINK": 5,
+      "THINK": 7,
       "PLAN": 5,
       "BUILD": 11,
-      "MAINTAIN": 4,
+      "MAINTAIN": 5,
       "EXPLORE": 2
     }
   },
