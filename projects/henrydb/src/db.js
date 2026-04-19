@@ -3015,14 +3015,19 @@ export class Database {
         });
       }
 
-      // Apply WHERE
-      if (ast.where) {
+      // Apply WHERE — only if no JOINs, otherwise apply after JOINs
+      if (ast.where && (!ast.joins || ast.joins.length === 0)) {
         rows = rows.filter(row => this._evalExpr(ast.where, row));
       }
 
       // Handle JOINs on view results
       for (const join of ast.joins || []) {
         rows = this._executeJoin(rows, join, viewAlias || tableName);
+      }
+
+      // Apply WHERE after JOINs (when JOINs exist)
+      if (ast.where && ast.joins && ast.joins.length > 0) {
+        rows = rows.filter(row => this._evalExpr(ast.where, row));
       }
 
       // Handle aggregates / GROUP BY on view results
