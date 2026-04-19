@@ -421,9 +421,19 @@
     {
       "id": "T41",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Deep investigation: CAST(SUM)/COUNT in GROUP BY broken",
-      "started": "2026-04-19T15:14:50.861Z"
+      "started": "2026-04-19T15:14:50.861Z",
+      "completed": "2026-04-19T15:17:01.488Z",
+      "duration_ms": 240000,
+      "summary": "Fixed CAST(SUM)/COUNT in GROUP BY: parser missing trailing arithmetic after CAST + _evalGroupExpr missing cast handler. 128 tests pass."
+    },
+    {
+      "id": "T42",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "More stress testing: edge cases with HAVING, lateral joins, complex subqueries",
+      "started": "2026-04-19T15:17:25.217Z"
     },
     {
       "id": "T33",
@@ -601,6 +611,14 @@
     {
       "time": "2026-04-19T15:14:45.146Z",
       "msg": "Moved T33 after T41"
+    },
+    {
+      "time": "2026-04-19T15:17:19.079Z",
+      "msg": "Added T42 (THINK) after end: More stress testing: edge cases with HAVING, lateral joins, complex subqueries"
+    },
+    {
+      "time": "2026-04-19T15:17:19.196Z",
+      "msg": "Moved T33 after T42"
     }
   ]
 }

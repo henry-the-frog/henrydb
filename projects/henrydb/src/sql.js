@@ -937,8 +937,8 @@ export function parse(sql) {
       if (isKeyword('SEPARATOR')) {
         advance();
         separator = advance().value; // STRING literal
-      } else if (func === 'STRING_AGG' && peek().type === ',') {
-        // PostgreSQL STRING_AGG(expr, delimiter) syntax
+      } else if ((func === 'STRING_AGG' || func === 'GROUP_CONCAT') && peek().type === ',') {
+        // PostgreSQL STRING_AGG(expr, delimiter) / GROUP_CONCAT(expr, delimiter) syntax
         advance(); // skip comma
         separator = advance().value; // STRING literal
       }
