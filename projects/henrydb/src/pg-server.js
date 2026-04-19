@@ -1742,3 +1742,4 @@ if (process.argv[1]?.endsWith('pg-server.js')) {
     process.exit(0);
   });
 }
+export function getQueryCount() { return _queryLog.length; }
