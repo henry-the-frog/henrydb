@@ -16,7 +16,7 @@ import { ConsistentHashRing } from './consistent-hash.js';
 import { BufferPool } from './buffer-pool.js';
 import { LSMTree } from './lsm.js';
 import { RaftCluster } from './raft.js';
-import { LockManager, LockMode } from './lock-manager.js';
+import { LockManager, MODES as LockMode } from './lock-manager.js';
 import { UnionFind, SortedSet } from './union-find.js';
 import { DAG, WorkerPool } from './scheduler.js';
 import { TDigest, SegmentTree } from './analytics.js';
@@ -150,10 +150,10 @@ describe('Data Structure Catalog', () => {
 
     it('Lock Manager: deadlock detection', () => {
       const lm = new LockManager();
-      lm.lock(1, 'r1', LockMode.EXCLUSIVE);
-      lm.lock(2, 'r2', LockMode.EXCLUSIVE);
+      lm.lock(1, 'r1', LockMode.X);
+      lm.lock(2, 'r2', LockMode.X);
       lm.unlock(1);
-      assert.equal(lm.lock(2, 'r1', LockMode.EXCLUSIVE), true);
+      assert.equal(lm.lock(2, 'r1', LockMode.X), true);
     });
   });
 
