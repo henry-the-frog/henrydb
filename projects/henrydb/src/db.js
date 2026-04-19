@@ -7992,6 +7992,48 @@ export class Database {
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
       case 'INITCAP': { const v = this._evalValue(args[0], row); return v != null ? String(v).replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()) : null; }
+      case 'SPLIT_PART': {
+        const str = this._evalValue(args[0], row);
+        const delim = this._evalValue(args[1], row);
+        const field = this._evalValue(args[2], row);
+        if (str == null || delim == null || field == null) return null;
+        const parts = String(str).split(String(delim));
+        const idx = Number(field) - 1; // 1-indexed
+        return idx >= 0 && idx < parts.length ? parts[idx] : '';
+      }
+      case 'OVERLAY': {
+        // OVERLAY(string PLACING replacement FROM start FOR length)
+        const str = String(this._evalValue(args[0], row) ?? '');
+        const replacement = String(this._evalValue(args[1], row) ?? '');
+        const start = Number(this._evalValue(args[2], row)) - 1; // 1-indexed
+        const len = args.length > 3 ? Number(this._evalValue(args[3], row)) : replacement.length;
+        return str.substring(0, start) + replacement + str.substring(start + len);
+      }
+      case 'TRANSLATE': {
+        const str = String(this._evalValue(args[0], row) ?? '');
+        const from = String(this._evalValue(args[1], row) ?? '');
+        const to = String(this._evalValue(args[2], row) ?? '');
+        let result = '';
+        for (const ch of str) {
+          const idx = from.indexOf(ch);
+          if (idx >= 0) { if (idx < to.length) result += to[idx]; }
+          else result += ch;
+        }
+        return result;
+      }
+      case 'CHR': return String.fromCharCode(Number(this._evalValue(args[0], row)));
+      case 'ASCII': { const v = this._evalValue(args[0], row); return v != null ? String(v).charCodeAt(0) : null; }
+      case 'MD5': {
+        const v = this._evalValue(args[0], row);
+        if (v == null) return null;
+        // Simple hash (not cryptographic, just for compatibility)
+        let hash = 0;
+        const str = String(v);
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+        }
+        return Math.abs(hash).toString(16).padStart(8, '0');
+      }
       case 'LENGTH': case 'CHAR_LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
       case 'POSITION': {
         const substr = String(this._evalValue(args[0], row));
