@@ -2794,6 +2794,11 @@ export class Database {
       }
     }
     
+    // Apply pushed-down filter if present
+    if (join.filter) {
+      return result.filter(row => this._evalExpr(join.filter, row));
+    }
+    
     return result;
   }
 
