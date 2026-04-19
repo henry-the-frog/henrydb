@@ -2398,12 +2398,25 @@ export function parse(sql) {
       const colName = tok.originalValue || tok.value;
       const colType = advance().value;
       let defaultVal = null;
-      if (isKeyword('DEFAULT')) {
-        advance();
-        const defExpr = parseExpr();
-        defaultVal = defExpr.type === 'literal' ? defExpr.value : defExpr;
+      let notNull = false;
+      // Parse column constraints: NOT NULL, DEFAULT, UNIQUE, PRIMARY KEY
+      while (pos < tokens.length) {
+        if (isKeyword('NOT') && tokens[pos + 1]?.value === 'NULL') {
+          advance(); advance(); notNull = true;
+        } else if (isKeyword('NULL')) {
+          advance(); // explicit NULL (nullable)
+        } else if (isKeyword('DEFAULT')) {
+          advance();
+          const defExpr = parseExpr();
+          defaultVal = defExpr.type === 'literal' ? defExpr.value : defExpr;
+        } else if (isKeyword('UNIQUE') || isKeyword('PRIMARY')) {
+          advance(); // skip constraint keywords
+          if (isKeyword('KEY')) advance();
+        } else {
+          break;
+        }
       }
-      return { type: 'ALTER_TABLE', table, action: 'ADD_COLUMN', column: colName, dataType: colType, defaultValue: defaultVal };
+      return { type: 'ALTER_TABLE', table, action: 'ADD_COLUMN', column: colName, dataType: colType, defaultValue: defaultVal, notNull };
     }
     
     if (isKeyword('DROP')) {
@@ -2896,11 +2909,24 @@ export function parse(sql) {
       const name = advance().value;
       const dataType = advance().value;
       let defaultValue = null;
-      if (isKeyword('DEFAULT')) {
-        advance();
-        defaultValue = parseExpr();
+      let notNull = false;
+      // Parse column constraints: NOT NULL, DEFAULT, UNIQUE, PRIMARY KEY
+      while (pos < tokens.length) {
+        if (isKeyword('NOT') && tokens[pos + 1]?.value === 'NULL') {
+          advance(); advance(); notNull = true;
+        } else if (isKeyword('NULL')) {
+          advance();
+        } else if (isKeyword('DEFAULT')) {
+          advance();
+          defaultValue = parseExpr();
+        } else if (isKeyword('UNIQUE') || isKeyword('PRIMARY')) {
+          advance();
+          if (isKeyword('KEY')) advance();
+        } else {
+          break;
+        }
       }
-      return { type: 'ALTER_TABLE', table, action: 'ADD_COLUMN', column: { name, type: dataType, default: defaultValue } };
+      return { type: 'ALTER_TABLE', table, action: 'ADD_COLUMN', column: { name, type: dataType, default: defaultValue, notNull } };
     }
 
     if (isKeyword('DROP')) {

@@ -264,16 +264,20 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "Fix INSERT SELECT column mapping: use positional mapping when explicit columns provided",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T24",
-      "started": "2026-04-19T14:51:13.435Z"
+      "started": "2026-04-19T14:51:13.435Z",
+      "completed": "2026-04-19T14:52:08.029Z",
+      "duration_ms": 180000,
+      "summary": "Fixed INSERT SELECT column mapping to use positional instead of name-based lookup. Works for matching names, reordered columns, and partial column lists with defaults."
     },
     {
       "id": "T28",
       "mode": "BUILD",
       "task": "Fix ALTER TABLE ADD COLUMN NOT NULL DEFAULT to backfill existing rows",
-      "status": "upcoming",
-      "plan_ref": "T24"
+      "status": "in-progress",
+      "plan_ref": "T24",
+      "started": "2026-04-19T14:52:15.808Z"
     },
     {
       "id": "T29",
