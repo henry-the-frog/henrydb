@@ -650,6 +650,18 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
   // Connection-scoped cursor state
   const cursors = new Map(); // name → { rows, columns, pos }
   const tempTables = new Set(); // names of temp tables created by this connection
+  const connectionParams = new Map([
+    ['server_version', '15.0'],
+    ['server_encoding', 'UTF8'],
+    ['client_encoding', 'UTF8'],
+    ['DateStyle', 'ISO, MDY'],
+    ['work_mem', '4MB'],
+    ['statement_timeout', '0'],
+    ['search_path', '"$user", public'],
+    ['TimeZone', 'UTC'],
+    ['integer_datetimes', 'on'],
+    ['standard_conforming_strings', 'on'],
+  ]);
 
   function executeWithIntercept(sql) {
     // Track query for pg_stat_activity
@@ -659,6 +671,38 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       connInfo.queryCount = (connInfo.queryCount || 0) + 1;
       connInfo.state = 'active';
     }
+    // SHOW ALL
+    if (/^SHOW\s+ALL\s*$/i.test(sql.trim())) {
+      const rows = [];
+      for (const [name, value] of connectionParams) {
+        rows.push({ name, setting: value, description: '' });
+      }
+      return { type: 'ROWS', rows };
+    }
+    
+    // SHOW parameter
+    const showMatch = sql.match(/^SHOW\s+(\w+)\s*$/i);
+    if (showMatch) {
+      const param = showMatch[1].toLowerCase();
+      const value = connectionParams.get(param) || connectionParams.get(showMatch[1]) || '';
+      return { type: 'ROWS', rows: [{ [param]: value }], columns: [{ name: param, type: 'TEXT' }] };
+    }
+    
+    // RESET parameter
+    const resetMatch = sql.match(/^RESET\s+(ALL|\w+)\s*$/i);
+    if (resetMatch) {
+      return { type: 'COMMAND', command: 'RESET' };
+    }
+    
+    // SET parameter (connection-scoped)
+    const setMatch = sql.match(/^SET\s+(\w+)\s*(?:=|TO)\s*['"]?(.+?)['"]?\s*$/i);
+    if (setMatch) {
+      const param = setMatch[1].toLowerCase();
+      const value = setMatch[2].trim();
+      connectionParams.set(param, value);
+      return { type: 'COMMAND', command: 'SET' };
+    }
+    
     // Advisory lock functions
     const advisoryMatch = sql.match(/SELECT\s+pg_(advisory_lock|advisory_unlock|try_advisory_lock)\s*\(\s*(\d+)\s*\)/i);
     if (advisoryMatch) {
