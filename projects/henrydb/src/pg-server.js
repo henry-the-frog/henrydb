@@ -576,6 +576,9 @@ function handleConnection(socket, db, connId = 0) {
   let buffer = Buffer.alloc(0);
   let startupDone = false;
 
+  // Connection-scoped cursor state
+  const cursors = new Map(); // name → { rows, columns, pos }
+
   function executeWithIntercept(sql) {
     // Advisory lock functions
     const advisoryMatch = sql.match(/SELECT\s+pg_(advisory_lock|advisory_unlock|try_advisory_lock)\s*\(\s*(\d+)\s*\)/i);
@@ -594,6 +597,69 @@ function handleConnection(socket, db, connId = 0) {
         const success = _advisoryLocks.unlock(connId, key);
         return { type: 'ROWS', rows: [{ [colName]: success ? 't' : 'f' }], columns: [{ name: colName, type: 'TEXT' }] };
       }
+    }
+    
+    // DECLARE cursor
+    const declareMatch = sql.match(/DECLARE\s+(\w+)\s+CURSOR\s+FOR\s+(.*)/is);
+    if (declareMatch) {
+      const name = declareMatch[1].toLowerCase();
+      const query = declareMatch[2].trim();
+      const result = db.execute(query);
+      const columns = result.rows?.length > 0 ? Object.keys(result.rows[0]) : [];
+      cursors.set(name, { 
+        rows: result.rows || [], 
+        columns: columns,
+        pos: 0 
+      });
+      return { type: 'COMMAND', command: 'DECLARE CURSOR' };
+    }
+    
+    // FETCH [ALL|NEXT|FORWARD N|N] FROM cursor
+    const fetchMatch = sql.match(/FETCH\s+(ALL|NEXT|FORWARD\s+(\d+)|(\d+))\s+FROM\s+(\w+)/i);
+    if (fetchMatch) {
+      const cursorName = fetchMatch[4].toLowerCase();
+      const cursor = cursors.get(cursorName);
+      if (!cursor) throw new Error(`Cursor "${cursorName}" not found`);
+      
+      let count;
+      if (fetchMatch[1].toUpperCase() === 'ALL') {
+        count = cursor.rows.length - cursor.pos;
+      } else if (fetchMatch[1].toUpperCase() === 'NEXT') {
+        count = 1;
+      } else if (fetchMatch[2]) {
+        count = parseInt(fetchMatch[2], 10); // FORWARD N
+      } else {
+        count = parseInt(fetchMatch[3], 10); // bare N
+      }
+      
+      const rows = cursor.rows.slice(cursor.pos, cursor.pos + count);
+      cursor.pos += count;
+      return { type: 'ROWS', rows };
+    }
+    
+    // MOVE N FROM cursor
+    const moveMatch = sql.match(/MOVE\s+(\d+)\s+FROM\s+(\w+)/i);
+    if (moveMatch) {
+      const count = parseInt(moveMatch[1], 10);
+      const cursorName = moveMatch[2].toLowerCase();
+      const cursor = cursors.get(cursorName);
+      if (!cursor) throw new Error(`Cursor "${cursorName}" not found`);
+      cursor.pos += count;
+      return { type: 'COMMAND', command: `MOVE ${count}` };
+    }
+    
+    // CLOSE ALL
+    if (/^CLOSE\s+ALL\s*$/i.test(sql.trim())) {
+      cursors.clear();
+      return { type: 'COMMAND', command: 'CLOSE ALL' };
+    }
+    
+    // CLOSE cursor
+    const closeMatch = sql.match(/^CLOSE\s+(\w+)\s*$/i);
+    if (closeMatch) {
+      const cursorName = closeMatch[1].toLowerCase();
+      cursors.delete(cursorName);
+      return { type: 'COMMAND', command: 'CLOSE CURSOR' };
     }
     
     const intercepted = interceptPgCatalog(sql, db);
