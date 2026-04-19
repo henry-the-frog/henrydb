@@ -805,6 +805,25 @@
       "summary": "Neural-net: 75 source files, 20K lines. Full ML library with transformers, GANs, VAEs, RL, meta-learning, and more. 282/282 tests pass after fixes. Project is fully green!"
     },
     {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Continue expr-walker migration: simplify _evalGroupExpr and _evalAggregateExpr",
+      "project": "henrydb",
+      "started": "2026-04-19T16:20:07.233Z",
+      "completed": "2026-04-19T16:20:21.495Z",
+      "duration_ms": 30000,
+      "summary": "SKIP: _evalGroupExpr and _evalAggregateExpr are evaluators, not walkers. They need a different pattern (interpreter/fold). The expr-walker covers detection/collection use cases. The evaluator functions should stay as-is."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write real-world SQL scenario test: sales analytics dashboard queries",
+      "project": "henrydb",
+      "started": "2026-04-19T16:20:36.868Z"
+    },
+    {
       "id": "T33",
       "mode": "THINK",
       "status": "upcoming",
@@ -1180,6 +1199,22 @@
     {
       "time": "2026-04-19T16:16:55.661Z",
       "msg": "Moved T33 after T76"
+    },
+    {
+      "time": "2026-04-19T16:20:06.884Z",
+      "msg": "Added T77 (BUILD) after end: Continue expr-walker migration: simplify _evalGroupExpr and _evalAggregateExpr"
+    },
+    {
+      "time": "2026-04-19T16:20:07.002Z",
+      "msg": "Moved T33 after T77"
+    },
+    {
+      "time": "2026-04-19T16:20:36.519Z",
+      "msg": "Added T78 (BUILD) after end: Write real-world SQL scenario test: sales analytics dashboard queries"
+    },
+    {
+      "time": "2026-04-19T16:20:36.636Z",
+      "msg": "Moved T33 after T78"
     }
   ]
 }
