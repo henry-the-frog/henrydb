@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-19T00:22:29.047Z",
+  "generated": "2026-04-19T00:47:53.509Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "HenryDB: final regression sweep, git push, update workspace",
-    "startedAt": "2026-04-19T00:22:29.047Z",
-    "taskId": "T290"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "HenryDB: implement ILIKE (case-insensitive LIKE) and fix LIKE pattern matching",
+    "completedAt": "2026-04-19T00:47:53.509Z",
+    "taskId": "T293",
+    "summary": "ILIKE already implemented. Fixed string.test to use ILIKE for case-insensitive matching (LIKE is case-sensitive per SQL standard). 21/21 string tests, 15/15 window-advanced pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-18",
@@ -3161,13 +3163,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 285,
+    "blocksCompleted": 288,
     "blocksTotal": 285,
     "modeDistribution": {
       "THINK": 45,
       "PLAN": 27,
-      "BUILD": 144,
-      "MAINTAIN": 56,
+      "BUILD": 146,
+      "MAINTAIN": 57,
       "EXPLORE": 13
     }
   },
