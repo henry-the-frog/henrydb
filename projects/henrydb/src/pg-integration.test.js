@@ -77,10 +77,10 @@ describe('PG Wire Integration', () => {
     await client.query('CREATE TABLE nums (val INT)');
     await client.query('INSERT INTO nums VALUES (10), (20), (30), (40), (50)');
     const r = await client.query('SELECT COUNT(*) as cnt, SUM(val) as total, AVG(val) as avg, MIN(val) as lo, MAX(val) as hi FROM nums');
-    assert.equal(r.rows[0].cnt, '5');
-    assert.equal(r.rows[0].total, '150');
-    assert.equal(r.rows[0].lo, '10');
-    assert.equal(r.rows[0].hi, '50');
+    assert.equal(r.rows[0].cnt, 5);
+    assert.equal(r.rows[0].total, 150);
+    assert.equal(r.rows[0].lo, 10);
+    assert.equal(r.rows[0].hi, 50);
     await client.end();
   });
 
@@ -101,7 +101,7 @@ describe('PG Wire Integration', () => {
     await client.query('CREATE TABLE emp (name TEXT, salary INT)');
     await client.query("INSERT INTO emp VALUES ('Alice', 100), ('Bob', 90), ('Carol', 100), ('Dave', 80)");
     const r = await client.query('SELECT name, RANK() OVER (ORDER BY salary DESC) as rnk FROM emp ORDER BY rnk, name');
-    assert.equal(r.rows[0].rnk, '1'); // Alice or Carol (tied at 100)
+    assert.equal(r.rows[0].rnk, 1); // Alice or Carol (tied at 100)
     await client.end();
   });
 
@@ -112,7 +112,7 @@ describe('PG Wire Integration', () => {
     await client.query('INSERT INTO t VALUES (1, 10), (2, 20), (3, 30)');
     const r = await client.query('SELECT * FROM t WHERE val > (SELECT AVG(val) FROM t) ORDER BY id');
     assert.equal(r.rows.length, 1); // Only id=3 (30 > 20)
-    assert.equal(r.rows[0].id, '3');
+    assert.equal(r.rows[0].id, 3);
     await client.end();
   });
 
@@ -147,7 +147,7 @@ describe('PG Wire Integration', () => {
     await client.connect();
     await client.query("CREATE FUNCTION double(x INT) RETURNS INT AS $$ SELECT x * 2 $$");
     const r = await client.query('SELECT double(21) as result');
-    assert.equal(r.rows[0].result, '42');
+    assert.equal(r.rows[0].result, 42);
     await client.end();
   });
 
@@ -214,7 +214,7 @@ describe('PG Wire Integration', () => {
     const r1 = await client.query('SELECT UPPER(val) as u FROM t');
     assert.equal(r1.rows[0].u, 'HELLO WORLD');
     const r2 = await client.query('SELECT LENGTH(val) as len FROM t');
-    assert.equal(r2.rows[0].len, '11');
+    assert.equal(r2.rows[0].len, 11);
     await client.end();
   });
 });

@@ -47,7 +47,7 @@ describe('PG Client Compatibility', () => {
     
     const r = await client.query('SELECT 1+1 as result');
     assert.equal(r.rows.length, 1);
-    assert.equal(r.rows[0].result, '2');
+    assert.equal(r.rows[0].result, 2);
     
     await client.end();
   });
@@ -108,7 +108,7 @@ describe('PG Client Compatibility', () => {
     
     await client.query('DELETE FROM t WHERE id = $1', [2]);
     const r2 = await client.query('SELECT COUNT(*) as cnt FROM t');
-    assert.equal(r2.rows[0].cnt, '2');
+    assert.equal(r2.rows[0].cnt, 2);
     
     await client.end();
   });
@@ -153,7 +153,7 @@ describe('PG Client Compatibility', () => {
     ]);
     
     const r = await pool.query('SELECT COUNT(*) as cnt FROM nums');
-    assert.equal(r.rows[0].cnt, '5');
+    assert.equal(r.rows[0].cnt, 5);
     
     await pool.end();
   });
@@ -192,7 +192,7 @@ describe('PG Client Compatibility', () => {
     
     // Connection should still work after error
     const r = await client.query('SELECT 1 as alive');
-    assert.equal(r.rows[0].alive, '1');
+    assert.equal(r.rows[0].alive, 1);
     
     await client.end();
   });
@@ -208,7 +208,7 @@ describe('PG Client Compatibility', () => {
     }
     
     const r = await client.query('SELECT COUNT(*) as cnt FROM t');
-    assert.equal(r.rows[0].cnt, '10');
+    assert.equal(r.rows[0].cnt, 10);
     
     // Query with different parameter types
     const r2 = await client.query('SELECT * FROM t WHERE name = $1', ['item_5']);
@@ -226,8 +226,8 @@ describe('PG Client Compatibility', () => {
     await client.query('INSERT INTO sales VALUES (10), (20), (30), (40), (50)');
     
     const r = await client.query('SELECT SUM(amount) as total, AVG(amount) as avg_amt, COUNT(*) as cnt FROM sales');
-    assert.equal(r.rows[0].total, '150');
-    assert.equal(r.rows[0].cnt, '5');
+    assert.equal(r.rows[0].total, 150);
+    assert.equal(r.rows[0].cnt, 5);
     
     await client.end();
   });

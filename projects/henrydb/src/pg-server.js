@@ -721,9 +721,10 @@ function interceptPgCatalog(sql, db) {
   if (upper.includes('INFORMATION_SCHEMA') && upper.includes('COLUMNS')) {
     const columns = [];
     const whereMatch = sql.match(/WHERE\s+table_name\s*=\s*'([^']+)'/i);
+    const hasOrClause = /\bOR\b/i.test(sql);
     if (db.tables) {
       for (const [tableName, table] of db.tables) {
-        if (whereMatch && tableName !== whereMatch[1]) continue;
+        if (whereMatch && !hasOrClause && tableName !== whereMatch[1]) continue;
         if (table.schema) {
           table.schema.forEach((col, i) => {
             columns.push({
@@ -766,7 +767,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
   const cursors = new Map(); // name → { rows, columns, pos }
   const tempTables = new Set(); // names of temp tables created by this connection
   const connectionParams = new Map([
-    ['server_version', '15.0'],
+    ['server_version', '15.0 (HenryDB)'],
     ['server_encoding', 'UTF8'],
     ['client_encoding', 'UTF8'],
     ['DateStyle', 'ISO, MDY'],
