@@ -237,7 +237,11 @@ export function parse(sql) {
     return { type: 'EXPLAIN', statement, analyze, compiled, format };
   }
 
-  // SELECT or WITH
+    // Window function keyword lists (shared between parseSelectColumn and parsePrimary)
+  var ZERO_ARG_WINDOW_FUNCS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'];
+  var ARG_WINDOW_FUNCS = ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'];
+
+// SELECT or WITH
   if (isKeyword('WITH')) return parseWith();
   if (isKeyword('SELECT')) return parseSelect();
   if (isKeyword('VALUES')) return parseValuesClause();
@@ -836,6 +840,7 @@ export function parse(sql) {
     return cols;
   }
 
+
   function parseSelectColumn() {
     // CURRENT_TIMESTAMP, CURRENT_DATE (no parens)
     if (peek().type === 'KEYWORD' && (peek().value === 'CURRENT_TIMESTAMP' || peek().value === 'CURRENT_DATE')) {
@@ -974,18 +979,11 @@ export function parse(sql) {
       if (isKeyword('OVER')) {
         const over = parseOverClause();
         let node = { type: 'window', func, arg, distinct, over };
-        // Check for trailing arithmetic: SUM(x) OVER (...) - val
-        if (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
-          while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
-            const opType = peek().type;
-            const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
-            advance();
-            const right = parsePrimary();
-            node = { type: 'arith', op, left: node, right };
-          }
+        const withArith = parseTrailingArithmetic(node);
+        if (withArith !== node) {
           let alias = null;
           if (isKeyword('AS')) { advance(); alias = readAlias(); }
-          return { type: 'expression', expr: node, alias };
+          return { type: 'expression', expr: withArith, alias };
         }
         let alias = null;
         if (isKeyword('AS')) { advance(); alias = readAlias(); }
@@ -1029,65 +1027,31 @@ export function parse(sql) {
     }
 
     // Window functions: ROW_NUMBER, RANK, DENSE_RANK, CUME_DIST, PERCENT_RANK
-    if (peek().type === 'KEYWORD' && ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'].includes(peek().value)) {
-      const func = advance().value;
-      expect('(');
-      expect(')');
-      const over = parseOverClause();
-      let node = { type: 'window', func, arg: null, over };
-      // Check for trailing arithmetic: ROW_NUMBER() OVER (...) * 10
-      if (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
-        while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
-          const opType = peek().type;
-          const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
-          advance();
-          const right = parsePrimary();
-          node = { type: 'arith', op, left: node, right };
-        }
+    if (peek().type === 'KEYWORD' && ZERO_ARG_WINDOW_FUNCS.includes(peek().value)) {
+      let node = parseWindowCall();
+      const withArith = parseTrailingArithmetic(node);
+      if (withArith !== node) {
         let alias = null;
         if (isKeyword('AS')) { advance(); alias = readAlias(); }
-        return { type: 'expression', expr: node, alias };
+        return { type: 'expression', expr: withArith, alias };
       }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'window', func, arg: null, over, alias };
+      return { ...node, alias };
     }
 
     // LAG/LEAD window functions with arguments
-    if (peek().type === 'KEYWORD' && ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE', 'NTILE', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE'].includes(peek().value)) {
-      const func = advance().value;
-      expect('(');
-      let arg = null;
-      let offset = 1;
-      let defaultValue = null;
-      if (!match(')')) {
-        arg = parseExpr();
-        if (match(',')) {
-          offset = parseExpr().value || 1;
-          if (match(',')) {
-            defaultValue = parseExpr().value ?? null;
-          }
-        }
-        expect(')');
-      }
-      const over = parseOverClause();
-      let node = { type: 'window', func, arg, offset, defaultValue, over };
-      // Check for trailing arithmetic: LAG(val) OVER (...) - val
-      if (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
-        while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
-          const opType = peek().type;
-          const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
-          advance();
-          const right = parsePrimary();
-          node = { type: 'arith', op, left: node, right };
-        }
+    if (peek().type === 'KEYWORD' && ARG_WINDOW_FUNCS.includes(peek().value)) {
+      let node = parseWindowCall();
+      const withArith = parseTrailingArithmetic(node);
+      if (withArith !== node) {
         let alias = null;
         if (isKeyword('AS')) { advance(); alias = readAlias(); }
-        return { type: 'expression', expr: node, alias };
+        return { type: 'expression', expr: withArith, alias };
       }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
-      return { type: 'window', func, arg, offset, defaultValue, over, alias };
+      return { ...node, alias };
     }
 
     // EXTRACT(field FROM expr)
@@ -1956,23 +1920,11 @@ export function parse(sql) {
     }
 
     // Window functions in expressions: ROW_NUMBER(), RANK(), DENSE_RANK(), LAG(), LEAD(), etc.
-    if (t.type === 'KEYWORD' && ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'].includes(t.value) && tokens[pos + 1]?.type === '(') {
-      const func = advance().value;
-      expect('(');
-      expect(')');
-      const over = parseOverClause();
-      return { type: 'window', func, arg: null, over };
+    if (t.type === 'KEYWORD' && ZERO_ARG_WINDOW_FUNCS.includes(t.value) && tokens[pos + 1]?.type === '(') {
+      return parseWindowCall();
     }
-    if (t.type === 'KEYWORD' && ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'].includes(t.value) && tokens[pos + 1]?.type === '(') {
-      const func = advance().value;
-      expect('(');
-      const arg = parseExpr();
-      let offset = null, defaultValue = null;
-      if (match(',')) { offset = parseExpr(); }
-      if (match(',')) { defaultValue = parseExpr(); }
-      expect(')');
-      const over = parseOverClause();
-      return { type: 'window', func, arg, offset, defaultValue, over };
+    if (t.type === 'KEYWORD' && ARG_WINDOW_FUNCS.includes(t.value) && tokens[pos + 1]?.type === '(') {
+      return parseWindowCall();
     }
     // Aggregate OVER (...) — window aggregate in expression context
     if (t.type === 'KEYWORD' && ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX'].includes(t.value) && tokens[pos + 1]?.type === '(') {
@@ -2132,6 +2084,43 @@ export function parse(sql) {
     const expr = parseExpr();
     if (expr.type === 'column_ref') return expr.name;
     return expr;
+  }
+
+  // Shared helper: parse a window function call (ROW_NUMBER, RANK, LAG, LEAD, etc.)
+  // Assumes we've already confirmed peek() is a window function keyword.
+  // Returns a {type:'window', func, arg, over, ...} node.
+  
+  function parseWindowCall() {
+    const func = advance().value;
+    expect('(');
+    let arg = null, offset = null, defaultValue = null;
+    if (ZERO_ARG_WINDOW_FUNCS.includes(func)) {
+      expect(')');
+    } else {
+      if (!match(')')) {
+        arg = parseExpr();
+        if (match(',')) { offset = parseExpr(); }
+        if (match(',')) { defaultValue = parseExpr(); }
+        expect(')');
+      }
+    }
+    const over = parseOverClause();
+    return { type: 'window', func, arg, offset, defaultValue, over };
+  }
+
+  // Shared helper: parse trailing arithmetic after a node (window func, aggregate, etc.)
+  // Returns null if no trailing arithmetic, otherwise wraps the node in arith expressions.
+  function parseTrailingArithmetic(node) {
+    if (!peek() || !['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) return node;
+    let result = node;
+    while (peek() && ['PLUS', 'MINUS', '*', 'SLASH', 'MOD'].includes(peek().type)) {
+      const opType = peek().type;
+      const op = opType === 'PLUS' ? '+' : opType === 'MINUS' ? '-' : opType === '*' ? '*' : opType === 'SLASH' ? '/' : '%';
+      advance();
+      const right = parsePrimary();
+      result = { type: 'arith', op, left: result, right };
+    }
+    return result;
   }
 
   function parseOverClause() {

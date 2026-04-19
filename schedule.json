@@ -102,57 +102,99 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit, push, test sweep",
-      "started": "2026-04-19T14:37:27.213Z"
+      "started": "2026-04-19T14:37:27.213Z",
+      "completed": "2026-04-19T14:37:43.022Z",
+      "duration_ms": 30000,
+      "summary": "Both repos pushed. HenryDB and workspace up to date."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection - depth check, learning assessment"
+      "status": "done",
+      "task": "Mid-day reflection - depth check, learning assessment",
+      "started": "2026-04-19T14:37:49.934Z",
+      "completed": "2026-04-19T14:38:03.048Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passes 3/3 (trailing arith bug, parseSelectColumn duality, batch WAL index-bound). Neural-net CI already fixed yesterday (1607/1607). Skip T10-T12, proceed to T13+ or function consolidation."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net CI fix - still failing on every push, diagnose root cause",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T14:38:19.466Z",
+      "completed": "2026-04-19T14:38:19.609Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: Neural-net CI already fixed yesterday (1607/1607)."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T10",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-19T14:38:25.219Z",
+      "completed": "2026-04-19T14:38:25.363Z",
+      "duration_ms": 1000,
+      "summary": "SKIP"
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit, push neural-net fix"
+      "status": "done",
+      "task": "Git commit, push neural-net fix",
+      "started": "2026-04-19T14:38:25.620Z",
+      "completed": "2026-04-19T14:38:25.764Z",
+      "duration_ms": 1000,
+      "summary": "SKIP"
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess project portfolio - 13 projects, priorities"
+      "status": "done",
+      "task": "Assess project portfolio - 13 projects, priorities",
+      "started": "2026-04-19T14:38:34.921Z",
+      "completed": "2026-04-19T14:38:57.296Z",
+      "duration_ms": 60000,
+      "summary": "13 projects: HenryDB deepest (795 tests, active bugs). Today depth on HenryDB is correct. Secondary: riscv/git/sat-solver for depth later."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB SQL function consolidation - deduplicate parsePrimary and parseSelectColumn",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T14:39:03.837Z",
+      "completed": "2026-04-19T14:39:35.535Z",
+      "duration_ms": 120000,
+      "summary": "Plan: extract parseWindowCall and parseAggregateCall shared helpers. Incremental dedup > big bang rewrite. 3 BUILD tasks."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Extract shared parseWindowCall helper (used by both parseSelectColumn and parsePrimary)",
       "plan_ref": "T14",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T14:39:44.054Z"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Extract shared parseAggregateCall helper",
+      "status": "upcoming",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Verify 178+ tests still pass after consolidation",
+      "status": "upcoming",
+      "plan_ref": "T14"
     },
     {
       "id": "T16",
@@ -264,6 +306,10 @@
     {
       "time": "2026-04-19T14:33:41.003Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T14:39:30.449Z",
+      "msg": "PLAN T14 filled 3 BUILD tasks"
     }
   ]
 }
