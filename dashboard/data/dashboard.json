@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-19T21:21:32.069Z",
+  "generated": "2026-04-19T21:23:01.891Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Mid-session git push + knowledge capture",
-    "startedAt": "2026-04-19T21:21:32.069Z",
-    "taskId": "T142"
+    "mode": "BUILD",
+    "task": "Investigate and fix ROLLBACK TO SAVEPOINT MVCC undo - undoes too much",
+    "startedAt": "2026-04-19T21:23:01.891Z",
+    "taskId": "T150"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -6174,51 +6174,96 @@
       {
         "id": "T140",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: file-backed persistence or major missing feature area",
         "task": null,
-        "started": "2026-04-19T20:45:11.541Z"
+        "started": "2026-04-19T20:45:11.541Z",
+        "completed": "2026-04-19T20:45:44.261Z",
+        "duration_ms": 60000,
+        "summary": "Planned depth work: stress testing critical paths (SERIAL, correlated subqueries, JOINs, persistence), fixing full scan failures, adding concurrent server tests"
       },
       {
         "id": "T141",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Run targeted stress tests on critical paths: INSERT with SERIAL, correlated subqueries, JOIN with complex WHERE, persistence round-trip",
         "plan_ref": "T140",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-19T20:45:48.882Z",
+        "completed": "2026-04-19T20:50:23.228Z",
+        "duration_ms": 600000,
+        "summary": "Created 18 stress tests for critical paths. Found and fixed: (1) case-insensitive column lookup in INSERT/UPSERT, (2) ON CONFLICT now handles UNIQUE columns not just PK, (3) parser preserves original case for INSERT column lists. All 18 new tests pass, all existing tests pass."
       },
       {
         "id": "T148",
         "mode": "BUILD",
         "task": "Fix any new failures from full test suite scan (currently running)",
-        "status": "upcoming",
-        "plan_ref": "T140"
+        "status": "done",
+        "plan_ref": "T140",
+        "started": "2026-04-19T20:50:31.736Z",
+        "completed": "2026-04-19T21:19:19.587Z",
+        "duration_ms": 600000,
+        "summary": "Full 810-file test suite scan. Fixed: (1) NEXTVAL double-increment in defaults (2) UDF RETURN bodies (3) CALL statement (4) DESCRIBE/pg_attribute metadata (5) SHOW TABLES handler conflict (6) pg-client/pg-integration type assertions. Remaining known failures: savepoints MVCC undo (3), ORM compat missing features (6), table-changes notifications (4), update-rollback isolation (1), server-knex type mismatches (~13)."
       },
       {
         "id": "T149",
         "mode": "BUILD",
         "task": "Add comprehensive server integration test: multi-client concurrent SERIAL inserts",
-        "status": "upcoming",
-        "plan_ref": "T140"
+        "status": "done",
+        "plan_ref": "T140",
+        "started": "2026-04-19T21:19:33.369Z",
+        "completed": "2026-04-19T21:21:24.927Z",
+        "duration_ms": 300000,
+        "summary": "Created concurrent SERIAL server integration test: 5 tests covering single client 100 inserts, multi-table independence, two-client concurrent inserts, SERIAL+UPSERT+gaps, complex 3-table schema with JOINs. All pass."
       },
       {
         "id": "T142",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-session git push + knowledge capture"
+        "status": "done",
+        "task": "Mid-session git push + knowledge capture",
+        "started": "2026-04-19T21:21:32.032Z",
+        "completed": "2026-04-19T21:22:14.454Z",
+        "duration_ms": 120000,
+        "summary": "Git push done, daily log updated with 9 bug fixes and learning captures, CURRENT.md updated"
       },
       {
         "id": "T143",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on depth vs breadth - are we building quality?"
+        "status": "done",
+        "task": "Reflect on depth vs breadth - are we building quality?",
+        "started": "2026-04-19T21:22:20.583Z",
+        "completed": "2026-04-19T21:22:36.564Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passed (3/3 YES). Session B is high quality: 12+ genuine bugs found. Next: tackle MVCC savepoint undo — deepest remaining correctness issue."
       },
       {
         "id": "T144",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Evening depth work: stress testing, benchmarking, or architectural improvement",
-        "task": null
+        "task": null,
+        "started": "2026-04-19T21:22:42.021Z"
+      },
+      {
+        "id": "T150",
+        "mode": "BUILD",
+        "task": "Investigate and fix ROLLBACK TO SAVEPOINT MVCC undo - undoes too much",
+        "status": "upcoming",
+        "plan_ref": "T144"
+      },
+      {
+        "id": "T151",
+        "mode": "BUILD",
+        "task": "Fix server-knex connection pool timeout and null dereference",
+        "status": "upcoming",
+        "plan_ref": "T144"
+      },
+      {
+        "id": "T152",
+        "mode": "BUILD",
+        "task": "Run final test sweep and capture remaining failure count",
+        "status": "upcoming",
+        "plan_ref": "T144"
       },
       {
         "id": "T145",
@@ -6238,13 +6283,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 143,
-    "blocksTotal": 149,
+    "blocksCompleted": 146,
+    "blocksTotal": 152,
     "modeDistribution": {
-      "THINK": 33,
-      "PLAN": 13,
+      "THINK": 34,
+      "PLAN": 14,
       "BUILD": 74,
-      "MAINTAIN": 20,
+      "MAINTAIN": 21,
       "EXPLORE": 3
     }
   },

@@ -1241,12 +1241,38 @@ export class TransactionSession {
     this._tx.undoLog.length = sp.undoLogLen;
 
     // Physically remove rows added after savepoint (new inserts/updates)
+    // Also restore rows that were marked as deleted after the savepoint
     const addedKeys = new Set();
+    const deletedKeys = new Set();
     for (const key of this._tx.writeSet) {
-      if (!sp.writeSetSnapshot.has(key) && !key.endsWith(':del')) {
-        addedKeys.add(key);
+      if (!sp.writeSetSnapshot.has(key)) {
+        if (key.endsWith(':del')) {
+          deletedKeys.add(key);
+        } else {
+          addedKeys.add(key);
+        }
       }
     }
+    
+    // Restore deleted rows (clear xmax so they become visible again)
+    for (const key of deletedKeys) {
+      const parts = key.replace(/:del$/, '').split(':');
+      const tableName = parts[0];
+      const pageId = parseInt(parts[1]);
+      const slotIdx = parseInt(parts[2]);
+      if (isNaN(pageId) || isNaN(slotIdx)) continue;
+      
+      const vm = this._tdb._versionMaps.get(tableName);
+      if (vm) {
+        const verKey = `${pageId}:${slotIdx}`;
+        const ver = vm.get(verKey);
+        if (ver && ver.xmax === this._tx.txId) {
+          ver.xmax = null; // Restore visibility
+        }
+      }
+    }
+    
+    // Remove newly added rows
     for (const key of addedKeys) {
       const parts = key.split(':');
       const tableName = parts[0];
@@ -1394,40 +1420,63 @@ export class TransactionSession {
         this._tdb._trackNewRows(this._tx);
         // For UPDATE: save undo information to restore old values on rollback
         if (isUpdate && updateSnapshot && updateSnapshot.rows.length > 0) {
+          // For savepoint-safe undo: record what rows were in the table BEFORE this UPDATE
+          // Use a targeted approach: track which physical rows were added/deleted by this UPDATE
           const snap = updateSnapshot;
+          const preUpdateRowKeys = snap.physicalRowKeys;
+          
           this._tx.undoLog.push(() => {
             const table = this._tdb._db.tables.get(snap.tableName);
             if (!table) return;
-            // Clear result cache — stale results from during the transaction
             if (this._tdb._db._resultCache) {
               this._tdb._db._resultCache.clear();
             }
             const vm = this._tdb._versionMaps.get(snap.tableName);
-            // Use origScan to bypass MVCC filtering during undo
             const origScan = table.heap._origScan || table.heap.scan.bind(table.heap);
             const origDelete = table.heap._origDelete || table.heap.delete.bind(table.heap);
-            // Clear all current rows from the table (physical, bypass MVCC)
+            
+            // Delete rows that were ADDED by this UPDATE (not in preUpdateRowKeys)
             const toDelete = [];
             for (const { pageId, slotIdx } of origScan()) {
-              toDelete.push({ pageId, slotIdx });
+              const key = `${pageId}:${slotIdx}`;
+              if (!preUpdateRowKeys.has(key)) {
+                toDelete.push({ pageId, slotIdx, key });
+              }
             }
-            for (const { pageId, slotIdx } of toDelete) {
-              try { 
+            for (const { pageId, slotIdx, key } of toDelete) {
+              try {
                 origDelete(pageId, slotIdx);
-                // Also clean up version map for deleted rows
-                if (vm) vm.delete(`${pageId}:${slotIdx}`);
+                if (vm) vm.delete(key);
               } catch (e) { /* ignore */ }
             }
-            // Re-insert all old rows (bypass MVCC interceptors)
+            
+            // Restore xmax ONLY for rows that were alive before this UPDATE
+            if (vm) {
+              for (const key of snap.aliveRowKeys) {
+                const ver = vm.get(key);
+                if (ver && ver.xmax === snap.txId) {
+                  ver.xmax = 0; // Make visible again
+                }
+              }
+            }
+            
+            // Re-insert any snapshot rows that are no longer physically present
             const origInsert = table.heap._origInsert || table.heap.insert.bind(table.heap);
+            const currentValues = new Set();
+            for (const { values } of origScan()) {
+              currentValues.add(JSON.stringify(values));
+            }
             for (const values of snap.rows) {
-              const rid = origInsert ? table.heap.insert(values) : table.heap.insert(values);
-              // Don't add version map entry — rows without entries are visible by default
-              // (the scan interceptor yields rows with no version entry)
-              for (const [colName, index] of table.indexes) {
-                const colIdx = snap.schema.findIndex(c => c.name === colName);
-                if (colIdx >= 0) {
-                  index.insert(values[colIdx], rid);
+              if (!currentValues.has(JSON.stringify(values))) {
+                const rid = table.heap.insert(values);
+                if (vm) {
+                  vm.set(`${rid.pageId}:${rid.slotIdx}`, { xmin: snap.txId, xmax: 0 });
+                }
+                for (const [colName, index] of table.indexes) {
+                  const colIdx = snap.schema.findIndex(c => c.name === colName);
+                  if (colIdx >= 0) {
+                    index.insert(values[colIdx], rid);
+                  }
                 }
               }
             }
@@ -1504,21 +1553,29 @@ export class TransactionSession {
     const table = this._tdb._db.tables.get(tableName);
     if (!table) return null;
 
-    // Snapshot VISIBLE rows (through MVCC) that existed BEFORE this transaction
+    // Snapshot VISIBLE rows (through MVCC) — these are the rows as they exist
+    // right before this UPDATE, including rows modified earlier in this transaction
     const txId = this._tx.txId;
     const vm = this._tdb._versionMaps.get(tableName);
     const snapshot = [];
-    // Use the regular (MVCC-filtered) scan to only get visible rows
-    for (const { pageId, slotIdx, values } of table.heap.scan()) {
-      if (vm) {
-        const key = `${pageId}:${slotIdx}`;
-        const ver = vm.get(key);
-        // Skip rows created by this transaction - they'll be rolled back separately
-        if (ver && ver.xmin === txId) continue;
+    // Also capture physical row keys for targeted undo
+    const physicalRowKeys = new Set();
+    // Also capture which rows are "alive" (xmax = 0) before the UPDATE
+    const aliveRowKeys = new Set();
+    const origScan = table.heap._origScan || table.heap.scan.bind(table.heap);
+    for (const { pageId, slotIdx } of origScan()) {
+      const key = `${pageId}:${slotIdx}`;
+      physicalRowKeys.add(key);
+      const ver = vm?.get(key);
+      if (!ver || ver.xmax === 0 || ver.xmax === null || ver.xmax === undefined) {
+        aliveRowKeys.add(key);
       }
+    }
+    // Use the regular (MVCC-filtered) scan to get all currently visible rows
+    for (const { pageId, slotIdx, values } of table.heap.scan()) {
       snapshot.push([...values]);
     }
-    return { tableName, rows: snapshot, schema: table.schema };
+    return { tableName, rows: snapshot, schema: table.schema, txId, physicalRowKeys, aliveRowKeys };
   }
 
   _extractTableName(sql) {

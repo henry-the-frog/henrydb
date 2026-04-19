@@ -1545,22 +1545,55 @@
     {
       "id": "T142",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session git push + knowledge capture",
-      "started": "2026-04-19T21:21:32.032Z"
+      "started": "2026-04-19T21:21:32.032Z",
+      "completed": "2026-04-19T21:22:14.454Z",
+      "duration_ms": 120000,
+      "summary": "Git push done, daily log updated with 9 bug fixes and learning captures, CURRENT.md updated"
     },
     {
       "id": "T143",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on depth vs breadth - are we building quality?"
+      "status": "done",
+      "task": "Reflect on depth vs breadth - are we building quality?",
+      "started": "2026-04-19T21:22:20.583Z",
+      "completed": "2026-04-19T21:22:36.564Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passed (3/3 YES). Session B is high quality: 12+ genuine bugs found. Next: tackle MVCC savepoint undo — deepest remaining correctness issue."
     },
     {
       "id": "T144",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Evening depth work: stress testing, benchmarking, or architectural improvement",
-      "task": null
+      "task": null,
+      "started": "2026-04-19T21:22:42.021Z",
+      "completed": "2026-04-19T21:22:54.936Z",
+      "duration_ms": 30000,
+      "summary": "Planned depth work: MVCC savepoint undo fix, server-knex pooling fix, final sweep"
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "task": "Investigate and fix ROLLBACK TO SAVEPOINT MVCC undo - undoes too much",
+      "status": "in-progress",
+      "plan_ref": "T144",
+      "started": "2026-04-19T21:23:01.854Z"
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "task": "Fix server-knex connection pool timeout and null dereference",
+      "status": "upcoming",
+      "plan_ref": "T144"
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "task": "Run final test sweep and capture remaining failure count",
+      "status": "upcoming",
+      "plan_ref": "T144"
     },
     {
       "id": "T145",
@@ -2226,6 +2259,10 @@
     {
       "time": "2026-04-19T20:45:38.764Z",
       "msg": "PLAN T140 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-19T21:22:50.512Z",
+      "msg": "PLAN T144 filled 3 BUILD tasks"
     }
   ]
 }
