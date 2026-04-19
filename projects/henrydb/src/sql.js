@@ -205,6 +205,11 @@ export function parse(sql) {
   }
   function isKeyword(val) { const t = peek(); return t && t.type === 'KEYWORD' && t.value === val; }
 
+  // Shared keyword lists (must be before any code that calls parse functions)
+  var ZERO_ARG_WINDOW_FUNCS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'];
+  var ARG_WINDOW_FUNCS = ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'];
+  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'];
+
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
     advance();
@@ -236,11 +241,6 @@ export function parse(sql) {
     else throw new Error('EXPLAIN requires a SELECT statement');
     return { type: 'EXPLAIN', statement, analyze, compiled, format };
   }
-
-    // Window function keyword lists (shared between parseSelectColumn and parsePrimary)
-  var ZERO_ARG_WINDOW_FUNCS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'];
-  var ARG_WINDOW_FUNCS = ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'];
-  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'];
 
 // SELECT or WITH
   if (isKeyword('WITH')) return parseWith();
