@@ -1535,15 +1535,19 @@
       "id": "T149",
       "mode": "BUILD",
       "task": "Add comprehensive server integration test: multi-client concurrent SERIAL inserts",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T140",
-      "started": "2026-04-19T21:19:33.369Z"
+      "started": "2026-04-19T21:19:33.369Z",
+      "completed": "2026-04-19T21:21:24.927Z",
+      "duration_ms": 300000,
+      "summary": "Created concurrent SERIAL server integration test: 5 tests covering single client 100 inserts, multi-table independence, two-client concurrent inserts, SERIAL+UPSERT+gaps, complex 3-table schema with JOINs. All pass."
     },
     {
       "id": "T142",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session git push + knowledge capture"
+      "status": "in-progress",
+      "task": "Mid-session git push + knowledge capture",
+      "started": "2026-04-19T21:21:32.032Z"
     },
     {
       "id": "T143",
