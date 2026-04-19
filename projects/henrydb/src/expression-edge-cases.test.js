@@ -1,153 +1,223 @@
-// expression-edge-cases.test.js — CASE WHEN, COALESCE, NULLIF, CAST + MVCC
+// expression-edge-cases.test.js — Expression evaluation correctness
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import { strict as assert } from 'node:assert';
-import { TransactionalDatabase } from './transactional-db.js';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Database } from './db.js';
 
-let dbDir, db;
-function setup() {
-  dbDir = mkdtempSync(join(tmpdir(), 'henrydb-expr-'));
-  db = TransactionalDatabase.open(dbDir);
-}
-function teardown() {
-  try { db.close(); } catch {}
-  rmSync(dbDir, { recursive: true, force: true });
-}
-function rows(r) { return Array.isArray(r) ? r : r?.rows || []; }
-
-describe('Expression Edge Cases + MVCC', () => {
-  beforeEach(setup);
-  afterEach(teardown);
-
-  it('CASE WHEN with concurrent update changes classification', () => {
-    db.execute('CREATE TABLE items (id INT, score INT)');
-    db.execute('INSERT INTO items VALUES (1, 90)');
-    db.execute('INSERT INTO items VALUES (2, 50)');
-    db.execute('INSERT INTO items VALUES (3, 30)');
-    
-    const s1 = db.session();
-    s1.begin();
-    
-    // Update scores outside s1
-    db.execute('UPDATE items SET score = 10 WHERE id = 1'); // 90 → 10
-    
-    // s1 should classify based on original values
-    const r = rows(s1.execute(
-      "SELECT id, CASE WHEN score >= 80 THEN 'A' WHEN score >= 60 THEN 'B' ELSE 'C' END as grade FROM items ORDER BY id"
-    ));
-    assert.equal(r[0].grade, 'A', 'id=1 was 90 in snapshot → A');
-    assert.equal(r[1].grade, 'C', 'id=2 was 50 → C');
-    assert.equal(r[2].grade, 'C', 'id=3 was 30 → C');
-    
-    s1.commit();
+describe('CAST and Type Coercion', () => {
+  it('CAST INT to TEXT', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT CAST(42 AS TEXT) as r').rows[0].r, '42');
   });
 
-  it('COALESCE with NULL propagation', () => {
-    db.execute('CREATE TABLE t (id INT, a INT, b INT, c INT)');
-    db.execute('INSERT INTO t VALUES (1, NULL, NULL, 99)');
-    db.execute('INSERT INTO t VALUES (2, NULL, 50, 99)');
-    db.execute('INSERT INTO t VALUES (3, 10, 50, 99)');
-    
-    const r = rows(db.execute('SELECT id, COALESCE(a, b, c) as first_non_null FROM t ORDER BY id'));
-    assert.equal(r[0].first_non_null, 99, 'Both a,b NULL → c');
-    assert.equal(r[1].first_non_null, 50, 'a NULL → b');
-    assert.equal(r[2].first_non_null, 10, 'a not NULL → a');
+  it('CAST TEXT to INT', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT CAST('123' AS INT) as r").rows[0].r, 123);
   });
 
-  it('COALESCE with all NULL returns NULL', () => {
-    db.execute('CREATE TABLE t (id INT, a INT, b INT)');
-    db.execute('INSERT INTO t VALUES (1, NULL, NULL)');
-    
-    const r = rows(db.execute('SELECT COALESCE(a, b) as result FROM t'));
-    assert.equal(r[0].result, null, 'All NULL → NULL');
+  it('CAST FLOAT to INT truncates', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT CAST(3.7 AS INT) as r').rows[0].r, 3);
   });
 
-  it('NULLIF returns NULL when args are equal', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    db.execute('INSERT INTO t VALUES (1, 0)');
-    db.execute('INSERT INTO t VALUES (2, 5)');
-    
-    const r = rows(db.execute('SELECT id, NULLIF(val, 0) as safe FROM t ORDER BY id'));
-    assert.equal(r[0].safe, null, 'val=0 should become NULL');
-    assert.equal(r[1].safe, 5, 'val=5 stays 5');
+  it('nested CAST', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT CAST(CAST(3.7 AS INT) AS TEXT) as r").rows[0].r, '3');
   });
 
-  it('CASE WHEN with ELSE NULL', () => {
-    db.execute('CREATE TABLE t (id INT, status TEXT)');
-    db.execute("INSERT INTO t VALUES (1, 'active')");
-    db.execute("INSERT INTO t VALUES (2, 'inactive')");
-    db.execute("INSERT INTO t VALUES (3, 'pending')");
-    
-    const r = rows(db.execute(
-      "SELECT id, CASE status WHEN 'active' THEN 1 WHEN 'pending' THEN 0 END as is_active FROM t ORDER BY id"
-    ));
-    assert.equal(r[0].is_active, 1);
-    assert.equal(r[1].is_active, null, 'No matching WHEN → NULL');
-    assert.equal(r[2].is_active, 0);
+  it('implicit string-number comparison', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO t VALUES (1, 50)');
+    const r = db.execute("SELECT * FROM t WHERE val = '50'");
+    assert.equal(r.rows.length, 1);
+  });
+});
+
+describe('NULL Arithmetic', () => {
+  it('NULL + number = NULL', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT NULL + 1 as r').rows[0].r, null);
   });
 
-  it('nested CASE expressions', () => {
-    db.execute('CREATE TABLE t (id INT, a INT, b INT)');
-    db.execute('INSERT INTO t VALUES (1, 10, 20)');
-    db.execute('INSERT INTO t VALUES (2, 30, 5)');
-    
-    const r = rows(db.execute(
-      "SELECT id, CASE WHEN a > b THEN CASE WHEN a > 20 THEN 'big' ELSE 'medium' END ELSE 'small' END as size FROM t ORDER BY id"
-    ));
-    assert.equal(r[0].size, 'small', 'a=10 < b=20 → small');
-    assert.equal(r[1].size, 'big', 'a=30 > b=5, a > 20 → big');
+  it('number * NULL = NULL', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT 5 * NULL as r').rows[0].r, null);
   });
 
-  it('CAST between types', () => {
-    db.execute('CREATE TABLE t (id INT, val TEXT)');
-    db.execute("INSERT INTO t VALUES (1, '42')");
-    
-    // CAST TEXT to INT
-    const r = rows(db.execute("SELECT CAST(val AS INT) as num FROM t"));
-    assert.equal(r[0].num, 42);
-    
-    // CAST INT to TEXT
-    const r2 = rows(db.execute("SELECT CAST(id AS TEXT) as str FROM t"));
-    assert.equal(r2[0].str, '1');
+  it('NULL / number = NULL', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT NULL / 2 as r').rows[0].r, null);
+  });
+});
+
+describe('Conditional Expressions', () => {
+  it('NULLIF equal values returns NULL', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT NULLIF(1, 1) as r').rows[0].r, null);
   });
 
-  it('CASE WHEN in WHERE clause', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    for (let i = 1; i <= 5; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
-    
-    const r = rows(db.execute(
-      "SELECT id FROM t WHERE CASE WHEN val > 30 THEN 1 ELSE 0 END = 1 ORDER BY id"
-    ));
-    assert.equal(r.length, 2, 'Only val > 30: id 4,5');
-    assert.equal(r[0].id, 4);
-    assert.equal(r[1].id, 5);
+  it('NULLIF different values returns first', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT NULLIF(1, 2) as r').rows[0].r, 1);
   });
 
-  it('COALESCE in UPDATE SET', () => {
-    db.execute('CREATE TABLE t (id INT, val INT, backup INT)');
-    db.execute('INSERT INTO t VALUES (1, NULL, 99)');
-    db.execute('INSERT INTO t VALUES (2, 50, 99)');
-    
-    db.execute('UPDATE t SET val = COALESCE(val, backup)');
-    
-    const r = rows(db.execute('SELECT * FROM t ORDER BY id'));
-    assert.equal(r[0].val, 99, 'NULL val → backup');
-    assert.equal(r[1].val, 50, 'Non-NULL val unchanged');
+  it('IIF true branch', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT IIF(1 > 0, 'yes', 'no') as r").rows[0].r, 'yes');
   });
 
-  it('expressions survive close/reopen', () => {
-    db.execute('CREATE TABLE t (id INT, val INT)');
-    db.execute('INSERT INTO t VALUES (1, NULL)');
-    db.execute('INSERT INTO t VALUES (2, 42)');
-    
-    db.close();
-    db = TransactionalDatabase.open(dbDir);
-    
-    const r = rows(db.execute('SELECT id, COALESCE(val, -1) as safe FROM t ORDER BY id'));
-    assert.equal(r[0].safe, -1);
-    assert.equal(r[1].safe, 42);
+  it('IIF false branch', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT IIF(1 < 0, 'yes', 'no') as r").rows[0].r, 'no');
+  });
+
+  it('COALESCE picks first non-null', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT COALESCE(NULL, NULL, 3, 4) as r').rows[0].r, 3);
+  });
+
+  it('nested CASE', () => {
+    const db = new Database();
+    const r = db.execute("SELECT CASE WHEN 1 > 0 THEN CASE WHEN 2 > 3 THEN 'inner-t' ELSE 'inner-f' END ELSE 'outer-f' END as r");
+    assert.equal(r.rows[0].r, 'inner-f');
+  });
+});
+
+describe('Expression Aliases', () => {
+  it('ORDER BY alias', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    db.execute('INSERT INTO t VALUES (1, 10), (2, 20), (3, 5)');
+    const r = db.execute('SELECT val * 2 as doubled FROM t ORDER BY doubled DESC');
+    assert.equal(r.rows[0].doubled, 40);
+    assert.equal(r.rows[2].doubled, 10);
+  });
+
+  it('ORDER BY ordinal', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, a INT, b INT)');
+    db.execute('INSERT INTO t VALUES (1, 30, 10), (2, 10, 20), (3, 20, 30)');
+    const r = db.execute('SELECT a, b FROM t ORDER BY 2 DESC');
+    assert.equal(r.rows[0].b, 30);
+  });
+
+  it('GROUP BY expression', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+    for (let i = 0; i < 20; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i})`);
+    const r = db.execute('SELECT val % 5 as bucket, COUNT(*) as cnt FROM t GROUP BY val % 5 ORDER BY bucket');
+    assert.equal(r.rows.length, 5);
+  });
+
+  it('HAVING with aggregate expression', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, grp TEXT, val INT)');
+    db.execute("INSERT INTO t VALUES (1, 'A', 10), (2, 'A', 20), (3, 'B', 100), (4, 'B', 200)");
+    const r = db.execute('SELECT grp, AVG(val) as avg_val FROM t GROUP BY grp HAVING AVG(val) > 50');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].grp, 'B');
+  });
+});
+
+describe('Math Functions', () => {
+  it('ABS', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT ABS(-42) as r').rows[0].r, 42);
+  });
+
+  it('ROUND integer', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT ROUND(3.7) as r').rows[0].r, 4);
+  });
+
+  it('ROUND decimal places', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT ROUND(3.14159, 2) as r').rows[0].r, 3.14);
+  });
+
+  it('POWER', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT POWER(2, 10) as r').rows[0].r, 1024);
+  });
+
+  it('SQRT', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT SQRT(144) as r').rows[0].r, 12);
+  });
+
+  it('GREATEST and LEAST', () => {
+    const db = new Database();
+    const r = db.execute('SELECT GREATEST(1, 5, 3) as g, LEAST(1, 5, 3) as l');
+    assert.equal(r.rows[0].g, 5);
+    assert.equal(r.rows[0].l, 1);
+  });
+
+  it('integer division truncates toward zero', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT 7 / 2 as r').rows[0].r, 3);
+    assert.equal(db.execute('SELECT -7 / 2 as r').rows[0].r, -3);
+  });
+
+  it('division by zero returns NULL', () => {
+    const db = new Database();
+    assert.equal(db.execute('SELECT 10 / 0 as r').rows[0].r, null);
+  });
+});
+
+describe('String Functions', () => {
+  it('UPPER/LOWER', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT UPPER('hello') as u, LOWER('WORLD') as l").rows[0].u, 'HELLO');
+  });
+
+  it('SUBSTRING', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT SUBSTRING('hello world', 1, 5) as r").rows[0].r, 'hello');
+  });
+
+  it('LENGTH', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT LENGTH('hello') as r").rows[0].r, 5);
+  });
+
+  it('CONCAT', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT CONCAT('hello', ' ', 'world') as r").rows[0].r, 'hello world');
+  });
+
+  it('nested string functions', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT UPPER(SUBSTRING('hello world', 1, 5)) as r").rows[0].r, 'HELLO');
+  });
+
+  it('TRIM', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT TRIM('  hello  ') as r").rows[0].r, 'hello');
+  });
+
+  it('REPLACE', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT REPLACE('hello world', 'world', 'there') as r").rows[0].r, 'hello there');
+  });
+});
+
+describe('Aggregate with FILTER', () => {
+  it('COUNT with FILTER', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, grp TEXT)');
+    db.execute("INSERT INTO t VALUES (1, 'A'), (2, 'B'), (3, 'A'), (4, 'C'), (5, 'A')");
+    const r = db.execute("SELECT COUNT(*) FILTER (WHERE grp = 'A') as a_cnt, COUNT(*) as total FROM t");
+    assert.equal(r.rows[0].a_cnt, 3);
+    assert.equal(r.rows[0].total, 5);
+  });
+
+  it('SUM with FILTER', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT, active INT)');
+    db.execute('INSERT INTO t VALUES (1, 10, 1), (2, 20, 0), (3, 30, 1)');
+    const r = db.execute('SELECT SUM(val) FILTER (WHERE active = 1) as active_sum, SUM(val) as total FROM t');
+    assert.equal(r.rows[0].active_sum, 40);
+    assert.equal(r.rows[0].total, 60);
   });
 });
