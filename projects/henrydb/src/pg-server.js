@@ -747,7 +747,18 @@ function interceptPgCatalog(sql, db) {
   return null; // Not intercepted
 }
 
-function handleConnection(socket, db, connId = 0, channels = new Map(), users = null) {
+function handleConnection(socket, db, connId = 0, channels = new Map(), users = null, connOptions = {}) {
+  const { idleTimeoutMs = 0 } = connOptions;
+  let idleTimer = null;
+  
+  function resetIdleTimer() {
+    if (idleTimeoutMs > 0) {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        socket.end();
+      }, idleTimeoutMs);
+    }
+  }
   let buffer = Buffer.alloc(0);
   let startupDone = false;
   let authState = null; // { userName, userEntry, salt } when waiting for password
@@ -1103,6 +1114,8 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     tempTables.clear();
   });
   socket.on('close', () => {
+    // Clean up idle timer
+    if (idleTimer) clearTimeout(idleTimer);
     // Clean up MVCC session
     if (txSession) {
       try { txSession.close(); } catch(e) { /* ignore */ }
@@ -1192,7 +1205,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
         socket.write(parameterStatus('client_encoding', 'UTF8'));
         socket.write(parameterStatus('DateStyle', 'ISO, MDY'));
         socket.write(parameterStatus('integer_datetimes', 'on'));
-        socket.write(readyForQuery('I'));
+        socket.write(readyForQuery('I')); resetIdleTimer();
         continue;
       }
 
@@ -1226,7 +1239,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
           socket.write(parameterStatus('client_encoding', 'UTF8'));
           socket.write(parameterStatus('DateStyle', 'ISO, MDY'));
           socket.write(parameterStatus('integer_datetimes', 'on'));
-          socket.write(readyForQuery('I'));
+          socket.write(readyForQuery('I')); resetIdleTimer();
         } else {
           socket.write(errorResponse('FATAL', '28P01', 
             `password authentication failed for user "${authState.userName}"`));
@@ -1258,7 +1271,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
           handleExecute(payload, socket, db);
           break;
         case 0x53: // 'S' — Sync
-          socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+          socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
           break;
         case 0x43: // 'C' — Close (statement or portal)
           handleClose(payload, socket);
@@ -1289,7 +1302,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
             const reason = payload.toString('utf8').replace(/\0/g, '').trim();
             copyState = null;
             socket.write(errorResponse('ERROR', '57014', reason || 'COPY cancelled'));
-            socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+            socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
           }
           break;
 
@@ -1609,7 +1622,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     const table = db.tables?.get(tableName) || db.tables?.get(tableName.toLowerCase());
     if (!table) {
       socket.write(errorResponse('ERROR', '42P01', `Table "${tableName}" does not exist`));
-      socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+      socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
       return;
     }
 
@@ -1623,7 +1636,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     copyState = null;
 
     if (!state) {
-      socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+      socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
       return;
     }
 
@@ -1641,7 +1654,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     } catch (err) {
       socket.write(errorResponse('ERROR', '42000', err.message));
     }
-    socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+    socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
   }
 
   function copyOutResponse(numColumns) {
@@ -1715,7 +1728,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
 
     if (!query) {
       socket.write(emptyQueryResponse());
-      socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+      socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
       return;
     }
 
@@ -1778,7 +1791,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
       }
     }
 
-    socket.write(readyForQuery(inTransaction ? 'T' : 'I'));
+    socket.write(readyForQuery(inTransaction ? 'T' : 'I')); resetIdleTimer();
   }
 }
 
@@ -1836,9 +1849,28 @@ export function createPgServer(db, port = 5433, options = {}) {
   // Global channel subscriptions: channel → Map<connId, socket>
   const channels = new Map();
   
+  const maxConnections = options.maxConnections || 100;
+  const idleTimeoutMs = options.idleTimeoutMs || 0; // 0 = no timeout
+  
   const server = createServer((socket) => {
+    // Check connection limit
+    if (_activeConnections.size >= maxConnections) {
+      // Send PostgreSQL error response and close
+      const buf = Buffer.alloc(256);
+      let offset = 0;
+      buf[offset++] = 0x45; // 'E' ErrorResponse
+      const msg = `SFATAL\0CTOO_MANY_CONNECTIONS\0Msorry, too many clients already (max: ${maxConnections})\0\0`;
+      buf.writeInt32BE(msg.length + 4, offset);
+      offset += 4;
+      buf.write(msg, offset);
+      offset += msg.length;
+      socket.write(buf.subarray(0, offset));
+      socket.end();
+      return;
+    }
+    
     const connId = _nextConnId++;
-    handleConnection(socket, db, connId, channels, options.users);
+    handleConnection(socket, db, connId, channels, options.users, { idleTimeoutMs });
   });
 
   // Expose channels for test access
