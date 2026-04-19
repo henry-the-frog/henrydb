@@ -189,7 +189,7 @@ export class TransactionalDatabase {
     if (this._isDDL(trimmed)) {
       const result = this._db.execute(sql);
       if (trimmed.startsWith('CREATE TABLE') || trimmed.startsWith('CREATE INDEX')
-          || trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED') || trimmed.startsWith('CREATE TRIGGER')) {
+          || trimmed.startsWith('CREATE UNIQUE') || trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED') || trimmed.startsWith('CREATE TRIGGER')) {
         this._trackCreate(sql);
         this._installScanInterceptors(); // New table needs interceptor
       }
