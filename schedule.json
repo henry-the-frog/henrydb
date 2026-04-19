@@ -1480,15 +1480,22 @@
     {
       "id": "T138",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, dashboard health, knowledge capture",
-      "started": "2026-04-19T20:36:37.304Z"
+      "started": "2026-04-19T20:36:37.304Z",
+      "completed": "2026-04-19T20:37:06.386Z",
+      "duration_ms": 120000,
+      "summary": "Git commit+push, daily log updated with critical SERIAL bug findings, learning captured"
     },
     {
       "id": "T139",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess progress - what area of HenryDB needs most depth?"
+      "status": "done",
+      "task": "Assess progress - what area of HenryDB needs most depth?",
+      "started": "2026-04-19T20:37:12.637Z",
+      "completed": "2026-04-19T20:44:53.936Z",
+      "duration_ms": 300000,
+      "summary": "Fixed 3 more bugs: (1) Correlated subquery comparison in WHERE - parser returned SUBQUERY node without parsing following comparison operator (> 1), (2) Composite PK case sensitivity - CREATE INDEX column names uppercased by tokenizer, (3) indexCatalog lost on serialization round-trip. Tests: complex-query-depth 9/9, composite-pk 8/8."
     },
     {
       "id": "T140",

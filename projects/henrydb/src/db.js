@@ -844,6 +844,7 @@ export class Database {
       sequences,
       materializedViews: matViews,
       comments,
+      indexCatalog: Object.fromEntries(this.indexCatalog),
     };
   }
 
@@ -976,6 +977,11 @@ export class Database {
     for (const [key, val] of Object.entries(obj.comments || {})) {
       if (!db._comments) db._comments = new Map();
       db._comments.set(key, val);
+    }
+    
+    // Restore indexCatalog (for composite unique/PK constraints)
+    for (const [name, meta] of Object.entries(obj.indexCatalog || {})) {
+      db.indexCatalog.set(name, meta);
     }
     
     return db;
@@ -1493,14 +1499,14 @@ export class Database {
 
     // Validate columns exist
     for (const col of ast.columns) {
-      if (!table.schema.find(c => c.name === col)) {
+      if (!table.schema.find(c => c.name.toLowerCase() === col.toLowerCase())) {
         throw new Error(`Column ${col} not found in table ${ast.table}`);
       }
     }
 
     // For simplicity, support single-column indexes (composite uses CompositeKey)
     const isComposite = ast.columns.length > 1;
-    const colIndices = ast.columns.map(c => table.schema.findIndex(s => s.name === c));
+    const colIndices = ast.columns.map(c => table.schema.findIndex(s => s.name.toLowerCase() === c.toLowerCase()));
 
     // Choose index type: HASH or BTREE (default)
     const indexType = (ast.indexType || 'BTREE').toUpperCase();

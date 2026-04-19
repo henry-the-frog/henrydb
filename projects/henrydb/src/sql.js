@@ -1603,7 +1603,16 @@ export function parse(sql) {
       if (isKeyword('SELECT')) {
         const subquery = parseSelect();
         expect(')');
-        return { type: 'SUBQUERY', subquery };
+        const subNode = { type: 'SUBQUERY', subquery };
+        // Check for comparison operator after subquery (e.g., (SELECT COUNT(*) ...) > 1)
+        const compOps = new Set(['EQ', 'NE', 'LT', 'GT', 'LE', 'GE']);
+        const nxt = peek();
+        if (nxt && compOps.has(nxt.type)) {
+          const op = advance().type;
+          const right = parsePrimaryWithConcat();
+          return { type: 'COMPARE', op, left: subNode, right };
+        }
+        return subNode;
       }
       // Not a subquery — put the '(' back and let parsePrimary handle it
       // (parsePrimary correctly handles nested parens with operator precedence)
@@ -2780,7 +2789,7 @@ export function parse(sql) {
     }
     expect('(');
     const columns = [];
-    do { columns.push(advance().value); } while (match(','));
+    do { const tok = advance(); columns.push(tok.originalValue || tok.value); } while (match(','));
     expect(')');
     // INCLUDE clause for covering indexes
     let include = null;
