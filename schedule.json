@@ -1647,17 +1647,21 @@
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix transaction isolation: uncommitted changes visible to other connections",
       "project": "henrydb",
-      "started": "2026-04-19T22:06:33.427Z"
+      "started": "2026-04-19T22:06:33.427Z",
+      "completed": "2026-04-19T22:09:39.542Z",
+      "duration_ms": 300000,
+      "summary": "Added per-connection MVCC transaction isolation to wire protocol. Each connection gets an MVCC session for proper isolation. BEGIN/COMMIT/ROLLBACK routed through session. Fixes read-uncommitted bug where uncommitted changes were visible to other connections. 2/2 update-rollback-stress tests pass."
     },
     {
       "id": "T156",
       "mode": "MAINTAIN",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Git push, final daily log, test count update",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-19T22:09:45.527Z"
     }
   ],
   "focusProjects": [

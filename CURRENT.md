@@ -2,29 +2,25 @@
 status: in-progress
 session: B (afternoon)
 date: 2026-04-19
-mode: MAINTAIN
-task: Mid-session git push + knowledge capture
-current_position: T142
+mode: BUILD
+task: Continuing after MAINTAIN
+current_position: T156+
 started: 2026-04-19T20:15:57Z
-tasks_completed_this_session: 8
+tasks_completed_this_session: 17
 
-## Session B accomplishments so far
-- Fixed CRITICAL SERIAL UNIQUE constraint false positive
-- Fixed correlated subquery comparison in WHERE (parser)
-- Fixed composite PK case sensitivity and serialization
-- Fixed EXPLAIN small table index preference
-- Fixed column existence validation in SELECT/WHERE
-- Fixed _orderValues double NEXTVAL resolution
-- Fixed ON CONFLICT with UNIQUE (not just PK) columns
-- Added CALL statement, RETURN UDF bodies
-- Fixed DESCRIBE/pg_attribute/SHOW TABLES metadata
-- Fixed pg-client/pg-integration type assertions
-- Created 23 new targeted tests (18 critical-paths + 5 concurrent)
-- Full 810-file test suite scan completed
+## Session B accomplishments
+- **18+ bugs fixed** including 3 CRITICAL
+- **23 new tests written**  
+- **812 test files scanned**
+- **Remaining failures: ~4** (table-changes-explore only)
 
-## Remaining known failures
-- savepoints.test.js: 3 (MVCC undo depth issue)
-- orm-compat.test.js: 6 (missing CREATE EXTENSION/SCHEMA/GRANT)
-- table-changes-explore.test.js: 4 (notifications not wired)
-- update-rollback-stress.test.js: 1 (isolation)
-- server-knex.test.js: ~13 (pool timeout + null deref)
+## Key fixes
+- CRITICAL: SERIAL UNIQUE constraint false positive
+- CRITICAL: MVCC ROLLBACK TO SAVEPOINT undo
+- CRITICAL: Per-connection transaction isolation
+- Correlated subquery WHERE comparison parser
+- Composite PK case sensitivity + serialization
+- ON CONFLICT with UNIQUE columns
+- Sequence double-increment prevention
+- Knex/ORM compatibility
+- Column validation, CALL/RETURN UDF, metadata queries
