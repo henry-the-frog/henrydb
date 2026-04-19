@@ -2094,8 +2094,14 @@ export function parse(sql) {
     } else {
       if (!match(')')) {
         arg = parseExpr();
-        if (match(',')) { offset = parseExpr(); }
-        if (match(',')) { defaultValue = parseExpr(); }
+        if (match(',')) { 
+          const offsetExpr = parseExpr();
+          offset = offsetExpr.type === 'literal' ? offsetExpr.value : offsetExpr;
+        }
+        if (match(',')) { 
+          const defaultExpr = parseExpr();
+          defaultValue = defaultExpr.type === 'literal' ? defaultExpr.value : defaultExpr;
+        }
         expect(')');
       }
     }

@@ -441,9 +441,26 @@
     {
       "id": "T43",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix HAVING with function-wrapped aggregates (COALESCE(SUM(x),0) > 0 in HAVING)",
-      "started": "2026-04-19T15:19:23.354Z"
+      "started": "2026-04-19T15:19:23.354Z",
+      "completed": "2026-04-19T15:20:46.961Z",
+      "duration_ms": 180000,
+      "summary": "Fixed HAVING with COALESCE-wrapped aggregates. _collectAggregateExprs now walks function args, CASE whens, operands. 109 tests pass. 15 bugs fixed this session."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Full test sweep of all HenryDB test files to catch regressions",
+      "project": "henrydb",
+      "started": "2026-04-19T15:21:22.548Z"
+    },
+    {
+      "id": "T45",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Update TODO with all fixed items, add new findings"
     },
     {
       "id": "T33",
@@ -637,6 +654,18 @@
     {
       "time": "2026-04-19T15:19:17.317Z",
       "msg": "Moved T33 after T43"
+    },
+    {
+      "time": "2026-04-19T15:21:14.595Z",
+      "msg": "Added T44 (BUILD) after end: Full test sweep of all HenryDB test files to catch regressions"
+    },
+    {
+      "time": "2026-04-19T15:21:14.713Z",
+      "msg": "Added T45 (THINK) after end: Update TODO with all fixed items, add new findings"
+    },
+    {
+      "time": "2026-04-19T15:21:14.830Z",
+      "msg": "Moved T33 after T45"
     }
   ]
 }
