@@ -54,7 +54,7 @@ export class ReplicationPublisher {
     // Send to all connections listening on replication channel
     const listeners = this.server._channels.get(REPLICATION_CHANNEL);
     if (listeners && listeners.size > 0) {
-      for (const conn of listeners) {
+      for (const [connId, socket] of listeners) {
         try {
           const channelBuf = Buffer.from(REPLICATION_CHANNEL + '\0', 'utf8');
           const payloadBuf = Buffer.from(payload + '\0', 'utf8');
@@ -62,10 +62,10 @@ export class ReplicationPublisher {
           const buf = Buffer.alloc(1 + len);
           buf[0] = 0x41; // 'A' NotificationResponse
           buf.writeInt32BE(len, 1);
-          buf.writeInt32BE(0, 5); // pid 0 for replication
+          buf.writeInt32BE(connId, 5);
           channelBuf.copy(buf, 9);
           payloadBuf.copy(buf, 9 + channelBuf.length);
-          conn.socket.write(buf);
+          socket.write(buf);
         } catch (e) {
           // Listener might be dead
         }
