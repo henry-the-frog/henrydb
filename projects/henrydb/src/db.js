@@ -2320,11 +2320,10 @@ export class Database {
             values.push(row[col.name] !== undefined ? row[col.name] : null);
           }
         } else {
-          // Position-based mapping: use only unqualified keys
-          const unqualifiedKeys = rowKeys.filter(k => !k.includes('.'));
+          // Position-based mapping: use all keys in order
           for (let i = 0; i < table.schema.length; i++) {
-            if (i < unqualifiedKeys.length) {
-              values.push(row[unqualifiedKeys[i]]);
+            if (i < rowKeys.length) {
+              values.push(row[rowKeys[i]]);
             } else {
               values.push(null);
             }
