@@ -1604,7 +1604,7 @@ export class Database {
       const optimizedAst = optimizeSelect(ast, this);
       
       // Try vectorized execution for eligible queries
-      const vecResult = this._tryVectorizedExecution(optimizedAst);
+      const vecResult = this._selectInnerCore(optimizedAst);
       if (vecResult) return vecResult;
       
       return this._selectInner(optimizedAst);
@@ -3264,7 +3264,7 @@ export class Database {
       throw new Error(`Prepared statement "${name}" already exists`);
     }
     this._preparedStatements.set(name, {
-      statement: ast.statement,
+      statement: ast.statement || (ast.sql ? parse(ast.sql) : null),
       paramTypes: ast.paramTypes || [],
     });
     return { type: 'OK', message: `PREPARE ${name}` };
@@ -3284,7 +3284,7 @@ export class Database {
     // Walk the AST and replace parameter references
     this._substituteParams(stmt, paramValues);
     
-    return this._executeAst(stmt);
+    return this.execute_ast(stmt);
   }
 
   _substituteParams(node, params) {
@@ -3313,7 +3313,7 @@ export class Database {
   }
 
   _deallocate(ast) {
-    if (ast.all) {
+    if (ast.all || (ast.name && ast.name.toUpperCase() === 'ALL')) {
       this._preparedStatements.clear();
       return { type: 'OK', message: 'DEALLOCATE ALL' };
     }
@@ -3331,7 +3331,7 @@ export class Database {
       throw new Error(`Cursor "${name}" already exists`);
     }
     // Execute the query and store the full result set
-    const result = this._executeAst(ast.query);
+    const result = this.execute_ast(ast.query);
     const rows = result && result.rows ? result.rows : [];
     this._cursors.set(name, { rows, position: 0, scroll: ast.scroll });
     return { type: 'OK', message: `DECLARE CURSOR ${name}` };
@@ -3371,7 +3371,7 @@ export class Database {
       // COPY TO — export as CSV
       let rows, columns;
       if (ast.query) {
-        const result = this._executeAst(ast.query);
+        const result = this.execute_ast(ast.query);
         rows = result.rows;
         columns = result.columns || Object.keys(rows[0] || {});
       } else {
@@ -3427,7 +3427,7 @@ export class Database {
     
     if (analyze) {
       const t0 = performance.now();
-      const result = this._executeAst(stmt);
+      const result = this.execute_ast(stmt);
       const elapsed = performance.now() - t0;
       plan[0].Plan['Actual Rows'] = result.rows?.length || 0;
       plan[0].Plan['Actual Total Time'] = +elapsed.toFixed(3);
@@ -3469,7 +3469,7 @@ export class Database {
     // Get source rows
     let sourceRows;
     if (ast.source.type === 'subquery') {
-      sourceRows = this._executeAst(ast.source.query).rows;
+      sourceRows = this.execute_ast(ast.source.query).rows;
     } else {
       sourceRows = this.execute(`SELECT * FROM ${ast.source.name}`).rows;
     }
