@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-20T15:15:32.467Z",
+  "generated": "2026-04-20T15:26:17.181Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping — git push, knowledge capture",
-    "startedAt": "2026-04-20T15:15:32.467Z",
-    "taskId": "T20"
+    "task": "Housekeeping — git push",
+    "startedAt": "2026-04-20T15:26:17.181Z",
+    "taskId": "T25"
   },
   "schedule": {
     "date": "2026-04-20",
@@ -3714,59 +3714,90 @@
       {
         "id": "T18",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB pg-server hardening or stored procedures",
         "task": null,
-        "started": "2026-04-20T15:04:05.130Z"
+        "started": "2026-04-20T15:04:05.130Z",
+        "completed": "2026-04-20T15:04:50.632Z",
+        "duration_ms": 60000,
+        "summary": "pg-server already solid (27/27 tests). Planned stored procedures Phase 1: SQL scalar functions. 2 BUILD tasks."
       },
       {
         "id": "T19",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement CREATE FUNCTION for SQL scalar functions: parser + catalog + eval",
         "plan_ref": "T18",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T15:05:00.566Z",
+        "completed": "2026-04-20T15:12:08.491Z",
+        "duration_ms": 600000,
+        "summary": "CREATE FUNCTION implemented: parser (with dollar-quoting), function catalog, UDF evaluation with parameter binding. Works with all SQL expressions."
       },
       {
         "id": "T31",
         "mode": "BUILD",
         "task": "Add SQL scalar function tests: basic, nested, WHERE clause, NULL handling",
-        "status": "upcoming",
-        "plan_ref": "T18"
+        "status": "done",
+        "plan_ref": "T18",
+        "started": "2026-04-20T15:12:28.203Z",
+        "completed": "2026-04-20T15:15:19.419Z",
+        "duration_ms": 180000,
+        "summary": "10 scalar function tests: basic, concat, WHERE, NULL, nested, OR REPLACE, table data, CASE, ORDER BY. All pass."
       },
       {
         "id": "T20",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping — git push, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping — git push, knowledge capture",
+        "started": "2026-04-20T15:15:32.431Z",
+        "completed": "2026-04-20T15:15:53.477Z",
+        "duration_ms": 15000,
+        "summary": "Git push synced."
       },
       {
         "id": "T21",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Query compilation research: copy-and-patch vs traditional codegen",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T15:16:01.598Z",
+        "completed": "2026-04-20T15:16:58.769Z",
+        "duration_ms": 120000,
+        "summary": "Researched copy-and-patch (VLDB 2023). Not directly applicable to JS (native code patching). HenryDB already has push-based pipeline compilation. Real opportunity: vectorized batch execution with typed arrays. Notes in scratch."
       },
       {
         "id": "T22",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Evening direction: most interesting open problem?"
+        "status": "done",
+        "task": "Evening direction: most interesting open problem?",
+        "started": "2026-04-20T15:17:22.924Z",
+        "completed": "2026-04-20T15:17:33.151Z",
+        "duration_ms": 15000,
+        "summary": "Most interesting: vectorized execution (columnar batches + typed arrays). Continue queue, prototype if time allows."
       },
       {
         "id": "T23",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB test suite health — remaining failures and parser edge cases",
-        "task": null
+        "task": null,
+        "started": "2026-04-20T15:17:43.216Z"
       },
       {
         "id": "T24",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Investigate remaining 5 test failures — categorize as timeout vs real bug",
         "plan_ref": "T23",
         "project": "henrydb"
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Fix any real bugs found in remaining failures",
+        "status": "upcoming",
+        "plan_ref": "T23"
       },
       {
         "id": "T25",
@@ -3785,13 +3816,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 24,
-    "blocksTotal": 31,
+    "blocksCompleted": 30,
+    "blocksTotal": 32,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 5,
-      "BUILD": 10,
-      "MAINTAIN": 4
+      "THINK": 6,
+      "PLAN": 6,
+      "BUILD": 12,
+      "MAINTAIN": 5,
+      "EXPLORE": 1
     }
   },
   "artifacts": [
