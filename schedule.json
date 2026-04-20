@@ -788,9 +788,30 @@
     {
       "id": "T74",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T16:33:04.012Z"
+      "started": "2026-04-20T16:33:04.012Z",
+      "completed": "2026-04-20T16:33:20.365Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix ALTER TABLE + MVCC visibility interaction (SELECT empty after ALTER)",
+      "project": "henrydb",
+      "started": "2026-04-20T16:35:24.935Z",
+      "completed": "2026-04-20T16:39:40.066Z",
+      "duration_ms": 600000,
+      "summary": "ALL TESTS PASS! 4108/4116, 0 failures! Fixed ALTER TABLE + MVCC: rebuild version maps after DDL, use origScan/origDelete to bypass interceptors during DDL. Integration test passes."
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Final session summary + git push",
+      "started": "2026-04-20T16:40:00.261Z"
     }
   ],
   "focusProjects": [
@@ -1086,6 +1107,14 @@
     {
       "time": "2026-04-20T16:22:25.996Z",
       "msg": "Added T74 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T16:35:24.584Z",
+      "msg": "Added T75 (BUILD) after end: BUILD: Fix ALTER TABLE + MVCC visibility interaction (SELECT empty after ALTER)"
+    },
+    {
+      "time": "2026-04-20T16:35:24.703Z",
+      "msg": "Added T76 (MAINTAIN) after end: MAINTAIN: Final session summary + git push"
     }
   ]
 }
