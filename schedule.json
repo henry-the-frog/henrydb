@@ -460,9 +460,52 @@
     {
       "id": "T43",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push, daily log update, scratch index update",
-      "started": "2026-04-20T15:37:25.747Z"
+      "started": "2026-04-20T15:37:25.747Z",
+      "completed": "2026-04-20T15:38:13.477Z",
+      "duration_ms": 30000,
+      "summary": "Git push synced. Scratch index updated with new notes."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement VectorizedSort: external merge sort for vectorized batches",
+      "project": "henrydb",
+      "started": "2026-04-20T15:38:46.798Z",
+      "completed": "2026-04-20T15:39:59.814Z",
+      "duration_ms": 180000,
+      "summary": "VectorizedSort (multi-key ASC/DESC, batched output) + VectorizedDistinct (hash-based, zero-copy). Both working."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement VectorizedDistinct: hash-based deduplication",
+      "project": "henrydb",
+      "started": "2026-04-20T15:40:08.688Z",
+      "completed": "2026-04-20T15:40:08.831Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: Already implemented in T44."
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Integration: wire vectorized engine into CompiledQueryEngine for auto-vectorization",
+      "project": "henrydb",
+      "started": "2026-04-20T15:40:17.261Z",
+      "completed": "2026-04-20T15:42:54.564Z",
+      "duration_ms": 300000,
+      "summary": "Auto-vectorization wired in: tables with 500+ rows use vectorized execution for eligible queries. Falls back to Volcano. 92/92 existing tests pass."
+    },
+    {
+      "id": "T47",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: final git push + daily log",
+      "started": "2026-04-20T15:43:19.963Z"
     }
   ],
   "focusProjects": [
@@ -634,6 +677,22 @@
     {
       "time": "2026-04-20T15:34:33.048Z",
       "msg": "Added T43 (MAINTAIN) after end: MAINTAIN: git push, daily log update, scratch index update"
+    },
+    {
+      "time": "2026-04-20T15:38:33.686Z",
+      "msg": "Added T44 (BUILD) after end: Implement VectorizedSort: external merge sort for vectorized batches"
+    },
+    {
+      "time": "2026-04-20T15:38:33.804Z",
+      "msg": "Added T45 (BUILD) after end: Implement VectorizedDistinct: hash-based deduplication"
+    },
+    {
+      "time": "2026-04-20T15:38:33.922Z",
+      "msg": "Added T46 (BUILD) after end: Integration: wire vectorized engine into CompiledQueryEngine for auto-vectorization"
+    },
+    {
+      "time": "2026-04-20T15:38:34.040Z",
+      "msg": "Added T47 (MAINTAIN) after end: MAINTAIN: final git push + daily log"
     }
   ]
 }
