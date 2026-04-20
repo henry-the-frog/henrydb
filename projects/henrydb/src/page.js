@@ -136,7 +136,7 @@ export function encodeTuple(values) {
   for (const val of values) {
     if (val === null || val === undefined) {
       parts.push(new Uint8Array([TYPE_NULL, 0, 0]));
-    } else if (typeof val === 'number' && Number.isInteger(val)) {
+    } else if (typeof val === 'number' && Number.isInteger(val) && val >= -2147483648 && val <= 2147483647) {
       const buf = new ArrayBuffer(4);
       new DataView(buf).setInt32(0, val);
       parts.push(new Uint8Array([TYPE_INT, 0, 4]));

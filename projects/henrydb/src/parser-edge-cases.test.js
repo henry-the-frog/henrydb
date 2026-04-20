@@ -67,6 +67,16 @@ describe('Parser Edge Cases — Numbers', () => {
     assert.equal(r.rows[0].val, 2147483647);
   });
 
+  it('large integers beyond INT32 range', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (val INT)');
+    db.execute('INSERT INTO t VALUES (999999999999)');
+    db.execute('INSERT INTO t VALUES (-999999999999)');
+    const r = db.execute('SELECT val FROM t ORDER BY val');
+    assert.equal(r.rows[0].val, -999999999999);
+    assert.equal(r.rows[1].val, 999999999999);
+  });
+
   it('float precision', () => {
     const db = new Database();
     db.execute('CREATE TABLE t (val FLOAT)');
