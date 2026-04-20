@@ -41,7 +41,10 @@ export class Database {
     this._functions = new Map(); // name -> { params, returnType, body, language }
     
     // Prepared statements catalog
-    this._preparedStatements = new Map(); // name -> { statement (AST), paramTypes }
+    this._preparedStatements = new Map();
+    
+    // Cursor catalog
+    this._cursors = new Map(); // name -> { rows, position }
   }
 
   /** Case-insensitive table lookup */
@@ -3314,6 +3317,47 @@ export class Database {
     }
     this._preparedStatements.delete(name);
     return { type: 'OK', message: `DEALLOCATE ${name}` };
+  }
+
+  _declareCursor(ast) {
+    const name = ast.name.toLowerCase();
+    if (this._cursors.has(name)) {
+      throw new Error(`Cursor "${name}" already exists`);
+    }
+    // Execute the query and store the full result set
+    const result = this._executeAst(ast.query);
+    const rows = result && result.rows ? result.rows : [];
+    this._cursors.set(name, { rows, position: 0, scroll: ast.scroll });
+    return { type: 'OK', message: `DECLARE CURSOR ${name}` };
+  }
+
+  _fetch(ast) {
+    const name = ast.name.toLowerCase();
+    const cursor = this._cursors.get(name);
+    if (!cursor) {
+      throw new Error(`Cursor "${name}" does not exist`);
+    }
+    
+    const count = ast.count === Infinity ? cursor.rows.length - cursor.position : ast.count;
+    const start = cursor.position;
+    const end = Math.min(start + count, cursor.rows.length);
+    const rows = cursor.rows.slice(start, end);
+    cursor.position = end;
+    
+    return { rows };
+  }
+
+  _closeCursor(ast) {
+    if (ast.all) {
+      this._cursors.clear();
+      return { type: 'OK', message: 'CLOSE ALL' };
+    }
+    const name = ast.name.toLowerCase();
+    if (!this._cursors.has(name)) {
+      throw new Error(`Cursor "${name}" does not exist`);
+    }
+    this._cursors.delete(name);
+    return { type: 'OK', message: `CLOSE ${name}` };
   }
 
   _callUserFunction(funcDef, args, row) {
