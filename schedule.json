@@ -2636,10 +2636,21 @@
     {
       "id": "T246",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Depth check: try to break HenryDB with adversarial queries not in test suite",
       "project": "henrydb",
-      "started": "2026-04-20T03:04:25.615Z"
+      "started": "2026-04-20T03:04:25.615Z",
+      "completed": "2026-04-20T03:08:42.527Z",
+      "duration_ms": 600000,
+      "summary": "Adversarial testing found 2 bugs: (1) UPDATE SET case-insensitive column matching for keyword columns, (2) || operator not propagating NULL. Both fixed. Also verified: div-by-zero, NULLS FIRST, recursive CTE cycles, CASE+aggregates, COALESCE, INSERT...SELECT all correct."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Write regression tests for the 4 bugs fixed tonight (keyword columns, NULL concat, index UPDATE/DELETE, COUNT(*))",
+      "project": "henrydb",
+      "started": "2026-04-20T03:09:00.140Z"
     },
     {
       "id": "T241",
@@ -3673,6 +3684,14 @@
     {
       "time": "2026-04-20T03:04:20.863Z",
       "msg": "Moved T241 after T246"
+    },
+    {
+      "time": "2026-04-20T03:08:53.133Z",
+      "msg": "Added T247 (BUILD) after end: Write regression tests for the 4 bugs fixed tonight (keyword columns, NULL concat, index UPDATE/DELETE, COUNT(*))"
+    },
+    {
+      "time": "2026-04-20T03:08:53.253Z",
+      "msg": "Moved T241 after T247"
     }
   ]
 }
