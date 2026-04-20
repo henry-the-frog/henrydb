@@ -2675,6 +2675,29 @@ export class Database {
   }
 
   _applySelectColumns(ast, rows) {
+    // Pre-compute subquery aliases referenced by ORDER BY so sort can access them
+    if (ast.orderBy && ast.columns) {
+      const orderByAliases = new Set(ast.orderBy.map(o => typeof o.column === 'string' ? o.column : null).filter(Boolean));
+      const subqueryAliases = ast.columns.filter(c => 
+        (c.type === 'subquery' || c.type === 'scalar_subquery') &&
+        orderByAliases.has(c.alias || c.name)
+      );
+      if (subqueryAliases.length > 0) {
+        for (const row of rows) {
+          for (const col of subqueryAliases) {
+            const alias = col.alias || col.name;
+            if (row[alias] === undefined) {
+              try {
+                row[alias] = this._evalValue(col, row);
+              } catch (e) {
+                row[alias] = null;
+              }
+            }
+          }
+        }
+      }
+    }
+    
     // Apply ORDER BY (with sort elimination for BTree tables)
     if (ast.orderBy && !this._canEliminateSort(ast)) {
       rows.sort((a, b) => {
@@ -3511,6 +3534,8 @@ export class Database {
           // Simple column alias: val as v → resolve as column_ref
           aliasExprs.set(col.alias, { type: 'column_ref', name: col.name });
         } else if (col.type === 'aggregate') {
+          aliasExprs.set(col.alias, col);
+        } else if (col.type === 'scalar_subquery') {
           aliasExprs.set(col.alias, col);
         }
       }
