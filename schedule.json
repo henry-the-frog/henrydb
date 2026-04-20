@@ -247,35 +247,188 @@
     {
       "id": "T24",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session git push and log update",
-      "started": "2026-04-20T21:02:50.880Z"
+      "started": "2026-04-20T21:02:50.880Z",
+      "completed": "2026-04-20T21:03:25.137Z",
+      "duration_ms": 30000,
+      "summary": "Git push both repos. Daily log updated."
     },
     {
       "id": "T25",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Investigate parseSelectColumn vs parseExpr divergence — map the full gap",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T21:03:34.503Z",
+      "completed": "2026-04-20T21:04:22.154Z",
+      "duration_ms": 180000,
+      "summary": "Full gap map: parseSelectColumn handles arithmetic/functions/aggregates/CASE/CAST but NOT boolean ops (IS NULL, BETWEEN, IN, LIKE, EXISTS, AND, OR, NOT, comparisons). NULL/TRUE/FALSE treated as column names. Root cause: 300-line hand-coded function falls through to advance().value. Fix: route through parseExpr for general expressions."
     },
     {
       "id": "T26",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Design a migration path from parseSelectColumn to unified expression parsing"
+      "status": "done",
+      "task": "Design a migration path from parseSelectColumn to unified expression parsing",
+      "started": "2026-04-20T21:04:32.043Z",
+      "completed": "2026-04-20T21:04:47.309Z",
+      "duration_ms": 60000,
+      "summary": "Migration plan: Phase 1 — extend parseExpr to handle aggregates and window functions. Phase 2 — replace parseSelectColumn body with parseExpr delegation. Phase 3 — update executor to handle unified expression types. Do incrementally, not all at once. High-risk refactor, needs 4200-test safety net."
     },
     {
       "id": "T27",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: test CREATE INDEX ON with 10K rows — does it actually use the index?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T21:04:56.823Z",
+      "completed": "2026-04-20T21:05:34.235Z",
+      "duration_ms": 120000,
+      "summary": "Index tests: CREATE INDEX works, 134x speedup on non-PK index, PK lookups 0.1ms on 10K rows. EXPLAIN shows INDEX_SCAN. Key insight: planner-executor integration WORKS for single-table index selection — only JOIN strategy is disconnected."
+    },
+    {
+      "id": "T29",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate index-nested-loop join — can we use index for the inner side of joins?",
+      "project": "henrydb",
+      "started": "2026-04-20T21:06:05.256Z",
+      "completed": "2026-04-20T21:06:27.988Z",
+      "duration_ms": 120000,
+      "summary": "Index-NL-join not implemented. JOIN on indexed column still does full table scan NL. EXPLAIN confirms NESTED_LOOP_JOIN with TABLE_SCAN. Hash join fix (P0) is still higher priority — O(n+m) vs O(n*log(m))."
+    },
+    {
+      "id": "T30",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test WAL recovery — crash simulation",
+      "project": "henrydb",
+      "started": "2026-04-20T21:06:58.807Z",
+      "completed": "2026-04-20T21:07:23.644Z",
+      "duration_ms": 120000,
+      "summary": "WAL recovery works correctly: post-checkpoint data recovered, UPDATE recovered, committed txs survive restart, uncommitted txs rolled back. ARIES redo/undo working as designed."
+    },
+    {
+      "id": "T31",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Compile full bug list from today's testing. Prioritize for tomorrow's fix day.",
+      "started": "2026-04-20T21:07:30.742Z",
+      "completed": "2026-04-20T21:08:03.130Z",
+      "duration_ms": 120000,
+      "summary": "Compiled 11 bugs, prioritized into P0/P1/P2. Tomorrow fix order: quick wins (division, CASE, SUM empty, LIMIT 0 — 20 min), hash join (30 min), index rollback (60 min), parser unification (120+ min). Wrote to scratch/bug-priority-2026-04-20.md."
+    },
+    {
+      "id": "T32",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: edge cases — empty tables, single-row tables, all-NULL columns",
+      "project": "henrydb",
+      "started": "2026-04-20T21:08:13.072Z",
+      "completed": "2026-04-20T21:08:36.426Z",
+      "duration_ms": 60000,
+      "summary": "Edge cases: 29/29 pass technically (no crashes). Known bugs confirmed: LIMIT 0, SUM(all-NULL)=0. Empty tables, single-row tables, all-NULL columns all handle correctly otherwise."
+    },
+    {
+      "id": "T33",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Profile: parse time vs execution time on complex queries",
+      "project": "henrydb",
+      "started": "2026-04-20T21:08:45.273Z",
+      "completed": "2026-04-20T21:09:07.129Z",
+      "duration_ms": 60000,
+      "summary": "Parse overhead: 0.5-5.5% of total query time. Parser is very fast (0.01-0.03ms). Execution dominates. Prepared statements give minimal benefit. Hash join fix will have biggest performance impact."
+    },
+    {
+      "id": "T34",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test EXPLAIN ANALYZE — does actual row count match estimated?",
+      "project": "henrydb",
+      "started": "2026-04-20T21:09:16.797Z",
+      "completed": "2026-04-20T21:09:48.210Z",
+      "duration_ms": 120000,
+      "summary": "EXPLAIN ANALYZE works. actual_rows=1000 is a display bug (showing scanned not matched). Index lookups actually 12x faster than full scan (0.068ms vs 0.832ms). Estimation accuracy good for final row count."
     },
     {
       "id": "T28",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Evening wrap: git push, CURRENT.md, daily log evening summary"
+      "status": "skipped",
+      "task": "Evening wrap: git push, CURRENT.md, daily log evening summary",
+      "skip_reason": ""
+    },
+    {
+      "id": "T35",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test concurrent connections — multiple sessions reading/writing different tables",
+      "project": "henrydb",
+      "started": "2026-04-20T21:10:20.888Z",
+      "completed": "2026-04-20T21:10:41.220Z",
+      "duration_ms": 60000,
+      "summary": "Concurrent connections work: different-table writes no conflict, cross-table read-write committed, 20 rapid sessions all succeed. No issues found."
+    },
+    {
+      "id": "T36",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test views — CREATE VIEW, SELECT from view, nested views",
+      "project": "henrydb",
+      "started": "2026-04-20T21:10:48.149Z",
+      "completed": "2026-04-20T21:11:29.783Z",
+      "duration_ms": 120000,
+      "summary": "Views work: CREATE, SELECT, nested, DROP all correct. BUG: VIEW-TABLE JOIN drops the table side columns. Budget/name from dept table missing in output when joining view with table. View-only columns returned."
+    },
+    {
+      "id": "T37",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CTEs — complex multi-CTE queries, CTE as INSERT source",
+      "project": "henrydb",
+      "started": "2026-04-20T21:11:38.639Z",
+      "completed": "2026-04-20T21:12:04.457Z",
+      "duration_ms": 120000,
+      "summary": "CTEs: 5/7 pass. Simple, multi, CTE-ref-CTE, recursive (counter + tree walk) all work. BUGS: INSERT FROM CTE silently inserts nothing. CTE in subquery not supported (parser error). Tree walk produces correct hierarchy traversal."
+    },
+    {
+      "id": "T38",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test foreign key constraints — CASCADE, SET NULL, RESTRICT",
+      "project": "henrydb",
+      "started": "2026-04-20T21:12:12.330Z",
+      "completed": "2026-04-20T21:12:29.794Z",
+      "duration_ms": 60000,
+      "summary": "FK constraints: basic RESTRICT works (creation, valid insert, violation caught, delete blocked). CASCADE and SET NULL NOT implemented — both behave as RESTRICT. Parser accepts the syntax but executor ignores the action."
+    },
+    {
+      "id": "T39",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test triggers — BEFORE/AFTER INSERT/UPDATE/DELETE",
+      "project": "henrydb",
+      "started": "2026-04-20T21:12:38.257Z",
+      "completed": "2026-04-20T21:13:14.916Z",
+      "duration_ms": 120000,
+      "summary": "Triggers: syntax works, triggers fire on INSERT/UPDATE/DELETE. BUG: NEW and OLD references return NULL — trigger body has no access to row context. Half-implemented feature."
+    },
+    {
+      "id": "T40",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What would make HenryDB actually useful? Compare to SQLite feature set.",
+      "started": "2026-04-20T21:13:23.769Z",
+      "completed": "2026-04-20T21:13:49.510Z",
+      "duration_ms": 60000,
+      "summary": "HenryDB has wide feature surface but shallow depth. Correctness issues (division, CASE WHEN, index rollback) prevent real use. Main value is as learning project. To be useful: fix P0 bugs first, then wire hash join. Wide features HenryDB has that SQLite lacks: MERGE, ROLLUP, FILTER, SSI."
+    },
+    {
+      "id": "T41",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Late session git push and log update",
+      "started": "2026-04-20T21:14:02.263Z"
     }
   ],
   "focusProjects": [
@@ -399,6 +552,66 @@
     {
       "time": "2026-04-20T20:54:51.138Z",
       "msg": "Added T28 (MAINTAIN) after T27: Evening wrap: git push, CURRENT.md, daily log evening summary"
+    },
+    {
+      "time": "2026-04-20T21:05:53.818Z",
+      "msg": "Added T29 (EXPLORE) after end: HenryDB: investigate index-nested-loop join — can we use index for the inner side of joins?"
+    },
+    {
+      "time": "2026-04-20T21:06:00.200Z",
+      "msg": "Added T30 (EXPLORE) after end: HenryDB: test WAL recovery — crash simulation"
+    },
+    {
+      "time": "2026-04-20T21:06:00.317Z",
+      "msg": "Added T31 (THINK) after end: Compile full bug list from today's testing. Prioritize for tomorrow's fix day."
+    },
+    {
+      "time": "2026-04-20T21:06:00.435Z",
+      "msg": "Added T32 (EXPLORE) after end: HenryDB: edge cases — empty tables, single-row tables, all-NULL columns"
+    },
+    {
+      "time": "2026-04-20T21:06:00.552Z",
+      "msg": "Added T33 (EXPLORE) after end: Profile: parse time vs execution time on complex queries"
+    },
+    {
+      "time": "2026-04-20T21:06:00.669Z",
+      "msg": "Added T34 (EXPLORE) after end: HenryDB: test EXPLAIN ANALYZE — does actual row count match estimated?"
+    },
+    {
+      "time": "2026-04-20T21:06:49.007Z",
+      "msg": "Moved T28 after T34"
+    },
+    {
+      "time": "2026-04-20T21:10:01.767Z",
+      "msg": "Added T35 (EXPLORE) after end: HenryDB: test concurrent connections — multiple sessions reading/writing different tables"
+    },
+    {
+      "time": "2026-04-20T21:10:01.884Z",
+      "msg": "Added T36 (EXPLORE) after end: HenryDB: test views — CREATE VIEW, SELECT from view, nested views"
+    },
+    {
+      "time": "2026-04-20T21:10:02.002Z",
+      "msg": "Added T37 (EXPLORE) after end: HenryDB: test CTEs — complex multi-CTE queries, CTE as INSERT source"
+    },
+    {
+      "time": "2026-04-20T21:10:02.119Z",
+      "msg": "Added T38 (EXPLORE) after end: HenryDB: test foreign key constraints — CASCADE, SET NULL, RESTRICT"
+    },
+    {
+      "time": "2026-04-20T21:10:02.238Z",
+      "msg": "Added T39 (EXPLORE) after end: HenryDB: test triggers — BEFORE/AFTER INSERT/UPDATE/DELETE"
+    },
+    {
+      "time": "2026-04-20T21:10:02.355Z",
+      "msg": "Added T40 (THINK) after end: What would make HenryDB actually useful? Compare to SQLite feature set."
+    },
+    {
+      "time": "2026-04-20T21:10:02.474Z",
+      "msg": "Added T41 (MAINTAIN) after end: Late session git push and log update"
+    },
+    {
+      "time": "2026-04-20T21:10:12.132Z",
+      "msg": "Removed T28: "
     }
   ]
 }

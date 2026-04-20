@@ -1,42 +1,47 @@
-# Parser Expression Audit Pattern
+# parseSelectColumn vs parseExpr Gap Analysis
 
-uses: 1
-created: 2026-04-13
-tags: henrydb, parser, sql, bug-pattern
+## What parseSelectColumn handles (works in SELECT)
+- Number literals ✅
+- String literals ✅  
+- Column references ✅
+- Table.column references ✅
+- Arithmetic (+, -, *, /, %) ✅
+- Parenthesized expressions ✅ (but only arithmetic inside)
+- Function calls (UPPER, LENGTH, etc.) ✅
+- Aggregate functions (COUNT, SUM, etc.) ✅
+- Window functions (RANK, ROW_NUMBER, etc.) ✅
+- CASE WHEN ... THEN ... END ✅
+- CAST(expr AS type) ✅
+- Scalar subqueries ((SELECT ...)) ✅
+- COALESCE, NULLIF ✅
+- EXTRACT, DATE_TRUNC ✅
+- ARRAY[...] constructor ✅
+- String concatenation (||) ✅
 
-## The Bug
+## What only parseExpr handles (BROKEN in SELECT)
+- NULL literal → treated as column name "NULL"
+- TRUE/FALSE literals → treated as column names
+- IS NULL / IS NOT NULL → returns column headers as values
+- BETWEEN x AND y → returns column name as value
+- IN (list) → returns column name as value
+- LIKE / ILIKE → returns left operand value
+- EXISTS(...) → returns keyword "EXISTS" as column name
+- Comparisons (>, <, =, <>) → returns left operand
+- Boolean operators (AND, OR) → returns first value
+- NOT → returns keyword "NOT" as column name
 
-SQL parser used `parsePrimary()` (single token) instead of `parseExpression()` (full expression tree) in 7+ locations. This meant any compound expression was silently truncated:
+## Root Cause
+`parseSelectColumn` is a ~300 line function with hand-coded special cases. When it reaches the end without matching any special case, it does `const col = advance().value` which treats ANY token as a column name. It never delegates to `parseExpr()` for boolean/comparison expressions.
 
-- `WHERE id = 2 - 1` → parsed as `WHERE id = 2` (RHS expression dropped)
-- `INSERT VALUES (5 * 20)` → parsed as `INSERT VALUES (5)`
-- `BETWEEN 1 AND 2+3` → parsed as `BETWEEN 1 AND 2`
-- `IN (1+1, 2*3)` → only parsed first token of each element
+## Fix Strategy: Route Through parseExpr
+The cleanest fix would be to make parseSelectColumn use parseExpr for general expressions:
+1. Try parseExpr() for the column expression
+2. Check for AS alias after
+3. Keep special cases only for things parseExpr doesn't handle (window functions, aggregates)
 
-## Locations Found (Apr 13)
+This is a major refactor but it's the right solution — the dual-path parsing is the source of all these bugs.
 
-1. Comparison RHS (CRITICAL — `WHERE` clauses)
-2. BETWEEN lower/upper bounds
-3. INSERT VALUES list items
-4. IN/NOT IN list items
-5. UPDATE SET subqueries
-6. Window PARTITION BY expressions
-7. CREATE TABLE DEFAULT values
-8. LIMIT/OFFSET expressions
-9. RETURNING expressions
-
-## The Fix
-
-Upgraded all 7+ `parsePrimary()` calls to `parseExpression()` with appropriate precedence.
-
-## Prevention
-
-When adding a new SQL clause that accepts a value:
-1. **Always use `parseExpression()`**, not `parsePrimary()`
-2. `parsePrimary()` is ONLY for the leaf nodes of expressions (literals, column refs, function calls)
-3. Test with compound expressions: `a + b`, `a * (b + c)`, subqueries
-4. The differential fuzzer would catch many of these — run it after parser changes
-
-## Meta-Lesson
-
-This is a "copy-paste inheritance" bug. The first clause probably used `parsePrimary()` correctly (for a simple case), and subsequent clauses copied the pattern without considering expressions. **When copying parser code for a new clause, always ask: "Does this accept an expression or just a primary?"**
+## Quick Fixes (tactical)
+1. Add NULL/TRUE/FALSE literal handling before the `advance()` fallback
+2. Add IS NULL/IS NOT NULL after column parsing
+3. These are band-aids — the fundamental problem remains
