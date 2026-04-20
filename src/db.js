@@ -2537,7 +2537,7 @@ export class Database {
         const meta = table.indexMeta && table.indexMeta.get(colName);
         if (meta && meta.expressions) {
           for (const expr of meta.expressions) {
-            if (expr) this._collectColumnRefs(expr).forEach(c => indexedColumns.add(c));
+            if (expr) this._collectColumnRefs(expr).forEach(c => indexedColumns.add(c.name || c));
           }
         }
       }
@@ -5062,7 +5062,9 @@ export class Database {
   /** Collect all column_ref names from an expression AST */
   _collectColumnRefs(expr) {
     if (!expr) return [];
-    if (expr.type === 'column_ref') return [expr.name];
+    if (expr.type === 'column_ref') {
+      return [expr];
+    }
     const refs = [];
     if (expr.left) refs.push(...this._collectColumnRefs(expr.left));
     if (expr.right) refs.push(...this._collectColumnRefs(expr.right));
