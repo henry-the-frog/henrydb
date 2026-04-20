@@ -5,6 +5,8 @@
 import { QueryPlanner } from './planner.js';
 import { compilePipelineJIT, JITCompiledIterator, compilePipeline, CompiledIterator } from './pipeline-compiler.js';
 import { SeqScan, Filter, Project, Limit, HashJoin, Sort, HashAggregate } from './volcano.js';
+import { VectorizedScan, VectorizedFilter, VectorizedProject, VectorizedSort,
+         VectorizedLimit, VectorizedHashAggregate, VectorizedDistinct, collectAll } from './vectorized.js';
 
 /**
  * CompiledQueryEngine — takes a Database, plans queries, and compiles execution.
@@ -67,6 +69,15 @@ export class CompiledQueryEngine {
 
     const joins = ast.joins || [];
 
+    // Try vectorized execution first for single-table queries
+    if (joins.length === 0) {
+      const vecResult = this._tryVectorized(ast, table);
+      if (vecResult) {
+        this.stats.queriesVectorized = (this.stats.queriesVectorized || 0) + 1;
+        return vecResult;
+      }
+    }
+
     // Single-table query: compile scan + filter + project
     if (joins.length === 0) {
       return this._compileSingleTable(ast, table, plan);
@@ -74,6 +85,150 @@ export class CompiledQueryEngine {
 
     // Multi-table: compile join strategy from plan
     return this._compileJoinQuery(ast, table, plan, joins);
+  }
+
+  /**
+   * Try to execute using vectorized operators.
+   * Returns { rows: [...] } or null if not applicable.
+   */
+  _tryVectorized(ast, table) {
+    try {
+      const schema = table.schema;
+      const colNames = schema.map(c => c.name);
+      
+      // Start with scan
+      let op = new VectorizedScan(table.heap, schema, ast.from.table);
+      
+      // Add filter if WHERE clause exists
+      if (ast.where) {
+        const filterFn = this._buildVectorizedFilter(ast.where, colNames);
+        if (!filterFn) return null; // Can't vectorize this filter
+        op = new VectorizedFilter(op, filterFn);
+      }
+      
+      // Add projection
+      if (ast.columns && !ast.columns.some(c => c === '*' || c.name === '*')) {
+        const projections = [];
+        for (const col of ast.columns) {
+          if (col.type === 'column' || col.type === 'column_ref') {
+            const name = col.alias || col.name;
+            const srcName = col.name;
+            projections.push({
+              name,
+              compute: (batch, i) => batch.getValue(srcName, i),
+            });
+          } else if (col.type === 'expression' && col.expr) {
+            const computeFn = this._buildVectorizedExpr(col.expr, colNames);
+            if (!computeFn) return null;
+            projections.push({ name: col.alias || 'expr', compute: computeFn });
+          } else {
+            return null; // Can't vectorize complex projection
+          }
+        }
+        if (projections.length > 0) {
+          op = new VectorizedProject(op, projections);
+        }
+      }
+      
+      // Add DISTINCT
+      if (ast.distinct) {
+        const outputCols = ast.columns?.map(c => c.alias || c.name) || colNames;
+        op = new VectorizedDistinct(op, outputCols);
+      }
+      
+      // Add ORDER BY
+      if (ast.orderBy && ast.orderBy.length > 0) {
+        const orderBy = ast.orderBy.map(o => ({
+          column: o.column || o.name,
+          direction: (o.direction || 'ASC').toUpperCase(),
+        }));
+        op = new VectorizedSort(op, orderBy);
+      }
+      
+      // Add LIMIT
+      if (ast.limit?.value) {
+        op = new VectorizedLimit(op, ast.limit.value);
+      }
+      
+      // Execute
+      const rows = collectAll(op);
+      return { rows };
+    } catch {
+      return null; // Fall back to compiled/interpreted
+    }
+  }
+
+  /**
+   * Build a vectorized filter function from a WHERE clause AST.
+   */
+  _buildVectorizedFilter(where, colNames) {
+    if (!where) return null;
+    
+    switch (where.type) {
+      case '=': case '!=': case '<': case '>': case '<=': case '>=': {
+        const leftFn = this._buildVectorizedExpr(where.left, colNames);
+        const rightFn = this._buildVectorizedExpr(where.right, colNames);
+        if (!leftFn || !rightFn) return null;
+        const op = where.type;
+        return (batch, i) => {
+          const l = leftFn(batch, i), r = rightFn(batch, i);
+          switch (op) {
+            case '=': return l === r || l == r;
+            case '!=': return l !== r && l != r;
+            case '<': return l < r;
+            case '>': return l > r;
+            case '<=': return l <= r;
+            case '>=': return l >= r;
+          }
+        };
+      }
+      case 'AND': {
+        const leftFn = this._buildVectorizedFilter(where.left, colNames);
+        const rightFn = this._buildVectorizedFilter(where.right, colNames);
+        if (!leftFn || !rightFn) return null;
+        return (batch, i) => leftFn(batch, i) && rightFn(batch, i);
+      }
+      case 'OR': {
+        const leftFn = this._buildVectorizedFilter(where.left, colNames);
+        const rightFn = this._buildVectorizedFilter(where.right, colNames);
+        if (!leftFn || !rightFn) return null;
+        return (batch, i) => leftFn(batch, i) || rightFn(batch, i);
+      }
+      default:
+        return null; // Can't vectorize this expression type
+    }
+  }
+
+  /**
+   * Build a vectorized expression evaluator.
+   */
+  _buildVectorizedExpr(expr, colNames) {
+    if (!expr) return null;
+    
+    if (expr.type === 'column' || expr.type === 'column_ref') {
+      const name = expr.name;
+      return (batch, i) => batch.getValue(name, i);
+    }
+    if (expr.type === 'literal' || expr.type === 'number' || expr.type === 'string') {
+      const val = expr.value;
+      return () => val;
+    }
+    if (expr.type === 'binary_op' || ['+', '-', '*', '/'].includes(expr.type)) {
+      const leftFn = this._buildVectorizedExpr(expr.left, colNames);
+      const rightFn = this._buildVectorizedExpr(expr.right, colNames);
+      if (!leftFn || !rightFn) return null;
+      const op = expr.type === 'binary_op' ? expr.op : expr.type;
+      return (batch, i) => {
+        const l = leftFn(batch, i), r = rightFn(batch, i);
+        switch (op) {
+          case '+': return l + r;
+          case '-': return l - r;
+          case '*': return l * r;
+          case '/': return r !== 0 ? l / r : null;
+        }
+      };
+    }
+    return null;
   }
 
   /**

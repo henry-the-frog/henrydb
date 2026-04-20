@@ -1570,6 +1570,11 @@ export class Database {
     try {
       // Optimize: decorrelate subqueries
       const optimizedAst = optimizeSelect(ast, this);
+      
+      // Try vectorized execution for eligible queries
+      const vecResult = this._tryVectorizedExecution(optimizedAst);
+      if (vecResult) return vecResult;
+      
       return this._selectInner(optimizedAst);
     } finally {
       // Clean up temporary CTE views
@@ -1659,6 +1664,33 @@ export class Database {
       }
     }
     return result;
+  }
+
+  /**
+   * Try vectorized execution for simple queries.
+   * Returns { rows, columns } or null if not eligible.
+   */
+  _tryVectorizedExecution(ast) {
+    try {
+      // Only for single-table SELECT without subqueries, GROUP BY, HAVING, UNION
+      if (!ast.from?.table) return null;
+      if (ast.joins?.length) return null;
+      if (ast.groupBy || ast.having) return null;
+      if (ast.type !== 'SELECT') return null;
+      
+      const table = this.tables.get(ast.from.table) || this.tables.get(ast.from.table.toLowerCase());
+      if (!table) return null;
+      
+      // Need enough rows to benefit (vectorized has overhead for small tables)
+      const stats = this._tableStats.get(ast.from.table);
+      const rowCount = stats?.rowCount || table.heap.rowCount || 0;
+      if (rowCount < 500) return null;
+      
+      const engine = new CompiledQueryEngine(this);
+      return engine._tryVectorized(ast, table);
+    } catch {
+      return null;
+    }
   }
 
   _selectInner(ast) {
