@@ -42,9 +42,21 @@ export class ColumnStore {
     return col.reduce((a, b) => a + b, 0) / col.length;
   }
 
-  /** Column-wise MIN/MAX. */
-  min(name) { return Math.min(...this._columns.get(name)); }
-  max(name) { return Math.max(...this._columns.get(name)); }
+  /** Column-wise MIN/MAX (safe for large arrays — no spread). */
+  min(name) {
+    const col = this._columns.get(name);
+    if (col.length === 0) return undefined;
+    let m = col[0];
+    for (let i = 1; i < col.length; i++) if (col[i] < m) m = col[i];
+    return m;
+  }
+  max(name) {
+    const col = this._columns.get(name);
+    if (col.length === 0) return undefined;
+    let m = col[0];
+    for (let i = 1; i < col.length; i++) if (col[i] > m) m = col[i];
+    return m;
+  }
 
   /** Filter: return row indices where predicate is true. */
   filter(name, predicate) {
@@ -83,8 +95,8 @@ export class ColumnStore {
       if (aggFn === 'sum') agg = values.reduce((a, b) => a + b, 0);
       else if (aggFn === 'avg') agg = values.reduce((a, b) => a + b, 0) / values.length;
       else if (aggFn === 'count') agg = values.length;
-      else if (aggFn === 'min') agg = Math.min(...values);
-      else if (aggFn === 'max') agg = Math.max(...values);
+      else if (aggFn === 'min') { agg = values[0]; for (let j = 1; j < values.length; j++) if (values[j] < agg) agg = values[j]; }
+      else if (aggFn === 'max') { agg = values[0]; for (let j = 1; j < values.length; j++) if (values[j] > agg) agg = values[j]; }
       result.push({ [groupCol]: key, [aggFn]: agg });
     }
     return result;
