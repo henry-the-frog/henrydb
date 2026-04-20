@@ -1206,19 +1206,25 @@ export function parse(sql) {
         while (match(',')) args.push(parseExpr());
         expect(')');
       }
-      // Check for arithmetic after function call
+      // Check for arithmetic and concat after function call
       let node = { type: 'function_call', func, args };
-      while (['PLUS', 'MINUS', 'SLASH', 'MOD'].includes(peek().type) || (peek().type === '*' && tokens[pos+1]?.type !== ')')) {
+      while (['PLUS', 'MINUS', 'SLASH', 'MOD', 'CONCAT_OP', 'CONCAT'].includes(peek().type) || (peek().type === '*' && tokens[pos+1]?.type !== ')')) {
         const t = peek().type;
-        const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
-        advance();
-        const right = parsePrimary();
-        node = { type: 'arith', op, left: node, right };
+        if (t === 'CONCAT_OP' || t === 'CONCAT') {
+          advance();
+          const right = parsePrimary();
+          node = { type: 'function_call', func: 'CONCAT', args: [node, right] };
+        } else {
+          const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
+          advance();
+          const right = parsePrimary();
+          node = { type: 'arith', op, left: node, right };
+        }
       }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       if (node.type === 'function_call') {
-        return { type: 'function', func, args, alias };
+        return { type: 'function', func: node.func, args: node.args, alias };
       }
       return { type: 'expression', expr: node, alias };
     }
