@@ -4759,19 +4759,23 @@ export class Database {
 
       // Helper to compute an aggregate on this group
       const computeAgg = (func, arg, distinct, extra = {}) => {
+        let filteredGroupRows = groupRows;
+        if (extra.filter) {
+          filteredGroupRows = groupRows.filter(r => this._evalExpr(extra.filter, r));
+        }
         let values;
         if (arg === '*') {
-          values = groupRows;
+          values = filteredGroupRows;
         } else if (typeof arg === 'object') {
           // Expression argument (e.g., SUM(qty * price))
-          values = groupRows.map(r => this._evalValue(arg, r)).filter(v => v != null);
+          values = filteredGroupRows.map(r => this._evalValue(arg, r)).filter(v => v != null);
         } else {
-          values = groupRows.map(r => this._resolveColumn(arg, r)).filter(v => v != null);
+          values = filteredGroupRows.map(r => this._resolveColumn(arg, r)).filter(v => v != null);
         }
         switch (func) {
           case 'COUNT': {
             if (distinct && arg !== '*') return new Set(values).size;
-            return arg === '*' ? groupRows.length : values.length;
+            return arg === '*' ? filteredGroupRows.length : values.length;
           }
           case 'SUM': return values.reduce((s, v) => s + v, 0);
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
@@ -4797,7 +4801,7 @@ export class Database {
       for (const col of ast.columns) {
         if (col.type === 'aggregate') {
           const name = col.alias || `${col.func}(${col.arg})`;
-          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator });
+          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, filter: col.filter });
           // Also store under canonical key for HAVING resolution
           const canonKey = `${col.func}(${col.arg})`;
           if (name !== canonKey) result[canonKey] = result[name];
