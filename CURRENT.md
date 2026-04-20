@@ -5,36 +5,28 @@
 ## Project: henrydb
 
 ### What happened:
-- ~100 tasks completed (T100-T205)
+- ~110 tasks completed (T100-T210)
 - 25+ new SQL features, 50+ new functions
 - 7 critical/significant bug fixes
 - Tests: 3866 → 4143 (+277), ZERO real failures
 - Codebase: 94K lines (42K source, 52K test), 172 modules
-- 151 SQL functions, 46 statement types
+- 151 SQL functions, 46 statement types, 40+ git commits
 - Performance: 12K inserts/sec, 10K PK lookups/sec
 - TPC-H Q1/Q3/Q4/Q5/Q13 all pass
+- db.js split plan written (7 proposed modules)
+- failures.md updated with 3 new bug pattern categories
 
 ### Critical bugs fixed:
-1. _tryVectorizedExecution naming mismatch
-2. _executeAst naming mismatch (5 call sites)
-3. Tokenizer negative number ambiguity
-4. Correlated subquery outer scope resolution
-5. FILTER clause GROUP BY path
-6. COMMENT ON parser missing
+1. _tryVectorizedExecution naming mismatch (CRITICAL — all TransactionalDB SELECTs crashed)
+2. _executeAst naming mismatch (5 call sites — prepared statements/cursors broken)
+3. Tokenizer negative number ambiguity (ARRAY[10-4] failed)
+4. Correlated subquery outer scope resolution (EXISTS with unqualified refs broken)
+5. FILTER clause GROUP BY path (only worked without GROUP BY)
+6. COMMENT ON parser missing (had executor but no parser)
 7. DEALLOCATE ALL keyword parsing
 
-### New features added:
-MERGE, GROUPING SETS, CTE column lists, ARRAY support (6 functions),
-FILTER clause, DATE_TRUNC/EXTRACT/AGE/DATE_ADD/DATE_SUB/TO_CHAR/DATE_PART,
-STDDEV/VARIANCE/MEDIAN, PERCENT_RANK/CUME_DIST/NTH_VALUE,
-INITCAP/TRANSLATE/CHR/ASCII/MD5/ENCODE/DECODE,
-REGEXP_MATCHES/REGEXP_COUNT/SPLIT_PART/POSITION/STRPOS,
-MOD/SIGN/TRUNC/PI/EXP/LN/LOG10/SIN/COS/TAN/ASIN/ACOS/ATAN/CBRT/GCD/LCM,
-SHOW TABLES/COLUMNS/FUNCTIONS, EXPLAIN FORMAT JSON, COMMENT ON,
-DEFAULT CURRENT_TIMESTAMP, predicate pushdown, ROLLUP/CUBE,
-prepared statements, cursors, COPY TO CSV, DISTINCT ON, DROP FUNCTION
-
 ### Next priorities:
-- Split db.js (7K+ lines, duplicate methods)
-- WAL truncation
+- Split db.js (7K+ lines, duplicate methods) — plan in scratch/db-js-split-plan.md
+- WAL truncation (WAL grows forever)
 - MVCC visibility function in HeapFile API
+- Join performance optimization (10K×1K = 10s is too slow)
