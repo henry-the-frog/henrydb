@@ -2728,6 +2728,12 @@ export function parse(sql) {
         isSerial = true;
         dataType = dataType.toUpperCase() === 'BIGSERIAL' ? 'BIGINT' : 'INT';
       }
+      // Consume optional type length spec: VARCHAR(100), CHAR(10), NUMERIC(10,2)
+      if (peek().type === '(') {
+        advance(); // (
+        while (peek().type !== ')') advance(); // consume length/precision
+        advance(); // )
+      }
       let primaryKey = false;
       let notNull = false;
       let unique = false;
