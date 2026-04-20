@@ -17,7 +17,7 @@ const KEYWORDS = new Set([
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
   'POWER', 'SQRT', 'LOG', 'RANDOM',
-  'CURRENT_TIMESTAMP', 'CURRENT_DATE', 'NOW', 'STRFTIME', 'DATE_TRUNC', 'EXTRACT', 'DATE_PART', 'DATE_ADD', 'DATE_SUB', 'TO_CHAR',
+  'CURRENT_TIMESTAMP', 'CURRENT_DATE', 'NOW', 'STRFTIME', 'DATE_TRUNC', 'EXTRACT', 'DATE_PART', 'DATE_ADD', 'DATE_SUB', 'TO_CHAR', 'POSITION',
   'SHOW', 'TABLES', 'COLUMNS',
   'TRUNCATE', 'RENAME', 'DESCRIBE',
   'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT', 'SAVEPOINT', 'RELEASE',
@@ -795,6 +795,21 @@ export function parse(sql) {
       return { type: 'window', func, arg, args, over, alias };
     }
 
+    // POSITION(substr IN str) in SELECT
+    if (peek().type === 'KEYWORD' && peek().value === 'POSITION' && pos + 1 < tokens.length && tokens[pos + 1].type === '(') {
+      advance(); // POSITION
+      expect('(');
+      const substr = parsePrimaryWithConcat();
+      expect('KEYWORD', 'IN');
+      const str = parsePrimaryWithConcat();
+      expect(')');
+      let node = { type: 'function_call', func: 'POSITION', args: [substr, str] };
+      node = parseSelectArithExpr(node);
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr: node, alias };
+    }
+
     // ARRAY[...] constructor in SELECT
     if ((peek().type === 'KEYWORD' || peek().type === 'IDENT') && peek().value.toUpperCase() === 'ARRAY' && pos + 1 < tokens.length && tokens[pos + 1].type === '[') {
       advance(); // ARRAY
@@ -1243,6 +1258,16 @@ export function parse(sql) {
       const dateExpr = parsePrimaryWithConcat();
       expect(')');
       return { type: 'function_call', func: 'EXTRACT', args: [{ type: 'literal', value: field }, dateExpr] };
+    }
+    // POSITION(substr IN str)
+    if (t.type === 'KEYWORD' && t.value === 'POSITION') {
+      advance();
+      expect('(');
+      const substr = parsePrimaryWithConcat();
+      expect('KEYWORD', 'IN');
+      const str = parsePrimaryWithConcat();
+      expect(')');
+      return { type: 'function_call', func: 'POSITION', args: [substr, str] };
     }
     // ARRAY[...] constructor
     if ((t.type === 'KEYWORD' || t.type === 'IDENT') && t.value.toUpperCase() === 'ARRAY' && pos + 1 < tokens.length && tokens[pos + 1].type === '[') {

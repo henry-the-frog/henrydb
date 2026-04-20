@@ -5984,6 +5984,12 @@ export class Database {
         const parts = str.split(delim);
         return field >= 1 && field <= parts.length ? parts[field - 1] : '';
       }
+      case 'POSITION': case 'STRPOS': {
+        const substr = String(this._evalValue(args[0], row));
+        const str = String(this._evalValue(args[1], row));
+        const idx = str.indexOf(substr);
+        return idx >= 0 ? idx + 1 : 0; // 1-based, 0 if not found
+      }
       case 'COALESCE': {
         for (const arg of args) {
           const v = this._evalValue(arg, row);
