@@ -1044,9 +1044,41 @@
     {
       "id": "T98",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: mid-session git push + daily log",
-      "started": "2026-04-20T17:05:49.124Z"
+      "started": "2026-04-20T17:05:49.124Z",
+      "completed": "2026-04-20T17:06:12.730Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Cursors — DECLARE/FETCH/CLOSE for row-at-a-time processing",
+      "project": "henrydb",
+      "started": "2026-04-20T17:06:28.239Z",
+      "completed": "2026-04-20T17:08:03.341Z",
+      "duration_ms": 180000,
+      "summary": "Cursors: DECLARE/FETCH/CLOSE. Materialize result, stream in batches. Tested: multi-fetch, close, error handling."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: EXPLAIN ANALYZE — execution timing for each operator",
+      "project": "henrydb",
+      "started": "2026-04-20T17:08:03.597Z",
+      "completed": "2026-04-20T17:08:56.528Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: EXPLAIN ANALYZE already implemented with actual vs estimated row counts + timing."
+    },
+    {
+      "id": "T101",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T17:08:56.786Z"
     }
   ],
   "focusProjects": [
@@ -1438,6 +1470,18 @@
     {
       "time": "2026-04-20T17:05:13.674Z",
       "msg": "Added T98 (MAINTAIN) after end: MAINTAIN: mid-session git push + daily log"
+    },
+    {
+      "time": "2026-04-20T17:06:27.768Z",
+      "msg": "Added T99 (BUILD) after end: BUILD: Cursors — DECLARE/FETCH/CLOSE for row-at-a-time processing"
+    },
+    {
+      "time": "2026-04-20T17:06:27.888Z",
+      "msg": "Added T100 (BUILD) after end: BUILD: EXPLAIN ANALYZE — execution timing for each operator"
+    },
+    {
+      "time": "2026-04-20T17:06:28.007Z",
+      "msg": "Added T101 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
