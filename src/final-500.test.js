@@ -154,14 +154,17 @@ describe('500 Test Milestone', () => {
     assert.equal(r.rows[0].new_col, 42);
   });
 
-  it('LIKE case insensitive matching', () => {
+  it('LIKE case sensitive matching', () => {
     const db = new Database();
     db.execute('CREATE TABLE names (id INT PRIMARY KEY, name TEXT)');
     db.execute("INSERT INTO names VALUES (1, 'Alice')");
     db.execute("INSERT INTO names VALUES (2, 'ALICE')");
     db.execute("INSERT INTO names VALUES (3, 'Bob')");
-    const r = db.execute("SELECT * FROM names WHERE name LIKE 'alice%'");
-    assert.equal(r.rows.length, 2); // Case insensitive
+    // SQL LIKE is case-sensitive; ILIKE is case-insensitive
+    const r = db.execute("SELECT * FROM names WHERE name LIKE 'A%'");
+    assert.equal(r.rows.length, 2); // Alice and ALICE both start with 'A'
+    const r2 = db.execute("SELECT * FROM names WHERE name ILIKE 'alice%'");
+    assert.equal(r2.rows.length, 2); // ILIKE is case-insensitive
   });
 
   it('BETWEEN inclusive boundaries', () => {
