@@ -4757,9 +4757,18 @@ export class Database {
           const colNameLower = colName.toLowerCase();
           const index = table.indexes.get(colName) || table.indexes.get(colNameLower);
           if (index && typeof index.search === 'function') {
-            const results = index.search(val);
-            if (results !== undefined && results !== null) {
-              const rids = Array.isArray(results) ? results : [results];
+            // Use range() for non-unique indexes to get ALL matching rows
+            // search() only returns one match which misses duplicates
+            let rids;
+            if (typeof index.range === 'function') {
+              const rangeResults = index.range(val, val);
+              rids = rangeResults.map(r => r.value || r);
+            } else {
+              const results = index.search(val);
+              rids = results !== undefined && results !== null ? 
+                (Array.isArray(results) ? results : [results]) : [];
+            }
+            if (rids.length > 0) {
               for (const rid of rids) {
                 try {
                   const tuple = table.heap.get(rid.pageId, rid.slotIdx);
@@ -5045,9 +5054,17 @@ export class Database {
         if (colName) {
           const index = table.indexes.get(colName);
           if (index && typeof index.search === 'function') {
-            const results = index.search(val);
-            if (results !== undefined && results !== null) {
-              const rids = Array.isArray(results) ? results : [results];
+            // Use range() for non-unique indexes to get ALL matching rows
+            let rids;
+            if (typeof index.range === 'function') {
+              const rangeResults = index.range(val, val);
+              rids = rangeResults.map(r => r.value || r);
+            } else {
+              const results = index.search(val);
+              rids = results !== undefined && results !== null ? 
+                (Array.isArray(results) ? results : [results]) : [];
+            }
+            if (rids.length > 0) {
               for (const rid of rids) {
                 try {
                   const tuple = table.heap.get(rid.pageId, rid.slotIdx);
