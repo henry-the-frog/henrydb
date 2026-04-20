@@ -1667,8 +1667,55 @@ export class Database {
   }
 
   /**
+   * Try to use an index for UPDATE's WHERE clause.
+   * Returns array of {pageId, slotIdx, values} or null.
+   */
+  _tryIndexScanForUpdate(table, ast) {
+    if (!ast.where) return null;
+    
+    // Check for simple equality: WHERE col = value
+    let colName, value;
+    if (ast.where.type === '=') {
+      const left = ast.where.left;
+      const right = ast.where.right;
+      if ((left.type === 'column' || left.type === 'column_ref') && 
+          (right.type === 'literal' || right.type === 'number' || right.type === 'string')) {
+        colName = left.name;
+        value = right.value;
+      } else if ((right.type === 'column' || right.type === 'column_ref') && 
+                 (left.type === 'literal' || left.type === 'number' || left.type === 'string')) {
+        colName = right.name;
+        value = left.value;
+      }
+    }
+    
+    if (!colName) return null;
+    
+    // Check for index on this column
+    const idx = table.indexes?.get(colName) || table.indexes?.get(colName.toLowerCase()) || table.indexes?.get(colName.toUpperCase());
+    if (!idx) return null;
+    
+    // Use index to find matching row IDs
+    const rids = idx.search(value);
+    if (!rids || rids.length === 0) return [];
+    
+    // Fetch rows by their rid
+    const results = [];
+    for (const rid of rids) {
+      try {
+        const entry = table.heap.get(rid);
+        if (entry) {
+          results.push({ pageId: entry.pageId, slotIdx: entry.slotIdx, values: entry.values });
+        }
+      } catch {
+        // rid not valid, skip
+      }
+    }
+    return results;
+  }
+
+  /**
    * Try vectorized execution for simple queries.
-   * Returns { rows, columns } or null if not eligible.
    */
   _tryVectorizedExecution(ast) {
     try {
@@ -2293,10 +2340,23 @@ export class Database {
         }
       }
     } else {
-      for (const { pageId, slotIdx, values } of table.heap.scan()) {
-        const row = this._valuesToRow(values, table.schema, ast.table);
-        if (!ast.where || this._evalExpr(ast.where, row)) {
-          toUpdate.push({ pageId, slotIdx, values: [...values] });
+      // Try index-backed scan for WHERE clause on indexed column
+      const indexScanResult = this._tryIndexScanForUpdate(table, ast);
+      if (indexScanResult) {
+        // Index scan found matching rows — no SeqScan needed
+        for (const entry of indexScanResult) {
+          const row = this._valuesToRow(entry.values, table.schema, ast.table);
+          if (!ast.where || this._evalExpr(ast.where, row)) {
+            toUpdate.push({ pageId: entry.pageId, slotIdx: entry.slotIdx, values: [...entry.values] });
+          }
+        }
+      } else {
+        // Fall back to SeqScan
+        for (const { pageId, slotIdx, values } of table.heap.scan()) {
+          const row = this._valuesToRow(values, table.schema, ast.table);
+          if (!ast.where || this._evalExpr(ast.where, row)) {
+            toUpdate.push({ pageId, slotIdx, values: [...values] });
+          }
         }
       }
     }

@@ -441,7 +441,8 @@ export class TransactionalDatabase {
           
           if (created && !deleted) {
             // SSI tracking: record the read for serializable isolation
-            if (tdb._mvcc.recordRead) {
+            // Skip recording if we're in an index-backed UPDATE scan
+            if (tdb._mvcc.recordRead && !tx._suppressSsiReads) {
               tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, ver.xmin);
             }
             yield row;
@@ -849,12 +850,17 @@ export class TransactionSession {
       if (this._revokedRows.size > 0) {
         this._tx._revokedRows = this._revokedRows;
       }
+      // Suppress SSI read tracking during UPDATE scans
+      // Reads will be recorded only for the specific rows that are actually modified
+      const isUpdate = trimmed.startsWith('UPDATE ');
+      if (isUpdate) this._tx._suppressSsiReads = true;
       try {
         const result = this._tdb._db.execute(sql);
         // Track new rows immediately
         this._tdb._trackNewRows(this._tx);
         return result;
       } finally {
+        if (isUpdate) this._tx._suppressSsiReads = false;
         this._tdb._activeTx = prevTx;
         this._tdb._setHeapTxId(prevTx ? prevTx.txId : 0);
       }
