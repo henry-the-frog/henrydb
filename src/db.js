@@ -436,6 +436,15 @@ export class Database {
       }
       case 'REFRESH_MATVIEW': return this._refreshMatView(ast);
       case 'DROP_VIEW': return this._dropView(ast);
+      case 'DROP_FUNCTION': {
+        const name = ast.name.toLowerCase();
+        if (!this._functions.has(name)) {
+          if (ast.ifExists) return { type: 'OK', message: `NOTICE: function "${name}" does not exist, skipping` };
+          throw new Error(`Function "${name}" does not exist`);
+        }
+        this._functions.delete(name);
+        return { type: 'OK', message: `DROP FUNCTION ${name}` };
+      }
       case 'INSERT': return this._insert(ast);
       case 'INSERT_SELECT': return this._insertSelect(ast);
       case 'SELECT': return this._select(ast);

@@ -1953,6 +1953,19 @@ export function parse(sql) {
       const name = (advance().originalValue || tokens[pos-1].value);
       return { type: 'DROP_SEQUENCE', name, ifExists };
     }
+    if (isKeyword('FUNCTION')) {
+      advance();
+      let ifExists = false;
+      if (isKeyword('IF')) { advance(); if (isKeyword('EXISTS')) advance(); ifExists = true; }
+      const name = advance().value.toLowerCase();
+      // Optional parameter list (ignored — we match by name only)
+      if (peek().type === '(') {
+        advance();
+        while (peek().type !== ')' && pos < tokens.length) advance();
+        if (peek().type === ')') advance();
+      }
+      return { type: 'DROP_FUNCTION', name, ifExists };
+    }
     expect('KEYWORD', 'TABLE');
     let ifExists = false;
     if (isKeyword('IF')) { advance(); expect('KEYWORD', 'EXISTS'); ifExists = true; }
