@@ -7,6 +7,7 @@ const KEYWORDS = new Set([
   'FALSE', 'ORDER', 'BY', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'FETCH', 'FIRST', 'NEXT', 'ROWS', 'ROW', 'ONLY', 'AS',
   'INT', 'INTEGER', 'TEXT', 'VARCHAR', 'FLOAT', 'BOOL', 'BOOLEAN',
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY',
+  'PERCENTILE_CONT', 'PERCENTILE_DISC', 'MODE',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'INDEXES', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
@@ -209,7 +210,7 @@ export function parse(sql) {
   // Shared keyword lists (must be before any code that calls parse functions)
   var ZERO_ARG_WINDOW_FUNCS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'];
   var ARG_WINDOW_FUNCS = ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'];
-  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'];
+  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 'MODE'];
 
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
@@ -969,6 +970,13 @@ export function parse(sql) {
         advance(); // skip comma
         separator = advance().value; // STRING literal
       }
+      // Parse percentile fraction for PERCENTILE_CONT/PERCENTILE_DISC
+      let percentile = null;
+      if ((func === 'PERCENTILE_CONT' || func === 'PERCENTILE_DISC') && peek().type === ',') {
+        advance(); // skip comma
+        const fracExpr = parseExpr();
+        percentile = fracExpr.type === 'literal' ? fracExpr.value : fracExpr;
+      }
       // Optional ORDER BY inside aggregate (STRING_AGG, ARRAY_AGG, etc.)
       let aggOrderBy = null;
       if (isKeyword('ORDER')) {
@@ -996,7 +1004,7 @@ export function parse(sql) {
       }
 
       // Add separator info for GROUP_CONCAT / STRING_AGG
-      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy, filter: filterClause } : { aggOrderBy, filter: filterClause };
+      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy, filter: filterClause, percentile } : { aggOrderBy, filter: filterClause, percentile };
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();

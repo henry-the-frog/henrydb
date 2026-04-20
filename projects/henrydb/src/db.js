@@ -7417,6 +7417,34 @@ export class Database {
             const boolVals = (arg === '*' ? groupRows : values).filter(v => v != null);
             return boolVals.length === 0 ? null : boolVals.some(v => !!v);
           }
+          case 'PERCENTILE_CONT': {
+            const fraction = extra.percentile ?? 0.5;
+            const sorted = values.map(Number).sort((a, b) => a - b);
+            if (sorted.length === 0) return null;
+            if (sorted.length === 1) return sorted[0];
+            const pos = fraction * (sorted.length - 1);
+            const lower = Math.floor(pos);
+            const upper = Math.ceil(pos);
+            const weight = pos - lower;
+            return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+          }
+          case 'PERCENTILE_DISC': {
+            const fraction2 = extra.percentile ?? 0.5;
+            const sorted2 = values.map(Number).sort((a, b) => a - b);
+            if (sorted2.length === 0) return null;
+            const idx2 = Math.ceil(fraction2 * sorted2.length) - 1;
+            return sorted2[Math.max(0, Math.min(idx2, sorted2.length - 1))];
+          }
+          case 'MODE': {
+            if (values.length === 0) return null;
+            const freq = new Map();
+            for (const v of values) freq.set(v, (freq.get(v) || 0) + 1);
+            let maxFreq = 0, modeVal = null;
+            for (const [v, count] of freq) {
+              if (count > maxFreq) { maxFreq = count; modeVal = v; }
+            }
+            return modeVal;
+          }
         }
       };
 
@@ -7424,7 +7452,7 @@ export class Database {
       for (const col of ast.columns) {
         if (col.type === 'aggregate') {
           const name = col.alias || `${col.func}(${col.arg})`;
-          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, filter: col.filter, groupRows, aggArg: col.arg });
+          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, filter: col.filter, groupRows, aggArg: col.arg, percentile: col.percentile });
           // Also store under canonical key for HAVING resolution
           const canonKey = `${col.func}(${col.arg})`;
           if (name !== canonKey) result[`__agg_${canonKey}`] = result[name];
@@ -9337,6 +9365,45 @@ export class Database {
           // Returns TRUE if any value is true/truthy, NULL if all are null
           const boolVals2 = values.filter(v => v != null);
           result[name] = boolVals2.length === 0 ? null : boolVals2.some(v => !!v);
+          break;
+        }
+        case 'PERCENTILE_CONT': {
+          // Continuous percentile: interpolates between values
+          // fraction is stored in col.percentile or as a literal in col.args
+          const fraction = col.percentile ?? (col.args?.[0]?.value ?? 0.5);
+          const sorted = values.map(Number).sort((a, b) => a - b);
+          if (sorted.length === 0) { result[name] = null; break; }
+          if (sorted.length === 1) { result[name] = sorted[0]; break; }
+          // PostgreSQL formula: position = fraction * (N - 1)
+          const pos = fraction * (sorted.length - 1);
+          const lower = Math.floor(pos);
+          const upper = Math.ceil(pos);
+          const weight = pos - lower;
+          result[name] = sorted[lower] * (1 - weight) + sorted[upper] * weight;
+          break;
+        }
+        case 'PERCENTILE_DISC': {
+          // Discrete percentile: returns an actual value from the set
+          const fraction2 = col.percentile ?? (col.args?.[0]?.value ?? 0.5);
+          const sorted2 = values.map(Number).sort((a, b) => a - b);
+          if (sorted2.length === 0) { result[name] = null; break; }
+          // PostgreSQL formula: first value where cumulative distribution >= fraction
+          const idx = Math.ceil(fraction2 * sorted2.length) - 1;
+          result[name] = sorted2[Math.max(0, Math.min(idx, sorted2.length - 1))];
+          break;
+        }
+        case 'MODE': {
+          // Returns the most frequent value
+          if (values.length === 0) { result[name] = null; break; }
+          const freq = new Map();
+          for (const v of values) {
+            freq.set(v, (freq.get(v) || 0) + 1);
+          }
+          let maxFreq = 0, modeVal = null;
+          for (const [v, count] of freq) {
+            if (count > maxFreq) { maxFreq = count; modeVal = v; }
+          }
+          result[name] = modeVal;
           break;
         }
       }
