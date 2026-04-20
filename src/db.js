@@ -6205,13 +6205,18 @@ export class Database {
       if (col.type !== 'aggregate') continue;
       const argStr = typeof col.arg === 'object' ? 'expr' : col.arg;
       const name = col.alias || `${col.func}(${argStr})`;
+      let filteredRows = rows;
+      if (col.filter) {
+        filteredRows = rows.filter(r => this._evalExpr(col.filter, r));
+      }
+      
       let values;
       if (col.arg === '*') {
-        values = rows;
+        values = filteredRows;
       } else if (typeof col.arg === 'object') {
-        values = rows.map(r => this._evalValue(col.arg, r)).filter(v => v != null);
+        values = filteredRows.map(r => this._evalValue(col.arg, r)).filter(v => v != null);
       } else {
-        values = rows.map(r => this._resolveColumn(col.arg, r)).filter(v => v != null);
+        values = filteredRows.map(r => this._resolveColumn(col.arg, r)).filter(v => v != null);
       }
 
       switch (col.func) {
@@ -6219,7 +6224,7 @@ export class Database {
           if (col.distinct && col.arg !== '*') {
             result[name] = new Set(values).size;
           } else {
-            result[name] = col.arg === '*' ? rows.length : values.length;
+            result[name] = col.arg === '*' ? filteredRows.length : values.length;
           }
           break;
         }

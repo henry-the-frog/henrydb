@@ -32,7 +32,7 @@ const KEYWORDS = new Set([
   'CURSOR', 'SCROLL', 'FETCH', 'CLOSE', 'DECLARE',
   'COPY', 'STDIN', 'STDOUT', 'DELIMITER', 'CSV', 'HEADER',
   'COMMENT',
-  'MERGE', 'USING', 'MATCHED',
+  'MERGE', 'USING', 'MATCHED', 'FILTER',
   'CONFLICT', 'DO', 'NOTHING',
   'ANALYZE', 'RETURNING',
   'MATERIALIZED', 'REFRESH',
@@ -723,8 +723,19 @@ export function parse(sql) {
       }
       expect(')');
 
+      // Optional FILTER (WHERE ...) clause
+      let filter = null;
+      if (isKeyword('FILTER')) {
+        advance(); // FILTER
+        expect('(');
+        expect('KEYWORD', 'WHERE');
+        filter = parseExpr();
+        expect(')');
+      }
+
       // Add separator info for GROUP_CONCAT/STRING_AGG
       const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator } : {};
+      if (filter) aggExtra.filter = filter;
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();
