@@ -549,6 +549,7 @@ export class Database {
       case 'DECLARE_CURSOR': return this._declareCursor(ast);
       case 'FETCH': return this._fetch(ast);
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
+      case 'COPY': return this._executeCopy(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'PREPARE': return this._prepare(ast);
@@ -3358,6 +3359,54 @@ export class Database {
     }
     this._cursors.delete(name);
     return { type: 'OK', message: `CLOSE ${name}` };
+  }
+
+  _executeCopy(ast) {
+    if (ast.direction === 'TO') {
+      // COPY TO — export as CSV
+      let rows, columns;
+      if (ast.query) {
+        const result = this._executeAst(ast.query);
+        rows = result.rows;
+        columns = result.columns || Object.keys(rows[0] || {});
+      } else {
+        const table = this.tables.get(ast.table) || this.tables.get(ast.table.toLowerCase());
+        if (!table) throw new Error(`Table "${ast.table}" does not exist`);
+        const result = this.execute(`SELECT * FROM ${ast.table}`);
+        rows = result.rows;
+        columns = table.schema.map(c => c.name);
+      }
+      
+      const delim = ast.delimiter || ',';
+      const lines = [];
+      if (ast.header) {
+        lines.push(columns.join(delim));
+      }
+      for (const row of rows) {
+        const vals = columns.map(c => {
+          const v = row[c];
+          if (v === null || v === undefined) return '';
+          const s = String(v);
+          // Quote if contains delimiter, newline, or quotes
+          if (s.includes(delim) || s.includes('\n') || s.includes('"')) {
+            return '"' + s.replace(/"/g, '""') + '"';
+          }
+          return s;
+        });
+        lines.push(vals.join(delim));
+      }
+      
+      return { type: 'COPY', data: lines.join('\n'), rows: rows.length };
+    }
+    
+    if (ast.direction === 'FROM' && ast.target) {
+      // COPY FROM — import CSV (from provided data string)
+      // Note: file system access not available in all contexts,
+      // so we also support COPY FROM STDIN with data provided separately
+      return { type: 'COPY_FROM', table: ast.table, header: ast.header, delimiter: ast.delimiter };
+    }
+    
+    throw new Error('Unsupported COPY direction');
   }
 
   _callUserFunction(funcDef, args, row) {
