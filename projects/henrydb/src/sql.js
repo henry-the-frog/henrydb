@@ -21,7 +21,7 @@ const KEYWORDS = new Set([
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'ISNULL', 'NVL', 'IIF', 'TYPEOF',
   'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT',
   'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM',
-  'CURRENT_TIMESTAMP', 'CURRENT_DATE', 'NOW', 'STRFTIME',
+  'CURRENT_TIMESTAMP', 'CURRENT_DATE', 'CURRENT_TIME', 'NOW', 'STRFTIME',
   'SHOW', 'TABLES', 'COLUMNS',
   'TRUNCATE', 'RENAME', 'DESCRIBE',
   'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT',
@@ -874,7 +874,7 @@ export function parse(sql) {
 
   function parseSelectColumn() {
     // CURRENT_TIMESTAMP, CURRENT_DATE (no parens)
-    if (peek().type === 'KEYWORD' && (peek().value === 'CURRENT_TIMESTAMP' || peek().value === 'CURRENT_DATE')) {
+    if (peek().type === 'KEYWORD' && (peek().value === 'CURRENT_TIMESTAMP' || peek().value === 'CURRENT_DATE' || peek().value === 'CURRENT_TIME')) {
       const func = advance().value;
       // Check for arithmetic after (e.g., CURRENT_DATE + INTERVAL '1 day')
       let node = { type: 'function', func, args: [] };
@@ -1943,6 +1943,7 @@ export function parse(sql) {
     if (t.type === 'KEYWORD' && t.value === 'FALSE') { advance(); return { type: 'literal', value: false }; }
     if (t.type === 'KEYWORD' && t.value === 'CURRENT_TIMESTAMP') { advance(); return { type: 'function_call', func: 'CURRENT_TIMESTAMP', args: [] }; }
     if (t.type === 'KEYWORD' && t.value === 'CURRENT_DATE') { advance(); return { type: 'function_call', func: 'CURRENT_DATE', args: [] }; }
+    if (t.type === 'KEYWORD' && t.value === 'CURRENT_TIME') { advance(); return { type: 'function_call', func: 'CURRENT_TIME', args: [] }; }
 
     // CASE expression
     if (t.type === 'KEYWORD' && t.value === 'CASE') {
@@ -1973,7 +1974,8 @@ export function parse(sql) {
     if (t.type === 'KEYWORD' && ['UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'ISNULL', 'NVL', 'IIF', 'TYPEOF',
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
       'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC', 'NEXTVAL', 'CURRVAL', 'SETVAL', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT',
-      'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE', 'AGE', 'TO_CHAR', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP'].includes(t.value)) {
+      'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE', 'AGE', 'TO_CHAR', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP', 'DATE_PART',
+      'LN', 'LOG2', 'LOG10', 'SIGN', 'PI', 'DEGREES', 'RADIANS', 'SIN', 'COS', 'TAN', 'ASIN', 'ACOS', 'ATAN', 'ATAN2'].includes(t.value)) {
       // Only parse as function call if next token is '(' — otherwise treat as identifier
       if (tokens[pos + 1]?.type === '(') {
         const func = advance().value;

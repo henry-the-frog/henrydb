@@ -9018,6 +9018,27 @@ export class Database {
       
       // Date/time functions
       case 'CURRENT_TIMESTAMP': case 'NOW': return new Date().toISOString();
+      case 'CURRENT_TIME': return new Date().toISOString().split('T')[1].replace('Z', '');
+      case 'DATE_PART': {
+        const part = this._evalValue(args[0], row);
+        const dateStr = String(this._evalValue(args[1], row));
+        const d = new Date(dateStr);
+        switch (String(part).toLowerCase()) {
+          case 'year': return d.getUTCFullYear();
+          case 'month': return d.getUTCMonth() + 1;
+          case 'day': return d.getUTCDate();
+          case 'hour': return d.getUTCHours();
+          case 'minute': return d.getUTCMinutes();
+          case 'second': return d.getUTCSeconds();
+          case 'dow': case 'dayofweek': return d.getUTCDay();
+          case 'doy': case 'dayofyear': {
+            const start = new Date(Date.UTC(d.getUTCFullYear(), 0, 0));
+            return Math.floor((d - start) / 86400000);
+          }
+          case 'epoch': return Math.floor(d.getTime() / 1000);
+          default: return null;
+        }
+      }
       case 'CURRENT_DATE': return new Date().toISOString().split('T')[0];
       case 'NEXTVAL': {
         const seqName = String(this._evalValue(args[0], row)).toLowerCase();
