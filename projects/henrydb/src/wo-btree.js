@@ -96,10 +96,13 @@ export class WOBTree {
       return idx < node.keys.length && node.keys[idx] === key ? node.values[idx] : undefined;
     }
 
-    // Check buffer first
+    // Check buffer first — return the LAST (most recent) entry for this key
+    let bufferedValue;
+    let found = false;
     for (const entry of node.buffer) {
-      if (entry.key === key) return entry.value;
+      if (entry.key === key) { bufferedValue = entry.value; found = true; }
     }
+    if (found) return bufferedValue;
 
     // Descend to child
     const childIdx = this._findChild(node, key);
