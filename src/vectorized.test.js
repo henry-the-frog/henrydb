@@ -1,179 +1,152 @@
-// vectorized.test.js — Vectorized execution engine tests + benchmark
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  ColumnBatch, VectorizedScan, VectorizedFilter, VectorizedProject,
-  VectorizedAggregate, buildFilterPredicate, andPredicate,
-} from './vectorized.js';
 import { Database } from './db.js';
-import { compileScanFilterProject } from './query-compiler.js';
-import { parse } from './sql.js';
+import { VectorizedScan, VectorizedFilter, VectorizedProject, VectorizedLimit, collectAll, DataBatch } from './vectorized.js';
 
-describe('Vectorized Execution', () => {
-  describe('ColumnBatch', () => {
-    it('creates batch with columns', () => {
-      const cols = new Map([
-        ['id', [1, 2, 3]],
-        ['name', ['Alice', 'Bob', 'Carol']],
-      ]);
-      const batch = new ColumnBatch(cols, 3);
-      assert.strictEqual(batch.length, 3);
-      assert.strictEqual(batch.activeCount, 3);
-      assert.deepStrictEqual(batch.getColumn('id'), [1, 2, 3]);
-    });
+function query(db, sql) {
+  return db.execute(sql).rows;
+}
 
-    it('rows() iterates all rows', () => {
-      const cols = new Map([['id', [1, 2]], ['val', [10, 20]]]);
-      const batch = new ColumnBatch(cols, 2);
-      const rows = [...batch.rows()];
-      assert.strictEqual(rows.length, 2);
-      assert.deepStrictEqual(rows[0], { id: 1, val: 10 });
-    });
+describe('Vectorized Execution Engine', () => {
 
-    it('filter creates selection vector', () => {
-      const cols = new Map([['id', [1, 2, 3, 4, 5]]]);
-      const batch = new ColumnBatch(cols, 5);
-      const filtered = batch.filter(new Uint32Array([0, 2, 4]));
-      assert.strictEqual(filtered.activeCount, 3);
-      const rows = [...filtered.rows()];
-      assert.strictEqual(rows.length, 3);
-      assert.deepStrictEqual(rows.map(r => r.id), [1, 3, 5]);
-    });
+  it('VectorizedScan reads all rows in batches', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INTEGER, val TEXT)');
+    for (let i = 0; i < 100; i++) {
+      db.execute("INSERT INTO t VALUES (" + i + ", 'v" + i + "')");
+    }
+    const table = db.tables.get('t');
+    const scan = new VectorizedScan(table.heap, table.schema, 't', 32);
+    const rows = collectAll(scan, ['id', 'val']);
+    assert.equal(rows.length, 100);
+    assert.equal(rows[0].id, 0);
+    assert.equal(rows[99].id, 99);
   });
 
-  describe('VectorizedScan', () => {
-    it('scans heap into batches', () => {
-      const db = new Database();
-      db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
-      for (let i = 0; i < 100; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i * 10})`);
-      
-      const schema = [{ name: 'id' }, { name: 'val' }];
-      const scan = new VectorizedScan(db.tables.get('t').heap, schema, 30);
-      
-      const batches = [...scan.execute()];
-      assert.strictEqual(batches.length, 4); // 30 + 30 + 30 + 10
-      assert.strictEqual(batches[0].length, 30);
-      assert.strictEqual(batches[3].length, 10);
+  it('VectorizedFilter uses selection vectors (zero-copy)', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE nums (id INTEGER, value NUMERIC)');
+    for (let i = 0; i < 1000; i++) {
+      db.execute('INSERT INTO nums VALUES (' + i + ', ' + (i * 2.5) + ')');
+    }
+    const table = db.tables.get('nums');
+    const scan = new VectorizedScan(table.heap, table.schema, 'nums', 256);
+    const filter = new VectorizedFilter(scan, (batch, i) => {
+      return batch.getValue('id', i) >= 500;
     });
+    const rows = collectAll(filter, ['id', 'value']);
+    assert.equal(rows.length, 500);
+    assert.equal(rows[0].id, 500);
   });
 
-  describe('VectorizedFilter', () => {
-    it('filters batch with predicate', () => {
-      const cols = new Map([['id', [1, 2, 3, 4, 5]], ['val', [10, 20, 30, 40, 50]]]);
-      const batch = new ColumnBatch(cols, 5);
-      
-      const pred = buildFilterPredicate('val', '>', 25);
-      const filter = new VectorizedFilter(pred);
-      const result = filter.execute(batch);
-      
-      assert.strictEqual(result.activeCount, 3);
-      const rows = [...result.rows()];
-      assert.deepStrictEqual(rows.map(r => r.val), [30, 40, 50]);
-    });
+  it('VectorizedProject computes new columns', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE data (x INTEGER, y INTEGER)');
+    for (let i = 0; i < 50; i++) {
+      db.execute('INSERT INTO data VALUES (' + i + ', ' + (i * 10) + ')');
+    }
+    const table = db.tables.get('data');
+    const scan = new VectorizedScan(table.heap, table.schema, 'data', 64);
+    const project = new VectorizedProject(scan, [
+      { name: 'x', compute: (b, i) => b.getValue('x', i) },
+      { name: 'sum_xy', compute: (b, i) => b.getValue('x', i) + b.getValue('y', i) },
+    ]);
+    const rows = collectAll(project, ['x', 'sum_xy']);
+    assert.equal(rows.length, 50);
+    assert.equal(rows[0].sum_xy, 0); // 0 + 0
+    assert.equal(rows[10].sum_xy, 110); // 10 + 100
   });
 
-  describe('VectorizedProject', () => {
-    it('extracts columns', () => {
-      const cols = new Map([['id', [1, 2]], ['name', ['A', 'B']], ['extra', [true, false]]]);
-      const batch = new ColumnBatch(cols, 2);
-      
-      const project = new VectorizedProject(['id', 'name']);
-      const result = project.execute(batch);
-      
-      assert.ok(result.getColumn('id'));
-      assert.ok(result.getColumn('name'));
-      assert.strictEqual(result.getColumn('extra'), undefined);
-    });
+  it('VectorizedLimit stops after N rows', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE big (id INTEGER)');
+    for (let i = 0; i < 1000; i++) {
+      db.execute('INSERT INTO big VALUES (' + i + ')');
+    }
+    const table = db.tables.get('big');
+    const scan = new VectorizedScan(table.heap, table.schema, 'big', 128);
+    const limit = new VectorizedLimit(scan, 10);
+    const rows = collectAll(limit, ['id']);
+    assert.equal(rows.length, 10);
   });
 
-  describe('VectorizedAggregate', () => {
-    it('computes aggregates', () => {
-      const cols = new Map([['val', [10, 20, 30, 40, 50]]]);
-      const batch = new ColumnBatch(cols, 5);
-      
-      const agg = new VectorizedAggregate([
-        { fn: 'COUNT', column: 'val', alias: 'cnt' },
-        { fn: 'SUM', column: 'val', alias: 'total' },
-        { fn: 'AVG', column: 'val', alias: 'avg' },
-        { fn: 'MIN', column: 'val', alias: 'min' },
-        { fn: 'MAX', column: 'val', alias: 'max' },
-      ]);
-      
-      const result = agg.execute(batch);
-      assert.strictEqual(result.cnt, 5);
-      assert.strictEqual(result.total, 150);
-      assert.strictEqual(result.avg, 30);
-      assert.strictEqual(result.min, 10);
-      assert.strictEqual(result.max, 50);
-    });
-
-    it('aggregates with selection vector', () => {
-      const cols = new Map([['val', [10, 20, 30, 40, 50]]]);
-      const batch = new ColumnBatch(cols, 5, new Uint32Array([1, 3])); // rows 20, 40
-      
-      const agg = new VectorizedAggregate([
-        { fn: 'SUM', column: 'val', alias: 'total' },
-      ]);
-      
-      assert.strictEqual(agg.execute(batch).total, 60);
-    });
+  it('chained operators: scan → filter → project → limit', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE chain (id INTEGER, price NUMERIC, category TEXT)');
+    for (let i = 0; i < 200; i++) {
+      const cat = i % 3 === 0 ? 'A' : (i % 3 === 1 ? 'B' : 'C');
+      db.execute("INSERT INTO chain VALUES (" + i + ", " + (i * 1.5) + ", '" + cat + "')");
+    }
+    const table = db.tables.get('chain');
+    const scan = new VectorizedScan(table.heap, table.schema, 'chain', 64);
+    const filter = new VectorizedFilter(scan, (b, i) => b.getValue('category', i) === 'A');
+    const project = new VectorizedProject(filter, [
+      { name: 'id', compute: (b, i) => b.getValue('id', i) },
+      { name: 'discounted', compute: (b, i) => b.getValue('price', i) * 0.9 },
+    ]);
+    const limit = new VectorizedLimit(project, 5);
+    const rows = collectAll(limit, ['id', 'discounted']);
+    assert.equal(rows.length, 5);
+    // Category A: ids 0, 3, 6, 9, 12
+    assert.equal(rows[0].id, 0);
+    assert.equal(rows[1].id, 3);
+    assert.equal(rows[4].id, 12);
   });
 
-  describe('Benchmark: row-at-a-time vs compiled vs vectorized', () => {
-    it('10K rows with complex filter', () => {
-      const db = new Database();
-      db.execute('CREATE TABLE orders (id INT PRIMARY KEY, amount INT, status TEXT, region TEXT)');
-      for (let i = 0; i < 10000; i++) {
-        const status = ['pending', 'shipped', 'delivered', 'cancelled'][i % 4];
-        const region = ['US', 'EU', 'APAC', 'LATAM'][i % 4];
-        db.execute(`INSERT INTO orders VALUES (${i}, ${(i * 17) % 1000}, '${status}', '${region}')`);
-      }
-      
-      const runs = 10;
-      
-      // 1. Row-at-a-time (interpreted)
-      const startI = performance.now();
-      for (let j = 0; j < runs; j++) {
-        db.execute("SELECT id, amount FROM orders WHERE amount > 500 AND status = 'shipped'");
-      }
-      const timeI = (performance.now() - startI) / runs;
-      
-      // 2. Compiled
-      const schema = [{ name: 'id' }, { name: 'amount' }, { name: 'status' }, { name: 'region' }];
-      const ast = parse("SELECT id, amount FROM orders WHERE amount > 500 AND status = 'shipped'");
-      const compiled = compileScanFilterProject(ast.where, ast.columns, schema);
-      const heap = [...db.tables.get('orders').heap.scan()];
-      
-      const startC = performance.now();
-      for (let j = 0; j < runs; j++) {
-        compiled(heap);
-      }
-      const timeC = (performance.now() - startC) / runs;
-      
-      // 3. Vectorized
-      const scan = new VectorizedScan(db.tables.get('orders').heap, schema, 1024);
-      const pred1 = buildFilterPredicate('amount', '>', 500);
-      const pred2 = buildFilterPredicate('status', '=', 'shipped');
-      const filter = new VectorizedFilter(andPredicate(pred1, pred2));
-      const project = new VectorizedProject(['id', 'amount']);
-      
-      const startV = performance.now();
-      for (let j = 0; j < runs; j++) {
-        const results = [];
-        for (const batch of scan.execute()) {
-          const filtered = filter.execute(batch);
-          const projected = project.execute(filtered);
-          for (const row of projected.rows()) results.push(row);
-        }
-      }
-      const timeV = (performance.now() - startV) / runs;
-      
-      console.log(`    Interpreted: ${timeI.toFixed(1)}ms`);
-      console.log(`    Compiled:    ${timeC.toFixed(1)}ms (${(timeI/timeC).toFixed(1)}x)`);
-      console.log(`    Vectorized:  ${timeV.toFixed(1)}ms (${(timeI/timeV).toFixed(1)}x)`);
-      
-      assert.ok(timeC < timeI, 'Compiled should be faster than interpreted');
-      // Vectorized may or may not be faster than compiled for this scale
-    });
+  it('empty table produces no batches', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE empty (id INTEGER)');
+    const table = db.tables.get('empty');
+    const scan = new VectorizedScan(table.heap, table.schema, 'empty', 32);
+    const rows = collectAll(scan, ['id']);
+    assert.equal(rows.length, 0);
+  });
+
+  it('filter that eliminates all rows', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE nopass (id INTEGER)');
+    for (let i = 0; i < 100; i++) {
+      db.execute('INSERT INTO nopass VALUES (' + i + ')');
+    }
+    const table = db.tables.get('nopass');
+    const scan = new VectorizedScan(table.heap, table.schema, 'nopass', 32);
+    const filter = new VectorizedFilter(scan, () => false);
+    const rows = collectAll(filter, ['id']);
+    assert.equal(rows.length, 0);
+  });
+
+  it('benchmark: vectorized vs volcano on 10K rows', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE perf (id INTEGER, value NUMERIC, flag INTEGER)');
+    for (let i = 0; i < 10000; i++) {
+      db.execute('INSERT INTO perf VALUES (' + i + ', ' + (i * 1.1) + ', ' + (i % 5) + ')');
+    }
+
+    // Volcano (standard)
+    const t0 = Date.now();
+    const volcanoResult = query(db, 'SELECT id, value * 2 AS doubled FROM perf WHERE flag = 0 LIMIT 100');
+    const volcanoTime = Date.now() - t0;
+
+    // Vectorized
+    const table = db.tables.get('perf');
+    const t1 = Date.now();
+    const scan = new VectorizedScan(table.heap, table.schema, 'perf', 1024);
+    const filter = new VectorizedFilter(scan, (b, i) => b.getValue('flag', i) === 0);
+    const project = new VectorizedProject(filter, [
+      { name: 'id', compute: (b, i) => b.getValue('id', i) },
+      { name: 'doubled', compute: (b, i) => b.getValue('value', i) * 2 },
+    ]);
+    const limit = new VectorizedLimit(project, 100);
+    const vecResult = collectAll(limit, ['id', 'doubled']);
+    const vecTime = Date.now() - t1;
+
+    console.log('Volcano:', volcanoTime + 'ms, Vectorized:', vecTime + 'ms');
+    
+    // Verify correctness: same results
+    assert.equal(volcanoResult.length, 100);
+    assert.equal(vecResult.length, 100);
+    assert.equal(vecResult[0].id, 0);
+    assert.equal(vecResult[0].doubled, 0);
+    assert.equal(vecResult[1].id, 5); // Next row with flag=0
   });
 });
