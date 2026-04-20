@@ -6,6 +6,8 @@
 - ~~HenryDB: NULL IS NULL returns string "NULL" not boolean TRUE — FIXED: parser now handles IS NULL after literal tokens~~ (since 2026-04-20, fixed 2026-04-20)
 
 ### Normal
+- ~~HenryDB: `SELECT a BETWEEN 3 AND 7 as mid` parser bug — FIXED: parser now handles BETWEEN/NOT BETWEEN in SELECT columns~~ (since 2026-04-20, fixed 2026-04-20)
+- HenryDB: OFFSET -1 returns wrong results (should be treated as OFFSET 0 per SQL standard) (P2, since 2026-04-20)
 - HenryDB: db.js is 7K+ lines — needs splitting (has duplicate _exprToString methods)
 - HenryDB: WAL truncation after checkpoint (WAL grows forever)
 - HenryDB: MVCC interception approach is fragile — consider proper visibility function in HeapFile API

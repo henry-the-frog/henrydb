@@ -1720,6 +1720,28 @@
       "completed": "2026-04-20T23:39:15.444Z",
       "duration_ms": 300000,
       "summary": "FIXED: Duplicate CREATE INDEX now throws error (was silently succeeding). Added column-set and name-based duplicate detection. IF NOT EXISTS still returns OK. 37 index tests pass."
+    },
+    {
+      "id": "T161",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: SQL correctness fuzzing — try tricky SQL patterns to find bugs",
+      "project": "henrydb",
+      "started": "2026-04-20T23:39:34.544Z",
+      "completed": "2026-04-20T23:41:45.432Z",
+      "duration_ms": 600000,
+      "summary": "SQL correctness fuzzing: 40+ test patterns run. All core SQL operations work (self-join, correlated subquery, EXISTS, window funcs, CTE, recursive CTE, GROUP BY expressions, UPDATE/DELETE with subqueries, RETURNING). Found 2 new bugs: (1) BETWEEN in SELECT column parser fails (P1), (2) OFFSET -1 wrong result (P2). Fixed duplicate index, division, IS NULL bugs earlier. DB handles NULL correctly everywhere."
+    },
+    {
+      "id": "T162",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: fix BETWEEN in SELECT column parser bug",
+      "project": "henrydb",
+      "started": "2026-04-20T23:42:02.761Z",
+      "completed": "2026-04-20T23:45:20.631Z",
+      "duration_ms": 480000,
+      "summary": "FIXED: BETWEEN/NOT BETWEEN in SELECT columns. Two issues: (1) parser didnt recognize BETWEEN after column name — added BETWEEN/NOT BETWEEN handlers to parseSelectColumn, (2) NOT_BETWEEN was missing from _evalValue boolean type delegation list. Now SELECT a BETWEEN 3 AND 7 works correctly."
     }
   ],
   "focusProjects": [
@@ -2383,6 +2405,14 @@
     {
       "time": "2026-04-20T23:38:22.652Z",
       "msg": "Added T160 (EXPLORE) after end: HenryDB: investigate and fix duplicate CREATE INDEX silently succeeds (should error without IF NOT EXISTS)"
+    },
+    {
+      "time": "2026-04-20T23:39:34.311Z",
+      "msg": "Added T161 (EXPLORE) after end: HenryDB: SQL correctness fuzzing — try tricky SQL patterns to find bugs"
+    },
+    {
+      "time": "2026-04-20T23:42:02.527Z",
+      "msg": "Added T162 (EXPLORE) after end: HenryDB: fix BETWEEN in SELECT column parser bug"
     }
   ]
 }

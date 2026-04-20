@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-20T23:39:15.482Z",
+  "generated": "2026-04-20T23:45:20.668Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: investigate and fix duplicate CREATE INDEX silently succeeds (should error without IF NOT EXISTS)",
-    "completedAt": "2026-04-20T23:39:15.482Z",
-    "taskId": "T160",
-    "summary": "FIXED: Duplicate CREATE INDEX now throws error (was silently succeeding). Added column-set and name-based duplicate detection. IF NOT EXISTS still returns OK. 37 index tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: fix BETWEEN in SELECT column parser bug",
+    "completedAt": "2026-04-20T23:45:20.668Z",
+    "taskId": "T162",
+    "summary": "FIXED: BETWEEN/NOT BETWEEN in SELECT columns. Two issues: (1) parser didnt recognize BETWEEN after column name — added BETWEEN/NOT BETWEEN handlers to parseSelectColumn, (2) NOT_BETWEEN was missing from _evalValue boolean type delegation list. Now SELECT a BETWEEN 3 AND 7 works correctly.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 368,
+    "blocksCompleted": 370,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 30,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 94,
-      "EXPLORE": 140
+      "EXPLORE": 142
     }
   },
   "artifacts": [
