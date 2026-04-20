@@ -1303,6 +1303,32 @@ export function parse(sql) {
   function parseGroupBy() {
     const cols = [];
     do {
+      // Check for GROUPING SETS ((col1, col2), (col3), ())
+      if ((isKeyword('GROUPING') || (peek().type === 'IDENT' && peek().value.toUpperCase() === 'GROUPING')) 
+          && pos + 1 < tokens.length && tokens[pos + 1].value && tokens[pos + 1].value.toUpperCase() === 'SETS') {
+        advance(); // GROUPING
+        advance(); // SETS
+        expect('(');
+        const sets = [];
+        while (peek().type !== ')') {
+          expect('(');
+          const group = [];
+          while (peek().type !== ')') {
+            group.push(advance().value);
+            if (peek().type === ',') advance();
+          }
+          expect(')');
+          sets.push(group);
+          if (peek().type === ',') advance();
+        }
+        expect(')');
+        cols.push({
+          type: 'function_call',
+          func: 'GROUPING_SETS',
+          args: sets.map(s => s.length === 0 ? [] : s.map(c => ({ type: 'column_ref', name: c })))
+        });
+        continue;
+      }
       // Try to parse as expression (handles col % 3, function calls, etc.)
       const expr = parseExpr();
       if (expr.type === 'column_ref') {

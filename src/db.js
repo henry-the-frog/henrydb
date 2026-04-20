@@ -1779,9 +1779,10 @@ export class Database {
             }
             groupingSets.push(subset);
           }
-        } else if (func === 'GROUPING' && (gb.func || '').toUpperCase() === 'GROUPING_SETS') {
+        } else if (func === 'GROUPING_SETS' || (func === 'GROUPING' && (gb.func || '').toUpperCase() === 'GROUPING_SETS')) {
           // Explicit GROUPING SETS
           groupingSets = args.map(a => {
+            if (Array.isArray(a)) return a.map(x => x.name || x.value || x);
             if (Array.isArray(a.args)) return a.args.map(x => x.name || x.value || x);
             return [a.name || a.value || a];
           });
@@ -1800,7 +1801,7 @@ export class Database {
     for (const groupSet of groupingSets) {
       const modifiedAst = {
         ...ast,
-        groupBy: groupSet.length > 0 ? groupSet.map(c => ({ type: 'column', name: c })) : undefined,
+        groupBy: groupSet.length > 0 ? groupSet : undefined,
       };
       
       // If no GROUP BY columns (the () set), remove groupBy entirely
@@ -1814,8 +1815,13 @@ export class Database {
           for (const row of result.rows) {
             // Set NULL for columns not in this grouping set
             for (const col of groupByColumns) {
-              if (!groupSet.includes(col) && !(col in row)) {
+              if (!groupSet.includes(col)) {
                 row[col] = null;
+                // Also null any uppercase/lowercase variants
+                const upper = col.toUpperCase();
+                const lower = col.toLowerCase();
+                if (upper !== col) row[upper] = null;
+                if (lower !== col) row[lower] = null;
               }
             }
             allRows.push(row);
