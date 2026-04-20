@@ -473,8 +473,9 @@ export class VectorizedSort {
       for (const key of this._orderBy) {
         const av = a[key.column], bv = b[key.column];
         if (av == null && bv == null) continue;
-        if (av == null) return key.direction === 'ASC' ? -1 : 1;
-        if (bv == null) return key.direction === 'ASC' ? 1 : -1;
+        // NULLS LAST: nulls always sort after non-null values (standard SQL default)
+        if (av == null) return 1;
+        if (bv == null) return -1;
         if (av < bv) return key.direction === 'ASC' ? -1 : 1;
         if (av > bv) return key.direction === 'ASC' ? 1 : -1;
       }
