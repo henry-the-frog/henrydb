@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-20T14:54:34.916Z",
+  "generated": "2026-04-20T14:58:04.963Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping — git push, knowledge capture",
-    "startedAt": "2026-04-20T14:54:34.916Z",
-    "taskId": "T8"
+    "task": "Housekeeping — git push, PR check",
+    "startedAt": "2026-04-20T14:58:04.963Z",
+    "taskId": "T12"
   },
   "schedule": {
     "date": "2026-04-20",
@@ -3552,52 +3552,79 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB query optimizer improvements — cost model or decorrelation",
         "task": null,
-        "started": "2026-04-20T14:49:50.943Z"
+        "started": "2026-04-20T14:49:50.943Z",
+        "completed": "2026-04-20T14:50:13.808Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 BUILD tasks: parametric cost model (foundation), then join method selection (NL/hash/merge cost comparison). Based on query-optimizer-gaps.md analysis."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement parametric cost model: replace raw row count with seq_page_cost/random_page_cost/cpu_tuple_cost formula",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T14:50:24.272Z",
+        "completed": "2026-04-20T14:53:53.909Z",
+        "duration_ms": 300000,
+        "summary": "Parametric cost model: SEQ_PAGE_COST/RANDOM_PAGE_COST/CPU_TUPLE_COST now used in cost-model.js. Fixed Limit early termination. Planner already had parametric model — synced volcano cost estimator. All 67 optimizer tests pass."
       },
       {
         "id": "T28",
         "mode": "BUILD",
         "task": "Add join method selection to DP optimizer: compare NL/hash/merge costs per join pair",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-20T14:54:19.964Z",
+        "completed": "2026-04-20T14:54:20.108Z",
+        "duration_ms": 5000,
+        "summary": "SKIP: Planner already has DP-based join method selection comparing NL/hash/merge costs per join pair (lines 604-660). No new work needed."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping — git push, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping — git push, knowledge capture",
+        "started": "2026-04-20T14:54:34.880Z",
+        "completed": "2026-04-20T14:54:56.043Z",
+        "duration_ms": 30000,
+        "summary": "Git push both repos. HenryDB and workspace synced."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-morning depth check: surprises? learning? bugs?"
+        "status": "done",
+        "task": "Mid-morning depth check: surprises? learning? bugs?",
+        "started": "2026-04-20T14:55:07.224Z",
+        "completed": "2026-04-20T14:55:24.048Z",
+        "duration_ms": 30000,
+        "summary": "Depth check 3/3 YES. SSI sequential tx false positive (surprise + learning). TDigest O(n²) (architectural). Catalog mismatches (6 tests). BUILD count: 5/20 cap. Continue building."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB VACUUM incremental HOT chain pruning for persistent mode",
-        "task": null
+        "task": null,
+        "started": "2026-04-20T14:55:34.091Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Add HOT chain pruning to VACUUM: clean up chain entries for dead tuples",
         "plan_ref": "T10",
         "project": "henrydb"
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "task": "Write HOT chain VACUUM stress test: verify chains are pruned after heavy UPDATE+VACUUM cycles",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -3704,13 +3731,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 9,
-    "blocksTotal": 28,
+    "blocksCompleted": 14,
+    "blocksTotal": 29,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 4,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 6,
+      "MAINTAIN": 2
     }
   },
   "artifacts": [

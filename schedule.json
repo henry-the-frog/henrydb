@@ -102,36 +102,63 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping — git push, knowledge capture",
-      "started": "2026-04-20T14:54:34.880Z"
+      "started": "2026-04-20T14:54:34.880Z",
+      "completed": "2026-04-20T14:54:56.043Z",
+      "duration_ms": 30000,
+      "summary": "Git push both repos. HenryDB and workspace synced."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-morning depth check: surprises? learning? bugs?"
+      "status": "done",
+      "task": "Mid-morning depth check: surprises? learning? bugs?",
+      "started": "2026-04-20T14:55:07.224Z",
+      "completed": "2026-04-20T14:55:24.048Z",
+      "duration_ms": 30000,
+      "summary": "Depth check 3/3 YES. SSI sequential tx false positive (surprise + learning). TDigest O(n²) (architectural). Catalog mismatches (6 tests). BUILD count: 5/20 cap. Continue building."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB VACUUM incremental HOT chain pruning for persistent mode",
-      "task": null
+      "task": null,
+      "started": "2026-04-20T14:55:34.091Z",
+      "completed": "2026-04-20T14:56:42.127Z",
+      "duration_ms": 60000,
+      "summary": "Planned HOT chain VACUUM pruning. Current VACUUM removes MVCC dead tuples but doesnt clean HOT chain map entries. Need to prune chains when dead tuples removed. 2 BUILD tasks."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add HOT chain pruning to VACUUM: clean up chain entries for dead tuples",
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T14:56:52.180Z",
+      "completed": "2026-04-20T14:57:24.489Z",
+      "duration_ms": 30000,
+      "summary": "SKIP: HOT chain pruning already implemented in page.js pruneHotChains() and wired into _vacuum(). 32/32 vacuum tests pass."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Write HOT chain VACUUM stress test: verify chains are pruned after heavy UPDATE+VACUUM cycles",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-20T14:57:37.133Z",
+      "completed": "2026-04-20T14:57:55.726Z",
+      "duration_ms": 15000,
+      "summary": "SKIP: hot-vacuum-stress.test.js already has 9 tests covering rapid HOT updates, interleaved VACUUM, multi-row scenarios. All pass."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, PR check"
+      "status": "in-progress",
+      "task": "Housekeeping — git push, PR check",
+      "started": "2026-04-20T14:58:04.927Z"
     },
     {
       "id": "T13",
@@ -350,6 +377,10 @@
     {
       "time": "2026-04-20T14:50:02.436Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-20T14:56:34.334Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }
