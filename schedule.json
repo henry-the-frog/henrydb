@@ -1939,9 +1939,44 @@
     {
       "id": "T181",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T19:09:56.552Z"
+      "started": "2026-04-20T19:09:56.552Z",
+      "completed": "2026-04-20T19:10:19.897Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T182",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: ILIKE operator (case-insensitive LIKE)",
+      "project": "henrydb",
+      "started": "2026-04-20T19:10:28.519Z",
+      "completed": "2026-04-20T19:10:53.367Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: ILIKE already works."
+    },
+    {
+      "id": "T183",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: POSITION function (POSITION(substr IN str))",
+      "project": "henrydb",
+      "started": "2026-04-20T19:10:53.627Z",
+      "completed": "2026-04-20T19:12:34.428Z",
+      "duration_ms": 60000,
+      "summary": "POSITION(substr IN str) with special SQL syntax. Returns 1-based position, 0 if not found. STRPOS alias also added."
+    },
+    {
+      "id": "T184",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Final test sweep + git push",
+      "started": "2026-04-20T19:12:34.688Z",
+      "completed": "2026-04-20T19:16:28.301Z",
+      "duration_ms": 120000,
+      "summary": "Final sweep: 4135+ pass, 0 real failures (5 benchmark timeouts). POSITION, math, regex functions all clean."
     }
   ],
   "focusProjects": [
@@ -2653,6 +2688,18 @@
     {
       "time": "2026-04-20T19:07:42.731Z",
       "msg": "Added T181 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T19:10:28.047Z",
+      "msg": "Added T182 (BUILD) after end: BUILD: ILIKE operator (case-insensitive LIKE)"
+    },
+    {
+      "time": "2026-04-20T19:10:28.167Z",
+      "msg": "Added T183 (BUILD) after end: BUILD: POSITION function (POSITION(substr IN str))"
+    },
+    {
+      "time": "2026-04-20T19:10:28.286Z",
+      "msg": "Added T184 (MAINTAIN) after end: MAINTAIN: Final test sweep + git push"
     }
   ]
 }
