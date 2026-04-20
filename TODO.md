@@ -4,7 +4,6 @@
 
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
-- HenryDB: server-json.test.js was flaky (intermittent hang — COPY TO connection issue?)
 
 
 

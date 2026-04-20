@@ -128,6 +128,9 @@ export class BPlusTree {
 
   has(key) { return this.get(key) !== undefined; }
 
+  /** Alias for get() — compatibility with BTree API */
+  search(key) { return this.get(key); }
+
   /**
    * Delete a key (simplified: doesn't rebalance/merge nodes).
    */

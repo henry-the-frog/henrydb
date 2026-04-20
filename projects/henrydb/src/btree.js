@@ -65,6 +65,9 @@ export class BPlusTree {
     return node.search(key);
   }
 
+  /** Alias for search() — compatibility with BPlusTree API */
+  get(key) { return this.search(key); }
+
   // Insert key-value pair
   insert(key, value) {
     let internalKey = key;

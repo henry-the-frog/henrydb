@@ -2560,9 +2560,81 @@
       "id": "T238",
       "mode": "BUILD",
       "task": "Write stress tests for subquery decorrelation",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T235",
-      "started": "2026-04-20T02:51:51.881Z"
+      "started": "2026-04-20T02:51:51.881Z",
+      "completed": "2026-04-20T02:52:49.078Z",
+      "duration_ms": 300000,
+      "summary": "10 decorrelation stress tests: all pass. Covers self-reference, multi-column correlation, NOT IN, aggregates, 500-row dataset, NULLs, nested subqueries."
+    },
+    {
+      "id": "T239",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit pg-server fix impact: how many previously-failing wire protocol tests now pass?",
+      "project": "henrydb",
+      "started": "2026-04-20T02:53:12.314Z",
+      "completed": "2026-04-20T02:54:31.868Z",
+      "duration_ms": 300000,
+      "summary": "71/71 server test files pass. The pg-server fix (options→connOptions) unblocked ALL wire protocol tests. One-line fix, massive impact."
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement MERGE/UPSERT statement (SQL:2008 standard MERGE INTO)",
+      "project": "henrydb",
+      "started": "2026-04-20T02:54:36.670Z",
+      "completed": "2026-04-20T02:54:53.361Z",
+      "duration_ms": 30000,
+      "summary": "Already implemented: HenryDB has both ON CONFLICT (UPSERT) and MERGE INTO, with 9 test files. Skipped."
+    },
+    {
+      "id": "T242",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore neural-net project: what state is it in? what's the next interesting challenge?",
+      "project": "neural-net",
+      "started": "2026-04-20T02:55:52.616Z",
+      "completed": "2026-04-20T02:56:50.007Z",
+      "duration_ms": 120000,
+      "summary": "Neural-net has 71 modules, 1230+ tests, all passing. Has transformer/attention/embedding but no text generation pipeline. Plan: build char-level LM."
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build tiny character-level language model: tokenizer + transformer + generation loop",
+      "project": "neural-net",
+      "started": "2026-04-20T02:57:07.166Z",
+      "completed": "2026-04-20T03:00:17.243Z",
+      "duration_ms": 600000,
+      "summary": "Built char-level LM: GPT-style decoder-only transformer with causal attention, CharTokenizer, autoregressive generation. 13 tests all pass. Model learns abc pattern."
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Train char-LM on Shakespeare text: generate convincing prose",
+      "project": "neural-net",
+      "started": "2026-04-20T03:00:51.454Z",
+      "completed": "2026-04-20T03:02:45.063Z",
+      "duration_ms": 300000,
+      "summary": "Shakespeare char-LM demo: 20K params, loss 4.6→2.7, learns letter frequencies and word-like patterns from 323 tokens. Demonstrates full training pipeline."
+    },
+    {
+      "id": "T245",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix btree.js/bplus-tree.js API inconsistency (search vs get)",
+      "project": "henrydb",
+      "started": "2026-04-20T03:02:51.687Z"
+    },
+    {
+      "id": "T241",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push, daily log, evening summary"
     }
   ],
   "focusProjects": [
@@ -3542,6 +3614,46 @@
     {
       "time": "2026-04-20T02:46:15.616Z",
       "msg": "PLAN T235 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-20T02:53:03.956Z",
+      "msg": "Added T239 (EXPLORE) after end: Audit pg-server fix impact: how many previously-failing wire protocol tests now pass?"
+    },
+    {
+      "time": "2026-04-20T02:53:04.077Z",
+      "msg": "Added T240 (BUILD) after end: Implement MERGE/UPSERT statement (SQL:2008 standard MERGE INTO)"
+    },
+    {
+      "time": "2026-04-20T02:53:04.197Z",
+      "msg": "Added T241 (MAINTAIN) after end: Final git push, daily log, evening summary"
+    },
+    {
+      "time": "2026-04-20T02:55:43.178Z",
+      "msg": "Added T242 (EXPLORE) after end: Explore neural-net project: what state is it in? what's the next interesting challenge?"
+    },
+    {
+      "time": "2026-04-20T02:55:48.952Z",
+      "msg": "Moved T241 after T242"
+    },
+    {
+      "time": "2026-04-20T02:56:56.717Z",
+      "msg": "Added T243 (BUILD) after end: Build tiny character-level language model: tokenizer + transformer + generation loop"
+    },
+    {
+      "time": "2026-04-20T02:57:02.867Z",
+      "msg": "Moved T241 after T243"
+    },
+    {
+      "time": "2026-04-20T03:00:40.404Z",
+      "msg": "Added T244 (BUILD) after end: Train char-LM on Shakespeare text: generate convincing prose"
+    },
+    {
+      "time": "2026-04-20T03:00:40.525Z",
+      "msg": "Added T245 (BUILD) after end: HenryDB: fix btree.js/bplus-tree.js API inconsistency (search vs get)"
+    },
+    {
+      "time": "2026-04-20T03:00:45.289Z",
+      "msg": "Moved T241 after T245"
     }
   ]
 }
