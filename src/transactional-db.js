@@ -764,16 +764,33 @@ export class TransactionSession {
       const vm = this._tdb._versionMaps.get(tableName);
       if (!vm) continue;
       
-      // Find keys in current vm but not in snapshot — mark as dead
+      // Find keys created by THIS transaction but not in the savepoint snapshot
+      // Only revoke rows that belong to this transaction
+      const myTxId = this._tx.txId;
       for (const [key, ver] of vm) {
         if (!snapshot.has(key)) {
-          vm.set(key, { xmin: ver.xmin, xmax: -2 });
-          this._revokedRows.add(`${tableName}:${key}`);
+          // Only mark as dead if this row was created by our transaction
+          if (ver.xmin === myTxId) {
+            vm.set(key, { xmin: ver.xmin, xmax: -2 });
+            this._revokedRows.add(`${tableName}:${key}`);
+          }
         }
       }
-      // Restore all snapshot entries (overwriting any modifications like DELETE xmax changes)
+      // Restore all snapshot entries
+      // - For our own rows: restore full state
+      // - For other txns' rows: only restore xmax if we changed it (e.g., UPDATE/DELETE)
       for (const [k, v] of snapshot) {
-        vm.set(k, { ...v });
+        const currentVer = vm.get(k);
+        if (!currentVer) {
+          // Row was removed from vm — restore it
+          vm.set(k, { ...v });
+        } else if (currentVer.xmin === myTxId) {
+          // Our row — full restore
+          vm.set(k, { ...v });
+        } else if (currentVer.xmax !== v.xmax) {
+          // Someone else's row but we changed xmax (UPDATE/DELETE) — restore xmax
+          vm.set(k, { ...currentVer, xmax: v.xmax });
+        }
       }
     }
     
