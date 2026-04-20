@@ -851,9 +851,74 @@
     {
       "id": "T81",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Pre-close: git push and log update",
-      "started": "2026-04-20T21:40:09.381Z"
+      "started": "2026-04-20T21:40:09.381Z",
+      "completed": "2026-04-20T21:40:41.889Z",
+      "duration_ms": 30000,
+      "summary": "Git push, daily log updated."
+    },
+    {
+      "id": "T82",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CURSOR — DECLARE, FETCH NEXT, CLOSE",
+      "project": "henrydb",
+      "started": "2026-04-20T21:41:07.069Z",
+      "completed": "2026-04-20T21:41:26.048Z",
+      "duration_ms": 60000,
+      "summary": "Cursors work: DECLARE, FETCH NEXT (returns 1 row), FETCH N (returns N rows), CLOSE. FETCH FORWARD ALL treats ALL as cursor name (parser issue). Good basic cursor support."
+    },
+    {
+      "id": "T83",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test SET/SHOW GUC parameters (e.g. enable_seqscan)",
+      "project": "henrydb",
+      "started": "2026-04-20T21:41:33.325Z",
+      "completed": "2026-04-20T21:41:48.501Z",
+      "duration_ms": 30000,
+      "summary": "SET not implemented. SHOW only supports TABLES, COLUMNS, CREATE TABLE. No GUC parameter configuration. No SET TRANSACTION."
+    },
+    {
+      "id": "T84",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test type system — INT, REAL, TEXT, BOOLEAN, DATE, TIMESTAMP, NUMERIC",
+      "project": "henrydb",
+      "started": "2026-04-20T21:41:54.298Z",
+      "completed": "2026-04-20T21:42:21.685Z",
+      "duration_ms": 60000,
+      "summary": "Types: 15/20 work. INT, REAL, FLOAT, NUMERIC, TEXT, BOOLEAN, DATE, TIMESTAMP, JSON, JSONB, UUID, BYTEA, SERIAL all work. BUGS: BIGINT truncates (32-bit overflow). DOUBLE PRECISION, VARCHAR(N), DECIMAL(P,S), CHAR(N) — multi-word and parameterized types not parsed."
+    },
+    {
+      "id": "T85",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test EXPLAIN output when hash join is added — design the EXPLAIN change",
+      "project": "henrydb",
+      "started": "2026-04-20T21:42:27.893Z",
+      "completed": "2026-04-20T21:42:52.828Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN change: line 4187 in db.js. Check join.on for COMPARE/EQ/both column_ref → show HASH_JOIN with hashKey. Else keep NESTED_LOOP_JOIN. Simple conditional in the plan.push() call."
+    },
+    {
+      "id": "T86",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Measure memory usage: how much RAM for 100K, 1M rows?",
+      "project": "henrydb",
+      "started": "2026-04-20T21:42:58.805Z",
+      "completed": "2026-04-20T21:44:27.635Z",
+      "duration_ms": 120000,
+      "summary": "Memory: 822 bytes/row for 4-column table. 100K rows = 83MB. Extrapolated 1M = ~800MB. High overhead from JS objects + column name storage per row. Practical limit ~100K rows."
+    },
+    {
+      "id": "T87",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final pre-close: commit everything",
+      "started": "2026-04-20T21:44:35.874Z"
     }
   ],
   "focusProjects": [
@@ -1201,6 +1266,30 @@
     {
       "time": "2026-04-20T21:37:42.339Z",
       "msg": "Added T81 (MAINTAIN) after end: Pre-close: git push and log update"
+    },
+    {
+      "time": "2026-04-20T21:40:57.515Z",
+      "msg": "Added T82 (EXPLORE) after end: HenryDB: test CURSOR — DECLARE, FETCH NEXT, CLOSE"
+    },
+    {
+      "time": "2026-04-20T21:40:57.634Z",
+      "msg": "Added T83 (EXPLORE) after end: HenryDB: test SET/SHOW GUC parameters (e.g. enable_seqscan)"
+    },
+    {
+      "time": "2026-04-20T21:40:57.752Z",
+      "msg": "Added T84 (EXPLORE) after end: HenryDB: test type system — INT, REAL, TEXT, BOOLEAN, DATE, TIMESTAMP, NUMERIC"
+    },
+    {
+      "time": "2026-04-20T21:40:57.871Z",
+      "msg": "Added T85 (EXPLORE) after end: HenryDB: test EXPLAIN output when hash join is added — design the EXPLAIN change"
+    },
+    {
+      "time": "2026-04-20T21:40:57.989Z",
+      "msg": "Added T86 (EXPLORE) after end: Measure memory usage: how much RAM for 100K, 1M rows?"
+    },
+    {
+      "time": "2026-04-20T21:40:58.107Z",
+      "msg": "Added T87 (MAINTAIN) after end: Final pre-close: commit everything"
     }
   ]
 }
