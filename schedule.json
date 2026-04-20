@@ -1257,13 +1257,45 @@
     {
       "id": "T118",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "BUILD: EXPLAIN FORMAT JSON (machine-readable explain output)",
       "project": "henrydb",
-      "started": "2026-04-20T17:25:39.423Z"
+      "started": "2026-04-20T17:25:39.423Z",
+      "completed": "2026-04-20T17:25:58.724Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
     },
     {
       "id": "T119",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T17:26:15.975Z",
+      "completed": "2026-04-20T17:26:35.737Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: Error messages already decent. Move to SHOW command."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Improve SQL parse error messages with context and position info",
+      "project": "henrydb",
+      "started": "2026-04-20T17:26:35.996Z",
+      "completed": "2026-04-20T17:28:05.342Z",
+      "duration_ms": 60000,
+      "summary": "SHOW TABLES, SHOW COLUMNS FROM, SHOW FUNCTIONS. Convenience introspection commands."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "BUILD: Add SHOW command (SHOW TABLES, SHOW COLUMNS FROM, SHOW FUNCTIONS)",
+      "project": "henrydb",
+      "started": "2026-04-20T17:28:05.600Z"
+    },
+    {
+      "id": "T122",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "MAINTAIN: git push"
@@ -1742,6 +1774,18 @@
     {
       "time": "2026-04-20T17:20:46.640Z",
       "msg": "Added T119 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T17:26:15.504Z",
+      "msg": "Added T120 (BUILD) after end: BUILD: Improve SQL parse error messages with context and position info"
+    },
+    {
+      "time": "2026-04-20T17:26:15.623Z",
+      "msg": "Added T121 (BUILD) after end: BUILD: Add SHOW command (SHOW TABLES, SHOW COLUMNS FROM, SHOW FUNCTIONS)"
+    },
+    {
+      "time": "2026-04-20T17:26:15.742Z",
+      "msg": "Added T122 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
