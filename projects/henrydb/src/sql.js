@@ -9,6 +9,7 @@ const KEYWORDS = new Set([
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY',
   'PERCENTILE_CONT', 'PERCENTILE_DISC', 'MODE',
   'STDDEV', 'STDDEV_POP', 'STDDEV_SAMP', 'VARIANCE', 'VAR_POP', 'VAR_SAMP',
+  'CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'INDEXES', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
@@ -211,7 +212,7 @@ export function parse(sql) {
   // Shared keyword lists (must be before any code that calls parse functions)
   var ZERO_ARG_WINDOW_FUNCS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'CUME_DIST', 'PERCENT_RANK'];
   var ARG_WINDOW_FUNCS = ['LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE', 'NTILE'];
-  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 'MODE', 'STDDEV', 'STDDEV_POP', 'STDDEV_SAMP', 'VARIANCE', 'VAR_POP', 'VAR_SAMP'];
+  var AGGREGATE_FUNCS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 'MODE', 'STDDEV', 'STDDEV_POP', 'STDDEV_SAMP', 'VARIANCE', 'VAR_POP', 'VAR_SAMP', 'CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT'];
 
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
@@ -978,6 +979,14 @@ export function parse(sql) {
         const fracExpr = parseExpr();
         percentile = fracExpr.type === 'literal' ? fracExpr.value : fracExpr;
       }
+      // Parse second argument for two-arg aggregate functions (CORR, COVAR_*, REGR_*)
+      let arg2 = null;
+      const TWO_ARG_AGGS = ['CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT'];
+      if (TWO_ARG_AGGS.includes(func) && peek().type === ',') {
+        advance(); // skip comma
+        const arg2Expr = parseExpr();
+        arg2 = arg2Expr.type === 'column_ref' ? arg2Expr.name : arg2Expr;
+      }
       // Optional ORDER BY inside aggregate (STRING_AGG, ARRAY_AGG, etc.)
       let aggOrderBy = null;
       if (isKeyword('ORDER')) {
@@ -1005,7 +1014,7 @@ export function parse(sql) {
       }
 
       // Add separator info for GROUP_CONCAT / STRING_AGG
-      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy, filter: filterClause, percentile } : { aggOrderBy, filter: filterClause, percentile };
+      const aggExtra = (func === 'GROUP_CONCAT' || func === 'STRING_AGG') ? { separator, aggOrderBy, filter: filterClause, percentile, arg2 } : { aggOrderBy, filter: filterClause, percentile, arg2 };
       // Check for window function: aggregate OVER (...)
       if (isKeyword('OVER')) {
         const over = parseOverClause();

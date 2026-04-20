@@ -7471,6 +7471,38 @@ export class Database {
             const mean4 = nums4.reduce((a, b) => a + b, 0) / nums4.length;
             return nums4.reduce((sum, x) => sum + (x - mean4) ** 2, 0) / nums4.length;
           }
+          case 'CORR':
+          case 'COVAR_POP':
+          case 'COVAR_SAMP':
+          case 'REGR_SLOPE':
+          case 'REGR_INTERCEPT':
+          case 'REGR_R2':
+          case 'REGR_COUNT': {
+            const arg2Col = extra.arg2;
+            if (!arg2Col) return null;
+            const pairs = [];
+            for (const row of effectiveRows) {
+              const y = typeof arg === 'object' ? this._evalValue(arg, row) : this._resolveColumn(arg, row);
+              const x = typeof arg2Col === 'object' ? this._evalValue(arg2Col, row) : this._resolveColumn(arg2Col, row);
+              if (y != null && x != null) pairs.push([Number(y), Number(x)]);
+            }
+            if (func === 'REGR_COUNT') return pairs.length;
+            if (pairs.length < 2) return null;
+            const n = pairs.length;
+            const mY = pairs.reduce((s, [y]) => s + y, 0) / n;
+            const mX = pairs.reduce((s, [, x]) => s + x, 0) / n;
+            const covP = pairs.reduce((s, [y, x]) => s + (y - mY) * (x - mX), 0) / n;
+            const vXP = pairs.reduce((s, [, x]) => s + (x - mX) ** 2, 0) / n;
+            const vYP = pairs.reduce((s, [y]) => s + (y - mY) ** 2, 0) / n;
+            switch (func) {
+              case 'COVAR_POP': return covP;
+              case 'COVAR_SAMP': return covP * n / (n - 1);
+              case 'CORR': { const d = Math.sqrt(vXP * vYP); return d > 0 ? covP / d : null; }
+              case 'REGR_SLOPE': return vXP > 0 ? covP / vXP : null;
+              case 'REGR_INTERCEPT': return vXP > 0 ? mY - (covP / vXP) * mX : null;
+              case 'REGR_R2': { const c = (vXP > 0 && vYP > 0) ? covP / Math.sqrt(vXP * vYP) : null; return c !== null ? c ** 2 : null; }
+            }
+          }
         }
       };
 
@@ -7478,7 +7510,7 @@ export class Database {
       for (const col of ast.columns) {
         if (col.type === 'aggregate') {
           const name = col.alias || `${col.func}(${col.arg})`;
-          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, filter: col.filter, groupRows, aggArg: col.arg, percentile: col.percentile });
+          result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, filter: col.filter, groupRows, aggArg: col.arg, percentile: col.percentile, arg2: col.arg2 });
           // Also store under canonical key for HAVING resolution
           const canonKey = `${col.func}(${col.arg})`;
           if (name !== canonKey) result[`__agg_${canonKey}`] = result[name];
@@ -9466,6 +9498,50 @@ export class Database {
           if (nums4.length === 0) { result[name] = null; break; }
           const mean4 = nums4.reduce((a, b) => a + b, 0) / nums4.length;
           result[name] = nums4.reduce((sum, x) => sum + (x - mean4) ** 2, 0) / nums4.length;
+          break;
+        }
+        case 'CORR':
+        case 'COVAR_POP':
+        case 'COVAR_SAMP':
+        case 'REGR_SLOPE':
+        case 'REGR_INTERCEPT':
+        case 'REGR_R2':
+        case 'REGR_COUNT': {
+          // Two-arg aggregate: first arg is Y, second is X
+          const arg2Col = col.arg2;
+          if (!arg2Col) { result[name] = null; break; }
+          // Get paired (y, x) values, excluding pairs with NULL in either
+          const pairs = [];
+          for (const row of (col.filter ? filteredRows : rows)) {
+            const y = typeof col.arg === 'object' ? this._evalValue(col.arg, row) : this._resolveColumn(col.arg, row);
+            const x = typeof arg2Col === 'object' ? this._evalValue(arg2Col, row) : this._resolveColumn(arg2Col, row);
+            if (y != null && x != null) pairs.push([Number(y), Number(x)]);
+          }
+          if (col.func === 'REGR_COUNT') { result[name] = pairs.length; break; }
+          if (pairs.length < 2) { result[name] = null; break; }
+          const n5 = pairs.length;
+          const meanY5 = pairs.reduce((s, [y]) => s + y, 0) / n5;
+          const meanX5 = pairs.reduce((s, [, x]) => s + x, 0) / n5;
+          const covPop = pairs.reduce((s, [y, x]) => s + (y - meanY5) * (x - meanX5), 0) / n5;
+          const varXPop = pairs.reduce((s, [, x]) => s + (x - meanX5) ** 2, 0) / n5;
+          const varYPop = pairs.reduce((s, [y]) => s + (y - meanY5) ** 2, 0) / n5;
+          
+          switch (col.func) {
+            case 'COVAR_POP': result[name] = covPop; break;
+            case 'COVAR_SAMP': result[name] = n5 > 1 ? covPop * n5 / (n5 - 1) : null; break;
+            case 'CORR': {
+              const denom = Math.sqrt(varXPop * varYPop);
+              result[name] = denom > 0 ? covPop / denom : null;
+              break;
+            }
+            case 'REGR_SLOPE': result[name] = varXPop > 0 ? covPop / varXPop : null; break;
+            case 'REGR_INTERCEPT': result[name] = varXPop > 0 ? meanY5 - (covPop / varXPop) * meanX5 : null; break;
+            case 'REGR_R2': {
+              const corr = (varXPop > 0 && varYPop > 0) ? covPop / Math.sqrt(varXPop * varYPop) : null;
+              result[name] = corr !== null ? corr ** 2 : null;
+              break;
+            }
+          }
           break;
         }
       }
