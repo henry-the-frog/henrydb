@@ -4597,6 +4597,36 @@ export class Database {
             }
             break;
           }
+          case 'PERCENT_RANK': {
+            // PERCENT_RANK = (rank - 1) / (total - 1)
+            // Same ranking logic as RANK
+            let rank = 1;
+            for (let i = 0; i < partition.length; i++) {
+              if (i > 0 && orderBy) {
+                const prev = this._resolveColumn(orderBy[0].column || orderBy[0].expr?.name || orderBy[0], partition[i - 1]);
+                const curr = this._resolveColumn(orderBy[0].column || orderBy[0].expr?.name || orderBy[0], partition[i]);
+                if (prev !== curr) rank = i + 1;
+              }
+              partition[i][`__window_${name}`] = partition.length <= 1 ? 0 : (rank - 1) / (partition.length - 1);
+            }
+            break;
+          }
+          case 'CUME_DIST': {
+            // CUME_DIST = number of rows <= current row / total rows
+            for (let i = 0; i < partition.length; i++) {
+              // Count how many rows have values <= current (in sorted order)
+              let count = i + 1;
+              // Include ties
+              while (count < partition.length && orderBy) {
+                const curr = this._resolveColumn(orderBy[0].column || orderBy[0].expr?.name || orderBy[0], partition[i]);
+                const next = this._resolveColumn(orderBy[0].column || orderBy[0].expr?.name || orderBy[0], partition[count]);
+                if (curr !== next) break;
+                count++;
+              }
+              partition[i][`__window_${name}`] = count / partition.length;
+            }
+            break;
+          }
           case 'COUNT': {
             // With ORDER BY: running count, without: total count
             if (orderBy) {
