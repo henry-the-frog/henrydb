@@ -2144,6 +2144,27 @@
       "completed": "2026-04-20T19:26:53.578Z",
       "duration_ms": 120000,
       "summary": "db.js split plan written. Proposed 7 files: core (500), DDL (800), DML (1200), select (1500), eval (1500), util (500), session (400). Mixin-based migration preserves API."
+    },
+    {
+      "id": "T201",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Quick performance test — how fast is HenryDB for common operations?",
+      "project": "henrydb",
+      "started": "2026-04-20T19:27:56.240Z",
+      "completed": "2026-04-20T19:28:40.860Z",
+      "duration_ms": 60000,
+      "summary": "Performance: INSERT 12K/sec, PK lookup 10K qps, scan 28ms, aggregate 22ms, window 27ms, GROUP BY 24ms. JOIN is bottleneck at 10.5s (10K×1K)."
+    },
+    {
+      "id": "T202",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Update MEMORY.md with session A highlights",
+      "started": "2026-04-20T19:28:53.320Z",
+      "completed": "2026-04-20T19:29:28.419Z",
+      "duration_ms": 60000,
+      "summary": "MEMORY.md updated with current HenryDB stats."
     }
   ],
   "focusProjects": [
@@ -2931,6 +2952,14 @@
     {
       "time": "2026-04-20T19:26:09.673Z",
       "msg": "Added T200 (MAINTAIN) after end: MAINTAIN: Write a proposed db.js split plan — which methods go to which files"
+    },
+    {
+      "time": "2026-04-20T19:27:56.008Z",
+      "msg": "Added T201 (MAINTAIN) after end: MAINTAIN: Quick performance test — how fast is HenryDB for common operations?"
+    },
+    {
+      "time": "2026-04-20T19:28:53.086Z",
+      "msg": "Added T202 (MAINTAIN) after end: MAINTAIN: Update MEMORY.md with session A highlights"
     }
   ]
 }
