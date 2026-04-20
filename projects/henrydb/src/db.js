@@ -4808,7 +4808,8 @@ export class Database {
       const newValues = [...item.values];
       const row = item.mergedRow || this._valuesToRow(item.values, table.schema, ast.table);
       for (const { column, value } of ast.assignments) {
-        const colIdx = table.schema.findIndex(c => c.name === column);
+        const colLower = column.toLowerCase();
+        const colIdx = table.schema.findIndex(c => c.name === column || c.name.toLowerCase() === colLower);
         if (colIdx === -1) throw new Error(`Column ${column} not found`);
         newValues[colIdx] = this._evalValue(value, row);
       }

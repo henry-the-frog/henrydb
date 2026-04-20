@@ -8,7 +8,6 @@
 
 
 ### Low
-- HenryDB: btree.js/bplus-tree.js API inconsistency (search vs get) — unify
 - RISC-V: Liveness-based register allocation (current linear sequential, low priority)
 - Neural-net: Architecture exploration (attention, model serialization already done)
 - RISC-V: IIFE pattern (fn(x){x}(5) direct invocation)

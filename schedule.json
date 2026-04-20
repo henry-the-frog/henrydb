@@ -2625,10 +2625,21 @@
     {
       "id": "T245",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix btree.js/bplus-tree.js API inconsistency (search vs get)",
       "project": "henrydb",
-      "started": "2026-04-20T03:02:51.687Z"
+      "started": "2026-04-20T03:02:51.687Z",
+      "completed": "2026-04-20T03:04:10.206Z",
+      "duration_ms": 120000,
+      "summary": "Unified btree/bplus-tree API: added search() alias to BPlusTree and get() alias to BTree. Removed TODO item."
+    },
+    {
+      "id": "T246",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Depth check: try to break HenryDB with adversarial queries not in test suite",
+      "project": "henrydb",
+      "started": "2026-04-20T03:04:25.615Z"
     },
     {
       "id": "T241",
@@ -3654,6 +3665,14 @@
     {
       "time": "2026-04-20T03:00:45.289Z",
       "msg": "Moved T241 after T245"
+    },
+    {
+      "time": "2026-04-20T03:04:20.742Z",
+      "msg": "Added T246 (EXPLORE) after end: Depth check: try to break HenryDB with adversarial queries not in test suite"
+    },
+    {
+      "time": "2026-04-20T03:04:20.863Z",
+      "msg": "Moved T241 after T246"
     }
   ]
 }
