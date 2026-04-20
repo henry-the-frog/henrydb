@@ -210,6 +210,8 @@ export class TransactionalDatabase {
         if (this._wal && this._wal.logDDL) {
           this._wal.logDDL(sql);
         }
+        // Rebuild version maps for altered tables — old entries are stale
+        this._rebuildVersionMaps();
       }
       return result;
     }
@@ -409,6 +411,26 @@ export class TransactionalDatabase {
 
   // --- Scan interceptors ---
   
+  /**
+   * Rebuild version maps for all tables after DDL changes.
+   * Clears stale entries and re-scans heaps to create fresh version map entries.
+   */
+  _rebuildVersionMaps() {
+    for (const [name, table] of this._db.tables) {
+      const vm = this._versionMaps.get(name);
+      if (!vm) continue;
+      
+      // Clear all entries
+      vm.clear();
+      
+      // Re-scan and create fresh entries
+      const origScan = table.heap._origScan || table.heap.scan.bind(table.heap);
+      for (const { pageId, slotIdx } of origScan()) {
+        vm.set(`${pageId}:${slotIdx}`, { xmin: 1, xmax: 0 }); // Committed, visible
+      }
+    }
+  }
+
   _installScanInterceptors() {
     // For each table, intercept heap.scan() and heap.delete() for MVCC
     for (const [tableName, tableObj] of this._db.tables) {
@@ -905,6 +927,7 @@ export class TransactionSession {
         if (this._tdb._wal && this._tdb._wal.logDDL) {
           this._tdb._wal.logDDL(sql);
         }
+        this._tdb._rebuildVersionMaps();
       }
       return result;
     }

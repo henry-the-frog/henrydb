@@ -671,15 +671,19 @@ export class Database {
         table.schema.push({ name: ast.column, type: ast.dataType, primaryKey: false });
         
         // Add default value to all existing rows
-        // Collect rows first, then update them (avoid modifying during scan)
+        // Use the original (non-MVCC-intercepted) scan/delete if available
+        // This is necessary because ALTER TABLE runs as DDL (outside MVCC)
+        const origScan = table.heap._origScan || table.heap.scan.bind(table.heap);
+        const origDelete = table.heap._origDelete || table.heap.delete.bind(table.heap);
+        
         const toUpdate = [];
-        for (const { pageId, slotIdx, values } of table.heap.scan()) {
+        for (const { pageId, slotIdx, values } of origScan()) {
           toUpdate.push({ pageId, slotIdx, values: [...values] });
         }
         
         for (const entry of toUpdate) {
           const newValues = [...entry.values, ast.defaultValue ?? null];
-          table.heap.delete(entry.pageId, entry.slotIdx);
+          origDelete(entry.pageId, entry.slotIdx);
           table.heap.insert(newValues);
         }
         
