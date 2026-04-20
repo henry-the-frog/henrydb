@@ -671,12 +671,16 @@ export class Database {
         table.schema.push({ name: ast.column, type: ast.dataType, primaryKey: false });
         
         // Add default value to all existing rows
-        const colIdx = table.schema.length - 1;
+        // Collect rows first, then update them (avoid modifying during scan)
+        const toUpdate = [];
         for (const { pageId, slotIdx, values } of table.heap.scan()) {
-          values.push(ast.defaultValue ?? null);
-          // Re-encode and update the tuple in place
-          const encoded = encodeTuple(values);
-          table.heap.pages.find(p => p.id === pageId)?.updateTuple(slotIdx, encoded);
+          toUpdate.push({ pageId, slotIdx, values: [...values] });
+        }
+        
+        for (const entry of toUpdate) {
+          const newValues = [...entry.values, ast.defaultValue ?? null];
+          table.heap.delete(entry.pageId, entry.slotIdx);
+          table.heap.insert(newValues);
         }
         
         return { type: 'OK', message: `Column ${ast.column} added to ${ast.table}` };

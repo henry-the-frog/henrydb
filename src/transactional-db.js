@@ -9,6 +9,7 @@ import { Database } from './db.js';
 import { DiskManager } from './disk-manager.js';
 import { BufferPool } from './buffer-pool.js';
 import { FileWAL, recoverFromFileWAL } from './file-wal.js';
+import { WAL_TYPES } from './wal.js';
 import { FileBackedHeap } from './file-backed-heap.js';
 import { MVCCManager, MVCCTransaction } from './mvcc.js';
 import { SSIManager } from './ssi.js';
@@ -78,6 +79,17 @@ export class TransactionalDatabase {
       if (recover) {
         for (const [name, heap] of heaps) {
           recoverFromFileWAL(heap, wal);
+        }
+        
+        // Replay DDL records (ALTER TABLE, etc.)
+        const allRecords = wal.readFromStable(0);
+        for (const r of allRecords) {
+          if (r.type === WAL_TYPES.DDL && r.after) {
+            try {
+              const sql = typeof r.after === 'string' ? r.after : String(r.after);
+              db.execute(sql);
+            } catch { /* DDL might fail if already applied */ }
+          }
         }
         
         // Try to load saved version maps from mvcc-state.json
@@ -192,6 +204,12 @@ export class TransactionalDatabase {
           || trimmed.startsWith('CREATE UNIQUE') || trimmed.startsWith('CREATE VIEW') || trimmed.startsWith('CREATE MATERIALIZED') || trimmed.startsWith('CREATE TRIGGER')) {
         this._trackCreate(sql);
         this._installScanInterceptors(); // New table needs interceptor
+      }
+      // Log ALTER TABLE to WAL for persistence
+      if (trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('ALTER ')) {
+        if (this._wal && this._wal.logDDL) {
+          this._wal.logDDL(sql);
+        }
       }
       return result;
     }
@@ -882,6 +900,11 @@ export class TransactionSession {
       if (trimmed.startsWith('CREATE ')) {
         this._tdb._trackCreate(sql);
         this._tdb._installScanInterceptors();
+      }
+      if (trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('ALTER ')) {
+        if (this._tdb._wal && this._tdb._wal.logDDL) {
+          this._tdb._wal.logDDL(sql);
+        }
       }
       return result;
     }

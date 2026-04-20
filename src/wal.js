@@ -33,6 +33,7 @@ const WAL_TYPES = {
   CHECKPOINT: 6,
   BEGIN_CHECKPOINT: 7,
   END_CHECKPOINT: 8,
+  DDL: 9,
 };
 
 const WAL_TYPE_NAMES = Object.fromEntries(
@@ -235,6 +236,14 @@ export class WriteAheadLog {
     this._lastCheckpointLsn = lsn;
     this.flush(); // Force flush on checkpoint
     return lsn;
+  }
+
+  /**
+   * Log a DDL statement (ALTER TABLE, etc.)
+   * Stored as the raw SQL in the 'after' field.
+   */
+  logDDL(sql) {
+    return this._append(0, WAL_TYPES.DDL, '', -1, -1, null, sql);
   }
 
   /**
@@ -625,6 +634,18 @@ export function recoverFromWAL(wal, db) {
   let redone = 0;
   
   for (const record of redoRecords) {
+    // DDL records are always replayed (txId = 0)
+    if (record.type === WAL_TYPES.DDL) {
+      if (record.after) {
+        try {
+          const sql = record.after instanceof Buffer ? record.after.toString() : String(record.after);
+          db.execute(sql);
+          redone++;
+        } catch { /* DDL might fail if already applied — that's OK */ }
+      }
+      continue;
+    }
+
     // Only replay committed transactions
     if (!committedTxns.has(record.txId)) continue;
     

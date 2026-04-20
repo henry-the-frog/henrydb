@@ -94,6 +94,16 @@ export class FileWAL {
     return lsn;
   }
 
+  /** Log a DDL statement (ALTER TABLE, etc.) */
+  logDDL(sql) {
+    const lsn = this._nextLsn++;
+    const record = new WALRecord(lsn, 0, WAL_TYPES.DDL);
+    record.after = sql; // Store as plain string, will be JSON-serialized by WALRecord.serialize()
+    this._writeBuffer.push(record);
+    this.flush();
+    return lsn;
+  }
+
   /** Flush buffered records to the file. */
   flush() {
     if (this._writeBuffer.length === 0) return;
