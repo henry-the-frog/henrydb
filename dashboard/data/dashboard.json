@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-20T02:43:48.236Z",
+  "generated": "2026-04-20T02:46:23.062Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git commit, push, dashboard check",
-    "startedAt": "2026-04-20T02:43:48.236Z",
-    "taskId": "T229"
+    "mode": "BUILD",
+    "task": "Fix server-json flaky test (investigate COPY TO connection hang)",
+    "startedAt": "2026-04-20T02:46:23.062Z",
+    "taskId": "T236"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -7112,59 +7112,132 @@
       {
         "id": "T227",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Evening HenryDB depth work",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-20T02:21:01.686Z"
+        "started": "2026-04-20T02:21:01.686Z",
+        "completed": "2026-04-20T02:21:28.066Z",
+        "duration_ms": 60000,
+        "summary": "Planned 3 BUILD tasks: LIKE ESCAPE fix, query planner stress tests, full test sweep on under-tested modules"
       },
       {
         "id": "T228",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix LIKE ESCAPE clause implementation + regression tests",
         "plan_ref": "T227",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T02:21:48.662Z",
+        "completed": "2026-04-20T02:24:00.897Z",
+        "duration_ms": 600000,
+        "summary": "Implemented LIKE ESCAPE clause: parser + executor + 13 tests. Also fixed COUNT(*) in expressions earlier. NOT LIKE ESCAPE and ILIKE ESCAPE both work."
       },
       {
         "id": "T231",
         "mode": "BUILD",
         "task": "Stress-test query planner: complex JOINs, subquery flattening, index selection edge cases",
-        "status": "upcoming",
-        "plan_ref": "T227"
+        "status": "done",
+        "plan_ref": "T227",
+        "started": "2026-04-20T02:24:12.886Z",
+        "completed": "2026-04-20T02:25:32.004Z",
+        "duration_ms": 600000,
+        "summary": "20 query planner stress tests: 3-way JOINs, self-JOINs, correlated/scalar/IN/EXISTS subqueries, recursive CTEs, window functions, UNION, derived tables. All pass, no bugs found."
       },
       {
         "id": "T232",
         "mode": "BUILD",
         "task": "Run full test sweep on under-tested modules, fix any failures",
-        "status": "upcoming",
-        "plan_ref": "T227"
+        "status": "done",
+        "plan_ref": "T227",
+        "started": "2026-04-20T02:25:35.730Z",
+        "completed": "2026-04-20T02:43:33.993Z",
+        "duration_ms": 600000,
+        "summary": "Test sweep found 2 bugs: (1) UPDATE via non-unique index only affected first match (search() vs range()), (2) same bug in DELETE. Both fixed. Also found pre-existing wire protocol failures (pg dep issue). Core modules all clean."
       },
       {
         "id": "T229",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit, push, dashboard check"
+        "status": "done",
+        "task": "Git commit, push, dashboard check",
+        "started": "2026-04-20T02:43:48.145Z",
+        "completed": "2026-04-20T02:43:57.699Z",
+        "duration_ms": 60000,
+        "summary": "Git push, TODO cleanup done."
       },
       {
         "id": "T230",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research query optimizer strategies: cost model, join ordering, predicate pushdown",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T02:44:01.226Z",
+        "completed": "2026-04-20T02:44:49.824Z",
+        "duration_ms": 300000,
+        "summary": "Researched optimizer strategies: join ordering (DP/greedy), subquery decorrelation, sort avoidance, merge join. Decision: implement join ordering next — highest ROI for multi-table queries. Scratch note written."
+      },
+      {
+        "id": "T233",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Design join ordering optimization for HenryDB multi-table queries",
+        "project": "henrydb",
+        "started": "2026-04-20T02:45:07.222Z",
+        "completed": "2026-04-20T02:45:52.834Z",
+        "duration_ms": 120000,
+        "summary": "HenryDB already has DP-based join ordering optimizer (up to 6 tables), predicate pushdown, cost model. Redirecting: focus on subquery decorrelation or fixing the server-json flakiness instead."
+      },
+      {
+        "id": "T234",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Implement join ordering optimizer",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T235",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Evening depth: fix more bugs from TODO + implement subquery decorrelation",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-20T02:46:10.577Z"
+      },
+      {
+        "id": "T236",
+        "mode": "BUILD",
+        "task": "Fix server-json flaky test (investigate COPY TO connection hang)",
+        "status": "upcoming",
+        "plan_ref": "T235"
+      },
+      {
+        "id": "T237",
+        "mode": "BUILD",
+        "task": "Implement subquery decorrelation: convert correlated WHERE IN to semi-join",
+        "status": "upcoming",
+        "plan_ref": "T235"
+      },
+      {
+        "id": "T238",
+        "mode": "BUILD",
+        "task": "Write stress tests for subquery decorrelation",
+        "status": "upcoming",
+        "plan_ref": "T235"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 227,
-    "blocksTotal": 232,
+    "blocksCompleted": 231,
+    "blocksTotal": 238,
     "modeDistribution": {
-      "THINK": 49,
-      "PLAN": 20,
+      "THINK": 50,
+      "PLAN": 21,
       "BUILD": 124,
-      "MAINTAIN": 31,
-      "EXPLORE": 3
+      "MAINTAIN": 32,
+      "EXPLORE": 4
     }
   },
   "artifacts": [

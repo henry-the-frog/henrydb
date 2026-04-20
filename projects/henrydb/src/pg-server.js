@@ -1068,7 +1068,7 @@ function handleConnection(socket, db, connId = 0, channels = new Map(), users = 
     _queryStats.set(_normalized, _stat);
     
     // Slow query logging (threshold: 100ms by default, configurable)
-    const slowThresholdMs = options.slowQueryThresholdMs || 100;
+    const slowThresholdMs = connOptions.slowQueryThresholdMs || 100;
     if (_execDuration >= slowThresholdMs) {
       if (!_slowQueryLog) _slowQueryLog = [];
       _slowQueryLog.push({
