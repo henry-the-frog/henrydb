@@ -426,9 +426,282 @@
     {
       "id": "T41",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Late session git push and log update",
-      "started": "2026-04-20T21:14:02.263Z"
+      "started": "2026-04-20T21:14:02.263Z",
+      "completed": "2026-04-20T21:14:28.721Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. Daily log updated with feature testing results."
+    },
+    {
+      "id": "T42",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep dive: understand how _executeJoin resolves table references in ON conditions — trace through code",
+      "project": "henrydb",
+      "started": "2026-04-20T21:14:54.098Z",
+      "completed": "2026-04-20T21:15:18.852Z",
+      "duration_ms": 120000,
+      "summary": "Traced join column resolution. Combined row has both prefixed (a.id) and unprefixed (id) keys. ON condition uses prefixed names. Hash join: check ON type=COMPARE+EQ+both column_ref, determine left/right by membership in leftRows[0] vs rightRows[0], build hash on right column. Straightforward."
+    },
+    {
+      "id": "T43",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test HenryDB's CHECK constraints, DEFAULT values, generated columns",
+      "project": "henrydb",
+      "started": "2026-04-20T21:15:26.972Z",
+      "completed": "2026-04-20T21:15:54.161Z",
+      "duration_ms": 120000,
+      "summary": "CHECK: works (validate+reject). DEFAULT: works (including CURRENT_TIMESTAMP). Generated columns: work. NOT NULL: works. UNIQUE: parser error for inline syntax, table-level syntax parses but does NOT enforce uniqueness."
+    },
+    {
+      "id": "T44",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test stored procedures / user-defined functions",
+      "project": "henrydb",
+      "started": "2026-04-20T21:16:01.431Z",
+      "completed": "2026-04-20T21:16:39.979Z",
+      "duration_ms": 120000,
+      "summary": "UDFs work with PostgreSQL syntax (AS body or AS $$body$$). Scalar functions, multi-param, use in WHERE, DROP — all work. No stored procedures. RETURN syntax fails (expects AS body)."
+    },
+    {
+      "id": "T45",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run the vectorized engine benchmarks — verify columnar vs row speedup",
+      "project": "henrydb",
+      "started": "2026-04-20T21:16:48.879Z",
+      "completed": "2026-04-20T21:18:54.011Z",
+      "duration_ms": 120000,
+      "summary": "Vectorized engine: 1.6x for GROUP BY, 1.8x for Filter on 10K rows. Modest JS speedups. HashJoin API mismatch (buildColumns not iterable). Vectorized engine exists and works but not integrated into main query execution path — another case of feature theater."
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test JSON functions — JSON_EXTRACT, JSON_SET, JSON_ARRAY",
+      "project": "henrydb",
+      "started": "2026-04-20T21:19:08.863Z",
+      "completed": "2026-04-20T21:19:27.350Z",
+      "duration_ms": 60000,
+      "summary": "JSON: 5/10 pass. JSON_EXTRACT (with nested paths), JSON_SET, JSON_TYPE, JSON_ARRAY_LENGTH work. Missing: JSON_ARRAY, JSON_OBJECT, JSON_VALID, JSON_KEYS. Partial implementation."
+    },
+    {
+      "id": "T47",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Prioritize: which HenryDB modules need refactoring most? Rank by bug density.",
+      "started": "2026-04-20T21:19:34.393Z",
+      "completed": "2026-04-20T21:19:56.641Z",
+      "duration_ms": 60000,
+      "summary": "sql.js has highest bug density (2.4/kloc, 6 bugs from parseSelectColumn). db.js has most total bugs (11) due to size. Refactor priority: parseSelectColumn unification, _executeJoin hash, _evalExpr default case. planner.js is clean but dead code."
+    },
+    {
+      "id": "T48",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test GRANT/REVOKE and user management if implemented",
+      "project": "henrydb",
+      "started": "2026-04-20T21:20:06.662Z",
+      "completed": "2026-04-20T21:20:16.400Z",
+      "duration_ms": 10000,
+      "summary": "GRANT/REVOKE/CREATE USER not implemented. No user management or access control."
+    },
+    {
+      "id": "T49",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test UPDATE with subquery, UPDATE FROM, multi-table UPDATE",
+      "project": "henrydb",
+      "started": "2026-04-20T21:20:24.879Z",
+      "completed": "2026-04-20T21:20:39.790Z",
+      "duration_ms": 60000,
+      "summary": "UPDATE: all tested features work. Scalar subquery, correlated subquery (with lookup table), UPDATE FROM, UPDATE RETURNING — all correct. No issues."
+    },
+    {
+      "id": "T50",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test DELETE with JOIN, DELETE returning",
+      "project": "henrydb",
+      "started": "2026-04-20T21:20:49.740Z",
+      "completed": "2026-04-20T21:21:07.226Z",
+      "duration_ms": 30000,
+      "summary": "DELETE: all work. Subquery IN, RETURNING, complex WHERE with AVG subquery, TRUNCATE — no issues."
+    },
+    {
+      "id": "T51",
+      "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final wrap: git push, CURRENT.md, evening summary",
+      "skip_reason": ""
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test string functions — CONCAT, POSITION, OVERLAY, TRANSLATE",
+      "project": "henrydb",
+      "started": "2026-04-20T21:21:44.814Z",
+      "completed": "2026-04-20T21:22:06.587Z",
+      "duration_ms": 60000,
+      "summary": "String functions: 25/26 pass. CONCAT, LENGTH, UPPER, LOWER, SUBSTR, REPLACE, TRIM, LTRIM, RTRIM, POSITION, LEFT, RIGHT, REPEAT, REVERSE, LPAD, RPAD, CONCAT_WS, INITCAP, ASCII, CHR, ||, SPLIT_PART, REGEXP_REPLACE, TRANSLATE all work. Only OVERLAY keyword syntax fails."
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test LATERAL JOIN, NATURAL JOIN, CROSS JOIN",
+      "project": "henrydb",
+      "started": "2026-04-20T21:22:12.258Z",
+      "completed": "2026-04-20T21:22:33.912Z",
+      "duration_ms": 60000,
+      "summary": "CROSS JOIN: works. LATERAL JOIN: works (correct correlated subquery). RIGHT JOIN: works (3 rows). Self-join: works. BUGS: NATURAL JOIN does cross join instead of matching on common columns (9 rows instead of 3). FULL OUTER JOIN seems to drop unmatched rows (3 instead of 4+)."
+    },
+    {
+      "id": "T54",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CREATE TABLE AS, INSERT INTO SELECT, COPY FROM",
+      "project": "henrydb",
+      "started": "2026-04-20T21:22:39.200Z",
+      "completed": "2026-04-20T21:23:30.075Z",
+      "duration_ms": 60000,
+      "summary": "CREATE TABLE AS: works with expressions. INSERT INTO SELECT: works with WHERE. COPY TO CSV: works with HEADER. COPY FROM: accepted (no error). TEMP TABLE: not supported (parser error)."
+    },
+    {
+      "id": "T55",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test GROUPING SETS and CUBE alongside ROLLUP",
+      "project": "henrydb",
+      "started": "2026-04-20T21:23:35.534Z",
+      "completed": "2026-04-20T21:23:53.754Z",
+      "duration_ms": 60000,
+      "summary": "ROLLUP, CUBE, GROUPING SETS all work correctly with proper cardinalities. Minor cosmetic: null columns have uppercase alias duplicates."
+    },
+    {
+      "id": "T56",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Write comprehensive regression test suite for all bugs found today",
+      "project": "henrydb",
+      "started": "2026-04-20T21:24:00.254Z",
+      "completed": "2026-04-20T21:25:42.397Z",
+      "duration_ms": 300000,
+      "summary": "Wrote 20 regression tests. 4 pass (FK CASCADE actually works — earlier test had wrong syntax, index rollback swallowed by catch). 16 fail as expected. These tests will validate all fixes. CASCADE and SET NULL BOTH work — removing from bug list."
+    },
+    {
+      "id": "T57",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Write the scratch/architecture-review.md — complete quality assessment of HenryDB",
+      "started": "2026-04-20T21:26:03.418Z",
+      "completed": "2026-04-20T21:26:53.855Z",
+      "duration_ms": 300000,
+      "summary": "Wrote comprehensive architecture review. Grades: db.js C+, sql.js B-, planner.js A design/F integration, vectorized B, transactional A-. Key pattern: feature theater — subsystems exist but arent connected. Top priority: correctness bugs, then hash join."
+    },
+    {
+      "id": "T58",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test ALTER TABLE — ADD COLUMN, DROP COLUMN, RENAME",
+      "project": "henrydb",
+      "started": "2026-04-20T21:27:02.629Z",
+      "completed": "2026-04-20T21:27:19.952Z",
+      "duration_ms": 30000,
+      "summary": "ALTER TABLE: all 5 tested operations work. ADD COLUMN (with DEFAULT), DROP COLUMN, RENAME COLUMN, RENAME TABLE, ADD CONSTRAINT. No issues."
+    },
+    {
+      "id": "T59",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test UPSERT — INSERT ON CONFLICT UPDATE",
+      "project": "henrydb",
+      "started": "2026-04-20T21:27:27.095Z",
+      "completed": "2026-04-20T21:27:43.572Z",
+      "duration_ms": 60000,
+      "summary": "UPSERT syntax works: ON CONFLICT DO UPDATE and DO NOTHING both execute. BUG: EXCLUDED references return NULL (same pattern as trigger NEW/OLD). The conflicting row values arent passed to the SET expressions."
+    },
+    {
+      "id": "T60",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session wrap: git push, CURRENT.md, evening summary"
+    },
+    {
+      "id": "T61",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test EXPLAIN for all query types — verify plan node descriptions",
+      "project": "henrydb",
+      "started": "2026-04-20T21:28:13.867Z",
+      "completed": "2026-04-20T21:28:34.059Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN works for all query types. Shows INDEX_SCAN for indexed cols, TABLE_SCAN for unindexed, HASH_GROUP_BY, SORT, DISTINCT, NESTED_LOOP_JOIN. Row estimates only for INDEX_SCAN. All JOINs show NESTED_LOOP_JOIN confirming dead code issue."
+    },
+    {
+      "id": "T62",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test pg_catalog and information_schema virtual tables",
+      "project": "henrydb",
+      "started": "2026-04-20T21:28:41.884Z",
+      "completed": "2026-04-20T21:28:59.445Z",
+      "duration_ms": 60000,
+      "summary": "information_schema: all 5 tested queries work (tables, columns, key_column_usage, table_constraints). pg_catalog: only pg_type works; pg_tables, pg_indexes, pg_views not implemented."
+    },
+    {
+      "id": "T63",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test VACUUM, ANALYZE, REINDEX commands",
+      "project": "henrydb",
+      "started": "2026-04-20T21:29:06.392Z",
+      "completed": "2026-04-20T21:29:22.322Z",
+      "duration_ms": 30000,
+      "summary": "VACUUM, ANALYZE, ANALYZE table, CHECKPOINT all work. REINDEX and CLUSTER not implemented."
+    },
+    {
+      "id": "T64",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Updated bug list: remove false positives (FK CASCADE), add new bugs (EXCLUDED, NATURAL JOIN)",
+      "started": "2026-04-20T21:29:27.117Z",
+      "completed": "2026-04-20T21:30:02.147Z",
+      "duration_ms": 60000,
+      "summary": "Updated bug list: 20 bugs total. Removed FK CASCADE/SET NULL false positives (they work). Added EXCLUDED, NATURAL JOIN, FULL OUTER JOIN, VIEW-TABLE JOIN, INSERT FROM CTE, UNIQUE enforcement. Prioritized for tomorrow."
+    },
+    {
+      "id": "T65",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test expression index — CREATE INDEX ON expr",
+      "project": "henrydb",
+      "started": "2026-04-20T21:30:08.872Z",
+      "completed": "2026-04-20T21:30:28.600Z",
+      "duration_ms": 60000,
+      "summary": "Expression index works: CREATE INDEX ON (LOWER(col)), planner uses it for LOWER(col) = val queries. Partial index (WHERE clause) works. Multi-column index works. Impressive feature coverage."
+    },
+    {
+      "id": "T66",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test LISTEN/NOTIFY if implemented",
+      "project": "henrydb",
+      "started": "2026-04-20T21:30:34.586Z",
+      "completed": "2026-04-20T21:30:53.193Z",
+      "duration_ms": 30000,
+      "summary": "LISTEN/NOTIFY: both parse and execute. In-process synchronous notifications. No errors."
+    },
+    {
+      "id": "T67",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Pre-final: update daily log, push git",
+      "started": "2026-04-20T21:30:59.035Z"
     }
   ],
   "focusProjects": [
@@ -612,6 +885,114 @@
     {
       "time": "2026-04-20T21:10:12.132Z",
       "msg": "Removed T28: "
+    },
+    {
+      "time": "2026-04-20T21:14:44.725Z",
+      "msg": "Added T42 (EXPLORE) after end: Deep dive: understand how _executeJoin resolves table references in ON conditions — trace through code"
+    },
+    {
+      "time": "2026-04-20T21:14:44.842Z",
+      "msg": "Added T43 (EXPLORE) after end: Test HenryDB's CHECK constraints, DEFAULT values, generated columns"
+    },
+    {
+      "time": "2026-04-20T21:14:44.960Z",
+      "msg": "Added T44 (EXPLORE) after end: Test stored procedures / user-defined functions"
+    },
+    {
+      "time": "2026-04-20T21:14:45.078Z",
+      "msg": "Added T45 (EXPLORE) after end: Run the vectorized engine benchmarks — verify columnar vs row speedup"
+    },
+    {
+      "time": "2026-04-20T21:14:45.196Z",
+      "msg": "Added T46 (EXPLORE) after end: Test JSON functions — JSON_EXTRACT, JSON_SET, JSON_ARRAY"
+    },
+    {
+      "time": "2026-04-20T21:14:45.314Z",
+      "msg": "Added T47 (THINK) after end: Prioritize: which HenryDB modules need refactoring most? Rank by bug density."
+    },
+    {
+      "time": "2026-04-20T21:14:45.431Z",
+      "msg": "Added T48 (EXPLORE) after end: Test GRANT/REVOKE and user management if implemented"
+    },
+    {
+      "time": "2026-04-20T21:14:45.548Z",
+      "msg": "Added T49 (EXPLORE) after end: HenryDB: test UPDATE with subquery, UPDATE FROM, multi-table UPDATE"
+    },
+    {
+      "time": "2026-04-20T21:14:45.667Z",
+      "msg": "Added T50 (EXPLORE) after end: HenryDB: test DELETE with JOIN, DELETE returning"
+    },
+    {
+      "time": "2026-04-20T21:14:45.784Z",
+      "msg": "Added T51 (MAINTAIN) after end: Final wrap: git push, CURRENT.md, evening summary"
+    },
+    {
+      "time": "2026-04-20T21:21:27.388Z",
+      "msg": "Added T52 (EXPLORE) after end: HenryDB: test string functions — CONCAT, POSITION, OVERLAY, TRANSLATE"
+    },
+    {
+      "time": "2026-04-20T21:21:27.508Z",
+      "msg": "Added T53 (EXPLORE) after end: HenryDB: test LATERAL JOIN, NATURAL JOIN, CROSS JOIN"
+    },
+    {
+      "time": "2026-04-20T21:21:27.625Z",
+      "msg": "Added T54 (EXPLORE) after end: HenryDB: test CREATE TABLE AS, INSERT INTO SELECT, COPY FROM"
+    },
+    {
+      "time": "2026-04-20T21:21:27.743Z",
+      "msg": "Added T55 (EXPLORE) after end: HenryDB: test GROUPING SETS and CUBE alongside ROLLUP"
+    },
+    {
+      "time": "2026-04-20T21:21:27.861Z",
+      "msg": "Added T56 (EXPLORE) after end: Write comprehensive regression test suite for all bugs found today"
+    },
+    {
+      "time": "2026-04-20T21:21:27.979Z",
+      "msg": "Added T57 (THINK) after end: Write the scratch/architecture-review.md — complete quality assessment of HenryDB"
+    },
+    {
+      "time": "2026-04-20T21:21:28.096Z",
+      "msg": "Added T58 (EXPLORE) after end: HenryDB: test ALTER TABLE — ADD COLUMN, DROP COLUMN, RENAME"
+    },
+    {
+      "time": "2026-04-20T21:21:28.215Z",
+      "msg": "Added T59 (EXPLORE) after end: HenryDB: test UPSERT — INSERT ON CONFLICT UPDATE"
+    },
+    {
+      "time": "2026-04-20T21:21:28.332Z",
+      "msg": "Added T60 (MAINTAIN) after end: Final session wrap: git push, CURRENT.md, evening summary"
+    },
+    {
+      "time": "2026-04-20T21:21:34.845Z",
+      "msg": "Removed T51: "
+    },
+    {
+      "time": "2026-04-20T21:28:07.218Z",
+      "msg": "Added T61 (EXPLORE) after end: HenryDB: test EXPLAIN for all query types — verify plan node descriptions"
+    },
+    {
+      "time": "2026-04-20T21:28:07.336Z",
+      "msg": "Added T62 (EXPLORE) after end: HenryDB: test pg_catalog and information_schema virtual tables"
+    },
+    {
+      "time": "2026-04-20T21:28:07.453Z",
+      "msg": "Added T63 (EXPLORE) after end: HenryDB: test VACUUM, ANALYZE, REINDEX commands"
+    },
+    {
+      "time": "2026-04-20T21:28:07.572Z",
+      "msg": "Added T64 (THINK) after end: Updated bug list: remove false positives (FK CASCADE), add new bugs (EXCLUDED, NATURAL JOIN)"
+    },
+    {
+      "time": "2026-04-20T21:28:07.690Z",
+      "msg": "Added T65 (EXPLORE) after end: HenryDB: test expression index — CREATE INDEX ON expr"
+    },
+    {
+      "time": "2026-04-20T21:28:07.808Z",
+      "msg": "Added T66 (EXPLORE) after end: HenryDB: test LISTEN/NOTIFY if implemented"
+    },
+    {
+      "time": "2026-04-20T21:28:07.926Z",
+      "msg": "Added T67 (MAINTAIN) after end: Pre-final: update daily log, push git"
     }
   ]
 }
