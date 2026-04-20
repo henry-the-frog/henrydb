@@ -2,7 +2,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 import { VectorizedScan, VectorizedFilter, VectorizedProject, VectorizedLimit,
-         VectorizedHashAggregate, VectorizedHashJoin, collectAll, DataBatch } from './vectorized.js';
+         VectorizedHashAggregate, VectorizedHashJoin, VectorizedSort,
+         VectorizedDistinct, collectAll, DataBatch } from './vectorized.js';
 
 function query(db, sql) {
   return db.execute(sql).rows;
@@ -297,5 +298,86 @@ describe('Vectorized Execution Engine', () => {
     assert.equal(electronics.cnt, 2);
     assert.equal(books.total, 60);
     assert.equal(books.cnt, 3);
+  });
+
+  it('VectorizedSort: ascending order', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE unsorted (val INTEGER)');
+    for (const v of [5, 3, 1, 4, 2]) db.execute('INSERT INTO unsorted VALUES (' + v + ')');
+    const table = db.tables.get('unsorted');
+    const scan = new VectorizedScan(table.heap, table.schema, 'unsorted', 32);
+    const sort = new VectorizedSort(scan, [{ column: 'val', direction: 'ASC' }]);
+    const rows = collectAll(sort, ['val']);
+    assert.deepEqual(rows.map(r => r.val), [1, 2, 3, 4, 5]);
+  });
+
+  it('VectorizedSort: descending order', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE desc_t (val INTEGER)');
+    for (const v of [5, 3, 1, 4, 2]) db.execute('INSERT INTO desc_t VALUES (' + v + ')');
+    const table = db.tables.get('desc_t');
+    const scan = new VectorizedScan(table.heap, table.schema, 'desc_t', 32);
+    const sort = new VectorizedSort(scan, [{ column: 'val', direction: 'DESC' }]);
+    const rows = collectAll(sort, ['val']);
+    assert.deepEqual(rows.map(r => r.val), [5, 4, 3, 2, 1]);
+  });
+
+  it('VectorizedSort: multi-key sort', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE multi (a INTEGER, b INTEGER)');
+    db.execute('INSERT INTO multi VALUES (2, 1)');
+    db.execute('INSERT INTO multi VALUES (1, 2)');
+    db.execute('INSERT INTO multi VALUES (1, 1)');
+    db.execute('INSERT INTO multi VALUES (2, 2)');
+    const table = db.tables.get('multi');
+    const scan = new VectorizedScan(table.heap, table.schema, 'multi', 32);
+    const sort = new VectorizedSort(scan, [
+      { column: 'a', direction: 'ASC' },
+      { column: 'b', direction: 'DESC' },
+    ]);
+    const rows = collectAll(sort, ['a', 'b']);
+    assert.deepEqual(rows, [{ a: 1, b: 2 }, { a: 1, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 1 }]);
+  });
+
+  it('VectorizedDistinct: single column', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE dups (val TEXT)');
+    for (const v of ['a', 'b', 'a', 'c', 'b', 'a']) db.execute("INSERT INTO dups VALUES ('" + v + "')");
+    const table = db.tables.get('dups');
+    const scan = new VectorizedScan(table.heap, table.schema, 'dups', 32);
+    const distinct = new VectorizedDistinct(scan, ['val']);
+    const rows = collectAll(distinct, ['val']);
+    assert.equal(rows.length, 3);
+    const vals = rows.map(r => r.val).sort();
+    assert.deepEqual(vals, ['a', 'b', 'c']);
+  });
+
+  it('VectorizedDistinct: multi-column', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE mdups (a INTEGER, b TEXT)');
+    db.execute("INSERT INTO mdups VALUES (1, 'x')");
+    db.execute("INSERT INTO mdups VALUES (1, 'y')");
+    db.execute("INSERT INTO mdups VALUES (1, 'x')"); // duplicate
+    db.execute("INSERT INTO mdups VALUES (2, 'x')");
+    const table = db.tables.get('mdups');
+    const scan = new VectorizedScan(table.heap, table.schema, 'mdups', 32);
+    const distinct = new VectorizedDistinct(scan, ['a', 'b']);
+    const rows = collectAll(distinct, ['a', 'b']);
+    assert.equal(rows.length, 3); // (1,x), (1,y), (2,x)
+  });
+
+  it('VectorizedSort + Limit: top-N', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE scores (name TEXT, score INTEGER)');
+    for (let i = 0; i < 100; i++) db.execute("INSERT INTO scores VALUES ('p" + i + "', " + i + ")");
+    const table = db.tables.get('scores');
+    const scan = new VectorizedScan(table.heap, table.schema, 'scores', 32);
+    const sort = new VectorizedSort(scan, [{ column: 'score', direction: 'DESC' }]);
+    const limit = new VectorizedLimit(sort, 3);
+    const rows = collectAll(limit, ['name', 'score']);
+    assert.equal(rows.length, 3);
+    assert.equal(rows[0].score, 99);
+    assert.equal(rows[1].score, 98);
+    assert.equal(rows[2].score, 97);
   });
 });
