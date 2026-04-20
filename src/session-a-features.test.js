@@ -226,4 +226,75 @@ describe('Session A Features (2026-04-20)', () => {
       assert.equal(db._comments.has('TABLE.t'), false);
     });
   });
+
+  // === Correlated EXISTS ===
+  describe('Correlated EXISTS', () => {
+    it('EXISTS with unqualified outer column', () => {
+      db.execute('CREATE TABLE orders (o_orderkey INT)');
+      db.execute('CREATE TABLE lineitem (l_orderkey INT)');
+      db.execute('INSERT INTO orders VALUES (1), (2), (3)');
+      db.execute('INSERT INTO lineitem VALUES (1), (3)');
+      const r = db.execute('SELECT * FROM orders WHERE EXISTS (SELECT 1 FROM lineitem WHERE l_orderkey = o_orderkey) ORDER BY o_orderkey');
+      assert.equal(r.rows.length, 2);
+      assert.equal(r.rows[0].o_orderkey, 1);
+      assert.equal(r.rows[1].o_orderkey, 3);
+    });
+
+    it('NOT EXISTS with unqualified outer column', () => {
+      db.execute('CREATE TABLE orders (o_orderkey INT)');
+      db.execute('CREATE TABLE lineitem (l_orderkey INT)');
+      db.execute('INSERT INTO orders VALUES (1), (2), (3)');
+      db.execute('INSERT INTO lineitem VALUES (1), (3)');
+      const r = db.execute('SELECT * FROM orders WHERE NOT EXISTS (SELECT 1 FROM lineitem WHERE l_orderkey = o_orderkey)');
+      assert.equal(r.rows.length, 1);
+      assert.equal(r.rows[0].o_orderkey, 2);
+    });
+
+    it('EXISTS with qualified outer column', () => {
+      db.execute('CREATE TABLE o (id INT, name TEXT)');
+      db.execute('CREATE TABLE l (oid INT, qty INT)');
+      db.execute("INSERT INTO o VALUES (1, 'a'), (2, 'b')");
+      db.execute('INSERT INTO l VALUES (1, 10)');
+      const r = db.execute('SELECT * FROM o WHERE EXISTS (SELECT 1 FROM l WHERE l.oid = o.id)');
+      assert.equal(r.rows.length, 1);
+      assert.equal(r.rows[0].id, 1);
+    });
+  });
+
+  // === DEFAULT CURRENT_TIMESTAMP ===
+  describe('DEFAULT CURRENT_TIMESTAMP', () => {
+    it('inserts current timestamp for missing column', () => {
+      db.execute('CREATE TABLE t (id INT, created TEXT DEFAULT CURRENT_TIMESTAMP)');
+      db.execute('INSERT INTO t (id) VALUES (1)');
+      const r = db.execute('SELECT * FROM t');
+      assert.ok(r.rows[0].created !== null);
+      assert.ok(r.rows[0].created.startsWith('20'));
+    });
+  });
+
+  // === GROUP BY expression column names ===
+  describe('GROUP BY expressions', () => {
+    it('produces readable column names', () => {
+      db.execute('CREATE TABLE t (id INT)');
+      db.execute('INSERT INTO t VALUES (1), (2), (3), (4), (5)');
+      const r = db.execute('SELECT id % 2 as grp, COUNT(*) as cnt FROM t GROUP BY id % 2');
+      assert.equal(r.rows.length, 2);
+      // Should have human-readable key, not JSON
+      const keys = Object.keys(r.rows[0]);
+      assert.ok(!keys.some(k => k.startsWith('{')));
+    });
+  });
+
+  // === Date functions ===
+  describe('Additional date functions', () => {
+    it('DATE_SUB', () => {
+      const r = db.execute("SELECT DATE_SUB('2024-03-15', '2 months') as d");
+      assert.ok(r.rows[0].d.startsWith('2024-01'));
+    });
+
+    it('TO_CHAR', () => {
+      const r = db.execute("SELECT TO_CHAR('2024-03-15', 'YYYY-MM-DD') as d");
+      assert.equal(r.rows[0].d, '2024-03-15');
+    });
+  });
 });
