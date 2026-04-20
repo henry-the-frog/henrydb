@@ -2474,15 +2474,19 @@
       "id": "T232",
       "mode": "BUILD",
       "task": "Run full test sweep on under-tested modules, fix any failures",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T227",
-      "started": "2026-04-20T02:25:35.730Z"
+      "started": "2026-04-20T02:25:35.730Z",
+      "completed": "2026-04-20T02:43:33.993Z",
+      "duration_ms": 600000,
+      "summary": "Test sweep found 2 bugs: (1) UPDATE via non-unique index only affected first match (search() vs range()), (2) same bug in DELETE. Both fixed. Also found pre-existing wire protocol failures (pg dep issue). Core modules all clean."
     },
     {
       "id": "T229",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit, push, dashboard check"
+      "status": "in-progress",
+      "task": "Git commit, push, dashboard check",
+      "started": "2026-04-20T02:43:48.145Z"
     },
     {
       "id": "T230",
