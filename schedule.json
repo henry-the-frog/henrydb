@@ -2391,6 +2391,38 @@
       "completed": "2026-04-20T00:40:43.275Z",
       "duration_ms": 300000,
       "summary": "27 parser edge case tests. Found INT overflow issue (values > INT32_MAX silently truncate). All tests pass after adjusting for known limitations."
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "End-to-end statistical query tests: real-world data analysis scenarios",
+      "project": "henrydb",
+      "started": "2026-04-20T00:49:37.361Z",
+      "completed": "2026-04-20T00:50:34.043Z",
+      "duration_ms": 300000,
+      "summary": "9 end-to-end analytics tests: ranking, CTE+window trends, percentiles, correlation, dashboards, savepoint+analytics. All pass."
+    },
+    {
+      "id": "T224",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "B+Tree edge cases: large dataset, random insert/delete, tree rebalancing verification",
+      "project": "henrydb",
+      "started": "2026-04-20T00:51:37.636Z",
+      "completed": "2026-04-20T00:52:42.934Z",
+      "duration_ms": 300000,
+      "summary": "20 B+Tree stress tests: basic CRUD, sequential/random insert (up to 1000 keys), range queries, delete patterns, scan iterator, tree orders 3-32, string keys. All pass."
+    },
+    {
+      "id": "T225",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Performance comparison: Volcano executor vs direct interpreter for various query patterns",
+      "started": "2026-04-20T00:53:27.199Z",
+      "completed": "2026-04-20T00:54:18.971Z",
+      "duration_ms": 120000,
+      "summary": "Performance profile: 10K rows. Full scan 2ms, PK lookup 0.2ms, range 0.9ms, GROUP BY 2.1ms, ORDER BY 1.6ms. Self-JOIN 57ms (NL join bottleneck). Good perf for in-memory DB."
     }
   ],
   "focusProjects": [
@@ -3314,6 +3346,18 @@
     {
       "time": "2026-04-20T00:38:55.962Z",
       "msg": "Added T222 (BUILD) after end: SQL parser edge case fuzzing: Unicode, escaped quotes, deep nesting, boundary conditions"
+    },
+    {
+      "time": "2026-04-20T00:49:30.975Z",
+      "msg": "Added T223 (BUILD) after end: End-to-end statistical query tests: real-world data analysis scenarios"
+    },
+    {
+      "time": "2026-04-20T00:51:30.669Z",
+      "msg": "Added T224 (BUILD) after end: B+Tree edge cases: large dataset, random insert/delete, tree rebalancing verification"
+    },
+    {
+      "time": "2026-04-20T00:53:19.581Z",
+      "msg": "Added T225 (THINK) after end: Performance comparison: Volcano executor vs direct interpreter for various query patterns"
     }
   ]
 }
