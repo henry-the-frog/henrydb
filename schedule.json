@@ -1076,9 +1076,41 @@
     {
       "id": "T101",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T17:08:56.786Z"
+      "started": "2026-04-20T17:08:56.786Z",
+      "completed": "2026-04-20T17:09:25.450Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: COPY table FROM/TO support for CSV import/export",
+      "project": "henrydb",
+      "started": "2026-04-20T17:09:40.868Z",
+      "completed": "2026-04-20T17:10:57.357Z",
+      "duration_ms": 180000,
+      "summary": "COPY TO STDOUT with CSV format, HEADER, DELIMITER options. Also works with SELECT query. Proper CSV quoting for special characters."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: CREATE INDEX CONCURRENTLY (non-blocking index creation)",
+      "project": "henrydb",
+      "started": "2026-04-20T17:11:04.757Z",
+      "completed": "2026-04-20T17:11:04.901Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: CREATE INDEX CONCURRENTLY not meaningful for single-threaded engine. Regular CREATE INDEX is non-blocking enough."
+    },
+    {
+      "id": "T104",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push + daily log",
+      "started": "2026-04-20T17:11:05.158Z"
     }
   ],
   "focusProjects": [
@@ -1482,6 +1514,18 @@
     {
       "time": "2026-04-20T17:06:28.007Z",
       "msg": "Added T101 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T17:09:40.398Z",
+      "msg": "Added T102 (BUILD) after end: BUILD: COPY table FROM/TO support for CSV import/export"
+    },
+    {
+      "time": "2026-04-20T17:09:40.517Z",
+      "msg": "Added T103 (BUILD) after end: BUILD: CREATE INDEX CONCURRENTLY (non-blocking index creation)"
+    },
+    {
+      "time": "2026-04-20T17:09:40.635Z",
+      "msg": "Added T104 (MAINTAIN) after end: MAINTAIN: git push + daily log"
     }
   ]
 }
