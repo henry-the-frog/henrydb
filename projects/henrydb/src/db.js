@@ -419,9 +419,15 @@ export class Database {
       const table = this.tables.get(tableName);
       if (!table) continue;
       
-      // Create a fresh heap and re-insert saved rows
+      // Create a fresh heap of the same type and re-insert saved rows
       const oldHeap = table.heap;
-      table.heap = this._heapFactory(tableName);
+      if (oldHeap instanceof BTreeTable) {
+        // BTreeTable: create fresh with same primary key column
+        const pkCol = table.schema?.findIndex(c => c.primaryKey);
+        table.heap = new BTreeTable(tableName, pkCol >= 0 ? pkCol : 0);
+      } else {
+        table.heap = this._heapFactory(tableName);
+      }
       
       // Copy HOT chains config
       if (oldHeap._hotChains) {
