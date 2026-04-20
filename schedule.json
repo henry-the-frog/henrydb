@@ -1822,9 +1822,30 @@
     {
       "id": "T170",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T18:56:20.347Z"
+      "started": "2026-04-20T18:56:20.347Z",
+      "completed": "2026-04-20T18:56:46.510Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add NOT EXISTS to session-a test file + correlated subquery tests",
+      "project": "henrydb",
+      "started": "2026-04-20T18:57:24.278Z",
+      "completed": "2026-04-20T18:59:12.538Z",
+      "duration_ms": 120000,
+      "summary": "35-test file: added correlated EXISTS/NOT EXISTS with unqualified/qualified outer refs, DEFAULT CURRENT_TIMESTAMP, GROUP BY expression names, DATE_SUB, TO_CHAR. All 35 pass. Full suite: 0 failures."
+    },
+    {
+      "id": "T172",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Final daily log + evening summary + git push",
+      "started": "2026-04-20T18:59:12.796Z"
     }
   ],
   "focusProjects": [
@@ -2492,6 +2513,14 @@
     {
       "time": "2026-04-20T18:52:23.918Z",
       "msg": "Added T170 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T18:57:23.790Z",
+      "msg": "Added T171 (BUILD) after end: BUILD: Add NOT EXISTS to session-a test file + correlated subquery tests"
+    },
+    {
+      "time": "2026-04-20T18:57:23.938Z",
+      "msg": "Added T172 (MAINTAIN) after end: MAINTAIN: Final daily log + evening summary + git push"
     }
   ]
 }

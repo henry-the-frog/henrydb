@@ -1,13 +1,12 @@
 ## TODO
 
 ### Urgent
-- HenryDB: Correlated subqueries don't resolve unqualified outer column references (since 2026-04-20)
+- (none)
 
 ### Normal
 - HenryDB: db.js is 7K+ lines — needs splitting (has duplicate _exprToString methods)
 - HenryDB: WAL truncation after checkpoint (WAL grows forever)
 - HenryDB: MVCC interception approach is fragile — consider proper visibility function in HeapFile API
-- HenryDB: Integration test (e-commerce scenario) — verify after naming fix
 
 ### Low
 - RISC-V: Liveness-based register allocation
