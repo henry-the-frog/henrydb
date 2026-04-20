@@ -1108,9 +1108,58 @@
     {
       "id": "T104",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push + daily log",
-      "started": "2026-04-20T17:11:05.158Z"
+      "started": "2026-04-20T17:11:05.158Z",
+      "completed": "2026-04-20T17:11:30.398Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: DO block — anonymous PL/pgSQL-style execution",
+      "project": "henrydb",
+      "started": "2026-04-20T17:12:11.715Z",
+      "completed": "2026-04-20T17:12:19.997Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: DO blocks require PL/pgSQL interpreter — too complex for now."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: RETURNING clause for INSERT/UPDATE/DELETE",
+      "project": "henrydb",
+      "started": "2026-04-20T17:12:20.401Z",
+      "completed": "2026-04-20T17:12:42.686Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: RETURNING clause already fully implemented for INSERT/UPDATE/DELETE."
+    },
+    {
+      "id": "T107",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T17:13:06.171Z",
+      "completed": "2026-04-20T17:15:12.203Z",
+      "duration_ms": 120000,
+      "summary": "DISTINCT ON (cols) — PostgreSQL extension. Returns first row per distinct group. Tested with ORDER BY."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "BUILD: DISTINCT ON (cols) — PostgreSQL extension for first-in-group queries",
+      "project": "henrydb",
+      "started": "2026-04-20T17:15:12.460Z"
+    },
+    {
+      "id": "T109",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: git push"
     }
   ],
   "focusProjects": [
@@ -1526,6 +1575,26 @@
     {
       "time": "2026-04-20T17:09:40.635Z",
       "msg": "Added T104 (MAINTAIN) after end: MAINTAIN: git push + daily log"
+    },
+    {
+      "time": "2026-04-20T17:12:11.076Z",
+      "msg": "Added T105 (BUILD) after end: BUILD: DO block — anonymous PL/pgSQL-style execution"
+    },
+    {
+      "time": "2026-04-20T17:12:11.273Z",
+      "msg": "Added T106 (BUILD) after end: BUILD: RETURNING clause for INSERT/UPDATE/DELETE"
+    },
+    {
+      "time": "2026-04-20T17:12:11.440Z",
+      "msg": "Added T107 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T17:13:05.762Z",
+      "msg": "Added T108 (BUILD) after end: BUILD: DISTINCT ON (cols) — PostgreSQL extension for first-in-group queries"
+    },
+    {
+      "time": "2026-04-20T17:13:05.892Z",
+      "msg": "Added T109 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
