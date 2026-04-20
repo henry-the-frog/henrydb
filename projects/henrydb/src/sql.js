@@ -1975,7 +1975,7 @@ export function parse(sql) {
       'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'EXP', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'MOD', 'LTRIM', 'RTRIM',
       'JSON_BUILD_OBJECT', 'JSON_BUILD_ARRAY', 'ROW_TO_JSON', 'TO_JSON', 'JSON_OBJECT_KEYS', 'DATE_ADD', 'DATE_DIFF', 'DATE_TRUNC', 'NEXTVAL', 'CURRVAL', 'SETVAL', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT',
       'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE', 'AGE', 'TO_CHAR', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP', 'DATE_PART',
-      'LN', 'LOG2', 'LOG10', 'SIGN', 'PI', 'DEGREES', 'RADIANS', 'SIN', 'COS', 'TAN', 'ASIN', 'ACOS', 'ATAN', 'ATAN2'].includes(t.value)) {
+      'LN', 'LOG2', 'LOG10', 'SIGN', 'PI', 'DEGREES', 'RADIANS', 'SIN', 'COS', 'TAN', 'ASIN', 'ACOS', 'ATAN', 'ATAN2', 'GEN_RANDOM_UUID', 'UUID'].includes(t.value)) {
       // Only parse as function call if next token is '(' — otherwise treat as identifier
       if (tokens[pos + 1]?.type === '(') {
         const func = advance().value;
