@@ -1385,8 +1385,27 @@ export function parse(sql) {
     
     if (isKeyword('AS')) { advance(); alias = readAlias(); }
     // NUMBER and STRING tokens without operators should be literals, not column refs
+    // But first check for IS NULL / IS NOT NULL after them
     if (colTok.type === 'NUMBER' || colTok.type === 'STRING') {
-      return { type: 'expression', expr: { type: 'literal', value: col, ...(colTok.isFloat ? { isFloat: true } : {}) }, alias };
+      const literalExpr = { type: 'literal', value: col, ...(colTok.isFloat ? { isFloat: true } : {}) };
+      // Check for IS NULL / IS NOT NULL after literal
+      if (!alias && isKeyword('IS')) {
+        advance(); // IS
+        let not = false;
+        if (isKeyword('NOT')) { not = true; advance(); }
+        if (isKeyword('NULL')) {
+          advance();
+          const expr = not
+            ? { type: 'IS_NOT_NULL', left: literalExpr }
+            : { type: 'IS_NULL', left: literalExpr };
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          else if (peek().type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
+            alias = readAlias();
+          }
+          return { type: 'expression', expr, alias };
+        }
+      }
+      return { type: 'expression', expr: literalExpr, alias };
     }
     
     // Check for IS NULL / IS NOT NULL / comparison operators after a column name
