@@ -1446,8 +1446,33 @@ export function parse(sql) {
       }
     }
     
-    // BETWEEN in SELECT list is tricky (BETWEEN x AND y conflicts with alias),
-    // so we skip it here. Users can wrap in parens: (col BETWEEN x AND y) AS alias
+    // BETWEEN in SELECT list: `col BETWEEN x AND y` — the AND is ambiguous with alias
+    // but we can parse it since BETWEEN is always followed by expr AND expr
+    if (!alias && isKeyword('BETWEEN')) {
+      advance(); // BETWEEN
+      const low = parsePrimary();
+      expect('KEYWORD', 'AND');
+      const high = parsePrimary();
+      const expr = { type: 'BETWEEN', left: { type: 'column_ref', name: col }, low, high };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      else if (peek()?.type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
+        alias = readAlias();
+      }
+      return { type: 'expression', expr, alias };
+    }
+    if (!alias && isKeyword('NOT') && tokens[pos+1]?.type === 'KEYWORD' && tokens[pos+1]?.value === 'BETWEEN') {
+      advance(); // NOT
+      advance(); // BETWEEN
+      const low = parsePrimary();
+      expect('KEYWORD', 'AND');
+      const high = parsePrimary();
+      const expr = { type: 'NOT_BETWEEN', left: { type: 'column_ref', name: col }, low, high };
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      else if (peek()?.type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
+        alias = readAlias();
+      }
+      return { type: 'expression', expr, alias };
+    }
     
     // Check for comparison operators (=, <>, <, >, <=, >=) after column
     if (!alias && peek() && ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE'].includes(peek().type)) {

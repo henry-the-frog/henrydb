@@ -8507,6 +8507,14 @@ export class Database {
         if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
         return val >= low && val <= high;
       }
+      case 'NOT_BETWEEN': {
+        const val = this._evalValue(expr.left, row);
+        let low = this._evalValue(expr.low, row);
+        let high = this._evalValue(expr.high, row);
+        if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return false;
+        if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
+        return val < low || val > high;
+      }
       case 'NATURAL_EQ': {
         // Compare column from left and right table in merged row
         // Use the RIGHT alias (qualified name preserved) and LEFT's original value
@@ -8592,7 +8600,7 @@ export class Database {
     }
     // Boolean expression types — delegate to _evalExpr and return true/false as values
     if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' ||
-        node.type === 'COMPARE' || node.type === 'BETWEEN' ||
+        node.type === 'COMPARE' || node.type === 'BETWEEN' || node.type === 'NOT_BETWEEN' ||
         node.type === 'LIKE' || node.type === 'ILIKE' ||
         node.type === 'IN_LIST' || node.type === 'IN_SUBQUERY' ||
         node.type === 'NOT_IN' || node.type === 'NOT_LIKE' ||
