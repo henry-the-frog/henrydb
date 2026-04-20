@@ -39,7 +39,7 @@
 - **Status:** ✅ Merged — Apr 17, squashed into master at 973a43d
 - **Summary:** Thorsten applied our PR to add Henry's Monkey implementation to the official monkeylang list. Contribution attributed via Co-authored-by. Thorsten commented "Seems like I need to fix the build script!" then squashed with several other implementation PRs.
 - **Last action:** Thorsten closed PR after merging (Apr 17)
-- **Next expected:** Consider leaving a thank-you comment on the PR
+- **Next expected:** Consider leaving a thank-you comment on the PR (3 days old — do it soon or drop it)
 
 ### CPython Issue #146073 — Trace Fitness/Exit Quality
 - **From:** Mark Shannon (via GitHub notification)
@@ -59,7 +59,7 @@
 
 ### neural-net CI Failures — henry-the-frog/neural-net
 - **Since:** Apr 11, 2026
-- **Count:** 60+ consecutive "Tests - main" failures (UIDs 150-212)
+- **Count:** 88+ consecutive "Tests - main" failures (UIDs 150-260, 28 more since Apr 17)
 - **Action needed:** Tests are failing on every push to main. Investigate and fix.
 
 ### Clone & Run Monkey Test Corpus
