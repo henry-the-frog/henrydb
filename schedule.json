@@ -640,9 +640,52 @@
     {
       "id": "T60",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: final git push + daily log",
-      "started": "2026-04-20T16:11:25.422Z"
+      "started": "2026-04-20T16:11:25.422Z",
+      "completed": "2026-04-20T16:11:43.052Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced. Daily log updated."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add VectorizedHashAggregate to auto-vectorization path for GROUP BY queries",
+      "project": "henrydb",
+      "started": "2026-04-20T16:12:04.896Z",
+      "completed": "2026-04-20T16:13:56.482Z",
+      "duration_ms": 180000,
+      "summary": "Vectorized GROUP BY aggregation. SUM/COUNT/AVG/MIN/MAX + HAVING + ORDER BY. 500+ row tables auto-vectorize."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Write comprehensive vectorized sort+distinct tests",
+      "project": "henrydb",
+      "started": "2026-04-20T16:13:56.744Z",
+      "completed": "2026-04-20T16:14:45.280Z",
+      "duration_ms": 120000,
+      "summary": "20 vectorized tests: scan, filter, project, limit, chained, empty, all-filtered, benchmark, GROUP BY, global agg, filter→agg, hash join, no-match, join→agg, sort ASC/DESC/multi-key, distinct single/multi-col, top-N."
+    },
+    {
+      "id": "T63",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Review neural-net project for depth opportunities",
+      "project": "neural-net",
+      "started": "2026-04-20T16:14:45.536Z",
+      "completed": "2026-04-20T16:15:18.448Z",
+      "duration_ms": 60000,
+      "summary": "Neural-net: 1337/1337 pass, CI green. Depth opportunities: training pipeline integration, numerical stability, performance benchmarks. Continue HenryDB for now."
+    },
+    {
+      "id": "T64",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T16:15:18.704Z"
     }
   ],
   "focusProjects": [
@@ -882,6 +925,22 @@
     {
       "time": "2026-04-20T16:08:13.385Z",
       "msg": "Added T60 (MAINTAIN) after end: MAINTAIN: final git push + daily log"
+    },
+    {
+      "time": "2026-04-20T16:11:59.878Z",
+      "msg": "Added T61 (BUILD) after end: BUILD: Add VectorizedHashAggregate to auto-vectorization path for GROUP BY queries"
+    },
+    {
+      "time": "2026-04-20T16:11:59.996Z",
+      "msg": "Added T62 (BUILD) after end: BUILD: Write comprehensive vectorized sort+distinct tests"
+    },
+    {
+      "time": "2026-04-20T16:12:00.115Z",
+      "msg": "Added T63 (EXPLORE) after end: EXPLORE: Review neural-net project for depth opportunities"
+    },
+    {
+      "time": "2026-04-20T16:12:00.234Z",
+      "msg": "Added T64 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
