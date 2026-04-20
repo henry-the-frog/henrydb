@@ -767,9 +767,30 @@
     {
       "id": "T72",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T16:21:36.560Z",
+      "completed": "2026-04-20T16:22:07.638Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Persist ALTER TABLE ADD/DROP COLUMN via WAL",
+      "project": "henrydb",
+      "started": "2026-04-20T16:22:26.228Z",
+      "completed": "2026-04-20T16:32:37.432Z",
+      "duration_ms": 600000,
+      "summary": "ALTER TABLE WAL persistence: DDL records logged and replayed. Schema changes persist across reopen. Two remaining issues: (1) SELECT empty after ALTER (MVCC visibility), (2) UPDATE values lost on reopen (WAL order). Partial fix."
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T16:21:36.560Z"
+      "started": "2026-04-20T16:33:04.012Z"
     }
   ],
   "focusProjects": [
@@ -1057,6 +1078,14 @@
     {
       "time": "2026-04-20T16:19:15.710Z",
       "msg": "Added T72 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T16:22:25.877Z",
+      "msg": "Added T73 (BUILD) after end: BUILD: Persist ALTER TABLE ADD/DROP COLUMN via WAL"
+    },
+    {
+      "time": "2026-04-20T16:22:25.996Z",
+      "msg": "Added T74 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
