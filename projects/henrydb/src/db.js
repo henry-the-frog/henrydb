@@ -8421,24 +8421,16 @@ export class Database {
         const val = this._evalValue(expr.left, row);
         const pattern = this._evalValue(expr.pattern, row);
         if (val == null || pattern == null) return null;
-        // Convert SQL LIKE pattern to regex: % → .*, _ → ., escape special chars
-        // LIKE is case-sensitive (use ILIKE for case-insensitive)
-        const regex = '^' + String(pattern)
-          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-          .replace(/%/g, '.*')
-          .replace(/_/g, '.')
-          + '$';
+        const escapeChar = expr.escape ? this._evalValue(expr.escape, row) : null;
+        const regex = this._likeToRegex(String(pattern), escapeChar);
         return new RegExp(regex).test(String(val));
       }
       case 'ILIKE': {
         const val = this._evalValue(expr.left, row);
         const pattern = this._evalValue(expr.pattern, row);
         if (val == null || pattern == null) return null;
-        const regex = '^' + String(pattern)
-          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-          .replace(/%/g, '.*')
-          .replace(/_/g, '.')
-          + '$';
+        const escapeChar = expr.escape ? this._evalValue(expr.escape, row) : null;
+        const regex = this._likeToRegex(String(pattern), escapeChar);
         return new RegExp(regex, 'i').test(String(val));
       }
       case 'SIMILAR_TO': {
@@ -9721,6 +9713,28 @@ export class Database {
     }
     fields.push(current);
     return fields;
+  }
+
+    // Convert SQL LIKE pattern to regex string, with optional ESCAPE character
+  // LIKE: % → .*, _ → ., escape char makes next char literal
+  _likeToRegex(pattern, escapeChar) {
+    let regex = '^';
+    for (let i = 0; i < pattern.length; i++) {
+      const ch = pattern[i];
+      if (escapeChar && ch === escapeChar && i + 1 < pattern.length) {
+        // Next character is literal (escaped)
+        i++;
+        regex += pattern[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      } else if (ch === '%') {
+        regex += '.*';
+      } else if (ch === '_') {
+        regex += '.';
+      } else {
+        regex += ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+    }
+    regex += '$';
+    return regex;
   }
 
   _escapeCsvField(val, delimiter) {

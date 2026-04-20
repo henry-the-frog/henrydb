@@ -5,8 +5,8 @@
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
 - HenryDB: server-json.test.js was flaky (intermittent hang — COPY TO connection issue?)
-- HenryDB: LIKE escape clause not implemented (`LIKE 'he\%lo' ESCAPE '\'`)
-- HenryDB: `COUNT(*) - COUNT(value)` in GROUP BY gives wrong result — second aggregate evaluates against ungrouped data
+
+
 
 ### Low
 - HenryDB: btree.js/bplus-tree.js API inconsistency (search vs get) — unify

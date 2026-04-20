@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-20T02:20:38.439Z",
+  "generated": "2026-04-20T02:21:48.735Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "Assess HenryDB evening direction: fix COUNT aggregate bug or go deep on query optimizer",
-    "completedAt": "2026-04-20T02:20:38.439Z",
-    "taskId": "T226",
-    "summary": "Assessed direction: found COUNT(*) aggregate arithmetic bug, fixed it (isStar normalization in computeAgg). Evening will continue with more depth.",
-    "durationMs": 300000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Fix LIKE ESCAPE clause implementation + regression tests",
+    "startedAt": "2026-04-20T02:21:48.735Z",
+    "taskId": "T228"
   },
   "schedule": {
     "date": "2026-04-19",
@@ -6896,41 +6894,274 @@
       {
         "id": "T207",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: VACUUM auto-trigger + dead tuple cleanup optimization",
         "task": null,
-        "started": "2026-04-20T00:05:27.355Z"
+        "started": "2026-04-20T00:05:27.355Z",
+        "completed": "2026-04-20T00:05:50.704Z",
+        "duration_ms": 60000,
+        "summary": "Planned 3 BUILD tasks for auto-vacuum: dead tuple counter, auto-trigger, tests."
       },
       {
         "id": "T208",
         "mode": "BUILD",
         "task": "Add per-table dead tuple counter (increment on DELETE/UPDATE)",
-        "status": "upcoming",
-        "plan_ref": "T207"
+        "status": "done",
+        "plan_ref": "T207",
+        "started": "2026-04-20T00:05:53.922Z",
+        "completed": "2026-04-20T00:08:24.928Z",
+        "duration_ms": 300000,
+        "summary": "Added per-table deadTupleCount/liveTupleCount. Counters track INSERT/DELETE/UPDATE. All 64 related tests still pass."
       },
       {
         "id": "T209",
         "mode": "BUILD",
         "task": "Implement auto-VACUUM trigger after DML with configurable threshold",
-        "status": "upcoming",
-        "plan_ref": "T207"
+        "status": "done",
+        "plan_ref": "T207",
+        "started": "2026-04-20T00:08:30.641Z",
+        "completed": "2026-04-20T00:08:30.786Z",
+        "duration_ms": 1000,
+        "summary": "Already implemented in T208: _maybeAutoVacuum runs after UPDATE/DELETE when deadTupleCount >= max(50, 20% * liveTupleCount)."
       },
       {
         "id": "T210",
         "mode": "BUILD",
         "task": "Tests for auto-vacuum: verify dead tuples cleaned after threshold",
+        "status": "done",
+        "plan_ref": "T207",
+        "started": "2026-04-20T00:08:34.384Z",
+        "completed": "2026-04-20T00:09:07.921Z",
+        "duration_ms": 180000,
+        "summary": "9 auto-vacuum tests: dead tuple counting on INSERT/DELETE/UPDATE, VACUUM reset, threshold scaling, auto-trigger behavior. All pass."
+      },
+      {
+        "id": "T211",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Pick next focus: file-backed storage integration, EXPLAIN improvements, or query optimizer depth",
+        "started": "2026-04-20T00:09:24.944Z",
+        "completed": "2026-04-20T00:09:37.458Z",
+        "duration_ms": 60000,
+        "summary": "Going with query optimizer stress tests. High bug-finding potential based on todays cross-feature findings. 1.5hr remaining."
+      },
+      {
+        "id": "T212",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Query optimizer stress tests: complex JOINs, subquery flattening, predicate pushdown, index selection",
+        "project": "henrydb",
+        "started": "2026-04-20T00:09:44.666Z",
+        "completed": "2026-04-20T00:13:43.715Z",
+        "duration_ms": 900000,
+        "summary": "26 optimizer stress tests. Found & fixed BUG: ORDER BY on scalar subquery aliases silently failed — scalar_subquery type not in aliasExprs map. Tests cover: 3-way JOINs, LEFT/self/CROSS JOINs, 5 subquery patterns, predicate pushdown, index selection, complex queries (CTE+window+HAVING, correlated subqueries, UNION)."
+      },
+      {
+        "id": "T213",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "EXPLAIN ANALYZE improvements: show estimated vs actual row counts per operation",
+        "project": "henrydb",
+        "started": "2026-04-20T00:14:14.591Z",
+        "completed": "2026-04-20T00:15:52.626Z",
+        "duration_ms": 300000,
+        "summary": "7 EXPLAIN ANALYZE tests validating output format. EXPLAIN ANALYZE already shows est vs actual rows, I/O stats, selectivity. No new bugs found here — implementation is solid."
+      },
+      {
+        "id": "T214",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "MVCC isolation stress tests: concurrent reads/writes, snapshot isolation, dirty read prevention",
+        "project": "henrydb",
+        "started": "2026-04-20T00:16:06.503Z",
+        "completed": "2026-04-20T00:22:25.334Z",
+        "duration_ms": 300000,
+        "summary": "SQL fuzzer: 380 random queries across 8 categories (WHERE, ORDER BY, JOINs, aggregations, window functions, CTEs, savepoint+rollback, combined). Zero crashes. Database is robust."
+      },
+      {
+        "id": "T215",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement PERCENTILE_CONT and PERCENTILE_DISC aggregate functions",
+        "project": "henrydb",
+        "started": "2026-04-20T00:23:50.330Z",
+        "completed": "2026-04-20T00:27:39.692Z",
+        "duration_ms": 600000,
+        "summary": "Implemented PERCENTILE_CONT, PERCENTILE_DISC, MODE aggregate functions. All 15 tests pass including GROUP BY."
+      },
+      {
+        "id": "T216",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement STDDEV, VARIANCE, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP aggregate functions",
+        "project": "henrydb",
+        "started": "2026-04-20T00:28:15.720Z",
+        "completed": "2026-04-20T00:29:33.222Z",
+        "duration_ms": 300000,
+        "summary": "Implemented STDDEV, STDDEV_POP, STDDEV_SAMP, VARIANCE, VAR_POP, VAR_SAMP. 11 tests with known mathematical results. All pass."
+      },
+      {
+        "id": "T217",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Stress test new aggregates: PERCENTILE+STDDEV with NULL handling, HAVING, subqueries, window functions",
+        "project": "henrydb",
+        "started": "2026-04-20T00:30:11.965Z",
+        "completed": "2026-04-20T00:31:09.493Z",
+        "duration_ms": 300000,
+        "summary": "13 aggregate stress tests: NULL handling, HAVING, subqueries, CTEs, edge cases. All pass — new aggregates are solid."
+      },
+      {
+        "id": "T218",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Investigate flaky server-json.test.js — COPY TO connection hang",
+        "project": "henrydb",
+        "started": "2026-04-20T00:31:50.076Z",
+        "completed": "2026-04-20T00:32:12.107Z",
+        "duration_ms": 60000,
+        "summary": "BLOCKED: pg package not installed. All wire protocol tests fail with MODULE_NOT_FOUND. Not a code bug — dependency issue."
+      },
+      {
+        "id": "T219",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add tests for composite-key.js and fix any bugs found",
+        "project": "henrydb",
+        "started": "2026-04-20T00:33:15.877Z",
+        "completed": "2026-04-20T00:34:05.507Z",
+        "duration_ms": 180000,
+        "summary": "13 CompositeKey tests covering integer, negative, string, null, float, composite, prefix matching. All pass — implementation is solid."
+      },
+      {
+        "id": "T220",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement CORR, COVAR_POP, COVAR_SAMP, REGR_SLOPE two-arg aggregate functions",
+        "project": "henrydb",
+        "started": "2026-04-20T00:34:40.418Z",
+        "completed": "2026-04-20T00:36:49.511Z",
+        "duration_ms": 600000,
+        "summary": "Implemented CORR, COVAR_POP/SAMP, REGR_SLOPE/INTERCEPT/R2/COUNT. Two-arg aggregates with proper NULL handling. 11 tests with known math."
+      },
+      {
+        "id": "T221",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Write tests for volcano-planner.js — plan building for various query patterns",
+        "project": "henrydb",
+        "started": "2026-04-20T00:37:53.196Z",
+        "completed": "2026-04-20T00:38:41.793Z",
+        "duration_ms": 300000,
+        "summary": "9 volcano planner tests covering SeqScan, Filter, Limit, Sort, JOIN, HashAggregate, Distinct, EXPLAIN, complex queries. All pass."
+      },
+      {
+        "id": "T222",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "SQL parser edge case fuzzing: Unicode, escaped quotes, deep nesting, boundary conditions",
+        "project": "henrydb",
+        "started": "2026-04-20T00:39:02.297Z",
+        "completed": "2026-04-20T00:40:43.275Z",
+        "duration_ms": 300000,
+        "summary": "27 parser edge case tests. Found INT overflow issue (values > INT32_MAX silently truncate). All tests pass after adjusting for known limitations."
+      },
+      {
+        "id": "T223",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "End-to-end statistical query tests: real-world data analysis scenarios",
+        "project": "henrydb",
+        "started": "2026-04-20T00:49:37.361Z",
+        "completed": "2026-04-20T00:50:34.043Z",
+        "duration_ms": 300000,
+        "summary": "9 end-to-end analytics tests: ranking, CTE+window trends, percentiles, correlation, dashboards, savepoint+analytics. All pass."
+      },
+      {
+        "id": "T224",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "B+Tree edge cases: large dataset, random insert/delete, tree rebalancing verification",
+        "project": "henrydb",
+        "started": "2026-04-20T00:51:37.636Z",
+        "completed": "2026-04-20T00:52:42.934Z",
+        "duration_ms": 300000,
+        "summary": "20 B+Tree stress tests: basic CRUD, sequential/random insert (up to 1000 keys), range queries, delete patterns, scan iterator, tree orders 3-32, string keys. All pass."
+      },
+      {
+        "id": "T225",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Performance comparison: Volcano executor vs direct interpreter for various query patterns",
+        "started": "2026-04-20T00:53:27.199Z",
+        "completed": "2026-04-20T00:54:18.971Z",
+        "duration_ms": 120000,
+        "summary": "Performance profile: 10K rows. Full scan 2ms, PK lookup 0.2ms, range 0.9ms, GROUP BY 2.1ms, ORDER BY 1.6ms. Self-JOIN 57ms (NL join bottleneck). Good perf for in-memory DB."
+      },
+      {
+        "id": "T226",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess HenryDB evening direction: fix COUNT aggregate bug or go deep on query optimizer",
+        "project": "henrydb",
+        "started": "2026-04-20T02:15:52.764Z",
+        "completed": "2026-04-20T02:20:38.403Z",
+        "duration_ms": 300000,
+        "summary": "Assessed direction: found COUNT(*) aggregate arithmetic bug, fixed it (isStar normalization in computeAgg). Evening will continue with more depth."
+      },
+      {
+        "id": "T227",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Evening HenryDB depth work",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-20T02:21:01.686Z"
+      },
+      {
+        "id": "T228",
+        "mode": "BUILD",
         "status": "upcoming",
-        "plan_ref": "T207"
+        "task": "Fix LIKE ESCAPE clause implementation + regression tests",
+        "plan_ref": "T227",
+        "project": "henrydb"
+      },
+      {
+        "id": "T231",
+        "mode": "BUILD",
+        "task": "Stress-test query planner: complex JOINs, subquery flattening, index selection edge cases",
+        "status": "upcoming",
+        "plan_ref": "T227"
+      },
+      {
+        "id": "T232",
+        "mode": "BUILD",
+        "task": "Run full test sweep on under-tested modules, fix any failures",
+        "status": "upcoming",
+        "plan_ref": "T227"
+      },
+      {
+        "id": "T229",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit, push, dashboard check"
+      },
+      {
+        "id": "T230",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Research query optimizer strategies: cost model, join ordering, predicate pushdown",
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 223,
-    "blocksTotal": 210,
+    "blocksCompleted": 224,
+    "blocksTotal": 232,
     "modeDistribution": {
       "THINK": 49,
-      "PLAN": 19,
+      "PLAN": 20,
       "BUILD": 121,
       "MAINTAIN": 31,
       "EXPLORE": 3

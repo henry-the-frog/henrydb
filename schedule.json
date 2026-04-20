@@ -2438,18 +2438,37 @@
     {
       "id": "T227",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Evening HenryDB depth work",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T02:21:01.686Z",
+      "completed": "2026-04-20T02:21:28.066Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks: LIKE ESCAPE fix, query planner stress tests, full test sweep on under-tested modules"
     },
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Fix LIKE ESCAPE clause implementation + regression tests",
       "plan_ref": "T227",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T02:21:48.662Z"
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "task": "Stress-test query planner: complex JOINs, subquery flattening, index selection edge cases",
+      "status": "upcoming",
+      "plan_ref": "T227"
+    },
+    {
+      "id": "T232",
+      "mode": "BUILD",
+      "task": "Run full test sweep on under-tested modules, fix any failures",
+      "status": "upcoming",
+      "plan_ref": "T227"
     },
     {
       "id": "T229",
@@ -3418,6 +3437,10 @@
     {
       "time": "2026-04-20T02:15:45.770Z",
       "msg": "Added T230 (EXPLORE) after T229: Research query optimizer strategies: cost model, join ordering, predicate pushdown"
+    },
+    {
+      "time": "2026-04-20T02:21:23.888Z",
+      "msg": "PLAN T227 filled 3 BUILD tasks"
     }
   ]
 }

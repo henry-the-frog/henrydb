@@ -12,7 +12,7 @@ const KEYWORDS = new Set([
   'CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'INDEXES', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'ILIKE', 'SIMILAR', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
+  'LIKE', 'ILIKE', 'SIMILAR', 'ESCAPE', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVERLAY', 'PLACING', 'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
@@ -1720,7 +1720,12 @@ export function parse(sql) {
       advance(); // NOT
       advance(); // LIKE
       const pattern = parsePrimaryWithConcat();
-      return { type: 'NOT', expr: { type: 'LIKE', left, pattern } };
+      let escape = null;
+      if (isKeyword('ESCAPE')) {
+        advance();
+        escape = parsePrimaryWithConcat();
+      }
+      return { type: 'NOT', expr: { type: 'LIKE', left, pattern, escape } };
     }
 
     // NOT BETWEEN
@@ -1750,13 +1755,23 @@ export function parse(sql) {
     if (isKeyword('LIKE')) {
       advance();
       const pattern = parsePrimaryWithConcat();
-      return { type: 'LIKE', left, pattern };
+      let escape = null;
+      if (isKeyword('ESCAPE')) {
+        advance();
+        escape = parsePrimaryWithConcat();
+      }
+      return { type: 'LIKE', left, pattern, escape };
     }
 
     if (isKeyword('ILIKE')) {
       advance();
       const pattern = parsePrimaryWithConcat();
-      return { type: 'ILIKE', left, pattern };
+      let escape = null;
+      if (isKeyword('ESCAPE')) {
+        advance();
+        escape = parsePrimaryWithConcat();
+      }
+      return { type: 'ILIKE', left, pattern, escape };
     }
 
     // SIMILAR TO
