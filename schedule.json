@@ -577,9 +577,30 @@
     {
       "id": "T54",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T16:02:03.624Z",
+      "completed": "2026-04-20T16:02:30.056Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix MVCC index bypass: intercept heap.get() for MVCC visibility check",
+      "project": "henrydb",
+      "started": "2026-04-20T16:02:48.901Z",
+      "completed": "2026-04-20T16:07:00.037Z",
+      "duration_ms": 300000,
+      "summary": "CRITICAL FIX: MVCC-aware index lookups. Intercepted heap.get() for visibility check + index scan fallback. Snapshot isolation now works for PK queries. 122/122 tests pass."
+    },
+    {
+      "id": "T56",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T16:02:03.624Z"
+      "started": "2026-04-20T16:07:23.932Z"
     }
   ],
   "focusProjects": [
@@ -795,6 +816,14 @@
     {
       "time": "2026-04-20T15:53:30.724Z",
       "msg": "Added T54 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T16:02:43.923Z",
+      "msg": "Added T55 (BUILD) after end: Fix MVCC index bypass: intercept heap.get() for MVCC visibility check"
+    },
+    {
+      "time": "2026-04-20T16:02:44.042Z",
+      "msg": "Added T56 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }

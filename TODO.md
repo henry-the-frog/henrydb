@@ -3,7 +3,7 @@
 ### Urgent
 
 ### Urgent
-- HenryDB: Index lookups bypass MVCC scan interceptor — snapshot isolation broken for PK/indexed queries (since 2026-04-20)
+- (none)
 
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
