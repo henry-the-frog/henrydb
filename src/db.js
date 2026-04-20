@@ -4978,6 +4978,18 @@ export class Database {
         const found = expr.hashSet.has(leftVal);
         return expr.negated ? !found : found;
       }
+      case 'NOT_IN_HASHSET': {
+        const leftVal = this._evalValue(expr.left, row);
+        return !expr.hashSet.has(leftVal);
+      }
+      case 'IN_COMPOSITE_HASHSET': {
+        const vals = expr.outerCols.map(col => this._evalValue({ type: 'column_ref', name: col }, row));
+        return expr.hashSet.has(JSON.stringify(vals));
+      }
+      case 'NOT_IN_COMPOSITE_HASHSET': {
+        const vals = expr.outerCols.map(col => this._evalValue({ type: 'column_ref', name: col }, row));
+        return !expr.hashSet.has(JSON.stringify(vals));
+      }
       case 'LITERAL_BOOL': {
         return expr.value;
       }
