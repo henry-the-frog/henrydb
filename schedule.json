@@ -1864,9 +1864,52 @@
     {
       "id": "T174",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T19:01:48.761Z"
+      "started": "2026-04-20T19:01:48.761Z",
+      "completed": "2026-04-20T19:02:12.102Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: PERCENT_RANK and CUME_DIST window functions",
+      "project": "henrydb",
+      "started": "2026-04-20T19:02:26.163Z",
+      "completed": "2026-04-20T19:03:56.215Z",
+      "duration_ms": 60000,
+      "summary": "PERCENT_RANK and CUME_DIST window functions. Both work correctly."
+    },
+    {
+      "id": "T176",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: String functions: INITCAP, TRANSLATE, CHR, ASCII",
+      "project": "henrydb",
+      "started": "2026-04-20T19:03:56.474Z",
+      "completed": "2026-04-20T19:04:51.477Z",
+      "duration_ms": 60000,
+      "summary": "INITCAP, TRANSLATE, CHR, ASCII, MD5, ENCODE/DECODE. All work."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: GENERATE_SERIES as CTE-compatible table function",
+      "project": "henrydb",
+      "started": "2026-04-20T19:04:51.740Z",
+      "completed": "2026-04-20T19:05:09.056Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: generate_series already works with step support."
+    },
+    {
+      "id": "T178",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Final test sweep + daily log evening summary + git push",
+      "started": "2026-04-20T19:05:09.315Z"
     }
   ],
   "focusProjects": [
@@ -2550,6 +2593,22 @@
     {
       "time": "2026-04-20T19:00:08.968Z",
       "msg": "Added T174 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T19:02:25.554Z",
+      "msg": "Added T175 (BUILD) after end: BUILD: PERCENT_RANK and CUME_DIST window functions"
+    },
+    {
+      "time": "2026-04-20T19:02:25.691Z",
+      "msg": "Added T176 (BUILD) after end: BUILD: String functions: INITCAP, TRANSLATE, CHR, ASCII"
+    },
+    {
+      "time": "2026-04-20T19:02:25.811Z",
+      "msg": "Added T177 (BUILD) after end: BUILD: GENERATE_SERIES as CTE-compatible table function"
+    },
+    {
+      "time": "2026-04-20T19:02:25.931Z",
+      "msg": "Added T178 (MAINTAIN) after end: MAINTAIN: Final test sweep + daily log evening summary + git push"
     }
   ]
 }
