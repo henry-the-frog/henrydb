@@ -884,9 +884,41 @@
     {
       "id": "T83",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T16:50:47.809Z"
+      "started": "2026-04-20T16:50:47.809Z",
+      "completed": "2026-04-20T16:51:17.479Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add LATERAL JOIN support — parser + executor",
+      "project": "henrydb",
+      "started": "2026-04-20T16:51:36.499Z",
+      "completed": "2026-04-20T16:53:35.006Z",
+      "duration_ms": 120000,
+      "summary": "Comma LATERAL syntax added. Both FROM t1, LATERAL (...) and CROSS JOIN LATERAL (...) now work. LATERAL was already implemented — just needed parser fix for comma syntax."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Write LATERAL JOIN tests",
+      "project": "henrydb",
+      "started": "2026-04-20T16:53:35.262Z",
+      "completed": "2026-04-20T16:55:05.361Z",
+      "duration_ms": 120000,
+      "summary": "5 LATERAL JOIN tests: basic, comma syntax, multi-row, LEFT JOIN, derived table. All pass."
+    },
+    {
+      "id": "T86",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push + daily log update",
+      "started": "2026-04-20T16:55:05.619Z"
     }
   ],
   "focusProjects": [
@@ -1218,6 +1250,18 @@
     {
       "time": "2026-04-20T16:49:55.823Z",
       "msg": "Added T83 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T16:51:36.010Z",
+      "msg": "Added T84 (BUILD) after end: BUILD: Add LATERAL JOIN support — parser + executor"
+    },
+    {
+      "time": "2026-04-20T16:51:36.129Z",
+      "msg": "Added T85 (BUILD) after end: BUILD: Write LATERAL JOIN tests"
+    },
+    {
+      "time": "2026-04-20T16:51:36.268Z",
+      "msg": "Added T86 (MAINTAIN) after end: MAINTAIN: git push + daily log update"
     }
   ]
 }
