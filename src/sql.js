@@ -2006,7 +2006,17 @@ export function parse(sql) {
         else if (isKeyword('DEFAULT')) {
           advance();
           const t = advance();
-          defaultVal = t.type === 'NUMBER' ? t.value : t.type === 'STRING' ? t.value : null;
+          if (t.type === 'NUMBER') defaultVal = t.value;
+          else if (t.type === 'STRING') defaultVal = t.value;
+          else if (t.type === 'KEYWORD' && (t.value === 'CURRENT_TIMESTAMP' || t.value === 'CURRENT_DATE' || t.value === 'NOW')) {
+            defaultVal = { type: 'function_call', func: t.value, args: [] };
+          } else if (t.type === 'KEYWORD' && (t.value === 'TRUE' || t.value === 'FALSE')) {
+            defaultVal = t.value === 'TRUE';
+          } else if (t.type === 'KEYWORD' && t.value === 'NULL') {
+            defaultVal = null;
+          } else {
+            defaultVal = t.value;
+          }
         }
         else if (isKeyword('REFERENCES')) {
           advance();
