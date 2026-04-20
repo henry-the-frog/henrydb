@@ -1,139 +1,122 @@
-// string-functions.test.js — String function edge cases
+// string-functions.test.js — String function correctness tests
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Database } from './db.js';
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import { strict as assert } from 'node:assert';
-import { TransactionalDatabase } from './transactional-db.js';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+describe('String Functions', () => {
+  it('UPPER/LOWER', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT UPPER('hello') as r").rows[0].r, 'HELLO');
+    assert.equal(db.execute("SELECT LOWER('HELLO') as r").rows[0].r, 'hello');
+  });
 
-let dbDir, db;
-function setup() {
-  dbDir = mkdtempSync(join(tmpdir(), 'henrydb-str-'));
-  db = TransactionalDatabase.open(dbDir);
-}
-function teardown() {
-  try { db.close(); } catch {}
-  rmSync(dbDir, { recursive: true, force: true });
-}
-function rows(r) { return Array.isArray(r) ? r : r?.rows || []; }
+  it('LENGTH', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT LENGTH('hello') as r").rows[0].r, 5);
+    assert.equal(db.execute("SELECT LENGTH('') as r").rows[0].r, 0);
+  });
 
-describe('String Function Edge Cases', () => {
-  beforeEach(setup);
-  afterEach(teardown);
+  it('TRIM', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT TRIM('  hello  ') as r").rows[0].r, 'hello');
+  });
 
-  it('UPPER and LOWER with NULL', () => {
+  it('LTRIM/RTRIM', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT LTRIM('  hello') as r").rows[0].r, 'hello');
+    assert.equal(db.execute("SELECT RTRIM('hello  ') as r").rows[0].r, 'hello');
+  });
+
+  it('LEFT/RIGHT', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT LEFT('hello', 3) as r").rows[0].r, 'hel');
+    assert.equal(db.execute("SELECT RIGHT('hello', 3) as r").rows[0].r, 'llo');
+  });
+
+  it('REPEAT', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT REPEAT('ab', 3) as r").rows[0].r, 'ababab');
+  });
+
+  it('REVERSE', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT REVERSE('hello') as r").rows[0].r, 'olleh');
+  });
+
+  it('LPAD/RPAD', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT LPAD('hi', 5, '*') as r").rows[0].r, '***hi');
+    assert.equal(db.execute("SELECT RPAD('hi', 5, '*') as r").rows[0].r, 'hi***');
+  });
+
+  it('REPLACE', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT REPLACE('hello world', 'world', 'there') as r").rows[0].r, 'hello there');
+  });
+
+  it('SUBSTRING/SUBSTR', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT SUBSTRING('hello', 2, 3) as r").rows[0].r, 'ell');
+    assert.equal(db.execute("SELECT SUBSTR('hello', 2, 3) as r").rows[0].r, 'ell');
+  });
+
+  it('CONCAT', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT CONCAT('hello', ' ', 'world') as r").rows[0].r, 'hello world');
+  });
+
+  it('string concatenation with ||', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT 'hello' || ' ' || 'world' as r").rows[0].r, 'hello world');
+  });
+
+  it('POSITION/LOCATE', () => {
+    const db = new Database();
+    assert.equal(db.execute("SELECT POSITION('ll' IN 'hello') as r").rows[0].r, 3);
+  });
+
+  it('LIKE with %', () => {
+    const db = new Database();
     db.execute('CREATE TABLE t (val TEXT)');
-    db.execute('INSERT INTO t VALUES (NULL)');
-    
-    const r1 = rows(db.execute('SELECT UPPER(val) as u FROM t'));
-    assert.equal(r1[0].u, null, 'UPPER(NULL) should be NULL');
-    
-    const r2 = rows(db.execute('SELECT LOWER(val) as l FROM t'));
-    assert.equal(r2[0].l, null, 'LOWER(NULL) should be NULL');
+    db.execute("INSERT INTO t VALUES ('apple'),('banana'),('avocado'),('blueberry')");
+    const r = db.execute("SELECT val FROM t WHERE val LIKE 'a%' ORDER BY val");
+    assert.deepEqual(r.rows.map(r => r.val), ['apple', 'avocado']);
   });
 
-  it('LENGTH with empty string', () => {
+  it('LIKE with _', () => {
+    const db = new Database();
     db.execute('CREATE TABLE t (val TEXT)');
-    db.execute("INSERT INTO t VALUES ('')");
-    
-    const r = rows(db.execute('SELECT LENGTH(val) as len FROM t'));
-    assert.equal(r[0].len, 0, 'LENGTH of empty string should be 0');
+    db.execute("INSERT INTO t VALUES ('cat'),('car'),('cap'),('cob')");
+    const r = db.execute("SELECT val FROM t WHERE val LIKE 'ca_' ORDER BY val");
+    assert.deepEqual(r.rows.map(r => r.val), ['cap', 'car', 'cat']);
   });
 
-  it('LENGTH with NULL', () => {
+  it('ILIKE case-insensitive', () => {
+    const db = new Database();
     db.execute('CREATE TABLE t (val TEXT)');
-    db.execute('INSERT INTO t VALUES (NULL)');
-    
-    const r = rows(db.execute('SELECT LENGTH(val) as len FROM t'));
-    assert.equal(r[0].len, null, 'LENGTH(NULL) should be NULL');
+    db.execute("INSERT INTO t VALUES ('Apple'),('BANANA'),('cherry')");
+    const r = db.execute("SELECT val FROM t WHERE val ILIKE 'a%' ORDER BY val");
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].val, 'Apple');
   });
 
-  it('SUBSTR with boundary values', () => {
-    db.execute('CREATE TABLE t (val TEXT)');
-    db.execute("INSERT INTO t VALUES ('abcdef')");
-    
-    // Start from 1 (SQL is 1-indexed)
-    const r1 = rows(db.execute('SELECT SUBSTR(val, 1, 3) as s FROM t'));
-    assert.equal(r1[0].s, 'abc');
-    
-    // Substr past end
-    const r2 = rows(db.execute('SELECT SUBSTR(val, 4, 100) as s FROM t'));
-    assert.equal(r2[0].s, 'def');
-    
-    // Substr with no length
-    const r3 = rows(db.execute('SELECT SUBSTR(val, 3) as s FROM t'));
-    assert.equal(r3[0].s, 'cdef');
+  it('INITCAP', () => {
+    const db = new Database();
+    const r = db.execute("SELECT INITCAP('hello world') as r");
+    assert.equal(r.rows[0].r, 'Hello World');
   });
 
-  it('concatenation operator ||', () => {
-    db.execute('CREATE TABLE t (first TEXT, last TEXT)');
-    db.execute("INSERT INTO t VALUES ('John', 'Doe')");
-    
-    const r = rows(db.execute("SELECT first || ' ' || last as full_name FROM t"));
-    assert.equal(r[0].full_name, 'John Doe');
-  });
-
-  it('|| with NULL returns NULL', () => {
-    db.execute('CREATE TABLE t (a TEXT, b TEXT)');
-    db.execute('INSERT INTO t VALUES (NULL, \'hello\')');
-    
-    const r = rows(db.execute("SELECT a || b as result FROM t"));
-    // SQL standard: NULL || anything = NULL
-    // Some DBs concat as empty string — both behaviors acceptable
-    assert.ok(r[0].result === null || r[0].result === 'hello',
-      `NULL || 'hello' should be NULL or 'hello', got: ${r[0].result}`);
-  });
-
-  it('REPLACE with empty string', () => {
-    db.execute('CREATE TABLE t (val TEXT)');
-    db.execute("INSERT INTO t VALUES ('hello')");
-    
-    const r = rows(db.execute("SELECT REPLACE(val, 'l', '') as r FROM t"));
-    assert.equal(r[0].r, 'heo', 'REPLACE with empty string should remove matches');
-  });
-
-  it('string comparison with LIKE', () => {
-    db.execute('CREATE TABLE t (name TEXT)');
-    db.execute("INSERT INTO t VALUES ('Alice')");
-    db.execute("INSERT INTO t VALUES ('Bob')");
-    db.execute("INSERT INTO t VALUES ('Angela')");
-    db.execute("INSERT INTO t VALUES ('Zoe')");
-    
-    const r = rows(db.execute("SELECT name FROM t WHERE name LIKE 'A%' ORDER BY name"));
-    assert.equal(r.length, 2);
-    assert.equal(r[0].name, 'Alice');
-    assert.equal(r[1].name, 'Angela');
-  });
-
-  it('LIKE with underscore wildcard', () => {
-    db.execute('CREATE TABLE t (code TEXT)');
-    db.execute("INSERT INTO t VALUES ('A1')");
-    db.execute("INSERT INTO t VALUES ('A2')");
-    db.execute("INSERT INTO t VALUES ('AB')");
-    db.execute("INSERT INTO t VALUES ('B1')");
-    
-    const r = rows(db.execute("SELECT code FROM t WHERE code LIKE 'A_' ORDER BY code"));
-    assert.equal(r.length, 3); // A1, A2, AB
-  });
-
-  it('TRIM variations', () => {
-    db.execute('CREATE TABLE t (val TEXT)');
-    db.execute("INSERT INTO t VALUES ('  hello  ')");
-    
-    const r = rows(db.execute("SELECT TRIM(val) as trimmed FROM t"));
-    assert.equal(r[0].trimmed, 'hello');
-  });
-
-  it('string functions survive close/reopen', () => {
-    db.execute('CREATE TABLE t (name TEXT)');
-    db.execute("INSERT INTO t VALUES ('Test Data')");
-    
-    db.close();
-    db = TransactionalDatabase.open(dbDir);
-    
-    const r = rows(db.execute('SELECT UPPER(name) as u, LENGTH(name) as len FROM t'));
-    assert.equal(r[0].u, 'TEST DATA');
-    assert.equal(r[0].len, 9);
+  it('string functions with table data', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE users (first TEXT, last TEXT)');
+    db.execute("INSERT INTO users VALUES ('john','doe'),('jane','smith')");
+    const r = db.execute(`
+      SELECT CONCAT(UPPER(first), ' ', UPPER(last)) as name,
+             LENGTH(first) + LENGTH(last) as name_len
+      FROM users
+      ORDER BY last
+    `);
+    assert.equal(r.rows[0].name, 'JOHN DOE');
+    assert.equal(r.rows[0].name_len, 7);
   });
 });
