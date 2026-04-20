@@ -22,3 +22,6 @@
 
 ## Reference
 - `README.md` — How to use scratch notes (uses counter, tags, lifecycle)
+- `tpch-stress-results.md` — **NEW 2026-04-20** TPC-H 31/33 pass, hash join dead code, parser bugs
+- `diff-fuzzer-results.md` — **NEW 2026-04-20** Division truncation, NULL IS NULL broken, CAST no-op
+- `hash-join-wiring-plan.md` — **NEW 2026-04-20** 30-line fix: add hash join to _executeJoinWithRows

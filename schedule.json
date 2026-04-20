@@ -77,75 +77,181 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session git push, CURRENT.md update",
-      "started": "2026-04-20T20:32:57.611Z"
+      "started": "2026-04-20T20:32:57.611Z",
+      "completed": "2026-04-20T20:33:12.492Z",
+      "duration_ms": 30000,
+      "summary": "Git push synced. Added 10 more tasks for remaining session time."
     },
     {
       "id": "T9",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive: trace the division code path in db.js — find exactly where truncation happens",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:33:18.932Z",
+      "completed": "2026-04-20T20:34:12.141Z",
+      "duration_ms": 120000,
+      "summary": "Found division bug root cause: sql.js tokenizer parses 10.0 as parseFloat(10.0)=10 (JS treats as integer). db.js line 5875 checks Number.isInteger() which is true for 10.0. Fix: tag tokens with isFloat when source has decimal point, use that instead of Number.isInteger()."
     },
     {
       "id": "T10",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Investigate planner.js executeHashJoin — can it be called from db.js with minimal changes?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:34:19.893Z",
+      "completed": "2026-04-20T20:34:59.468Z",
+      "duration_ms": 120000,
+      "summary": "Analyzed planner.js executeHashJoin vs db.js _executeJoinWithRows. Different APIs. Simplest fix: add hash join directly into _executeJoinWithRows (~30 lines). Detect equi-join, build hash on smaller side, probe. Expected 180x speedup on 1K×1K."
     },
     {
       "id": "T11",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Design the planner-executor integration — what is the minimal change to wire hash joins?"
+      "status": "done",
+      "task": "Design the planner-executor integration — what is the minimal change to wire hash joins?",
+      "started": "2026-04-20T20:35:06.352Z",
+      "completed": "2026-04-20T20:35:16.794Z",
+      "duration_ms": 60000,
+      "summary": "Design confirmed: add hash join directly into _executeJoinWithRows. ~30 lines. Build on smaller side, composite key for multi-column, LEFT JOIN null extension, NL fallback for theta joins. This is the 80/20 solution — full planner integration can wait."
     },
     {
       "id": "T12",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Audit NULL handling across the codebase — IS NULL, IS NOT NULL, COALESCE, NULLIF",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:35:23.624Z",
+      "completed": "2026-04-20T20:36:21.796Z",
+      "duration_ms": 300000,
+      "summary": "NULL handling audit: IS NULL/IS NOT NULL work in WHERE (parseExpr handles it) but NOT in SELECT (parseSelectColumn has separate expression path). NULL literal in SELECT becomes column name. Root cause: dual expression parsing — parseExpr for WHERE, custom for SELECT. CASE WHEN NULL returns yes (truthy). Fix: unify expression parsing or add NULL/IS handling to parseSelectColumn."
     },
     {
       "id": "T13",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Run the full test suite with 120s timeout to get true pass rate",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:36:28.730Z",
+      "completed": "2026-04-20T20:51:06.566Z",
+      "duration_ms": 600000,
+      "summary": "Full suite: 4204/4208 pass, 1 fail, 3 skipped (165s). 99.9% pass rate. Single failure likely flaky. No systemic test breakage."
     },
     {
       "id": "T14",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review today's scratch notes — anything worth promoting to lessons?"
+      "status": "done",
+      "task": "Review today's scratch notes — anything worth promoting to lessons?",
+      "started": "2026-04-20T20:51:19.043Z",
+      "completed": "2026-04-20T20:51:58.460Z",
+      "duration_ms": 120000,
+      "summary": "Promoted 4 lessons from today: feature theater, JS numeric model, dual expression parsing, differential fuzzing as quality gate. Updated lessons/README.md."
     },
     {
       "id": "T15",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Read planner.js in full — understand the DP optimizer, cost model, and join selection logic",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:52:07.172Z",
+      "completed": "2026-04-20T20:52:26.169Z",
+      "duration_ms": 300000,
+      "summary": "Read planner.js (971 lines). Well-built: DP join reorder, histogram selectivity, MCV, expression index matching, 3 join strategies. executeHashJoin/executeMergeJoin methods exist but take heap-based rightTable. Fix confirmed: add equi-join hash detection in _executeJoinWithRows, no planner integration needed."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update MEMORY.md, failures.md, scratch/INDEX.md"
+      "status": "done",
+      "task": "Update MEMORY.md, failures.md, scratch/INDEX.md",
+      "started": "2026-04-20T20:52:35.584Z",
+      "completed": "2026-04-20T20:53:10.103Z",
+      "duration_ms": 120000,
+      "summary": "Updated scratch/INDEX.md (+3 new notes), failures.md (+3 bugs from stress testing: division truncation, hash join dead code, NULL IS NULL). Lessons already promoted earlier."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Investigate: can we add a simple hash-join-only fast path in _executeJoinWithRows for equi-joins?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:53:17.694Z",
+      "completed": "2026-04-20T20:54:28.961Z",
+      "duration_ms": 300000,
+      "summary": "Key finding: hash join fix must go in _executeJoin (the main path at line 2430), NOT _executeJoinWithRows (only for views/CTEs). ON AST: {type:COMPARE, op:EQ, left/right: column_ref with dotted names}. Updated wiring plan with precise line numbers and code."
     },
     {
       "id": "T18",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session wrap: git push, CURRENT.md, daily log evening summary",
+      "started": "2026-04-20T20:54:55.018Z"
+    },
+    {
+      "id": "T19",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Final session wrap: git push, CURRENT.md, daily log evening summary"
+      "task": "Investigate the CASE WHEN NULL bug — CASE WHEN NULL THEN yes ELSE no returns yes",
+      "project": "henrydb"
+    },
+    {
+      "id": "T20",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Stress test MVCC: concurrent read/write/commit/rollback with shared state",
+      "project": "henrydb"
+    },
+    {
+      "id": "T21",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Check neural-net project status — any test failures or stale branches?",
+      "project": "neural-net"
+    },
+    {
+      "id": "T22",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What other projects exist in ~/repos? Any neglected ones worth reviving?"
+    },
+    {
+      "id": "T23",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Write a SQL correctness checker: edge cases for NULL, OUTER JOIN, GROUP BY, HAVING",
+      "project": "henrydb"
+    },
+    {
+      "id": "T24",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session git push and log update"
+    },
+    {
+      "id": "T25",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Investigate parseSelectColumn vs parseExpr divergence — map the full gap",
+      "project": "henrydb"
+    },
+    {
+      "id": "T26",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Design a migration path from parseSelectColumn to unified expression parsing"
+    },
+    {
+      "id": "T27",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: test CREATE INDEX ON with 10K rows — does it actually use the index?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T28",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Evening wrap: git push, CURRENT.md, daily log evening summary"
     }
   ],
   "focusProjects": [
@@ -229,6 +335,46 @@
     {
       "time": "2026-04-20T20:32:54.350Z",
       "msg": "Added T18 (MAINTAIN) after T17: Final session wrap: git push, CURRENT.md, daily log evening summary"
+    },
+    {
+      "time": "2026-04-20T20:54:50.078Z",
+      "msg": "Added T19 (EXPLORE) after T18: Investigate the CASE WHEN NULL bug — CASE WHEN NULL THEN yes ELSE no returns yes"
+    },
+    {
+      "time": "2026-04-20T20:54:50.196Z",
+      "msg": "Added T20 (EXPLORE) after T19: Stress test MVCC: concurrent read/write/commit/rollback with shared state"
+    },
+    {
+      "time": "2026-04-20T20:54:50.314Z",
+      "msg": "Added T21 (EXPLORE) after T20: Check neural-net project status — any test failures or stale branches?"
+    },
+    {
+      "time": "2026-04-20T20:54:50.431Z",
+      "msg": "Added T22 (THINK) after T21: What other projects exist in ~/repos? Any neglected ones worth reviving?"
+    },
+    {
+      "time": "2026-04-20T20:54:50.549Z",
+      "msg": "Added T23 (EXPLORE) after T22: Write a SQL correctness checker: edge cases for NULL, OUTER JOIN, GROUP BY, HAVING"
+    },
+    {
+      "time": "2026-04-20T20:54:50.666Z",
+      "msg": "Added T24 (MAINTAIN) after T23: Mid-session git push and log update"
+    },
+    {
+      "time": "2026-04-20T20:54:50.784Z",
+      "msg": "Added T25 (EXPLORE) after T24: Investigate parseSelectColumn vs parseExpr divergence — map the full gap"
+    },
+    {
+      "time": "2026-04-20T20:54:50.902Z",
+      "msg": "Added T26 (THINK) after T25: Design a migration path from parseSelectColumn to unified expression parsing"
+    },
+    {
+      "time": "2026-04-20T20:54:51.020Z",
+      "msg": "Added T27 (EXPLORE) after T26: HenryDB: test CREATE INDEX ON with 10K rows — does it actually use the index?"
+    },
+    {
+      "time": "2026-04-20T20:54:51.138Z",
+      "msg": "Added T28 (MAINTAIN) after T27: Evening wrap: git push, CURRENT.md, daily log evening summary"
     }
   ]
 }

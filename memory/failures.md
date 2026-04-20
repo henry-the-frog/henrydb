@@ -241,3 +241,22 @@ This is a specific failure mode of incremental development: you build the pieces
 **Root cause:** `isCorrelated()` in decorrelate.js only compared column references against outer TABLE names/aliases. It never checked inner table column schemas. So unqualified column names that happened to not match any table name were treated as uncorrelated.
 **Fix:** Added inner table column schema checking. If a referenced column doesn't exist in ANY inner table's schema, it must be an outer reference.
 **Pattern:** Decorrelation must understand column namespaces, not just table names.
+
+## 2026-04-20 Session B: Stress Test Findings
+
+### Division Always Truncates (CRITICAL)
+**Bug:** `SELECT 10.0 / 3` → 3 instead of 3.33. All floating-point division returns integer.
+**Root cause:** sql.js tokenizer: `parseFloat("10.0")` returns JS `10`, then `Number.isInteger(10) === true`, so division does `Math.trunc()`.
+**Fix needed:** Tag NUMBER tokens with `isFloat: true` when source contains decimal point. Use that tag in division instead of `Number.isInteger()`.
+**Impact:** Every revenue/price calculation in every query is wrong. The TPC-H `l_extendedprice * (1 - l_discount)` always returns 0 because `1 - 0.05 = 0` after truncation.
+
+### Hash Join Dead Code (CRITICAL)
+**Bug:** planner.js has complete hash join and merge join implementations. db.js executor always uses nested loop. The planner's output is never consumed.
+**Root cause:** `_executeJoinWithRows` in db.js doesn't check the planner. EXPLAIN shows NESTED_LOOP_JOIN regardless.
+**Impact:** Multi-table joins 100-1000x slower than they should be. 500×2000 join: 17s instead of ~100ms.
+**Fix needed:** Add equi-join detection + hash map build in `_executeJoinWithRows` (~30 lines).
+
+### NULL IS NULL in SELECT (SIGNIFICANT)
+**Bug:** `SELECT NULL IS NULL` → returns `{"NULL":"NULL"}` instead of `true`/`1`.
+**Root cause:** `parseSelectColumn()` has separate expression parsing from `parseExpr()`. NULL keyword falls through to generic column-name handling. IS operator not checked in SELECT context.
+**Pattern:** Dual expression parsing paths. Same root cause as `val IS NULL as is_null` returning column headers as values.
