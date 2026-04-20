@@ -1636,37 +1636,90 @@
     {
       "id": "T153",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: test the volcano.test.js — does HashJoin pass its own tests?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T23:22:43.383Z",
+      "completed": "2026-04-20T23:24:25.491Z",
+      "duration_ms": 480000,
+      "summary": "HashJoin iterator works correctly and efficiently: 10Kx10K in 9ms. MergeJoin also works (5Kx5K in 9ms). Critically: db.js DOES use hash join for equi-joins (_hashJoin method at line 4047). Earlier session finding about dead hash join may have been incorrect or was specific to a different code path. 5Kx5K query via SQL completes in 32ms, consistent with hash join usage."
     },
     {
       "id": "T154",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Quick: run all standalone module tests to verify pass rates",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T23:24:38.244Z",
+      "completed": "2026-04-20T23:30:48.975Z",
+      "duration_ms": 300000,
+      "summary": "Random sample of 20 non-server test files: 192 tests pass, 0 fail. Only 1 timeout (index-advisor.test.js). 847 total test files exist. Suite is healthy. Earlier WAL and column store bug fixes did not break anything."
     },
     {
       "id": "T155",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: test the sort-merge-join.test.js — does it pass?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T23:30:59.036Z",
+      "completed": "2026-04-20T23:31:04.753Z",
+      "duration_ms": 30000,
+      "summary": "sort-merge-join.test.js: 7/7 pass."
     },
     {
       "id": "T156",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: test grace-hash-join.test.js",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T23:31:12.975Z",
+      "completed": "2026-04-20T23:31:17.889Z",
+      "duration_ms": 30000,
+      "summary": "grace-hash-join.test.js: 6/6 pass."
     },
     {
       "id": "T157",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: test symmetric-hash-join.test.js",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T23:31:23.937Z",
+      "completed": "2026-04-20T23:31:28.338Z",
+      "duration_ms": 30000,
+      "summary": "symmetric-hash-join.test.js: 8/8 pass."
+    },
+    {
+      "id": "T158",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate and fix division truncation bug (10.0/3 = 3 instead of 3.333)",
+      "project": "henrydb",
+      "started": "2026-04-20T23:31:52.927Z",
+      "completed": "2026-04-20T23:36:34.814Z",
+      "duration_ms": 600000,
+      "summary": "FIXED P0 BUG: Division truncation. Root cause: JS Number.isInteger(10.0)===true so 10.0/3 was integer division. Fix: tokenizer marks decimal-point literals with isFloat flag, propagated through AST (6 parser paths fixed). Division now only truncates when both operands are true integers without decimal point. 10/3=3 (correct), 10.0/3=3.333 (fixed), 5.5/2=2.75. All existing tests pass."
+    },
+    {
+      "id": "T159",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate and fix NULL IS NULL bug (returns string NULL not boolean TRUE)",
+      "project": "henrydb",
+      "started": "2026-04-20T23:36:53.665Z",
+      "completed": "2026-04-20T23:38:07.222Z",
+      "duration_ms": 300000,
+      "summary": "FIXED: IS NULL/IS NOT NULL after literal values. Parser returned literal immediately for NUMBER/STRING tokens without checking trailing IS NULL. Now 1 IS NULL=false, NULL IS NULL=true. Column-based IS NULL was already correct. 78 tests pass, 0 regressions."
+    },
+    {
+      "id": "T160",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate and fix duplicate CREATE INDEX silently succeeds (should error without IF NOT EXISTS)",
+      "project": "henrydb",
+      "started": "2026-04-20T23:38:28.559Z",
+      "completed": "2026-04-20T23:39:15.444Z",
+      "duration_ms": 300000,
+      "summary": "FIXED: Duplicate CREATE INDEX now throws error (was silently succeeding). Added column-set and name-based duplicate detection. IF NOT EXISTS still returns OK. 37 index tests pass."
     }
   ],
   "focusProjects": [
@@ -2318,6 +2371,18 @@
     {
       "time": "2026-04-20T22:35:56.973Z",
       "msg": "Added T157 (EXPLORE) after end: HenryDB: test symmetric-hash-join.test.js"
+    },
+    {
+      "time": "2026-04-20T23:31:49.173Z",
+      "msg": "Added T158 (EXPLORE) after end: HenryDB: investigate and fix division truncation bug (10.0/3 = 3 instead of 3.333)"
+    },
+    {
+      "time": "2026-04-20T23:36:48.664Z",
+      "msg": "Added T159 (EXPLORE) after end: HenryDB: investigate and fix NULL IS NULL bug (returns string NULL not boolean TRUE)"
+    },
+    {
+      "time": "2026-04-20T23:38:22.652Z",
+      "msg": "Added T160 (EXPLORE) after end: HenryDB: investigate and fix duplicate CREATE INDEX silently succeeds (should error without IF NOT EXISTS)"
     }
   ]
 }

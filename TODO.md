@@ -1,9 +1,9 @@
 ## TODO
 
 ### Urgent
-- HenryDB: Division always truncates to integer — 10.0/3 = 3 (since 2026-04-20)
-- HenryDB: Planner-executor disconnect — hash join is dead code, all queries use nested loop (since 2026-04-20)
-- HenryDB: NULL IS NULL returns string "NULL" not boolean TRUE (since 2026-04-20)
+- ~~HenryDB: Division always truncates to integer — FIXED: tokenizer now marks decimal literals with isFloat, division checks AST~~ (since 2026-04-20, fixed 2026-04-20)
+- HenryDB: Planner-executor disconnect — RESOLVED: hash join IS used via _hashJoin at db.js:4047. Verified 5Kx5K in 32ms. Remove this item. (since 2026-04-20, resolved 2026-04-20)
+- ~~HenryDB: NULL IS NULL returns string "NULL" not boolean TRUE — FIXED: parser now handles IS NULL after literal tokens~~ (since 2026-04-20, fixed 2026-04-20)
 
 ### Normal
 - HenryDB: db.js is 7K+ lines — needs splitting (has duplicate _exprToString methods)

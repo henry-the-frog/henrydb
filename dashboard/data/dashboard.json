@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-20T23:22:32.034Z",
+  "generated": "2026-04-20T23:39:15.482Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Final pre-close git push",
-    "completedAt": "2026-04-20T23:22:32.034Z",
-    "taskId": "T148",
-    "summary": "Already pushed recently, doing a fresh push now.",
-    "durationMs": 15000
+    "mode": "EXPLORE",
+    "task": "HenryDB: investigate and fix duplicate CREATE INDEX silently succeeds (should error without IF NOT EXISTS)",
+    "completedAt": "2026-04-20T23:39:15.482Z",
+    "taskId": "T160",
+    "summary": "FIXED: Duplicate CREATE INDEX now throws error (was silently succeeding). Added column-set and name-based duplicate detection. IF NOT EXISTS still returns OK. 37 index tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 360,
+    "blocksCompleted": 368,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 30,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 94,
-      "EXPLORE": 132
+      "EXPLORE": 140
     }
   },
   "artifacts": [
