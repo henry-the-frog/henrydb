@@ -786,9 +786,74 @@
     {
       "id": "T75",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Late session git push",
-      "started": "2026-04-20T21:36:49.018Z"
+      "started": "2026-04-20T21:36:49.018Z",
+      "completed": "2026-04-20T21:37:28.046Z",
+      "duration_ms": 30000,
+      "summary": "Git push both repos."
+    },
+    {
+      "id": "T76",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test RETURNING with complex expressions, subqueries",
+      "project": "henrydb",
+      "started": "2026-04-20T21:37:48.855Z",
+      "completed": "2026-04-20T21:38:09.065Z",
+      "duration_ms": 60000,
+      "summary": "RETURNING: 5/5 pass. INSERT/UPDATE/DELETE + bulk INSERT all support RETURNING. Minor: RETURNING with expression alias (val * 2 as doubled) returns raw column value, not computed expression."
+    },
+    {
+      "id": "T77",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test TABLESAMPLE, FETCH FIRST, OFFSET",
+      "project": "henrydb",
+      "started": "2026-04-20T21:38:16.144Z",
+      "completed": "2026-04-20T21:38:36.164Z",
+      "duration_ms": 60000,
+      "summary": "LIMIT OFFSET works correctly. FETCH FIRST/NEXT parses but doesnt limit (returns all rows). TABLESAMPLE parses but doesnt sample (returns all). These are parsed-but-not-executed features."
+    },
+    {
+      "id": "T78",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test DO block and anonymous code execution",
+      "project": "henrydb",
+      "started": "2026-04-20T21:38:42.356Z",
+      "completed": "2026-04-20T21:38:59.075Z",
+      "duration_ms": 30000,
+      "summary": "DO blocks not supported (no PL/pgSQL). Multi-statement execution works. BEGIN/COMMIT blocks work."
+    },
+    {
+      "id": "T79",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test multi-statement transactions in a single execute call",
+      "project": "henrydb",
+      "started": "2026-04-20T21:39:06.363Z",
+      "completed": "2026-04-20T21:39:25.544Z",
+      "duration_ms": 60000,
+      "summary": "Multi-statement execution is broken: only first statement executes. CREATE TABLE; INSERT; INSERT — only CREATE runs. BEGIN; INSERT; COMMIT — no inserts. The semicolon-based multi-statement splitting doesnt feed subsequent statements to the executor."
+    },
+    {
+      "id": "T80",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep: count exactly how many SQL features HenryDB supports vs claims",
+      "project": "henrydb",
+      "started": "2026-04-20T21:39:38.946Z",
+      "completed": "2026-04-20T21:40:01.031Z",
+      "duration_ms": 120000,
+      "summary": "Feature count: 23 statement types, ~151 SQL functions, 10 window functions, 5 join types, 3 advanced aggregation modes. ~6 features parse but dont execute correctly (FETCH, TABLESAMPLE, frame specs, multi-statement, LIMIT 0, NATURAL JOIN). Wide feature surface, narrow correctness."
+    },
+    {
+      "id": "T81",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Pre-close: git push and log update",
+      "started": "2026-04-20T21:40:09.381Z"
     }
   ],
   "focusProjects": [
@@ -1112,6 +1177,30 @@
     {
       "time": "2026-04-20T21:31:51.081Z",
       "msg": "Added T75 (MAINTAIN) after end: Late session git push"
+    },
+    {
+      "time": "2026-04-20T21:37:41.748Z",
+      "msg": "Added T76 (EXPLORE) after end: HenryDB: test RETURNING with complex expressions, subqueries"
+    },
+    {
+      "time": "2026-04-20T21:37:41.867Z",
+      "msg": "Added T77 (EXPLORE) after end: HenryDB: test TABLESAMPLE, FETCH FIRST, OFFSET"
+    },
+    {
+      "time": "2026-04-20T21:37:41.985Z",
+      "msg": "Added T78 (EXPLORE) after end: HenryDB: test DO block and anonymous code execution"
+    },
+    {
+      "time": "2026-04-20T21:37:42.104Z",
+      "msg": "Added T79 (EXPLORE) after end: HenryDB: test multi-statement transactions in a single execute call"
+    },
+    {
+      "time": "2026-04-20T21:37:42.222Z",
+      "msg": "Added T80 (EXPLORE) after end: Deep: count exactly how many SQL features HenryDB supports vs claims"
+    },
+    {
+      "time": "2026-04-20T21:37:42.339Z",
+      "msg": "Added T81 (MAINTAIN) after end: Pre-close: git push and log update"
     }
   ]
 }
