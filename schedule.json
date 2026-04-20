@@ -809,9 +809,52 @@
     {
       "id": "T76",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Final session summary + git push",
-      "started": "2026-04-20T16:40:00.261Z"
+      "started": "2026-04-20T16:40:00.261Z",
+      "completed": "2026-04-20T16:40:22.919Z",
+      "duration_ms": 15000,
+      "summary": "Final push synced. Session A milestone: ZERO test failures for first time. 4108/4116 pass."
+    },
+    {
+      "id": "T77",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Run the 5 cancelled benchmark tests individually to investigate timeouts",
+      "project": "henrydb",
+      "started": "2026-04-20T16:40:43.193Z",
+      "completed": "2026-04-20T16:46:54.389Z",
+      "duration_ms": 300000,
+      "summary": "With 120s timeout: 4173 tests, 4169 pass, 1 fail, 0 cancelled! The 5 previously-cancelled tests all pass individually. +61 more tests."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add UNION/UNION ALL support to parser and executor",
+      "project": "henrydb",
+      "started": "2026-04-20T16:47:04.477Z",
+      "completed": "2026-04-20T16:48:01.510Z",
+      "duration_ms": 15000,
+      "summary": "SKIP: UNION/UNION ALL already fully implemented. Parser + executor both handle it. Tested: dedup and ALL modes work."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add INSERT INTO...SELECT support",
+      "project": "henrydb",
+      "started": "2026-04-20T16:48:02.078Z",
+      "completed": "2026-04-20T16:48:24.366Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: INSERT INTO...SELECT already works! HenryDB more feature-complete than expected."
+    },
+    {
+      "id": "T80",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T16:48:24.775Z"
     }
   ],
   "focusProjects": [
@@ -1115,6 +1158,22 @@
     {
       "time": "2026-04-20T16:35:24.703Z",
       "msg": "Added T76 (MAINTAIN) after end: MAINTAIN: Final session summary + git push"
+    },
+    {
+      "time": "2026-04-20T16:40:42.606Z",
+      "msg": "Added T77 (EXPLORE) after end: EXPLORE: Run the 5 cancelled benchmark tests individually to investigate timeouts"
+    },
+    {
+      "time": "2026-04-20T16:40:42.725Z",
+      "msg": "Added T78 (BUILD) after end: BUILD: Add UNION/UNION ALL support to parser and executor"
+    },
+    {
+      "time": "2026-04-20T16:40:42.844Z",
+      "msg": "Added T79 (BUILD) after end: BUILD: Add INSERT INTO...SELECT support"
+    },
+    {
+      "time": "2026-04-20T16:40:42.962Z",
+      "msg": "Added T80 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
