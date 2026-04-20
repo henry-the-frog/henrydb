@@ -917,6 +917,7 @@ export class Database {
       this._insertRow(table, null, values);
       inserted++;
     }
+    if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
     return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
   }
 
@@ -1349,7 +1350,7 @@ export class Database {
     // Extract table-level CHECK constraints
     const tableChecks = (ast.tableConstraints || []).filter(c => c.type === 'CHECK').map(c => c.expr);
 
-    this.tables.set(ast.table, { heap, schema, indexes, tableChecks });
+    this.tables.set(ast.table, { heap, schema, indexes, tableChecks, deadTupleCount: 0, liveTupleCount: 0 });
     this.catalog.push({ name: ast.table, columns: schema });
     
     // Create composite unique indexes
@@ -2375,6 +2376,7 @@ export class Database {
       const filteredRows = this._resolveReturning(ast.returning, returnedRows);
       return { type: 'ROWS', rows: filteredRows, count: inserted };
     }
+    if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
     return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
   }
 
@@ -2468,6 +2470,7 @@ export class Database {
       const filteredRows = this._resolveReturning(ast.returning, returnedRows);
       return { type: 'ROWS', rows: filteredRows, count: inserted };
     }
+    if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
     return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
   }
 
@@ -4867,6 +4870,8 @@ export class Database {
       return { type: 'ROWS', rows: filteredRows, count: updated };
     }
 
+    if (table.deadTupleCount !== undefined) table.deadTupleCount += updated;
+    this._maybeAutoVacuum(ast.table, table);
     return { type: 'OK', message: `${updated} row(s) updated`, count: updated };
   }
 
@@ -5097,6 +5102,9 @@ export class Database {
       return { type: 'ROWS', rows: filteredRows, count: deleted };
     }
 
+    if (table.deadTupleCount !== undefined) table.deadTupleCount += deleted;
+    if (table.liveTupleCount !== undefined) table.liveTupleCount -= deleted;
+    this._maybeAutoVacuum(ast.table, table);
     return { type: 'OK', message: `${deleted} row(s) deleted`, count: deleted };
   }
 
@@ -5365,6 +5373,30 @@ export class Database {
     return { type: 'ROWS', rows };
   }
 
+  /**
+   * Auto-vacuum trigger: runs lightweight vacuum when dead tuple count exceeds threshold.
+   * PostgreSQL-style: threshold = autovacuum_vacuum_threshold + autovacuum_vacuum_scale_factor * n_live_tup
+   * We use: max(50, 0.2 * liveTupleCount)
+   */
+  _maybeAutoVacuum(tableName, table) {
+    if (!table.deadTupleCount) return;
+    const threshold = Math.max(50, Math.floor(0.2 * (table.liveTupleCount || 0)));
+    if (table.deadTupleCount < threshold) return;
+    
+    // Run lightweight vacuum on just this table
+    try {
+      if (table.mvccHeap && this._mvccManager) {
+        const result = table.mvccHeap.vacuum(this._mvccManager);
+        table.deadTupleCount = Math.max(0, table.deadTupleCount - (result.deadTuplesRemoved || 0));
+      } else if (table.heap && table.heap.compact) {
+        table.heap.compact();
+        table.deadTupleCount = 0;
+      }
+    } catch (e) {
+      // Auto-vacuum failure is non-fatal
+    }
+  }
+
   _vacuum(ast) {
     const tables = ast.table ? [this.tables.get(ast.table.toUpperCase()) || this.tables.get(ast.table)] 
                              : [...this.tables.values()];
@@ -5420,6 +5452,8 @@ export class Database {
         table.stats.rowCount = liveRows;
         table.stats.lastVacuum = Date.now();
       }
+      // Reset dead tuple counter after vacuum
+      table.deadTupleCount = 0;
       
       // For file-backed heaps, flush dirty pages
       if (typeof heap.flush === 'function') {
