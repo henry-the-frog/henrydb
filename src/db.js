@@ -39,6 +39,9 @@ export class Database {
     
     // User-defined functions catalog
     this._functions = new Map(); // name -> { params, returnType, body, language }
+    
+    // Prepared statements catalog
+    this._preparedStatements = new Map(); // name -> { statement (AST), paramTypes }
   }
 
   /** Case-insensitive table lookup */
@@ -545,6 +548,9 @@ export class Database {
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
+      case 'PREPARE': return this._prepare(ast);
+      case 'EXECUTE': return this._executePrepared(ast);
+      case 'DEALLOCATE': return this._deallocate(ast);
       case 'DROP_SEQUENCE': return this._dropSequence(ast);
       case 'TRUNCATE': return this._truncate(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
@@ -3241,6 +3247,73 @@ export class Database {
       language: ast.language || 'sql',
     });
     return { type: 'OK', message: `CREATE FUNCTION ${name}` };
+  }
+
+  _prepare(ast) {
+    const name = ast.name.toLowerCase();
+    if (this._preparedStatements.has(name)) {
+      throw new Error(`Prepared statement "${name}" already exists`);
+    }
+    this._preparedStatements.set(name, {
+      statement: ast.statement,
+      paramTypes: ast.paramTypes || [],
+    });
+    return { type: 'OK', message: `PREPARE ${name}` };
+  }
+
+  _executePrepared(ast) {
+    const name = ast.name.toLowerCase();
+    const ps = this._preparedStatements.get(name);
+    if (!ps) {
+      throw new Error(`Prepared statement "${name}" does not exist`);
+    }
+    
+    // Substitute $1, $2, etc. with parameter values
+    const stmt = JSON.parse(JSON.stringify(ps.statement)); // Deep clone AST
+    const paramValues = ast.params || [];
+    
+    // Walk the AST and replace parameter references
+    this._substituteParams(stmt, paramValues);
+    
+    return this._executeAst(stmt);
+  }
+
+  _substituteParams(node, params) {
+    if (!node || typeof node !== 'object') return;
+    
+    // Replace PARAM nodes ($1, $2, etc.)
+    if (node.type === 'PARAM' || node.type === 'param') {
+      const idx = (node.index || node.number || 1) - 1;
+      if (idx >= 0 && idx < params.length) {
+        const val = this._evalValue(params[idx], {});
+        Object.assign(node, { type: 'literal', value: val });
+      }
+      return;
+    }
+    
+    for (const key of Object.keys(node)) {
+      const val = node[key];
+      if (Array.isArray(val)) {
+        for (const item of val) {
+          if (item && typeof item === 'object') this._substituteParams(item, params);
+        }
+      } else if (val && typeof val === 'object') {
+        this._substituteParams(val, params);
+      }
+    }
+  }
+
+  _deallocate(ast) {
+    if (ast.all) {
+      this._preparedStatements.clear();
+      return { type: 'OK', message: 'DEALLOCATE ALL' };
+    }
+    const name = ast.name.toLowerCase();
+    if (!this._preparedStatements.has(name)) {
+      throw new Error(`Prepared statement "${name}" does not exist`);
+    }
+    this._preparedStatements.delete(name);
+    return { type: 'OK', message: `DEALLOCATE ${name}` };
   }
 
   _callUserFunction(funcDef, args, row) {
