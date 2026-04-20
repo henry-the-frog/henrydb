@@ -260,3 +260,10 @@ This is a specific failure mode of incremental development: you build the pieces
 **Bug:** `SELECT NULL IS NULL` → returns `{"NULL":"NULL"}` instead of `true`/`1`.
 **Root cause:** `parseSelectColumn()` has separate expression parsing from `parseExpr()`. NULL keyword falls through to generic column-name handling. IS operator not checked in SELECT context.
 **Pattern:** Dual expression parsing paths. Same root cause as `val IS NULL as is_null` returning column headers as values.
+
+### Index Lookup After Rollback Returns Empty (CRITICAL)
+**Bug:** After UPDATE+ROLLBACK in explicit transaction, `WHERE id = 3` (PK index lookup) returns empty, but full table scan and `WHERE id > 2` (range scan) both find the row.
+**Repro:** Create table, insert rows, begin tx, UPDATE, rollback. Index equality lookup fails.
+**Root cause:** UPDATE modifies B-tree index to point to new version. ROLLBACK restores heap data but doesn't restore the B-tree index entry to point to the original version.
+**Impact:** Any index lookup after a rolled-back UPDATE on indexed columns silently returns wrong results. Data appears missing.
+**Pattern:** Same class as MVCC index bypass — index maintenance and MVCC version visibility are not coordinated.

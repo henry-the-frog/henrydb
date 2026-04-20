@@ -183,49 +183,73 @@
     {
       "id": "T18",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session wrap: git push, CURRENT.md, daily log evening summary",
-      "started": "2026-04-20T20:54:55.018Z"
+      "started": "2026-04-20T20:54:55.018Z",
+      "completed": "2026-04-20T20:55:04.746Z",
+      "duration_ms": 30000,
+      "summary": "Git push, added 10 more tasks. Queue refilled."
     },
     {
       "id": "T19",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Investigate the CASE WHEN NULL bug — CASE WHEN NULL THEN yes ELSE no returns yes",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:55:12.038Z",
+      "completed": "2026-04-20T20:56:12.699Z",
+      "duration_ms": 120000,
+      "summary": "Root cause: _evalExpr default case (line 5822) returns true. Literal NULL falls through switch (no case for type literal). CASE WHEN NULL → _evalExpr({type:literal,value:null}) → default → true. Fix: add fallthrough case for literal/column_ref that evaluates truthiness. Same bug affects CASE WHEN 0, CASE WHEN false — all return yes."
     },
     {
       "id": "T20",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Stress test MVCC: concurrent read/write/commit/rollback with shared state",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:56:21.373Z",
+      "completed": "2026-04-20T20:57:41.386Z",
+      "duration_ms": 300000,
+      "summary": "MVCC stress: found CRITICAL bug. Index lookup after rollback fails — WHERE id=3 returns empty but full scan finds the row. PK index points to rolled-back version. Same class as MVCC index bypass bug from Session A but NOT fixed. Write conflict detection works. Write skew not detected (SSI gap)."
     },
     {
       "id": "T21",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Check neural-net project status — any test failures or stale branches?",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-20T20:57:58.608Z",
+      "completed": "2026-04-20T20:58:13.455Z",
+      "duration_ms": 30000,
+      "summary": "Neural-net: 282/282 tests pass, 0 failures, single main branch. Last commit: MoE backward pass fix. Clean and healthy."
     },
     {
       "id": "T22",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What other projects exist in ~/repos? Any neglected ones worth reviving?"
+      "status": "done",
+      "task": "What other projects exist in ~/repos? Any neglected ones worth reviving?",
+      "started": "2026-04-20T20:58:23.915Z",
+      "completed": "2026-04-20T21:01:46.068Z",
+      "duration_ms": 120000,
+      "summary": "4 repos: henrydb (3063 commits, active), monkey-lang (2114, 4 days), neural-net (149, 2 days, clean), ray-tracer (84, 9 days, 360/360 tests). Ray-tracer most neglected. Tomorrow: HenryDB fix day. Later this week: ray-tracer depth session."
     },
     {
       "id": "T23",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write a SQL correctness checker: edge cases for NULL, OUTER JOIN, GROUP BY, HAVING",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T21:01:53.329Z",
+      "completed": "2026-04-20T21:02:40.229Z",
+      "duration_ms": 120000,
+      "summary": "SQL correctness: 19/21 pass. 2 new bugs: SUM on empty set returns 0 (should be NULL per SQL standard), LIMIT 0 returns all rows (should return none). NULL semantics, OUTER JOIN, HAVING all correct."
     },
     {
       "id": "T24",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session git push and log update"
+      "status": "in-progress",
+      "task": "Mid-session git push and log update",
+      "started": "2026-04-20T21:02:50.880Z"
     },
     {
       "id": "T25",
