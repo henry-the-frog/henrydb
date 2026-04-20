@@ -8954,6 +8954,20 @@ export class Database {
       case 'GREATEST': { const vals = args.map(a => this._evalValue(a, row)).filter(v => v != null); return vals.length ? Math.max(...vals.map(Number)) : null; }
       case 'LEAST': { const vals = args.map(a => this._evalValue(a, row)).filter(v => v != null); return vals.length ? Math.min(...vals.map(Number)) : null; }
       case 'MOD': { const a = Number(this._evalValue(args[0], row)); const b = Number(this._evalValue(args[1], row)); return b === 0 ? null : a % b; }
+      case 'LN': return Math.log(this._evalValue(args[0], row));
+      case 'LOG2': return Math.log2(this._evalValue(args[0], row));
+      case 'LOG10': return Math.log10(this._evalValue(args[0], row));
+      case 'SIGN': { const v = Number(this._evalValue(args[0], row)); return v > 0 ? 1 : v < 0 ? -1 : 0; }
+      case 'PI': return Math.PI;
+      case 'DEGREES': return this._evalValue(args[0], row) * (180 / Math.PI);
+      case 'RADIANS': return this._evalValue(args[0], row) * (Math.PI / 180);
+      case 'SIN': return Math.sin(this._evalValue(args[0], row));
+      case 'COS': return Math.cos(this._evalValue(args[0], row));
+      case 'TAN': return Math.tan(this._evalValue(args[0], row));
+      case 'ASIN': return Math.asin(this._evalValue(args[0], row));
+      case 'ACOS': return Math.acos(this._evalValue(args[0], row));
+      case 'ATAN': return Math.atan(this._evalValue(args[0], row));
+      case 'ATAN2': return Math.atan2(this._evalValue(args[0], row), this._evalValue(args[1], row));
       case 'LTRIM': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).trimStart(); }
       case 'RTRIM': { const v = this._evalValue(args[0], row); return v == null ? null : String(v).trimEnd(); }
       
