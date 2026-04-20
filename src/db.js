@@ -4693,6 +4693,17 @@ export class Database {
             }
             break;
           }
+          case 'NTH_VALUE': {
+            // NTH_VALUE(expr, n) — value of nth row in window frame
+            const nth = col.args && col.args.length > 1 ? this._evalValue(col.args[1], {}) : 1;
+            const idx = nth - 1; // 1-based to 0-based
+            for (const r of partition) {
+              r[`__window_${name}`] = idx >= 0 && idx < partition.length 
+                ? this._resolveColumn(col.arg, partition[idx])
+                : null;
+            }
+            break;
+          }
         }
       }
     }

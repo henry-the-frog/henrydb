@@ -10,7 +10,7 @@ const KEYWORDS = new Set([
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
-  'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE', 'VIEW', 'DISTINCT',
+  'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE', 'NTH_VALUE', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED',
   'INTERSECT', 'EXCEPT',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'SHOW', 'TABLES', 'DESCRIBE',
@@ -750,7 +750,7 @@ export function parse(sql) {
     }
 
     // Window functions with arguments: LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTILE
-    if (peek().type === 'KEYWORD' && ['LEAD', 'LAG', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE'].includes(peek().value)) {
+    if (peek().type === 'KEYWORD' && ['LEAD', 'LAG', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE', 'NTH_VALUE'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
       const args = [];
