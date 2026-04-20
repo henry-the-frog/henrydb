@@ -4,7 +4,6 @@
 
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
-- HenryDB: Savepoint ROLLBACK TO bug — undo log + physical row removal too aggressive (removes rows instead of restoring)
 - HenryDB: server-json.test.js was flaky (intermittent hang — COPY TO connection issue?)
 
 ### Low
