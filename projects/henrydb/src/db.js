@@ -8760,6 +8760,12 @@ export class Database {
         return idx === -1 ? 0 : idx + 1;
       }
       case 'CONCAT': return args.map(a => { const v = this._evalValue(a, row); return v != null ? String(v) : ''; }).join('');
+      case 'CONCAT_OP': {
+        // SQL || operator: NULL propagates
+        const vals = args.map(a => this._evalValue(a, row));
+        if (vals.some(v => v === null || v === undefined)) return null;
+        return vals.map(v => String(v)).join('');
+      }
       case 'COALESCE': {
         for (const arg of args) {
           const v = this._evalValue(arg, row);

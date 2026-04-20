@@ -908,7 +908,7 @@ export function parse(sql) {
         let left = castNode;
         while (match('CONCAT_OP') || match('CONCAT')) {
           const right = parsePrimaryWithConcat();
-          left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
+          left = { type: 'function_call', func: 'CONCAT_OP', args: [left, right] };
         }
         castNode = left;
       }
@@ -1213,7 +1213,7 @@ export function parse(sql) {
         if (t === 'CONCAT_OP' || t === 'CONCAT') {
           advance();
           const right = parsePrimary();
-          node = { type: 'function_call', func: 'CONCAT', args: [node, right] };
+          node = { type: 'function_call', func: 'CONCAT_OP', args: [node, right] };
         } else {
           const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
           advance();
@@ -1282,7 +1282,7 @@ export function parse(sql) {
         if (t === 'CONCAT_OP' || t === 'CONCAT') {
           advance();
           const right = parsePrimary();
-          node = { type: 'function_call', func: 'CONCAT', args: [node, right] };
+          node = { type: 'function_call', func: 'CONCAT_OP', args: [node, right] };
         } else {
           const op = t === 'PLUS' ? '+' : t === 'MINUS' ? '-' : t === 'SLASH' ? '/' : t === 'MOD' ? '%' : '*';
           advance();
@@ -1342,7 +1342,7 @@ export function parse(sql) {
         } else if (t === 'CONCAT_OP') {
           advance();
           const right = parsePrimary();
-          left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
+          left = { type: 'function_call', func: 'CONCAT_OP', args: [left, right] };
         } else break;
       }
       // Handle :: type cast after expression
@@ -1849,7 +1849,7 @@ export function parse(sql) {
       if (t === 'CONCAT_OP') {
         advance();
         const right = parseAddSub();
-        left = { type: 'function_call', func: 'CONCAT', args: [left, right] };
+        left = { type: 'function_call', func: 'CONCAT_OP', args: [left, right] };
       } else if (t === 'CAST_OP') {
         advance(); // ::
         const typeTok = advance();
