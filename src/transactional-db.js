@@ -490,6 +490,35 @@ export class TransactionalDatabase {
         // Don't physically delete — the row stays in the heap for other snapshots
       };
       
+      // Intercept get(): check MVCC visibility for index lookups
+      const origGet = heap.get ? heap.get.bind(heap) : null;
+      if (origGet) {
+        heap.get = function(pageIdOrRid, slotIdx) {
+          const result = origGet(pageIdOrRid, slotIdx);
+          if (!result) return result;
+          
+          const tx = tdb._activeTx;
+          const vm = tdb._versionMaps.get(name);
+          if (!vm || !tx) return result; // No MVCC context — return as-is
+          
+          // Determine the pageId and slotIdx from the result
+          const pId = result.pageId !== undefined ? result.pageId : pageIdOrRid;
+          const sIdx = result.slotIdx !== undefined ? result.slotIdx : slotIdx;
+          const key = `${pId}:${sIdx}`;
+          const ver = vm.get(key);
+          if (!ver) return null; // No version entry = invisible
+          
+          // Check visibility
+          const created = tdb._mvcc.isVisible(ver.xmin, tx);
+          const deleted = ver.xmax === -2 || (ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx));
+          if (created && !deleted) return result;
+          
+          // Row not visible — return null, let caller fall back to scan
+          return null;
+        };
+        heap._origGet = origGet;
+      }
+      
       heap._mvccWrapped = true;
       heap._origScan = origScan;
       heap._origDelete = origDelete;

@@ -4373,6 +4373,9 @@ export class Database {
               rows.push(this._valuesToRow(values, table.schema, tableAlias));
             }
           }
+          // If index lookup found entries but get() returned null for all (MVCC invisible),
+          // fall back to scan — the visible version might be at a different slot
+          if (rows.length === 0 && entries.length > 0) return null;
           return { rows, residual: null, indexOnly: rows.length > 0 && rows[0]?.includedValues !== undefined };
         }
       }
