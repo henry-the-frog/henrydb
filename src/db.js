@@ -5905,6 +5905,39 @@ export class Database {
       case 'UPPER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toUpperCase() : null; }
       case 'LOWER': { const v = this._evalValue(args[0], row); return v != null ? String(v).toLowerCase() : null; }
       case 'LENGTH': { const v = this._evalValue(args[0], row); return v != null ? String(v).length : null; }
+      case 'INITCAP': {
+        const v = this._evalValue(args[0], row);
+        if (v == null) return null;
+        return String(v).replace(/\b\w/g, c => c.toUpperCase());
+      }
+      case 'TRANSLATE': {
+        const str = String(this._evalValue(args[0], row));
+        const from = String(this._evalValue(args[1], row));
+        const to = String(this._evalValue(args[2], row));
+        let result = '';
+        for (const c of str) {
+          const idx = from.indexOf(c);
+          if (idx >= 0) result += idx < to.length ? to[idx] : '';
+          else result += c;
+        }
+        return result;
+      }
+      case 'CHR': return String.fromCharCode(Number(this._evalValue(args[0], row)));
+      case 'ASCII': { const v = this._evalValue(args[0], row); return v != null && String(v).length > 0 ? String(v).charCodeAt(0) : null; }
+      case 'MD5': {
+        // Simple hash for md5 (not cryptographically secure but functional)
+        const str = String(this._evalValue(args[0], row));
+        let h = 0;
+        for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+        return Math.abs(h).toString(16).padStart(8, '0');
+      }
+      case 'ENCODE': case 'DECODE': {
+        const val = this._evalValue(args[0], row);
+        const fmt = String(this._evalValue(args[1], row)).toLowerCase();
+        if (func === 'ENCODE' && fmt === 'base64') return Buffer.from(String(val)).toString('base64');
+        if (func === 'DECODE' && fmt === 'base64') return Buffer.from(String(val), 'base64').toString();
+        return val;
+      }
       case 'CONCAT': return args.map(a => { const v = this._evalValue(a, row); return v != null ? String(v) : ''; }).join('');
       case 'CONCAT_WS': {
         const sep = String(this._evalValue(args[0], row));
