@@ -1182,16 +1182,48 @@
     {
       "id": "T111",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "EXPLORE: Stress test the pg wire protocol with a real pg client",
       "project": "henrydb",
-      "started": "2026-04-20T17:18:33.800Z"
+      "started": "2026-04-20T17:18:33.800Z",
+      "completed": "2026-04-20T17:18:51.852Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
     },
     {
       "id": "T112",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T17:19:09.663Z",
+      "completed": "2026-04-20T17:19:42.424Z",
+      "duration_ms": 120000,
+      "summary": "Depth pivot #2: 4123/4128 pass, 0 fail. Zero regressions from all new features (ROLLUP, CUBE, DISTINCT ON, cursors, prepared stmts, COPY, COMMENT)."
+    },
+    {
+      "id": "T113",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Depth pivot #2 — full test sweep",
+      "project": "henrydb",
+      "started": "2026-04-20T17:19:42.856Z",
+      "completed": "2026-04-20T17:20:00.766Z",
+      "duration_ms": 60000,
+      "summary": "Architecture review: Strengths: clean modules, 46% test density, 3 execution engines. Weaknesses: db.js too large (6.2K), MVCC interception fragile, WAL no truncation. Most impactful fix: split db.js."
+    },
+    {
+      "id": "T114",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "THINK: What is the architecture quality of HenryDB? What would a code review find?",
+      "project": "henrydb",
+      "started": "2026-04-20T17:20:01.109Z"
+    },
+    {
+      "id": "T115",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "MAINTAIN: git push"
+      "task": "MAINTAIN: git push + daily log evening summary"
     }
   ],
   "focusProjects": [
@@ -1639,6 +1671,18 @@
     {
       "time": "2026-04-20T17:16:21.628Z",
       "msg": "Added T112 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T17:19:09.193Z",
+      "msg": "Added T113 (MAINTAIN) after end: MAINTAIN: Depth pivot #2 — full test sweep"
+    },
+    {
+      "time": "2026-04-20T17:19:09.313Z",
+      "msg": "Added T114 (THINK) after end: THINK: What is the architecture quality of HenryDB? What would a code review find?"
+    },
+    {
+      "time": "2026-04-20T17:19:09.432Z",
+      "msg": "Added T115 (MAINTAIN) after end: MAINTAIN: git push + daily log evening summary"
     }
   ]
 }
