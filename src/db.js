@@ -5734,6 +5734,9 @@ export class Database {
   _evalValue(node, row) {
     if (node.type === 'literal') return node.value;
     if (node.type === 'column_ref') return this._resolveColumn(node.name, row);
+    if (node.type === 'array_constructor') {
+      return node.elements.map(e => this._evalValue(e, row));
+    }
     if (node.type === 'MATCH_AGAINST') {
       // Return relevance score
       return this._evalExpr(node, row) ? 1 : 0;
@@ -6131,6 +6134,49 @@ export class Database {
           .replace('Mon', d.toLocaleString('en', { month: 'short', timeZone: 'UTC' }))
           .replace('Day', d.toLocaleString('en', { weekday: 'long', timeZone: 'UTC' }))
           .replace('Dy', d.toLocaleString('en', { weekday: 'short', timeZone: 'UTC' }));
+      }
+      
+      case 'ARRAY_LENGTH': {
+        const arr = this._evalValue(args[0], row);
+        if (Array.isArray(arr)) return arr.length;
+        if (typeof arr === 'string') {
+          try { const parsed = JSON.parse(arr); return Array.isArray(parsed) ? parsed.length : 0; }
+          catch { return 0; }
+        }
+        return 0;
+      }
+      
+      case 'ARRAY_APPEND': {
+        let arr = this._evalValue(args[0], row);
+        const val = this._evalValue(args[1], row);
+        if (typeof arr === 'string') try { arr = JSON.parse(arr); } catch { arr = []; }
+        if (!Array.isArray(arr)) arr = [];
+        return [...arr, val];
+      }
+      
+      case 'ARRAY_REMOVE': {
+        let arr = this._evalValue(args[0], row);
+        const val = this._evalValue(args[1], row);
+        if (typeof arr === 'string') try { arr = JSON.parse(arr); } catch { arr = []; }
+        if (!Array.isArray(arr)) return [];
+        return arr.filter(x => x !== val);
+      }
+      
+      case 'ARRAY_CAT': {
+        let arr1 = this._evalValue(args[0], row);
+        let arr2 = this._evalValue(args[1], row);
+        if (typeof arr1 === 'string') try { arr1 = JSON.parse(arr1); } catch { arr1 = []; }
+        if (typeof arr2 === 'string') try { arr2 = JSON.parse(arr2); } catch { arr2 = []; }
+        return [...(arr1 || []), ...(arr2 || [])];
+      }
+      
+      case 'ARRAY_POSITION': {
+        let arr = this._evalValue(args[0], row);
+        const val = this._evalValue(args[1], row);
+        if (typeof arr === 'string') try { arr = JSON.parse(arr); } catch { arr = []; }
+        if (!Array.isArray(arr)) return null;
+        const idx = arr.indexOf(val);
+        return idx >= 0 ? idx + 1 : null; // 1-based
       }
       
       default: {

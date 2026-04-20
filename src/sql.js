@@ -96,7 +96,7 @@ export function tokenize(sql) {
     if (src[i] === '>') { tokens.push({ type: 'GT' }); i++; continue; }
 
     // Punctuation
-    if ('(),;'.includes(src[i])) {
+    if ('(),;[]'.includes(src[i])) {
       tokens.push({ type: src[i] }); i++; continue;
     }
     if (src[i] === '*') { tokens.push({ type: '*' }); i++; continue; }
@@ -767,6 +767,21 @@ export function parse(sql) {
       return { type: 'window', func, arg, args, over, alias };
     }
 
+    // ARRAY[...] constructor in SELECT
+    if ((peek().type === 'KEYWORD' || peek().type === 'IDENT') && peek().value.toUpperCase() === 'ARRAY' && pos + 1 < tokens.length && tokens[pos + 1].type === '[') {
+      advance(); // ARRAY
+      expect('[');
+      const elements = [];
+      if (peek().type !== ']') {
+        elements.push(parseExpr());
+        while (match(',')) elements.push(parseExpr());
+      }
+      expect(']');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr: { type: 'array_constructor', elements }, alias };
+    }
+
     // EXTRACT(field FROM expr) — special syntax
     if (peek().type === 'KEYWORD' && peek().value === 'EXTRACT') {
       advance(); // EXTRACT
@@ -787,7 +802,7 @@ export function parse(sql) {
 
     // String functions in SELECT
     if (peek().type === 'KEYWORD' && ['UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'COALESCE', 'NULLIF', 'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'LTRIM', 'RTRIM', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'IIF', 'TYPEOF', 'INSTR', 'PRINTF',
-      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH', 'DATE_TRUNC', 'DATE_PART', 'AGE', 'DATE_ADD', 'DATE_SUB', 'TO_CHAR'].includes(peek().value)) {
+      'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'LEFT', 'RIGHT', 'LPAD', 'RPAD', 'REVERSE', 'REPEAT', 'POWER', 'SQRT', 'LOG', 'RANDOM', 'STRFTIME', 'NOW', 'GREATEST', 'LEAST', 'CONCAT_WS', 'REGEXP_REPLACE', 'REGEXP_MATCH', 'DATE_TRUNC', 'DATE_PART', 'AGE', 'DATE_ADD', 'DATE_SUB', 'TO_CHAR', 'ARRAY_LENGTH', 'ARRAY_APPEND', 'ARRAY_REMOVE', 'ARRAY_CAT', 'ARRAY_POSITION', 'UNNEST', 'STRING_AGG'].includes(peek().value)) {
       const func = advance().value;
       expect('(');
       const args = [];
@@ -1186,6 +1201,18 @@ export function parse(sql) {
       const dateExpr = parsePrimaryWithConcat();
       expect(')');
       return { type: 'function_call', func: 'EXTRACT', args: [{ type: 'literal', value: field }, dateExpr] };
+    }
+    // ARRAY[...] constructor
+    if ((t.type === 'KEYWORD' || t.type === 'IDENT') && t.value.toUpperCase() === 'ARRAY' && pos + 1 < tokens.length && tokens[pos + 1].type === '[') {
+      advance(); // ARRAY
+      expect('[');
+      const elements = [];
+      if (peek().type !== ']') {
+        elements.push(parsePrimaryWithConcat());
+        while (match(',')) elements.push(parsePrimaryWithConcat());
+      }
+      expect(']');
+      return { type: 'array_constructor', elements };
     }
     // Parenthesized expression or subquery
     if (t.type === '(') {
