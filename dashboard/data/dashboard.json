@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-20T15:26:17.181Z",
+  "generated": "2026-04-20T15:33:55.836Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping — git push",
-    "startedAt": "2026-04-20T15:26:17.181Z",
-    "taskId": "T25"
+    "task": "MAINTAIN: git push + knowledge capture",
+    "startedAt": "2026-04-20T15:33:55.836Z",
+    "taskId": "T35"
   },
   "schedule": {
     "date": "2026-04-20",
@@ -3779,51 +3779,124 @@
       {
         "id": "T23",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB test suite health — remaining failures and parser edge cases",
         "task": null,
-        "started": "2026-04-20T15:17:43.216Z"
+        "started": "2026-04-20T15:17:43.216Z",
+        "completed": "2026-04-20T15:19:57.959Z",
+        "duration_ms": 60000,
+        "summary": "Test suite: 4105 total, 4092 pass, 5 fail, 5 cancelled, 3 skipped. Significant improvement. 2 BUILD tasks to investigate remaining failures."
       },
       {
         "id": "T24",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Investigate remaining 5 test failures — categorize as timeout vs real bug",
         "plan_ref": "T23",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T15:20:11.267Z",
+        "completed": "2026-04-20T15:25:13.049Z",
+        "duration_ms": 300000,
+        "summary": "5 failures: 1 test bug (LIKE case sensitivity, now fixed), 2 pre-existing SSI false positives (SeqScan reads too broadly), 1 savepoint isolation bug, 1 integration test. SSI issue needs predicate locks."
       },
       {
         "id": "T32",
         "mode": "BUILD",
         "task": "Fix any real bugs found in remaining failures",
-        "status": "upcoming",
-        "plan_ref": "T23"
+        "status": "done",
+        "plan_ref": "T23",
+        "started": "2026-04-20T15:25:26.766Z",
+        "completed": "2026-04-20T15:25:41.367Z",
+        "duration_ms": 120000,
+        "summary": "Fixed LIKE test. Remaining failures: savepoint isolation (MVCC visibility after ROLLBACK TO in concurrent sessions) and integration missing rows. Both need deeper investigation. SSI false positives need predicate locks. Added TODO for these."
       },
       {
         "id": "T25",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping — git push"
+        "status": "done",
+        "task": "Housekeeping — git push",
+        "started": "2026-04-20T15:26:17.145Z",
+        "completed": "2026-04-20T15:26:38.043Z",
+        "duration_ms": 15000,
+        "summary": "Git push synced."
       },
       {
         "id": "T26",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive: MVCC research or database internals papers",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-20T15:26:50.197Z",
+        "completed": "2026-04-20T15:27:34.848Z",
+        "duration_ms": 120000,
+        "summary": "Researched SSI predicate locks. Key insight: PostgreSQL uses SIRead page-level locks. For HenryDB, simpler fix is index-backed UPDATE (only reads matching rows). Three solutions ordered by effort. Notes in scratch."
+      },
+      {
+        "id": "T33",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Design vectorized execution engine — batch size, column format, operator interface",
+        "project": "henrydb",
+        "started": "2026-04-20T15:28:40.757Z",
+        "completed": "2026-04-20T15:28:57.299Z",
+        "duration_ms": 60000,
+        "summary": "Designed vectorized execution: DataBatch (columnar chunks, 1024 rows), selection vectors, pull-based operator interface. Prototype: Scan+Filter+Project+benchmark vs Volcano."
+      },
+      {
+        "id": "T34",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "PLAN: Vectorized execution prototype — VectorizedScan + VectorizedFilter",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-20T15:29:13.836Z"
+      },
+      {
+        "id": "T36",
+        "mode": "BUILD",
+        "task": "Implement DataBatch + VectorizedScan: columnar batches from HeapFile",
+        "status": "upcoming",
+        "plan_ref": "T34"
+      },
+      {
+        "id": "T37",
+        "mode": "BUILD",
+        "task": "Implement VectorizedFilter with selection vectors",
+        "status": "upcoming",
+        "plan_ref": "T34"
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "task": "Implement VectorizedProject: compute new columns",
+        "status": "upcoming",
+        "plan_ref": "T34"
+      },
+      {
+        "id": "T39",
+        "mode": "BUILD",
+        "task": "Benchmark: Vectorized vs Volcano on 100K row scan+filter+project",
+        "status": "upcoming",
+        "plan_ref": "T34"
+      },
+      {
+        "id": "T35",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "MAINTAIN: git push + knowledge capture"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
-    "blocksTotal": 32,
+    "blocksCompleted": 38,
+    "blocksTotal": 39,
     "modeDistribution": {
-      "THINK": 6,
-      "PLAN": 6,
-      "BUILD": 12,
-      "MAINTAIN": 5,
-      "EXPLORE": 1
+      "THINK": 7,
+      "PLAN": 7,
+      "BUILD": 16,
+      "MAINTAIN": 6,
+      "EXPLORE": 2
     }
   },
   "artifacts": [

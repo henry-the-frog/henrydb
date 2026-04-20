@@ -4,7 +4,9 @@
 
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
-- HenryDB: 39 "ERR" test files in full suite run are likely timeout-related (need 15s+ timeout, not 10s)
+- HenryDB: SSI false positives on disjoint-row UPDATEs (need index-backed UPDATE or deferred read recording)
+- HenryDB: Savepoint isolation bug — concurrent sessions with savepoints don't see correct row counts
+- HenryDB: Integration test (e-commerce scenario) returns 8 rows instead of 10
 
 
 

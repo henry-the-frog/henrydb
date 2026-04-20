@@ -329,16 +329,97 @@
     {
       "id": "T25",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping — git push",
-      "started": "2026-04-20T15:26:17.145Z"
+      "started": "2026-04-20T15:26:17.145Z",
+      "completed": "2026-04-20T15:26:38.043Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
     },
     {
       "id": "T26",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive: MVCC research or database internals papers",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T15:26:50.197Z",
+      "completed": "2026-04-20T15:27:34.848Z",
+      "duration_ms": 120000,
+      "summary": "Researched SSI predicate locks. Key insight: PostgreSQL uses SIRead page-level locks. For HenryDB, simpler fix is index-backed UPDATE (only reads matching rows). Three solutions ordered by effort. Notes in scratch."
+    },
+    {
+      "id": "T33",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Design vectorized execution engine — batch size, column format, operator interface",
+      "project": "henrydb",
+      "started": "2026-04-20T15:28:40.757Z",
+      "completed": "2026-04-20T15:28:57.299Z",
+      "duration_ms": 60000,
+      "summary": "Designed vectorized execution: DataBatch (columnar chunks, 1024 rows), selection vectors, pull-based operator interface. Prototype: Scan+Filter+Project+benchmark vs Volcano."
+    },
+    {
+      "id": "T34",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Vectorized execution prototype — VectorizedScan + VectorizedFilter",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-20T15:29:13.836Z",
+      "completed": "2026-04-20T15:29:18.985Z",
+      "duration_ms": 15000,
+      "summary": "4 BUILD tasks: DataBatch+Scan, Filter+selVec, Project, Benchmark."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "task": "Implement DataBatch + VectorizedScan: columnar batches from HeapFile",
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-04-20T15:29:25.207Z",
+      "completed": "2026-04-20T15:30:28.638Z",
+      "duration_ms": 300000,
+      "summary": "Vectorized engine: DataBatch (columnar chunks + selection vectors), VectorizedScan, VectorizedFilter (zero-copy), VectorizedProject, VectorizedLimit, collectAll. All working."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "Implement VectorizedFilter with selection vectors",
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-04-20T15:30:41.296Z",
+      "completed": "2026-04-20T15:30:41.439Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: Already implemented in T36 (VectorizedFilter with selection vectors)."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "Implement VectorizedProject: compute new columns",
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-04-20T15:30:48.371Z",
+      "completed": "2026-04-20T15:30:48.522Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: Already implemented in T36 (VectorizedProject)."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Benchmark: Vectorized vs Volcano on 100K row scan+filter+project",
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-04-20T15:30:54.714Z",
+      "completed": "2026-04-20T15:33:25.230Z",
+      "duration_ms": 300000,
+      "summary": "8 vectorized tests pass. Benchmark: 2x speedup vs Volcano (90ms→46ms on 50K rows with filter+project). Selection vectors avoid data copying."
+    },
+    {
+      "id": "T35",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push + knowledge capture",
+      "started": "2026-04-20T15:33:55.800Z"
     }
   ],
   "focusProjects": [
@@ -478,6 +559,22 @@
     {
       "time": "2026-04-20T15:19:51.611Z",
       "msg": "PLAN T23 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-20T15:28:19.307Z",
+      "msg": "Added T33 (THINK) after end: THINK: Design vectorized execution engine — batch size, column format, operator interface"
+    },
+    {
+      "time": "2026-04-20T15:28:26.236Z",
+      "msg": "Added T34 (PLAN) after end: PLAN: Vectorized execution prototype — VectorizedScan + VectorizedFilter"
+    },
+    {
+      "time": "2026-04-20T15:28:26.374Z",
+      "msg": "Added T35 (MAINTAIN) after end: MAINTAIN: git push + knowledge capture"
+    },
+    {
+      "time": "2026-04-20T15:29:13.976Z",
+      "msg": "PLAN T34 filled 4 BUILD tasks"
     }
   ]
 }
