@@ -16,4 +16,4 @@
 - Neural-net: training checkpoints / early stopping improvements
 - HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr (risky, deferred)
 - HenryDB: Unified expression walker migration — use expr-walker.js for _evalGroupExpr and _evalAggregateExpr
-- HenryDB: Hash-index performance (timeout in 1 test)
+- HenryDB: Hash-index performance (test takes 24s, needs optimization not bug fix)
