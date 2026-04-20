@@ -699,9 +699,96 @@
     {
       "id": "T67",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Pre-final: update daily log, push git",
-      "started": "2026-04-20T21:30:59.035Z"
+      "started": "2026-04-20T21:30:59.035Z",
+      "completed": "2026-04-20T21:31:35.101Z",
+      "duration_ms": 30000,
+      "summary": "Daily log updated, git pushed both repos."
+    },
+    {
+      "id": "T68",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep dive: test LATERAL JOIN with complex correlated subqueries",
+      "project": "henrydb",
+      "started": "2026-04-20T21:31:56.743Z",
+      "completed": "2026-04-20T21:32:17.013Z",
+      "duration_ms": 60000,
+      "summary": "LATERAL JOIN works for complex patterns: running aggregates (correct cumulative sums), max-per-group filter. Top-N per group has empty output (DISTINCT subquery column mismatch). Impressive LATERAL support."
+    },
+    {
+      "id": "T69",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test WINDOW functions edge cases — RANGE vs ROWS, GROUPS, empty partitions",
+      "project": "henrydb",
+      "started": "2026-04-20T21:32:21.118Z",
+      "completed": "2026-04-20T21:32:48.352Z",
+      "duration_ms": 60000,
+      "summary": "Window functions: 7/9 tests pass. ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTH_VALUE, NTILE, PERCENT_RANK, CUME_DIST all work. BUGS: ROWS BETWEEN and RANGE BETWEEN frame specs not parsed. Cant do sliding windows or custom frames."
+    },
+    {
+      "id": "T70",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: benchmark INSERT performance — bulk vs single row",
+      "project": "henrydb",
+      "started": "2026-04-20T21:32:53.835Z",
+      "completed": "2026-04-20T21:33:28.351Z",
+      "duration_ms": 60000,
+      "summary": "INSERT: 12.9K single/sec, 15.3K bulk/sec (only 19% better). INSERT INTO SELECT slower than singles (1284ms vs 775ms) — unexpected, suggests bulk path overhead. Index overhead minimal. Overall ~13K inserts/sec for in-memory DB."
+    },
+    {
+      "id": "T71",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test generated columns — stored vs virtual, complex expressions",
+      "project": "henrydb",
+      "started": "2026-04-20T21:33:33.880Z",
+      "completed": "2026-04-20T21:33:54.634Z",
+      "duration_ms": 60000,
+      "summary": "Generated columns: all 5 tests pass. STORED, VIRTUAL, function-based expressions, recomputation on UPDATE, rejection of direct INSERT. No issues."
+    },
+    {
+      "id": "T72",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: write a mini TPC-H benchmark that reports correctness AND performance",
+      "project": "henrydb",
+      "started": "2026-04-20T21:34:00.964Z",
+      "completed": "2026-04-20T21:35:12.835Z",
+      "duration_ms": 120000,
+      "summary": "Mini TPC-H: 7/7 correct! Single-table: 10-23ms. JOIN queries: 5-6 seconds (NL on 600×2400). Correlated EXISTS: 5.4s. Confirms hash join is #1 perf fix — would reduce JOIN queries from 5s to ~50ms (100x improvement)."
+    },
+    {
+      "id": "T73",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test HenryDB error handling — invalid SQL, type mismatches, constraint violations",
+      "project": "henrydb",
+      "started": "2026-04-20T21:35:24.230Z",
+      "completed": "2026-04-20T21:35:44.829Z",
+      "duration_ms": 60000,
+      "summary": "Error handling: 10/15 correct. Gaps: missing column silently returns (doesnt error), extra comma accepted, reserved word as alias accepted, wrong column count not checked (falls through to PK check). Parser is too permissive in some cases."
+    },
+    {
+      "id": "T74",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test HenryDB concurrency: rapid transaction start/commit/rollback cycles",
+      "project": "henrydb",
+      "started": "2026-04-20T21:35:51.077Z",
+      "completed": "2026-04-20T21:36:43.254Z",
+      "duration_ms": 60000,
+      "summary": "Concurrency: 1000 serial tx=21s (21ms/tx — slow for single row UPDATE). 1000 rollbacks corrupt PK index (known bug). Confirmed index-after-rollback is a data corruption issue that worsens with repeated rollbacks."
+    },
+    {
+      "id": "T75",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Late session git push",
+      "started": "2026-04-20T21:36:49.018Z"
     }
   ],
   "focusProjects": [
@@ -993,6 +1080,38 @@
     {
       "time": "2026-04-20T21:28:07.926Z",
       "msg": "Added T67 (MAINTAIN) after end: Pre-final: update daily log, push git"
+    },
+    {
+      "time": "2026-04-20T21:31:50.240Z",
+      "msg": "Added T68 (EXPLORE) after end: Deep dive: test LATERAL JOIN with complex correlated subqueries"
+    },
+    {
+      "time": "2026-04-20T21:31:50.360Z",
+      "msg": "Added T69 (EXPLORE) after end: HenryDB: test WINDOW functions edge cases — RANGE vs ROWS, GROUPS, empty partitions"
+    },
+    {
+      "time": "2026-04-20T21:31:50.489Z",
+      "msg": "Added T70 (EXPLORE) after end: HenryDB: benchmark INSERT performance — bulk vs single row"
+    },
+    {
+      "time": "2026-04-20T21:31:50.608Z",
+      "msg": "Added T71 (EXPLORE) after end: HenryDB: test generated columns — stored vs virtual, complex expressions"
+    },
+    {
+      "time": "2026-04-20T21:31:50.727Z",
+      "msg": "Added T72 (EXPLORE) after end: HenryDB: write a mini TPC-H benchmark that reports correctness AND performance"
+    },
+    {
+      "time": "2026-04-20T21:31:50.846Z",
+      "msg": "Added T73 (EXPLORE) after end: Test HenryDB error handling — invalid SQL, type mismatches, constraint violations"
+    },
+    {
+      "time": "2026-04-20T21:31:50.964Z",
+      "msg": "Added T74 (EXPLORE) after end: Test HenryDB concurrency: rapid transaction start/commit/rollback cycles"
+    },
+    {
+      "time": "2026-04-20T21:31:51.081Z",
+      "msg": "Added T75 (MAINTAIN) after end: Late session git push"
     }
   ]
 }
