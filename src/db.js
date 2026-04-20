@@ -5955,6 +5955,35 @@ export class Database {
         const pattern = String(this._evalValue(args[1], row));
         return new RegExp(pattern).test(str) ? 1 : 0;
       }
+      case 'REGEXP_MATCHES': {
+        const str = String(this._evalValue(args[0], row));
+        const pattern = String(this._evalValue(args[1], row));
+        const flags = args[2] ? String(this._evalValue(args[2], row)) : '';
+        const re = new RegExp(pattern, flags);
+        const matches = [];
+        if (flags.includes('g')) {
+          let m;
+          while ((m = re.exec(str)) !== null) {
+            matches.push(m[1] || m[0]); // Capture group or full match
+          }
+        } else {
+          const m = str.match(re);
+          if (m) matches.push(m[1] || m[0]);
+        }
+        return matches;
+      }
+      case 'REGEXP_COUNT': {
+        const str = String(this._evalValue(args[0], row));
+        const pattern = String(this._evalValue(args[1], row));
+        return (str.match(new RegExp(pattern, 'g')) || []).length;
+      }
+      case 'SPLIT_PART': {
+        const str = String(this._evalValue(args[0], row));
+        const delim = String(this._evalValue(args[1], row));
+        const field = Number(this._evalValue(args[2], row));
+        const parts = str.split(delim);
+        return field >= 1 && field <= parts.length ? parts[field - 1] : '';
+      }
       case 'COALESCE': {
         for (const arg of args) {
           const v = this._evalValue(arg, row);
