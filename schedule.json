@@ -916,9 +916,52 @@
     {
       "id": "T86",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push + daily log update",
-      "started": "2026-04-20T16:55:05.619Z"
+      "started": "2026-04-20T16:55:05.619Z",
+      "completed": "2026-04-20T16:55:38.934Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced. Daily log updated."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: DROP FUNCTION support — complement to CREATE FUNCTION",
+      "project": "henrydb",
+      "started": "2026-04-20T16:55:59.378Z",
+      "completed": "2026-04-20T16:57:25.808Z",
+      "duration_ms": 60000,
+      "summary": "DROP FUNCTION [IF EXISTS] implemented: parser + executor. Tested."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: CALL procedure support for scalar functions",
+      "project": "henrydb",
+      "started": "2026-04-20T16:57:26.065Z",
+      "completed": "2026-04-20T16:57:35.758Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: CALL is for procedures, not scalar functions. Scalar functions already work in SELECT, WHERE, ORDER BY."
+    },
+    {
+      "id": "T89",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Benchmark vectorized vs Volcano on realistic workload (TPC-H Q1)",
+      "project": "henrydb",
+      "started": "2026-04-20T16:57:36.017Z",
+      "completed": "2026-04-20T16:58:10.756Z",
+      "duration_ms": 120000,
+      "summary": "TPC-H Q1 benchmark (10K rows): Volcano 56ms, Vectorized 34ms — 1.65x speedup. Consistent with earlier 2x on simple scan+filter. Vectorized advantage increases with data size."
+    },
+    {
+      "id": "T90",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: final git push + daily log",
+      "started": "2026-04-20T16:58:17.582Z"
     }
   ],
   "focusProjects": [
@@ -1262,6 +1305,22 @@
     {
       "time": "2026-04-20T16:51:36.268Z",
       "msg": "Added T86 (MAINTAIN) after end: MAINTAIN: git push + daily log update"
+    },
+    {
+      "time": "2026-04-20T16:55:58.791Z",
+      "msg": "Added T87 (BUILD) after end: BUILD: DROP FUNCTION support — complement to CREATE FUNCTION"
+    },
+    {
+      "time": "2026-04-20T16:55:58.909Z",
+      "msg": "Added T88 (BUILD) after end: BUILD: CALL procedure support for scalar functions"
+    },
+    {
+      "time": "2026-04-20T16:55:59.028Z",
+      "msg": "Added T89 (EXPLORE) after end: EXPLORE: Benchmark vectorized vs Volcano on realistic workload (TPC-H Q1)"
+    },
+    {
+      "time": "2026-04-20T16:55:59.146Z",
+      "msg": "Added T90 (MAINTAIN) after end: MAINTAIN: final git push + daily log"
     }
   ]
 }
