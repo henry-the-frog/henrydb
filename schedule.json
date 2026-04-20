@@ -916,9 +916,85 @@
     {
       "id": "T87",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final pre-close: commit everything",
-      "started": "2026-04-20T21:44:35.874Z"
+      "started": "2026-04-20T21:44:35.874Z",
+      "completed": "2026-04-20T21:45:00.086Z",
+      "duration_ms": 30000,
+      "summary": "Git push, daily log updated."
+    },
+    {
+      "id": "T88",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test the B-tree implementation directly — insert/delete/search patterns",
+      "project": "henrydb",
+      "started": "2026-04-20T21:45:32.780Z",
+      "completed": "2026-04-20T21:46:30.006Z",
+      "duration_ms": 60000,
+      "summary": "B+ tree: fast and correct. Sequential: 4M insert/sec, 7.7M get/sec. Random: 1.8M insert, 4.8M get. Range scan 10K in 3ms. Delete verified correct 500/500. Multiple tree implementations exist (B+, CoW, WO, VEB, interval, KD, R-tree, wavelet)."
+    },
+    {
+      "id": "T89",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test COMMENT ON TABLE, COMMENT ON COLUMN",
+      "project": "henrydb",
+      "started": "2026-04-20T21:46:36.617Z",
+      "completed": "2026-04-20T21:46:49.867Z",
+      "duration_ms": 10000,
+      "summary": "COMMENT ON TABLE and COMMENT ON COLUMN both work. No issues."
+    },
+    {
+      "id": "T90",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test the parser — very long SQL, deeply nested subqueries, 100+ columns",
+      "project": "henrydb",
+      "started": "2026-04-20T21:46:54.187Z",
+      "completed": "2026-04-20T21:47:23.730Z",
+      "duration_ms": 60000,
+      "summary": "Parser stress: 6/6 pass. 100-column table, 20-deep nested subqueries, 50 OR conditions, IN(200), 50-expression SELECT, 10K-char string. No stack overflows or parser failures. Robust."
+    },
+    {
+      "id": "T91",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test pg wire protocol server if implemented",
+      "project": "henrydb",
+      "started": "2026-04-20T21:47:31.564Z",
+      "completed": "2026-04-20T21:48:30.926Z",
+      "duration_ms": 60000,
+      "summary": "HTTP server works: REST API (POST /sql, GET /tables, /stats, /health). pg wire protocol v3 messages implemented (auth, row desc, data row, error) but NOT wired to TCP server — cant connect with psql yet. Protocol ready, server not."
+    },
+    {
+      "id": "T92",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test the heap file directly — page splits, overflow, compaction",
+      "project": "henrydb",
+      "started": "2026-04-20T21:48:43.199Z",
+      "completed": "2026-04-20T21:49:26.424Z",
+      "duration_ms": 60000,
+      "summary": "HeapFile: fast and correct. 435K insert/sec, 833K read/sec, 5M delete/sec, 1M update/sec. 89 pages for 10K rows (98.9% utilization). Pages not reclaimed after delete. Well-implemented slotted page structure."
+    },
+    {
+      "id": "T93",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CREATE MATERIALIZED VIEW and REFRESH MATERIALIZED VIEW",
+      "project": "henrydb",
+      "started": "2026-04-20T21:49:32.632Z",
+      "completed": "2026-04-20T21:50:01.222Z",
+      "duration_ms": 60000,
+      "summary": "MATERIALIZED VIEW: syntax works but NOT materialized. Behaves as regular view (reads source live). Before refresh already shows new data. REFRESH is no-op. Another parsed-but-not-executed feature."
+    },
+    {
+      "id": "T94",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Another git push and log",
+      "started": "2026-04-20T21:50:07.577Z"
     }
   ],
   "focusProjects": [
@@ -1290,6 +1366,34 @@
     {
       "time": "2026-04-20T21:40:58.107Z",
       "msg": "Added T87 (MAINTAIN) after end: Final pre-close: commit everything"
+    },
+    {
+      "time": "2026-04-20T21:45:25.463Z",
+      "msg": "Added T88 (EXPLORE) after end: HenryDB: test the B-tree implementation directly — insert/delete/search patterns"
+    },
+    {
+      "time": "2026-04-20T21:45:25.603Z",
+      "msg": "Added T89 (EXPLORE) after end: HenryDB: test COMMENT ON TABLE, COMMENT ON COLUMN"
+    },
+    {
+      "time": "2026-04-20T21:45:25.722Z",
+      "msg": "Added T90 (EXPLORE) after end: HenryDB: stress test the parser — very long SQL, deeply nested subqueries, 100+ columns"
+    },
+    {
+      "time": "2026-04-20T21:45:25.841Z",
+      "msg": "Added T91 (EXPLORE) after end: HenryDB: test pg wire protocol server if implemented"
+    },
+    {
+      "time": "2026-04-20T21:45:25.961Z",
+      "msg": "Added T92 (EXPLORE) after end: HenryDB: test the heap file directly — page splits, overflow, compaction"
+    },
+    {
+      "time": "2026-04-20T21:45:26.079Z",
+      "msg": "Added T93 (EXPLORE) after end: HenryDB: test CREATE MATERIALIZED VIEW and REFRESH MATERIALIZED VIEW"
+    },
+    {
+      "time": "2026-04-20T21:45:26.196Z",
+      "msg": "Added T94 (MAINTAIN) after end: Another git push and log"
     }
   ]
 }
