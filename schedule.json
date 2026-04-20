@@ -1715,9 +1715,64 @@
     {
       "id": "T160",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T18:36:47.199Z"
+      "started": "2026-04-20T18:36:47.199Z",
+      "completed": "2026-04-20T18:37:18.701Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix DEFAULT CURRENT_TIMESTAMP returns null",
+      "project": "henrydb",
+      "started": "2026-04-20T18:37:29.740Z",
+      "completed": "2026-04-20T18:39:01.690Z",
+      "duration_ms": 60000,
+      "summary": "Fixed DEFAULT CURRENT_TIMESTAMP. Parser now captures keyword defaults, executor evaluates function calls at insert time. Also handles DEFAULT TRUE/FALSE/NULL."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix GROUP BY expression column name (shows JSON of AST)",
+      "project": "henrydb",
+      "started": "2026-04-20T18:39:01.949Z",
+      "completed": "2026-04-20T18:41:46.970Z",
+      "duration_ms": 120000,
+      "summary": "GROUP BY expression column names now readable: (id % 2) instead of JSON AST. Fixed duplicate _exprToString method."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: BOOLEAN type support (TRUE, FALSE literals)",
+      "project": "henrydb",
+      "started": "2026-04-20T18:41:47.228Z",
+      "completed": "2026-04-20T18:42:03.331Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: BOOLEAN type already works. TRUE/FALSE literals parsed, BOOLEAN column type, WHERE comparisons all function correctly."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix _collectColumnRefs for predicate pushdown (missing method error possible)",
+      "project": "henrydb",
+      "started": "2026-04-20T18:42:03.604Z",
+      "completed": "2026-04-20T18:43:18.115Z",
+      "duration_ms": 60000,
+      "summary": "Fixed _collectColumnRefs to return full column_ref objects. Predicate pushdown now properly handles table-qualified column references."
+    },
+    {
+      "id": "T165",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Full test sweep + git push",
+      "project": "henrydb",
+      "started": "2026-04-20T18:43:18.375Z"
     }
   ],
   "focusProjects": [
@@ -2345,6 +2400,26 @@
     {
       "time": "2026-04-20T18:34:41.170Z",
       "msg": "Added T160 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T18:37:29.029Z",
+      "msg": "Added T161 (BUILD) after end: BUILD: Fix DEFAULT CURRENT_TIMESTAMP returns null"
+    },
+    {
+      "time": "2026-04-20T18:37:29.149Z",
+      "msg": "Added T162 (BUILD) after end: BUILD: Fix GROUP BY expression column name (shows JSON of AST)"
+    },
+    {
+      "time": "2026-04-20T18:37:29.269Z",
+      "msg": "Added T163 (BUILD) after end: BUILD: BOOLEAN type support (TRUE, FALSE literals)"
+    },
+    {
+      "time": "2026-04-20T18:37:29.387Z",
+      "msg": "Added T164 (BUILD) after end: BUILD: Fix _collectColumnRefs for predicate pushdown (missing method error possible)"
+    },
+    {
+      "time": "2026-04-20T18:37:29.507Z",
+      "msg": "Added T165 (MAINTAIN) after end: MAINTAIN: Full test sweep + git push"
     }
   ]
 }
