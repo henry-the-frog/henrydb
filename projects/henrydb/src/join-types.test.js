@@ -1,70 +1,99 @@
-// join-types.test.js — RIGHT JOIN, CROSS JOIN, aggregate JOINs
-import { describe, it, beforeEach } from 'node:test';
+// join-types.test.js — All JOIN type tests
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
-describe('JOIN types', () => {
-  let db;
+function setup() {
+  const db = new Database();
+  db.execute('CREATE TABLE a (id INT, name TEXT)');
+  db.execute('CREATE TABLE b (id INT, a_id INT, val TEXT)');
+  db.execute("INSERT INTO a VALUES (1,'alice'),(2,'bob'),(3,'charlie')");
+  db.execute("INSERT INTO b VALUES (1,1,'x'),(2,1,'y'),(3,2,'z'),(4,9,'orphan')");
+  return db;
+}
 
-  beforeEach(() => {
-    db = new Database();
-    db.execute('CREATE TABLE colors (id INT PRIMARY KEY, name TEXT)');
-    db.execute("INSERT INTO colors VALUES (1, 'Red')");
-    db.execute("INSERT INTO colors VALUES (2, 'Blue')");
-    db.execute("INSERT INTO colors VALUES (3, 'Green')");
-
-    db.execute('CREATE TABLE sizes (id INT PRIMARY KEY, label TEXT)');
-    db.execute("INSERT INTO sizes VALUES (1, 'Small')");
-    db.execute("INSERT INTO sizes VALUES (2, 'Large')");
-
-    db.execute('CREATE TABLE products (id INT PRIMARY KEY, color_id INT, size_id INT, price INT)');
-    db.execute('INSERT INTO products VALUES (1, 1, 1, 10)');
-    db.execute('INSERT INTO products VALUES (2, 1, 2, 20)');
-    db.execute('INSERT INTO products VALUES (3, 2, 1, 15)');
+describe('JOIN Types', () => {
+  it('INNER JOIN', () => {
+    const db = setup();
+    const r = db.execute('SELECT a.name, b.val FROM a JOIN b ON a.id = b.a_id ORDER BY a.name, b.val');
+    assert.equal(r.rows.length, 3); // alice×2 + bob×1
   });
 
-  describe('CROSS JOIN', () => {
-    it('cartesian product', () => {
-      const r = db.execute('SELECT colors.name AS color, sizes.label AS size FROM colors CROSS JOIN sizes');
-      assert.equal(r.rows.length, 6); // 3 colors × 2 sizes
-    });
-
-    it('CROSS JOIN with WHERE', () => {
-      const r = db.execute("SELECT colors.name, sizes.label FROM colors CROSS JOIN sizes WHERE colors.name = 'Red'");
-      assert.equal(r.rows.length, 2);
-    });
+  it('LEFT JOIN keeps unmatched left rows', () => {
+    const db = setup();
+    const r = db.execute('SELECT a.name, b.val FROM a LEFT JOIN b ON a.id = b.a_id ORDER BY a.name');
+    assert.equal(r.rows.length, 4); // alice×2 + bob×1 + charlie×1(null)
+    const charlie = r.rows.find(row => row.name === 'charlie');
+    assert.equal(charlie.val, null);
   });
 
-  describe('RIGHT JOIN', () => {
-    it('includes unmatched from right', () => {
-      const r = db.execute('SELECT products.id AS pid, colors.name AS color FROM products RIGHT JOIN colors ON products.color_id = colors.id');
-      // Green (id=3) has no products
-      assert.ok(r.rows.length >= 4); // 3 products + 1 unmatched Green
-      const green = r.rows.find(row => row.color === 'Green');
-      assert.ok(green);
-      assert.equal(green.pid, null);
-    });
-
-    it('RIGHT JOIN all matched', () => {
-      const r = db.execute('SELECT products.id, sizes.label FROM products RIGHT JOIN sizes ON products.size_id = sizes.id');
-      assert.ok(r.rows.length >= 3); // All sizes have products
-    });
+  it('RIGHT JOIN keeps unmatched right rows', () => {
+    const db = setup();
+    const r = db.execute('SELECT a.name, b.val FROM a RIGHT JOIN b ON a.id = b.a_id ORDER BY b.val');
+    assert.equal(r.rows.length, 4); // alice×2 + bob×1 + orphan×1(null name)
+    const orphan = r.rows.find(row => row.val === 'orphan');
+    assert.equal(orphan.name, null);
   });
 
-  describe('Aggregate with JOINs', () => {
-    it('COUNT with JOIN', () => {
-      const r = db.execute('SELECT colors.name, COUNT(products.id) AS cnt FROM colors LEFT JOIN products ON colors.id = products.color_id GROUP BY colors.name ORDER BY cnt DESC');
-      assert.ok(r.rows.length === 3);
-    });
+  it('FULL OUTER JOIN keeps both unmatched', () => {
+    const db = setup();
+    const r = db.execute('SELECT a.name, b.val FROM a FULL OUTER JOIN b ON a.id = b.a_id ORDER BY a.name, b.val');
+    assert.ok(r.rows.length >= 5); // All matched + charlie(null) + orphan(null)
+  });
 
-    it('SUM with JOIN', () => {
-      const r = db.execute('SELECT colors.name, SUM(products.price) AS total FROM colors JOIN products ON colors.id = products.color_id GROUP BY colors.name ORDER BY total DESC');
-      assert.ok(r.rows.length >= 2);
-    });
+  it('CROSS JOIN', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE x (v INT)');
+    db.execute('CREATE TABLE y (v INT)');
+    db.execute('INSERT INTO x VALUES (1),(2)');
+    db.execute('INSERT INTO y VALUES (10),(20),(30)');
+    const r = db.execute('SELECT x.v as xv, y.v as yv FROM x CROSS JOIN y ORDER BY xv, yv');
+    assert.equal(r.rows.length, 6); // 2 × 3
+  });
 
-    it('AVG with JOIN + HAVING', () => {
-      const r = db.execute('SELECT colors.name, AVG(products.price) AS avg_price FROM colors JOIN products ON colors.id = products.color_id GROUP BY colors.name HAVING avg_price > 14');
-      assert.ok(r.rows.length >= 1);
-    });
+  it('NATURAL JOIN', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t1 (id INT, name TEXT)');
+    db.execute('CREATE TABLE t2 (id INT, val TEXT)');
+    db.execute("INSERT INTO t1 VALUES (1,'alice'),(2,'bob')");
+    db.execute("INSERT INTO t2 VALUES (1,'x'),(2,'y')");
+    const r = db.execute('SELECT * FROM t1 NATURAL JOIN t2 ORDER BY id');
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].name, 'alice');
+    assert.equal(r.rows[0].val, 'x');
+  });
+
+  it('self join', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INT, name TEXT, mgr_id INT)');
+    db.execute("INSERT INTO emp VALUES (1,'CEO',NULL),(2,'VP',1),(3,'Dir',2)");
+    const r = db.execute(`
+      SELECT e.name as employee, m.name as manager
+      FROM emp e LEFT JOIN emp m ON e.mgr_id = m.id
+      ORDER BY e.id
+    `);
+    assert.equal(r.rows[0].employee, 'CEO');
+    assert.equal(r.rows[0].manager, null);
+    assert.equal(r.rows[1].manager, 'CEO');
+  });
+
+  it('multi-table join', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE customers (id INT, name TEXT)');
+    db.execute('CREATE TABLE orders (id INT, cust_id INT, date TEXT)');
+    db.execute('CREATE TABLE items (id INT, order_id INT, product TEXT)');
+    db.execute("INSERT INTO customers VALUES (1,'alice')");
+    db.execute("INSERT INTO orders VALUES (1,1,'2026-01-01')");
+    db.execute("INSERT INTO items VALUES (1,1,'widget'),(2,1,'gadget')");
+    
+    const r = db.execute(`
+      SELECT c.name, o.date, i.product
+      FROM customers c
+      JOIN orders o ON c.id = o.cust_id
+      JOIN items i ON o.id = i.order_id
+      ORDER BY i.product
+    `);
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].name, 'alice');
   });
 });
