@@ -1,251 +1,289 @@
 // vectorized.js — Vectorized execution engine for HenryDB
-// Instead of processing one row at a time, processes batches of column values.
-// Key advantage: better CPU cache utilization, SIMD-friendly data layout,
-// reduced per-row interpretation overhead.
+// Processes data in columnar batches (vectors) instead of row-at-a-time.
+// Inspired by MonetDB/X100 and DuckDB.
 
 const DEFAULT_BATCH_SIZE = 1024;
 
 /**
- * ColumnBatch — a batch of columnar data.
- * Each column is stored as a flat array (or typed array for numbers).
- * A selection vector tracks which rows are "active" (pass filters).
+ * DataBatch — a columnar chunk of data.
+ * Each column is stored as an array. A selection vector tracks active rows.
  */
-export class ColumnBatch {
+export class DataBatch {
   /**
-   * @param {Map<string, any[]>} columns — column name → value array
-   * @param {number} length — number of rows
-   * @param {Uint32Array|null} selection — active row indices (null = all active)
+   * @param {Object} columns - { colName: Array }
+   * @param {number} count - number of rows
+   * @param {Int32Array|null} selectionVector - if set, only these indices are active
    */
-  constructor(columns, length, selection = null) {
-    this.columns = columns;     // Map<string, any[]>
-    this.length = length;       // total rows in batch
-    this.selection = selection;  // null means all rows active
-    this._activeCount = selection ? selection.length : length;
+  constructor(columns, count, selectionVector = null) {
+    this.columns = columns;   // { name: Array }
+    this.count = count;        // total rows in arrays
+    this.sel = selectionVector; // null = all rows active
   }
 
-  /** Number of active (non-filtered) rows. */
-  get activeCount() { return this._activeCount; }
-
-  /** Get a column's values array. */
-  getColumn(name) { return this.columns.get(name); }
-
-  /** Get the value at a specific row for a column. */
-  getValue(col, rowIdx) {
-    const arr = this.columns.get(col);
-    return arr ? arr[rowIdx] : undefined;
+  /**
+   * Number of active rows (respecting selection vector).
+   */
+  get activeCount() {
+    return this.sel ? this.sel.length : this.count;
   }
 
-  /** Create a new batch with a subset of active rows. */
-  filter(newSelection) {
-    return new ColumnBatch(this.columns, this.length, newSelection);
+  /**
+   * Get a column value at the given active-row index.
+   */
+  getValue(colName, activeIdx) {
+    const realIdx = this.sel ? this.sel[activeIdx] : activeIdx;
+    return this.columns[colName][realIdx];
   }
 
-  /** Iterate active rows as objects (for final output). */
-  *rows() {
-    const colNames = [...this.columns.keys()];
-    const colArrays = colNames.map(n => this.columns.get(n));
-    
-    if (this.selection) {
-      for (const idx of this.selection) {
-        const row = {};
-        for (let c = 0; c < colNames.length; c++) {
-          row[colNames[c]] = colArrays[c][idx];
-        }
-        yield row;
+  /**
+   * Materialize to row-oriented format (for result output).
+   * Returns array of plain objects.
+   */
+  toRows(columnNames) {
+    const names = columnNames || Object.keys(this.columns);
+    const rows = [];
+    const n = this.activeCount;
+    for (let i = 0; i < n; i++) {
+      const row = {};
+      for (const name of names) {
+        row[name] = this.getValue(name, i);
       }
-    } else {
-      for (let i = 0; i < this.length; i++) {
-        const row = {};
-        for (let c = 0; c < colNames.length; c++) {
-          row[colNames[c]] = colArrays[c][i];
-        }
-        yield row;
-      }
+      rows.push(row);
     }
+    return rows;
+  }
+
+  /**
+   * Create an empty batch with the given column names.
+   */
+  static empty(columnNames) {
+    const columns = {};
+    for (const name of columnNames) {
+      columns[name] = [];
+    }
+    return new DataBatch(columns, 0);
   }
 }
 
 /**
- * VectorizedScan — read a heap into column batches.
+ * VectorizedScan — reads a HeapFile in batches.
+ * Converts row-oriented heap data into columnar batches.
  */
 export class VectorizedScan {
-  constructor(heap, schema, batchSize = DEFAULT_BATCH_SIZE) {
+  /**
+   * @param {HeapFile} heap - the heap to scan
+   * @param {Array} schema - column schema [{name, type}]
+   * @param {string} tableName - table name for column prefixes
+   * @param {number} batchSize - rows per batch
+   */
+  constructor(heap, schema, tableName, batchSize = DEFAULT_BATCH_SIZE) {
     this._heap = heap;
     this._schema = schema;
+    this._tableName = tableName;
     this._batchSize = batchSize;
+    this._iterator = null;
+    this._done = false;
   }
 
-  /** Yield column batches from the heap. */
-  *execute() {
-    const colNames = this._schema.map(s => s.name);
-    let batch = new Map();
-    for (const name of colNames) batch.set(name, []);
-    let count = 0;
+  /**
+   * Initialize the scan.
+   */
+  open() {
+    this._iterator = this._heap.scan();
+    this._done = false;
+  }
 
-    for (const entry of this._heap.scan()) {
-      for (let i = 0; i < colNames.length; i++) {
-        batch.get(colNames[i]).push(entry.values[i]);
+  /**
+   * Get next batch of rows. Returns null when exhausted.
+   */
+  next() {
+    if (this._done) return null;
+    if (!this._iterator) this.open();
+
+    // Allocate column arrays
+    const columns = {};
+    const colNames = this._schema.map(c => c.name);
+    for (const name of colNames) {
+      columns[name] = new Array(this._batchSize);
+    }
+
+    let count = 0;
+    while (count < this._batchSize) {
+      const result = this._iterator.next();
+      if (result.done) {
+        this._done = true;
+        break;
+      }
+      const { values } = result.value;
+      for (let c = 0; c < colNames.length; c++) {
+        columns[colNames[c]][count] = values[c];
       }
       count++;
+    }
 
-      if (count >= this._batchSize) {
-        yield new ColumnBatch(batch, count);
-        batch = new Map();
-        for (const name of colNames) batch.set(name, []);
-        count = 0;
+    if (count === 0) return null;
+
+    // Trim arrays to actual count
+    if (count < this._batchSize) {
+      for (const name of colNames) {
+        columns[name].length = count;
       }
     }
 
-    if (count > 0) {
-      yield new ColumnBatch(batch, count);
-    }
+    return new DataBatch(columns, count);
+  }
+
+  /**
+   * Close the scan.
+   */
+  close() {
+    this._iterator = null;
+    this._done = true;
   }
 }
 
 /**
- * VectorizedFilter — apply a filter predicate to an entire batch at once.
- * Returns a new batch with a selection vector of matching rows.
+ * VectorizedFilter — applies a predicate to a batch using selection vectors.
+ * Does NOT copy data — just computes which rows pass the filter.
  */
 export class VectorizedFilter {
   /**
-   * @param {Function} predicateFn — (batch: ColumnBatch) => Uint32Array (selected indices)
+   * @param {VectorizedScan|VectorizedFilter|VectorizedProject} child - input operator
+   * @param {Function} predicate - (batch, activeIdx) => boolean
    */
-  constructor(predicateFn) {
-    this._predicate = predicateFn;
+  constructor(child, predicate) {
+    this._child = child;
+    this._predicate = predicate;
   }
 
-  /** Apply filter to batch, return filtered batch. */
-  execute(batch) {
-    const selected = this._predicate(batch);
-    return batch.filter(selected);
+  open() {
+    this._child.open();
+  }
+
+  next() {
+    while (true) {
+      const batch = this._child.next();
+      if (!batch) return null;
+
+      // Apply predicate, build selection vector
+      const sel = new Int32Array(batch.activeCount);
+      let selCount = 0;
+
+      const n = batch.activeCount;
+      for (let i = 0; i < n; i++) {
+        if (this._predicate(batch, i)) {
+          sel[selCount++] = batch.sel ? batch.sel[i] : i;
+        }
+      }
+
+      if (selCount === 0) continue; // Empty batch after filter, get next
+
+      return new DataBatch(
+        batch.columns,
+        batch.count,
+        sel.subarray(0, selCount)
+      );
+    }
+  }
+
+  close() {
+    this._child.close();
   }
 }
 
 /**
- * VectorizedProject — extract specific columns from a batch.
+ * VectorizedProject — computes new columns from existing ones.
  */
 export class VectorizedProject {
-  constructor(columnNames) {
-    this._columns = columnNames;
+  /**
+   * @param {*} child - input operator
+   * @param {Array} projections - [{name, compute: (batch, activeIdx) => value}]
+   */
+  constructor(child, projections) {
+    this._child = child;
+    this._projections = projections;
   }
 
-  execute(batch) {
-    const projected = new Map();
-    for (const name of this._columns) {
-      projected.set(name, batch.getColumn(name));
-    }
-    return new ColumnBatch(projected, batch.length, batch.selection);
-  }
-}
-
-/**
- * VectorizedAggregate — compute aggregates over a batch.
- * Supports: COUNT, SUM, AVG, MIN, MAX.
- */
-export class VectorizedAggregate {
-  constructor(aggregates) {
-    this._aggregates = aggregates; // [{fn: 'SUM', column: 'amount', alias: 'total'}]
+  open() {
+    this._child.open();
   }
 
-  execute(batch) {
-    const results = {};
-    
-    for (const agg of this._aggregates) {
-      const col = batch.getColumn(agg.column);
-      const sel = batch.selection;
-      
-      switch (agg.fn.toUpperCase()) {
-        case 'COUNT': {
-          results[agg.alias] = sel ? sel.length : batch.length;
-          break;
-        }
-        case 'SUM': {
-          let sum = 0;
-          if (sel) {
-            for (const i of sel) if (col[i] != null) sum += col[i];
-          } else {
-            for (let i = 0; i < batch.length; i++) if (col[i] != null) sum += col[i];
-          }
-          results[agg.alias] = sum;
-          break;
-        }
-        case 'AVG': {
-          let sum = 0, count = 0;
-          if (sel) {
-            for (const i of sel) if (col[i] != null) { sum += col[i]; count++; }
-          } else {
-            for (let i = 0; i < batch.length; i++) if (col[i] != null) { sum += col[i]; count++; }
-          }
-          results[agg.alias] = count > 0 ? sum / count : null;
-          break;
-        }
-        case 'MIN': {
-          let min = Infinity;
-          if (sel) {
-            for (const i of sel) if (col[i] != null && col[i] < min) min = col[i];
-          } else {
-            for (let i = 0; i < batch.length; i++) if (col[i] != null && col[i] < min) min = col[i];
-          }
-          results[agg.alias] = min === Infinity ? null : min;
-          break;
-        }
-        case 'MAX': {
-          let max = -Infinity;
-          if (sel) {
-            for (const i of sel) if (col[i] != null && col[i] > max) max = col[i];
-          } else {
-            for (let i = 0; i < batch.length; i++) if (col[i] != null && col[i] > max) max = col[i];
-          }
-          results[agg.alias] = max === -Infinity ? null : max;
-          break;
-        }
+  next() {
+    const batch = this._child.next();
+    if (!batch) return null;
+
+    const newColumns = {};
+    const n = batch.activeCount;
+
+    for (const proj of this._projections) {
+      const col = new Array(n);
+      for (let i = 0; i < n; i++) {
+        col[i] = proj.compute(batch, i);
       }
+      newColumns[proj.name] = col;
     }
-    
-    return results;
+
+    // Project resets selection vector — new columns are dense
+    return new DataBatch(newColumns, n);
+  }
+
+  close() {
+    this._child.close();
   }
 }
 
 /**
- * Build a vectorized filter predicate from a simple WHERE clause.
- * Returns a function (batch) => Uint32Array.
+ * VectorizedLimit — stops after N rows.
  */
-export function buildFilterPredicate(column, op, value) {
-  return (batch) => {
-    const col = batch.getColumn(column);
-    const selected = [];
-    const n = batch.selection ? batch.selection.length : batch.length;
-    
-    const iterate = batch.selection || { length: batch.length, [Symbol.iterator]: function*() {
-      for (let i = 0; i < batch.length; i++) yield i;
-    }};
-    
-    for (const i of (batch.selection || Array.from({length: batch.length}, (_, i) => i))) {
-      const v = col[i];
-      let pass = false;
-      switch (op) {
-        case '>': pass = v > value; break;
-        case '<': pass = v < value; break;
-        case '>=': pass = v >= value; break;
-        case '<=': pass = v <= value; break;
-        case '=': case '==': pass = v === value; break;
-        case '!=': case '<>': pass = v !== value; break;
-      }
-      if (pass) selected.push(i);
+export class VectorizedLimit {
+  constructor(child, limit) {
+    this._child = child;
+    this._limit = limit;
+    this._seen = 0;
+  }
+
+  open() {
+    this._child.open();
+    this._seen = 0;
+  }
+
+  next() {
+    if (this._seen >= this._limit) return null;
+
+    const batch = this._child.next();
+    if (!batch) return null;
+
+    const remaining = this._limit - this._seen;
+    const take = Math.min(batch.activeCount, remaining);
+    this._seen += take;
+
+    if (take === batch.activeCount) return batch;
+
+    // Need to truncate
+    if (batch.sel) {
+      return new DataBatch(batch.columns, batch.count, batch.sel.subarray(0, take));
     }
-    
-    return new Uint32Array(selected);
-  };
+    // No sel — create one
+    const sel = new Int32Array(take);
+    for (let i = 0; i < take; i++) sel[i] = i;
+    return new DataBatch(batch.columns, batch.count, sel);
+  }
+
+  close() {
+    this._child.close();
+  }
 }
 
 /**
- * Combine two filter predicates with AND.
+ * Collect all rows from a vectorized operator into a flat array.
  */
-export function andPredicate(pred1, pred2) {
-  return (batch) => {
-    const sel1 = pred1(batch);
-    const filtered = batch.filter(sel1);
-    const sel2 = pred2(filtered);
-    return sel2;
-  };
+export function collectAll(operator, columnNames) {
+  operator.open();
+  const allRows = [];
+  let batch;
+  while ((batch = operator.next()) !== null) {
+    allRows.push(...batch.toRows(columnNames));
+  }
+  operator.close();
+  return allRows;
 }
