@@ -628,9 +628,12 @@
     {
       "id": "T60",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session wrap: git push, CURRENT.md, evening summary",
-      "started": "2026-04-20T22:34:43.497Z"
+      "started": "2026-04-20T22:34:43.497Z",
+      "completed": "2026-04-20T22:35:44.179Z",
+      "duration_ms": 300000,
+      "summary": "Final wrap: evening summary written, CURRENT.md updated, both repos pushed. Session B complete: 100+ tests, 20 bugs found, architecture review, quality map of all 172 modules."
     },
     {
       "id": "T61",
@@ -1607,6 +1610,27 @@
       "status": "upcoming",
       "task": "Quick: run all standalone module tests to verify pass rates",
       "project": "henrydb"
+    },
+    {
+      "id": "T155",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: test the sort-merge-join.test.js — does it pass?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T156",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: test grace-hash-join.test.js",
+      "project": "henrydb"
+    },
+    {
+      "id": "T157",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: test symmetric-hash-join.test.js",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2246,6 +2270,18 @@
     {
       "time": "2026-04-20T22:31:50.565Z",
       "msg": "Added T154 (EXPLORE) after end: Quick: run all standalone module tests to verify pass rates"
+    },
+    {
+      "time": "2026-04-20T22:35:56.720Z",
+      "msg": "Added T155 (EXPLORE) after end: HenryDB: test the sort-merge-join.test.js — does it pass?"
+    },
+    {
+      "time": "2026-04-20T22:35:56.840Z",
+      "msg": "Added T156 (EXPLORE) after end: HenryDB: test grace-hash-join.test.js"
+    },
+    {
+      "time": "2026-04-20T22:35:56.973Z",
+      "msg": "Added T157 (EXPLORE) after end: HenryDB: test symmetric-hash-join.test.js"
     }
   ]
 }
