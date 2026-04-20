@@ -1012,9 +1012,41 @@
     {
       "id": "T95",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T17:04:36.743Z"
+      "started": "2026-04-20T17:04:36.743Z",
+      "completed": "2026-04-20T17:04:54.634Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T96",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: What is the total line count of HenryDB? How many modules?",
+      "project": "henrydb",
+      "started": "2026-04-20T17:05:13.906Z",
+      "completed": "2026-04-20T17:05:32.427Z",
+      "duration_ms": 30000,
+      "summary": "HenryDB: 51 source modules, 57 test files. 32K source lines + 27K test lines = 59K total. Largest: db.js (6.2K), sql.js (2.3K), planner.js (1K), transactional-db.js (1K), pg-protocol.js (0.8K)."
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add CREATE TABLE...AS SELECT (CTAS) support",
+      "project": "henrydb",
+      "started": "2026-04-20T17:05:32.704Z",
+      "completed": "2026-04-20T17:05:48.868Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: CREATE TABLE...AS SELECT already works."
+    },
+    {
+      "id": "T98",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: mid-session git push + daily log",
+      "started": "2026-04-20T17:05:49.124Z"
     }
   ],
   "focusProjects": [
@@ -1394,6 +1426,18 @@
     {
       "time": "2026-04-20T17:02:27.864Z",
       "msg": "Added T95 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T17:05:13.436Z",
+      "msg": "Added T96 (EXPLORE) after end: EXPLORE: What is the total line count of HenryDB? How many modules?"
+    },
+    {
+      "time": "2026-04-20T17:05:13.556Z",
+      "msg": "Added T97 (BUILD) after end: BUILD: Add CREATE TABLE...AS SELECT (CTAS) support"
+    },
+    {
+      "time": "2026-04-20T17:05:13.674Z",
+      "msg": "Added T98 (MAINTAIN) after end: MAINTAIN: mid-session git push + daily log"
     }
   ]
 }
