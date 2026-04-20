@@ -106,15 +106,15 @@ describe('String Functions', () => {
     assert.equal(r.rows[0].r, 'Hello World');
   });
 
-  it('string functions with table data', () => {
+  it('string functions with table data and || operator', () => {
     const db = new Database();
-    db.execute('CREATE TABLE users (first TEXT, last TEXT)');
+    db.execute('CREATE TABLE users (first_name TEXT, last_name TEXT)');
     db.execute("INSERT INTO users VALUES ('john','doe'),('jane','smith')");
     const r = db.execute(`
-      SELECT CONCAT(UPPER(first), ' ', UPPER(last)) as name,
-             LENGTH(first) + LENGTH(last) as name_len
+      SELECT UPPER(first_name) || ' ' || UPPER(last_name) as name,
+             LENGTH(first_name) + LENGTH(last_name) as name_len
       FROM users
-      ORDER BY last
+      ORDER BY last_name
     `);
     assert.equal(r.rows[0].name, 'JOHN DOE');
     assert.equal(r.rows[0].name_len, 7);
