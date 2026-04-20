@@ -6056,13 +6056,58 @@ export class Database {
         const factor = Math.pow(10, decimals);
         return Math.round(val * factor) / factor;
       }
-      case 'CEIL': {
+      case 'CEIL': case 'CEILING': {
         const val = this._evalValue(args[0], row);
         return val != null ? Math.ceil(val) : null;
       }
       case 'FLOOR': {
         const val = this._evalValue(args[0], row);
         return val != null ? Math.floor(val) : null;
+      }
+      case 'MOD': {
+        const a = Number(this._evalValue(args[0], row));
+        const b = Number(this._evalValue(args[1], row));
+        return b !== 0 ? a % b : null;
+      }
+      case 'SIGN': {
+        const val = Number(this._evalValue(args[0], row));
+        return val > 0 ? 1 : val < 0 ? -1 : 0;
+      }
+      case 'TRUNC': case 'TRUNCATE': {
+        const val = Number(this._evalValue(args[0], row));
+        const places = args[1] ? Number(this._evalValue(args[1], row)) : 0;
+        const factor = Math.pow(10, places);
+        return Math.trunc(val * factor) / factor;
+      }
+      case 'PI': return Math.PI;
+      case 'EXP': return Math.exp(Number(this._evalValue(args[0], row)));
+      case 'LN': return Math.log(Number(this._evalValue(args[0], row)));
+      case 'LOG10': case 'LOG2': {
+        const val = Number(this._evalValue(args[0], row));
+        return func === 'LOG10' ? Math.log10(val) : Math.log2(val);
+      }
+      case 'DEGREES': return Number(this._evalValue(args[0], row)) * (180 / Math.PI);
+      case 'RADIANS': return Number(this._evalValue(args[0], row)) * (Math.PI / 180);
+      case 'SIN': return Math.sin(Number(this._evalValue(args[0], row)));
+      case 'COS': return Math.cos(Number(this._evalValue(args[0], row)));
+      case 'TAN': return Math.tan(Number(this._evalValue(args[0], row)));
+      case 'ASIN': return Math.asin(Number(this._evalValue(args[0], row)));
+      case 'ACOS': return Math.acos(Number(this._evalValue(args[0], row)));
+      case 'ATAN': return Math.atan(Number(this._evalValue(args[0], row)));
+      case 'ATAN2': return Math.atan2(Number(this._evalValue(args[0], row)), Number(this._evalValue(args[1], row)));
+      case 'CBRT': return Math.cbrt(Number(this._evalValue(args[0], row)));
+      case 'GCD': {
+        let a = Math.abs(Number(this._evalValue(args[0], row)));
+        let b = Math.abs(Number(this._evalValue(args[1], row)));
+        while (b) { [a, b] = [b, a % b]; }
+        return a;
+      }
+      case 'LCM': {
+        const a = Math.abs(Number(this._evalValue(args[0], row)));
+        const b = Math.abs(Number(this._evalValue(args[1], row)));
+        let gcd_a = a, gcd_b = b;
+        while (gcd_b) { [gcd_a, gcd_b] = [gcd_b, gcd_a % gcd_b]; }
+        return gcd_a ? (a / gcd_a) * b : 0;
       }
       case 'IFNULL': {
         const val = this._evalValue(args[0], row);
