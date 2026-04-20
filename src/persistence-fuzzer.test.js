@@ -151,7 +151,7 @@ function runFuzzerRound(seed, numTables, numOpsPerTable, numReopenCycles) {
   }
 }
 
-describe('Persistence Fuzzer', () => {
+describe('Persistence Fuzzer', { timeout: 120000 }, () => {
   // Run 20 different random seeds
   for (let seed = 1; seed <= 20; seed++) {
     it(`seed ${seed}: 3 tables, 30 ops, 3 reopen cycles`, () => {

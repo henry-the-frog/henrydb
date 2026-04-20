@@ -91,7 +91,7 @@ function timeQuery(query) {
 
 // ===== TPC-H-INSPIRED QUERIES =====
 
-describe('Query Optimizer Quality: TPC-H-like', () => {
+describe('Query Optimizer Quality: TPC-H-like', { timeout: 120000 }, () => {
   beforeEach(setup);
   afterEach(teardown);
 

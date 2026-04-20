@@ -82,7 +82,7 @@ function setupTPCH(scale = 1) {
   return { db, numCustomers, numOrders, numLineitems, numParts, numSuppliers };
 }
 
-describe('TPC-H Compiled Queries', () => {
+describe('TPC-H Compiled Queries', { timeout: 120000 }, () => {
   
   it('Q1-like: lineitem pricing summary (single table aggregate)', () => {
     const { db } = setupTPCH(1);

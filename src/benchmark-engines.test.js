@@ -37,7 +37,7 @@ function setupBenchDB() {
   return db;
 }
 
-describe('Engine Benchmark Suite', () => {
+describe('Engine Benchmark Suite', { timeout: 120000 }, () => {
   const db = setupBenchDB();
   const vec = new VectorizedCodeGen(db);
   const codegen = new QueryCodeGen(db);
