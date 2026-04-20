@@ -547,11 +547,24 @@ export function parse(sql) {
 
       // Implicit CROSS JOINs from comma-separated tables in FROM
       while (match(',')) {
-        const nextTable = advance().value;
-        let nextAlias = null;
-        if (peek().type === 'IDENT') nextAlias = advance().value;
-        else if (isKeyword('AS')) { advance(); nextAlias = readAlias(); }
-        joins.push({ joinType: 'CROSS', table: nextTable, alias: nextAlias, on: null });
+        // Handle LATERAL subquery: , LATERAL (SELECT ...) alias
+        if (isKeyword('LATERAL')) {
+          advance(); // LATERAL
+          expect('(');
+          const subquery = parseSelect();
+          expect(')');
+          let subAlias = null;
+          if (isKeyword('AS')) { advance(); subAlias = readAlias(); }
+          else if (peek().type === 'IDENT') subAlias = advance().value;
+          subAlias = subAlias || '__lateral';
+          joins.push({ joinType: 'CROSS', lateral: true, subquery, alias: subAlias, on: null });
+        } else {
+          const nextTable = advance().value;
+          let nextAlias = null;
+          if (peek().type === 'IDENT') nextAlias = advance().value;
+          else if (isKeyword('AS')) { advance(); nextAlias = readAlias(); }
+          joins.push({ joinType: 'CROSS', table: nextTable, alias: nextAlias, on: null });
+        }
       }
 
       // JOINs
