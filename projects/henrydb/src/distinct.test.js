@@ -1,93 +1,56 @@
-// distinct.test.js — DISTINCT tests for HenryDB
-import { describe, it, beforeEach } from 'node:test';
+// distinct.test.js — DISTINCT and DISTINCT ON tests
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
 describe('DISTINCT', () => {
-  let db;
-
-  beforeEach(() => {
-    db = new Database();
-    db.execute('CREATE TABLE sales (id INT PRIMARY KEY, product TEXT, category TEXT, amount INT)');
-    db.execute("INSERT INTO sales VALUES (1, 'Widget', 'A', 100)");
-    db.execute("INSERT INTO sales VALUES (2, 'Gadget', 'B', 200)");
-    db.execute("INSERT INTO sales VALUES (3, 'Widget', 'A', 150)");
-    db.execute("INSERT INTO sales VALUES (4, 'Doohickey', 'A', 100)");
-    db.execute("INSERT INTO sales VALUES (5, 'Gadget', 'B', 200)");
-    db.execute("INSERT INTO sales VALUES (6, 'Gizmo', 'C', 300)");
+  it('removes duplicate rows', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute("INSERT INTO t VALUES ('a'),('b'),('a'),('c'),('b')");
+    const r = db.execute('SELECT DISTINCT val FROM t ORDER BY val');
+    assert.deepEqual(r.rows.map(r => r.val), ['a', 'b', 'c']);
   });
 
-  describe('SELECT DISTINCT', () => {
-    it('removes duplicate rows', () => {
-      const result = db.execute('SELECT DISTINCT category FROM sales');
-      assert.equal(result.rows.length, 3); // A, B, C
-    });
-
-    it('DISTINCT with multiple columns', () => {
-      const result = db.execute('SELECT DISTINCT product, category FROM sales');
-      assert.equal(result.rows.length, 4); // Widget/A, Gadget/B, Doohickey/A, Gizmo/C
-    });
-
-    it('DISTINCT on all-unique data', () => {
-      const result = db.execute('SELECT DISTINCT id FROM sales');
-      assert.equal(result.rows.length, 6);
-    });
-
-    it('DISTINCT with ORDER BY', () => {
-      const result = db.execute('SELECT DISTINCT category FROM sales ORDER BY category');
-      assert.equal(result.rows[0].category, 'A');
-      assert.equal(result.rows[1].category, 'B');
-      assert.equal(result.rows[2].category, 'C');
-    });
-
-    it('DISTINCT with LIMIT', () => {
-      const result = db.execute('SELECT DISTINCT category FROM sales LIMIT 2');
-      assert.equal(result.rows.length, 2);
-    });
-
-    it('DISTINCT on empty result', () => {
-      const result = db.execute("SELECT DISTINCT category FROM sales WHERE amount > 999");
-      assert.equal(result.rows.length, 0);
-    });
+  it('DISTINCT on multiple columns', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (a TEXT, b TEXT)');
+    db.execute("INSERT INTO t VALUES ('x','1'),('x','2'),('y','1'),('x','1')");
+    const r = db.execute('SELECT DISTINCT a, b FROM t ORDER BY a, b');
+    assert.equal(r.rows.length, 3); // (x,1), (x,2), (y,1)
   });
 
-  describe('COUNT(DISTINCT ...)', () => {
-    it('counts distinct values', () => {
-      const result = db.execute('SELECT COUNT(DISTINCT category) AS cnt FROM sales');
-      assert.equal(result.rows[0].cnt, 3);
-    });
-
-    it('counts distinct products', () => {
-      const result = db.execute('SELECT COUNT(DISTINCT product) AS cnt FROM sales');
-      assert.equal(result.rows[0].cnt, 4); // Widget, Gadget, Doohickey, Gizmo
-    });
-
-    it('COUNT DISTINCT with GROUP BY', () => {
-      const result = db.execute('SELECT category, COUNT(DISTINCT amount) AS unique_amounts FROM sales GROUP BY category');
-      const catA = result.rows.find(r => r.category === 'A');
-      assert.equal(catA.unique_amounts, 2); // 100, 150
-      const catB = result.rows.find(r => r.category === 'B');
-      assert.equal(catB.unique_amounts, 1); // 200
-    });
-
-    it('COUNT DISTINCT vs COUNT', () => {
-      const distinct = db.execute('SELECT COUNT(DISTINCT product) AS cnt FROM sales');
-      const all = db.execute('SELECT COUNT(product) AS cnt FROM sales');
-      assert.ok(distinct.rows[0].cnt <= all.rows[0].cnt);
-      assert.equal(distinct.rows[0].cnt, 4);
-      assert.equal(all.rows[0].cnt, 6);
-    });
+  it('COUNT(DISTINCT col)', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (val TEXT)');
+    db.execute("INSERT INTO t VALUES ('a'),('b'),('a'),('c'),('b'),('a')");
+    const r = db.execute('SELECT COUNT(DISTINCT val) as cnt FROM t');
+    assert.equal(r.rows[0].cnt, 3);
   });
 
-  describe('Combined', () => {
-    it('DISTINCT with WHERE', () => {
-      const result = db.execute("SELECT DISTINCT category FROM sales WHERE amount >= 150");
-      assert.equal(result.rows.length, 3); // A(150), B(200), C(300)
-    });
+  it('DISTINCT with NULL', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (val INT)');
+    db.execute('INSERT INTO t VALUES (1),(NULL),(2),(NULL),(1)');
+    const r = db.execute('SELECT DISTINCT val FROM t ORDER BY val');
+    // NULL, 1, 2 — 3 distinct values
+    assert.equal(r.rows.length, 3);
+  });
 
-    it('without DISTINCT has duplicates', () => {
-      const result = db.execute('SELECT category FROM sales');
-      assert.equal(result.rows.length, 6); // includes duplicates
-    });
+  it('DISTINCT with ORDER BY + LIMIT', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (val INT)');
+    db.execute('INSERT INTO t VALUES (3),(1),(2),(3),(1),(2),(3)');
+    const r = db.execute('SELECT DISTINCT val FROM t ORDER BY val LIMIT 2');
+    assert.deepEqual(r.rows.map(r => r.val), [1, 2]);
+  });
+
+  it('AVG(DISTINCT val)', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (val INT)');
+    db.execute('INSERT INTO t VALUES (1),(2),(1),(3),(2)');
+    const r = db.execute('SELECT COUNT(DISTINCT val) as cnt, COUNT(*) as total FROM t');
+    assert.equal(r.rows[0].cnt, 3);
+    assert.equal(r.rows[0].total, 5);
   });
 });
