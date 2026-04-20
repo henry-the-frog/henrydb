@@ -1590,10 +1590,18 @@ export class Database {
         
         if (cte.recursive && (cte.unionQuery || cte.query.type === 'UNION')) {
           // Recursive CTE: iterate until fixed point
-          const allRows = this._executeRecursiveCTE(cte);
+          // Pass column list to recursive executor so it can rename at each iteration
+          let allRows = this._executeRecursiveCTE(cte);
           this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
         } else {
-          this.views.set(cte.name, { query: cte.query, isCTE: true });
+          if (cte.columnList) {
+            // Non-recursive CTE with column list: materialize and rename
+            const result = this._select(cte.query);
+            const rows = this._renameCTEColumns(result.rows || [], cte.columnList);
+            this.views.set(cte.name, { materializedRows: rows, isCTE: true });
+          } else {
+            this.views.set(cte.name, { query: cte.query, isCTE: true });
+          }
         }
         tempViews.push(cte.name);
       }
@@ -3440,6 +3448,19 @@ export class Database {
     throw new Error('Unsupported COPY direction');
   }
 
+  _renameCTEColumns(rows, columnList) {
+    if (!columnList || columnList.length === 0) return rows;
+    return rows.map(row => {
+      const keys = Object.keys(row);
+      const newRow = {};
+      for (let i = 0; i < keys.length; i++) {
+        const newName = i < columnList.length ? columnList[i] : keys[i];
+        newRow[newName] = row[keys[i]];
+      }
+      return newRow;
+    });
+  }
+
   _splitPredicates(expr, tableAlias, tableCols) {
     // Split an AND-connected predicate into parts that reference only the given table
     // and parts that reference other tables
@@ -4214,9 +4235,16 @@ export class Database {
 
     // Step 1: Execute base query
     const baseResult = this._select(baseQuery);
-    const columnNames = Object.keys(baseResult.rows[0] || {});
-    let allRows = [...baseResult.rows];
-    let workingSet = [...baseResult.rows];
+    let baseRows = baseResult.rows;
+    
+    // Apply column list renaming if specified
+    if (cte.columnList) {
+      baseRows = this._renameCTEColumns(baseRows, cte.columnList);
+    }
+    
+    const columnNames = Object.keys(baseRows[0] || {}).filter(k => !k.includes('.'));
+    let allRows = [...baseRows];
+    let workingSet = [...baseRows];
 
     // Step 2: Iterate until fixed point
     for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {

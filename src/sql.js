@@ -503,6 +503,17 @@ export function parse(sql) {
     do {
       const cteTok = advance();
       const name = cteTok.originalValue || cteTok.value;
+      // Optional column list: cte_name(col1, col2, ...)
+      let columnList = null;
+      if (peek().type === '(' && !isKeyword('AS')) {
+        advance(); // (
+        columnList = [];
+        while (peek().type !== ')') {
+          columnList.push(advance().value);
+          if (peek().type === ',') advance();
+        }
+        expect(')');
+      }
       if (isKeyword('AS')) advance(); // optional AS
       expect('(');
       const baseQuery = parseSelect();
@@ -515,7 +526,7 @@ export function parse(sql) {
         unionQuery.unionAll = all;
       }
       expect(')');
-      ctes.push({ name, query: baseQuery, unionQuery, recursive });
+      ctes.push({ name, query: baseQuery, unionQuery, recursive, columnList });
     } while (match(','));
 
     // Main query
