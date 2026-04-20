@@ -7445,6 +7445,32 @@ export class Database {
             }
             return modeVal;
           }
+          case 'STDDEV':
+          case 'STDDEV_SAMP': {
+            const nums = values.map(Number);
+            if (nums.length < 2) return null;
+            const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+            return Math.sqrt(nums.reduce((sum, x) => sum + (x - mean) ** 2, 0) / (nums.length - 1));
+          }
+          case 'STDDEV_POP': {
+            const nums2 = values.map(Number);
+            if (nums2.length === 0) return null;
+            const mean2 = nums2.reduce((a, b) => a + b, 0) / nums2.length;
+            return Math.sqrt(nums2.reduce((sum, x) => sum + (x - mean2) ** 2, 0) / nums2.length);
+          }
+          case 'VARIANCE':
+          case 'VAR_SAMP': {
+            const nums3 = values.map(Number);
+            if (nums3.length < 2) return null;
+            const mean3 = nums3.reduce((a, b) => a + b, 0) / nums3.length;
+            return nums3.reduce((sum, x) => sum + (x - mean3) ** 2, 0) / (nums3.length - 1);
+          }
+          case 'VAR_POP': {
+            const nums4 = values.map(Number);
+            if (nums4.length === 0) return null;
+            const mean4 = nums4.reduce((a, b) => a + b, 0) / nums4.length;
+            return nums4.reduce((sum, x) => sum + (x - mean4) ** 2, 0) / nums4.length;
+          }
         }
       };
 
@@ -9404,6 +9430,42 @@ export class Database {
             if (count > maxFreq) { maxFreq = count; modeVal = v; }
           }
           result[name] = modeVal;
+          break;
+        }
+        case 'STDDEV':
+        case 'STDDEV_SAMP': {
+          // Sample standard deviation: sqrt(sum((x-mean)^2) / (N-1))
+          const nums = values.map(Number);
+          if (nums.length < 2) { result[name] = null; break; }
+          const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+          const variance = nums.reduce((sum, x) => sum + (x - mean) ** 2, 0) / (nums.length - 1);
+          result[name] = Math.sqrt(variance);
+          break;
+        }
+        case 'STDDEV_POP': {
+          // Population standard deviation: sqrt(sum((x-mean)^2) / N)
+          const nums2 = values.map(Number);
+          if (nums2.length === 0) { result[name] = null; break; }
+          const mean2 = nums2.reduce((a, b) => a + b, 0) / nums2.length;
+          const variance2 = nums2.reduce((sum, x) => sum + (x - mean2) ** 2, 0) / nums2.length;
+          result[name] = Math.sqrt(variance2);
+          break;
+        }
+        case 'VARIANCE':
+        case 'VAR_SAMP': {
+          // Sample variance: sum((x-mean)^2) / (N-1)
+          const nums3 = values.map(Number);
+          if (nums3.length < 2) { result[name] = null; break; }
+          const mean3 = nums3.reduce((a, b) => a + b, 0) / nums3.length;
+          result[name] = nums3.reduce((sum, x) => sum + (x - mean3) ** 2, 0) / (nums3.length - 1);
+          break;
+        }
+        case 'VAR_POP': {
+          // Population variance: sum((x-mean)^2) / N
+          const nums4 = values.map(Number);
+          if (nums4.length === 0) { result[name] = null; break; }
+          const mean4 = nums4.reduce((a, b) => a + b, 0) / nums4.length;
+          result[name] = nums4.reduce((sum, x) => sum + (x - mean4) ** 2, 0) / nums4.length;
           break;
         }
       }
