@@ -47,8 +47,9 @@ describe('Cost Model', () => {
   });
 
   it('estimates Sort cost is N*log(N)', () => {
+    const scan = estimateCost(plan('SELECT * FROM users'), tableStats);
     const est = estimateCost(plan('SELECT * FROM users ORDER BY age'), tableStats);
-    assert.ok(est.cost > 100); // Should be > N
+    assert.ok(est.cost > scan.cost); // Sort should add cost beyond scan
   });
 
   it('estimates HashJoin cost', () => {

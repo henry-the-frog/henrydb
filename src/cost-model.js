@@ -1,5 +1,32 @@
-// cost-model.js — Cost estimation for volcano operators
-// Each operator estimates: rows (cardinality), cost (relative), ioOps (I/O operations)
+// cost-model.js — Parametric cost estimation for volcano operators
+// Uses PostgreSQL-style cost parameters for I/O and CPU costs.
+
+// Default cost parameters (configurable via setCostParams)
+let SEQ_PAGE_COST = 1.0;       // sequential page read
+let RANDOM_PAGE_COST = 4.0;    // random page read (index lookup)
+let CPU_TUPLE_COST = 0.01;     // process one row
+let CPU_INDEX_TUPLE_COST = 0.005; // process one index entry
+let CPU_OPERATOR_COST = 0.0025;   // evaluate one predicate
+let HASH_BUILD_COST = 0.02;      // hash one tuple (build phase)
+let DEFAULT_PAGE_SIZE = 100;      // rows per page (for I/O estimation)
+
+/**
+ * Set cost model parameters (e.g., from SET commands).
+ */
+export function setCostParams(params) {
+  if (params.seqPageCost != null) SEQ_PAGE_COST = params.seqPageCost;
+  if (params.randomPageCost != null) RANDOM_PAGE_COST = params.randomPageCost;
+  if (params.cpuTupleCost != null) CPU_TUPLE_COST = params.cpuTupleCost;
+  if (params.cpuIndexTupleCost != null) CPU_INDEX_TUPLE_COST = params.cpuIndexTupleCost;
+  if (params.cpuOperatorCost != null) CPU_OPERATOR_COST = params.cpuOperatorCost;
+}
+
+/**
+ * Get current cost parameters.
+ */
+export function getCostParams() {
+  return { SEQ_PAGE_COST, RANDOM_PAGE_COST, CPU_TUPLE_COST, CPU_INDEX_TUPLE_COST, CPU_OPERATOR_COST };
+}
 
 /**
  * Compute cost estimates for a volcano iterator tree.
@@ -21,34 +48,43 @@ function _estimate(node, stats) {
     case 'SeqScan': {
       const tableName = desc.details.table;
       const tableInfo = stats.get(tableName) || stats.get(tableName?.toLowerCase());
-      const rows = tableInfo?.rowCount || 1000; // Default estimate
-      return { type, rows, cost: rows, ioOps: Math.ceil(rows / 100) };
+      const rows = tableInfo?.rowCount || 1000;
+      const pages = Math.ceil(rows / DEFAULT_PAGE_SIZE);
+      const ioCost = pages * SEQ_PAGE_COST;
+      const cpuCost = rows * CPU_TUPLE_COST;
+      return { type, rows, cost: ioCost + cpuCost, ioOps: pages };
     }
     
     case 'IndexScan': {
       const rows = 10; // Assume selective
-      return { type, rows, cost: Math.log2(rows + 1) * 2, ioOps: Math.ceil(Math.log2(rows + 1)) };
+      const treeHeight = Math.ceil(Math.log2(rows + 1));
+      const ioCost = treeHeight * RANDOM_PAGE_COST;
+      const cpuCost = rows * CPU_INDEX_TUPLE_COST + rows * CPU_TUPLE_COST;
+      return { type, rows, cost: ioCost + cpuCost, ioOps: treeHeight };
     }
     
     case 'Filter': {
       const child = _estimate(desc.children[0], stats);
-      // Default selectivity: 1/3
       const selectivity = 0.33;
       const rows = Math.max(1, Math.ceil(child.rows * selectivity));
-      return { type, rows, cost: child.cost + rows, ioOps: child.ioOps };
+      // CPU cost: evaluate predicate on every input row
+      const filterCost = child.rows * CPU_OPERATOR_COST;
+      return { type, rows, cost: child.cost + filterCost, ioOps: child.ioOps };
     }
     
     case 'Project': {
       const child = _estimate(desc.children[0], stats);
-      return { type, rows: child.rows, cost: child.cost + child.rows * 0.1, ioOps: child.ioOps };
+      return { type, rows: child.rows, cost: child.cost + child.rows * CPU_OPERATOR_COST, ioOps: child.ioOps };
     }
     
     case 'Limit': {
       const child = _estimate(desc.children[0], stats);
       const limit = desc.details.limit || 10;
       const rows = Math.min(limit, child.rows);
-      // Cost is greatly reduced for pipelined operators
-      return { type, rows, cost: rows + 1, ioOps: Math.ceil(rows / 100) };
+      // Early termination: only pay fraction of child cost proportional to rows fetched
+      const fraction = child.rows > 0 ? rows / child.rows : 1;
+      const cost = child.cost * fraction + rows * CPU_TUPLE_COST;
+      return { type, rows, cost, ioOps: Math.ceil(child.ioOps * fraction) };
     }
     
     case 'Distinct': {
@@ -59,17 +95,18 @@ function _estimate(node, stats) {
     
     case 'Sort': {
       const child = _estimate(desc.children[0], stats);
-      const sortCost = child.rows * Math.log2(child.rows + 1);
+      // N log N comparison-based sort
+      const sortCost = child.rows * Math.log2(child.rows + 1) * CPU_OPERATOR_COST;
       return { type, rows: child.rows, cost: child.cost + sortCost, ioOps: child.ioOps };
     }
     
     case 'HashJoin': {
       const left = desc.children[0] ? _estimate(desc.children[0], stats) : { rows: 1000, cost: 1000, ioOps: 10 };
       const right = desc.children[1] ? _estimate(desc.children[1], stats) : { rows: 100, cost: 100, ioOps: 1 };
-      // Build: hash the smaller side. Probe: scan the larger side.
-      const buildCost = right.cost + right.rows * 1.5; // hash overhead
-      const probeCost = left.cost + left.rows; // scan + hash lookup
-      const rows = Math.ceil(left.rows * right.rows * 0.1); // Assume 10% match rate
+      // Build: hash the smaller side (right). Probe: scan the larger side.
+      const buildCost = right.cost + right.rows * HASH_BUILD_COST;
+      const probeCost = left.cost + left.rows * CPU_TUPLE_COST;
+      const rows = Math.ceil(left.rows * right.rows * 0.1);
       return { type, rows, cost: buildCost + probeCost, ioOps: left.ioOps + right.ioOps };
     }
     
@@ -77,14 +114,15 @@ function _estimate(node, stats) {
       const outer = desc.children[0] ? _estimate(desc.children[0], stats) : { rows: 1000, cost: 1000, ioOps: 10 };
       const inner = desc.children[1] ? _estimate(desc.children[1], stats) : { rows: 100, cost: 100, ioOps: 1 };
       const rows = Math.ceil(outer.rows * inner.rows * 0.1);
+      // Outer full scan + for each outer row, full inner scan
       return { type, rows, cost: outer.cost + outer.rows * inner.cost, ioOps: outer.ioOps + outer.rows * inner.ioOps };
     }
     
     case 'IndexNestedLoopJoin': {
       const outer = desc.children[0] ? _estimate(desc.children[0], stats) : { rows: 1000, cost: 1000, ioOps: 10 };
-      // Index lookup is O(log N) per outer row
-      const rows = outer.rows; // Assume 1:1 match
-      const lookupCost = Math.log2(1000) * outer.rows;
+      const rows = outer.rows;
+      // Each outer row does one index lookup
+      const lookupCost = outer.rows * (Math.log2(1000) * RANDOM_PAGE_COST + CPU_INDEX_TUPLE_COST);
       return { type, rows, cost: outer.cost + lookupCost, ioOps: outer.ioOps + outer.rows };
     }
     
@@ -92,14 +130,16 @@ function _estimate(node, stats) {
       const left = desc.children[0] ? _estimate(desc.children[0], stats) : { rows: 1000, cost: 1000, ioOps: 10 };
       const right = desc.children[1] ? _estimate(desc.children[1], stats) : { rows: 1000, cost: 1000, ioOps: 10 };
       const rows = Math.ceil((left.rows + right.rows) * 0.1);
-      return { type, rows, cost: left.cost + right.cost + left.rows + right.rows, ioOps: left.ioOps + right.ioOps };
+      // Linear scan of both sorted inputs
+      const mergeCost = (left.rows + right.rows) * CPU_TUPLE_COST;
+      return { type, rows, cost: left.cost + right.cost + mergeCost, ioOps: left.ioOps + right.ioOps };
     }
     
     case 'HashAggregate': {
       const child = _estimate(desc.children[0], stats);
-      // Groups: assume 10% of input
       const groups = desc.details.groupBy === 'none' ? 1 : Math.max(1, Math.ceil(child.rows * 0.1));
-      return { type, rows: groups, cost: child.cost + child.rows * 1.2, ioOps: child.ioOps };
+      const aggCost = child.rows * (HASH_BUILD_COST + CPU_OPERATOR_COST);
+      return { type, rows: groups, cost: child.cost + aggCost, ioOps: child.ioOps };
     }
     
     case 'Window': {
