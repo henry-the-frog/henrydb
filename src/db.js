@@ -1732,9 +1732,87 @@ export class Database {
   }
 
   /**
-   * Try vectorized execution for simple queries.
+   * Expand ROLLUP/CUBE/GROUPING SETS into multiple queries.
+   * Returns combined result or null if not applicable.
    */
-  _tryVectorizedExecution(ast) {
+  _expandGroupingSets(ast) {
+    if (!ast.groupBy || ast.groupBy.length === 0) return null;
+
+    let groupingSets = null;
+    const plainCols = [];
+    
+    for (const gb of ast.groupBy) {
+      if (gb.type === 'function' || gb.type === 'function_call') {
+        const func = (gb.func || gb.name || '').toUpperCase();
+        const args = gb.args || [];
+        const colNames = args.map(a => a.name || a.value || a);
+        
+        if (func === 'ROLLUP') {
+          // ROLLUP(a, b) = GROUPING SETS ((a,b), (a), ())
+          groupingSets = [];
+          for (let i = colNames.length; i >= 0; i--) {
+            groupingSets.push(colNames.slice(0, i));
+          }
+        } else if (func === 'CUBE') {
+          // CUBE(a, b) = all subsets: (a,b), (a), (b), ()
+          groupingSets = [];
+          const n = colNames.length;
+          for (let mask = (1 << n) - 1; mask >= 0; mask--) {
+            const subset = [];
+            for (let j = 0; j < n; j++) {
+              if (mask & (1 << j)) subset.push(colNames[j]);
+            }
+            groupingSets.push(subset);
+          }
+        } else if (func === 'GROUPING' && (gb.func || '').toUpperCase() === 'GROUPING_SETS') {
+          // Explicit GROUPING SETS
+          groupingSets = args.map(a => {
+            if (Array.isArray(a.args)) return a.args.map(x => x.name || x.value || x);
+            return [a.name || a.value || a];
+          });
+        }
+      } else {
+        plainCols.push(gb.name || gb.column || gb);
+      }
+    }
+    
+    if (!groupingSets) return null;
+    
+    // Execute a separate query for each grouping set and UNION ALL results
+    const allRows = [];
+    const groupByColumns = [...new Set(groupingSets.flat())];
+    
+    for (const groupSet of groupingSets) {
+      const modifiedAst = {
+        ...ast,
+        groupBy: groupSet.length > 0 ? groupSet.map(c => ({ type: 'column', name: c })) : undefined,
+      };
+      
+      // If no GROUP BY columns (the () set), remove groupBy entirely
+      if (groupSet.length === 0) {
+        delete modifiedAst.groupBy;
+      }
+      
+      try {
+        const result = this._selectInner(modifiedAst);
+        if (result && result.rows) {
+          for (const row of result.rows) {
+            // Set NULL for columns not in this grouping set
+            for (const col of groupByColumns) {
+              if (!groupSet.includes(col) && !(col in row)) {
+                row[col] = null;
+              }
+            }
+            allRows.push(row);
+          }
+        }
+      } catch { /* skip failed grouping set */ }
+    }
+    
+    return { rows: allRows, columns: ast.columns?.map(c => c.alias || c.name || c) };
+  }
+
+  _selectInnerCore(ast) {
     try {
       // Only for single-table SELECT without subqueries, GROUP BY, HAVING, UNION
       if (!ast.from?.table) return null;
@@ -1758,6 +1836,11 @@ export class Database {
   }
 
   _selectInner(ast) {
+    // Handle ROLLUP/CUBE by expanding to multiple GROUP BY queries
+    if (ast.groupBy) {
+      const rollupResult = this._expandGroupingSets(ast);
+      if (rollupResult) return rollupResult;
+    }
     // Handle SELECT without FROM (e.g., SELECT 1 AS n)
     if (!ast.from) {
       const row = {};
