@@ -3414,6 +3414,42 @@ export class Database {
     throw new Error('Unsupported COPY direction');
   }
 
+  _buildExplainPlan(stmt, analyze) {
+    const tableName = stmt.from?.table;
+    const plan = [{
+      'Plan': {
+        'Node Type': stmt.where ? 'Seq Scan' : 'Seq Scan',
+        'Relation Name': tableName || '(derived)',
+        'Alias': tableName || '(derived)',
+        'Filter': stmt.where ? this._exprToString(stmt.where) : undefined,
+      }
+    }];
+    
+    if (analyze) {
+      const t0 = performance.now();
+      const result = this._executeAst(stmt);
+      const elapsed = performance.now() - t0;
+      plan[0].Plan['Actual Rows'] = result.rows?.length || 0;
+      plan[0].Plan['Actual Total Time'] = +elapsed.toFixed(3);
+      plan[0]['Execution Time'] = +elapsed.toFixed(3);
+    }
+    
+    return plan;
+  }
+
+  _exprToString(expr) {
+    if (!expr) return '';
+    if (expr.type === '=' || expr.type === '!=' || expr.type === '<' || expr.type === '>') {
+      return `(${this._exprToString(expr.left)} ${expr.type} ${this._exprToString(expr.right)})`;
+    }
+    if (expr.type === 'AND') return `(${this._exprToString(expr.left)} AND ${this._exprToString(expr.right)})`;
+    if (expr.type === 'OR') return `(${this._exprToString(expr.left)} OR ${this._exprToString(expr.right)})`;
+    if (expr.type === 'column' || expr.type === 'column_ref') return expr.name || `${expr.table}.${expr.column}`;
+    if (expr.type === 'literal' || expr.type === 'number') return String(expr.value);
+    if (expr.type === 'string') return `'${expr.value}'`;
+    return JSON.stringify(expr);
+  }
+
   _executeComment(ast) {
     const key = ast.columnName 
       ? `${ast.objectType}.${ast.objectName}.${ast.columnName}`
