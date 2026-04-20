@@ -1629,9 +1629,52 @@
     {
       "id": "T152",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push + daily log",
-      "started": "2026-04-20T18:15:32.518Z"
+      "started": "2026-04-20T18:15:32.518Z",
+      "completed": "2026-04-20T18:16:05.537Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T153",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Stress test new features — ARRAY, EXTRACT, FILTER, MERGE, GROUPING SETS, CTE column lists",
+      "project": "henrydb",
+      "started": "2026-04-20T18:18:08.106Z",
+      "completed": "2026-04-20T18:26:21.816Z",
+      "duration_ms": 600000,
+      "summary": "Stress test found 2 bugs: (1) Tokenizer duplicate negative number check caused ARRAY[10-4] to fail — fixed with unary minus in parser. (2) FILTER clause didnt work with GROUP BY — fixed. Also verified EXTRACT, MERGE, DATE_TRUNC, recursive CTEs all correct."
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix any bugs found",
+      "project": "henrydb",
+      "started": "2026-04-20T18:26:22.074Z",
+      "completed": "2026-04-20T18:26:28.406Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: Bugs already fixed in T153."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Write comprehensive test file for new features",
+      "project": "henrydb",
+      "started": "2026-04-20T18:26:28.665Z",
+      "completed": "2026-04-20T18:31:20.745Z",
+      "duration_ms": 600000,
+      "summary": "28-test coverage file for all new features. Fixed COMMENT ON parser and EXPLAIN FORMAT JSON parser (both were broken). All 28 tests pass."
+    },
+    {
+      "id": "T156",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Final git push + daily log + reflections",
+      "started": "2026-04-20T18:31:21.005Z"
     }
   ],
   "focusProjects": [
@@ -2227,6 +2270,22 @@
     {
       "time": "2026-04-20T18:09:25.374Z",
       "msg": "Added T152 (MAINTAIN) after end: MAINTAIN: git push + daily log"
+    },
+    {
+      "time": "2026-04-20T18:18:07.515Z",
+      "msg": "Added T153 (EXPLORE) after end: EXPLORE: Stress test new features — ARRAY, EXTRACT, FILTER, MERGE, GROUPING SETS, CTE column lists"
+    },
+    {
+      "time": "2026-04-20T18:18:07.634Z",
+      "msg": "Added T154 (BUILD) after end: BUILD: Fix any bugs found"
+    },
+    {
+      "time": "2026-04-20T18:18:07.754Z",
+      "msg": "Added T155 (BUILD) after end: BUILD: Write comprehensive test file for new features"
+    },
+    {
+      "time": "2026-04-20T18:18:07.873Z",
+      "msg": "Added T156 (MAINTAIN) after end: MAINTAIN: Final git push + daily log + reflections"
     }
   ]
 }
