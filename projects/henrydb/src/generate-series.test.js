@@ -1,50 +1,80 @@
-// generate-series.test.js
+// generate-series.test.js — GENERATE_SERIES function tests
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
 describe('GENERATE_SERIES', () => {
-  it('generates ascending integer sequence', () => {
+  it('basic ascending', () => {
     const db = new Database();
-    const r = db.execute('SELECT * FROM GENERATE_SERIES(1, 5)');
-    assert.equal(r.rows.length, 5);
+    const r = db.execute('SELECT value FROM generate_series(1, 5)');
     assert.deepEqual(r.rows.map(r => r.value), [1, 2, 3, 4, 5]);
   });
 
-  it('supports custom step', () => {
+  it('with step', () => {
     const db = new Database();
-    const r = db.execute('SELECT value FROM GENERATE_SERIES(0, 10, 3)');
-    assert.deepEqual(r.rows.map(r => r.value), [0, 3, 6, 9]);
+    const r = db.execute('SELECT value FROM generate_series(0, 10, 2)');
+    assert.deepEqual(r.rows.map(r => r.value), [0, 2, 4, 6, 8, 10]);
   });
 
-  it('supports descending with negative step', () => {
+  it('descending with negative step', () => {
     const db = new Database();
-    const r = db.execute('SELECT value FROM GENERATE_SERIES(5, 1, -1)');
+    const r = db.execute('SELECT value FROM generate_series(5, 1, -1)');
     assert.deepEqual(r.rows.map(r => r.value), [5, 4, 3, 2, 1]);
   });
 
-  it('supports expressions in SELECT', () => {
+  it('single value (start = end)', () => {
     const db = new Database();
-    const r = db.execute('SELECT value * value AS sq FROM GENERATE_SERIES(1, 4)');
-    assert.deepEqual(r.rows.map(r => r.sq), [1, 4, 9, 16]);
+    const r = db.execute('SELECT value FROM generate_series(1, 1)');
+    assert.equal(r.rows.length, 1);
+    assert.equal(r.rows[0].value, 1);
   });
 
-  it('supports WHERE clause', () => {
+  it('empty series (start > end, positive step)', () => {
     const db = new Database();
-    const r = db.execute('SELECT value FROM GENERATE_SERIES(1, 10) WHERE value > 7');
-    assert.deepEqual(r.rows.map(r => r.value), [8, 9, 10]);
-  });
-
-  it('supports LIMIT', () => {
-    const db = new Database();
-    const r = db.execute('SELECT value FROM GENERATE_SERIES(1, 100) LIMIT 3');
-    assert.equal(r.rows.length, 3);
-    assert.deepEqual(r.rows.map(r => r.value), [1, 2, 3]);
-  });
-
-  it('empty range returns empty', () => {
-    const db = new Database();
-    const r = db.execute('SELECT * FROM GENERATE_SERIES(5, 1)');
+    const r = db.execute('SELECT value FROM generate_series(5, 1)');
     assert.equal(r.rows.length, 0);
+  });
+
+  it('with WHERE filter', () => {
+    const db = new Database();
+    const r = db.execute('SELECT value FROM generate_series(1, 10) WHERE value % 3 = 0');
+    assert.deepEqual(r.rows.map(r => r.value), [3, 6, 9]);
+  });
+
+  it('with window function', () => {
+    const db = new Database();
+    const r = db.execute(`
+      SELECT value, SUM(value) OVER (ORDER BY value) as running_sum
+      FROM generate_series(1, 5)
+    `);
+    assert.equal(r.rows[4].running_sum, 15); // 1+2+3+4+5
+    assert.equal(r.rows[0].running_sum, 1);
+    assert.equal(r.rows[2].running_sum, 6); // 1+2+3
+  });
+
+  it('with aggregate', () => {
+    const db = new Database();
+    const r = db.execute('SELECT SUM(value) as total, COUNT(*) as cnt FROM generate_series(1, 100)');
+    assert.equal(r.rows[0].total, 5050);
+    assert.equal(r.rows[0].cnt, 100);
+  });
+
+  it('in subquery', () => {
+    const db = new Database();
+    const r = db.execute(`
+      SELECT * FROM generate_series(1, 5) s
+      WHERE s.value IN (SELECT value FROM generate_series(3, 7))
+    `);
+    assert.deepEqual(r.rows.map(r => r.value), [3, 4, 5]);
+  });
+
+  it('generate_series result can be queried', () => {
+    const db = new Database();
+    const r = db.execute(`
+      SELECT value, value * value as squared
+      FROM generate_series(1, 5)
+    `);
+    assert.equal(r.rows.length, 5);
+    assert.equal(r.rows[2].squared, 9); // 3*3
   });
 });
