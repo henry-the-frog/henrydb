@@ -3534,9 +3534,11 @@ export class Database {
     }
     if (expr.type === 'AND') return `(${this._exprToString(expr.left)} AND ${this._exprToString(expr.right)})`;
     if (expr.type === 'OR') return `(${this._exprToString(expr.left)} OR ${this._exprToString(expr.right)})`;
+    if (expr.type === 'arith') return `(${this._exprToString(expr.left)} ${expr.op} ${this._exprToString(expr.right)})`;
     if (expr.type === 'column' || expr.type === 'column_ref') return expr.name || `${expr.table}.${expr.column}`;
     if (expr.type === 'literal' || expr.type === 'number') return String(expr.value);
     if (expr.type === 'string') return `'${expr.value}'`;
+    if (expr.type === 'function_call') return `${expr.func}(${(expr.args || []).map(a => this._exprToString(a)).join(', ')})`;
     return JSON.stringify(expr);
   }
 
@@ -4506,6 +4508,15 @@ export class Database {
     if (expr.type === 'function') {
       return `${expr.name}(...)`;
     }
+    if (expr.type === 'arith') {
+      return `(${this._exprToString(expr.left)} ${expr.op} ${this._exprToString(expr.right)})`;
+    }
+    if (expr.type === 'function_call') {
+      return `${expr.func}(${(expr.args || []).map(a => this._exprToString(a)).join(', ')})`;
+    }
+    if (expr.type === '=' || expr.type === '!=' || expr.type === '<' || expr.type === '>') {
+      return `(${this._exprToString(expr.left)} ${expr.type} ${this._exprToString(expr.right)})`;
+    }
     return '?';
   }
 
@@ -4765,7 +4776,7 @@ export class Database {
         } else {
           // Expression group key — evaluate and use alias or stringify
           const val = this._evalValue(col, groupRows[0]);
-          const key = col.alias || JSON.stringify(col).slice(0, 20);
+          const key = col.alias || this._exprToString(col) || JSON.stringify(col).slice(0, 20);
           result[key] = val;
         }
       }
