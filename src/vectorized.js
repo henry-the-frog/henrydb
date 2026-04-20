@@ -439,9 +439,108 @@ export class VectorizedHashAggregate {
 }
 
 /**
+ * VectorizedSort — materializes all input, sorts, and outputs in batches.
+ */
+export class VectorizedSort {
+  constructor(child, orderBy, batchSize = DEFAULT_BATCH_SIZE) {
+    this._child = child;
+    this._orderBy = orderBy;
+    this._batchSize = batchSize;
+    this._sortedRows = null;
+    this._pos = 0;
+    this._colNames = null;
+  }
+
+  open() {
+    this._child.open();
+    this._sortedRows = null;
+    this._pos = 0;
+    const allRows = [];
+    let batch;
+    while ((batch = this._child.next()) !== null) {
+      if (!this._colNames) this._colNames = Object.keys(batch.columns);
+      const n = batch.activeCount;
+      for (let i = 0; i < n; i++) {
+        const row = {};
+        for (const col of this._colNames) {
+          row[col] = batch.getValue(col, i);
+        }
+        allRows.push(row);
+      }
+    }
+    this._child.close();
+    allRows.sort((a, b) => {
+      for (const key of this._orderBy) {
+        const av = a[key.column], bv = b[key.column];
+        if (av == null && bv == null) continue;
+        if (av == null) return key.direction === 'ASC' ? -1 : 1;
+        if (bv == null) return key.direction === 'ASC' ? 1 : -1;
+        if (av < bv) return key.direction === 'ASC' ? -1 : 1;
+        if (av > bv) return key.direction === 'ASC' ? 1 : -1;
+      }
+      return 0;
+    });
+    this._sortedRows = allRows;
+  }
+
+  next() {
+    if (!this._sortedRows || this._pos >= this._sortedRows.length) return null;
+    const end = Math.min(this._pos + this._batchSize, this._sortedRows.length);
+    const count = end - this._pos;
+    const columns = {};
+    const colNames = this._colNames || (this._sortedRows.length > 0 ? Object.keys(this._sortedRows[0]) : []);
+    for (const col of colNames) {
+      columns[col] = new Array(count);
+    }
+    for (let i = 0; i < count; i++) {
+      const row = this._sortedRows[this._pos + i];
+      for (const col of colNames) columns[col][i] = row[col];
+    }
+    this._pos = end;
+    return new DataBatch(columns, count);
+  }
+
+  close() { this._sortedRows = null; this._pos = 0; }
+}
+
+/**
+ * VectorizedDistinct — hash-based deduplication via selection vectors.
+ */
+export class VectorizedDistinct {
+  constructor(child, keyColumns) {
+    this._child = child;
+    this._keyColumns = keyColumns;
+    this._seen = null;
+  }
+
+  open() { this._child.open(); this._seen = new Set(); }
+
+  next() {
+    while (true) {
+      const batch = this._child.next();
+      if (!batch) return null;
+      const sel = new Int32Array(batch.activeCount);
+      let selCount = 0;
+      const n = batch.activeCount;
+      for (let i = 0; i < n; i++) {
+        const key = this._keyColumns.length === 1
+          ? batch.getValue(this._keyColumns[0], i)
+          : JSON.stringify(this._keyColumns.map(c => batch.getValue(c, i)));
+        if (!this._seen.has(key)) {
+          this._seen.add(key);
+          sel[selCount++] = batch.sel ? batch.sel[i] : i;
+        }
+      }
+      if (selCount === 0) continue;
+      return new DataBatch(batch.columns, batch.count, sel.subarray(0, selCount));
+    }
+  }
+
+  close() { this._child.close(); this._seen = null; }
+}
+
+/**
  * VectorizedHashJoin — hash join with build and probe phases.
- * Build side is fully materialized into a hash table.
- * Probe side streams through in batches.
  */
 export class VectorizedHashJoin {
   /**
