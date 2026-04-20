@@ -1808,6 +1808,50 @@
       "completed": "2026-04-20T23:51:40.748Z",
       "duration_ms": 360000,
       "summary": "Full-text search: MATCH AGAINST requires fulltext index (correct). to_tsvector/to_tsquery BROKEN — @@ operator not in tokenizer, so query returns all rows (P1 bug). The full-text-search.js module itself works correctly (TSVector, TSQuery, ranking all implement proper logic), but the integration with the SQL parser is missing the @@ operator entirely."
+    },
+    {
+      "id": "T169",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test persistent database — write, close, reopen, verify data",
+      "project": "henrydb",
+      "started": "2026-04-20T23:52:03.996Z",
+      "completed": "2026-04-20T23:53:26.302Z",
+      "duration_ms": 420000,
+      "summary": "Persistent database works: 1000 rows written, 500 updated, 100 deleted, verified after close/reopen (900 rows, exact match). Updates and deletes correctly persist. Multiple open/close cycles work. 562KB disk for 900 rows. No data loss, no bugs."
+    },
+    {
+      "id": "T170",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: comprehensive performance benchmark — inserts, selects, joins, aggregates",
+      "project": "henrydb",
+      "started": "2026-04-20T23:53:41.947Z",
+      "completed": "2026-04-20T23:54:24.302Z",
+      "duration_ms": 360000,
+      "summary": "HenryDB benchmark: INSERT 39K/s, Point SELECT 14.7K/s, Full scan 10K in 26ms, COUNT 6.3K/s, GROUP BY 3.7K/s, UPDATE 19K/s, DELETE 37K/s, Pure equi-join 10Kx100 in 12ms. Expression-based join (id%100=b.id) falls to NLJ: 1.1s. Window function 417 ops/s, CTE 667 ops/s. Solid in-memory performance."
+    },
+    {
+      "id": "T171",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test SSI — write skew prevention, serialization anomalies",
+      "project": "henrydb",
+      "started": "2026-04-20T23:54:42.055Z",
+      "completed": "2026-04-20T23:55:30.048Z",
+      "duration_ms": 240000,
+      "summary": "SSI correctly detects write skew (classic doctor on-call scenario). T1 commits, T2 aborted with serialization failure. Non-conflicting transactions commit independently. 10/10 existing tests pass."
+    },
+    {
+      "id": "T172",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: error handling & crash resistance — SQL injection, malformed queries, type errors",
+      "project": "henrydb",
+      "started": "2026-04-20T23:55:47.938Z",
+      "completed": "2026-04-20T23:56:26.004Z",
+      "duration_ms": 300000,
+      "summary": "Error handling robust: SQL injection semicolons ignored, malformed SQL gives clear errors, no crashes. Unicode works. Division by zero returns NULL. Row size limits enforced. Found 2 issues: (1) block comments not handled by tokenizer (P2), (2) 1+hello does string concat instead of error (P3, cosmetic). DB survives all malicious inputs."
     }
   ],
   "focusProjects": [
@@ -2503,6 +2547,22 @@
     {
       "time": "2026-04-20T23:50:11.068Z",
       "msg": "Added T168 (EXPLORE) after end: HenryDB: test full-text search — indexing, queries, ranking"
+    },
+    {
+      "time": "2026-04-20T23:52:03.763Z",
+      "msg": "Added T169 (EXPLORE) after end: HenryDB: test persistent database — write, close, reopen, verify data"
+    },
+    {
+      "time": "2026-04-20T23:53:41.713Z",
+      "msg": "Added T170 (EXPLORE) after end: HenryDB: comprehensive performance benchmark — inserts, selects, joins, aggregates"
+    },
+    {
+      "time": "2026-04-20T23:54:41.822Z",
+      "msg": "Added T171 (EXPLORE) after end: HenryDB: test SSI — write skew prevention, serialization anomalies"
+    },
+    {
+      "time": "2026-04-20T23:55:47.702Z",
+      "msg": "Added T172 (EXPLORE) after end: HenryDB: error handling & crash resistance — SQL injection, malformed queries, type errors"
     }
   ]
 }
