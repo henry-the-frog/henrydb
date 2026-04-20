@@ -46,28 +46,106 @@
     {
       "id": "T5",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, knowledge capture, daily log update",
-      "started": "2026-04-20T20:25:45.773Z"
+      "started": "2026-04-20T20:25:45.773Z",
+      "completed": "2026-04-20T20:26:22.922Z",
+      "duration_ms": 60000,
+      "summary": "Git push both repos, daily log updated, TODO updated with 3 Urgent items from stress test findings."
     },
     {
       "id": "T6",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What should tomorrow look like? Which project deserves depth?"
+      "status": "done",
+      "task": "What should tomorrow look like? Which project deserves depth?",
+      "started": "2026-04-20T20:26:29.533Z",
+      "completed": "2026-04-20T20:26:40.525Z",
+      "duration_ms": 60000,
+      "summary": "Tomorrow: fix day, not feature day. P0: division truncation + planner-executor wiring. P1: NULL IS NULL + recursive CTE parser. P2: CAST numeric + MERGE USING. No new features."
     },
     {
       "id": "T7",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB performance profiling: identify hottest functions in 10K-row queries",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T20:26:46.735Z",
+      "completed": "2026-04-20T20:32:31.916Z",
+      "duration_ms": 600000,
+      "summary": "Performance profile: single-table ops fast (16-31ms on 10K). JOINs catastrophically slow: 1K×1K=1.8s, 10K×1K=timeout. Correlated EXISTS 10K×1K=14.8s. All due to nested-loop-only joins. Hash join wiring is the single most impactful fix."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session git push, CURRENT.md update",
+      "started": "2026-04-20T20:32:57.611Z"
+    },
+    {
+      "id": "T9",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Final session git push, CURRENT.md update"
+      "task": "Deep dive: trace the division code path in db.js — find exactly where truncation happens",
+      "project": "henrydb"
+    },
+    {
+      "id": "T10",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Investigate planner.js executeHashJoin — can it be called from db.js with minimal changes?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T11",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Design the planner-executor integration — what is the minimal change to wire hash joins?"
+    },
+    {
+      "id": "T12",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Audit NULL handling across the codebase — IS NULL, IS NOT NULL, COALESCE, NULLIF",
+      "project": "henrydb"
+    },
+    {
+      "id": "T13",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Run the full test suite with 120s timeout to get true pass rate",
+      "project": "henrydb"
+    },
+    {
+      "id": "T14",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Review today's scratch notes — anything worth promoting to lessons?"
+    },
+    {
+      "id": "T15",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Read planner.js in full — understand the DP optimizer, cost model, and join selection logic",
+      "project": "henrydb"
+    },
+    {
+      "id": "T16",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update MEMORY.md, failures.md, scratch/INDEX.md"
+    },
+    {
+      "id": "T17",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Investigate: can we add a simple hash-join-only fast path in _executeJoinWithRows for equi-joins?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T18",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session wrap: git push, CURRENT.md, daily log evening summary"
     }
   ],
   "focusProjects": [
@@ -111,6 +189,46 @@
     {
       "time": "2026-04-20T20:16:20.349Z",
       "msg": "Added T8 (MAINTAIN) after T7: Final session git push, CURRENT.md update"
+    },
+    {
+      "time": "2026-04-20T20:32:53.245Z",
+      "msg": "Added T9 (EXPLORE) after T8: Deep dive: trace the division code path in db.js — find exactly where truncation happens"
+    },
+    {
+      "time": "2026-04-20T20:32:53.385Z",
+      "msg": "Added T10 (EXPLORE) after T9: Investigate planner.js executeHashJoin — can it be called from db.js with minimal changes?"
+    },
+    {
+      "time": "2026-04-20T20:32:53.504Z",
+      "msg": "Added T11 (THINK) after T10: Design the planner-executor integration — what is the minimal change to wire hash joins?"
+    },
+    {
+      "time": "2026-04-20T20:32:53.621Z",
+      "msg": "Added T12 (EXPLORE) after T11: Audit NULL handling across the codebase — IS NULL, IS NOT NULL, COALESCE, NULLIF"
+    },
+    {
+      "time": "2026-04-20T20:32:53.740Z",
+      "msg": "Added T13 (EXPLORE) after T12: Run the full test suite with 120s timeout to get true pass rate"
+    },
+    {
+      "time": "2026-04-20T20:32:53.878Z",
+      "msg": "Added T14 (THINK) after T13: Review today's scratch notes — anything worth promoting to lessons?"
+    },
+    {
+      "time": "2026-04-20T20:32:53.996Z",
+      "msg": "Added T15 (EXPLORE) after T14: Read planner.js in full — understand the DP optimizer, cost model, and join selection logic"
+    },
+    {
+      "time": "2026-04-20T20:32:54.114Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Update MEMORY.md, failures.md, scratch/INDEX.md"
+    },
+    {
+      "time": "2026-04-20T20:32:54.231Z",
+      "msg": "Added T17 (EXPLORE) after T16: Investigate: can we add a simple hash-join-only fast path in _executeJoinWithRows for equi-joins?"
+    },
+    {
+      "time": "2026-04-20T20:32:54.350Z",
+      "msg": "Added T18 (MAINTAIN) after T17: Final session wrap: git push, CURRENT.md, daily log evening summary"
     }
   ]
 }
