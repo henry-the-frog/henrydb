@@ -8412,6 +8412,19 @@ export class Database {
         const found = expr.hashSet.has(leftVal);
         return expr.negated ? !found : found;
       }
+      case 'CORRELATED_IN_HASHMAP': {
+        // Batch-decorrelated correlated IN subquery
+        const leftVal = this._evalValue(expr.left, row);
+        // Build composite key from outer columns
+        const keyParts = expr.outerCols.map(col => {
+          const name = col.includes('.') ? col : col;
+          return this._evalValue({ type: 'column_ref', name }, row);
+        });
+        const key = keyParts.length === 1 ? String(keyParts[0]) : keyParts.map(String).join('\0');
+        const valSet = expr.hashMap.get(key);
+        const found = valSet ? valSet.has(leftVal) : false;
+        return expr.negated ? !found : found;
+      }
       case 'LITERAL_BOOL': {
         return expr.value;
       }

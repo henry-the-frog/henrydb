@@ -85,6 +85,174 @@ function hoistScalarSubquery(expr, outerTables, db) {
   }
 }
 
+/**
+ * Try to batch-decorrelate a correlated IN subquery.
+ * 
+ * Pattern: WHERE outer.x IN (SELECT inner.y FROM t2 WHERE inner.key = outer.key)
+ * 
+ * Strategy:
+ * 1. Extract correlation predicate: inner.key = outer.key
+ * 2. Execute inner query without correlation: SELECT key, y FROM t2
+ * 3. Build Map<outerKeyVal, Set<innerVal>>
+ * 4. Return a CORRELATED_IN_HASHMAP node that looks up per row
+ * 
+ * Returns null if the pattern doesn't match.
+ */
+function tryBatchDecorrelate(expr, outerTables, db) {
+  const subquery = expr.subquery;
+  if (!subquery || !subquery.where) return null;
+  
+  // Collect inner tables
+  const innerTables = new Set();
+  if (subquery.from) {
+    innerTables.add(subquery.from.alias || subquery.from.table);
+  }
+  for (const join of subquery.joins || []) {
+    innerTables.add(join.alias || join.table);
+  }
+  
+  // Split WHERE into correlation predicates and inner-only predicates
+  const allPreds = flattenAnd(subquery.where);
+  const correlationPreds = [];
+  const innerPreds = [];
+  
+  for (const pred of allPreds) {
+    if (isCorrelationPred(pred, innerTables, outerTables)) {
+      correlationPreds.push(pred);
+    } else {
+      innerPreds.push(pred);
+    }
+  }
+  
+  if (correlationPreds.length === 0) return null; // Not correlated
+  
+  // Extract correlation mappings: outerCol → innerCol
+  const mappings = [];
+  for (const pred of correlationPreds) {
+    const mapping = extractEqMapping(pred, innerTables, outerTables);
+    if (!mapping) return null; // Non-equality correlation — can't decorrelate
+    mappings.push(mapping);
+  }
+  
+  // Build the decorrelated inner query: remove correlation predicates, add
+  // the inner correlation columns to the SELECT list
+  try {
+    const innerSelectCols = [...(subquery.columns || [])];
+    // Add correlation inner columns if not already selected
+    const innerColNames = mappings.map(m => m.innerCol);
+    
+    // Build a modified subquery AST without correlation predicates
+    const modifiedSubquery = {
+      ...subquery,
+      where: innerPreds.length > 0 ? buildAnd(innerPreds) : null,
+      columns: [
+        ...innerSelectCols,
+        ...innerColNames.map(col => ({
+          type: 'column',
+          name: col,
+          alias: `__corr_${col.replace(/\./g, '_')}`,
+        })),
+      ],
+    };
+    
+    // Execute the inner query once (no correlation)
+    const result = db._select(modifiedSubquery);
+    
+    // Build multi-valued hash map: compositeKey → Set<innerVal>
+    const hashMap = new Map();
+    const selectCol = subquery.columns?.[0];
+    const targetColName = selectCol?.alias || selectCol?.name || 
+      (selectCol?.type === 'aggregate' ? `${selectCol.func}(${selectCol.arg})` : null);
+    
+    for (const row of result.rows) {
+      // Build composite key from correlation columns
+      const keyParts = mappings.map(m => {
+        const alias = `__corr_${m.innerCol.replace(/\./g, '_')}`;
+        return row[alias] ?? row[m.innerCol] ?? row[m.innerCol.split('.').pop()];
+      });
+      const key = keyParts.length === 1 ? String(keyParts[0]) : keyParts.map(String).join('\0');
+      
+      // Get the value column (first column from original SELECT)
+      const keys = Object.keys(row);
+      let val;
+      if (targetColName) {
+        val = row[targetColName] ?? row[keys[0]];
+      } else {
+        val = row[keys[0]];
+      }
+      
+      if (!hashMap.has(key)) hashMap.set(key, new Set());
+      hashMap.get(key).add(val);
+    }
+    
+    return {
+      type: 'CORRELATED_IN_HASHMAP',
+      left: expr.left,
+      outerCols: mappings.map(m => m.outerCol),
+      hashMap,
+      negated: expr.negated || false,
+    };
+  } catch (e) {
+    // If anything fails, fall back to correlated execution
+    return null;
+  }
+}
+
+function flattenAnd(expr) {
+  if (!expr) return [];
+  if (expr.type === 'AND') return [...flattenAnd(expr.left), ...flattenAnd(expr.right)];
+  return [expr];
+}
+
+function buildAnd(preds) {
+  if (preds.length === 0) return null;
+  return preds.length === 1 ? preds[0] : preds.reduce((a, b) => ({ type: 'AND', left: a, right: b }));
+}
+
+/**
+ * Check if a predicate references both inner and outer tables.
+ */
+function isCorrelationPred(pred, innerTables, outerTables) {
+  const refs = collectColumnRefs(pred);
+  let hasInner = false, hasOuter = false;
+  for (const ref of refs) {
+    if (innerTables.has(ref)) hasInner = true;
+    else if (outerTables.has(ref)) hasOuter = true;
+  }
+  return hasInner && hasOuter;
+}
+
+/**
+ * Extract an equality mapping from a correlation predicate.
+ * E.g., t2.id = t1.id → { innerCol: 't2.id', outerCol: 't1.id' }
+ * Returns null for non-equality predicates.
+ */
+function extractEqMapping(pred, innerTables, outerTables) {
+  if (pred.type !== 'COMPARE' || pred.op !== 'EQ') return null;
+  
+  const leftCol = getColumnRef(pred.left);
+  const rightCol = getColumnRef(pred.right);
+  if (!leftCol || !rightCol) return null;
+  
+  const leftTable = leftCol.includes('.') ? leftCol.split('.')[0] : null;
+  const rightTable = rightCol.includes('.') ? rightCol.split('.')[0] : null;
+  
+  if (leftTable && innerTables.has(leftTable) && rightTable && outerTables.has(rightTable)) {
+    return { innerCol: leftCol, outerCol: rightCol };
+  }
+  if (rightTable && innerTables.has(rightTable) && leftTable && outerTables.has(leftTable)) {
+    return { innerCol: rightCol, outerCol: leftCol };
+  }
+  return null;
+}
+
+function getColumnRef(expr) {
+  if (!expr) return null;
+  if (expr.type === 'column_ref') return expr.name;
+  if (expr.type === 'column') return expr.name;
+  return null;
+}
+
 export function decorrelateExpr(expr, outerTables, db) {
   if (!expr) return expr;
 
@@ -153,6 +321,10 @@ export function decorrelateExpr(expr, outerTables, db) {
       };
     }
     // TODO: Correlated IN subquery → semi-join
+    // Try batch decorrelation: extract correlation predicate, run inner query
+    // once without it, build a hash map for fast lookup.
+    const decorrelated = tryBatchDecorrelate(expr, outerTables, db);
+    if (decorrelated) return decorrelated;
     return expr;
   }
 
