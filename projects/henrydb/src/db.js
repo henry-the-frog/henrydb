@@ -6725,7 +6725,7 @@ export class Database {
             for (let i = 0; i < partition.length; i++) {
               if (i > 0 && orderBy) {
                 const same = orderBy.every(({ column }) =>
-                  this._resolveColumn(column, partition[i]) === this._resolveColumn(column, partition[i - 1])
+                  this._orderByValue(column, partition[i]) === this._orderByValue(column, partition[i - 1])
                 );
                 if (!same) rank = i + 1;
               }
@@ -6738,7 +6738,7 @@ export class Database {
             for (let i = 0; i < partition.length; i++) {
               if (i > 0 && orderBy) {
                 const same = orderBy.every(({ column }) =>
-                  this._resolveColumn(column, partition[i]) === this._resolveColumn(column, partition[i - 1])
+                  this._orderByValue(column, partition[i]) === this._orderByValue(column, partition[i - 1])
                 );
                 if (!same) rank++;
               }
@@ -6946,9 +6946,8 @@ export class Database {
   _windowOrderEqual(rowA, rowB, orderBy) {
     if (!orderBy || orderBy.length === 0) return true;
     for (const ob of orderBy) {
-      const col = ob.column?.name || ob.column;
-      const va = this._resolveColumn(col, rowA);
-      const vb = this._resolveColumn(col, rowB);
+      const va = this._orderByValue(ob.column, rowA);
+      const vb = this._orderByValue(ob.column, rowB);
       if (va !== vb) return false;
     }
     return true;
