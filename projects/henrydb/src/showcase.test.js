@@ -1,231 +1,151 @@
-// showcase.test.js — E-commerce data warehouse showcase
-// Demonstrates HenryDB as a complete SQL engine with real-world patterns
-import { describe, it, before } from 'node:test';
+// showcase.test.js — HenryDB feature showcase and integration tests
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
-describe('E-Commerce Data Warehouse', () => {
-  let db;
-  before(() => {
-    db = new Database();
+describe('HenryDB Feature Showcase', () => {
+  it('complete analytics pipeline', () => {
+    const db = new Database();
     
-    // Schema: 5 tables
-    db.execute(`CREATE TABLE customers (
-      id INT PRIMARY KEY, name TEXT, email TEXT, 
-      region TEXT, metadata TEXT, created_at TEXT
-    )`);
-    db.execute(`CREATE TABLE products (
-      id INT PRIMARY KEY, name TEXT, category TEXT,
-      price REAL, stock INT
-    )`);
-    db.execute(`CREATE TABLE orders (
-      id INT PRIMARY KEY, customer_id INT, 
-      order_date TEXT, status TEXT, total REAL,
-      FOREIGN KEY (customer_id) REFERENCES customers(id)
-    )`);
-    db.execute(`CREATE TABLE order_items (
-      id INT PRIMARY KEY, order_id INT, product_id INT,
-      quantity INT, unit_price REAL,
-      FOREIGN KEY (order_id) REFERENCES orders(id),
-      FOREIGN KEY (product_id) REFERENCES products(id)
-    )`);
-    db.execute(`CREATE TABLE reviews (
-      id INT, product_id INT PRIMARY KEY, customer_id INT,
-      rating INT, comment TEXT, review_date TEXT
-    )`);
-
-    // Seed customers
-    db.execute(`INSERT INTO customers VALUES (1, 'Alice Smith', 'alice@example.com', 'West', '{"tier": "gold", "loyalty_points": 2500}', '2023-01-15')`);
-    db.execute(`INSERT INTO customers VALUES (2, 'Bob Johnson', 'bob@example.com', 'East', '{"tier": "silver", "loyalty_points": 800}', '2023-03-22')`);
-    db.execute(`INSERT INTO customers VALUES (3, 'Carol Williams', 'carol@example.com', 'West', '{"tier": "gold", "loyalty_points": 3200}', '2023-02-10')`);
-    db.execute(`INSERT INTO customers VALUES (4, 'Dave Brown', 'dave@example.com', 'Central', '{"tier": "bronze", "loyalty_points": 150}', '2023-06-01')`);
-    db.execute(`INSERT INTO customers VALUES (5, 'Eve Davis', 'eve@example.com', 'East', '{"tier": "silver", "loyalty_points": 1200}', '2023-04-15')`);
-
-    // Seed products
-    db.execute("INSERT INTO products VALUES (1, 'Laptop Pro', 'Electronics', 1299.99, 50)");
-    db.execute("INSERT INTO products VALUES (2, 'Wireless Mouse', 'Electronics', 29.99, 200)");
-    db.execute("INSERT INTO products VALUES (3, 'Standing Desk', 'Furniture', 599.99, 30)");
-    db.execute("INSERT INTO products VALUES (4, 'Ergonomic Chair', 'Furniture', 449.99, 25)");
-    db.execute("INSERT INTO products VALUES (5, 'USB-C Hub', 'Electronics', 49.99, 150)");
-    db.execute("INSERT INTO products VALUES (6, 'Monitor 27in', 'Electronics', 399.99, 40)");
-    db.execute("INSERT INTO products VALUES (7, 'Desk Lamp', 'Furniture', 79.99, 100)");
-
-    // Seed orders
-    db.execute("INSERT INTO orders VALUES (1, 1, '2024-01-15', 'completed', 1379.97)");
-    db.execute("INSERT INTO orders VALUES (2, 2, '2024-01-20', 'completed', 629.98)");
-    db.execute("INSERT INTO orders VALUES (3, 1, '2024-02-10', 'completed', 449.99)");
-    db.execute("INSERT INTO orders VALUES (4, 3, '2024-02-15', 'shipped', 1349.97)");
-    db.execute("INSERT INTO orders VALUES (5, 4, '2024-03-01', 'pending', 79.98)");
-    db.execute("INSERT INTO orders VALUES (6, 5, '2024-03-10', 'completed', 699.98)");
-    db.execute("INSERT INTO orders VALUES (7, 1, '2024-03-15', 'completed', 49.99)");
-
-    // Seed order items
-    db.execute("INSERT INTO order_items VALUES (1, 1, 1, 1, 1299.99)");
-    db.execute("INSERT INTO order_items VALUES (2, 1, 2, 2, 29.99)");
-    db.execute("INSERT INTO order_items VALUES (3, 1, 5, 1, 49.99)");
-    db.execute("INSERT INTO order_items VALUES (4, 2, 3, 1, 599.99)");
-    db.execute("INSERT INTO order_items VALUES (5, 2, 2, 1, 29.99)");
-    db.execute("INSERT INTO order_items VALUES (6, 3, 4, 1, 449.99)");
-    db.execute("INSERT INTO order_items VALUES (7, 4, 1, 1, 1299.99)");
-    db.execute("INSERT INTO order_items VALUES (8, 4, 5, 1, 49.99)");
-    db.execute("INSERT INTO order_items VALUES (9, 5, 7, 1, 79.99)");
-    db.execute("INSERT INTO order_items VALUES (10, 6, 6, 1, 399.99)");
-    db.execute("INSERT INTO order_items VALUES (11, 6, 3, 1, 599.99)");
-    db.execute("INSERT INTO order_items VALUES (12, 7, 5, 1, 49.99)");
-
-    // Seed reviews
-    db.execute("INSERT INTO reviews VALUES (1, 1, 1, 5, 'Amazing laptop!', '2024-01-20')");
-    db.execute("INSERT INTO reviews VALUES (2, 2, 1, 4, 'Good mouse, responsive', '2024-01-20')");
-    db.execute("INSERT INTO reviews VALUES (3, 3, 2, 5, 'Love this desk', '2024-01-25')");
-    db.execute("INSERT INTO reviews VALUES (4, 4, 1, 4, 'Comfortable chair', '2024-02-15')");
-    db.execute("INSERT INTO reviews VALUES (5, 1, 3, 4, 'Great performance', '2024-02-20')");
-    db.execute("INSERT INTO reviews VALUES (6, 6, 5, 3, 'Decent monitor', '2024-03-15')");
-  });
-
-  it('Revenue by product category', () => {
+    // Schema
+    db.execute('CREATE TABLE products (id SERIAL PRIMARY KEY, name TEXT, category TEXT, price INT)');
+    db.execute('CREATE TABLE orders (id SERIAL PRIMARY KEY, product_id INT, qty INT, order_date TEXT)');
+    db.execute('CREATE INDEX idx_orders_product ON orders(product_id)');
+    
+    // Data
+    const products = [
+      [1, 'Widget A', 'widgets', 25], [2, 'Widget B', 'widgets', 35],
+      [3, 'Gadget X', 'gadgets', 50], [4, 'Gadget Y', 'gadgets', 75],
+      [5, 'Thing Z', 'things', 100]
+    ];
+    for (const [id, name, cat, price] of products) {
+      db.execute(`INSERT INTO products VALUES (${id}, '${name}', '${cat}', ${price})`);
+    }
+    
+    for (let i = 1; i <= 50; i++) {
+      const pid = (i % 5) + 1;
+      const qty = (i % 7) + 1;
+      const month = ((i % 3) + 1).toString().padStart(2, '0');
+      db.execute(`INSERT INTO orders VALUES (${i}, ${pid}, ${qty}, '2026-${month}-15')`);
+    }
+    
+    // Complex analytics query
     const r = db.execute(`
-      SELECT p.category, SUM(oi.quantity * oi.unit_price) AS revenue, COUNT(DISTINCT o.id) AS order_count
-      FROM order_items oi
-      JOIN products p ON p.id = oi.product_id
-      JOIN orders o ON o.id = oi.order_id
-      WHERE o.status = 'completed'
-      GROUP BY p.category
-      ORDER BY revenue DESC
-    `);
-    assert.ok(r.rows.length >= 2);
-    assert.equal(r.rows[0].category, 'Electronics');
-  });
-
-  it('Customer lifetime value (CLV) ranking', () => {
-    const r = db.execute(`
-      SELECT c.name, 
-        SUM(o.total) AS lifetime_value,
-        COUNT(o.id) AS order_count,
-        ROW_NUMBER() OVER (ORDER BY SUM(o.total) DESC) AS clv_rank
-      FROM customers c
-      JOIN orders o ON o.customer_id = c.id
-      WHERE o.status = 'completed'
-      GROUP BY c.name
-      ORDER BY lifetime_value DESC
-    `);
-    assert.ok(r.rows.length >= 3);
-    assert.equal(r.rows[0].name, 'Alice Smith');
-    assert.equal(r.rows[0].order_count, 3);
-  });
-
-  it('Product ratings with review count', () => {
-    const r = db.execute(`
-      SELECT p.name, p.category,
-        AVG(r.rating) AS avg_rating,
-        COUNT(r.id) AS review_count
-      FROM products p
-      LEFT JOIN reviews r ON r.product_id = p.id
-      GROUP BY p.name, p.category
-      HAVING COUNT(r.id) > 0
-      ORDER BY avg_rating DESC, review_count DESC
-    `);
-    assert.ok(r.rows.length >= 4);
-    // Products with ratings: Laptop(4.5), Standing Desk(5), Mouse(4), Chair(4), Monitor(3)
-  });
-
-  it('JSON tier analysis', () => {
-    const r = db.execute(`
-      SELECT JSON_EXTRACT(c.metadata, '$.tier') AS tier,
-        COUNT(*) AS customer_count,
-        SUM(o.total) AS total_revenue
-      FROM customers c
-      JOIN orders o ON o.customer_id = c.id
-      GROUP BY tier
-      ORDER BY total_revenue DESC
-    `);
-    assert.ok(r.rows.length >= 2);
-    assert.equal(r.rows[0].tier, 'gold');
-  });
-
-  it('CTE: monthly revenue trend', () => {
-    const r = db.execute(`
-      WITH monthly AS (
-        SELECT 
-          SUBSTR(order_date, 1, 7) AS month,
-          SUM(total) AS revenue,
-          COUNT(*) AS orders
-        FROM orders
-        WHERE status = 'completed'
-        GROUP BY SUBSTR(order_date, 1, 7)
+      WITH order_details AS (
+        SELECT o.id, p.name, p.category, p.price * o.qty as revenue, o.order_date
+        FROM orders o JOIN products p ON o.product_id = p.id
+      ),
+      category_stats AS (
+        SELECT category,
+               COUNT(*) as num_orders,
+               SUM(revenue) as total_revenue,
+               AVG(revenue) as avg_revenue,
+               STDDEV_POP(revenue) as revenue_sd,
+               PERCENTILE_CONT(revenue, 0.5) as median_revenue
+        FROM order_details
+        GROUP BY category
       )
-      SELECT month, revenue, orders
-      FROM monthly
-      ORDER BY month
+      SELECT category, num_orders, total_revenue, 
+             ROUND(avg_revenue, 2) as avg_rev,
+             ROUND(revenue_sd, 2) as sd,
+             median_revenue,
+             RANK() OVER (ORDER BY total_revenue DESC) as revenue_rank
+      FROM category_stats
+      ORDER BY revenue_rank
     `);
-    assert.ok(r.rows.length >= 2);
-    // Should have Jan, Feb, Mar 2024
-  });
-
-  it('Products never ordered (anti-join)', () => {
-    const r = db.execute(`
-      SELECT p.name
-      FROM products p
-      WHERE NOT EXISTS (
-        SELECT 1 FROM order_items oi WHERE oi.product_id = p.id
-      )
-    `);
-    // Desk Lamp (id=7) has order_items but let me check...
-    // Actually, all products were ordered. Let me verify:
-    assert.ok(r.rows.length >= 0);
-  });
-
-  it('Top customer per region', () => {
-    const r = db.execute(`
-      SELECT c.name, c.region, SUM(o.total) AS total_spent,
-        ROW_NUMBER() OVER (PARTITION BY c.region ORDER BY SUM(o.total) DESC) AS region_rank
-      FROM customers c
-      JOIN orders o ON o.customer_id = c.id
-      GROUP BY c.name, c.region
-      ORDER BY c.region, region_rank
-    `);
+    
     assert.ok(r.rows.length >= 3);
-    // Each region should have rank 1 customer
-    const westTop = r.rows.find(row => row.region === 'West' && row.region_rank === 1);
-    assert.equal(westTop.name, 'Alice Smith');
+    assert.equal(r.rows[0].revenue_rank, 1);
+    for (const row of r.rows) {
+      assert.ok(row.total_revenue > 0);
+      assert.ok(row.num_orders > 0);
+    }
   });
 
-  it('Complex: basket analysis with CASE', () => {
+  it('time series analysis', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE metrics (ts TEXT, cpu_pct FLOAT, mem_mb INT)');
+    
+    for (let h = 0; h < 24; h++) {
+      const ts = `2026-04-19T${h.toString().padStart(2, '0')}:00:00`;
+      const cpu = 20 + Math.sin(h / 4) * 30 + (h > 8 && h < 18 ? 20 : 0);
+      const mem = 4000 + h * 50;
+      db.execute(`INSERT INTO metrics VALUES ('${ts}', ${cpu.toFixed(1)}, ${mem})`);
+    }
+    
     const r = db.execute(`
-      SELECT o.id AS order_id, c.name,
-        SUM(oi.quantity) AS total_items,
-        SUM(oi.quantity * oi.unit_price) AS total_value,
-        CASE 
-          WHEN SUM(oi.quantity * oi.unit_price) > 1000 THEN 'high'
-          WHEN SUM(oi.quantity * oi.unit_price) > 200 THEN 'medium'
-          ELSE 'low'
-        END AS basket_tier
-      FROM orders o
-      JOIN customers c ON c.id = o.customer_id
-      JOIN order_items oi ON oi.order_id = o.id
-      GROUP BY o.id, c.name
-      ORDER BY total_value DESC
+      SELECT ts, cpu_pct,
+             AVG(cpu_pct) OVER (ORDER BY ts ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING) as cpu_smooth,
+             mem_mb,
+             LAG(mem_mb) OVER (ORDER BY ts) as prev_mem,
+             LEAD(mem_mb) OVER (ORDER BY ts) as next_mem
+      FROM metrics
+      ORDER BY ts
     `);
-    assert.ok(r.rows.length >= 5);
-    assert.equal(r.rows[0].basket_tier, 'high');
+    assert.equal(r.rows.length, 24);
+    assert.equal(r.rows[0].prev_mem, null); // First row has no previous
+    assert.ok(r.rows[12].cpu_smooth > 0); // Smoothed value should be positive
   });
 
-  it('UPSERT: update stock after order', () => {
-    const before = db.execute('SELECT stock FROM products WHERE id = 1');
-    const stockBefore = before.rows[0].stock;
+  it('data quality checks with aggregates', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE raw_data (id INT, value FLOAT, source TEXT)');
+    db.execute("INSERT INTO raw_data VALUES (1,10.5,'A'),(2,NULL,'A'),(3,20.3,'B'),(4,-5.0,'B'),(5,999.9,'A')");
     
-    db.execute('UPDATE products SET stock = stock - 1 WHERE id = 1');
-    
-    const after = db.execute('SELECT stock FROM products WHERE id = 1');
-    assert.equal(after.rows[0].stock, stockBefore - 1);
-    
-    // Restore
-    db.execute('UPDATE products SET stock = stock + 1 WHERE id = 1');
-  });
-
-  it('GENERATE_SERIES for date ranges', () => {
     const r = db.execute(`
-      SELECT value AS day_offset FROM GENERATE_SERIES(0, 6)
+      SELECT source,
+             COUNT(*) as total,
+             COUNT(value) as non_null,
+             MIN(value) as min_val,
+             MAX(value) as max_val,
+             PERCENTILE_CONT(value, 0.5) as median,
+             CASE WHEN MAX(value) - MIN(value) > 100 THEN 'outliers detected' ELSE 'clean' END as quality
+      FROM raw_data
+      GROUP BY source
+      ORDER BY source
     `);
-    assert.equal(r.rows.length, 7); // 7 days
+    assert.equal(r.rows.length, 2);
+    assert.equal(r.rows[0].source, 'A');
+    assert.equal(r.rows[0].total, 3);
+    assert.equal(r.rows[0].non_null, 2);
+    assert.equal(r.rows[0].quality, 'outliers detected'); // 10.5 to 999.9
+    assert.equal(r.rows[1].quality, 'clean'); // -5 to 20.3
+  });
+
+  it('savepoint-based transaction with analytics', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE accounts (id INT PRIMARY KEY, name TEXT, balance INT)');
+    db.execute("INSERT INTO accounts VALUES (1,'alice',1000),(2,'bob',500),(3,'charlie',750)");
+    
+    // Begin multi-step transaction with savepoints
+    db.execute('SAVEPOINT before_transfers');
+    
+    // Transfer 200 from alice to bob
+    db.execute('UPDATE accounts SET balance = balance - 200 WHERE id = 1');
+    db.execute('UPDATE accounts SET balance = balance + 200 WHERE id = 2');
+    
+    db.execute('SAVEPOINT after_first_transfer');
+    
+    // Try to transfer 1000 from charlie (would overdraft)
+    db.execute('UPDATE accounts SET balance = balance - 1000 WHERE id = 3');
+    
+    // Check: charlie is negative → rollback this transfer only
+    const charlie = db.execute('SELECT balance FROM accounts WHERE id = 3').rows[0].balance;
+    assert.ok(charlie < 0);
+    db.execute('ROLLBACK TO after_first_transfer');
+    
+    // Verify: first transfer kept, second rolled back
+    const final = db.execute(`
+      SELECT name, balance,
+             RANK() OVER (ORDER BY balance DESC) as rank
+      FROM accounts
+      ORDER BY balance DESC
+    `);
+    assert.equal(final.rows[0].name, 'alice');
+    assert.equal(final.rows[0].balance, 800); // 1000 - 200
+    assert.equal(final.rows[1].name, 'charlie');
+    assert.equal(final.rows[1].balance, 750); // Restored
+    assert.equal(final.rows[2].name, 'bob');
+    assert.equal(final.rows[2].balance, 700); // 500 + 200
   });
 });
