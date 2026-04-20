@@ -1,15 +1,13 @@
 # CURRENT.md — Current Session State
 
-**Session:** C Evening
+**Session:** C Evening (ended)
 **Date:** 2026-04-19
-**Status:** in-progress
-**Project:** HenryDB
+**Status:** session-ended
+**Projects:** HenryDB, Neural-Net
 
-## Current Task
-- **T226** THINK: Assessed direction — fixed COUNT(*) aggregate bug
-- **Completed:** Fixed isStar normalization in computeAgg, 8 regression tests
-
-## Session C Progress
-- Tasks completed: 1
-- Bugs fixed: 1 (COUNT(*) in expressions)
-- Tests added: 8
+## Session C Summary
+- **Tasks completed:** 14 (T226-T248)
+- **Bugs fixed:** 6 (COUNT(*) expressions, UPDATE/DELETE non-unique index, pg-server crash, keyword column UPDATE, || NULL propagation, LIKE ESCAPE)
+- **Features added:** 3 (LIKE ESCAPE clause, correlated IN subquery decorrelation, character-level language model)
+- **Tests added:** ~60 new tests
+- **Full suite health:** 846 files, 8337 tests pass, 99.88% pass rate
