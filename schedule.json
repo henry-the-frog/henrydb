@@ -852,9 +852,41 @@
     {
       "id": "T80",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T16:48:24.775Z",
+      "completed": "2026-04-20T16:49:07.341Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: ANALYZE command — collect table statistics (row count, distinct values, histograms)",
+      "project": "henrydb",
+      "started": "2026-04-20T16:49:56.056Z",
+      "completed": "2026-04-20T16:50:47.150Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: ANALYZE already fully implemented with NDV, null counts, min/max, avg width, histograms. Planner has selectivityEq/LT/GT methods."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Use ANALYZE stats in query planner for selectivity estimation",
+      "project": "henrydb",
+      "started": "2026-04-20T16:50:47.406Z",
+      "completed": "2026-04-20T16:50:47.552Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: Planner already uses ANALYZE stats for selectivity estimation (histogram-based)."
+    },
+    {
+      "id": "T83",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T16:48:24.775Z"
+      "started": "2026-04-20T16:50:47.809Z"
     }
   ],
   "focusProjects": [
@@ -1174,6 +1206,18 @@
     {
       "time": "2026-04-20T16:40:42.962Z",
       "msg": "Added T80 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T16:49:55.586Z",
+      "msg": "Added T81 (BUILD) after end: BUILD: ANALYZE command — collect table statistics (row count, distinct values, histograms)"
+    },
+    {
+      "time": "2026-04-20T16:49:55.705Z",
+      "msg": "Added T82 (BUILD) after end: BUILD: Use ANALYZE stats in query planner for selectivity estimation"
+    },
+    {
+      "time": "2026-04-20T16:49:55.823Z",
+      "msg": "Added T83 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
