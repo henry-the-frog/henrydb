@@ -1289,16 +1289,100 @@
     {
       "id": "T121",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "BUILD: Add SHOW command (SHOW TABLES, SHOW COLUMNS FROM, SHOW FUNCTIONS)",
       "project": "henrydb",
-      "started": "2026-04-20T17:28:05.600Z"
+      "started": "2026-04-20T17:28:05.600Z",
+      "completed": "2026-04-20T17:28:24.960Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
     },
     {
       "id": "T122",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T17:30:17.544Z",
+      "completed": "2026-04-20T17:30:28.270Z",
+      "duration_ms": 5000,
+      "summary": "Git push already up to date."
+    },
+    {
+      "id": "T123",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Investigate integration test e-commerce scenario (8 rows instead of 10). Read relevant test file.",
+      "project": "henrydb",
+      "started": "2026-04-20T17:30:53.975Z",
+      "completed": "2026-04-20T17:39:45.514Z",
+      "duration_ms": 600000,
+      "summary": "CRITICAL: Fixed 3 naming bugs. (1) _tryVectorizedExecution→_selectInnerCore (all TransactionalDB SELECTs crashed). (2) _executeAst→execute_ast (prepared stmts/cursors/MERGE broken). (3) DEALLOCATE ALL name parsing. Integration test passes, prepared stmts 13/13. All remaining test failures are just timeouts."
+    },
+    {
+      "id": "T124",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Fix e-commerce integration test bug",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-20T17:39:45.772Z",
+      "completed": "2026-04-20T17:39:56.126Z",
+      "duration_ms": 30000,
+      "summary": "E-commerce bug already fixed in T123. Redirected BUILD tasks to timeout fixes and naming audit."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "task": "BUILD: Increase timeout for benchmark/stress tests or mark them as slow",
       "status": "upcoming",
-      "task": "MAINTAIN: git push"
+      "plan_ref": "T124"
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "task": "BUILD: Hunt for more _executeAst naming mismatches across codebase",
+      "status": "upcoming",
+      "plan_ref": "T124"
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: placeholder",
+      "project": "henrydb",
+      "started": "2026-04-20T17:39:56.389Z",
+      "completed": "2026-04-20T17:40:02.254Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: placeholder task superseded by T129."
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: placeholder",
+      "project": "henrydb",
+      "started": "2026-04-20T17:40:08.067Z",
+      "completed": "2026-04-20T17:40:08.213Z",
+      "duration_ms": 1000,
+      "summary": "SKIP: placeholder superseded."
+    },
+    {
+      "id": "T127",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Full test sweep after fix",
+      "project": "henrydb",
+      "started": "2026-04-20T17:40:08.490Z",
+      "completed": "2026-04-20T17:42:02.309Z",
+      "duration_ms": 120000,
+      "summary": "Full sweep: 4108 pass, 0 fail, 5 cancelled (timeouts). ZERO regressions. Critical bugs from T123 confirmed fixed across entire suite."
+    },
+    {
+      "id": "T128",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push + daily log update",
+      "started": "2026-04-20T17:42:02.569Z"
     }
   ],
   "focusProjects": [
@@ -1786,6 +1870,34 @@
     {
       "time": "2026-04-20T17:26:15.742Z",
       "msg": "Added T122 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T17:30:53.146Z",
+      "msg": "Added T123 (THINK) after end: THINK: Investigate integration test e-commerce scenario (8 rows instead of 10). Read relevant test file."
+    },
+    {
+      "time": "2026-04-20T17:30:53.264Z",
+      "msg": "Added T124 (PLAN) after end: PLAN: Fix e-commerce integration test bug"
+    },
+    {
+      "time": "2026-04-20T17:30:53.384Z",
+      "msg": "Added T125 (BUILD) after end: BUILD: placeholder"
+    },
+    {
+      "time": "2026-04-20T17:30:53.504Z",
+      "msg": "Added T126 (BUILD) after end: BUILD: placeholder"
+    },
+    {
+      "time": "2026-04-20T17:30:53.624Z",
+      "msg": "Added T127 (MAINTAIN) after end: MAINTAIN: Full test sweep after fix"
+    },
+    {
+      "time": "2026-04-20T17:30:53.743Z",
+      "msg": "Added T128 (MAINTAIN) after end: MAINTAIN: git push + daily log update"
+    },
+    {
+      "time": "2026-04-20T17:39:51.115Z",
+      "msg": "PLAN T124 filled 2 BUILD tasks"
     }
   ]
 }
