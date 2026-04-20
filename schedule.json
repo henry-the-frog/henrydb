@@ -992,9 +992,211 @@
     {
       "id": "T94",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Another git push and log",
-      "started": "2026-04-20T21:50:07.577Z"
+      "started": "2026-04-20T21:50:07.577Z",
+      "completed": "2026-04-20T21:50:31.987Z",
+      "duration_ms": 30000,
+      "summary": "Git push, daily log updated."
+    },
+    {
+      "id": "T95",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test full-text search — CREATE INDEX USING GIN, to_tsvector, ts_rank",
+      "project": "henrydb",
+      "started": "2026-04-20T21:50:56.159Z",
+      "completed": "2026-04-20T21:51:22.399Z",
+      "duration_ms": 60000,
+      "summary": "FTS: mostly theater. to_tsvector/to_tsquery/@@  parse but @@ returns all rows (doesnt filter). No GIN index syntax. ts_rank/ts_headline not implemented. Basic LIKE search works correctly as alternative."
+    },
+    {
+      "id": "T96",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test spatial/R-tree index — nearest neighbor, range queries",
+      "project": "henrydb",
+      "started": "2026-04-20T21:51:31.860Z",
+      "completed": "2026-04-20T21:51:58.906Z",
+      "duration_ms": 30000,
+      "summary": "R-tree works programmatically: range queries and nearest neighbor both correct. NOT integrated into SQL — no GIST index type, no spatial functions. Another standalone module."
+    },
+    {
+      "id": "T97",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test SEQUENCE — CREATE SEQUENCE, nextval, currval",
+      "project": "henrydb",
+      "started": "2026-04-20T21:52:03.527Z",
+      "completed": "2026-04-20T21:52:24.781Z",
+      "duration_ms": 60000,
+      "summary": "Sequences work: CREATE SEQUENCE, nextval (1,2,...), currval, setval all correct. SERIAL column type creates column but doesnt auto-increment (id is NULL). SERIAL-sequence wiring missing."
+    },
+    {
+      "id": "T98",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test aggregate functions exhaustively — all 16 claimed",
+      "project": "henrydb",
+      "started": "2026-04-20T21:52:30.915Z",
+      "completed": "2026-04-20T21:52:55.982Z",
+      "duration_ms": 60000,
+      "summary": "Aggregates: 13/19 fully work (COUNT, SUM, AVG, MIN, MAX, STDDEV, VARIANCE, GROUP_CONCAT, COUNT/SUM DISTINCT, FILTER). 4 return undefined (ARRAY_AGG, STRING_AGG, BOOL_AND, BOOL_OR). 3 not implemented (BIT_AND, BIT_OR, EVERY)."
+    },
+    {
+      "id": "T99",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B final assessment: what surprised me today?",
+      "started": "2026-04-20T21:53:02.167Z",
+      "completed": "2026-04-20T21:53:19.206Z",
+      "duration_ms": 60000,
+      "summary": "Biggest surprises: (1) planner-executor disconnect hiding under 4200 tests, (2) division bug in plain sight, (3) depth of feature theater pattern (8+ disconnected features), (4) storage layer is genuinely good, (5) afternoon of testing found more bugs than months of features."
+    },
+    {
+      "id": "T100",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final MEMORY.md update with Session B insights",
+      "started": "2026-04-20T21:53:26.202Z",
+      "completed": "2026-04-20T21:54:08.271Z",
+      "duration_ms": 120000,
+      "summary": "MEMORY.md updated with Session B findings. HenryDB section rewritten with depth audit results, Feature Theater pattern, storage vs SQL layer grades. Added Feature Theater and depth>breadth lessons."
+    },
+    {
+      "id": "T101",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CoW-BTree — the MVCC-safe tree implementation",
+      "project": "henrydb",
+      "started": "2026-04-20T21:54:29.041Z",
+      "completed": "2026-04-20T21:55:24.330Z",
+      "duration_ms": 60000,
+      "summary": "CoW B-tree: snapshot isolation works correctly (old snap sees pre-delete/pre-insert state). Performance: 3.8K insert/sec, 27K get/sec — 100x slower than B+ tree due to node copying. Correct but impractical at scale."
+    },
+    {
+      "id": "T102",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test ANALYZE output — does it update histogram statistics?",
+      "project": "henrydb",
+      "started": "2026-04-20T21:55:31.388Z",
+      "completed": "2026-04-20T21:55:49.747Z",
+      "duration_ms": 30000,
+      "summary": "ANALYZE: executes without error but doesnt change EXPLAIN output. estimated_rows stays ? for TABLE_SCAN. Either ANALYZE doesnt update stats or EXPLAIN doesnt use them for non-index paths."
+    },
+    {
+      "id": "T103",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test ORDER BY with NULL handling — NULLS FIRST, NULLS LAST",
+      "project": "henrydb",
+      "started": "2026-04-20T21:55:56.072Z",
+      "completed": "2026-04-20T21:56:13.255Z",
+      "duration_ms": 30000,
+      "summary": "NULLS FIRST/LAST: works correctly. Default ASC: NULLs last. Default DESC: NULLs first. Explicit NULLS FIRST/LAST both work. Matches PostgreSQL behavior."
+    },
+    {
+      "id": "T104",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test WHERE on computed columns and expressions",
+      "project": "henrydb",
+      "started": "2026-04-20T21:56:20.176Z",
+      "completed": "2026-04-20T21:56:42.104Z",
+      "duration_ms": 30000,
+      "summary": "WHERE on expressions: arithmetic, string concat, UPPER, LENGTH, CAST, CASE all work correctly in WHERE. GROUP BY expression returns column name (same parseSelectColumn bug). WHERE evaluation is solid."
+    },
+    {
+      "id": "T105",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test multi-table UPDATE with JOIN",
+      "project": "henrydb",
+      "started": "2026-04-20T21:56:48.612Z",
+      "completed": "2026-04-20T21:57:07.973Z",
+      "duration_ms": 30000,
+      "summary": "Multi-table UPDATE: both UPDATE FROM (join-based) and correlated subquery UPDATE work correctly. No issues. JS floating point noise is expected."
+    },
+    {
+      "id": "T106",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test EXPLAIN with JOINs — compare plan vs actual execution",
+      "project": "henrydb",
+      "started": "2026-04-20T21:57:41.692Z",
+      "completed": "2026-04-20T21:58:06.936Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN on JOINs: always NESTED_LOOP_JOIN, never INDEX_SCAN for inner table even with index. EXPLAIN ANALYZE: estimated_rows imprecise (30 vs 100 actual). Plan doesnt change between INNER/LEFT/CROSS — same NL plan for all. Confirms join execution is uniform NL."
+    },
+    {
+      "id": "T107",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test conversion functions — TO_CHAR, TO_DATE, TO_NUMBER",
+      "project": "henrydb",
+      "started": "2026-04-20T21:58:13.564Z",
+      "completed": "2026-04-20T21:58:33.762Z",
+      "duration_ms": 30000,
+      "summary": "TO_CHAR: exists but returns format string literally, doesnt format. TO_DATE/TO_NUMBER/TO_TIMESTAMP: not implemented. ::TYPE cast: parses but returns undefined. Conversion functions are mostly stubs."
+    },
+    {
+      "id": "T108",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: test the WAL module directly — log records, checkpoints, recovery",
+      "project": "henrydb"
+    },
+    {
+      "id": "T109",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test INTERSECT and EXCEPT set operations",
+      "project": "henrydb",
+      "started": "2026-04-20T21:58:40.975Z",
+      "completed": "2026-04-20T21:59:00.639Z",
+      "duration_ms": 30000,
+      "summary": "INTERSECT and EXCEPT: all 4 variants work correctly. INTERSECT returns common rows, EXCEPT returns difference. ALL variants also work."
+    },
+    {
+      "id": "T110",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CREATE EXTENSION and extension system",
+      "project": "henrydb",
+      "started": "2026-04-20T21:59:07.914Z",
+      "completed": "2026-04-20T21:59:20.285Z",
+      "duration_ms": 10000,
+      "summary": "CREATE EXTENSION: not implemented. Parser doesnt recognize EXTENSION keyword."
+    },
+    {
+      "id": "T111",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test transaction isolation levels — READ COMMITTED vs SERIALIZABLE",
+      "project": "henrydb",
+      "started": "2026-04-20T21:59:27.433Z",
+      "completed": "2026-04-20T21:59:53.085Z",
+      "duration_ms": 60000,
+      "summary": "Snapshot isolation confirmed: no phantom reads (s1 sees consistent snapshot), no dirty reads (s4 sees committed value). MVCC works at snapshot isolation level — stronger than READ COMMITTED."
+    },
+    {
+      "id": "T112",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test advisory locks and pg_advisory_lock",
+      "project": "henrydb",
+      "started": "2026-04-20T22:00:01.320Z",
+      "completed": "2026-04-20T22:00:14.976Z",
+      "duration_ms": 10000,
+      "summary": "Advisory locks not implemented."
+    },
+    {
+      "id": "T113",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Pre-close git push",
+      "started": "2026-04-20T22:00:21.436Z"
     }
   ],
   "focusProjects": [
@@ -1394,6 +1596,82 @@
     {
       "time": "2026-04-20T21:45:26.196Z",
       "msg": "Added T94 (MAINTAIN) after end: Another git push and log"
+    },
+    {
+      "time": "2026-04-20T21:50:48.692Z",
+      "msg": "Added T95 (EXPLORE) after end: HenryDB: test full-text search — CREATE INDEX USING GIN, to_tsvector, ts_rank"
+    },
+    {
+      "time": "2026-04-20T21:50:48.811Z",
+      "msg": "Added T96 (EXPLORE) after end: HenryDB: test spatial/R-tree index — nearest neighbor, range queries"
+    },
+    {
+      "time": "2026-04-20T21:50:48.931Z",
+      "msg": "Added T97 (EXPLORE) after end: HenryDB: test SEQUENCE — CREATE SEQUENCE, nextval, currval"
+    },
+    {
+      "time": "2026-04-20T21:50:49.050Z",
+      "msg": "Added T98 (EXPLORE) after end: HenryDB: test aggregate functions exhaustively — all 16 claimed"
+    },
+    {
+      "time": "2026-04-20T21:50:49.168Z",
+      "msg": "Added T99 (THINK) after end: Session B final assessment: what surprised me today?"
+    },
+    {
+      "time": "2026-04-20T21:50:49.286Z",
+      "msg": "Added T100 (MAINTAIN) after end: Final MEMORY.md update with Session B insights"
+    },
+    {
+      "time": "2026-04-20T21:54:21.241Z",
+      "msg": "Added T101 (EXPLORE) after end: HenryDB: test CoW-BTree — the MVCC-safe tree implementation"
+    },
+    {
+      "time": "2026-04-20T21:54:21.360Z",
+      "msg": "Added T102 (EXPLORE) after end: HenryDB: test ANALYZE output — does it update histogram statistics?"
+    },
+    {
+      "time": "2026-04-20T21:54:21.479Z",
+      "msg": "Added T103 (EXPLORE) after end: HenryDB: test ORDER BY with NULL handling — NULLS FIRST, NULLS LAST"
+    },
+    {
+      "time": "2026-04-20T21:54:21.598Z",
+      "msg": "Added T104 (EXPLORE) after end: HenryDB: test WHERE on computed columns and expressions"
+    },
+    {
+      "time": "2026-04-20T21:54:21.717Z",
+      "msg": "Added T105 (EXPLORE) after end: HenryDB: test multi-table UPDATE with JOIN"
+    },
+    {
+      "time": "2026-04-20T21:57:34.614Z",
+      "msg": "Added T106 (EXPLORE) after end: HenryDB: test EXPLAIN with JOINs — compare plan vs actual execution"
+    },
+    {
+      "time": "2026-04-20T21:57:34.732Z",
+      "msg": "Added T107 (EXPLORE) after end: HenryDB: test conversion functions — TO_CHAR, TO_DATE, TO_NUMBER"
+    },
+    {
+      "time": "2026-04-20T21:57:34.852Z",
+      "msg": "Added T108 (EXPLORE) after end: HenryDB: test the WAL module directly — log records, checkpoints, recovery"
+    },
+    {
+      "time": "2026-04-20T21:57:34.971Z",
+      "msg": "Added T109 (EXPLORE) after end: HenryDB: test INTERSECT and EXCEPT set operations"
+    },
+    {
+      "time": "2026-04-20T21:57:35.090Z",
+      "msg": "Added T110 (EXPLORE) after end: HenryDB: test CREATE EXTENSION and extension system"
+    },
+    {
+      "time": "2026-04-20T21:57:35.208Z",
+      "msg": "Added T111 (EXPLORE) after end: HenryDB: test transaction isolation levels — READ COMMITTED vs SERIALIZABLE"
+    },
+    {
+      "time": "2026-04-20T21:57:35.326Z",
+      "msg": "Added T112 (EXPLORE) after end: HenryDB: test advisory locks and pg_advisory_lock"
+    },
+    {
+      "time": "2026-04-20T21:57:35.444Z",
+      "msg": "Added T113 (MAINTAIN) after end: Pre-close git push"
     }
   ]
 }

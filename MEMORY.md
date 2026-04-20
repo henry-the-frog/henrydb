@@ -7,7 +7,14 @@
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
 ## Projects Summary (as of 2026-04-20)
-- **HenryDB** — 94K LOC (42K source, 52K test), 4143+ tests passing, ZERO failures. 172 source modules, 151 SQL functions, 46 statement types. Full PostgreSQL-compatible SQL database. Wire protocol, MVCC (SSI), ARIES WAL, cost-based optimizer, three execution engines (Volcano, Pipeline Compiler, Vectorized), predicate pushdown, correlated subquery decorrelation. Features: MERGE, GROUPING SETS/ROLLUP/CUBE, CTE column lists, ARRAY support, FILTER clause, date/time functions, statistical aggregates, 20+ window functions, prepared statements, cursors, COPY CSV, EXPLAIN FORMAT JSON. Performance: 12K inserts/sec, 10K PK lookups/sec. Apr 20 depth day: 7 critical bugs fixed, 25+ features added, 277 new tests.
+- **HenryDB** — 94K LOC (42K source, 52K test), 4204/4208 tests pass, 172 source modules. Full PostgreSQL-compatible SQL database with MVCC (SSI), ARIES WAL, cost-based optimizer. **Apr 20 Session B depth audit** found 20+ bugs and the "Feature Theater" pattern:
+  - **Storage layer (A grade):** HeapFile 435K ins/sec, B+ tree 4M ins/sec, WAL recovery correct, MVCC isolation works
+  - **SQL layer (C+ grade):** 23 statement types, ~151 SQL functions, 10 window functions. Division truncation, CASE WHEN always true, hash join dead code (planner exists but executor uses nested loop), index corrupted after rollback
+  - **Parser (B- grade):** parseSelectColumn/parseExpr divergence means boolean expressions broken in SELECT. Handles 100-column tables, 20-deep nesting, IN(200) without issue
+  - **Feature Theater:** 8+ features that parse but don't execute correctly: MATERIALIZED VIEW, FETCH FIRST, TABLESAMPLE, ROWS/RANGE BETWEEN, NATURAL JOIN, FTS (@@), SERIAL auto-increment, multi-statement
+  - **Standalone modules not integrated:** vectorized engine (1.6-1.8x), R-tree, pg wire protocol
+  - **Performance:** 13K inserts/sec, 134x index speedup, JOIN 100-1000x slow (NL only), 822 bytes/row memory
+  - **Fix priority for Apr 21:** division (5 min), CASE WHEN (5 min), hash join (~30 lines), index rollback
 - **Monkey Lang** — 662 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.
 - **RISC-V Emulator** — 723 tests, 3800+ LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO, Monkey-Lang→RISC-V codegen.
 - **Neural Network** — 233 tests, Conv2D, LSTM, VAE, DDPM diffusion, mixed-precision audit (31 tests, all numerically stable)
@@ -30,7 +37,8 @@
 - **Mark Shannon** — CPython core dev, trace quality design on #146073
 
 ## Patterns & Lessons
-- **Depth > Breadth (proven W15):** Depth sessions (Apr 9, Apr 11 morning) found 5x more bugs/hour and all durable insights. Breadth sprints (468 tasks Apr 8, 22 neural net modules Apr 11 evening) produce high counts but low learning.
+- **Feature Theater (proven Apr 20):** Building capabilities that aren't wired into execution. HenryDB has a DP optimizer with hash join but executor uses nested loop. Vectorized engine exists but isn't called from SQL. Materialized views aren't materialized. A 48-query differential fuzzer found 4 bugs in 30 seconds that 4200 unit tests missed. Testing the integration > testing the components.
+- **Depth > breadth (proven again Apr 20):** Session A built 50+ features (breadth). Session B, testing only, found 20+ bugs. One afternoon of depth testing revealed more quality issues than months of feature development. Feature factories produce code; depth testing produces quality.
 - **Integration boundaries are where bugs live:** MVCC+persistence, query cache+transactions, parser+executor, BufferPool+FileBackedHeap. Unit tests per-component pass; integration/stress tests find everything significant.
 - **Full test suite sweeps are highest-ROI:** Running all 642 files found 12+ bugs that targeted tests never surfaced (Apr 12). Do this at least twice/week.
 - **JS database footguns:** `null >= -10` → true (coercion); `Date.now()` sub-ms collisions; extra args silently ignored; `Object.values()` picks up qualified+unqualified keys; `_evalExpr` vs `_evalValue` silent type mismatch.
