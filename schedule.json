@@ -1769,10 +1769,62 @@
     {
       "id": "T165",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Full test sweep + git push",
       "project": "henrydb",
-      "started": "2026-04-20T18:43:18.375Z"
+      "started": "2026-04-20T18:43:18.375Z",
+      "completed": "2026-04-20T18:49:28.789Z",
+      "duration_ms": 120000,
+      "summary": "Full sweep: 4134/4144, 0 real failures (only timeouts on heavy benchmarks). Git pushed."
+    },
+    {
+      "id": "T166",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: What SQL standard features does HenryDB still lack? Compare against TPC-H queries.",
+      "project": "henrydb",
+      "started": "2026-04-20T18:49:42.531Z",
+      "completed": "2026-04-20T18:51:15.593Z",
+      "duration_ms": 300000,
+      "summary": "TPC-H exploration: Q1, Q3, Q5, Q10, Q13, Q17 all work. Q4 (correlated EXISTS) fails with unqualified outer refs — works with table-qualified refs (o.id). Window functions + PARTITION work. HAVING works. Multi-table joins (5-way) work. Pre-existing bug: correlated subqueries dont resolve unqualified outer column references."
+    },
+    {
+      "id": "T167",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Write session reflection — what went right/wrong, what patterns emerged",
+      "started": "2026-04-20T18:51:15.853Z",
+      "completed": "2026-04-20T18:51:58.354Z",
+      "duration_ms": 120000,
+      "summary": "Session reflection written. Key insights: (1) Build-to-discover works — every critical bug found while building features. (2) 50+ BUILDs is too many. (3) db.js duplicate methods are a real problem. (4) Correlated subquery scope is the top remaining bug."
+    },
+    {
+      "id": "T168",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Final daily log + evening summary + reflections + git push",
+      "started": "2026-04-20T18:51:58.614Z",
+      "completed": "2026-04-20T18:52:47.390Z",
+      "duration_ms": 30000,
+      "summary": "Daily log, TODO, reflections updated."
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix correlated subquery outer scope resolution for unqualified column names",
+      "project": "henrydb",
+      "started": "2026-04-20T18:52:47.649Z",
+      "completed": "2026-04-20T18:56:20.087Z",
+      "duration_ms": 300000,
+      "summary": "CRITICAL: Fixed correlated subquery outer scope resolution. isCorrelated() now checks inner table column schemas to detect unqualified outer refs. EXISTS/NOT EXISTS with unqualified outer columns now work. TPC-H Q4 passes."
+    },
+    {
+      "id": "T170",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T18:56:20.347Z"
     }
   ],
   "focusProjects": [
@@ -2420,6 +2472,26 @@
     {
       "time": "2026-04-20T18:37:29.507Z",
       "msg": "Added T165 (MAINTAIN) after end: MAINTAIN: Full test sweep + git push"
+    },
+    {
+      "time": "2026-04-20T18:49:42.000Z",
+      "msg": "Added T166 (EXPLORE) after end: EXPLORE: What SQL standard features does HenryDB still lack? Compare against TPC-H queries."
+    },
+    {
+      "time": "2026-04-20T18:49:42.157Z",
+      "msg": "Added T167 (THINK) after end: THINK: Write session reflection — what went right/wrong, what patterns emerged"
+    },
+    {
+      "time": "2026-04-20T18:49:42.298Z",
+      "msg": "Added T168 (MAINTAIN) after end: MAINTAIN: Final daily log + evening summary + reflections + git push"
+    },
+    {
+      "time": "2026-04-20T18:52:23.798Z",
+      "msg": "Added T169 (BUILD) after end: BUILD: Fix correlated subquery outer scope resolution for unqualified column names"
+    },
+    {
+      "time": "2026-04-20T18:52:23.918Z",
+      "msg": "Added T170 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }

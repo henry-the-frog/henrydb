@@ -1,21 +1,19 @@
 ## TODO
 
 ### Urgent
-- (none)
+- HenryDB: Correlated subqueries don't resolve unqualified outer column references (since 2026-04-20)
 
 ### Normal
-- HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
-- HenryDB: Integration test (e-commerce scenario) returns 8 rows instead of 10
-- HenryDB: db.js is 6.2K lines — needs splitting into DDL/DML/expression modules
+- HenryDB: db.js is 7K+ lines — needs splitting (has duplicate _exprToString methods)
+- HenryDB: WAL truncation after checkpoint (WAL grows forever)
+- HenryDB: MVCC interception approach is fragile — consider proper visibility function in HeapFile API
+- HenryDB: Integration test (e-commerce scenario) — verify after naming fix
 
 ### Low
-- RISC-V: Liveness-based register allocation (current linear sequential, low priority)
+- RISC-V: Liveness-based register allocation
 - Neural-net: Architecture exploration (attention, model serialization already done)
-- RISC-V: IIFE pattern (fn(x){x}(5) direct invocation)
+- RISC-V: IIFE pattern
 - HenryDB: heap page overflow with very large values (>30KB). Need TOAST-style overflow pages.
-- Neural-net: training checkpoints / early stopping improvements
-- HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr (risky, deferred)
-- HenryDB: Unified expression walker migration — use expr-walker.js for _evalGroupExpr and _evalAggregateExpr
-- HenryDB: Hash-index performance (test takes 24s, needs optimization not bug fix)
-- HenryDB: WAL truncation after checkpoint (WAL grows forever currently)
-- HenryDB: MVCC interception approach is fragile — consider proper visibility function in HeapFile API
+- HenryDB: Hash-index performance (test takes 24s)
+- HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr
+- HenryDB: Unified expression walker migration
