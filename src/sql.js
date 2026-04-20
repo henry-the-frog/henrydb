@@ -28,6 +28,7 @@ const KEYWORDS = new Set([
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
+  'FUNCTION', 'RETURNS', 'LANGUAGE', 'CALL', 'PROCEDURE',
   'CONFLICT', 'DO', 'NOTHING',
   'ANALYZE', 'RETURNING',
   'MATERIALIZED', 'REFRESH',
@@ -108,6 +109,17 @@ export function tokenize(sql) {
     if (src[i] === '/') { tokens.push({ type: 'SLASH' }); i++; continue; }
     if (src[i] === '%') { tokens.push({ type: 'MOD' }); i++; continue; }
 
+    // Dollar-quoted string: $$body$$
+    if (src[i] === '$' && i + 1 < src.length && src[i + 1] === '$') {
+      i += 2; // skip opening $$
+      let body = '';
+      while (i + 1 < src.length && !(src[i] === '$' && src[i + 1] === '$')) {
+        body += src[i++];
+      }
+      if (i + 1 < src.length) i += 2; // skip closing $$
+      tokens.push({ type: 'STRING', value: body.trim() });
+      continue;
+    }
     // Parameter placeholder: $1, $2, etc.
     if (src[i] === '$' && i + 1 < src.length && /[0-9]/.test(src[i + 1])) {
       i++; // skip $
@@ -1649,6 +1661,59 @@ export function parse(sql) {
       expect('KEYWORD', 'AS');
       const query = parseSelect();
       return { type: 'CREATE_MATVIEW', name, query };
+    }
+    if (isKeyword('FUNCTION') || isKeyword('OR')) {
+      // CREATE [OR REPLACE] FUNCTION
+      let orReplace = false;
+      if (isKeyword('OR')) {
+        advance(); // OR
+        expect('KEYWORD', 'REPLACE');
+        orReplace = true;
+        expect('KEYWORD', 'FUNCTION');
+      } else {
+        advance(); // FUNCTION
+      }
+      const name = advance().value.toLowerCase();
+      expect('(');
+      const params = [];
+      while (peek().type !== ')') {
+        const paramName = advance().value.toLowerCase();
+        const paramType = advance().value.toUpperCase();
+        params.push({ name: paramName, type: paramType });
+        if (peek().type === ',') advance();
+      }
+      expect(')');
+      let returnType = null;
+      if (isKeyword('RETURNS')) {
+        advance(); // RETURNS
+        returnType = advance().value.toUpperCase();
+      }
+      // Parse body: AS $$ body $$ or AS 'body'
+      expect('KEYWORD', 'AS');
+      let body;
+      if (peek().type === 'STRING') {
+        body = advance().value;
+      } else if (peek().value === '$$' || peek().type === '$$') {
+        // Dollar-quoted string: consume everything between $$ and $$
+        advance(); // opening $$
+        const bodyTokens = [];
+        while (pos < tokens.length && !(peek().value === '$$' || peek().type === '$$')) {
+          const t = peek();
+          bodyTokens.push(t.originalValue || t.value || t.type);
+          advance();
+        }
+        if (pos < tokens.length) advance(); // closing $$
+        body = bodyTokens.join(' ');
+      } else {
+        throw new Error('Expected function body after AS');
+      }
+      // Optional: LANGUAGE specifier (ignore for now)
+      let language = 'sql';
+      if (isKeyword('LANGUAGE')) {
+        advance();
+        language = advance().value.toLowerCase();
+      }
+      return { type: 'CREATE_FUNCTION', name, params, returnType, body, language, orReplace };
     }
     expect('KEYWORD', 'TABLE');
     let ifNotExists = false;

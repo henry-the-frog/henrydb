@@ -36,6 +36,9 @@ export class Database {
     
     // pg_stat_statements tracking
     this._queryStats = new Map(); // normalized_query -> { query, calls, total_exec_time, min_exec_time, max_exec_time, rows }
+    
+    // User-defined functions catalog
+    this._functions = new Map(); // name -> { params, returnType, body, language }
   }
 
   /** Case-insensitive table lookup */
@@ -532,6 +535,7 @@ export class Database {
       case 'FETCH': return this._fetch(ast);
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
+      case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'DROP_SEQUENCE': return this._dropSequence(ast);
       case 'TRUNCATE': return this._truncate(ast);
       case 'CHECKPOINT': return this._checkpoint(ast);
@@ -3020,6 +3024,74 @@ export class Database {
     return { type: 'OK', message: `CREATE SEQUENCE "${name}"` };
   }
 
+  _createFunction(ast) {
+    const name = ast.name.toLowerCase();
+    if (this._functions.has(name) && !ast.orReplace) {
+      throw new Error(`Function "${name}" already exists`);
+    }
+    // Parse the body SQL expression once
+    let bodyAst;
+    try {
+      bodyAst = parse(ast.body);
+    } catch {
+      // If it doesn't parse as a full statement, try wrapping in SELECT
+      try {
+        bodyAst = parse('SELECT ' + ast.body);
+      } catch (e2) {
+        throw new Error(`Invalid function body: ${e2.message}`);
+      }
+    }
+    this._functions.set(name, {
+      params: ast.params,
+      returnType: ast.returnType,
+      body: ast.body,
+      bodyAst,
+      language: ast.language || 'sql',
+    });
+    return { type: 'OK', message: `CREATE FUNCTION ${name}` };
+  }
+
+  _callUserFunction(funcDef, args, row) {
+    // Evaluate arguments
+    const argValues = args.map(a => this._evalValue(a, row));
+    
+    // Create a parameter binding row: param_name → value (both cases for case-insensitive matching)
+    const paramRow = { ...row };
+    for (let i = 0; i < funcDef.params.length; i++) {
+      const val = argValues[i] !== undefined ? argValues[i] : null;
+      const name = funcDef.params[i].name;
+      paramRow[name] = val;
+      paramRow[name.toUpperCase()] = val;
+      paramRow[name.toLowerCase()] = val;
+    }
+    
+    if (funcDef.language === 'sql') {
+      // SQL function: evaluate the body expression with params as the row context
+      const ast = funcDef.bodyAst;
+      if (ast.type === 'SELECT' && !ast.from) {
+        const col = ast.columns[0];
+        // Resolve the column value depending on its type
+        if (col.type === 'column' || col.type === 'column_ref') {
+          const name = col.name;
+          return paramRow[name] !== undefined ? paramRow[name] : null;
+        }
+        if (col.type === 'function') {
+          return this._evalFunction(col.func, col.args, paramRow);
+        }
+        if (col.type === 'expression') {
+          return this._evalValue(col.expr, paramRow);
+        }
+        return this._evalValue(col, paramRow);
+      }
+      // Full SELECT with FROM: execute as subquery
+      const result = this._select(ast);
+      if (!result.rows || result.rows.length === 0) return null;
+      return Object.values(result.rows[0])[0];
+    }
+    
+    throw new Error(`Unsupported function language: ${funcDef.language}`);
+  }
+
   _dropSequence(ast) {
     if (!this._sequences) this._sequences = new Map();
     const name = ast.name.toLowerCase();
@@ -5335,7 +5407,14 @@ export class Database {
           .replace('%S', String(d.getUTCSeconds()).padStart(2, '0'));
       }
       
-      default: throw new Error(`Unknown function: ${func}`);
+      default: {
+        // Check user-defined functions
+        const udf = this._functions.get(func.toLowerCase());
+        if (udf) {
+          return this._callUserFunction(udf, args, row);
+        }
+        throw new Error(`Unknown function: ${func}`);
+      }
     }
   }
 
