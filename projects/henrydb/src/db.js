@@ -7385,7 +7385,14 @@ export class Database {
           }
           case 'JSON_AGG':
           case 'JSONB_AGG': {
-            return JSON.stringify(distinct ? [...new Set(values)] : values);
+            const vals = distinct ? [...new Set(values)] : values;
+            const parsed = vals.map(v => {
+              if (typeof v === 'string') {
+                try { return JSON.parse(v); } catch { return v; }
+              }
+              return v;
+            });
+            return JSON.stringify(parsed);
           }
           case 'ARRAY_AGG': {
             let items = distinct ? [...new Set(values)] : values;
@@ -9421,7 +9428,14 @@ export class Database {
         case 'JSON_AGG':
         case 'JSONB_AGG': {
           const vals = col.distinct ? [...new Set(values)] : values;
-          result[name] = JSON.stringify(vals);
+          // Try to parse string values as JSON to avoid double-encoding
+          const parsed = vals.map(v => {
+            if (typeof v === 'string') {
+              try { return JSON.parse(v); } catch { return v; }
+            }
+            return v;
+          });
+          result[name] = JSON.stringify(parsed);
           break;
         }
         case 'ARRAY_AGG': {
