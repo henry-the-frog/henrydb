@@ -1907,9 +1907,41 @@
     {
       "id": "T178",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Final test sweep + daily log evening summary + git push",
-      "started": "2026-04-20T19:05:09.315Z"
+      "started": "2026-04-20T19:05:09.315Z",
+      "completed": "2026-04-20T19:07:34.752Z",
+      "duration_ms": 300000,
+      "summary": "Final sweep: 4135+ pass, 0 fail. Evening summary written. Git pushed everywhere."
+    },
+    {
+      "id": "T179",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: REGEXP_MATCHES (return all matches) + REGEXP_SPLIT_TO_TABLE",
+      "project": "henrydb",
+      "started": "2026-04-20T19:07:42.963Z",
+      "completed": "2026-04-20T19:08:51.047Z",
+      "duration_ms": 60000,
+      "summary": "REGEXP_MATCHES (global match), REGEXP_COUNT, SPLIT_PART. Also added INITCAP, TRANSLATE, CHR, ASCII, MD5, ENCODE/DECODE."
+    },
+    {
+      "id": "T180",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Math functions: CEIL, FLOOR, MOD, SIGN, TRUNC, PI(), EXP, LN, LOG10",
+      "project": "henrydb",
+      "started": "2026-04-20T19:08:51.305Z",
+      "completed": "2026-04-20T19:09:56.292Z",
+      "duration_ms": 60000,
+      "summary": "20+ math functions: MOD, SIGN, TRUNC, PI, EXP, LN, LOG10, LOG2, DEGREES, RADIANS, SIN, COS, TAN, ASIN, ACOS, ATAN, ATAN2, CBRT, GCD, LCM."
+    },
+    {
+      "id": "T181",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T19:09:56.552Z"
     }
   ],
   "focusProjects": [
@@ -2609,6 +2641,18 @@
     {
       "time": "2026-04-20T19:02:25.931Z",
       "msg": "Added T178 (MAINTAIN) after end: MAINTAIN: Final test sweep + daily log evening summary + git push"
+    },
+    {
+      "time": "2026-04-20T19:07:42.492Z",
+      "msg": "Added T179 (BUILD) after end: BUILD: REGEXP_MATCHES (return all matches) + REGEXP_SPLIT_TO_TABLE"
+    },
+    {
+      "time": "2026-04-20T19:07:42.612Z",
+      "msg": "Added T180 (BUILD) after end: BUILD: Math functions: CEIL, FLOOR, MOD, SIGN, TRUNC, PI(), EXP, LN, LOG10"
+    },
+    {
+      "time": "2026-04-20T19:07:42.731Z",
+      "msg": "Added T181 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
