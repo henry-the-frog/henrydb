@@ -4805,6 +4805,36 @@ export class Database {
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
           case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
           case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
+          case 'STDDEV': case 'STDDEV_SAMP': {
+            if (values.length < 2) return null;
+            const nums = values.map(Number);
+            const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+            return Math.sqrt(nums.reduce((s, v) => s + (v - mean) ** 2, 0) / (nums.length - 1));
+          }
+          case 'STDDEV_POP': {
+            if (!values.length) return null;
+            const nums = values.map(Number);
+            const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+            return Math.sqrt(nums.reduce((s, v) => s + (v - mean) ** 2, 0) / nums.length);
+          }
+          case 'VARIANCE': case 'VAR_SAMP': {
+            if (values.length < 2) return null;
+            const nums = values.map(Number);
+            const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+            return nums.reduce((s, v) => s + (v - mean) ** 2, 0) / (nums.length - 1);
+          }
+          case 'VAR_POP': {
+            if (!values.length) return null;
+            const nums = values.map(Number);
+            const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+            return nums.reduce((s, v) => s + (v - mean) ** 2, 0) / nums.length;
+          }
+          case 'MEDIAN': {
+            if (!values.length) return null;
+            const sorted = values.map(Number).sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+          }
           case 'GROUP_CONCAT':
           case 'STRING_AGG': {
             const sep = extra.separator || ',';
@@ -6262,6 +6292,43 @@ export class Database {
         case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + v, 0) / values.length : null; break;
         case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
         case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;
+        case 'STDDEV': case 'STDDEV_SAMP': {
+          if (values.length < 2) { result[name] = null; break; }
+          const nums = values.map(Number);
+          const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+          const variance = nums.reduce((s, v) => s + (v - mean) ** 2, 0) / (nums.length - 1);
+          result[name] = Math.sqrt(variance);
+          break;
+        }
+        case 'STDDEV_POP': {
+          if (!values.length) { result[name] = null; break; }
+          const nums = values.map(Number);
+          const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+          const variance = nums.reduce((s, v) => s + (v - mean) ** 2, 0) / nums.length;
+          result[name] = Math.sqrt(variance);
+          break;
+        }
+        case 'VARIANCE': case 'VAR_SAMP': {
+          if (values.length < 2) { result[name] = null; break; }
+          const nums = values.map(Number);
+          const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+          result[name] = nums.reduce((s, v) => s + (v - mean) ** 2, 0) / (nums.length - 1);
+          break;
+        }
+        case 'VAR_POP': {
+          if (!values.length) { result[name] = null; break; }
+          const nums = values.map(Number);
+          const mean = nums.reduce((s, v) => s + v, 0) / nums.length;
+          result[name] = nums.reduce((s, v) => s + (v - mean) ** 2, 0) / nums.length;
+          break;
+        }
+        case 'MEDIAN': {
+          if (!values.length) { result[name] = null; break; }
+          const sorted = values.map(Number).sort((a, b) => a - b);
+          const mid = Math.floor(sorted.length / 2);
+          result[name] = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+          break;
+        }
         case 'GROUP_CONCAT': {
           const sep = col.separator || ',';
           result[name] = values.map(String).join(sep);
