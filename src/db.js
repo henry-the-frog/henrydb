@@ -554,6 +554,7 @@ export class Database {
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'COPY': return this._executeCopy(ast);
       case 'COMMENT': return this._executeComment(ast);
+      case 'MERGE': return this._executeMerge(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'PREPARE': return this._prepare(ast);
@@ -3423,6 +3424,108 @@ export class Database {
       this._comments.set(key, ast.comment);
     }
     return { type: 'OK', message: `COMMENT` };
+  }
+
+  _executeMerge(ast) {
+    const targetTable = this.tables.get(ast.target) || this.tables.get(ast.target.toLowerCase());
+    if (!targetTable) throw new Error(`Table "${ast.target}" does not exist`);
+    
+    // Get source rows
+    let sourceRows;
+    if (ast.source.type === 'subquery') {
+      sourceRows = this._executeAst(ast.source.query).rows;
+    } else {
+      sourceRows = this.execute(`SELECT * FROM ${ast.source.name}`).rows;
+    }
+    
+    // Get target rows
+    const targetRows = this.execute(`SELECT * FROM ${ast.target}`).rows;
+    
+    let inserted = 0, updated = 0, deleted = 0;
+    
+    for (const srcRow of sourceRows) {
+      // Create combined row for condition evaluation
+      const combinedRow = {};
+      const srcAlias = ast.sourceAlias || ast.source.name || 'source';
+      const tgtAlias = ast.targetAlias || ast.target;
+      
+      for (const [k, v] of Object.entries(srcRow)) {
+        combinedRow[k] = v;
+        combinedRow[`${srcAlias}.${k}`] = v;
+      }
+      
+      // Find matching target row
+      let matched = false;
+      for (const tgtRow of targetRows) {
+        const mergedRow = {};
+        // Add source columns with all name variants
+        for (const [k, v] of Object.entries(srcRow)) {
+          mergedRow[k] = v;
+          mergedRow[k.toUpperCase()] = v;
+          mergedRow[k.toLowerCase()] = v;
+          const sa = srcAlias;
+          mergedRow[`${sa}.${k}`] = v;
+          mergedRow[`${sa.toUpperCase()}.${k.toUpperCase()}`] = v;
+          mergedRow[`${sa.toLowerCase()}.${k.toLowerCase()}`] = v;
+        }
+        // Add target columns
+        for (const [k, v] of Object.entries(tgtRow)) {
+          mergedRow[k] = v;
+          mergedRow[k.toUpperCase()] = v;
+          mergedRow[k.toLowerCase()] = v;
+          const ta = tgtAlias;
+          mergedRow[`${ta}.${k}`] = v;
+          mergedRow[`${ta.toUpperCase()}.${k.toUpperCase()}`] = v;
+          mergedRow[`${ta.toLowerCase()}.${k.toLowerCase()}`] = v;
+        }
+        
+        if (this._evalExpr(ast.condition, mergedRow)) {
+          matched = true;
+          // Find WHEN MATCHED clause
+          const matchedClause = ast.clauses.find(c => c.matched === true);
+          if (matchedClause) {
+            if (matchedClause.action === 'UPDATE') {
+              // Evaluate SET expressions against the merged row
+              const pkCol = targetTable.schema.find(c => c.primaryKey);
+              if (pkCol) {
+                const pkVal = tgtRow[pkCol.name];
+                for (const s of matchedClause.sets) {
+                  const newVal = this._evalValue(s.value, mergedRow);
+                  const valStr = newVal === null ? 'NULL' : typeof newVal === 'string' ? "'" + newVal.replace(/'/g, "''") + "'" : newVal;
+                  this.execute(`UPDATE ${ast.target} SET ${s.column} = ${valStr} WHERE ${pkCol.name} = ${typeof pkVal === 'string' ? "'" + pkVal + "'" : pkVal}`);
+                }
+                updated++;
+              }
+            } else if (matchedClause.action === 'DELETE') {
+              const pkCol = targetTable.schema.find(c => c.primaryKey);
+              if (pkCol) {
+                const pkVal = tgtRow[pkCol.name];
+                this.execute(`DELETE FROM ${ast.target} WHERE ${pkCol.name} = ${typeof pkVal === 'string' ? "'" + pkVal + "'" : pkVal}`);
+                deleted++;
+              }
+            }
+          }
+          break;
+        }
+      }
+      
+      if (!matched) {
+        // Find WHEN NOT MATCHED clause
+        const notMatchedClause = ast.clauses.find(c => c.matched === false);
+        if (notMatchedClause && notMatchedClause.action === 'INSERT') {
+          const vals = notMatchedClause.values.map(v => this._evalValue(v, combinedRow));
+          const valStr = vals.map(v => v === null ? 'NULL' : typeof v === 'string' ? "'" + v.replace(/'/g, "''") + "'" : v).join(', ');
+          if (notMatchedClause.columns) {
+            this.execute(`INSERT INTO ${ast.target} (${notMatchedClause.columns.join(', ')}) VALUES (${valStr})`);
+          } else {
+            this.execute(`INSERT INTO ${ast.target} VALUES (${valStr})`);
+          }
+          inserted++;
+        }
+      }
+    }
+    
+    return { type: 'MERGE', inserted, updated, deleted };
   }
 
   _callUserFunction(funcDef, args, row) {
