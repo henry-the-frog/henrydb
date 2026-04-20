@@ -47,7 +47,7 @@ A fully-featured SQL database engine written from scratch in JavaScript. No depe
 - `UNION` / `UNION ALL` / `INTERSECT` / `INTERSECT ALL` / `EXCEPT` / `EXCEPT ALL`
 - Subqueries (scalar, IN, EXISTS, correlated)
 - Common Table Expressions (`WITH` / recursive `WITH RECURSIVE name(cols) AS (...)`)
-- Window functions: `ROW_NUMBER`, `RANK`, `DENSE_RANK`, `NTILE`, `LAG`, `LEAD`, `FIRST_VALUE`, `LAST_VALUE`, `NTH_VALUE`, `SUM`, `AVG`, `COUNT`, `MIN`, `MAX`
+- Window functions: `ROW_NUMBER`, `RANK`, `DENSE_RANK`, `NTILE`, `LAG`, `LEAD`, `FIRST_VALUE`, `LAST_VALUE`, `NTH_VALUE`, `PERCENT_RANK`, `CUME_DIST`, `SUM`, `AVG`, `COUNT`, `MIN`, `MAX`
 - `CASE WHEN ... THEN ... ELSE ... END`
 - `VALUES (1, 'a'), (2, 'b')` as standalone query
 - `ARRAY[1, 2, 3]` constructor
@@ -61,15 +61,15 @@ A fully-featured SQL database engine written from scratch in JavaScript. No depe
 - `FOREIGN KEY ... REFERENCES ... ON DELETE CASCADE/SET NULL/RESTRICT`
 
 ### Functions
-- **String**: `UPPER`, `LOWER`, `LENGTH`, `CONCAT`, `CONCAT_WS`, `SUBSTRING`, `REPLACE`, `TRIM`, `LTRIM`, `RTRIM`, `LPAD`, `RPAD`, `LEFT`, `RIGHT`, `REVERSE`, `REPEAT`, `INSTR`, `PRINTF`
-- **Math**: `ABS`, `ROUND`, `CEIL`, `FLOOR`, `POWER`, `SQRT`, `LOG`, `GREATEST`, `LEAST`
+- **String**: `UPPER`, `LOWER`, `LENGTH`, `CONCAT`, `CONCAT_WS`, `SUBSTRING`, `REPLACE`, `TRIM`, `LTRIM`, `RTRIM`, `LPAD`, `RPAD`, `LEFT`, `RIGHT`, `REVERSE`, `REPEAT`, `INSTR`, `PRINTF`, `INITCAP`, `TRANSLATE`, `CHR`, `ASCII`, `MD5`, `ENCODE`, `DECODE`, `POSITION`, `SPLIT_PART`
+- **Math**: `ABS`, `ROUND`, `CEIL`, `FLOOR`, `POWER`, `SQRT`, `LOG`, `GREATEST`, `LEAST`, `MOD`, `SIGN`, `TRUNC`, `PI`, `EXP`, `LN`, `LOG10`, `LOG2`, `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`, `ATAN2`, `CBRT`, `GCD`, `LCM`, `DEGREES`, `RADIANS`
 - **Null**: `COALESCE`, `NULLIF`, `IFNULL`, `IIF`
 - **Type**: `TYPEOF`, `CAST(... AS type)`
 - **Date/Time**: `NOW()`, `CURRENT_DATE`, `CURRENT_TIMESTAMP`, `DATE_TRUNC`, `EXTRACT(field FROM date)`, `DATE_PART`, `AGE`, `DATE_ADD`, `DATE_SUB`, `TO_CHAR`, `STRFTIME`
 - **Array**: `ARRAY_LENGTH`, `ARRAY_APPEND`, `ARRAY_REMOVE`, `ARRAY_CAT`, `ARRAY_POSITION`
 - **JSON**: `JSON_EXTRACT`, `JSON_SET`, `JSON_ARRAY_LENGTH`, `JSON_TYPE`, `JSON_OBJECT`, `JSON_ARRAY`
-- **Regex**: `REGEXP_REPLACE`, `REGEXP_MATCH`
-- **Aggregates**: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`, `ARRAY_AGG`, `JSON_AGG`, `STRING_AGG`, `GROUP_CONCAT`, `BOOL_AND`, `BOOL_OR`
+- **Regex**: `REGEXP_REPLACE`, `REGEXP_MATCH`, `REGEXP_MATCHES`, `REGEXP_COUNT`
+- **Aggregates**: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`, `ARRAY_AGG`, `JSON_AGG`, `STRING_AGG`, `GROUP_CONCAT`, `BOOL_AND`, `BOOL_OR`, `STDDEV`, `STDDEV_POP`, `VARIANCE`, `VAR_POP`, `MEDIAN`
 - **Aggregate FILTER**: `COUNT(*) FILTER (WHERE condition)`
 - **User-defined**: `CREATE FUNCTION name(params) RETURNS type AS $$ body $$`
 - `generate_series(start, stop)` table-valued function
@@ -189,9 +189,11 @@ node --test src/sql.test.js      # Run specific test file
 | Metric | Value |
 |--------|-------|
 | Source lines | ~42,000 |
-| Test lines | ~51,000 |
-| Tests passing | 4,100+ |
+| Test lines | ~52,000 |
+| Tests passing | 4,143+ |
 | Source modules | 172 |
+| SQL functions | 151 |
+| Statement types | 46 |
 | Dependencies | 0 |
 
 ## License
