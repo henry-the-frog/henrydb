@@ -10,26 +10,35 @@ export class TDigest {
   constructor(compression = 100) {
     this.compression = compression;
     this._centroids = []; // { mean, count }
+    this._buffer = [];    // unsorted incoming values
     this._totalCount = 0;
     this._min = Infinity;
     this._max = -Infinity;
     this._needsSort = false;
+    this._bufferCapacity = Math.max(500, compression * 5);
   }
 
   /**
    * Add a value.
    */
   add(value, count = 1) {
-    this._centroids.push({ mean: value, count });
+    this._buffer.push({ mean: value, count });
     this._totalCount += count;
     if (value < this._min) this._min = value;
     if (value > this._max) this._max = value;
-    this._needsSort = true;
 
-    // Compress periodically
-    if (this._centroids.length > this.compression * 3) {
-      this._compress();
+    // Flush buffer when it gets large
+    if (this._buffer.length >= this._bufferCapacity) {
+      this._flushBuffer();
     }
+  }
+
+  _flushBuffer() {
+    if (this._buffer.length === 0) return;
+    this._centroids.push(...this._buffer);
+    this._buffer = [];
+    this._needsSort = true;
+    this._compress();
   }
 
   /**
@@ -41,6 +50,7 @@ export class TDigest {
     if (q <= 0) return this._min;
     if (q >= 1) return this._max;
 
+    this._flushBuffer();
     this._ensureSorted();
 
     const target = q * this._totalCount;
@@ -76,7 +86,12 @@ export class TDigest {
    * Merge another T-Digest into this one.
    */
   merge(other) {
+    this._flushBuffer();
     for (const c of other._centroids) {
+      this._centroids.push({ ...c });
+    }
+    // Also merge any buffered values from other
+    for (const c of other._buffer) {
       this._centroids.push({ ...c });
     }
     this._totalCount += other._totalCount;
@@ -94,6 +109,7 @@ export class TDigest {
 
     const compressed = [];
     let i = 0;
+    let cumCount = 0; // running cumulative count
 
     while (i < this._centroids.length) {
       let merged = { ...this._centroids[i] };
@@ -105,7 +121,7 @@ export class TDigest {
         const newCount = merged.count + next.count;
         
         // Size limit: centroids near the tails should be small
-        const qEstimate = this._cumCountBefore(compressed, merged) / this._totalCount;
+        const qEstimate = (cumCount + merged.count / 2) / this._totalCount;
         const maxSize = this._maxCentroidSize(qEstimate);
         
         if (newCount <= maxSize) {
@@ -118,6 +134,7 @@ export class TDigest {
         }
       }
 
+      cumCount += merged.count;
       compressed.push(merged);
     }
 
@@ -147,7 +164,7 @@ export class TDigest {
   get count() { return this._totalCount; }
   get min() { return this._min; }
   get max() { return this._max; }
-  get centroidCount() { return this._centroids.length; }
+  get centroidCount() { this._flushBuffer(); return this._centroids.length; }
 
   getStats() {
     return {

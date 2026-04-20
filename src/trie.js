@@ -60,3 +60,43 @@ export class Trie {
 
   get size() { return this._size; }
 }
+
+/**
+ * RingBuffer — fixed-capacity circular buffer.
+ * When full, new pushes overwrite the oldest entry.
+ */
+export class RingBuffer {
+  constructor(capacity) {
+    this._buf = new Array(capacity);
+    this._capacity = capacity;
+    this._head = 0;  // next write position
+    this._count = 0;
+  }
+
+  push(item) {
+    this._buf[this._head] = item;
+    this._head = (this._head + 1) % this._capacity;
+    if (this._count < this._capacity) this._count++;
+  }
+
+  latest() {
+    if (this._count === 0) return undefined;
+    return this._buf[(this._head - 1 + this._capacity) % this._capacity];
+  }
+
+  oldest() {
+    if (this._count === 0) return undefined;
+    return this._buf[(this._head - this._count + this._capacity) % this._capacity];
+  }
+
+  toArray() {
+    const result = [];
+    for (let i = 0; i < this._count; i++) {
+      result.push(this._buf[(this._head - this._count + i + this._capacity) % this._capacity]);
+    }
+    return result;
+  }
+
+  get size() { return this._count; }
+  get capacity() { return this._capacity; }
+}

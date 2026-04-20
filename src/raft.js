@@ -192,3 +192,63 @@ export class RaftNode {
     return this.log.length > 0 ? this.log[this.log.length - 1].term : 0;
   }
 }
+
+/**
+ * RaftCluster — convenience wrapper around multiple RaftNodes.
+ * Wires up peer lists and provides electLeader/replicateEntry helpers.
+ */
+export class RaftCluster {
+  constructor(size) {
+    const ids = Array.from({ length: size }, (_, i) => i);
+    this.nodes = ids.map(id => new RaftNode(id, ids.filter(p => p !== id)));
+  }
+
+  /**
+   * Elect a leader by having the given node start an election
+   * and collecting votes from all peers.
+   */
+  electLeader(nodeId) {
+    const candidate = this.nodes[nodeId];
+    const voteReq = candidate.startElection();
+
+    for (const peer of candidate.peers) {
+      const reply = this.nodes[peer].handleRequestVote(voteReq);
+      candidate.handleVoteResponse({ ...reply, from: peer });
+    }
+    return candidate.state === 'leader';
+  }
+
+  /**
+   * Replicate a command from the leader to all followers.
+   */
+  replicateEntry(command) {
+    const leader = this.nodes.find(n => n.state === 'leader');
+    if (!leader) return false;
+
+    leader.appendEntry(command);
+    const lastIdx = leader.log.length - 1;
+
+    for (const peerId of leader.peers) {
+      const ae = {
+        type: 'AppendEntries',
+        term: leader.currentTerm,
+        leaderId: leader.id,
+        prevLogIndex: lastIdx - 1,
+        prevLogTerm: lastIdx > 0 ? leader.log[lastIdx - 1].term : 0,
+        entries: [leader.log[lastIdx]],
+        leaderCommit: leader.commitIndex,
+      };
+      const reply = this.nodes[peerId].handleAppendEntries(ae);
+      if (reply.success) {
+        leader.matchIndex[peerId] = lastIdx;
+        leader.nextIndex[peerId] = lastIdx + 1;
+      }
+    }
+    leader.updateCommitIndex();
+    return true;
+  }
+
+  get leader() {
+    return this.nodes.find(n => n.state === 'leader') || null;
+  }
+}

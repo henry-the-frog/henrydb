@@ -96,9 +96,17 @@ export class SSIManager extends MVCCManager {
   recordWrite(txId, key) {
     // Check if any active or recently committed transaction read this key
     // If so, they have an rw-antidependency: them →rw→ us
+    // But only for CONCURRENT transactions — if the reader committed before
+    // this transaction's snapshot, it's sequential (no conflict possible).
+    const writerTx = this.activeTxns.get(txId);
     for (const [otherTxId, readSet] of this.readSets) {
       if (otherTxId === txId) continue;
       if (readSet.has(key)) {
+        // Skip if otherTx committed before our snapshot started (non-concurrent)
+        if (writerTx?.snapshot && this.committedTxns.has(otherTxId) &&
+            otherTxId < writerTx.snapshot.xmin) {
+          continue;
+        }
         // otherTx read this key, and we're writing it
         // rw-antidependency: otherTx →rw→ us
         this._addRWDependency(otherTxId, txId);

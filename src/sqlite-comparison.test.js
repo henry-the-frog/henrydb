@@ -7,7 +7,18 @@ import { Database } from './db.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const BetterSqlite3 = require('better-sqlite3');
+let BetterSqlite3;
+try {
+  BetterSqlite3 = require('better-sqlite3');
+} catch {
+  describe('SQLite Comparison (SKIPPED — better-sqlite3 not installed)', () => {
+    it('skipped', { skip: 'better-sqlite3 not available' }, () => {});
+  });
+  // Early exit — skip the rest of the file
+  // (import.meta won't let us conditionally stop, but we can guard with if)
+}
+
+if (BetterSqlite3) {
 
 let henrydb;
 let sqlite;
@@ -236,3 +247,5 @@ describe('HenryDB vs SQLite: 10K rows', () => {
     console.log(`      Ratio:   ${ratio.toFixed(1)}x`);
   });
 });
+
+} // end if (BetterSqlite3)

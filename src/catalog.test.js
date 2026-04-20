@@ -49,15 +49,17 @@ describe('Data Structure Catalog', () => {
 
     it('Skip List: probabilistic sorted index', () => {
       const sl = new SkipList();
-      for (let i = 0; i < 100; i++) sl.insert(i, i);
-      assert.equal(sl.find(50), 50);
+      for (let i = 0; i < 100; i++) sl.set(i, i);
+      assert.equal(sl.get(50), 50);
       assert.equal(sl.range(10, 20).length, 11);
     });
 
     it('Bitmap Index: low-cardinality columns', () => {
-      const idx = new BitmapIndex('idx', 'status');
-      for (let i = 0; i < 100; i++) idx.addRow(i, i % 3 === 0 ? 'active' : 'inactive');
-      assert.ok(idx.count('active') > 0);
+      const idx = new BitmapIndex();
+      const values = [];
+      for (let i = 0; i < 100; i++) values.push(i % 3 === 0 ? 'active' : 'inactive');
+      idx.build(values);
+      assert.ok(idx.eq('active').popcount() > 0);
     });
 
     it('R-Tree: spatial queries', () => {
@@ -69,8 +71,8 @@ describe('Data Structure Catalog', () => {
 
     it('Trie: prefix queries', () => {
       const trie = new Trie();
-      trie.insert('database'); trie.insert('data');
-      assert.equal(trie.findByPrefix('dat').length, 2);
+      trie.insert('database', true); trie.insert('data', true);
+      assert.equal(trie.prefixSearch('dat').length, 2);
     });
 
     it('Cuckoo Hash: O(1) worst-case', () => {
@@ -84,8 +86,8 @@ describe('Data Structure Catalog', () => {
     it('Bloom Filter: membership testing', () => {
       const bf = new BloomFilter(100);
       bf.add('exists');
-      assert.equal(bf.mightContain('exists'), true);
-      assert.equal(bf.mightContain('nope'), false);
+      assert.equal(bf.test('exists'), true);
+      assert.equal(bf.test('nope'), false);
     });
 
     it('Count-Min Sketch: frequency estimation', () => {
@@ -148,12 +150,12 @@ describe('Data Structure Catalog', () => {
       assert.ok(cluster.electLeader(0));
     });
 
-    it('Lock Manager: deadlock detection', () => {
+    it('Lock Manager: deadlock detection', async () => {
       const lm = new LockManager();
-      lm.lock(1, 'r1', LockMode.X);
-      lm.lock(2, 'r2', LockMode.X);
-      lm.unlock(1);
-      assert.equal(lm.lock(2, 'r1', LockMode.X), true);
+      await lm.acquire(1, 'r1', LockMode.X);
+      await lm.acquire(2, 'r2', LockMode.X);
+      lm.release(1, 'r1');
+      assert.equal(await lm.acquire(2, 'r1', LockMode.X), true);
     });
   });
 
