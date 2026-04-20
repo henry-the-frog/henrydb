@@ -545,9 +545,41 @@
     {
       "id": "T51",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T15:52:47.656Z",
+      "completed": "2026-04-20T15:53:14.450Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix savepoint isolation bug: concurrent sessions with savepoints see wrong row counts",
+      "project": "henrydb",
+      "started": "2026-04-20T15:53:38.937Z",
+      "completed": "2026-04-20T15:56:22.518Z",
+      "duration_ms": 300000,
+      "summary": "MAJOR: Fixed savepoint ROLLBACK TO isolation. Bug: shared version map was modified for all txns rows. Fix: two-pass restore (revoke only own rows + restore xmax for others). 82/82 savepoint/mvcc tests pass."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix integration-full-stack test: e-commerce scenario returns 8 not 10 rows",
+      "project": "henrydb",
+      "started": "2026-04-20T15:56:43.756Z",
+      "completed": "2026-04-20T16:01:25.912Z",
+      "duration_ms": 300000,
+      "summary": "Integration test failure caused by deeper issue: index lookups (PK, BPlusTree) bypass MVCC scan interceptor. Snapshot isolation broken for indexed WHERE clauses. Added to Urgent TODO."
+    },
+    {
+      "id": "T54",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "MAINTAIN: git push",
-      "started": "2026-04-20T15:52:47.656Z"
+      "started": "2026-04-20T16:02:03.624Z"
     }
   ],
   "focusProjects": [
@@ -751,6 +783,18 @@
     {
       "time": "2026-04-20T15:43:55.984Z",
       "msg": "Added T51 (MAINTAIN) after end: MAINTAIN: git push"
+    },
+    {
+      "time": "2026-04-20T15:53:30.489Z",
+      "msg": "Added T52 (BUILD) after end: Fix savepoint isolation bug: concurrent sessions with savepoints see wrong row counts"
+    },
+    {
+      "time": "2026-04-20T15:53:30.606Z",
+      "msg": "Added T53 (BUILD) after end: Fix integration-full-stack test: e-commerce scenario returns 8 not 10 rows"
+    },
+    {
+      "time": "2026-04-20T15:53:30.724Z",
+      "msg": "Added T54 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
