@@ -1541,10 +1541,20 @@ export class Database {
     const table = this.tables.get(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
-    // Check IF NOT EXISTS
+    // Check IF NOT EXISTS / duplicate index
     const colName = ast.columns.join(',');
-    if (ast.ifNotExists && table.indexes?.has(colName)) {
-      return { type: 'OK', message: 'CREATE INDEX' };
+    if (table.indexes?.has(colName)) {
+      if (ast.ifNotExists) {
+        return { type: 'OK', message: 'CREATE INDEX' };
+      }
+      throw new Error(`Index on column(s) ${colName} already exists on table ${ast.table}`);
+    }
+    // Also check by index name if provided
+    if (ast.indexName && table._indexNames?.has(ast.indexName)) {
+      if (ast.ifNotExists) {
+        return { type: 'OK', message: 'CREATE INDEX' };
+      }
+      throw new Error(`Index ${ast.indexName} already exists`);
     }
 
     // Validate columns exist
@@ -1653,6 +1663,11 @@ export class Database {
     }
 
     table.indexes.set(colName, index);
+    // Track index names for duplicate detection
+    if (ast.indexName || ast.name) {
+      if (!table._indexNames) table._indexNames = new Set();
+      table._indexNames.add(ast.indexName || ast.name);
+    }
     // Store index metadata for the planner
     if (!table.indexMeta) table.indexMeta = new Map();
     table.indexMeta.set(colName, {
