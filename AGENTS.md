@@ -81,8 +81,8 @@ This is a **hard gate**, not a suggestion. Do not continue BUILD tasks until you
 
 Feature factories feel productive but they're low-learning. Depth > breadth.
 
-### Learning Gate (after every bug fix)
-When you find and fix a bug, or encounter a genuinely surprising result, write ≥1 line capturing the insight to a scratch note or daily log BEFORE moving to the next task. Track in Evening Summary as `Learning captures: X/Y bugs`. The rule: if you fixed a bug but can't articulate what you learned, you didn't learn — you just patched. Three consecutive reflections (Apr 9-11) diagnosed "knowledge capture too thin" without fixing it. This IS the fix.
+### Learning Gate (after surprising/systemic bug fixes)
+When you find and fix a bug that is **surprising or reveals a systemic pattern**, write ≥1 line capturing the insight to a scratch note or daily log BEFORE moving to the next task. Track in Evening Summary as `Learning captures: X/Y notable bugs`. Not every typo needs reflection — but bugs that make you say "I didn't expect that" or "this pattern exists elsewhere" do. The bar: ~5-10 captures per day on a heavy bug day, not 40+. The rule: if a surprising bug was fixed but can't be articulated, you didn't learn — you just patched.
 
 ### Sweep Gate (second+ sessions per day)
 Every second session of the day (or any session after a break >1 hour) MUST start with a full test suite sweep of the active project before any new feature work begins. Run all tests, triage what's broken, fix or file everything found. Only then start building. The sweep is the session's opening move, not an afterthought. Rationale (observed Apr 12): Session C's full-suite sweep found 12+ bugs including CRITICAL ROLLBACK no-op. This is consistently the highest-ROI activity for quality.
@@ -92,6 +92,9 @@ Must begin with: (1) read TODO.md, (2) review day's BUILD count — if >10 BUILD
 
 ### Session BUILD Cap (hard gate)
 No session may execute more than 20 BUILD tasks before a mandatory depth pivot. At task 20: stop. Run a full test sweep of the active project. Spend ≥30 min on EXPLORE/THINK/MAINTAIN (stress testing, bug hunting, investigation). Only then may more BUILDs be queued (cap resets and applies again). This is structural — task 21 cannot be BUILD without clearing the pivot. The queue optimizes for throughput; this is the governor. Four reflections (Apr 13-16) diagnosed breadth spirals; conventions failed because they required in-the-moment discipline. This doesn't.
+
+### Daily BUILD Ceiling (hard gate)
+No more than 60 BUILD tasks per day across ALL sessions. After 60, remaining sessions must be EXPLORE/THINK/MAINTAIN only. The per-burst cap (20) catches within-session momentum; this catches across-session accumulation. Apr 19 produced 248 tasks — the burst cap alone is insufficient for multi-session days. Track the count in daily logs. If you hit 60 before evening, the evening is for depth, not features.
 
 ### Blog Cap
 Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
