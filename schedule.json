@@ -2116,9 +2116,34 @@
     {
       "id": "T198",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Verify all git repos are clean and pushed",
-      "started": "2026-04-20T19:24:38.010Z"
+      "started": "2026-04-20T19:24:38.010Z",
+      "completed": "2026-04-20T19:25:12.536Z",
+      "duration_ms": 15000,
+      "summary": "All repos clean and pushed."
+    },
+    {
+      "id": "T199",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Review and clean up HenryDB git history — how many commits today?",
+      "project": "henrydb",
+      "started": "2026-04-20T19:25:18.096Z",
+      "completed": "2026-04-20T19:25:49.955Z",
+      "duration_ms": 30000,
+      "summary": "40+ commits today, 3054 total in HenryDB. No squash needed — commits are well-organized with clear feat/fix/chore/docs prefixes."
+    },
+    {
+      "id": "T200",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Write a proposed db.js split plan — which methods go to which files",
+      "project": "henrydb",
+      "started": "2026-04-20T19:26:09.905Z",
+      "completed": "2026-04-20T19:26:53.578Z",
+      "duration_ms": 120000,
+      "summary": "db.js split plan written. Proposed 7 files: core (500), DDL (800), DML (1200), select (1500), eval (1500), util (500), session (400). Mixin-based migration preserves API."
     }
   ],
   "focusProjects": [
@@ -2898,6 +2923,14 @@
     {
       "time": "2026-04-20T19:24:37.777Z",
       "msg": "Added T198 (MAINTAIN) after end: MAINTAIN: Verify all git repos are clean and pushed"
+    },
+    {
+      "time": "2026-04-20T19:25:17.863Z",
+      "msg": "Added T199 (MAINTAIN) after end: MAINTAIN: Review and clean up HenryDB git history — how many commits today?"
+    },
+    {
+      "time": "2026-04-20T19:26:09.673Z",
+      "msg": "Added T200 (MAINTAIN) after end: MAINTAIN: Write a proposed db.js split plan — which methods go to which files"
     }
   ]
 }
