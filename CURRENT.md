@@ -1,17 +1,14 @@
 # CURRENT.md — Current Session State
 
-**Session:** B Evening
+**Session:** B Evening — COMPLETED
 **Date:** 2026-04-19
-**Status:** in-progress
+**Status:** session-ended
 **Project:** HenryDB
-**Focus:** Depth — stress testing, bug fixing, feature additions
 
-## Session Stats
-- **Bugs Fixed:** 7
-- **Tests Added:** 150+
+## Session B Results
+- **Bugs Fixed:** 10
+- **Tests Added:** 191 net (8437→8628)
 - **Features Added:** 20+ functions/improvements
-- **Commits:** 20+
-- **All tests passing:** Yes (279/280, 1 pre-existing pg dep issue)
-
-## Recent Task
-Working on B+Tree stress tests and performance profiling.
+- **Commits:** 92
+- **Duration:** 5:45 PM - 8:00 PM (2hr 15min)
+- **All session tests passing:** 100% (except 1 pre-existing pg dep issue)
