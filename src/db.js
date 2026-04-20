@@ -6024,6 +6024,115 @@ export class Database {
           .replace('%S', String(d.getUTCSeconds()).padStart(2, '0'));
       }
       
+      case 'DATE_TRUNC': {
+        const field = String(this._evalValue(args[0], row)).toLowerCase();
+        const dateStr = this._evalValue(args[1], row);
+        const d = new Date(dateStr);
+        switch (field) {
+          case 'year': return `${d.getUTCFullYear()}-01-01`;
+          case 'month': return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-01`;
+          case 'day': case 'date': return d.toISOString().split('T')[0];
+          case 'hour': return `${d.toISOString().split(':')[0]}:00:00`;
+          case 'minute': return `${d.toISOString().split(':').slice(0,2).join(':')}:00`;
+          case 'quarter': {
+            const q = Math.floor(d.getUTCMonth() / 3) * 3;
+            return `${d.getUTCFullYear()}-${String(q + 1).padStart(2, '0')}-01`;
+          }
+          case 'week': {
+            const day = d.getUTCDay();
+            const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(d);
+            monday.setUTCDate(diff);
+            return monday.toISOString().split('T')[0];
+          }
+          default: return dateStr;
+        }
+      }
+      
+      case 'EXTRACT': {
+        const field = String(this._evalValue(args[0], row)).toLowerCase();
+        const dateStr = this._evalValue(args[1], row);
+        const d = new Date(dateStr);
+        switch (field) {
+          case 'year': return d.getUTCFullYear();
+          case 'month': return d.getUTCMonth() + 1;
+          case 'day': return d.getUTCDate();
+          case 'hour': return d.getUTCHours();
+          case 'minute': return d.getUTCMinutes();
+          case 'second': return d.getUTCSeconds();
+          case 'dow': case 'dayofweek': return d.getUTCDay();
+          case 'doy': case 'dayofyear': {
+            const start = new Date(d.getUTCFullYear(), 0, 0);
+            const diff = d - start;
+            return Math.floor(diff / 86400000);
+          }
+          case 'quarter': return Math.floor(d.getUTCMonth() / 3) + 1;
+          case 'week': {
+            const start = new Date(d.getUTCFullYear(), 0, 1);
+            const diff = d - start;
+            return Math.ceil((diff / 86400000 + start.getUTCDay()) / 7);
+          }
+          case 'epoch': return Math.floor(d.getTime() / 1000);
+          default: throw new Error(`Unknown extract field: ${field}`);
+        }
+      }
+      
+      case 'DATE_PART': {
+        // DATE_PART is an alias for EXTRACT
+        return this._evalFunction('EXTRACT', args, row);
+      }
+      
+      case 'AGE': {
+        const d1 = new Date(this._evalValue(args[0], row));
+        const d2 = args.length > 1 ? new Date(this._evalValue(args[1], row)) : new Date();
+        const diff = Math.abs(d1 - d2);
+        const days = Math.floor(diff / 86400000);
+        const years = Math.floor(days / 365);
+        const months = Math.floor((days % 365) / 30);
+        const remDays = days % 30;
+        return `${years} years ${months} mons ${remDays} days`;
+      }
+      
+      case 'DATE_ADD': case 'DATE_SUB': {
+        const dateStr = this._evalValue(args[0], row);
+        const interval = this._evalValue(args[1], row);
+        const d = new Date(dateStr);
+        // Parse interval: "N unit" (e.g., "3 days", "1 month")
+        const match = String(interval).match(/^(-?\d+)\s*(year|month|day|hour|minute|second)s?$/i);
+        if (match) {
+          const n = parseInt(match[1]) * (func === 'DATE_SUB' ? -1 : 1);
+          const unit = match[2].toLowerCase();
+          switch (unit) {
+            case 'year': d.setUTCFullYear(d.getUTCFullYear() + n); break;
+            case 'month': d.setUTCMonth(d.getUTCMonth() + n); break;
+            case 'day': d.setUTCDate(d.getUTCDate() + n); break;
+            case 'hour': d.setUTCHours(d.getUTCHours() + n); break;
+            case 'minute': d.setUTCMinutes(d.getUTCMinutes() + n); break;
+            case 'second': d.setUTCSeconds(d.getUTCSeconds() + n); break;
+          }
+        }
+        return d.toISOString();
+      }
+      
+      case 'TO_CHAR': {
+        const val = this._evalValue(args[0], row);
+        const fmt = args.length > 1 ? String(this._evalValue(args[1], row)) : '';
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return String(val);
+        return fmt
+          .replace('YYYY', String(d.getUTCFullYear()))
+          .replace('MM', String(d.getUTCMonth() + 1).padStart(2, '0'))
+          .replace('DD', String(d.getUTCDate()).padStart(2, '0'))
+          .replace('HH24', String(d.getUTCHours()).padStart(2, '0'))
+          .replace('HH', String(d.getUTCHours() % 12 || 12).padStart(2, '0'))
+          .replace('MI', String(d.getUTCMinutes()).padStart(2, '0'))
+          .replace('SS', String(d.getUTCSeconds()).padStart(2, '0'))
+          .replace('Month', d.toLocaleString('en', { month: 'long', timeZone: 'UTC' }))
+          .replace('Mon', d.toLocaleString('en', { month: 'short', timeZone: 'UTC' }))
+          .replace('Day', d.toLocaleString('en', { weekday: 'long', timeZone: 'UTC' }))
+          .replace('Dy', d.toLocaleString('en', { weekday: 'short', timeZone: 'UTC' }));
+      }
+      
       default: {
         // Check user-defined functions
         const udf = this._functions.get(func.toLowerCase());
