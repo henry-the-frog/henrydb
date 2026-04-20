@@ -24,6 +24,9 @@
 ### RISC-V Emulator
 - **riscv-register-allocation.md** — Linear sequential allocation (s1-s11, overflow to stack). No liveness analysis. Good enough for Monkey. (uses: 0, created: 2026-04-18)
 
+### HenryDB (new 2026-04-19)
+- **query-optimizer-research.md** — Cost model, join ordering (DP/greedy), subquery decorrelation, sort avoidance, merge join strategies. Decision: join ordering already implemented, focus on decorrelation next. (uses: 1, created: 2026-04-19)
+
 ### HenryDB (new 2026-04-18)
 - **hot-chains.md** — HOT chain implementation, PG comparison (same-page vs Map-based), integration points, MVCC interaction. (uses: 1, created: 2026-04-18)
 - **stored-procedures-design.md** — Phased approach: SQL scalar → JS → table-returning → procedures. All phases 1-3 implemented. (uses: 1, created: 2026-04-18)
