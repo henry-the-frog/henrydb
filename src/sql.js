@@ -77,9 +77,8 @@ export function tokenize(sql) {
     }
 
     // Number
-    if (/[0-9]/.test(src[i]) || (src[i] === '-' && /[0-9]/.test(src[i + 1]))) {
+    if (/[0-9]/.test(src[i])) {
       let num = '';
-      if (src[i] === '-') num += src[i++];
       while (i < src.length && /[0-9.]/.test(src[i])) num += src[i++];
       tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num) });
       continue;
@@ -1203,6 +1202,20 @@ export function parse(sql) {
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
+    // Unary minus
+    if (t.type === 'MINUS') {
+      advance();
+      const operand = parsePrimary();
+      if (operand.type === 'literal' && typeof operand.value === 'number') {
+        return { type: 'literal', value: -operand.value };
+      }
+      return { type: '*', left: { type: 'literal', value: -1 }, right: operand };
+    }
+    // Unary plus (no-op)
+    if (t.type === 'PLUS') {
+      advance();
+      return parsePrimary();
+    }
     // EXTRACT(field FROM expr)
     if (t.type === 'KEYWORD' && t.value === 'EXTRACT') {
       advance();
