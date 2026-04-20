@@ -209,3 +209,35 @@ Three bugs were "the feature exists but isn't wired up":
 3. Parser exists but processor doesn't call it
 
 This is a specific failure mode of incremental development: you build the pieces, test them individually, but forget to connect them. The fix is **contract testing at integration boundaries** — which is exactly what found all of these bugs.
+
+## 2026-04-20: Method Naming Mismatch Class (3 instances)
+
+### _tryVectorizedExecution → _selectInnerCore (CRITICAL)
+**Bug:** `_tryVectorizedExecution` was called in `_select()` but the method was actually named `_selectInnerCore`. ALL SELECT queries through TransactionalDatabase crashed.
+**Root cause:** Method was renamed during refactoring but the call site wasn't updated.
+**Why undetected:** The method was only called for tables with 500+ rows via auto-vectorization, and most tests use small tables with Database (not TransactionalDatabase).
+
+### _executeAst → execute_ast (5 call sites)
+**Bug:** Private method name `_executeAst` was used in 5 places but the real method is `execute_ast`. Broke prepared statements, cursors, and MERGE with subqueries.
+**Why undetected:** All affected features were new (added the same day).
+
+### DEALLOCATE ALL → name parsing
+**Bug:** `DEALLOCATE ALL` was parsed as `DEALLOCATE` with name `ALL` instead of the special keyword.
+**Fix:** Check for `ast.name.toUpperCase() === 'ALL'` in addition to `ast.all`.
+
+**Pattern:** JavaScript doesn't catch `this.undefinedMethod()` at parse time — only at runtime. Method renames are silent failures. 
+**Prevention:** After renaming ANY method in db.js, run `grep -n "methodName" src/db.js` to find all call sites. Consider adding a constructor check that validates all expected methods exist.
+
+## 2026-04-20: Tokenizer Duplicate Negative Number Check
+
+**Bug:** `10-4` was tokenized as `NUMBER:10 NUMBER:-4` instead of `NUMBER:10 MINUS NUMBER:4`. Caused `ARRAY[10-4]` to fail.
+**Root cause:** Two separate negative number checks in the tokenizer — one with a context guard (after comma, paren, operators), one without (raw `-` before digit). The unguarded one fired first.
+**Fix:** Removed the unguarded check, added unary minus support in parsePrimary().
+**Pattern:** Two code paths for the same thing always creates bugs. The fix improved both paths.
+
+## 2026-04-20: Correlated Subquery Outer Scope Resolution
+
+**Bug:** `EXISTS (SELECT 1 FROM lineitem WHERE l_orderkey = o_orderkey)` — the `o_orderkey` outer reference wasn't detected as correlated. The subquery was evaluated as uncorrelated, returning empty.
+**Root cause:** `isCorrelated()` in decorrelate.js only compared column references against outer TABLE names/aliases. It never checked inner table column schemas. So unqualified column names that happened to not match any table name were treated as uncorrelated.
+**Fix:** Added inner table column schema checking. If a referenced column doesn't exist in ANY inner table's schema, it must be an outer reference.
+**Pattern:** Decorrelation must understand column namespaces, not just table names.
