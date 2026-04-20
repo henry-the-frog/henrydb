@@ -724,9 +724,52 @@
     {
       "id": "T68",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Final git push + daily log summary",
-      "started": "2026-04-20T16:18:29.714Z"
+      "started": "2026-04-20T16:18:29.714Z",
+      "completed": "2026-04-20T16:18:57.595Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced. Reflections committed."
+    },
+    {
+      "id": "T69",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Full test sweep — mandatory depth pivot at BUILD 20",
+      "project": "henrydb",
+      "started": "2026-04-20T16:19:27.366Z",
+      "completed": "2026-04-20T16:20:04.763Z",
+      "duration_ms": 60000,
+      "summary": "Focused sweep: 215/217 pass (2 cancelled timeouts) across all changed areas: SSI, MVCC, concurrent, savepoint, vectorized, scalar functions, decorrelation, cost model, catalog, tdigest. Zero failures."
+    },
+    {
+      "id": "T70",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Deep dive into the remaining integration-full-stack failure (ALTER TABLE persistence)",
+      "project": "henrydb",
+      "started": "2026-04-20T16:20:05.020Z",
+      "completed": "2026-04-20T16:21:19.038Z",
+      "duration_ms": 60000,
+      "summary": "Root cause: ALTER TABLE ADD COLUMN not in WAL. Schema change is purely in-memory, lost on close/reopen. Need WAL record for ALTER TABLE. Added to TODO."
+    },
+    {
+      "id": "T71",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: What would HenryDB need to be a real usable database?",
+      "project": "henrydb",
+      "started": "2026-04-20T16:21:19.295Z",
+      "completed": "2026-04-20T16:21:36.303Z",
+      "duration_ms": 60000,
+      "summary": "HenryDB usability gaps: (1) ALTER TABLE persistence (only remaining failure), (2) connection handling, (3) SQL completeness (UNION, derived tables), (4) scale performance, (5) tooling. Most impactful next: ALTER TABLE WAL persistence."
+    },
+    {
+      "id": "T72",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T16:21:36.560Z"
     }
   ],
   "focusProjects": [
@@ -998,6 +1041,22 @@
     {
       "time": "2026-04-20T16:16:09.759Z",
       "msg": "Added T68 (MAINTAIN) after end: MAINTAIN: Final git push + daily log summary"
+    },
+    {
+      "time": "2026-04-20T16:19:15.355Z",
+      "msg": "Added T69 (MAINTAIN) after end: MAINTAIN: Full test sweep — mandatory depth pivot at BUILD 20"
+    },
+    {
+      "time": "2026-04-20T16:19:15.474Z",
+      "msg": "Added T70 (EXPLORE) after end: EXPLORE: Deep dive into the remaining integration-full-stack failure (ALTER TABLE persistence)"
+    },
+    {
+      "time": "2026-04-20T16:19:15.592Z",
+      "msg": "Added T71 (THINK) after end: THINK: What would HenryDB need to be a real usable database?"
+    },
+    {
+      "time": "2026-04-20T16:19:15.710Z",
+      "msg": "Added T72 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }

@@ -6,6 +6,7 @@
 - (none)
 
 ### Normal
+- HenryDB: ALTER TABLE not persisted — schema changes lost on close/reopen (no WAL record for ALTER)
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
 - HenryDB: SSI false positives on disjoint-row UPDATEs (need index-backed UPDATE or deferred read recording)
 - HenryDB: Savepoint isolation bug — concurrent sessions with savepoints don't see correct row counts
