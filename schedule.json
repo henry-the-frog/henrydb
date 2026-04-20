@@ -2423,6 +2423,46 @@
       "completed": "2026-04-20T00:54:18.971Z",
       "duration_ms": 120000,
       "summary": "Performance profile: 10K rows. Full scan 2ms, PK lookup 0.2ms, range 0.9ms, GROUP BY 2.1ms, ORDER BY 1.6ms. Self-JOIN 57ms (NL join bottleneck). Good perf for in-memory DB."
+    },
+    {
+      "id": "T226",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess HenryDB evening direction: fix COUNT aggregate bug or go deep on query optimizer",
+      "project": "henrydb",
+      "started": "2026-04-20T02:15:52.764Z",
+      "completed": "2026-04-20T02:20:38.403Z",
+      "duration_ms": 300000,
+      "summary": "Assessed direction: found COUNT(*) aggregate arithmetic bug, fixed it (isStar normalization in computeAgg). Evening will continue with more depth."
+    },
+    {
+      "id": "T227",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Evening HenryDB depth work",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T227",
+      "project": "henrydb"
+    },
+    {
+      "id": "T229",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit, push, dashboard check"
+    },
+    {
+      "id": "T230",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Research query optimizer strategies: cost model, join ordering, predicate pushdown",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3358,6 +3398,26 @@
     {
       "time": "2026-04-20T00:53:19.581Z",
       "msg": "Added T225 (THINK) after end: Performance comparison: Volcano executor vs direct interpreter for various query patterns"
+    },
+    {
+      "time": "2026-04-20T02:15:39.908Z",
+      "msg": "Added T226 (THINK) after end: Assess HenryDB evening direction: fix COUNT aggregate bug or go deep on query optimizer"
+    },
+    {
+      "time": "2026-04-20T02:15:45.411Z",
+      "msg": "Added T227 (PLAN) after T226: Evening HenryDB depth work"
+    },
+    {
+      "time": "2026-04-20T02:15:45.530Z",
+      "msg": "Added T228 (BUILD) after T227: null"
+    },
+    {
+      "time": "2026-04-20T02:15:45.650Z",
+      "msg": "Added T229 (MAINTAIN) after T228: Git commit, push, dashboard check"
+    },
+    {
+      "time": "2026-04-20T02:15:45.770Z",
+      "msg": "Added T230 (EXPLORE) after T229: Research query optimizer strategies: cost model, join ordering, predicate pushdown"
     }
   ]
 }

@@ -7342,8 +7342,10 @@ export class Database {
             try { return !!this._evalExpr(extra.filter, r); } catch { return false; }
           });
         }
+        // Normalize star arg: parser may produce string '*' or {type:'column_ref', name:'*'}
+        const isStar = arg === '*' || (typeof arg === 'object' && arg?.name === '*');
         let values;
-        if (arg === '*') {
+        if (isStar) {
           values = effectiveRows;
         } else if (typeof arg === 'object') {
           values = effectiveRows.map(r => this._evalValue(arg, r)).filter(v => v != null);
@@ -7352,8 +7354,8 @@ export class Database {
         }
         switch (func) {
           case 'COUNT': {
-            if (distinct && arg !== '*') return new Set(values).size;
-            return arg === '*' ? effectiveRows.length : values.length;
+            if (distinct && !isStar) return new Set(values).size;
+            return isStar ? effectiveRows.length : values.length;
           }
           case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
           case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;

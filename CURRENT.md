@@ -1,14 +1,15 @@
 # CURRENT.md — Current Session State
 
-**Session:** B Evening — COMPLETED
+**Session:** C Evening
 **Date:** 2026-04-19
-**Status:** session-ended
+**Status:** in-progress
 **Project:** HenryDB
 
-## Session B Results
-- **Bugs Fixed:** 10
-- **Tests Added:** 191 net (8437→8628)
-- **Features Added:** 20+ functions/improvements
-- **Commits:** 92
-- **Duration:** 5:45 PM - 8:00 PM (2hr 15min)
-- **All session tests passing:** 100% (except 1 pre-existing pg dep issue)
+## Current Task
+- **T226** THINK: Assessed direction — fixed COUNT(*) aggregate bug
+- **Completed:** Fixed isStar normalization in computeAgg, 8 regression tests
+
+## Session C Progress
+- Tasks completed: 1
+- Bugs fixed: 1 (COUNT(*) in expressions)
+- Tests added: 8
