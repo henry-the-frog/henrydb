@@ -48,36 +48,63 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard health, check email",
-      "started": "2026-04-20T14:48:53.391Z"
+      "started": "2026-04-20T14:48:53.391Z",
+      "completed": "2026-04-20T14:49:20.387Z",
+      "duration_ms": 120000,
+      "summary": "Git push both repos (henrydb rebase+push, workspace push). Dashboard healthy. 4058 tests, 4041 pass."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess HenryDB depth: what subsystems need stress testing?"
+      "status": "done",
+      "task": "Assess HenryDB depth: what subsystems need stress testing?",
+      "started": "2026-04-20T14:49:27.577Z",
+      "completed": "2026-04-20T14:49:42.761Z",
+      "duration_ms": 60000,
+      "summary": "Weakest subsystems: (1) MVCC persistence round-trip (version maps lost on serialize), (2) recovery paths (savepoint xmax markers), (3) layer boundaries (parser/planner/executor cross-talk). Most impactful: MVCC persistence stress testing."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB query optimizer improvements — cost model or decorrelation",
-      "task": null
+      "task": null,
+      "started": "2026-04-20T14:49:50.943Z",
+      "completed": "2026-04-20T14:50:13.808Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: parametric cost model (foundation), then join method selection (NL/hash/merge cost comparison). Based on query-optimizer-gaps.md analysis."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement parametric cost model: replace raw row count with seq_page_cost/random_page_cost/cpu_tuple_cost formula",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T14:50:24.272Z",
+      "completed": "2026-04-20T14:53:53.909Z",
+      "duration_ms": 300000,
+      "summary": "Parametric cost model: SEQ_PAGE_COST/RANDOM_PAGE_COST/CPU_TUPLE_COST now used in cost-model.js. Fixed Limit early termination. Planner already had parametric model — synced volcano cost estimator. All 67 optimizer tests pass."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Add join method selection to DP optimizer: compare NL/hash/merge costs per join pair",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-20T14:54:19.964Z",
+      "completed": "2026-04-20T14:54:20.108Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: Planner already has DP-based join method selection comparing NL/hash/merge costs per join pair (lines 604-660). No new work needed."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping — git push, knowledge capture",
+      "started": "2026-04-20T14:54:34.880Z"
     },
     {
       "id": "T9",
@@ -319,6 +346,10 @@
     {
       "time": "2026-04-20T14:20:54.988Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-20T14:50:02.436Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
