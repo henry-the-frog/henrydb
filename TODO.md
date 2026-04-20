@@ -4,6 +4,7 @@
 
 ### Normal
 - HenryDB: VACUUM incremental HOT chain pruning for persistent/file-backed mode (metadata persistence)
+- HenryDB: 39 "ERR" test files in full suite run are likely timeout-related (need 15s+ timeout, not 10s)
 
 
 
