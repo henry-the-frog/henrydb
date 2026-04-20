@@ -156,63 +156,117 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping — git push, PR check",
-      "started": "2026-04-20T14:58:04.927Z"
+      "started": "2026-04-20T14:58:04.927Z",
+      "completed": "2026-04-20T14:58:31.459Z",
+      "duration_ms": 30000,
+      "summary": "Git push both repos. Synced."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction: continue HenryDB depth or pivot?"
+      "status": "done",
+      "task": "Afternoon direction: continue HenryDB depth or pivot?",
+      "started": "2026-04-20T14:58:38.284Z",
+      "completed": "2026-04-20T14:58:53.377Z",
+      "duration_ms": 15000,
+      "summary": "Continue HenryDB depth. 12 tasks done, some skips. Next: subquery decorrelation (genuinely new, educational). Session boundary 2:15 PM MDT."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB EXISTS subquery decorrelation — batch hash pattern",
-      "task": null
+      "task": null,
+      "started": "2026-04-20T14:59:01.403Z",
+      "completed": "2026-04-20T14:59:29.624Z",
+      "duration_ms": 60000,
+      "summary": "decorrelate.js already handles uncorrelated IN/EXISTS. Gap: correlated EXISTS→semi-join. 2 BUILD tasks: implement + test."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement correlated EXISTS→semi-join decorrelation: extract correlation predicate and rewrite as JOIN",
       "plan_ref": "T14",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T14:59:38.516Z",
+      "completed": "2026-04-20T15:01:39.501Z",
+      "duration_ms": 300000,
+      "summary": "Implemented correlated EXISTS→batch hash semi-join. Splits correlation predicates from local predicates, executes inner query once, builds hash set, filters via O(1) lookup. Supports single and multi-column. NOT EXISTS→anti-join."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Add tests for correlated EXISTS decorrelation: equality, range, multi-column correlations",
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-04-20T15:01:57.000Z",
+      "completed": "2026-04-20T15:03:03.654Z",
+      "duration_ms": 180000,
+      "summary": "8 correlated EXISTS decorrelation tests. All pass. Covers basic EXISTS, NOT EXISTS, local filters, combined WHERE, empty sets, performance benchmark."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, dashboard update"
+      "status": "done",
+      "task": "Housekeeping — git push, dashboard update",
+      "started": "2026-04-20T15:03:11.681Z",
+      "completed": "2026-04-20T15:03:24.396Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
     },
     {
       "id": "T17",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Check 3 open PRs — any review comments? Rebase needed?"
+      "status": "done",
+      "task": "Check 3 open PRs — any review comments? Rebase needed?",
+      "started": "2026-04-20T15:03:33.824Z",
+      "completed": "2026-04-20T15:03:55.922Z",
+      "duration_ms": 10000,
+      "summary": "No open PRs in henrydb or neural-net."
     },
     {
       "id": "T18",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB pg-server hardening or stored procedures",
-      "task": null
+      "task": null,
+      "started": "2026-04-20T15:04:05.130Z",
+      "completed": "2026-04-20T15:04:50.632Z",
+      "duration_ms": 60000,
+      "summary": "pg-server already solid (27/27 tests). Planned stored procedures Phase 1: SQL scalar functions. 2 BUILD tasks."
     },
     {
       "id": "T19",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement CREATE FUNCTION for SQL scalar functions: parser + catalog + eval",
       "plan_ref": "T18",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T15:05:00.566Z",
+      "completed": "2026-04-20T15:12:08.491Z",
+      "duration_ms": 600000,
+      "summary": "CREATE FUNCTION implemented: parser (with dollar-quoting), function catalog, UDF evaluation with parameter binding. Works with all SQL expressions."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Add SQL scalar function tests: basic, nested, WHERE clause, NULL handling",
+      "status": "done",
+      "plan_ref": "T18",
+      "started": "2026-04-20T15:12:28.203Z",
+      "completed": "2026-04-20T15:15:19.419Z",
+      "duration_ms": 180000,
+      "summary": "10 scalar function tests: basic, concat, WHERE, NULL, nested, OR REPLACE, table data, CASE, ORDER BY. All pass."
     },
     {
       "id": "T20",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping — git push, knowledge capture",
+      "started": "2026-04-20T15:15:32.431Z"
     },
     {
       "id": "T21",
@@ -381,6 +435,14 @@
     {
       "time": "2026-04-20T14:56:34.334Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-20T14:59:23.071Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-20T15:04:45.900Z",
+      "msg": "PLAN T18 filled 2 BUILD tasks"
     }
   ]
 }
