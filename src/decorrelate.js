@@ -32,7 +32,7 @@ function collectColumnRefs(expr, refs = new Set()) {
  * Check if a subquery references any outer table columns
  * (i.e., is it correlated?)
  */
-function isCorrelated(subqueryAst, outerTables) {
+function isCorrelated(subqueryAst, outerTables, db) {
   const refs = collectColumnRefs(subqueryAst.where);
   const innerTables = new Set();
   if (subqueryAst.from) {
@@ -44,9 +44,30 @@ function isCorrelated(subqueryAst, outerTables) {
     if (join.alias) innerTables.add(join.alias);
   }
   
-  // Check if any referenced table is NOT in the inner query
+  // Collect inner table column names
+  const innerColumns = new Set();
+  if (db && db.tables) {
+    for (const tbl of innerTables) {
+      const table = db.tables.get(tbl) || db.tables.get(tbl.toLowerCase());
+      if (table && table.schema) {
+        for (const col of table.schema) {
+          innerColumns.add(col.name);
+          innerColumns.add(col.name.toUpperCase());
+          innerColumns.add(col.name.toLowerCase());
+        }
+      }
+    }
+  }
+  
   for (const ref of refs) {
+    // Qualified reference: check if table prefix is an outer table
     if (!innerTables.has(ref) && outerTables.has(ref)) return true;
+    
+    // Unqualified reference: check if it's NOT an inner table column
+    if (!innerTables.has(ref) && !outerTables.has(ref) && !innerColumns.has(ref)) {
+      // This column isn't from any inner table — must be an outer reference
+      return true;
+    }
   }
   return false;
 }
@@ -80,7 +101,7 @@ export function decorrelateExpr(expr, outerTables, db) {
 
   // Optimize IN_SUBQUERY
   if (expr.type === 'IN_SUBQUERY') {
-    if (!isCorrelated(expr.subquery, outerTables)) {
+    if (!isCorrelated(expr.subquery, outerTables, db)) {
       // Uncorrelated: execute once, build hash set
       const result = db._select(expr.subquery);
       const values = new Set();
@@ -101,7 +122,7 @@ export function decorrelateExpr(expr, outerTables, db) {
 
   // Optimize EXISTS
   if (expr.type === 'EXISTS') {
-    if (!isCorrelated(expr.subquery, outerTables)) {
+    if (!isCorrelated(expr.subquery, outerTables, db)) {
       // Uncorrelated EXISTS: evaluate once
       const result = db._select(expr.subquery);
       return {
@@ -115,7 +136,7 @@ export function decorrelateExpr(expr, outerTables, db) {
 
   // Optimize NOT EXISTS
   if (expr.type === 'NOT_EXISTS') {
-    if (!isCorrelated(expr.subquery, outerTables)) {
+    if (!isCorrelated(expr.subquery, outerTables, db)) {
       const result = db._select(expr.subquery);
       return {
         type: 'LITERAL_BOOL',
