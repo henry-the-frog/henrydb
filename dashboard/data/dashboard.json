@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-20T23:45:20.668Z",
+  "generated": "2026-04-20T23:51:40.784Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: fix BETWEEN in SELECT column parser bug",
-    "completedAt": "2026-04-20T23:45:20.668Z",
-    "taskId": "T162",
-    "summary": "FIXED: BETWEEN/NOT BETWEEN in SELECT columns. Two issues: (1) parser didnt recognize BETWEEN after column name — added BETWEEN/NOT BETWEEN handlers to parseSelectColumn, (2) NOT_BETWEEN was missing from _evalValue boolean type delegation list. Now SELECT a BETWEEN 3 AND 7 works correctly.",
-    "durationMs": 480000
+    "task": "HenryDB: test full-text search — indexing, queries, ranking",
+    "completedAt": "2026-04-20T23:51:40.784Z",
+    "taskId": "T168",
+    "summary": "Full-text search: MATCH AGAINST requires fulltext index (correct). to_tsvector/to_tsquery BROKEN — @@ operator not in tokenizer, so query returns all rows (P1 bug). The full-text-search.js module itself works correctly (TSVector, TSQuery, ranking all implement proper logic), but the integration with the SQL parser is missing the @@ operator entirely.",
+    "durationMs": 360000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 370,
+    "blocksCompleted": 376,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 30,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 94,
-      "EXPLORE": 142
+      "EXPLORE": 148
     }
   },
   "artifacts": [
