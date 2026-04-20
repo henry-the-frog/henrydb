@@ -2450,18 +2450,22 @@
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix LIKE ESCAPE clause implementation + regression tests",
       "plan_ref": "T227",
       "project": "henrydb",
-      "started": "2026-04-20T02:21:48.662Z"
+      "started": "2026-04-20T02:21:48.662Z",
+      "completed": "2026-04-20T02:24:00.897Z",
+      "duration_ms": 600000,
+      "summary": "Implemented LIKE ESCAPE clause: parser + executor + 13 tests. Also fixed COUNT(*) in expressions earlier. NOT LIKE ESCAPE and ILIKE ESCAPE both work."
     },
     {
       "id": "T231",
       "mode": "BUILD",
       "task": "Stress-test query planner: complex JOINs, subquery flattening, index selection edge cases",
-      "status": "upcoming",
-      "plan_ref": "T227"
+      "status": "in-progress",
+      "plan_ref": "T227",
+      "started": "2026-04-20T02:24:12.886Z"
     },
     {
       "id": "T232",
