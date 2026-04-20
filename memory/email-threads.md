@@ -59,7 +59,8 @@
 
 ### neural-net CI Failures — henry-the-frog/neural-net
 - **Since:** Apr 11, 2026
-- **Count:** 88+ consecutive "Tests - main" failures (UIDs 150-260, 28 more since Apr 17)
+- **Count:** 116+ consecutive "Tests - main" failures (UIDs 150-260, 28 more Apr 17-18)
+- **Last checked:** Apr 20
 - **Action needed:** Tests are failing on every push to main. Investigate and fix.
 
 ### Clone & Run Monkey Test Corpus
