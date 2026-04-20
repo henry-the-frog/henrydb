@@ -4,29 +4,53 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review weekend work, set Monday direction. HenryDB at 8337 tests/99.88%. Neural-net CI failing. 3 PRs open."
+      "status": "done",
+      "task": "Review weekend work, set Monday direction. HenryDB at 8337 tests/99.88%. Neural-net CI failing. 3 PRs open.",
+      "started": "2026-04-20T14:15:31.272Z",
+      "completed": "2026-04-20T14:15:57.618Z",
+      "duration_ms": 60000,
+      "summary": "Reviewed weekend state. HenryDB 8337 tests/99.88%. Queue direction validated — depth day on HenryDB. No queue changes needed."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix neural-net CI failures and investigate 39 HenryDB ERR test files",
-      "task": null
+      "task": null,
+      "started": "2026-04-20T14:16:08.930Z",
+      "completed": "2026-04-20T14:21:01.765Z",
+      "duration_ms": 120000,
+      "summary": "Neural-net CI already green (latest run passed). HenryDB ERR files: plan is to increase test timeout and categorize failures. 2 BUILD tasks created."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Investigate HenryDB ERR test files — increase timeout, identify true failures vs timeout issues",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-20T14:21:14.268Z",
+      "completed": "2026-04-20T14:43:00.636Z",
+      "duration_ms": 900000,
+      "summary": "Fixed SSI sequential tx false positive, TDigest O(n²) compression→buffered (1M: 60s→427ms), catalog test API mismatches, sqlite-comparison graceful skip. Tests: 3866→4041 passing (+175). 6 remaining failures are timeout-related benchmark tests."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Fix any genuine test failures found in ERR files",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-20T14:43:34.984Z",
+      "completed": "2026-04-20T14:48:17.110Z",
+      "duration_ms": 300000,
+      "summary": "Remaining 5 timeout failures are heavy benchmarks. Added 120s timeouts to benchmark-engines, optimizer-quality, persistence-fuzzer, tpch-compiled. bank-transfer passes at 60s."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard health, check email"
+      "status": "in-progress",
+      "task": "Git push, dashboard health, check email",
+      "started": "2026-04-20T14:48:53.391Z"
     },
     {
       "id": "T5",
@@ -291,6 +315,10 @@
     {
       "time": "2026-04-20T14:02:00.762Z",
       "msg": "Added T26 (EXPLORE) after T25: Deep dive: MVCC research or database internals papers"
+    },
+    {
+      "time": "2026-04-20T14:20:54.988Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }
