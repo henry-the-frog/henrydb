@@ -1843,9 +1843,30 @@
     {
       "id": "T172",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: Final daily log + evening summary + git push",
-      "started": "2026-04-20T18:59:12.796Z"
+      "started": "2026-04-20T18:59:12.796Z",
+      "completed": "2026-04-20T19:00:09.087Z",
+      "duration_ms": 30000,
+      "summary": "Daily log updated, git pushed."
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: STDDEV, VARIANCE, MEDIAN aggregate functions",
+      "project": "henrydb",
+      "started": "2026-04-20T19:00:09.346Z",
+      "completed": "2026-04-20T19:01:48.501Z",
+      "duration_ms": 120000,
+      "summary": "STDDEV, STDDEV_POP, VARIANCE, VAR_POP, MEDIAN aggregate functions. All work with GROUP BY and FILTER."
+    },
+    {
+      "id": "T174",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T19:01:48.761Z"
     }
   ],
   "focusProjects": [
@@ -2521,6 +2542,14 @@
     {
       "time": "2026-04-20T18:57:23.938Z",
       "msg": "Added T172 (MAINTAIN) after end: MAINTAIN: Final daily log + evening summary + git push"
+    },
+    {
+      "time": "2026-04-20T19:00:08.848Z",
+      "msg": "Added T173 (BUILD) after end: BUILD: STDDEV, VARIANCE, MEDIAN aggregate functions"
+    },
+    {
+      "time": "2026-04-20T19:00:08.968Z",
+      "msg": "Added T174 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
