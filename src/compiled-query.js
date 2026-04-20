@@ -106,6 +106,11 @@ export class CompiledQueryEngine {
         op = new VectorizedFilter(op, filterFn);
       }
       
+      // Handle GROUP BY + aggregates using vectorized hash aggregate
+      if (ast.groupBy && ast.groupBy.length > 0) {
+        return this._tryVectorizedAggregate(ast, op, colNames);
+      }
+      
       // Add projection
       if (ast.columns && !ast.columns.some(c => c === '*' || c.name === '*')) {
         const projections = [];
@@ -161,6 +166,68 @@ export class CompiledQueryEngine {
   /**
    * Build a vectorized filter function from a WHERE clause AST.
    */
+  /**
+   * Build vectorized aggregate for GROUP BY queries.
+   */
+  _tryVectorizedAggregate(ast, inputOp, colNames) {
+    const groupBy = ast.groupBy.map(g => g.name || g.column || g);
+    const aggregates = [];
+    
+    for (const col of ast.columns) {
+      if (col.type === 'column' || col.type === 'column_ref') {
+        // Pass-through group by column — handled by aggregate groupBy
+        continue;
+      }
+      if (col.type === 'function' || (col.type === 'expression' && col.expr?.type === 'function_call')) {
+        const funcNode = col.type === 'function' ? col : col.expr;
+        const func = (funcNode.func || funcNode.name || '').toUpperCase();
+        const aggName = col.alias || func.toLowerCase();
+        
+        if (func === 'COUNT') {
+          const isCountStar = !funcNode.args || funcNode.args.length === 0 || funcNode.args[0]?.name === '*';
+          if (isCountStar) {
+            aggregates.push({ name: aggName, func: 'COUNT_STAR' });
+          } else {
+            aggregates.push({ name: aggName, func: 'COUNT', column: funcNode.args[0].name });
+          }
+        } else if (['SUM', 'AVG', 'MIN', 'MAX'].includes(func)) {
+          if (!funcNode.args || funcNode.args.length === 0) return null;
+          aggregates.push({ name: aggName, func, column: funcNode.args[0].name });
+        } else {
+          return null; // Unsupported aggregate
+        }
+      }
+    }
+    
+    if (aggregates.length === 0) return null;
+    
+    let op = new VectorizedHashAggregate(inputOp, groupBy, aggregates);
+    
+    // Add HAVING filter
+    if (ast.having) {
+      const havingFn = this._buildVectorizedFilter(ast.having, [...groupBy, ...aggregates.map(a => a.name)]);
+      if (!havingFn) return null;
+      op = new VectorizedFilter(op, havingFn);
+    }
+    
+    // Add ORDER BY
+    if (ast.orderBy?.length > 0) {
+      const orderBy = ast.orderBy.map(o => ({
+        column: o.column || o.name,
+        direction: (o.direction || 'ASC').toUpperCase(),
+      }));
+      op = new VectorizedSort(op, orderBy);
+    }
+    
+    // Add LIMIT
+    if (ast.limit?.value) {
+      op = new VectorizedLimit(op, ast.limit.value);
+    }
+    
+    const rows = collectAll(op);
+    return { rows };
+  }
+
   _buildVectorizedFilter(where, colNames) {
     if (!where) return null;
     
