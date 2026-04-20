@@ -4115,6 +4115,12 @@ export class Database {
   _explain(ast) {
     const stmt = ast.statement;
 
+    // EXPLAIN (FORMAT JSON) — return structured plan
+    if (ast.format === 'JSON') {
+      const plan = this._buildExplainPlan(stmt, ast.analyze);
+      return { rows: [{ 'QUERY PLAN': JSON.stringify(plan, null, 2) }], json: plan };
+    }
+
     // EXPLAIN COMPILED: show the compiled query plan
     if (ast.compiled) {
       return this._explainCompiled(stmt);

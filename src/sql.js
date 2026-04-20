@@ -186,14 +186,31 @@ export function parse(sql) {
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
     advance();
-    const analyze = isKeyword('ANALYZE') ? (advance(), true) : false;
-    const compiled = isKeyword('COMPILED') ? (advance(), true) : false;
+    let analyze = false;
+    let compiled = false;
+    let format = 'TEXT';
+    // Handle parenthesized options: EXPLAIN (FORMAT JSON, ANALYZE)
+    if (peek().type === '(') {
+      advance();
+      while (peek().type !== ')' && pos < tokens.length) {
+        if (isKeyword('ANALYZE') || isKeyword('ANALYSE')) { advance(); analyze = true; }
+        else if (isKeyword('FORMAT')) { advance(); format = advance().value.toUpperCase(); }
+        else if (isKeyword('VERBOSE')) { advance(); }
+        else if (isKeyword('COMPILED')) { advance(); compiled = true; }
+        else advance();
+        if (peek().type === ',') advance();
+      }
+      expect(')');
+    } else {
+      if (isKeyword('ANALYZE') || isKeyword('ANALYSE')) { advance(); analyze = true; }
+      if (isKeyword('COMPILED')) { advance(); compiled = true; }
+    }
     // Parse the underlying statement
     let statement;
     if (isKeyword('WITH')) statement = parseWith();
     else if (isKeyword('SELECT')) statement = parseSelect();
     else throw new Error('EXPLAIN requires a SELECT statement');
-    return { type: 'EXPLAIN', statement, analyze, compiled };
+    return { type: 'EXPLAIN', statement, analyze, compiled, format };
   }
 
   // SELECT or WITH
@@ -204,6 +221,7 @@ export function parse(sql) {
   if (isKeyword('UPDATE')) return parseUpdate();
   if (isKeyword('DELETE')) return parseDelete();
   if (isKeyword('MERGE')) return parseMerge();
+  if (isKeyword('COMMENT')) return parseComment();
   if (isKeyword('ALTER')) return parseAlter();
   if (isKeyword('CREATE')) return parseCreate();
   if (isKeyword('REFRESH')) {
@@ -1617,6 +1635,33 @@ export function parse(sql) {
       rows.push(values);
     } while (match(','));
     return { type: 'VALUES_QUERY', rows };
+  }
+
+  function parseComment() {
+    advance(); // COMMENT
+    expect('KEYWORD', 'ON');
+    const objectType = advance().value; // TABLE, COLUMN, FUNCTION, INDEX
+    let objectName, columnName;
+    objectName = advance().value;
+    if (objectType === 'COLUMN' && peek().type === '.') {
+      // COMMENT ON COLUMN table.column
+      advance(); // .
+      columnName = advance().value;
+    } else if (objectType === 'COLUMN' && peek().type === 'IDENT') {
+      // Handle table.column where dot was not tokenized separately
+      columnName = objectName;
+      // Already have column name from the dotted identifier
+    }
+    expect('KEYWORD', 'IS');
+    const commentTok = peek();
+    let comment;
+    if (isKeyword('NULL') || (commentTok.type === 'IDENT' && commentTok.value.toUpperCase() === 'NULL')) {
+      advance();
+      comment = null;
+    } else {
+      comment = advance().value; // STRING
+    }
+    return { type: 'COMMENT', objectType, objectName, columnName, comment };
   }
 
   function parseMerge() {
