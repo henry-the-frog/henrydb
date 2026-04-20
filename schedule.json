@@ -2549,16 +2549,20 @@
       "id": "T237",
       "mode": "BUILD",
       "task": "Implement subquery decorrelation: convert correlated WHERE IN to semi-join",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T235",
-      "started": "2026-04-20T02:48:52.874Z"
+      "started": "2026-04-20T02:48:52.874Z",
+      "completed": "2026-04-20T02:51:44.929Z",
+      "duration_ms": 600000,
+      "summary": "Implemented correlated IN subquery decorrelation: batch execution + hash map lookup. O(n*m) → O(n+m). All 60+ subquery tests pass."
     },
     {
       "id": "T238",
       "mode": "BUILD",
       "task": "Write stress tests for subquery decorrelation",
-      "status": "upcoming",
-      "plan_ref": "T235"
+      "status": "in-progress",
+      "plan_ref": "T235",
+      "started": "2026-04-20T02:51:51.881Z"
     }
   ],
   "focusProjects": [
