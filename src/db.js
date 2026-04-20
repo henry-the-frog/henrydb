@@ -2101,10 +2101,30 @@ export class Database {
         }
       }
     } else {
-      // With JOINs: full scan, apply WHERE after JOINs
+      // With JOINs: try predicate pushdown
+      // Split WHERE into: (a) conditions on left table only, (b) rest
+      const leftAlias = ast.from.alias || ast.from.table;
+      const leftCols = new Set(table.schema.map(c => c.name));
+      
+      let leftPredicate = null;
+      let residualPredicate = ast.where;
+      
+      if (ast.where) {
+        const { left, rest } = this._splitPredicates(ast.where, leftAlias, leftCols);
+        leftPredicate = left;
+        residualPredicate = rest;
+      }
+      
       for (const { pageId, slotIdx, values } of table.heap.scan()) {
-        const row = this._valuesToRow(values, table.schema, ast.from.alias || ast.from.table);
+        const row = this._valuesToRow(values, table.schema, leftAlias);
+        // Apply pushed-down predicate on left table
+        if (leftPredicate && !this._evalExpr(leftPredicate, row)) continue;
         rows.push(row);
+      }
+      
+      // Override the WHERE for post-join filtering to only the residual
+      if (residualPredicate !== ast.where) {
+        ast = { ...ast, where: residualPredicate };
       }
     }
 
@@ -3418,6 +3438,42 @@ export class Database {
     }
     
     throw new Error('Unsupported COPY direction');
+  }
+
+  _splitPredicates(expr, tableAlias, tableCols) {
+    // Split an AND-connected predicate into parts that reference only the given table
+    // and parts that reference other tables
+    if (!expr) return { left: null, rest: null };
+    
+    if (expr.type === 'AND') {
+      const leftSplit = this._splitPredicates(expr.left, tableAlias, tableCols);
+      const rightSplit = this._splitPredicates(expr.right, tableAlias, tableCols);
+      
+      const left = leftSplit.left && rightSplit.left 
+        ? { type: 'AND', left: leftSplit.left, right: rightSplit.left }
+        : leftSplit.left || rightSplit.left;
+      const rest = leftSplit.rest && rightSplit.rest
+        ? { type: 'AND', left: leftSplit.rest, right: rightSplit.rest }
+        : leftSplit.rest || rightSplit.rest;
+      
+      return { left, rest };
+    }
+    
+    // Check if this expression only references columns from the given table
+    const refs = this._collectColumnRefs(expr);
+    const onlyLeft = refs.every(ref => {
+      const name = ref.name || ref.column || '';
+      const table = ref.table || '';
+      // Matches if: (a) table-qualified to our alias, (b) unqualified and column exists in our table
+      if (table && table.toUpperCase() === tableAlias.toUpperCase()) return true;
+      if (!table && tableCols.has(name)) return true;
+      if (!table && tableCols.has(name.toUpperCase())) return true;
+      if (!table && tableCols.has(name.toLowerCase())) return true;
+      return false;
+    });
+    
+    if (onlyLeft) return { left: expr, rest: null };
+    return { left: null, rest: expr };
   }
 
   _buildExplainPlan(stmt, analyze) {
