@@ -44,7 +44,10 @@ export class Database {
     this._preparedStatements = new Map();
     
     // Cursor catalog
-    this._cursors = new Map(); // name -> { rows, position }
+    this._cursors = new Map();
+    
+    // Comments catalog
+    this._comments = new Map(); // "TABLE.tablename" or "COLUMN.table.col" → comment
   }
 
   /** Case-insensitive table lookup */
@@ -550,6 +553,7 @@ export class Database {
       case 'FETCH': return this._fetch(ast);
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'COPY': return this._executeCopy(ast);
+      case 'COMMENT': return this._executeComment(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'PREPARE': return this._prepare(ast);
@@ -3407,6 +3411,18 @@ export class Database {
     }
     
     throw new Error('Unsupported COPY direction');
+  }
+
+  _executeComment(ast) {
+    const key = ast.columnName 
+      ? `${ast.objectType}.${ast.objectName}.${ast.columnName}`
+      : `${ast.objectType}.${ast.objectName}`;
+    if (ast.comment === null) {
+      this._comments.delete(key);
+    } else {
+      this._comments.set(key, ast.comment);
+    }
+    return { type: 'OK', message: `COMMENT` };
   }
 
   _callUserFunction(funcDef, args, row) {
