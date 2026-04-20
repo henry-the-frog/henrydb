@@ -1520,9 +1520,64 @@
     {
       "id": "T142",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: git push + daily log",
-      "started": "2026-04-20T17:53:34.073Z"
+      "started": "2026-04-20T17:53:34.073Z",
+      "completed": "2026-04-20T17:54:00.181Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add EXPLAIN ANALYZE for JOINs — show per-operator timing and row counts",
+      "project": "henrydb",
+      "started": "2026-04-20T17:55:52.809Z",
+      "completed": "2026-04-20T17:56:11.565Z",
+      "duration_ms": 30000,
+      "summary": "EXPLAIN ANALYZE already shows per-operator timing, rows, filter info, and estimation accuracy. Join node lacks timing but overall quality is good. Skip enhancement."
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Window function FIRST_VALUE/LAST_VALUE/NTH_VALUE",
+      "project": "henrydb",
+      "started": "2026-04-20T17:56:11.823Z",
+      "completed": "2026-04-20T17:57:21.794Z",
+      "duration_ms": 60000,
+      "summary": "NTH_VALUE window function. Returns nth row value in window frame. Added to parser keywords + window function list + executor."
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: LATERAL subquery in FROM clause",
+      "project": "henrydb",
+      "started": "2026-04-20T17:57:22.053Z",
+      "completed": "2026-04-20T17:57:40.287Z",
+      "duration_ms": 5000,
+      "summary": "SKIP: LATERAL already works (implemented earlier today)."
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Date/time functions (NOW, DATE_TRUNC, EXTRACT, INTERVAL)",
+      "project": "henrydb",
+      "started": "2026-04-20T17:57:40.566Z",
+      "completed": "2026-04-20T18:00:04.071Z",
+      "duration_ms": 300000,
+      "summary": "7 date/time functions: DATE_TRUNC, EXTRACT (with special SQL syntax), DATE_PART, AGE, DATE_ADD, DATE_SUB, TO_CHAR. All work in SELECT and WHERE clauses."
+    },
+    {
+      "id": "T147",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: Full test sweep + git push",
+      "project": "henrydb",
+      "started": "2026-04-20T18:00:04.330Z"
     }
   ],
   "focusProjects": [
@@ -2078,6 +2133,26 @@
     {
       "time": "2026-04-20T17:50:13.818Z",
       "msg": "Added T142 (MAINTAIN) after end: MAINTAIN: git push + daily log"
+    },
+    {
+      "time": "2026-04-20T17:54:24.697Z",
+      "msg": "Added T143 (BUILD) after end: BUILD: Add EXPLAIN ANALYZE for JOINs — show per-operator timing and row counts"
+    },
+    {
+      "time": "2026-04-20T17:54:24.925Z",
+      "msg": "Added T144 (BUILD) after end: BUILD: Window function FIRST_VALUE/LAST_VALUE/NTH_VALUE"
+    },
+    {
+      "time": "2026-04-20T17:54:25.091Z",
+      "msg": "Added T145 (BUILD) after end: BUILD: LATERAL subquery in FROM clause"
+    },
+    {
+      "time": "2026-04-20T17:54:25.277Z",
+      "msg": "Added T146 (BUILD) after end: BUILD: Date/time functions (NOW, DATE_TRUNC, EXTRACT, INTERVAL)"
+    },
+    {
+      "time": "2026-04-20T17:54:25.442Z",
+      "msg": "Added T147 (MAINTAIN) after end: MAINTAIN: Full test sweep + git push"
     }
   ]
 }
