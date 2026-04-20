@@ -5,12 +5,14 @@
 ## Project: henrydb
 
 ### What happened:
-- 90 tasks completed (T100-T190)
-- 25+ new SQL features
+- ~100 tasks completed (T100-T205)
+- 25+ new SQL features, 50+ new functions
 - 7 critical/significant bug fixes
-- Tests: 3866 → 4135+ (269 new), ZERO real failures
+- Tests: 3866 → 4143 (+277), ZERO real failures
 - Codebase: 94K lines (42K source, 52K test), 172 modules
 - 151 SQL functions, 46 statement types
+- Performance: 12K inserts/sec, 10K PK lookups/sec
+- TPC-H Q1/Q3/Q4/Q5/Q13 all pass
 
 ### Critical bugs fixed:
 1. _tryVectorizedExecution naming mismatch

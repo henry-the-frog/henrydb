@@ -2165,6 +2165,37 @@
       "completed": "2026-04-20T19:29:28.419Z",
       "duration_ms": 60000,
       "summary": "MEMORY.md updated with current HenryDB stats."
+    },
+    {
+      "id": "T203",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Quick stress test — create 10K row table and run all TPC-H-style queries",
+      "project": "henrydb",
+      "started": "2026-04-20T19:29:42.634Z",
+      "completed": "2026-04-20T19:30:14.698Z",
+      "duration_ms": 30000,
+      "summary": "TPC-H stress test on 1K lineitem, 100 orders, 50 customers: Q1 16ms, Q3 1242ms, Q4 630ms, Q5 1178ms, Q13 15ms. All pass correctly."
+    },
+    {
+      "id": "T204",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Check if any scratch notes are stale and can be archived",
+      "started": "2026-04-20T19:30:25.802Z",
+      "completed": "2026-04-20T19:30:40.438Z",
+      "duration_ms": 30000,
+      "summary": "46 scratch notes. Some from Apr 8-9 are likely stale (buffer-pool-research, cpython-trace, forth-compilation, thompsons-nfa). Not archiving now — would need review."
+    },
+    {
+      "id": "T205",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Verify CURRENT.md is accurate and complete",
+      "started": "2026-04-20T19:30:52.757Z",
+      "completed": "2026-04-20T19:31:28.307Z",
+      "duration_ms": 15000,
+      "summary": "CURRENT.md verified and updated with final counts."
     }
   ],
   "focusProjects": [
@@ -2960,6 +2991,18 @@
     {
       "time": "2026-04-20T19:28:53.086Z",
       "msg": "Added T202 (MAINTAIN) after end: MAINTAIN: Update MEMORY.md with session A highlights"
+    },
+    {
+      "time": "2026-04-20T19:29:42.402Z",
+      "msg": "Added T203 (MAINTAIN) after end: MAINTAIN: Quick stress test — create 10K row table and run all TPC-H-style queries"
+    },
+    {
+      "time": "2026-04-20T19:30:25.569Z",
+      "msg": "Added T204 (MAINTAIN) after end: MAINTAIN: Check if any scratch notes are stale and can be archived"
+    },
+    {
+      "time": "2026-04-20T19:30:52.524Z",
+      "msg": "Added T205 (MAINTAIN) after end: MAINTAIN: Verify CURRENT.md is accurate and complete"
     }
   ]
 }
