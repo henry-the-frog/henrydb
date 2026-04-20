@@ -991,9 +991,30 @@
     {
       "id": "T93",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "MAINTAIN: mid-session git push",
-      "started": "2026-04-20T17:01:30.502Z"
+      "started": "2026-04-20T17:01:30.502Z",
+      "completed": "2026-04-20T17:01:56.775Z",
+      "duration_ms": 15000,
+      "summary": "Git push synced."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Prepared statements (PREPARE/EXECUTE/DEALLOCATE) with parameter binding",
+      "project": "henrydb",
+      "started": "2026-04-20T17:02:28.095Z",
+      "completed": "2026-04-20T17:04:36.484Z",
+      "duration_ms": 300000,
+      "summary": "Prepared statements: PREPARE/EXECUTE/DEALLOCATE. Parameter substitution via AST walking. Works with SELECT, INSERT, UPDATE, DELETE."
+    },
+    {
+      "id": "T95",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "MAINTAIN: git push",
+      "started": "2026-04-20T17:04:36.743Z"
     }
   ],
   "focusProjects": [
@@ -1365,6 +1386,14 @@
     {
       "time": "2026-04-20T16:58:50.114Z",
       "msg": "Added T93 (MAINTAIN) after end: MAINTAIN: mid-session git push"
+    },
+    {
+      "time": "2026-04-20T17:02:27.745Z",
+      "msg": "Added T94 (BUILD) after end: BUILD: Prepared statements (PREPARE/EXECUTE/DEALLOCATE) with parameter binding"
+    },
+    {
+      "time": "2026-04-20T17:02:27.864Z",
+      "msg": "Added T95 (MAINTAIN) after end: MAINTAIN: git push"
     }
   ]
 }
