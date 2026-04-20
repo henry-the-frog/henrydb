@@ -8655,8 +8655,11 @@ export class Database {
         case '/': {
           if (right === 0) return null;
           const result = left / right;
-          // Integer division when both operands are integers
-          if (Number.isInteger(left) && Number.isInteger(right)) return Math.trunc(result);
+          // Integer division when both operands are integer-typed (SQL standard)
+          // If either literal was written with a decimal point (e.g., 10.0), treat as float
+          const leftIsFloat = node.left?.isFloat || false;
+          const rightIsFloat = node.right?.isFloat || false;
+          if (Number.isInteger(left) && Number.isInteger(right) && !leftIsFloat && !rightIsFloat) return Math.trunc(result);
           return result;
         }
         case '%': return right === 0 ? null : left % right;

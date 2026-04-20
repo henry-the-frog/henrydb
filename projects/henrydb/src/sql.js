@@ -110,7 +110,7 @@ export function tokenize(sql) {
       let num = '';
       if (src[i] === '-') num += src[i++];
       while (i < src.length && /[0-9.]/.test(src[i])) num += src[i++];
-      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num) });
+      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num), isFloat: num.includes('.') });
       continue;
     }
 
@@ -140,7 +140,7 @@ export function tokenize(sql) {
       let num = '-';
       i++;
       while (i < src.length && /[0-9.]/.test(src[i])) num += src[i++];
-      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num) });
+      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num), isFloat: num.includes('.') });
       continue;
     }
     if (src[i] === '-') { tokens.push({ type: 'MINUS' }); i++; continue; }
@@ -1241,7 +1241,7 @@ export function parse(sql) {
       const operand = parsePrimary();
       let expr;
       if (operand.type === 'literal' && typeof operand.value === 'number') {
-        expr = { type: 'literal', value: -operand.value };
+        expr = { type: 'literal', value: -operand.value, ...(operand.isFloat ? { isFloat: true } : {}) };
       } else {
         expr = { type: 'unary_minus', operand };
       }
@@ -1305,7 +1305,7 @@ export function parse(sql) {
     const nextType = nextTok ? nextTok.type : null;
     if (nextType === 'CONCAT_OP' || nextType === 'CAST_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
       let seed = colTok.type === 'STRING' || colTok.type === 'NUMBER'
-        ? { type: 'literal', value: col }
+        ? { type: 'literal', value: col, ...(colTok.isFloat ? { isFloat: true } : {}) }
         : { type: 'column_ref', name: col };
       // Parse with correct operator precedence
       // First, consume mul/div/mod that directly follow the seed
@@ -1386,7 +1386,7 @@ export function parse(sql) {
     if (isKeyword('AS')) { advance(); alias = readAlias(); }
     // NUMBER and STRING tokens without operators should be literals, not column refs
     if (colTok.type === 'NUMBER' || colTok.type === 'STRING') {
-      return { type: 'expression', expr: { type: 'literal', value: col }, alias };
+      return { type: 'expression', expr: { type: 'literal', value: col, ...(colTok.isFloat ? { isFloat: true } : {}) }, alias };
     }
     
     // Check for IS NULL / IS NOT NULL / comparison operators after a column name
@@ -1906,8 +1906,7 @@ export function parse(sql) {
       const operand = parsePrimary();
       // Fold literal numbers: -5 → literal(-5)
       if (operand.type === 'literal' && typeof operand.value === 'number') {
-        return { type: 'literal', value: -operand.value };
-      }
+        return { type: 'literal', value: -operand.value, ...(operand.isFloat ? { isFloat: true } : {}) };      }
       return { type: 'unary_minus', operand };
     }
     // Unary plus: +expr (no-op, just parse the operand)
@@ -1915,7 +1914,7 @@ export function parse(sql) {
       advance();
       return parsePrimary();
     }
-    if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
+    if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value, isFloat: t.isFloat || false }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
     // INTERVAL 'N unit'
