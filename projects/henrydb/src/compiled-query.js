@@ -115,6 +115,11 @@ export class CompiledQueryEngine {
 
     // Sequential scan with compiled filter
     const filterFn = ast.where ? this._compileFilter(ast.where, schema) : null;
+    if (ast.where && !filterFn) {
+      // Cannot compile the WHERE clause — throw to signal fallback to interpreter.
+      // This prevents silently returning all rows when the filter can't compile.
+      throw new Error(`Compiled engine: unsupported WHERE expression type. Use interpreter fallback.`);
+    }
     const limitVal = ast.limit?.value;
     let count = 0;
 
@@ -205,9 +210,10 @@ export class CompiledQueryEngine {
     // Apply final WHERE filter (post-join conditions)
     if (ast.where) {
       const postFilter = this._compileFilter(ast.where, null, false);
-      if (postFilter) {
-        leftRows = leftRows.filter(postFilter);
+      if (!postFilter) {
+        throw new Error(`Compiled engine: unsupported WHERE expression in join query. Use interpreter fallback.`);
       }
+      leftRows = leftRows.filter(postFilter);
     }
 
     return { rows: this._applyProjectAndLimit(leftRows, ast) };
@@ -441,12 +447,15 @@ export class CompiledQueryEngine {
       case 'AND': {
         const left = this._compileExpr(expr.left);
         const right = this._compileExpr(expr.right);
+        // Both sides must compile — can't silently drop conditions
         if (left && right) return (row) => left(row) && right(row);
+        if (!left || !right) return null; // Fall back to interpreter
         return left || right;
       }
       case 'OR': {
         const left = this._compileExpr(expr.left);
         const right = this._compileExpr(expr.right);
+        // Both sides must compile for OR — can't evaluate partial OR
         if (left && right) return (row) => left(row) || right(row);
         return null;
       }
@@ -454,7 +463,66 @@ export class CompiledQueryEngine {
         const inner = this._compileExpr(expr.expr);
         return inner ? (row) => !inner(row) : null;
       }
+      case 'BETWEEN': {
+        const valFn = this._compileValueExpr(expr.expr || expr.left);
+        const lowFn = this._compileValueExpr(expr.low || expr.right?.low);
+        const highFn = this._compileValueExpr(expr.high || expr.right?.high);
+        return (row) => {
+          const v = valFn(row), lo = lowFn(row), hi = highFn(row);
+          return v >= lo && v <= hi;
+        };
+      }
+      case 'NOT_BETWEEN': {
+        const valFn = this._compileValueExpr(expr.expr || expr.left);
+        const lowFn = this._compileValueExpr(expr.low || expr.right?.low);
+        const highFn = this._compileValueExpr(expr.high || expr.right?.high);
+        return (row) => {
+          const v = valFn(row), lo = lowFn(row), hi = highFn(row);
+          return v < lo || v > hi;
+        };
+      }
+      case 'IS_NULL': {
+        const valFn = this._compileValueExpr(expr.expr || expr.left);
+        return (row) => valFn(row) == null;
+      }
+      case 'IS_NOT_NULL': {
+        const valFn = this._compileValueExpr(expr.expr || expr.left);
+        return (row) => valFn(row) != null;
+      }
+      case 'IN_LIST': {
+        const valFn = this._compileValueExpr(expr.expr || expr.left);
+        const listFns = (expr.list || expr.values || []).map(item => this._compileValueExpr(item));
+        return (row) => {
+          const v = valFn(row);
+          return listFns.some(fn => fn(row) === v);
+        };
+      }
+      case 'NOT_IN': {
+        const valFn = this._compileValueExpr(expr.expr || expr.left);
+        const listFns = (expr.list || expr.values || []).map(item => this._compileValueExpr(item));
+        return (row) => {
+          const v = valFn(row);
+          if (v == null) return null; // SQL: NULL NOT IN (...) = NULL
+          return !listFns.some(fn => fn(row) === v);
+        };
+      }
+      case 'LIKE':
+      case 'ILIKE': {
+        const valFn = this._compileValueExpr(expr.left || expr.expr);
+        const patternFn = this._compileValueExpr(expr.pattern || expr.right);
+        const caseInsensitive = expr.type === 'ILIKE';
+        return (row) => {
+          const v = valFn(row);
+          const p = patternFn(row);
+          if (v == null || p == null) return false;
+          const regex = String(p).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            .replace(/%/g, '.*').replace(/_/g, '.');
+          return new RegExp(`^${regex}$`, caseInsensitive ? 'i' : '').test(String(v));
+        };
+      }
       default:
+        // Unknown expression type — return null to signal the compiled engine
+        // cannot handle this query. Callers MUST fall back to interpreter.
         return null;
     }
   }
@@ -613,12 +681,13 @@ export class CompiledQueryEngine {
     // Apply HAVING filter
     if (aggInfo.having) {
       const havingFn = this._compileHavingFilter(aggInfo.having);
-      if (havingFn) {
-        const filtered = aggregated.filter(havingFn);
-        this.stats.queriesCompiled++;
-        this.stats.totalCompileTimeMs += Date.now() - startTime;
-        return { rows: ast.limit ? filtered.slice(0, typeof ast.limit === "number" ? ast.limit : ast.limit.value) : filtered };
+      if (!havingFn) {
+        throw new Error(`Compiled engine: unsupported HAVING expression. Use interpreter fallback.`);
       }
+      const filtered = aggregated.filter(havingFn);
+      this.stats.queriesCompiled++;
+      this.stats.totalCompileTimeMs += Date.now() - startTime;
+      return { rows: ast.limit ? filtered.slice(0, typeof ast.limit === "number" ? ast.limit : ast.limit.value) : filtered };
     }
 
     // Apply ORDER BY
