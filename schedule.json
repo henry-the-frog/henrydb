@@ -469,6 +469,17 @@
       "completed": "2026-04-21T03:31:12.156Z",
       "duration_ms": 300000,
       "summary": "Distributed training: DP (gradient avg), TP (weight split), PP (micro-batching), ZeRO (3 stages). Llama-7B: 98GB→12.3GB with ZeRO-3. 7 tests."
+    },
+    {
+      "id": "T44",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement tokenizer vocabulary analysis — BPE merge visualization, compression stats",
+      "project": "neural-net",
+      "started": "2026-04-21T03:31:59.101Z",
+      "completed": "2026-04-21T03:32:55.088Z",
+      "duration_ms": 180000,
+      "summary": "Tokenizer analysis: compression stats, merge history, vocabulary coverage. 6 tests."
     }
   ],
   "focusProjects": [
@@ -648,6 +659,10 @@
     {
       "time": "2026-04-21T03:29:55.455Z",
       "msg": "Added T43 (EXPLORE) after end: Neural-net: implement data parallelism / model parallelism concepts (educational)"
+    },
+    {
+      "time": "2026-04-21T03:31:53.191Z",
+      "msg": "Added T44 (EXPLORE) after end: Neural-net: implement tokenizer vocabulary analysis — BPE merge visualization, compression stats"
     }
   ]
 }
