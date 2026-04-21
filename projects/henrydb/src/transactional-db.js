@@ -80,11 +80,11 @@ export class TransactionalDatabase {
       // Restore views from catalog
       if (catalog.views) {
         for (const view of catalog.views) {
-          try { db.execute(view.sql); 
+          try { db.execute(view.sql);
             // Store the SQL on the view def for re-persistence
             const viewDef = db.views.get(view.name);
             if (viewDef) viewDef.sql = view.sql;
-          } catch (e) { /* ignore view creation errors — underlying table may not exist yet */ }
+          } catch (e) { /* ignore view creation errors - underlying table may not exist yet */ }
         }
       }
       // Restore triggers from catalog
@@ -123,7 +123,7 @@ export class TransactionalDatabase {
       if (recover) {
         // Phase 1: Replay DDL WAL records (ALTER TABLE, CREATE INDEX, etc.)
         // These modify the schema and must be replayed BEFORE per-heap DML recovery.
-        // NOTE: We only modify schema, NOT heap data — heap data will be corrected by
+        // NOTE: We only modify schema, NOT heap data - heap data will be corrected by
         // per-heap DML recovery in Phase 2. Using db.execute() would double-apply changes.
         const allWalRecords = wal.readFromStable(0);
         for (const r of allWalRecords) {
@@ -170,7 +170,7 @@ export class TransactionalDatabase {
           if (!db.tables.has(name)) tdb._createSqls.delete(name);
         }
         // Handle heap rekeying for renamed tables
-        // DDL replay may have renamed tables — need to match heaps to new names
+        // DDL replay may have renamed tables - need to match heaps to new names
         const ddlRenames = new Map(); // oldName → newName
         for (const r of allWalRecords) {
           if (r.type === RECORD_TYPES.DDL && r.after?.sql) {
@@ -202,7 +202,7 @@ export class TransactionalDatabase {
               const tableObj = db.tables.get(newName);
               if (tableObj) tableObj.heap = fileHeap;
             } else {
-              // new_name.db doesn't exist — just rekey the old heap
+              // new_name.db doesn't exist - just rekey the old heap
               const heap = heaps.get(oldName);
               heaps.delete(oldName);
               heap.name = newName;
@@ -221,7 +221,7 @@ export class TransactionalDatabase {
             }
           }
         }
-        
+
         // Remove catalog entries for tables that no longer exist (dropped or renamed)
         for (const name of [...tdb._createSqls.keys()]) {
           if (!db.tables.has(name)) {
@@ -245,9 +245,9 @@ export class TransactionalDatabase {
             tableObj.heap = fileHeap;
           }
         }
-        
+
         // Phase 2: Per-heap DML recovery (INSERT/UPDATE/DELETE replay)
-        // Only replay records AFTER the last checkpoint — earlier records are already applied
+        // Only replay records AFTER the last checkpoint - earlier records are already applied
         const checkpointLsn = wal.lastCheckpointLsn || 0;
         for (const [name, heap] of heaps) {
           recoverFromFileWAL(heap, wal, checkpointLsn);
@@ -318,6 +318,8 @@ export class TransactionalDatabase {
     this._poolSize = poolSize;
     this._isolationLevel = mvcc instanceof SSIManager ? 'serializable' : 'snapshot';
     this._sessions = new Map();
+    this._queryCache = new Map(); // SQL string → result (invalidated on any DML)
+    this._queryCacheHits = 0;
     this._nextSessionId = 1;
 
     // Active transaction for the current execution context
@@ -341,7 +343,16 @@ export class TransactionalDatabase {
    */
   execute(sql) {
     const trimmed = sql.trim().toUpperCase();
-
+    
+    // Query result cache: cache SELECT results, invalidate on any DML
+    if (this._queryCache && trimmed.startsWith('SELECT')) {
+      const cached = this._queryCache.get(sql);
+      if (cached) {
+        this._queryCacheHits = (this._queryCacheHits || 0) + 1;
+        return cached;
+      }
+    }
+    
     // DDL and utility: bypass MVCC
     if (this._isDDL(trimmed)) {
       // VACUUM should use the MVCC-aware vacuum, not the base Database's
@@ -361,7 +372,7 @@ export class TransactionalDatabase {
       // Log DDL to WAL for crash recovery with stale catalog
       // NOTE: ALTER TABLE and CREATE/DROP INDEX are already logged by the inner Database
       // via the patched db.wal.logDDL interceptor. Only log DDL types NOT covered there.
-      const isReadOnly = trimmed.startsWith('SHOW') || trimmed.startsWith('DESCRIBE') || 
+      const isReadOnly = trimmed.startsWith('SHOW') || trimmed.startsWith('DESCRIBE') ||
                          trimmed.startsWith('EXPLAIN') || trimmed.startsWith('VACUUM') ||
                          trimmed.startsWith('ANALYZE');
       const alreadyLoggedByInner = trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('RENAME') ||
@@ -373,14 +384,14 @@ export class TransactionalDatabase {
         this._trackCreate(sql);
         this._installScanInterceptors(); // New table needs interceptor
       } else if (trimmed.startsWith('ALTER TABLE') || trimmed.startsWith('RENAME')) {
-        // ALTER TABLE changes schema — update catalog to match current state
+        // ALTER TABLE changes schema - update catalog to match current state
         this._updateCatalogAfterAlter(sql);
         // Checkpoint after ALTER TABLE ADD/DROP COLUMN to establish a clean WAL boundary.
         // Without this, recovery replays old INSERT records with pre-alter tuple widths,
         // creating duplicate rows with wrong column counts.
-        if (trimmed.startsWith('ALTER TABLE') && 
+        if (trimmed.startsWith('ALTER TABLE') &&
             (trimmed.includes('ADD COLUMN') || trimmed.includes('DROP COLUMN'))) {
-          try { this.checkpoint(); } catch (e) { /* checkpoint best-effort — fails if txs open */ }
+          try { this.checkpoint(); } catch (e) { /* checkpoint best-effort - fails if txs open */ }
         }
       } else if (trimmed.startsWith('DROP TABLE')) {
         const match = sql.match(/DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?(\w+)/i);
@@ -442,7 +453,7 @@ export class TransactionalDatabase {
       this._physicalizeDeletes(tx);
       this._activeTx = null;
       this._setHeapTxId(0);
-      // Invalidate result cache — DML changed data, cached SELECTs may be stale
+      // Invalidate result cache - DML changed data, cached SELECTs may be stale
       if (this._db._resultCache) this._db._resultCache.clear();
       return result;
     } catch (e) {
@@ -501,7 +512,7 @@ export class TransactionalDatabase {
 
     // 5. Truncate WAL (all data is safely on disk)
     this._wal.truncate();
-    
+
     // 6. Re-write checkpoint marker so recovery knows where to start
     this._wal.checkpoint();
 
@@ -640,7 +651,7 @@ export class TransactionalDatabase {
       const heap = tableObj.heap;
       const origDelete = heap._origDelete;
       if (origDelete) {
-        // Keep WAL enabled so pageLSN advances — ensures crash recovery
+        // Keep WAL enabled so pageLSN advances - ensures crash recovery
         // doesn't replay stale INSERT records over physicalized deletes
         try { origDelete(pageId, slotIdx); } catch (e) { /* already deleted */ }
       }
@@ -676,7 +687,7 @@ export class TransactionalDatabase {
         // Use original physical delete (bypass MVCC interceptor)
         const origDelete = heap._origDelete;
         if (origDelete) {
-          // Keep WAL enabled so pageLSN advances — ensures recovery doesn't
+          // Keep WAL enabled so pageLSN advances - ensures recovery doesn't
           // replay stale INSERT records over vacuum'd pages
           try { origDelete(pageId, slotIdx); } catch (e) { /* already deleted */ }
         }
@@ -848,11 +859,11 @@ export class TransactionalDatabase {
                 throw new Error(`Write-write conflict on ${name}:${key}`);
               }
             }
-            
+
             // PK-level write-write conflict check: after repeated concurrent UPDATEs,
             // different transactions may be operating on different physical versions
             // of the same logical row. Check if any other version with the same PK
-            // has xmax set by an active transaction — that means a concurrent
+            // has xmax set by an active transaction - that means a concurrent
             // modification is in progress on the same logical row.
             if (extractPK) {
               const origScanFn = heap._origScan || origScan;
@@ -883,7 +894,7 @@ export class TransactionalDatabase {
                 }
               }
             }
-            
+
             const oldXmax = ver.xmax;
             ver.xmax = tx.txId;
             tx.writeSet.add(`${name}:${key}:del`);
@@ -895,7 +906,7 @@ export class TransactionalDatabase {
             }
             tx.undoLog.push(() => { ver.xmax = oldXmax; });
           } else {
-            // No version entry (e.g., restored by undo) — create one and mark deleted
+            // No version entry (e.g., restored by undo) - create one and mark deleted
             const newVer = { xmin: 1, xmax: tx.txId };
             vm.set(key, newVer);
             tx.writeSet.add(`${name}:${key}:del`);
@@ -916,23 +927,23 @@ export class TransactionalDatabase {
         heap.findByPK = function(pkValue) {
           const values = origFindByPK(pkValue);
           if (!values) {
-            // B+tree doesn't have this key — but under MVCC, an older version
+            // B+tree doesn't have this key - but under MVCC, an older version
             // might exist in the heap (e.g., row was updated and B+tree now points
             // to the new version). Fall back to scan for the PK.
             const pkIndices = heap.pkIndices || [0];
             for (const row of heap.scan()) {
               const rowValues = row.values || row;
-              const pk = pkIndices.length === 1 ? rowValues[pkIndices[0]] : 
+              const pk = pkIndices.length === 1 ? rowValues[pkIndices[0]] :
                 pkIndices.map(i => String(rowValues[i])).join('\0');
               if (pk === pkValue) return rowValues;
             }
             return null;
           }
-          
+
           // Check version map for the B+tree result
           const vm = tdb._versionMaps.get(name);
           if (!vm) return values;
-          
+
           // Look up the version map by pageId:slotIdx
           const pkToRid = heap._pkToRid;
           if (pkToRid) {
@@ -943,26 +954,26 @@ export class TransactionalDatabase {
               const slotIdx = ridNum % (heap._syntheticPageSize || 1000);
               const key = `${pageId}:${slotIdx}`;
               const ver = vm.get(key);
-              
+
               if (ver) {
                 const tx = tdb._activeTx;
                 if (tx) {
-                  // In transaction — check visibility
+                  // In transaction - check visibility
                   const created = tdb._mvcc.isVisible(ver.xmin, tx);
                   const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
                   if (!created || deleted) {
-                    // Current B+tree version not visible — scan for an older version
+                    // Current B+tree version not visible - scan for an older version
                     const pkIndices = heap.pkIndices || [0];
                     for (const row of heap.scan()) {
                       const rowValues = row.values || row;
-                      const pk = pkIndices.length === 1 ? rowValues[pkIndices[0]] : 
+                      const pk = pkIndices.length === 1 ? rowValues[pkIndices[0]] :
                         pkIndices.map(i => String(rowValues[i])).join('\0');
                       if (pk === pkValue) return rowValues;
                     }
                     return null;
                   }
                 } else {
-                  // No transaction — check committed state
+                  // No transaction - check committed state
                   if (ver.xmax !== 0 && tdb._mvcc.committedTxns.has(ver.xmax)) return null;
                 }
               }
@@ -979,10 +990,10 @@ export class TransactionalDatabase {
         heap.get = function(pageId, slotIdx) {
           const values = origGet(pageId, slotIdx);
           if (!values) return null;
-          
+
           const vm = tdb._versionMaps.get(name);
           if (!vm) return values;
-          
+
           const key = `${pageId}:${slotIdx}`;
           const ver = vm.get(key);
           if (ver) {
@@ -1174,12 +1185,12 @@ export class TransactionalDatabase {
   }
 
   /**
-   * Replay ALTER TABLE DDL during crash recovery — modifies schema only, NOT heap data.
+   * Replay ALTER TABLE DDL during crash recovery - modifies schema only, NOT heap data.
    * Heap data is handled by per-heap DML recovery.
    */
   _replayDDLSchemaOnly(db, sql) {
     const trimmed = sql.trim();
-    
+
     // ALTER TABLE t ADD COLUMN name TYPE [DEFAULT val]
     const addMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)\s+(\w+)(?:\s+DEFAULT\s+(.+))?/i);
     if (addMatch) {
@@ -1195,7 +1206,7 @@ export class TransactionalDatabase {
       table.schema.push(colDef);
       return;
     }
-    
+
     // ALTER TABLE t DROP COLUMN name
     const dropMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+DROP\s+COLUMN\s+(\w+)/i);
     if (dropMatch) {
@@ -1206,7 +1217,7 @@ export class TransactionalDatabase {
       if (idx >= 0) table.schema.splice(idx, 1);
       return;
     }
-    
+
     // ALTER TABLE t RENAME COLUMN old TO new
     const renameColMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+COLUMN\s+(\w+)\s+TO\s+(\w+)/i);
     if (renameColMatch) {
@@ -1217,7 +1228,7 @@ export class TransactionalDatabase {
       if (col) col.name = newName;
       return;
     }
-    
+
     // ALTER TABLE t RENAME TO new_name
     const renameMatch = trimmed.match(/ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/i);
     if (renameMatch) {
@@ -1232,7 +1243,7 @@ export class TransactionalDatabase {
       if (table.heap) table.heap.name = newName;
       return;
     }
-    
+
     // Fallback: try full execute for unrecognized ALTER patterns
     try { db.execute(sql); } catch {}
   }
@@ -1340,7 +1351,7 @@ export class TransactionSession {
         }
       }
     }
-    
+
     // Restore deleted rows (clear xmax so they become visible again)
     for (const key of deletedKeys) {
       const parts = key.replace(/:del$/, '').split(':');
@@ -1348,7 +1359,7 @@ export class TransactionSession {
       const pageId = parseInt(parts[1]);
       const slotIdx = parseInt(parts[2]);
       if (isNaN(pageId) || isNaN(slotIdx)) continue;
-      
+
       const vm = this._tdb._versionMaps.get(tableName);
       if (vm) {
         const verKey = `${pageId}:${slotIdx}`;
@@ -1358,7 +1369,7 @@ export class TransactionSession {
         }
       }
     }
-    
+
     // Remove newly added rows
     for (const key of addedKeys) {
       const parts = key.split(':');
@@ -1424,7 +1435,7 @@ export class TransactionSession {
     // Release row-level locks held by this transaction
     this._tdb._db._releaseRowLocks(txId);
     this._tx = null;
-    // Invalidate result cache — committed data may change query results
+    // Invalidate result cache - committed data may change query results
     if (this._tdb._db._resultCache) this._tdb._db._resultCache.clear();
 
     // Auto-checkpoint if WAL exceeds threshold
@@ -1511,7 +1522,7 @@ export class TransactionSession {
           // Use a targeted approach: track which physical rows were added/deleted by this UPDATE
           const snap = updateSnapshot;
           const preUpdateRowKeys = snap.physicalRowKeys;
-          
+
           this._tx.undoLog.push(() => {
             const table = this._tdb._db.tables.get(snap.tableName);
             if (!table) return;
@@ -1521,7 +1532,7 @@ export class TransactionSession {
             const vm = this._tdb._versionMaps.get(snap.tableName);
             const origScan = table.heap._origScan || table.heap.scan.bind(table.heap);
             const origDelete = table.heap._origDelete || table.heap.delete.bind(table.heap);
-            
+
             // Delete rows that were ADDED by this UPDATE (not in preUpdateRowKeys)
             const toDelete = [];
             for (const { pageId, slotIdx } of origScan()) {
@@ -1536,7 +1547,7 @@ export class TransactionSession {
                 if (vm) vm.delete(key);
               } catch (e) { /* ignore */ }
             }
-            
+
             // Restore xmax ONLY for rows that were alive before this UPDATE
             if (vm) {
               for (const key of snap.aliveRowKeys) {
@@ -1546,7 +1557,7 @@ export class TransactionSession {
                 }
               }
             }
-            
+
             // Re-insert any snapshot rows that are no longer physically present
             const origInsert = table.heap._origInsert || table.heap.insert.bind(table.heap);
             const currentValues = new Set();
@@ -1640,7 +1651,7 @@ export class TransactionSession {
     const table = this._tdb._db.tables.get(tableName);
     if (!table) return null;
 
-    // Snapshot VISIBLE rows (through MVCC) — these are the rows as they exist
+    // Snapshot VISIBLE rows (through MVCC) - these are the rows as they exist
     // right before this UPDATE, including rows modified earlier in this transaction
     const txId = this._tx.txId;
     const vm = this._tdb._versionMaps.get(tableName);
