@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-21T16:25:55.423Z",
+  "generated": "2026-04-21T16:37:36.347Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git push all repos, ensure workspace is clean",
-    "startedAt": "2026-04-21T16:25:55.423Z",
-    "taskId": "T62"
+    "mode": "BUILD",
+    "task": "Extract _insert and _insertSelect (287 LOC) into dml-insert.js",
+    "startedAt": "2026-04-21T16:37:36.347Z",
+    "taskId": "T68"
   },
   "schedule": {
     "date": "2026-04-21",
@@ -467,29 +467,313 @@
       {
         "id": "T39",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Wire Volcano IndexScan operator in planner — replace SeqScan+Filter with IndexScan when index available",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-21T15:41:10.763Z"
+        "started": "2026-04-21T15:41:10.763Z",
+        "completed": "2026-04-21T15:41:55.174Z",
+        "duration_ms": 60000,
+        "summary": "IndexScan wire plan: detect equality/range WHERE on indexed columns in buildPlan, replace SeqScan+Filter with IndexScan. Need to extract predicate conditions and match against index catalog."
       },
       {
         "id": "T43",
         "mode": "BUILD",
         "task": "Wire IndexScan into Volcano planner: detect WHERE col = val on indexed columns and use IndexScan instead of SeqScan+Filter",
+        "status": "done",
+        "plan_ref": "T39",
+        "started": "2026-04-21T15:42:04.412Z",
+        "completed": "2026-04-21T15:44:02.520Z",
+        "duration_ms": 300000,
+        "summary": "Wired Volcano IndexScan: tryIndexScan detects WHERE on indexed cols. Supports EQ, range, BETWEEN, AND with residual. 4 new tests, 92/92 pass. SeqScan+Filter → IndexScan optimization now active."
+      },
+      {
+        "id": "T44",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Run adversarial stress test suite on HenryDB — generate random concurrent SQL and look for crashes",
+        "project": "henrydb",
+        "started": "2026-04-21T15:44:43.459Z",
+        "completed": "2026-04-21T15:45:54.728Z",
+        "duration_ms": 300000,
+        "summary": "Random stress test suite: 7 tests covering random SELECTs, UPDATEs, concurrent conflicts, vacuum+integrity, DECIMAL aggregation, window functions, MVCC subqueries. All pass."
+      },
+      {
+        "id": "T45",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Read the Volcano/Cascades optimizer paper approach and compare to HenryDB's cost model",
+        "project": "henrydb",
+        "started": "2026-04-21T15:46:25.249Z",
+        "completed": "2026-04-21T15:48:02.263Z",
+        "duration_ms": 120000,
+        "summary": "Analyzed three separate cost paths in HenryDB: db.js uses PG-style with real stats, EXPLAIN uses generic defaults, Volcano has no cost model. Documented divergence risks and unification roadmap."
+      },
+      {
+        "id": "T46",
+        "mode": "THINK",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T15:48:13.725Z",
+        "completed": "2026-04-21T15:48:44.784Z",
+        "duration_ms": 60000,
+        "summary": "Investigated dual cost model: both execution and EXPLAIN use the same _compareScanCosts/_compareJoinCosts. The divergence was overstated — both paths use identical cost model. Only Volcano planner lacks cost-based decisions. Removed from TODO."
+      },
+      {
+        "id": "T47",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep test: train a character-level language model end-to-end with neural-net library and evaluate generation quality",
+        "project": "neural-net",
+        "started": "2026-04-21T15:50:13.901Z",
+        "completed": "2026-04-21T15:51:04.443Z",
+        "duration_ms": 180000,
+        "summary": "Trained char-LM end-to-end: tokenizer→model→training→generation all work. Loss decreases from 3.56→3.09 over 50 epochs (log(30)=3.40). Generation semi-coherent (spaces+punctuation placed reasonably). Model size limits quality, not bugs."
+      },
+      {
+        "id": "T48",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Profile HenryDB query execution: time a complex query with joins, subqueries, window functions",
+        "project": "henrydb",
+        "started": "2026-04-21T15:51:19.667Z",
+        "completed": "2026-04-21T15:53:58.732Z",
+        "duration_ms": 180000,
+        "summary": "Profiled HenryDB: PK lookup 4ms, index scan 0.5ms, 2-way join 5.4ms, 3-way 3.6ms, GROUP BY 17.5ms, window 1.6ms. BOTTLENECK: correlated subquery 259ms (O(n*m)). Highest-ROI optimization: query decorrelation."
+      },
+      {
+        "id": "T49",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep investigation: MVCC heap monkey-patching fragility — catalog the 5 risks and design a cleaner architecture",
+        "project": "henrydb",
+        "started": "2026-04-21T15:54:33.143Z",
+        "completed": "2026-04-21T15:55:24.770Z",
+        "duration_ms": 180000,
+        "summary": "Cataloged 5 MVCC monkey-patching fragility risks. Designed MVCCHeap wrapper class as replacement. Migration plan: ~2 hours, creates mvcc-heap.js with scan/get/delete/findByPK. Benefits: new heap types auto-get MVCC, clean separation."
+      },
+      {
+        "id": "T50",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Test HenryDB wire protocol with real PostgreSQL client (psql or pg library)",
+        "project": "henrydb",
+        "started": "2026-04-21T15:56:24.317Z",
+        "completed": "2026-04-21T15:57:24.327Z",
+        "duration_ms": 120000,
+        "summary": "Wire protocol works with real pg npm client: SELECT, GROUP BY, parameterized queries all pass. SERIAL auto-increment works. 80+ wire protocol test files exist. wire-basic 3/3, pg-client 13/13 pass."
+      },
+      {
+        "id": "T51",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Wire Volcano Union operator for UNION/UNION ALL queries",
+        "project": "henrydb",
+        "started": "2026-04-21T15:58:03.427Z",
+        "completed": "2026-04-21T15:59:41.094Z",
+        "duration_ms": 180000,
+        "summary": "Wired Volcano Union: buildPlan handles UNION AST recursively. UNION ALL works, UNION wraps in Distinct (needs column normalization for cross-table dedup). 92 tests pass."
+      },
+      {
+        "id": "T52",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Read through HenryDB's most complex test suite — what patterns emerge, what's missing?",
+        "project": "henrydb",
+        "started": "2026-04-21T16:00:01.666Z",
+        "completed": "2026-04-21T16:01:04.131Z",
+        "duration_ms": 120000,
+        "summary": "855 test files, 126K lines of test code. SQL fuzzer (74 tests, 20K+ queries): pass. SQL standard conformance (48): pass. Vacuum depth (19): pass. Test infrastructure is remarkably comprehensive."
+      },
+      {
+        "id": "T53",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Investigate HenryDB's autograd module in neural-net — can it do gradient-based optimization on SQL queries?",
+        "project": "neural-net",
+        "started": "2026-04-21T16:01:43.860Z",
+        "completed": "2026-04-21T16:02:25.652Z",
+        "duration_ms": 60000,
+        "summary": "Autograd engine works perfectly: f(x,y)=x²+3xy+y² gives correct gradients (13,12). Sigmoid gradient exact (0.25). Tape-based reverse-mode AD with topological sort. Not practical for SQL optimization but solid for ML research."
+      },
+      {
+        "id": "T54",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Investigate HenryDB's compiled query engine in more depth — what queries trigger compilation, how fast is it?",
+        "project": "henrydb",
+        "started": "2026-04-21T16:02:47.239Z",
+        "completed": "2026-04-21T16:03:53.197Z",
+        "duration_ms": 120000,
+        "summary": "Compiled engine is 3x slower than interpreter for 1K rows (compilation overhead dominates). Benefits only at >50K rows. Adaptive engine switching is the correct approach. Current threshold of 50 rows is too low — should be higher."
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Adjust compiled engine threshold from 50 rows to 5000 based on benchmarking",
+        "project": "henrydb",
+        "started": "2026-04-21T16:04:08.039Z",
+        "completed": "2026-04-21T16:08:30.657Z",
+        "duration_ms": 300000,
+        "summary": "Raised compiled engine threshold from 50 to 5000 rows based on benchmarking (3x slower at 1K rows). Made configurable. All 45 tests pass."
+      },
+      {
+        "id": "T56",
+        "mode": "THINK",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T16:10:36.673Z",
+        "completed": "2026-04-21T16:10:57.195Z",
+        "duration_ms": 60000,
+        "summary": "Session reflection complete. Key learnings: JS Number.isInteger gotcha, MVCC PK-level conflicts, compiled engine threshold too low. Next priorities: MVCCHeap wrapper, correlated subquery optimization, continued extraction."
+      },
+      {
+        "id": "T57",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep-read the Volcano IndexScan implementation — verify it handles edge cases (empty range, NULL keys, non-unique indexes)",
+        "project": "henrydb",
+        "started": "2026-04-21T16:11:15.509Z",
+        "completed": "2026-04-21T16:12:36.835Z",
+        "duration_ms": 180000,
+        "summary": "Deep-read IndexScan: found B+tree range() bug — range(50, undefined) returns 0 entries instead of all entries ≥50. range(undefined, undefined) also returns 0. Only bounded ranges work correctly. IndexScan wiring is correct, B+tree range needs fixing."
+      },
+      {
+        "id": "T58",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Investigate HenryDB's B+tree implementation depth — leaf chain correctness, split behavior",
+        "project": "henrydb",
+        "started": "2026-04-21T16:13:23.103Z",
+        "completed": "2026-04-21T16:13:55.036Z",
+        "duration_ms": 120000,
+        "summary": "B+tree leaf chains are correctly ordered for both unique and non-unique keys (suffix comparator ensures order). range() works for bounded ranges. Only bug: undefined bounds treated as NaN, returning 0 entries. Fix is straightforward."
+      },
+      {
+        "id": "T59",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Read through neural-net's speculative decoding implementation — verify correctness",
+        "project": "neural-net",
+        "started": "2026-04-21T16:14:10.962Z",
+        "completed": "2026-04-21T16:14:34.896Z",
+        "duration_ms": 120000,
+        "summary": "Speculative decoding is a faithful implementation of Leviathan et al. 2023. Acceptance probability, rejection sampling, bonus token all correct. One potential issue: extractPositionLogits assumes flat logits layout (pos*vocabSize+v) — depends on model forward() shape convention."
+      },
+      {
+        "id": "T60",
+        "mode": "THINK",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T16:15:25.201Z",
+        "completed": "2026-04-21T16:15:39.982Z",
+        "duration_ms": 120000,
+        "summary": "Most impactful improvement: end-to-end demo app using HenryDB via pg wire protocol. Would reveal real gaps, serve as integration test, provide compelling demo. Current state is remarkably complete for a from-scratch DB — the gap is real-world usage testing."
+      },
+      {
+        "id": "T61",
+        "mode": "THINK",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T16:15:58.852Z",
+        "completed": "2026-04-21T16:16:29.018Z",
+        "duration_ms": 60000,
+        "summary": "Updated scratch INDEX.md: 6 bugs marked as FIXED/VERIFIED. 6 new design notes from today. Categorized by status (resolved/active/completed). Clean separation of active vs archived items."
+      },
+      {
+        "id": "T62",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push all repos, ensure workspace is clean",
+        "project": "henrydb",
+        "started": "2026-04-21T16:25:55.387Z",
+        "completed": "2026-04-21T16:26:23.158Z",
+        "duration_ms": 30000,
+        "summary": "All repos pushed. Workspace clean."
+      },
+      {
+        "id": "T63",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix Volcano IndexScan for one-sided ranges — verify with updated B+tree",
+        "project": "henrydb",
+        "started": "2026-04-21T16:26:47.622Z",
+        "completed": "2026-04-21T16:26:47.764Z",
+        "duration_ms": 30000,
+        "summary": "Already fixed by B+tree range() fix. All 5 range patterns verified: >, >=, <, =, BETWEEN. All produce correct results through Volcano IndexScan."
+      },
+      {
+        "id": "T64",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Implement correlated subquery decorrelation — convert to join+groupby for 50x speedup",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T16:27:10.697Z",
+        "completed": "2026-04-21T16:27:42.125Z",
+        "duration_ms": 120000,
+        "summary": "Planned materialized subquery optimization: pre-compute aggregate correlated subqueries once with GROUP BY, then look up per row. O(n*m)→O(n+m). 2 BUILD tasks."
+      },
+      {
+        "id": "T66",
+        "mode": "BUILD",
+        "task": "Add correlated subquery materialization in _select: pre-compute aggregate subqueries with GROUP BY on correlation column",
+        "status": "done",
+        "plan_ref": "T64",
+        "started": "2026-04-21T16:27:56.099Z",
+        "completed": "2026-04-21T16:34:16.049Z",
+        "duration_ms": 600000,
+        "summary": "Correlated subquery materialization: 259ms→21ms (12x). Detects aggregate+correlation pattern, pre-computes GROUP BY, looks up per-row. COUNT defaults to 0. All subquery tests pass."
+      },
+      {
+        "id": "T67",
+        "mode": "BUILD",
+        "task": "Add tests for correlated subquery optimization",
+        "status": "done",
+        "plan_ref": "T64",
+        "started": "2026-04-21T16:34:51.734Z",
+        "completed": "2026-04-21T16:36:14.258Z",
+        "duration_ms": 300000,
+        "summary": "6 correlated subquery optimization tests: COUNT/SUM/MAX with correlation, performance (<200ms for 5K rows), multiple subqueries, WHERE on outer. All pass."
+      },
+      {
+        "id": "T65",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Extract DML handlers (_insert, _insertSelect, _update, _delete) from db.js",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T16:36:38.617Z"
+      },
+      {
+        "id": "T68",
+        "mode": "BUILD",
+        "task": "Extract _insert and _insertSelect (287 LOC) into dml-insert.js",
         "status": "upcoming",
-        "plan_ref": "T39"
+        "plan_ref": "T65"
+      },
+      {
+        "id": "T69",
+        "mode": "BUILD",
+        "task": "Extract _update and _delete (352 LOC) into dml-mutate.js",
+        "status": "upcoming",
+        "plan_ref": "T65"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 60,
-    "blocksTotal": 43,
+    "blocksCompleted": 66,
+    "blocksTotal": 69,
     "modeDistribution": {
       "THINK": 10,
-      "PLAN": 13,
-      "BUILD": 17,
-      "MAINTAIN": 7,
+      "PLAN": 15,
+      "BUILD": 20,
+      "MAINTAIN": 8,
       "EXPLORE": 13
     }
   }

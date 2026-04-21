@@ -677,17 +677,85 @@
     {
       "id": "T62",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push all repos, ensure workspace is clean",
       "project": "henrydb",
-      "started": "2026-04-21T16:25:55.387Z"
+      "started": "2026-04-21T16:25:55.387Z",
+      "completed": "2026-04-21T16:26:23.158Z",
+      "duration_ms": 30000,
+      "summary": "All repos pushed. Workspace clean."
     },
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix Volcano IndexScan for one-sided ranges — verify with updated B+tree",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T16:26:47.622Z",
+      "completed": "2026-04-21T16:26:47.764Z",
+      "duration_ms": 30000,
+      "summary": "Already fixed by B+tree range() fix. All 5 range patterns verified: >, >=, <, =, BETWEEN. All produce correct results through Volcano IndexScan."
+    },
+    {
+      "id": "T64",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement correlated subquery decorrelation — convert to join+groupby for 50x speedup",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T16:27:10.697Z",
+      "completed": "2026-04-21T16:27:42.125Z",
+      "duration_ms": 120000,
+      "summary": "Planned materialized subquery optimization: pre-compute aggregate correlated subqueries once with GROUP BY, then look up per row. O(n*m)→O(n+m). 2 BUILD tasks."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "task": "Add correlated subquery materialization in _select: pre-compute aggregate subqueries with GROUP BY on correlation column",
+      "status": "done",
+      "plan_ref": "T64",
+      "started": "2026-04-21T16:27:56.099Z",
+      "completed": "2026-04-21T16:34:16.049Z",
+      "duration_ms": 600000,
+      "summary": "Correlated subquery materialization: 259ms→21ms (12x). Detects aggregate+correlation pattern, pre-computes GROUP BY, looks up per-row. COUNT defaults to 0. All subquery tests pass."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "task": "Add tests for correlated subquery optimization",
+      "status": "done",
+      "plan_ref": "T64",
+      "started": "2026-04-21T16:34:51.734Z",
+      "completed": "2026-04-21T16:36:14.258Z",
+      "duration_ms": 300000,
+      "summary": "6 correlated subquery optimization tests: COUNT/SUM/MAX with correlation, performance (<200ms for 5K rows), multiple subqueries, WHERE on outer. All pass."
+    },
+    {
+      "id": "T65",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Extract DML handlers (_insert, _insertSelect, _update, _delete) from db.js",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T16:36:38.617Z",
+      "completed": "2026-04-21T16:37:23.708Z",
+      "duration_ms": 60000,
+      "summary": "DML handlers: 727 LOC across _insert (194), _insertSelect (93), _update (207), _delete (145). Split into 2 BUILD tasks."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "task": "Extract _insert and _insertSelect (287 LOC) into dml-insert.js",
+      "status": "in-progress",
+      "plan_ref": "T65",
+      "started": "2026-04-21T16:37:36.311Z"
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "task": "Extract _update and _delete (352 LOC) into dml-mutate.js",
+      "status": "upcoming",
+      "plan_ref": "T65"
     }
   ],
   "focusProjects": [
@@ -975,6 +1043,22 @@
     {
       "time": "2026-04-21T16:25:45.371Z",
       "msg": "Added T63 (BUILD) after end: Fix Volcano IndexScan for one-sided ranges — verify with updated B+tree"
+    },
+    {
+      "time": "2026-04-21T16:27:00.483Z",
+      "msg": "Added T64 (PLAN) after end: Implement correlated subquery decorrelation — convert to join+groupby for 50x speedup"
+    },
+    {
+      "time": "2026-04-21T16:27:00.601Z",
+      "msg": "Added T65 (PLAN) after end: Extract DML handlers (_insert, _insertSelect, _update, _delete) from db.js"
+    },
+    {
+      "time": "2026-04-21T16:27:36.813Z",
+      "msg": "PLAN T64 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T16:37:17.196Z",
+      "msg": "PLAN T65 filled 2 BUILD tasks"
     }
   ]
 }

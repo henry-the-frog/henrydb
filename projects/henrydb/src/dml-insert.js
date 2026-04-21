@@ -1,0 +1,328 @@
+// dml-insert.js — INSERT handlers extracted from db.js
+// Note: These functions take 'db' as first parameter (database context)
+
+export function insert(db, ast) {
+  const table = db.tables.get(ast.table);
+  if (!table) throw new Error(`Table ${ast.table} not found`);
+
+  let inserted = 0;
+  const returnedRows = [];
+  
+  // Batch autocommit: use a single WAL transaction for all rows
+  const isBatch = ast.rows.length > 1 && !db._currentTxId;
+  let batchTxId;
+  if (isBatch) {
+    batchTxId = db._nextTxId++;
+    db._batchTxId = batchTxId;
+  }
+  
+  for (const row of ast.rows) {
+    const values = row.map((r, colIdx) => {
+      if (r.type === 'literal') return r.value;
+      // Handle DEFAULT keyword
+      if (r.type === 'column_ref' && r.name === 'DEFAULT') {
+        // Resolve the column's default value
+        const schema = ast.columns ? 
+          table.schema.find(s => s.name === ast.columns[colIdx]) :
+          table.schema[colIdx];
+        if (schema?.defaultValue != null) return db._resolveDefault(schema.defaultValue);
+        return null;
+      }
+      // Evaluate expression (for INSERT VALUES with arithmetic, CASE, etc.)
+      try { return db._evalValue(r, {}); } catch { return r.value; }
+    });
+    
+    // UPSERT: ON CONFLICT handling
+    if (ast.onConflict) {
+      const orderedValues = db._orderValues(table, ast.columns, values);
+      
+      // Determine conflict column(s) — could be PK or specified UNIQUE column
+      let conflictIdx = -1;
+      if (ast.onConflict.column) {
+        // ON CONFLICT (column) — use specified column
+        conflictIdx = table.schema.findIndex(c => c.name.toLowerCase() === ast.onConflict.column.toLowerCase());
+      } else if (ast.onConflict.columns && ast.onConflict.columns.length > 0) {
+        // ON CONFLICT (col1, col2, ...) — use first column for now
+        conflictIdx = table.schema.findIndex(c => c.name.toLowerCase() === ast.onConflict.columns[0].toLowerCase());
+      }
+      if (conflictIdx < 0) {
+        // Fallback to PK
+        conflictIdx = table.schema.findIndex(c => c.primaryKey);
+      }
+      
+      if (conflictIdx >= 0 && orderedValues[conflictIdx] != null) {
+        // Check if conflict column value already exists
+        let existing = null;
+        let existingRid = null;
+        for (const tuple of table.heap.scan()) {
+          const tupleValues = tuple.values || tuple;
+          if (tupleValues[conflictIdx] === orderedValues[conflictIdx]) { 
+            existing = tupleValues; 
+            existingRid = { pageId: tuple.pageId, slotIdx: tuple.slotIdx };
+            break; 
+          }
+        }
+        
+        if (existing) {
+          if (ast.onConflict.action === 'NOTHING') {
+            continue; // Skip this row
+          }
+          if (ast.onConflict.action === 'UPDATE') {
+            // Build row object for expression evaluation
+            const existingRow = {};
+            table.schema.forEach((c, i) => { existingRow[c.name] = existing[i]; });
+            // Also expose excluded.* (the values that would have been inserted)
+            table.schema.forEach((c, i) => { existingRow[`excluded.${c.name}`] = orderedValues[i]; });
+            
+            // Evaluate SET expressions
+            const newValues = [...existing];
+            for (const set of ast.onConflict.sets) {
+              const colIdx = table.schema.findIndex(c => c.name.toLowerCase() === set.column.toLowerCase());
+              if (colIdx >= 0) {
+                newValues[colIdx] = db._evalValue(set.value, existingRow);
+              }
+            }
+            
+            // Validate constraints BEFORE modifying the heap (CHECK, NOT NULL, FK)
+            // For UNIQUE/PK: we need to exclude the row being updated
+            db._validateConstraintsForUpdate(table, newValues, existingRid, existing);
+            
+            // Write back to heap: delete old row, insert new one
+            if (existingRid) {
+              table.heap.delete(existingRid.pageId, existingRid.slotIdx);
+              const newRid = table.heap.insert(newValues);
+              
+              // Update conflict column index
+              const pkIdx = table.schema.findIndex(c => c.primaryKey);
+              if (pkIdx >= 0 && table.indexes.has(table.schema[pkIdx].name)) {
+                const idx = table.indexes.get(table.schema[pkIdx].name);
+                idx.insert(newValues[pkIdx], newRid);
+              }
+              if (conflictIdx !== pkIdx && table.indexes.has(table.schema[conflictIdx].name)) {
+                const idx = table.indexes.get(table.schema[conflictIdx].name);
+                idx.insert(newValues[conflictIdx], newRid);
+              }
+            }
+            
+            if (ast.returning) {
+              const retRow = {};
+              table.schema.forEach((c, i) => { retRow[c.name] = newValues[i]; });
+              returnedRows.push(retRow);
+            }
+            inserted++;
+            continue;
+          }
+        }
+      }
+    }
+    
+    // Check UNIQUE constraints (including PRIMARY KEY columns)
+    // Skip if UPSERT (ON CONFLICT) is in play — conflicts are handled above
+    if (!ast.onConflict) {
+    // Must use schema-ordered values, not insert-column-ordered values
+    const orderedValsForCheck = db._orderValues(table, ast.columns, values);
+    // Apply SERIAL auto-increment for the check
+    for (let ci = 0; ci < table.schema.length; ci++) {
+      if (table.schema[ci].serial && (orderedValsForCheck[ci] === null || orderedValsForCheck[ci] === undefined)) {
+        // Skip SERIAL columns that haven't been assigned yet — they'll be unique
+        continue;
+      }
+      if ((table.schema[ci].unique || table.schema[ci].primaryKey) && orderedValsForCheck[ci] != null) {
+        for (const tuple of table.heap.scan()) {
+          const tv = tuple.values || tuple;
+          if (tv[ci] === orderedValsForCheck[ci]) {
+            throw new Error(`UNIQUE constraint violated on column ${table.schema[ci].name}: duplicate value '${orderedValsForCheck[ci]}'`);
+          }
+        }
+      }
+    }
+    }
+
+    // Check UNIQUE INDEX constraints from indexCatalog
+    for (const [idxName, meta] of db.indexCatalog) {
+      if (meta.table === ast.table && meta.unique) {
+        const idxTable = db.tables.get(meta.table);
+        if (!idxTable) continue;
+        const colIndices = meta.columns.map(col => idxTable.schema.findIndex(c => c.name === col));
+        if (colIndices.some(i => i < 0)) continue;
+        // Get the ordered values (map from ast.columns to schema order)
+        const orderedVals = new Array(idxTable.schema.length).fill(null);
+        if (ast.columns) {
+          for (let i = 0; i < ast.columns.length; i++) {
+            const ci = idxTable.schema.findIndex(c => c.name === ast.columns[i]);
+            if (ci >= 0) orderedVals[ci] = values[i];
+          }
+        } else {
+          for (let i = 0; i < values.length; i++) orderedVals[i] = values[i];
+        }
+        const keyValues = colIndices.map(i => orderedVals[i]);
+        // Skip NULL keys (SQL standard: NULLs are not equal)
+        if (keyValues.some(v => v === null || v === undefined)) continue;
+        // Scan existing data for duplicate (index-independent check)
+        for (const tuple of idxTable.heap.scan()) {
+          const tv = tuple.values || tuple;
+          const existingKey = colIndices.map(i => tv[i]);
+          if (keyValues.every((v, i) => v === existingKey[i])) {
+            throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
+          }
+        }
+      }
+    }
+    
+    const rid = db._insertRow(table, ast.columns, values);
+    inserted++;
+    
+    if (ast.returning) {
+      // Read actual inserted values (including SERIAL-assigned IDs)
+      const lastTuple = [...table.heap.scan()].pop();
+      const actualValues = lastTuple?.values || lastTuple || [];
+      const retRow = {};
+      table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
+      returnedRows.push(retRow);
+    }
+  }
+
+  // Batch autocommit: commit the batch transaction after all rows
+  if (isBatch && batchTxId !== undefined) {
+    db.wal.appendCommit(batchTxId);
+    db._batchTxId = undefined;
+  }
+
+  if (ast.returning) {
+    const filteredRows = db._resolveReturning(ast.returning, returnedRows);
+    return { type: 'ROWS', rows: filteredRows, count: inserted };
+  }
+  if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
+  return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
+}
+
+export function insertSelect(db, ast) {
+  const table = db.tables.get(ast.table);
+  if (!table) throw new Error(`Table ${ast.table} not found`);
+
+  const result = db.execute_ast(ast.query);
+  let inserted = 0;
+  const returnedRows = [];
+  
+  // Batch autocommit: use a single WAL transaction for all rows
+  const isBatch = result.rows.length > 1 && !db._currentTxId;
+  let batchTxId;
+  if (isBatch) {
+    batchTxId = db._nextTxId++;
+    db._batchTxId = batchTxId;
+  }
+  
+  // Determine how many SELECT columns we expect
+  const selectCols = ast.query?.columns?.length || table.schema.length;
+  
+  for (const row of result.rows) {
+    const values = [];
+    if (ast.columns) {
+      // Explicit column list: INSERT INTO t (col1, col2) SELECT ...
+      // Map SELECT results POSITIONALLY (by order, not by name)
+      const rowKeys = Object.keys(row);
+      for (let i = 0; i < ast.columns.length; i++) {
+        if (i < rowKeys.length) {
+          values.push(row[rowKeys[i]]);
+        } else {
+          values.push(null);
+        }
+      }
+    } else {
+      // No explicit column list: map SELECT result to table schema by column name or position
+      const rowKeys = Object.keys(row);
+      // Try name-based mapping first
+      let nameMatch = true;
+      for (const col of table.schema) {
+        if (row[col.name] === undefined && row[col.name] !== null) {
+          nameMatch = false;
+          break;
+        }
+      }
+      if (nameMatch && table.schema.every(col => col.name in row)) {
+        // Name-based mapping: match by column name
+        for (const col of table.schema) {
+          values.push(row[col.name] !== undefined ? row[col.name] : null);
+        }
+      } else {
+        // Position-based mapping: use all keys in order
+        for (let i = 0; i < table.schema.length; i++) {
+          if (i < rowKeys.length) {
+            values.push(row[rowKeys[i]]);
+          } else {
+            values.push(null);
+          }
+        }
+      }
+    }
+    db._insertRow(table, ast.columns || null, values);
+    if (ast.returning) {
+      // Build the row from ordered values mapped to schema
+      const retRow = {};
+      if (ast.columns) {
+        // Map values to specified columns, fill rest with defaults/null
+        for (let i = 0; i < table.schema.length; i++) {
+          const colIdx = ast.columns.indexOf(table.schema[i].name);
+          retRow[table.schema[i].name] = colIdx >= 0 && colIdx < values.length ? values[colIdx] : null;
+        }
+      } else {
+        const rowKeys = Object.keys(row);
+        for (let i = 0; i < table.schema.length; i++) {
+          retRow[table.schema[i].name] = i < rowKeys.length ? row[rowKeys[i]] : null;
+        }
+      }
+      returnedRows.push(retRow);
+    }
+    inserted++;
+  }
+
+  // Batch autocommit: commit the batch transaction after all rows
+  if (isBatch && batchTxId !== undefined) {
+    db.wal.appendCommit(batchTxId);
+    db._batchTxId = undefined;
+  }
+
+  if (ast.returning) {
+    const filteredRows = db._resolveReturning(ast.returning, returnedRows);
+    return { type: 'ROWS', rows: filteredRows, count: inserted };
+  }
+  if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
+  return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
+}
+
+export function fireTriggers(db, timing, event, tableName, rowValues, schema, oldRowValues) {
+  for (const trigger of db.triggers) {
+    if (trigger.timing === timing && trigger.event === event && trigger.table === tableName) {
+      try {
+        // Build NEW and OLD row objects from values + schema
+        let bodySql = trigger.bodySql;
+        if (schema && rowValues) {
+          for (let i = 0; i < schema.length; i++) {
+            const colName = schema[i].name;
+            const val = rowValues[i];
+            const sqlVal = val === null || val === undefined ? 'NULL' 
+              : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'` 
+              : String(val);
+            // Replace NEW.column references
+            bodySql = bodySql.replace(new RegExp(`NEW\\.${colName}\\b`, 'gi'), sqlVal);
+          }
+        }
+        if (schema && oldRowValues) {
+          for (let i = 0; i < schema.length; i++) {
+            const colName = schema[i].name;
+            const val = oldRowValues[i];
+            const sqlVal = val === null || val === undefined ? 'NULL'
+              : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'`
+              : String(val);
+            // Replace OLD.column references
+            bodySql = bodySql.replace(new RegExp(`OLD\\.${colName}\\b`, 'gi'), sqlVal);
+          }
+        }
+        db.execute(bodySql);
+      } catch (e) {
+        // Trigger errors propagate
+        throw new Error(`Trigger ${trigger.name} failed: ${e.message}`);
+      }
+    }
+  }
+}
