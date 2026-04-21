@@ -387,6 +387,127 @@
       "completed": "2026-04-21T15:30:32.544Z",
       "duration_ms": 600000,
       "summary": "Full test sweep complete. 0 regressions across all categories: core SQL, MVCC/SSI, window/CTE, persistence/WAL, functions/types, math/JSON, DDL. All clean."
+    },
+    {
+      "id": "T36",
+      "mode": "THINK",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:31:47.069Z",
+      "completed": "2026-04-21T15:32:38.775Z",
+      "duration_ms": 60000,
+      "summary": "All 6 Volcano operators already implemented in volcano.js but not wired in planner. Priority: IndexScan (biggest perf impact) > Window (unifies execution) > CTE > Union > MergeJoin. Planner imports only 11 basic operators."
+    },
+    {
+      "id": "T37",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "Wire Volcano Window operator to replace _computeWindowFunctions",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T38",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Extract DDL handlers from db.js into ddl.js",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:32:58.033Z",
+      "completed": "2026-04-21T15:33:46.130Z",
+      "duration_ms": 60000,
+      "summary": "DDL handlers span 1100 LOC (lines 1291-2380) with 26 this.* references. Split into 3 BUILD tasks: tables, indexes, views+alter."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Extract _createTable, _createTableAs, _dropTable from db.js into ddl.js",
+      "status": "done",
+      "plan_ref": "T38",
+      "started": "2026-04-21T15:33:58.269Z",
+      "completed": "2026-04-21T15:36:06.793Z",
+      "duration_ms": 300000,
+      "summary": "Extracted ddl-tables.js: _createTable, _createTableAs, _dropTable. db.js now 8596 LOC (-192). All DDL tests pass."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "Extract _createIndex, _dropIndex from db.js into ddl.js",
+      "status": "done",
+      "plan_ref": "T38",
+      "started": "2026-04-21T15:36:17.193Z",
+      "completed": "2026-04-21T15:39:26.256Z",
+      "duration_ms": 300000,
+      "summary": "Extracted ddl-indexes.js: _createIndex (154 LOC), _dropIndex (25 LOC). db.js now 8420 LOC (-177). All index tests pass."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "task": "Extract _createView, _dropView, _alterTable from db.js into ddl.js",
+      "status": "done",
+      "plan_ref": "T38",
+      "started": "2026-04-21T15:39:36.776Z",
+      "completed": "2026-04-21T15:40:44.539Z",
+      "duration_ms": 300000,
+      "summary": "Extracted ddl-misc.js: _createView, _dropView, _alterTable, _createFunction, _dropFunction. db.js now 8247 LOC (-173, cumulative -1641 = 17% reduction). All tests pass."
+    },
+    {
+      "id": "T39",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Wire Volcano IndexScan operator in planner — replace SeqScan+Filter with IndexScan when index available",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:41:10.763Z",
+      "completed": "2026-04-21T15:41:55.174Z",
+      "duration_ms": 60000,
+      "summary": "IndexScan wire plan: detect equality/range WHERE on indexed columns in buildPlan, replace SeqScan+Filter with IndexScan. Need to extract predicate conditions and match against index catalog."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "task": "Wire IndexScan into Volcano planner: detect WHERE col = val on indexed columns and use IndexScan instead of SeqScan+Filter",
+      "status": "done",
+      "plan_ref": "T39",
+      "started": "2026-04-21T15:42:04.412Z",
+      "completed": "2026-04-21T15:44:02.520Z",
+      "duration_ms": 300000,
+      "summary": "Wired Volcano IndexScan: tryIndexScan detects WHERE on indexed cols. Supports EQ, range, BETWEEN, AND with residual. 4 new tests, 92/92 pass. SeqScan+Filter → IndexScan optimization now active."
+    },
+    {
+      "id": "T44",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Run adversarial stress test suite on HenryDB — generate random concurrent SQL and look for crashes",
+      "project": "henrydb",
+      "started": "2026-04-21T15:44:43.459Z",
+      "completed": "2026-04-21T15:45:54.728Z",
+      "duration_ms": 300000,
+      "summary": "Random stress test suite: 7 tests covering random SELECTs, UPDATEs, concurrent conflicts, vacuum+integrity, DECIMAL aggregation, window functions, MVCC subqueries. All pass."
+    },
+    {
+      "id": "T45",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Read the Volcano/Cascades optimizer paper approach and compare to HenryDB's cost model",
+      "project": "henrydb",
+      "started": "2026-04-21T15:46:25.249Z",
+      "completed": "2026-04-21T15:48:02.263Z",
+      "duration_ms": 120000,
+      "summary": "Analyzed three separate cost paths in HenryDB: db.js uses PG-style with real stats, EXPLAIN uses generic defaults, Volcano has no cost model. Documented divergence risks and unification roadmap."
+    },
+    {
+      "id": "T46",
+      "mode": "THINK",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:48:13.725Z",
+      "completed": "2026-04-21T15:48:44.784Z",
+      "duration_ms": 60000,
+      "summary": "Investigated dual cost model: both execution and EXPLAIN use the same _compareScanCosts/_compareJoinCosts. The divergence was overstated — both paths use identical cost model. Only Volcano planner lacks cost-based decisions. Removed from TODO."
     }
   ],
   "focusProjects": [
@@ -566,6 +687,46 @@
     {
       "time": "2026-04-21T15:18:24.480Z",
       "msg": "PLAN T28 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T15:31:31.671Z",
+      "msg": "Added T36 (THINK) after end: Design Volcano operator wiring — which of the 6 operators (Union, Window, CTE, etc.) should be wired first?"
+    },
+    {
+      "time": "2026-04-21T15:31:31.788Z",
+      "msg": "Added T37 (PLAN) after end: Wire Volcano Window operator to replace _computeWindowFunctions"
+    },
+    {
+      "time": "2026-04-21T15:31:31.905Z",
+      "msg": "Added T38 (PLAN) after end: Extract DDL handlers from db.js into ddl.js"
+    },
+    {
+      "time": "2026-04-21T15:32:45.616Z",
+      "msg": "Removed T37: "
+    },
+    {
+      "time": "2026-04-21T15:32:45.733Z",
+      "msg": "Added T39 (PLAN) after end: Wire Volcano IndexScan operator in planner — replace SeqScan+Filter with IndexScan when index available"
+    },
+    {
+      "time": "2026-04-21T15:33:37.879Z",
+      "msg": "PLAN T38 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T15:41:48.396Z",
+      "msg": "PLAN T39 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T15:44:32.958Z",
+      "msg": "Added T44 (MAINTAIN) after end: Run adversarial stress test suite on HenryDB — generate random concurrent SQL and look for crashes"
+    },
+    {
+      "time": "2026-04-21T15:46:09.909Z",
+      "msg": "Added T45 (EXPLORE) after end: Read the Volcano/Cascades optimizer paper approach and compare to HenryDB's cost model"
+    },
+    {
+      "time": "2026-04-21T15:46:10.028Z",
+      "msg": "Added T46 (THINK) after end: Investigate the dual cost model divergence in HenryDB — how bad is it and should it be unified?"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T15:30:32.581Z",
+  "generated": "2026-04-21T15:48:44.822Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Full test sweep — run all 849 HenryDB test files sequentially",
-    "completedAt": "2026-04-21T15:30:32.581Z",
-    "taskId": "T30",
-    "summary": "Full test sweep complete. 0 regressions across all categories: core SQL, MVCC/SSI, window/CTE, persistence/WAL, functions/types, math/JSON, DDL. All clean.",
-    "durationMs": 600000
+    "mode": "THINK",
+    "task": "",
+    "completedAt": "2026-04-21T15:48:44.822Z",
+    "taskId": "T46",
+    "summary": "Investigated dual cost model: both execution and EXPLAIN use the same _compareScanCosts/_compareJoinCosts. The divergence was overstated — both paths use identical cost model. Only Volcano planner lacks cost-based decisions. Removed from TODO.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -358,45 +358,141 @@
       {
         "id": "T28",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Extract window functions (~400 LOC) from db.js into window-functions.js",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-21T15:17:49.547Z"
+        "started": "2026-04-21T15:17:49.547Z",
+        "completed": "2026-04-21T15:18:31.592Z",
+        "duration_ms": 60000,
+        "summary": "Window functions: 424 LOC (6637-7060). Depends on _evalValue, _resolveColumn, _orderByValue, _exprContainsAggregate. Same extraction pattern as sql-functions.js."
       },
       {
         "id": "T35",
         "mode": "BUILD",
         "task": "Extract window functions (424 LOC) from db.js into window-functions.js with db context delegation",
-        "status": "upcoming",
-        "plan_ref": "T28"
+        "status": "done",
+        "plan_ref": "T28",
+        "started": "2026-04-21T15:18:42.942Z",
+        "completed": "2026-04-21T15:20:25.557Z",
+        "duration_ms": 300000,
+        "summary": "Extracted window-functions.js: 7 methods, 405 LOC removed. db.js now 8788 (was 9193). 128/128 window tests pass."
       },
       {
         "id": "T29",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Extract EXPLAIN/plan formatting (~400 LOC) from db.js into explain.js",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T15:20:36.139Z",
+        "completed": "2026-04-21T15:21:04.294Z",
+        "duration_ms": 60000,
+        "summary": "EXPLAIN is 800 LOC but has heavy dependencies on 20+ internal planner methods. Not a clean extraction target. Better to extract DDL next or refactor explain after planner extraction. Deferred."
       },
       {
         "id": "T30",
         "mode": "MAINTAIN",
-        "status": "upcoming",
+        "status": "done",
         "task": "Full test sweep — run all 849 HenryDB test files sequentially",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T15:21:16.694Z",
+        "completed": "2026-04-21T15:30:32.544Z",
+        "duration_ms": 600000,
+        "summary": "Full test sweep complete. 0 regressions across all categories: core SQL, MVCC/SSI, window/CTE, persistence/WAL, functions/types, math/JSON, DDL. All clean."
+      },
+      {
+        "id": "T36",
+        "mode": "THINK",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T15:31:47.069Z",
+        "completed": "2026-04-21T15:32:38.775Z",
+        "duration_ms": 60000,
+        "summary": "All 6 Volcano operators already implemented in volcano.js but not wired in planner. Priority: IndexScan (biggest perf impact) > Window (unifies execution) > CTE > Union > MergeJoin. Planner imports only 11 basic operators."
+      },
+      {
+        "id": "T37",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Wire Volcano Window operator to replace _computeWindowFunctions",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T38",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Extract DDL handlers from db.js into ddl.js",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T15:32:58.033Z",
+        "completed": "2026-04-21T15:33:46.130Z",
+        "duration_ms": 60000,
+        "summary": "DDL handlers span 1100 LOC (lines 1291-2380) with 26 this.* references. Split into 3 BUILD tasks: tables, indexes, views+alter."
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "task": "Extract _createTable, _createTableAs, _dropTable from db.js into ddl.js",
+        "status": "done",
+        "plan_ref": "T38",
+        "started": "2026-04-21T15:33:58.269Z",
+        "completed": "2026-04-21T15:36:06.793Z",
+        "duration_ms": 300000,
+        "summary": "Extracted ddl-tables.js: _createTable, _createTableAs, _dropTable. db.js now 8596 LOC (-192). All DDL tests pass."
+      },
+      {
+        "id": "T41",
+        "mode": "BUILD",
+        "task": "Extract _createIndex, _dropIndex from db.js into ddl.js",
+        "status": "done",
+        "plan_ref": "T38",
+        "started": "2026-04-21T15:36:17.193Z",
+        "completed": "2026-04-21T15:39:26.256Z",
+        "duration_ms": 300000,
+        "summary": "Extracted ddl-indexes.js: _createIndex (154 LOC), _dropIndex (25 LOC). db.js now 8420 LOC (-177). All index tests pass."
+      },
+      {
+        "id": "T42",
+        "mode": "BUILD",
+        "task": "Extract _createView, _dropView, _alterTable from db.js into ddl.js",
+        "status": "done",
+        "plan_ref": "T38",
+        "started": "2026-04-21T15:39:36.776Z",
+        "completed": "2026-04-21T15:40:44.539Z",
+        "duration_ms": 300000,
+        "summary": "Extracted ddl-misc.js: _createView, _dropView, _alterTable, _createFunction, _dropFunction. db.js now 8247 LOC (-173, cumulative -1641 = 17% reduction). All tests pass."
+      },
+      {
+        "id": "T39",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Wire Volcano IndexScan operator in planner — replace SeqScan+Filter with IndexScan when index available",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T15:41:10.763Z"
+      },
+      {
+        "id": "T43",
+        "mode": "BUILD",
+        "task": "Wire IndexScan into Volcano planner: detect WHERE col = val on indexed columns and use IndexScan instead of SeqScan+Filter",
+        "status": "upcoming",
+        "plan_ref": "T39"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 35,
-    "blocksTotal": 35,
+    "blocksCompleted": 45,
+    "blocksTotal": 43,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 11,
-      "BUILD": 11,
-      "MAINTAIN": 6,
-      "EXPLORE": 2
+      "THINK": 7,
+      "PLAN": 13,
+      "BUILD": 15,
+      "MAINTAIN": 7,
+      "EXPLORE": 3
     }
   }
 }
