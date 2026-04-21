@@ -17,7 +17,7 @@
   - **Fix priority for Apr 21:** division (5 min), CASE WHEN (5 min), hash join (~30 lines), index rollback
 - **Monkey Lang** — 662 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.
 - **RISC-V Emulator** — 723 tests, 3800+ LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO, Monkey-Lang→RISC-V codegen.
-- **Neural Network** — 233 tests, Conv2D, LSTM, VAE, DDPM diffusion, mixed-precision audit (31 tests, all numerically stable)
+- **Neural Network** — 373+ tests (was 233), Conv2D, LSTM, VAE, DDPM diffusion, mixed-precision audit. **NEW Apr 20:** Complete modern LLM stack from scratch — GQA, RoPE, Flash Attention, Sliding Window, MoE, Speculative Decoding, LoRA, DPO, Quantization (INT8/INT4), BPE tokenizer, ModernDecoder (Llama-style), KV-cache compression, Beam Search, Paged Attention, Continuous Batching, Constrained Decoding, Gradient Checkpointing, AdamW. 28 new source files, 260+ new tests in one evening session.
 - **Git** — 153 tests, custom git implementation
 - **FFT** — 151 tests, Fast Fourier Transform
 
