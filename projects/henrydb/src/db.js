@@ -8379,6 +8379,27 @@ export class Database {
     return undefined;
   }
 
+  // Check if an AST node is a column_ref pointing to a DECIMAL/NUMERIC/REAL/FLOAT column
+  _isFloatColumnRef(node, row) {
+    if (!node || node.type !== 'column_ref') return false;
+    const colName = node.name?.includes('.') ? node.name.split('.').pop() : node.name;
+    if (!colName) return false;
+    // Look up the column type in known tables
+    for (const [, table] of this.tables) {
+      const col = table.schema?.find(c => c.name === colName);
+      if (col) {
+        const type = (col.type || '').toUpperCase();
+        if (type.startsWith('DECIMAL') || type.startsWith('NUMERIC') || 
+            type === 'REAL' || type === 'FLOAT' || type === 'DOUBLE' || 
+            type === 'DOUBLE PRECISION' || type.startsWith('FLOAT')) {
+          return true;
+        }
+        return false;
+      }
+    }
+    return false;
+  }
+
   _evalExpr(expr, row) {
     if (!expr) return true;
     switch (expr.type) {
@@ -8721,12 +8742,17 @@ export class Database {
         case '/': {
           if (right === 0) return null;
           const result = left / right;
-          // Integer division when both operands are integer-typed (SQL standard)
-          // If either literal was written with a decimal point (e.g., 10.0), treat as float
+          // Integer division when both operands are integer-typed (SQL standard).
+          // Check 1: literal floats (10.0) bypass truncation via isFloat flag.
+          // Check 2: column values from DECIMAL/NUMERIC/REAL/FLOAT/DOUBLE types
+          //          should never truncate, even when JS value passes Number.isInteger.
           const leftIsFloat = node.left?.isFloat || false;
           const rightIsFloat = node.right?.isFloat || false;
-          if (Number.isInteger(left) && Number.isInteger(right) && !leftIsFloat && !rightIsFloat) return Math.trunc(result);
-          return result;
+          if (leftIsFloat || rightIsFloat) return result;
+          if (!Number.isInteger(left) || !Number.isInteger(right)) return result;
+          // Check if either operand is a column_ref with float/decimal type
+          if (this._isFloatColumnRef(node.left, row) || this._isFloatColumnRef(node.right, row)) return result;
+          return Math.trunc(result);
         }
         case '%': return right === 0 ? null : left % right;
       }
