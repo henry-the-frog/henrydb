@@ -2,6 +2,7 @@
 // Extracted from db.js to reduce monolith size
 
 import { BPlusTree } from './btree.js';
+import { BTreeTable } from './btree-table.js';
 
 export function createTable(db, ast) {
   if (db.tables.has(ast.table)) {

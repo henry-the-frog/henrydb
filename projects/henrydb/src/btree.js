@@ -152,13 +152,16 @@ export class BPlusTree {
       return this._rangeByUserKey(lo, hi);
     }
     const results = [];
+    // Handle undefined/null bounds: treat as open-ended
+    const hasLo = lo !== undefined && lo !== null;
+    const hasHi = hi !== undefined && hi !== null;
     // Start from leftmost leaf and scan all — duplicate key splits can create
     // out-of-order leaf chains, so we can't early-terminate on first key > hi.
     let node = this.root;
     while (node instanceof InternalNode) node = node.children[0];
     while (node) {
       for (let i = 0; i < node.keys.length; i++) {
-        if (node.keys[i] >= lo && node.keys[i] <= hi) {
+        if ((!hasLo || node.keys[i] >= lo) && (!hasHi || node.keys[i] <= hi)) {
           results.push({ key: node.keys[i], value: node.values[i] });
         }
       }
@@ -170,7 +173,9 @@ export class BPlusTree {
   // Range scan for suffix trees: translate user keys to internal composite keys
   _rangeByUserKey(lo, hi) {
     const results = [];
-    const loKey = [lo, -Infinity];
+    const hasLo = lo !== undefined && lo !== null;
+    const hasHi = hi !== undefined && hi !== null;
+    const loKey = hasLo ? [lo, -Infinity] : [-Infinity, -Infinity];
     
     // Navigate to the starting leaf
     let node = this.root;
@@ -182,8 +187,8 @@ export class BPlusTree {
     while (node) {
       for (let i = 0; i < node.keys.length; i++) {
         const k = node.keys[i];
-        if (k[0] > hi) return results; // Early termination — safe with suffix keys!
-        if (k[0] >= lo && k[0] <= hi) {
+        if (hasHi && k[0] > hi) return results; // Early termination — safe with suffix keys!
+        if ((!hasLo || k[0] >= lo) && (!hasHi || k[0] <= hi)) {
           results.push({ key: k[0], value: node.values[i] });
         }
       }

@@ -728,11 +728,8 @@ export class IndexScan extends Iterator {
   }
 
   open() {
-    if (this._low !== undefined && this._high !== undefined) {
-      this._gen = this._index.range(this._low, this._high);
-    } else {
-      this._gen = this._index.range(undefined, undefined);
-    }
+    // B+tree range() now handles undefined bounds (treated as open-ended)
+    this._gen = this._index.range(this._low, this._high);
     this._results = [];
     // Collect index entries and fetch from heap
     for (const entry of this._gen) {
