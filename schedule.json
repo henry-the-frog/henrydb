@@ -177,8 +177,58 @@
     {
       "id": "T17",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit extraction, push, test sweep",
+      "started": "2026-04-21T23:48:20.564Z",
+      "completed": "2026-04-21T23:48:39.366Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed. Test sweep: 137 tests (compiled, window, CTE, aggregate, persistent) all pass. Workspace clean."
+    },
+    {
+      "id": "T18",
+      "mode": "THINK",
+      "status": "done",
+      "task": "db.js extraction status check. What's left? Identify 2-3 more extraction targets to get below 5000 LOC.",
+      "started": "2026-04-21T23:49:08.913Z",
+      "completed": "2026-04-21T23:49:36.926Z",
+      "duration_ms": 60000,
+      "summary": "db.js at 5960 LOC. Need -960 to reach sub-5000. Best extraction targets: (1) COPY+cursor+prepared+listen (~400 LOC, session commands module), (2) window functions + set operations (~350 LOC, query operations). Two extractions would bring db.js to ~5210. Third extraction of EXPLAIN (~150 LOC) reaches ~5060. Close but not quite sub-5000."
+    },
+    {
+      "id": "T19",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "db.js extraction batch 3 — target sub-5000 LOC",
+      "task": null,
+      "started": "2026-04-21T23:49:44.761Z",
+      "completed": "2026-04-21T23:50:45.391Z",
+      "duration_ms": 60000,
+      "summary": "Plan: 2 BUILD tasks — set operations (124 LOC) + EXPLAIN builder (150 LOC). Both are clean extractions with mixin pattern."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Extract set operations (UNION/INTERSECT/EXCEPT) from db.js to set-operations.js (~124 LOC). Mixin pattern.",
+      "plan_ref": "T19",
+      "project": "henrydb",
+      "started": "2026-04-21T23:50:52.929Z",
+      "completed": "2026-04-21T23:51:51.121Z",
+      "duration_ms": 240000,
+      "summary": "Extracted UNION/INTERSECT/EXCEPT to set-operations.js (130 LOC). Mixin pattern. db.js: 5960→5839 (-121). 25 set operation tests pass."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Extract EXPLAIN plan building from db.js to explain-builder.js (~150 LOC). Mixin pattern.",
       "status": "upcoming",
-      "task": "Commit extraction, push, test sweep"
+      "plan_ref": "T19"
+    },
+    {
+      "id": "T21",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, push, test sweep"
     }
   ],
   "focusProjects": [
@@ -266,6 +316,26 @@
     {
       "time": "2026-04-21T23:45:14.957Z",
       "msg": "PLAN T15 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T23:48:53.333Z",
+      "msg": "Added T18 (THINK) after end: db.js extraction status check. What's left? Identify 2-3 more extraction targets to get below 5000 LOC."
+    },
+    {
+      "time": "2026-04-21T23:48:57.419Z",
+      "msg": "Added T19 (PLAN) after T18: db.js extraction batch 3 — target sub-5000 LOC"
+    },
+    {
+      "time": "2026-04-21T23:49:02.012Z",
+      "msg": "Added T20 (BUILD) after T19: null"
+    },
+    {
+      "time": "2026-04-21T23:49:02.129Z",
+      "msg": "Added T21 (MAINTAIN) after T20: Commit, push, test sweep"
+    },
+    {
+      "time": "2026-04-21T23:50:40.906Z",
+      "msg": "PLAN T19 filled 2 BUILD tasks"
     }
   ]
 }

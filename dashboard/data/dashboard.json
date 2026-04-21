@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T23:48:06.005Z",
+  "generated": "2026-04-21T23:51:51.157Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Extract pg_catalog virtual tables from db.js to pg-catalog.js (~354 LOC). Self-contained module that generates pg_class, pg_attribute, pg_type etc. rows.",
-    "completedAt": "2026-04-21T23:48:06.005Z",
-    "taskId": "T16",
-    "summary": "Extracted pg_catalog + information_schema from db.js to pg-catalog.js (541 LOC). Mixin pattern with installPgCatalog(Database). db.js: 6635→5960 LOC (-675). 44 pg catalog tests pass, 50 query/join/subquery tests pass.",
-    "durationMs": 480000
+    "task": "Extract set operations (UNION/INTERSECT/EXCEPT) from db.js to set-operations.js (~124 LOC). Mixin pattern.",
+    "completedAt": "2026-04-21T23:51:51.157Z",
+    "taskId": "T20",
+    "summary": "Extracted UNION/INTERSECT/EXCEPT to set-operations.js (130 LOC). Mixin pattern. db.js: 5960→5839 (-121). 25 set operation tests pass.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -167,35 +167,85 @@
       {
         "id": "T15",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Continue db.js extraction — join execution module",
         "task": null,
-        "started": "2026-04-21T23:44:40.503Z"
+        "started": "2026-04-21T23:44:40.503Z",
+        "completed": "2026-04-21T23:45:19.100Z",
+        "duration_ms": 60000,
+        "summary": "Identified pg_catalog virtual tables (354 LOC) as best extraction target - fully self-contained. Join execution only 220 LOC (borderline). 1 BUILD task."
       },
       {
         "id": "T16",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Extract pg_catalog virtual tables from db.js to pg-catalog.js (~354 LOC). Self-contained module that generates pg_class, pg_attribute, pg_type etc. rows.",
         "plan_ref": "T15",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T23:45:25.350Z",
+        "completed": "2026-04-21T23:48:05.968Z",
+        "duration_ms": 480000,
+        "summary": "Extracted pg_catalog + information_schema from db.js to pg-catalog.js (541 LOC). Mixin pattern with installPgCatalog(Database). db.js: 6635→5960 LOC (-675). 44 pg catalog tests pass, 50 query/join/subquery tests pass."
       },
       {
         "id": "T17",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Commit extraction, push, test sweep",
+        "started": "2026-04-21T23:48:20.564Z",
+        "completed": "2026-04-21T23:48:39.366Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed. Test sweep: 137 tests (compiled, window, CTE, aggregate, persistent) all pass. Workspace clean."
+      },
+      {
+        "id": "T18",
+        "mode": "THINK",
+        "status": "done",
+        "task": "db.js extraction status check. What's left? Identify 2-3 more extraction targets to get below 5000 LOC.",
+        "started": "2026-04-21T23:49:08.913Z",
+        "completed": "2026-04-21T23:49:36.926Z",
+        "duration_ms": 60000,
+        "summary": "db.js at 5960 LOC. Need -960 to reach sub-5000. Best extraction targets: (1) COPY+cursor+prepared+listen (~400 LOC, session commands module), (2) window functions + set operations (~350 LOC, query operations). Two extractions would bring db.js to ~5210. Third extraction of EXPLAIN (~150 LOC) reaches ~5060. Close but not quite sub-5000."
+      },
+      {
+        "id": "T19",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "db.js extraction batch 3 — target sub-5000 LOC",
+        "task": null,
+        "started": "2026-04-21T23:49:44.761Z"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Commit extraction, push, test sweep"
+        "task": "Extract set operations (UNION/INTERSECT/EXCEPT) from db.js to set-operations.js (~124 LOC). Mixin pattern.",
+        "plan_ref": "T19",
+        "project": "henrydb"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Extract EXPLAIN plan building from db.js to explain-builder.js (~150 LOC). Mixin pattern.",
+        "status": "upcoming",
+        "plan_ref": "T19"
+      },
+      {
+        "id": "T21",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Commit, push, test sweep"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 16,
-    "blocksTotal": 17,
+    "blocksCompleted": 20,
+    "blocksTotal": 22,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 4,
-      "BUILD": 6,
-      "MAINTAIN": 3
+      "THINK": 4,
+      "PLAN": 5,
+      "BUILD": 7,
+      "MAINTAIN": 4
     }
   }
 }
