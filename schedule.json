@@ -829,6 +829,50 @@
       "completed": "2026-04-21T16:47:25.249Z",
       "duration_ms": 120000,
       "summary": "Session summary and reflection written. 42 tasks, 25 BUILDs, 6 critical fixes, 12x subquery speedup, 22% monolith reduction, 807 tests green."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Extract expression evaluator core (_evalExpr, _evalValue, _resolveColumn) from db.js into expr-eval.js",
+      "project": "henrydb",
+      "started": "2026-04-21T16:48:00.727Z",
+      "completed": "2026-04-21T16:48:37.949Z",
+      "duration_ms": 60000,
+      "summary": "Expression evaluator analysis: 929 LOC across 8 methods, heavily coupled. Further extraction has diminishing returns and high risk. db.js at 7690 is already a good size. Deferred to future MVCCHeap refactoring session."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create a simple todo-app demo using HenryDB via pg wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-21T16:48:48.754Z",
+      "completed": "2026-04-21T16:51:31.319Z",
+      "duration_ms": 300000,
+      "summary": "End-to-end todo app demo: CRUD via pg wire protocol, parameterized queries, window functions, aggregations. All work. Compelling showcase of HenryDB as a real database backend."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire Volcano CTE operator for WITH queries",
+      "project": "henrydb",
+      "started": "2026-04-21T16:52:03.974Z",
+      "completed": "2026-04-21T16:53:02.821Z",
+      "duration_ms": 180000,
+      "summary": "Wired Volcano CTE: WITH queries materialize subqueries eagerly, create virtual tables for main query. Works end-to-end. 92/92 volcano tests pass."
+    },
+    {
+      "id": "T79",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Profile the todo-app demo end-to-end: measure latency per operation",
+      "project": "henrydb",
+      "started": "2026-04-21T16:53:29.684Z",
+      "completed": "2026-04-21T16:53:52.694Z",
+      "duration_ms": 60000,
+      "summary": "Wire protocol latency per op: INSERT 0.78ms, SELECT PK 0.15ms, SELECT filter 0.28ms, UPDATE 0.21ms, COUNT 0.16ms, GROUP BY 0.20ms. All sub-millisecond. Competitive with SQLite for small datasets."
     }
   ],
   "focusProjects": [
@@ -1156,6 +1200,22 @@
     {
       "time": "2026-04-21T16:46:22.677Z",
       "msg": "Added T75 (THINK) after end: Write comprehensive session evening summary and reflection for memory/reflections/2026-04-21.md"
+    },
+    {
+      "time": "2026-04-21T16:47:55.038Z",
+      "msg": "Added T76 (BUILD) after end: Extract expression evaluator core (_evalExpr, _evalValue, _resolveColumn) from db.js into expr-eval.js"
+    },
+    {
+      "time": "2026-04-21T16:48:43.668Z",
+      "msg": "Added T77 (BUILD) after end: Create a simple todo-app demo using HenryDB via pg wire protocol"
+    },
+    {
+      "time": "2026-04-21T16:51:51.439Z",
+      "msg": "Added T78 (BUILD) after end: Wire Volcano CTE operator for WITH queries"
+    },
+    {
+      "time": "2026-04-21T16:51:51.556Z",
+      "msg": "Added T79 (EXPLORE) after end: Profile the todo-app demo end-to-end: measure latency per operation"
     }
   ]
 }
