@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T01:51:58.391Z",
+  "generated": "2026-04-21T01:52:55.311Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: Verify _select also has the index scan MVCC gap",
-    "completedAt": "2026-04-21T01:51:58.391Z",
-    "taskId": "T21",
-    "summary": "SELECT is NOT affected by the index bug! _tryIndexScan uses findByPK() which has MVCC scan fallback (L843 transactional-db.js). _update/_delete use heap.get(pageId, slotIdx) directly without fallback. The bug is specific to _update and _delete index-scan paths which use RID-based lookup instead of PK-based lookup.",
-    "durationMs": 180000
+    "task": "HenryDB: Does the Raft module actually work? Quick inspection",
+    "completedAt": "2026-04-21T01:52:55.311Z",
+    "taskId": "T22",
+    "summary": "Raft: 353 LOC, 10/10 tests pass. Full consensus impl with leader election, log replication, AppendEntries, RequestVote, and RaftCluster with partition/heal simulation. Clean, working.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 421,
+    "blocksCompleted": 422,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 33,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 95,
-      "EXPLORE": 189
+      "EXPLORE": 190
     }
   },
   "artifacts": [
