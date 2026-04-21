@@ -746,16 +746,20 @@
       "id": "T68",
       "mode": "BUILD",
       "task": "Extract _insert and _insertSelect (287 LOC) into dml-insert.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T65",
-      "started": "2026-04-21T16:37:36.311Z"
+      "started": "2026-04-21T16:37:36.311Z",
+      "completed": "2026-04-21T16:38:35.740Z",
+      "duration_ms": 300000,
+      "summary": "Extracted dml-insert.js: _insert (194), _insertSelect (93), _fireTriggers (36). db.js now 8039 LOC (-320, cumulative -1849 = 19% reduction). All INSERT tests pass."
     },
     {
       "id": "T69",
       "mode": "BUILD",
       "task": "Extract _update and _delete (352 LOC) into dml-mutate.js",
-      "status": "upcoming",
-      "plan_ref": "T65"
+      "status": "in-progress",
+      "plan_ref": "T65",
+      "started": "2026-04-21T16:38:45.625Z"
     }
   ],
   "focusProjects": [
