@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-21T14:52:26.903Z",
+  "generated": "2026-04-21T14:55:10.085Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Commit, push, PR triage, email check",
-    "startedAt": "2026-04-21T14:52:26.903Z",
-    "taskId": "T12"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "Add checkpoint() method + auto-checkpoint to PersistentDatabase",
+    "completedAt": "2026-04-21T14:55:10.085Z",
+    "taskId": "T14",
+    "summary": "PersistentDB checkpoint implemented: checkpoint(), auto-checkpoint at 16MB WAL, 3 new tests (truncation, data survives reopen, auto-trigger). 11/11 existing + 3 new pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -157,37 +159,49 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB compiled query engine silent-null correctness bug",
         "task": null,
-        "started": "2026-04-21T14:45:45.142Z"
+        "started": "2026-04-21T14:45:45.142Z",
+        "completed": "2026-04-21T14:46:16.821Z",
+        "duration_ms": 120000,
+        "summary": "Analyzed compiled engine: _compileExpr returns null for unknown types, silently skipping filters. AND also drops conditions. Plan: throw on unknown, add BETWEEN/IS NULL/IN, fix AND/OR."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix _compileExpr: throw on unknown types, add BETWEEN/IS NULL/IN support, fix AND/OR null propagation",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T14:46:27.236Z",
+        "completed": "2026-04-21T14:52:08.363Z",
+        "duration_ms": 300000,
+        "summary": "Fixed compiled engine silent-null: added BETWEEN/IS NULL/IN/LIKE support, AND no longer drops conditions, proper error-catching fallback. 45/45 compiled+adaptive tests pass. 7 new correctness tests."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Commit, push, PR triage, email check"
+        "status": "done",
+        "task": "Commit, push, PR triage, email check",
+        "started": "2026-04-21T14:52:26.867Z",
+        "completed": "2026-04-21T14:52:44.935Z",
+        "duration_ms": 30000,
+        "summary": "HenryDB pushed (MVCC + division + compiled engine fixes). Neural-net pushed (MoE serialization + training). Workspace committed."
       },
       {
         "id": "T13",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB PersistentDB WAL checkpoint/truncation",
-        "task": null
+        "task": null,
+        "started": "2026-04-21T14:52:53.457Z"
       },
       {
         "id": "T14",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Add checkpoint() method + auto-checkpoint to PersistentDatabase",
         "plan_ref": "T13",
         "project": "henrydb"
       },
@@ -241,13 +255,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 15,
+    "blocksCompleted": 18,
     "blocksTotal": 25,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 5,
-      "BUILD": 5,
-      "MAINTAIN": 2
+      "PLAN": 6,
+      "BUILD": 6,
+      "MAINTAIN": 3
     }
   }
 }

@@ -169,24 +169,35 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit, push, PR triage, email check",
-      "started": "2026-04-21T14:52:26.867Z"
+      "started": "2026-04-21T14:52:26.867Z",
+      "completed": "2026-04-21T14:52:44.935Z",
+      "duration_ms": 30000,
+      "summary": "HenryDB pushed (MVCC + division + compiled engine fixes). Neural-net pushed (MoE serialization + training). Workspace committed."
     },
     {
       "id": "T13",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB PersistentDB WAL checkpoint/truncation",
-      "task": null
+      "task": null,
+      "started": "2026-04-21T14:52:53.457Z",
+      "completed": "2026-04-21T14:54:59.011Z",
+      "duration_ms": 60000,
+      "summary": "Planned PersistentDB checkpoint: flush heaps + save catalog + truncate WAL. Auto-checkpoint at 16MB. Modeled after TransactionalDB."
     },
     {
       "id": "T14",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add checkpoint() method + auto-checkpoint to PersistentDatabase",
       "plan_ref": "T13",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T14:55:09.908Z",
+      "completed": "2026-04-21T14:55:10.049Z",
+      "duration_ms": 300000,
+      "summary": "PersistentDB checkpoint implemented: checkpoint(), auto-checkpoint at 16MB WAL, 3 new tests (truncation, data survives reopen, auto-trigger). 11/11 existing + 3 new pass."
     },
     {
       "id": "T15",
@@ -365,6 +376,10 @@
     {
       "time": "2026-04-21T14:46:10.905Z",
       "msg": "PLAN T10 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T14:54:52.091Z",
+      "msg": "PLAN T13 filled 1 BUILD tasks"
     }
   ]
 }

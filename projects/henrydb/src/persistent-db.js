@@ -112,6 +112,7 @@ export class PersistentDatabase {
     this._catalogPath = catalogPath;
     this._statsPath = join(dirPath, 'stats.json');
     this._createSqls = new Map(); // tableName → CREATE TABLE SQL
+    this._autoCheckpointBytes = 16 * 1024 * 1024; // 16MB WAL threshold
     
     // Load persistent stats if available
     this._loadStats();
@@ -159,6 +160,10 @@ export class PersistentDatabase {
       for (const heap of this._heaps.values()) {
         heap._currentTxId = 0;
       }
+      // Auto-checkpoint: truncate WAL when it exceeds threshold
+      if (this._wal.fileSize >= this._autoCheckpointBytes) {
+        try { this.checkpoint(); } catch (e) { /* checkpoint best-effort */ }
+      }
     }
     
     // Track CREATE TABLE and ANALYZE statements
@@ -185,6 +190,30 @@ export class PersistentDatabase {
     for (const heap of this._heaps.values()) {
       heap.flush();
     }
+  }
+
+  /**
+   * Checkpoint: flush all data to disk, save catalog, then truncate the WAL.
+   * After checkpoint, the WAL starts fresh (no replay needed on recovery).
+   * Returns the WAL size before truncation.
+   */
+  checkpoint() {
+    // 1. Flush all heap pages to disk
+    this.flush();
+
+    // 2. Save catalog (CREATE TABLE statements)
+    this._saveCatalog();
+
+    // 3. Write checkpoint record and truncate WAL
+    if (this._wal) {
+      const walSize = this._wal.fileSize || 0;
+      this._wal.checkpoint();
+      this._wal.truncate();
+      // Re-write checkpoint marker for next recovery start
+      this._wal.checkpoint();
+      return walSize;
+    }
+    return 0;
   }
 
   /**
