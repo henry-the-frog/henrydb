@@ -4,7 +4,7 @@
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
-  IndexScan, Union,
+  IndexScan, Union, CTEIterator,
 } from './volcano.js';
 
 /**
@@ -22,6 +22,30 @@ export function explainPlan(ast, tables, indexCatalog) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog) {
+  // Handle WITH (CTE)
+  if (ast.type === 'WITH') {
+    // Materialize each CTE as a temporary table
+    const cteTables = new Map(tables);
+    for (const cte of (ast.ctes || [])) {
+      const ctePlan = buildPlan(cte.query, cteTables, indexCatalog);
+      // Materialize: execute the CTE plan and store results
+      ctePlan.open();
+      const rows = [];
+      let row;
+      while ((row = ctePlan.next()) !== null) rows.push(row);
+      ctePlan.close();
+      
+      // Create a virtual table for the CTE
+      const schema = rows.length > 0 ? Object.keys(rows[0]).map(name => ({ name })) : [];
+      cteTables.set(cte.name, {
+        heap: { scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c.name]), pageId: 0, slotIdx: 0 }; } },
+        schema
+      });
+    }
+    // Build the main query plan with CTE tables available
+    return buildPlan(ast.query, cteTables, indexCatalog);
+  }
+
   // Handle UNION/UNION ALL
   if (ast.type === 'UNION') {
     const leftPlan = buildPlan(ast.left, tables, indexCatalog);
