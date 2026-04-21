@@ -1,7 +1,7 @@
 ## TODO
 
 ### Urgent
-- **HenryDB: Lost update bug — write-write conflict not detected in MVCC** (since 2026-04-20). Two concurrent txns can update same row without error. T2's commit silently lost.
+- **HenryDB: Lost update bug — _update index-scan path skips invisible rows** (since 2026-04-20). When T1 updates+commits, PK index points to T1's new row (invisible to T2). `heap.get()` returns null, `usedIndex=true` prevents fallback to full scan → 0 rows updated. Fix: when index scan finds 0 visible rows for an UPDATE, fall through to full table scan. Location: db.js L4762-4800.
 
 ### Normal
 - HenryDB: Compiled query engine silent-null correctness bug — returns all rows when filter can't compile (latent, only EXPLAIN COMPILED path) (since 2026-04-20)

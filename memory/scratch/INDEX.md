@@ -29,3 +29,4 @@
 - `henrydb-wal-truncation-gap.md` — **NEW 2026-04-20** WAL truncation: TransactionalDB OK, PersistentDB missing checkpoint/truncation entirely
 - `henrydb-mvcc-interception.md` — **NEW 2026-04-20** MVCC via heap monkey-patching: 4 intercepted methods, fragility analysis, recommendations
 - `henrydb-compiled-engine-gaps.md` — **NEW 2026-04-20** Compiled engine only handles 4 expr types. Silent null on unknown → correctness bug (returns all rows)
+- `henrydb-lost-update-rca.md` — **NEW 2026-04-20** Root cause: _update index-scan path returns invisible MVCC rows as null → 0 rows updated. Fix: fall through to scan when index returns invisible rows.

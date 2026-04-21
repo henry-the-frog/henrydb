@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-21T01:45:15.967Z",
+  "generated": "2026-04-21T01:49:24.535Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: How does SSI (Serializable Snapshot Isolation) differ from regular MVCC? Does it catch the lost update?",
-    "completedAt": "2026-04-21T01:45:15.967Z",
-    "taskId": "T15",
-    "summary": "SSI mode also fails to catch lost update — same bug. Root cause: delete interceptor only checks activeTxns for write-write conflict, but committed txns are already removed. Need to check if row was modified after snapshot start (like PostgreSQL first-updater-wins). Both snapshot and serializable isolation levels have this bug.",
+    "task": "HenryDB: Narrow the UPDATE bug — is it _physicalizeDeletes or the UPDATE scan path?",
+    "completedAt": "2026-04-21T01:49:24.535Z",
+    "taskId": "T19",
+    "summary": "ROOT CAUSE FOUND: UPDATE uses B+tree index scan for WHERE id=X. The PK index points to T1s NEW row (0:1, xmin=2) which is invisible to T2s snapshot. heap.get() returns null for invisible row. usedIndex=true, so fallback full scan is SKIPPED. Fix: when index scan finds 0 visible rows, fall through to full table scan. The bug is specifically in the index-scan optimization path of _update, not in MVCC itself.",
     "durationMs": 300000
   },
   "schedule": {
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 415,
+    "blocksCompleted": 419,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 33,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 95,
-      "EXPLORE": 183
+      "EXPLORE": 187
     }
   },
   "artifacts": [

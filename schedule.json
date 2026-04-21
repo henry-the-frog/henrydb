@@ -162,6 +162,50 @@
       "completed": "2026-04-21T01:45:15.924Z",
       "duration_ms": 300000,
       "summary": "SSI mode also fails to catch lost update — same bug. Root cause: delete interceptor only checks activeTxns for write-write conflict, but committed txns are already removed. Need to check if row was modified after snapshot start (like PostgreSQL first-updater-wins). Both snapshot and serializable isolation levels have this bug."
+    },
+    {
+      "id": "T16",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Investigate the lost update root cause deeper — exactly what happens in the version map during concurrent UPDATE",
+      "project": "henrydb",
+      "started": "2026-04-21T01:46:02.999Z",
+      "completed": "2026-04-21T01:47:00.026Z",
+      "duration_ms": 300000,
+      "summary": "Root cause identified: T2 UPDATE returns 0 rows affected (silently does nothing). T2 MVCC scan sees old row for SELECT but UPDATE path fails to locate/modify it after T1 committed. The lost update is actually a silent no-op UPDATE, not overwrite. T1 value preserved but T2 thinks it updated when it didnt. PostgreSQL would either block (wait for T1 commit) or error with could not serialize access."
+    },
+    {
+      "id": "T17",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: What happens with 3+ concurrent transactions? Test phantom write skew.",
+      "project": "henrydb",
+      "started": "2026-04-21T01:47:16.881Z",
+      "completed": "2026-04-21T01:47:38.616Z",
+      "duration_ms": 180000,
+      "summary": "SSI correctly catches write skew (doctor on-call pattern)! T2 commit rejected with Serialization failure: dangerous structure detected. So SSI works for different-row conflicts but not same-row updates (lost update bug is specific to concurrent UPDATE of same row)."
+    },
+    {
+      "id": "T18",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Test concurrent INSERT + DELETE isolation behaviors",
+      "project": "henrydb",
+      "started": "2026-04-21T01:47:45.855Z",
+      "completed": "2026-04-21T01:48:10.984Z",
+      "duration_ms": 180000,
+      "summary": "Concurrent DELETE: ✅ write-write conflict correctly detected (throws error). Concurrent INSERT isolation: ✅ uncommitted inserts invisible. Key insight: DELETE conflict detection WORKS (both txns target same physical row), but UPDATE fails because T1 commit physicalizes the delete (removes row from heap), so T2 UPDATE scans a different set of rows → 0 rows affected. The bug is specifically in UPDATE, not DELETE."
+    },
+    {
+      "id": "T19",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Narrow the UPDATE bug — is it _physicalizeDeletes or the UPDATE scan path?",
+      "project": "henrydb",
+      "started": "2026-04-21T01:48:20.579Z",
+      "completed": "2026-04-21T01:49:24.488Z",
+      "duration_ms": 300000,
+      "summary": "ROOT CAUSE FOUND: UPDATE uses B+tree index scan for WHERE id=X. The PK index points to T1s NEW row (0:1, xmin=2) which is invisible to T2s snapshot. heap.get() returns null for invisible row. usedIndex=true, so fallback full scan is SKIPPED. Fix: when index scan finds 0 visible rows, fall through to full table scan. The bug is specifically in the index-scan optimization path of _update, not in MVCC itself."
     }
   ],
   "focusProjects": [
@@ -233,6 +277,22 @@
     {
       "time": "2026-04-21T01:44:46.938Z",
       "msg": "Added T15 (EXPLORE) after end: HenryDB: How does SSI (Serializable Snapshot Isolation) differ from regular MVCC? Does it catch the lost update?"
+    },
+    {
+      "time": "2026-04-21T01:46:02.859Z",
+      "msg": "Added T16 (EXPLORE) after end: HenryDB: Investigate the lost update root cause deeper — exactly what happens in the version map during concurrent UPDATE"
+    },
+    {
+      "time": "2026-04-21T01:47:16.746Z",
+      "msg": "Added T17 (EXPLORE) after end: HenryDB: What happens with 3+ concurrent transactions? Test phantom write skew."
+    },
+    {
+      "time": "2026-04-21T01:47:45.714Z",
+      "msg": "Added T18 (EXPLORE) after end: HenryDB: Test concurrent INSERT + DELETE isolation behaviors"
+    },
+    {
+      "time": "2026-04-21T01:48:20.440Z",
+      "msg": "Added T19 (EXPLORE) after end: HenryDB: Narrow the UPDATE bug — is it _physicalizeDeletes or the UPDATE scan path?"
     }
   ]
 }
