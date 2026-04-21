@@ -59,6 +59,21 @@ export function tokenize(sql) {
     // Whitespace
     if (/\s/.test(src[i])) { i++; continue; }
 
+    // Line comment: -- to end of line
+    if (src[i] === '-' && src[i + 1] === '-') {
+      i += 2;
+      while (i < src.length && src[i] !== '\n') i++;
+      continue;
+    }
+
+    // Block comment: /* ... */
+    if (src[i] === '/' && src[i + 1] === '*') {
+      i += 2;
+      while (i < src.length - 1 && !(src[i] === '*' && src[i + 1] === '/')) i++;
+      i += 2; // skip */
+      continue;
+    }
+
     // Dollar-quoted string ($$ body $$ or $tag$ body $tag$)
     if (src[i] === '$') {
       let tag = '$';
