@@ -4797,6 +4797,10 @@ export class Database {
                 } catch(e) { /* stale index entry */ }
               }
               usedIndex = true;
+              // MVCC fix: if index returned RIDs but all were invisible
+              // (heap.get returned null for all), fall through to full scan
+              // so we find the version visible to this transaction's snapshot.
+              if (toUpdate.length === 0) usedIndex = false;
             }
           }
         }
@@ -5094,6 +5098,9 @@ export class Database {
                 } catch(e) { /* stale index entry */ }
               }
               usedIndex = true;
+              // MVCC fix: if index returned RIDs but all were invisible
+              // (heap.get returned null for all), fall through to full scan
+              if (toDelete.length === 0) usedIndex = false;
             }
           }
         }
