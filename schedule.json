@@ -1962,6 +1962,72 @@
       "completed": "2026-04-21T00:15:14.953Z",
       "duration_ms": 240000,
       "summary": "Buffer pool: 14 tests pass, page management: 28 tests pass (42 total). LRU eviction works correctly. API: newPage returns {pageId, data}, fetchPage returns raw data buffer (asymmetric but intentional). InMemoryDiskManager for testing. No bugs found."
+    },
+    {
+      "id": "T183",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test query VM — bytecode compilation and execution",
+      "project": "henrydb",
+      "started": "2026-04-21T00:15:33.349Z",
+      "completed": "2026-04-21T00:15:56.664Z",
+      "duration_ms": 120000,
+      "summary": "Query VM (SQLite-style VDBE): 28 tests pass. Full bytecode engine with opcodes for control flow, table scanning, arithmetic, comparisons, aggregation. Codegen compiles SQL AST to bytecode. Works correctly."
+    },
+    {
+      "id": "T184",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test GiST index, skip list, and other advanced data structures",
+      "project": "henrydb",
+      "started": "2026-04-21T00:20:09.540Z",
+      "completed": "2026-04-21T00:20:46.868Z",
+      "duration_ms": 300000,
+      "summary": "Advanced data structures all pass: GiST (11), MVCC skip list (17), latch B-tree (12), bloom filter (11), extendible hash (13), lock manager (6), cost model (10), histogram (2), join optimizer (13), pipeline compiler (20), SQL linter (15). 130 additional tests, all pass."
+    },
+    {
+      "id": "T185",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: use SQL linter to find issues in our test queries",
+      "project": "henrydb",
+      "started": "2026-04-21T00:21:05.269Z",
+      "completed": "2026-04-21T00:21:29.461Z",
+      "duration_ms": 120000,
+      "summary": "SQL linter works beautifully: catches SELECT *, DELETE without WHERE, Cartesian products, function in WHERE (prevents index), DISTINCT *, ORDER BY ordinal, NULL comparison (= NULL), leading wildcards. 14 rules, clear messages with suggestions."
+    },
+    {
+      "id": "T186",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test index advisor — does it recommend good indexes?",
+      "project": "henrydb",
+      "started": "2026-04-21T00:21:40.949Z",
+      "completed": "2026-04-21T00:22:10.764Z",
+      "duration_ms": 180000,
+      "summary": "Index advisor works: analyzed 12-query workload, produced 7 correct recommendations including composite indexes. Correctly prioritizes frequently-used columns (customer_id: 5 WHERE + 1 JOIN). Minor: improvement field is undefined."
+    },
+    {
+      "id": "T187",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test transactional-db module — full ACID integration",
+      "project": "henrydb",
+      "started": "2026-04-21T00:22:32.232Z",
+      "completed": "2026-04-21T00:22:56.213Z",
+      "duration_ms": 120000,
+      "summary": "Transactional-db: 13/13 tests pass. Full ACID: auto-commit, persistence, BEGIN/COMMIT/ROLLBACK, snapshot isolation, MVCC for UPDATE/DELETE, crash recovery, multi-session, VACUUM. 1.4 seconds."
+    },
+    {
+      "id": "T188",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test HTTP/JSON API server",
+      "project": "henrydb",
+      "started": "2026-04-21T00:23:03.374Z",
+      "completed": "2026-04-21T00:23:53.874Z",
+      "duration_ms": 180000,
+      "summary": "HTTP/JSON API works: POST /query executes SQL, returns JSON results. GET /health returns status/version/stats. Both PG wire (port N) and HTTP (port N+1) run simultaneously. EXPLAIN returns structured plan JSON."
     }
   ],
   "focusProjects": [
@@ -2713,6 +2779,30 @@
     {
       "time": "2026-04-21T00:13:54.541Z",
       "msg": "Added T182 (EXPLORE) after end: HenryDB: test buffer pool — page pinning, LRU eviction, dirty page writes"
+    },
+    {
+      "time": "2026-04-21T00:15:33.114Z",
+      "msg": "Added T183 (EXPLORE) after end: HenryDB: test query VM — bytecode compilation and execution"
+    },
+    {
+      "time": "2026-04-21T00:20:09.306Z",
+      "msg": "Added T184 (EXPLORE) after end: HenryDB: test GiST index, skip list, and other advanced data structures"
+    },
+    {
+      "time": "2026-04-21T00:21:05.035Z",
+      "msg": "Added T185 (EXPLORE) after end: HenryDB: use SQL linter to find issues in our test queries"
+    },
+    {
+      "time": "2026-04-21T00:21:40.715Z",
+      "msg": "Added T186 (EXPLORE) after end: HenryDB: test index advisor — does it recommend good indexes?"
+    },
+    {
+      "time": "2026-04-21T00:22:31.997Z",
+      "msg": "Added T187 (EXPLORE) after end: HenryDB: test transactional-db module — full ACID integration"
+    },
+    {
+      "time": "2026-04-21T00:23:03.139Z",
+      "msg": "Added T188 (EXPLORE) after end: HenryDB: test HTTP/JSON API server"
     }
   ]
 }
