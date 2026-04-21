@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T23:51:51.157Z",
+  "generated": "2026-04-21T23:54:51.221Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Extract set operations (UNION/INTERSECT/EXCEPT) from db.js to set-operations.js (~124 LOC). Mixin pattern.",
-    "completedAt": "2026-04-21T23:51:51.157Z",
-    "taskId": "T20",
-    "summary": "Extracted UNION/INTERSECT/EXCEPT to set-operations.js (130 LOC). Mixin pattern. db.js: 5960→5839 (-121). 25 set operation tests pass.",
-    "durationMs": 240000
+    "task": "Extract EXPLAIN plan building from db.js to explain-builder.js (~150 LOC). Mixin pattern.",
+    "completedAt": "2026-04-21T23:54:51.221Z",
+    "taskId": "T22",
+    "summary": "Extracted expression evaluator from db.js to expression-evaluator.js (803 LOC). 7 methods: _collectAggregateExprs, _resolveColumn, _evalExpr, _evalValue, _evalFunction, _evalSubquery, _computeAggregates. db.js: 5839→5043 (-796). 289 tests pass across query/subquery/aggregate/expression/window/CTE/pg-catalog/compiled/MVCC/transactional/join suites. Pivoted from EXPLAIN extraction to expression evaluator for 5x bigger LOC reduction.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -239,12 +239,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 20,
+    "blocksCompleted": 21,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 5,
-      "BUILD": 7,
+      "BUILD": 8,
       "MAINTAIN": 4
     }
   }

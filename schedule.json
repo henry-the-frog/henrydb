@@ -221,8 +221,12 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "Extract EXPLAIN plan building from db.js to explain-builder.js (~150 LOC). Mixin pattern.",
-      "status": "upcoming",
-      "plan_ref": "T19"
+      "status": "done",
+      "plan_ref": "T19",
+      "started": "2026-04-21T23:52:02.888Z",
+      "completed": "2026-04-21T23:54:51.185Z",
+      "duration_ms": 600000,
+      "summary": "Extracted expression evaluator from db.js to expression-evaluator.js (803 LOC). 7 methods: _collectAggregateExprs, _resolveColumn, _evalExpr, _evalValue, _evalFunction, _evalSubquery, _computeAggregates. db.js: 5839→5043 (-796). 289 tests pass across query/subquery/aggregate/expression/window/CTE/pg-catalog/compiled/MVCC/transactional/join suites. Pivoted from EXPLAIN extraction to expression evaluator for 5x bigger LOC reduction."
     },
     {
       "id": "T21",
