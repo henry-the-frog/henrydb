@@ -66,5 +66,13 @@ Fall through to scan (Option A) AND check version map for concurrent modificatio
 - Dirty read prevention: ✅
 
 ## What's broken
-- Concurrent UPDATE of same row: ❌ (index-scan path)
+- _update() index-scan path: ❌ (uses heap.get() with RID → invisible → null → 0 rows)
+- _delete() index-scan path: ❌ (same pattern, L5059-5098)
+- _select() _tryIndexScan: ✅ (uses findByPK() which has MVCC scan fallback at L843)
+- Concurrent DELETE (both before commit): ✅ (same physical row → write-write conflict detected)
 - Would also affect DELETE + UPDATE concurrently (index-scan same path)
+
+## Key Insight
+The fundamental difference: SELECT uses `findByPK()` (MVCC-aware with scan fallback), while UPDATE/DELETE use `heap.get(pageId, slotIdx)` (MVCC-aware but NO fallback when invisible → returns null).
+
+Fix both _update and _delete: when index scan finds RIDs but all `heap.get()` return null/invisible, set `usedIndex = false` to trigger fallback full scan.

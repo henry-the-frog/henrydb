@@ -206,6 +206,28 @@
       "completed": "2026-04-21T01:49:24.488Z",
       "duration_ms": 300000,
       "summary": "ROOT CAUSE FOUND: UPDATE uses B+tree index scan for WHERE id=X. The PK index points to T1s NEW row (0:1, xmin=2) which is invisible to T2s snapshot. heap.get() returns null for invisible row. usedIndex=true, so fallback full scan is SKIPPED. Fix: when index scan finds 0 visible rows, fall through to full table scan. The bug is specifically in the index-scan optimization path of _update, not in MVCC itself."
+    },
+    {
+      "id": "T20",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Same bug in _delete index scan path? Check.",
+      "project": "henrydb",
+      "started": "2026-04-21T01:50:36.263Z",
+      "completed": "2026-04-21T01:50:55.514Z",
+      "duration_ms": 120000,
+      "summary": "Confirmed: _delete has SAME index-scan bug pattern (L5059-5098). Same usedIndex=true, no fallback when MVCC visibility filters out index results. BUT it only triggers when T1 commits before T2 operates — if both operate before commit, the physical row conflict is detected. Both _update and _delete need the same fix."
+    },
+    {
+      "id": "T21",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Verify _select also has the index scan MVCC gap",
+      "project": "henrydb",
+      "started": "2026-04-21T01:51:04.005Z",
+      "completed": "2026-04-21T01:51:58.346Z",
+      "duration_ms": 180000,
+      "summary": "SELECT is NOT affected by the index bug! _tryIndexScan uses findByPK() which has MVCC scan fallback (L843 transactional-db.js). _update/_delete use heap.get(pageId, slotIdx) directly without fallback. The bug is specific to _update and _delete index-scan paths which use RID-based lookup instead of PK-based lookup."
     }
   ],
   "focusProjects": [
@@ -293,6 +315,14 @@
     {
       "time": "2026-04-21T01:48:20.440Z",
       "msg": "Added T19 (EXPLORE) after end: HenryDB: Narrow the UPDATE bug — is it _physicalizeDeletes or the UPDATE scan path?"
+    },
+    {
+      "time": "2026-04-21T01:50:36.129Z",
+      "msg": "Added T20 (EXPLORE) after end: HenryDB: Same bug in _delete index scan path? Check."
+    },
+    {
+      "time": "2026-04-21T01:51:03.873Z",
+      "msg": "Added T21 (EXPLORE) after end: HenryDB: Verify _select also has the index scan MVCC gap"
     }
   ]
 }
