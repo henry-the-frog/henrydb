@@ -530,6 +530,17 @@
       "completed": "2026-04-21T15:53:58.732Z",
       "duration_ms": 180000,
       "summary": "Profiled HenryDB: PK lookup 4ms, index scan 0.5ms, 2-way join 5.4ms, 3-way 3.6ms, GROUP BY 17.5ms, window 1.6ms. BOTTLENECK: correlated subquery 259ms (O(n*m)). Highest-ROI optimization: query decorrelation."
+    },
+    {
+      "id": "T49",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep investigation: MVCC heap monkey-patching fragility — catalog the 5 risks and design a cleaner architecture",
+      "project": "henrydb",
+      "started": "2026-04-21T15:54:33.143Z",
+      "completed": "2026-04-21T15:55:24.770Z",
+      "duration_ms": 180000,
+      "summary": "Cataloged 5 MVCC monkey-patching fragility risks. Designed MVCCHeap wrapper class as replacement. Migration plan: ~2 hours, creates mvcc-heap.js with scan/get/delete/findByPK. Benefits: new heap types auto-get MVCC, clean separation."
     }
   ],
   "focusProjects": [
@@ -757,6 +768,10 @@
     {
       "time": "2026-04-21T15:51:12.906Z",
       "msg": "Added T48 (EXPLORE) after end: Profile HenryDB query execution: time a complex query with joins, subqueries, window functions"
+    },
+    {
+      "time": "2026-04-21T15:54:26.338Z",
+      "msg": "Added T49 (EXPLORE) after end: Deep investigation: MVCC heap monkey-patching fragility — catalog the 5 risks and design a cleaner architecture"
     }
   ]
 }

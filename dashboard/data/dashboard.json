@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-21T15:53:58.778Z",
+  "generated": "2026-04-21T15:55:24.807Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Profile HenryDB query execution: time a complex query with joins, subqueries, window functions",
-    "completedAt": "2026-04-21T15:53:58.778Z",
-    "taskId": "T48",
-    "summary": "Profiled HenryDB: PK lookup 4ms, index scan 0.5ms, 2-way join 5.4ms, 3-way 3.6ms, GROUP BY 17.5ms, window 1.6ms. BOTTLENECK: correlated subquery 259ms (O(n*m)). Highest-ROI optimization: query decorrelation.",
+    "task": "Deep investigation: MVCC heap monkey-patching fragility — catalog the 5 risks and design a cleaner architecture",
+    "completedAt": "2026-04-21T15:55:24.807Z",
+    "taskId": "T49",
+    "summary": "Cataloged 5 MVCC monkey-patching fragility risks. Designed MVCCHeap wrapper class as replacement. Migration plan: ~2 hours, creates mvcc-heap.js with scan/get/delete/findByPK. Benefits: new heap types auto-get MVCC, clean separation.",
     "durationMs": 180000
   },
   "schedule": {
@@ -485,14 +485,14 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 48,
     "blocksTotal": 43,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 13,
       "BUILD": 15,
       "MAINTAIN": 7,
-      "EXPLORE": 5
+      "EXPLORE": 6
     }
   }
 }
