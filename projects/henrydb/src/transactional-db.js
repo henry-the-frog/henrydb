@@ -344,6 +344,19 @@ export class TransactionalDatabase {
 
     // DDL and utility: bypass MVCC
     if (this._isDDL(trimmed)) {
+      // VACUUM should use the MVCC-aware vacuum, not the base Database's
+      if (trimmed.startsWith('VACUUM')) {
+        const stats = this.vacuum();
+        let totalDead = 0;
+        for (const tbl of Object.values(stats)) {
+          totalDead += tbl.deadTuplesRemoved || 0;
+        }
+        return {
+          type: 'OK',
+          message: `VACUUM: ${Object.keys(stats).length} table(s) processed, ${totalDead} dead tuples removed`,
+          details: stats
+        };
+      }
       const result = this._db.execute(sql);
       // Log DDL to WAL for crash recovery with stale catalog
       // NOTE: ALTER TABLE and CREATE/DROP INDEX are already logged by the inner Database
