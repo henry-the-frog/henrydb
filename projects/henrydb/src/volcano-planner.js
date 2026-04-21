@@ -4,7 +4,7 @@
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
-  IndexScan,
+  IndexScan, Union,
 } from './volcano.js';
 
 /**
@@ -22,6 +22,17 @@ export function explainPlan(ast, tables, indexCatalog) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog) {
+  // Handle UNION/UNION ALL
+  if (ast.type === 'UNION') {
+    const leftPlan = buildPlan(ast.left, tables, indexCatalog);
+    const rightPlan = buildPlan(ast.right, tables, indexCatalog);
+    let iter = new Union(leftPlan, rightPlan);
+    if (!ast.all) {
+      iter = new Distinct(iter);
+    }
+    return iter;
+  }
+
   // 1. Build scan for FROM table
   let iter = buildScanNode(ast.from, tables);
 
