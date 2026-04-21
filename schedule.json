@@ -2039,6 +2039,39 @@
       "completed": "2026-04-21T00:25:14.030Z",
       "duration_ms": 180000,
       "summary": "Query rewriter 17 tests pass, stored routines 18 pass, pool proxy 13 pass, pool health 14 pass, connection pool 11 pass. 73 additional tests. CLI exists (psql-like REPL). All modules healthy."
+    },
+    {
+      "id": "T190",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: run TPC-H-style analytical queries",
+      "project": "henrydb",
+      "started": "2026-04-21T00:26:08.353Z",
+      "completed": "2026-04-21T00:26:45.658Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB runs TPC-H queries! Q1 (pricing summary, 5K row aggregate): 39ms. Q3 (3-way join+GROUP BY+LIMIT): 38ms. Q5 (5-way join, revenue by nation): 46ms. Q10 (4-way join, customer returns): 25ms. All produce correct results. Impressive for a JS database."
+    },
+    {
+      "id": "T191",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: TPC-H at 10x scale — 10K orders, 50K lineitems",
+      "project": "henrydb",
+      "started": "2026-04-21T00:27:05.847Z",
+      "completed": "2026-04-21T00:28:28.130Z",
+      "duration_ms": 300000,
+      "summary": "TPC-H at 10x (10K orders, 50K lineitems): Q1=253ms, Q3=157ms, Q5=367ms. Sublinear scaling from 1x. Insert with index is slow (213/sec vs 39K/sec without). Query performance is good — 5-way join on 50K rows in 367ms."
+    },
+    {
+      "id": "T192",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: create comprehensive demo showcasing all features",
+      "project": "henrydb",
+      "started": "2026-04-21T00:29:40.231Z",
+      "completed": "2026-04-21T00:30:32.021Z",
+      "duration_ms": 300000,
+      "summary": "Created demo.js: 15-feature showcase. DDL with constraints, DML with RETURNING, concurrent indexes, transactions+savepoints, window functions, CTEs, JSON, full-text search, aggregation+HAVING, subqueries, UPSERT, stored functions, EXPLAIN ANALYZE, SQL comments, BETWEEN in SELECT. All work perfectly."
     }
   ],
   "focusProjects": [
@@ -2818,6 +2851,18 @@
     {
       "time": "2026-04-21T00:24:45.734Z",
       "msg": "Added T189 (EXPLORE) after end: HenryDB: test query rewriter and stored routines"
+    },
+    {
+      "time": "2026-04-21T00:26:08.119Z",
+      "msg": "Added T190 (EXPLORE) after end: HenryDB: run TPC-H-style analytical queries"
+    },
+    {
+      "time": "2026-04-21T00:27:05.606Z",
+      "msg": "Added T191 (EXPLORE) after end: HenryDB: TPC-H at 10x scale — 10K orders, 50K lineitems"
+    },
+    {
+      "time": "2026-04-21T00:29:39.997Z",
+      "msg": "Added T192 (EXPLORE) after end: HenryDB: create comprehensive demo showcasing all features"
     }
   ]
 }
