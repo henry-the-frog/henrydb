@@ -124,8 +124,12 @@
       "id": "T13",
       "mode": "BUILD",
       "task": "Wire MergeJoin in volcano-planner: detect sorted equi-joins (ORDER BY on join key or indexed) and choose MergeJoin over HashJoin when inputs are pre-sorted. Add MergeJoin tests.",
-      "status": "upcoming",
-      "plan_ref": "T9"
+      "status": "done",
+      "plan_ref": "T9",
+      "started": "2026-04-21T23:37:30.299Z",
+      "completed": "2026-04-21T23:42:18.800Z",
+      "duration_ms": 480000,
+      "summary": "Wired MergeJoin in volcano-planner: detects when both join inputs are Sort nodes on the join key, selects MergeJoin over HashJoin. Fixed MergeJoin duplicate row bug (left-side duplicates lost right group re-scan). 7 new tests: basic join, duplicates, non-matching, empty, pre-sorted selection, end-to-end, describe(). 114 volcano tests, 169 total pass."
     },
     {
       "id": "T11",

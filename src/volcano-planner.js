@@ -165,8 +165,17 @@ export function buildPlan(ast, tables, indexCatalog) {
       }
       
       if (equiJoin) {
-        iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey,
-          join.joinType === 'LEFT' ? 'left' : 'inner');
+        // Check if MergeJoin is appropriate: both inputs sorted on join key
+        const leftSorted = isSortedOn(iter, equiJoin.probeKey);
+        const rightSorted = isSortedOn(rightIter, equiJoin.buildKey);
+        
+        if (leftSorted && rightSorted) {
+          // Both already sorted — MergeJoin avoids hash table overhead
+          iter = new MergeJoin(iter, rightIter, equiJoin.probeKey, equiJoin.buildKey);
+        } else {
+          iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey,
+            join.joinType === 'LEFT' ? 'left' : 'inner');
+        }
       } else {
         iter = new NestedLoopJoin(iter, rightIter, predicate ? (l, r) => predicate({ ...l, ...r }) : null,
           join.joinType === 'LEFT' ? 'left' : 'inner');
@@ -235,6 +244,22 @@ export function buildPlan(ast, tables, indexCatalog) {
 }
 
 // --- Helpers ---
+
+/**
+ * Check if an iterator is already sorted on a given column.
+ * Detects Sort nodes whose primary key matches the column.
+ */
+function isSortedOn(iter, column) {
+  if (iter instanceof Sort) {
+    const orderBy = iter._orderBy;
+    if (orderBy && orderBy.length > 0) {
+      const primaryKey = orderBy[0].column;
+      // Match column name (with or without alias prefix)
+      if (primaryKey === column || primaryKey.endsWith('.' + column) || column.endsWith('.' + primaryKey)) return true;
+    }
+  }
+  return false;
+}
 
 function buildScanNode(fromClause, tables) {
   if (!fromClause) return new ValuesIter([{}]); // Dummy for SELECT without FROM

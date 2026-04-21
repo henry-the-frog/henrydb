@@ -501,6 +501,14 @@ export class MergeJoin extends Iterator {
       // Emit from current group
       if (this._rightGroupIdx < this._rightGroup.length && this._leftRow) {
         const combined = { ...this._leftRow, ...this._rightGroup[this._rightGroupIdx++] };
+        // If group exhausted for this left row, advance left and check for re-scan
+        if (this._rightGroupIdx >= this._rightGroup.length) {
+          this._leftRow = this._left.next();
+          // If next left row matches same group, re-scan the group
+          if (this._leftRow && this._leftRow[this._leftKey] === this._rightGroupKey) {
+            this._rightGroupIdx = 0;
+          }
+        }
         return combined;
       }
 
@@ -526,20 +534,7 @@ export class MergeJoin extends Iterator {
         this._rightRow = this._right.next();
       }
       this._rightGroupIdx = 0;
-
-      // Emit first match
-      if (this._rightGroup.length > 0) {
-        const combined = { ...this._leftRow, ...this._rightGroup[this._rightGroupIdx++] };
-        // If group exhausted for this left row, advance left
-        if (this._rightGroupIdx >= this._rightGroup.length) {
-          this._leftRow = this._left.next();
-          // Check if next left row matches same group
-          if (this._leftRow && this._leftRow[this._leftKey] === this._rightGroupKey) {
-            this._rightGroupIdx = 0; // Re-scan group
-          }
-        }
-        return combined;
-      }
+      // Loop back to emit from group
     }
   }
 

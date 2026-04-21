@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T23:37:18.586Z",
+  "generated": "2026-04-21T23:42:18.840Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Wire CTE support in volcano-planner: handle ast.ctes by materializing subqueries with CTE iterator, inject materialized rows as virtual tables for main query. Support both non-recursive and recursive CTEs. Add tests.",
-    "completedAt": "2026-04-21T23:37:18.585Z",
-    "taskId": "T10",
-    "summary": "Wired CTE support in volcano-planner. Non-recursive CTEs eagerly materialized and injected as virtual tables. Recursive CTEs iterate until fixed point with depth limit 100. Column renaming, alias qualification, JOIN support all working. 11 new tests (simple filter, column rename, JOIN, ORDER BY, aggregation, recursive counting/powers/fibonacci, max depth, multiple CTEs, EXPLAIN). 107 total volcano tests pass.",
-    "durationMs": 600000
+    "task": "Wire MergeJoin in volcano-planner: detect sorted equi-joins (ORDER BY on join key or indexed) and choose MergeJoin over HashJoin when inputs are pre-sorted. Add MergeJoin tests.",
+    "completedAt": "2026-04-21T23:42:18.840Z",
+    "taskId": "T13",
+    "summary": "Wired MergeJoin in volcano-planner: detects when both join inputs are Sort nodes on the join key, selects MergeJoin over HashJoin. Fixed MergeJoin duplicate row bug (left-side duplicates lost right group re-scan). 7 new tests: basic join, duplicates, non-matching, empty, pre-sorted selection, end-to-end, describe(). 114 volcano tests, 169 total pass.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -142,12 +142,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 11,
+    "blocksCompleted": 12,
     "blocksTotal": 13,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 3,
-      "BUILD": 4,
+      "BUILD": 5,
       "MAINTAIN": 2
     }
   }
