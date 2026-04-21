@@ -2028,6 +2028,17 @@
       "completed": "2026-04-21T00:23:53.874Z",
       "duration_ms": 180000,
       "summary": "HTTP/JSON API works: POST /query executes SQL, returns JSON results. GET /health returns status/version/stats. Both PG wire (port N) and HTTP (port N+1) run simultaneously. EXPLAIN returns structured plan JSON."
+    },
+    {
+      "id": "T189",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test query rewriter and stored routines",
+      "project": "henrydb",
+      "started": "2026-04-21T00:24:45.969Z",
+      "completed": "2026-04-21T00:25:14.030Z",
+      "duration_ms": 180000,
+      "summary": "Query rewriter 17 tests pass, stored routines 18 pass, pool proxy 13 pass, pool health 14 pass, connection pool 11 pass. 73 additional tests. CLI exists (psql-like REPL). All modules healthy."
     }
   ],
   "focusProjects": [
@@ -2803,6 +2814,10 @@
     {
       "time": "2026-04-21T00:23:03.139Z",
       "msg": "Added T188 (EXPLORE) after end: HenryDB: test HTTP/JSON API server"
+    },
+    {
+      "time": "2026-04-21T00:24:45.734Z",
+      "msg": "Added T189 (EXPLORE) after end: HenryDB: test query rewriter and stored routines"
     }
   ]
 }

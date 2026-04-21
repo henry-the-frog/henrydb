@@ -95,14 +95,15 @@ HenryDB is a **330-module, 847-test-file database engine** written entirely in J
 4. **Duplicate CREATE INDEX (P1)**: Silently succeeded. Now throws error without IF NOT EXISTS.
 5. **BETWEEN in SELECT (P1)**: Parser didn't recognize `col BETWEEN x AND y` in SELECT columns. Added parser + evaluator support.
 6. **WOBTree buffer search (P1)**: Returned first match instead of last for duplicate keys — stale reads before flush.
+7. **@@ operator for FTS (P1)**: `to_tsvector() @@ to_tsquery()` returned all rows — `@@` wasn't in tokenizer. Added tokenizer + parser + evaluator.
+8. **SQL comments (P2)**: Neither `--` line comments nor `/* */` block comments were handled by tokenizer. Added both.
+9. **Negative OFFSET (P2)**: `OFFSET -1` used `Array.slice(-1)` counting from end. Clamped to 0 in all 8 code paths.
 
 ## Known Bugs 🐛
-1. **`@@` operator not tokenized (P1)**: `to_tsvector() @@ to_tsquery()` returns all rows — parser drops `@@`.
-2. **Block comments (P2)**: `/* ... */` not handled by tokenizer — causes parser errors.
-3. **Compiled query divergences (P2)**: BETWEEN, CASE, HAVING, JOIN column names differ from interpreter.
-4. **OFFSET -1 (P2)**: Returns wrong results instead of treating as OFFSET 0.
-5. **PL/SQL DML in IF blocks (P2)**: UPDATE/INSERT inside IF blocks fails — parser treats as assignment.
-6. **File-based WAL truncation (P2)**: WAL grows forever even after checkpoint — truncate() is a no-op for files.
+1. **Compiled query divergences (P2)**: BETWEEN, CASE, HAVING, JOIN column names differ from interpreter.
+2. **PL/SQL DML in IF blocks (P2)**: UPDATE/INSERT inside IF blocks fails — parser treats as assignment.
+3. **File-based WAL truncation (P2)**: WAL grows forever even after checkpoint — truncate() is a no-op for files.
+4. **Index advisor improvement field (P3)**: `improvement` field is undefined in recommendations.
 
 ## What's Impressive
 - Complete end-to-end: parse SQL → optimize → execute → return results
