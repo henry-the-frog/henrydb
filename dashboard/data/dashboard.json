@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T00:03:29.759Z",
+  "generated": "2026-04-21T00:11:35.093Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: test PL/SQL stored procedures — functions, loops, cursors",
-    "completedAt": "2026-04-21T00:03:29.759Z",
-    "taskId": "T175",
-    "summary": "PL/SQL works for basic blocks: DECLARE, variables, assignments, WHILE loops, IF/ELSE, RETURN. Fibonacci(10)=55 correct. SQL functions (LANGUAGE sql) work including aggregates and WHERE usage. JS functions (LANGUAGE js) work with expression syntax. PL/SQL parser fails on DML (UPDATE/INSERT) inside IF blocks — treats as assignment. Stored procedures via CREATE FUNCTION + LANGUAGE sql are the most reliable path.",
-    "durationMs": 360000
+    "task": "HenryDB: fix block comment support in SQL tokenizer",
+    "completedAt": "2026-04-21T00:11:35.093Z",
+    "taskId": "T180",
+    "summary": "FIXED: Added SQL comment support. Line (--) and block (/* */) comments now properly skipped during tokenization. Previously -- was two MINUS tokens. Multi-line block comments work. 71 tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 383,
+    "blocksCompleted": 388,
     "blocksTotal": 139,
     "modeDistribution": {
-      "THINK": 30,
+      "THINK": 31,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 94,
-      "EXPLORE": 155
+      "EXPLORE": 159
     }
   },
   "artifacts": [

@@ -1885,6 +1885,61 @@
       "completed": "2026-04-21T00:03:29.714Z",
       "duration_ms": 360000,
       "summary": "PL/SQL works for basic blocks: DECLARE, variables, assignments, WHILE loops, IF/ELSE, RETURN. Fibonacci(10)=55 correct. SQL functions (LANGUAGE sql) work including aggregates and WHERE usage. JS functions (LANGUAGE js) work with expression syntax. PL/SQL parser fails on DML (UPDATE/INSERT) inside IF blocks — treats as assignment. Stored procedures via CREATE FUNCTION + LANGUAGE sql are the most reliable path."
+    },
+    {
+      "id": "T176",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test JSON operations — jsonb, jsonpath, operators",
+      "project": "henrydb",
+      "started": "2026-04-21T00:03:56.805Z",
+      "completed": "2026-04-21T00:04:17.920Z",
+      "duration_ms": 180000,
+      "summary": "JSON operations fully functional: -> and ->> operators, nested paths, array indexing, json_extract($.path), json_array_length, json_object, json_array, WHERE with JSON values, CAST of JSON fields. All 10 test queries work correctly."
+    },
+    {
+      "id": "T177",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: write comprehensive state-of-the-project assessment",
+      "project": "henrydb",
+      "started": "2026-04-21T00:04:35.213Z",
+      "completed": "2026-04-21T00:05:36.975Z",
+      "duration_ms": 600000,
+      "summary": "Wrote comprehensive STATE-OF-HENRYDB.md: 330 modules, 847 test files, 6207+ tests. Documented all working features, bugs found/fixed (6 today), known bugs (6), performance benchmarks, and recommendations. This is the definitive project assessment."
+    },
+    {
+      "id": "T178",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test ARIES recovery — analysis, redo, undo phases",
+      "project": "henrydb",
+      "started": "2026-04-21T00:05:49.000Z",
+      "completed": "2026-04-21T00:06:09.173Z",
+      "duration_ms": 120000,
+      "summary": "ARIES recovery: 12/12 tests pass. Covers all 3 phases (analysis, redo, undo), CLR records, checkpoint recovery, idempotent recovery. Well-tested."
+    },
+    {
+      "id": "T179",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: fix @@ operator for tsvector/tsquery full-text search",
+      "project": "henrydb",
+      "started": "2026-04-21T00:06:19.927Z",
+      "completed": "2026-04-21T00:09:18.363Z",
+      "duration_ms": 600000,
+      "summary": "FIXED P1 BUG: @@ operator for full-text search. Three changes: (1) tokenizer: @@ as TS_MATCH, (2) parser: expr @@ expr as TS_MATCH node, (3) evaluator: TS_MATCH case + TO_TSVECTOR/TO_TSQUERY functions. Now to_tsvector(body) @@ to_tsquery(fox) correctly matches only relevant rows. All 56 existing tests pass."
+    },
+    {
+      "id": "T180",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: fix block comment support in SQL tokenizer",
+      "project": "henrydb",
+      "started": "2026-04-21T00:09:36.876Z",
+      "completed": "2026-04-21T00:11:35.057Z",
+      "duration_ms": 300000,
+      "summary": "FIXED: Added SQL comment support. Line (--) and block (/* */) comments now properly skipped during tokenization. Previously -- was two MINUS tokens. Multi-line block comments work. 71 tests pass."
     }
   ],
   "focusProjects": [
@@ -2608,6 +2663,26 @@
     {
       "time": "2026-04-21T00:01:36.315Z",
       "msg": "Added T175 (EXPLORE) after end: HenryDB: test PL/SQL stored procedures — functions, loops, cursors"
+    },
+    {
+      "time": "2026-04-21T00:03:56.571Z",
+      "msg": "Added T176 (EXPLORE) after end: HenryDB: test JSON operations — jsonb, jsonpath, operators"
+    },
+    {
+      "time": "2026-04-21T00:04:34.979Z",
+      "msg": "Added T177 (THINK) after end: HenryDB: write comprehensive state-of-the-project assessment"
+    },
+    {
+      "time": "2026-04-21T00:05:48.766Z",
+      "msg": "Added T178 (EXPLORE) after end: HenryDB: test ARIES recovery — analysis, redo, undo phases"
+    },
+    {
+      "time": "2026-04-21T00:06:19.692Z",
+      "msg": "Added T179 (EXPLORE) after end: HenryDB: fix @@ operator for tsvector/tsquery full-text search"
+    },
+    {
+      "time": "2026-04-21T00:09:36.638Z",
+      "msg": "Added T180 (EXPLORE) after end: HenryDB: fix block comment support in SQL tokenizer"
     }
   ]
 }
