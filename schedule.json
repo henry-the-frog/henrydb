@@ -257,23 +257,136 @@
     {
       "id": "T19",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit monolith split, push, test sweep",
-      "started": "2026-04-21T15:08:17.991Z"
+      "started": "2026-04-21T15:08:17.991Z",
+      "completed": "2026-04-21T15:08:31.626Z",
+      "duration_ms": 20000,
+      "summary": "All pushed. 6 HenryDB commits today."
     },
     {
       "id": "T20",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research PostgreSQL EvalPlanQual and first-updater-wins for HenryDB MVCC",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T15:08:40.911Z",
+      "completed": "2026-04-21T15:09:47.580Z",
+      "duration_ms": 120000,
+      "summary": "Researched PostgreSQL EvalPlanQual: Read Committed re-evaluates WHERE on updated rows after waiting. Not needed at HenryDB Repeatable Read level where write-write conflicts are thrown. PK-level conflict detection is correct. Documented in scratch note."
     },
     {
       "id": "T21",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Read LuaJIT allocation sinking paper or database engine design patterns",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T15:09:59.526Z",
+      "completed": "2026-04-21T15:10:49.252Z",
+      "duration_ms": 120000,
+      "summary": "Explored database engine design patterns. Documented HenryDB architecture and next phase priorities: P1 dead tuple vacuum, P2 more monolith extraction, P3 stress testing, P4 buffer pool improvements. Wrote scratch notes."
+    },
+    {
+      "id": "T27",
+      "mode": "THINK",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:11:27.181Z",
+      "completed": "2026-04-21T15:12:27.732Z",
+      "duration_ms": 120000,
+      "summary": "Designed dead tuple vacuum: Phase 1 is version map cleanup + heap slot zeroing. After 100 UPDATEs, 100 dead + 1 live version map entry. Vacuum removes dead entries. API: db.vacuum(), SQL VACUUM command. Wrote design doc."
+    },
+    {
+      "id": "T31",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement dead tuple vacuum (Phase 1) for TransactionalDatabase",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:12:44.695Z",
+      "completed": "2026-04-21T15:12:57.968Z",
+      "duration_ms": 30000,
+      "summary": "Planned vacuum implementation: 3 BUILD tasks — vacuum() method, VACUUM SQL command, tests."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Add vacuum() method to TransactionalDatabase: clean version maps, zero dead heap slots",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-04-21T15:13:09.348Z",
+      "completed": "2026-04-21T15:16:26.670Z",
+      "duration_ms": 300000,
+      "summary": "vacuum() already existed in TransactionalDB. Wired SQL VACUUM command to use MVCC-aware vacuum instead of bypassing to base Database. Removed duplicate method. 50 updates → 50 dead removed."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Add VACUUM SQL command parsing and execution",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-04-21T15:16:38.848Z",
+      "completed": "2026-04-21T15:16:38.991Z",
+      "duration_ms": 5000,
+      "summary": "Already done in T32 — SQL VACUUM was already parsed, just needed MVCC wiring."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Add vacuum tests: verify dead tuple cleanup, space reclamation, data integrity",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-04-21T15:16:47.934Z",
+      "completed": "2026-04-21T15:17:25.329Z",
+      "duration_ms": 120000,
+      "summary": "5 vacuum tests: dead version cleanup, SQL VACUUM integration, multi-table, active tx snapshot safety, idempotency. All pass."
+    },
+    {
+      "id": "T28",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Extract window functions (~400 LOC) from db.js into window-functions.js",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:17:49.547Z",
+      "completed": "2026-04-21T15:18:31.592Z",
+      "duration_ms": 60000,
+      "summary": "Window functions: 424 LOC (6637-7060). Depends on _evalValue, _resolveColumn, _orderByValue, _exprContainsAggregate. Same extraction pattern as sql-functions.js."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Extract window functions (424 LOC) from db.js into window-functions.js with db context delegation",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-21T15:18:42.942Z",
+      "completed": "2026-04-21T15:20:25.557Z",
+      "duration_ms": 300000,
+      "summary": "Extracted window-functions.js: 7 methods, 405 LOC removed. db.js now 8788 (was 9193). 128/128 window tests pass."
+    },
+    {
+      "id": "T29",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Extract EXPLAIN/plan formatting (~400 LOC) from db.js into explain.js",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T15:20:36.139Z",
+      "completed": "2026-04-21T15:21:04.294Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN is 800 LOC but has heavy dependencies on 20+ internal planner methods. Not a clean extraction target. Better to extract DDL next or refactor explain after planner extraction. Deferred."
+    },
+    {
+      "id": "T30",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Full test sweep — run all 849 HenryDB test files sequentially",
+      "project": "henrydb",
+      "started": "2026-04-21T15:21:16.694Z",
+      "completed": "2026-04-21T15:30:32.544Z",
+      "duration_ms": 600000,
+      "summary": "Full test sweep complete. 0 regressions across all categories: core SQL, MVCC/SSI, window/CTE, persistence/WAL, functions/types, math/JSON, DDL. All clean."
     }
   ],
   "focusProjects": [
@@ -421,6 +534,38 @@
     {
       "time": "2026-04-21T14:58:58.494Z",
       "msg": "PLAN T17 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T15:11:06.153Z",
+      "msg": "Added T27 (THINK) after end: Design dead tuple vacuum for HenryDB — analyze heap compaction approach"
+    },
+    {
+      "time": "2026-04-21T15:11:12.606Z",
+      "msg": "Added T28 (PLAN) after end: Extract window functions (~400 LOC) from db.js into window-functions.js"
+    },
+    {
+      "time": "2026-04-21T15:11:12.724Z",
+      "msg": "Added T29 (PLAN) after end: Extract EXPLAIN/plan formatting (~400 LOC) from db.js into explain.js"
+    },
+    {
+      "time": "2026-04-21T15:11:18.318Z",
+      "msg": "Added T30 (MAINTAIN) after end: Full test sweep — run all 849 HenryDB test files sequentially"
+    },
+    {
+      "time": "2026-04-21T15:12:33.832Z",
+      "msg": "Added T31 (PLAN) after end: Implement dead tuple vacuum (Phase 1) for TransactionalDatabase"
+    },
+    {
+      "time": "2026-04-21T15:12:33.949Z",
+      "msg": "Moved T31 after T27"
+    },
+    {
+      "time": "2026-04-21T15:12:51.162Z",
+      "msg": "PLAN T31 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T15:18:24.480Z",
+      "msg": "PLAN T28 filled 1 BUILD tasks"
     }
   ]
 }
