@@ -28,7 +28,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('selects vectorized for large scans', () => {
     const db = setupDB(1000);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     const result = engine.executeSelect({
       type: 'SELECT',
@@ -43,7 +43,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('selects vectorized for joins with large tables', () => {
     const db = setupDB(500);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     const result = engine.executeSelect({
       type: 'SELECT',
@@ -69,7 +69,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('selects codegen for selective queries', () => {
     const db = setupDB(500);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     const result = engine.executeSelect({
       type: 'SELECT',
@@ -88,7 +88,7 @@ describe('AdaptiveQueryEngine', () => {
     db.execute('CREATE TABLE t (id INT PRIMARY KEY)');
     for (let i = 0; i < 10; i++) db.execute(`INSERT INTO t VALUES (${i})`);
 
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
     const result = engine.executeSelect({
       type: 'SELECT',
       columns: [{ name: '*' }],
@@ -101,7 +101,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('correctness: adaptive matches standard execution', () => {
     const db = setupDB(200);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     const adaptive = engine.executeSelect({
       type: 'SELECT',
@@ -126,7 +126,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('tracks engine selection stats', () => {
     const db = setupDB(300);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     // Run several queries
     engine.executeSelect({
@@ -165,7 +165,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('records decisions for debugging', () => {
     const db = setupDB(200);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     engine.executeSelect({
       type: 'SELECT',
@@ -183,7 +183,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('runtime feedback improves selection over time', () => {
     const db = setupDB(500);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     // Run the same query shape multiple times to build feedback
     for (let i = 0; i < 5; i++) {
@@ -204,7 +204,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('benchmark: adaptive engine overhead is minimal', () => {
     const db = setupDB(500);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     const ast = {
       type: 'SELECT',
@@ -242,7 +242,7 @@ describe('AdaptiveQueryEngine', () => {
 
   it('mixed workload: different queries get different engines', () => {
     const db = setupDB(500);
-    const engine = new AdaptiveQueryEngine(db);
+    const engine = new AdaptiveQueryEngine(db, { compileThreshold: 50 });
 
     // Full scan → vectorized
     const r1 = engine.executeSelect({

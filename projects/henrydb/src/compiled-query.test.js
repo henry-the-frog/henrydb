@@ -39,14 +39,14 @@ function setupDB(rowCount = 200) {
 describe('CompiledQueryEngine', () => {
   it('constructs and has planner', () => {
     const db = new Database();
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
     assert.ok(engine.planner);
     assert.equal(engine.stats.queriesCompiled, 0);
   });
 
   it('compiles a single-table scan with filter', () => {
     const db = setupDB(200);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     // Parse a simple query AST
     const ast = {
@@ -72,7 +72,7 @@ describe('CompiledQueryEngine', () => {
     db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
     for (let i = 0; i < 10; i++) db.execute(`INSERT INTO t VALUES (${i}, ${i})`);
 
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
     const ast = {
       type: 'SELECT',
       columns: [{ name: '*' }],
@@ -85,7 +85,7 @@ describe('CompiledQueryEngine', () => {
 
   it('compiles hash join between two tables', () => {
     const db = setupDB(100);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const ast = {
       type: 'SELECT',
@@ -117,7 +117,7 @@ describe('CompiledQueryEngine', () => {
     for (let i = 0; i < 100; i++) db.execute(`INSERT INTO a VALUES (${i}, 'v${i}')`);
     for (let i = 0; i < 200; i++) db.execute(`INSERT INTO b VALUES (${i}, ${i % 100}, 'd${i}')`);
 
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
     const ast = {
       type: 'SELECT',
       columns: [{ name: '*' }],
@@ -140,7 +140,7 @@ describe('CompiledQueryEngine', () => {
 
   it('compiled merge join produces correct results', () => {
     const db = setupDB(100);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     // Force merge join by directly testing the method
     const leftRows = [];
@@ -154,7 +154,7 @@ describe('CompiledQueryEngine', () => {
 
   it('compiled nested loop join produces correct results', () => {
     const db = new Database();
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const leftRows = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
     const rightRows = [{ a_id: 1, val: 'x' }, { a_id: 1, val: 'y' }, { a_id: 2, val: 'z' }];
@@ -172,7 +172,7 @@ describe('CompiledQueryEngine', () => {
 
   it('LEFT JOIN preserves unmatched rows', () => {
     const db = new Database();
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const leftRows = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }, { id: 3, name: 'Charlie' }];
     const rightRows = [{ a_id: 1, val: 'x' }];
@@ -186,7 +186,7 @@ describe('CompiledQueryEngine', () => {
 
   it('LEFT JOIN via merge join preserves unmatched', () => {
     const db = new Database();
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const leftRows = [{ id: 1, name: 'A' }, { id: 2, name: 'B' }, { id: 3, name: 'C' }];
     const rightRows = [{ a_id: 2, val: 'matched' }];
@@ -200,7 +200,7 @@ describe('CompiledQueryEngine', () => {
 
   it('EXPLAIN COMPILED shows plan', () => {
     const db = setupDB(100);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const ast = {
       type: 'SELECT',
@@ -220,7 +220,7 @@ describe('CompiledQueryEngine', () => {
 
   it('tracks compilation stats', () => {
     const db = setupDB(200);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     // Compile a query
     engine.executeSelect({
@@ -246,7 +246,7 @@ describe('CompiledQueryEngine', () => {
 
   it('three-table join works', () => {
     const db = setupDB(100);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const ast = {
       type: 'SELECT',
@@ -284,7 +284,7 @@ describe('CompiledQueryEngine', () => {
 
   it('compiled query matches Volcano results for filter', () => {
     const db = setupDB(200);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     // Compiled execution
     const ast = {
@@ -315,7 +315,7 @@ describe('CompiledQueryEngine', () => {
     for (let i = 0; i < 100; i++) db.execute(`INSERT INTO a VALUES (${i}, ${i * 10})`);
     for (let i = 0; i < 200; i++) db.execute(`INSERT INTO b VALUES (${i}, ${i % 100}, ${i})`);
 
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     // Standard execution
     const standard = db.execute('SELECT a.val, b.data FROM a JOIN b ON a.id = b.a_id');
@@ -343,7 +343,7 @@ describe('CompiledQueryEngine', () => {
 
   it('AND filter compiles correctly', () => {
     const db = setupDB(200);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const ast = {
       type: 'SELECT',
@@ -372,7 +372,7 @@ describe('CompiledQueryEngine', () => {
 
   it('cross join works', () => {
     const db = new Database();
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     const leftRows = [{ id: 1 }, { id: 2 }];
     const rightRows = [{ val: 'a' }, { val: 'b' }, { val: 'c' }];
@@ -383,7 +383,7 @@ describe('CompiledQueryEngine', () => {
 
   it('benchmark: compiled vs standard on 1000-row join', () => {
     const db = setupDB(500);
-    const engine = new CompiledQueryEngine(db);
+    const engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
 
     // Compile
     const ast = {

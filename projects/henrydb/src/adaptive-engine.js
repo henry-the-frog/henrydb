@@ -16,12 +16,13 @@ import { CompiledQueryEngine } from './compiled-query.js';
  * AdaptiveQueryEngine — picks the best execution strategy per query.
  */
 export class AdaptiveQueryEngine {
-  constructor(database) {
+  constructor(database, { compileThreshold = 5000 } = {}) {
     this.db = database;
     this.planner = new QueryPlanner(database);
     this.vectorized = new VectorizedCodeGen(database);
     this.codegen = new QueryCodeGen(database);
-    this.compiled = new CompiledQueryEngine(database);
+    this.compiled = new CompiledQueryEngine(database, { compileThreshold });
+    this._compileThreshold = compileThreshold;
     
     this.stats = {
       total: 0,
@@ -179,9 +180,10 @@ export class AdaptiveQueryEngine {
       return 'volcano';
     }
 
-    // Tiny tables: not worth compiling
-    if (rowCount < 50) {
-      analysis.reason = `small table (${rowCount} rows) → volcano`;
+    // Tiny tables: not worth compiling. Benchmarking (Apr 21) showed compiled
+    // engine is 3x slower than interpreter at 1K rows.
+    if (rowCount < this._compileThreshold) {
+      analysis.reason = `small table (${rowCount} rows, threshold ${this._compileThreshold}) → volcano`;
       return 'volcano';
     }
 

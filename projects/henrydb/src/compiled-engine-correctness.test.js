@@ -13,7 +13,7 @@ describe('Compiled Engine Expression Correctness', () => {
     for (let i = 0; i < 100; i++) {
       db.execute(`INSERT INTO t VALUES (${i}, ${i * 10}, 'name${i}')`);
     }
-    engine = new CompiledQueryEngine(db);
+    engine = new CompiledQueryEngine(db, { compileThreshold: 50 });
   });
 
   it('BETWEEN filter works in compiled engine', () => {

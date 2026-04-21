@@ -11,9 +11,10 @@ import { SeqScan, Filter, Project, Limit, HashJoin, Sort, HashAggregate } from '
  * Bridges the planner's strategic decisions with the pipeline compiler's codegen.
  */
 export class CompiledQueryEngine {
-  constructor(database) {
+  constructor(database, { compileThreshold = 5000 } = {}) {
     this.db = database;
     this.planner = new QueryPlanner(database);
+    this._compileThreshold = compileThreshold;
     this.stats = { queriesCompiled: 0, queriesInterpreted: 0, totalCompileTimeMs: 0 };
   }
 
@@ -40,7 +41,11 @@ export class CompiledQueryEngine {
     // Compile if: table has enough rows (overhead worthwhile) and no subqueries
     const tableStats = this.planner.getStats(ast.from?.table);
     const tableRows = tableStats?.rowCount || 0;
-    const shouldCompile = tableRows >= 50 && !ast.where?.subquery;
+    // Only compile queries on tables with enough rows to justify the overhead.
+    // Benchmarking (Apr 21): compiled engine 3x slower than interpreter at 1K rows.
+    // Crossover point is ~5K rows where compilation overhead is amortized.
+    const threshold = this._compileThreshold ?? 5000;
+    const shouldCompile = tableRows >= threshold && !ast.where?.subquery;
     
     if (!shouldCompile) {
       this.stats.queriesInterpreted++;

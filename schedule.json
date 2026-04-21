@@ -574,6 +574,36 @@
       "completed": "2026-04-21T16:01:04.131Z",
       "duration_ms": 120000,
       "summary": "855 test files, 126K lines of test code. SQL fuzzer (74 tests, 20K+ queries): pass. SQL standard conformance (48): pass. Vacuum depth (19): pass. Test infrastructure is remarkably comprehensive."
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate HenryDB's autograd module in neural-net — can it do gradient-based optimization on SQL queries?",
+      "project": "neural-net",
+      "started": "2026-04-21T16:01:43.860Z",
+      "completed": "2026-04-21T16:02:25.652Z",
+      "duration_ms": 60000,
+      "summary": "Autograd engine works perfectly: f(x,y)=x²+3xy+y² gives correct gradients (13,12). Sigmoid gradient exact (0.25). Tape-based reverse-mode AD with topological sort. Not practical for SQL optimization but solid for ML research."
+    },
+    {
+      "id": "T54",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate HenryDB's compiled query engine in more depth — what queries trigger compilation, how fast is it?",
+      "project": "henrydb",
+      "started": "2026-04-21T16:02:47.239Z",
+      "completed": "2026-04-21T16:03:53.197Z",
+      "duration_ms": 120000,
+      "summary": "Compiled engine is 3x slower than interpreter for 1K rows (compilation overhead dominates). Benefits only at >50K rows. Adaptive engine switching is the correct approach. Current threshold of 50 rows is too low — should be higher."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Adjust compiled engine threshold from 50 rows to 5000 based on benchmarking",
+      "project": "henrydb",
+      "started": "2026-04-21T16:04:08.039Z"
     }
   ],
   "focusProjects": [
@@ -817,6 +847,18 @@
     {
       "time": "2026-04-21T15:59:53.630Z",
       "msg": "Added T52 (EXPLORE) after end: Read through HenryDB's most complex test suite — what patterns emerge, what's missing?"
+    },
+    {
+      "time": "2026-04-21T16:01:35.763Z",
+      "msg": "Added T53 (EXPLORE) after end: Investigate HenryDB's autograd module in neural-net — can it do gradient-based optimization on SQL queries?"
+    },
+    {
+      "time": "2026-04-21T16:02:41.491Z",
+      "msg": "Added T54 (EXPLORE) after end: Investigate HenryDB's compiled query engine in more depth — what queries trigger compilation, how fast is it?"
+    },
+    {
+      "time": "2026-04-21T16:04:01.537Z",
+      "msg": "Added T55 (BUILD) after end: Adjust compiled engine threshold from 50 rows to 5000 based on benchmarking"
     }
   ]
 }
