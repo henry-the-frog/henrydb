@@ -2,7 +2,7 @@
 // Bridges the SQL parser to the volcano execution engine
 
 import {
-  SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
+  Iterator, SeqScan, ValuesIter, Filter, Project, Limit, Distinct, Union,
   NestedLoopJoin, HashJoin, MergeJoin, Sort, HashAggregate, IndexNestedLoopJoin,
   CTE, RecursiveCTE,
 } from './volcano.js';
@@ -22,6 +22,112 @@ export function explainPlan(ast, tables, indexCatalog) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog) {
+  // Handle UNION/INTERSECT/EXCEPT at the top level
+  if (ast.type === 'UNION') {
+    const leftPlan = buildPlan(ast.left, tables, indexCatalog);
+    const rightPlan = buildPlan(ast.right, tables, indexCatalog);
+    let iter = new Union(leftPlan, rightPlan);
+    if (!ast.all) {
+      // For UNION dedup, normalize rows first (strip qualified names + internals)
+      iter = wrapNormalizeForSetOp(iter, tables, ast.left);
+      iter = new Distinct(iter);
+    }
+    // ORDER BY on combined result
+    if (ast.orderBy && ast.orderBy.length > 0) {
+      const orderSpec = ast.orderBy.map(o => ({
+        column: o.column,
+        desc: o.direction === 'DESC',
+      }));
+      iter = new Sort(iter, orderSpec);
+    }
+    // LIMIT/OFFSET
+    if (ast.limit != null || ast.offset != null) {
+      iter = new Limit(iter, ast.limit, ast.offset || 0);
+    }
+    return iter;
+  }
+  
+  if (ast.type === 'INTERSECT') {
+    const leftPlan = buildPlan(ast.left, tables, indexCatalog);
+    const rightPlan = buildPlan(ast.right, tables, indexCatalog);
+    
+    const leftRows = materialize(leftPlan);
+    const rightRows = materialize(rightPlan);
+    const leftNorm = leftRows.map(normalizeSetRow);
+    const rightNorm = rightRows.map(normalizeSetRow);
+    
+    if (ast.all) {
+      const rightCounts = new Map();
+      for (const r of rightNorm) {
+        const key = JSON.stringify(r);
+        rightCounts.set(key, (rightCounts.get(key) || 0) + 1);
+      }
+      const result = [];
+      for (let i = 0; i < leftNorm.length; i++) {
+        const key = JSON.stringify(leftNorm[i]);
+        const count = rightCounts.get(key) || 0;
+        if (count > 0) {
+          result.push(leftNorm[i]);
+          rightCounts.set(key, count - 1);
+        }
+      }
+      return new ValuesIter(result);
+    }
+    
+    const rightKeys = new Set(rightNorm.map(r => JSON.stringify(r)));
+    const seen = new Set();
+    const result = [];
+    for (const r of leftNorm) {
+      const key = JSON.stringify(r);
+      if (rightKeys.has(key) && !seen.has(key)) {
+        seen.add(key);
+        result.push(r);
+      }
+    }
+    return new ValuesIter(result);
+  }
+  
+  if (ast.type === 'EXCEPT') {
+    const leftPlan = buildPlan(ast.left, tables, indexCatalog);
+    const rightPlan = buildPlan(ast.right, tables, indexCatalog);
+    
+    const leftRows = materialize(leftPlan);
+    const rightRows = materialize(rightPlan);
+    const leftNorm = leftRows.map(normalizeSetRow);
+    const rightNorm = rightRows.map(normalizeSetRow);
+    
+    if (ast.all) {
+      const rightCounts = new Map();
+      for (const r of rightNorm) {
+        const key = JSON.stringify(r);
+        rightCounts.set(key, (rightCounts.get(key) || 0) + 1);
+      }
+      const result = [];
+      for (const r of leftNorm) {
+        const key = JSON.stringify(r);
+        const count = rightCounts.get(key) || 0;
+        if (count > 0) {
+          rightCounts.set(key, count - 1);
+        } else {
+          result.push(r);
+        }
+      }
+      return new ValuesIter(result);
+    }
+    
+    const rightKeys = new Set(rightNorm.map(r => JSON.stringify(r)));
+    const seen = new Set();
+    const result = [];
+    for (const r of leftNorm) {
+      const key = JSON.stringify(r);
+      if (!rightKeys.has(key) && !seen.has(key)) {
+        seen.add(key);
+        result.push(r);
+      }
+    }
+    return new ValuesIter(result);
+  }
+
   // 0. Handle CTEs — materialize subqueries and add as virtual tables
   let effectiveTables = tables;
   if (ast.ctes && ast.ctes.length > 0) {
@@ -244,6 +350,56 @@ export function buildPlan(ast, tables, indexCatalog) {
 }
 
 // --- Helpers ---
+
+/**
+ * Normalize a row for set operations: strip qualified names (x.col),
+ * internal fields (_pageId, _slotIdx), and keep only unqualified columns.
+ */
+function normalizeSetRow(row) {
+  const result = {};
+  for (const [k, v] of Object.entries(row)) {
+    if (k.startsWith('_') || k.includes('.')) continue;
+    result[k] = v;
+  }
+  return result;
+}
+
+/**
+ * Materialize an iterator into an array of rows.
+ */
+function materialize(iter) {
+  iter.open();
+  const rows = [];
+  let row;
+  while ((row = iter.next()) !== null) rows.push(row);
+  iter.close();
+  return rows;
+}
+
+/**
+ * Wrap a Union iterator to normalize rows for UNION dedup.
+ * Returns a new iterator that strips qualified/internal columns.
+ */
+function wrapNormalizeForSetOp(iter, tables, leftAst) {
+  return new NormalizeIterator(iter);
+}
+
+class NormalizeIterator extends Iterator {
+  constructor(child) {
+    super();
+    this._child = child;
+  }
+  open() { this._child.open(); }
+  next() {
+    const row = this._child.next();
+    if (row === null) return null;
+    return normalizeSetRow(row);
+  }
+  close() { this._child.close(); }
+  describe() {
+    return { type: 'Normalize', children: [this._child], details: {} };
+  }
+}
 
 /**
  * Check if an iterator is already sorted on a given column.

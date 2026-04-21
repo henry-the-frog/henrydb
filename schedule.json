@@ -231,8 +231,51 @@
     {
       "id": "T21",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit, push, test sweep",
+      "started": "2026-04-21T23:55:05.785Z",
+      "completed": "2026-04-21T23:55:10.933Z",
+      "duration_ms": 30000,
+      "summary": "Pushed to GitHub. All clear."
+    },
+    {
+      "id": "T23",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Volcano Union wiring assessment: what does the planner need to handle UNION queries through the Volcano engine? Check how UNION ASTs flow through execute_ast.",
+      "started": "2026-04-21T23:55:46.107Z",
+      "completed": "2026-04-21T23:56:13.091Z",
+      "duration_ms": 60000,
+      "summary": "Union iterator exists in volcano.js (simple append). buildPlan only handles SELECT ASTs. To wire: (1) check ast.type === UNION at top of buildPlan, (2) recursively build left/right plans, (3) wrap in Union iterator, (4) add Distinct if not ast.all. Simple 20-line addition."
+    },
+    {
+      "id": "T24",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Wire Volcano Union operator in planner",
+      "task": null,
+      "started": "2026-04-21T23:56:17.646Z",
+      "completed": "2026-04-21T23:56:28.228Z",
+      "duration_ms": 30000,
+      "summary": "1 BUILD task: wire UNION/INTERSECT/EXCEPT in volcano-planner."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire Union in volcano-planner.js: handle UNION/UNION ALL/INTERSECT/EXCEPT AST types. Build left+right plans, wrap in Union+Distinct or compute set differences. Add tests for UNION/INTERSECT/EXCEPT through Volcano.",
+      "plan_ref": "T24",
+      "project": "henrydb",
+      "started": "2026-04-21T23:56:32.617Z",
+      "completed": "2026-04-21T23:58:47.557Z",
+      "duration_ms": 480000,
+      "summary": "Wired UNION/INTERSECT/EXCEPT in volcano-planner. UNION ALL uses Union iterator. UNION adds Distinct with NormalizeIterator to strip qualified/internal columns. INTERSECT/EXCEPT materialize and compare normalized rows. 13 new tests, 127 total volcano tests pass."
+    },
+    {
+      "id": "T26",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Commit, push, test sweep"
+      "task": "Commit Union wiring, push, verify"
     }
   ],
   "focusProjects": [
@@ -340,6 +383,26 @@
     {
       "time": "2026-04-21T23:50:40.906Z",
       "msg": "PLAN T19 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T23:55:34.839Z",
+      "msg": "Added T23 (THINK) after end: Volcano Union wiring assessment: what does the planner need to handle UNION queries through the Volcano engine? Check how UNION ASTs flow through execute_ast."
+    },
+    {
+      "time": "2026-04-21T23:55:40.900Z",
+      "msg": "Added T24 (PLAN) after T23: Wire Volcano Union operator in planner"
+    },
+    {
+      "time": "2026-04-21T23:55:41.018Z",
+      "msg": "Added T25 (BUILD) after T24: null"
+    },
+    {
+      "time": "2026-04-21T23:55:41.137Z",
+      "msg": "Added T26 (MAINTAIN) after T25: Commit Union wiring, push, verify"
+    },
+    {
+      "time": "2026-04-21T23:56:22.605Z",
+      "msg": "PLAN T24 filled 1 BUILD tasks"
     }
   ]
 }

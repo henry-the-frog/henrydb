@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T23:54:51.221Z",
+  "generated": "2026-04-21T23:58:47.593Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Extract EXPLAIN plan building from db.js to explain-builder.js (~150 LOC). Mixin pattern.",
-    "completedAt": "2026-04-21T23:54:51.221Z",
-    "taskId": "T22",
-    "summary": "Extracted expression evaluator from db.js to expression-evaluator.js (803 LOC). 7 methods: _collectAggregateExprs, _resolveColumn, _evalExpr, _evalValue, _evalFunction, _evalSubquery, _computeAggregates. db.js: 5839→5043 (-796). 289 tests pass across query/subquery/aggregate/expression/window/CTE/pg-catalog/compiled/MVCC/transactional/join suites. Pivoted from EXPLAIN extraction to expression evaluator for 5x bigger LOC reduction.",
-    "durationMs": 600000
+    "task": "Wire Union in volcano-planner.js: handle UNION/UNION ALL/INTERSECT/EXCEPT AST types. Build left+right plans, wrap in Union+Distinct or compute set differences. Add tests for UNION/INTERSECT/EXCEPT through Volcano.",
+    "completedAt": "2026-04-21T23:58:47.593Z",
+    "taskId": "T25",
+    "summary": "Wired UNION/INTERSECT/EXCEPT in volcano-planner. UNION ALL uses Union iterator. UNION adds Distinct with NormalizeIterator to strip qualified/internal columns. INTERSECT/EXCEPT materialize and compare normalized rows. 13 new tests, 127 total volcano tests pass.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -210,42 +210,89 @@
       {
         "id": "T19",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "db.js extraction batch 3 — target sub-5000 LOC",
         "task": null,
-        "started": "2026-04-21T23:49:44.761Z"
+        "started": "2026-04-21T23:49:44.761Z",
+        "completed": "2026-04-21T23:50:45.391Z",
+        "duration_ms": 60000,
+        "summary": "Plan: 2 BUILD tasks — set operations (124 LOC) + EXPLAIN builder (150 LOC). Both are clean extractions with mixin pattern."
       },
       {
         "id": "T20",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Extract set operations (UNION/INTERSECT/EXCEPT) from db.js to set-operations.js (~124 LOC). Mixin pattern.",
         "plan_ref": "T19",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T23:50:52.929Z",
+        "completed": "2026-04-21T23:51:51.121Z",
+        "duration_ms": 240000,
+        "summary": "Extracted UNION/INTERSECT/EXCEPT to set-operations.js (130 LOC). Mixin pattern. db.js: 5960→5839 (-121). 25 set operation tests pass."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Extract EXPLAIN plan building from db.js to explain-builder.js (~150 LOC). Mixin pattern.",
-        "status": "upcoming",
-        "plan_ref": "T19"
+        "status": "done",
+        "plan_ref": "T19",
+        "started": "2026-04-21T23:52:02.888Z",
+        "completed": "2026-04-21T23:54:51.185Z",
+        "duration_ms": 600000,
+        "summary": "Extracted expression evaluator from db.js to expression-evaluator.js (803 LOC). 7 methods: _collectAggregateExprs, _resolveColumn, _evalExpr, _evalValue, _evalFunction, _evalSubquery, _computeAggregates. db.js: 5839→5043 (-796). 289 tests pass across query/subquery/aggregate/expression/window/CTE/pg-catalog/compiled/MVCC/transactional/join suites. Pivoted from EXPLAIN extraction to expression evaluator for 5x bigger LOC reduction."
       },
       {
         "id": "T21",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Commit, push, test sweep",
+        "started": "2026-04-21T23:55:05.785Z",
+        "completed": "2026-04-21T23:55:10.933Z",
+        "duration_ms": 30000,
+        "summary": "Pushed to GitHub. All clear."
+      },
+      {
+        "id": "T23",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Volcano Union wiring assessment: what does the planner need to handle UNION queries through the Volcano engine? Check how UNION ASTs flow through execute_ast.",
+        "started": "2026-04-21T23:55:46.107Z",
+        "completed": "2026-04-21T23:56:13.091Z",
+        "duration_ms": 60000,
+        "summary": "Union iterator exists in volcano.js (simple append). buildPlan only handles SELECT ASTs. To wire: (1) check ast.type === UNION at top of buildPlan, (2) recursively build left/right plans, (3) wrap in Union iterator, (4) add Distinct if not ast.all. Simple 20-line addition."
+      },
+      {
+        "id": "T24",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Wire Volcano Union operator in planner",
+        "task": null,
+        "started": "2026-04-21T23:56:17.646Z"
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Commit, push, test sweep"
+        "task": "Wire Union in volcano-planner.js: handle UNION/UNION ALL/INTERSECT/EXCEPT AST types. Build left+right plans, wrap in Union+Distinct or compute set differences. Add tests for UNION/INTERSECT/EXCEPT through Volcano.",
+        "plan_ref": "T24",
+        "project": "henrydb"
+      },
+      {
+        "id": "T26",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Commit Union wiring, push, verify"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 21,
-    "blocksTotal": 22,
+    "blocksCompleted": 25,
+    "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 4,
-      "PLAN": 5,
-      "BUILD": 8,
-      "MAINTAIN": 4
+      "THINK": 5,
+      "PLAN": 6,
+      "BUILD": 9,
+      "MAINTAIN": 5
     }
   }
 }
