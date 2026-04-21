@@ -4,29 +4,53 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday: 60 BUILD ceiling hit, MVCC lost update P0 found, 260 neural-net tests added. Set direction."
+      "status": "done",
+      "task": "Review yesterday: 60 BUILD ceiling hit, MVCC lost update P0 found, 260 neural-net tests added. Set direction.",
+      "started": "2026-04-21T14:15:26.182Z",
+      "completed": "2026-04-21T14:17:16.874Z",
+      "duration_ms": 120000,
+      "summary": "Reviewed Apr 20: MVCC lost update P0 already fixed (13/13 tests pass). Redirected T2 PLAN to multi-version heap visibility bug. Neural-net has 2 failures (MoE serialization, training robustness). Queue validated."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix MVCC lost update bug (P0) — _update/_delete index-scan invisible row fallback",
-      "task": null
+      "task": null,
+      "started": "2026-04-21T14:17:30.708Z",
+      "completed": "2026-04-21T14:18:21.060Z",
+      "duration_ms": 90000,
+      "summary": "Planned MVCC multi-version fix: logical rowId tracking in version maps + scan dedup. 2 BUILD tasks."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add logical rowId to version maps + scan dedup in transactional-db.js",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T14:18:27.208Z",
+      "completed": "2026-04-21T14:32:55.605Z",
+      "duration_ms": 600000,
+      "summary": "Fixed MVCC multi-version heap visibility: PK-based scan dedup (keeps newest visible version per PK), PK-level write-write conflict detection in delete interceptor, index scan MVCC fallback. 90/90 MVCC tests pass, 0 skipped."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Unskip mvcc-adversarial-stress test, verify multi-version visibility fix",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-21T14:33:11.970Z",
+      "completed": "2026-04-21T14:33:12.155Z",
+      "duration_ms": 5000,
+      "summary": "Already completed as part of T3 — test unskipped and passes."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit MVCC fix, push, check dashboard"
+      "status": "in-progress",
+      "task": "Commit MVCC fix, push, check dashboard",
+      "started": "2026-04-21T14:33:20.591Z"
     },
     {
       "id": "T5",
@@ -238,6 +262,14 @@
     {
       "time": "2026-04-21T14:01:50.398Z",
       "msg": "Added T21 (EXPLORE) after T20: Read LuaJIT allocation sinking paper or database engine design patterns"
+    },
+    {
+      "time": "2026-04-21T14:16:48.206Z",
+      "msg": "Moved T2 after T1"
+    },
+    {
+      "time": "2026-04-21T14:18:16.454Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }

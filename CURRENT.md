@@ -1,11 +1,11 @@
 # CURRENT.md — Session Status
 
-## Status: upcoming
+## Status: in-progress
 ## Session: 2026-04-21 Session A (8:15 AM - 2:15 PM MDT)
 ## Project: henrydb + neural-net
-## Started: pending
+## Started: 2026-04-21T14:15:26Z
 
-### First Task
+### Current Task
 - T1 THINK: Review yesterday — 60 BUILD ceiling hit, MVCC lost update P0 found, 260 neural-net tests. Set direction.
 
 ### Context Files
