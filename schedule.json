@@ -91,36 +91,87 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit neural-net fix, push, dashboard health check",
-      "started": "2026-04-21T14:37:52.464Z"
+      "started": "2026-04-21T14:37:52.464Z",
+      "completed": "2026-04-21T14:38:06.557Z",
+      "duration_ms": 30000,
+      "summary": "Neural-net fix pushed. 536/536 tests green. HenryDB fix pushed earlier."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review HenryDB TODO items — prioritize compiled engine vs WAL truncation vs MVCC multi-version"
+      "status": "done",
+      "task": "Review HenryDB TODO items — prioritize compiled engine vs WAL truncation vs MVCC multi-version",
+      "started": "2026-04-21T14:38:13.876Z",
+      "completed": "2026-04-21T14:38:31.642Z",
+      "duration_ms": 30000,
+      "summary": "Reprioritized: division truncation (CRITICAL) and hash join dead code (CRITICAL) promoted above compiled engine and WAL truncation. MVCC multi-version already fixed."
+    },
+    {
+      "id": "T23",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix division truncation: 10.0/3=3 instead of 3.33 — NUMBER token needs isFloat tag",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T14:38:51.859Z",
+      "completed": "2026-04-21T14:43:23.400Z",
+      "duration_ms": 300000,
+      "summary": "Planned and fixed division truncation. DECIMAL/REAL/FLOAT columns now use float division. INT/INT still truncates per SQL standard."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Already fixed: type-aware division in _evalValue + _isFloatColumnRef helper",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-21T14:43:32.974Z",
+      "completed": "2026-04-21T14:43:33.116Z",
+      "duration_ms": 5000,
+      "summary": "Already completed during PLAN phase. Division fix committed with 7 tests."
+    },
+    {
+      "id": "T25",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix hash join dead code: planner generates hash joins but executor always uses nested loop",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T14:44:09.772Z",
+      "completed": "2026-04-21T14:45:31.985Z",
+      "duration_ms": 120000,
+      "summary": "Hash join is already wired: _executeJoin uses cost-based method selection. 1K×1K join runs in 8.9ms (hash join speed). The claim was outdated — hash join was integrated in the INNER/LEFT path with _hashJoin, _mergeJoin, and index NL fallbacks."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB compiled query engine silent-null correctness bug",
-      "task": null
+      "task": null,
+      "started": "2026-04-21T14:45:45.142Z",
+      "completed": "2026-04-21T14:46:16.821Z",
+      "duration_ms": 120000,
+      "summary": "Analyzed compiled engine: _compileExpr returns null for unknown types, silently skipping filters. AND also drops conditions. Plan: throw on unknown, add BETWEEN/IS NULL/IN, fix AND/OR."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix _compileExpr: throw on unknown types, add BETWEEN/IS NULL/IN support, fix AND/OR null propagation",
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T14:46:27.236Z",
+      "completed": "2026-04-21T14:52:08.363Z",
+      "duration_ms": 300000,
+      "summary": "Fixed compiled engine silent-null: added BETWEEN/IS NULL/IN/LIKE support, AND no longer drops conditions, proper error-catching fallback. 45/45 compiled+adaptive tests pass. 7 new correctness tests."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, push, PR triage, email check"
+      "status": "in-progress",
+      "task": "Commit, push, PR triage, email check",
+      "started": "2026-04-21T14:52:26.867Z"
     },
     {
       "id": "T13",
@@ -290,6 +341,30 @@
     {
       "time": "2026-04-21T14:37:19.277Z",
       "msg": "PLAN T6 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T14:38:35.163Z",
+      "msg": "Added T23 (PLAN) after end: Fix division truncation: 10.0/3=3 instead of 3.33 — NUMBER token needs isFloat tag"
+    },
+    {
+      "time": "2026-04-21T14:38:40.401Z",
+      "msg": "Moved T23 after T9"
+    },
+    {
+      "time": "2026-04-21T14:43:15.834Z",
+      "msg": "PLAN T23 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T14:43:59.261Z",
+      "msg": "Added T25 (PLAN) after end: Fix hash join dead code: planner generates hash joins but executor always uses nested loop"
+    },
+    {
+      "time": "2026-04-21T14:44:02.791Z",
+      "msg": "Moved T25 after T24"
+    },
+    {
+      "time": "2026-04-21T14:46:10.905Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
     }
   ]
 }
