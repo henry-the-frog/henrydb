@@ -757,9 +757,23 @@
       "id": "T69",
       "mode": "BUILD",
       "task": "Extract _update and _delete (352 LOC) into dml-mutate.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T65",
-      "started": "2026-04-21T16:38:45.625Z"
+      "started": "2026-04-21T16:38:45.625Z",
+      "completed": "2026-04-21T16:40:02.364Z",
+      "duration_ms": 300000,
+      "summary": "Extracted dml-mutate.js: _update (207 LOC), _delete (145 LOC). db.js now 7690 LOC (-350, cumulative -2198 = 22% reduction). All DML operations verified."
+    },
+    {
+      "id": "T70",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Comprehensive test sweep of all extracted modules — verify no regressions",
+      "project": "henrydb",
+      "started": "2026-04-21T16:40:43.169Z",
+      "completed": "2026-04-21T16:41:11.675Z",
+      "duration_ms": 180000,
+      "summary": "Comprehensive test sweep: 807 tests across all touched areas (select, insert, update, join, aggregate, function, window, CTE, subquery, MVCC, compiled, volcano, vacuum, stress). 0 failures. Clean."
     }
   ],
   "focusProjects": [
@@ -1063,6 +1077,10 @@
     {
       "time": "2026-04-21T16:37:17.196Z",
       "msg": "PLAN T65 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T16:40:38.411Z",
+      "msg": "Added T70 (MAINTAIN) after end: Comprehensive test sweep of all extracted modules — verify no regressions"
     }
   ]
 }
