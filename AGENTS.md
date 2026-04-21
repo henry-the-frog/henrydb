@@ -96,6 +96,14 @@ No session may execute more than 20 BUILD tasks before a mandatory depth pivot. 
 ### Daily BUILD Ceiling (hard gate)
 No more than 60 BUILD tasks per day across ALL sessions. After 60, remaining sessions must be EXPLORE/THINK/MAINTAIN only. The per-burst cap (20) catches within-session momentum; this catches across-session accumulation. Apr 19 produced 248 tasks — the burst cap alone is insufficient for multi-session days. Track the count in daily logs. If you hit 60 before evening, the evening is for depth, not features.
 
+### EXPLORE/BUILD Distinction (hard definition)
+If a task produces new source files, new test files, or net-new functionality, it's **BUILD** — regardless of label. The test: "Did this task increase the codebase size?" If yes → BUILD. This applies to all caps and gates.
+- **EXPLORE** = reading code, running existing tests, investigating behavior, writing scratch notes, researching papers/docs.
+- **THINK** = design docs, architecture analysis, tradeoff evaluation, writing reflections.
+- **MAINTAIN** = refactoring without new functionality, fixing existing tests, cleanup, documentation.
+
+Relabeling a feature-building sprint as EXPLORE to dodge the BUILD cap is the failure mode this prevents. Observed Apr 20: 28 new source files labeled EXPLORE bypassed the evening gate and daily ceiling.
+
 ### Blog Cap
 Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
 

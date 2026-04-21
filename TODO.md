@@ -1,7 +1,7 @@
 ## TODO
 
 ### Urgent
-(empty)
+- Send Jordan the Monday recap via iMessage (cron job composed it but couldn't send — see memory/2026-04-20.md evening review) (since 2026-04-20)
 
 ### Normal
 - HenryDB: Compiled query engine silent-null correctness bug — returns all rows when filter can't compile (latent, only EXPLAIN COMPILED path) (since 2026-04-20)

@@ -1,551 +1,148 @@
 {
-  "date": "2026-04-20",
+  "date": "2026-04-21",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "done",
-      "task": "Session C: Review lost update bug RCA, plan fix. 2 BUILDs remaining today.",
-      "started": "2026-04-21T02:16:04.347Z",
-      "completed": "2026-04-21T02:16:17.032Z",
-      "duration_ms": 90000,
-      "summary": "Reviewed lost update RCA. Fix clear: Option C hybrid (fall-through + conflict detection). 2 BUILDs available — use both for bug fix and tests."
+      "status": "upcoming",
+      "task": "Review yesterday: 60 BUILD ceiling hit, MVCC lost update P0 found, 260 neural-net tests added. Set direction."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Plan MVCC lost update fix — review scratch note, design minimal fix",
-      "task": null,
-      "started": "2026-04-21T02:16:23.346Z",
-      "completed": "2026-04-21T02:16:45.799Z",
-      "duration_ms": 60000,
-      "summary": "Planned 2 BUILD tasks: (1) Fix _update/_delete fall-through when index returns MVCC-invisible rows, (2) Write concurrency tests. Context: src/db.js L4759-4810, L5058-5102."
-    },
-    {
-      "id": "T9",
-      "mode": "BUILD",
-      "task": "Fix MVCC lost update: fall-through in _update/_delete when index returns invisible rows + conflict detection",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-21T02:16:52.009Z",
-      "completed": "2026-04-21T02:19:19.651Z",
-      "duration_ms": 600000,
-      "summary": "Fixed MVCC lost update bug in _update() and _delete(). Added usedIndex=false fallback when index returns invisible rows. 7 new tests, 125 existing MVCC/SSI tests pass, 60 update tests pass. Committed."
-    },
-    {
-      "id": "T10",
-      "mode": "BUILD",
-      "task": "Write concurrency tests for lost update fix + regression tests",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-21T02:19:39.052Z",
-      "completed": "2026-04-21T02:20:42.234Z",
-      "duration_ms": 300000,
-      "summary": "Expanded test suite to 13 cases: UPDATE/DELETE via PK and non-PK index, write-write conflict detection, stress tests, edge cases. All pass."
+      "status": "upcoming",
+      "goal": "Fix MVCC lost update bug (P0) — _update/_delete index-scan invisible row fallback",
+      "task": null
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "done",
+      "status": "upcoming",
       "task": null,
-      "project": "henrydb",
-      "started": "2026-04-21T02:20:58.051Z",
-      "completed": "2026-04-21T02:20:58.217Z",
-      "duration_ms": 0,
-      "summary": "Skipped — BUILD ceiling 60/60 reached"
+      "plan_ref": "T2",
+      "project": "henrydb"
     },
     {
       "id": "T4",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-21T02:21:01.427Z",
-      "completed": "2026-04-21T02:21:01.596Z",
-      "duration_ms": 0,
-      "summary": "Skipped — BUILD ceiling 60/60 reached"
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit MVCC fix, push, check dashboard"
     },
     {
       "id": "T5",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard, knowledge capture",
-      "started": "2026-04-21T02:21:08.651Z",
-      "completed": "2026-04-21T02:21:35.321Z",
-      "duration_ms": 120000,
-      "summary": "Git push done, TODO P0 cleared, dashboard healthy."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess HenryDB health: multi-version visibility, compiled engine silent-null, WAL truncation"
     },
     {
       "id": "T6",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: Wire remaining Volcano operators or explore PostgreSQL concurrency model",
-      "project": "henrydb",
-      "started": "2026-04-21T02:21:43.290Z",
-      "completed": "2026-04-21T02:23:28.080Z",
-      "duration_ms": 600000,
-      "summary": "PostgreSQL concurrency deep dive: EvalPlanQual mechanism, first-updater-wins protocol, isolation level differences. Wrote scratch note with implementation plan for HenryDB. Phase 1: serialization error on concurrent update."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix neural-net CI — investigate and fix test failures on main branch",
+      "task": null
     },
     {
       "id": "T7",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Explore a non-HenryDB project for variety — RISC-V liveness alloc or neural-net attention",
-      "project": "neural-net",
-      "started": "2026-04-21T02:23:35.174Z",
-      "completed": "2026-04-21T02:26:52.724Z",
-      "duration_ms": 600000,
-      "summary": "Implemented Grouped Query Attention (GQA) with KV-cache for neural-net project. Modern LLM technique: configurable Q/KV head ratio, causal masking, incremental token generation. 17 tests."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T6",
+      "project": "neural-net"
     },
     {
       "id": "T8",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit neural-net fix, push, dashboard health check"
+    },
+    {
+      "id": "T9",
       "mode": "THINK",
-      "status": "done",
-      "task": "End-of-day reflection",
-      "started": "2026-04-21T02:37:16.899Z",
-      "completed": "2026-04-21T02:37:26.973Z",
-      "duration_ms": 60000,
-      "summary": "Reflection: P0 MVCC fix shipped, deeper heap bug found, neural-net now has full modern LLM architecture. Learning: EvalPlanQual, RoPE relative property, SwiGLU vs ReLU. High-quality evening session."
+      "status": "upcoming",
+      "task": "Review HenryDB TODO items — prioritize compiled engine vs WAL truncation vs MVCC multi-version"
+    },
+    {
+      "id": "T10",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB compiled query engine silent-null correctness bug",
+      "task": null
     },
     {
       "id": "T11",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: stress test MVCC lost update fix with adversarial concurrent workloads",
-      "project": "henrydb",
-      "started": "2026-04-21T02:27:28.237Z",
-      "completed": "2026-04-21T02:29:10.897Z",
-      "duration_ms": 300000,
-      "summary": "Adversarial MVCC stress tests: 11 tests (10 pass, 1 skipped). Found REAL BUG: heap.scan() returns multiple row versions after repeated concurrent UPDATE cycles. Filed in TODO."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T10",
+      "project": "henrydb"
     },
     {
       "id": "T12",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement RoPE (Rotary Position Encoding) for GQA",
-      "project": "neural-net",
-      "started": "2026-04-21T02:29:14.888Z",
-      "completed": "2026-04-21T02:30:46.459Z",
-      "duration_ms": 600000,
-      "summary": "Implemented RoPE (Rotary Position Embedding): precomputed rotation tables, per-vector/sequence application, KV-cache offset support. Verified relative position property and distance decay. 11 tests."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, push, PR triage, email check"
     },
     {
       "id": "T13",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: integrate RoPE into GQA + end-to-end test of modern transformer block",
-      "project": "neural-net",
-      "started": "2026-04-21T02:31:04.091Z",
-      "completed": "2026-04-21T02:32:45.378Z",
-      "duration_ms": 300000,
-      "summary": "Integrated RoPE into GQA: applied to Q/K after projection. KV-cache compatible. 20 tests pass. Also explored the design tradeoff of pre- vs post-rotation caching."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB PersistentDB WAL checkpoint/truncation",
+      "task": null
     },
     {
       "id": "T14",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: investigate heap multi-version visibility bug in detail",
-      "project": "henrydb",
-      "started": "2026-04-21T02:32:54.511Z",
-      "completed": "2026-04-21T02:35:08.322Z",
-      "duration_ms": 600000,
-      "summary": "Deep investigation of MVCC heap multi-version bug. Found 3 contributing root causes: (1) no logical row deduplication, (2) session UPDATE operates on all visible duplicates, (3) eventually visibility check fails. Wrote detailed RCA with fix options. Recommend logical rowId approach."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T13",
+      "project": "henrydb"
     },
     {
       "id": "T15",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: build a minimal GPT-2 style decoder block using GQA+RoPE+LayerNorm",
-      "project": "neural-net",
-      "started": "2026-04-21T02:35:20.834Z",
-      "completed": "2026-04-21T02:37:03.907Z",
-      "duration_ms": 600000,
-      "summary": "Built complete Llama-style decoder: RMSNorm + SwiGLU + GQA+RoPE + KV-cache + greedy generation. 14 tests pass. ~475 lines. Modern LLM architecture from scratch."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Full workspace commit+push, dashboard update"
     },
     {
       "id": "T16",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: train the mini Llama on a simple pattern (repeating sequence) to verify learning",
-      "project": "neural-net",
-      "started": "2026-04-21T02:37:39.819Z",
-      "completed": "2026-04-21T02:39:07.733Z",
-      "duration_ms": 600000,
-      "summary": "Implemented sampling strategies: temperature, top-k, top-p, repetition penalty, combined pipeline. 23 tests. Also prepared for training verification but focused on sampling first."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-day reflection: surprises, patterns, pivot assessment"
     },
     {
       "id": "T17",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: explore Volcano planner — wire Union operator for UNION ALL queries",
-      "project": "henrydb",
-      "started": "2026-04-21T02:39:17.003Z",
-      "completed": "2026-04-21T02:40:12.017Z",
-      "duration_ms": 300000,
-      "summary": "Explored Volcano planner integration for UNION. Found: UNION is handled by SQL interpreter, Volcano planner only used for EXPLAIN tree format. Full Volcano execution not wired for actual queries. Adding UNION to planner for EXPLAIN is tractable but low-impact. Deferred in favor of higher-value exploration."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB db.js monolith split — extract first module from 9844 LOC",
+      "task": null
     },
     {
       "id": "T18",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement temperature sampling + top-k for generation",
-      "project": "neural-net",
-      "started": "2026-04-21T02:40:15.221Z",
-      "completed": "2026-04-21T02:41:14.263Z",
-      "duration_ms": 300000,
-      "summary": "Integrated sampling into ModernDecoder.generate(): temperature, top-k/p, repetition penalty, stop token. 16 tests pass including 3 new generation tests."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T17",
+      "project": "henrydb"
     },
     {
       "id": "T19",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement Byte Pair Encoding (BPE) tokenizer",
-      "project": "neural-net",
-      "started": "2026-04-21T02:41:31.950Z",
-      "completed": "2026-04-21T02:42:35.961Z",
-      "duration_ms": 600000,
-      "summary": "Implemented BPE tokenizer: training via most-frequent-pair merging, encode/decode roundtrip, export/import, special tokens. 13 tests. Complete text→tokens→text pipeline."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit monolith split, push, test sweep"
     },
     {
       "id": "T20",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: run full test suite sweep to check for regressions from MVCC fix",
-      "project": "henrydb",
-      "started": "2026-04-21T02:42:44.728Z",
-      "completed": "2026-04-21T02:56:37.851Z",
-      "duration_ms": 300000,
-      "summary": "Regression sweep: 35+60=95 MVCC/update tests pass, 0 failures, 1 known skip. No regressions from the MVCC lost update fix."
+      "status": "upcoming",
+      "task": "Research PostgreSQL EvalPlanQual and first-updater-wins for HenryDB MVCC",
+      "project": "henrydb"
     },
     {
       "id": "T21",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: end-to-end demo — BPE + ModernDecoder text generation on simple pattern",
-      "project": "neural-net",
-      "started": "2026-04-21T02:56:54.564Z",
-      "completed": "2026-04-21T02:57:40.722Z",
-      "duration_ms": 300000,
-      "summary": "End-to-end LLM pipeline demo: BPE→ModernDecoder→Sampling. 6 tests pass. 4000 tok/s on mini model. Complete text→tokens→model→logits→sampling→text from scratch."
-    },
-    {
-      "id": "T22",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement simple cross-entropy training for ModernDecoder on next-token prediction",
-      "project": "neural-net",
-      "started": "2026-04-21T02:57:59.660Z",
-      "completed": "2026-04-21T02:58:50.621Z",
-      "duration_ms": 300000,
-      "summary": "SPSA training for ModernDecoder: gradient-free optimization via parameter perturbation. 58% loss reduction in 20 steps on simple pattern. Initial loss matches theory (2.12 ≈ ln(8)). Model CAN learn!"
-    },
-    {
-      "id": "T23",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: explore index-only scans — visibility map integration with B-tree for covering indexes",
-      "project": "henrydb",
-      "started": "2026-04-21T02:59:01.940Z",
-      "completed": "2026-04-21T02:59:38.934Z",
-      "duration_ms": 300000,
-      "summary": "Explored index-only scans: HenryDB already has covering index support but missing visibility map check for MVCC correctness. Wrote scratch note with fix plan: Phase 1 (vis map check) + Phase 2 (MVCC-aware index entries)."
-    },
-    {
-      "id": "T24",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: run complete test suite to check for regressions",
-      "project": "neural-net",
-      "started": "2026-04-21T03:00:12.838Z",
-      "completed": "2026-04-21T03:00:39.765Z",
-      "duration_ms": 180000,
-      "summary": "Full neural-net test suite: 373/374 pass. 1 flaky failure in pre-existing training-verification.test.js (convergence threshold) — not related to our changes. All new code (GQA, RoPE, decoder, BPE, sampling, training) passing."
-    },
-    {
-      "id": "T25",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: explore and implement simplified Flash Attention (tiled softmax for memory efficiency)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:01:00.438Z",
-      "completed": "2026-04-21T03:02:18.896Z",
-      "duration_ms": 600000,
-      "summary": "Implemented Flash Attention: online softmax for tiled computation. O(N*tileSize) memory vs O(N²). Exact match with standard attention verified. 8x memory reduction. 8 tests pass."
-    },
-    {
-      "id": "T26",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement sliding window attention (Mistral-style) with KV-cache eviction",
-      "project": "neural-net",
-      "started": "2026-04-21T03:02:36.430Z",
-      "completed": "2026-04-21T03:03:41.125Z",
-      "duration_ms": 300000,
-      "summary": "Sliding Window Attention + bounded KV-cache: O(N×W) memory, auto-eviction, verified correctness. 10 tests pass. 1000 tokens through 4-slot cache stays bounded."
-    },
-    {
-      "id": "T27",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement Mixture of Experts (MoE) routing for FFN layer (Mixtral-style)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:04:00.667Z",
-      "completed": "2026-04-21T03:05:10.000Z",
-      "duration_ms": 600000,
-      "summary": "Mixture of Experts (MoE): top-K routing, SwiGLU experts, load balancing loss, routing stats. 12 tests. Mixtral/Switch Transformer architecture from scratch."
-    },
-    {
-      "id": "T28",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement speculative decoding (draft model + verification)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:05:40.509Z",
-      "completed": "2026-04-21T03:07:14.858Z",
-      "duration_ms": 600000,
-      "summary": "Speculative Decoding: draft+target model pair, probabilistic acceptance, adjusted rejection sampling. Same distribution as target, fewer forward passes. 6 tests."
-    },
-    {
-      "id": "T29",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement weight quantization (INT8/INT4) for model compression",
-      "project": "neural-net",
-      "started": "2026-04-21T03:07:41.800Z",
-      "completed": "2026-04-21T03:08:51.644Z",
-      "duration_ms": 300000,
-      "summary": "Weight quantization: INT8 absmax (~8x compression) + INT4 group (~16x, configurable group size). Verified accuracy tradeoffs. 10 tests."
-    },
-    {
-      "id": "T30",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement LoRA (Low-Rank Adaptation) for efficient fine-tuning",
-      "project": "neural-net",
-      "started": "2026-04-21T03:09:17.433Z",
-      "completed": "2026-04-21T03:10:32.596Z",
-      "duration_ms": 300000,
-      "summary": "LoRA: W=W+BA decomposition, 256x compression for rank-8, merge-to-base for zero overhead, export/import. 8 tests. Complete LLM fine-tuning technique from scratch."
-    },
-    {
-      "id": "T31",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement DPO (Direct Preference Optimization) loss for alignment",
-      "project": "neural-net",
-      "started": "2026-04-21T03:11:00.126Z",
-      "completed": "2026-04-21T03:12:00.174Z",
-      "duration_ms": 300000,
-      "summary": "DPO alignment loss: preference optimization without reward model. Verified ln(2) baseline. Implicit reward extraction. 7 tests."
-    },
-    {
-      "id": "T32",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update scratch/INDEX.md with all new scratch notes and knowledge from Session C",
-      "started": "2026-04-21T03:12:59.971Z",
-      "completed": "2026-04-21T03:13:25.254Z",
-      "duration_ms": 60000,
-      "summary": "Updated scratch/INDEX.md with 3 new notes: postgresql-first-updater-wins, henrydb-mvcc-multiversion-bug, henrydb-index-only-scans."
-    },
-    {
-      "id": "T33",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Neural-net: write ARCHITECTURE.md documenting the complete LLM stack built tonight",
-      "project": "neural-net",
-      "started": "2026-04-21T03:13:40.816Z",
-      "completed": "2026-04-21T03:14:27.634Z",
-      "duration_ms": 180000,
-      "summary": "Wrote LLM-ARCHITECTURE.md documenting all 14 components, 152 tests, full pipeline architecture."
-    },
-    {
-      "id": "T34",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement KV-cache compression (grouped quantization for K/V cache)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:14:57.695Z",
-      "completed": "2026-04-21T03:16:01.914Z",
-      "duration_ms": 300000,
-      "summary": "KV-cache compression: INT8 quantized K/V storage, >3x memory reduction, MAE < 0.1. 6 tests."
-    },
-    {
-      "id": "T35",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement beam search for generation (alternative to greedy/sampling)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:16:49.389Z",
-      "completed": "2026-04-21T03:17:51.936Z",
-      "duration_ms": 300000,
-      "summary": "Beam search: maintains K beams, pruning by score. Beam-1 verified = greedy. Wider beams find better sequences. 7 tests."
-    },
-    {
-      "id": "T36",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement perplexity evaluation metric + model comparison",
-      "project": "neural-net",
-      "started": "2026-04-21T03:18:13.523Z",
-      "completed": "2026-04-21T03:19:10.850Z",
-      "duration_ms": 180000,
-      "summary": "Perplexity metric: per-sequence, corpus-level, model comparison, theoretical baselines. 7 tests."
-    },
-    {
-      "id": "T37",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement attention sink (keep first K tokens in KV-cache for streaming LLM)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:19:30.769Z",
-      "completed": "2026-04-21T03:20:29.016Z",
-      "duration_ms": 180000,
-      "summary": "Attention Sink Cache: first K tokens permanent + sliding window. Bounded memory for infinite generation. 6 tests."
-    },
-    {
-      "id": "T38",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement multi-token prediction (predict next K tokens simultaneously)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:20:56.994Z",
-      "completed": "2026-04-21T03:21:55.114Z",
-      "duration_ms": 180000,
-      "summary": "Multi-token prediction: K heads predicting next K tokens simultaneously. Training + inference. 6 tests."
-    },
-    {
-      "id": "T39",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement gradient checkpointing for memory-efficient training",
-      "project": "neural-net",
-      "started": "2026-04-21T03:22:33.056Z",
-      "completed": "2026-04-21T03:23:37.371Z",
-      "duration_ms": 300000,
-      "summary": "Gradient checkpointing: O(√N) memory, optimal checkpoint calculation, Llama-70B analysis (20GB→4.8GB). 7 tests."
-    },
-    {
-      "id": "T40",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement cosine learning rate schedule with warmup",
-      "project": "neural-net",
-      "started": "2026-04-21T03:24:00.271Z",
-      "completed": "2026-04-21T03:25:00.952Z",
-      "duration_ms": 180000,
-      "summary": "LR schedules: cosine warmup, WSD, GPT-3/Llama presets. 6 tests."
-    },
-    {
-      "id": "T41",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement AdamW optimizer with weight decay decoupling",
-      "project": "neural-net",
-      "started": "2026-04-21T03:25:57.114Z",
-      "completed": "2026-04-21T03:27:14.002Z",
-      "duration_ms": 300000,
-      "summary": "AdamW optimizer: decoupled weight decay, bias correction, + SGD momentum baseline. 6 tests."
-    },
-    {
-      "id": "T42",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement paged attention (vLLM-style) for efficient batched inference",
-      "project": "neural-net",
-      "started": "2026-04-21T03:27:58.706Z",
-      "completed": "2026-04-21T03:29:05.465Z",
-      "duration_ms": 300000,
-      "summary": "Paged Attention: OS-style virtual memory for KV-cache. Page pool, reuse, multi-request sharing. 7 tests."
-    },
-    {
-      "id": "T43",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement data parallelism / model parallelism concepts (educational)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:30:02.112Z",
-      "completed": "2026-04-21T03:31:12.156Z",
-      "duration_ms": 300000,
-      "summary": "Distributed training: DP (gradient avg), TP (weight split), PP (micro-batching), ZeRO (3 stages). Llama-7B: 98GB→12.3GB with ZeRO-3. 7 tests."
-    },
-    {
-      "id": "T44",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement tokenizer vocabulary analysis — BPE merge visualization, compression stats",
-      "project": "neural-net",
-      "started": "2026-04-21T03:31:59.101Z",
-      "completed": "2026-04-21T03:32:55.088Z",
-      "duration_ms": 180000,
-      "summary": "Tokenizer analysis: compression stats, merge history, vocabulary coverage. 6 tests."
-    },
-    {
-      "id": "T45",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement continuous batching for multi-request serving",
-      "project": "neural-net",
-      "started": "2026-04-21T03:33:25.754Z",
-      "completed": "2026-04-21T03:34:31.414Z",
-      "duration_ms": 300000,
-      "summary": "Continuous batching: dynamic request scheduling, prefill/decode separation, staggered arrivals. 6 tests."
-    },
-    {
-      "id": "T46",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement prefix caching (shared prompt KV-cache across requests)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:35:20.838Z",
-      "completed": "2026-04-21T03:36:18.039Z",
-      "duration_ms": 300000,
-      "summary": "Prefix caching: shared prompt KV-cache reuse, LRU eviction, hit rate tracking. 7 tests."
-    },
-    {
-      "id": "T47",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement structured output / constrained decoding (JSON mode)",
-      "project": "neural-net",
-      "started": "2026-04-21T03:36:55.430Z",
-      "completed": "2026-04-21T03:37:56.759Z",
-      "duration_ms": 300000,
-      "summary": "Constrained decoding: token masking, JSON grammar state machine, regex constraint. 8 tests."
-    },
-    {
-      "id": "T48",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement token healing / glue tokens for BPE boundaries",
-      "project": "neural-net",
-      "started": "2026-04-21T03:38:14.715Z",
-      "completed": "2026-04-21T03:39:05.403Z",
-      "duration_ms": 180000,
-      "summary": "Token healing: BPE boundary fix, prefix detection, constrained generation. 4 tests."
-    },
-    {
-      "id": "T49",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement GGUF-style model serialization format",
-      "project": "neural-net",
-      "started": "2026-04-21T03:39:51.313Z",
-      "completed": "2026-04-21T03:40:50.588Z",
-      "duration_ms": 300000,
-      "summary": "Model serialization: GGUF-inspired format, integrity verification, file size estimates. 5 tests."
-    },
-    {
-      "id": "T50",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: implement tokenizer merges visualization and analysis",
-      "project": "neural-net",
-      "started": "2026-04-21T03:40:57.708Z",
-      "completed": "2026-04-21T03:41:07.650Z",
-      "duration_ms": 30000,
-      "summary": "Already implemented in tokenizer-analysis.js (analyzeMerges). No additional work needed."
+      "status": "upcoming",
+      "task": "Read LuaJIT allocation sinking paper or database engine design patterns",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -555,204 +152,92 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-21T02:15:31.521Z",
-      "msg": "Re-initialized same-day queue. Focus preserved: [henrydb, neural-net]"
+      "time": "2026-04-21T14:01:07.638Z",
+      "msg": "Added T1 (THINK) after end: Review yesterday: 60 BUILD ceiling hit, MVCC lost update P0 found, 260 neural-net tests added. Set direction."
     },
     {
-      "time": "2026-04-21T02:15:41.950Z",
-      "msg": "Added T1 (THINK) after end: Session C: Review lost update bug RCA, plan fix. 2 BUILDs remaining today."
+      "time": "2026-04-21T14:01:17.019Z",
+      "msg": "Added T2 (PLAN) after T1: Fix MVCC lost update bug (P0) — _update/_delete index-scan invisible row fallback"
     },
     {
-      "time": "2026-04-21T02:15:50.356Z",
-      "msg": "Added T2 (PLAN) after T1: Plan MVCC lost update fix — review scratch note, design minimal fix"
+      "time": "2026-04-21T14:01:36.972Z",
+      "msg": "Focus set: [henrydb, neural-net]"
     },
     {
-      "time": "2026-04-21T02:15:56.204Z",
+      "time": "2026-04-21T14:01:42.628Z",
       "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-21T02:15:56.354Z",
-      "msg": "Added T4 (BUILD) after T3: null"
+      "time": "2026-04-21T14:01:42.747Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Commit MVCC fix, push, check dashboard"
     },
     {
-      "time": "2026-04-21T02:15:56.500Z",
-      "msg": "Added T5 (MAINTAIN) after T4: Housekeeping: git push, dashboard, knowledge capture"
+      "time": "2026-04-21T14:01:42.863Z",
+      "msg": "Added T5 (THINK) after T4: Assess HenryDB health: multi-version visibility, compiled engine silent-null, WAL truncation"
     },
     {
-      "time": "2026-04-21T02:15:56.655Z",
-      "msg": "Added T6 (EXPLORE) after T5: HenryDB: Wire remaining Volcano operators or explore PostgreSQL concurrency model"
+      "time": "2026-04-21T14:01:42.980Z",
+      "msg": "Added T6 (PLAN) after T5: Fix neural-net CI — investigate and fix test failures on main branch"
     },
     {
-      "time": "2026-04-21T02:15:56.804Z",
-      "msg": "Added T7 (EXPLORE) after T6: Explore a non-HenryDB project for variety — RISC-V liveness alloc or neural-net attention"
+      "time": "2026-04-21T14:01:43.097Z",
+      "msg": "Added T7 (BUILD) after T6: null"
     },
     {
-      "time": "2026-04-21T02:15:56.953Z",
-      "msg": "Added T8 (THINK) after T7: End-of-day reflection"
+      "time": "2026-04-21T14:01:43.213Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Commit neural-net fix, push, dashboard health check"
     },
     {
-      "time": "2026-04-21T02:16:41.277Z",
-      "msg": "PLAN T2 filled 2 BUILD tasks"
+      "time": "2026-04-21T14:01:43.330Z",
+      "msg": "Added T9 (THINK) after T8: Review HenryDB TODO items — prioritize compiled engine vs WAL truncation vs MVCC multi-version"
     },
     {
-      "time": "2026-04-21T02:27:10.257Z",
-      "msg": "Added T11 (EXPLORE) after end: HenryDB: stress test MVCC lost update fix with adversarial concurrent workloads"
+      "time": "2026-04-21T14:01:43.450Z",
+      "msg": "Added T10 (PLAN) after T9: HenryDB compiled query engine silent-null correctness bug"
     },
     {
-      "time": "2026-04-21T02:27:10.409Z",
-      "msg": "Added T12 (EXPLORE) after end: Neural-net: implement RoPE (Rotary Position Encoding) for GQA"
+      "time": "2026-04-21T14:01:43.571Z",
+      "msg": "Added T11 (BUILD) after T10: null"
     },
     {
-      "time": "2026-04-21T02:31:00.829Z",
-      "msg": "Added T13 (EXPLORE) after end: Neural-net: integrate RoPE into GQA + end-to-end test of modern transformer block"
+      "time": "2026-04-21T14:01:43.691Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Commit, push, PR triage, email check"
     },
     {
-      "time": "2026-04-21T02:31:00.977Z",
-      "msg": "Added T14 (EXPLORE) after end: HenryDB: investigate heap multi-version visibility bug in detail"
+      "time": "2026-04-21T14:01:49.454Z",
+      "msg": "Added T13 (PLAN) after T12: HenryDB PersistentDB WAL checkpoint/truncation"
     },
     {
-      "time": "2026-04-21T02:35:17.094Z",
-      "msg": "Added T15 (EXPLORE) after end: Neural-net: build a minimal GPT-2 style decoder block using GQA+RoPE+LayerNorm"
+      "time": "2026-04-21T14:01:49.571Z",
+      "msg": "Added T14 (BUILD) after T13: null"
     },
     {
-      "time": "2026-04-21T02:37:35.953Z",
-      "msg": "Added T16 (EXPLORE) after end: Neural-net: train the mini Llama on a simple pattern (repeating sequence) to verify learning"
+      "time": "2026-04-21T14:01:49.690Z",
+      "msg": "Added T15 (MAINTAIN) after T14: Full workspace commit+push, dashboard update"
     },
     {
-      "time": "2026-04-21T02:37:36.105Z",
-      "msg": "Added T17 (EXPLORE) after end: HenryDB: explore Volcano planner — wire Union operator for UNION ALL queries"
+      "time": "2026-04-21T14:01:49.808Z",
+      "msg": "Added T16 (THINK) after T15: Mid-day reflection: surprises, patterns, pivot assessment"
     },
     {
-      "time": "2026-04-21T02:37:36.258Z",
-      "msg": "Added T18 (EXPLORE) after end: Neural-net: implement temperature sampling + top-k for generation"
+      "time": "2026-04-21T14:01:49.927Z",
+      "msg": "Added T17 (PLAN) after T16: HenryDB db.js monolith split — extract first module from 9844 LOC"
     },
     {
-      "time": "2026-04-21T02:41:28.528Z",
-      "msg": "Added T19 (EXPLORE) after end: Neural-net: implement Byte Pair Encoding (BPE) tokenizer"
+      "time": "2026-04-21T14:01:50.045Z",
+      "msg": "Added T18 (BUILD) after T17: null"
     },
     {
-      "time": "2026-04-21T02:41:28.680Z",
-      "msg": "Added T20 (EXPLORE) after end: HenryDB: run full test suite sweep to check for regressions from MVCC fix"
+      "time": "2026-04-21T14:01:50.163Z",
+      "msg": "Added T19 (MAINTAIN) after T18: Commit monolith split, push, test sweep"
     },
     {
-      "time": "2026-04-21T02:56:50.882Z",
-      "msg": "Added T21 (EXPLORE) after end: Neural-net: end-to-end demo — BPE + ModernDecoder text generation on simple pattern"
+      "time": "2026-04-21T14:01:50.281Z",
+      "msg": "Added T20 (EXPLORE) after T19: Research PostgreSQL EvalPlanQual and first-updater-wins for HenryDB MVCC"
     },
     {
-      "time": "2026-04-21T02:57:55.714Z",
-      "msg": "Added T22 (EXPLORE) after end: Neural-net: implement simple cross-entropy training for ModernDecoder on next-token prediction"
-    },
-    {
-      "time": "2026-04-21T02:57:55.862Z",
-      "msg": "Added T23 (EXPLORE) after end: HenryDB: explore index-only scans — visibility map integration with B-tree for covering indexes"
-    },
-    {
-      "time": "2026-04-21T03:00:09.241Z",
-      "msg": "Added T24 (EXPLORE) after end: Neural-net: run complete test suite to check for regressions"
-    },
-    {
-      "time": "2026-04-21T03:00:55.791Z",
-      "msg": "Added T25 (EXPLORE) after end: Neural-net: explore and implement simplified Flash Attention (tiled softmax for memory efficiency)"
-    },
-    {
-      "time": "2026-04-21T03:02:32.493Z",
-      "msg": "Added T26 (EXPLORE) after end: Neural-net: implement sliding window attention (Mistral-style) with KV-cache eviction"
-    },
-    {
-      "time": "2026-04-21T03:03:57.366Z",
-      "msg": "Added T27 (EXPLORE) after end: Neural-net: implement Mixture of Experts (MoE) routing for FFN layer (Mixtral-style)"
-    },
-    {
-      "time": "2026-04-21T03:05:33.959Z",
-      "msg": "Added T28 (EXPLORE) after end: Neural-net: implement speculative decoding (draft model + verification)"
-    },
-    {
-      "time": "2026-04-21T03:07:36.814Z",
-      "msg": "Added T29 (EXPLORE) after end: Neural-net: implement weight quantization (INT8/INT4) for model compression"
-    },
-    {
-      "time": "2026-04-21T03:09:12.057Z",
-      "msg": "Added T30 (EXPLORE) after end: Neural-net: implement LoRA (Low-Rank Adaptation) for efficient fine-tuning"
-    },
-    {
-      "time": "2026-04-21T03:10:55.038Z",
-      "msg": "Added T31 (EXPLORE) after end: Neural-net: implement DPO (Direct Preference Optimization) loss for alignment"
-    },
-    {
-      "time": "2026-04-21T03:12:55.662Z",
-      "msg": "Added T32 (MAINTAIN) after end: Update scratch/INDEX.md with all new scratch notes and knowledge from Session C"
-    },
-    {
-      "time": "2026-04-21T03:13:34.362Z",
-      "msg": "Added T33 (MAINTAIN) after end: Neural-net: write ARCHITECTURE.md documenting the complete LLM stack built tonight"
-    },
-    {
-      "time": "2026-04-21T03:14:51.371Z",
-      "msg": "Added T34 (EXPLORE) after end: Neural-net: implement KV-cache compression (grouped quantization for K/V cache)"
-    },
-    {
-      "time": "2026-04-21T03:16:44.934Z",
-      "msg": "Added T35 (EXPLORE) after end: Neural-net: implement beam search for generation (alternative to greedy/sampling)"
-    },
-    {
-      "time": "2026-04-21T03:18:09.755Z",
-      "msg": "Added T36 (EXPLORE) after end: Neural-net: implement perplexity evaluation metric + model comparison"
-    },
-    {
-      "time": "2026-04-21T03:19:23.388Z",
-      "msg": "Added T37 (EXPLORE) after end: Neural-net: implement attention sink (keep first K tokens in KV-cache for streaming LLM)"
-    },
-    {
-      "time": "2026-04-21T03:20:52.944Z",
-      "msg": "Added T38 (EXPLORE) after end: Neural-net: implement multi-token prediction (predict next K tokens simultaneously)"
-    },
-    {
-      "time": "2026-04-21T03:22:27.269Z",
-      "msg": "Added T39 (EXPLORE) after end: Neural-net: implement gradient checkpointing for memory-efficient training"
-    },
-    {
-      "time": "2026-04-21T03:23:56.493Z",
-      "msg": "Added T40 (EXPLORE) after end: Neural-net: implement cosine learning rate schedule with warmup"
-    },
-    {
-      "time": "2026-04-21T03:25:53.097Z",
-      "msg": "Added T41 (EXPLORE) after end: Neural-net: implement AdamW optimizer with weight decay decoupling"
-    },
-    {
-      "time": "2026-04-21T03:27:54.845Z",
-      "msg": "Added T42 (EXPLORE) after end: Neural-net: implement paged attention (vLLM-style) for efficient batched inference"
-    },
-    {
-      "time": "2026-04-21T03:29:55.455Z",
-      "msg": "Added T43 (EXPLORE) after end: Neural-net: implement data parallelism / model parallelism concepts (educational)"
-    },
-    {
-      "time": "2026-04-21T03:31:53.191Z",
-      "msg": "Added T44 (EXPLORE) after end: Neural-net: implement tokenizer vocabulary analysis — BPE merge visualization, compression stats"
-    },
-    {
-      "time": "2026-04-21T03:33:21.599Z",
-      "msg": "Added T45 (EXPLORE) after end: Neural-net: implement continuous batching for multi-request serving"
-    },
-    {
-      "time": "2026-04-21T03:35:14.940Z",
-      "msg": "Added T46 (EXPLORE) after end: Neural-net: implement prefix caching (shared prompt KV-cache across requests)"
-    },
-    {
-      "time": "2026-04-21T03:36:50.972Z",
-      "msg": "Added T47 (EXPLORE) after end: Neural-net: implement structured output / constrained decoding (JSON mode)"
-    },
-    {
-      "time": "2026-04-21T03:38:08.039Z",
-      "msg": "Added T48 (EXPLORE) after end: Neural-net: implement token healing / glue tokens for BPE boundaries"
-    },
-    {
-      "time": "2026-04-21T03:39:45.187Z",
-      "msg": "Added T49 (EXPLORE) after end: Neural-net: implement GGUF-style model serialization format"
-    },
-    {
-      "time": "2026-04-21T03:39:45.330Z",
-      "msg": "Added T50 (EXPLORE) after end: Neural-net: implement tokenizer merges visualization and analysis"
+      "time": "2026-04-21T14:01:50.398Z",
+      "msg": "Added T21 (EXPLORE) after T20: Read LuaJIT allocation sinking paper or database engine design patterns"
     }
   ]
 }
