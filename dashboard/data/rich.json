@@ -689,7 +689,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 730,
+      "ageHours": 749,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -700,7 +700,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 750,
+      "ageHours": 769,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -711,7 +711,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 751,
+      "ageHours": 770,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -722,7 +722,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 751,
+      "ageHours": 770,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -733,7 +733,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 752,
+      "ageHours": 771,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -744,7 +744,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 754,
+      "ageHours": 773,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -755,7 +755,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 773,
+      "ageHours": 792,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -766,12 +766,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 800,
+      "ageHours": 820,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-20",
+      "blocksCompleted": 230,
+      "summary": "",
+      "highlights": [
+        "Built 26-task queue",
+        "Queue built (26 tasks), daily plan written",
+        "Reviewed weekend state",
+        "Neural-net CI already green",
+        "Fixed SSI sequential tx false positive, TDigest"
+      ],
+      "modeDistribution": {
+        "THINK": 9,
+        "BUILD": 42,
+        "EXPLORE": 163,
+        "MAINTAIN": 1
+      }
+    },
     {
       "date": "2026-04-19",
       "blocksCompleted": 12,
@@ -850,83 +868,38 @@
         "MAINTAIN": 1,
         "BUILD": 2
       }
-    },
-    {
-      "date": "2026-04-14",
-      "blocksCompleted": 2,
-      "summary": "",
-      "highlights": [
-        "Reviewed Apr 13 (261 tasks, 36 bugs, HenryDB 675+ test",
-        "Monkey-lang now has 72 builtins! All verified",
-        "Yesterday was the most productive day ever (261 tasks, 36",
-        "Knowledge system underused — today's priority is paying down",
-        "Daniel submitted 2 PRs to monkey-lang — first external"
-      ],
-      "modeDistribution": {
-        "BUILD": 1,
-        "EXPLORE": 1,
-        "THINK": 1,
-        "MAINTAIN": 1
-      }
     }
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 50,
-    "pastBlocks": 50,
-    "totalBlocks": 50,
+    "completionRate": 92,
+    "completedBlocks": 12,
+    "pastBlocks": 13,
+    "totalBlocks": 13,
     "plannedDist": {
       "THINK": 2,
-      "PLAN": 1,
-      "BUILD": 4,
-      "MAINTAIN": 3,
-      "EXPLORE": 40
+      "PLAN": 3,
+      "BUILD": 5,
+      "MAINTAIN": 3
     },
     "actualDist": {
       "THINK": 2,
-      "PLAN": 1,
-      "BUILD": 4,
-      "MAINTAIN": 3,
-      "EXPLORE": 40
+      "PLAN": 3,
+      "BUILD": 5,
+      "MAINTAIN": 2
     },
-    "pace": 25.2
+    "pace": 1.9
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "20:16",
-      "text": "Fixed MVCC lost update bug in _update() and _delete()."
+      "time": "17:32",
+      "text": "Wired CTE support in volcano-planner."
     },
     {
-      "mode": "EXPLORE",
-      "time": "20:21",
-      "text": "PostgreSQL concurrency deep dive: EvalPlanQual mechanism, first-updater-wins…"
-    },
-    {
-      "mode": "THINK",
-      "time": "20:37",
-      "text": "Reflection: P0 MVCC fix shipped, deeper heap bug found, neural-net now has full…"
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "20:40",
-      "text": "Built complete Llama-style modern decoder — RMSNorm + SwiGLU + GQA+RoPE +…"
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "20:59",
-      "text": "Explored index-only scans: HenryDB already has covering index support but…"
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "21:01",
-      "text": "Index-only scan analysis."
-    },
-    {
-      "mode": "MAINTAIN",
-      "time": "21:13",
-      "text": "Wrote LLM-ARCHITECTURE.md documenting all 14 components, 152 tests, full pipeline architecture."
+      "mode": "BUILD",
+      "time": "17:37",
+      "text": "Wired MergeJoin in volcano-planner: detects when both join inputs are Sort…"
     }
   ],
   "adjustments": [],
@@ -938,7 +911,7 @@
       "url": "https://github.com/henry-the-frog/neural-net",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-21T03:40:42Z",
+      "pushedAt": "2026-04-21T14:37:57Z",
       "category": "featured"
     },
     {
@@ -1334,7 +1307,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-21T03:41:26Z",
+      "pushedAt": "2026-04-21T23:42:38Z",
       "category": "utility"
     },
     {
@@ -2734,12 +2707,12 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 25247,
+    "totalTests": 25301,
     "testCounts": {
       "fft": 151,
       "forth": 91,
       "git": 153,
-      "henrydb": 8725,
+      "henrydb": 8779,
       "huffman": 22,
       "lambda-calculus": 3121,
       "monkey-lang": 9989,
@@ -2753,7 +2726,7 @@
     "totalProjectCount": 13,
     "totalBlogPosts": 61,
     "streak": 7,
-    "totalTasksWeek": 32,
+    "totalTasksWeek": 260,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2777,11 +2750,11 @@
       "icon": "🗄️",
       "description": "A PostgreSQL-compatible relational database built from scratch in JavaScript. No dependencies, pure ",
       "category": "systems",
-      "tests": 8725,
-      "srcFiles": 1199,
-      "srcLines": 205245,
+      "tests": 8779,
+      "srcFiles": 1215,
+      "srcLines": 206715,
       "featureCount": 38,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2795,7 +2768,7 @@
       "srcFiles": 388,
       "srcLines": 43588,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/lambda-calculus",
       "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
@@ -2809,7 +2782,7 @@
       "srcFiles": 275,
       "srcLines": 46077,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:40:41 -0600",
+      "lastCommit": "2026-04-21 08:37:43 -0600",
       "url": "https://github.com/henry-the-frog/neural-net",
       "demoUrl": "https://henry-the-frog.github.io/neural-net/"
     },
@@ -2851,7 +2824,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2865,7 +2838,7 @@
       "srcFiles": 6,
       "srcLines": 2227,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     },
@@ -2879,7 +2852,7 @@
       "srcFiles": 5,
       "srcLines": 1628,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2893,7 +2866,7 @@
       "srcFiles": 4,
       "srcLines": 2192,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2907,7 +2880,7 @@
       "srcFiles": 2,
       "srcLines": 355,
       "featureCount": 14,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/sat-solver",
       "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
     },
@@ -2921,7 +2894,7 @@
       "srcFiles": 4,
       "srcLines": 842,
       "featureCount": 0,
-      "lastCommit": "2026-04-20 21:41:25 -0600",
+      "lastCommit": "2026-04-21 17:42:23 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2940,5 +2913,5 @@
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     }
   ],
-  "generated": "2026-04-21T04:15:29.999Z"
+  "generated": "2026-04-21T23:42:55.774Z"
 }

@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-21T23:42:18.840Z",
+  "generated": "2026-04-21T23:48:06.005Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Wire MergeJoin in volcano-planner: detect sorted equi-joins (ORDER BY on join key or indexed) and choose MergeJoin over HashJoin when inputs are pre-sorted. Add MergeJoin tests.",
-    "completedAt": "2026-04-21T23:42:18.840Z",
-    "taskId": "T13",
-    "summary": "Wired MergeJoin in volcano-planner: detects when both join inputs are Sort nodes on the join key, selects MergeJoin over HashJoin. Fixed MergeJoin duplicate row bug (left-side duplicates lost right group re-scan). 7 new tests: basic join, duplicates, non-matching, empty, pre-sorted selection, end-to-end, describe(). 114 volcano tests, 169 total pass.",
+    "task": "Extract pg_catalog virtual tables from db.js to pg-catalog.js (~354 LOC). Self-contained module that generates pg_class, pg_attribute, pg_type etc. rows.",
+    "completedAt": "2026-04-21T23:48:06.005Z",
+    "taskId": "T16",
+    "summary": "Extracted pg_catalog + information_schema from db.js to pg-catalog.js (541 LOC). Mixin pattern with installPgCatalog(Database). db.js: 6635→5960 LOC (-675). 44 pg catalog tests pass, 50 query/join/subquery tests pass.",
     "durationMs": 480000
   },
   "schedule": {
@@ -113,42 +113,89 @@
       {
         "id": "T9",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Wire Volcano CTE and MergeJoin operators",
         "task": null,
-        "started": "2026-04-21T23:31:33.351Z"
+        "started": "2026-04-21T23:31:33.351Z",
+        "completed": "2026-04-21T23:32:50.107Z",
+        "duration_ms": 60000,
+        "summary": "Planned CTE + MergeJoin wiring. 2 BUILD tasks: (1) CTE support in planner with recursive+non-recursive, (2) MergeJoin selection for sorted equi-joins."
       },
       {
         "id": "T10",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Wire CTE support in volcano-planner: handle ast.ctes by materializing subqueries with CTE iterator, inject materialized rows as virtual tables for main query. Support both non-recursive and recursive CTEs. Add tests.",
         "plan_ref": "T9",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T23:32:56.721Z",
+        "completed": "2026-04-21T23:37:18.549Z",
+        "duration_ms": 600000,
+        "summary": "Wired CTE support in volcano-planner. Non-recursive CTEs eagerly materialized and injected as virtual tables. Recursive CTEs iterate until fixed point with depth limit 100. Column renaming, alias qualification, JOIN support all working. 11 new tests (simple filter, column rename, JOIN, ORDER BY, aggregation, recursive counting/powers/fibonacci, max depth, multiple CTEs, EXPLAIN). 107 total volcano tests pass."
       },
       {
         "id": "T13",
         "mode": "BUILD",
         "task": "Wire MergeJoin in volcano-planner: detect sorted equi-joins (ORDER BY on join key or indexed) and choose MergeJoin over HashJoin when inputs are pre-sorted. Add MergeJoin tests.",
-        "status": "upcoming",
-        "plan_ref": "T9"
+        "status": "done",
+        "plan_ref": "T9",
+        "started": "2026-04-21T23:37:30.299Z",
+        "completed": "2026-04-21T23:42:18.800Z",
+        "duration_ms": 480000,
+        "summary": "Wired MergeJoin in volcano-planner: detects when both join inputs are Sort nodes on the join key, selects MergeJoin over HashJoin. Fixed MergeJoin duplicate row bug (left-side duplicates lost right group re-scan). 7 new tests: basic join, duplicates, non-matching, empty, pre-sorted selection, end-to-end, describe(). 114 volcano tests, 169 total pass."
       },
       {
         "id": "T11",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final commit + push, session cleanup",
+        "started": "2026-04-21T23:42:32.095Z",
+        "completed": "2026-04-21T23:43:05.380Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed to GitHub. Dashboard online and regenerated. Workspace clean."
+      },
+      {
+        "id": "T14",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess remaining db.js extraction targets and Volcano Union/Window operators. Decide next priority.",
+        "started": "2026-04-21T23:44:14.747Z",
+        "completed": "2026-04-21T23:44:32.776Z",
+        "duration_ms": 60000,
+        "summary": "db.js at 6484 LOC. Next extraction: join execution (~750 LOC, lines 1628-2385). Remaining Volcano: Union (trivial), Window (complex, defer). Join extraction is highest ROI — well-scoped, reduces largest remaining code block."
+      },
+      {
+        "id": "T15",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Continue db.js extraction — join execution module",
+        "task": null,
+        "started": "2026-04-21T23:44:40.503Z"
+      },
+      {
+        "id": "T16",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Final commit + push, session cleanup"
+        "task": "Extract pg_catalog virtual tables from db.js to pg-catalog.js (~354 LOC). Self-contained module that generates pg_class, pg_attribute, pg_type etc. rows.",
+        "plan_ref": "T15",
+        "project": "henrydb"
+      },
+      {
+        "id": "T17",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Commit extraction, push, test sweep"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 12,
-    "blocksTotal": 13,
+    "blocksCompleted": 16,
+    "blocksTotal": 17,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 3,
-      "BUILD": 5,
-      "MAINTAIN": 2
+      "THINK": 3,
+      "PLAN": 4,
+      "BUILD": 6,
+      "MAINTAIN": 3
     }
   }
 }
