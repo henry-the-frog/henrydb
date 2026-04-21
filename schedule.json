@@ -502,6 +502,28 @@
       "completed": "2026-04-21T03:36:18.039Z",
       "duration_ms": 300000,
       "summary": "Prefix caching: shared prompt KV-cache reuse, LRU eviction, hit rate tracking. 7 tests."
+    },
+    {
+      "id": "T47",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement structured output / constrained decoding (JSON mode)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:36:55.430Z",
+      "completed": "2026-04-21T03:37:56.759Z",
+      "duration_ms": 300000,
+      "summary": "Constrained decoding: token masking, JSON grammar state machine, regex constraint. 8 tests."
+    },
+    {
+      "id": "T48",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement token healing / glue tokens for BPE boundaries",
+      "project": "neural-net",
+      "started": "2026-04-21T03:38:14.715Z",
+      "completed": "2026-04-21T03:39:05.403Z",
+      "duration_ms": 180000,
+      "summary": "Token healing: BPE boundary fix, prefix detection, constrained generation. 4 tests."
     }
   ],
   "focusProjects": [
@@ -693,6 +715,14 @@
     {
       "time": "2026-04-21T03:35:14.940Z",
       "msg": "Added T46 (EXPLORE) after end: Neural-net: implement prefix caching (shared prompt KV-cache across requests)"
+    },
+    {
+      "time": "2026-04-21T03:36:50.972Z",
+      "msg": "Added T47 (EXPLORE) after end: Neural-net: implement structured output / constrained decoding (JSON mode)"
+    },
+    {
+      "time": "2026-04-21T03:38:08.039Z",
+      "msg": "Added T48 (EXPLORE) after end: Neural-net: implement token healing / glue tokens for BPE boundaries"
     }
   ]
 }

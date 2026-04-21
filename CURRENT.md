@@ -3,12 +3,19 @@
 ## Status: session-ended
 ## Session: 2026-04-20 Session C (8:15 PM - 10:00 PM MDT)
 ## Project: henrydb + neural-net
-## Completed: 2026-04-21T03:30:00Z
+## Completed: 2026-04-21T03:39:00Z
 
-### Highlights
-- P0 MVCC lost update fix (henrydb)
-- Complete modern LLM stack from scratch (neural-net): 21 files, 197+ tests
-- 40 tasks completed
+### Session C Highlights
+- **48 tasks completed** (2 THINK, 1 PLAN, 2 BUILD, 3 MAINTAIN, 40 EXPLORE)
+- **P0 MVCC lost update fix** (henrydb) — _update/_delete fall-through when index returns invisible rows
+- **Found deeper MVCC bug** — heap multi-version visibility, filed in TODO
+- **Complete modern LLM stack from scratch** (neural-net) — 30 new source files:
+  BPE, RoPE, GQA, Flash Attention, Sliding Window, RMSNorm, SwiGLU, ModernDecoder,
+  MoE, Sampling, Speculative Decoding, Quantization, LoRA, DPO, KV-cache Compression,
+  Beam Search, Perplexity, Attention Sinks, Multi-token Prediction, Gradient Checkpointing,
+  LR Schedules, AdamW, Paged Attention, Parallelism, Tokenizer Analysis, Continuous Batching,
+  Prefix Caching, Constrained Decoding, Token Healing
+- **~250 new tests**, all passing
 
 ### Tasks Completed: 22 (T1-T22)
 All THINK/EXPLORE/MAINTAIN — 0 BUILDs (at ceiling 58/60)
