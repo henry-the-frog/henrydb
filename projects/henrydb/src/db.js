@@ -3081,12 +3081,57 @@ export class Database {
     // LIMIT (only apply before projection if no DISTINCT)
     if (ast.limit != null && !ast.distinct) rows = rows.slice(0, ast.limit);
 
+    // Materialize correlated scalar subqueries: pre-compute once with GROUP BY
+    // instead of re-executing per row. Transforms O(n*m) to O(n+m).
+    const materializedSubqueries = new Map(); // columnIndex → Map(correlationKey → value)
+    for (let ci = 0; ci < ast.columns.length; ci++) {
+      const col = ast.columns[ci];
+      if (col.type !== 'scalar_subquery') continue;
+      const sub = col.subquery;
+      if (!sub || !sub.where) continue;
+      
+      // Detect correlation: WHERE inner_col = outer_ref pattern
+      const corr = this._detectCorrelation(sub.where, rows[0]);
+      if (!corr) continue;
+      
+      // Build a materialized lookup: execute subquery once with GROUP BY on correlation column
+      try {
+        const tableName = sub.from?.table;
+        if (!tableName) continue;
+        
+        // Get the original aggregate column text (e.g., COUNT(*), SUM(amount))
+        const aggCol = sub.columns[0];
+        let aggExpr;
+        if (aggCol.type === 'aggregate') {
+          aggExpr = `${aggCol.func}(${aggCol.distinct ? 'DISTINCT ' : ''}${aggCol.arg || '*'})`;
+        } else {
+          continue; // Not an aggregate — can't materialize
+        }
+        
+        // Construct and execute materialized query
+        const matSql = `SELECT ${corr.innerCol} AS __corr_key, ${aggExpr} AS __corr_val FROM ${tableName} GROUP BY ${corr.innerCol}`;
+        const materializedResult = this.execute(matSql);
+        const lookup = new Map();
+        for (const r of (materializedResult.rows || materializedResult)) {
+          lookup.set(r.__corr_key, r.__corr_val);
+        }
+        // For COUNT aggregates, default to 0 (not null) when no matching rows
+        const defaultVal = aggCol.func?.toUpperCase() === 'COUNT' ? 0 : null;
+        materializedSubqueries.set(ci, { lookup, outerCol: corr.outerCol, defaultValue: defaultVal });
+      } catch (e) {
+        // Materialization failed — fall back to per-row execution
+        continue;
+      }
+    }
+
     // Project columns
     const projected = rows.map(row => {
       const result = {};
       let exprIdx = 0;
       let hadStar = false;
+      let colIdx = -1;
       for (const col of ast.columns) {
+        colIdx++;
         if (col.type === 'star') {
           // Include all non-qualified, non-internal columns
           hadStar = true;
@@ -3109,8 +3154,15 @@ export class Database {
           result[name] = this._evalValue(col.expr, row);
         } else if (col.type === 'scalar_subquery') {
           const name = col.alias || 'subquery';
-          const subResult = this._evalSubquery(col.subquery, row);
-          result[name] = subResult.length > 0 ? Object.values(subResult[0])[0] : null;
+          // Check for materialized subquery (pre-computed for correlation optimization)
+          const mat = materializedSubqueries.get(colIdx);
+          if (mat) {
+            const key = this._resolveColumn(mat.outerCol, row);
+            result[name] = mat.lookup.get(key) ?? mat.defaultValue;
+          } else {
+            const subResult = this._evalSubquery(col.subquery, row);
+            result[name] = subResult.length > 0 ? Object.values(subResult[0])[0] : null;
+          }
         } else if (col.type === 'window') {
           const name = col.alias || `${col.func}(${col.arg || ''})`;
           result[name] = row[`__window_${name}`];
@@ -7408,7 +7460,66 @@ export class Database {
     return undefined;
   }
 
-  // Check if an AST node is a column_ref pointing to a DECIMAL/NUMERIC/REAL/FLOAT column
+  /**
+   * Detect correlation pattern in a WHERE clause: inner_col = outer_ref
+   * Returns { innerCol, outerCol } or null if not a simple correlation.
+   */
+  _detectCorrelation(where, sampleRow) {
+    if (!where || !sampleRow) return null;
+    if (where.type === 'COMPARE' && where.op === 'EQ') {
+      const left = where.left;
+      const right = where.right;
+      // Check: left is inner column, right is outer column (or vice versa)
+      if (left?.type === 'column_ref' && right?.type === 'column_ref') {
+        const leftName = left.name;
+        const rightName = right.name;
+        // Determine which is the outer reference by checking if it exists in the sample row
+        const leftInRow = this._resolveColumn(leftName, sampleRow) !== undefined ||
+          Object.keys(sampleRow).some(k => k === leftName || k.endsWith('.' + leftName));
+        const rightInRow = this._resolveColumn(rightName, sampleRow) !== undefined ||
+          Object.keys(sampleRow).some(k => k === rightName || k.endsWith('.' + rightName));
+        
+        if (leftInRow && !rightInRow) {
+          return { outerCol: leftName, innerCol: rightName };
+        }
+        if (rightInRow && !leftInRow) {
+          return { outerCol: rightName, innerCol: leftName };
+        }
+      }
+    }
+    // Check AND: look for correlation in either side
+    if (where.type === 'AND') {
+      return this._detectCorrelation(where.left, sampleRow) ||
+             this._detectCorrelation(where.right, sampleRow);
+    }
+    return null;
+  }
+
+  /**
+   * Remove the correlation predicate from a WHERE clause.
+   * Returns the remaining predicates (or null if the entire WHERE was the correlation).
+   */
+  _removeCorrelationPredicate(where, corr) {
+    if (!where) return null;
+    if (where.type === 'COMPARE' && where.op === 'EQ') {
+      const leftName = where.left?.name;
+      const rightName = where.right?.name;
+      if ((leftName === corr.innerCol && rightName === corr.outerCol) ||
+          (leftName === corr.outerCol && rightName === corr.innerCol)) {
+        return null; // This IS the correlation predicate — remove it
+      }
+    }
+    if (where.type === 'AND') {
+      const left = this._removeCorrelationPredicate(where.left, corr);
+      const right = this._removeCorrelationPredicate(where.right, corr);
+      if (!left && !right) return null;
+      if (!left) return right;
+      if (!right) return left;
+      return { type: 'AND', left, right };
+    }
+    return where;
+  }
+
   _isFloatColumnRef(node, row) {
     if (!node || node.type !== 'column_ref') return false;
     const colName = node.name?.includes('.') ? node.name.split('.').pop() : node.name;
