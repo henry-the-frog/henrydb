@@ -96,6 +96,72 @@
       "completed": "2026-04-21T01:37:04.063Z",
       "duration_ms": 60000,
       "summary": "Portfolio review: HenryDB dominated today (200K LOC). Deep architecture analysis produced 4 scratch notes. Tomorrow: HenryDB fix day (hash join wiring, compiled engine null bug, WAL truncation). Consider monkey-lang for variety."
+    },
+    {
+      "id": "T10",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Read and audit the parser (sql.js 3206 LOC) — what SQL standard features are supported vs missing?",
+      "project": "henrydb",
+      "started": "2026-04-21T01:38:18.077Z",
+      "completed": "2026-04-21T01:39:26.701Z",
+      "duration_ms": 300000,
+      "summary": "Parser audit: sql.js handles 82+ SQL features including GRANT/REVOKE, UPSERT, PARTITION BY, window frames, GROUPING SETS, CALL. Missing from parser: JSON_TABLE, XML, EXCLUSION constraints. Cursors/enums/domains exist as standalone modules but not integrated into main engine."
+    },
+    {
+      "id": "T11",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Volcano iterator model audit — what operators exist and how complete is the physical plan?",
+      "project": "henrydb",
+      "started": "2026-04-21T01:39:38.786Z",
+      "completed": "2026-04-21T01:40:04.629Z",
+      "duration_ms": 300000,
+      "summary": "Volcano model: 17 operators (1129 LOC). 11 wired into planner (SeqScan, Filter, Project, Limit, Sort, Distinct, HashJoin, NestedLoopJoin, IndexNestedLoopJoin, HashAggregate, ValuesIter). 6 defined but unwired (Union, Window, CTE, RecursiveCTE, MergeJoin, IndexScan). These features use db.js interpreter path instead."
+    },
+    {
+      "id": "T12",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: pg-server wire protocol — test against a real PostgreSQL client (psql or pg npm module)",
+      "project": "henrydb",
+      "started": "2026-04-21T01:40:16.585Z",
+      "completed": "2026-04-21T01:41:40.165Z",
+      "duration_ms": 300000,
+      "summary": "PG wire protocol: 26/26 tests pass (pg-server + pg-client). Server handles auth (trust + MD5 + SCRAM), query protocol, extended query protocol. psql not installed locally but test suite validates thoroughly via pg npm module."
+    },
+    {
+      "id": "T13",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Planner cost model accuracy — run some test queries and compare estimated vs actual row counts",
+      "project": "henrydb",
+      "started": "2026-04-21T01:41:50.292Z",
+      "completed": "2026-04-21T01:42:35.246Z",
+      "duration_ms": 300000,
+      "summary": "Cost model accuracy: After ANALYZE, histogram-based estimates are excellent (0-24% error, avg ~7%). BUT planTree estimates use generic defaults (1/3 for range, 1/10 for equality) — two cost models running in parallel. The analysis path uses real histogram stats; the planner tree uses fallback constants. This divergence means the planner may make suboptimal join/scan decisions despite good stats."
+    },
+    {
+      "id": "T14",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: Stress test MVCC concurrency — can we trigger write-write conflicts and verify isolation?",
+      "project": "henrydb",
+      "started": "2026-04-21T01:42:42.738Z",
+      "completed": "2026-04-21T01:43:46.194Z",
+      "duration_ms": 300000,
+      "summary": "MVCC concurrency stress: snapshot isolation ✅, phantom prevention ✅, dirty read prevention ✅. BUT write-write conflict detection ❌ (no error raised when two txns update same row). Lost update confirmed: T1 commits 1100, T2 commits 1200, final=1100 (T2 silently lost). Real concurrency bug — either conflict detection or last-writer-wins is broken."
+    },
+    {
+      "id": "T15",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: How does SSI (Serializable Snapshot Isolation) differ from regular MVCC? Does it catch the lost update?",
+      "project": "henrydb",
+      "started": "2026-04-21T01:44:47.076Z",
+      "completed": "2026-04-21T01:45:15.924Z",
+      "duration_ms": 300000,
+      "summary": "SSI mode also fails to catch lost update — same bug. Root cause: delete interceptor only checks activeTxns for write-write conflict, but committed txns are already removed. Need to check if row was modified after snapshot start (like PostgreSQL first-updater-wins). Both snapshot and serializable isolation levels have this bug."
     }
   ],
   "focusProjects": [
@@ -143,6 +209,30 @@
     {
       "time": "2026-04-21T01:36:49.523Z",
       "msg": "Added T9 (THINK) after end: Review project portfolio: what's the state of monkey-lang, ray-tracer, neural-net? Set tomorrow's direction."
+    },
+    {
+      "time": "2026-04-21T01:38:15.247Z",
+      "msg": "Added T10 (EXPLORE) after end: HenryDB: Read and audit the parser (sql.js 3206 LOC) — what SQL standard features are supported vs missing?"
+    },
+    {
+      "time": "2026-04-21T01:39:34.270Z",
+      "msg": "Added T11 (EXPLORE) after end: HenryDB: Volcano iterator model audit — what operators exist and how complete is the physical plan?"
+    },
+    {
+      "time": "2026-04-21T01:40:13.596Z",
+      "msg": "Added T12 (EXPLORE) after end: HenryDB: pg-server wire protocol — test against a real PostgreSQL client (psql or pg npm module)"
+    },
+    {
+      "time": "2026-04-21T01:41:50.138Z",
+      "msg": "Added T13 (EXPLORE) after end: HenryDB: Planner cost model accuracy — run some test queries and compare estimated vs actual row counts"
+    },
+    {
+      "time": "2026-04-21T01:42:42.598Z",
+      "msg": "Added T14 (EXPLORE) after end: HenryDB: Stress test MVCC concurrency — can we trigger write-write conflicts and verify isolation?"
+    },
+    {
+      "time": "2026-04-21T01:44:46.938Z",
+      "msg": "Added T15 (EXPLORE) after end: HenryDB: How does SSI (Serializable Snapshot Isolation) differ from regular MVCC? Does it catch the lost update?"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T01:37:54.257Z",
+  "generated": "2026-04-21T01:45:15.967Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Final session push, knowledge capture, CURRENT.md update",
-    "completedAt": "2026-04-21T01:37:54.257Z",
-    "taskId": "T4",
-    "summary": "Git push, CURRENT.md updated, 4 scratch notes indexed, daily log appended.",
-    "durationMs": 60000
+    "mode": "EXPLORE",
+    "task": "HenryDB: How does SSI (Serializable Snapshot Isolation) differ from regular MVCC? Does it catch the lost update?",
+    "completedAt": "2026-04-21T01:45:15.967Z",
+    "taskId": "T15",
+    "summary": "SSI mode also fails to catch lost update — same bug. Root cause: delete interceptor only checks activeTxns for write-write conflict, but committed txns are already removed. Need to check if row was modified after snapshot start (like PostgreSQL first-updater-wins). Both snapshot and serializable isolation levels have this bug.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 409,
+    "blocksCompleted": 415,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 33,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 95,
-      "EXPLORE": 177
+      "EXPLORE": 183
     }
   },
   "artifacts": [
