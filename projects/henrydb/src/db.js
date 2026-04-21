@@ -2738,7 +2738,7 @@ export class Database {
       });
     }
     // Apply LIMIT/OFFSET
-    if (ast.offset) rows = rows.slice(ast.offset);
+    if (ast.offset) rows = rows.slice(Math.max(0, ast.offset));
     if (ast.limit != null) rows = rows.slice(0, ast.limit);
     
     // Apply SELECT columns
@@ -3336,7 +3336,7 @@ export class Database {
         });
       }
 
-      if (ast.offset) rows = rows.slice(ast.offset);
+      if (ast.offset) rows = rows.slice(Math.max(0, ast.offset));
       if (ast.limit != null) rows = rows.slice(0, ast.limit);
 
       // Project columns
@@ -3615,7 +3615,7 @@ export class Database {
     }
 
     // OFFSET (before LIMIT, but LIMIT deferred until after DISTINCT)
-    if (ast.offset && !ast.distinct) rows = rows.slice(ast.offset);
+    if (ast.offset && !ast.distinct) rows = rows.slice(Math.max(0, ast.offset));
 
     // LIMIT (only apply before projection if no DISTINCT)
     if (ast.limit != null && !ast.distinct) rows = rows.slice(0, ast.limit);
@@ -3701,7 +3701,7 @@ export class Database {
           finalRows.push(projected[i]);
         }
       }
-      if (ast.offset) finalRows = finalRows.slice(ast.offset);
+      if (ast.offset) finalRows = finalRows.slice(Math.max(0, ast.offset));
       if (ast.limit != null) finalRows = finalRows.slice(0, ast.limit);
     } else if (ast.distinct) {
       const seen = new Set();
@@ -3712,7 +3712,7 @@ export class Database {
         return true;
       });
       // Apply OFFSET and LIMIT after DISTINCT
-      if (ast.offset) finalRows = finalRows.slice(ast.offset);
+      if (ast.offset) finalRows = finalRows.slice(Math.max(0, ast.offset));
       if (ast.limit != null) finalRows = finalRows.slice(0, ast.limit);
     }
 
@@ -5805,7 +5805,7 @@ export class Database {
         return 0;
       });
     }
-    if (ast.offset) rows = rows.slice(ast.offset);
+    if (ast.offset) rows = rows.slice(Math.max(0, ast.offset));
     if (ast.limit != null) rows = rows.slice(0, ast.limit);
     return rows;
   }
@@ -7283,7 +7283,7 @@ export class Database {
           return 0;
         });
       }
-      if (ast.offset) allRows = allRows.slice(ast.offset);
+      if (ast.offset) allRows = allRows.slice(Math.max(0, ast.offset));
       if (ast.limit != null) allRows = allRows.slice(0, ast.limit);
       return { rows: allRows, columns: allRows.length > 0 ? Object.keys(allRows[0]) : [] };
     }
@@ -7638,7 +7638,7 @@ export class Database {
     }
 
     // LIMIT
-    if (ast.offset) resultRows = resultRows.slice(ast.offset);
+    if (ast.offset) resultRows = resultRows.slice(Math.max(0, ast.offset));
     if (ast.limit != null) resultRows = resultRows.slice(0, ast.limit);
 
     // Strip internal __agg_ keys before returning
