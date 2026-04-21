@@ -607,6 +607,72 @@
       "completed": "2026-04-21T16:08:30.657Z",
       "duration_ms": 300000,
       "summary": "Raised compiled engine threshold from 50 to 5000 rows based on benchmarking (3x slower at 1K rows). Made configurable. All 45 tests pass."
+    },
+    {
+      "id": "T56",
+      "mode": "THINK",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T16:10:36.673Z",
+      "completed": "2026-04-21T16:10:57.195Z",
+      "duration_ms": 60000,
+      "summary": "Session reflection complete. Key learnings: JS Number.isInteger gotcha, MVCC PK-level conflicts, compiled engine threshold too low. Next priorities: MVCCHeap wrapper, correlated subquery optimization, continued extraction."
+    },
+    {
+      "id": "T57",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep-read the Volcano IndexScan implementation — verify it handles edge cases (empty range, NULL keys, non-unique indexes)",
+      "project": "henrydb",
+      "started": "2026-04-21T16:11:15.509Z",
+      "completed": "2026-04-21T16:12:36.835Z",
+      "duration_ms": 180000,
+      "summary": "Deep-read IndexScan: found B+tree range() bug — range(50, undefined) returns 0 entries instead of all entries ≥50. range(undefined, undefined) also returns 0. Only bounded ranges work correctly. IndexScan wiring is correct, B+tree range needs fixing."
+    },
+    {
+      "id": "T58",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate HenryDB's B+tree implementation depth — leaf chain correctness, split behavior",
+      "project": "henrydb",
+      "started": "2026-04-21T16:13:23.103Z",
+      "completed": "2026-04-21T16:13:55.036Z",
+      "duration_ms": 120000,
+      "summary": "B+tree leaf chains are correctly ordered for both unique and non-unique keys (suffix comparator ensures order). range() works for bounded ranges. Only bug: undefined bounds treated as NaN, returning 0 entries. Fix is straightforward."
+    },
+    {
+      "id": "T59",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Read through neural-net's speculative decoding implementation — verify correctness",
+      "project": "neural-net",
+      "started": "2026-04-21T16:14:10.962Z",
+      "completed": "2026-04-21T16:14:34.896Z",
+      "duration_ms": 120000,
+      "summary": "Speculative decoding is a faithful implementation of Leviathan et al. 2023. Acceptance probability, rejection sampling, bonus token all correct. One potential issue: extractPositionLogits assumes flat logits layout (pos*vocabSize+v) — depends on model forward() shape convention."
+    },
+    {
+      "id": "T60",
+      "mode": "THINK",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T16:15:25.201Z",
+      "completed": "2026-04-21T16:15:39.982Z",
+      "duration_ms": 120000,
+      "summary": "Most impactful improvement: end-to-end demo app using HenryDB via pg wire protocol. Would reveal real gaps, serve as integration test, provide compelling demo. Current state is remarkably complete for a from-scratch DB — the gap is real-world usage testing."
+    },
+    {
+      "id": "T61",
+      "mode": "THINK",
+      "status": "done",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T16:15:58.852Z",
+      "completed": "2026-04-21T16:16:29.018Z",
+      "duration_ms": 60000,
+      "summary": "Updated scratch INDEX.md: 6 bugs marked as FIXED/VERIFIED. 6 new design notes from today. Categorized by status (resolved/active/completed). Clean separation of active vs archived items."
     }
   ],
   "focusProjects": [
@@ -862,6 +928,30 @@
     {
       "time": "2026-04-21T16:04:01.537Z",
       "msg": "Added T55 (BUILD) after end: Adjust compiled engine threshold from 50 rows to 5000 based on benchmarking"
+    },
+    {
+      "time": "2026-04-21T16:10:30.267Z",
+      "msg": "Added T56 (THINK) after end: Session reflection: what did I learn today? What surprised me? What's the highest-value next work?"
+    },
+    {
+      "time": "2026-04-21T16:11:11.225Z",
+      "msg": "Added T57 (EXPLORE) after end: Deep-read the Volcano IndexScan implementation — verify it handles edge cases (empty range, NULL keys, non-unique indexes)"
+    },
+    {
+      "time": "2026-04-21T16:13:17.304Z",
+      "msg": "Added T58 (EXPLORE) after end: Investigate HenryDB's B+tree implementation depth — leaf chain correctness, split behavior"
+    },
+    {
+      "time": "2026-04-21T16:14:05.157Z",
+      "msg": "Added T59 (EXPLORE) after end: Read through neural-net's speculative decoding implementation — verify correctness"
+    },
+    {
+      "time": "2026-04-21T16:15:20.358Z",
+      "msg": "Added T60 (THINK) after end: What is the most impactful single improvement I could make to HenryDB to advance it as a real database?"
+    },
+    {
+      "time": "2026-04-21T16:15:52.801Z",
+      "msg": "Added T61 (THINK) after end: Review scratch notes index — are any outdated or should be archived?"
     }
   ]
 }

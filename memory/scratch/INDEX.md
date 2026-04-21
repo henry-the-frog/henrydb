@@ -1,35 +1,44 @@
 # Scratch Notes Index
 
-## Bug Analysis
+## Bug Analysis (Resolved)
+- `henrydb-lost-update-rca.md` — **FIXED 2026-04-20** _update index-scan path invisible rows → fall through to scan
+- `henrydb-mvcc-multiversion-bug.md` — **FIXED 2026-04-21** PK-based scan dedup + PK-level conflict detection
+- `henrydb-compiled-engine-gaps.md` — **FIXED 2026-04-21** Added BETWEEN/IS NULL/IN/LIKE, safe fallback on unknown types
+- `henrydb-wal-truncation-gap.md` — **FIXED 2026-04-21** PersistentDB checkpoint + auto-checkpoint at 16MB
+- `diff-fuzzer-results.md` — **FIXED 2026-04-21** Division truncation fixed (DECIMAL column type awareness)
+- `hash-join-wiring-plan.md` — **VERIFIED 2026-04-21** Hash join already working (1K×1K in 8.9ms)
+
+## Bug Analysis (Active)
 - `bug-patterns-2026-04-17.md` — Category analysis of HenryDB bugs (layer boundaries, recovery model gaps)
 - `ssi-sequential-false-positive.md` — SSI recordWrite missing concurrency check
 - `ssi-false-positive-seqscan.md` — SSI false positives from SeqScan reading too broadly
 - `ssi-suppress-update-reads.md` — SSI false positives from UPDATE scanning
-- `method-naming-mismatch.md` — **NEW 2026-04-20** Method rename without updating call sites pattern
-- `tokenizer-negative-ambiguity.md` — **NEW 2026-04-20** Duplicate negative number checks in tokenizer
+- `method-naming-mismatch.md` — Method rename without updating call sites pattern
+- `tokenizer-negative-ambiguity.md` — Duplicate negative number checks in tokenizer
+- `tpch-stress-results.md` — TPC-H 31/33 pass
 
-## Design Notes
-- `hot-chains.md` — HOT chain design (already implemented in page.js)
-- `stored-procedures-design.md` — SQL function phases (Phase 1 done: scalar functions)
+## Design Notes (Active)
+- `henrydb-mvcc-heap-redesign.md` — **NEW 2026-04-21** MVCCHeap wrapper class to replace monkey-patching
+- `henrydb-vacuum-design.md` — **NEW 2026-04-21** Phase 1 vacuum design (version map cleanup)
+- `henrydb-next-phase.md` — **NEW 2026-04-21** Architecture analysis + next priorities
+- `henrydb-cost-model-analysis.md` — **NEW 2026-04-21** Three cost paths, unification roadmap
+- `henrydb-perf-profile.md` — **NEW 2026-04-21** Benchmark results, correlated subquery bottleneck
+- `postgresql-evalplanqual.md` — **NEW 2026-04-21** EvalPlanQual research for Read Committed
+- `hot-chains.md` — HOT chain design (implemented)
+- `stored-procedures-design.md` — SQL function phases (Phase 1 done)
 - `savepoint-physicalization.md` — Savepoint persistence design
 - `mvcc-persistence-bugs.md` — Version map serialization issues
 - `savepoint-rollback-isolation.md` — Savepoint version map scoping
 - `mvcc-index-bypass.md` — MVCC visibility in index scans
+- `henrydb-index-only-scans.md` — Covering indexes need MVCC visibility map check
+- `henrydb-mvcc-interception.md` — MVCC monkey-patching fragility (see redesign note)
 
-## Performance
-- `query-optimizer-gaps.md` — Optimizer improvement opportunities (parametric cost model done)
-- `query-compilation-research.md` — Copy-and-patch vs traditional codegen (vectorized > both for JS)
+## Design Notes (Completed)
+- `henrydb-monolith-analysis.md` — **IN PROGRESS** db.js analysis (now 8247 LOC, was 9888)
+
+## Performance/Research
+- `query-optimizer-gaps.md` — Optimizer improvements (parametric cost model done)
+- `query-compilation-research.md` — Copy-and-patch vs traditional codegen
 
 ## Reference
-- `README.md` — How to use scratch notes (uses counter, tags, lifecycle)
-- `tpch-stress-results.md` — **NEW 2026-04-20** TPC-H 31/33 pass, hash join dead code, parser bugs
-- `diff-fuzzer-results.md` — **NEW 2026-04-20** Division truncation, NULL IS NULL broken, CAST no-op
-- `hash-join-wiring-plan.md` — **NEW 2026-04-20** 30-line fix: add hash join to _executeJoinWithRows
-- `henrydb-monolith-analysis.md` — **NEW 2026-04-20** db.js 9844-line analysis: module boundaries, extraction order, duplicate _analyzeTable bug
-- `henrydb-wal-truncation-gap.md` — **NEW 2026-04-20** WAL truncation: TransactionalDB OK, PersistentDB missing checkpoint/truncation entirely
-- `henrydb-mvcc-interception.md` — **NEW 2026-04-20** MVCC via heap monkey-patching: 4 intercepted methods, fragility analysis, recommendations
-- `henrydb-compiled-engine-gaps.md` — **NEW 2026-04-20** Compiled engine only handles 4 expr types. Silent null on unknown → correctness bug (returns all rows)
-- `henrydb-lost-update-rca.md` — **NEW 2026-04-20** Root cause: _update index-scan path returns invisible MVCC rows as null → 0 rows updated. Fix: fall through to scan when index returns invisible rows.
-- `postgresql-first-updater-wins.md` — **NEW 2026-04-20** PostgreSQL EvalPlanQual mechanism, first-updater-wins protocol, READ COMMITTED vs REPEATABLE READ, implementation plan for HenryDB.
-- `henrydb-mvcc-multiversion-bug.md` — **NEW 2026-04-20** Deep analysis: heap.scan() returns multiple row versions after repeated concurrent UPDATE cycles. Root causes: (1) no logical row dedup, (2) cascading version creation, (3) visibility check failure. Fix options: logical rowId, version chains, PK-based dedup.
-- `henrydb-index-only-scans.md` — **NEW 2026-04-20** HenryDB has covering indexes but missing MVCC visibility map check. Fix plan: Phase 1 (vis map check), Phase 2 (MVCC-aware index entries).
+- `README.md` — How to use scratch notes

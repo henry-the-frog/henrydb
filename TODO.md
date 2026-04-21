@@ -1,7 +1,7 @@
 ## TODO
 
 ### Urgent
-(none)
+- HenryDB: B+tree range() bug — range(low, undefined) and range(undefined, undefined) return 0 entries. Only bounded ranges work. Breaks Volcano IndexScan for open-ended range queries. (since 2026-04-21)
 
 ### Normal
 - HenryDB: 6 Volcano operators partially wired (IndexScan done, Window/CTE/RecursiveCTE/Union/MergeJoin remain) (since 2026-04-20, updated 2026-04-21)
