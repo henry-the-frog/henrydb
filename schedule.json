@@ -202,36 +202,64 @@
     {
       "id": "T15",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Full workspace commit+push, dashboard update",
-      "started": "2026-04-21T14:55:27.278Z"
+      "started": "2026-04-21T14:55:27.278Z",
+      "completed": "2026-04-21T14:55:55.470Z",
+      "duration_ms": 30000,
+      "summary": "All pushed. HenryDB: 5 commits today (MVCC, division, compiled engine, WAL checkpoint). Neural-net: 1 commit (MoE fix)."
     },
     {
       "id": "T16",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection: surprises, patterns, pivot assessment"
+      "status": "done",
+      "task": "Mid-day reflection: surprises, patterns, pivot assessment",
+      "started": "2026-04-21T14:56:07.428Z",
+      "completed": "2026-04-21T14:56:27.867Z",
+      "duration_ms": 30000,
+      "summary": "Depth check PASS: 3/3 surprises (MVCC PK dedup, JS isInteger gotcha, compiled engine AND bug). 7 BUILDs so far. Will tackle index-after-rollback CRITICAL before monolith split."
+    },
+    {
+      "id": "T26",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix index lookup after rollback: B-tree index not properly restored when transaction rolls back",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-21T14:56:48.893Z",
+      "completed": "2026-04-21T14:57:57.983Z",
+      "duration_ms": 120000,
+      "summary": "Index-after-rollback investigated: works correctly in current codebase. MVCC visibility + scan fallback + PK dedup handle rollback properly. Secondary index lookups on rolled-back columns return correct results. No fix needed."
     },
     {
       "id": "T17",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB db.js monolith split — extract first module from 9844 LOC",
-      "task": null
+      "task": null,
+      "started": "2026-04-21T14:58:14.714Z",
+      "completed": "2026-04-21T14:59:04.538Z",
+      "duration_ms": 120000,
+      "summary": "Identified _evalFunction (645 LOC) as first extraction target. Self-contained function dispatcher with _dateArith, _likeToRegex, _jsonExtract helpers. Called only from _evalValue."
     },
     {
       "id": "T18",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Extract _evalFunction (645 LOC) + _dateArith + _likeToRegex + _jsonExtract into sql-functions.js",
       "plan_ref": "T17",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T14:59:15.764Z",
+      "completed": "2026-04-21T15:07:58.815Z",
+      "duration_ms": 600000,
+      "summary": "Extracted sql-functions.js from db.js: 695 LOC removed. _evalFunction (645 LOC), _jsonExtract, _dateArith, _likeToRegex moved to standalone module. db.js now 9193 LOC (was 9888). All tests pass."
     },
     {
       "id": "T19",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit monolith split, push, test sweep"
+      "status": "in-progress",
+      "task": "Commit monolith split, push, test sweep",
+      "started": "2026-04-21T15:08:17.991Z"
     },
     {
       "id": "T20",
@@ -381,6 +409,18 @@
     {
       "time": "2026-04-21T14:54:52.091Z",
       "msg": "PLAN T13 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T14:56:33.598Z",
+      "msg": "Added T26 (PLAN) after end: Fix index lookup after rollback: B-tree index not properly restored when transaction rolls back"
+    },
+    {
+      "time": "2026-04-21T14:56:40.461Z",
+      "msg": "Moved T26 after T16"
+    },
+    {
+      "time": "2026-04-21T14:58:58.494Z",
+      "msg": "PLAN T17 filled 1 BUILD tasks"
     }
   ]
 }

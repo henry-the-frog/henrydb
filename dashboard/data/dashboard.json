@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-21T14:55:27.314Z",
+  "generated": "2026-04-21T15:08:18.027Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Full workspace commit+push, dashboard update",
-    "startedAt": "2026-04-21T14:55:27.314Z",
-    "taskId": "T15"
+    "task": "Commit monolith split, push, test sweep",
+    "startedAt": "2026-04-21T15:08:18.027Z",
+    "taskId": "T19"
   },
   "schedule": {
     "date": "2026-04-21",
@@ -190,43 +190,71 @@
       {
         "id": "T13",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB PersistentDB WAL checkpoint/truncation",
         "task": null,
-        "started": "2026-04-21T14:52:53.457Z"
+        "started": "2026-04-21T14:52:53.457Z",
+        "completed": "2026-04-21T14:54:59.011Z",
+        "duration_ms": 60000,
+        "summary": "Planned PersistentDB checkpoint: flush heaps + save catalog + truncate WAL. Auto-checkpoint at 16MB. Modeled after TransactionalDB."
       },
       {
         "id": "T14",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Add checkpoint() method + auto-checkpoint to PersistentDatabase",
         "plan_ref": "T13",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-21T14:55:09.908Z",
+        "completed": "2026-04-21T14:55:10.049Z",
+        "duration_ms": 300000,
+        "summary": "PersistentDB checkpoint implemented: checkpoint(), auto-checkpoint at 16MB WAL, 3 new tests (truncation, data survives reopen, auto-trigger). 11/11 existing + 3 new pass."
       },
       {
         "id": "T15",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Full workspace commit+push, dashboard update"
+        "status": "done",
+        "task": "Full workspace commit+push, dashboard update",
+        "started": "2026-04-21T14:55:27.278Z",
+        "completed": "2026-04-21T14:55:55.470Z",
+        "duration_ms": 30000,
+        "summary": "All pushed. HenryDB: 5 commits today (MVCC, division, compiled engine, WAL checkpoint). Neural-net: 1 commit (MoE fix)."
       },
       {
         "id": "T16",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day reflection: surprises, patterns, pivot assessment"
+        "status": "done",
+        "task": "Mid-day reflection: surprises, patterns, pivot assessment",
+        "started": "2026-04-21T14:56:07.428Z",
+        "completed": "2026-04-21T14:56:27.867Z",
+        "duration_ms": 30000,
+        "summary": "Depth check PASS: 3/3 surprises (MVCC PK dedup, JS isInteger gotcha, compiled engine AND bug). 7 BUILDs so far. Will tackle index-after-rollback CRITICAL before monolith split."
+      },
+      {
+        "id": "T26",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Fix index lookup after rollback: B-tree index not properly restored when transaction rolls back",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-21T14:56:48.893Z",
+        "completed": "2026-04-21T14:57:57.983Z",
+        "duration_ms": 120000,
+        "summary": "Index-after-rollback investigated: works correctly in current codebase. MVCC visibility + scan fallback + PK dedup handle rollback properly. Secondary index lookups on rolled-back columns return correct results. No fix needed."
       },
       {
         "id": "T17",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB db.js monolith split — extract first module from 9844 LOC",
-        "task": null
+        "task": null,
+        "started": "2026-04-21T14:58:14.714Z"
       },
       {
         "id": "T18",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Extract _evalFunction (645 LOC) + _dateArith + _likeToRegex + _jsonExtract into sql-functions.js",
         "plan_ref": "T17",
         "project": "henrydb"
       },
@@ -253,13 +281,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 18,
-    "blocksTotal": 25,
+    "blocksCompleted": 23,
+    "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 6,
-      "BUILD": 6,
-      "MAINTAIN": 3
+      "THINK": 4,
+      "PLAN": 8,
+      "BUILD": 7,
+      "MAINTAIN": 4
     }
   }
 }
