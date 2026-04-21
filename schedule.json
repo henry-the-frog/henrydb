@@ -541,6 +541,39 @@
       "completed": "2026-04-21T15:55:24.770Z",
       "duration_ms": 180000,
       "summary": "Cataloged 5 MVCC monkey-patching fragility risks. Designed MVCCHeap wrapper class as replacement. Migration plan: ~2 hours, creates mvcc-heap.js with scan/get/delete/findByPK. Benefits: new heap types auto-get MVCC, clean separation."
+    },
+    {
+      "id": "T50",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test HenryDB wire protocol with real PostgreSQL client (psql or pg library)",
+      "project": "henrydb",
+      "started": "2026-04-21T15:56:24.317Z",
+      "completed": "2026-04-21T15:57:24.327Z",
+      "duration_ms": 120000,
+      "summary": "Wire protocol works with real pg npm client: SELECT, GROUP BY, parameterized queries all pass. SERIAL auto-increment works. 80+ wire protocol test files exist. wire-basic 3/3, pg-client 13/13 pass."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire Volcano Union operator for UNION/UNION ALL queries",
+      "project": "henrydb",
+      "started": "2026-04-21T15:58:03.427Z",
+      "completed": "2026-04-21T15:59:41.094Z",
+      "duration_ms": 180000,
+      "summary": "Wired Volcano Union: buildPlan handles UNION AST recursively. UNION ALL works, UNION wraps in Distinct (needs column normalization for cross-table dedup). 92 tests pass."
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Read through HenryDB's most complex test suite — what patterns emerge, what's missing?",
+      "project": "henrydb",
+      "started": "2026-04-21T16:00:01.666Z",
+      "completed": "2026-04-21T16:01:04.131Z",
+      "duration_ms": 120000,
+      "summary": "855 test files, 126K lines of test code. SQL fuzzer (74 tests, 20K+ queries): pass. SQL standard conformance (48): pass. Vacuum depth (19): pass. Test infrastructure is remarkably comprehensive."
     }
   ],
   "focusProjects": [
@@ -772,6 +805,18 @@
     {
       "time": "2026-04-21T15:54:26.338Z",
       "msg": "Added T49 (EXPLORE) after end: Deep investigation: MVCC heap monkey-patching fragility — catalog the 5 risks and design a cleaner architecture"
+    },
+    {
+      "time": "2026-04-21T15:56:17.767Z",
+      "msg": "Added T50 (EXPLORE) after end: Test HenryDB wire protocol with real PostgreSQL client (psql or pg library)"
+    },
+    {
+      "time": "2026-04-21T15:57:54.441Z",
+      "msg": "Added T51 (BUILD) after end: Wire Volcano Union operator for UNION/UNION ALL queries"
+    },
+    {
+      "time": "2026-04-21T15:59:53.630Z",
+      "msg": "Added T52 (EXPLORE) after end: Read through HenryDB's most complex test suite — what patterns emerge, what's missing?"
     }
   ]
 }
