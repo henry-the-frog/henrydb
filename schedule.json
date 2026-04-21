@@ -491,6 +491,17 @@
       "completed": "2026-04-21T03:34:31.414Z",
       "duration_ms": 300000,
       "summary": "Continuous batching: dynamic request scheduling, prefill/decode separation, staggered arrivals. 6 tests."
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement prefix caching (shared prompt KV-cache across requests)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:35:20.838Z",
+      "completed": "2026-04-21T03:36:18.039Z",
+      "duration_ms": 300000,
+      "summary": "Prefix caching: shared prompt KV-cache reuse, LRU eviction, hit rate tracking. 7 tests."
     }
   ],
   "focusProjects": [
@@ -678,6 +689,10 @@
     {
       "time": "2026-04-21T03:33:21.599Z",
       "msg": "Added T45 (EXPLORE) after end: Neural-net: implement continuous batching for multi-request serving"
+    },
+    {
+      "time": "2026-04-21T03:35:14.940Z",
+      "msg": "Added T46 (EXPLORE) after end: Neural-net: implement prefix caching (shared prompt KV-cache across requests)"
     }
   ]
 }
