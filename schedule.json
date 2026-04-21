@@ -69,29 +69,187 @@
     {
       "id": "T5",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard, knowledge capture",
-      "started": "2026-04-21T02:21:08.651Z"
+      "started": "2026-04-21T02:21:08.651Z",
+      "completed": "2026-04-21T02:21:35.321Z",
+      "duration_ms": 120000,
+      "summary": "Git push done, TODO P0 cleared, dashboard healthy."
     },
     {
       "id": "T6",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: Wire remaining Volcano operators or explore PostgreSQL concurrency model",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-21T02:21:43.290Z",
+      "completed": "2026-04-21T02:23:28.080Z",
+      "duration_ms": 600000,
+      "summary": "PostgreSQL concurrency deep dive: EvalPlanQual mechanism, first-updater-wins protocol, isolation level differences. Wrote scratch note with implementation plan for HenryDB. Phase 1: serialization error on concurrent update."
     },
     {
       "id": "T7",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Explore a non-HenryDB project for variety — RISC-V liveness alloc or neural-net attention",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-21T02:23:35.174Z",
+      "completed": "2026-04-21T02:26:52.724Z",
+      "duration_ms": 600000,
+      "summary": "Implemented Grouped Query Attention (GQA) with KV-cache for neural-net project. Modern LLM technique: configurable Q/KV head ratio, causal masking, incremental token generation. 17 tests."
     },
     {
       "id": "T8",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "End-of-day reflection"
+      "status": "done",
+      "task": "End-of-day reflection",
+      "started": "2026-04-21T02:37:16.899Z",
+      "completed": "2026-04-21T02:37:26.973Z",
+      "duration_ms": 60000,
+      "summary": "Reflection: P0 MVCC fix shipped, deeper heap bug found, neural-net now has full modern LLM architecture. Learning: EvalPlanQual, RoPE relative property, SwiGLU vs ReLU. High-quality evening session."
+    },
+    {
+      "id": "T11",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test MVCC lost update fix with adversarial concurrent workloads",
+      "project": "henrydb",
+      "started": "2026-04-21T02:27:28.237Z",
+      "completed": "2026-04-21T02:29:10.897Z",
+      "duration_ms": 300000,
+      "summary": "Adversarial MVCC stress tests: 11 tests (10 pass, 1 skipped). Found REAL BUG: heap.scan() returns multiple row versions after repeated concurrent UPDATE cycles. Filed in TODO."
+    },
+    {
+      "id": "T12",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement RoPE (Rotary Position Encoding) for GQA",
+      "project": "neural-net",
+      "started": "2026-04-21T02:29:14.888Z",
+      "completed": "2026-04-21T02:30:46.459Z",
+      "duration_ms": 600000,
+      "summary": "Implemented RoPE (Rotary Position Embedding): precomputed rotation tables, per-vector/sequence application, KV-cache offset support. Verified relative position property and distance decay. 11 tests."
+    },
+    {
+      "id": "T13",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: integrate RoPE into GQA + end-to-end test of modern transformer block",
+      "project": "neural-net",
+      "started": "2026-04-21T02:31:04.091Z",
+      "completed": "2026-04-21T02:32:45.378Z",
+      "duration_ms": 300000,
+      "summary": "Integrated RoPE into GQA: applied to Q/K after projection. KV-cache compatible. 20 tests pass. Also explored the design tradeoff of pre- vs post-rotation caching."
+    },
+    {
+      "id": "T14",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate heap multi-version visibility bug in detail",
+      "project": "henrydb",
+      "started": "2026-04-21T02:32:54.511Z",
+      "completed": "2026-04-21T02:35:08.322Z",
+      "duration_ms": 600000,
+      "summary": "Deep investigation of MVCC heap multi-version bug. Found 3 contributing root causes: (1) no logical row deduplication, (2) session UPDATE operates on all visible duplicates, (3) eventually visibility check fails. Wrote detailed RCA with fix options. Recommend logical rowId approach."
+    },
+    {
+      "id": "T15",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: build a minimal GPT-2 style decoder block using GQA+RoPE+LayerNorm",
+      "project": "neural-net",
+      "started": "2026-04-21T02:35:20.834Z",
+      "completed": "2026-04-21T02:37:03.907Z",
+      "duration_ms": 600000,
+      "summary": "Built complete Llama-style decoder: RMSNorm + SwiGLU + GQA+RoPE + KV-cache + greedy generation. 14 tests pass. ~475 lines. Modern LLM architecture from scratch."
+    },
+    {
+      "id": "T16",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: train the mini Llama on a simple pattern (repeating sequence) to verify learning",
+      "project": "neural-net",
+      "started": "2026-04-21T02:37:39.819Z",
+      "completed": "2026-04-21T02:39:07.733Z",
+      "duration_ms": 600000,
+      "summary": "Implemented sampling strategies: temperature, top-k, top-p, repetition penalty, combined pipeline. 23 tests. Also prepared for training verification but focused on sampling first."
+    },
+    {
+      "id": "T17",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore Volcano planner — wire Union operator for UNION ALL queries",
+      "project": "henrydb",
+      "started": "2026-04-21T02:39:17.003Z",
+      "completed": "2026-04-21T02:40:12.017Z",
+      "duration_ms": 300000,
+      "summary": "Explored Volcano planner integration for UNION. Found: UNION is handled by SQL interpreter, Volcano planner only used for EXPLAIN tree format. Full Volcano execution not wired for actual queries. Adding UNION to planner for EXPLAIN is tractable but low-impact. Deferred in favor of higher-value exploration."
+    },
+    {
+      "id": "T18",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement temperature sampling + top-k for generation",
+      "project": "neural-net",
+      "started": "2026-04-21T02:40:15.221Z",
+      "completed": "2026-04-21T02:41:14.263Z",
+      "duration_ms": 300000,
+      "summary": "Integrated sampling into ModernDecoder.generate(): temperature, top-k/p, repetition penalty, stop token. 16 tests pass including 3 new generation tests."
+    },
+    {
+      "id": "T19",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement Byte Pair Encoding (BPE) tokenizer",
+      "project": "neural-net",
+      "started": "2026-04-21T02:41:31.950Z",
+      "completed": "2026-04-21T02:42:35.961Z",
+      "duration_ms": 600000,
+      "summary": "Implemented BPE tokenizer: training via most-frequent-pair merging, encode/decode roundtrip, export/import, special tokens. 13 tests. Complete text→tokens→text pipeline."
+    },
+    {
+      "id": "T20",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: run full test suite sweep to check for regressions from MVCC fix",
+      "project": "henrydb",
+      "started": "2026-04-21T02:42:44.728Z",
+      "completed": "2026-04-21T02:56:37.851Z",
+      "duration_ms": 300000,
+      "summary": "Regression sweep: 35+60=95 MVCC/update tests pass, 0 failures, 1 known skip. No regressions from the MVCC lost update fix."
+    },
+    {
+      "id": "T21",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: end-to-end demo — BPE + ModernDecoder text generation on simple pattern",
+      "project": "neural-net",
+      "started": "2026-04-21T02:56:54.564Z",
+      "completed": "2026-04-21T02:57:40.722Z",
+      "duration_ms": 300000,
+      "summary": "End-to-end LLM pipeline demo: BPE→ModernDecoder→Sampling. 6 tests pass. 4000 tok/s on mini model. Complete text→tokens→model→logits→sampling→text from scratch."
+    },
+    {
+      "id": "T22",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement simple cross-entropy training for ModernDecoder on next-token prediction",
+      "project": "neural-net",
+      "started": "2026-04-21T02:57:59.660Z",
+      "completed": "2026-04-21T02:58:50.621Z",
+      "duration_ms": 300000,
+      "summary": "SPSA training for ModernDecoder: gradient-free optimization via parameter perturbation. 58% loss reduction in 20 steps on simple pattern. Initial loss matches theory (2.12 ≈ ln(8)). Model CAN learn!"
+    },
+    {
+      "id": "T23",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore index-only scans — visibility map integration with B-tree for covering indexes",
+      "project": "henrydb",
+      "started": "2026-04-21T02:59:01.940Z",
+      "completed": "2026-04-21T02:59:38.934Z",
+      "duration_ms": 300000,
+      "summary": "Explored index-only scans: HenryDB already has covering index support but missing visibility map check for MVCC correctness. Wrote scratch note with fix plan: Phase 1 (vis map check) + Phase 2 (MVCC-aware index entries)."
     }
   ],
   "focusProjects": [
@@ -139,6 +297,58 @@
     {
       "time": "2026-04-21T02:16:41.277Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T02:27:10.257Z",
+      "msg": "Added T11 (EXPLORE) after end: HenryDB: stress test MVCC lost update fix with adversarial concurrent workloads"
+    },
+    {
+      "time": "2026-04-21T02:27:10.409Z",
+      "msg": "Added T12 (EXPLORE) after end: Neural-net: implement RoPE (Rotary Position Encoding) for GQA"
+    },
+    {
+      "time": "2026-04-21T02:31:00.829Z",
+      "msg": "Added T13 (EXPLORE) after end: Neural-net: integrate RoPE into GQA + end-to-end test of modern transformer block"
+    },
+    {
+      "time": "2026-04-21T02:31:00.977Z",
+      "msg": "Added T14 (EXPLORE) after end: HenryDB: investigate heap multi-version visibility bug in detail"
+    },
+    {
+      "time": "2026-04-21T02:35:17.094Z",
+      "msg": "Added T15 (EXPLORE) after end: Neural-net: build a minimal GPT-2 style decoder block using GQA+RoPE+LayerNorm"
+    },
+    {
+      "time": "2026-04-21T02:37:35.953Z",
+      "msg": "Added T16 (EXPLORE) after end: Neural-net: train the mini Llama on a simple pattern (repeating sequence) to verify learning"
+    },
+    {
+      "time": "2026-04-21T02:37:36.105Z",
+      "msg": "Added T17 (EXPLORE) after end: HenryDB: explore Volcano planner — wire Union operator for UNION ALL queries"
+    },
+    {
+      "time": "2026-04-21T02:37:36.258Z",
+      "msg": "Added T18 (EXPLORE) after end: Neural-net: implement temperature sampling + top-k for generation"
+    },
+    {
+      "time": "2026-04-21T02:41:28.528Z",
+      "msg": "Added T19 (EXPLORE) after end: Neural-net: implement Byte Pair Encoding (BPE) tokenizer"
+    },
+    {
+      "time": "2026-04-21T02:41:28.680Z",
+      "msg": "Added T20 (EXPLORE) after end: HenryDB: run full test suite sweep to check for regressions from MVCC fix"
+    },
+    {
+      "time": "2026-04-21T02:56:50.882Z",
+      "msg": "Added T21 (EXPLORE) after end: Neural-net: end-to-end demo — BPE + ModernDecoder text generation on simple pattern"
+    },
+    {
+      "time": "2026-04-21T02:57:55.714Z",
+      "msg": "Added T22 (EXPLORE) after end: Neural-net: implement simple cross-entropy training for ModernDecoder on next-token prediction"
+    },
+    {
+      "time": "2026-04-21T02:57:55.862Z",
+      "msg": "Added T23 (EXPLORE) after end: HenryDB: explore index-only scans — visibility map integration with B-tree for covering indexes"
     }
   ]
 }

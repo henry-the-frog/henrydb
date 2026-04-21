@@ -1,7 +1,7 @@
 ## TODO
 
 ### Urgent
-- **HenryDB: Lost update bug — _update index-scan path skips invisible rows** (since 2026-04-20). When T1 updates+commits, PK index points to T1's new row (invisible to T2). `heap.get()` returns null, `usedIndex=true` prevents fallback to full scan → 0 rows updated. Fix: when index scan finds 0 visible rows for an UPDATE, fall through to full table scan. Location: db.js L4762-4800.
+(empty)
 
 ### Normal
 - HenryDB: Compiled query engine silent-null correctness bug — returns all rows when filter can't compile (latent, only EXPLAIN COMPILED path) (since 2026-04-20)
@@ -19,3 +19,6 @@
 - HenryDB: Hash-index performance (test takes 24s)
 - HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr
 - HenryDB: Unified expression walker migration
+
+### Normal
+- **HenryDB: MVCC heap scan returns multiple row versions** — After repeated concurrent UPDATE cycles on the same row, heap.scan() returns ALL physical versions (not just the one visible in the current snapshot). This means SELECT can return duplicate rows. Root cause: heap stores multiple physical copies and the visibility filter in full-scan path doesn't properly deduplicate by logical row identity. Test: mvcc-adversarial-stress.test.js "10 sequential transactions" (currently skipped).
