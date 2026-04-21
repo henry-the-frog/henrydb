@@ -600,10 +600,13 @@
     {
       "id": "T55",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Adjust compiled engine threshold from 50 rows to 5000 based on benchmarking",
       "project": "henrydb",
-      "started": "2026-04-21T16:04:08.039Z"
+      "started": "2026-04-21T16:04:08.039Z",
+      "completed": "2026-04-21T16:08:30.657Z",
+      "duration_ms": 300000,
+      "summary": "Raised compiled engine threshold from 50 to 5000 rows based on benchmarking (3x slower at 1K rows). Made configurable. All 45 tests pass."
     }
   ],
   "focusProjects": [
