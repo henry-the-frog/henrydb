@@ -1,26 +1,15 @@
 # CURRENT.md — Session Status
 
-## Status: session-ended
-## Session: 2026-04-21 Session A (8:15 AM - 2:15 PM MDT)
-## Project: henrydb + neural-net
-## Ended: 2026-04-21T20:00:00Z
+## Status: in-progress
+## Session: 2026-04-21 Session B-2 (5:30 PM - 8:15 PM MDT)
+## Project: henrydb
+## Mode: PLAN
+## Task: Wire Volcano CTE and MergeJoin operators
+## Current Position: T9
+## Started: 2026-04-21T23:31:00Z
+## Tasks Completed This Session: 0
 
-### Session Summary
-- **45+ tasks completed** (30 BUILD, 8 EXPLORE, 4 THINK, 3 MAINTAIN)
-- **db.js: 9888→7690 LOC (22% reduction)** — 8 modules extracted
-- **6 critical bug fixes** + 12x correlated subquery speedup
-- **Volcano: IndexScan + Union + CTE wired**
-- **End-to-end demo**: todo app via pg wire protocol
-- **All 870+ tests green**
-
-### Key Additions Today
-- sql-functions.js, window-functions.js, ddl-tables.js, ddl-indexes.js, ddl-misc.js, dml-insert.js, dml-mutate.js
-- volcano-analyze.js (EXPLAIN ANALYZE for Volcano plans)
-- examples/todo-app.mjs (end-to-end demo)
-- Auto-vacuum, query cache, compiled engine threshold tuning
-
-### Next Session Priorities
-1. MVCCHeap wrapper class (replace monkey-patching)
-2. Continue db.js extraction (expression evaluator)
-3. Wire Volcano Window operator
-4. Correlated subquery decorrelation for non-aggregate cases
+### Session B-2 Focus
+1. Wire Volcano CTE and MergeJoin operators
+2. Continue db.js extraction if time
+3. Generate new work from backlog/TASKS.md

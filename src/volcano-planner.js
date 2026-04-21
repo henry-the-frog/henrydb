@@ -3,7 +3,8 @@
 
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
-  NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
+  NestedLoopJoin, HashJoin, MergeJoin, Sort, HashAggregate, IndexNestedLoopJoin,
+  CTE, RecursiveCTE,
 } from './volcano.js';
 
 /**
@@ -21,15 +22,130 @@ export function explainPlan(ast, tables, indexCatalog) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog) {
+  // 0. Handle CTEs — materialize subqueries and add as virtual tables
+  let effectiveTables = tables;
+  if (ast.ctes && ast.ctes.length > 0) {
+    effectiveTables = new Map(tables);
+    for (const cte of ast.ctes) {
+      if (cte.recursive) {
+        // Recursive CTE: iteratively materialize until fixed point
+        const unionAst = cte.query; // type: 'UNION'
+        const baseAst = unionAst.left;
+        const recursiveAst = unionAst.right;
+        const columnList = cte.columnList;
+        
+        // Build and execute base case
+        const basePlan = buildPlan(baseAst, effectiveTables, indexCatalog);
+        basePlan.open();
+        let allRows = [];
+        let row;
+        while ((row = basePlan.next()) !== null) {
+          allRows.push(row);
+        }
+        basePlan.close();
+        
+        // Rename columns if columnList provided
+        if (columnList && allRows.length > 0) {
+          const origColumns = Object.keys(allRows[0]);
+          allRows = allRows.map(r => {
+            const renamed = {};
+            for (let i = 0; i < columnList.length && i < origColumns.length; i++) {
+              renamed[columnList[i]] = r[origColumns[i]];
+            }
+            return renamed;
+          });
+        }
+        
+        // Iterate recursive step until fixed point
+        let workingTable = [...allRows];
+        const maxDepth = 100;
+        let depth = 0;
+        
+        while (workingTable.length > 0 && depth < maxDepth) {
+          // Create virtual table for self-reference
+          const columns = columnList || Object.keys(workingTable[0] || {});
+          const tempTables = new Map(effectiveTables);
+          tempTables.set(cte.name, {
+            heap: workingTable,
+            schema: columns.map(c => ({ name: c, type: 'ANY' })),
+            _cteMaterialized: true,
+          });
+          
+          const stepPlan = buildPlan(recursiveAst, tempTables, indexCatalog);
+          stepPlan.open();
+          const newRows = [];
+          while ((row = stepPlan.next()) !== null) {
+            // Rename to match column list
+            if (columnList) {
+              const origCols = Object.keys(row);
+              const renamed = {};
+              for (let i = 0; i < columnList.length && i < origCols.length; i++) {
+                renamed[columnList[i]] = row[origCols[i]];
+              }
+              newRows.push(renamed);
+            } else {
+              newRows.push(row);
+            }
+          }
+          stepPlan.close();
+          
+          if (newRows.length === 0) break;
+          allRows.push(...newRows);
+          workingTable = newRows;
+          depth++;
+        }
+        
+        const columns = columnList || (allRows.length > 0 ? Object.keys(allRows[0]) : []);
+        effectiveTables.set(cte.name, {
+          heap: allRows,
+          schema: columns.map(c => ({ name: c, type: 'ANY' })),
+          _cteMaterialized: true,
+        });
+      } else {
+        // Non-recursive CTE: build plan, materialize eagerly
+        const ctePlan = buildPlan(cte.query, effectiveTables, indexCatalog);
+        
+        // Materialize the CTE results
+        ctePlan.open();
+        const rows = [];
+        let row;
+        while ((row = ctePlan.next()) !== null) {
+          rows.push(row);
+        }
+        ctePlan.close();
+        
+        // Apply column rename if columnList specified
+        let materializedRows = rows;
+        if (cte.columnList && rows.length > 0) {
+          const origColumns = Object.keys(rows[0]);
+          materializedRows = rows.map(r => {
+            const renamed = {};
+            for (let i = 0; i < cte.columnList.length && i < origColumns.length; i++) {
+              renamed[cte.columnList[i]] = r[origColumns[i]];
+            }
+            return renamed;
+          });
+        }
+        
+        const columns = cte.columnList || (materializedRows.length > 0 ? Object.keys(materializedRows[0]) : []);
+        effectiveTables.set(cte.name, {
+          heap: materializedRows,
+          schema: columns.map(c => ({ name: c, type: 'ANY' })),
+          _cteMaterialized: true,
+        });
+      }
+    }
+  }
+
   // 1. Build scan for FROM table
-  let iter = buildScanNode(ast.from, tables);
+  let iter = buildScanNode(ast.from, effectiveTables);
 
   // 2. Build JOIN nodes
   if (ast.joins && ast.joins.length > 0) {
     for (const join of ast.joins) {
       const rightTableName = typeof join.table === 'string' ? join.table : join.table;
       const rightAlias = join.alias || rightTableName;
-      const rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, tables);
+      const rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, effectiveTables);
       const predicate = join.on ? buildPredicate(join.on) : null;
       
       // Choose join strategy:
@@ -40,7 +156,7 @@ export function buildPlan(ast, tables, indexCatalog) {
       
       if (equiJoin && indexCatalog) {
         const inlJoin = tryIndexNestedLoopJoin(
-          iter, equiJoin, ast.from, join, tables, indexCatalog
+          iter, equiJoin, ast.from, join, effectiveTables, indexCatalog
         );
         if (inlJoin) {
           iter = inlJoin;
@@ -129,6 +245,21 @@ function buildScanNode(fromClause, tables) {
   const tableObj = tables.get(tableName) || tables.get(tableName.toLowerCase());
   if (!tableObj) throw new Error(`Table ${tableName} not found`);
 
+  // CTE with materialized rows — scan from array with alias qualification
+  if (tableObj._cteMaterialized && Array.isArray(tableObj.heap)) {
+    const qualifyAlias = alias || tableName;
+    const rows = tableObj.heap;
+    // Add alias-qualified column names like SeqScan does
+    const qualifiedRows = rows.map(r => {
+      const qr = { ...r };
+      for (const [k, v] of Object.entries(r)) {
+        qr[`${qualifyAlias}.${k}`] = v;
+      }
+      return qr;
+    });
+    return new ValuesIter(qualifiedRows);
+  }
+
   const columns = tableObj.schema.map(c => c.name);
   return new SeqScan(tableObj.heap, columns, alias || tableName);
 }
@@ -208,7 +339,8 @@ function buildValueGetter(expr) {
         }
         return row[name]; // undefined
       };
-    case 'binary_expr': {
+    case 'binary_expr':
+    case 'arith': {
       const left = buildValueGetter(expr.left);
       const right = buildValueGetter(expr.right);
       const op = expr.op;
