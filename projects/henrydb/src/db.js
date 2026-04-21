@@ -8515,6 +8515,30 @@ export class Database {
         if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
         return val < low || val > high;
       }
+      case 'TS_MATCH': {
+        // Full-text search: to_tsvector(text) @@ to_tsquery(query)
+        const leftVal = this._evalValue(expr.left, row);
+        const rightVal = this._evalValue(expr.right, row);
+        if (leftVal === null || leftVal === undefined || rightVal === null || rightVal === undefined) return false;
+        // Both sides should be evaluated as function calls (to_tsvector, to_tsquery)
+        // The function evaluator will return TSVector/TSQuery objects or strings
+        // If they're strings, we need to do the matching ourselves
+        if (typeof leftVal === 'string' && typeof rightVal === 'string') {
+          // leftVal is the text (from to_tsvector), rightVal is the query (from to_tsquery)
+          // Simple word-level matching
+          const words = leftVal.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(Boolean);
+          const queryTerms = rightVal.toLowerCase().replace(/[^\w\s&|!]/g, ' ').split(/\s+/).filter(Boolean);
+          return queryTerms.every(term => words.some(w => w.includes(term) || term.includes(w)));
+        }
+        // If FTS module returns proper objects, use their match method
+        if (leftVal && typeof leftVal.matches === 'function') {
+          return leftVal.matches(rightVal);
+        }
+        if (rightVal && typeof rightVal.matches === 'function') {
+          return rightVal.matches(leftVal);
+        }
+        return false;
+      }
       case 'NATURAL_EQ': {
         // Compare column from left and right table in merged row
         // Use the RIGHT alias (qualified name preserved) and LEFT's original value
@@ -8602,6 +8626,7 @@ export class Database {
     if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' ||
         node.type === 'COMPARE' || node.type === 'BETWEEN' || node.type === 'NOT_BETWEEN' ||
         node.type === 'LIKE' || node.type === 'ILIKE' ||
+        node.type === 'TS_MATCH' ||
         node.type === 'IN_LIST' || node.type === 'IN_SUBQUERY' ||
         node.type === 'NOT_IN' || node.type === 'NOT_LIKE' ||
         node.type === 'IS_TRUE' || node.type === 'IS_FALSE' ||
@@ -9352,6 +9377,16 @@ export class Database {
         const jsonStr = this._evalValue(args[0], row);
         if (jsonStr == null) return 0;
         try { JSON.parse(String(jsonStr)); return 1; } catch (e) { return 0; }
+      }
+      
+      // Full-text search functions — return the text for TS_MATCH to process
+      case 'TO_TSVECTOR': {
+        const text = this._evalValue(args[0], row);
+        return text != null ? String(text) : null;
+      }
+      case 'TO_TSQUERY': case 'PLAINTO_TSQUERY': case 'PHRASETO_TSQUERY': {
+        const query = this._evalValue(args[0], row);
+        return query != null ? String(query) : null;
       }
       
       default: throw new Error(`Unknown function: ${func}`);

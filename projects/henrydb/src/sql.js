@@ -121,6 +121,7 @@ export function tokenize(sql) {
     if (src[i] === '<' && src[i + 1] === '>') { tokens.push({ type: 'NE' }); i += 2; continue; }
     if (src[i] === '|' && src[i + 1] === '|') { tokens.push({ type: 'CONCAT_OP' }); i += 2; continue; }
     if (src[i] === ':' && src[i + 1] === ':') { tokens.push({ type: 'CAST_OP' }); i += 2; continue; }
+    if (src[i] === '@' && src[i + 1] === '@') { tokens.push({ type: 'TS_MATCH' }); i += 2; continue; }
     if (src[i] === '=') { tokens.push({ type: 'EQ' }); i++; continue; }
     if (src[i] === '<') { tokens.push({ type: 'LT' }); i++; continue; }
     if (src[i] === '>') { tokens.push({ type: 'GT' }); i++; continue; }
@@ -1882,6 +1883,12 @@ export function parse(sql) {
       }
       const right = parsePrimaryWithConcat();
       return { type: 'COMPARE', op, left, right };
+    }
+    // Text search match: expr @@ expr
+    if (op === 'TS_MATCH') {
+      advance();
+      const right = parsePrimaryWithConcat();
+      return { type: 'TS_MATCH', left, right };
     }
     return left;
   }
