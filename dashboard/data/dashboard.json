@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T00:11:35.093Z",
+  "generated": "2026-04-21T00:15:14.989Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: fix block comment support in SQL tokenizer",
-    "completedAt": "2026-04-21T00:11:35.093Z",
-    "taskId": "T180",
-    "summary": "FIXED: Added SQL comment support. Line (--) and block (/* */) comments now properly skipped during tokenization. Previously -- was two MINUS tokens. Multi-line block comments work. 71 tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: test buffer pool — page pinning, LRU eviction, dirty page writes",
+    "completedAt": "2026-04-21T00:15:14.989Z",
+    "taskId": "T182",
+    "summary": "Buffer pool: 14 tests pass, page management: 28 tests pass (42 total). LRU eviction works correctly. API: newPage returns {pageId, data}, fetchPage returns raw data buffer (asymmetric but intentional). InMemoryDiskManager for testing. No bugs found.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 388,
+    "blocksCompleted": 390,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 31,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 94,
-      "EXPLORE": 159
+      "EXPLORE": 161
     }
   },
   "artifacts": [

@@ -7,7 +7,7 @@
 
 ### Normal
 - ~~HenryDB: `SELECT a BETWEEN 3 AND 7 as mid` parser bug — FIXED: parser now handles BETWEEN/NOT BETWEEN in SELECT columns~~ (since 2026-04-20, fixed 2026-04-20)
-- HenryDB: OFFSET -1 returns wrong results (should be treated as OFFSET 0 per SQL standard) (P2, since 2026-04-20)
+- ~~HenryDB: OFFSET -1 returns wrong results — FIXED: clamp to Math.max(0, offset)~~ (since 2026-04-20, fixed 2026-04-20)
 - ~~HenryDB: Block comments (`/* ... */`) not handled — FIXED: added line + block comment support to tokenizer~~ (since 2026-04-20, fixed 2026-04-20)
 - ~~HenryDB: `to_tsvector() @@ to_tsquery()` is broken — FIXED: added @@ tokenizer + parser + evaluator~~ (since 2026-04-20, fixed 2026-04-20)
 - HenryDB: Compiled query engine divergences: BETWEEN, CASE, HAVING, JOIN column names (P2, since 2026-04-20)
