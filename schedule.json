@@ -508,6 +508,28 @@
       "completed": "2026-04-21T15:48:44.784Z",
       "duration_ms": 60000,
       "summary": "Investigated dual cost model: both execution and EXPLAIN use the same _compareScanCosts/_compareJoinCosts. The divergence was overstated — both paths use identical cost model. Only Volcano planner lacks cost-based decisions. Removed from TODO."
+    },
+    {
+      "id": "T47",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep test: train a character-level language model end-to-end with neural-net library and evaluate generation quality",
+      "project": "neural-net",
+      "started": "2026-04-21T15:50:13.901Z",
+      "completed": "2026-04-21T15:51:04.443Z",
+      "duration_ms": 180000,
+      "summary": "Trained char-LM end-to-end: tokenizer→model→training→generation all work. Loss decreases from 3.56→3.09 over 50 epochs (log(30)=3.40). Generation semi-coherent (spaces+punctuation placed reasonably). Model size limits quality, not bugs."
+    },
+    {
+      "id": "T48",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Profile HenryDB query execution: time a complex query with joins, subqueries, window functions",
+      "project": "henrydb",
+      "started": "2026-04-21T15:51:19.667Z",
+      "completed": "2026-04-21T15:53:58.732Z",
+      "duration_ms": 180000,
+      "summary": "Profiled HenryDB: PK lookup 4ms, index scan 0.5ms, 2-way join 5.4ms, 3-way 3.6ms, GROUP BY 17.5ms, window 1.6ms. BOTTLENECK: correlated subquery 259ms (O(n*m)). Highest-ROI optimization: query decorrelation."
     }
   ],
   "focusProjects": [
@@ -727,6 +749,14 @@
     {
       "time": "2026-04-21T15:46:10.028Z",
       "msg": "Added T46 (THINK) after end: Investigate the dual cost model divergence in HenryDB — how bad is it and should it be unified?"
+    },
+    {
+      "time": "2026-04-21T15:50:05.025Z",
+      "msg": "Added T47 (EXPLORE) after end: Deep test: train a character-level language model end-to-end with neural-net library and evaluate generation quality"
+    },
+    {
+      "time": "2026-04-21T15:51:12.906Z",
+      "msg": "Added T48 (EXPLORE) after end: Profile HenryDB query execution: time a complex query with joins, subqueries, window functions"
     }
   ]
 }
