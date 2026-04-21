@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-20T23:56:26.040Z",
+  "generated": "2026-04-21T00:03:29.759Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: error handling & crash resistance — SQL injection, malformed queries, type errors",
-    "completedAt": "2026-04-20T23:56:26.040Z",
-    "taskId": "T172",
-    "summary": "Error handling robust: SQL injection semicolons ignored, malformed SQL gives clear errors, no crashes. Unicode works. Division by zero returns NULL. Row size limits enforced. Found 2 issues: (1) block comments not handled by tokenizer (P2), (2) 1+hello does string concat instead of error (P3, cosmetic). DB survives all malicious inputs.",
-    "durationMs": 300000
+    "task": "HenryDB: test PL/SQL stored procedures — functions, loops, cursors",
+    "completedAt": "2026-04-21T00:03:29.759Z",
+    "taskId": "T175",
+    "summary": "PL/SQL works for basic blocks: DECLARE, variables, assignments, WHILE loops, IF/ELSE, RETURN. Fibonacci(10)=55 correct. SQL functions (LANGUAGE sql) work including aggregates and WHERE usage. JS functions (LANGUAGE js) work with expression syntax. PL/SQL parser fails on DML (UPDATE/INSERT) inside IF blocks — treats as assignment. Stored procedures via CREATE FUNCTION + LANGUAGE sql are the most reliable path.",
+    "durationMs": 360000
   },
   "schedule": {
     "date": "2026-04-20",
@@ -4954,14 +4954,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 380,
+    "blocksCompleted": 383,
     "blocksTotal": 139,
     "modeDistribution": {
       "THINK": 30,
       "PLAN": 9,
       "BUILD": 95,
       "MAINTAIN": 94,
-      "EXPLORE": 152
+      "EXPLORE": 155
     }
   },
   "artifacts": [

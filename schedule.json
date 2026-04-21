@@ -1852,6 +1852,39 @@
       "completed": "2026-04-20T23:56:26.004Z",
       "duration_ms": 300000,
       "summary": "Error handling robust: SQL injection semicolons ignored, malformed SQL gives clear errors, no crashes. Unicode works. Division by zero returns NULL. Row size limits enforced. Found 2 issues: (1) block comments not handled by tokenizer (P2), (2) 1+hello does string concat instead of error (P3, cosmetic). DB survives all malicious inputs."
+    },
+    {
+      "id": "T173",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test Raft consensus — leader election, log replication",
+      "project": "henrydb",
+      "started": "2026-04-20T23:56:57.286Z",
+      "completed": "2026-04-20T23:58:38.270Z",
+      "duration_ms": 360000,
+      "summary": "Raft consensus works: 5-node cluster, leader election, 10-command log replication (all nodes consistent). Leader failure simulation: partition leader, new leader elected in term 2, post-failover commands replicate, old leader steps down and catches up after heal. All logs converge to 10 entries. No bugs."
+    },
+    {
+      "id": "T174",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test vectorized execution — batch processing vs row-at-a-time",
+      "project": "henrydb",
+      "started": "2026-04-20T23:59:11.636Z",
+      "completed": "2026-04-21T00:01:18.538Z",
+      "duration_ms": 360000,
+      "summary": "Vectorized execution works correctly (100K rows, filter + agg). However, vectorized is 2x SLOWER than Volcano in JS due to fromRows conversion overhead. Vectorized benefits (SIMD, cache) dont apply in JS — V8 hidden classes optimize row-at-a-time well. Educational implementation, not a performance win in this context."
+    },
+    {
+      "id": "T175",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test PL/SQL stored procedures — functions, loops, cursors",
+      "project": "henrydb",
+      "started": "2026-04-21T00:01:36.550Z",
+      "completed": "2026-04-21T00:03:29.714Z",
+      "duration_ms": 360000,
+      "summary": "PL/SQL works for basic blocks: DECLARE, variables, assignments, WHILE loops, IF/ELSE, RETURN. Fibonacci(10)=55 correct. SQL functions (LANGUAGE sql) work including aggregates and WHERE usage. JS functions (LANGUAGE js) work with expression syntax. PL/SQL parser fails on DML (UPDATE/INSERT) inside IF blocks — treats as assignment. Stored procedures via CREATE FUNCTION + LANGUAGE sql are the most reliable path."
     }
   ],
   "focusProjects": [
@@ -2563,6 +2596,18 @@
     {
       "time": "2026-04-20T23:55:47.702Z",
       "msg": "Added T172 (EXPLORE) after end: HenryDB: error handling & crash resistance — SQL injection, malformed queries, type errors"
+    },
+    {
+      "time": "2026-04-20T23:56:57.052Z",
+      "msg": "Added T173 (EXPLORE) after end: HenryDB: test Raft consensus — leader election, log replication"
+    },
+    {
+      "time": "2026-04-20T23:59:11.401Z",
+      "msg": "Added T174 (EXPLORE) after end: HenryDB: test vectorized execution — batch processing vs row-at-a-time"
+    },
+    {
+      "time": "2026-04-21T00:01:36.315Z",
+      "msg": "Added T175 (EXPLORE) after end: HenryDB: test PL/SQL stored procedures — functions, loops, cursors"
     }
   ]
 }
