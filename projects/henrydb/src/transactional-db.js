@@ -709,11 +709,50 @@ export class TransactionalDatabase {
       const tdb = this;
       const name = tableName;
 
-      // Intercept scan: filter by MVCC visibility
+      // Helper: get PK column indices for dedup (empty array if no PK)
+      const pkIndices = (() => {
+        const tbl = tdb._db.tables.get(name);
+        if (!tbl || !tbl.schema) return [];
+        const indices = [];
+        for (let i = 0; i < tbl.schema.length; i++) {
+          if (tbl.schema[i].primaryKey) indices.push(i);
+        }
+        return indices;
+      })();
+
+      // Helper: extract PK key from row values for dedup
+      const extractPK = pkIndices.length > 0 ? (values) => {
+        if (pkIndices.length === 1) return values[pkIndices[0]];
+        return pkIndices.map(i => String(values[i])).join('\0');
+      } : null;
+
+      // Helper: deduplicate rows by PK, keeping the LAST visible version
+      // (newest physical slot = most recent write, including current tx's own writes)
+      const dedupByPK = (rows) => {
+        if (!extractPK) return rows;
+        const pkMap = new Map(); // pk → index in rows array
+        const result = [];
+        for (const row of rows) {
+          if (!row.values) { result.push(row); continue; }
+          const pk = extractPK(row.values);
+          if (pk == null) { result.push(row); continue; }
+          if (pkMap.has(pk)) {
+            // Replace the earlier version with this newer one
+            result[pkMap.get(pk)] = null;
+          }
+          pkMap.set(pk, result.length);
+          result.push(row);
+        }
+        return result.filter(r => r !== null);
+      };
+
+      // Intercept scan: filter by MVCC visibility + deduplicate by PK
       heap.scan = function*() {
         const tx = tdb._activeTx;
+
         if (!tx) {
-          // No active transaction - show all non-deleted rows
+          // No active transaction - show all non-deleted rows, dedup by PK
+          const visibleRows = [];
           for (const row of origScan()) {
             const vm = tdb._versionMaps.get(name);
             if (vm) {
@@ -723,25 +762,25 @@ export class TransactionalDatabase {
                 continue;
               }
             }
-            yield row;
+            visibleRows.push(row);
           }
+          yield* dedupByPK(visibleRows);
           return;
         }
 
         const vm = tdb._versionMaps.get(name);
         const visMap = tdb._visibilityMap;
+        const visibleRows = [];
         for (const row of origScan()) {
-          if (!vm) { yield row; continue; }
+          if (!vm) { visibleRows.push(row); continue; }
 
           // Visibility map optimization: if page is all-visible, skip MVCC check
           if (visMap.isAllVisible(name, row.pageId)) {
-            // Page is known to be all-visible - yield directly
-            // Still record read for SSI tracking
             if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
               const key = `${row.pageId}:${row.slotIdx}`;
               tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, 0);
             }
-            yield row;
+            visibleRows.push(row);
             continue;
           }
 
@@ -749,11 +788,10 @@ export class TransactionalDatabase {
           const ver = vm.get(key);
 
           if (!ver) {
-            // SSI tracking: record read even for rows without version info
             if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
               tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, 0);
             }
-            yield row;
+            visibleRows.push(row);
             continue;
           }
 
@@ -761,13 +799,13 @@ export class TransactionalDatabase {
           const deleted = ver.xmax !== 0 && tdb._mvcc.isVisible(ver.xmax, tx);
 
           if (created && !deleted) {
-            // SSI tracking: record the read for serializable isolation
             if (tdb._mvcc.recordRead && !tx.suppressReadTracking) {
               tdb._mvcc.recordRead(tx.txId, `${name}:${key}`, ver.xmin);
             }
-            yield row;
+            visibleRows.push(row);
           }
         }
+        yield* dedupByPK(visibleRows);
       };
 
       // Intercept delete: in MVCC mode, mark xmax instead of physical delete
@@ -797,6 +835,42 @@ export class TransactionalDatabase {
                 throw new Error(`Write-write conflict on ${name}:${key}`);
               }
             }
+            
+            // PK-level write-write conflict check: after repeated concurrent UPDATEs,
+            // different transactions may be operating on different physical versions
+            // of the same logical row. Check if any other version with the same PK
+            // has xmax set by an active transaction — that means a concurrent
+            // modification is in progress on the same logical row.
+            if (extractPK) {
+              const origScanFn = heap._origScan || origScan;
+              // Get current row's PK from heap
+              const currentValues = (heap._origGet || heap.get)?.call(heap, pageId, slotIdx);
+              if (currentValues) {
+                const vals = Array.isArray(currentValues) ? currentValues : (currentValues.values || currentValues);
+                const currentPK = extractPK(vals);
+                if (currentPK != null) {
+                  for (const [otherKey, otherVer] of vm) {
+                    if (otherKey === key) continue; // skip self
+                    if (otherVer.xmax !== 0 && otherVer.xmax !== tx.txId) {
+                      const otherTx2 = tx.manager.activeTxns.get(otherVer.xmax);
+                      if (otherTx2 && !otherTx2.committed && !otherTx2.aborted) {
+                        // Check if this other version has the same PK
+                        const [otherPageId, otherSlotIdx] = otherKey.split(':').map(Number);
+                        const otherValues = (heap._origGet || heap.get)?.call(heap, otherPageId, otherSlotIdx);
+                        if (otherValues) {
+                          const otherVals = Array.isArray(otherValues) ? otherValues : (otherValues.values || otherValues);
+                          const otherPK = extractPK(otherVals);
+                          if (otherPK != null && otherPK === currentPK) {
+                            throw new Error(`Write-write conflict on ${name}:${key} (PK-level: same logical row modified by tx ${otherVer.xmax})`);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            
             const oldXmax = ver.xmax;
             ver.xmax = tx.txId;
             tx.writeSet.add(`${name}:${key}:del`);

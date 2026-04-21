@@ -24,7 +24,7 @@ describe('MVCC Adversarial Stress Tests', () => {
   afterEach(teardown);
 
   describe('Index-scan invisible row stress', () => {
-    it('10 sequential transactions each UPDATE same PK-indexed row', { skip: 'Known MVCC bug: heap scan returns multiple versions of same row after repeated updates. Needs MVCC visibility fix in heap scan.' }, () => {
+    it('10 sequential transactions each UPDATE same PK-indexed row', () => {
       db.execute('CREATE TABLE counter (id INT PRIMARY KEY, val INT)');
       db.execute('INSERT INTO counter VALUES (1, 0)');
 

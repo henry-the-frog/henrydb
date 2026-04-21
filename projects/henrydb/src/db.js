@@ -7855,6 +7855,17 @@ export class Database {
               rows.push(this._valuesToRow(values, table.schema, tableAlias));
             }
           }
+          // MVCC fallback: if index had entries but all heap lookups returned null
+          // (invisible under current snapshot), fall back to full scan to find
+          // the version visible to this transaction.
+          if (rows.length === 0 && entries.length > 0) {
+            const fallbackRows = [];
+            for (const { pageId, slotIdx, values } of table.heap.scan()) {
+              const row = this._valuesToRow(values, table.schema, tableAlias);
+              fallbackRows.push(row);
+            }
+            return { rows: fallbackRows, residual: where };
+          }
           return { rows, residual: null, indexOnly: rows.length > 0 && rows[0]?.includedValues !== undefined };
         }
       }
