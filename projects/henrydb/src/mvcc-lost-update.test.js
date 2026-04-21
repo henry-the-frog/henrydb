@@ -189,5 +189,104 @@ describe('MVCC Lost Update Bug Fix', () => {
 
       s2.commit();
     });
+
+    it('DELETE via non-PK indexed column after concurrent modification', () => {
+      db.execute('CREATE TABLE t (id INT PRIMARY KEY, name TEXT, val INT)');
+      db.execute('CREATE INDEX idx_name ON t (name)');
+      db.execute("INSERT INTO t VALUES (1, 'bob', 100)");
+
+      const s2 = db.session();
+      s2.begin();
+
+      // T1 updates the indexed row
+      db.execute("UPDATE t SET val = 200 WHERE name = 'bob'");
+
+      // T2 deletes via same indexed column
+      s2.execute("DELETE FROM t WHERE name = 'bob'");
+      const r = rows(s2.execute("SELECT * FROM t WHERE name = 'bob'"));
+      assert.equal(r.length, 0, 'Row should be deleted in T2 view');
+
+      s2.commit();
+    });
+  });
+
+  describe('Stress: rapid concurrent updates', () => {
+    it('10 sequential transactions each update same row', () => {
+      db.execute('CREATE TABLE counter (id INT PRIMARY KEY, val INT)');
+      db.execute('INSERT INTO counter VALUES (1, 0)');
+
+      for (let i = 1; i <= 10; i++) {
+        db.execute(`UPDATE counter SET val = ${i} WHERE id = 1`);
+      }
+
+      const r = rows(db.execute('SELECT val FROM counter WHERE id = 1'));
+      assert.equal(r[0].val, 10);
+    });
+
+    it('interleaved sessions detect write-write conflict', () => {
+      db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+      db.execute('INSERT INTO t VALUES (1, 0)');
+
+      // s1 starts, reads
+      const s1 = db.session();
+      s1.begin();
+      const v1 = rows(s1.execute('SELECT val FROM t WHERE id = 1'));
+      assert.equal(v1[0].val, 0);
+
+      // External update
+      db.execute('UPDATE t SET val = 50 WHERE id = 1');
+
+      // s2 starts after the update
+      const s2 = db.session();
+      s2.begin();
+      const v2 = rows(s2.execute('SELECT val FROM t WHERE id = 1'));
+      assert.equal(v2[0].val, 50, 's2 sees committed value');
+
+      // s1 still sees 0
+      const v1again = rows(s1.execute('SELECT val FROM t WHERE id = 1'));
+      assert.equal(v1again[0].val, 0, 's1 snapshot unchanged');
+
+      // s1 updates — should work (first updater)
+      s1.execute('UPDATE t SET val = 100 WHERE id = 1');
+
+      // s2 tries to update the same row — write-write conflict expected
+      assert.throws(() => {
+        s2.execute('UPDATE t SET val = 200 WHERE id = 1');
+      }, /conflict/i, 'Second updater should get write-write conflict');
+
+      s1.commit();
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('UPDATE WHERE on non-existent value uses index without issue', () => {
+      db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+      db.execute('INSERT INTO t VALUES (1, 100)');
+
+      // Update non-existent row — should be 0 rows, no crash
+      db.execute('UPDATE t SET val = 999 WHERE id = 999');
+      const r = rows(db.execute('SELECT val FROM t WHERE id = 1'));
+      assert.equal(r[0].val, 100, 'Original row unchanged');
+    });
+
+    it('DELETE WHERE on non-existent value is safe', () => {
+      db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT)');
+      db.execute('INSERT INTO t VALUES (1, 100)');
+
+      db.execute('DELETE FROM t WHERE id = 999');
+      const r = rows(db.execute('SELECT * FROM t'));
+      assert.equal(r.length, 1, 'Original row still exists');
+    });
+
+    it('UPDATE with compound WHERE still works via full scan', () => {
+      db.execute('CREATE TABLE t (id INT PRIMARY KEY, val INT, flag INT)');
+      db.execute('INSERT INTO t VALUES (1, 100, 1)');
+      db.execute('INSERT INTO t VALUES (2, 200, 0)');
+
+      // Compound WHERE won't use index scan — goes straight to full scan
+      db.execute('UPDATE t SET val = 999 WHERE id = 1 AND flag = 1');
+      const r = rows(db.execute('SELECT val FROM t WHERE id = 1'));
+      assert.equal(r[0].val, 999);
+    });
   });
 });
