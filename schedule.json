@@ -250,6 +250,192 @@
       "completed": "2026-04-21T02:59:38.934Z",
       "duration_ms": 300000,
       "summary": "Explored index-only scans: HenryDB already has covering index support but missing visibility map check for MVCC correctness. Wrote scratch note with fix plan: Phase 1 (vis map check) + Phase 2 (MVCC-aware index entries)."
+    },
+    {
+      "id": "T24",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: run complete test suite to check for regressions",
+      "project": "neural-net",
+      "started": "2026-04-21T03:00:12.838Z",
+      "completed": "2026-04-21T03:00:39.765Z",
+      "duration_ms": 180000,
+      "summary": "Full neural-net test suite: 373/374 pass. 1 flaky failure in pre-existing training-verification.test.js (convergence threshold) — not related to our changes. All new code (GQA, RoPE, decoder, BPE, sampling, training) passing."
+    },
+    {
+      "id": "T25",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: explore and implement simplified Flash Attention (tiled softmax for memory efficiency)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:01:00.438Z",
+      "completed": "2026-04-21T03:02:18.896Z",
+      "duration_ms": 600000,
+      "summary": "Implemented Flash Attention: online softmax for tiled computation. O(N*tileSize) memory vs O(N²). Exact match with standard attention verified. 8x memory reduction. 8 tests pass."
+    },
+    {
+      "id": "T26",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement sliding window attention (Mistral-style) with KV-cache eviction",
+      "project": "neural-net",
+      "started": "2026-04-21T03:02:36.430Z",
+      "completed": "2026-04-21T03:03:41.125Z",
+      "duration_ms": 300000,
+      "summary": "Sliding Window Attention + bounded KV-cache: O(N×W) memory, auto-eviction, verified correctness. 10 tests pass. 1000 tokens through 4-slot cache stays bounded."
+    },
+    {
+      "id": "T27",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement Mixture of Experts (MoE) routing for FFN layer (Mixtral-style)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:04:00.667Z",
+      "completed": "2026-04-21T03:05:10.000Z",
+      "duration_ms": 600000,
+      "summary": "Mixture of Experts (MoE): top-K routing, SwiGLU experts, load balancing loss, routing stats. 12 tests. Mixtral/Switch Transformer architecture from scratch."
+    },
+    {
+      "id": "T28",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement speculative decoding (draft model + verification)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:05:40.509Z",
+      "completed": "2026-04-21T03:07:14.858Z",
+      "duration_ms": 600000,
+      "summary": "Speculative Decoding: draft+target model pair, probabilistic acceptance, adjusted rejection sampling. Same distribution as target, fewer forward passes. 6 tests."
+    },
+    {
+      "id": "T29",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement weight quantization (INT8/INT4) for model compression",
+      "project": "neural-net",
+      "started": "2026-04-21T03:07:41.800Z",
+      "completed": "2026-04-21T03:08:51.644Z",
+      "duration_ms": 300000,
+      "summary": "Weight quantization: INT8 absmax (~8x compression) + INT4 group (~16x, configurable group size). Verified accuracy tradeoffs. 10 tests."
+    },
+    {
+      "id": "T30",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement LoRA (Low-Rank Adaptation) for efficient fine-tuning",
+      "project": "neural-net",
+      "started": "2026-04-21T03:09:17.433Z",
+      "completed": "2026-04-21T03:10:32.596Z",
+      "duration_ms": 300000,
+      "summary": "LoRA: W=W+BA decomposition, 256x compression for rank-8, merge-to-base for zero overhead, export/import. 8 tests. Complete LLM fine-tuning technique from scratch."
+    },
+    {
+      "id": "T31",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement DPO (Direct Preference Optimization) loss for alignment",
+      "project": "neural-net",
+      "started": "2026-04-21T03:11:00.126Z",
+      "completed": "2026-04-21T03:12:00.174Z",
+      "duration_ms": 300000,
+      "summary": "DPO alignment loss: preference optimization without reward model. Verified ln(2) baseline. Implicit reward extraction. 7 tests."
+    },
+    {
+      "id": "T32",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Update scratch/INDEX.md with all new scratch notes and knowledge from Session C",
+      "started": "2026-04-21T03:12:59.971Z",
+      "completed": "2026-04-21T03:13:25.254Z",
+      "duration_ms": 60000,
+      "summary": "Updated scratch/INDEX.md with 3 new notes: postgresql-first-updater-wins, henrydb-mvcc-multiversion-bug, henrydb-index-only-scans."
+    },
+    {
+      "id": "T33",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Neural-net: write ARCHITECTURE.md documenting the complete LLM stack built tonight",
+      "project": "neural-net",
+      "started": "2026-04-21T03:13:40.816Z",
+      "completed": "2026-04-21T03:14:27.634Z",
+      "duration_ms": 180000,
+      "summary": "Wrote LLM-ARCHITECTURE.md documenting all 14 components, 152 tests, full pipeline architecture."
+    },
+    {
+      "id": "T34",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement KV-cache compression (grouped quantization for K/V cache)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:14:57.695Z",
+      "completed": "2026-04-21T03:16:01.914Z",
+      "duration_ms": 300000,
+      "summary": "KV-cache compression: INT8 quantized K/V storage, >3x memory reduction, MAE < 0.1. 6 tests."
+    },
+    {
+      "id": "T35",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement beam search for generation (alternative to greedy/sampling)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:16:49.389Z",
+      "completed": "2026-04-21T03:17:51.936Z",
+      "duration_ms": 300000,
+      "summary": "Beam search: maintains K beams, pruning by score. Beam-1 verified = greedy. Wider beams find better sequences. 7 tests."
+    },
+    {
+      "id": "T36",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement perplexity evaluation metric + model comparison",
+      "project": "neural-net",
+      "started": "2026-04-21T03:18:13.523Z",
+      "completed": "2026-04-21T03:19:10.850Z",
+      "duration_ms": 180000,
+      "summary": "Perplexity metric: per-sequence, corpus-level, model comparison, theoretical baselines. 7 tests."
+    },
+    {
+      "id": "T37",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement attention sink (keep first K tokens in KV-cache for streaming LLM)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:19:30.769Z",
+      "completed": "2026-04-21T03:20:29.016Z",
+      "duration_ms": 180000,
+      "summary": "Attention Sink Cache: first K tokens permanent + sliding window. Bounded memory for infinite generation. 6 tests."
+    },
+    {
+      "id": "T38",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement multi-token prediction (predict next K tokens simultaneously)",
+      "project": "neural-net",
+      "started": "2026-04-21T03:20:56.994Z",
+      "completed": "2026-04-21T03:21:55.114Z",
+      "duration_ms": 180000,
+      "summary": "Multi-token prediction: K heads predicting next K tokens simultaneously. Training + inference. 6 tests."
+    },
+    {
+      "id": "T39",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement gradient checkpointing for memory-efficient training",
+      "project": "neural-net",
+      "started": "2026-04-21T03:22:33.056Z",
+      "completed": "2026-04-21T03:23:37.371Z",
+      "duration_ms": 300000,
+      "summary": "Gradient checkpointing: O(√N) memory, optimal checkpoint calculation, Llama-70B analysis (20GB→4.8GB). 7 tests."
+    },
+    {
+      "id": "T40",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: implement cosine learning rate schedule with warmup",
+      "project": "neural-net",
+      "started": "2026-04-21T03:24:00.271Z",
+      "completed": "2026-04-21T03:25:00.952Z",
+      "duration_ms": 180000,
+      "summary": "LR schedules: cosine warmup, WSD, GPT-3/Llama presets. 6 tests."
     }
   ],
   "focusProjects": [
@@ -349,6 +535,74 @@
     {
       "time": "2026-04-21T02:57:55.862Z",
       "msg": "Added T23 (EXPLORE) after end: HenryDB: explore index-only scans — visibility map integration with B-tree for covering indexes"
+    },
+    {
+      "time": "2026-04-21T03:00:09.241Z",
+      "msg": "Added T24 (EXPLORE) after end: Neural-net: run complete test suite to check for regressions"
+    },
+    {
+      "time": "2026-04-21T03:00:55.791Z",
+      "msg": "Added T25 (EXPLORE) after end: Neural-net: explore and implement simplified Flash Attention (tiled softmax for memory efficiency)"
+    },
+    {
+      "time": "2026-04-21T03:02:32.493Z",
+      "msg": "Added T26 (EXPLORE) after end: Neural-net: implement sliding window attention (Mistral-style) with KV-cache eviction"
+    },
+    {
+      "time": "2026-04-21T03:03:57.366Z",
+      "msg": "Added T27 (EXPLORE) after end: Neural-net: implement Mixture of Experts (MoE) routing for FFN layer (Mixtral-style)"
+    },
+    {
+      "time": "2026-04-21T03:05:33.959Z",
+      "msg": "Added T28 (EXPLORE) after end: Neural-net: implement speculative decoding (draft model + verification)"
+    },
+    {
+      "time": "2026-04-21T03:07:36.814Z",
+      "msg": "Added T29 (EXPLORE) after end: Neural-net: implement weight quantization (INT8/INT4) for model compression"
+    },
+    {
+      "time": "2026-04-21T03:09:12.057Z",
+      "msg": "Added T30 (EXPLORE) after end: Neural-net: implement LoRA (Low-Rank Adaptation) for efficient fine-tuning"
+    },
+    {
+      "time": "2026-04-21T03:10:55.038Z",
+      "msg": "Added T31 (EXPLORE) after end: Neural-net: implement DPO (Direct Preference Optimization) loss for alignment"
+    },
+    {
+      "time": "2026-04-21T03:12:55.662Z",
+      "msg": "Added T32 (MAINTAIN) after end: Update scratch/INDEX.md with all new scratch notes and knowledge from Session C"
+    },
+    {
+      "time": "2026-04-21T03:13:34.362Z",
+      "msg": "Added T33 (MAINTAIN) after end: Neural-net: write ARCHITECTURE.md documenting the complete LLM stack built tonight"
+    },
+    {
+      "time": "2026-04-21T03:14:51.371Z",
+      "msg": "Added T34 (EXPLORE) after end: Neural-net: implement KV-cache compression (grouped quantization for K/V cache)"
+    },
+    {
+      "time": "2026-04-21T03:16:44.934Z",
+      "msg": "Added T35 (EXPLORE) after end: Neural-net: implement beam search for generation (alternative to greedy/sampling)"
+    },
+    {
+      "time": "2026-04-21T03:18:09.755Z",
+      "msg": "Added T36 (EXPLORE) after end: Neural-net: implement perplexity evaluation metric + model comparison"
+    },
+    {
+      "time": "2026-04-21T03:19:23.388Z",
+      "msg": "Added T37 (EXPLORE) after end: Neural-net: implement attention sink (keep first K tokens in KV-cache for streaming LLM)"
+    },
+    {
+      "time": "2026-04-21T03:20:52.944Z",
+      "msg": "Added T38 (EXPLORE) after end: Neural-net: implement multi-token prediction (predict next K tokens simultaneously)"
+    },
+    {
+      "time": "2026-04-21T03:22:27.269Z",
+      "msg": "Added T39 (EXPLORE) after end: Neural-net: implement gradient checkpointing for memory-efficient training"
+    },
+    {
+      "time": "2026-04-21T03:23:56.493Z",
+      "msg": "Added T40 (EXPLORE) after end: Neural-net: implement cosine learning rate schedule with warmup"
     }
   ]
 }

@@ -30,3 +30,6 @@
 - `henrydb-mvcc-interception.md` — **NEW 2026-04-20** MVCC via heap monkey-patching: 4 intercepted methods, fragility analysis, recommendations
 - `henrydb-compiled-engine-gaps.md` — **NEW 2026-04-20** Compiled engine only handles 4 expr types. Silent null on unknown → correctness bug (returns all rows)
 - `henrydb-lost-update-rca.md` — **NEW 2026-04-20** Root cause: _update index-scan path returns invisible MVCC rows as null → 0 rows updated. Fix: fall through to scan when index returns invisible rows.
+- `postgresql-first-updater-wins.md` — **NEW 2026-04-20** PostgreSQL EvalPlanQual mechanism, first-updater-wins protocol, READ COMMITTED vs REPEATABLE READ, implementation plan for HenryDB.
+- `henrydb-mvcc-multiversion-bug.md` — **NEW 2026-04-20** Deep analysis: heap.scan() returns multiple row versions after repeated concurrent UPDATE cycles. Root causes: (1) no logical row dedup, (2) cascading version creation, (3) visibility check failure. Fix options: logical rowId, version chains, PK-based dedup.
+- `henrydb-index-only-scans.md` — **NEW 2026-04-20** HenryDB has covering indexes but missing MVCC visibility map check. Fix plan: Phase 1 (vis map check), Phase 2 (MVCC-aware index entries).

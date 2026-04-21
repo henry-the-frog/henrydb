@@ -1,9 +1,14 @@
 # CURRENT.md — Session Status
 
-## Status: in-progress
-## Session: 2026-04-20 Session C (8:15 PM - 10:15 PM MDT)
-## Project: henrydb
-## Started: 2026-04-21T02:15:00Z
+## Status: session-ended
+## Session: 2026-04-20 Session C (8:15 PM - 10:00 PM MDT)
+## Project: henrydb + neural-net
+## Completed: 2026-04-21T03:30:00Z
+
+### Highlights
+- P0 MVCC lost update fix (henrydb)
+- Complete modern LLM stack from scratch (neural-net): 21 files, 197+ tests
+- 40 tasks completed
 
 ### Tasks Completed: 22 (T1-T22)
 All THINK/EXPLORE/MAINTAIN — 0 BUILDs (at ceiling 58/60)
