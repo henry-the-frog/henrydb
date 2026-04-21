@@ -4,6 +4,7 @@
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
+  IndexScan,
 } from './volcano.js';
 
 /**
@@ -58,10 +59,19 @@ export function buildPlan(ast, tables, indexCatalog) {
     }
   }
 
-  // 3. WHERE filter
+  // 3. WHERE filter — try IndexScan optimization first
   if (ast.where) {
-    const pred = buildPredicate(ast.where);
-    iter = new Filter(iter, pred);
+    const indexScanResult = tryIndexScan(ast.where, ast.from, tables, indexCatalog);
+    if (indexScanResult) {
+      // Replace SeqScan with IndexScan and apply remaining predicates
+      iter = indexScanResult.scan;
+      if (indexScanResult.residual) {
+        iter = new Filter(iter, buildPredicate(indexScanResult.residual));
+      }
+    } else {
+      const pred = buildPredicate(ast.where);
+      iter = new Filter(iter, pred);
+    }
   }
 
   // 4. GROUP BY + aggregates
@@ -119,6 +129,124 @@ export function buildPlan(ast, tables, indexCatalog) {
 }
 
 // --- Helpers ---
+
+/**
+ * Try to use an IndexScan for a WHERE predicate.
+ * Looks for equality (col = val) or range (col BETWEEN low AND high) on indexed columns.
+ * Returns { scan: IndexScan, residual: remainingWhere } or null.
+ */
+function tryIndexScan(where, fromClause, tables, indexCatalog) {
+  if (!where || !fromClause) return null;
+  
+  const tableName = typeof fromClause === 'string' ? fromClause : fromClause.table;
+  const alias = typeof fromClause === 'string' ? null : fromClause.alias;
+  const tableObj = tables.get(tableName) || tables.get(tableName?.toLowerCase());
+  if (!tableObj) return null;
+  
+  const columns = tableObj.schema.map(c => c.name);
+  
+  // Check for equality condition: col = literal
+  if (where.type === 'COMPARE' && where.op === 'EQ') {
+    const { colName, value } = extractColLiteral(where, alias || tableName);
+    if (colName && value !== undefined) {
+      const index = findIndex(tableObj, colName, indexCatalog, tableName);
+      if (index) {
+        return {
+          scan: new IndexScan(index, tableObj.heap, columns, value, value, alias || tableName),
+          residual: null
+        };
+      }
+    }
+  }
+  
+  // Check for range conditions: col > val, col >= val, col < val, col <= val
+  if (where.type === 'COMPARE' && ['LT', 'LE', 'GT', 'GE'].includes(where.op)) {
+    const { colName, value, colSide } = extractColLiteral(where, alias || tableName);
+    if (colName && value !== undefined) {
+      const index = findIndex(tableObj, colName, indexCatalog, tableName);
+      if (index) {
+        let low, high;
+        if (colSide === 'left') {
+          if (where.op === 'GT' || where.op === 'GE') low = value;
+          if (where.op === 'LT' || where.op === 'LE') high = value;
+        } else {
+          if (where.op === 'GT' || where.op === 'GE') high = value;
+          if (where.op === 'LT' || where.op === 'LE') low = value;
+        }
+        return {
+          scan: new IndexScan(index, tableObj.heap, columns, low, high, alias || tableName),
+          residual: where // Keep full predicate as residual for exact filtering
+        };
+      }
+    }
+  }
+  
+  // Check for BETWEEN: col BETWEEN low AND high
+  if (where.type === 'BETWEEN') {
+    const colNode = where.expr || where.left;
+    const lowNode = where.low;
+    const highNode = where.high;
+    if (colNode?.type === 'column_ref' && lowNode?.type === 'literal' && highNode?.type === 'literal') {
+      const colName = colNode.name?.includes('.') ? colNode.name.split('.').pop() : colNode.name;
+      const index = findIndex(tableObj, colName, indexCatalog, tableName);
+      if (index) {
+        return {
+          scan: new IndexScan(index, tableObj.heap, columns, lowNode.value, highNode.value, alias || tableName),
+          residual: null
+        };
+      }
+    }
+  }
+  
+  // Check AND: try to extract an indexed condition from one side
+  if (where.type === 'AND') {
+    const leftResult = tryIndexScan(where.left, fromClause, tables, indexCatalog);
+    if (leftResult) {
+      const combinedResidual = leftResult.residual
+        ? { type: 'AND', left: leftResult.residual, right: where.right }
+        : where.right;
+      return { scan: leftResult.scan, residual: combinedResidual };
+    }
+    const rightResult = tryIndexScan(where.right, fromClause, tables, indexCatalog);
+    if (rightResult) {
+      const combinedResidual = rightResult.residual
+        ? { type: 'AND', left: where.left, right: rightResult.residual }
+        : where.left;
+      return { scan: rightResult.scan, residual: combinedResidual };
+    }
+  }
+  
+  return null;
+}
+
+function extractColLiteral(compare, alias) {
+  const left = compare.left;
+  const right = compare.right;
+  if (left?.type === 'column_ref' && (right?.type === 'literal' || right?.type === 'number')) {
+    const name = left.name?.includes('.') ? left.name.split('.').pop() : left.name;
+    return { colName: name, value: right.value, colSide: 'left' };
+  }
+  if (right?.type === 'column_ref' && (left?.type === 'literal' || left?.type === 'number')) {
+    const name = right.name?.includes('.') ? right.name.split('.').pop() : right.name;
+    return { colName: name, value: left.value, colSide: 'right' };
+  }
+  return {};
+}
+
+function findIndex(tableObj, colName, indexCatalog, tableName) {
+  if (tableObj.indexes) {
+    const idx = tableObj.indexes.get(colName);
+    if (idx) return idx;
+  }
+  if (indexCatalog) {
+    for (const [, idxInfo] of indexCatalog) {
+      if (idxInfo.table === tableName && idxInfo.columns?.[0] === colName && idxInfo.index) {
+        return idxInfo.index;
+      }
+    }
+  }
+  return null;
+}
 
 function buildScanNode(fromClause, tables) {
   if (!fromClause) return new ValuesIter([{}]); // Dummy for SELECT without FROM
