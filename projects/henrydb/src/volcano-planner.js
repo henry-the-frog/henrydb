@@ -284,7 +284,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
 
     // 5. HAVING filter (applied after aggregation)
     if (ast.having) {
-      const havingPred = buildAggregatePredicate(ast.having, ast.columns);
+      const havingPred = buildAggregatePredicate(ast.having, ast.columns, _ctx);
       iter = new Filter(iter, havingPred);
       iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || 10) * 0.5));
     }
@@ -885,19 +885,37 @@ function buildAggregateProjections(columns, groupByExprs) {
   });
 }
 
-function buildAggregatePredicate(expr, columns) {
+function buildAggregatePredicate(expr, columns, ctx) {
   // HAVING uses aggregate expressions — resolve to their output names
   if (expr.type === 'COMPARE') {
-    const getLeft = buildAggregateValueGetter(expr.left, columns);
-    const getRight = buildAggregateValueGetter(expr.right, columns);
+    const getLeft = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getRight = buildAggregateValueGetter(expr.right, columns, ctx);
     const cmp = comparators[expr.op];
     return (row) => cmp(getLeft(row), getRight(row));
   }
   return () => true;
 }
 
-function buildAggregateValueGetter(expr, columns) {
+function buildAggregateValueGetter(expr, columns, ctx) {
   if (expr.type === 'literal') return () => expr.value;
+  if (expr.type === 'SUBQUERY') {
+    // Evaluate subquery eagerly (once) and return the scalar result
+    if (ctx) {
+      try {
+        const subPlan = buildPlan(expr.subquery, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+        if (subPlan) {
+          subPlan.open();
+          const row = subPlan.next();
+          subPlan.close();
+          if (row) {
+            const val = Object.values(row)[0]; // scalar subquery = first column of first row
+            return () => val;
+          }
+        }
+      } catch (e) { /* fall through */ }
+    }
+    return () => null;
+  }
   if (expr.type === 'aggregate_expr') {
     // Find the matching aggregate column's output name
     // Normalize arg: parser may give {type:'column_ref', name:'val'} or just 'val'
