@@ -278,13 +278,19 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         const idx = gb.value - 1;
         if (idx >= 0 && idx < ast.columns.length) {
           const col = ast.columns[idx];
+          // Expression column: return the expression itself
+          if (col.type === 'expression' && col.expr) return col.expr;
           return col.name || col.alias || col;
         }
       }
-      // String alias: GROUP BY d → resolve to actual column name
+      // String alias: GROUP BY d → resolve to actual column name or expression
       if (typeof gb === 'string') {
         const aliasMatch = ast.columns.find(c => c.alias === gb);
-        if (aliasMatch) return aliasMatch.name || aliasMatch.expr || gb;
+        if (aliasMatch) {
+          // If it's an expression column (val / 10 AS decade), return the expression
+          if (aliasMatch.type === 'expression' && aliasMatch.expr) return aliasMatch.expr;
+          return aliasMatch.name || gb;
+        }
       }
       return gb;
     });
