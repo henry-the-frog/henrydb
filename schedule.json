@@ -275,30 +275,42 @@
     {
       "id": "T30",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano.",
-      "started": "2026-04-22T20:54:19.815Z"
+      "started": "2026-04-22T20:54:19.815Z",
+      "completed": "2026-04-22T20:57:09.163Z",
+      "duration_ms": 360000,
+      "summary": "Fixed correlated WHERE subqueries in Volcano. buildValueGetter now handles SUBQUERY type: correlated evals per row via buildCorrelatedSubqueryPlan, non-correlated evaluates eagerly. 168/168 tests pass, fixes subquery-stress failure."
     },
     {
       "id": "T26",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: JOIN subqueries in JOIN ON clause for Volcano",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T20:57:20.043Z",
+      "completed": "2026-04-22T20:57:45.228Z",
+      "duration_ms": 60000,
+      "summary": "JOIN subqueries already work in Volcano (materialized at planner lines 154-184). No changes needed. Verified with test."
     },
     {
       "id": "T27",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T26",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T20:58:05.560Z",
+      "completed": "2026-04-22T20:58:05.703Z",
+      "duration_ms": 0,
+      "summary": "Skipped — JOIN subqueries already handled."
     },
     {
       "id": "T28",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, broader test sweep"
+      "status": "in-progress",
+      "task": "Git push, broader test sweep",
+      "started": "2026-04-22T20:58:16.382Z"
     },
     {
       "id": "T29",
