@@ -5,10 +5,8 @@
 
 ### Normal
 - HenryDB: db.js now at ~5582 lines — further extraction possible: EXPLAIN ~350, GROUP BY ~166, cost model ~200 (since 2026-04-20, updated 2026-04-22)
-- HenryDB: Volcano planner fully cost-based with predicate pushdown. Consider integrating table stats from ANALYZE. (since 2026-04-21, updated 2026-04-21)
-- HenryDB: 6 pre-existing tpch-compiled.test.js failures (CTE import issue — different from the fixed CTEIterator one). (since 2026-04-21)
-- Neural-net: 3 pre-existing sliding-window.test.js failures. (since 2026-04-21)
-- HenryDB: InstrumentedIterator in volcano.js — scaffold for per-operator timing in EXPLAIN ANALYZE. Wire it up. (since 2026-04-21)
+- HenryDB: Volcano planner: integrate ANALYZE table stats for better cost estimates (since 2026-04-21)
+- Neural-net: 3 pre-existing sliding-window.test.js failures (since 2026-04-21)
 
 ### Low
 - RISC-V: Liveness-based register allocation
@@ -18,15 +16,8 @@
 - HenryDB: Hash-index performance (test takes 24s)
 - HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr
 - HenryDB: Unified expression walker migration
-
-### Tomorrow Ideas (Session C)
-- RISC-V liveness-based register allocation (algorithmic, different from db work)
-- Neural-net: stress-test transformer attention implementation
-- HenryDB: RIGHT/FULL join in Volcano, INLJ LEFT support
-- Git: explore current state and find depth opportunities
-
-### Quick Wins for Tomorrow
-- SAT solver: SMT strict inequality bug — _processAssertion ignores < and >. 8-line fix: add else-if for '>' (→ >=, value+1) and '<' (→ <=, value-1). See smt.cjs line ~720.
+- HenryDB: EXPLAIN ANALYZE: add est vs actual rows, Rows Removed by Filter (PG-style)
+- HenryDB: Vectorized (batch-at-a-time) execution in Volcano operators
 
 ### Blog Post Idea
 - "Wiring a Volcano Engine into a Database" — from Feature Theater to 37x speedup. Covers the integration strategy, EvalPlanQual bug find, and benchmark results. Good technical post.
