@@ -36,7 +36,7 @@ export function explain(db, ast) {
         return { type: 'PLAN', rows: [{ 'QUERY PLAN': `Volcano planner error: ${e.message}` }] };
       }
     }
-    const builder = new PlanBuilder(this);
+    const builder = new PlanBuilder(db);
     const planTree = builder.buildPlan(stmt);
     if (format === 'json-tree') {
       const json = PlanFormatter.toJSON(planTree);
@@ -223,7 +223,7 @@ export function explainCompiled(db, stmt) {
     return { type: 'COMPILED_PLAN', message: 'Only SELECT queries can be compiled' };
   }
 
-  const engine = new CompiledQueryEngine(this);
+  const engine = new CompiledQueryEngine(db);
   
   const plan = engine.planner.plan(stmt);
   const explainText = engine.explainCompiled(stmt);
@@ -258,7 +258,7 @@ export function explainAnalyze(db, stmt) {
   // Build tree-structured plan with estimates
   let planTree = null;
   try {
-    const builder = new PlanBuilder(this);
+    const builder = new PlanBuilder(db);
     planTree = builder.buildPlan(stmt);
   } catch (e) {
     // Plan builder may fail — fall through to legacy
@@ -267,7 +267,7 @@ export function explainAnalyze(db, stmt) {
   // Get planner estimates (legacy)
   let plannerEstimate = null;
   try {
-    const planner = new QueryPlanner(this);
+    const planner = new QueryPlanner(db);
     plannerEstimate = planner.plan(stmt);
   } catch (e) {
     // Planner may fail for complex queries — proceed with execution only
@@ -321,7 +321,8 @@ export function explainAnalyze(db, stmt) {
   
   let result;
   try {
-    result = db._select(stmt);
+    // Use execute_ast to handle all statement types (SELECT, UNION, INTERSECT, etc.)
+    result = db.execute_ast(stmt);
   } finally {
     // Restore original methods
     if (ioTableName && db.tables.has(ioTableName)) {
