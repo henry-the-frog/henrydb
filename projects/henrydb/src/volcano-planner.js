@@ -427,15 +427,15 @@ function buildPredicate(expr) {
       return (row) => !inner(row);
     }
     case 'IS_NULL': {
-      const getter = buildValueGetter(expr.column || expr.expr);
+      const getter = buildValueGetter(expr.left || expr.column || expr.expr);
       return (row) => getter(row) == null;
     }
     case 'IS_NOT_NULL': {
-      const getter = buildValueGetter(expr.column || expr.expr);
+      const getter = buildValueGetter(expr.left || expr.column || expr.expr);
       return (row) => getter(row) != null;
     }
     case 'BETWEEN': {
-      const val = buildValueGetter(expr.expr);
+      const val = buildValueGetter(expr.left || expr.expr);
       const low = buildValueGetter(expr.low);
       const high = buildValueGetter(expr.high);
       return (row) => { const v = val(row); return v >= low(row) && v <= high(row); };
@@ -452,9 +452,9 @@ function buildPredicate(expr) {
       return (row) => { const v = val(row); return vals.some(g => g(row) === v); };
     }
     case 'LIKE': {
-      const val = buildValueGetter(expr.expr);
-      const pattern = expr.pattern;
-      const regex = new RegExp('^' + pattern.replace(/%/g, '.*').replace(/_/g, '.') + '$', 'i');
+      const val = buildValueGetter(expr.left || expr.expr);
+      const patternStr = typeof expr.pattern === 'object' ? expr.pattern.value : expr.pattern;
+      const regex = new RegExp('^' + String(patternStr).replace(/%/g, '.*').replace(/_/g, '.') + '$', 'i');
       return (row) => regex.test(val(row));
     }
     default:
