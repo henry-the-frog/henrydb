@@ -481,9 +481,52 @@
     {
       "id": "T46",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write daily log evening summary, update TODO.md and TASKS.md with session B-2 achievements.",
-      "started": "2026-04-22T00:23:15.156Z"
+      "started": "2026-04-22T00:23:15.156Z",
+      "completed": "2026-04-22T00:24:14.269Z",
+      "duration_ms": 60000,
+      "summary": "Updated daily log with evening summary, TASKS.md with latest achievements, committed."
+    },
+    {
+      "id": "T47",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement liveness-based register allocation for RISC-V codegen",
+      "task": null,
+      "project": "riscv",
+      "started": "2026-04-22T00:25:30.723Z",
+      "completed": "2026-04-22T00:25:38.667Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — project limit reached (max 2 per session)."
+    },
+    {
+      "id": "T49",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit, push",
+      "started": "2026-04-22T00:26:09.329Z",
+      "completed": "2026-04-22T00:26:16.218Z",
+      "duration_ms": 15000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire Volcano engine into db.js execution path for SELECT queries with joins. This is P0 — hash join exists but db.js always uses nested loop.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:25:38.922Z",
+      "completed": "2026-04-22T00:26:05.181Z",
+      "duration_ms": 60000,
+      "summary": "Assessed: wiring Volcano into db.js executor is a major architectural change (deeply interleaved join execution, expression evaluation, GROUP BY, WHERE, etc). Needs careful planning as a multi-session effort. Documented approach: add useVolcano flag, intercept at _select when joins present, delegate to buildPlan+execute. Deferred to dedicated session."
+    },
+    {
+      "id": "T50",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update MEMORY.md and scratch notes with today's major achievements and learnings",
+      "started": "2026-04-22T00:26:26.848Z"
     }
   ],
   "focusProjects": [
@@ -691,6 +734,22 @@
     {
       "time": "2026-04-22T00:23:14.924Z",
       "msg": "Added T46 (MAINTAIN) after end: Write daily log evening summary, update TODO.md and TASKS.md with session B-2 achievements."
+    },
+    {
+      "time": "2026-04-22T00:25:16.219Z",
+      "msg": "Added T47 (PLAN) after end: Implement liveness-based register allocation for RISC-V codegen"
+    },
+    {
+      "time": "2026-04-22T00:25:24.404Z",
+      "msg": "Added T48 (BUILD) after end: Wire Volcano engine into db.js execution path for SELECT queries with joins. This is P0 — hash join exists but db.js always uses nested loop."
+    },
+    {
+      "time": "2026-04-22T00:25:24.541Z",
+      "msg": "Added T49 (MAINTAIN) after T47: Commit, push"
+    },
+    {
+      "time": "2026-04-22T00:26:26.616Z",
+      "msg": "Added T50 (MAINTAIN) after end: Update MEMORY.md and scratch notes with today's major achievements and learnings"
     }
   ]
 }
