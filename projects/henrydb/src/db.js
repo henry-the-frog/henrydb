@@ -2142,7 +2142,7 @@ export class Database {
   _tryVolcanoSelect(ast) {
     // Skip Volcano for unsupported patterns
     if (!ast.from) return null; // No FROM clause (e.g., SELECT 1)
-    if (ast.from.subquery) return null; // Derived table in FROM (not JOIN)
+    // Derived tables in FROM — now supported in Volcano (materialized)
     if (ast.recursive) return null; // Recursive CTEs
     if (ast.ctes?.some(c => c.recursive)) return null; // Recursive CTEs in CTE list
     // Skip CTEs containing window functions or UNION
@@ -2171,7 +2171,7 @@ export class Database {
     const astStr = JSON.stringify(ast);
     if (unsupportedAggs.some(a => astStr.includes(`"func":"${a}"`) || astStr.includes(`"func":"${a.toLowerCase()}"`) )) return null;
     // Check for derived tables in nested subqueries
-    if (astStr.includes('"table":"__subquery"')) return null;
+    // Derived tables (__subquery) — now supported in Volcano
     // Skip JSON operations
     if (JSON.stringify(ast).includes('"->>"') || JSON.stringify(ast).includes('"json_')){
       return null;

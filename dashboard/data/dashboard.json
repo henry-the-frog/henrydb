@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T20:31:27.611Z",
+  "generated": "2026-04-22T20:33:20.093Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git push, dashboard update",
-    "startedAt": "2026-04-22T20:31:27.611Z",
-    "taskId": "T8"
+    "mode": "BUILD",
+    "task": "Support derived tables in Volcano FROM: materialize subquery, create virtual table, wire into scan",
+    "startedAt": "2026-04-22T20:33:20.093Z",
+    "taskId": "T17"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -892,52 +892,96 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Add correlated subquery support to Volcano planner",
         "task": null,
-        "started": "2026-04-22T20:25:41.801Z"
+        "started": "2026-04-22T20:25:41.801Z",
+        "completed": "2026-04-22T20:25:59.351Z",
+        "duration_ms": 120000,
+        "summary": "Two features: (1) func-wrapped aggregates: detect nested function(aggregate) in planner, extract inner agg, apply outer func in Project. (2) scalar correlated subqueries: buildValueGetter detect subquery type, execute sub-plan per outer row. 2 BUILD tasks."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Support function-wrapped aggregates in Volcano (COALESCE(SUM(x),0), NULLIF(AVG(x),0), etc.)",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T20:26:07.367Z",
+        "completed": "2026-04-22T20:29:38.169Z",
+        "duration_ms": 420000,
+        "summary": "Function-wrapped aggregates now supported in Volcano. COALESCE(SUM), NULLIF(COUNT), ROUND(AVG), ABS(SUM) all work. Guard removed. 115/115 tests pass."
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "task": "Support scalar correlated subqueries in Volcano SELECT columns",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-22T20:29:46.659Z",
+        "completed": "2026-04-22T20:31:18.256Z",
+        "duration_ms": 300000,
+        "summary": "Scalar correlated subqueries now work in Volcano SELECT columns. Uses buildCorrelatedSubqueryPlan per outer row. Results match legacy exactly. 115/115 tests pass."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push, dashboard update"
+        "status": "done",
+        "task": "Git push, dashboard update",
+        "started": "2026-04-22T20:31:27.561Z",
+        "completed": "2026-04-22T20:31:41.259Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed henrydb + workspace. Dashboard synced."
       },
       {
         "id": "T9",
         "mode": "THINK",
+        "status": "done",
+        "task": "Mid-session quality check. Depth check: am I learning? Assess remaining time and priorities.",
+        "started": "2026-04-22T20:31:48.937Z",
+        "completed": "2026-04-22T20:32:34.677Z",
+        "duration_ms": 120000,
+        "summary": "Depth check passed: CTE alias bug was surprising, func-wrapped agg fallback was educational. 4 BUILDs so far, good learning rate. Revised plan: drop window functions (too complex), add derived tables in FROM (common, achievable). 5.75h remaining."
+      },
+      {
+        "id": "T16",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Support derived tables (subqueries) in FROM clause in Volcano",
+        "task": null,
+        "started": "2026-04-22T20:32:43.494Z"
+      },
+      {
+        "id": "T17",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Mid-session quality check. Depth check: am I learning? Assess remaining time and priorities."
+        "task": "Support derived tables in Volcano FROM: materialize subquery, create virtual table, wire into scan",
+        "plan_ref": "T16",
+        "project": "henrydb"
+      },
+      {
+        "id": "T18",
+        "mode": "BUILD",
+        "task": "Add tests for derived tables: FROM subquery, JOIN with subquery, nested derived tables",
+        "status": "upcoming",
+        "plan_ref": "T16"
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "skipped",
         "goal": "HenryDB: Window function support in Volcano iterators",
-        "task": null
+        "task": null,
+        "skip_reason": ""
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": ""
       },
       {
         "id": "T12",
@@ -956,13 +1000,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 9,
-    "blocksTotal": 15,
+    "blocksCompleted": 12,
+    "blocksTotal": 18,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
+      "THINK": 3,
+      "PLAN": 3,
       "BUILD": 4,
-      "MAINTAIN": 1
+      "MAINTAIN": 2
     }
   },
   "artifacts": [

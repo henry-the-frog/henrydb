@@ -102,30 +102,66 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard update",
-      "started": "2026-04-22T20:31:27.561Z"
+      "started": "2026-04-22T20:31:27.561Z",
+      "completed": "2026-04-22T20:31:41.259Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed henrydb + workspace. Dashboard synced."
     },
     {
       "id": "T9",
       "mode": "THINK",
+      "status": "done",
+      "task": "Mid-session quality check. Depth check: am I learning? Assess remaining time and priorities.",
+      "started": "2026-04-22T20:31:48.937Z",
+      "completed": "2026-04-22T20:32:34.677Z",
+      "duration_ms": 120000,
+      "summary": "Depth check passed: CTE alias bug was surprising, func-wrapped agg fallback was educational. 4 BUILDs so far, good learning rate. Revised plan: drop window functions (too complex), add derived tables in FROM (common, achievable). 5.75h remaining."
+    },
+    {
+      "id": "T16",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Support derived tables (subqueries) in FROM clause in Volcano",
+      "task": null,
+      "started": "2026-04-22T20:32:43.494Z",
+      "completed": "2026-04-22T20:33:12.524Z",
+      "duration_ms": 90000,
+      "summary": "Plan: materialize FROM subquery via Volcano plan, create virtual table with schema from result columns, add to tables map under alias. Same pattern as CTE materialization. 2 BUILD tasks."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Support derived tables in Volcano FROM: materialize subquery, create virtual table, wire into scan",
+      "plan_ref": "T16",
+      "project": "henrydb",
+      "started": "2026-04-22T20:33:20.057Z"
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Add tests for derived tables: FROM subquery, JOIN with subquery, nested derived tables",
       "status": "upcoming",
-      "task": "Mid-session quality check. Depth check: am I learning? Assess remaining time and priorities."
+      "plan_ref": "T16"
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "HenryDB: Window function support in Volcano iterators",
-      "task": null
+      "task": null,
+      "skip_reason": ""
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": ""
     },
     {
       "id": "T12",
@@ -210,6 +246,26 @@
     {
       "time": "2026-04-22T20:25:52.964Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T20:32:21.088Z",
+      "msg": "Removed T10: "
+    },
+    {
+      "time": "2026-04-22T20:32:21.204Z",
+      "msg": "Removed T11: "
+    },
+    {
+      "time": "2026-04-22T20:32:29.493Z",
+      "msg": "Added T16 (PLAN) after T9: HenryDB: Support derived tables (subqueries) in FROM clause in Volcano"
+    },
+    {
+      "time": "2026-04-22T20:32:29.611Z",
+      "msg": "Added T17 (BUILD) after T16: null"
+    },
+    {
+      "time": "2026-04-22T20:33:05.155Z",
+      "msg": "PLAN T16 filled 2 BUILD tasks"
     }
   ]
 }

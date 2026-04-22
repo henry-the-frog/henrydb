@@ -74,6 +74,37 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 1. Build scan for FROM table
+  // Handle derived tables (subqueries in FROM)
+  if (ast.from && ast.from.subquery) {
+    const subPlan = buildPlan(ast.from.subquery, tables, indexCatalog, tableStats);
+    subPlan.open();
+    const subRows = [];
+    let subRow;
+    while ((subRow = subPlan.next()) !== null) subRows.push(subRow);
+    subPlan.close();
+    
+    // Strip table qualifications from column names (same as CTE materialization)
+    const rawKeys = subRows.length > 0 ? Object.keys(subRows[0]).filter(k => !k.startsWith('_')) : [];
+    const subSchema = rawKeys.map(name => {
+      const unqual = name.includes('.') ? name.split('.').pop() : name;
+      return { name: unqual, _origKey: name };
+    });
+    const alias = ast.from.alias || '__derived';
+    const virtualTable = {
+      heap: {
+        scan: function*() { for (const r of subRows) yield { values: subSchema.map(c => r[c._origKey]), pageId: 0, slotIdx: 0 }; },
+        rowCount: subRows.length,
+        tupleCount: subRows.length
+      },
+      schema: subSchema.map(c => ({ name: c.name }))
+    };
+    // Create a new tables map with the derived table added
+    tables = new Map(tables);
+    tables.set(alias, virtualTable);
+    // Rewrite ast.from to reference the virtual table
+    ast = { ...ast, from: { table: alias, alias } };
+  }
+  
   let iter = buildScanNode(ast.from, tables);
   const fromTableName = typeof ast.from === 'string' ? ast.from : ast.from.table;
   const fromTable = tables.get(fromTableName) || tables.get(fromTableName?.toLowerCase());
