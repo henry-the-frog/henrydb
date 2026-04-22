@@ -515,6 +515,32 @@ function buildPredicate(expr, ctx) {
       const right = buildPredicate(expr.right, ctx);
       return (row) => left(row) || right(row);
     }
+    case 'QUANTIFIED_COMPARE': {
+      // ANY/ALL: compare left value against all values from subquery
+      const leftGetter = buildValueGetter(expr.left);
+      const cmp = comparators[expr.op];
+      const quantifier = expr.quantifier; // 'ANY' or 'ALL'
+      
+      // Eagerly evaluate subquery (not correlated)
+      return (outerRow) => {
+        const leftVal = leftGetter(outerRow);
+        const subPlan = buildPlan(expr.subquery, ctx?.tables, ctx?.indexCatalog, ctx?.tableStats);
+        if (!subPlan) return false;
+        subPlan.open();
+        const values = [];
+        let r;
+        while ((r = subPlan.next()) !== null) {
+          values.push(Object.values(r)[0]); // scalar subquery
+        }
+        subPlan.close();
+        
+        if (quantifier === 'ANY' || quantifier === 'SOME') {
+          return values.some(v => cmp(leftVal, v));
+        } else { // ALL
+          return values.every(v => cmp(leftVal, v));
+        }
+      };
+    }
     case 'EXISTS': {
       // Correlated EXISTS: for each outer row, execute the subquery
       // replacing outer column references with outer row values
