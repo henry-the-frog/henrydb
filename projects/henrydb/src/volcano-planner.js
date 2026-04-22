@@ -145,11 +145,19 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         rightIter._estimatedRows = rightRowCount;
       }
       
-      // Push per-table predicate into right scan
+      // Push per-table predicate into right scan (only for INNER/CROSS joins)
+      // For LEFT/RIGHT/FULL joins, predicates on the nullable side must apply AFTER the join
+      const canPushdownRight = !join.joinType || join.joinType === 'INNER' || join.joinType === 'CROSS';
+      let deferredRightPredicate = null;
       if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
-        rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias], _ctx));
-        const sel = estimateSelectivity(_pushdownPredicates[rightAlias], rightTableName, tableStats);
-        rightIter._estimatedRows = Math.max(1, Math.round(rightRowCount * sel));
+        if (canPushdownRight) {
+          rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias], _ctx));
+          const sel = estimateSelectivity(_pushdownPredicates[rightAlias], rightTableName, tableStats);
+          rightIter._estimatedRows = Math.max(1, Math.round(rightRowCount * sel));
+        } else {
+          // Defer predicate to apply after the join
+          deferredRightPredicate = _pushdownPredicates[rightAlias];
+        }
       }
       
       const predicate = join.on ? buildPredicate(join.on, _ctx) : null;
@@ -199,6 +207,11 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         const leftEst = iter._outer?._estimatedRows || fromRowCount;
         const rightEst = rightIter._estimatedRows || rightRowCount;
         iter._estimatedRows = Math.max(1, Math.max(leftEst, rightEst));
+      }
+      
+      // Apply deferred right-table predicate after outer join
+      if (deferredRightPredicate) {
+        iter = new Filter(iter, buildPredicate(deferredRightPredicate, _ctx));
       }
     }
   }
