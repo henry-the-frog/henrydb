@@ -363,17 +363,21 @@
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add DISTINCT aggregate support to HashAggregate + planner",
       "plan_ref": "T34",
       "project": "henrydb",
-      "started": "2026-04-22T21:04:05.716Z"
+      "started": "2026-04-22T21:04:05.716Z",
+      "completed": "2026-04-22T21:05:42.482Z",
+      "duration_ms": 180000,
+      "summary": "DISTINCT aggregates now work in Volcano. COUNT/SUM/AVG DISTINCT with GROUP BY and FILTER. Results match legacy. 163/163 tests."
     },
     {
       "id": "T36",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, test sweep"
+      "status": "in-progress",
+      "task": "Git push, test sweep",
+      "started": "2026-04-22T21:05:47.585Z"
     },
     {
       "id": "T37",
