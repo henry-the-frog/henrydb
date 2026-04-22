@@ -183,8 +183,10 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     
     for (const col of ast.columns) {
       if (col.type === 'aggregate') {
-        const name = col.alias || `${col.func}(${col.arg})`;
-        aggregates.push({ name, func: col.func, column: col.arg });
+        // Normalize arg: parser may give string 'val' or object {type:'column_ref', name:'val'}
+        const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+        const name = col.alias || `${col.func}(${argStr})`;
+        aggregates.push({ name, func: col.func, column: argStr });
       }
     }
     
@@ -612,7 +614,8 @@ function buildProjections(columns, hasAggregates) {
 function buildAggregateProjections(columns) {
   return columns.map(col => {
     if (col.type === 'aggregate') {
-      const name = col.alias || `${col.func}(${col.arg})`;
+      const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+      const name = col.alias || `${col.func}(${argStr})`;
       return { name: col.alias || name, expr: (row) => row[name] };
     }
     if (col.type === 'column') {
@@ -652,7 +655,10 @@ function resolveOutputColumn(name, columns) {
   // Order by might reference an alias
   for (const col of columns) {
     if (col.alias === name) {
-      if (col.type === 'aggregate') return col.alias || `${col.func}(${col.arg})`;
+      if (col.type === 'aggregate') {
+        const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+        return col.alias || `${col.func}(${argStr})`;
+      }
       return col.name;
     }
   }
