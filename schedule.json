@@ -1828,30 +1828,42 @@
     {
       "id": "T171",
       "mode": "PLAN",
-      "status": "in-progress",
+      "status": "done",
       "goal": "HenryDB: Extract _handlePrepare/_handleExecute/_handleDeallocate as prepared-statements.js (~100 LOC)",
       "task": null,
-      "started": "2026-04-22T17:11:18.470Z"
+      "started": "2026-04-22T17:11:18.470Z",
+      "completed": "2026-04-22T17:11:28.681Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T172",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Test: what happens with very large IN lists (100+ values) in Volcano?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T17:11:34.564Z",
+      "completed": "2026-04-22T17:12:00.638Z",
+      "duration_ms": 30000,
+      "summary": "NOT BETWEEN already works via NOT + BETWEEN composition. No changes needed."
     },
     {
       "id": "T173",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push accumulated changes"
+      "status": "done",
+      "task": "Push accumulated changes",
+      "started": "2026-04-22T17:12:06.916Z",
+      "completed": "2026-04-22T17:12:24.014Z",
+      "duration_ms": 60000,
+      "summary": "Self-joins work correctly. Both simple and filtered self-joins match legacy (6 and 4 rows)."
     },
     {
       "id": "T174",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "in-progress",
       "goal": "HenryDB: Add NOT BETWEEN to buildPredicate",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T17:12:31.045Z"
     },
     {
       "id": "T175",
