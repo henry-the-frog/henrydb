@@ -724,6 +724,16 @@ class SMTSolver {
       const bv = this._freshBoolVar();
       this.bounds.addAtom('ge', String(expr[1]), Number(expr[2]), bv);
       this.bounds.assertTrue(bv);
+    } else if (op === '<') {
+      // Strict inequality: x < n → x <= n-1 (integer arithmetic)
+      const bv = this._freshBoolVar();
+      this.bounds.addAtom('le', String(expr[1]), Number(expr[2]) - 1, bv);
+      this.bounds.assertTrue(bv);
+    } else if (op === '>') {
+      // Strict inequality: x > n → x >= n+1 (integer arithmetic)
+      const bv = this._freshBoolVar();
+      this.bounds.addAtom('ge', String(expr[1]), Number(expr[2]) + 1, bv);
+      this.bounds.assertTrue(bv);
     } else if (op === 'and') {
       for (let i = 1; i < expr.length; i++) {
         this._processAssertion(expr[i]);
