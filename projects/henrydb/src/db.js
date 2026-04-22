@@ -2182,13 +2182,26 @@ export class Database {
     let row;
     while ((row = plan.next()) !== null) {
       // Clean up row keys: use unqualified names, strip internal _keys
+      // Keep qualified names when there would be column name collisions
       const clean = {};
+      const seen = new Set();
+      // First pass: collect unqualified names that appear multiple times
+      const nameCounts = {};
+      for (const k of Object.keys(row)) {
+        if (k.startsWith('_')) continue;
+        const unqual = k.includes('.') ? k.split('.').pop() : k;
+        nameCounts[unqual] = (nameCounts[unqual] || 0) + 1;
+      }
       for (const [k, v] of Object.entries(row)) {
         if (k.startsWith('_')) continue;
-        // For qualified names (t.id), prefer unqualified form if not already present
         if (k.includes('.')) {
           const unqual = k.split('.').pop();
-          if (!(unqual in clean)) clean[unqual] = v;
+          if (nameCounts[unqual] > 1) {
+            // Column name collision — keep qualified name
+            clean[k] = v;
+          } else if (!(unqual in clean)) {
+            clean[unqual] = v;
+          }
         } else {
           clean[k] = v;
         }
