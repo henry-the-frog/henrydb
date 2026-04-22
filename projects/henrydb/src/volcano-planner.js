@@ -457,6 +457,19 @@ function buildPredicate(expr) {
       const regex = new RegExp('^' + String(patternStr).replace(/%/g, '.*').replace(/_/g, '.') + '$', 'i');
       return (row) => regex.test(val(row));
     }
+    case 'case_expr': {
+      const whens = expr.whens.map(w => ({
+        condition: buildPredicate(w.condition),
+        result: buildPredicate(w.result)
+      }));
+      const elsePred = expr.else ? buildPredicate(expr.else) : () => false;
+      return (row) => {
+        for (const w of whens) {
+          if (w.condition(row)) return w.result(row);
+        }
+        return elsePred(row);
+      };
+    }
     default:
       return () => true;
   }
@@ -510,6 +523,19 @@ function buildValueGetter(expr) {
           case 'COALESCE': return vals.find(v => v != null) ?? null;
           default: return null;
         }
+      };
+    }
+    case 'case_expr': {
+      const whens = expr.whens.map(w => ({
+        condition: buildPredicate(w.condition),
+        result: buildValueGetter(w.result)
+      }));
+      const elseVal = expr.else ? buildValueGetter(expr.else) : () => null;
+      return (row) => {
+        for (const w of whens) {
+          if (w.condition(row)) return w.result(row);
+        }
+        return elseVal(row);
       };
     }
     default:
