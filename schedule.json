@@ -183,10 +183,90 @@
     {
       "id": "T13",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Research: what are the remaining ~3% failures? Categorize and triage.",
       "project": "henrydb",
-      "started": "2026-04-22T20:40:51.351Z"
+      "started": "2026-04-22T20:40:51.351Z",
+      "completed": "2026-04-22T20:44:12.037Z",
+      "duration_ms": 300000,
+      "summary": "Categorized remaining failures: 8 LATERAL JOIN (pre-existing, partial impl), 8 JSON (pre-existing), 4 FTS (pre-existing). Fixed derived-table-with-window-function regression. Core SQL: 157/157 pass."
+    },
+    {
+      "id": "T19",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Direction: fix LATERAL JOIN failures (8), then assess what other Volcano gaps to close. Check BUILD count (depth gate).",
+      "started": "2026-04-22T20:44:50.089Z"
+    },
+    {
+      "id": "T20",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix LATERAL JOIN: top-N per group, LEFT LATERAL, LATERAL with aggregation",
+      "task": null
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T20",
+      "project": "henrydb"
+    },
+    {
+      "id": "T22",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, test sweep, learning capture"
+    },
+    {
+      "id": "T23",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: Aggregate FILTER clause support (COUNT(*) FILTER (WHERE x > 0))",
+      "task": null
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T23",
+      "project": "henrydb"
+    },
+    {
+      "id": "T25",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Afternoon depth check. 10 BUILDs done? Assess quality and direction."
+    },
+    {
+      "id": "T26",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: JOIN subqueries in JOIN ON clause for Volcano",
+      "task": null
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T26",
+      "project": "henrydb"
+    },
+    {
+      "id": "T28",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, broader test sweep"
+    },
+    {
+      "id": "T29",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -278,6 +358,50 @@
     {
       "time": "2026-04-22T20:33:05.155Z",
       "msg": "PLAN T16 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T20:44:29.039Z",
+      "msg": "Added T19 (THINK) after end: Direction: fix LATERAL JOIN failures (8), then assess what other Volcano gaps to close. Check BUILD count (depth gate)."
+    },
+    {
+      "time": "2026-04-22T20:44:38.817Z",
+      "msg": "Added T20 (PLAN) after T19: Fix LATERAL JOIN: top-N per group, LEFT LATERAL, LATERAL with aggregation"
+    },
+    {
+      "time": "2026-04-22T20:44:38.942Z",
+      "msg": "Added T21 (BUILD) after T20: null"
+    },
+    {
+      "time": "2026-04-22T20:44:39.074Z",
+      "msg": "Added T22 (MAINTAIN) after T21: Git push, test sweep, learning capture"
+    },
+    {
+      "time": "2026-04-22T20:44:39.209Z",
+      "msg": "Added T23 (PLAN) after T22: HenryDB: Aggregate FILTER clause support (COUNT(*) FILTER (WHERE x > 0))"
+    },
+    {
+      "time": "2026-04-22T20:44:39.346Z",
+      "msg": "Added T24 (BUILD) after T23: null"
+    },
+    {
+      "time": "2026-04-22T20:44:39.484Z",
+      "msg": "Added T25 (THINK) after T24: Afternoon depth check. 10 BUILDs done? Assess quality and direction."
+    },
+    {
+      "time": "2026-04-22T20:44:39.616Z",
+      "msg": "Added T26 (PLAN) after T25: HenryDB: JOIN subqueries in JOIN ON clause for Volcano"
+    },
+    {
+      "time": "2026-04-22T20:44:39.753Z",
+      "msg": "Added T27 (BUILD) after T26: null"
+    },
+    {
+      "time": "2026-04-22T20:44:39.892Z",
+      "msg": "Added T28 (MAINTAIN) after T27: Git push, broader test sweep"
+    },
+    {
+      "time": "2026-04-22T20:44:40.021Z",
+      "msg": "Added T29 (EXPLORE) after T28: Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates"
     }
   ]
 }

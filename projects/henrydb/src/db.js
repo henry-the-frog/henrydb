@@ -2142,6 +2142,8 @@ export class Database {
   _tryVolcanoSelect(ast) {
     // Skip Volcano for unsupported patterns
     if (!ast.from) return null; // No FROM clause (e.g., SELECT 1)
+    if (this._outerRow) return null; // Correlated context (LATERAL JOIN) — use legacy path
+    if (ast.joins?.some(j => j.lateral)) return null; // LATERAL JOINs — use legacy path
     // Derived tables in FROM — now supported in Volcano (materialized)
     if (ast.recursive) return null; // Recursive CTEs
     if (ast.ctes?.some(c => c.recursive)) return null; // Recursive CTEs in CTE list
