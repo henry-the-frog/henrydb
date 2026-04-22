@@ -29,6 +29,8 @@ describe('EXPLAIN ANALYZE with Volcano Instrumentation', () => {
     assert.ok(result.volcanoAnalyze.timingTree.includes('time='), 'Should show timing');
     // Check for estimated vs actual comparison
     assert.ok(result.volcanoAnalyze.timingTree.includes('est='), 'Should show estimated rows');
+    // Check for Rows Removed by Filter
+    assert.ok(result.volcanoAnalyze.timingTree.includes('Rows Removed by Filter'), 'Should show rows removed');
   });
 
   it('shows per-operator timing for join', () => {

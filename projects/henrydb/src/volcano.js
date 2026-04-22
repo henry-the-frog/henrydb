@@ -1275,6 +1275,17 @@ export class InstrumentedIterator extends Iterator {
     
     let line = `${prefix}${type}${detailStr ? ` (${detailStr})` : ''} ${timing}`;
     
+    // Add "Rows Removed by Filter" for Filter operators (PG-style)
+    if (type === 'Filter' && desc.children && desc.children.length > 0) {
+      const childIter = desc.children[0];
+      if (childIter instanceof InstrumentedIterator) {
+        const removed = childIter.rowCount - this.rowCount;
+        if (removed > 0) {
+          line += `\n${'  '.repeat(indent + 1)}Rows Removed by Filter: ${removed}`;
+        }
+      }
+    }
+    
     if (desc.children) {
       for (const child of desc.children) {
         if (child instanceof InstrumentedIterator) {
