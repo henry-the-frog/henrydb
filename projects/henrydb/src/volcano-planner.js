@@ -1050,14 +1050,30 @@ function buildAggregateValueGetter(expr, columns, ctx) {
 }
 
 function resolveOutputColumn(name, columns) {
-  // Order by might reference an alias
-  for (const col of columns) {
-    if (col.alias === name) {
+  // Ordinal: ORDER BY 1 → first column
+  if (typeof name === 'number' || (typeof name === 'object' && name?.type === 'literal' && typeof name?.value === 'number')) {
+    const idx = (typeof name === 'number' ? name : name.value) - 1;
+    if (idx >= 0 && idx < columns.length) {
+      const col = columns[idx];
+      if (col.alias) return col.alias;
       if (col.type === 'aggregate') {
         const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
         return col.alias || `${col.func}(${argStr})`;
       }
-      return col.name;
+      return col.name || col.alias;
+    }
+  }
+  
+  // Order by might reference an alias
+  if (typeof name === 'string') {
+    for (const col of columns) {
+      if (col.alias === name) {
+        if (col.type === 'aggregate') {
+          const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+          return col.alias || `${col.func}(${argStr})`;
+        }
+        return col.alias || col.name;
+      }
     }
   }
   return name;
