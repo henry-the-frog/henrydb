@@ -2172,7 +2172,7 @@ export class Database {
     // Check for derived tables in nested subqueries
     // Derived tables (__subquery) — now supported in Volcano
     // Skip JSON operations
-    if (JSON.stringify(ast).includes('"->>"') || JSON.stringify(ast).includes('"json_')){
+    if (astStr.includes('"->>"') || astStr.toLowerCase().includes('"json_') || astStr.includes('"JSON_')) {
       return null;
     }
     

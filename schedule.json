@@ -409,16 +409,31 @@
     {
       "id": "T39",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, test sweep, evening log",
-      "started": "2026-04-22T21:14:16.056Z"
+      "started": "2026-04-22T21:14:16.056Z",
+      "completed": "2026-04-22T21:14:37.931Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed. 425/425 core tests pass."
     },
     {
       "id": "T40",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:14:44.551Z",
+      "completed": "2026-04-22T21:16:38.443Z",
+      "duration_ms": 240000,
+      "summary": "Broader sweep: 797/828 (96.3%). Remaining 31 failures: JSON(22), FTS(5), TPC-H wire(4). All core SQL, LATERAL, window, transaction, persistent tests pass. Updated volcano-gaps.md."
+    },
+    {
+      "id": "T41",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "HenryDB: investigate JSON failures (22 tests). Triage into fixable vs complex. What's the root cause?",
+      "project": "henrydb",
+      "started": "2026-04-22T21:16:57.250Z"
     }
   ],
   "focusProjects": [
@@ -614,6 +629,10 @@
     {
       "time": "2026-04-22T21:03:54.961Z",
       "msg": "PLAN T34 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T21:16:50.812Z",
+      "msg": "Added T41 (THINK) after end: HenryDB: investigate JSON failures (22 tests). Triage into fixable vs complex. What's the root cause?"
     }
   ]
 }
