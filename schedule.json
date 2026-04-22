@@ -633,6 +633,35 @@
       "completed": "2026-04-22T22:06:34.145Z",
       "duration_ms": 300000,
       "summary": "IFNULL + TYPEOF added to Volcano. 15/15 more-functions pass. ORDER BY hidden column + window-in-CASE are complex issues requiring planner changes. Skip for now."
+    },
+    {
+      "id": "T60",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run ALL henrydb tests (866 files). Get a true comprehensive pass rate.",
+      "project": "henrydb",
+      "started": "2026-04-22T22:07:07.436Z",
+      "completed": "2026-04-22T22:12:41.426Z",
+      "duration_ms": 180000,
+      "summary": "Comprehensive sweep: 979/989 (98.99%). 10 remaining failures: window-in-CASE(3), ORDER BY hidden(1), correlated-subquery-edge(3), e2e-analytics(2), EXISTS-nested(1). All complex patterns requiring planner refactoring."
+    },
+    {
+      "id": "T61",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session B knowledge capture: update daily log, volcano-gaps.md, MEMORY.md. Write evening summary.",
+      "started": "2026-04-22T22:13:01.561Z",
+      "completed": "2026-04-22T22:13:52.494Z",
+      "duration_ms": 120000,
+      "summary": "Knowledge captured: volcano-gaps.md updated, daily log Session B entry written. 24 features, 8 bugs, 979/989 tests."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix ORDER BY column not in SELECT: include hidden columns in pre-sort projection, strip after sort",
+      "project": "henrydb",
+      "started": "2026-04-22T22:14:18.170Z"
     }
   ],
   "focusProjects": [
@@ -904,6 +933,18 @@
     {
       "time": "2026-04-22T22:03:25.425Z",
       "msg": "Added T59 (BUILD) after end: Fix broader test failures: IFNULL, ORDER BY column not in SELECT, ROW_NUMBER in CASE, window in CASE"
+    },
+    {
+      "time": "2026-04-22T22:07:00.337Z",
+      "msg": "Added T60 (EXPLORE) after end: Run ALL henrydb tests (866 files). Get a true comprehensive pass rate."
+    },
+    {
+      "time": "2026-04-22T22:12:52.421Z",
+      "msg": "Added T61 (MAINTAIN) after end: Session B knowledge capture: update daily log, volcano-gaps.md, MEMORY.md. Write evening summary."
+    },
+    {
+      "time": "2026-04-22T22:14:10.731Z",
+      "msg": "Added T62 (BUILD) after end: Fix ORDER BY column not in SELECT: include hidden columns in pre-sort projection, strip after sort"
     }
   ]
 }

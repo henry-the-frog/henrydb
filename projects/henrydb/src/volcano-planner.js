@@ -522,10 +522,36 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   const projections = buildProjections(ast.columns, hasAggregates, _ctx);
   const hasWindowFns = ast.columns.some(c => c.type === 'window');
   
-  if (projections && !hasAggregates && !hasWindowFns) {
+  // Check if ORDER BY references columns not in SELECT
+  const selectColNames = new Set(ast.columns.map(c => c.alias || c.name).filter(Boolean));
+  const hiddenOrderCols = [];
+  if (ast.orderBy) {
+    for (const o of ast.orderBy) {
+      const col = typeof o.column === 'object' ? (o.column.name || o.column) : o.column;
+      if (typeof col === 'string' && !selectColNames.has(col)) {
+        hiddenOrderCols.push(col);
+      }
+    }
+  }
+  const orderByUsesHidden = hiddenOrderCols.length > 0;
+  
+  if (projections && !hasAggregates && !hasWindowFns && !orderByUsesHidden) {
     // Don't project after aggregate or before window — column names already set
     const prevEst = iter._estimatedRows;
     iter = new Project(iter, projections);
+    iter._estimatedRows = prevEst;
+  } else if (projections && !hasAggregates && !hasWindowFns && orderByUsesHidden) {
+    // Include hidden ORDER BY columns in projection for sort, strip after sort
+    const tempProjections = [...projections];
+    for (const hc of hiddenOrderCols) {
+      tempProjections.push({ name: hc, expr: (row) => {
+        if (row[hc] !== undefined) return row[hc];
+        for (const k of Object.keys(row)) { if (k.endsWith('.' + hc)) return row[k]; }
+        return undefined;
+      }});
+    }
+    const prevEst = iter._estimatedRows;
+    iter = new Project(iter, tempProjections);
     iter._estimatedRows = prevEst;
   } else if (hasAggregates) {
     // For aggregates, project to rename/select the right columns
@@ -573,7 +599,8 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     iter._estimatedRows = prevEst;
     
     // Apply projection after window — now window columns are available
-    if (projections) {
+    // But skip if ORDER BY uses hidden columns (will project after sort instead)
+    if (projections && !orderByUsesHidden) {
       // Add window function columns to projections (they're already computed by Window)
       const finalProjections = [];
       for (const col of ast.columns) {
@@ -587,6 +614,34 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       }
       const prevEst2 = iter._estimatedRows;
       iter = new Project(iter, finalProjections);
+      iter._estimatedRows = prevEst2;
+    } else if (projections && orderByUsesHidden) {
+      // Include SELECT columns + hidden ORDER BY columns for sort
+      const tempProjections = [];
+      for (const col of ast.columns) {
+        if (col.type === 'window') {
+          const name = col.alias || `${col.func}()`;
+          tempProjections.push({ name, expr: (row) => row[name] });
+        } else {
+          const name = col.alias || col.name;
+          tempProjections.push({ name, expr: (row) => {
+            if (row[col.name] !== undefined) return row[col.name];
+            if (row[name] !== undefined) return row[name];
+            for (const k of Object.keys(row)) { if (k.endsWith('.' + (col.name || name))) return row[k]; }
+            return undefined;
+          }});
+        }
+      }
+      // Add hidden ORDER BY columns
+      for (const hc of hiddenOrderCols) {
+        tempProjections.push({ name: hc, expr: (row) => {
+          if (row[hc] !== undefined) return row[hc];
+          for (const k of Object.keys(row)) { if (k.endsWith('.' + hc)) return row[k]; }
+          return undefined;
+        }});
+      }
+      const prevEst2 = iter._estimatedRows;
+      iter = new Project(iter, tempProjections);
       iter._estimatedRows = prevEst2;
     }
   }
@@ -606,6 +661,24 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     }));
     const prevEst = iter._estimatedRows;
     iter = new Sort(iter, orderSpec);
+    iter._estimatedRows = prevEst;
+  }
+
+  // 8b. Post-sort projection (strip hidden ORDER BY columns)
+  if (orderByUsesHidden) {
+    // Build final projection with only SELECT columns
+    const finalProjections = [];
+    for (const col of ast.columns) {
+      if (col.type === 'window') {
+        const name = col.alias || `${col.func}()`;
+        finalProjections.push({ name, expr: (row) => row[name] });
+      } else {
+        const name = col.alias || col.name;
+        finalProjections.push({ name, expr: (row) => row[col.name] ?? row[name] ?? row[col.alias] });
+      }
+    }
+    const prevEst = iter._estimatedRows;
+    iter = new Project(iter, finalProjections);
     iter._estimatedRows = prevEst;
   }
 
