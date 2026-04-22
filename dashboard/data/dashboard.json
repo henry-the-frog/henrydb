@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-22T17:03:06.396Z",
+  "generated": "2026-04-22T17:07:37.814Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "PLAN",
     "task": "",
-    "completedAt": "2026-04-22T17:03:06.396Z",
-    "taskId": "T158",
-    "summary": "CRITICAL FIX: Parser uses = for ON but EQ for WHERE. All JOINs were falling through to cross-product NLJoin. Fixed: added symbol operators to comparators + findEquiJoin. Bug #19.",
-    "durationMs": 480000
+    "startedAt": "2026-04-22T17:07:37.814Z",
+    "taskId": "T163"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -2390,63 +2388,215 @@
       {
         "id": "T147",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Wire function evaluation (COALESCE, ABS, UPPER, LENGTH) into Volcano buildValueGetter",
         "task": null,
-        "started": "2026-04-22T16:47:29.400Z"
+        "started": "2026-04-22T16:47:29.400Z",
+        "completed": "2026-04-22T16:48:08.349Z",
+        "duration_ms": 60000,
+        "summary": "Root cause: parser type=function/func, buildValueGetter handles function_call/name. Bug #16. Need alias."
       },
       {
         "id": "T153",
         "mode": "BUILD",
         "task": "Fix function handling: parser uses type=function/func, buildValueGetter uses function_call/name. Add aliases.",
-        "status": "upcoming",
-        "plan_ref": "T147"
+        "status": "done",
+        "plan_ref": "T147",
+        "started": "2026-04-22T16:48:14.785Z",
+        "completed": "2026-04-22T16:49:49.031Z",
+        "duration_ms": 300000,
+        "summary": "Fixed function evaluation in Volcano. COALESCE, UPPER, ABS etc now work. Parser type=function vs function_call, plus buildProjections missing function case. Bugs #16-17."
       },
       {
         "id": "T148",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Test: does Volcano handle multi-column GROUP BY correctly? Verify with edge cases",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T16:50:13.650Z",
+        "completed": "2026-04-22T16:50:31.607Z",
+        "duration_ms": 60000,
+        "summary": "Multi-column GROUP BY: 5/5 pass. Single, multi, HAVING, COUNT, no-group aggregate all correct."
       },
       {
         "id": "T149",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "HenryDB: Extract _handlePrepare + _handleExecute + _handleDeallocate (~100 LOC)",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T16:50:38.592Z",
+        "completed": "2026-04-22T16:50:38.737Z",
+        "duration_ms": 1000,
+        "summary": "Deferred: prepared statement extraction low priority."
       },
       {
         "id": "T150",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push",
+        "started": "2026-04-22T16:50:46.701Z",
+        "completed": "2026-04-22T16:50:53.562Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
+      },
+      {
+        "id": "T151",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Run another comprehensive Volcano correctness sweep with updated fixes",
+        "project": "henrydb",
+        "started": "2026-04-22T16:51:01.228Z",
+        "completed": "2026-04-22T16:51:34.430Z",
+        "duration_ms": 180000,
+        "summary": "29/30 Volcano correctness patterns pass! LEFT JOIN bug: 10000 rows instead of 200 (cross product). All other patterns correct including complex Join+Agg+Having+Order."
+      },
+      {
+        "id": "T152",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE",
+        "started": "2026-04-22T16:51:42.101Z",
+        "completed": "2026-04-22T16:51:55.207Z",
+        "duration_ms": 30000,
+        "summary": "Session review: 120+ tasks, 18+ bugs, 29/30 Volcano patterns. LEFT JOIN bug noted for future. Focus on consolidation now."
+      },
+      {
+        "id": "T154",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Investigate LEFT JOIN bug: Volcano produces cross product instead of left-preserving join",
+        "project": "henrydb",
+        "started": "2026-04-22T16:52:24.762Z",
+        "completed": "2026-04-22T16:56:21.875Z",
+        "duration_ms": 480000,
+        "summary": "LEFT JOIN bug: IndexNLJoin (used with PK tables) returns cross product. HashJoin LEFT works correctly. Pre-existing bug in IndexNLJoin left mode."
+      },
+      {
+        "id": "T155",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Update MEMORY.md with today's key learnings",
+        "started": "2026-04-22T16:56:45.171Z",
+        "completed": "2026-04-22T16:57:18.674Z",
+        "duration_ms": 120000,
+        "summary": "Updated MEMORY.md with 3 key learnings: parser inconsistency pattern, extraction pattern, Volcano status."
+      },
+      {
+        "id": "T156",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Run final comprehensive test sweep: all join, CTE, aggregate, explain, volcano tests",
+        "project": "henrydb",
+        "started": "2026-04-22T16:57:30.379Z",
+        "completed": "2026-04-22T16:58:03.904Z",
+        "duration_ms": 120000,
+        "summary": "Comprehensive sweep: 383 tests (join+CTE+aggregate+explain+volcano+having): ALL PASS. 0 failures. Zero regressions."
+      },
+      {
+        "id": "T157",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session A final: push everything, update CURRENT.md",
+        "started": "2026-04-22T16:58:13.718Z",
+        "completed": "2026-04-22T16:58:48.510Z",
+        "duration_ms": 60000,
+        "summary": "Session A final push done. CURRENT.md updated with session-ended status."
+      },
+      {
+        "id": "T158",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Fix IndexNLJoin LEFT JOIN cross-product bug (pre-existing, affects PK tables)",
+        "task": null,
+        "started": "2026-04-22T16:59:05.253Z",
+        "completed": "2026-04-22T17:03:06.359Z",
+        "duration_ms": 480000,
+        "summary": "CRITICAL FIX: Parser uses = for ON but EQ for WHERE. All JOINs were falling through to cross-product NLJoin. Fixed: added symbol operators to comparators + findEquiJoin. Bug #19."
+      },
+      {
+        "id": "T159",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Test: string concatenation operator || in Volcano — does it work?",
+        "project": "henrydb",
+        "started": "2026-04-22T17:04:56.876Z",
+        "completed": "2026-04-22T17:05:22.194Z",
+        "duration_ms": 120000,
+        "summary": "Benchmark after JOIN fix: Volcano beats legacy for Join+GROUP BY (1.5x). Legacy still wins for simple ops (2-10x). Average 0.6x. 13/13 row counts match."
+      },
+      {
+        "id": "T160",
+        "mode": "EXPLORE",
+        "status": "in-progress",
+        "task": "Hunt for more AST format mismatches: what other predicates silently return true?",
+        "project": "henrydb",
+        "started": "2026-04-22T17:05:28.315Z"
+      },
+      {
+        "id": "T168",
+        "mode": "BUILD",
+        "task": "Add || string concat to buildValueGetter arith handler",
+        "status": "upcoming",
+        "plan_ref": "T160"
+      },
+      {
+        "id": "T161",
         "mode": "MAINTAIN",
         "status": "upcoming",
         "task": "Push"
       },
       {
-        "id": "T151",
+        "id": "T162",
         "mode": "EXPLORE",
         "status": "upcoming",
-        "task": "Run another comprehensive Volcano correctness sweep with updated fixes",
+        "task": "Re-run the Volcano benchmark with JOIN fix — measure performance improvement",
         "project": "henrydb"
       },
       {
-        "id": "T152",
+        "id": "T163",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: Add string concatenation (||) to Volcano buildValueGetter",
+        "task": null
+      },
+      {
+        "id": "T164",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Hunt: what other predicates in buildPredicate fall through to default: true?",
+        "project": "henrydb"
+      },
+      {
+        "id": "T165",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: Add OR pushdown in Volcano: WHERE a=1 OR a=2 should use IN-style",
+        "task": null
+      },
+      {
+        "id": "T166",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Push"
+      },
+      {
+        "id": "T167",
         "mode": "THINK",
         "status": "upcoming",
-        "task": "Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE"
+        "task": "Session reflection: what patterns made today productive?"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 158,
-    "blocksTotal": 153,
+    "blocksCompleted": 163,
+    "blocksTotal": 168,
     "modeDistribution": {
       "THINK": 22,
       "PLAN": 41,
       "BUILD": 34,
-      "MAINTAIN": 33,
-      "EXPLORE": 28
+      "MAINTAIN": 35,
+      "EXPLORE": 31
     }
   },
   "artifacts": [

@@ -1692,22 +1692,90 @@
     {
       "id": "T159",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Test: string concatenation operator || in Volcano — does it work?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T17:04:56.876Z",
+      "completed": "2026-04-22T17:05:22.194Z",
+      "duration_ms": 120000,
+      "summary": "Benchmark after JOIN fix: Volcano beats legacy for Join+GROUP BY (1.5x). Legacy still wins for simple ops (2-10x). Average 0.6x. 13/13 row counts match."
     },
     {
       "id": "T160",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Hunt for more AST format mismatches: what other predicates silently return true?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T17:05:28.315Z",
+      "completed": "2026-04-22T17:05:52.009Z",
+      "duration_ms": 30000,
+      "summary": "String concat || parsed as arith with op=||. Need to add || case to arith handler."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "task": "Add || string concat to buildValueGetter arith handler",
+      "status": "upcoming",
+      "plan_ref": "T160"
     },
     {
       "id": "T161",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Push",
+      "started": "2026-04-22T17:06:49.280Z",
+      "completed": "2026-04-22T17:07:24.146Z",
+      "duration_ms": 60000,
+      "summary": "Predicate audit: all common predicates handled. Remaining gaps: CAST, ANY/ALL, EXISTS. No critical silently-true fallthroughs for common patterns."
+    },
+    {
+      "id": "T162",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Re-run the Volcano benchmark with JOIN fix — measure performance improvement",
+      "project": "henrydb",
+      "started": "2026-04-22T17:07:30.907Z",
+      "completed": "2026-04-22T17:07:31.052Z",
+      "duration_ms": 1000,
+      "summary": "Deferred: OR pushdown is optimization, not correctness. Low priority."
+    },
+    {
+      "id": "T163",
+      "mode": "PLAN",
+      "status": "in-progress",
+      "goal": "HenryDB: Add string concatenation (||) to Volcano buildValueGetter",
+      "task": null,
+      "started": "2026-04-22T17:07:37.777Z"
+    },
+    {
+      "id": "T164",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Push"
+      "task": "Hunt: what other predicates in buildPredicate fall through to default: true?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T165",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: Add OR pushdown in Volcano: WHERE a=1 OR a=2 should use IN-style",
+      "task": null
+    },
+    {
+      "id": "T166",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Push",
+      "started": "2026-04-22T17:05:59.518Z",
+      "completed": "2026-04-22T17:06:42.426Z",
+      "duration_ms": 60000,
+      "summary": "Added || string concat and div-by-zero protection to Volcano. hello||world works."
+    },
+    {
+      "id": "T167",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Session reflection: what patterns made today productive?"
     }
   ],
   "focusProjects": [
@@ -2379,6 +2447,34 @@
     {
       "time": "2026-04-22T16:58:57.644Z",
       "msg": "Added T161 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-22T17:04:48.347Z",
+      "msg": "Added T162 (EXPLORE) after end: Re-run the Volcano benchmark with JOIN fix — measure performance improvement"
+    },
+    {
+      "time": "2026-04-22T17:04:48.467Z",
+      "msg": "Added T163 (PLAN) after end: HenryDB: Add string concatenation (||) to Volcano buildValueGetter"
+    },
+    {
+      "time": "2026-04-22T17:04:48.587Z",
+      "msg": "Added T164 (EXPLORE) after end: Hunt: what other predicates in buildPredicate fall through to default: true?"
+    },
+    {
+      "time": "2026-04-22T17:04:48.707Z",
+      "msg": "Added T165 (PLAN) after end: HenryDB: Add OR pushdown in Volcano: WHERE a=1 OR a=2 should use IN-style"
+    },
+    {
+      "time": "2026-04-22T17:04:48.827Z",
+      "msg": "Added T166 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-22T17:04:48.947Z",
+      "msg": "Added T167 (THINK) after end: Session reflection: what patterns made today productive?"
+    },
+    {
+      "time": "2026-04-22T17:05:44.818Z",
+      "msg": "PLAN T160 filled 1 BUILD tasks"
     }
   ]
 }
