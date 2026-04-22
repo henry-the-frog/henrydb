@@ -773,6 +773,29 @@
       "completed": "2026-04-22T22:48:56.654Z",
       "duration_ms": 300000,
       "summary": "SELECT * + window functions works! Star expansion in Project. 986/989 (99.70%). 20 BUILDs done — session cap reached."
+    },
+    {
+      "id": "T73",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate remaining 3 failures: what exactly is broken and why",
+      "project": "henrydb",
+      "started": "2026-04-22T22:49:26.243Z",
+      "completed": "2026-04-22T22:53:39.039Z",
+      "duration_ms": 360000,
+      "summary": "Investigated remaining 3 failures. 2 e2e-analytics were regressions from uncommitted planner changes (star case + arg null fix). Committed safe volcano.js star expansion only. Reverted planner changes. NOT NOT NOT is pre-existing parser issue. Final: 985/989."
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update volcano-gaps.md, write final session B summary, daily log"
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Session B reflection: what was the most impactful work? What would I do differently?"
     }
   ],
   "focusProjects": [
@@ -1096,6 +1119,18 @@
     {
       "time": "2026-04-22T22:47:12.575Z",
       "msg": "Added T72 (BUILD) after end: Fix SELECT * + window: careful star expansion with window column preservation"
+    },
+    {
+      "time": "2026-04-22T22:49:20.973Z",
+      "msg": "Added T73 (EXPLORE) after end: Investigate remaining 3 failures: what exactly is broken and why"
+    },
+    {
+      "time": "2026-04-22T22:49:21.091Z",
+      "msg": "Added T74 (MAINTAIN) after T73: Update volcano-gaps.md, write final session B summary, daily log"
+    },
+    {
+      "time": "2026-04-22T22:49:21.209Z",
+      "msg": "Added T75 (THINK) after T74: Session B reflection: what was the most impactful work? What would I do differently?"
     }
   ]
 }

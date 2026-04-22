@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-22T22:48:56.755Z",
+  "generated": "2026-04-22T22:53:39.074Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fix SELECT * + window: careful star expansion with window column preservation",
-    "completedAt": "2026-04-22T22:48:56.755Z",
-    "taskId": "T72",
-    "summary": "SELECT * + window functions works! Star expansion in Project. 986/989 (99.70%). 20 BUILDs done — session cap reached.",
-    "durationMs": 300000
+    "mode": "EXPLORE",
+    "task": "Investigate remaining 3 failures: what exactly is broken and why",
+    "completedAt": "2026-04-22T22:53:39.074Z",
+    "taskId": "T73",
+    "summary": "Investigated remaining 3 failures. 2 e2e-analytics were regressions from uncommitted planner changes (star case + arg null fix). Committed safe volcano.js star expansion only. Reverted planner changes. NOT NOT NOT is pre-existing parser issue. Final: 985/989.",
+    "durationMs": 360000
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1376,14 +1376,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 68,
+    "blocksCompleted": 69,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 8,
       "BUILD": 24,
       "MAINTAIN": 14,
-      "EXPLORE": 7
+      "EXPLORE": 8
     }
   },
   "artifacts": [
