@@ -460,6 +460,18 @@ export class HashJoin extends Iterator {
       if (!this._buildCols) this._buildCols = Object.keys(row).filter(k => !k.startsWith('_'));
     }
     this._build.close();
+    
+    // If build side was empty, derive build columns from the build iterator's schema
+    if (!this._buildCols && this._allBuildRows.length === 0) {
+      const buildScan = this._build;
+      if (buildScan._columns) {
+        this._buildCols = [];
+        for (const col of buildScan._columns) {
+          this._buildCols.push(col);
+          if (buildScan._alias) this._buildCols.push(`${buildScan._alias}.${col}`);
+        }
+      }
+    }
 
     // Probe phase
     this._probe.open();

@@ -2102,7 +2102,7 @@ export class Database {
       
       // Try Volcano engine first (faster for many patterns, opt-in)
       let result = null;
-      if (this._useVolcano === true) {
+      if (this._useVolcano !== false) {
         try {
           result = this._tryVolcanoSelect(optimizedAst);
         } catch (e) {
