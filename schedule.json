@@ -573,6 +573,17 @@
       "completed": "2026-04-22T00:34:08.113Z",
       "duration_ms": 300000,
       "summary": "Wrote design doc for Volcano-db.js integration. Key insight: delegate ONLY the join step (not the full query). Build minimal AST with just from+joins, execute via Volcano for the join, return materialized rows to db.js for the rest (WHERE, GROUP BY, window, ORDER BY, etc). Estimated 186x improvement on multi-table TPC-H queries. Fallback to NL when ON clause is too complex."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement tryVolcanoJoin() in db.js — delegate join execution to Volcano engine when hasJoins is true. Follow design doc.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:34:28.112Z",
+      "completed": "2026-04-22T00:40:52.472Z",
+      "duration_ms": 1200000,
+      "summary": "WIRED Volcano engine into db.js execution! _tryVolcanoJoin delegates INNER and LEFT equi-joins to Volcano (HashJoin/MergeJoin). Fixed INLJ bug: skips IndexNestedLoopJoin for LEFT joins (doesnt handle unmatched rows). All 41 join tests pass. 211 total tests pass (query/subquery/agg/join/volcano). This is the P0 feature — db.js now uses hash join for equi-joins!"
     }
   ],
   "focusProjects": [
@@ -812,6 +823,10 @@
     {
       "time": "2026-04-22T00:33:17.320Z",
       "msg": "Added T54 (THINK) after end: Architectural assessment: what would it take to wire Volcano into db.js for join execution? Write a design doc to memory/scratch/."
+    },
+    {
+      "time": "2026-04-22T00:34:27.880Z",
+      "msg": "Added T55 (BUILD) after end: Implement tryVolcanoJoin() in db.js — delegate join execution to Volcano engine when hasJoins is true. Follow design doc."
     }
   ]
 }

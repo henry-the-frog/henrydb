@@ -264,7 +264,7 @@ export function buildPlan(ast, tables, indexCatalog) {
       // 3. NestedLoopJoin as fallback
       const equiJoin = extractEquiJoinKeys(join.on, ast.from, join);
       
-      if (equiJoin && indexCatalog) {
+      if (equiJoin && indexCatalog && join.joinType !== 'LEFT') {
         const inlJoin = tryIndexNestedLoopJoin(
           iter, equiJoin, ast.from, join, effectiveTables, indexCatalog
         );

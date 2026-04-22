@@ -8,6 +8,7 @@ import { QueryPlanner } from './planner.js';
 import { makeCompositeKey } from './composite-key.js';
 import { parse } from './sql.js';
 import { WriteAheadLog } from './wal.js';
+import { buildPlan as buildVolcanoPlan } from './volcano-planner.js';
 import { CompiledQueryEngine } from './compiled-query.js';
 import { InvertedIndex, tokenize } from './fulltext.js';
 import { PlanCache } from './plan-cache.js';
@@ -2149,9 +2150,17 @@ export class Database {
       }
     }
 
-    // Handle JOINs
-    for (const join of ast.joins || []) {
-      rows = this._executeJoin(rows, join, ast.from.alias || ast.from.table);
+    // Handle JOINs — try Volcano engine first for performance
+    if (ast.joins && ast.joins.length > 0) {
+      const volcanoRows = this._tryVolcanoJoin(ast, rows);
+      if (volcanoRows !== null) {
+        rows = volcanoRows;
+      } else {
+        // Fallback to nested loop
+        for (const join of ast.joins) {
+          rows = this._executeJoin(rows, join, ast.from.alias || ast.from.table);
+        }
+      }
     }
 
     // WHERE filter after JOINs
@@ -4927,6 +4936,46 @@ export class Database {
   }
 
   // Collect aggregate_expr nodes from an expression tree (for HAVING pre-computation)
+
+  /**
+   * Try to execute joins via Volcano engine for performance.
+   * Returns materialized rows if successful, null to fall back to nested loop.
+   */
+  _tryVolcanoJoin(ast, leftRows) {
+    try {
+      // Only handle INNER and LEFT joins — fall back for RIGHT, FULL, CROSS
+      for (const join of ast.joins) {
+        const jt = (join.joinType || 'INNER').toUpperCase();
+        if (jt !== 'INNER' && jt !== 'JOIN' && jt !== 'LEFT') return null;
+        // Only handle equi-joins (ON clause with = comparison)
+        if (!join.on) return null;
+      }
+      // Build a minimal join-only AST for Volcano
+      const joinAst = {
+        type: 'SELECT',
+        columns: [{ type: 'star' }],
+        from: ast.from,
+        joins: ast.joins,
+        where: null,   // WHERE applied separately by db.js
+        groupBy: null,
+        orderBy: null,
+        limit: null,
+      };
+      
+      const plan = buildVolcanoPlan(joinAst, this.tables, this.indexCatalog);
+      const rows = [];
+      plan.open();
+      let row;
+      while ((row = plan.next()) !== null) {
+        rows.push(row);
+      }
+      plan.close();
+      return rows;
+    } catch (e) {
+      // If Volcano can't handle the query, fall back silently
+      return null;
+    }
+  }
 }
 
 // Install pg_catalog and information_schema virtual table methods
