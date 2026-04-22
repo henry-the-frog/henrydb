@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-22T00:59:49.969Z",
+  "generated": "2026-04-22T01:02:38.608Z",
   "current": {
     "status": "done",
     "mode": "THINK",
-    "task": "Investigate monkey-lang to RISC-V compilation pipeline: how does the codegen connect, what optimization passes exist, where does register allocation fit.",
-    "completedAt": "2026-04-22T00:59:49.969Z",
-    "taskId": "T70",
-    "summary": "Monkey→RISC-V pipeline: AST → RiscVCodeGen (stack-based code gen) → RISC-V assembly → Assembler → Machine code → CPU emulator. Current register allocator: linear assignment of s1-s11 without deallocation. Falls back to stack after 11 vars. Liveness improvement: track last-use, reuse dead registers. For 20-var function with max 5 live: 0 spills vs 9 currently. Key implementation: compute last-use for each variable, free register after last use, allocate from freed pool first.",
+    "task": "Design flash attention for neural-net project: what would it require? How to implement O(N) memory attention without materializing the full NxN attention matrix.",
+    "completedAt": "2026-04-22T01:02:38.608Z",
+    "taskId": "T72",
+    "summary": "Flash attention design: tiled computation with online softmax trick. Process Q×K in blocks, maintain running max/sum statistics, never materialize full N×N matrix. O(N) memory vs O(N²). For JS: benefit is memory allocation and cache locality (computation still O(N²)). ~80 LOC implementation. Key algorithm: online softmax with rescaling. Would make a good addition to attention.js.",
     "durationMs": 120000
   },
   "schedule": {
@@ -286,10 +286,10 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 70,
+    "blocksCompleted": 72,
     "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 25,
+      "THINK": 27,
       "PLAN": 7,
       "BUILD": 19,
       "MAINTAIN": 19

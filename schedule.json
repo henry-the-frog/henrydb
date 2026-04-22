@@ -742,6 +742,26 @@
       "completed": "2026-04-22T00:59:49.933Z",
       "duration_ms": 120000,
       "summary": "Monkey→RISC-V pipeline: AST → RiscVCodeGen (stack-based code gen) → RISC-V assembly → Assembler → Machine code → CPU emulator. Current register allocator: linear assignment of s1-s11 without deallocation. Falls back to stack after 11 vars. Liveness improvement: track last-use, reuse dead registers. For 20-var function with max 5 live: 0 spills vs 9 currently. Key implementation: compute last-use for each variable, free register after last use, allocate from freed pool first."
+    },
+    {
+      "id": "T71",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Write a scratch note analyzing the Monkey-lang optimization passes: const-prop, DCE, escape analysis, inline caching. Which passes interact with codegen?",
+      "started": "2026-04-22T01:00:38.587Z",
+      "completed": "2026-04-22T01:01:20.631Z",
+      "duration_ms": 120000,
+      "summary": "Monkey-lang optimization pipeline: Parse→AST→CFG→SCCP→DCE→Escape Analysis→Bytecode (with hidden classes for IC). Four major optimization passes: CFG (365 LOC), SCCP (208), DCE (228), Escape Analysis (267). Hidden classes (260 LOC) for V8-style inline caching. Register allocation for RISC-V codegen would integrate with escape analysis: non-escaping vars → register candidates. The CFG builder could provide the basic blocks needed for liveness analysis."
+    },
+    {
+      "id": "T72",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design flash attention for neural-net project: what would it require? How to implement O(N) memory attention without materializing the full NxN attention matrix.",
+      "started": "2026-04-22T01:02:15.893Z",
+      "completed": "2026-04-22T01:02:38.572Z",
+      "duration_ms": 120000,
+      "summary": "Flash attention design: tiled computation with online softmax trick. Process Q×K in blocks, maintain running max/sum statistics, never materialize full N×N matrix. O(N) memory vs O(N²). For JS: benefit is memory allocation and cache locality (computation still O(N²)). ~80 LOC implementation. Key algorithm: online softmax with rescaling. Would make a good addition to attention.js."
     }
   ],
   "focusProjects": [
@@ -1045,6 +1065,14 @@
     {
       "time": "2026-04-22T00:59:09.722Z",
       "msg": "Added T70 (THINK) after end: Investigate monkey-lang to RISC-V compilation pipeline: how does the codegen connect, what optimization passes exist, where does register allocation fit."
+    },
+    {
+      "time": "2026-04-22T01:00:38.354Z",
+      "msg": "Added T71 (THINK) after end: Write a scratch note analyzing the Monkey-lang optimization passes: const-prop, DCE, escape analysis, inline caching. Which passes interact with codegen?"
+    },
+    {
+      "time": "2026-04-22T01:02:15.660Z",
+      "msg": "Added T72 (THINK) after end: Design flash attention for neural-net project: what would it require? How to implement O(N) memory attention without materializing the full NxN attention matrix."
     }
   ]
 }
