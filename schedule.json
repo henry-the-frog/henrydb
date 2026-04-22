@@ -819,28 +819,133 @@
     {
       "id": "T76",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, daily log",
-      "started": "2026-04-22T15:42:56.986Z"
+      "started": "2026-04-22T15:42:56.986Z",
+      "completed": "2026-04-22T15:43:02.909Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T77",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Write scratch notes on today's findings: AST mismatch pattern, extraction learnings"
+      "status": "done",
+      "task": "Write scratch notes on today's findings: AST mismatch pattern, extraction learnings",
+      "started": "2026-04-22T15:43:10.079Z",
+      "completed": "2026-04-22T15:43:40.744Z",
+      "duration_ms": 120000,
+      "summary": "Wrote detailed scratch notes: AST mismatch pattern (4 instances), extraction lessons (4 common bugs), size estimate accuracy, total 7 bugs found."
     },
     {
       "id": "T78",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Run broader test sweep: 50 random test files to find regressions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T15:43:45.785Z",
+      "completed": "2026-04-22T15:44:22.765Z",
+      "duration_ms": 120000,
+      "summary": "612 tests across 50 random test files: 0 failures. All pass in 20.5 seconds. No regressions."
     },
     {
       "id": "T79",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session A final: push, summary, CURRENT.md",
+      "started": "2026-04-22T15:44:52.318Z",
+      "completed": "2026-04-22T15:44:52.461Z",
+      "duration_ms": 1000,
+      "summary": "Not time yet: 4h+ remaining."
+    },
+    {
+      "id": "T81",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Extract _selectInfoSchema + _selectPgCatalog from db.js (~160 LOC)",
+      "task": null,
+      "started": "2026-04-22T15:45:25.035Z",
+      "completed": "2026-04-22T15:45:55.368Z",
+      "duration_ms": 30000,
+      "summary": "3 functions, 151 LOC total. Pure metadata queries, minimal db deps."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "task": "Extract _selectInfoSchema + _selectPgCatalog + _filterPgCatalogRows from db.js (~151 LOC)",
+      "status": "done",
+      "plan_ref": "T81",
+      "started": "2026-04-22T15:46:02.616Z",
+      "completed": "2026-04-22T15:49:48.965Z",
+      "duration_ms": 480000,
+      "summary": "Extracted catalog queries (150 LOC). db.js 3549→3400 (66% from peak). 35 catalog tests pass. Had to redo extraction (wrong boundary caught _createSequence)."
+    },
+    {
+      "id": "T82",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Extract _union + _intersect + _except + helpers from db.js (~130 LOC)",
+      "task": null,
+      "started": "2026-04-22T15:50:09.540Z",
+      "completed": "2026-04-22T15:50:28.660Z",
+      "duration_ms": 30000,
+      "summary": "4 set operations, 112 LOC total. Small, clean extraction."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "task": "Extract _union + _unionInner + _intersect + _except from db.js (~112 LOC)",
+      "status": "done",
+      "plan_ref": "T82",
+      "started": "2026-04-22T15:50:33.771Z",
+      "completed": "2026-04-22T15:51:17.183Z",
+      "duration_ms": 300000,
+      "summary": "Extracted set operations (112 LOC). db.js 3404→3293 (67% from peak). 61 tests pass. BUILD #20 — session cap reached."
+    },
+    {
+      "id": "T83",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-22T15:51:32.608Z"
+    },
+    {
+      "id": "T84",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Session A final: push, summary, CURRENT.md"
+      "task": "Session BUILD cap: 20 BUILDs reached. Must pivot to depth for rest of session."
+    },
+    {
+      "id": "T85",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Stress test: run tpch-mini and tpch-compiled benchmarks, check performance",
+      "project": "henrydb"
+    },
+    {
+      "id": "T86",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Test edge cases: empty tables, NULL values, very large GROUP BY, nested CTEs",
+      "project": "henrydb"
+    },
+    {
+      "id": "T87",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Investigate: can Volcano executor replace legacy path entirely? What's missing?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T88",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Update TODO.md and scratch/INDEX.md with today's findings"
+    },
+    {
+      "id": "T89",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session sync: commit, push, update CURRENT.md"
     }
   ],
   "focusProjects": [
@@ -1188,6 +1293,50 @@
     {
       "time": "2026-04-22T15:40:06.178Z",
       "msg": "PLAN T75 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:45:04.940Z",
+      "msg": "Added T81 (PLAN) after end: HenryDB: Extract _selectInfoSchema + _selectPgCatalog from db.js (~160 LOC)"
+    },
+    {
+      "time": "2026-04-22T15:45:05.059Z",
+      "msg": "Added T82 (PLAN) after end: HenryDB: Extract _union + _intersect + _except + helpers from db.js (~130 LOC)"
+    },
+    {
+      "time": "2026-04-22T15:45:05.177Z",
+      "msg": "Added T83 (MAINTAIN) after end: Git push"
+    },
+    {
+      "time": "2026-04-22T15:45:05.295Z",
+      "msg": "Added T84 (THINK) after end: Session BUILD cap: 20 BUILDs reached. Must pivot to depth for rest of session."
+    },
+    {
+      "time": "2026-04-22T15:45:05.414Z",
+      "msg": "Added T85 (EXPLORE) after end: Stress test: run tpch-mini and tpch-compiled benchmarks, check performance"
+    },
+    {
+      "time": "2026-04-22T15:45:05.532Z",
+      "msg": "Added T86 (EXPLORE) after end: Test edge cases: empty tables, NULL values, very large GROUP BY, nested CTEs"
+    },
+    {
+      "time": "2026-04-22T15:45:05.650Z",
+      "msg": "Added T87 (EXPLORE) after end: Investigate: can Volcano executor replace legacy path entirely? What's missing?"
+    },
+    {
+      "time": "2026-04-22T15:45:05.769Z",
+      "msg": "Added T88 (THINK) after end: Update TODO.md and scratch/INDEX.md with today's findings"
+    },
+    {
+      "time": "2026-04-22T15:45:13.411Z",
+      "msg": "Added T89 (MAINTAIN) after end: Final session sync: commit, push, update CURRENT.md"
+    },
+    {
+      "time": "2026-04-22T15:45:45.003Z",
+      "msg": "PLAN T81 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:50:23.262Z",
+      "msg": "PLAN T82 filled 1 BUILD tasks"
     }
   ]
 }

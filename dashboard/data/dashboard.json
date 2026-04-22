@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T15:42:57.022Z",
+  "generated": "2026-04-22T15:51:32.645Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push, daily log",
-    "startedAt": "2026-04-22T15:42:57.022Z",
-    "taskId": "T76"
+    "task": "Git push",
+    "startedAt": "2026-04-22T15:51:32.645Z",
+    "taskId": "T83"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1621,55 +1621,160 @@
       {
         "id": "T75",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Further extraction - _withCTEs + _executeRecursiveCTE (~350 LOC)",
         "task": null,
-        "started": "2026-04-22T15:39:19.629Z"
+        "started": "2026-04-22T15:39:19.629Z",
+        "completed": "2026-04-22T15:40:14.149Z",
+        "duration_ms": 60000,
+        "summary": "_withCTEs (228 LOC) + _executeRecursiveCTE (135 LOC) = 363 LOC. Clean deps: just db.execute_ast, db._select, db.views."
       },
       {
         "id": "T80",
         "mode": "BUILD",
         "task": "Extract _withCTEs + _executeRecursiveCTE from db.js into cte-executor.js (~363 LOC)",
-        "status": "upcoming",
-        "plan_ref": "T75"
+        "status": "done",
+        "plan_ref": "T75",
+        "started": "2026-04-22T15:40:20.623Z",
+        "completed": "2026-04-22T15:42:35.608Z",
+        "duration_ms": 600000,
+        "summary": "Extracted CTE executor (159 LOC). First attempt had wrong line range (captured execute_ast). Fixed. db.js 3703→3546 (65% from peak). 48 CTE tests pass."
       },
       {
         "id": "T76",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push, daily log"
+        "status": "done",
+        "task": "Git push, daily log",
+        "started": "2026-04-22T15:42:56.986Z",
+        "completed": "2026-04-22T15:43:02.909Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
       },
       {
         "id": "T77",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Write scratch notes on today's findings: AST mismatch pattern, extraction learnings"
+        "status": "done",
+        "task": "Write scratch notes on today's findings: AST mismatch pattern, extraction learnings",
+        "started": "2026-04-22T15:43:10.079Z",
+        "completed": "2026-04-22T15:43:40.744Z",
+        "duration_ms": 120000,
+        "summary": "Wrote detailed scratch notes: AST mismatch pattern (4 instances), extraction lessons (4 common bugs), size estimate accuracy, total 7 bugs found."
       },
       {
         "id": "T78",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Run broader test sweep: 50 random test files to find regressions",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T15:43:45.785Z",
+        "completed": "2026-04-22T15:44:22.765Z",
+        "duration_ms": 120000,
+        "summary": "612 tests across 50 random test files: 0 failures. All pass in 20.5 seconds. No regressions."
       },
       {
         "id": "T79",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session A final: push, summary, CURRENT.md",
+        "started": "2026-04-22T15:44:52.318Z",
+        "completed": "2026-04-22T15:44:52.461Z",
+        "duration_ms": 1000,
+        "summary": "Not time yet: 4h+ remaining."
+      },
+      {
+        "id": "T81",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: Extract _selectInfoSchema + _selectPgCatalog from db.js (~160 LOC)",
+        "task": null,
+        "started": "2026-04-22T15:45:25.035Z",
+        "completed": "2026-04-22T15:45:55.368Z",
+        "duration_ms": 30000,
+        "summary": "3 functions, 151 LOC total. Pure metadata queries, minimal db deps."
+      },
+      {
+        "id": "T90",
+        "mode": "BUILD",
+        "task": "Extract _selectInfoSchema + _selectPgCatalog + _filterPgCatalogRows from db.js (~151 LOC)",
+        "status": "done",
+        "plan_ref": "T81",
+        "started": "2026-04-22T15:46:02.616Z",
+        "completed": "2026-04-22T15:49:48.965Z",
+        "duration_ms": 480000,
+        "summary": "Extracted catalog queries (150 LOC). db.js 3549→3400 (66% from peak). 35 catalog tests pass. Had to redo extraction (wrong boundary caught _createSequence)."
+      },
+      {
+        "id": "T82",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Extract _union + _intersect + _except + helpers from db.js (~130 LOC)",
+        "task": null,
+        "started": "2026-04-22T15:50:09.540Z"
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "task": "Extract _union + _unionInner + _intersect + _except from db.js (~112 LOC)",
         "status": "upcoming",
-        "task": "Session A final: push, summary, CURRENT.md"
+        "plan_ref": "T82"
+      },
+      {
+        "id": "T83",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push"
+      },
+      {
+        "id": "T84",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Session BUILD cap: 20 BUILDs reached. Must pivot to depth for rest of session."
+      },
+      {
+        "id": "T85",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Stress test: run tpch-mini and tpch-compiled benchmarks, check performance",
+        "project": "henrydb"
+      },
+      {
+        "id": "T86",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Test edge cases: empty tables, NULL values, very large GROUP BY, nested CTEs",
+        "project": "henrydb"
+      },
+      {
+        "id": "T87",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Investigate: can Volcano executor replace legacy path entirely? What's missing?",
+        "project": "henrydb"
+      },
+      {
+        "id": "T88",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Update TODO.md and scratch/INDEX.md with today's findings"
+      },
+      {
+        "id": "T89",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final session sync: commit, push, update CURRENT.md"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 76,
-    "blocksTotal": 80,
+    "blocksCompleted": 84,
+    "blocksTotal": 91,
     "modeDistribution": {
-      "THINK": 12,
-      "PLAN": 20,
-      "BUILD": 23,
-      "MAINTAIN": 14,
-      "EXPLORE": 7
+      "THINK": 13,
+      "PLAN": 22,
+      "BUILD": 25,
+      "MAINTAIN": 16,
+      "EXPLORE": 8
     }
   },
   "artifacts": [
