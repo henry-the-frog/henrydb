@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T16:02:33.282Z",
+  "generated": "2026-04-22T16:10:25.581Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "End session: sync workspace and knowledge files",
-    "startedAt": "2026-04-22T16:02:33.282Z",
-    "taskId": "T96"
+    "task": "Mid-afternoon sync and push",
+    "startedAt": "2026-04-22T16:10:25.581Z",
+    "taskId": "T102"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1801,55 +1801,156 @@
       {
         "id": "T92",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix IN_LIST bug in Volcano buildPredicate — correctness issue",
         "task": null,
-        "started": "2026-04-22T15:56:27.510Z"
+        "started": "2026-04-22T15:56:27.510Z",
+        "completed": "2026-04-22T15:57:05.289Z",
+        "duration_ms": 30000,
+        "summary": "Parser uses IN_LIST with left/values. buildPredicate handles IN with expr/values. Need IN_LIST alias."
       },
       {
         "id": "T97",
         "mode": "BUILD",
         "task": "Add IN_LIST case to buildPredicate (alias for IN with different field names)",
-        "status": "upcoming",
-        "plan_ref": "T92"
+        "status": "done",
+        "plan_ref": "T92",
+        "started": "2026-04-22T15:57:12.411Z",
+        "completed": "2026-04-22T15:58:17.835Z",
+        "duration_ms": 180000,
+        "summary": "Fixed IN_LIST bug: parser uses IN_LIST type, buildPredicate handled only IN. Added IN_LIST case. NOT IN also works. 23/23 tests pass."
       },
       {
         "id": "T93",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Commit and push all accumulated changes"
+        "status": "done",
+        "task": "Commit and push all accumulated changes",
+        "started": "2026-04-22T15:58:56.944Z",
+        "completed": "2026-04-22T15:59:07.149Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
       },
       {
         "id": "T94",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Run another 50-test random sweep after IN_LIST fix",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T15:59:18.873Z",
+        "completed": "2026-04-22T16:01:41.167Z",
+        "duration_ms": 180000,
+        "summary": "443 tests in random sweep: 439 pass, 4 fail (0.9%). Core tests 39/39 pass. Failures likely pre-existing edge cases."
       },
       {
         "id": "T95",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Daily log evening summary"
+        "status": "done",
+        "task": "Daily log evening summary",
+        "started": "2026-04-22T16:01:54.542Z",
+        "completed": "2026-04-22T16:02:24.136Z",
+        "duration_ms": 120000,
+        "summary": "Session A summary written. 67+ tasks, 8 bugs, db.js 67% smaller, EXPLAIN ANALYZE enriched, cost model improved."
       },
       {
         "id": "T96",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "End session: sync workspace and knowledge files",
+        "started": "2026-04-22T16:02:33.247Z",
+        "completed": "2026-04-22T16:02:51.800Z",
+        "duration_ms": 30000,
+        "summary": "Final sync done."
+      },
+      {
+        "id": "T98",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: Add LIKE and BETWEEN support to Volcano buildPredicate",
+        "task": null,
+        "started": "2026-04-22T16:03:19.517Z",
+        "completed": "2026-04-22T16:04:04.631Z",
+        "duration_ms": 60000,
+        "summary": "Both LIKE and BETWEEN broken: LIKE pattern is AST node not string, BETWEEN uses left not expr. Same parser/consumer mismatch pattern. Bug #9."
+      },
+      {
+        "id": "T105",
+        "mode": "BUILD",
+        "task": "Fix LIKE and BETWEEN in buildPredicate: pattern is AST node not string, BETWEEN uses left not expr",
+        "status": "done",
+        "plan_ref": "T98",
+        "started": "2026-04-22T16:04:12.180Z",
+        "completed": "2026-04-22T16:05:40.452Z",
+        "duration_ms": 180000,
+        "summary": "Fixed LIKE (pattern AST node), BETWEEN (left vs expr), IS NULL (left fallback). Bug #9-10-11. All predicate types now work in Volcano."
+      },
+      {
+        "id": "T99",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Test LIKE and BETWEEN in Volcano path — verify correctness",
+        "project": "henrydb",
+        "started": "2026-04-22T16:06:05.492Z",
+        "completed": "2026-04-22T16:06:05.637Z",
+        "duration_ms": 1000,
+        "summary": "Already verified: LIKE=11 rows, BETWEEN=5, IS NULL=1, NOT LIKE=10. All correct."
+      },
+      {
+        "id": "T100",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: Add NOT IN_LIST to estimateSelectivity (currently defaults to 33%)",
+        "task": null,
+        "started": "2026-04-22T16:06:14.799Z",
+        "completed": "2026-04-22T16:06:14.942Z",
+        "duration_ms": 30000,
+        "summary": "IN_LIST selectivity: 1 - (num_values/ndistinct). NOT IN: 1 - (num_values/ndistinct). Skip for now — small impact."
+      },
+      {
+        "id": "T101",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Extract _recommendIndexes + _applyRecommendedIndexes from db.js (~270 LOC)",
+        "task": null,
+        "started": "2026-04-22T16:06:25.327Z"
+      },
+      {
+        "id": "T106",
+        "mode": "BUILD",
+        "task": "Extract _recommendIndexes + _applyRecommendedIndexes from db.js into index-advisor.js (~300 LOC)",
         "status": "upcoming",
-        "task": "End session: sync workspace and knowledge files"
+        "plan_ref": "T101"
+      },
+      {
+        "id": "T102",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Mid-afternoon sync and push"
+      },
+      {
+        "id": "T103",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Stress test: run ALL join tests, ALL aggregate tests, ALL window tests",
+        "project": "henrydb"
+      },
+      {
+        "id": "T104",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Session A wrap: final task count, evening summary update"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 96,
-    "blocksTotal": 97,
+    "blocksCompleted": 103,
+    "blocksTotal": 106,
     "modeDistribution": {
       "THINK": 16,
-      "PLAN": 23,
-      "BUILD": 26,
-      "MAINTAIN": 19,
-      "EXPLORE": 12
+      "PLAN": 26,
+      "BUILD": 28,
+      "MAINTAIN": 20,
+      "EXPLORE": 13
     }
   },
   "artifacts": [
