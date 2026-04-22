@@ -92,15 +92,19 @@
       "id": "T15",
       "mode": "BUILD",
       "task": "Support scalar correlated subqueries in Volcano SELECT columns",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-22T20:29:46.659Z"
+      "started": "2026-04-22T20:29:46.659Z",
+      "completed": "2026-04-22T20:31:18.256Z",
+      "duration_ms": 300000,
+      "summary": "Scalar correlated subqueries now work in Volcano SELECT columns. Uses buildCorrelatedSubqueryPlan per outer row. Results match legacy exactly. 115/115 tests pass."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard update"
+      "status": "in-progress",
+      "task": "Git push, dashboard update",
+      "started": "2026-04-22T20:31:27.561Z"
     },
     {
       "id": "T9",
