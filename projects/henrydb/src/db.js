@@ -28,7 +28,8 @@ import { update as _updateImpl, executeDelete as _executeDeleteImpl } from './dm
 import { executeJoinWithRows as _executeJoinWithRowsImpl, executeJoin as _executeJoinImpl, extractEquiJoinColumns as _extractEquiJoinColumnsImpl, extractEquiJoinKey as _extractEquiJoinKeyImpl, hashJoin as _hashJoinImpl, mergeJoin as _mergeJoinImpl, estimateRowCount as _estimateRowCountImpl, compareScanCosts as _compareScanCostsImpl, compareJoinCosts as _compareJoinCostsImpl, estimateFilteredRows as _estimateFilteredRowsImpl, estimateJoinSize as _estimateJoinSizeImpl, extractJoinColumns as _extractJoinColumnsImpl, optimizeJoinOrder as _optimizeJoinOrderImpl, popcount as _popcountImpl, getTableNdv as _getTableNdvImpl } from './join-executor.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
-import { explainPlan as volcanoExplainPlan } from './volcano-planner.js';
+import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
+import { instrumentPlan } from './volcano.js';
 
 export class Database {
   // PostgreSQL-compatible cost model parameters
@@ -4384,17 +4385,39 @@ export class Database {
       planTreeText: planTree ? PlanFormatter.format(planTree, { analyze: true }) : null,
     };
     
-    // Add Volcano plan tree if available
+    // Add Volcano plan tree with per-operator instrumentation
     try {
-      const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
-      if (volcanoTree) {
+      const rawPlan = volcanoBuildPlan(stmt, this.tables, this._indexes);
+      if (rawPlan) {
+        const instrumented = instrumentPlan(rawPlan);
+        // Execute through instrumented plan to collect real timings
+        instrumented.open();
+        let volcanoRows = 0;
+        while (instrumented.next() !== null) volcanoRows++;
+        instrumented.close();
+        
+        const timingTree = instrumented.explain(0);
         analyzeResult.rows.push({ 'QUERY PLAN': '' });
-        analyzeResult.rows.push({ 'QUERY PLAN': 'Volcano Plan:' });
-        for (const line of volcanoTree.split('\n')) {
+        analyzeResult.rows.push({ 'QUERY PLAN': 'Volcano ANALYZE (per-operator actual timing):' });
+        for (const line of timingTree.split('\n')) {
           analyzeResult.rows.push({ 'QUERY PLAN': '  ' + line });
         }
+        analyzeResult.rows.push({ 'QUERY PLAN': `  Total Volcano rows: ${volcanoRows}` });
+        analyzeResult.volcanoAnalyze = { timingTree, volcanoRows };
       }
-    } catch (e) { /* skip if Volcano can't handle this query */ }
+    } catch (e) {
+      // Volcano instrumentation failed — add static plan tree as fallback
+      try {
+        const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+        if (volcanoTree) {
+          analyzeResult.rows.push({ 'QUERY PLAN': '' });
+          analyzeResult.rows.push({ 'QUERY PLAN': 'Volcano Plan:' });
+          for (const line of volcanoTree.split('\n')) {
+            analyzeResult.rows.push({ 'QUERY PLAN': '  ' + line });
+          }
+        }
+      } catch (e2) { /* skip if Volcano can't handle this query */ }
+    }
     
     return analyzeResult;
   }
