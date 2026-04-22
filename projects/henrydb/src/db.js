@@ -2166,9 +2166,7 @@ export class Database {
       c.type === 'aggregate' && unsupportedAggs.includes(c.func?.toUpperCase())
     );
     if (hasUnsupportedAgg) return null;
-    // Skip aggregate FILTER clause (COUNT(*) FILTER (WHERE x > 0))
-    const hasFilterAgg = ast.columns.some(c => c.type === 'aggregate' && c.filter);
-    if (hasFilterAgg) return null;
+    // Aggregate FILTER clause — now supported in Volcano
     // Also check HAVING and subqueries for unsupported aggregates
     const astStr = JSON.stringify(ast);
     if (unsupportedAggs.some(a => astStr.includes(`"func":"${a}"`) || astStr.includes(`"func":"${a.toLowerCase()}"`) )) return null;

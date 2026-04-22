@@ -221,24 +221,39 @@
     {
       "id": "T22",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, test sweep, learning capture",
-      "started": "2026-04-22T20:50:32.300Z"
+      "started": "2026-04-22T20:50:32.300Z",
+      "completed": "2026-04-22T20:51:04.456Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed. Knowledge captured in volcano-gaps.md. 398/403 broad tests pass. Key insight documented: Volcano steal problem pattern."
     },
     {
       "id": "T23",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: Aggregate FILTER clause support (COUNT(*) FILTER (WHERE x > 0))",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T20:51:12.334Z",
+      "completed": "2026-04-22T20:51:41.805Z",
+      "duration_ms": 90000,
+      "summary": "Plan: add filter predicate to aggregate spec in volcano-planner, pass to HashAggregate. In open() loop, only push values when filter matches. Remove _tryVolcanoSelect guard."
     },
     {
       "id": "T24",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Add FILTER clause to HashAggregate + volcano-planner aggregate collection",
       "plan_ref": "T23",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T20:51:50.258Z"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Test FILTER clause: COUNT FILTER, SUM FILTER, mixed filtered/unfiltered aggregates",
+      "status": "upcoming",
+      "plan_ref": "T23"
     },
     {
       "id": "T25",
@@ -426,6 +441,10 @@
     {
       "time": "2026-04-22T20:50:24.684Z",
       "msg": "Added T30 (THINK) after end: Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano."
+    },
+    {
+      "time": "2026-04-22T20:51:35.996Z",
+      "msg": "PLAN T23 filled 2 BUILD tasks"
     }
   ]
 }

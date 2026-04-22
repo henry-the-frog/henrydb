@@ -745,6 +745,8 @@ export class HashAggregate extends Iterator {
       }
       const group = this._groups.get(key);
       for (const agg of this._aggregates) {
+        // Apply FILTER clause: only include row if filter matches
+        if (agg.filterPred && !agg.filterPred(row)) continue;
         const val = agg.column === '*' ? 1 : (agg.valueGetter ? agg.valueGetter(row) : row[agg.column]);
         group.aggs[agg.name].values.push(val);
       }

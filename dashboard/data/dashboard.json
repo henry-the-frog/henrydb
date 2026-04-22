@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T20:50:32.337Z",
+  "generated": "2026-04-22T20:51:50.294Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git push, test sweep, learning capture",
-    "startedAt": "2026-04-22T20:50:32.337Z",
-    "taskId": "T22"
+    "mode": "BUILD",
+    "task": "Add FILTER clause to HashAggregate + volcano-planner aggregate collection",
+    "startedAt": "2026-04-22T20:51:50.294Z",
+    "taskId": "T24"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -946,25 +946,36 @@
       {
         "id": "T16",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Support derived tables (subqueries) in FROM clause in Volcano",
         "task": null,
-        "started": "2026-04-22T20:32:43.494Z"
+        "started": "2026-04-22T20:32:43.494Z",
+        "completed": "2026-04-22T20:33:12.524Z",
+        "duration_ms": 90000,
+        "summary": "Plan: materialize FROM subquery via Volcano plan, create virtual table with schema from result columns, add to tables map under alias. Same pattern as CTE materialization. 2 BUILD tasks."
       },
       {
         "id": "T17",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Support derived tables in Volcano FROM: materialize subquery, create virtual table, wire into scan",
         "plan_ref": "T16",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T20:33:20.057Z",
+        "completed": "2026-04-22T20:34:20.122Z",
+        "duration_ms": 360000,
+        "summary": "Derived tables in FROM now supported in Volcano. Materialize subquery, create virtual table, wire into scan. 107/107 tests pass."
       },
       {
         "id": "T18",
         "mode": "BUILD",
         "task": "Add tests for derived tables: FROM subquery, JOIN with subquery, nested derived tables",
-        "status": "upcoming",
-        "plan_ref": "T16"
+        "status": "done",
+        "plan_ref": "T16",
+        "started": "2026-04-22T20:34:31.174Z",
+        "completed": "2026-04-22T20:35:07.239Z",
+        "duration_ms": 180000,
+        "summary": "10 derived table tests: basic, alias qualification, WHERE, JOIN, GROUP BY, legacy parity, nested derived, COALESCE, scalar subquery. All pass."
       },
       {
         "id": "T10",
@@ -986,27 +997,135 @@
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push, test sweep, knowledge capture"
+        "status": "done",
+        "task": "Git push, test sweep, knowledge capture",
+        "started": "2026-04-22T20:35:16.308Z",
+        "completed": "2026-04-22T20:40:41.364Z",
+        "duration_ms": 180000,
+        "summary": "Git pushed. Targeted test sweep: 157/157 tests pass across sql, volcano, CTE, join, explain, derived-table, subquery, aggregate, tpch. No regressions."
       },
       {
         "id": "T13",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research: what are the remaining ~3% failures? Categorize and triage.",
+        "project": "henrydb",
+        "started": "2026-04-22T20:40:51.351Z",
+        "completed": "2026-04-22T20:44:12.037Z",
+        "duration_ms": 300000,
+        "summary": "Categorized remaining failures: 8 LATERAL JOIN (pre-existing, partial impl), 8 JSON (pre-existing), 4 FTS (pre-existing). Fixed derived-table-with-window-function regression. Core SQL: 157/157 pass."
+      },
+      {
+        "id": "T19",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Direction: fix LATERAL JOIN failures (8), then assess what other Volcano gaps to close. Check BUILD count (depth gate).",
+        "started": "2026-04-22T20:44:50.089Z",
+        "completed": "2026-04-22T20:50:11.052Z",
+        "duration_ms": 360000,
+        "summary": "Major insight: LATERAL failures (8/8) caused by Volcano not understanding outer row context. Fixed with Volcano skip guard. Also found correlated WHERE subquery (SELECT AVG...) is pre-existing failure. 398/403 broad test pass."
+      },
+      {
+        "id": "T20",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Fix LATERAL JOIN: top-N per group, LEFT LATERAL, LATERAL with aggregation",
+        "task": null,
+        "skip_reason": ""
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "T20",
+        "project": "henrydb",
+        "skip_reason": ""
+      },
+      {
+        "id": "T22",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, test sweep, learning capture",
+        "started": "2026-04-22T20:50:32.300Z",
+        "completed": "2026-04-22T20:51:04.456Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed. Knowledge captured in volcano-gaps.md. 398/403 broad tests pass. Key insight documented: Volcano steal problem pattern."
+      },
+      {
+        "id": "T23",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Aggregate FILTER clause support (COUNT(*) FILTER (WHERE x > 0))",
+        "task": null,
+        "started": "2026-04-22T20:51:12.334Z"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Add FILTER clause to HashAggregate + volcano-planner aggregate collection",
+        "plan_ref": "T23",
         "project": "henrydb"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Test FILTER clause: COUNT FILTER, SUM FILTER, mixed filtered/unfiltered aggregates",
+        "status": "upcoming",
+        "plan_ref": "T23"
+      },
+      {
+        "id": "T25",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Afternoon depth check. 10 BUILDs done? Assess quality and direction."
+      },
+      {
+        "id": "T26",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: JOIN subqueries in JOIN ON clause for Volcano",
+        "task": null
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T26",
+        "project": "henrydb"
+      },
+      {
+        "id": "T28",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, broader test sweep"
+      },
+      {
+        "id": "T29",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
+        "project": "henrydb"
+      },
+      {
+        "id": "T30",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano."
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 17,
-    "blocksTotal": 18,
+    "blocksCompleted": 19,
+    "blocksTotal": 31,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 3,
+      "PLAN": 4,
       "BUILD": 6,
-      "MAINTAIN": 3,
+      "MAINTAIN": 4,
       "EXPLORE": 1
     }
   },

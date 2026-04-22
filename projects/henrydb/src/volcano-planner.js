@@ -390,7 +390,8 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         // For expression args (arith, function_call), pass a valueGetter so HashAggregate can evaluate
         const isExprArg = typeof col.arg === 'object' && col.arg.type !== 'column_ref';
         const valueGetter = isExprArg ? buildValueGetter(col.arg) : null;
-        aggregates.push({ name, func: col.func, column: argStr, valueGetter });
+        const filterPred = col.filter ? buildPredicate(col.filter) : null;
+        aggregates.push({ name, func: col.func, column: argStr, valueGetter, filterPred, distinct: col.distinct });
       } else if ((col.type === 'function' || col.type === 'function_call') && 
                   col.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')) {
         // Function-wrapped aggregate: COALESCE(SUM(val), 0), NULLIF(AVG(val), 0), etc.
