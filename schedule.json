@@ -723,35 +723,124 @@
     {
       "id": "T68",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + dashboard",
-      "started": "2026-04-22T15:31:05.235Z"
+      "started": "2026-04-22T15:31:05.235Z",
+      "completed": "2026-04-22T15:31:13.924Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T69",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "20-BUILD cap reached: mandatory depth pivot — stress test, explore, investigate"
+      "status": "done",
+      "task": "20-BUILD cap reached: mandatory depth pivot — stress test, explore, investigate",
+      "started": "2026-04-22T15:31:21.727Z",
+      "completed": "2026-04-22T15:31:34.536Z",
+      "duration_ms": 30000,
+      "summary": "Depth pivot: EXPLORE tasks next. Stress test Volcano with complex queries, profile TPC-H timing, hunt for more AST bugs."
     },
     {
       "id": "T70",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Stress-test Volcano EXPLAIN ANALYZE across all query types: subqueries, UNION, window functions, LATERAL",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T15:31:40.968Z",
+      "completed": "2026-04-22T15:34:43.153Z",
+      "duration_ms": 600000,
+      "summary": "Stress tested all query types. Found 2 bugs: (1) this→db in extracted module (4 instances), (2) UNION EXPLAIN ANALYZE dispatch. Both fixed. Subquery, window func, ORDER BY+LIMIT all work."
     },
     {
       "id": "T71",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Profile HenryDB: what are the slowest operations? Run tpch with timing.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T15:35:10.270Z",
+      "completed": "2026-04-22T15:36:42.419Z",
+      "duration_ms": 300000,
+      "summary": "Profiled HenryDB: Index lookup 0.9ms, simple join 6.3ms, 3-table join 13.7ms. CTE+join 70.7ms is 10x slower than equivalent join (materialization overhead). Inserts: ~600/sec on indexed tables."
     },
     {
       "id": "T72",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End-of-session push and daily summary",
+      "started": "2026-04-22T15:37:14.400Z",
+      "completed": "2026-04-22T15:37:14.543Z",
+      "duration_ms": 1000,
+      "summary": "Not time yet: 4.5h remaining."
+    },
+    {
+      "id": "T73",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit ALL extracted files for remaining 'this' references that should be 'db'",
+      "project": "henrydb",
+      "started": "2026-04-22T15:37:47.856Z",
+      "completed": "2026-04-22T15:38:06.019Z",
+      "duration_ms": 60000,
+      "summary": "All 5 extracted files clean: no remaining this references, no Database. references. Audit passed."
+    },
+    {
+      "id": "T74",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate CTE 70.7ms performance: profile materialization vs join",
+      "project": "henrydb",
+      "started": "2026-04-22T15:38:11.024Z",
+      "completed": "2026-04-22T15:38:54.027Z",
+      "duration_ms": 180000,
+      "summary": "CTE slowness is in legacy executor (69ms), not Volcano (5ms). Legacy does full scan + slow join. Fix: route CTEs through Volcano. Noted for future work."
+    },
+    {
+      "id": "T75",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Further extraction - _withCTEs + _executeRecursiveCTE (~350 LOC)",
+      "task": null,
+      "started": "2026-04-22T15:39:19.629Z",
+      "completed": "2026-04-22T15:40:14.149Z",
+      "duration_ms": 60000,
+      "summary": "_withCTEs (228 LOC) + _executeRecursiveCTE (135 LOC) = 363 LOC. Clean deps: just db.execute_ast, db._select, db.views."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "Extract _withCTEs + _executeRecursiveCTE from db.js into cte-executor.js (~363 LOC)",
+      "status": "done",
+      "plan_ref": "T75",
+      "started": "2026-04-22T15:40:20.623Z",
+      "completed": "2026-04-22T15:42:35.608Z",
+      "duration_ms": 600000,
+      "summary": "Extracted CTE executor (159 LOC). First attempt had wrong line range (captured execute_ast). Fixed. db.js 3703→3546 (65% from peak). 48 CTE tests pass."
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push, daily log",
+      "started": "2026-04-22T15:42:56.986Z"
+    },
+    {
+      "id": "T77",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "End-of-session push and daily summary"
+      "task": "Write scratch notes on today's findings: AST mismatch pattern, extraction learnings"
+    },
+    {
+      "id": "T78",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Run broader test sweep: 50 random test files to find regressions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T79",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session A final: push, summary, CURRENT.md"
     }
   ],
   "focusProjects": [
@@ -1067,6 +1156,38 @@
     {
       "time": "2026-04-22T15:27:57.814Z",
       "msg": "Added T72 (MAINTAIN) after end: End-of-session push and daily summary"
+    },
+    {
+      "time": "2026-04-22T15:37:32.263Z",
+      "msg": "Added T73 (EXPLORE) after end: Audit ALL extracted files for remaining 'this' references that should be 'db'"
+    },
+    {
+      "time": "2026-04-22T15:37:32.380Z",
+      "msg": "Added T74 (EXPLORE) after end: Investigate CTE 70.7ms performance: profile materialization vs join"
+    },
+    {
+      "time": "2026-04-22T15:37:32.499Z",
+      "msg": "Added T75 (PLAN) after end: HenryDB: Further extraction - _withCTEs + _executeRecursiveCTE (~350 LOC)"
+    },
+    {
+      "time": "2026-04-22T15:37:32.617Z",
+      "msg": "Added T76 (MAINTAIN) after end: Git push, daily log"
+    },
+    {
+      "time": "2026-04-22T15:37:32.735Z",
+      "msg": "Added T77 (THINK) after end: Write scratch notes on today's findings: AST mismatch pattern, extraction learnings"
+    },
+    {
+      "time": "2026-04-22T15:37:32.853Z",
+      "msg": "Added T78 (EXPLORE) after end: Run broader test sweep: 50 random test files to find regressions"
+    },
+    {
+      "time": "2026-04-22T15:37:32.970Z",
+      "msg": "Added T79 (MAINTAIN) after end: Session A final: push, summary, CURRENT.md"
+    },
+    {
+      "time": "2026-04-22T15:40:06.178Z",
+      "msg": "PLAN T75 filled 1 BUILD tasks"
     }
   ]
 }
