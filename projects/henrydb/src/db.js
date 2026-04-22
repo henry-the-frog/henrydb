@@ -2144,6 +2144,7 @@ export class Database {
     if (!ast.from) return null; // No FROM clause (e.g., SELECT 1)
     if (ast.from.subquery) return null; // Derived table in FROM (not JOIN)
     if (ast.recursive) return null; // Recursive CTEs
+    if (ast.ctes?.some(c => c.recursive)) return null; // Recursive CTEs in CTE list
     if (ast.pivot) return null; // PIVOT queries
     if (ast.unpivot) return null; // UNPIVOT queries
     // Skip if WINDOW is used with GROUP BY and aggregate window functions
