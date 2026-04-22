@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T20:20:01.029Z",
+  "generated": "2026-04-22T20:22:38.267Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix CTE alias qualification bug: rs.region returns undefined when CTE aliased as rs",
-    "startedAt": "2026-04-22T20:20:01.029Z",
-    "taskId": "T3"
+    "task": "Add comprehensive CTE-Volcano correctness tests (CTE aliasing, multi-CTE, nested CTE)",
+    "startedAt": "2026-04-22T20:22:38.267Z",
+    "taskId": "T14"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -929,11 +929,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 2,
+    "blocksCompleted": 3,
     "blocksTotal": 14,
     "modeDistribution": {
       "THINK": 1,
-      "PLAN": 1
+      "PLAN": 1,
+      "BUILD": 1
     }
   },
   "artifacts": [

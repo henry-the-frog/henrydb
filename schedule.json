@@ -25,18 +25,22 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix CTE alias qualification bug: rs.region returns undefined when CTE aliased as rs",
       "plan_ref": "T2",
       "project": "henrydb",
-      "started": "2026-04-22T20:20:00.993Z"
+      "started": "2026-04-22T20:20:00.993Z",
+      "completed": "2026-04-22T20:22:31.187Z",
+      "duration_ms": 300000,
+      "summary": "Fixed CTE alias qualification bug. CTE inner JOINs produced qualified names (c.region) that became double-qualified (rs.c.region) in outer query. Strip qualifiers during CTE materialization. 66 CTE tests + 85 SQL tests pass."
     },
     {
       "id": "T14",
       "mode": "BUILD",
       "task": "Add comprehensive CTE-Volcano correctness tests (CTE aliasing, multi-CTE, nested CTE)",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "in-progress",
+      "plan_ref": "T2",
+      "started": "2026-04-22T20:22:38.230Z"
     },
     {
       "id": "T4",
