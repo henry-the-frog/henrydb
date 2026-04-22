@@ -2302,6 +2302,63 @@
       "completed": "2026-04-22T17:41:49.470Z",
       "duration_ms": 120000,
       "summary": "Extended stress test: 55/56 pass, 0 errors. Only failure: GROUP BY with CASE expression (minor). 56 diverse patterns tested."
+    },
+    {
+      "id": "T216",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Fix: GROUP BY CASE expression returns wrong row count. Debug Volcano GROUP BY expression evaluation",
+      "project": "henrydb",
+      "started": "2026-04-22T17:42:21.495Z",
+      "completed": "2026-04-22T17:44:52.651Z",
+      "duration_ms": 300000,
+      "summary": "Bug #23: GROUP BY CASE expression. HashAggregate got raw AST as keys. Fixed with synthetic computed columns + projection mapping. Works perfectly."
+    },
+    {
+      "id": "T217",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Fix: OFFSET-only (without LIMIT) returns all rows",
+      "project": "henrydb",
+      "started": "2026-04-22T17:44:56.585Z",
+      "completed": "2026-04-22T17:45:45.490Z",
+      "duration_ms": 60000,
+      "summary": "Fixed OFFSET-only: was only checking ast.limit. Now also checks ast.offset. Uses Infinity for offset-only. 4/4 pass."
+    },
+    {
+      "id": "T218",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: aggregate functions — COUNT(DISTINCT x), GROUP_CONCAT, STRING_AGG",
+      "project": "henrydb",
+      "started": "2026-04-22T17:45:50.623Z",
+      "completed": "2026-04-22T17:46:06.139Z",
+      "duration_ms": 30000,
+      "summary": "COUNT(DISTINCT), GROUP_CONCAT, STRING_AGG all work. 3/3 pass."
+    },
+    {
+      "id": "T219",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What is the biggest remaining gap between Volcano and a real query engine? Priority list for next session",
+      "project": "henrydb",
+      "started": "2026-04-22T17:46:11.028Z",
+      "completed": "2026-04-22T17:46:37.100Z",
+      "duration_ms": 120000,
+      "summary": "Documented Volcano gaps. 7 remaining gaps. Top 3: HAVING subquery, ANY/ALL, derived table in FROM. Updated scratch/volcano-gaps.md"
+    },
+    {
+      "id": "T220",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update MEMORY.md with today session learnings",
+      "started": "2026-04-22T17:46:40.849Z"
+    },
+    {
+      "id": "T221",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and daily log update"
     }
   ],
   "focusProjects": [
@@ -3189,6 +3246,30 @@
     {
       "time": "2026-04-22T17:39:46.156Z",
       "msg": "Added T215 (EXPLORE) after end: Stress: 100-query random SQL fuzz with diverse patterns"
+    },
+    {
+      "time": "2026-04-22T17:42:12.300Z",
+      "msg": "Added T216 (EXPLORE) after end: Fix: GROUP BY CASE expression returns wrong row count. Debug Volcano GROUP BY expression evaluation"
+    },
+    {
+      "time": "2026-04-22T17:42:12.420Z",
+      "msg": "Added T217 (EXPLORE) after end: Fix: OFFSET-only (without LIMIT) returns all rows"
+    },
+    {
+      "time": "2026-04-22T17:42:12.541Z",
+      "msg": "Added T218 (EXPLORE) after end: Test: aggregate functions — COUNT(DISTINCT x), GROUP_CONCAT, STRING_AGG"
+    },
+    {
+      "time": "2026-04-22T17:42:12.661Z",
+      "msg": "Added T219 (THINK) after end: What is the biggest remaining gap between Volcano and a real query engine? Priority list for next session"
+    },
+    {
+      "time": "2026-04-22T17:42:12.781Z",
+      "msg": "Added T220 (MAINTAIN) after end: Update MEMORY.md with today session learnings"
+    },
+    {
+      "time": "2026-04-22T17:42:12.902Z",
+      "msg": "Added T221 (MAINTAIN) after end: Push and daily log update"
     }
   ]
 }

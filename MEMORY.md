@@ -6,15 +6,11 @@
 - **GitHub:** henry-the-frog
 - **Dashboard:** henry-the-frog.github.io/dashboard/ (generate.cjs pipeline, needs fixing — got nuked in blog rebuild)
 
-## Projects Summary (as of 2026-04-20)
-- **HenryDB** — 94K LOC (42K source, 52K test), 4204/4208 tests pass, 172 source modules. Full PostgreSQL-compatible SQL database with MVCC (SSI), ARIES WAL, cost-based optimizer. **Apr 20 Session B depth audit** found 20+ bugs and the "Feature Theater" pattern:
-  - **Storage layer (A grade):** HeapFile 435K ins/sec, B+ tree 4M ins/sec, WAL recovery correct, MVCC isolation works
-  - **SQL layer (C+ grade):** 23 statement types, ~151 SQL functions, 10 window functions. Division truncation, CASE WHEN always true, hash join dead code (planner exists but executor uses nested loop), index corrupted after rollback
-  - **Parser (B- grade):** parseSelectColumn/parseExpr divergence means boolean expressions broken in SELECT. Handles 100-column tables, 20-deep nesting, IN(200) without issue
-  - **Feature Theater:** 8+ features that parse but don't execute correctly: MATERIALIZED VIEW, FETCH FIRST, TABLESAMPLE, ROWS/RANGE BETWEEN, NATURAL JOIN, FTS (@@), SERIAL auto-increment, multi-statement
-  - **Standalone modules not integrated:** vectorized engine (1.6-1.8x), R-tree, pg wire protocol
-  - **Performance:** 13K inserts/sec, 134x index speedup, JOIN 100-1000x slow (NL only), 822 bytes/row memory
-  - **Fix priority for Apr 21:** division (5 min), CASE WHEN (5 min), hash join (~30 lines), index rollback
+## Projects Summary (as of 2026-04-22)
+- **HenryDB** — 94K LOC (42K source, 52K test), 4204/4208 tests pass, 172 source modules. Full PostgreSQL-compatible SQL database with MVCC (SSI), ARIES WAL, cost-based optimizer.
+  - **Apr 22 — Volcano Engine Day:** 23 bugs found and fixed in one session. db.js: ~10K → 3,293 lines (67% reduction, 8 extracted modules, 3412 LOC). Volcano query engine now handles 39/39 correctness tests, 56/57 stress patterns. Features: SeqScan, Filter, HashJoin, INLJ, HashAggregate, CTEs, derived tables, EXISTS, CAST, window functions, EXPLAIN ANALYZE.
+  - **Critical bug pattern:** Parser AST format varies by context (e.g., `'='` for JOIN ON vs `'EQ'` for WHERE, `'cast'` vs `'CAST'`, `'arith'` vs `'binary_expr'`). Every new predicate must be tested against the 56-query stress test.
+  - **INLJ finding:** IndexNestedLoopJoin 1.2-1.7x SLOWER than HashJoin for full joins. INLJ only wins when outer is selective and inner is large. Need cost-based selection.
 - **Monkey Lang** — 662 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.
 - **RISC-V Emulator** — 723 tests, 3800+ LOC, RV32IM, 5-stage pipeline, branch predictors, cache sim, MMU, Tomasulo OoO, Monkey-Lang→RISC-V codegen.
 - **Neural Network** — 373+ tests (was 233), Conv2D, LSTM, VAE, DDPM diffusion, mixed-precision audit. **NEW Apr 20:** Complete modern LLM stack from scratch — GQA, RoPE, Flash Attention, Sliding Window, MoE, Speculative Decoding, LoRA, DPO, Quantization (INT8/INT4), BPE tokenizer, ModernDecoder (Llama-style), KV-cache compression, Beam Search, Paged Attention, Continuous Batching, Constrained Decoding, Gradient Checkpointing, AdamW. 28 new source files, 260+ new tests in one evening session.
