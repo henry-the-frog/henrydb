@@ -87,6 +87,7 @@ describe('TPC-H Compiled Queries', () => {
   it('Q1-like: lineitem pricing summary (single table aggregate)', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     // Single-table scan with filter — always compilable
     const ast = {
@@ -110,6 +111,7 @@ describe('TPC-H Compiled Queries', () => {
   it('Q3-like: customer-orders join with filter', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     // Customer JOIN Orders — planner should choose hash join
     const ast = {
@@ -137,6 +139,7 @@ describe('TPC-H Compiled Queries', () => {
   it('Q5-like: three-table join (customer → orders → lineitem)', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     const ast = {
       type: 'SELECT',
@@ -171,6 +174,7 @@ describe('TPC-H Compiled Queries', () => {
   it('Q9-like: four-table join (part → lineitem → supplier → nation)', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     const ast = {
       type: 'SELECT',
@@ -213,6 +217,7 @@ describe('TPC-H Compiled Queries', () => {
   it('EXPLAIN COMPILED shows join strategy', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     const ast = {
       type: 'SELECT',
@@ -236,6 +241,7 @@ describe('TPC-H Compiled Queries', () => {
   it('correctness: compiled join matches standard execution', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     // Compiled
     const ast = {
@@ -262,6 +268,7 @@ describe('TPC-H Compiled Queries', () => {
   it('benchmark: compiled vs standard on TPC-H 3-table join', () => {
     const { db } = setupTPCH(1);
     const engine = new CompiledQueryEngine(db);
+    engine._compileThreshold = 50;
 
     const ast = {
       type: 'SELECT',
