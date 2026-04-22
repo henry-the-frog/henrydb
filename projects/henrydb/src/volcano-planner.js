@@ -565,6 +565,22 @@ function buildValueGetter(expr) {
         return elseVal(row);
       };
     }
+    case 'CAST':
+    case 'cast': {
+      const inner = buildValueGetter(expr.expr);
+      const dataType = (expr.targetType || expr.dataType || '').toUpperCase();
+      return (row) => {
+        const v = inner(row);
+        if (v == null) return null;
+        switch (dataType) {
+          case 'INT': case 'INTEGER': case 'BIGINT': case 'SMALLINT': return parseInt(v, 10);
+          case 'FLOAT': case 'DOUBLE': case 'REAL': case 'NUMERIC': case 'DECIMAL': return parseFloat(v);
+          case 'TEXT': case 'VARCHAR': case 'CHAR': return String(v);
+          case 'BOOLEAN': case 'BOOL': return Boolean(v);
+          default: return v;
+        }
+      };
+    }
     default:
       return () => null;
   }
