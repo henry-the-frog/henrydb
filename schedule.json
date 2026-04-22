@@ -2350,15 +2350,73 @@
     {
       "id": "T220",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update MEMORY.md with today session learnings",
-      "started": "2026-04-22T17:46:40.849Z"
+      "started": "2026-04-22T17:46:40.849Z",
+      "completed": "2026-04-22T17:47:18.436Z",
+      "duration_ms": 120000,
+      "summary": "Updated MEMORY.md with Volcano day summary, INLJ finding, AST mismatch pattern."
     },
     {
       "id": "T221",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push and daily log update"
+      "status": "done",
+      "task": "Push and daily log update",
+      "started": "2026-04-22T17:47:24.290Z",
+      "completed": "2026-04-22T17:47:29.680Z",
+      "duration_ms": 10000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T222",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Fix: HAVING with subquery — evaluate subquery in buildAggregatePredicate",
+      "project": "henrydb",
+      "started": "2026-04-22T17:47:44.027Z",
+      "completed": "2026-04-22T17:49:00.362Z",
+      "duration_ms": 120000,
+      "summary": "HAVING subquery fixed. Evaluate SUBQUERY eagerly as scalar, cache result. Works correctly."
+    },
+    {
+      "id": "T223",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Fix: ANY/ALL subquery support in Volcano",
+      "project": "henrydb",
+      "started": "2026-04-22T17:49:04.823Z",
+      "completed": "2026-04-22T17:49:49.430Z",
+      "duration_ms": 120000,
+      "summary": "Added ANY/ALL QUANTIFIED_COMPARE. Eager subquery eval, some()/every(). 2/2 pass."
+    },
+    {
+      "id": "T224",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run full join test suite to verify no regressions from session changes",
+      "project": "henrydb",
+      "started": "2026-04-22T17:49:54.142Z",
+      "completed": "2026-04-22T17:50:20.034Z",
+      "duration_ms": 60000,
+      "summary": "123/123 join tests pass, all volcano tests pass. Zero regressions."
+    },
+    {
+      "id": "T225",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Wire Volcano into main execute() — make it the default query engine with legacy fallback",
+      "project": "henrydb",
+      "started": "2026-04-22T17:50:26.287Z",
+      "completed": "2026-04-22T17:53:27.029Z",
+      "duration_ms": 300000,
+      "summary": "Wired Volcano into execute() as opt-in. _useVolcano=true enables. Row cleanup (de-qualify, strip internals). Falls back to legacy on error. 39/39 correctness, 123/123 join tests pass."
+    },
+    {
+      "id": "T226",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push",
+      "started": "2026-04-22T17:53:35.850Z"
     }
   ],
   "focusProjects": [
@@ -3270,6 +3328,26 @@
     {
       "time": "2026-04-22T17:42:12.902Z",
       "msg": "Added T221 (MAINTAIN) after end: Push and daily log update"
+    },
+    {
+      "time": "2026-04-22T17:47:37.520Z",
+      "msg": "Added T222 (EXPLORE) after end: Fix: HAVING with subquery — evaluate subquery in buildAggregatePredicate"
+    },
+    {
+      "time": "2026-04-22T17:47:37.640Z",
+      "msg": "Added T223 (EXPLORE) after end: Fix: ANY/ALL subquery support in Volcano"
+    },
+    {
+      "time": "2026-04-22T17:47:37.761Z",
+      "msg": "Added T224 (EXPLORE) after end: Run full join test suite to verify no regressions from session changes"
+    },
+    {
+      "time": "2026-04-22T17:47:37.881Z",
+      "msg": "Added T225 (EXPLORE) after end: Wire Volcano into main execute() — make it the default query engine with legacy fallback"
+    },
+    {
+      "time": "2026-04-22T17:47:38.001Z",
+      "msg": "Added T226 (MAINTAIN) after end: Push"
     }
   ]
 }
