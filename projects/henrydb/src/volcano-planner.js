@@ -630,6 +630,15 @@ function buildPredicate(expr, ctx) {
       const regex = new RegExp('^' + String(patternStr).replace(/%/g, '.*').replace(/_/g, '.') + '$', 'i');
       return (row) => regex.test(val(row));
     }
+    case 'IN_HASHSET': {
+      // Pre-computed hash set from optimizeSelect/decorrelate
+      const val = buildValueGetter(expr.left);
+      const hashSet = expr.hashSet;
+      if (expr.negated) {
+        return (row) => !hashSet.has(val(row));
+      }
+      return (row) => hashSet.has(val(row));
+    }
     case 'IN_SUBQUERY': {
       const val = buildValueGetter(expr.left);
       if (ctx && ctx.tables) {
