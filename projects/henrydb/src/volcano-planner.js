@@ -642,15 +642,24 @@ function extractEquiJoinKeys(on, leftFrom, rightJoin) {
   const lName = on.left.name;
   const rName = on.right.name;
   
-  // Check if names are qualified (e.g., "u.id")
+  // Check if names are qualified (e.g., "o.product_id")
   if (lName.includes('.') && rName.includes('.')) {
-    const [lTable, lCol] = lName.split('.');
-    const [rTable, rCol] = rName.split('.');
-    // build side = right table (smaller side), probe = left (already built)
-    return { buildKey: rName, probeKey: lName };
+    const [lTable] = lName.split('.');
+    const [rTable] = rName.split('.');
+    // Match qualified prefix to left/right table aliases
+    // buildKey must come from the build side (rightIter = rightJoin table)
+    // probeKey must come from the probe side (iter = leftFrom table)
+    if (lTable === rightAlias && rTable === leftAlias) {
+      return { buildKey: lName, probeKey: rName };
+    }
+    if (rTable === rightAlias && lTable === leftAlias) {
+      return { buildKey: rName, probeKey: lName };
+    }
+    // Fallback: can't determine — return null to use NestedLoopJoin
+    return null;
   }
   
-  // Unqualified — just use the names directly
+  // Unqualified — just use the names directly (ambiguous but best effort)
   return { buildKey: rName, probeKey: lName };
 }
 
