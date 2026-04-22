@@ -680,10 +680,24 @@
     {
       "id": "T64",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Window-in-expression: extract nested window functions from CASE/arithmetic, add to Window spec, replace with column refs",
       "project": "henrydb",
-      "started": "2026-04-22T22:28:27.013Z"
+      "started": "2026-04-22T22:28:27.013Z",
+      "completed": "2026-04-22T22:32:38.936Z",
+      "duration_ms": 480000,
+      "summary": "Window-in-expression support! CASE WHEN ROW_NUMBER()... works. Extracts nested windows from expressions, adds to Window spec, evaluates rewritten expression. 983/989 (99.39%). 3 more tests fixed."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix SELECT * + window function: expand star then add window column",
+      "project": "henrydb",
+      "started": "2026-04-22T22:33:01.696Z",
+      "completed": "2026-04-22T22:41:01.784Z",
+      "duration_ms": 600000,
+      "summary": "Attempted SELECT * + window + NULL propagation + arg null fix. Introduced regressions (multiple window functions broke). Reverted to 983/989. These edge cases need more careful planner work."
     }
   ],
   "focusProjects": [
@@ -975,6 +989,10 @@
     {
       "time": "2026-04-22T22:28:17.785Z",
       "msg": "Added T64 (BUILD) after end: Window-in-expression: extract nested window functions from CASE/arithmetic, add to Window spec, replace with column refs"
+    },
+    {
+      "time": "2026-04-22T22:32:56.310Z",
+      "msg": "Added T65 (BUILD) after end: Fix SELECT * + window function: expand star then add window column"
     }
   ]
 }

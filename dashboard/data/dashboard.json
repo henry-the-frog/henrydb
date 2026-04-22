@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-22T22:28:27.050Z",
+  "generated": "2026-04-22T22:41:01.823Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Window-in-expression: extract nested window functions from CASE/arithmetic, add to Window spec, replace with column refs",
-    "startedAt": "2026-04-22T22:28:27.050Z",
-    "taskId": "T64"
+    "task": "Fix SELECT * + window function: expand star then add window column",
+    "completedAt": "2026-04-22T22:41:01.823Z",
+    "taskId": "T65",
+    "summary": "Attempted SELECT * + window + NULL propagation + arg null fix. Introduced regressions (multiple window functions broke). Reverted to 983/989. These edge cases need more careful planner work.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1374,12 +1376,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 59,
+    "blocksCompleted": 61,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 8,
-      "BUILD": 20,
+      "BUILD": 22,
       "MAINTAIN": 12,
       "EXPLORE": 6
     }
