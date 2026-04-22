@@ -4,7 +4,7 @@
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
-  IndexScan, Union, CTEIterator,
+  IndexScan, Union, CTE as CTEIterator,
 } from './volcano.js';
 
 /**
@@ -85,11 +85,11 @@ export function buildPlan(ast, tables, indexCatalog) {
       }
       
       if (equiJoin) {
-        iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey,
-          join.joinType === 'LEFT' ? 'left' : 'inner');
+        const jt = join.joinType === 'LEFT' ? 'left' : join.joinType === 'RIGHT' ? 'right' : join.joinType === 'FULL' ? 'full' : 'inner';
+        iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey, jt);
       } else {
-        iter = new NestedLoopJoin(iter, rightIter, predicate ? (l, r) => predicate({ ...l, ...r }) : null,
-          join.joinType === 'LEFT' ? 'left' : 'inner');
+        const jt = join.joinType === 'LEFT' ? 'left' : join.joinType === 'RIGHT' ? 'right' : join.joinType === 'FULL' ? 'full' : 'inner';
+        iter = new NestedLoopJoin(iter, rightIter, predicate ? (l, r) => predicate({ ...l, ...r }) : null, jt);
       }
     }
   }

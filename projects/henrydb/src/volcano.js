@@ -300,7 +300,7 @@ export class NestedLoopJoin extends Iterator {
    * @param {Iterator} outer — left/outer input
    * @param {Iterator} inner — right/inner input (reopened per outer row)
    * @param {function} predicate — (outerRow, innerRow) => boolean (null = cross join)
-   * @param {'inner'|'left'} [joinType='inner']
+   * @param {'inner'|'left'|'right'|'full'} [joinType='inner']
    */
   constructor(outer, inner, predicate, joinType = 'inner') {
     super();
@@ -311,6 +311,9 @@ export class NestedLoopJoin extends Iterator {
     this._outerRow = null;
     this._matched = false;
     this._innerRows = null; // Materialized inner for re-scan
+    this._matchedInner = null; // Track matched inner rows for RIGHT/FULL
+    this._rightPhase = false; // Emitting unmatched inner rows
+    this._rightIdx = 0;
   }
 
   open() {
@@ -326,36 +329,69 @@ export class NestedLoopJoin extends Iterator {
     this._outerRow = null;
     this._innerIdx = 0;
     this._matched = false;
+    this._rightPhase = false;
+    this._rightIdx = 0;
+    if (this._joinType === 'right' || this._joinType === 'full') {
+      this._matchedInner = new Set();
+    }
   }
 
   next() {
+    // Right phase: emit unmatched inner rows
+    if (this._rightPhase) {
+      while (this._rightIdx < this._innerRows.length) {
+        const idx = this._rightIdx++;
+        if (!this._matchedInner.has(idx)) {
+          const nullOuter = {};
+          if (this._outerCols) {
+            for (const col of this._outerCols) nullOuter[col] = null;
+          }
+          return { ...nullOuter, ...this._innerRows[idx] };
+        }
+      }
+      return null;
+    }
+
     while (true) {
       if (this._outerRow === null) {
         this._outerRow = this._outer.next();
-        if (this._outerRow === null) return null;
+        if (this._outerRow === null) {
+          // Outer exhausted — enter right phase if RIGHT or FULL
+          if ((this._joinType === 'right' || this._joinType === 'full') && this._matchedInner) {
+            this._rightPhase = true;
+            return this.next();
+          }
+          return null;
+        }
+        if (!this._outerCols) {
+          this._outerCols = Object.keys(this._outerRow).filter(k => !k.startsWith('_'));
+        }
         this._innerIdx = 0;
         this._matched = false;
       }
 
       while (this._innerIdx < this._innerRows.length) {
-        const innerRow = this._innerRows[this._innerIdx++];
+        const idx = this._innerIdx++;
+        const innerRow = this._innerRows[idx];
         if (!this._predicate || this._predicate(this._outerRow, innerRow)) {
           this._matched = true;
+          if (this._matchedInner) this._matchedInner.add(idx);
           return { ...this._outerRow, ...innerRow };
         }
       }
 
       // Inner exhausted for this outer row
-      if (this._joinType === 'left' && !this._matched) {
-        // Left join: emit outer row with nulls for inner columns
+      if ((this._joinType === 'left' || this._joinType === 'full') && !this._matched) {
+        // Left/full join: emit outer row with nulls for inner columns
         const nullInner = {};
         if (this._innerRows.length > 0) {
           for (const key of Object.keys(this._innerRows[0])) {
             if (!key.startsWith('_')) nullInner[key] = null;
           }
         }
+        const result = { ...this._outerRow, ...nullInner };
         this._outerRow = null;
-        return { ...this._outerRow, ...nullInner };
+        return result;
       }
 
       this._outerRow = null; // Move to next outer row
@@ -384,7 +420,7 @@ export class HashJoin extends Iterator {
    * @param {Iterator} probe — probe side
    * @param {string} buildKey — column name on build side
    * @param {string} probeKey — column name on probe side
-   * @param {'inner'|'left'} [joinType='inner']
+   * @param {'inner'|'left'|'right'|'full'} [joinType='inner']
    */
   constructor(build, probe, buildKey, probeKey, joinType = 'inner') {
     super();
@@ -398,12 +434,17 @@ export class HashJoin extends Iterator {
     this._matchIdx = 0;
     this._matches = null;
     this._buildCols = null;
+    this._probeCols = null;
+    this._matchedBuildRows = null; // Track matched build rows for RIGHT/FULL
+    this._rightPhase = false; // Emitting unmatched build rows
+    this._rightIter = null;
   }
 
   open() {
     // Build phase: hash the build side
     this._hashTable = new Map();
     this._build.open();
+    this._allBuildRows = [];
     let row;
     while ((row = this._build.next()) !== null) {
       const key = row[this._buildKey];
@@ -412,6 +453,7 @@ export class HashJoin extends Iterator {
         this._hashTable.set(keyStr, []);
       }
       this._hashTable.get(keyStr).push(row);
+      this._allBuildRows.push(row);
       if (!this._buildCols) this._buildCols = Object.keys(row).filter(k => !k.startsWith('_'));
     }
     this._build.close();
@@ -421,25 +463,56 @@ export class HashJoin extends Iterator {
     this._probeRow = null;
     this._matches = null;
     this._matchIdx = 0;
+    this._rightPhase = false;
+    this._rightIdx = 0;
+    if (this._joinType === 'right' || this._joinType === 'full') {
+      this._matchedBuildRows = new Set();
+    }
   }
 
   next() {
+    // Right phase: emit unmatched build rows
+    if (this._rightPhase) {
+      while (this._rightIdx < this._allBuildRows.length) {
+        const idx = this._rightIdx++;
+        if (!this._matchedBuildRows.has(this._allBuildRows[idx])) {
+          const nullProbe = {};
+          if (this._probeCols) {
+            for (const col of this._probeCols) nullProbe[col] = null;
+          }
+          return { ...nullProbe, ...this._allBuildRows[idx] };
+        }
+      }
+      return null;
+    }
+
     while (true) {
       // Emit pending matches
       if (this._matches && this._matchIdx < this._matches.length) {
         const buildRow = this._matches[this._matchIdx++];
+        if (this._matchedBuildRows) this._matchedBuildRows.add(buildRow);
         return { ...this._probeRow, ...buildRow };
       }
 
       // Get next probe row
       this._probeRow = this._probe.next();
-      if (this._probeRow === null) return null;
+      if (this._probeRow === null) {
+        // Probe exhausted — enter right phase if RIGHT or FULL
+        if ((this._joinType === 'right' || this._joinType === 'full') && this._matchedBuildRows) {
+          this._rightPhase = true;
+          return this.next();
+        }
+        return null;
+      }
+      if (!this._probeCols) {
+        this._probeCols = Object.keys(this._probeRow).filter(k => !k.startsWith('_'));
+      }
 
       const key = String(this._probeRow[this._probeKey]);
       this._matches = this._hashTable.get(key) || [];
       this._matchIdx = 0;
 
-      if (this._matches.length === 0 && this._joinType === 'left') {
+      if (this._matches.length === 0 && (this._joinType === 'left' || this._joinType === 'full')) {
         const nullBuild = {};
         if (this._buildCols) {
           for (const col of this._buildCols) nullBuild[col] = null;
@@ -452,6 +525,8 @@ export class HashJoin extends Iterator {
   close() {
     this._probe.close();
     this._hashTable = null;
+    this._allBuildRows = null;
+    this._matchedBuildRows = null;
   }
 
   describe() {
