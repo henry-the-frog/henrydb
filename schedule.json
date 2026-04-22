@@ -146,9 +146,12 @@
       "id": "T18",
       "mode": "BUILD",
       "task": "Add tests for derived tables: FROM subquery, JOIN with subquery, nested derived tables",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T16",
-      "started": "2026-04-22T20:34:31.174Z"
+      "started": "2026-04-22T20:34:31.174Z",
+      "completed": "2026-04-22T20:35:07.239Z",
+      "duration_ms": 180000,
+      "summary": "10 derived table tests: basic, alias qualification, WHERE, JOIN, GROUP BY, legacy parity, nested derived, COALESCE, scalar subquery. All pass."
     },
     {
       "id": "T10",
@@ -170,15 +173,20 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, test sweep, knowledge capture"
+      "status": "done",
+      "task": "Git push, test sweep, knowledge capture",
+      "started": "2026-04-22T20:35:16.308Z",
+      "completed": "2026-04-22T20:40:41.364Z",
+      "duration_ms": 180000,
+      "summary": "Git pushed. Targeted test sweep: 157/157 tests pass across sql, volcano, CTE, join, explain, derived-table, subquery, aggregate, tpch. No regressions."
     },
     {
       "id": "T13",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Research: what are the remaining ~3% failures? Categorize and triage.",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T20:40:51.351Z"
     }
   ],
   "focusProjects": [

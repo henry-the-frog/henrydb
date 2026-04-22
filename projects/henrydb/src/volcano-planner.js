@@ -76,6 +76,14 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   // 1. Build scan for FROM table
   // Handle derived tables (subqueries in FROM)
   if (ast.from && ast.from.subquery) {
+    // Check if subquery has unsupported features (window functions, etc.)
+    const subAst = ast.from.subquery;
+    const hasUnsupportedInSub = subAst.columns?.some(c => 
+      c.type === 'window' || (c.type === 'expression' && c.expr?.over)
+    );
+    if (hasUnsupportedInSub) {
+      throw new Error('Derived table contains unsupported features (window functions)');
+    }
     const subPlan = buildPlan(ast.from.subquery, tables, indexCatalog, tableStats);
     subPlan.open();
     const subRows = [];
