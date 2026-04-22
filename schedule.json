@@ -732,6 +732,16 @@
       "completed": "2026-04-22T00:56:51.437Z",
       "duration_ms": 60000,
       "summary": "Tomorrow plan: AM → RISC-V liveness register allocation + SAT SMT fix (8 lines). PM → HenryDB RIGHT/FULL join, MVCC index visibility, TPC-H benchmark. Balances 3 projects with depth (register allocation) and quick wins (SMT fix)."
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate monkey-lang to RISC-V compilation pipeline: how does the codegen connect, what optimization passes exist, where does register allocation fit.",
+      "started": "2026-04-22T00:59:09.975Z",
+      "completed": "2026-04-22T00:59:49.933Z",
+      "duration_ms": 120000,
+      "summary": "Monkey→RISC-V pipeline: AST → RiscVCodeGen (stack-based code gen) → RISC-V assembly → Assembler → Machine code → CPU emulator. Current register allocator: linear assignment of s1-s11 without deallocation. Falls back to stack after 11 vars. Liveness improvement: track last-use, reuse dead registers. For 20-var function with max 5 live: 0 spills vs 9 currently. Key implementation: compute last-use for each variable, free register after last use, allocate from freed pool first."
     }
   ],
   "focusProjects": [
@@ -1031,6 +1041,10 @@
     {
       "time": "2026-04-22T00:56:40.163Z",
       "msg": "Added T69 (THINK) after end: Plan tomorrow: balance HenryDB depth with project variety. RISC-V register allocation is the top pick for non-HenryDB work."
+    },
+    {
+      "time": "2026-04-22T00:59:09.722Z",
+      "msg": "Added T70 (THINK) after end: Investigate monkey-lang to RISC-V compilation pipeline: how does the codegen connect, what optimization passes exist, where does register allocation fit."
     }
   ]
 }
