@@ -287,8 +287,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       if (typeof gb === 'string') {
         const aliasMatch = ast.columns.find(c => c.alias === gb);
         if (aliasMatch) {
-          // If it's an expression column (val / 10 AS decade), return the expression
+          // If it's an expression/function column, return the whole column object as expression
           if (aliasMatch.type === 'expression' && aliasMatch.expr) return aliasMatch.expr;
+          if (aliasMatch.type === 'function' || aliasMatch.type === 'function_call') return aliasMatch;
           return aliasMatch.name || gb;
         }
       }
@@ -738,7 +739,13 @@ function buildValueGetter(expr) {
           case '+': return l + r;
           case '-': return l - r;
           case '*': return l * r;
-          case '/': return r !== 0 ? l / r : null;
+          case '/': {
+            if (r === 0) return null;
+            const result = l / r;
+            // SQL: INT / INT = INT (truncated)
+            if (Number.isInteger(l) && Number.isInteger(r)) return Math.trunc(result);
+            return result;
+          }
           case '%': return l % r;
           default: return null;
         }
