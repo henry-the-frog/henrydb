@@ -1107,6 +1107,32 @@ export class Window extends Iterator {
           // Helper to get value for a row (supports expression args)
           const getVal = (row) => wf.argGetter ? wf.argGetter(row) : row[wf.arg];
           
+          // Determine frame bounds
+          let frameStart = 0, frameEnd;
+          if (wf.frame) {
+            // ROWS frame
+            if (wf.frame.start?.type === 'OFFSET' && wf.frame.start.direction === 'PRECEDING') {
+              frameStart = Math.max(0, i - wf.frame.start.offset);
+            } else if (wf.frame.start?.type === 'UNBOUNDED' && wf.frame.start.direction === 'PRECEDING') {
+              frameStart = 0;
+            } else if (wf.frame.start?.type === 'CURRENT_ROW') {
+              frameStart = i;
+            }
+            
+            if (wf.frame.end?.type === 'OFFSET' && wf.frame.end.direction === 'FOLLOWING') {
+              frameEnd = Math.min(rows.length - 1, i + wf.frame.end.offset);
+            } else if (wf.frame.end?.type === 'UNBOUNDED' && wf.frame.end.direction === 'FOLLOWING') {
+              frameEnd = rows.length - 1;
+            } else if (wf.frame.end?.type === 'CURRENT_ROW') {
+              frameEnd = i;
+            } else {
+              frameEnd = i; // default: up to current row
+            }
+          } else {
+            // Default frame: no ORDER BY = full partition, with ORDER BY = start to current
+            frameEnd = this._orderBy.length > 0 ? i : rows.length - 1;
+          }
+          
           switch (wf.func.toUpperCase()) {
             case 'ROW_NUMBER': r[wf.name] = i + 1; break;
             case 'RANK':
@@ -1125,26 +1151,23 @@ export class Window extends Iterator {
               r[wf.name] = i + off < rows.length ? getVal(rows[i + off]) : (wf.defaultValue ?? null); break;
             }
             case 'SUM': { 
-              const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let s = 0; for (let j = 0; j <= end; j++) s += getVal(rows[j]) || 0; 
+              let s = 0; for (let j = frameStart; j <= frameEnd; j++) s += getVal(rows[j]) || 0; 
               r[wf.name] = s; break; 
             }
             case 'COUNT': {
-              r[wf.name] = this._orderBy.length > 0 ? i + 1 : rows.length; break;
+              r[wf.name] = frameEnd - frameStart + 1; break;
             }
             case 'AVG': { 
-              const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let s = 0; for (let j = 0; j <= end; j++) s += getVal(rows[j]) || 0; 
-              r[wf.name] = s / (end + 1); break; 
+              let s = 0; const cnt = frameEnd - frameStart + 1;
+              for (let j = frameStart; j <= frameEnd; j++) s += getVal(rows[j]) || 0; 
+              r[wf.name] = cnt > 0 ? s / cnt : null; break; 
             }
             case 'MIN': { 
-              const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let m = Infinity; for (let j = 0; j <= end; j++) { const v = getVal(rows[j]); if (v != null && v < m) m = v; } 
+              let m = Infinity; for (let j = frameStart; j <= frameEnd; j++) { const v = getVal(rows[j]); if (v != null && v < m) m = v; } 
               r[wf.name] = m === Infinity ? null : m; break; 
             }
             case 'MAX': { 
-              const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let m = -Infinity; for (let j = 0; j <= end; j++) { const v = getVal(rows[j]); if (v != null && v > m) m = v; } 
+              let m = -Infinity; for (let j = frameStart; j <= frameEnd; j++) { const v = getVal(rows[j]); if (v != null && v > m) m = v; } 
               r[wf.name] = m === -Infinity ? null : m; break; 
             }
             case 'FIRST_VALUE': {

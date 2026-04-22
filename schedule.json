@@ -531,8 +531,12 @@
       "id": "T53",
       "mode": "BUILD",
       "task": "Add LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE window functions",
-      "status": "upcoming",
-      "plan_ref": "T48"
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-04-22T21:42:40.734Z",
+      "completed": "2026-04-22T21:42:40.877Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T49. LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE all work."
     },
     {
       "id": "T50",
@@ -558,9 +562,33 @@
     {
       "id": "T52",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push code and update volcano-gaps knowledge",
-      "started": "2026-04-22T21:42:09.693Z"
+      "started": "2026-04-22T21:42:09.693Z",
+      "completed": "2026-04-22T21:42:23.439Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed. 801/810 tests pass."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement window frame specs: ROWS BETWEEN N PRECEDING AND M FOLLOWING",
+      "project": "henrydb",
+      "started": "2026-04-22T21:43:02.261Z"
+    },
+    {
+      "id": "T55",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Fix remaining 7 edge case failures in broader test suite",
+      "project": "henrydb"
+    },
+    {
+      "id": "T56",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push code, run final test sweep, capture session knowledge"
     }
   ],
   "focusProjects": [
@@ -808,6 +836,18 @@
     {
       "time": "2026-04-22T21:30:42.241Z",
       "msg": "PLAN T48 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T21:42:48.248Z",
+      "msg": "Added T54 (BUILD) after end: Implement window frame specs: ROWS BETWEEN N PRECEDING AND M FOLLOWING"
+    },
+    {
+      "time": "2026-04-22T21:42:48.366Z",
+      "msg": "Added T55 (EXPLORE) after T54: Fix remaining 7 edge case failures in broader test suite"
+    },
+    {
+      "time": "2026-04-22T21:42:56.529Z",
+      "msg": "Added T56 (MAINTAIN) after T55: Push code, run final test sweep, capture session knowledge"
     }
   ]
 }
