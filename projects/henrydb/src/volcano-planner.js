@@ -271,8 +271,10 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 4. GROUP BY + aggregates
-  const hasAggregates = ast.columns.some(c => c.type === 'aggregate');
+  const hasAggregates = ast.columns.some(c => c.type === 'aggregate' || 
+    ((c.type === 'function' || c.type === 'function_call') && c.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')));
   let groupByExprs = [];
+  let funcWrappedAggs = [];
   if (ast.groupBy || hasAggregates) {
     let groupBy = ast.groupBy || [];
     const aggregates = [];
@@ -340,6 +342,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       };
     }
     
+    funcWrappedAggs.length = 0; // Track function-wrapped aggregates for projection
     for (const col of ast.columns) {
       if (col.type === 'aggregate') {
         // Normalize arg: parser may give string 'val' or object {type:'column_ref', name:'val'}
@@ -349,6 +352,22 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         const isExprArg = typeof col.arg === 'object' && col.arg.type !== 'column_ref';
         const valueGetter = isExprArg ? buildValueGetter(col.arg) : null;
         aggregates.push({ name, func: col.func, column: argStr, valueGetter });
+      } else if ((col.type === 'function' || col.type === 'function_call') && 
+                  col.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')) {
+        // Function-wrapped aggregate: COALESCE(SUM(val), 0), NULLIF(AVG(val), 0), etc.
+        // Extract inner aggregates and track the wrapping function
+        const innerAggs = [];
+        for (const arg of col.args) {
+          if (arg.type === 'aggregate' || arg.type === 'aggregate_expr') {
+            const innerArgStr = typeof arg.arg === 'object' ? (arg.arg.name || JSON.stringify(arg.arg)) : arg.arg;
+            const syntheticName = `__func_agg_${aggregates.length}`;
+            const isExprArg = typeof arg.arg === 'object' && arg.arg?.type !== 'column_ref';
+            const valueGetter = isExprArg ? buildValueGetter(arg.arg) : null;
+            aggregates.push({ name: syntheticName, func: arg.func, column: innerArgStr, valueGetter, distinct: arg.distinct });
+            innerAggs.push({ syntheticName, originalArg: arg });
+          }
+        }
+        funcWrappedAggs.push({ col, innerAggs });
       }
     }
     
@@ -375,7 +394,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   } else if (hasAggregates) {
     // For aggregates, project to rename/select the right columns
     const prevEst = iter._estimatedRows;
-    iter = new Project(iter, buildAggregateProjections(ast.columns, groupByExprs));
+    iter = new Project(iter, buildAggregateProjections(ast.columns, groupByExprs, funcWrappedAggs));
     iter._estimatedRows = prevEst;
   }
 
@@ -989,12 +1008,33 @@ function buildProjections(columns, hasAggregates) {
   }).filter(Boolean);
 }
 
-function buildAggregateProjections(columns, groupByExprs) {
+function buildAggregateProjections(columns, groupByExprs, funcWrappedAggs) {
   return columns.map(col => {
     if (col.type === 'aggregate') {
       const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
       const name = col.alias || `${col.func}(${argStr})`;
       return { name: col.alias || name, expr: (row) => row[name] };
+    }
+    // Function-wrapped aggregate: COALESCE(SUM(val), 0) etc.
+    if ((col.type === 'function' || col.type === 'function_call') && funcWrappedAggs) {
+      const fwa = funcWrappedAggs.find(f => f.col === col);
+      if (fwa) {
+        const outputName = col.alias || `${col.func}(...)`;
+        const outerFunc = col.func?.toUpperCase();
+        return { name: outputName, expr: (row) => {
+          // Build args: replace aggregate args with their computed values, keep literals
+          const args = col.args.map(arg => {
+            if (arg.type === 'aggregate' || arg.type === 'aggregate_expr') {
+              const match = fwa.innerAggs.find(ia => ia.originalArg === arg);
+              return match ? row[match.syntheticName] : null;
+            }
+            if (arg.type === 'literal') return arg.value;
+            return null;
+          });
+          // Apply outer function
+          return applyScalarFunction(outerFunc, args);
+        }};
+      }
     }
     if (col.type === 'column') {
       const name = col.alias || col.name;
@@ -1240,4 +1280,28 @@ function getColumnNdv(tableName, columnName, tableStats) {
   const stats = tableStats.get(tableName);
   if (!stats || !stats.columns) return null;
   return stats.columns[col]?.distinct || null;
+}
+
+/**
+ * Apply a scalar SQL function to pre-computed argument values.
+ */
+function applyScalarFunction(funcName, args) {
+  switch (funcName) {
+    case 'COALESCE': return args.find(v => v != null) ?? null;
+    case 'NULLIF': return args[0] === args[1] ? null : args[0];
+    case 'GREATEST': return Math.max(...args.filter(v => v != null));
+    case 'LEAST': return Math.min(...args.filter(v => v != null));
+    case 'ABS': return Math.abs(args[0]);
+    case 'ROUND': return args[1] != null ? parseFloat(Number(args[0]).toFixed(args[1])) : Math.round(args[0]);
+    case 'UPPER': return args[0] != null ? String(args[0]).toUpperCase() : null;
+    case 'LOWER': return args[0] != null ? String(args[0]).toLowerCase() : null;
+    case 'LENGTH': return args[0] != null ? String(args[0]).length : null;
+    case 'CONCAT': case 'CONCAT_OP': return args.map(v => v ?? '').join('');
+    case 'TRIM': return args[0] != null ? String(args[0]).trim() : null;
+    case 'REPLACE': return args[0] != null ? String(args[0]).replaceAll(String(args[1]), String(args[2])) : null;
+    case 'LEFT': return args[0] != null ? String(args[0]).substring(0, args[1]) : null;
+    case 'RIGHT': return args[0] != null ? String(args[0]).slice(-args[1]) : null;
+    case 'IFNULL': return args[0] != null ? args[0] : args[1]; // alias of COALESCE for 2 args
+    default: return null;
+  }
 }

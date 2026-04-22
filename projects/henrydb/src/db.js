@@ -2155,12 +2155,7 @@ export class Database {
     // Skip if WINDOW is used with GROUP BY and aggregate window functions
     const hasWindowFn = ast.columns.some(c => c.type === 'window' || (c.type === 'expression' && c.expr?.over));
     if (hasWindowFn) return null; // Window functions not fully supported in Volcano
-    // Skip function-wrapped aggregates (COALESCE(SUM(x), 0)) — not yet supported
-    const hasFuncWrappedAgg = ast.columns.some(c => 
-      (c.type === 'function' || c.type === 'function_call') && 
-      c.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')
-    );
-    if (hasFuncWrappedAgg) return null;
+    // Function-wrapped aggregates (COALESCE(SUM(x), 0)) — now supported in Volcano
     // Skip unsupported aggregate functions
     const unsupportedAggs = ['ARRAY_AGG', 'STRING_AGG', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 
       'STDDEV', 'STDDEV_POP', 'STDDEV_SAMP', 'VARIANCE', 'VAR_POP', 'VAR_SAMP', 'MODE', 'MEDIAN',
