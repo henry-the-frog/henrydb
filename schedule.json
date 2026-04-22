@@ -794,6 +794,16 @@
       "completed": "2026-04-22T01:06:39.874Z",
       "duration_ms": 120000,
       "summary": "Two planners: planner.js (971 LOC, full cost-based DP optimizer with histograms) and volcano-planner.js (740 LOC, heuristic plan builder with basic costs). They could be merged: use planner.js for optimization decisions (join order, strategy selection), output Volcano iterator trees. This would give sophisticated optimization + clean iterator execution. The compiled-query.js already does this partially — it uses planner.js output."
+    },
+    {
+      "id": "T76",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Count total test cases across ALL projects to get accurate number",
+      "started": "2026-04-22T01:09:20.623Z",
+      "completed": "2026-04-22T01:09:54.825Z",
+      "duration_ms": 60000,
+      "summary": "Total test infrastructure: 4814 test files, ~50K test case declarations (it/test calls). Verified 954 across 10 projects in this session sweep. The monkey-lang ecosystem accounts for many (518 compiler tests alone). HenryDB has ~8.8K test declarations."
     }
   ],
   "focusProjects": [
@@ -1117,6 +1127,10 @@
     {
       "time": "2026-04-22T01:06:20.689Z",
       "msg": "Added T75 (THINK) after end: Investigate HenryDB query planner (planner.js) vs volcano-planner.js: how do they differ? Can they be merged?"
+    },
+    {
+      "time": "2026-04-22T01:09:20.390Z",
+      "msg": "Added T76 (THINK) after end: Count total test cases across ALL projects to get accurate number"
     }
   ]
 }
