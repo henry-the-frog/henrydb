@@ -638,8 +638,11 @@ function buildAggregateValueGetter(expr, columns) {
   if (expr.type === 'literal') return () => expr.value;
   if (expr.type === 'aggregate_expr') {
     // Find the matching aggregate column's output name
-    const match = columns.find(c => c.type === 'aggregate' && c.func === expr.func && c.arg === expr.arg);
-    const name = match ? (match.alias || `${match.func}(${match.arg})`) : `${expr.func}(${expr.arg})`;
+    // Normalize arg: parser may give {type:'column_ref', name:'val'} or just 'val'
+    const exprArg = typeof expr.arg === 'object' ? expr.arg.name : expr.arg;
+    const match = columns.find(c => c.type === 'aggregate' && c.func === expr.func && 
+      ((typeof c.arg === 'object' ? c.arg.name : c.arg) === exprArg));
+    const name = match ? (match.alias || `${match.func}(${typeof match.arg === 'object' ? match.arg.name : match.arg})`) : `${expr.func}(${exprArg})`;
     return (row) => row[name];
   }
   return buildValueGetter(expr);
