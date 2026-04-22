@@ -59,6 +59,10 @@ export function buildPlan(ast, tables, indexCatalog) {
 
   // 1. Build scan for FROM table
   let iter = buildScanNode(ast.from, tables);
+  const fromTableName = typeof ast.from === 'string' ? ast.from : ast.from.table;
+  const fromTable = tables.get(fromTableName) || tables.get(fromTableName?.toLowerCase());
+  const fromRowCount = fromTable?.heap?.rowCount || fromTable?.heap?.tupleCount || 100;
+  iter._estimatedRows = fromRowCount;
 
   // Predicate pushdown: split WHERE into per-table conditions
   let residualWhere = ast.where;
@@ -73,6 +77,7 @@ export function buildPlan(ast, tables, indexCatalog) {
     if (perTable[fromTableName]) {
       const pred = buildPredicate(perTable[fromTableName]);
       iter = new Filter(iter, pred);
+      iter._estimatedRows = Math.max(1, Math.round(fromRowCount * 0.33));
     }
     
     residualWhere = residual;
@@ -87,10 +92,14 @@ export function buildPlan(ast, tables, indexCatalog) {
       const rightTableName = typeof join.table === 'string' ? join.table : join.table;
       const rightAlias = join.alias || rightTableName;
       let rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, tables);
+      const rightTable = tables.get(rightTableName) || tables.get(rightTableName?.toLowerCase());
+      const rightRowCount = rightTable?.heap?.rowCount || rightTable?.heap?.tupleCount || 100;
+      rightIter._estimatedRows = rightRowCount;
       
       // Push per-table predicate into right scan
       if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
         rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias]));
+        rightIter._estimatedRows = Math.max(1, Math.round(rightRowCount * 0.33));
       }
       
       const predicate = join.on ? buildPredicate(join.on) : null;
@@ -106,6 +115,7 @@ export function buildPlan(ast, tables, indexCatalog) {
           iter, equiJoin, ast.from, join, tables, indexCatalog
         );
         if (inlJoin) {
+          inlJoin._estimatedRows = Math.max(1, iter._estimatedRows || fromRowCount);
           iter = inlJoin;
           continue;
         }
@@ -114,9 +124,16 @@ export function buildPlan(ast, tables, indexCatalog) {
       if (equiJoin) {
         const jt = join.joinType === 'LEFT' ? 'left' : join.joinType === 'RIGHT' ? 'right' : join.joinType === 'FULL' ? 'full' : 'inner';
         iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey, jt);
+        // Join estimate: smaller * selectivity (assume 1-to-many)
+        const leftEst = iter._probe?._estimatedRows || fromRowCount;
+        const rightEst = rightIter._estimatedRows || rightRowCount;
+        iter._estimatedRows = Math.max(1, Math.max(leftEst, rightEst));
       } else {
         const jt = join.joinType === 'LEFT' ? 'left' : join.joinType === 'RIGHT' ? 'right' : join.joinType === 'FULL' ? 'full' : 'inner';
         iter = new NestedLoopJoin(iter, rightIter, predicate ? (l, r) => predicate({ ...l, ...r }) : null, jt);
+        const leftEst = iter._outer?._estimatedRows || fromRowCount;
+        const rightEst = rightIter._estimatedRows || rightRowCount;
+        iter._estimatedRows = Math.max(1, Math.max(leftEst, rightEst));
       }
     }
   }
@@ -128,12 +145,15 @@ export function buildPlan(ast, tables, indexCatalog) {
     if (indexScanResult) {
       // Replace SeqScan with IndexScan and apply remaining predicates
       iter = indexScanResult.scan;
+      iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * 0.1)); // Index = selective
       if (indexScanResult.residual) {
         iter = new Filter(iter, buildPredicate(indexScanResult.residual));
+        iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * 0.5));
       }
     } else {
       const pred = buildPredicate(effectiveWhere);
       iter = new Filter(iter, pred);
+      iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * 0.33));
     }
   }
 
@@ -151,11 +171,15 @@ export function buildPlan(ast, tables, indexCatalog) {
     }
     
     iter = new HashAggregate(iter, groupBy, aggregates);
+    // Estimate groups: sqrt(input rows) as rough heuristic
+    const inputEst = iter._input?._estimatedRows || fromRowCount;
+    iter._estimatedRows = Math.max(1, Math.round(Math.sqrt(inputEst)));
 
     // 5. HAVING filter (applied after aggregation)
     if (ast.having) {
       const havingPred = buildAggregatePredicate(ast.having, ast.columns);
       iter = new Filter(iter, havingPred);
+      iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || 10) * 0.5));
     }
   }
 
@@ -163,15 +187,21 @@ export function buildPlan(ast, tables, indexCatalog) {
   const projections = buildProjections(ast.columns, hasAggregates);
   if (projections && !hasAggregates) {
     // Don't project after aggregate — column names already set by HashAggregate
+    const prevEst = iter._estimatedRows;
     iter = new Project(iter, projections);
+    iter._estimatedRows = prevEst;
   } else if (hasAggregates) {
     // For aggregates, project to rename/select the right columns
+    const prevEst = iter._estimatedRows;
     iter = new Project(iter, buildAggregateProjections(ast.columns));
+    iter._estimatedRows = prevEst;
   }
 
   // 7. DISTINCT
   if (ast.distinct) {
+    const prevEst = iter._estimatedRows;
     iter = new Distinct(iter);
+    iter._estimatedRows = prevEst; // Conservative
   }
 
   // 8. ORDER BY
@@ -180,12 +210,16 @@ export function buildPlan(ast, tables, indexCatalog) {
       column: resolveOutputColumn(o.column, ast.columns),
       desc: o.direction === 'DESC',
     }));
+    const prevEst = iter._estimatedRows;
     iter = new Sort(iter, orderSpec);
+    iter._estimatedRows = prevEst;
   }
 
   // 9. LIMIT / OFFSET
   if (ast.limit != null) {
+    const prevEst = iter._estimatedRows;
     iter = new Limit(iter, ast.limit, ast.offset || 0);
+    iter._estimatedRows = Math.min(prevEst || ast.limit, ast.limit);
   }
 
   return iter;

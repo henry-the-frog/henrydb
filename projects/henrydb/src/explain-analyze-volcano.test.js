@@ -25,8 +25,10 @@ describe('EXPLAIN ANALYZE with Volcano Instrumentation', () => {
     assert.ok(result.volcanoAnalyze, 'Should have volcanoAnalyze');
     assert.ok(result.volcanoAnalyze.timingTree, 'Should have timing tree');
     assert.ok(result.volcanoAnalyze.timingTree.includes('SeqScan'), 'Should show SeqScan');
-    assert.ok(result.volcanoAnalyze.timingTree.includes('rows='), 'Should show row counts');
+    assert.ok(result.volcanoAnalyze.timingTree.includes('actual='), 'Should show row counts');
     assert.ok(result.volcanoAnalyze.timingTree.includes('time='), 'Should show timing');
+    // Check for estimated vs actual comparison
+    assert.ok(result.volcanoAnalyze.timingTree.includes('est='), 'Should show estimated rows');
   });
 
   it('shows per-operator timing for join', () => {

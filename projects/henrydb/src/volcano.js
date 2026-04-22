@@ -1213,6 +1213,7 @@ export class InstrumentedIterator extends Iterator {
     this.nextTimeMs = 0;
     this.closeTimeMs = 0;
     this.totalTimeMs = 0;
+    this._estimatedRows = inner._estimatedRows || null;
     // Recursively instrument children
     this._instrumentChildren();
   }
@@ -1269,7 +1270,8 @@ export class InstrumentedIterator extends Iterator {
     const details = desc.details || {};
     const detailStr = Object.entries(details).map(([k, v]) => `${k}=${v}`).join(', ');
     
-    const timing = `(rows=${this.rowCount} time=${this.totalTimeMs.toFixed(2)}ms)`;
+    const estStr = this._estimatedRows != null ? `est=${this._estimatedRows} ` : '';
+    const timing = `(${estStr}actual=${this.rowCount} time=${this.totalTimeMs.toFixed(2)}ms)`;
     
     let line = `${prefix}${type}${detailStr ? ` (${detailStr})` : ''} ${timing}`;
     
