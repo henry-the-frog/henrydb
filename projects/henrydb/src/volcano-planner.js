@@ -41,14 +41,20 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       ctePlan.close();
       
       // Create a virtual table for the CTE
-      const schema = rows.length > 0 ? Object.keys(rows[0]).map(name => ({ name })) : [];
+      // Strip table qualifications from column names (c.region → region)
+      // CTE output columns should be unqualified so outer queries can re-qualify with their own alias
+      const rawKeys = rows.length > 0 ? Object.keys(rows[0]).filter(k => !k.startsWith('_')) : [];
+      const schema = rawKeys.map(name => {
+        const unqual = name.includes('.') ? name.split('.').pop() : name;
+        return { name: unqual, _origKey: name };
+      });
       cteTables.set(cte.name, {
         heap: { 
-          scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c.name]), pageId: 0, slotIdx: 0 }; },
+          scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c._origKey]), pageId: 0, slotIdx: 0 }; },
           rowCount: rows.length,
           tupleCount: rows.length
         },
-        schema
+        schema: schema.map(c => ({ name: c.name }))
       });
     }
     // Build the main query plan with CTE tables available
