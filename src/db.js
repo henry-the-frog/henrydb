@@ -557,7 +557,6 @@ export class Database {
       case 'CLOSE_CURSOR': return this._closeCursor(ast);
       case 'COPY': return this._executeCopy(ast);
       case 'COMMENT': return this._executeComment(ast);
-      case 'MERGE': return this._executeMerge(ast);
       case 'CREATE_SEQUENCE': return this._createSequence(ast);
       case 'CREATE_FUNCTION': return this._createFunction(ast);
       case 'PREPARE': return this._prepare(ast);
@@ -2835,22 +2834,6 @@ export class Database {
     return { type: 'OK', message: `${deleted} row(s) deleted`, count: deleted };
   }
 
-  _truncate(ast) {
-    const table = this._getTable(ast.table);
-    if (!table) throw new Error(`Table ${ast.table} not found`);
-
-    // Clear heap file
-    const count = table.heap.rowCount || 0;
-    table.heap = this._heapFactory();
-
-    // Rebuild all indexes (empty)
-    for (const [colName, oldIndex] of table.indexes) {
-      table.indexes.set(colName, new BPlusTree(32, { unique: oldIndex.unique }));
-    }
-
-    return { type: 'OK', message: `${ast.table} truncated`, count };
-  }
-
   _showTables() {
     const rows = [];
     for (const [name] of this.tables) {
@@ -2930,63 +2913,6 @@ export class Database {
   }
 
   // Prepared statements
-  _prepare(ast) {
-    if (!this._prepared) this._prepared = new Map();
-    const name = ast.name.toLowerCase();
-    if (this._prepared.has(name)) {
-      throw new Error(`Prepared statement "${name}" already exists`);
-    }
-    this._prepared.set(name, {
-      sql: ast.sql,
-      paramTypes: ast.paramTypes || [],
-    });
-    return { type: 'OK', message: 'PREPARE' };
-  }
-
-  _executePrepared(ast) {
-    if (!this._prepared) this._prepared = new Map();
-    const name = ast.name.toLowerCase();
-    const prepared = this._prepared.get(name);
-    if (!prepared) {
-      throw new Error(`Prepared statement "${name}" does not exist`);
-    }
-
-    // Evaluate parameter expressions — extract literal values
-    const params = (ast.params || []).map(p => {
-      if (p.type === 'literal') return p.value;
-      if (p.type === 'column_ref') return p.name; // treat bare identifiers as strings
-      return this._evalValue(p, {});
-    });
-    
-    // Substitute $1, $2, etc. in the SQL with actual values
-    let sql = prepared.sql;
-    for (let i = params.length; i >= 1; i--) {
-      const val = params[i - 1];
-      let replacement;
-      if (val === null) replacement = 'NULL';
-      else if (typeof val === 'string') replacement = `'${val.replace(/'/g, "''")}'`;
-      else replacement = String(val);
-      sql = sql.replace(new RegExp(`\\$${i}`, 'g'), replacement);
-    }
-
-    return this.execute(sql);
-  }
-
-  _deallocate(ast) {
-    if (!this._prepared) this._prepared = new Map();
-    if (ast.name === 'ALL') {
-      this._prepared.clear();
-    } else {
-      const name = ast.name.toLowerCase();
-      if (!this._prepared.has(name)) {
-        throw new Error(`Prepared statement "${name}" does not exist`);
-      }
-      this._prepared.delete(name);
-    }
-    return { type: 'OK', message: 'DEALLOCATE' };
-  }
-
-  // COPY command: bulk import/export
   _copy(ast) {
     if (ast.direction === 'TO') {
       return this._copyTo(ast);
@@ -3371,47 +3297,6 @@ export class Database {
     }
     this._preparedStatements.delete(name);
     return { type: 'OK', message: `DEALLOCATE ${name}` };
-  }
-
-  _declareCursor(ast) {
-    const name = ast.name.toLowerCase();
-    if (this._cursors.has(name)) {
-      throw new Error(`Cursor "${name}" already exists`);
-    }
-    // Execute the query and store the full result set
-    const result = this.execute_ast(ast.query);
-    const rows = result && result.rows ? result.rows : [];
-    this._cursors.set(name, { rows, position: 0, scroll: ast.scroll });
-    return { type: 'OK', message: `DECLARE CURSOR ${name}` };
-  }
-
-  _fetch(ast) {
-    const name = ast.name.toLowerCase();
-    const cursor = this._cursors.get(name);
-    if (!cursor) {
-      throw new Error(`Cursor "${name}" does not exist`);
-    }
-    
-    const count = ast.count === Infinity ? cursor.rows.length - cursor.position : ast.count;
-    const start = cursor.position;
-    const end = Math.min(start + count, cursor.rows.length);
-    const rows = cursor.rows.slice(start, end);
-    cursor.position = end;
-    
-    return { rows };
-  }
-
-  _closeCursor(ast) {
-    if (ast.all) {
-      this._cursors.clear();
-      return { type: 'OK', message: 'CLOSE ALL' };
-    }
-    const name = ast.name.toLowerCase();
-    if (!this._cursors.has(name)) {
-      throw new Error(`Cursor "${name}" does not exist`);
-    }
-    this._cursors.delete(name);
-    return { type: 'OK', message: `CLOSE ${name}` };
   }
 
   _executeCopy(ast) {

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-22T00:05:14.508Z",
+  "generated": "2026-04-22T00:07:13.964Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix MERGE parser: support subquery USING clause (MERGE INTO t USING (SELECT ...) AS s ON ...). Second TPC-H failure.",
-    "completedAt": "2026-04-22T00:05:14.508Z",
-    "taskId": "T30",
-    "summary": "Fixed MERGE parser: subquery USING clause now supported. Parser handles (SELECT ...) AS alias syntax. Executor handles sourceSubquery by executing it and using result rows. 62 tests (merge + SQL parser) pass. This fixes the second TPC-H failure — potentially 33/33 now.",
-    "durationMs": 300000
+    "task": "Remove dead duplicate methods from db.js after investigation",
+    "completedAt": "2026-04-22T00:07:13.964Z",
+    "taskId": "T32",
+    "summary": "Removed 114 LOC of dead duplicate methods from db.js: _truncate, _prepare, _executePrepared, _deallocate, _declareCursor, _fetch, _closeCursor. Also removed unreachable case MERGE switch branch. db.js: 5043→4939 LOC. SUB-5000 ACHIEVED! 118 tests pass (prepared, cursor, SQL, query).",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -286,12 +286,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 30,
+    "blocksCompleted": 32,
     "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 6,
+      "THINK": 7,
       "PLAN": 6,
-      "BUILD": 11,
+      "BUILD": 12,
       "MAINTAIN": 7
     }
   }
