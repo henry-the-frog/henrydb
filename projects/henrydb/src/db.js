@@ -2145,6 +2145,11 @@ export class Database {
     if (ast.from.subquery) return null; // Derived table in FROM (not JOIN)
     if (ast.recursive) return null; // Recursive CTEs
     if (ast.ctes?.some(c => c.recursive)) return null; // Recursive CTEs in CTE list
+    // Skip CTEs containing window functions or UNION
+    if (ast.ctes?.some(c => {
+      const s = JSON.stringify(c);
+      return c.unionQuery || s.includes('"type":"window"') || s.includes('"over":{');
+    })) return null;
     if (ast.pivot) return null; // PIVOT queries
     if (ast.unpivot) return null; // UNPIVOT queries
     // Skip if WINDOW is used with GROUP BY and aggregate window functions
