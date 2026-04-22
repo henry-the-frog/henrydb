@@ -818,7 +818,7 @@ function buildValueGetter(expr, ctx) {
     }
     case 'function_call':
     case 'function': {
-      const args = (expr.args || []).map(buildValueGetter);
+      const args = (expr.args || []).map(a => buildValueGetter(a, ctx));
       const funcName = (expr.name || expr.func || '').toUpperCase();
       return (row) => {
         const vals = args.map(g => g(row));
@@ -1102,10 +1102,10 @@ function buildProjections(columns, hasAggregates, ctx) {
       case 'star':
         return null; // Can't project * — passthrough
       case 'expression':
-        return { name: outputName, expr: buildValueGetter(col.expr) };
+        return { name: outputName, expr: buildValueGetter(col.expr, ctx) };
       case 'function':
       case 'function_call':
-        return { name: outputName, expr: buildValueGetter(col) };
+        return { name: outputName, expr: buildValueGetter(col, ctx) };
       case 'scalar_subquery':
         // Correlated scalar subquery: (SELECT SUM(x) FROM t WHERE t.id = outer.id)
         return { name: outputName || 'subquery', expr: (outerRow) => {

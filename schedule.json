@@ -308,16 +308,20 @@
     {
       "id": "T28",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, broader test sweep",
-      "started": "2026-04-22T20:58:16.382Z"
+      "started": "2026-04-22T20:58:16.382Z",
+      "completed": "2026-04-22T20:59:05.284Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed. Broader sweep: 331/354 (up from 306/337). LATERAL 18/18, subquery-stress fixed. Remaining 23 failures all pre-existing FTS/JSON gaps."
     },
     {
       "id": "T29",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T20:59:12.441Z"
     }
   ],
   "focusProjects": [
