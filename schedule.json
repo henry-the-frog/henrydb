@@ -1635,6 +1635,45 @@
       "completed": "2026-04-22T16:51:55.207Z",
       "duration_ms": 30000,
       "summary": "Session review: 120+ tasks, 18+ bugs, 29/30 Volcano patterns. LEFT JOIN bug noted for future. Focus on consolidation now."
+    },
+    {
+      "id": "T154",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate LEFT JOIN bug: Volcano produces cross product instead of left-preserving join",
+      "project": "henrydb",
+      "started": "2026-04-22T16:52:24.762Z",
+      "completed": "2026-04-22T16:56:21.875Z",
+      "duration_ms": 480000,
+      "summary": "LEFT JOIN bug: IndexNLJoin (used with PK tables) returns cross product. HashJoin LEFT works correctly. Pre-existing bug in IndexNLJoin left mode."
+    },
+    {
+      "id": "T155",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Update MEMORY.md with today's key learnings",
+      "started": "2026-04-22T16:56:45.171Z",
+      "completed": "2026-04-22T16:57:18.674Z",
+      "duration_ms": 120000,
+      "summary": "Updated MEMORY.md with 3 key learnings: parser inconsistency pattern, extraction pattern, Volcano status."
+    },
+    {
+      "id": "T156",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run final comprehensive test sweep: all join, CTE, aggregate, explain, volcano tests",
+      "project": "henrydb",
+      "started": "2026-04-22T16:57:30.379Z",
+      "completed": "2026-04-22T16:58:03.904Z",
+      "duration_ms": 120000,
+      "summary": "Comprehensive sweep: 383 tests (join+CTE+aggregate+explain+volcano+having): ALL PASS. 0 failures. Zero regressions."
+    },
+    {
+      "id": "T157",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session A final: push everything, update CURRENT.md",
+      "started": "2026-04-22T16:58:13.718Z"
     }
   ],
   "focusProjects": [
@@ -2274,6 +2313,22 @@
     {
       "time": "2026-04-22T16:48:01.465Z",
       "msg": "PLAN T147 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T16:52:19.103Z",
+      "msg": "Added T154 (EXPLORE) after end: Investigate LEFT JOIN bug: Volcano produces cross product instead of left-preserving join"
+    },
+    {
+      "time": "2026-04-22T16:52:19.222Z",
+      "msg": "Added T155 (MAINTAIN) after end: Update MEMORY.md with today's key learnings"
+    },
+    {
+      "time": "2026-04-22T16:52:19.343Z",
+      "msg": "Added T156 (EXPLORE) after end: Run final comprehensive test sweep: all join, CTE, aggregate, explain, volcano tests"
+    },
+    {
+      "time": "2026-04-22T16:52:19.462Z",
+      "msg": "Added T157 (MAINTAIN) after end: Session A final: push everything, update CURRENT.md"
     }
   ]
 }
