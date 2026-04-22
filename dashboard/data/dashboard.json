@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T14:46:18.401Z",
+  "generated": "2026-04-22T14:54:20.700Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push, mid-session sync",
-    "startedAt": "2026-04-22T14:46:18.401Z",
-    "taskId": "T29"
+    "task": "Git push, dashboard regenerate",
+    "startedAt": "2026-04-22T14:54:20.700Z",
+    "taskId": "T34"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1109,58 +1109,104 @@
       {
         "id": "T26",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Extract GROUP BY executor from db.js (~166 LOC)",
         "task": null,
-        "started": "2026-04-22T14:43:40.810Z"
+        "started": "2026-04-22T14:43:40.810Z",
+        "completed": "2026-04-22T14:44:39.218Z",
+        "duration_ms": 60000,
+        "summary": "GROUP BY is _selectWithGroupBy at lines 4595-5119 = 525 LOC (not 166 estimated). References 13 db methods. Extraction follows db first-param pattern."
       },
       {
         "id": "T39",
         "mode": "BUILD",
         "task": "Extract _selectWithGroupBy from db.js into group-by-executor.js (~525 LOC, not 166)",
-        "status": "upcoming",
-        "plan_ref": "T26"
+        "status": "done",
+        "plan_ref": "T26",
+        "started": "2026-04-22T14:44:42.506Z",
+        "completed": "2026-04-22T14:45:51.409Z",
+        "duration_ms": 300000,
+        "summary": "Extracted GROUP BY executor (525 LOC) into group-by-executor.js. db.js 5582→5082 lines (49% from peak). 249 tests pass."
       },
       {
         "id": "T27",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T14:46:07.761Z",
+        "completed": "2026-04-22T14:46:07.904Z",
+        "duration_ms": 1000,
+        "summary": "Skipped: placeholder filled by T39."
       },
       {
         "id": "T28",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Neural-net: Fix 3 sliding-window.test.js failures",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T14:46:13.616Z",
+        "completed": "2026-04-22T14:46:13.760Z",
+        "duration_ms": 1000,
+        "summary": "Skipped: 2-project limit (henrydb + sat-solver)."
       },
       {
         "id": "T29",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, mid-session sync"
+        "status": "done",
+        "task": "Git commit+push, mid-session sync",
+        "started": "2026-04-22T14:46:18.364Z",
+        "completed": "2026-04-22T14:46:24.943Z",
+        "duration_ms": 30000,
+        "summary": "Pushed. Mid-session sync done."
       },
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "HenryDB: Pass ANALYZE table stats to Volcano planner for selectivity estimates",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T14:46:30.249Z",
+        "completed": "2026-04-22T14:46:53.269Z",
+        "duration_ms": 60000,
+        "summary": "Plan: add optional tableStats param to buildPlan/explainPlan. Use ndistinct for equality selectivity, histograms for ranges."
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "task": "Add tableStats param to Volcano buildPlan/explainPlan, use ndistinct for selectivity estimates in Filter and HashJoin",
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-22T14:46:57.141Z",
+        "completed": "2026-04-22T14:50:05.489Z",
+        "duration_ms": 300000,
+        "summary": "Added tableStats to Volcano planner. Selectivity uses ndistinct (exact with ANALYZE). Example: est=20 actual=20 (was est=33). All tests pass."
       },
       {
         "id": "T31",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T14:50:25.660Z",
+        "completed": "2026-04-22T14:50:25.802Z",
+        "duration_ms": 1000,
+        "summary": "Skipped: placeholder filled by T40."
       },
       {
         "id": "T32",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: Extract EXPLAIN methods from db.js (~350 LOC)",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T14:50:29.972Z"
+      },
+      {
+        "id": "T41",
+        "mode": "BUILD",
+        "task": "Extract _explain, _explainCompiled, _explainAnalyze, _fillScanActuals from db.js into explain-executor.js (~498 LOC)",
+        "status": "upcoming",
+        "plan_ref": "T32"
       },
       {
         "id": "T33",
@@ -1198,13 +1244,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
-    "blocksTotal": 39,
+    "blocksCompleted": 37,
+    "blocksTotal": 41,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 8,
-      "BUILD": 10,
-      "MAINTAIN": 5,
+      "PLAN": 10,
+      "BUILD": 14,
+      "MAINTAIN": 6,
       "EXPLORE": 2
     }
   },

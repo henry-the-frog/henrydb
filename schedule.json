@@ -329,43 +329,85 @@
     {
       "id": "T29",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, mid-session sync",
-      "started": "2026-04-22T14:46:18.364Z"
+      "started": "2026-04-22T14:46:18.364Z",
+      "completed": "2026-04-22T14:46:24.943Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. Mid-session sync done."
     },
     {
       "id": "T30",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: Pass ANALYZE table stats to Volcano planner for selectivity estimates",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T14:46:30.249Z",
+      "completed": "2026-04-22T14:46:53.269Z",
+      "duration_ms": 60000,
+      "summary": "Plan: add optional tableStats param to buildPlan/explainPlan. Use ndistinct for equality selectivity, histograms for ranges."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Add tableStats param to Volcano buildPlan/explainPlan, use ndistinct for selectivity estimates in Filter and HashJoin",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-22T14:46:57.141Z",
+      "completed": "2026-04-22T14:50:05.489Z",
+      "duration_ms": 300000,
+      "summary": "Added tableStats to Volcano planner. Selectivity uses ndistinct (exact with ANALYZE). Example: est=20 actual=20 (was est=33). All tests pass."
     },
     {
       "id": "T31",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T14:50:25.660Z",
+      "completed": "2026-04-22T14:50:25.802Z",
+      "duration_ms": 1000,
+      "summary": "Skipped: placeholder filled by T40."
     },
     {
       "id": "T32",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: Extract EXPLAIN methods from db.js (~350 LOC)",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T14:50:29.972Z",
+      "completed": "2026-04-22T14:51:11.745Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN extraction: 4 functions (~498 LOC total). _explain(209), _explainCompiled(36), _explainAnalyze(239), _fillScanActuals(14). 18 db dependencies."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "Extract _explain, _explainCompiled, _explainAnalyze, _fillScanActuals from db.js into explain-executor.js (~498 LOC)",
+      "status": "done",
+      "plan_ref": "T32",
+      "started": "2026-04-22T14:51:18.711Z",
+      "completed": "2026-04-22T14:53:56.714Z",
+      "duration_ms": 480000,
+      "summary": "Extracted EXPLAIN (496 LOC) into explain-executor.js. db.js 5082→4591 (54% from peak). 23 EXPLAIN tests pass."
     },
     {
       "id": "T33",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T14:54:13.522Z",
+      "completed": "2026-04-22T14:54:13.665Z",
+      "duration_ms": 1000,
+      "summary": "Skipped: placeholder filled by T41."
     },
     {
       "id": "T34",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard regenerate"
+      "status": "in-progress",
+      "task": "Git push, dashboard regenerate",
+      "started": "2026-04-22T14:54:20.664Z"
     },
     {
       "id": "T35",
@@ -568,6 +610,14 @@
     {
       "time": "2026-04-22T14:44:33.712Z",
       "msg": "PLAN T26 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T14:46:48.184Z",
+      "msg": "PLAN T30 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T14:51:06.843Z",
+      "msg": "PLAN T32 filled 1 BUILD tasks"
     }
   ]
 }
