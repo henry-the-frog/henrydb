@@ -2155,6 +2155,17 @@ export class Database {
       c.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')
     );
     if (hasFuncWrappedAgg) return null;
+    // Skip unsupported aggregate functions
+    const unsupportedAggs = ['ARRAY_AGG', 'STRING_AGG', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 
+      'STDDEV', 'STDDEV_POP', 'STDDEV_SAMP', 'VARIANCE', 'VAR_POP', 'VAR_SAMP', 'MODE', 'MEDIAN',
+      'REGR_SLOPE', 'REGR_INTERCEPT', 'CORR', 'COVAR_POP', 'COVAR_SAMP'];
+    const hasUnsupportedAgg = ast.columns.some(c => 
+      c.type === 'aggregate' && unsupportedAggs.includes(c.func?.toUpperCase())
+    );
+    if (hasUnsupportedAgg) return null;
+    // Also check HAVING and subqueries for unsupported aggregates
+    const astStr = JSON.stringify(ast);
+    if (unsupportedAggs.some(a => astStr.includes(`"func":"${a}"`) || astStr.includes(`"func":"${a.toLowerCase()}"`) )) return null;
     // Skip JSON operations
     if (JSON.stringify(ast).includes('"->>"') || JSON.stringify(ast).includes('"json_')){
       return null;
