@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-22T21:52:31.080Z",
+  "generated": "2026-04-22T21:57:39.661Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "THINK",
     "task": "Investigate 3 remaining failures: table-qualified outer row preservation for correlated subqueries in Volcano",
-    "startedAt": "2026-04-22T21:52:31.080Z",
-    "taskId": "T57"
+    "completedAt": "2026-04-22T21:57:39.661Z",
+    "taskId": "T57",
+    "summary": "Fixed all 3 remaining subquery failures! Root cause: non-correlated detection didnt check for outer refs in WHERE, so correlated subqueries were wrongly pre-evaluated with undefined outer values. Now explicitly detect outer refs. 809/810 tests pass!",
+    "durationMs": 360000
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1374,10 +1376,10 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 52,
+    "blocksCompleted": 53,
     "blocksTotal": 53,
     "modeDistribution": {
-      "THINK": 11,
+      "THINK": 12,
       "PLAN": 8,
       "BUILD": 17,
       "MAINTAIN": 11,
