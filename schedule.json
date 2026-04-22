@@ -788,14 +788,36 @@
     {
       "id": "T74",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update volcano-gaps.md, write final session B summary, daily log"
+      "status": "done",
+      "task": "Update volcano-gaps.md, write final session B summary, daily log",
+      "started": "2026-04-22T22:54:24.564Z",
+      "completed": "2026-04-22T22:54:54.461Z",
+      "duration_ms": 120000,
+      "summary": "Knowledge captured. volcano-gaps.md updated with final results. 985/989 (99.60%)."
     },
     {
       "id": "T75",
       "mode": "THINK",
+      "status": "done",
+      "task": "Session B reflection: what was the most impactful work? What would I do differently?",
+      "started": "2026-04-22T22:55:01.166Z",
+      "completed": "2026-04-22T22:55:17.101Z",
+      "duration_ms": 60000,
+      "summary": "Reflection complete. Most impactful: LATERAL fix (8 tests), window functions (30 tests), JSON/FTS guards (27 tests). Lessons: test before committing, NULL semantics conflict with JS, expression-extraction pattern is reusable."
+    },
+    {
+      "id": "T76",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Session B reflection: what was the most impactful work? What would I do differently?"
+      "task": "Deep edge case hunting: generate queries that exercise rare combinations. Try to find bugs.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T77",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "More edge case queries: LEFT JOIN + aggregate, CROSS JOIN, self-join + window, NULL handling edge cases",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1131,6 +1153,14 @@
     {
       "time": "2026-04-22T22:49:21.209Z",
       "msg": "Added T75 (THINK) after T74: Session B reflection: what was the most impactful work? What would I do differently?"
+    },
+    {
+      "time": "2026-04-22T22:56:54.407Z",
+      "msg": "Added T76 (EXPLORE) after end: Deep edge case hunting: generate queries that exercise rare combinations. Try to find bugs."
+    },
+    {
+      "time": "2026-04-22T22:58:48.358Z",
+      "msg": "Added T77 (EXPLORE) after end: More edge case queries: LEFT JOIN + aggregate, CROSS JOIN, self-join + window, NULL handling edge cases"
     }
   ]
 }
