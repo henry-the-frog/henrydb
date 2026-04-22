@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T20:26:07.404Z",
+  "generated": "2026-04-22T20:29:46.695Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Support function-wrapped aggregates in Volcano (COALESCE(SUM(x),0), NULLIF(AVG(x),0), etc.)",
-    "startedAt": "2026-04-22T20:26:07.404Z",
-    "taskId": "T7"
+    "task": "Support scalar correlated subqueries in Volcano SELECT columns",
+    "startedAt": "2026-04-22T20:29:46.695Z",
+    "taskId": "T15"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -956,12 +956,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 7,
+    "blocksCompleted": 8,
     "blocksTotal": 15,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 2,
+      "BUILD": 3,
       "MAINTAIN": 1
     }
   },

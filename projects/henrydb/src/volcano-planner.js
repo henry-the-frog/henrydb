@@ -385,7 +385,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 6. SELECT projection
-  const projections = buildProjections(ast.columns, hasAggregates);
+  const projections = buildProjections(ast.columns, hasAggregates, _ctx);
   if (projections && !hasAggregates) {
     // Don't project after aggregate — column names already set by HashAggregate
     const prevEst = iter._estimatedRows;
@@ -985,7 +985,7 @@ function extractEquiJoinKeys(on, leftFrom, rightJoin) {
   return { buildKey: rName, probeKey: lName };
 }
 
-function buildProjections(columns, hasAggregates) {
+function buildProjections(columns, hasAggregates, ctx) {
   if (!columns || columns.length === 0) return null;
   if (columns.length === 1 && columns[0].type === 'star') return null; // SELECT *
   if (hasAggregates) return null; // Handled separately
@@ -1002,6 +1002,25 @@ function buildProjections(columns, hasAggregates) {
       case 'function':
       case 'function_call':
         return { name: outputName, expr: buildValueGetter(col) };
+      case 'scalar_subquery':
+        // Correlated scalar subquery: (SELECT SUM(x) FROM t WHERE t.id = outer.id)
+        return { name: outputName || 'subquery', expr: (outerRow) => {
+          if (!ctx) return null;
+          try {
+            const subPlan = buildCorrelatedSubqueryPlan(col.subquery, outerRow, ctx);
+            if (!subPlan) return null;
+            subPlan.open();
+            const row = subPlan.next();
+            subPlan.close();
+            if (row) {
+              // Return first column value (scalar subquery)
+              for (const [k, v] of Object.entries(row)) {
+                if (!k.startsWith('_')) return v;
+              }
+            }
+            return null;
+          } catch (e) { return null; }
+        }};
       default:
         return { name: outputName, expr: () => null };
     }

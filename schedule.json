@@ -79,18 +79,22 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Support function-wrapped aggregates in Volcano (COALESCE(SUM(x),0), NULLIF(AVG(x),0), etc.)",
       "plan_ref": "T6",
       "project": "henrydb",
-      "started": "2026-04-22T20:26:07.367Z"
+      "started": "2026-04-22T20:26:07.367Z",
+      "completed": "2026-04-22T20:29:38.169Z",
+      "duration_ms": 420000,
+      "summary": "Function-wrapped aggregates now supported in Volcano. COALESCE(SUM), NULLIF(COUNT), ROUND(AVG), ABS(SUM) all work. Guard removed. 115/115 tests pass."
     },
     {
       "id": "T15",
       "mode": "BUILD",
       "task": "Support scalar correlated subqueries in Volcano SELECT columns",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-22T20:29:46.659Z"
     },
     {
       "id": "T8",
