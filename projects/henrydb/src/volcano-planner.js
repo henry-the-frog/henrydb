@@ -323,10 +323,16 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 9. LIMIT / OFFSET
-  if (ast.limit != null) {
+  if (ast.limit != null || ast.offset != null) {
     const prevEst = iter._estimatedRows;
-    iter = new Limit(iter, ast.limit, ast.offset || 0);
-    iter._estimatedRows = Math.min(prevEst || ast.limit, ast.limit);
+    const limit = ast.limit != null ? ast.limit : Infinity;
+    const offset = ast.offset || 0;
+    iter = new Limit(iter, limit, offset);
+    if (ast.limit != null) {
+      iter._estimatedRows = Math.min(prevEst || ast.limit, ast.limit);
+    } else {
+      iter._estimatedRows = Math.max(1, (prevEst || 100) - offset);
+    }
   }
 
   return iter;
