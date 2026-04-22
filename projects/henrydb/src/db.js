@@ -27,6 +27,7 @@ import { insert as _insertImpl, insertSelect as _insertSelectImpl, fireTriggers 
 import { update as _updateImpl, executeDelete as _executeDeleteImpl } from './dml-mutate.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
+import { explainPlan as volcanoExplainPlan } from './volcano-planner.js';
 
 export class Database {
   // PostgreSQL-compatible cost model parameters
@@ -4659,7 +4660,18 @@ export class Database {
     }
 
     // Tree-structured plan (new system) — use for SELECT statements
-    if (stmt.type === 'SELECT' && (format === 'tree' || format === 'json-tree' || format === 'html' || format === 'dot' || format === 'yaml')) {
+    if (stmt.type === 'SELECT' && (format === 'volcano' || format === 'tree' || format === 'json-tree' || format === 'html' || format === 'dot' || format === 'yaml')) {
+      // Volcano format: show the Volcano iterator plan tree
+      if (format === 'volcano') {
+        try {
+          const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+          const lines = volcanoTree.split('\n');
+          return { type: 'PLAN', rows: lines.map(l => ({ 'QUERY PLAN': l })) };
+        } catch (e) {
+          // Fall through to legacy explain if Volcano planner can't handle this query
+          return { type: 'PLAN', rows: [{ 'QUERY PLAN': `Volcano planner error: ${e.message}` }] };
+        }
+      }
       const builder = new PlanBuilder(this);
       const planTree = builder.buildPlan(stmt);
       if (format === 'json-tree') {

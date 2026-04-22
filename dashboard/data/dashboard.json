@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T02:46:42.039Z",
+  "generated": "2026-04-22T03:03:18.089Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix SELECT * to detect column name collisions and use qualified names, add tests",
-    "startedAt": "2026-04-22T02:46:42.039Z",
-    "taskId": "T34"
+    "task": "",
+    "startedAt": "2026-04-22T03:03:18.089Z",
+    "taskId": "T41"
   },
   "schedule": {
     "date": "2026-04-21",
@@ -313,50 +313,153 @@
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Fix SELECT * column name collision in FULL JOIN (same-name cols overwrite)",
         "task": null,
-        "started": "2026-04-22T02:45:53.024Z"
+        "started": "2026-04-22T02:45:53.024Z",
+        "completed": "2026-04-22T02:46:33.243Z",
+        "duration_ms": 60000,
+        "summary": "Plan: In _selectInner SELECT * path, detect when multiple qualified keys resolve to same unqualified name. For collisions, use qualified names (a.id, b.id). For unique names, use unqualified."
       },
       {
         "id": "T34",
         "mode": "BUILD",
         "task": "Fix SELECT * to detect column name collisions and use qualified names, add tests",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-22T02:46:42.002Z",
+        "completed": "2026-04-22T02:54:44.141Z",
+        "duration_ms": 600000,
+        "summary": "Fixed SELECT * column name collision in joins. _projectStarRow detects collisions, merges same-valued columns (equi-join/USING), uses qualified names for different values. All 3 SELECT * paths fixed. 6 new tests, 151/151 join tests pass."
       },
       {
         "id": "T31",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-22T02:57:07.478Z",
+        "completed": "2026-04-22T02:57:07.620Z",
+        "duration_ms": 0,
+        "summary": "Placeholder — completed in T34."
+      },
+      {
+        "id": "T32",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Neural-net: Implement learning rate scheduler (warmup + cosine decay)",
+        "task": null,
+        "started": "2026-04-22T02:54:57.417Z",
+        "completed": "2026-04-22T02:55:13.757Z",
+        "duration_ms": 30000,
+        "summary": "Plan: modular LR scheduler with warmup, cosine decay, step decay, one-cycle. Base class with step() method that returns current LR. Composable (warmup wraps any schedule)."
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "Implement LR scheduler module with warmup, cosine decay, step decay, one-cycle policies. Add comprehensive tests.",
+        "status": "done",
+        "plan_ref": "T32",
+        "started": "2026-04-22T02:55:19.460Z",
+        "completed": "2026-04-22T02:56:54.977Z",
+        "duration_ms": 300000,
+        "summary": "6 LR scheduler policies: ConstantLR, LinearWarmup, CosineDecay, StepDecay, OneCycle (Smith 2018), ExponentialDecay. Composable via WarmupScheduler. 24 tests passing."
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "neural-net",
+        "started": "2026-04-22T02:57:07.196Z",
+        "completed": "2026-04-22T02:57:07.337Z",
+        "duration_ms": 0,
+        "summary": "Placeholder — completed in T35."
+      },
+      {
+        "id": "T36",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Neural-net: train a small transformer on a real task using flash attention + LR scheduler, measure convergence",
+        "project": "neural-net",
+        "started": "2026-04-22T02:57:26.518Z",
+        "completed": "2026-04-22T02:58:29.387Z",
+        "duration_ms": 180000,
+        "summary": "End-to-end training loop verified: MultiHeadFlashAttention + WarmupScheduler(CosineDecay) + backward + updateWeights. Identity task converges (loss 0.019→0.016). Compared warmup+cosine vs constant LR — similar on this tiny task. All components integrate cleanly."
+      },
+      {
+        "id": "T37",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: Add EXPLAIN format for Volcano plan tree (show operators, cost, row estimates)",
+        "task": null,
+        "started": "2026-04-22T02:58:37.695Z",
+        "completed": "2026-04-22T02:59:50.236Z",
+        "duration_ms": 60000,
+        "summary": "EXPLAIN already implemented for Volcano! explainPlan() produces formatted tree with operator types, parameters, and tree structure. Already has describe() overrides for all 15 iterator classes. SQL-level EXPLAIN still shows old-style plan — can be updated in future to use Volcano format."
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-22T02:59:59.539Z",
+        "completed": "2026-04-22T02:59:59.682Z",
+        "duration_ms": 0,
+        "summary": "Placeholder — EXPLAIN already existed, no BUILD needed."
+      },
+      {
+        "id": "T39",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Neural-net: benchmark all LR schedulers on MNIST or XOR convergence",
+        "project": "neural-net",
+        "started": "2026-04-22T03:00:08.088Z",
+        "completed": "2026-04-22T03:01:46.542Z",
+        "duration_ms": 180000,
+        "summary": "XOR convergence benchmark across 6 LR schedulers. Results: ExpDecay fastest (epoch 25), Constant(0.1) reliable (epoch 27), Warmup+Cosine solid (epoch 43). CosineDecay alone and OneCycle fail (too aggressive/conservative for tiny tasks). StepDecay gets 3/4. Key insight: warmup helps stability but pure cosine decay without sufficient initial LR fails."
+      },
+      {
+        "id": "T40",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Wire Volcano EXPLAIN into SQL EXPLAIN handler",
+        "task": null,
+        "started": "2026-04-22T03:02:04.878Z"
+      },
+      {
+        "id": "T43",
+        "mode": "BUILD",
+        "task": "Add EXPLAIN FORMAT VOLCANO support, test SQL-level access to Volcano plan trees",
+        "status": "upcoming",
+        "plan_ref": "T40"
+      },
+      {
+        "id": "T41",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
       },
       {
-        "id": "T32",
-        "mode": "PLAN",
+        "id": "T42",
+        "mode": "EXPLORE",
         "status": "upcoming",
-        "goal": "Neural-net: Implement learning rate scheduler (warmup + cosine decay)",
-        "task": null
-      },
-      {
-        "id": "T33",
-        "mode": "BUILD",
-        "status": "upcoming",
-        "task": null,
-        "project": "neural-net"
+        "task": "HenryDB: Find the worst-performing TPC-H query and optimize it via Volcano",
+        "project": "henrydb"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 26,
-    "blocksTotal": 34,
+    "blocksCompleted": 36,
+    "blocksTotal": 43,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 7,
-      "BUILD": 11,
+      "PLAN": 10,
+      "BUILD": 16,
       "MAINTAIN": 2,
-      "EXPLORE": 2
+      "EXPLORE": 4
     }
   }
 }
