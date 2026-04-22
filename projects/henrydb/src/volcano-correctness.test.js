@@ -118,5 +118,12 @@ describe('Volcano Correctness: All SQL Patterns', () => {
     it('Join + Aggregate + Having + Order', () => verifyMatch(db,
       'SELECT p.category, SUM(o.qty) AS total FROM orders o JOIN products p ON o.product_id = p.id GROUP BY p.category HAVING SUM(o.qty) > 100 ORDER BY total DESC',
       'complex'));
+    it('derived table join (Volcano only)', () => {
+      // Legacy doesn't support derived tables, test Volcano directly
+      const sql = 'SELECT p.name, sub.cnt FROM products p JOIN (SELECT product_id, COUNT(*) AS cnt FROM orders GROUP BY product_id) sub ON p.id = sub.product_id WHERE sub.cnt > 2';
+      const volcano = executeVolcano(sql, db);
+      assert.ok(volcano !== null, 'Should produce a plan');
+      assert.ok(volcano.length > 0, 'Should return results');
+    });
   });
 });

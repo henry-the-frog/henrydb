@@ -98,12 +98,50 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   // 2. Build JOIN nodes
   if (ast.joins && ast.joins.length > 0) {
     for (const join of ast.joins) {
-      const rightTableName = typeof join.table === 'string' ? join.table : join.table;
+      let rightTableName = typeof join.table === 'string' ? join.table : join.table;
       const rightAlias = join.alias || rightTableName;
-      let rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, tables);
-      const rightTable = tables.get(rightTableName) || tables.get(rightTableName?.toLowerCase());
-      const rightRowCount = rightTable?.heap?.rowCount || rightTable?.heap?.tupleCount || 100;
-      rightIter._estimatedRows = rightRowCount;
+      let rightIter;
+      let rightRowCount = 100;
+      
+      // Handle derived tables (subquery in FROM/JOIN)
+      if (!rightTableName && join.subquery) {
+        // Materialize the subquery as a virtual table
+        const subPlan = buildPlan(join.subquery, tables, indexCatalog, tableStats);
+        if (subPlan) {
+          subPlan.open();
+          const rows = [];
+          let row;
+          while ((row = subPlan.next()) !== null) rows.push(row);
+          subPlan.close();
+          
+          // Create virtual table for the derived table (SeqScan expects {values: [...]} tuples)
+          const schema = rows.length > 0 ? Object.keys(rows[0]).filter(k => !k.startsWith('_')).map(name => ({ name })) : [];
+          const colNames = schema.map(s => s.name);
+          const virtualTable = {
+            schema,
+            heap: { 
+              rowCount: rows.length, 
+              tupleCount: rows.length, 
+              scan: function*() { 
+                for (const r of rows) yield { values: colNames.map(c => r[c]), pageId: 0, slotIdx: 0 }; 
+              } 
+            },
+            indexes: new Map(),
+          };
+          tables.set(rightAlias, virtualTable);
+          rightTableName = rightAlias;
+          rightIter = buildScanNode({ table: rightAlias, alias: rightAlias }, tables);
+          rightRowCount = rows.length || 1;
+          rightIter._estimatedRows = rightRowCount;
+        } else {
+          continue; // Can't build subquery plan
+        }
+      } else {
+        rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, tables);
+        const rightTable = tables.get(rightTableName) || tables.get(rightTableName?.toLowerCase());
+        rightRowCount = rightTable?.heap?.rowCount || rightTable?.heap?.tupleCount || 100;
+        rightIter._estimatedRows = rightRowCount;
+      }
       
       // Push per-table predicate into right scan
       if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
@@ -633,7 +671,7 @@ function tryIndexNestedLoopJoin(outerIter, equiJoin, leftFrom, rightJoin, tables
   const rightTableName = typeof rightJoin.table === 'string' ? rightJoin.table : rightJoin.table;
   const rightAlias = rightJoin.alias || rightTableName;
   
-  const rightTable = tables.get(rightTableName) || tables.get(rightTableName.toLowerCase());
+  const rightTable = tables.get(rightTableName) || (rightTableName && tables.get(rightTableName.toLowerCase()));
   if (!rightTable || !rightTable.indexes) return null;
   
   // Find the join column on the right (inner) table
