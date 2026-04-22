@@ -22,6 +22,7 @@ export function explainPlan(ast, tables, indexCatalog, tableStats) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog, tableStats) {
+  const _ctx = { tables, indexCatalog, tableStats };
   // Handle WITH (CTE) — parser may produce type='WITH' or type='SELECT' with ctes[]
   const hasCtes = (ast.type === 'WITH' && ast.ctes?.length > 0) || 
                   (ast.type === 'SELECT' && ast.ctes?.length > 0);
@@ -82,7 +83,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     
     // Push FROM table predicates into a Filter on the FROM scan
     if (perTable[fromTableName]) {
-      const pred = buildPredicate(perTable[fromTableName]);
+      const pred = buildPredicate(perTable[fromTableName], _ctx);
       iter = new Filter(iter, pred);
       const sel = estimateSelectivity(perTable[fromTableName], fromTableName, tableStats);
       iter._estimatedRows = Math.max(1, Math.round(fromRowCount * sel));
@@ -106,12 +107,12 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       
       // Push per-table predicate into right scan
       if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
-        rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias]));
+        rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias], _ctx));
         const sel = estimateSelectivity(_pushdownPredicates[rightAlias], rightTableName, tableStats);
         rightIter._estimatedRows = Math.max(1, Math.round(rightRowCount * sel));
       }
       
-      const predicate = join.on ? buildPredicate(join.on) : null;
+      const predicate = join.on ? buildPredicate(join.on, _ctx) : null;
       
       // Choose join strategy:
       // 1. IndexNestedLoopJoin if inner table has usable index on join key
@@ -164,11 +165,11 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       iter = indexScanResult.scan;
       iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * 0.1)); // Index = selective
       if (indexScanResult.residual) {
-        iter = new Filter(iter, buildPredicate(indexScanResult.residual));
+        iter = new Filter(iter, buildPredicate(indexScanResult.residual, _ctx));
         iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * 0.5));
       }
     } else {
-      const pred = buildPredicate(effectiveWhere);
+      const pred = buildPredicate(effectiveWhere, _ctx);
       iter = new Filter(iter, pred);
       const sel = estimateSelectivity(effectiveWhere, fromTableName, tableStats);
       iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * sel));
@@ -401,7 +402,7 @@ function buildScanNode(fromClause, tables) {
   return new SeqScan(tableObj.heap, columns, alias || tableName);
 }
 
-function buildPredicate(expr) {
+function buildPredicate(expr, ctx) {
   if (!expr) return () => true;
 
   switch (expr.type) {
@@ -413,13 +414,13 @@ function buildPredicate(expr) {
       return (row) => cmp(getLeft(row), getRight(row));
     }
     case 'AND': {
-      const left = buildPredicate(expr.left);
-      const right = buildPredicate(expr.right);
+      const left = buildPredicate(expr.left, ctx);
+      const right = buildPredicate(expr.right, ctx);
       return (row) => left(row) && right(row);
     }
     case 'OR': {
-      const left = buildPredicate(expr.left);
-      const right = buildPredicate(expr.right);
+      const left = buildPredicate(expr.left, ctx);
+      const right = buildPredicate(expr.right, ctx);
       return (row) => left(row) || right(row);
     }
     case 'NOT': {
@@ -457,10 +458,30 @@ function buildPredicate(expr) {
       const regex = new RegExp('^' + String(patternStr).replace(/%/g, '.*').replace(/_/g, '.') + '$', 'i');
       return (row) => regex.test(val(row));
     }
+    case 'IN_SUBQUERY': {
+      const val = buildValueGetter(expr.left);
+      if (ctx && ctx.tables) {
+        try {
+          const subPlan = buildPlan(expr.subquery, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+          if (subPlan) {
+            subPlan.open();
+            const values = new Set();
+            let row;
+            while ((row = subPlan.next()) !== null) {
+              const keys = Object.keys(row);
+              if (keys.length > 0) values.add(row[keys[0]]);
+            }
+            subPlan.close();
+            return (row) => values.has(val(row));
+          }
+        } catch (e) { /* fall through */ }
+      }
+      return () => true;
+    }
     case 'case_expr': {
       const whens = expr.whens.map(w => ({
-        condition: buildPredicate(w.condition),
-        result: buildPredicate(w.result)
+        condition: buildPredicate(w.condition, ctx),
+        result: buildPredicate(w.result, ctx)
       }));
       const elsePred = expr.elseResult || expr.else ? buildPredicate(expr.elseResult || expr.else) : () => false;
       return (row) => {
@@ -527,7 +548,7 @@ function buildValueGetter(expr) {
     }
     case 'case_expr': {
       const whens = expr.whens.map(w => ({
-        condition: buildPredicate(w.condition),
+        condition: buildPredicate(w.condition, ctx),
         result: buildValueGetter(w.result)
       }));
       const elseVal = expr.elseResult || expr.else ? buildValueGetter(expr.elseResult || expr.else) : () => null;

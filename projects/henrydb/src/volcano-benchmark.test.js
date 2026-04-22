@@ -88,9 +88,8 @@ describe('Volcano vs Legacy Benchmark', () => {
     console.log(`\n  Average speedup: ${avgSpeedup.toFixed(1)}x`);
     console.log(`  Volcano wins: ${wins}/${results.length}`);
     
-    // Verify row counts match (skip subquery IN — known gap)
+    // Verify row counts match
     for (const r of results) {
-      if (r.name === 'Subquery IN') continue; // Known: IN_SUBQUERY not yet handled in Volcano
       assert.equal(r.volcanoRows, r.legacyRows, `${r.name}: row count mismatch (volcano=${r.volcanoRows} legacy=${r.legacyRows})`);
     }
   });
