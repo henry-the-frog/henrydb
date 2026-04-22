@@ -167,36 +167,52 @@
     {
       "id": "T15",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git commit+push, dashboard regenerate",
-      "started": "2026-04-22T14:35:38.040Z"
+      "started": "2026-04-22T14:35:38.040Z",
+      "completed": "2026-04-22T14:35:44.553Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. Dashboard up."
     },
     {
       "id": "T16",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon reflection. What did depth work reveal? Any new bugs or patterns?"
+      "status": "done",
+      "task": "Afternoon reflection. What did depth work reveal? Any new bugs or patterns?",
+      "started": "2026-04-22T14:35:48.086Z",
+      "completed": "2026-04-22T14:36:03.482Z",
+      "duration_ms": 60000,
+      "summary": "5 BUILDs done. One mild surprise (mislabeled root cause). Patterns: db-first-param extraction works well, always verify root cause. Continuing to SAT solver."
     },
     {
       "id": "T17",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "SAT solver: Fix SMT strict inequality bug in _processAssertion (8-line quick win)",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T14:36:08.267Z",
+      "completed": "2026-04-22T14:36:43.927Z",
+      "duration_ms": 90000,
+      "summary": "Confirmed: _processAssertion handles <= and >= but not < and >. Arith path handles them but fallback silently drops them."
     },
     {
       "id": "T18",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add < and > handling to _processAssertion in smt.cjs, add edge case tests",
       "plan_ref": "T17",
-      "project": "sat-solver"
+      "project": "sat-solver",
+      "started": "2026-04-22T14:36:49.072Z",
+      "completed": "2026-04-22T14:37:20.858Z",
+      "duration_ms": 120000,
+      "summary": "Added < and > handling to _processAssertion fallback. 46/46 tests pass. Safety net for edge cases."
     },
     {
       "id": "T19",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, full workspace sync"
+      "status": "in-progress",
+      "task": "Git commit+push, full workspace sync",
+      "started": "2026-04-22T14:37:38.094Z"
     },
     {
       "id": "T20",
@@ -322,6 +338,10 @@
     {
       "time": "2026-04-22T14:31:54.135Z",
       "msg": "PLAN T13 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T14:36:37.697Z",
+      "msg": "PLAN T17 filled 1 BUILD tasks"
     }
   ]
 }

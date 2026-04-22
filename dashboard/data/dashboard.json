@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T14:35:38.088Z",
+  "generated": "2026-04-22T14:37:38.131Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push, dashboard regenerate",
-    "startedAt": "2026-04-22T14:35:38.088Z",
-    "taskId": "T15"
+    "task": "Git commit+push, full workspace sync",
+    "startedAt": "2026-04-22T14:37:38.131Z",
+    "taskId": "T19"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -968,43 +968,59 @@
       {
         "id": "T13",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Volcano cost model — add selectivity heuristic to IndexScan vs SeqScan decision",
         "task": null,
-        "started": "2026-04-22T14:31:36.491Z"
+        "started": "2026-04-22T14:31:36.491Z",
+        "completed": "2026-04-22T14:32:02.076Z",
+        "duration_ms": 90000,
+        "summary": "Plan: add selectivity check in tryIndexScan. If estimated rows > 30% of total, skip index and use SeqScan. Use 1/ndv for equality, 33% for ranges."
       },
       {
         "id": "T14",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Add selectivity-based IndexScan vs SeqScan decision in Volcano planner tryIndexScan, with tests",
         "plan_ref": "T13",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T14:32:05.541Z",
+        "completed": "2026-04-22T14:35:22.426Z",
+        "duration_ms": 300000,
+        "summary": "Added selectivity heuristic: range queries on <500 row tables prefer SeqScan. Equality always uses IndexScan. All tests pass."
       },
       {
         "id": "T15",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard regenerate"
+        "status": "done",
+        "task": "Git commit+push, dashboard regenerate",
+        "started": "2026-04-22T14:35:38.040Z",
+        "completed": "2026-04-22T14:35:44.553Z",
+        "duration_ms": 30000,
+        "summary": "Pushed. Dashboard up."
       },
       {
         "id": "T16",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon reflection. What did depth work reveal? Any new bugs or patterns?"
+        "status": "done",
+        "task": "Afternoon reflection. What did depth work reveal? Any new bugs or patterns?",
+        "started": "2026-04-22T14:35:48.086Z",
+        "completed": "2026-04-22T14:36:03.482Z",
+        "duration_ms": 60000,
+        "summary": "5 BUILDs done. One mild surprise (mislabeled root cause). Patterns: db-first-param extraction works well, always verify root cause. Continuing to SAT solver."
       },
       {
         "id": "T17",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "SAT solver: Fix SMT strict inequality bug in _processAssertion (8-line quick win)",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T14:36:08.267Z"
       },
       {
         "id": "T18",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Add < and > handling to _processAssertion in smt.cjs, add edge case tests",
         "plan_ref": "T17",
         "project": "sat-solver"
       },
@@ -1032,13 +1048,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
+    "blocksCompleted": 19,
     "blocksTotal": 22,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 4,
-      "BUILD": 5,
-      "MAINTAIN": 3
+      "THINK": 4,
+      "PLAN": 5,
+      "BUILD": 6,
+      "MAINTAIN": 4
     }
   },
   "artifacts": [
