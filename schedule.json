@@ -2822,9 +2822,52 @@
     {
       "id": "T264",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session A final commit and daily log",
-      "started": "2026-04-22T18:54:42.111Z"
+      "started": "2026-04-22T18:54:42.111Z",
+      "completed": "2026-04-22T18:55:18.284Z",
+      "duration_ms": 120000,
+      "summary": "Session A final commit. 270+ tasks, 27 bugs, Volcano default-on. Daily log updated."
+    },
+    {
+      "id": "T265",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Debug TPC-H Q6 failure — what does Volcano return vs legacy?",
+      "project": "henrydb",
+      "started": "2026-04-22T18:55:34.692Z",
+      "completed": "2026-04-22T18:56:54.002Z",
+      "duration_ms": 60000,
+      "summary": "TPC-H Q6: goes through wire protocol (TransactionalDB, Volcano disabled). Mini benchmark failures: window function + GROUP BY + aggregate (known gap). Not a simple fix."
+    },
+    {
+      "id": "T266",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Debug TPC-H Q3 failure — shipping priority with multi-table join",
+      "project": "henrydb",
+      "started": "2026-04-22T18:57:01.788Z",
+      "completed": "2026-04-22T18:57:01.933Z",
+      "duration_ms": 1000,
+      "summary": "TPC-H Q3 also uses wire protocol (TransactionalDB). Skipping — not Volcano-related."
+    },
+    {
+      "id": "T267",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run 100-test sample with Volcano default-on for final pass rate",
+      "project": "henrydb",
+      "started": "2026-04-22T18:57:08.700Z",
+      "completed": "2026-04-22T19:05:38.814Z",
+      "duration_ms": 180000,
+      "summary": "40-file test: 360/417 pass (86.3%). 49 fail, 8 cancelled. Remaining failures likely: window fn+agg, subquery edge cases, JSON/FTS."
+    },
+    {
+      "id": "T268",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Sync to remote",
+      "started": "2026-04-22T19:05:47.721Z"
     }
   ],
   "focusProjects": [
@@ -3908,6 +3951,22 @@
     {
       "time": "2026-04-22T18:51:47.478Z",
       "msg": "Added T264 (MAINTAIN) after end: Session A final commit and daily log"
+    },
+    {
+      "time": "2026-04-22T18:55:27.997Z",
+      "msg": "Added T265 (EXPLORE) after end: Debug TPC-H Q6 failure — what does Volcano return vs legacy?"
+    },
+    {
+      "time": "2026-04-22T18:55:28.117Z",
+      "msg": "Added T266 (EXPLORE) after end: Debug TPC-H Q3 failure — shipping priority with multi-table join"
+    },
+    {
+      "time": "2026-04-22T18:55:28.238Z",
+      "msg": "Added T267 (EXPLORE) after end: Run 100-test sample with Volcano default-on for final pass rate"
+    },
+    {
+      "time": "2026-04-22T18:55:28.359Z",
+      "msg": "Added T268 (MAINTAIN) after end: Sync to remote"
     }
   ]
 }
