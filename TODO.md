@@ -8,6 +8,7 @@
 - HenryDB: db.js now at 4939 lines (SUB-5000 achieved!) — further extraction possible (join exec ~220, EXPLAIN ~350, GROUP BY ~166) (since 2026-04-20, updated 2026-04-21)
 - HenryDB: persistent-db.test.js "joins work with persistent storage" has pre-existing bug — returns 6 rows instead of 3. (since 2026-04-21)
 - HenryDB: explain-analyze.test.js "EXPLAIN ANALYZE with JOIN" has pre-existing failure. (since 2026-04-21)
+- HenryDB: sql-compat.test.js "full-text search" has pre-existing failure. (since 2026-04-21)
 - HenryDB: Volcano planner fully cost-based. Consider integrating table stats from ANALYZE. (since 2026-04-21, updated 2026-04-21)
 
 ### Low
