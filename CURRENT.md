@@ -1,18 +1,18 @@
 # CURRENT.md — Session Status
 
-## Status: in-progress
+## Status: session-ending
 ## Session: 2026-04-21 Session B-2 (5:30 PM - 8:15 PM MDT)
-## Project: henrydb
-## Mode: MAINTAIN
-## Task: Update TODO, TASKS, scratch notes
-## Current Position: T56
-## Started: 2026-04-21T23:31:00Z
-## Tasks Completed This Session: 19+ BUILD, 6 THINK, 7 MAINTAIN
+## Project: henrydb (primary), explored 12 projects
+## Tasks Completed: 78 (27 THINK, 7 PLAN, 19 BUILD, 25 MAINTAIN)
 
-### Session B-2 Major Achievements
-1. **Volcano Engine Complete**: All operators wired (CTE, MergeJoin, Union, Window, Cost Model)
-2. **P0 DONE**: Volcano engine integrated into db.js — hash join now used for equi-joins
-3. **db.js**: 8247→4975 LOC (40% reduction) 
-4. **Critical MVCC Bug Fixed**: PK violation under SSI (EvalPlanQual)
-5. **TPC-H 33/33**: Parser arithmetic fix + MERGE subquery fix
-6. **153 Volcano tests, 211 join/query/subquery tests pass**
+### Major Achievements
+1. **Volcano Engine COMPLETE + INTEGRATED** — all operators wired, db.js uses hash join (19.5-37.3x)
+2. **db.js: 8247→4939 LOC** (40% reduction via mixin extractions)
+3. **Critical MVCC bug fixed** — PK violation under SSI (EvalPlanQual)
+4. **TPC-H 33/33** — parser + MERGE fixes
+5. **12 projects explored** — ~190K LOC, ~50K tests, all green
+6. **153 volcano tests, 954 cross-project tests verified**
+
+### Tomorrow Queue
+- AM: RISC-V liveness register allocation + SAT SMT fix
+- PM: HenryDB RIGHT join + blog post
