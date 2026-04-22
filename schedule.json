@@ -2122,9 +2122,74 @@
     {
       "id": "T199",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update daily log and push",
-      "started": "2026-04-22T17:30:26.151Z"
+      "started": "2026-04-22T17:30:26.151Z",
+      "completed": "2026-04-22T17:30:50.467Z",
+      "duration_ms": 60000,
+      "summary": "Daily log updated, pushed."
+    },
+    {
+      "id": "T200",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Benchmark: how much faster is INLJ vs HashJoin for indexed joins? Compare 100-row, 1000-row, 5000-row",
+      "project": "henrydb",
+      "started": "2026-04-22T17:31:06.162Z",
+      "completed": "2026-04-22T17:32:00.310Z",
+      "duration_ms": 120000,
+      "summary": "INLJ 1.16-1.68x SLOWER than HashJoin for full joins. Expected: INLJ wins for selective outer + large inner. HashJoin is O(N+M) vs INLJ O(N*logM). Consider: only use INLJ when outer is selective."
+    },
+    {
+      "id": "T201",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What are the remaining gaps in Volcano? EXISTS, scalar subqueries, correlated subqueries, multi-table UPDATE",
+      "project": "henrydb",
+      "started": "2026-04-22T17:32:04.607Z",
+      "completed": "2026-04-22T17:32:24.420Z",
+      "duration_ms": 120000,
+      "summary": "Volcano gaps: EXISTS (wrong filter), NOT EXISTS (empty), ANY/ALL (no filter), HAVING subquery (empty), derived table (crash). Scalar subquery works. 5 gap categories."
+    },
+    {
+      "id": "T202",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: does Volcano handle 3-way joins correctly? A JOIN B JOIN C",
+      "project": "henrydb",
+      "started": "2026-04-22T17:32:28.583Z",
+      "completed": "2026-04-22T17:32:44.284Z",
+      "duration_ms": 60000,
+      "summary": "3-way and 4-way joins all correct. Tested plain, filtered, GROUP BY variants. 4/4 pass."
+    },
+    {
+      "id": "T203",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Add EXISTS predicate support to Volcano buildPredicate",
+      "task": null,
+      "started": "2026-04-22T17:32:47.690Z",
+      "completed": "2026-04-22T17:35:10.711Z",
+      "duration_ms": 300000,
+      "summary": "Added EXISTS/NOT EXISTS to Volcano via correlated subquery plan. Deep-clone AST, substitute outer refs with literals, build fresh plan per row. Both work correctly."
+    },
+    {
+      "id": "T204",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: EXPLAIN output of Volcano plans — does it show IndexNestedLoopJoin, HashJoin correctly?",
+      "project": "henrydb",
+      "started": "2026-04-22T17:35:14.677Z",
+      "completed": "2026-04-22T17:35:29.128Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN shows Volcano plans correctly: IndexNestedLoopJoin, HashJoin, HashAggregate, Filter, SeqScan all visible. Both legacy and Volcano plans displayed."
+    },
+    {
+      "id": "T205",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push",
+      "started": "2026-04-22T17:35:35.640Z"
     }
   ],
   "focusProjects": [
@@ -2948,6 +3013,30 @@
     {
       "time": "2026-04-22T17:26:13.484Z",
       "msg": "Added T199 (MAINTAIN) after end: Update daily log and push"
+    },
+    {
+      "time": "2026-04-22T17:31:01.918Z",
+      "msg": "Added T200 (EXPLORE) after end: Benchmark: how much faster is INLJ vs HashJoin for indexed joins? Compare 100-row, 1000-row, 5000-row"
+    },
+    {
+      "time": "2026-04-22T17:31:02.038Z",
+      "msg": "Added T201 (THINK) after end: What are the remaining gaps in Volcano? EXISTS, scalar subqueries, correlated subqueries, multi-table UPDATE"
+    },
+    {
+      "time": "2026-04-22T17:31:02.158Z",
+      "msg": "Added T202 (EXPLORE) after end: Test: does Volcano handle 3-way joins correctly? A JOIN B JOIN C"
+    },
+    {
+      "time": "2026-04-22T17:31:02.278Z",
+      "msg": "Added T203 (PLAN) after end: HenryDB: Add EXISTS predicate support to Volcano buildPredicate"
+    },
+    {
+      "time": "2026-04-22T17:31:02.398Z",
+      "msg": "Added T204 (EXPLORE) after end: Test: EXPLAIN output of Volcano plans — does it show IndexNestedLoopJoin, HashJoin correctly?"
+    },
+    {
+      "time": "2026-04-22T17:31:02.517Z",
+      "msg": "Added T205 (MAINTAIN) after end: Push"
     }
   ]
 }
