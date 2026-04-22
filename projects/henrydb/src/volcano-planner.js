@@ -729,8 +729,18 @@ function buildValueGetter(expr) {
           case 'ABS': return Math.abs(vals[0]);
           case 'UPPER': return String(vals[0]).toUpperCase();
           case 'LOWER': return String(vals[0]).toLowerCase();
-          case 'LENGTH': return String(vals[0]).length;
+          case 'LENGTH': return vals[0] != null ? String(vals[0]).length : null;
           case 'COALESCE': return vals.find(v => v != null) ?? null;
+          case 'CONCAT_OP': case 'CONCAT': return vals.map(v => v ?? '').join('');
+          case 'SUBSTR': case 'SUBSTRING': return String(vals[0]).substring((vals[1] || 1) - 1, vals[2] ? (vals[1] || 1) - 1 + vals[2] : undefined);
+          case 'TRIM': return vals[0] != null ? String(vals[0]).trim() : null;
+          case 'REPLACE': return vals[0] != null ? String(vals[0]).replaceAll(String(vals[1]), String(vals[2])) : null;
+          case 'ROUND': return vals[1] != null ? parseFloat(Number(vals[0]).toFixed(vals[1])) : Math.round(vals[0]);
+          case 'NULLIF': return vals[0] === vals[1] ? null : vals[0];
+          case 'GREATEST': return Math.max(...vals.filter(v => v != null));
+          case 'LEAST': return Math.min(...vals.filter(v => v != null));
+          case 'LEFT': return vals[0] != null ? String(vals[0]).substring(0, vals[1]) : null;
+          case 'RIGHT': return vals[0] != null ? String(vals[0]).slice(-vals[1]) : null;
           default: return null;
         }
       };
