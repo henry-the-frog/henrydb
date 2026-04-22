@@ -523,9 +523,9 @@ export class HashJoin extends Iterator {
 
       if (this._matches.length === 0 && (this._joinType === 'left' || this._joinType === 'full')) {
         const nullBuild = {};
-        if (this._buildCols) {
-          for (const col of this._buildCols) nullBuild[col] = null;
-        }
+        // If build side was empty, _buildCols might be null. Use the build iterator's schema.
+        const cols = this._buildCols || (this._build._schema ? this._build._schema.map(s => s.name) : []);
+        for (const col of cols) nullBuild[col] = null;
         return { ...this._probeRow, ...nullBuild };
       }
     }
