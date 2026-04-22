@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-22T22:47:17.466Z",
+  "generated": "2026-04-22T22:48:56.755Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Fix SELECT * + window: careful star expansion with window column preservation",
-    "startedAt": "2026-04-22T22:47:17.466Z",
-    "taskId": "T72"
+    "completedAt": "2026-04-22T22:48:56.755Z",
+    "taskId": "T72",
+    "summary": "SELECT * + window functions works! Star expansion in Project. 986/989 (99.70%). 20 BUILDs done — session cap reached.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1374,12 +1376,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 67,
+    "blocksCompleted": 68,
     "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 8,
-      "BUILD": 23,
+      "BUILD": 24,
       "MAINTAIN": 14,
       "EXPLORE": 7
     }
