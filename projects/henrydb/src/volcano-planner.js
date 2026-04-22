@@ -432,6 +432,21 @@ function buildPredicate(expr, ctx) {
       const right = buildPredicate(expr.right, ctx);
       return (row) => left(row) || right(row);
     }
+    case 'EXISTS': {
+      // Correlated EXISTS: for each outer row, execute the subquery
+      // replacing outer column references with outer row values
+      const subAst = expr.subquery;
+      return (outerRow) => {
+        // Build a plan for the subquery, but we need to resolve outer references
+        // Strategy: build predicate for subquery WHERE, substituting outer row values
+        const subPlan = buildCorrelatedSubqueryPlan(subAst, outerRow, ctx);
+        if (!subPlan) return false;
+        subPlan.open();
+        const hasRow = subPlan.next() !== null;
+        subPlan.close();
+        return hasRow;
+      };
+    }
     case 'NOT': {
       const inner = buildPredicate(expr.operand || expr.expr, ctx);
       return (row) => !inner(row);
@@ -654,6 +669,59 @@ function resolveTableColumn(qualifiedName, alias) {
     return null; // Wrong table
   }
   return qualifiedName;
+}
+
+/**
+ * Build a plan for a correlated subquery, substituting outer row values.
+ * Replaces outer column references in the WHERE with literal values.
+ */
+function buildCorrelatedSubqueryPlan(subAst, outerRow, ctx) {
+  // Deep-clone the AST to avoid mutating the original
+  const cloned = JSON.parse(JSON.stringify(subAst));
+  
+  // Get inner table names to distinguish inner vs outer references
+  const innerTables = new Set();
+  if (cloned.from) innerTables.add(cloned.from.alias || cloned.from.table);
+  if (cloned.joins) for (const j of cloned.joins) innerTables.add(j.alias || j.table);
+  
+  // Substitute outer column references in WHERE with literal values
+  if (cloned.where) {
+    cloned.where = substituteOuterRefs(cloned.where, outerRow, innerTables);
+  }
+  
+  try {
+    return buildPlan(cloned, ctx?.tables, ctx?.indexCatalog, ctx?.tableStats);
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Recursively substitute outer column references with literal values from outerRow.
+ */
+function substituteOuterRefs(node, outerRow, innerTables) {
+  if (!node || typeof node !== 'object') return node;
+  
+  // If it's a column reference, check if it's an outer reference
+  if (node.type === 'column_ref' && node.name && node.name.includes('.')) {
+    const [table] = node.name.split('.');
+    if (!innerTables.has(table)) {
+      // This is an outer reference — substitute with literal value
+      const val = outerRow[node.name];
+      return { type: 'literal', value: val };
+    }
+  }
+  
+  // Recurse into all object properties
+  const result = Array.isArray(node) ? [] : {};
+  for (const [key, val] of Object.entries(node)) {
+    if (typeof val === 'object' && val !== null) {
+      result[key] = substituteOuterRefs(val, outerRow, innerTables);
+    } else {
+      result[key] = val;
+    }
+  }
+  return result;
 }
 
 function extractEquiJoinKeys(on, leftFrom, rightJoin) {
