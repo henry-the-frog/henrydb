@@ -82,22 +82,30 @@
       "id": "T16",
       "mode": "BUILD",
       "task": "Implement RIGHT and FULL outer join in HashJoin + NestedLoopJoin, wire through volcano-planner, add tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T7",
-      "started": "2026-04-22T02:20:00.066Z"
+      "started": "2026-04-22T02:20:00.066Z",
+      "completed": "2026-04-22T02:24:13.966Z",
+      "duration_ms": 600000,
+      "summary": "RIGHT and FULL outer join in Volcano engine. HashJoin+NLJ both track matched build/inner rows, emit unmatched rows after probe/outer exhaustion. Fixed LEFT JOIN bug in NLJ (outerRow nulled before return). Fixed CTEIterator import. 16 new tests, 241 join/volcano tests pass. SQL-level verified."
     },
     {
       "id": "T8",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T02:24:22.891Z",
+      "completed": "2026-04-22T02:24:23.032Z",
+      "duration_ms": 0,
+      "summary": "Placeholder — work completed in T16. Skipping."
     },
     {
       "id": "T9",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session: git push, dashboard check"
+      "status": "in-progress",
+      "task": "Mid-session: git push, dashboard check",
+      "started": "2026-04-22T02:24:29.349Z"
     },
     {
       "id": "T10",
