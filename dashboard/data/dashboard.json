@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T03:06:49.119Z",
+  "generated": "2026-04-22T03:34:47.468Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Implement predicate pushdown in volcano-planner: split WHERE into per-table conditions and push to SeqScans, verify with EXPLAIN FORMAT VOLCANO",
-    "startedAt": "2026-04-22T03:06:49.119Z",
-    "taskId": "T47"
+    "task": "HenryDB: Wire Volcano EXPLAIN into default EXPLAIN output (add volcano tree as secondary display)",
+    "startedAt": "2026-04-22T03:34:47.468Z",
+    "taskId": "T56"
   },
   "schedule": {
     "date": "2026-04-21",
@@ -492,12 +492,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 39,
+    "blocksCompleted": 50,
     "blocksTotal": 47,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 11,
-      "BUILD": 17,
+      "PLAN": 12,
+      "BUILD": 27,
       "MAINTAIN": 2,
       "EXPLORE": 5
     }

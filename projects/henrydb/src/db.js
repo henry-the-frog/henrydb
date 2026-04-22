@@ -4851,10 +4851,10 @@ export class Database {
       plan.push({ operation: 'LIMIT', count: stmt.limit });
     }
 
-    return this._formatPlan(plan, format);
+    return this._formatPlan(plan, format, stmt);
   }
 
-  _formatPlan(plan, format) {
+  _formatPlan(plan, format, stmt) {
     switch (format) {
       case 'json': {
         const json = JSON.stringify(plan, null, 2);
@@ -4992,6 +4992,19 @@ export class Database {
             default:
               lines.push(`${prefix}${step.operation}  ${JSON.stringify(step)}`);
           }
+        }
+        // Add Volcano plan tree if available
+        try {
+          const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+          if (volcanoTree) {
+            lines.push('');
+            lines.push('Volcano Plan:');
+            for (const line of volcanoTree.split('\n')) {
+              lines.push('  ' + line);
+            }
+          }
+        } catch (e) {
+          // Volcano planner couldn't handle this query — skip
         }
         return { type: 'PLAN', plan, rows: lines.map(l => ({ 'QUERY PLAN': l })) };
       }
