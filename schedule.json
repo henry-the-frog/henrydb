@@ -2468,8 +2468,54 @@
     {
       "id": "T231",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Push and daily log",
+      "started": "2026-04-22T18:06:54.468Z",
+      "completed": "2026-04-22T18:06:54.614Z",
+      "duration_ms": 1000,
+      "summary": "Already pushed."
+    },
+    {
+      "id": "T232",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Debug: what exactly differs in LEFT JOIN output between Volcano and legacy? Column names? NULL representation?",
+      "project": "henrydb",
+      "started": "2026-04-22T18:07:15.465Z",
+      "completed": "2026-04-22T18:12:58.391Z",
+      "duration_ms": 300000,
+      "summary": "Bug #24: INLJ used for LEFT JOIN dropped NULL probe rows. Fix: only use INLJ for INNER JOINs. 11 remaining default-on failures: IN subquery format, LEFT JOIN NULL handling, NATURAL JOIN, empty table."
+    },
+    {
+      "id": "T233",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Fix the LEFT JOIN differences to move toward Volcano default-on",
+      "project": "henrydb",
+      "started": "2026-04-22T18:13:02.691Z",
+      "completed": "2026-04-22T18:13:31.527Z",
+      "duration_ms": 180000,
+      "summary": "11 remaining default-on failures: LEFT JOIN + WHERE r.col IS NULL (anti-join), IN subquery row format, NATURAL JOIN, NULL join columns, empty table edge cases. Need per-failure debugging. Deferring to next session."
+    },
+    {
+      "id": "T234",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push",
+      "started": "2026-04-22T18:13:38.751Z"
+    },
+    {
+      "id": "T235",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Push and daily log"
+      "task": "Run broader test sample: 30 random test files to verify stability",
+      "project": "henrydb"
+    },
+    {
+      "id": "T236",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Sync all changes to remote"
     }
   ],
   "focusProjects": [
@@ -3421,6 +3467,26 @@
     {
       "time": "2026-04-22T17:53:56.397Z",
       "msg": "Added T231 (MAINTAIN) after end: Push and daily log"
+    },
+    {
+      "time": "2026-04-22T18:07:03.757Z",
+      "msg": "Added T232 (EXPLORE) after end: Debug: what exactly differs in LEFT JOIN output between Volcano and legacy? Column names? NULL representation?"
+    },
+    {
+      "time": "2026-04-22T18:07:03.877Z",
+      "msg": "Added T233 (EXPLORE) after end: Fix the LEFT JOIN differences to move toward Volcano default-on"
+    },
+    {
+      "time": "2026-04-22T18:07:03.998Z",
+      "msg": "Added T234 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-22T18:07:04.119Z",
+      "msg": "Added T235 (EXPLORE) after end: Run broader test sample: 30 random test files to verify stability"
+    },
+    {
+      "time": "2026-04-22T18:07:10.854Z",
+      "msg": "Added T236 (MAINTAIN) after end: Sync all changes to remote"
     }
   ]
 }
