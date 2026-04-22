@@ -702,6 +702,26 @@
       "completed": "2026-04-22T00:53:47.942Z",
       "duration_ms": 180000,
       "summary": "FOUND ROOT CAUSE: _processAssertion handles <= and >= but NOT < or > (strict inequalities). When (> x 10) is asserted, it falls through without being processed — the assertion is silently ignored. Fix: add < and > cases, convert to weak inequalities for integers: x > 10 → x >= 11, x < 5 → x <= 4. This is a simple 8-line fix (add two else-if branches)."
+    },
+    {
+      "id": "T67",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore Forth and lambda-calculus projects: current state, test coverage.",
+      "started": "2026-04-22T00:54:30.813Z",
+      "completed": "2026-04-22T00:55:15.823Z",
+      "duration_ms": 120000,
+      "summary": "Forth: 529 LOC interpreter, 91 tests all pass. Comprehensive: control flow, strings, stack ops, user-defined words, fuzzer. Lambda-calculus: 43K LOC with CoC, System F, STLC, effects system, proof assistant, session types, parametricity, NBE. 186 tests pass. Both are mature, well-tested projects. Good candidates for depth exploration but less urgently needed than SAT/RISCV."
+    },
+    {
+      "id": "T68",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore git internals project",
+      "started": "2026-04-22T00:55:29.800Z",
+      "completed": "2026-04-22T00:55:56.252Z",
+      "duration_ms": 60000,
+      "summary": "Git internals: 4671 LOC across 14 source files. Implements: objects (blob/tree/commit), index, diff, merge, cherry-pick, checkout, clone, CLI. 153 tests all pass. Clean and well-structured. Could explore: rebase, interactive rebase, pack files, or git protocol."
     }
   ],
   "focusProjects": [
@@ -989,6 +1009,14 @@
     {
       "time": "2026-04-22T00:52:38.929Z",
       "msg": "Added T66 (THINK) after end: Investigate SMT theory propagation bug: x > 10 AND x < 5 returns SAT. Read smt.cjs to understand the theory solver integration."
+    },
+    {
+      "time": "2026-04-22T00:54:30.581Z",
+      "msg": "Added T67 (THINK) after end: Explore Forth and lambda-calculus projects: current state, test coverage."
+    },
+    {
+      "time": "2026-04-22T00:55:29.567Z",
+      "msg": "Added T68 (THINK) after end: Explore git internals project"
     }
   ]
 }
