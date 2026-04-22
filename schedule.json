@@ -286,8 +286,9 @@
     {
       "id": "T26",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session push, daily log summary, test suite verification"
+      "status": "in-progress",
+      "task": "Final session push, daily log summary, test suite verification",
+      "started": "2026-04-22T03:42:00.546Z"
     },
     {
       "id": "T29",
@@ -595,10 +596,13 @@
     {
       "id": "T57",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: EXPLAIN ANALYZE with actual execution times via Volcano instrumenting",
       "project": "henrydb",
-      "started": "2026-04-22T03:37:47.810Z"
+      "started": "2026-04-22T03:37:47.810Z",
+      "completed": "2026-04-22T03:41:22.301Z",
+      "duration_ms": 300000,
+      "summary": "EXPLAIN ANALYZE now shows Volcano plan tree. InstrumentedIterator class added to volcano.js (scaffold for per-operator timing). 69 EXPLAIN tests pass."
     }
   ],
   "focusProjects": [
