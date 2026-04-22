@@ -1742,24 +1742,32 @@
     {
       "id": "T163",
       "mode": "PLAN",
-      "status": "in-progress",
+      "status": "done",
       "goal": "HenryDB: Add string concatenation (||) to Volcano buildValueGetter",
       "task": null,
-      "started": "2026-04-22T17:07:37.777Z"
+      "started": "2026-04-22T17:07:37.777Z",
+      "completed": "2026-04-22T17:07:46.069Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T164",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Hunt: what other predicates in buildPredicate fall through to default: true?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T17:07:52.661Z",
+      "completed": "2026-04-22T17:08:11.548Z",
+      "duration_ms": 60000,
+      "summary": "Session reflection: bug-finding loop + extraction template + parser pattern = productive. Should start comprehensive sweep earlier. Queue kept momentum."
     },
     {
       "id": "T165",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "in-progress",
       "goal": "HenryDB: Add OR pushdown in Volcano: WHERE a=1 OR a=2 should use IN-style",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T17:08:20.095Z"
     },
     {
       "id": "T166",
