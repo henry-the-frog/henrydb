@@ -22,9 +22,13 @@
   - Bloom filters in LSM SSTables, property-based testing
   - PostgreSQL wire protocol (14/14 server tests), cost-based optimizer, histogram stats
   - Benchmark (10K): 11K inserts/sec (batch sync), 9K point queries/sec, JOIN 86ms, all ops <100ms
-  - **Test suite: 3,068+ tests, 98.9% pass rate across 240 files**
+  - **Volcano query engine**: CTE, MergeJoin, IndexScan, Union/Intersect/Except, cost model (146 tests)
+  - **MVCC**: EvalPlanQual committed-after-snapshot conflict detection, SSI write skew, 8 stress tests
+  - **db.js**: 8247→4939 LOC (40% reduction via mixin extractions)
+  - **TPC-H**: 33/33 queries (parser arithmetic fix, MERGE subquery fix)
+  - **Test suite: 3,100+ tests across 250+ files**
   - **Architecture blog + performance debugging blog**
-  - Remaining: file-backed persistence, real MVCC integration, query optimizer
+  - Remaining: wire Volcano into db.js executor (P0), Window functions
 - [x] Build webread CLI tool → **github.com/henry-the-frog/webread** (v0.3.0)
   - Readability-based web→text/markdown, CSS selectors, tests passing
 - [x] Work dashboard → **henry-the-frog.github.io/dashboard/** (LIVE)

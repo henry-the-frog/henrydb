@@ -450,8 +450,40 @@
     {
       "id": "T43",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, push"
+      "status": "done",
+      "task": "Commit, push",
+      "started": "2026-04-22T00:20:33.252Z",
+      "completed": "2026-04-22T00:20:38.231Z",
+      "duration_ms": 15000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run TPC-H stress suite to verify 33/33 and benchmark",
+      "project": "henrydb",
+      "started": "2026-04-22T00:20:50.649Z",
+      "completed": "2026-04-22T00:22:29.658Z",
+      "duration_ms": 240000,
+      "summary": "TPC-H verification: 7 compiled TPC-H tests pass, 13 optimizer quality tests pass. Both original TPC-H failures (recursive CTE WHERE arithmetic + MERGE subquery USING) are confirmed fixed. Performance issue (hash join not used by db.js executor) remains P0 — Volcano engine has it wired but db.js still uses nested loop."
+    },
+    {
+      "id": "T45",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore scratch notes for unexplored areas. Read lessons/README.md for patterns to apply.",
+      "started": "2026-04-22T00:22:43.624Z",
+      "completed": "2026-04-22T00:23:04.625Z",
+      "duration_ms": 60000,
+      "summary": "Reviewed scratch notes and lessons. Options: (1) Continue HenryDB depth (MVCC findByPK, Volcano Window, more extraction). (2) Switch to RISC-V liveness-based register allocation. (3) Neural-net architecture exploration. Given 15 BUILDs already on HenryDB, switching to RISC-V or neural-net would provide depth on a different project. Recommend: RISC-V register allocation — it is a well-scoped algorithmic challenge."
+    },
+    {
+      "id": "T46",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Write daily log evening summary, update TODO.md and TASKS.md with session B-2 achievements.",
+      "started": "2026-04-22T00:23:15.156Z"
     }
   ],
   "focusProjects": [
@@ -647,6 +679,18 @@
     {
       "time": "2026-04-22T00:19:06.812Z",
       "msg": "Added T43 (MAINTAIN) after T42: Commit, push"
+    },
+    {
+      "time": "2026-04-22T00:20:50.395Z",
+      "msg": "Added T44 (BUILD) after end: Run TPC-H stress suite to verify 33/33 and benchmark"
+    },
+    {
+      "time": "2026-04-22T00:22:43.393Z",
+      "msg": "Added T45 (THINK) after end: Explore scratch notes for unexplored areas. Read lessons/README.md for patterns to apply."
+    },
+    {
+      "time": "2026-04-22T00:23:14.924Z",
+      "msg": "Added T46 (MAINTAIN) after end: Write daily log evening summary, update TODO.md and TASKS.md with session B-2 achievements."
     }
   ]
 }
