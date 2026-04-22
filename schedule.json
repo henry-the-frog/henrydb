@@ -103,42 +103,153 @@
     {
       "id": "T9",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session: git push, dashboard check",
-      "started": "2026-04-22T02:24:29.349Z"
+      "started": "2026-04-22T02:24:29.349Z",
+      "completed": "2026-04-22T02:25:00.918Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed henrydb (af8c519b..54a1db33). Dashboard online. Daily log updated. Workspace committed."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net: implement flash attention (O(N) memory, tiled computation with online softmax)",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T02:25:09.711Z",
+      "completed": "2026-04-22T02:25:37.227Z",
+      "duration_ms": 90000,
+      "summary": "Plan: FlashAttention class using tiled Q×K computation with online softmax trick. Process in blocks of blockSize rows, maintain running max/sum/output per query row. O(N·d) memory vs O(N²). Same forward API as SelfAttention. Include backward pass."
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Implement FlashAttention class with tiled computation and online softmax, add comprehensive tests",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-22T02:25:43.780Z",
+      "completed": "2026-04-22T02:29:49.128Z",
+      "duration_ms": 600000,
+      "summary": "Flash Attention implemented. FlashAttention class + standalone flashAttention() function. Tiled Q×K computation with online softmax trick — O(N·d) memory vs O(N²). Causal mask support. Backward pass with recomputation. 15 tests passing, exact numerical match against standard attention. Gradient check passes."
     },
     {
       "id": "T11",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "project": "neural-net",
+      "started": "2026-04-22T02:29:59.902Z",
+      "completed": "2026-04-22T02:30:00.047Z",
+      "duration_ms": 0,
+      "summary": "Placeholder — work completed in T17. Skipping."
+    },
+    {
+      "id": "T12",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test HenryDB Volcano integration: adversarial queries, edge cases, performance",
+      "project": "henrydb",
+      "started": "2026-04-22T02:30:06.733Z",
+      "completed": "2026-04-22T02:31:01.728Z",
+      "duration_ms": 300000,
+      "summary": "Stress-tested HenryDB Volcano integration with 15 adversarial queries: NULL join keys, empty tables, 1000×500 large joins (8ms), self-join, multi-join, cross join, window+join, CTE+join, FULL JOIN+COALESCE. All work correctly. Found one minor bug: ORDER BY prefers original column over SELECT alias when both have same name (COALESCE alias vs raw column). Not critical, noted for future fix."
+    },
+    {
+      "id": "T13",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Reflect on evening work, capture insights",
+      "started": "2026-04-22T02:31:14.018Z",
+      "completed": "2026-04-22T02:31:34.906Z",
+      "duration_ms": 60000,
+      "summary": "Captured 4 insights: extraction checklist for imports, use-after-clear pattern in NLJ, online softmax rescale elegance, ORDER BY alias resolution bug."
+    },
+    {
+      "id": "T14",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Push all changes, verify test suites, update knowledge files",
+      "started": "2026-04-22T02:31:42.537Z",
+      "completed": "2026-04-22T02:31:51.989Z",
+      "duration_ms": 30000,
+      "summary": "Pushed henrydb (up-to-date) and neural-net (838e80d..46b53be). Knowledge captured in daily log."
+    },
+    {
+      "id": "T18",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Generate next batch of work: what high-value features remain for henrydb and neural-net?",
+      "started": "2026-04-22T02:32:03.679Z",
+      "completed": "2026-04-22T02:32:35.631Z",
+      "duration_ms": 60000,
+      "summary": "Generated 8 new tasks: ORDER BY alias fix, flash attention transformer integration, JOIN executor extraction, performance benchmark. Queue filled through session end."
+    },
+    {
+      "id": "T19",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Fix ORDER BY alias resolution — prefer SELECT aliases over table columns",
+      "task": null,
+      "started": "2026-04-22T02:32:42.942Z",
+      "completed": "2026-04-22T02:33:54.133Z",
+      "duration_ms": 120000,
+      "summary": "Root cause: ORDER BY sorts BEFORE SELECT projection. So ORDER BY product resolves to raw s.product (from join) not the COALESCE alias. Fix: resolve ORDER BY columns against SELECT aliases when the column name matches an alias. Adjust _orderByValue to accept selectCols and check aliases first."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Fix ORDER BY to resolve SELECT aliases before raw columns, add test for COALESCE alias ordering",
+      "status": "in-progress",
+      "plan_ref": "T19",
+      "started": "2026-04-22T02:34:02.518Z"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T21",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Neural-net: Integrate FlashAttention into Transformer class as configurable attention mode",
+      "task": null
+    },
+    {
+      "id": "T22",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null,
       "project": "neural-net"
     },
     {
-      "id": "T12",
-      "mode": "EXPLORE",
+      "id": "T23",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Stress-test HenryDB Volcano integration: adversarial queries, edge cases, performance",
+      "goal": "HenryDB: Extract JOIN executor from db.js into join-executor.js (~220 LOC)",
+      "task": null
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
       "project": "henrydb"
     },
     {
-      "id": "T13",
-      "mode": "THINK",
+      "id": "T25",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Reflect on evening work, capture insights"
+      "task": "Performance comparison: FlashAttention vs SelfAttention at various sequence lengths",
+      "project": "neural-net"
     },
     {
-      "id": "T14",
+      "id": "T26",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Push all changes, verify test suites, update knowledge files"
+      "task": "Final session push, daily log summary, test suite verification"
     }
   ],
   "focusProjects": [
@@ -226,6 +337,50 @@
     {
       "time": "2026-04-22T02:19:47.205Z",
       "msg": "PLAN T7 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T02:25:32.892Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T02:31:57.330Z",
+      "msg": "Added T18 (THINK) after end: Generate next batch of work: what high-value features remain for henrydb and neural-net?"
+    },
+    {
+      "time": "2026-04-22T02:32:29.748Z",
+      "msg": "Added T19 (PLAN) after end: HenryDB: Fix ORDER BY alias resolution — prefer SELECT aliases over table columns"
+    },
+    {
+      "time": "2026-04-22T02:32:29.867Z",
+      "msg": "Added T20 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-22T02:32:29.985Z",
+      "msg": "Added T21 (PLAN) after end: Neural-net: Integrate FlashAttention into Transformer class as configurable attention mode"
+    },
+    {
+      "time": "2026-04-22T02:32:30.104Z",
+      "msg": "Added T22 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-22T02:32:30.222Z",
+      "msg": "Added T23 (PLAN) after end: HenryDB: Extract JOIN executor from db.js into join-executor.js (~220 LOC)"
+    },
+    {
+      "time": "2026-04-22T02:32:30.339Z",
+      "msg": "Added T24 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-22T02:32:30.458Z",
+      "msg": "Added T25 (EXPLORE) after end: Performance comparison: FlashAttention vs SelfAttention at various sequence lengths"
+    },
+    {
+      "time": "2026-04-22T02:32:30.576Z",
+      "msg": "Added T26 (MAINTAIN) after end: Final session push, daily log summary, test suite verification"
+    },
+    {
+      "time": "2026-04-22T02:33:47.250Z",
+      "msg": "PLAN T19 filled 1 BUILD tasks"
     }
   ]
 }

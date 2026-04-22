@@ -1840,27 +1840,9 @@ export class Database {
   }
 
   _applySelectColumns(ast, rows) {
-    // Pre-compute subquery aliases referenced by ORDER BY so sort can access them
+    // Pre-compute SELECT alias expressions for ORDER BY access
     if (ast.orderBy && ast.columns) {
-      const orderByAliases = new Set(ast.orderBy.map(o => typeof o.column === 'string' ? o.column : null).filter(Boolean));
-      const subqueryAliases = ast.columns.filter(c => 
-        (c.type === 'subquery' || c.type === 'scalar_subquery') &&
-        orderByAliases.has(c.alias || c.name)
-      );
-      if (subqueryAliases.length > 0) {
-        for (const row of rows) {
-          for (const col of subqueryAliases) {
-            const alias = col.alias || col.name;
-            if (row[alias] === undefined) {
-              try {
-                row[alias] = this._evalValue(col, row);
-              } catch (e) {
-                row[alias] = null;
-              }
-            }
-          }
-        }
-      }
+      this._preComputeOrderByAliases(ast, rows);
     }
     
     // Apply ORDER BY (with sort elimination for BTree tables)
@@ -2462,8 +2444,9 @@ export class Database {
         rows = this._computeWindowFunctions(ast.columns, rows, ast.windowDefs);
       }
 
-      // ORDER BY
+      // ORDER BY — pre-compute aliased expressions for sort access
       if (ast.orderBy) {
+        this._preComputeOrderByAliases(ast, rows);
         rows.sort((a, b) => {
           for (const { column, direction } of ast.orderBy) {
             const av = this._orderByValue(column, a);
@@ -2724,11 +2707,9 @@ export class Database {
             // Expression node (ORDER BY -val, ORDER BY col + 1, etc.)
             av = this._evalValue(column, a);
             bv = this._evalValue(column, b);
-          } else if (column in a) {
-            // Direct key match (works for aliased columns in the result)
-            av = a[column];
-            bv = b[column];
           } else if (aliasExprs.has(column)) {
+            // Prefer SELECT alias expressions over raw column values
+            // This handles cases like COALESCE(a.x, b.x) as x where 'x' exists as raw column
             const expr = aliasExprs.get(column);
             if (expr.type === 'function') {
               av = this._evalFunction(expr.func, expr.args, a);
@@ -2741,6 +2722,10 @@ export class Database {
             // Window function alias — resolve from computed window columns
             av = a[`__window_${column}`];
             bv = b[`__window_${column}`];
+          } else if (column in a) {
+            // Direct key match (simple column reference)
+            av = a[column];
+            bv = b[column];
           } else {
             av = this._resolveColumn(column, a);
             bv = this._resolveColumn(column, b);

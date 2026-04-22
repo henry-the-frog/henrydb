@@ -44,6 +44,41 @@ P._orderByValue = function(column, row, selectCols) {
 }
 
 /**
+ * Pre-compute SELECT alias expressions into rows so ORDER BY can access them.
+ * This resolves the SQL standard issue where ORDER BY runs before SELECT projection,
+ * but should be able to reference SELECT aliases (e.g., COALESCE(...) as product).
+ */
+P._preComputeOrderByAliases = function(ast, rows) {
+  if (!ast.orderBy || !ast.columns) return;
+  const orderByNames = new Set(
+    ast.orderBy.map(o => typeof o.column === 'string' ? o.column : null).filter(Boolean)
+  );
+  if (orderByNames.size === 0) return;
+  
+  // Find SELECT columns that are expressions with aliases matching ORDER BY columns
+  const aliasedCols = ast.columns.filter(c => {
+    const alias = c.alias;
+    if (!alias || !orderByNames.has(alias)) return false;
+    // Only for computed expressions, not simple column refs
+    return c.type !== 'column_ref' && c.type !== 'star' && c.type !== 'qualified_star';
+  });
+  
+  if (aliasedCols.length === 0) return;
+  
+  for (const row of rows) {
+    for (const col of aliasedCols) {
+      try {
+        const val = col.expr ? this._evalValue(col.expr, row) : this._evalValue(col, row);
+        row[col.alias] = val;
+      } catch (e) {
+        // If evaluation fails, don't overwrite existing value
+        if (row[col.alias] === undefined) row[col.alias] = null;
+      }
+    }
+  }
+}
+
+/**
  * Evaluate an expression in GROUP BY context, resolving aggregate sub-expressions.
  */
 P._evalGroupExpr = function(expr, groupRows, result, computeAgg) {
