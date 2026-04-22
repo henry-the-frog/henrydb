@@ -648,14 +648,20 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       rewrittenExprCols.set(ec, extractWindows(ec.expr));
     }
     
-    // Use first window function's partition/order for the Window operator
-    // (simplification: assumes all window functions share the same OVER)
-    const partitionBy = windowFuncs[0].partitionBy;
-    const orderBy = windowFuncs[0].orderBy;
+    // Group window functions by their OVER spec (partition + order)
+    const overGroups = new Map();
+    for (const wf of windowFuncs) {
+      const key = JSON.stringify({ partitionBy: wf.partitionBy, orderBy: wf.orderBy });
+      if (!overGroups.has(key)) overGroups.set(key, { partitionBy: wf.partitionBy, orderBy: wf.orderBy, funcs: [] });
+      overGroups.get(key).funcs.push(wf);
+    }
     
-    const prevEst = iter._estimatedRows;
-    iter = new Window(iter, partitionBy, orderBy, windowFuncs);
-    iter._estimatedRows = prevEst;
+    // Chain Window operators — one per unique OVER spec
+    for (const group of overGroups.values()) {
+      const prevEst = iter._estimatedRows;
+      iter = new Window(iter, group.partitionBy, group.orderBy, group.funcs);
+      iter._estimatedRows = prevEst;
+    }
     
     // Apply projection after window — now window columns are available
     // But skip if ORDER BY uses hidden columns (will project after sort instead)
