@@ -524,8 +524,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   
   // Check if ORDER BY references columns not in SELECT
   const selectColNames = new Set(ast.columns.map(c => c.alias || c.name).filter(Boolean));
+  const hasStar = ast.columns.some(c => c.type === 'star' || c.name === '*');
   const hiddenOrderCols = [];
-  if (ast.orderBy) {
+  if (ast.orderBy && !hasStar) {
     for (const o of ast.orderBy) {
       const col = typeof o.column === 'object' ? (o.column.name || o.column) : o.column;
       if (typeof col === 'string' && !selectColNames.has(col)) {
@@ -547,7 +548,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       tempProjections.push({ name: hc, expr: (row) => {
         if (row[hc] !== undefined) return row[hc];
         for (const k of Object.keys(row)) { if (k.endsWith('.' + hc)) return row[k]; }
-        return undefined;
+        return null;
       }});
     }
     const prevEst = iter._estimatedRows;
@@ -609,7 +610,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
           finalProjections.push({ name, expr: (row) => row[name] });
         } else {
           const name = col.alias || col.name;
-          finalProjections.push({ name, expr: (row) => row[col.name] ?? row[name] ?? row[col.alias] });
+          finalProjections.push({ name, expr: (row) => row[col.name] !== undefined ? row[col.name] : (row[name] !== undefined ? row[name] : (row[col.alias] !== undefined ? row[col.alias] : null)) });
         }
       }
       const prevEst2 = iter._estimatedRows;
@@ -628,7 +629,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
             if (row[col.name] !== undefined) return row[col.name];
             if (row[name] !== undefined) return row[name];
             for (const k of Object.keys(row)) { if (k.endsWith('.' + (col.name || name))) return row[k]; }
-            return undefined;
+            return null;
           }});
         }
       }
@@ -637,7 +638,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         tempProjections.push({ name: hc, expr: (row) => {
           if (row[hc] !== undefined) return row[hc];
           for (const k of Object.keys(row)) { if (k.endsWith('.' + hc)) return row[k]; }
-          return undefined;
+          return null;
         }});
       }
       const prevEst2 = iter._estimatedRows;
@@ -674,7 +675,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         finalProjections.push({ name, expr: (row) => row[name] });
       } else {
         const name = col.alias || col.name;
-        finalProjections.push({ name, expr: (row) => row[col.name] ?? row[name] ?? row[col.alias] });
+        finalProjections.push({ name, expr: (row) => row[col.name] !== undefined ? row[col.name] : (row[name] !== undefined ? row[name] : (row[col.alias] !== undefined ? row[col.alias] : null)) });
       }
     }
     const prevEst = iter._estimatedRows;
@@ -1429,7 +1430,7 @@ function buildAggregateProjections(columns, groupByExprs, funcWrappedAggs) {
     }
     if (col.type === 'column') {
       const name = col.alias || col.name;
-      return { name, expr: (row) => row[col.name] ?? row[name] };
+      return { name, expr: (row) => row[col.name] !== undefined ? row[col.name] : (row[name] !== undefined ? row[name] : null) };
     }
     // Expression columns (e.g., CASE WHEN ... AS band): look up in synthetic group columns
     if (col.type === 'expression' && funcWrappedAggs) {

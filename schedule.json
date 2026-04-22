@@ -658,10 +658,13 @@
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix ORDER BY column not in SELECT: include hidden columns in pre-sort projection, strip after sort",
       "project": "henrydb",
-      "started": "2026-04-22T22:14:18.170Z"
+      "started": "2026-04-22T22:14:18.170Z",
+      "completed": "2026-04-22T22:20:16.695Z",
+      "duration_ms": 480000,
+      "summary": "Fixed ORDER BY hidden column + window+hidden combination. Include hidden cols in pre-sort projection, strip after sort. 145/145 window+ORDER BY tests pass."
     }
   ],
   "focusProjects": [
