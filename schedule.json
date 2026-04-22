@@ -564,9 +564,114 @@
     {
       "id": "T49",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-afternoon push",
-      "started": "2026-04-22T15:13:47.832Z"
+      "started": "2026-04-22T15:13:47.832Z",
+      "completed": "2026-04-22T15:13:54.032Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T54",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Next batch: focus on cost model accuracy, query optimization depth. What areas are weakest?",
+      "started": "2026-04-22T15:14:13.027Z",
+      "completed": "2026-04-22T15:14:38.835Z",
+      "duration_ms": 60000,
+      "summary": "Generated 7 more tasks. Focus: selectivity benchmark, I/O cost model, _selectInner extraction, HAVING in Volcano."
+    },
+    {
+      "id": "T55",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Build selectivity accuracy benchmark — test est vs actual across many query patterns",
+      "task": null,
+      "started": "2026-04-22T15:14:44.281Z",
+      "completed": "2026-04-22T15:14:56.436Z",
+      "duration_ms": 30000,
+      "summary": "Plan: benchmark test comparing est vs actual for equality, range, join, combined. Report accuracy ratio."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "task": "Create selectivity-accuracy.test.js: test est vs actual for equality, range, join, combined queries with ANALYZE",
+      "status": "done",
+      "plan_ref": "T55",
+      "started": "2026-04-22T15:15:03.004Z",
+      "completed": "2026-04-22T15:16:04.050Z",
+      "duration_ms": 360000,
+      "summary": "Selectivity benchmark: 9 tests, all pass. Equality and wide range perfect (1.00). AND range 1.81x (independence assumption). Committed."
+    },
+    {
+      "id": "T56",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Add I/O cost model to Volcano IndexScan vs SeqScan decision",
+      "task": null,
+      "started": "2026-04-22T15:16:26.543Z",
+      "completed": "2026-04-22T15:16:46.143Z",
+      "duration_ms": 60000,
+      "summary": "Plan: replace 500-row threshold with cost comparison. SeqScan=pages*1.0+rows*0.01, IndexScan=est_rows*4.0+est_rows*0.015. Crossover at ~25% selectivity."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "task": "Add I/O cost comparison for IndexScan vs SeqScan in tryIndexScan, using selectivity * random_page_cost vs total * seq_page_cost",
+      "status": "done",
+      "plan_ref": "T56",
+      "started": "2026-04-22T15:16:53.738Z",
+      "completed": "2026-04-22T15:18:27.789Z",
+      "duration_ms": 300000,
+      "summary": "Replaced 500-row threshold with I/O cost model. SeqScan vs IndexScan cost comparison using PG-inspired constants. Crossover at ~25% selectivity. All tests pass."
+    },
+    {
+      "id": "T57",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Extract _selectInner from db.js (~700 LOC)",
+      "task": null,
+      "started": "2026-04-22T15:18:56.511Z",
+      "completed": "2026-04-22T15:19:38.653Z",
+      "duration_ms": 60000,
+      "summary": "_selectInner: 681 LOC, 30 db deps. Extractable with db first-param pattern. Core SELECT execution."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "task": "Extract _selectInner from db.js into select-inner.js (~681 LOC, 30 db deps)",
+      "status": "done",
+      "plan_ref": "T57",
+      "started": "2026-04-22T15:19:46.220Z",
+      "completed": "2026-04-22T15:22:30.509Z",
+      "duration_ms": 360000,
+      "summary": "Extracted _selectInner (681 LOC) into select-inner.js. Fixed missing pushdownPredicates import. db.js 4381→3703 (63% from peak). 121 tests pass."
+    },
+    {
+      "id": "T58",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-22T15:22:49.878Z"
+    },
+    {
+      "id": "T59",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: Add HAVING support to Volcano planner",
+      "task": null
+    },
+    {
+      "id": "T60",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "15-BUILD depth check: run full test sweep on henrydb"
+    },
+    {
+      "id": "T61",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push and daily log"
     }
   ],
   "focusProjects": [
@@ -806,6 +911,50 @@
     {
       "time": "2026-04-22T15:12:09.537Z",
       "msg": "PLAN T48 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:14:07.591Z",
+      "msg": "Added T54 (THINK) after end: Next batch: focus on cost model accuracy, query optimization depth. What areas are weakest?"
+    },
+    {
+      "time": "2026-04-22T15:14:29.459Z",
+      "msg": "Added T55 (PLAN) after end: HenryDB: Build selectivity accuracy benchmark — test est vs actual across many query patterns"
+    },
+    {
+      "time": "2026-04-22T15:14:29.578Z",
+      "msg": "Added T56 (PLAN) after end: HenryDB: Add I/O cost model to Volcano IndexScan vs SeqScan decision"
+    },
+    {
+      "time": "2026-04-22T15:14:29.696Z",
+      "msg": "Added T57 (PLAN) after end: HenryDB: Extract _selectInner from db.js (~700 LOC)"
+    },
+    {
+      "time": "2026-04-22T15:14:29.814Z",
+      "msg": "Added T58 (MAINTAIN) after end: Git push"
+    },
+    {
+      "time": "2026-04-22T15:14:29.932Z",
+      "msg": "Added T59 (PLAN) after end: HenryDB: Add HAVING support to Volcano planner"
+    },
+    {
+      "time": "2026-04-22T15:14:30.051Z",
+      "msg": "Added T60 (THINK) after end: 15-BUILD depth check: run full test sweep on henrydb"
+    },
+    {
+      "time": "2026-04-22T15:14:30.180Z",
+      "msg": "Added T61 (MAINTAIN) after end: Final session push and daily log"
+    },
+    {
+      "time": "2026-04-22T15:14:52.141Z",
+      "msg": "PLAN T55 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:16:38.173Z",
+      "msg": "PLAN T56 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:19:31.279Z",
+      "msg": "PLAN T57 filled 1 BUILD tasks"
     }
   ]
 }
