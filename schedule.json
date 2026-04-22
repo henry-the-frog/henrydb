@@ -133,18 +133,22 @@
     {
       "id": "T17",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Support derived tables in Volcano FROM: materialize subquery, create virtual table, wire into scan",
       "plan_ref": "T16",
       "project": "henrydb",
-      "started": "2026-04-22T20:33:20.057Z"
+      "started": "2026-04-22T20:33:20.057Z",
+      "completed": "2026-04-22T20:34:20.122Z",
+      "duration_ms": 360000,
+      "summary": "Derived tables in FROM now supported in Volcano. Materialize subquery, create virtual table, wire into scan. 107/107 tests pass."
     },
     {
       "id": "T18",
       "mode": "BUILD",
       "task": "Add tests for derived tables: FROM subquery, JOIN with subquery, nested derived tables",
-      "status": "upcoming",
-      "plan_ref": "T16"
+      "status": "in-progress",
+      "plan_ref": "T16",
+      "started": "2026-04-22T20:34:31.174Z"
     },
     {
       "id": "T10",
