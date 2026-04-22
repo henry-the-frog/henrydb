@@ -1608,22 +1608,33 @@
     {
       "id": "T150",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push",
-      "started": "2026-04-22T16:50:46.701Z"
+      "started": "2026-04-22T16:50:46.701Z",
+      "completed": "2026-04-22T16:50:53.562Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T151",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Run another comprehensive Volcano correctness sweep with updated fixes",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T16:51:01.228Z",
+      "completed": "2026-04-22T16:51:34.430Z",
+      "duration_ms": 180000,
+      "summary": "29/30 Volcano correctness patterns pass! LEFT JOIN bug: 10000 rows instead of 200 (cross product). All other patterns correct including complex Join+Agg+Having+Order."
     },
     {
       "id": "T152",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE"
+      "status": "done",
+      "task": "Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE",
+      "started": "2026-04-22T16:51:42.101Z",
+      "completed": "2026-04-22T16:51:55.207Z",
+      "duration_ms": 30000,
+      "summary": "Session review: 120+ tasks, 18+ bugs, 29/30 Volcano patterns. LEFT JOIN bug noted for future. Focus on consolidation now."
     }
   ],
   "focusProjects": [
