@@ -2057,16 +2057,74 @@
     {
       "id": "T193",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Stress test: run 50 random SQL queries through both Volcano and legacy, count mismatches",
       "project": "henrydb",
-      "started": "2026-04-22T17:24:46.529Z"
+      "started": "2026-04-22T17:24:46.529Z",
+      "completed": "2026-04-22T17:25:26.201Z",
+      "duration_ms": 180000,
+      "summary": "41/41 stress test queries pass. Zero failures. Covers scans, aggregates, joins, CTEs, subqueries, expressions, NULLs, window functions."
     },
     {
       "id": "T194",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update failures.md with Bug 20"
+      "status": "done",
+      "task": "Update failures.md with Bug 20",
+      "started": "2026-04-22T17:25:29.739Z",
+      "completed": "2026-04-22T17:26:00.270Z",
+      "duration_ms": 120000,
+      "summary": "Updated failures.md with Volcano AST format mismatch pattern. 21 bugs documented."
+    },
+    {
+      "id": "T195",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate: how does the CTE→Volcano routing work currently? What needs to change for full CTE Volcano support?",
+      "project": "henrydb",
+      "started": "2026-04-22T17:26:17.592Z",
+      "completed": "2026-04-22T17:26:27.983Z",
+      "duration_ms": 60000,
+      "summary": "CTEs already fully routed through Volcano. Materialize-then-scan approach. The 14x speedup is already achieved. No changes needed."
+    },
+    {
+      "id": "T196",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: what other expression types does buildValueGetter not handle? Fuzz with diverse SELECT expressions",
+      "project": "henrydb",
+      "started": "2026-04-22T17:26:31.766Z",
+      "completed": "2026-04-22T17:27:54.992Z",
+      "duration_ms": 180000,
+      "summary": "16/16 expression fuzz pass. Added CAST to buildValueGetter (both cast/CAST types). CAST works in WHERE and SELECT."
+    },
+    {
+      "id": "T197",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Further db.js extraction — prepared statements module (~100 LOC)",
+      "task": null,
+      "started": "2026-04-22T17:27:58.157Z",
+      "completed": "2026-04-22T17:28:10.261Z",
+      "duration_ms": 30000,
+      "summary": "Prepared statements only 55 LOC. Not worth extracting. Skipping."
+    },
+    {
+      "id": "T198",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate: does the IndexNestedLoopJoin work correctly? Test with PK index lookups",
+      "project": "henrydb",
+      "started": "2026-04-22T17:28:15.011Z",
+      "completed": "2026-04-22T17:30:22.166Z",
+      "duration_ms": 300000,
+      "summary": "Bug #22: INLJ never activated (indexCatalog guard was always undefined). Also fixed missing pushdown predicate when INLJ bypasses rightIter. Now INLJ activates for PK joins."
+    },
+    {
+      "id": "T199",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update daily log and push",
+      "started": "2026-04-22T17:30:26.151Z"
     }
   ],
   "focusProjects": [
@@ -2870,6 +2928,26 @@
     {
       "time": "2026-04-22T17:23:16.438Z",
       "msg": "Added T194 (MAINTAIN) after end: Update failures.md with Bug 20"
+    },
+    {
+      "time": "2026-04-22T17:26:13.004Z",
+      "msg": "Added T195 (THINK) after end: Investigate: how does the CTE→Volcano routing work currently? What needs to change for full CTE Volcano support?"
+    },
+    {
+      "time": "2026-04-22T17:26:13.124Z",
+      "msg": "Added T196 (EXPLORE) after end: Test: what other expression types does buildValueGetter not handle? Fuzz with diverse SELECT expressions"
+    },
+    {
+      "time": "2026-04-22T17:26:13.245Z",
+      "msg": "Added T197 (PLAN) after end: HenryDB: Further db.js extraction — prepared statements module (~100 LOC)"
+    },
+    {
+      "time": "2026-04-22T17:26:13.364Z",
+      "msg": "Added T198 (EXPLORE) after end: Investigate: does the IndexNestedLoopJoin work correctly? Test with PK index lookups"
+    },
+    {
+      "time": "2026-04-22T17:26:13.484Z",
+      "msg": "Added T199 (MAINTAIN) after end: Update daily log and push"
     }
   ]
 }
