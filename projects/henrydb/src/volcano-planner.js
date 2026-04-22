@@ -187,7 +187,10 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         // Normalize arg: parser may give string 'val' or object {type:'column_ref', name:'val'}
         const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
         const name = col.alias || `${col.func}(${argStr})`;
-        aggregates.push({ name, func: col.func, column: argStr });
+        // For expression args (arith, function_call), pass a valueGetter so HashAggregate can evaluate
+        const isExprArg = typeof col.arg === 'object' && col.arg.type !== 'column_ref';
+        const valueGetter = isExprArg ? buildValueGetter(col.arg) : null;
+        aggregates.push({ name, func: col.func, column: argStr, valueGetter });
       }
     }
     

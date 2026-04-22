@@ -724,7 +724,7 @@ export class HashAggregate extends Iterator {
       }
       const group = this._groups.get(key);
       for (const agg of this._aggregates) {
-        const val = agg.column === '*' ? 1 : row[agg.column];
+        const val = agg.column === '*' ? 1 : (agg.valueGetter ? agg.valueGetter(row) : row[agg.column]);
         group.aggs[agg.name].values.push(val);
       }
     }
