@@ -66,6 +66,8 @@ export class TransactionalDatabase {
     };
 
     const db = new Database({ heapFactory });
+    // Disable Volcano for transactional databases (reads raw heap, bypasses MVCC)
+    db._useVolcano = false;
 
     const tdb = new TransactionalDatabase(
       db, dirPath, wal, mvcc, diskManagers, heaps, versionMaps, catalogPath, poolSize

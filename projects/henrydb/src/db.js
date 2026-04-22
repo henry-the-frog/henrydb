@@ -2100,9 +2100,10 @@ export class Database {
       // Optimize: decorrelate subqueries
       const optimizedAst = optimizeSelect(ast, this);
       
-      // Try Volcano engine first (faster for many patterns, opt-in)
+      // Try Volcano engine first (faster for many patterns)
+      // Skip Volcano when inside a transaction (MVCC not yet supported)
       let result = null;
-      if (this._useVolcano === true) {
+      if (this._useVolcano !== false && this._currentTxId === 0) {
         try {
           result = this._tryVolcanoSelect(optimizedAst);
         } catch (e) {
