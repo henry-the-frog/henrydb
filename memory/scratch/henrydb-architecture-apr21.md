@@ -50,3 +50,13 @@ execution path is the biggest remaining perf win (186x on multi-table TPC-H quer
 
 Approach: intercept at db._select() when joins present, delegate to buildPlan+execute.
 Challenge: expression evaluation, GROUP BY, WHERE are deeply interleaved with join execution.
+
+## Volcano Integration Benchmark (Apr 21)
+
+| Scenario | Volcano (HashJoin) | Nested Loop | Speedup |
+|----------|-------------------|-------------|---------|
+| 2-table (100×1000) | 7.9ms | 154ms | **19.5×** |
+| 3-table (5×200×2000) | 17.8ms | 664ms | **37.3×** |
+
+P0 confirmed: hash join integration provides order-of-magnitude improvement.
+Speedup scales with table count (O(n+m) vs O(n×m)).
