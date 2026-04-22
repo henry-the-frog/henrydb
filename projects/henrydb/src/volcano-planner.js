@@ -74,6 +74,29 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 1. Build scan for FROM table
+  // Handle SELECT without FROM (e.g., SELECT 1+1, SELECT NOW())
+  if (!ast.from) {
+    // Create a single-row virtual scan
+    const singleRow = { __virtual: true };
+    const virtualIter = {
+      _opened: false,
+      _done: false,
+      _estimatedRows: 1,
+      open() { this._opened = true; this._done = false; },
+      next() { if (this._done) return null; this._done = true; return singleRow; },
+      close() { this._done = true; },
+      describe() { return { type: 'VirtualSingleRow' }; }
+    };
+    // Build projections directly
+    const projections = buildProjections(ast.columns, false, _ctx);
+    let iter = new Project(virtualIter, projections);
+    // Handle LIMIT
+    if (ast.limit != null || ast.offset != null) {
+      iter = new Limit(iter, ast.limit ?? Infinity, ast.offset ?? 0);
+    }
+    return iter;
+  }
+  
   // Handle derived tables (subqueries in FROM)
   if (ast.from && ast.from.subquery) {
     // Check if subquery has unsupported features (window functions, etc.)

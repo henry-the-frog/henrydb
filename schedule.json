@@ -318,10 +318,83 @@
     {
       "id": "T29",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
       "project": "henrydb",
-      "started": "2026-04-22T20:59:12.441Z"
+      "started": "2026-04-22T20:59:12.441Z",
+      "completed": "2026-04-22T21:01:40.927Z",
+      "duration_ms": 300000,
+      "summary": "Stress-tested 6 adversarial queries mixing CTEs+derived+correlated+FILTER. Found and fixed ctx propagation bug in buildValueGetter (COALESCE+scalar subquery). 5/6 adversarial pass, 1 edge case (triple-nested correlation) out of scope. 168/168 tests."
+    },
+    {
+      "id": "T32",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: what Volcano gaps remain? Prioritize for impact. Check DISTINCT aggregate, SELECT without FROM, JSON fixes.",
+      "project": "henrydb",
+      "started": "2026-04-22T21:02:06.967Z",
+      "completed": "2026-04-22T21:02:32.479Z",
+      "duration_ms": 60000,
+      "summary": "9 BUILDs so far, good depth. Quick wins: SELECT without FROM, DISTINCT aggregates. Then CTEs with UNION. Queue set for 5 more hours."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Support SELECT without FROM in Volcano (SELECT 1+1, SELECT NOW())",
+      "project": "henrydb",
+      "started": "2026-04-22T21:02:37.706Z"
+    },
+    {
+      "id": "T34",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Support DISTINCT aggregates in Volcano (COUNT(DISTINCT x), SUM(DISTINCT x))",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T34",
+      "project": "henrydb"
+    },
+    {
+      "id": "T36",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, test sweep"
+    },
+    {
+      "id": "T37",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Support CTEs containing UNION in Volcano",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T37",
+      "project": "henrydb"
+    },
+    {
+      "id": "T39",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, test sweep, evening log"
+    },
+    {
+      "id": "T40",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -477,6 +550,42 @@
     {
       "time": "2026-04-22T20:54:02.447Z",
       "msg": "Moved T30 after T25"
+    },
+    {
+      "time": "2026-04-22T21:02:00.067Z",
+      "msg": "Added T32 (THINK) after end: HenryDB: what Volcano gaps remain? Prioritize for impact. Check DISTINCT aggregate, SELECT without FROM, JSON fixes."
+    },
+    {
+      "time": "2026-04-22T21:02:25.086Z",
+      "msg": "Added T33 (BUILD) after T32: Support SELECT without FROM in Volcano (SELECT 1+1, SELECT NOW())"
+    },
+    {
+      "time": "2026-04-22T21:02:25.204Z",
+      "msg": "Added T34 (PLAN) after T33: Support DISTINCT aggregates in Volcano (COUNT(DISTINCT x), SUM(DISTINCT x))"
+    },
+    {
+      "time": "2026-04-22T21:02:25.321Z",
+      "msg": "Added T35 (BUILD) after T34: null"
+    },
+    {
+      "time": "2026-04-22T21:02:25.440Z",
+      "msg": "Added T36 (MAINTAIN) after T35: Git push, test sweep"
+    },
+    {
+      "time": "2026-04-22T21:02:25.558Z",
+      "msg": "Added T37 (PLAN) after T36: Support CTEs containing UNION in Volcano"
+    },
+    {
+      "time": "2026-04-22T21:02:25.676Z",
+      "msg": "Added T38 (BUILD) after T37: null"
+    },
+    {
+      "time": "2026-04-22T21:02:25.794Z",
+      "msg": "Added T39 (MAINTAIN) after T38: Git push, test sweep, evening log"
+    },
+    {
+      "time": "2026-04-22T21:02:25.911Z",
+      "msg": "Added T40 (EXPLORE) after T39: Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md"
     }
   ]
 }

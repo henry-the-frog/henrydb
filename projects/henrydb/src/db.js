@@ -2140,8 +2140,7 @@ export class Database {
   _selectInner(ast) { return _selectInnerImpl(this, ast); }
   
   _tryVolcanoSelect(ast) {
-    // Skip Volcano for unsupported patterns
-    if (!ast.from) return null; // No FROM clause (e.g., SELECT 1)
+    // SELECT without FROM: now supported via Volcano (single empty row)
     if (this._outerRow) return null; // Correlated context (LATERAL JOIN) — use legacy path
     if (ast.joins?.some(j => j.lateral)) return null; // LATERAL JOINs — use legacy path
     // Derived tables in FROM — now supported in Volcano (materialized)
