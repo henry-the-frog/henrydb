@@ -1,6 +1,7 @@
 ## TODO
 
 ### Urgent
+- HenryDB: db.js join executor extraction (~1200 LOC) — estimate was 220, actual 1200. Needs full session. (since 2026-04-21)
 (none)
 
 ### Normal
