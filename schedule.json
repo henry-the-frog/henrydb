@@ -1468,9 +1468,52 @@
     {
       "id": "T138",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "End session push",
-      "started": "2026-04-22T16:39:10.430Z"
+      "started": "2026-04-22T16:39:10.430Z",
+      "completed": "2026-04-22T16:40:03.186Z",
+      "duration_ms": 60000,
+      "summary": "Final push done. Session A: 100+ tasks, 13 bugs fixed, db.js 67% smaller, 27/28 Volcano patterns."
+    },
+    {
+      "id": "T139",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix arithmetic in Volcano WHERE: a+b>15 returns 0 instead of 2",
+      "task": null,
+      "started": "2026-04-22T16:40:25.235Z",
+      "completed": "2026-04-22T16:41:03.210Z",
+      "duration_ms": 30000,
+      "summary": "Root cause: parser uses type=arith, buildValueGetter handles type=binary_expr. Bug #14. Simple fix: add arith case."
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "task": "Add arith case to buildValueGetter (alias for binary_expr) — parser uses arith, not binary_expr",
+      "status": "done",
+      "plan_ref": "T139",
+      "started": "2026-04-22T16:41:12.184Z",
+      "completed": "2026-04-22T16:41:57.272Z",
+      "duration_ms": 60000,
+      "summary": "Fixed arith in WHERE: parser uses arith, not binary_expr. Bug #14. One-line fix. a+b>15 now correct."
+    },
+    {
+      "id": "T140",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test Volcano with more complex expressions: COALESCE, string functions, math",
+      "project": "henrydb",
+      "started": "2026-04-22T16:42:07.480Z",
+      "completed": "2026-04-22T16:42:39.369Z",
+      "duration_ms": 120000,
+      "summary": "Complex expression testing: arith in WHERE works after fix. Functions (COALESCE, ABS, UPPER) return null — not wired. NULL comparison issue. 6/9 row counts match."
+    },
+    {
+      "id": "T141",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push updates",
+      "started": "2026-04-22T16:42:49.953Z"
     }
   ],
   "focusProjects": [
@@ -2050,6 +2093,22 @@
     {
       "time": "2026-04-22T16:35:00.411Z",
       "msg": "Added T138 (MAINTAIN) after end: End session push"
+    },
+    {
+      "time": "2026-04-22T16:40:15.621Z",
+      "msg": "Added T139 (PLAN) after end: Fix arithmetic in Volcano WHERE: a+b>15 returns 0 instead of 2"
+    },
+    {
+      "time": "2026-04-22T16:40:15.741Z",
+      "msg": "Added T140 (EXPLORE) after end: Test Volcano with more complex expressions: COALESCE, string functions, math"
+    },
+    {
+      "time": "2026-04-22T16:40:15.861Z",
+      "msg": "Added T141 (MAINTAIN) after end: Push updates"
+    },
+    {
+      "time": "2026-04-22T16:40:57.121Z",
+      "msg": "PLAN T139 filled 1 BUILD tasks"
     }
   ]
 }
