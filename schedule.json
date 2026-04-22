@@ -1671,9 +1671,43 @@
     {
       "id": "T157",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session A final: push everything, update CURRENT.md",
-      "started": "2026-04-22T16:58:13.718Z"
+      "started": "2026-04-22T16:58:13.718Z",
+      "completed": "2026-04-22T16:58:48.510Z",
+      "duration_ms": 60000,
+      "summary": "Session A final push done. CURRENT.md updated with session-ended status."
+    },
+    {
+      "id": "T158",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix IndexNLJoin LEFT JOIN cross-product bug (pre-existing, affects PK tables)",
+      "task": null,
+      "started": "2026-04-22T16:59:05.253Z",
+      "completed": "2026-04-22T17:03:06.359Z",
+      "duration_ms": 480000,
+      "summary": "CRITICAL FIX: Parser uses = for ON but EQ for WHERE. All JOINs were falling through to cross-product NLJoin. Fixed: added symbol operators to comparators + findEquiJoin. Bug #19."
+    },
+    {
+      "id": "T159",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Test: string concatenation operator || in Volcano — does it work?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T160",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Hunt for more AST format mismatches: what other predicates silently return true?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T161",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push"
     }
   ],
   "focusProjects": [
@@ -2329,6 +2363,22 @@
     {
       "time": "2026-04-22T16:52:19.462Z",
       "msg": "Added T157 (MAINTAIN) after end: Session A final: push everything, update CURRENT.md"
+    },
+    {
+      "time": "2026-04-22T16:58:57.284Z",
+      "msg": "Added T158 (PLAN) after end: Fix IndexNLJoin LEFT JOIN cross-product bug (pre-existing, affects PK tables)"
+    },
+    {
+      "time": "2026-04-22T16:58:57.404Z",
+      "msg": "Added T159 (EXPLORE) after end: Test: string concatenation operator || in Volcano — does it work?"
+    },
+    {
+      "time": "2026-04-22T16:58:57.523Z",
+      "msg": "Added T160 (EXPLORE) after end: Hunt for more AST format mismatches: what other predicates silently return true?"
+    },
+    {
+      "time": "2026-04-22T16:58:57.644Z",
+      "msg": "Added T161 (MAINTAIN) after end: Push"
     }
   ]
 }
