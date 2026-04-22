@@ -616,6 +616,28 @@
       "completed": "2026-04-22T00:44:58.834Z",
       "duration_ms": 120000,
       "summary": "Tech debt inventory: Only 1 TODO comment in production code (clean). 2 orphan files (bench-engines.js, prepared-statements.js — both potentially useful). 176 source files, 358 test files. 96K LOC source, 53K LOC tests. db.js: 4988 LOC (approaching sub-5000 goal). Key remaining debt: (1) RIGHT/FULL join not in Volcano, (2) INLJ doesnt support LEFT, (3) window-functions.js extraction incomplete (separate impl exists), (4) prepared-statements.js orphaned extraction, (5) decorrelate.js has 1 TODO for correlated IN → semi-join."
+    },
+    {
+      "id": "T59",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore RISC-V emulator current state: test coverage, architecture, what register allocator currently does, what liveness analysis would improve.",
+      "project": "riscv",
+      "started": "2026-04-22T00:45:40.442Z",
+      "completed": "2026-04-22T00:46:17.921Z",
+      "duration_ms": 120000,
+      "summary": "RISC-V codegen has 1940 LOC. Current register allocator is linear assignment (s1, s2, s3...) without liveness analysis. Falls back to stack when 11 callee-saved regs exhausted. No dead variable reclamation. A liveness-based allocator (CFG → liveness → interference → coloring) would reduce spills for functions with many variables but few simultaneously live. Good algorithmic project for tomorrow."
+    },
+    {
+      "id": "T60",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore neural-net project: current state, architecture, test coverage, what's next.",
+      "project": "neural-net",
+      "started": "2026-04-22T00:46:27.639Z",
+      "completed": "2026-04-22T00:47:29.816Z",
+      "duration_ms": 120000,
+      "summary": "Neural-net project is substantial: 155 source files, 112 test files, 27K LOC. Covers: autograd, attention, transformers, CNNs, RNNs, LSTMs, GANs, diffusion, RL (DQN/PPO/DPO), BPE tokenization, beam search, mixed precision, data augmentation, and more. 22 autograd tests pass (clean). Good candidate for depth exploration: stress-test transformer implementation, add proper backprop through attention, or implement flash attention."
     }
   ],
   "focusProjects": [
@@ -871,6 +893,14 @@
     {
       "time": "2026-04-22T00:43:56.588Z",
       "msg": "Added T58 (THINK) after end: Technical debt inventory: scan codebase for remaining issues, dead code, missing tests, TODO comments. Create prioritized list."
+    },
+    {
+      "time": "2026-04-22T00:45:40.209Z",
+      "msg": "Added T59 (THINK) after end: Explore RISC-V emulator current state: test coverage, architecture, what register allocator currently does, what liveness analysis would improve."
+    },
+    {
+      "time": "2026-04-22T00:46:27.407Z",
+      "msg": "Added T60 (THINK) after end: Explore neural-net project: current state, architecture, test coverage, what's next."
     }
   ]
 }

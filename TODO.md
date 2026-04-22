@@ -17,3 +17,9 @@
 - HenryDB: Hash-index performance (test takes 24s)
 - HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr
 - HenryDB: Unified expression walker migration
+
+### Tomorrow Ideas (Session C)
+- RISC-V liveness-based register allocation (algorithmic, different from db work)
+- Neural-net: stress-test transformer attention implementation
+- HenryDB: RIGHT/FULL join in Volcano, INLJ LEFT support
+- Git: explore current state and find depth opportunities
