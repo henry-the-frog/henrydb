@@ -347,8 +347,39 @@
     {
       "id": "T33",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit, push, full sweep",
+      "started": "2026-04-22T00:07:26.217Z",
+      "completed": "2026-04-22T00:07:41.108Z",
+      "duration_ms": 30000,
+      "summary": "Pushed to GitHub. All verified."
+    },
+    {
+      "id": "T34",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Verify TPC-H 33/33: run the previously failing queries to confirm parser fixes work end-to-end.",
+      "started": "2026-04-22T00:08:19.145Z",
+      "completed": "2026-04-22T00:08:36.195Z",
+      "duration_ms": 60000,
+      "summary": "Verified both TPC-H failures are fixed: (1) Recursive CTE with arithmetic WHERE — produces 5 correct rows traversing region table. (2) MERGE with subquery USING — correctly inserts and updates. TPC-H should now be 33/33."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add Volcano cost model: basic cardinality estimation + cost-based join order selection",
+      "project": "henrydb",
+      "started": "2026-04-22T00:08:42.194Z",
+      "completed": "2026-04-22T00:10:46.401Z",
+      "duration_ms": 600000,
+      "summary": "Added Volcano cost model: selectivity estimation (equality/range/LIKE/BETWEEN/IS NULL/AND/OR/NOT), cardinality estimation from table stats, join cost comparison (hash/merge/nested loop), cost-based join strategy selection in planner, index scan threshold. 19 new tests, 146 total volcano tests pass. Planner now makes cost-based join decisions instead of always choosing hash."
+    },
+    {
+      "id": "T36",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Commit, push, full sweep"
+      "task": "Commit, push, log"
     }
   ],
   "focusProjects": [
@@ -504,6 +535,18 @@
     {
       "time": "2026-04-22T00:03:39.872Z",
       "msg": "Added T33 (MAINTAIN) after T32: Commit, push, full sweep"
+    },
+    {
+      "time": "2026-04-22T00:08:13.678Z",
+      "msg": "Added T34 (THINK) after end: Verify TPC-H 33/33: run the previously failing queries to confirm parser fixes work end-to-end."
+    },
+    {
+      "time": "2026-04-22T00:08:13.795Z",
+      "msg": "Added T35 (BUILD) after T34: Add Volcano cost model: basic cardinality estimation + cost-based join order selection"
+    },
+    {
+      "time": "2026-04-22T00:08:13.911Z",
+      "msg": "Added T36 (MAINTAIN) after T35: Commit, push, log"
     }
   ]
 }

@@ -6,6 +6,9 @@ import {
   NestedLoopJoin, HashJoin, MergeJoin, Sort, HashAggregate, IndexNestedLoopJoin,
   CTE, RecursiveCTE,
 } from './volcano.js';
+import {
+  estimateSelectivity, estimateCardinality, chooseBestJoin, shouldUseIndexScan,
+} from './volcano-cost.js';
 
 /**
  * Build a plan and return the EXPLAIN output string.
@@ -271,14 +274,27 @@ export function buildPlan(ast, tables, indexCatalog) {
       }
       
       if (equiJoin) {
-        // Check if MergeJoin is appropriate: both inputs sorted on join key
+        // Cost-based join strategy selection
+        const leftTableName = typeof ast.from === 'string' ? ast.from : ast.from.table;
+        const rightTableName2 = join.table?.table || join.table;
+        const leftCard = estimateCardinality(effectiveTables, leftTableName, ast.where);
+        const rightCard = estimateCardinality(effectiveTables, rightTableName2, null);
         const leftSorted = isSortedOn(iter, equiJoin.probeKey);
         const rightSorted = isSortedOn(rightIter, equiJoin.buildKey);
         
-        if (leftSorted && rightSorted) {
-          // Both already sorted — MergeJoin avoids hash table overhead
+        const strategy = chooseBestJoin(leftCard, rightCard, leftSorted, rightSorted);
+        
+        if (strategy === 'merge' && leftSorted && rightSorted) {
           iter = new MergeJoin(iter, rightIter, equiJoin.probeKey, equiJoin.buildKey);
+        } else if (strategy === 'merge') {
+          // Need to sort both sides first
+          const leftSort = new Sort(iter, [{ column: equiJoin.probeKey, desc: false }]);
+          const rightSort = new Sort(rightIter, [{ column: equiJoin.buildKey, desc: false }]);
+          iter = new MergeJoin(leftSort, rightSort, equiJoin.probeKey, equiJoin.buildKey);
+        } else if (strategy === 'nested_loop') {
+          iter = new NestedLoopJoin(iter, rightIter, predicate);
         } else {
+          // Default: hash join
           iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey,
             join.joinType === 'LEFT' ? 'left' : 'inner');
         }
