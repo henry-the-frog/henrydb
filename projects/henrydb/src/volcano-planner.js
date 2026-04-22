@@ -533,11 +533,13 @@ function buildValueGetter(expr) {
         }
       };
     }
-    case 'function_call': {
+    case 'function_call':
+    case 'function': {
       const args = (expr.args || []).map(buildValueGetter);
+      const funcName = (expr.name || expr.func || '').toUpperCase();
       return (row) => {
         const vals = args.map(g => g(row));
-        switch (expr.name.toUpperCase()) {
+        switch (funcName) {
           case 'ABS': return Math.abs(vals[0]);
           case 'UPPER': return String(vals[0]).toUpperCase();
           case 'LOWER': return String(vals[0]).toLowerCase();
@@ -659,6 +661,9 @@ function buildProjections(columns, hasAggregates) {
         return null; // Can't project * — passthrough
       case 'expression':
         return { name: outputName, expr: buildValueGetter(col.expr) };
+      case 'function':
+      case 'function_call':
+        return { name: outputName, expr: buildValueGetter(col) };
       default:
         return { name: outputName, expr: () => null };
     }
