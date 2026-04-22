@@ -242,18 +242,22 @@
     {
       "id": "T24",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add FILTER clause to HashAggregate + volcano-planner aggregate collection",
       "plan_ref": "T23",
       "project": "henrydb",
-      "started": "2026-04-22T20:51:50.258Z"
+      "started": "2026-04-22T20:51:50.258Z",
+      "completed": "2026-04-22T20:52:48.151Z",
+      "duration_ms": 240000,
+      "summary": "Aggregate FILTER clause now works in Volcano. COUNT/SUM/AVG/MIN/MAX with FILTER, mixed filtered/unfiltered. 106/106 tests pass."
     },
     {
       "id": "T31",
       "mode": "BUILD",
       "task": "Test FILTER clause: COUNT FILTER, SUM FILTER, mixed filtered/unfiltered aggregates",
-      "status": "upcoming",
-      "plan_ref": "T23"
+      "status": "in-progress",
+      "plan_ref": "T23",
+      "started": "2026-04-22T20:52:58.325Z"
     },
     {
       "id": "T25",
