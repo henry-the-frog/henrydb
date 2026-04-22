@@ -271,6 +271,24 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     let groupBy = ast.groupBy || [];
     const aggregates = [];
     
+    // Resolve GROUP BY aliases and ordinals
+    groupBy = groupBy.map(gb => {
+      // Ordinal: GROUP BY 1 → first column
+      if (typeof gb === 'object' && gb.type === 'literal' && typeof gb.value === 'number') {
+        const idx = gb.value - 1;
+        if (idx >= 0 && idx < ast.columns.length) {
+          const col = ast.columns[idx];
+          return col.name || col.alias || col;
+        }
+      }
+      // String alias: GROUP BY d → resolve to actual column name
+      if (typeof gb === 'string') {
+        const aliasMatch = ast.columns.find(c => c.alias === gb);
+        if (aliasMatch) return aliasMatch.name || aliasMatch.expr || gb;
+      }
+      return gb;
+    });
+    
     // Handle expression-based GROUP BY: pre-compute expressions as derived columns
     const resolvedGroupBy = [];
     for (let i = 0; i < groupBy.length; i++) {
