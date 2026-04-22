@@ -120,13 +120,19 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       // 3. NestedLoopJoin as fallback
       const equiJoin = extractEquiJoinKeys(join.on, ast.from, join);
       
-      if (equiJoin && indexCatalog) {
+      if (equiJoin) {
         const inlJoin = tryIndexNestedLoopJoin(
-          iter, equiJoin, ast.from, join, tables, indexCatalog
+          iter, equiJoin, ast.from, join, tables
         );
         if (inlJoin) {
           inlJoin._estimatedRows = Math.max(1, iter._estimatedRows || fromRowCount);
           iter = inlJoin;
+          // Apply pushdown predicate for the inner table as a post-filter
+          if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
+            iter = new Filter(iter, buildPredicate(_pushdownPredicates[rightAlias], _ctx));
+            const sel = estimateSelectivity(_pushdownPredicates[rightAlias], rightTableName, tableStats);
+            iter._estimatedRows = Math.max(1, Math.round((inlJoin._estimatedRows || fromRowCount) * sel));
+          }
           continue;
         }
       }
@@ -607,7 +613,7 @@ const comparators = {
  * Try to build an IndexNestedLoopJoin if the inner table has a usable index.
  * Returns the INL join iterator, or null if no usable index found.
  */
-function tryIndexNestedLoopJoin(outerIter, equiJoin, leftFrom, rightJoin, tables, indexCatalog) {
+function tryIndexNestedLoopJoin(outerIter, equiJoin, leftFrom, rightJoin, tables) {
   // Determine which side is outer (already built = left) and inner (right = join table)
   const rightTableName = typeof rightJoin.table === 'string' ? rightJoin.table : rightJoin.table;
   const rightAlias = rightJoin.alias || rightTableName;
