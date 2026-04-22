@@ -445,6 +445,12 @@ function buildPredicate(expr) {
       const vals = expr.values.map(buildValueGetter);
       return (row) => { const v = val(row); return vals.some(g => g(row) === v); };
     }
+    case 'IN_LIST': {
+      // Parser variant: uses 'left' instead of 'expr'
+      const val = buildValueGetter(expr.left || expr.expr);
+      const vals = expr.values.map(buildValueGetter);
+      return (row) => { const v = val(row); return vals.some(g => g(row) === v); };
+    }
     case 'LIKE': {
       const val = buildValueGetter(expr.expr);
       const pattern = expr.pattern;
