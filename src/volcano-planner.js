@@ -9,6 +9,7 @@ import {
 import {
   estimateSelectivity, estimateCardinality, chooseBestJoin, shouldUseIndexScan,
 } from './volcano-cost.js';
+import { applyWindowFunctions } from './window-functions.js';
 
 /**
  * Build a plan and return the EXPLAIN output string.
@@ -333,17 +334,33 @@ export function buildPlan(ast, tables, indexCatalog) {
     }
   }
 
-  // 6. SELECT projection
+  // 6. Window functions (BEFORE projection to preserve columns used in OVER)
+  const windowCols = (ast.columns || []).filter(c => c.type === 'window');
+  if (windowCols.length > 0) {
+    const rows = materialize(iter);
+    const specs = windowCols.map(col => ({
+      func: col.func,
+      args: col.arg ? [col.arg] : [],
+      partitionBy: col.over?.partitionBy?.map(p => typeof p === 'string' ? p : p.column || p.name) || [],
+      orderBy: col.over?.orderBy?.map(o => ({
+        column: typeof o.column === 'string' ? o.column : (o.column?.name || o.column),
+        direction: o.direction || 'ASC',
+      })) || [],
+      alias: col.alias || col.func,
+    }));
+    const withWindows = applyWindowFunctions(rows, specs);
+    iter = new ValuesIter(withWindows);
+  }
+
+  // 7. SELECT projection
   const projections = buildProjections(ast.columns, hasAggregates);
   if (projections && !hasAggregates) {
-    // Don't project after aggregate — column names already set by HashAggregate
     iter = new Project(iter, projections);
   } else if (hasAggregates) {
-    // For aggregates, project to rename/select the right columns
     iter = new Project(iter, buildAggregateProjections(ast.columns));
   }
 
-  // 7. DISTINCT
+  // 8. DISTINCT
   if (ast.distinct) {
     iter = new Distinct(iter);
   }
@@ -666,6 +683,9 @@ function buildProjections(columns, hasAggregates) {
         return null; // Can't project * — passthrough
       case 'expression':
         return { name: outputName, expr: buildValueGetter(col.expr) };
+      case 'window':
+        // Window function value was already computed and stored under the alias
+        return { name: outputName, expr: (row) => row[outputName] };
       default:
         return { name: outputName, expr: () => null };
     }

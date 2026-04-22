@@ -152,8 +152,10 @@ function applyRank(group, orderBy, alias, dense) {
 }
 
 function applyAggregate(group, func, col, alias, spec) {
+  // SQL standard: without ORDER BY, default frame is the entire partition
+  const hasOrderBy = spec.orderBy && spec.orderBy.length > 0;
   const frameStart = spec.frameStart || 'UNBOUNDED PRECEDING';
-  const frameEnd = spec.frameEnd || 'CURRENT ROW';
+  const frameEnd = spec.frameEnd || (hasOrderBy ? 'CURRENT ROW' : 'UNBOUNDED FOLLOWING');
 
   group.forEach((row, i) => {
     const start = resolveFrame(frameStart, i, group.length);

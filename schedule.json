@@ -524,9 +524,40 @@
     {
       "id": "T50",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update MEMORY.md and scratch notes with today's major achievements and learnings",
-      "started": "2026-04-22T00:26:26.848Z"
+      "started": "2026-04-22T00:26:26.848Z",
+      "completed": "2026-04-22T00:27:22.687Z",
+      "duration_ms": 120000,
+      "summary": "Updated MEMORY.md with 3 new lessons (Incomplete Extraction, MVCC Visibility vs Conflict, Parser Precedence). Created architecture scratch note with extraction history table, Volcano status matrix, MVCC status, P0 description."
+    },
+    {
+      "id": "T51",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate the orphaned window-functions.js — is it a duplicate of db.js code or different? Determine if it should be removed or wired.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:27:34.517Z",
+      "completed": "2026-04-22T00:28:06.601Z",
+      "duration_ms": 60000,
+      "summary": "window-functions.js is a standalone implementation (199 LOC, 12 tests pass). Different API from db.js _computeWindowFunctions. It is NOT a failed extraction — it is a separate implementation that could be used by the Volcano engine for window function wiring. Keep it."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire Window functions in Volcano planner using standalone window-functions.js module. Last remaining Volcano operator.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:28:17.327Z",
+      "completed": "2026-04-22T00:32:17.712Z",
+      "duration_ms": 600000,
+      "summary": "Wired Window functions in Volcano planner — LAST remaining operator done! All Volcano operators now supported. Window functions applied before projection to preserve ORDER BY columns. Fixed SQL standard frame default (no ORDER BY → entire partition, not CURRENT ROW). 7 new window tests, 153 total volcano tests pass."
+    },
+    {
+      "id": "T53",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, push, final test sweep"
     }
   ],
   "focusProjects": [
@@ -750,6 +781,18 @@
     {
       "time": "2026-04-22T00:26:26.616Z",
       "msg": "Added T50 (MAINTAIN) after end: Update MEMORY.md and scratch notes with today's major achievements and learnings"
+    },
+    {
+      "time": "2026-04-22T00:27:34.280Z",
+      "msg": "Added T51 (THINK) after end: Investigate the orphaned window-functions.js — is it a duplicate of db.js code or different? Determine if it should be removed or wired."
+    },
+    {
+      "time": "2026-04-22T00:28:16.977Z",
+      "msg": "Added T52 (BUILD) after end: Wire Window functions in Volcano planner using standalone window-functions.js module. Last remaining Volcano operator."
+    },
+    {
+      "time": "2026-04-22T00:28:17.094Z",
+      "msg": "Added T53 (MAINTAIN) after T52: Commit, push, final test sweep"
     }
   ]
 }
