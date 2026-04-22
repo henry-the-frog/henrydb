@@ -2241,9 +2241,67 @@
     {
       "id": "T210",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push and daily log",
-      "started": "2026-04-22T17:39:31.134Z"
+      "started": "2026-04-22T17:39:31.134Z",
+      "completed": "2026-04-22T17:39:37.516Z",
+      "duration_ms": 30000,
+      "summary": "Pushed and synced."
+    },
+    {
+      "id": "T211",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: what happens with RIGHT JOIN in Volcano? FULL OUTER JOIN?",
+      "project": "henrydb",
+      "started": "2026-04-22T17:39:49.883Z",
+      "completed": "2026-04-22T17:40:03.351Z",
+      "duration_ms": 60000,
+      "summary": "LEFT, RIGHT, FULL OUTER, CROSS JOIN all correct. 4/4 pass."
+    },
+    {
+      "id": "T212",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: does HAVING with a subquery work? SELECT dept, AVG(salary) ... HAVING AVG(salary) > (SELECT AVG(salary) FROM employees)",
+      "project": "henrydb",
+      "started": "2026-04-22T17:40:08.601Z",
+      "completed": "2026-04-22T17:40:24.672Z",
+      "duration_ms": 30000,
+      "summary": "HAVING with subquery: 0 vs 1. buildAggregatePredicate doesnt handle subquery expressions. Known gap."
+    },
+    {
+      "id": "T213",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Add INLJ cost-based selection — only use INLJ when outer is selective (<10% of table)",
+      "task": null,
+      "started": "2026-04-22T17:40:30.961Z",
+      "completed": "2026-04-22T17:40:31.108Z",
+      "duration_ms": 30000,
+      "summary": "INLJ cost selection: defer. Current INLJ is slower than HashJoin for full joins. Need heuristic: outer_rows < 0.1 * inner_rows. Low priority optimization."
+    },
+    {
+      "id": "T214",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: Volcano with OFFSET clause",
+      "project": "henrydb",
+      "started": "2026-04-22T17:40:36.028Z",
+      "completed": "2026-04-22T17:40:53.611Z",
+      "duration_ms": 30000,
+      "summary": "OFFSET: 3/4 pass. LIMIT+OFFSET works. OFFSET-only (no LIMIT) returns all rows instead of skipping. Minor gap."
+    },
+    {
+      "id": "T215",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress: 100-query random SQL fuzz with diverse patterns",
+      "project": "henrydb",
+      "started": "2026-04-22T17:40:58.299Z",
+      "completed": "2026-04-22T17:41:49.470Z",
+      "duration_ms": 120000,
+      "summary": "Extended stress test: 55/56 pass, 0 errors. Only failure: GROUP BY with CASE expression (minor). 56 diverse patterns tested."
     }
   ],
   "focusProjects": [
@@ -3111,6 +3169,26 @@
     {
       "time": "2026-04-22T17:35:50.139Z",
       "msg": "Added T210 (MAINTAIN) after end: Push and daily log"
+    },
+    {
+      "time": "2026-04-22T17:39:45.677Z",
+      "msg": "Added T211 (EXPLORE) after end: Test: what happens with RIGHT JOIN in Volcano? FULL OUTER JOIN?"
+    },
+    {
+      "time": "2026-04-22T17:39:45.797Z",
+      "msg": "Added T212 (EXPLORE) after end: Test: does HAVING with a subquery work? SELECT dept, AVG(salary) ... HAVING AVG(salary) > (SELECT AVG(salary) FROM employees)"
+    },
+    {
+      "time": "2026-04-22T17:39:45.917Z",
+      "msg": "Added T213 (PLAN) after end: HenryDB: Add INLJ cost-based selection — only use INLJ when outer is selective (<10% of table)"
+    },
+    {
+      "time": "2026-04-22T17:39:46.037Z",
+      "msg": "Added T214 (EXPLORE) after end: Test: Volcano with OFFSET clause"
+    },
+    {
+      "time": "2026-04-22T17:39:46.156Z",
+      "msg": "Added T215 (EXPLORE) after end: Stress: 100-query random SQL fuzz with diverse patterns"
     }
   ]
 }
