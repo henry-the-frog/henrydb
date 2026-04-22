@@ -731,15 +731,33 @@ function estimateSelectivity(where, tableName, tableStats) {
     }
     if (['LT', 'LE', 'GT', 'GE'].includes(where.op)) {
       // Range: use histogram if available, else default 33%
-      if (colStats?.histogram) {
-        // Simple histogram-based estimate: fraction of buckets matching
-        const val = where.right?.value;
-        if (val != null && colStats.histogram.length > 0) {
+      if (colStats?.histogram && colStats.histogram.length > 0) {
+        const val = where.right?.value ?? where.left?.value;
+        if (val != null) {
           const h = colStats.histogram;
-          const matching = where.op.startsWith('G') 
-            ? h.filter(b => b >= val).length 
-            : h.filter(b => b <= val).length;
-          return Math.max(0.01, matching / h.length);
+          const totalCount = h.reduce((s, b) => s + b.count, 0);
+          if (totalCount > 0) {
+            let matchingCount = 0;
+            for (const bucket of h) {
+              if (where.op === 'GT' || where.op === 'GE') {
+                // col > val: count rows in buckets where hi >= val
+                if (bucket.lo >= val) matchingCount += bucket.count;
+                else if (bucket.hi >= val) {
+                  // Partial bucket: interpolate
+                  const frac = (bucket.hi - val) / Math.max(1, bucket.hi - bucket.lo);
+                  matchingCount += Math.round(bucket.count * frac);
+                }
+              } else { // LT or LE
+                // col < val: count rows in buckets where lo <= val
+                if (bucket.hi <= val) matchingCount += bucket.count;
+                else if (bucket.lo <= val) {
+                  const frac = (val - bucket.lo) / Math.max(1, bucket.hi - bucket.lo);
+                  matchingCount += Math.round(bucket.count * frac);
+                }
+              }
+            }
+            return Math.max(0.01, matchingCount / totalCount);
+          }
         }
       }
       return 0.33;
