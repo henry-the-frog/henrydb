@@ -2169,6 +2169,8 @@ export class Database {
     // Also check HAVING and subqueries for unsupported aggregates
     const astStr = JSON.stringify(ast);
     if (unsupportedAggs.some(a => astStr.includes(`"func":"${a}"`) || astStr.includes(`"func":"${a.toLowerCase()}"`) )) return null;
+    // Check for derived tables in nested subqueries
+    if (astStr.includes('"table":"__subquery"')) return null;
     // Skip JSON operations
     if (JSON.stringify(ast).includes('"->>"') || JSON.stringify(ast).includes('"json_')){
       return null;
