@@ -605,6 +605,17 @@
       "completed": "2026-04-22T00:43:09.099Z",
       "duration_ms": 180000,
       "summary": "Benchmarked Volcano vs nested loop: 2-table join (100×1000): 19.5x speedup (7.9ms vs 154ms). 3-table join (5×200×2000): 37.3x speedup (17.8ms vs 664ms). Hash join improvement scales with table count. P0 impact confirmed."
+    },
+    {
+      "id": "T58",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Technical debt inventory: scan codebase for remaining issues, dead code, missing tests, TODO comments. Create prioritized list.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:43:56.821Z",
+      "completed": "2026-04-22T00:44:58.834Z",
+      "duration_ms": 120000,
+      "summary": "Tech debt inventory: Only 1 TODO comment in production code (clean). 2 orphan files (bench-engines.js, prepared-statements.js — both potentially useful). 176 source files, 358 test files. 96K LOC source, 53K LOC tests. db.js: 4988 LOC (approaching sub-5000 goal). Key remaining debt: (1) RIGHT/FULL join not in Volcano, (2) INLJ doesnt support LEFT, (3) window-functions.js extraction incomplete (separate impl exists), (4) prepared-statements.js orphaned extraction, (5) decorrelate.js has 1 TODO for correlated IN → semi-join."
     }
   ],
   "focusProjects": [
@@ -856,6 +867,10 @@
     {
       "time": "2026-04-22T00:42:27.563Z",
       "msg": "Added T57 (THINK) after end: Run a benchmark comparing old (nested loop) vs new (Volcano hash join) performance on a multi-table join query. Document the improvement."
+    },
+    {
+      "time": "2026-04-22T00:43:56.588Z",
+      "msg": "Added T58 (THINK) after end: Technical debt inventory: scan codebase for remaining issues, dead code, missing tests, TODO comments. Create prioritized list."
     }
   ]
 }
