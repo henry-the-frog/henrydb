@@ -4,9 +4,11 @@
 (none)
 
 ### Normal
-- HenryDB: db.js now at 4939 lines (SUB-5000 achieved!) — further extraction possible (join exec ~220, EXPLAIN ~350, GROUP BY ~166) (since 2026-04-20, updated 2026-04-21)
-- HenryDB: Volcano planner fully cost-based. Consider integrating table stats from ANALYZE. (since 2026-04-21, updated 2026-04-21)
-- HenryDB: ORDER BY resolves to table column before SELECT alias — should prefer aliases. Found in FULL JOIN + COALESCE test. (since 2026-04-21)
+- HenryDB: db.js now at ~4950 lines — further extraction possible: join exec ~1200 LOC (much larger than estimated), EXPLAIN ~350, GROUP BY ~166 (since 2026-04-20, updated 2026-04-21)
+- HenryDB: Volcano planner fully cost-based with predicate pushdown. Consider integrating table stats from ANALYZE. (since 2026-04-21, updated 2026-04-21)
+- HenryDB: 6 pre-existing tpch-compiled.test.js failures (CTE import issue — different from the fixed CTEIterator one). (since 2026-04-21)
+- Neural-net: 3 pre-existing sliding-window.test.js failures. (since 2026-04-21)
+- HenryDB: InstrumentedIterator in volcano.js — scaffold for per-operator timing in EXPLAIN ANALYZE. Wire it up. (since 2026-04-21)
 
 ### Low
 - RISC-V: Liveness-based register allocation

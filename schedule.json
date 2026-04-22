@@ -286,9 +286,12 @@
     {
       "id": "T26",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session push, daily log summary, test suite verification",
-      "started": "2026-04-22T03:42:00.546Z"
+      "started": "2026-04-22T03:42:00.546Z",
+      "completed": "2026-04-22T03:42:56.449Z",
+      "duration_ms": 120000,
+      "summary": "Final push complete. HenryDB + neural-net pushed. Daily log with evening summary. CURRENT.md updated to session-ended."
     },
     {
       "id": "T29",
@@ -603,6 +606,14 @@
       "completed": "2026-04-22T03:41:22.301Z",
       "duration_ms": 300000,
       "summary": "EXPLAIN ANALYZE now shows Volcano plan tree. InstrumentedIterator class added to volcano.js (scaffold for per-operator timing). 69 EXPLAIN tests pass."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: Add EXPLAIN test for Volcano predicate pushdown",
+      "project": "henrydb",
+      "started": "2026-04-22T03:46:43.493Z"
     }
   ],
   "focusProjects": [
@@ -854,6 +865,10 @@
     {
       "time": "2026-04-22T03:37:47.547Z",
       "msg": "Added T57 (BUILD) after end: HenryDB: EXPLAIN ANALYZE with actual execution times via Volcano instrumenting"
+    },
+    {
+      "time": "2026-04-22T03:46:43.375Z",
+      "msg": "Added T58 (BUILD) after end: HenryDB: Add EXPLAIN test for Volcano predicate pushdown"
     }
   ]
 }
