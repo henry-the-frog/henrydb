@@ -86,3 +86,19 @@ Before full liveness analysis, implement **linear scan with explicit frees**:
 - Function with 20 `let` bindings, 5 max live: 0 spills (currently 9)
 - Average function: 2-3 fewer spills
 - Benchmark: fibonacci, quicksort, tree traversal with many local variables
+
+## Existing Liveness Analysis in Monkey-lang
+
+monkey-lang already has:
+- `liveness.js` (237 LOC): backward dataflow, fixed-point iteration
+- `regalloc.js` (198 LOC): register allocation using liveness info
+- `ssa.js` (300 LOC): SSA form construction
+
+These are working and tested (all pass). Options:
+1. Import directly from monkey-lang into RISC-V codegen
+2. Adapt the algorithm (simpler: no SSA needed for simple linear scan)
+
+The liveness algorithm:
+- liveIn(B) = use(B) ∪ (liveOut(B) \ def(B))
+- liveOut(B) = ∪{liveIn(S) | S ∈ succs(B)}
+- Iterate backward over CFG until fixed point
