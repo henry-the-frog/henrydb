@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-22T00:10:46.437Z",
+  "generated": "2026-04-22T00:17:27.507Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add Volcano cost model: basic cardinality estimation + cost-based join order selection",
-    "completedAt": "2026-04-22T00:10:46.437Z",
-    "taskId": "T35",
-    "summary": "Added Volcano cost model: selectivity estimation (equality/range/LIKE/BETWEEN/IS NULL/AND/OR/NOT), cardinality estimation from table stats, join cost comparison (hash/merge/nested loop), cost-based join strategy selection in planner, index scan threshold. 19 new tests, 146 total volcano tests pass. Planner now makes cost-based join decisions instead of always choosing hash.",
+    "task": "Fix MVCC PK violation bug: UPDATE in stale transaction creates duplicate PK instead of detecting committed write conflict. Need EvalPlanQual-style re-check.",
+    "completedAt": "2026-04-22T00:17:27.507Z",
+    "taskId": "T38",
+    "summary": "Fixed critical MVCC bug: UPDATE in stale transaction created duplicate PK rows. Root cause: delete interceptor did not check for committed-after-snapshot write conflicts. Fix: EvalPlanQual-style check — if row xmax was set by a tx in our active set (concurrent tx that committed while we were running), throw serialization failure. All 55 MVCC+transactional tests pass. Also verified write skew detection still works independently.",
     "durationMs": 600000
   },
   "schedule": {
@@ -286,13 +286,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 35,
+    "blocksCompleted": 38,
     "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 8,
+      "THINK": 9,
       "PLAN": 6,
-      "BUILD": 13,
-      "MAINTAIN": 8
+      "BUILD": 14,
+      "MAINTAIN": 9
     }
   }
 }

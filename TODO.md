@@ -7,7 +7,7 @@
 - HenryDB: 1 Volcano operator remaining (Window — CTE, MergeJoin, IndexScan, Union all done) (since 2026-04-20, updated 2026-04-21)
 - HenryDB: db.js now at 4939 lines (SUB-5000 achieved!) — further extraction possible (join exec ~220, EXPLAIN ~350, GROUP BY ~166) (since 2026-04-20, updated 2026-04-21)
 - HenryDB: MVCC interception — MVCCHeap wrapper DONE, but findByPK still falls back to full scan. (since 2026-04-20, updated 2026-04-21)
-- HenryDB: Volcano planner needs cost model — currently no cost-based decisions (uses heuristics only) (since 2026-04-21)
+- HenryDB: Volcano planner has cost model now — next: wire Index scan selectivity threshold (since 2026-04-21, updated 2026-04-21)
 
 ### Low
 - RISC-V: Liveness-based register allocation

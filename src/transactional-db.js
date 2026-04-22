@@ -516,6 +516,18 @@ export class TransactionalDatabase {
               if (otherTx && !otherTx.committed && !otherTx.aborted) {
                 throw new Error(`Write-write conflict on ${name}:${key}`);
               }
+              // EvalPlanQual: if another tx committed AFTER our snapshot was taken,
+              // the row was modified concurrently — reject to prevent stale UPDATE
+              if (otherTx && otherTx.committed) {
+                // Was this transaction NOT committed in our snapshot?
+                // If it was in our activeSet or started after our snapshot.xmax,
+                // it committed after our snapshot → conflict
+                const inActiveSet = tx.snapshot && tx.snapshot.activeSet && tx.snapshot.activeSet.has(otherTx.txId);
+                const startedAfter = tx.snapshot && otherTx.txId >= tx.snapshot.xmax;
+                if (inActiveSet || startedAfter) {
+                  throw new Error(`Serialization failure: row ${name}:${key} was modified by transaction ${otherTx.txId} which committed after our snapshot`);
+                }
+              }
             }
             const oldXmax = ver.xmax;
             ver.xmax = tx.txId;
