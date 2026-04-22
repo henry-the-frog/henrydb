@@ -222,9 +222,48 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
 
   // 4. GROUP BY + aggregates
   const hasAggregates = ast.columns.some(c => c.type === 'aggregate');
+  let groupByExprs = [];
   if (ast.groupBy || hasAggregates) {
-    const groupBy = ast.groupBy || [];
+    let groupBy = ast.groupBy || [];
     const aggregates = [];
+    
+    // Handle expression-based GROUP BY: pre-compute expressions as derived columns
+    const resolvedGroupBy = [];
+    for (let i = 0; i < groupBy.length; i++) {
+      const gb = groupBy[i];
+      if (typeof gb === 'object' && gb.type && gb.type !== 'column_ref') {
+        // Expression GROUP BY — synthesize a column name and add a projection
+        const syntheticName = `__group_expr_${i}`;
+        groupByExprs.push({ name: syntheticName, getter: buildValueGetter(gb) });
+        resolvedGroupBy.push(syntheticName);
+      } else if (typeof gb === 'object' && gb.type === 'column_ref') {
+        resolvedGroupBy.push(gb.name);
+      } else {
+        resolvedGroupBy.push(gb);
+      }
+    }
+    
+    // If there are expression GROUP BY, wrap with a projection that adds computed columns
+    if (groupByExprs.length > 0) {
+      const prevIter = iter;
+      const prevEst = iter._estimatedRows;
+      iter = {
+        _child: prevIter,
+        _estimatedRows: prevEst,
+        open() { this._child.open(); },
+        next() {
+          const row = this._child.next();
+          if (row === null) return null;
+          // Add computed group-by columns
+          for (const expr of groupByExprs) {
+            row[expr.name] = expr.getter(row);
+          }
+          return row;
+        },
+        close() { this._child.close(); },
+        describe() { return { type: 'ComputeGroupBy', children: [this._child] }; },
+      };
+    }
     
     for (const col of ast.columns) {
       if (col.type === 'aggregate') {
@@ -238,7 +277,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       }
     }
     
-    iter = new HashAggregate(iter, groupBy, aggregates);
+    iter = new HashAggregate(iter, resolvedGroupBy, aggregates);
     // Estimate groups: sqrt(input rows) as rough heuristic
     const inputEst = iter._input?._estimatedRows || fromRowCount;
     iter._estimatedRows = Math.max(1, Math.round(Math.sqrt(inputEst)));
@@ -261,7 +300,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   } else if (hasAggregates) {
     // For aggregates, project to rename/select the right columns
     const prevEst = iter._estimatedRows;
-    iter = new Project(iter, buildAggregateProjections(ast.columns));
+    iter = new Project(iter, buildAggregateProjections(ast.columns, groupByExprs));
     iter._estimatedRows = prevEst;
   }
 
@@ -817,7 +856,7 @@ function buildProjections(columns, hasAggregates) {
   }).filter(Boolean);
 }
 
-function buildAggregateProjections(columns) {
+function buildAggregateProjections(columns, groupByExprs) {
   return columns.map(col => {
     if (col.type === 'aggregate') {
       const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
@@ -827,6 +866,14 @@ function buildAggregateProjections(columns) {
     if (col.type === 'column') {
       const name = col.alias || col.name;
       return { name, expr: (row) => row[col.name] ?? row[name] };
+    }
+    // Expression columns (e.g., CASE WHEN ... AS band): look up in synthetic group columns
+    if (col.type === 'expression' && groupByExprs && groupByExprs.length > 0) {
+      const name = col.alias || 'expr';
+      // Try to find a matching synthetic group expression
+      for (const ge of groupByExprs) {
+        return { name, expr: (row) => row[ge.name] };
+      }
     }
     return { name: col.alias || 'expr', expr: () => null };
   });
