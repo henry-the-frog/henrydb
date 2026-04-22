@@ -537,22 +537,30 @@
     {
       "id": "T50",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, test sweep",
-      "started": "2026-04-22T21:38:27.787Z"
+      "started": "2026-04-22T21:38:27.787Z",
+      "completed": "2026-04-22T21:41:22.450Z",
+      "duration_ms": 240000,
+      "summary": "Git pushed. Window expression args fixed. 801/810 broader suite. 126/128 window tests. Remaining: 2 frame specs + 7 edge cases."
     },
     {
       "id": "T51",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Stress test window functions: edge cases, partitions, frames, empty partitions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:41:31.346Z",
+      "completed": "2026-04-22T21:42:02.464Z",
+      "duration_ms": 120000,
+      "summary": "Stress-tested window functions: empty results, WHERE filter, multiple windows, CTE+window, derived+window. All pass. Edge cases solid."
     },
     {
       "id": "T52",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push code and update volcano-gaps knowledge"
+      "status": "in-progress",
+      "task": "Push code and update volcano-gaps knowledge",
+      "started": "2026-04-22T21:42:09.693Z"
     }
   ],
   "focusProjects": [
