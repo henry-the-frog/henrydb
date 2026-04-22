@@ -409,8 +409,49 @@
     {
       "id": "T39",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit fix, test, push",
+      "started": "2026-04-22T00:17:51.897Z",
+      "completed": "2026-04-22T00:17:57.144Z",
+      "duration_ms": 15000,
+      "summary": "Pushed. All verified."
+    },
+    {
+      "id": "T40",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Continue MVCC stress testing: test DELETE conflicts, INSERT-INSERT conflicts, phantom prevention with INSERT, and recovery after crash during transaction.",
+      "started": "2026-04-22T00:18:14.296Z",
+      "completed": "2026-04-22T00:18:56.241Z",
+      "duration_ms": 180000,
+      "summary": "Stress tested 4 more MVCC scenarios: (1) DELETE conflict — correctly rejected with EvalPlanQual. (2) INSERT-INSERT same PK — caught by unique constraint. (3) Phantom INSERT — snapshot isolation protects. (4) Double-reservation — correctly prevented. All scenarios pass. MVCC is solid."
+    },
+    {
+      "id": "T41",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Regenerate dashboard with today's work. Update TASKS.md with latest status.",
+      "started": "2026-04-22T00:19:13.325Z",
+      "completed": "2026-04-22T00:19:31.376Z",
+      "duration_ms": 30000,
+      "summary": "Dashboard regenerated: 43 blocks, 40 done."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write MVCC stress test suite — formalize the 5 scenarios tested today into proper tests",
+      "project": "henrydb",
+      "started": "2026-04-22T00:19:35.201Z",
+      "completed": "2026-04-22T00:20:20.387Z",
+      "duration_ms": 300000,
+      "summary": "Wrote 8 MVCC stress tests covering: EvalPlanQual UPDATE/DELETE conflicts, INSERT-INSERT PK conflict, write skew detection, phantom read prevention, double-reservation prevention, non-conflicting concurrent updates. All 8 pass."
+    },
+    {
+      "id": "T43",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Commit fix, test, push"
+      "task": "Commit, push"
     }
   ],
   "focusProjects": [
@@ -590,6 +631,22 @@
     {
       "time": "2026-04-22T00:13:57.282Z",
       "msg": "Added T39 (MAINTAIN) after T38: Commit fix, test, push"
+    },
+    {
+      "time": "2026-04-22T00:18:09.474Z",
+      "msg": "Added T40 (THINK) after end: Continue MVCC stress testing: test DELETE conflicts, INSERT-INSERT conflicts, phantom prevention with INSERT, and recovery after crash during transaction."
+    },
+    {
+      "time": "2026-04-22T00:19:06.575Z",
+      "msg": "Added T41 (MAINTAIN) after end: Regenerate dashboard with today's work. Update TASKS.md with latest status."
+    },
+    {
+      "time": "2026-04-22T00:19:06.694Z",
+      "msg": "Added T42 (BUILD) after T41: Write MVCC stress test suite — formalize the 5 scenarios tested today into proper tests"
+    },
+    {
+      "time": "2026-04-22T00:19:06.812Z",
+      "msg": "Added T43 (MAINTAIN) after T42: Commit, push"
     }
   ]
 }
