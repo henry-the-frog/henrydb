@@ -160,13 +160,36 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         }
       }
       
-      const predicate = join.on ? buildPredicate(join.on, _ctx) : null;
+      // Handle NATURAL JOIN: find common column names and create equi-join condition
+      let effectiveOn = join.on;
+      if (join.natural && !effectiveOn) {
+        const leftTable = tables.get(fromTableName) || tables.get(fromTableName?.toLowerCase());
+        const rightTable = tables.get(rightTableName) || tables.get(rightTableName?.toLowerCase());
+        if (leftTable?.schema && rightTable?.schema) {
+          const leftCols = new Set(leftTable.schema.map(s => s.name));
+          const commonCols = rightTable.schema.filter(s => leftCols.has(s.name)).map(s => s.name);
+          if (commonCols.length > 0) {
+            // Build AND chain of equi-join conditions
+            const leftAlias = ast.from.alias || fromTableName;
+            effectiveOn = commonCols.reduce((acc, col) => {
+              const cond = {
+                type: 'COMPARE', op: 'EQ',
+                left: { type: 'column_ref', name: `${leftAlias}.${col}` },
+                right: { type: 'column_ref', name: `${rightAlias}.${col}` }
+              };
+              return acc ? { type: 'AND', left: acc, right: cond } : cond;
+            }, null);
+          }
+        }
+      }
+      
+      const predicate = effectiveOn ? buildPredicate(effectiveOn, _ctx) : null;
       
       // Choose join strategy:
       // 1. IndexNestedLoopJoin if inner table has usable index on join key
       // 2. HashJoin for equi-joins
       // 3. NestedLoopJoin as fallback
-      const equiJoin = extractEquiJoinKeys(join.on, ast.from, join);
+      const equiJoin = extractEquiJoinKeys(effectiveOn, ast.from, join);
       
       const isInnerJoin = !join.joinType || join.joinType === 'INNER' || join.joinType === 'CROSS';
       if (equiJoin && isInnerJoin) {
