@@ -158,7 +158,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   // 3. WHERE filter — apply remaining (cross-table) predicates
   const effectiveWhere = residualWhere !== undefined ? residualWhere : ast.where;
   if (effectiveWhere) {
-    const indexScanResult = tryIndexScan(effectiveWhere, ast.from, tables, indexCatalog);
+    const indexScanResult = tryIndexScan(effectiveWhere, ast.from, tables, indexCatalog, tableStats);
     if (indexScanResult) {
       // Replace SeqScan with IndexScan and apply remaining predicates
       iter = indexScanResult.scan;
@@ -250,7 +250,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
  * Looks for equality (col = val) or range (col BETWEEN low AND high) on indexed columns.
  * Returns { scan: IndexScan, residual: remainingWhere } or null.
  */
-function tryIndexScan(where, fromClause, tables, indexCatalog) {
+function tryIndexScan(where, fromClause, tables, indexCatalog, tableStats) {
   if (!where || !fromClause) return null;
   
   const tableName = typeof fromClause === 'string' ? fromClause : fromClause.table;
@@ -261,8 +261,12 @@ function tryIndexScan(where, fromClause, tables, indexCatalog) {
   const columns = tableObj.schema.map(c => c.name);
   const totalRows = tableObj.heap?.rowCount || tableObj.heap?.tupleCount || 0;
   
-  // Cost-based selectivity threshold: skip index if scanning > 30% of table
-  const INDEX_SELECTIVITY_THRESHOLD = 0.30;
+  // I/O cost model constants (PG-inspired)
+  const SEQ_PAGE_COST = 1.0;
+  const RANDOM_PAGE_COST = 4.0;
+  const CPU_TUPLE_COST = 0.01;
+  const CPU_INDEX_TUPLE_COST = 0.005;
+  const ROWS_PER_PAGE = 100; // Approximate
   
   // Check for equality condition: col = literal
   if (where.type === 'COMPARE' && where.op === 'EQ') {
@@ -285,15 +289,18 @@ function tryIndexScan(where, fromClause, tables, indexCatalog) {
     if (colName && value !== undefined) {
       const index = findIndex(tableObj, colName, indexCatalog, tableName);
       if (index) {
-        // Estimate range selectivity: default 33% for range queries
-        // For small tables (< 50 rows), SeqScan is almost always faster
-        const estimatedSelectivity = 0.33;
-        if (totalRows < 50 || estimatedSelectivity > INDEX_SELECTIVITY_THRESHOLD) {
-          // Skip: prefer SeqScan for small tables or wide ranges
-          // Exception: if table is large enough that even 33% is many random I/Os
-          if (totalRows < 500) {
-            return null; // SeqScan wins for small-medium tables with range predicates
-          }
+        // Estimate selectivity using stats if available
+        const sel = estimateSelectivity(where, tableName, tableStats);
+        const estimatedRows = Math.max(1, Math.round(totalRows * sel));
+        
+        // Cost comparison: SeqScan vs IndexScan
+        const numPages = Math.max(1, Math.ceil(totalRows / ROWS_PER_PAGE));
+        const seqScanCost = numPages * SEQ_PAGE_COST + totalRows * CPU_TUPLE_COST;
+        const indexPages = Math.max(1, Math.ceil(estimatedRows / ROWS_PER_PAGE));
+        const indexScanCost = indexPages * RANDOM_PAGE_COST + estimatedRows * CPU_INDEX_TUPLE_COST + estimatedRows * CPU_TUPLE_COST;
+        
+        if (indexScanCost >= seqScanCost) {
+          return null; // SeqScan is cheaper
         }
         
         let low, high;
@@ -331,14 +338,14 @@ function tryIndexScan(where, fromClause, tables, indexCatalog) {
   
   // Check AND: try to extract an indexed condition from one side
   if (where.type === 'AND') {
-    const leftResult = tryIndexScan(where.left, fromClause, tables, indexCatalog);
+    const leftResult = tryIndexScan(where.left, fromClause, tables, indexCatalog, tableStats);
     if (leftResult) {
       const combinedResidual = leftResult.residual
         ? { type: 'AND', left: leftResult.residual, right: where.right }
         : where.right;
       return { scan: leftResult.scan, residual: combinedResidual };
     }
-    const rightResult = tryIndexScan(where.right, fromClause, tables, indexCatalog);
+    const rightResult = tryIndexScan(where.right, fromClause, tables, indexCatalog, tableStats);
     if (rightResult) {
       const combinedResidual = rightResult.residual
         ? { type: 'AND', left: where.left, right: rightResult.residual }
