@@ -2148,7 +2148,13 @@ export class Database {
     if (ast.unpivot) return null; // UNPIVOT queries
     // Skip if WINDOW is used with GROUP BY and aggregate window functions
     const hasWindowFn = ast.columns.some(c => c.type === 'window' || (c.type === 'expression' && c.expr?.over));
-    if (hasWindowFn && ast.groupBy) return null; // Window + GROUP BY interaction
+    if (hasWindowFn) return null; // Window functions not fully supported in Volcano
+    // Skip function-wrapped aggregates (COALESCE(SUM(x), 0)) — not yet supported
+    const hasFuncWrappedAgg = ast.columns.some(c => 
+      (c.type === 'function' || c.type === 'function_call') && 
+      c.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')
+    );
+    if (hasFuncWrappedAgg) return null;
     // Skip JSON operations
     if (JSON.stringify(ast).includes('"->>"') || JSON.stringify(ast).includes('"json_')){
       return null;
