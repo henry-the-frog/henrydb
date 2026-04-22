@@ -305,8 +305,42 @@
     {
       "id": "T29",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit fix, push, run test sweep",
+      "started": "2026-04-22T00:03:10.528Z",
+      "completed": "2026-04-22T00:03:15.984Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. Test sweep: 46 parser + 38 query + 127 volcano = 211 targeted tests pass."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix MERGE parser: support subquery USING clause (MERGE INTO t USING (SELECT ...) AS s ON ...). Second TPC-H failure.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:03:45.642Z",
+      "completed": "2026-04-22T00:05:14.471Z",
+      "duration_ms": 300000,
+      "summary": "Fixed MERGE parser: subquery USING clause now supported. Parser handles (SELECT ...) AS alias syntax. Executor handles sourceSubquery by executing it and using result rows. 62 tests (merge + SQL parser) pass. This fixes the second TPC-H failure — potentially 33/33 now."
+    },
+    {
+      "id": "T31",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Commit fix, push, run test sweep"
+      "task": "Explore db.js duplicate methods — there are duplicate _executePrepared, _truncate, _declareCursor, _fetch, _closeCursor. Investigate which ones are live and clean up."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Remove dead duplicate methods from db.js after investigation",
+      "project": "henrydb"
+    },
+    {
+      "id": "T33",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, push, full sweep"
     }
   ],
   "focusProjects": [
@@ -446,6 +480,22 @@
     {
       "time": "2026-04-21T23:59:43.258Z",
       "msg": "Added T29 (MAINTAIN) after T28: Commit fix, push, run test sweep"
+    },
+    {
+      "time": "2026-04-22T00:03:26.280Z",
+      "msg": "Added T30 (BUILD) after end: Fix MERGE parser: support subquery USING clause (MERGE INTO t USING (SELECT ...) AS s ON ...). Second TPC-H failure."
+    },
+    {
+      "time": "2026-04-22T00:03:32.882Z",
+      "msg": "Added T31 (THINK) after T30: Explore db.js duplicate methods — there are duplicate _executePrepared, _truncate, _declareCursor, _fetch, _closeCursor. Investigate which ones are live and clean up."
+    },
+    {
+      "time": "2026-04-22T00:03:39.755Z",
+      "msg": "Added T32 (BUILD) after T31: Remove dead duplicate methods from db.js after investigation"
+    },
+    {
+      "time": "2026-04-22T00:03:39.872Z",
+      "msg": "Added T33 (MAINTAIN) after T32: Commit, push, full sweep"
     }
   ]
 }

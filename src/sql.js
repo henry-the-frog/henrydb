@@ -1699,10 +1699,27 @@ export function parse(sql) {
     }
     
     expect('KEYWORD', 'USING');
-    const source = advance().value;
+    let source, sourceSubquery = null;
     let sourceAlias = null;
-    if (peek() && peek().type === 'IDENT' && !isKeyword('ON')) {
-      sourceAlias = advance().value;
+    
+    if (peek().type === '(') {
+      // Subquery source: USING (SELECT ...) AS alias
+      advance(); // (
+      sourceSubquery = parseSelect();
+      expect(')');
+      source = null;
+      // Parse alias: AS alias or just alias
+      if (isKeyword('AS')) {
+        advance();
+        sourceAlias = advance().value;
+      } else if (peek() && peek().type === 'IDENT' && !isKeyword('ON')) {
+        sourceAlias = advance().value;
+      }
+    } else {
+      source = advance().value;
+      if (peek() && peek().type === 'IDENT' && !isKeyword('ON')) {
+        sourceAlias = advance().value;
+      }
     }
     
     expect('KEYWORD', 'ON');
@@ -1757,6 +1774,7 @@ export function parse(sql) {
       type: 'MERGE',
       target, targetAlias: targetAlias || target,
       source, sourceAlias: sourceAlias || source,
+      sourceSubquery,
       condition, whenClauses
     };
   }

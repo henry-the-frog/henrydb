@@ -841,14 +841,25 @@ export class Database {
   _merge(ast) {
     const targetTable = this.tables.get(ast.target);
     if (!targetTable) throw new Error(`Table ${ast.target} not found`);
-    const sourceTable = this.tables.get(ast.source);
-    if (!sourceTable) throw new Error(`Table ${ast.source} not found`);
+    
+    // Get source rows — either from table or subquery
+    let sourceRows;
+    let sourceAlias = ast.sourceAlias;
+    if (ast.sourceSubquery) {
+      const result = this.execute_ast(ast.sourceSubquery);
+      sourceRows = result.rows;
+    } else {
+      const sourceTable = this.tables.get(ast.source);
+      if (!sourceTable) throw new Error(`Table ${ast.source} not found`);
+      sourceRows = [...sourceTable.heap.scan()].map(entry => 
+        this._valuesToRow(entry.values, sourceTable.schema, ast.source)
+      );
+    }
     
     let inserted = 0, updated = 0, deleted = 0;
     
     // For each source row, check if it matches any target row
-    for (const sourceEntry of sourceTable.heap.scan()) {
-      const sourceRow = this._valuesToRow(sourceEntry.values, sourceTable.schema, ast.source);
+    for (const sourceRow of sourceRows) {
       
       let matched = false;
       // Scan target for matching rows
