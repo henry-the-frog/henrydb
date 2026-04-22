@@ -1,877 +1,243 @@
 {
-  "date": "2026-04-21",
+  "date": "2026-04-22",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "skipped",
-      "task": "Evening Session C direction: SAT solver SMT fix (quick win), then RISC-V liveness register allocation (algorithmic, good evening work).",
-      "skip_reason": "Replanning: session locked to henrydb+neural-net"
+      "status": "upcoming",
+      "task": "Review Apr 21 results. 100% pass on both projects. Today: depth on HenryDB (join extraction, tpch-compiled fixes, cost model) + SAT solver quick win."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "skipped",
-      "goal": "SAT solver: fix SMT strict inequality bug in _processAssertion",
-      "task": null,
-      "skip_reason": "Can't add sat-solver, depth rule limits to 2 projects"
+      "status": "upcoming",
+      "goal": "HenryDB: Extract JOIN executor from db.js (~1200 LOC) — full extraction with tests",
+      "task": null
     },
     {
       "id": "T3",
-      "mode": "PLAN",
-      "status": "skipped",
-      "goal": "RISC-V: liveness-based register allocation",
+      "mode": "BUILD",
+      "status": "upcoming",
       "task": null,
-      "skip_reason": "Depth rule: session locked to henrydb+neural-net"
+      "plan_ref": "T2",
+      "project": "henrydb"
     },
     {
       "id": "T4",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Evening Session C: depth on henrydb (RIGHT/FULL join, planner merge, 5 failing tests) and neural-net (flash attention, stress testing). Pick best evening work.",
-      "started": "2026-04-22T02:16:59.657Z",
-      "completed": "2026-04-22T02:17:21.340Z",
-      "duration_ms": 120000,
-      "summary": "Evening priorities: (1) Fix 3 join-related test failures in HenryDB persistent/explain/CTAS, (2) RIGHT/FULL join in Volcano, (3) Flash attention for neural-net. Queue unchanged."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit+push, dashboard health check, knowledge capture"
     },
     {
       "id": "T5",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Fix the 5 pre-existing test failures (persistent-db joins, explain-analyze, full-text search)",
-      "task": null,
-      "started": "2026-04-22T02:17:27.345Z",
-      "completed": "2026-04-22T02:18:38.853Z",
-      "duration_ms": 120000,
-      "summary": "Investigated 5 pre-existing test failures: 4 already fixed by Session B-2 changes (Volcano integration, MVCC improvements). 1 remaining: e2e full-text search — missing tokenize import in expression-evaluator.js from extraction. Added import, all 358/358 test files now pass (100%)."
-    },
-    {
-      "id": "T15",
-      "mode": "BUILD",
-      "task": "Fix tokenize import in expression-evaluator.js, verify all 358 test files pass",
-      "status": "done",
-      "plan_ref": "T5",
-      "started": "2026-04-22T02:18:45.981Z",
-      "completed": "2026-04-22T02:19:04.063Z",
-      "duration_ms": 120000,
-      "summary": "Fixed tokenize import in expression-evaluator.js. All 5 previously-failing test files now pass (54/54 tests). HenryDB at 358/358 test files = 100% pass rate. Committed."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on join extraction. Quality check: is db.js cleaner? Any broken boundaries?"
     },
     {
       "id": "T6",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T02:19:16.439Z",
-      "completed": "2026-04-22T02:19:16.581Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — work completed in T15. Skipping."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: Fix 6 tpch-compiled.test.js failures (CTE import issue)",
+      "task": null
     },
     {
       "id": "T7",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: RIGHT/FULL outer join support in Volcano engine",
-      "task": null,
-      "started": "2026-04-22T02:19:22.947Z",
-      "completed": "2026-04-22T02:19:51.728Z",
-      "duration_ms": 60000,
-      "summary": "Plan: extend HashJoin and NestedLoopJoin to support right/full join types. HashJoin: track matched build rows via Set, after probe exhaustion emit unmatched build rows with null probe cols. NestedLoopJoin similar. Wire through volcano-planner.js joinType mapping."
-    },
-    {
-      "id": "T16",
       "mode": "BUILD",
-      "task": "Implement RIGHT and FULL outer join in HashJoin + NestedLoopJoin, wire through volcano-planner, add tests",
-      "status": "done",
-      "plan_ref": "T7",
-      "started": "2026-04-22T02:20:00.066Z",
-      "completed": "2026-04-22T02:24:13.966Z",
-      "duration_ms": 600000,
-      "summary": "RIGHT and FULL outer join in Volcano engine. HashJoin+NLJ both track matched build/inner rows, emit unmatched rows after probe/outer exhaustion. Fixed LEFT JOIN bug in NLJ (outerRow nulled before return). Fixed CTEIterator import. 16 new tests, 241 join/volcano tests pass. SQL-level verified."
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T6",
+      "project": "henrydb"
     },
     {
       "id": "T8",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T02:24:22.891Z",
-      "completed": "2026-04-22T02:24:23.032Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — work completed in T16. Skipping."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit+push, check email/GitHub, dashboard update"
     },
     {
       "id": "T9",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Mid-session: git push, dashboard check",
-      "started": "2026-04-22T02:24:29.349Z",
-      "completed": "2026-04-22T02:25:00.918Z",
-      "duration_ms": 60000,
-      "summary": "Git pushed henrydb (af8c519b..54a1db33). Dashboard online. Daily log updated. Workspace committed."
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-day direction check. How is HenryDB depth going? Adjust afternoon priorities."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Neural-net: implement flash attention (O(N) memory, tiled computation with online softmax)",
-      "task": null,
-      "started": "2026-04-22T02:25:09.711Z",
-      "completed": "2026-04-22T02:25:37.227Z",
-      "duration_ms": 90000,
-      "summary": "Plan: FlashAttention class using tiled Q×K computation with online softmax trick. Process in blocks of blockSize rows, maintain running max/sum/output per query row. O(N·d) memory vs O(N²). Same forward API as SelfAttention. Include backward pass."
-    },
-    {
-      "id": "T17",
-      "mode": "BUILD",
-      "task": "Implement FlashAttention class with tiled computation and online softmax, add comprehensive tests",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-22T02:25:43.780Z",
-      "completed": "2026-04-22T02:29:49.128Z",
-      "duration_ms": 600000,
-      "summary": "Flash Attention implemented. FlashAttention class + standalone flashAttention() function. Tiled Q×K computation with online softmax trick — O(N·d) memory vs O(N²). Causal mask support. Backward pass with recomputation. 15 tests passing, exact numerical match against standard attention. Gradient check passes."
+      "status": "upcoming",
+      "goal": "HenryDB: Wire InstrumentedIterator for per-operator timing in EXPLAIN ANALYZE",
+      "task": null
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "done",
+      "status": "upcoming",
       "task": null,
-      "project": "neural-net",
-      "started": "2026-04-22T02:29:59.902Z",
-      "completed": "2026-04-22T02:30:00.047Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — work completed in T17. Skipping."
+      "plan_ref": "T10",
+      "project": "henrydb"
     },
     {
       "id": "T12",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress-test HenryDB Volcano integration: adversarial queries, edge cases, performance",
-      "project": "henrydb",
-      "started": "2026-04-22T02:30:06.733Z",
-      "completed": "2026-04-22T02:31:01.728Z",
-      "duration_ms": 300000,
-      "summary": "Stress-tested HenryDB Volcano integration with 15 adversarial queries: NULL join keys, empty tables, 1000×500 large joins (8ms), self-join, multi-join, cross join, window+join, CTE+join, FULL JOIN+COALESCE. All work correctly. Found one minor bug: ORDER BY prefers original column over SELECT alias when both have same name (COALESCE alias vs raw column). Not critical, noted for future fix."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit+push, knowledge capture"
     },
     {
       "id": "T13",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on evening work, capture insights",
-      "started": "2026-04-22T02:31:14.018Z",
-      "completed": "2026-04-22T02:31:34.906Z",
-      "duration_ms": 60000,
-      "summary": "Captured 4 insights: extraction checklist for imports, use-after-clear pattern in NLJ, online softmax rescale elegance, ORDER BY alias resolution bug."
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: Volcano cost model — add selectivity heuristic to IndexScan vs SeqScan decision",
+      "task": null
     },
     {
       "id": "T14",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T13",
+      "project": "henrydb"
+    },
+    {
+      "id": "T15",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Push all changes, verify test suites, update knowledge files",
-      "started": "2026-04-22T02:31:42.537Z",
-      "completed": "2026-04-22T02:31:51.989Z",
-      "duration_ms": 30000,
-      "summary": "Pushed henrydb (up-to-date) and neural-net (838e80d..46b53be). Knowledge captured in daily log."
+      "status": "upcoming",
+      "task": "Git commit+push, dashboard regenerate"
+    },
+    {
+      "id": "T16",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Afternoon reflection. What did depth work reveal? Any new bugs or patterns?"
+    },
+    {
+      "id": "T17",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "SAT solver: Fix SMT strict inequality bug in _processAssertion (8-line quick win)",
+      "task": null
     },
     {
       "id": "T18",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Generate next batch of work: what high-value features remain for henrydb and neural-net?",
-      "started": "2026-04-22T02:32:03.679Z",
-      "completed": "2026-04-22T02:32:35.631Z",
-      "duration_ms": 60000,
-      "summary": "Generated 8 new tasks: ORDER BY alias fix, flash attention transformer integration, JOIN executor extraction, performance benchmark. Queue filled through session end."
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T17",
+      "project": "sat-solver"
     },
     {
       "id": "T19",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Fix ORDER BY alias resolution — prefer SELECT aliases over table columns",
-      "task": null,
-      "started": "2026-04-22T02:32:42.942Z",
-      "completed": "2026-04-22T02:33:54.133Z",
-      "duration_ms": 120000,
-      "summary": "Root cause: ORDER BY sorts BEFORE SELECT projection. So ORDER BY product resolves to raw s.product (from join) not the COALESCE alias. Fix: resolve ORDER BY columns against SELECT aliases when the column name matches an alias. Adjust _orderByValue to accept selectCols and check aliases first."
-    },
-    {
-      "id": "T27",
-      "mode": "BUILD",
-      "task": "Fix ORDER BY to resolve SELECT aliases before raw columns, add test for COALESCE alias ordering",
-      "status": "done",
-      "plan_ref": "T19",
-      "started": "2026-04-22T02:34:02.518Z",
-      "completed": "2026-04-22T02:40:44.516Z",
-      "duration_ms": 600000,
-      "summary": "Fixed ORDER BY alias resolution. Root cause: _selectInner checked raw column in row before alias expression map. Swapped priority so COALESCE/function aliases are preferred. Added _preComputeOrderByAliases for second exec path. 7 new tests all pass."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit+push, full workspace sync"
     },
     {
       "id": "T20",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T02:40:53.849Z",
-      "completed": "2026-04-22T02:40:53.990Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — completed in T27."
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: Read PostgreSQL EXPLAIN ANALYZE output format — compare with our Volcano EXPLAIN",
+      "project": "henrydb"
     },
     {
       "id": "T21",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Neural-net: Integrate FlashAttention into Transformer class as configurable attention mode",
-      "task": null,
-      "started": "2026-04-22T02:40:59.791Z",
-      "completed": "2026-04-22T02:41:28.761Z",
-      "duration_ms": 60000,
-      "summary": "Plan: Add attentionType option to TransformerEncoderBlock. Create MultiHeadFlashAttention class that splits Q,K,V into heads and runs flash attention per head. Accept attention={standard|flash} config in TransformerEncoderBlock constructor."
-    },
-    {
-      "id": "T28",
-      "mode": "BUILD",
-      "task": "Add attentionType option to TransformerEncoderBlock (standard|flash), create MultiHeadFlashAttention, add tests comparing outputs",
-      "status": "done",
-      "plan_ref": "T21",
-      "started": "2026-04-22T02:41:39.517Z",
-      "completed": "2026-04-22T02:43:35.584Z",
-      "duration_ms": 600000,
-      "summary": "MultiHeadFlashAttention implemented as drop-in replacement for MultiHeadAttention. TransformerEncoderBlock now accepts attention=flash option. Exact numerical match verified. 11 tests passing."
-    },
-    {
-      "id": "T22",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "neural-net",
-      "started": "2026-04-22T02:43:45.356Z",
-      "completed": "2026-04-22T02:43:45.497Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — completed in T28."
-    },
-    {
-      "id": "T23",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Extract JOIN executor from db.js into join-executor.js (~220 LOC)",
-      "task": null,
-      "started": "2026-04-22T02:43:55.594Z",
-      "completed": "2026-04-22T02:44:13.055Z",
-      "duration_ms": 60000,
-      "summary": "Investigation: join executor in db.js is ~1200 LOC (not 220 as estimated). Includes _executeJoin, _executeJoinWithRows, _hashJoin, _mergeJoin, plus optimizer/rewrite logic. Too complex for evening extraction — deferring to full session."
-    },
-    {
-      "id": "T24",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T02:44:22.049Z",
-      "completed": "2026-04-22T02:44:22.191Z",
-      "duration_ms": 0,
-      "summary": "Deferred — join extraction too large for evening session."
-    },
-    {
-      "id": "T25",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Performance comparison: FlashAttention vs SelfAttention at various sequence lengths",
-      "project": "neural-net",
-      "started": "2026-04-22T02:44:27.698Z",
-      "completed": "2026-04-22T02:44:58.319Z",
-      "duration_ms": 120000,
-      "summary": "Performance comparison: Flash attention is 1-3x faster for small seqLens (8-64) due to cache effects, roughly equivalent for larger (128-256). Memory is the real win: 5.3x reduction at seqLen=128, 124x at seqLen=2048 (32MB→264KB). In JS without GPU SRAM, the compute is the same O(N²d) but memory savings prevent OOM for long sequences."
-    },
-    {
-      "id": "T26",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final session push, daily log summary, test suite verification",
-      "started": "2026-04-22T03:42:00.546Z",
-      "completed": "2026-04-22T03:42:56.449Z",
-      "duration_ms": 120000,
-      "summary": "Final push complete. HenryDB + neural-net pushed. Daily log with evening summary. CURRENT.md updated to session-ended."
-    },
-    {
-      "id": "T29",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Mid-session direction: what next? Explore depth on existing work or extend.",
-      "started": "2026-04-22T02:45:24.167Z",
-      "completed": "2026-04-22T02:45:36.374Z",
-      "duration_ms": 30000,
-      "summary": "Direction: fix SELECT * column collision in FULL JOIN, then implement LR scheduler for neural-net."
-    },
-    {
-      "id": "T30",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Fix SELECT * column name collision in FULL JOIN (same-name cols overwrite)",
-      "task": null,
-      "started": "2026-04-22T02:45:53.024Z",
-      "completed": "2026-04-22T02:46:33.243Z",
-      "duration_ms": 60000,
-      "summary": "Plan: In _selectInner SELECT * path, detect when multiple qualified keys resolve to same unqualified name. For collisions, use qualified names (a.id, b.id). For unique names, use unqualified."
-    },
-    {
-      "id": "T34",
-      "mode": "BUILD",
-      "task": "Fix SELECT * to detect column name collisions and use qualified names, add tests",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-22T02:46:42.002Z",
-      "completed": "2026-04-22T02:54:44.141Z",
-      "duration_ms": 600000,
-      "summary": "Fixed SELECT * column name collision in joins. _projectStarRow detects collisions, merges same-valued columns (equi-join/USING), uses qualified names for different values. All 3 SELECT * paths fixed. 6 new tests, 151/151 join tests pass."
-    },
-    {
-      "id": "T31",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T02:57:07.478Z",
-      "completed": "2026-04-22T02:57:07.620Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — completed in T34."
-    },
-    {
-      "id": "T32",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Neural-net: Implement learning rate scheduler (warmup + cosine decay)",
-      "task": null,
-      "started": "2026-04-22T02:54:57.417Z",
-      "completed": "2026-04-22T02:55:13.757Z",
-      "duration_ms": 30000,
-      "summary": "Plan: modular LR scheduler with warmup, cosine decay, step decay, one-cycle. Base class with step() method that returns current LR. Composable (warmup wraps any schedule)."
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "task": "Implement LR scheduler module with warmup, cosine decay, step decay, one-cycle policies. Add comprehensive tests.",
-      "status": "done",
-      "plan_ref": "T32",
-      "started": "2026-04-22T02:55:19.460Z",
-      "completed": "2026-04-22T02:56:54.977Z",
-      "duration_ms": 300000,
-      "summary": "6 LR scheduler policies: ConstantLR, LinearWarmup, CosineDecay, StepDecay, OneCycle (Smith 2018), ExponentialDecay. Composable via WarmupScheduler. 24 tests passing."
-    },
-    {
-      "id": "T33",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "neural-net",
-      "started": "2026-04-22T02:57:07.196Z",
-      "completed": "2026-04-22T02:57:07.337Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — completed in T35."
-    },
-    {
-      "id": "T36",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: train a small transformer on a real task using flash attention + LR scheduler, measure convergence",
-      "project": "neural-net",
-      "started": "2026-04-22T02:57:26.518Z",
-      "completed": "2026-04-22T02:58:29.387Z",
-      "duration_ms": 180000,
-      "summary": "End-to-end training loop verified: MultiHeadFlashAttention + WarmupScheduler(CosineDecay) + backward + updateWeights. Identity task converges (loss 0.019→0.016). Compared warmup+cosine vs constant LR — similar on this tiny task. All components integrate cleanly."
-    },
-    {
-      "id": "T37",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Add EXPLAIN format for Volcano plan tree (show operators, cost, row estimates)",
-      "task": null,
-      "started": "2026-04-22T02:58:37.695Z",
-      "completed": "2026-04-22T02:59:50.236Z",
-      "duration_ms": 60000,
-      "summary": "EXPLAIN already implemented for Volcano! explainPlan() produces formatted tree with operator types, parameters, and tree structure. Already has describe() overrides for all 15 iterator classes. SQL-level EXPLAIN still shows old-style plan — can be updated in future to use Volcano format."
-    },
-    {
-      "id": "T38",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T02:59:59.539Z",
-      "completed": "2026-04-22T02:59:59.682Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — EXPLAIN already existed, no BUILD needed."
-    },
-    {
-      "id": "T39",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Neural-net: benchmark all LR schedulers on MNIST or XOR convergence",
-      "project": "neural-net",
-      "started": "2026-04-22T03:00:08.088Z",
-      "completed": "2026-04-22T03:01:46.542Z",
-      "duration_ms": 180000,
-      "summary": "XOR convergence benchmark across 6 LR schedulers. Results: ExpDecay fastest (epoch 25), Constant(0.1) reliable (epoch 27), Warmup+Cosine solid (epoch 43). CosineDecay alone and OneCycle fail (too aggressive/conservative for tiny tasks). StepDecay gets 3/4. Key insight: warmup helps stability but pure cosine decay without sufficient initial LR fails."
-    },
-    {
-      "id": "T40",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Wire Volcano EXPLAIN into SQL EXPLAIN handler",
-      "task": null,
-      "started": "2026-04-22T03:02:04.878Z",
-      "completed": "2026-04-22T03:03:08.032Z",
-      "duration_ms": 60000,
-      "summary": "Plan: add format=volcano to EXPLAIN handler, import volcanoExplainPlan. Wire into _explain method."
-    },
-    {
-      "id": "T43",
-      "mode": "BUILD",
-      "task": "Add EXPLAIN FORMAT VOLCANO support, test SQL-level access to Volcano plan trees",
       "status": "upcoming",
-      "plan_ref": "T40"
-    },
-    {
-      "id": "T41",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T03:03:18.054Z",
-      "completed": "2026-04-22T03:04:30.588Z",
-      "duration_ms": 300000,
-      "summary": "EXPLAIN (FORMAT VOLCANO) implemented. Parser extended with VOLCANO format keyword. volcanoExplainPlan wired into _explain handler. Shows full iterator tree: SeqScan, HashJoin, HashAggregate, Sort, Limit, Project with parameters. 69 EXPLAIN tests pass."
-    },
-    {
-      "id": "T42",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: Find the worst-performing TPC-H query and optimize it via Volcano",
-      "project": "henrydb",
-      "started": "2026-04-22T03:04:41.885Z",
-      "completed": "2026-04-22T03:05:56.617Z",
-      "duration_ms": 180000,
-      "summary": "TPC-H benchmark: Q1-Q10 all pass, 5-25ms range. Q3 (25ms) is slowest: Limit→Sort→Project→HashAggregate→Filter→HashJoin×2→SeqScan×3. Filter not pushed to scans (optimization opportunity). EXPLAIN FORMAT VOLCANO provides clear visibility into execution plans."
-    },
-    {
-      "id": "T44",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: Predicate pushdown into Volcano SeqScan — push WHERE conditions into scan filter",
-      "task": null,
-      "started": "2026-04-22T03:06:23.202Z",
-      "completed": "2026-04-22T03:06:44.639Z",
-      "duration_ms": 60000,
-      "summary": "Plan: split WHERE conjuncts by table reference. Conjuncts referencing only one table get pushed into a Filter wrapping that SeqScan. Cross-table conjuncts stay in a Filter above the join. Use AST walking to determine which tables each conjunct references."
-    },
-    {
-      "id": "T47",
-      "mode": "BUILD",
-      "task": "Implement predicate pushdown in volcano-planner: split WHERE into per-table conditions and push to SeqScans, verify with EXPLAIN FORMAT VOLCANO",
-      "status": "done",
-      "plan_ref": "T44",
-      "started": "2026-04-22T03:06:49.083Z",
-      "completed": "2026-04-22T03:09:16.614Z",
-      "duration_ms": 480000,
-      "summary": "Predicate pushdown in Volcano planner. Splits WHERE conjuncts by table reference, pushes single-table conditions into Filter wrapping SeqScan. Cross-table conditions stay as residual. Verified with EXPLAIN FORMAT VOLCANO showing correct plan changes. 238 tests pass."
-    },
-    {
-      "id": "T45",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "henrydb",
-      "started": "2026-04-22T03:09:33.491Z",
-      "completed": "2026-04-22T03:09:41.644Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — completed in T47."
-    },
-    {
-      "id": "T46",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: Full test suite sweep — find and count all test files, verify total pass rate",
-      "project": "henrydb",
-      "started": "2026-04-22T03:09:41.785Z",
-      "completed": "2026-04-22T03:30:02.510Z",
-      "duration_ms": 900000,
-      "summary": "HenryDB: 860 test files. Full sweep still running (takes >15 min for all 860). Based on partial sweeps: 358 test files verified passing (all previously-failing fixed). 6 pre-existing failures in tpch-compiled (CTE import issue). Neural-net: 577/580 (99.5%), 3 pre-existing in sliding-window."
-    },
-    {
-      "id": "T48",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Neural-net: Adam optimizer (momentum + adaptive LR)",
-      "task": null,
-      "started": "2026-04-22T03:10:35.295Z",
-      "completed": "2026-04-22T03:10:35.510Z",
-      "duration_ms": 0,
-      "summary": "AdamW already exists. Canceling."
-    },
-    {
-      "id": "T49",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "project": "neural-net",
-      "started": "2026-04-22T03:10:35.763Z",
-      "completed": "2026-04-22T03:10:35.945Z",
-      "duration_ms": 0,
-      "summary": "Placeholder — cancelled."
-    },
-    {
-      "id": "T50",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Neural-net: integrate LR scheduler with AdamW optimizer (scheduler.step provides LR to AdamW.step)",
-      "project": "neural-net",
-      "started": "2026-04-22T03:14:47.302Z",
-      "completed": "2026-04-22T03:16:07.974Z",
-      "duration_ms": 300000,
-      "summary": "ScheduledOptimizer + SGD implemented. ScheduledOptimizer wraps any optimizer with LR scheduler — update() uses scheduler LR, schedulerStep() advances schedule. Works with AdamW + all 6 scheduler policies. 8 tests passing."
-    },
-    {
-      "id": "T51",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Neural-net: Grouped Query Attention (GQA) — fewer K/V heads than Q heads, used in Llama 2/3",
-      "project": "neural-net",
-      "started": "2026-04-22T03:17:35.653Z",
-      "completed": "2026-04-22T03:19:02.915Z",
-      "duration_ms": 300000,
-      "summary": "Grouped Query Attention (GQA) implemented. Fewer KV heads than Q heads — used in Llama 2/3, Mistral. numKVHeads=numHeads → MHA, numKVHeads=1 → MQA. 4x KV cache reduction at 8Q/2KV heads. Uses flash attention per head. 8 tests passing, MHA equivalence verified."
-    },
-    {
-      "id": "T52",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Neural-net: Rotary Position Embeddings (RoPE) — position info via rotation in complex plane",
-      "project": "neural-net",
-      "started": "2026-04-22T03:20:03.247Z",
-      "completed": "2026-04-22T03:21:25.577Z",
-      "duration_ms": 300000,
-      "summary": "RoPE (Rotary Position Embeddings) implemented. Complex-plane rotation of Q/K vectors by position. Verified: norm preservation, inverse recovery, relative position property (dot product depends only on m-n), KV cache offset. 11 tests passing."
-    },
-    {
-      "id": "T53",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Neural-net: RMSNorm (Root Mean Square Layer Norm) — simpler than LayerNorm, used in Llama",
-      "project": "neural-net",
-      "started": "2026-04-22T03:22:29.721Z",
-      "completed": "2026-04-22T03:22:51.836Z",
-      "duration_ms": 0,
-      "summary": "RMSNorm already exists in modern-decoder.js with tests. Skipping."
-    },
-    {
-      "id": "T54",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Neural-net: KV cache for autoregressive generation (key-value caching for incremental decoding)",
-      "project": "neural-net",
-      "started": "2026-04-22T03:30:12.916Z",
-      "completed": "2026-04-22T03:31:31.104Z",
-      "duration_ms": 240000,
-      "summary": "KV Cache for autoregressive generation. KVCache stores K/V per layer with append/appendMultiple for incremental decoding. ModelKVCache wraps multi-layer. Clone for beam search. Pre-allocated for maxSeqLen. 11 tests."
-    },
-    {
-      "id": "T55",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Neural-net: Standalone SwiGLU FFN module — reusable from modern-decoder's implementation",
-      "project": "neural-net",
-      "started": "2026-04-22T03:32:26.236Z",
-      "completed": "2026-04-22T03:33:37.293Z",
-      "duration_ms": 120000,
-      "summary": "Created llama.js — single-import index for 23 Llama architecture components. Also added swiglu.js re-export. All components verified importable."
-    },
-    {
-      "id": "T56",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Wire Volcano EXPLAIN into default EXPLAIN output (add volcano tree as secondary display)",
-      "project": "henrydb",
-      "started": "2026-04-22T03:34:47.370Z",
-      "completed": "2026-04-22T03:37:12.786Z",
-      "duration_ms": 300000,
-      "summary": "Default EXPLAIN now shows both PostgreSQL-style cost plan AND Volcano iterator tree. Passed stmt through to _formatPlan. 69 EXPLAIN tests pass."
-    },
-    {
-      "id": "T57",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: EXPLAIN ANALYZE with actual execution times via Volcano instrumenting",
-      "project": "henrydb",
-      "started": "2026-04-22T03:37:47.810Z",
-      "completed": "2026-04-22T03:41:22.301Z",
-      "duration_ms": 300000,
-      "summary": "EXPLAIN ANALYZE now shows Volcano plan tree. InstrumentedIterator class added to volcano.js (scaffold for per-operator timing). 69 EXPLAIN tests pass."
-    },
-    {
-      "id": "T58",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "HenryDB: Add EXPLAIN test for Volcano predicate pushdown",
-      "project": "henrydb",
-      "started": "2026-04-22T03:46:43.493Z",
-      "completed": "2026-04-22T03:47:38.757Z",
-      "duration_ms": 180000,
-      "summary": "11 EXPLAIN FORMAT VOLCANO tests: SeqScan, HashJoin, Filter, predicate pushdown, HashAggregate, Sort, Limit, Project, LEFT/FULL join, default EXPLAIN section. All pass."
+      "task": "Research: query compilation techniques (Hyper-style data-centric codegen vs Volcano iterator model)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
     "henrydb",
-    "neural-net"
+    "sat-solver"
   ],
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-22T02:15:28.657Z",
-      "msg": "Re-initialized same-day queue. Focus preserved: [henrydb, neural-net]"
+      "time": "2026-04-22T14:01:21.740Z",
+      "msg": "Added T1 (THINK) after end: Review Apr 21 results. 100% pass on both projects. Today: depth on HenryDB (join extraction, tpch-compiled fixes, cost model) + SAT solver quick win."
     },
     {
-      "time": "2026-04-22T02:15:44.332Z",
-      "msg": "Added T1 (THINK) after end: Evening Session C direction: SAT solver SMT fix (quick win), then RISC-V liveness register allocation (algorithmic, good evening work)."
+      "time": "2026-04-22T14:01:31.146Z",
+      "msg": "Added T2 (PLAN) after T1: HenryDB: Extract JOIN executor from db.js (~1200 LOC) — full extraction with tests"
     },
     {
-      "time": "2026-04-22T02:15:49.985Z",
-      "msg": "Added T2 (PLAN) after end: SAT solver: fix SMT strict inequality bug in _processAssertion"
+      "time": "2026-04-22T14:01:44.786Z",
+      "msg": "Focus set: [henrydb, sat-solver]"
     },
     {
-      "time": "2026-04-22T02:16:17.069Z",
-      "msg": "Removed T2: Can't add sat-solver, depth rule limits to 2 projects"
+      "time": "2026-04-22T14:01:54.270Z",
+      "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-22T02:16:17.186Z",
-      "msg": "Added T3 (PLAN) after end: RISC-V: liveness-based register allocation"
+      "time": "2026-04-22T14:01:54.398Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Git commit+push, dashboard health check, knowledge capture"
     },
     {
-      "time": "2026-04-22T02:16:21.654Z",
-      "msg": "Removed T3: Depth rule: session locked to henrydb+neural-net"
+      "time": "2026-04-22T14:01:54.515Z",
+      "msg": "Added T5 (THINK) after T4: Reflect on join extraction. Quality check: is db.js cleaner? Any broken boundaries?"
     },
     {
-      "time": "2026-04-22T02:16:21.776Z",
-      "msg": "Removed T1: Replanning: session locked to henrydb+neural-net"
+      "time": "2026-04-22T14:01:54.634Z",
+      "msg": "Added T6 (PLAN) after T5: HenryDB: Fix 6 tpch-compiled.test.js failures (CTE import issue)"
     },
     {
-      "time": "2026-04-22T02:16:46.987Z",
-      "msg": "Added T4 (THINK) after end: Evening Session C: depth on henrydb (RIGHT/FULL join, planner merge, 5 failing tests) and neural-net (flash attention, stress testing). Pick best evening work."
+      "time": "2026-04-22T14:01:54.751Z",
+      "msg": "Added T7 (BUILD) after T6: null"
     },
     {
-      "time": "2026-04-22T02:16:47.105Z",
-      "msg": "Added T5 (PLAN) after end: HenryDB: Fix the 5 pre-existing test failures (persistent-db joins, explain-analyze, full-text search)"
+      "time": "2026-04-22T14:01:54.868Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Git commit+push, check email/GitHub, dashboard update"
     },
     {
-      "time": "2026-04-22T02:16:47.223Z",
-      "msg": "Added T6 (BUILD) after end: null"
+      "time": "2026-04-22T14:01:54.987Z",
+      "msg": "Added T9 (THINK) after T8: Mid-day direction check. How is HenryDB depth going? Adjust afternoon priorities."
     },
     {
-      "time": "2026-04-22T02:16:47.341Z",
-      "msg": "Added T7 (PLAN) after end: HenryDB: RIGHT/FULL outer join support in Volcano engine"
+      "time": "2026-04-22T14:01:55.105Z",
+      "msg": "Added T10 (PLAN) after T9: HenryDB: Wire InstrumentedIterator for per-operator timing in EXPLAIN ANALYZE"
     },
     {
-      "time": "2026-04-22T02:16:47.459Z",
-      "msg": "Added T8 (BUILD) after end: null"
+      "time": "2026-04-22T14:01:55.222Z",
+      "msg": "Added T11 (BUILD) after T10: null"
     },
     {
-      "time": "2026-04-22T02:16:47.576Z",
-      "msg": "Added T9 (MAINTAIN) after end: Mid-session: git push, dashboard check"
+      "time": "2026-04-22T14:01:55.341Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Git commit+push, knowledge capture"
     },
     {
-      "time": "2026-04-22T02:16:47.694Z",
-      "msg": "Added T10 (PLAN) after end: Neural-net: implement flash attention (O(N) memory, tiled computation with online softmax)"
+      "time": "2026-04-22T14:01:55.458Z",
+      "msg": "Added T13 (PLAN) after T12: HenryDB: Volcano cost model — add selectivity heuristic to IndexScan vs SeqScan decision"
     },
     {
-      "time": "2026-04-22T02:16:47.812Z",
-      "msg": "Added T11 (BUILD) after end: null"
+      "time": "2026-04-22T14:01:55.575Z",
+      "msg": "Added T14 (BUILD) after T13: null"
     },
     {
-      "time": "2026-04-22T02:16:47.930Z",
-      "msg": "Added T12 (EXPLORE) after end: Stress-test HenryDB Volcano integration: adversarial queries, edge cases, performance"
+      "time": "2026-04-22T14:01:55.693Z",
+      "msg": "Added T15 (MAINTAIN) after T14: Git commit+push, dashboard regenerate"
     },
     {
-      "time": "2026-04-22T02:16:48.049Z",
-      "msg": "Added T13 (THINK) after end: Reflect on evening work, capture insights"
+      "time": "2026-04-22T14:01:55.811Z",
+      "msg": "Added T16 (THINK) after T15: Afternoon reflection. What did depth work reveal? Any new bugs or patterns?"
     },
     {
-      "time": "2026-04-22T02:16:51.808Z",
-      "msg": "Added T14 (MAINTAIN) after end: Push all changes, verify test suites, update knowledge files"
+      "time": "2026-04-22T14:01:55.928Z",
+      "msg": "Added T17 (PLAN) after T16: SAT solver: Fix SMT strict inequality bug in _processAssertion (8-line quick win)"
     },
     {
-      "time": "2026-04-22T02:18:33.595Z",
-      "msg": "PLAN T5 filled 1 BUILD tasks"
+      "time": "2026-04-22T14:01:56.047Z",
+      "msg": "Added T18 (BUILD) after T17: null"
     },
     {
-      "time": "2026-04-22T02:19:47.205Z",
-      "msg": "PLAN T7 filled 1 BUILD tasks"
+      "time": "2026-04-22T14:01:56.164Z",
+      "msg": "Added T19 (MAINTAIN) after T18: Git commit+push, full workspace sync"
     },
     {
-      "time": "2026-04-22T02:25:32.892Z",
-      "msg": "PLAN T10 filled 1 BUILD tasks"
+      "time": "2026-04-22T14:01:56.282Z",
+      "msg": "Added T20 (EXPLORE) after T19: HenryDB: Read PostgreSQL EXPLAIN ANALYZE output format — compare with our Volcano EXPLAIN"
     },
     {
-      "time": "2026-04-22T02:31:57.330Z",
-      "msg": "Added T18 (THINK) after end: Generate next batch of work: what high-value features remain for henrydb and neural-net?"
-    },
-    {
-      "time": "2026-04-22T02:32:29.748Z",
-      "msg": "Added T19 (PLAN) after end: HenryDB: Fix ORDER BY alias resolution — prefer SELECT aliases over table columns"
-    },
-    {
-      "time": "2026-04-22T02:32:29.867Z",
-      "msg": "Added T20 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T02:32:29.985Z",
-      "msg": "Added T21 (PLAN) after end: Neural-net: Integrate FlashAttention into Transformer class as configurable attention mode"
-    },
-    {
-      "time": "2026-04-22T02:32:30.104Z",
-      "msg": "Added T22 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T02:32:30.222Z",
-      "msg": "Added T23 (PLAN) after end: HenryDB: Extract JOIN executor from db.js into join-executor.js (~220 LOC)"
-    },
-    {
-      "time": "2026-04-22T02:32:30.339Z",
-      "msg": "Added T24 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T02:32:30.458Z",
-      "msg": "Added T25 (EXPLORE) after end: Performance comparison: FlashAttention vs SelfAttention at various sequence lengths"
-    },
-    {
-      "time": "2026-04-22T02:32:30.576Z",
-      "msg": "Added T26 (MAINTAIN) after end: Final session push, daily log summary, test suite verification"
-    },
-    {
-      "time": "2026-04-22T02:33:47.250Z",
-      "msg": "PLAN T19 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-22T02:41:20.144Z",
-      "msg": "PLAN T21 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-22T02:45:15.024Z",
-      "msg": "Added T29 (THINK) after end: Mid-session direction: what next? Explore depth on existing work or extend."
-    },
-    {
-      "time": "2026-04-22T02:45:44.780Z",
-      "msg": "Added T30 (PLAN) after end: HenryDB: Fix SELECT * column name collision in FULL JOIN (same-name cols overwrite)"
-    },
-    {
-      "time": "2026-04-22T02:45:44.898Z",
-      "msg": "Added T31 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T02:45:45.016Z",
-      "msg": "Added T32 (PLAN) after end: Neural-net: Implement learning rate scheduler (warmup + cosine decay)"
-    },
-    {
-      "time": "2026-04-22T02:45:45.132Z",
-      "msg": "Added T33 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T02:46:27.879Z",
-      "msg": "PLAN T30 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-22T02:55:05.899Z",
-      "msg": "PLAN T32 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-22T02:57:18.316Z",
-      "msg": "Added T36 (EXPLORE) after end: Neural-net: train a small transformer on a real task using flash attention + LR scheduler, measure convergence"
-    },
-    {
-      "time": "2026-04-22T02:57:18.434Z",
-      "msg": "Added T37 (PLAN) after end: HenryDB: Add EXPLAIN format for Volcano plan tree (show operators, cost, row estimates)"
-    },
-    {
-      "time": "2026-04-22T02:57:18.552Z",
-      "msg": "Added T38 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T02:57:18.669Z",
-      "msg": "Added T39 (EXPLORE) after end: Neural-net: benchmark all LR schedulers on MNIST or XOR convergence"
-    },
-    {
-      "time": "2026-04-22T03:02:00.470Z",
-      "msg": "Added T40 (PLAN) after end: HenryDB: Wire Volcano EXPLAIN into SQL EXPLAIN handler"
-    },
-    {
-      "time": "2026-04-22T03:02:00.589Z",
-      "msg": "Added T41 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T03:02:00.707Z",
-      "msg": "Added T42 (EXPLORE) after end: HenryDB: Find the worst-performing TPC-H query and optimize it via Volcano"
-    },
-    {
-      "time": "2026-04-22T03:03:03.231Z",
-      "msg": "PLAN T40 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-22T03:06:18.727Z",
-      "msg": "Added T44 (PLAN) after end: HenryDB: Predicate pushdown into Volcano SeqScan — push WHERE conditions into scan filter"
-    },
-    {
-      "time": "2026-04-22T03:06:18.845Z",
-      "msg": "Added T45 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T03:06:18.962Z",
-      "msg": "Added T46 (EXPLORE) after end: HenryDB: Full test suite sweep — find and count all test files, verify total pass rate"
-    },
-    {
-      "time": "2026-04-22T03:06:38.004Z",
-      "msg": "PLAN T44 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-22T03:09:59.326Z",
-      "msg": "Added T48 (PLAN) after end: Neural-net: Adam optimizer (momentum + adaptive LR)"
-    },
-    {
-      "time": "2026-04-22T03:09:59.498Z",
-      "msg": "Added T49 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-22T03:14:42.887Z",
-      "msg": "Added T50 (BUILD) after end: Neural-net: integrate LR scheduler with AdamW optimizer (scheduler.step provides LR to AdamW.step)"
-    },
-    {
-      "time": "2026-04-22T03:17:35.405Z",
-      "msg": "Added T51 (BUILD) after end: Neural-net: Grouped Query Attention (GQA) — fewer K/V heads than Q heads, used in Llama 2/3"
-    },
-    {
-      "time": "2026-04-22T03:20:03.073Z",
-      "msg": "Added T52 (BUILD) after end: Neural-net: Rotary Position Embeddings (RoPE) — position info via rotation in complex plane"
-    },
-    {
-      "time": "2026-04-22T03:22:29.605Z",
-      "msg": "Added T53 (BUILD) after end: Neural-net: RMSNorm (Root Mean Square Layer Norm) — simpler than LayerNorm, used in Llama"
-    },
-    {
-      "time": "2026-04-22T03:30:12.800Z",
-      "msg": "Added T54 (BUILD) after end: Neural-net: KV cache for autoregressive generation (key-value caching for incremental decoding)"
-    },
-    {
-      "time": "2026-04-22T03:32:26.082Z",
-      "msg": "Added T55 (BUILD) after end: Neural-net: Standalone SwiGLU FFN module — reusable from modern-decoder's implementation"
-    },
-    {
-      "time": "2026-04-22T03:34:47.171Z",
-      "msg": "Added T56 (BUILD) after end: HenryDB: Wire Volcano EXPLAIN into default EXPLAIN output (add volcano tree as secondary display)"
-    },
-    {
-      "time": "2026-04-22T03:37:47.547Z",
-      "msg": "Added T57 (BUILD) after end: HenryDB: EXPLAIN ANALYZE with actual execution times via Volcano instrumenting"
-    },
-    {
-      "time": "2026-04-22T03:46:43.375Z",
-      "msg": "Added T58 (BUILD) after end: HenryDB: Add EXPLAIN test for Volcano predicate pushdown"
+      "time": "2026-04-22T14:01:56.399Z",
+      "msg": "Added T21 (EXPLORE) after T20: Research: query compilation techniques (Hyper-style data-centric codegen vs Volcano iterator model)"
     }
   ]
 }

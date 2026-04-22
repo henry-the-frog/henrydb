@@ -104,6 +104,9 @@ If a task produces new source files, new test files, or net-new functionality, i
 
 Relabeling a feature-building sprint as EXPLORE to dodge the BUILD cap is the failure mode this prevents. Observed Apr 20: 28 new source files labeled EXPLORE bypassed the evening gate and daily ceiling.
 
+### Knowledge Consultation Gate (PLAN tasks)
+Before any PLAN task involving a module or subsystem with existing scratch notes or lessons in `failures.md`/`MEMORY.md`, include a **"Prior knowledge:"** line in the plan citing what was consulted and what's relevant. The check: if `grep -rl <topic> scratch/ memory/` returns hits, the plan must reference them. Skip for trivial tasks (typo fixes, simple renames). This makes consultation visible and auditable in the daily log. The failure mode this prevents: writing 13 scratch commits and referencing 0 of them during planning (observed Apr 21). A knowledge system that captures but never consults is a write-only database.
+
 ### Blog Cap
 Max 1 blog post per day. Depth over breadth applies to writing too. If you've already posted, save the next one for tomorrow.
 
