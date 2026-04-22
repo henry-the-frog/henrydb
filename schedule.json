@@ -1181,15 +1181,75 @@
     {
       "id": "T110",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit accumulated changes and push",
-      "started": "2026-04-22T16:15:33.791Z"
+      "started": "2026-04-22T16:15:33.791Z",
+      "completed": "2026-04-22T16:15:42.571Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T111",
       "mode": "THINK",
+      "status": "done",
+      "task": "Session A final: update CURRENT.md, push everything",
+      "started": "2026-04-22T16:15:57.653Z",
+      "completed": "2026-04-22T16:16:21.093Z",
+      "duration_ms": 30000,
+      "summary": "CURRENT.md updated. Session continuing."
+    },
+    {
+      "id": "T113",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Count how many SQL patterns still fall back from Volcano — systematic check",
+      "project": "henrydb",
+      "started": "2026-04-22T16:16:56.282Z",
+      "completed": "2026-04-22T16:18:55.810Z",
+      "duration_ms": 360000,
+      "summary": "27/27 SQL patterns work in Volcano! Also found bug #12: elseResult vs else. All predicates, GROUP BY, JOINs, CTEs, subqueries, window functions, CASE all work."
+    },
+    {
+      "id": "T114",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Wire CASE expression in SELECT projection through Volcano (currently returns null)",
+      "task": null,
+      "started": "2026-04-22T16:19:29.694Z",
+      "completed": "2026-04-22T16:19:29.838Z",
+      "duration_ms": 1000,
+      "summary": "Already fixed: CASE in SELECT works after elseResult fix."
+    },
+    {
+      "id": "T115",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Add expression column support to buildProjections (a+b, func(x), CASE)",
+      "task": null,
+      "started": "2026-04-22T16:19:39.086Z",
+      "completed": "2026-04-22T16:19:39.231Z",
+      "duration_ms": 1000,
+      "summary": "Already works: buildProjections handles expression type, delegates to buildValueGetter which handles binary_expr, function_call, case_expr."
+    },
+    {
+      "id": "T116",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Periodic push",
+      "started": "2026-04-22T16:19:47.820Z"
+    },
+    {
+      "id": "T117",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Session A final: update CURRENT.md, push everything"
+      "task": "Run full MVCC + transaction test suite after all changes",
+      "project": "henrydb"
+    },
+    {
+      "id": "T118",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Generate next batch if time remains"
     }
   ],
   "focusProjects": [
@@ -1665,6 +1725,30 @@
     {
       "time": "2026-04-22T16:13:37.090Z",
       "msg": "PLAN T108 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T16:16:36.481Z",
+      "msg": "Added T113 (EXPLORE) after end: Count how many SQL patterns still fall back from Volcano — systematic check"
+    },
+    {
+      "time": "2026-04-22T16:16:36.599Z",
+      "msg": "Added T114 (PLAN) after end: HenryDB: Wire CASE expression in SELECT projection through Volcano (currently returns null)"
+    },
+    {
+      "time": "2026-04-22T16:16:36.718Z",
+      "msg": "Added T115 (PLAN) after end: HenryDB: Add expression column support to buildProjections (a+b, func(x), CASE)"
+    },
+    {
+      "time": "2026-04-22T16:16:36.836Z",
+      "msg": "Added T116 (MAINTAIN) after end: Periodic push"
+    },
+    {
+      "time": "2026-04-22T16:16:36.956Z",
+      "msg": "Added T117 (EXPLORE) after end: Run full MVCC + transaction test suite after all changes"
+    },
+    {
+      "time": "2026-04-22T16:16:37.075Z",
+      "msg": "Added T118 (THINK) after end: Generate next batch if time remains"
     }
   ]
 }
