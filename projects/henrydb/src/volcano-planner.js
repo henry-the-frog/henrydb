@@ -22,8 +22,10 @@ export function explainPlan(ast, tables, indexCatalog, tableStats) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog, tableStats) {
-  // Handle WITH (CTE)
-  if (ast.type === 'WITH') {
+  // Handle WITH (CTE) — parser may produce type='WITH' or type='SELECT' with ctes[]
+  const hasCtes = (ast.type === 'WITH' && ast.ctes?.length > 0) || 
+                  (ast.type === 'SELECT' && ast.ctes?.length > 0);
+  if (hasCtes) {
     // Materialize each CTE as a temporary table
     const cteTables = new Map(tables);
     for (const cte of (ast.ctes || [])) {
@@ -38,12 +40,17 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       // Create a virtual table for the CTE
       const schema = rows.length > 0 ? Object.keys(rows[0]).map(name => ({ name })) : [];
       cteTables.set(cte.name, {
-        heap: { scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c.name]), pageId: 0, slotIdx: 0 }; } },
+        heap: { 
+          scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c.name]), pageId: 0, slotIdx: 0 }; },
+          rowCount: rows.length,
+          tupleCount: rows.length
+        },
         schema
       });
     }
     // Build the main query plan with CTE tables available
-    return buildPlan(ast.query, cteTables, indexCatalog, tableStats);
+    const mainQuery = ast.type === 'WITH' ? ast.query : { ...ast, ctes: undefined };
+    return buildPlan(mainQuery, cteTables, indexCatalog, tableStats);
   }
 
   // Handle UNION/UNION ALL
