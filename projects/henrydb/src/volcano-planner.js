@@ -22,6 +22,8 @@ export function explainPlan(ast, tables, indexCatalog, tableStats) {
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
 export function buildPlan(ast, tables, indexCatalog, tableStats) {
+  // Create a local copy to avoid mutating the caller's tables map
+  tables = new Map(tables);
   const _ctx = { tables, indexCatalog, tableStats };
   // Handle WITH (CTE) — parser may produce type='WITH' or type='SELECT' with ctes[]
   const hasCtes = (ast.type === 'WITH' && ast.ctes?.length > 0) || 
@@ -158,7 +160,8 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       // 3. NestedLoopJoin as fallback
       const equiJoin = extractEquiJoinKeys(join.on, ast.from, join);
       
-      if (equiJoin) {
+      const isInnerJoin = !join.joinType || join.joinType === 'INNER' || join.joinType === 'CROSS';
+      if (equiJoin && isInnerJoin) {
         const inlJoin = tryIndexNestedLoopJoin(
           iter, equiJoin, ast.from, join, tables
         );
