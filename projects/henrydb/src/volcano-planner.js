@@ -483,7 +483,7 @@ function buildPredicate(expr, ctx) {
         condition: buildPredicate(w.condition, ctx),
         result: buildPredicate(w.result, ctx)
       }));
-      const elsePred = expr.elseResult || expr.else ? buildPredicate(expr.elseResult || expr.else) : () => false;
+      const elsePred = expr.elseResult || expr.else ? buildPredicate(expr.elseResult || expr.else, ctx) : () => false;
       return (row) => {
         for (const w of whens) {
           if (w.condition(row)) return w.result(row);
@@ -548,7 +548,7 @@ function buildValueGetter(expr) {
     }
     case 'case_expr': {
       const whens = expr.whens.map(w => ({
-        condition: buildPredicate(w.condition, ctx),
+        condition: buildPredicate(w.condition),
         result: buildValueGetter(w.result)
       }));
       const elseVal = expr.elseResult || expr.else ? buildValueGetter(expr.elseResult || expr.else) : () => null;
