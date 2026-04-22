@@ -126,10 +126,18 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       if (equiJoin) {
         const jt = join.joinType === 'LEFT' ? 'left' : join.joinType === 'RIGHT' ? 'right' : join.joinType === 'FULL' ? 'full' : 'inner';
         iter = new HashJoin(rightIter, iter, equiJoin.buildKey, equiJoin.probeKey, jt);
-        // Join estimate: smaller * selectivity (assume 1-to-many)
+        // Join estimate using ndistinct: rows = max(left,right) / max(ndv_left,ndv_right)
         const leftEst = iter._probe?._estimatedRows || fromRowCount;
         const rightEst = rightIter._estimatedRows || rightRowCount;
-        iter._estimatedRows = Math.max(1, Math.max(leftEst, rightEst));
+        // Look up ndistinct for join columns
+        const leftNdv = getColumnNdv(fromTableName, equiJoin.probeKey, tableStats);
+        const rightNdv = getColumnNdv(rightTableName, equiJoin.buildKey, tableStats);
+        const maxNdv = Math.max(leftNdv || 0, rightNdv || 0);
+        if (maxNdv > 1) {
+          iter._estimatedRows = Math.max(1, Math.round(Math.max(leftEst, rightEst) * Math.min(leftEst, rightEst) / maxNdv));
+        } else {
+          iter._estimatedRows = Math.max(1, Math.max(leftEst, rightEst));
+        }
       } else {
         const jt = join.joinType === 'LEFT' ? 'left' : join.joinType === 'RIGHT' ? 'right' : join.joinType === 'FULL' ? 'full' : 'inner';
         iter = new NestedLoopJoin(iter, rightIter, predicate ? (l, r) => predicate({ ...l, ...r }) : null, jt);
@@ -777,4 +785,16 @@ function estimateSelectivity(where, tableName, tableStats) {
   }
   
   return 0.33;
+}
+
+/**
+ * Get ndistinct for a column from ANALYZE stats.
+ */
+function getColumnNdv(tableName, columnName, tableStats) {
+  if (!tableStats || !tableName || !columnName) return null;
+  // Strip table alias prefix from column name (e.g., "o.customer" → "customer")
+  const col = columnName.includes('.') ? columnName.split('.').pop() : columnName;
+  const stats = tableStats.get(tableName);
+  if (!stats || !stats.columns) return null;
+  return stats.columns[col]?.distinct || null;
 }
