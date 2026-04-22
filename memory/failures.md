@@ -267,3 +267,16 @@ This is a specific failure mode of incremental development: you build the pieces
 **Root cause:** UPDATE modifies B-tree index to point to new version. ROLLBACK restores heap data but doesn't restore the B-tree index entry to point to the original version.
 **Impact:** Any index lookup after a rolled-back UPDATE on indexed columns silently returns wrong results. Data appears missing.
 **Pattern:** Same class as MVCC index bypass — index maintenance and MVCC version visibility are not coordinated.
+
+## 2026-04-22: Volcano Engine — AST Format Mismatch Bugs
+
+### The Systemic Pattern
+21 bugs found in one session, mostly from the same root cause: **parser AST format varies by context**, and the Volcano planner assumed a single format.
+
+**Key examples:**
+- **Bug #19 (CRITICAL):** Parser uses `'='` symbol for JOIN ON conditions but `'EQ'` for WHERE conditions. ALL JOIN ON equi-conditions fell through to cross-product NestedLoopJoin. Fix: add symbol operators to comparators and findEquiJoin.
+- **Bug #20:** `extractEquiJoinKeys` returned buildKey/probeKey based on AST order without checking which qualified name (e.g., `o.product_id` vs `p.id`) belonged to which table. Cross-product for all qualified joins. Fix: match qualified prefix to table alias.
+- **Bug #21:** `SUM(expr)` evaluated to 0. HashAggregate used `row[agg.column]` but for expression args, `agg.column` was a JSON-stringified AST node. Fix: pass valueGetter function for expression-type args.
+- **Bug pattern:** LIKE (field vs expr), BETWEEN (left vs expr), IS NULL (left fallback), CASE (elseResult vs else), IN_SUBQUERY (lazy vs eager), arith (type=arith vs binary_expr), function (type=function vs function_call)
+
+**Prevention:** Any new predicate/expression type must be tested with the full 41-query stress test before merge. The `volcano-correctness.test.js` (36 tests) and stress-test script catch these classes of bugs.
