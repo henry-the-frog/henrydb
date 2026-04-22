@@ -6,7 +6,7 @@
 - `henrydb-compiled-engine-gaps.md` — **FIXED 2026-04-21** Added BETWEEN/IS NULL/IN/LIKE, safe fallback on unknown types
 - `henrydb-wal-truncation-gap.md` — **FIXED 2026-04-21** PersistentDB checkpoint + auto-checkpoint at 16MB
 - `diff-fuzzer-results.md` — **FIXED 2026-04-21** Division truncation fixed (DECIMAL column type awareness)
-- `hash-join-wiring-plan.md` — **VERIFIED 2026-04-21** Hash join already working (1K×1K in 8.9ms)
+- `hash-join-wiring-plan.md` — **WIRED 2026-04-21** Hash join integrated into db.js executor (19.5-37.3x speedup)
 
 ## Bug Analysis (Active)
 - `bug-patterns-2026-04-17.md` — Category analysis of HenryDB bugs (layer boundaries, recovery model gaps)
@@ -15,7 +15,7 @@
 - `ssi-suppress-update-reads.md` — SSI false positives from UPDATE scanning
 - `method-naming-mismatch.md` — Method rename without updating call sites pattern
 - `tokenizer-negative-ambiguity.md` — Duplicate negative number checks in tokenizer
-- `tpch-stress-results.md` — TPC-H 31/33 pass
+- `tpch-stress-results.md` — TPC-H 33/33 pass (**FIXED 2026-04-21** parser arithmetic + MERGE subquery)
 
 ## Design Notes (Active)
 - `henrydb-mvcc-heap-redesign.md` — **NEW 2026-04-21** MVCCHeap wrapper class to replace monkey-patching
@@ -34,7 +34,9 @@
 - `henrydb-mvcc-interception.md` — MVCC monkey-patching fragility (see redesign note)
 
 ## Design Notes (Completed)
-- `henrydb-monolith-analysis.md` — **IN PROGRESS** db.js analysis (now 8247 LOC, was 9888)
+- `henrydb-monolith-analysis.md` — **DONE** db.js: 8247→4939 LOC (40% reduction)
+- `henrydb-architecture-apr21.md` — **NEW 2026-04-21** Architecture status + benchmark results
+- `volcano-dbjs-integration-design.md` — **DONE 2026-04-21** Volcano→db.js wiring design (implemented)
 
 ## Performance/Research
 - `query-optimizer-gaps.md` — Optimizer improvements (parametric cost model done)
