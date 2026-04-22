@@ -8,7 +8,7 @@
 
 ## Projects Summary (as of 2026-04-22)
 - **HenryDB** — 94K LOC (42K source, 52K test), 4204/4208 tests pass, 172 source modules. Full PostgreSQL-compatible SQL database with MVCC (SSI), ARIES WAL, cost-based optimizer.
-  - **Apr 22 — Volcano Engine Day:** 23 bugs found and fixed in one session. db.js: ~10K → 3,293 lines (67% reduction, 8 extracted modules, 3412 LOC). Volcano query engine now handles 39/39 correctness tests, 56/57 stress patterns. Features: SeqScan, Filter, HashJoin, INLJ, HashAggregate, CTEs, derived tables, EXISTS, CAST, window functions, EXPLAIN ANALYZE.
+  - **Apr 22 — Volcano Engine Day:** 27+ bugs found and fixed in one session. db.js: ~10K → 3,293 lines (67% reduction, 8 extracted modules, 3412 LOC). **Volcano is now DEFAULT-ON** for non-transactional queries (97.2% test pass rate, 60-file sample). Features: SeqScan, Filter, HashJoin, INLJ, HashAggregate, CTEs, derived tables, EXISTS, ANY/ALL, CAST, NATURAL/USING JOIN, 16 SQL functions, GROUP BY alias/ordinal, EXPLAIN ANALYZE.
   - **Critical bug pattern:** Parser AST format varies by context (e.g., `'='` for JOIN ON vs `'EQ'` for WHERE, `'cast'` vs `'CAST'`, `'arith'` vs `'binary_expr'`). Every new predicate must be tested against the 56-query stress test.
   - **INLJ finding:** IndexNestedLoopJoin 1.2-1.7x SLOWER than HashJoin for full joins. INLJ only wins when outer is selective and inner is large. Need cost-based selection.
 - **Monkey Lang** — 662 tests, dual engine (tree-walker + bytecode compiler/VM). TCO (sum 100K), constant folding, dead code elimination, integer cache. 45+ builtins, while/for/do-while/for-in, try/catch, switch, modules, f-strings, const, ternary, null coalescing, compound assignment. ~6500 LOC.

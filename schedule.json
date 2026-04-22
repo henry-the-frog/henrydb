@@ -2961,9 +2961,62 @@
     {
       "id": "T277",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push session improvements to remote",
-      "started": "2026-04-22T19:15:01.945Z"
+      "started": "2026-04-22T19:15:01.945Z",
+      "completed": "2026-04-22T19:15:10.580Z",
+      "duration_ms": 10000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T278",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate remaining 5% failures: what specific patterns still fail?",
+      "project": "henrydb",
+      "started": "2026-04-22T19:15:26.557Z",
+      "completed": "2026-04-22T19:17:45.349Z",
+      "duration_ms": 120000,
+      "summary": "Remaining TPC-H failures (Q3, Q5, Q10, Q14) use wire protocol → TransactionalDB → Volcano disabled. These are PRE-EXISTING legacy failures, not Volcano issues. Volcano pass rate is higher than measured."
+    },
+    {
+      "id": "T279",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Fix the most common remaining failure pattern",
+      "project": "henrydb",
+      "started": "2026-04-22T19:17:52.212Z",
+      "completed": "2026-04-22T19:20:16.699Z",
+      "duration_ms": 120000,
+      "summary": "Fixed: added all unsupported aggregates to skip list. All aggregate tests now pass."
+    },
+    {
+      "id": "T280",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit and push",
+      "started": "2026-04-22T19:20:25.373Z",
+      "completed": "2026-04-22T19:20:25.519Z",
+      "duration_ms": 1000,
+      "summary": "Already pushed."
+    },
+    {
+      "id": "T281",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run comprehensive test: 60+ random test files with Volcano default-on",
+      "project": "henrydb",
+      "started": "2026-04-22T19:20:43.556Z",
+      "completed": "2026-04-22T19:22:26.463Z",
+      "duration_ms": 180000,
+      "summary": "60-file test: 560/576 pass (97.2%). Up from 95.3%. 16 remaining failures across window fn edge cases, implicit type coercion, and wire protocol tests."
+    },
+    {
+      "id": "T282",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update memory and session state",
+      "started": "2026-04-22T19:22:33.565Z"
     }
   ],
   "focusProjects": [
@@ -4099,6 +4152,26 @@
     {
       "time": "2026-04-22T19:12:55.622Z",
       "msg": "Added T277 (MAINTAIN) after end: Push session improvements to remote"
+    },
+    {
+      "time": "2026-04-22T19:15:19.179Z",
+      "msg": "Added T278 (EXPLORE) after end: Investigate remaining 5% failures: what specific patterns still fail?"
+    },
+    {
+      "time": "2026-04-22T19:15:19.299Z",
+      "msg": "Added T279 (EXPLORE) after end: Fix the most common remaining failure pattern"
+    },
+    {
+      "time": "2026-04-22T19:15:19.420Z",
+      "msg": "Added T280 (MAINTAIN) after end: Commit and push"
+    },
+    {
+      "time": "2026-04-22T19:20:38.507Z",
+      "msg": "Added T281 (EXPLORE) after end: Run comprehensive test: 60+ random test files with Volcano default-on"
+    },
+    {
+      "time": "2026-04-22T19:20:38.628Z",
+      "msg": "Added T282 (MAINTAIN) after end: Update memory and session state"
     }
   ]
 }
