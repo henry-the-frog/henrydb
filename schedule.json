@@ -495,26 +495,41 @@
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add STRING_AGG and ARRAY_AGG to Volcano HashAggregate",
       "project": "henrydb",
-      "started": "2026-04-22T21:28:08.916Z"
+      "started": "2026-04-22T21:28:08.916Z",
+      "completed": "2026-04-22T21:30:19.290Z",
+      "duration_ms": 240000,
+      "summary": "STRING_AGG, ARRAY_AGG, GROUP_CONCAT now native in Volcano HashAggregate. Separator support for STRING_AGG. 163/163 tests pass."
     },
     {
       "id": "T48",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Window functions in Volcano: design WindowFunction iterator",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:30:27.503Z",
+      "completed": "2026-04-22T21:30:49.353Z",
+      "duration_ms": 120000,
+      "summary": "Window function design: WindowFunction iterator consumes all rows, partitions, sorts, computes per-row values. Two BUILD tasks: core functions (ROW_NUMBER, RANK, SUM OVER) then value functions (LAG, LEAD)."
     },
     {
       "id": "T49",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Implement WindowFunction iterator and integrate with volcano-planner for ROW_NUMBER, RANK, DENSE_RANK, SUM/COUNT/AVG OVER",
       "plan_ref": "T48",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:30:55.712Z"
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "task": "Add LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE window functions",
+      "status": "upcoming",
+      "plan_ref": "T48"
     },
     {
       "id": "T50",
@@ -777,6 +792,10 @@
     {
       "time": "2026-04-22T21:23:41.053Z",
       "msg": "Added T52 (MAINTAIN) after T51: Push code and update volcano-gaps knowledge"
+    },
+    {
+      "time": "2026-04-22T21:30:42.241Z",
+      "msg": "PLAN T48 filled 2 BUILD tasks"
     }
   ]
 }

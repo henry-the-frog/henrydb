@@ -1083,6 +1083,20 @@ export class Window extends Iterator {
 
     this._results = [];
     for (const rows of partitions.values()) {
+      // Sort partition by ORDER BY
+      if (this._orderBy.length > 0) {
+        rows.sort((a, b) => {
+          for (const o of this._orderBy) {
+            const va = a[o.column], vb = b[o.column];
+            if (va == null && vb == null) continue;
+            if (va == null) return 1;
+            if (vb == null) return -1;
+            if (va < vb) return o.desc ? 1 : -1;
+            if (va > vb) return o.desc ? -1 : 1;
+          }
+          return 0;
+        });
+      }
       let rank = 1, denseRank = 1, prevOrderKey = null;
 
       for (let i = 0; i < rows.length; i++) {
@@ -1107,11 +1121,41 @@ export class Window extends Iterator {
               const off = wf.offset || 1;
               r[wf.name] = i + off < rows.length ? rows[i + off][wf.arg] : (wf.defaultValue ?? null); break;
             }
-            case 'SUM': { let s = 0; for (let j = 0; j <= i; j++) s += rows[j][wf.arg] || 0; r[wf.name] = s; break; }
-            case 'COUNT': r[wf.name] = i + 1; break;
-            case 'AVG': { let s = 0; for (let j = 0; j <= i; j++) s += rows[j][wf.arg] || 0; r[wf.name] = s / (i + 1); break; }
-            case 'MIN': { let m = Infinity; for (let j = 0; j <= i; j++) { const v = rows[j][wf.arg]; if (v != null && v < m) m = v; } r[wf.name] = m === Infinity ? null : m; break; }
-            case 'MAX': { let m = -Infinity; for (let j = 0; j <= i; j++) { const v = rows[j][wf.arg]; if (v != null && v > m) m = v; } r[wf.name] = m === -Infinity ? null : m; break; }
+            case 'SUM': { 
+              const end = this._orderBy.length > 0 ? i : rows.length - 1;
+              let s = 0; for (let j = 0; j <= end; j++) s += rows[j][wf.arg] || 0; 
+              r[wf.name] = s; break; 
+            }
+            case 'COUNT': {
+              r[wf.name] = this._orderBy.length > 0 ? i + 1 : rows.length; break;
+            }
+            case 'AVG': { 
+              const end = this._orderBy.length > 0 ? i : rows.length - 1;
+              let s = 0; for (let j = 0; j <= end; j++) s += rows[j][wf.arg] || 0; 
+              r[wf.name] = s / (end + 1); break; 
+            }
+            case 'MIN': { 
+              const end = this._orderBy.length > 0 ? i : rows.length - 1;
+              let m = Infinity; for (let j = 0; j <= end; j++) { const v = rows[j][wf.arg]; if (v != null && v < m) m = v; } 
+              r[wf.name] = m === Infinity ? null : m; break; 
+            }
+            case 'MAX': { 
+              const end = this._orderBy.length > 0 ? i : rows.length - 1;
+              let m = -Infinity; for (let j = 0; j <= end; j++) { const v = rows[j][wf.arg]; if (v != null && v > m) m = v; } 
+              r[wf.name] = m === -Infinity ? null : m; break; 
+            }
+            case 'FIRST_VALUE': {
+              r[wf.name] = rows[0][wf.arg] ?? null; break;
+            }
+            case 'LAST_VALUE': {
+              const end = this._orderBy.length > 0 ? i : rows.length - 1;
+              r[wf.name] = rows[end][wf.arg] ?? null; break;
+            }
+            case 'NTILE': {
+              const n = wf.ntile || wf.offset || 2;
+              const size = Math.ceil(rows.length / n);
+              r[wf.name] = Math.min(Math.floor(i / size) + 1, n); break;
+            }
           }
         }
         prevOrderKey = orderKey;

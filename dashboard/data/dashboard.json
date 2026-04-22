@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T21:28:08.952Z",
+  "generated": "2026-04-22T21:30:55.748Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Add STRING_AGG and ARRAY_AGG to Volcano HashAggregate",
-    "startedAt": "2026-04-22T21:28:08.952Z",
-    "taskId": "T47"
+    "task": "Implement WindowFunction iterator and integrate with volcano-planner for ROW_NUMBER, RANK, DENSE_RANK, SUM/COUNT/AVG OVER",
+    "startedAt": "2026-04-22T21:30:55.748Z",
+    "taskId": "T49"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1175,65 +1175,211 @@
       {
         "id": "T34",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Support DISTINCT aggregates in Volcano (COUNT(DISTINCT x), SUM(DISTINCT x))",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-22T21:03:39.796Z"
+        "started": "2026-04-22T21:03:39.796Z",
+        "completed": "2026-04-22T21:03:59.882Z",
+        "duration_ms": 60000,
+        "summary": "Plan: pass distinct flag to HashAggregate. In next(), deduplicate values before computing aggregate. Simple change in volcano.js."
       },
       {
         "id": "T35",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Add DISTINCT aggregate support to HashAggregate + planner",
         "plan_ref": "T34",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T21:04:05.716Z",
+        "completed": "2026-04-22T21:05:42.482Z",
+        "duration_ms": 180000,
+        "summary": "DISTINCT aggregates now work in Volcano. COUNT/SUM/AVG DISTINCT with GROUP BY and FILTER. Results match legacy. 163/163 tests."
       },
       {
         "id": "T36",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, test sweep",
+        "started": "2026-04-22T21:05:47.585Z",
+        "completed": "2026-04-22T21:06:07.056Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed both repos."
+      },
+      {
+        "id": "T37",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Support CTEs containing UNION in Volcano",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-22T21:06:14.257Z",
+        "completed": "2026-04-22T21:13:52.780Z",
+        "duration_ms": 600000,
+        "summary": "CTE UNION support, recursive CTE compatibility, SELECT-without-FROM unnamed column fix. 425/425 core tests pass — zero failures!"
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "plan_ref": "T37",
+        "project": "henrydb",
+        "started": "2026-04-22T21:14:01.833Z",
+        "completed": "2026-04-22T21:14:10.072Z",
+        "duration_ms": 0,
+        "summary": "Done in T37 — CTE UNION already implemented and tested."
+      },
+      {
+        "id": "T39",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, test sweep, evening log",
+        "started": "2026-04-22T21:14:16.056Z",
+        "completed": "2026-04-22T21:14:37.931Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed. 425/425 core tests pass."
+      },
+      {
+        "id": "T40",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md",
+        "project": "henrydb",
+        "started": "2026-04-22T21:14:44.551Z",
+        "completed": "2026-04-22T21:16:38.443Z",
+        "duration_ms": 240000,
+        "summary": "Broader sweep: 797/828 (96.3%). Remaining 31 failures: JSON(22), FTS(5), TPC-H wire(4). All core SQL, LATERAL, window, transaction, persistent tests pass. Updated volcano-gaps.md."
+      },
+      {
+        "id": "T41",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: investigate JSON failures (22 tests). Triage into fixable vs complex. What's the root cause?",
+        "project": "henrydb",
+        "started": "2026-04-22T21:16:57.250Z",
+        "completed": "2026-04-22T21:18:21.750Z",
+        "duration_ms": 180000,
+        "summary": "JSON failures root cause: Volcano guard checked lowercase json_ but parser produces uppercase JSON_EXTRACT. One-line fix: case-insensitive guard. 63/63 JSON tests now pass (was 41/63). 22 tests fixed!"
+      },
+      {
+        "id": "T42",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: investigate FTS failures (5 tests). What's wrong?",
+        "project": "henrydb",
+        "started": "2026-04-22T21:18:37.753Z",
+        "completed": "2026-04-22T21:21:00.671Z",
+        "duration_ms": 180000,
+        "summary": "FTS failures: MATCH_AGAINST going through Volcano (no predicate support). Added guard. 49/49 FTS pass. Combined with JSON fix: 27 tests fixed total."
+      },
+      {
+        "id": "T43",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: investigate TPC-H wire protocol failures (4 tests). What's wrong?",
+        "project": "henrydb",
+        "started": "2026-04-22T21:21:07.261Z",
+        "completed": "2026-04-22T21:21:53.838Z",
+        "duration_ms": 60000,
+        "summary": "TPC-H wire failures: _slowQueryLog is not defined in wire protocol server. Pre-existing pg wire protocol bug, not Volcano related. Skip for now."
+      },
+      {
+        "id": "T44",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, full test sweep",
+        "started": "2026-04-22T21:22:00.148Z",
+        "completed": "2026-04-22T21:22:51.495Z",
+        "duration_ms": 120000,
+        "summary": "FULL SWEEP: 774/774 tests pass across sql, volcano, CTE, derived, aggregate, subquery, lateral, join, window, json, fulltext, transaction, persistent. ZERO failures!"
+      },
+      {
+        "id": "T45",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: what's the hardest remaining gap? Wire protocol _slowQueryLog bug, or window function support in Volcano, or STRING_AGG?",
+        "project": "henrydb",
+        "started": "2026-04-22T21:23:15.616Z",
+        "completed": "2026-04-22T21:23:49.244Z",
+        "duration_ms": 60000,
+        "summary": "Priorities: (1) wire protocol _slowQueryLog fix (quick, 4 tests), (2) STRING_AGG/ARRAY_AGG (quick), (3) window functions in Volcano (hard, depth work). Queue set."
+      },
+      {
+        "id": "T46",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix wire protocol _slowQueryLog bug",
+        "project": "henrydb",
+        "started": "2026-04-22T21:23:55.431Z",
+        "completed": "2026-04-22T21:28:00.121Z",
+        "duration_ms": 360000,
+        "summary": "Wire protocol _slowQueryLog fixed (1 line). Also fixed expression-wrapped aggregates (100*SUM(CASE...)/SUM(x)). 36/36 TPC-H pass. Recursive containsAggregate detection."
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add STRING_AGG and ARRAY_AGG to Volcano HashAggregate",
+        "project": "henrydb",
+        "started": "2026-04-22T21:28:08.916Z",
+        "completed": "2026-04-22T21:30:19.290Z",
+        "duration_ms": 240000,
+        "summary": "STRING_AGG, ARRAY_AGG, GROUP_CONCAT now native in Volcano HashAggregate. Separator support for STRING_AGG. 163/163 tests pass."
+      },
+      {
+        "id": "T48",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Window functions in Volcano: design WindowFunction iterator",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-22T21:30:27.503Z"
+      },
+      {
+        "id": "T49",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Implement WindowFunction iterator and integrate with volcano-planner for ROW_NUMBER, RANK, DENSE_RANK, SUM/COUNT/AVG OVER",
+        "plan_ref": "T48",
+        "project": "henrydb"
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
+        "task": "Add LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE window functions",
+        "status": "upcoming",
+        "plan_ref": "T48"
+      },
+      {
+        "id": "T50",
         "mode": "MAINTAIN",
         "status": "upcoming",
         "task": "Git push, test sweep"
       },
       {
-        "id": "T37",
-        "mode": "PLAN",
-        "status": "upcoming",
-        "goal": "Support CTEs containing UNION in Volcano",
-        "task": null,
-        "project": "henrydb"
-      },
-      {
-        "id": "T38",
-        "mode": "BUILD",
-        "status": "upcoming",
-        "task": null,
-        "plan_ref": "T37",
-        "project": "henrydb"
-      },
-      {
-        "id": "T39",
-        "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push, test sweep, evening log"
-      },
-      {
-        "id": "T40",
+        "id": "T51",
         "mode": "EXPLORE",
         "status": "upcoming",
-        "task": "Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md",
+        "task": "Stress test window functions: edge cases, partitions, frames, empty partitions",
         "project": "henrydb"
+      },
+      {
+        "id": "T52",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Push code and update volcano-gaps knowledge"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 42,
-    "blocksTotal": 40,
+    "blocksCompleted": 44,
+    "blocksTotal": 53,
     "modeDistribution": {
       "THINK": 11,
-      "PLAN": 7,
-      "BUILD": 13,
+      "PLAN": 8,
+      "BUILD": 14,
       "MAINTAIN": 8,
       "EXPLORE": 3
     }

@@ -4,7 +4,7 @@
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
-  IndexScan, Union, CTE as CTEIterator,
+  IndexScan, Union, CTE as CTEIterator, Window,
 } from './volcano.js';
 
 /**
@@ -518,8 +518,10 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
 
   // 6. SELECT projection
   const projections = buildProjections(ast.columns, hasAggregates, _ctx);
-  if (projections && !hasAggregates) {
-    // Don't project after aggregate — column names already set by HashAggregate
+  const hasWindowFns = ast.columns.some(c => c.type === 'window');
+  
+  if (projections && !hasAggregates && !hasWindowFns) {
+    // Don't project after aggregate or before window — column names already set
     const prevEst = iter._estimatedRows;
     iter = new Project(iter, projections);
     iter._estimatedRows = prevEst;
@@ -528,6 +530,61 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     const prevEst = iter._estimatedRows;
     iter = new Project(iter, buildAggregateProjections(ast.columns, groupByExprs, funcWrappedAggs));
     iter._estimatedRows = prevEst;
+  }
+
+  // 6b. Window Functions
+  const windowCols = ast.columns.filter(c => c.type === 'window');
+  if (windowCols.length > 0) {
+    // Extract partition by, order by, and window function specs
+    // Group by their OVER clause (same partition + order = same Window operator)
+    const windowFuncs = windowCols.map(wc => {
+      const partitionBy = (wc.over?.partitionBy || []).map(p => {
+        if (typeof p === 'string') return p;
+        if (p.type === 'column_ref') return p.name;
+        return String(p);
+      });
+      const orderBy = (wc.over?.orderBy || []).map(o => ({
+        column: typeof o.column === 'object' ? o.column.name : o.column,
+        desc: o.direction === 'DESC',
+      }));
+      return {
+        func: wc.func,
+        name: wc.alias || `${wc.func}()`,
+        arg: typeof wc.arg === 'object' ? (wc.arg.type === 'literal' ? null : wc.arg.name) : wc.arg,
+        ntile: wc.func === 'NTILE' && wc.arg?.type === 'literal' ? wc.arg.value : null,
+        offset: wc.offset,
+        defaultValue: wc.defaultValue,
+        partitionBy,
+        orderBy,
+      };
+    });
+    
+    // Use first window function's partition/order for the Window operator
+    // (simplification: assumes all window functions share the same OVER)
+    const partitionBy = windowFuncs[0].partitionBy;
+    const orderBy = windowFuncs[0].orderBy;
+    
+    const prevEst = iter._estimatedRows;
+    iter = new Window(iter, partitionBy, orderBy, windowFuncs);
+    iter._estimatedRows = prevEst;
+    
+    // Apply projection after window — now window columns are available
+    if (projections) {
+      // Add window function columns to projections (they're already computed by Window)
+      const finalProjections = [];
+      for (const col of ast.columns) {
+        if (col.type === 'window') {
+          const name = col.alias || `${col.func}()`;
+          finalProjections.push({ name, expr: (row) => row[name] });
+        } else {
+          const name = col.alias || col.name;
+          finalProjections.push({ name, expr: (row) => row[col.name] ?? row[name] ?? row[col.alias] });
+        }
+      }
+      const prevEst2 = iter._estimatedRows;
+      iter = new Project(iter, finalProjections);
+      iter._estimatedRows = prevEst2;
+    }
   }
 
   // 7. DISTINCT

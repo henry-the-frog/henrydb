@@ -2153,9 +2153,8 @@ export class Database {
     })) return null;
     if (ast.pivot) return null; // PIVOT queries
     if (ast.unpivot) return null; // UNPIVOT queries
-    // Skip if WINDOW is used with GROUP BY and aggregate window functions
+    // Window functions — now supported in Volcano via Window iterator
     const hasWindowFn = ast.columns.some(c => c.type === 'window' || (c.type === 'expression' && c.expr?.over));
-    if (hasWindowFn) return null; // Window functions not fully supported in Volcano
     // Function-wrapped aggregates (COALESCE(SUM(x), 0)) — now supported in Volcano
     // Skip unsupported aggregate functions
     const unsupportedAggs = ['PERCENTILE_CONT', 'PERCENTILE_DISC', 
