@@ -54,3 +54,12 @@
 1. **GROUP BY CASE expression** — Volcano produces wrong row counts when GROUP BY uses CASE WHEN expression. Legacy correct (X=17, Y=33), Volcano wrong (X=17, Y=17). Missing rows.
 2. **Subquery in ORDER BY** — `ORDER BY (SELECT MAX(val) FROM t) - val` crashes. Unsupported in Volcano.
 3. **Derived table with UNION** — `FROM (SELECT ... UNION ALL SELECT ...) sub` not supported (UNION in derived table subquery).
+
+### GROUP BY CASE Expression Bug — Details
+- Simple GROUP BY works (grp: a=2, b=2, c=2)
+- CASE values are computed correctly per row (X for 'a', Y otherwise)
+- HashAggregate GROUP BY with CASE expression loses 2 of 6 rows
+- Only 4 rows appear in output (2 X + 2 Y) instead of 6 (2 X + 4 Y)
+- Root cause: likely in GROUP BY key computation — the CASE evaluator might return undefined for some rows instead of 'Y'
+- The GROUP BY expression is parsed correctly (type: case_expr with WHEN conditions)
+- Investigation needed: add logging to HashAggregate's key computation for CASE expressions
