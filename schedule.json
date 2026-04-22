@@ -762,6 +762,38 @@
       "completed": "2026-04-22T01:02:38.572Z",
       "duration_ms": 120000,
       "summary": "Flash attention design: tiled computation with online softmax trick. Process Q×K in blocks, maintain running max/sum statistics, never materialize full N×N matrix. O(N) memory vs O(N²). For JS: benefit is memory allocation and cache locality (computation still O(N²)). ~80 LOC implementation. Key algorithm: online softmax with rescaling. Would make a good addition to attention.js."
+    },
+    {
+      "id": "T73",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Run comprehensive test sweep across ALL projects to verify nothing is broken. Document results.",
+      "started": "2026-04-22T01:03:24.278Z",
+      "completed": "2026-04-22T01:04:19.463Z",
+      "duration_ms": 180000,
+      "summary": "Comprehensive test sweep across 10 projects: 954 tests verified, 953 pass, 1 known bug (SAT solver SMT strict inequality). All projects green except SAT solver known bug. Covers: henrydb, monkey-lang, riscv, forth, git, huffman, type-inference, regex-engine, fft, sat-solver."
+    },
+    {
+      "id": "T74",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Compare HenryDB compiled query engine vs Volcano engine: what does each handle, where do they overlap, could they be unified?",
+      "project": "henrydb",
+      "started": "2026-04-22T01:05:33.287Z",
+      "completed": "2026-04-22T01:06:06.548Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB has THREE execution engines: (1) db.js interpreter (most general, now with Volcano for joins), (2) Volcano engine (iterator-based, all operators, cost model), (3) Compiled query engine (JIT/vectorized, highest perf). compiled-query.js (944 LOC) bridges planner with pipeline JIT compiler. 16 compiled-vs-volcano tests pass. Could be unified: use Volcano planner output as input to JIT compilation. The compiled engine already imports from volcano.js."
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate HenryDB query planner (planner.js) vs volcano-planner.js: how do they differ? Can they be merged?",
+      "project": "henrydb",
+      "started": "2026-04-22T01:06:20.927Z",
+      "completed": "2026-04-22T01:06:39.874Z",
+      "duration_ms": 120000,
+      "summary": "Two planners: planner.js (971 LOC, full cost-based DP optimizer with histograms) and volcano-planner.js (740 LOC, heuristic plan builder with basic costs). They could be merged: use planner.js for optimization decisions (join order, strategy selection), output Volcano iterator trees. This would give sophisticated optimization + clean iterator execution. The compiled-query.js already does this partially — it uses planner.js output."
     }
   ],
   "focusProjects": [
@@ -1073,6 +1105,18 @@
     {
       "time": "2026-04-22T01:02:15.660Z",
       "msg": "Added T72 (THINK) after end: Design flash attention for neural-net project: what would it require? How to implement O(N) memory attention without materializing the full NxN attention matrix."
+    },
+    {
+      "time": "2026-04-22T01:03:24.046Z",
+      "msg": "Added T73 (MAINTAIN) after end: Run comprehensive test sweep across ALL projects to verify nothing is broken. Document results."
+    },
+    {
+      "time": "2026-04-22T01:05:33.054Z",
+      "msg": "Added T74 (THINK) after end: Compare HenryDB compiled query engine vs Volcano engine: what does each handle, where do they overlap, could they be unified?"
+    },
+    {
+      "time": "2026-04-22T01:06:20.689Z",
+      "msg": "Added T75 (THINK) after end: Investigate HenryDB query planner (planner.js) vs volcano-planner.js: how do they differ? Can they be merged?"
     }
   ]
 }
