@@ -207,6 +207,10 @@ function tryIndexScan(where, fromClause, tables, indexCatalog) {
   if (!tableObj) return null;
   
   const columns = tableObj.schema.map(c => c.name);
+  const totalRows = tableObj.heap?.rowCount || tableObj.heap?.tupleCount || 0;
+  
+  // Cost-based selectivity threshold: skip index if scanning > 30% of table
+  const INDEX_SELECTIVITY_THRESHOLD = 0.30;
   
   // Check for equality condition: col = literal
   if (where.type === 'COMPARE' && where.op === 'EQ') {
@@ -214,6 +218,7 @@ function tryIndexScan(where, fromClause, tables, indexCatalog) {
     if (colName && value !== undefined) {
       const index = findIndex(tableObj, colName, indexCatalog, tableName);
       if (index) {
+        // Equality on index is almost always worth it (selectivity ~ 1/ndv)
         return {
           scan: new IndexScan(index, tableObj.heap, columns, value, value, alias || tableName),
           residual: null
@@ -228,6 +233,17 @@ function tryIndexScan(where, fromClause, tables, indexCatalog) {
     if (colName && value !== undefined) {
       const index = findIndex(tableObj, colName, indexCatalog, tableName);
       if (index) {
+        // Estimate range selectivity: default 33% for range queries
+        // For small tables (< 50 rows), SeqScan is almost always faster
+        const estimatedSelectivity = 0.33;
+        if (totalRows < 50 || estimatedSelectivity > INDEX_SELECTIVITY_THRESHOLD) {
+          // Skip: prefer SeqScan for small tables or wide ranges
+          // Exception: if table is large enough that even 33% is many random I/Os
+          if (totalRows < 500) {
+            return null; // SeqScan wins for small-medium tables with range predicates
+          }
+        }
+        
         let low, high;
         if (colSide === 'left') {
           if (where.op === 'GT' || where.op === 'GE') low = value;
