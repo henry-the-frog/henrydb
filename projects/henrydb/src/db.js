@@ -2105,7 +2105,7 @@ export class Database {
       let result = null;
       if (this._useVolcano !== false && this._currentTxId === 0) {
         try {
-          result = this._tryVolcanoSelect(optimizedAst);
+                    result = this._tryVolcanoSelect(optimizedAst);
         } catch (e) {
           // Volcano failed — fall through to legacy
           result = null;
@@ -2145,11 +2145,11 @@ export class Database {
     if (ast.joins?.some(j => j.lateral)) return null; // LATERAL JOINs — use legacy path
     // Derived tables in FROM — now supported in Volcano (materialized)
     if (ast.recursive) return null; // Recursive CTEs
-    if (ast.ctes?.some(c => c.recursive)) return null; // Recursive CTEs in CTE list
-    // Skip CTEs containing window functions or UNION
+    if (ast.ctes?.some(c => c.recursive)) return null; // Individual recursive CTEs
+    // Skip CTEs containing window functions (UNION now supported)
     if (ast.ctes?.some(c => {
       const s = JSON.stringify(c);
-      return c.unionQuery || s.includes('"type":"window"') || s.includes('"over":{');
+      return s.includes('"type":"window"') || s.includes('"over":{');
     })) return null;
     if (ast.pivot) return null; // PIVOT queries
     if (ast.unpivot) return null; // UNPIVOT queries
@@ -2176,7 +2176,28 @@ export class Database {
       return null;
     }
     
-    const plan = volcanoBuildPlan(ast, this.tables, this._indexes, this._tableStats);
+    // Build tables map including materialized CTE views
+    let volcanoTables = this.tables;
+    if (this.views.size > 0) {
+      volcanoTables = new Map(this.tables);
+      for (const [name, view] of this.views) {
+        if (view.materializedRows && !volcanoTables.has(name)) {
+          const rows = view.materializedRows;
+          const rawKeys = rows.length > 0 ? Object.keys(rows[0]) : [];
+          const schema = rawKeys.map(k => ({ name: k }));
+          volcanoTables.set(name, {
+            heap: {
+              scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c.name]), pageId: 0, slotIdx: 0 }; },
+              rowCount: rows.length,
+              tupleCount: rows.length
+            },
+            schema
+          });
+        }
+      }
+    }
+    
+    const plan = volcanoBuildPlan(ast, volcanoTables, this._indexes, this._tableStats);
     if (!plan) return null;
     
     plan.open();

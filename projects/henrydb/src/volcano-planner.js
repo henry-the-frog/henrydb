@@ -32,6 +32,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     // Materialize each CTE as a temporary table
     const cteTables = new Map(tables);
     for (const cte of (ast.ctes || [])) {
+      // Skip recursive CTEs — they're already materialized by _select as views
+      if (cte.recursive) continue;
+      
       const ctePlan = buildPlan(cte.query, cteTables, indexCatalog, tableStats);
       // Materialize: execute the CTE plan and store results
       ctePlan.open();
@@ -39,6 +42,32 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       let row;
       while ((row = ctePlan.next()) !== null) rows.push(row);
       ctePlan.close();
+      
+      // Handle UNION in CTE: cte.unionQuery is the right side
+      if (cte.unionQuery) {
+        try {
+          const unionPlan = buildPlan(cte.unionQuery, cteTables, indexCatalog, tableStats);
+          unionPlan.open();
+          let uRow;
+          while ((uRow = unionPlan.next()) !== null) rows.push(uRow);
+          unionPlan.close();
+        } catch (e) {
+          // If union query fails, throw to fall back to legacy
+          throw new Error('CTE UNION query failed: ' + e.message);
+        }
+        
+        // For UNION (not ALL), deduplicate
+        if (!cte.unionQuery.unionAll) {
+          const seen = new Set();
+          const uniqueRows = [];
+          for (const r of rows) {
+            const key = JSON.stringify(Object.entries(r).filter(([k]) => !k.startsWith('_')));
+            if (!seen.has(key)) { seen.add(key); uniqueRows.push(r); }
+          }
+          rows.length = 0;
+          rows.push(...uniqueRows);
+        }
+      }
       
       // Create a virtual table for the CTE
       // Strip table qualifications from column names (c.region → region)
@@ -1117,8 +1146,8 @@ function buildProjections(columns, hasAggregates, ctx) {
   if (columns.length === 1 && columns[0].type === 'star') return null; // SELECT *
   if (hasAggregates) return null; // Handled separately
   
-  return columns.map(col => {
-    const outputName = col.alias || col.name;
+  return columns.map((col, idx) => {
+    const outputName = col.alias || col.name || `col${idx}`;
     switch (col.type) {
       case 'column':
         return { name: outputName, expr: buildValueGetter({ type: 'column_ref', name: col.name }) };
@@ -1155,7 +1184,7 @@ function buildProjections(columns, hasAggregates, ctx) {
 }
 
 function buildAggregateProjections(columns, groupByExprs, funcWrappedAggs) {
-  return columns.map(col => {
+  return columns.map((col, idx) => {
     if (col.type === 'aggregate') {
       const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
       const name = col.alias || `${col.func}(${argStr})`;
