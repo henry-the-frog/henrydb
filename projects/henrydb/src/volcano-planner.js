@@ -629,7 +629,8 @@ function buildPredicate(expr, ctx) {
       const vals = expr.values.map(buildValueGetter);
       return (row) => { const v = val(row); return vals.some(g => g(row) === v); };
     }
-    case 'LIKE': {
+    case 'LIKE':
+    case 'ILIKE': {
       const val = buildValueGetter(expr.left || expr.expr);
       const patternStr = typeof expr.pattern === 'object' ? expr.pattern.value : expr.pattern;
       const regex = new RegExp('^' + String(patternStr).replace(/%/g, '.*').replace(/_/g, '.') + '$', 'i');
