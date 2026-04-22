@@ -739,7 +739,7 @@ export class HashAggregate extends Iterator {
         const group = { key, values: {}, aggs: {} };
         for (const col of this._groupBy) group.values[col] = row[col];
         for (const agg of this._aggregates) {
-          group.aggs[agg.name] = { func: agg.func, values: [] };
+          group.aggs[agg.name] = { func: agg.func, values: [], distinct: agg.distinct };
         }
         this._groups.set(key, group);
       }
@@ -757,7 +757,7 @@ export class HashAggregate extends Iterator {
     if (this._groups.size === 0 && this._groupBy.length === 0 && this._aggregates.length > 0) {
       const defaultGroup = { key: '', values: {}, aggs: {} };
       for (const agg of this._aggregates) {
-        defaultGroup.aggs[agg.name] = { func: agg.func, values: [] };
+        defaultGroup.aggs[agg.name] = { func: agg.func, values: [], distinct: agg.distinct };
       }
       this._groups.set('', defaultGroup);
     }
@@ -770,7 +770,9 @@ export class HashAggregate extends Iterator {
     if (done) return null;
     
     const row = { ...value.values };
-    for (const [name, { func, values }] of Object.entries(value.aggs)) {
+    for (const [name, { func, values: rawValues, distinct }] of Object.entries(value.aggs)) {
+      // Apply DISTINCT: deduplicate values
+      const values = distinct ? [...new Set(rawValues)] : rawValues;
       switch (func.toUpperCase()) {
         case 'COUNT':
           row[name] = values.filter(v => v != null).length;

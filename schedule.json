@@ -340,26 +340,34 @@
     {
       "id": "T33",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Support SELECT without FROM in Volcano (SELECT 1+1, SELECT NOW())",
       "project": "henrydb",
-      "started": "2026-04-22T21:02:37.706Z"
+      "started": "2026-04-22T21:02:37.706Z",
+      "completed": "2026-04-22T21:03:35.670Z",
+      "duration_ms": 120000,
+      "summary": "SELECT without FROM now works in Volcano. Virtual single-row iterator. 85/85 tests pass."
     },
     {
       "id": "T34",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Support DISTINCT aggregates in Volcano (COUNT(DISTINCT x), SUM(DISTINCT x))",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:03:39.796Z",
+      "completed": "2026-04-22T21:03:59.882Z",
+      "duration_ms": 60000,
+      "summary": "Plan: pass distinct flag to HashAggregate. In next(), deduplicate values before computing aggregate. Simple change in volcano.js."
     },
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Add DISTINCT aggregate support to HashAggregate + planner",
       "plan_ref": "T34",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:04:05.716Z"
     },
     {
       "id": "T36",
@@ -586,6 +594,10 @@
     {
       "time": "2026-04-22T21:02:25.911Z",
       "msg": "Added T40 (EXPLORE) after T39: Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md"
+    },
+    {
+      "time": "2026-04-22T21:03:54.961Z",
+      "msg": "PLAN T34 filled 1 BUILD tasks"
     }
   ]
 }

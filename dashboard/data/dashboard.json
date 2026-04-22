@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T21:02:37.743Z",
+  "generated": "2026-04-22T21:04:05.753Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Support SELECT without FROM in Volcano (SELECT 1+1, SELECT NOW())",
-    "startedAt": "2026-04-22T21:02:37.743Z",
-    "taskId": "T33"
+    "task": "Add DISTINCT aggregate support to HashAggregate + planner",
+    "startedAt": "2026-04-22T21:04:05.753Z",
+    "taskId": "T35"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1055,76 +1055,185 @@
       {
         "id": "T23",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Aggregate FILTER clause support (COUNT(*) FILTER (WHERE x > 0))",
         "task": null,
-        "started": "2026-04-22T20:51:12.334Z"
+        "started": "2026-04-22T20:51:12.334Z",
+        "completed": "2026-04-22T20:51:41.805Z",
+        "duration_ms": 90000,
+        "summary": "Plan: add filter predicate to aggregate spec in volcano-planner, pass to HashAggregate. In open() loop, only push values when filter matches. Remove _tryVolcanoSelect guard."
       },
       {
         "id": "T24",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Add FILTER clause to HashAggregate + volcano-planner aggregate collection",
         "plan_ref": "T23",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T20:51:50.258Z",
+        "completed": "2026-04-22T20:52:48.151Z",
+        "duration_ms": 240000,
+        "summary": "Aggregate FILTER clause now works in Volcano. COUNT/SUM/AVG/MIN/MAX with FILTER, mixed filtered/unfiltered. 106/106 tests pass."
       },
       {
         "id": "T31",
         "mode": "BUILD",
         "task": "Test FILTER clause: COUNT FILTER, SUM FILTER, mixed filtered/unfiltered aggregates",
-        "status": "upcoming",
-        "plan_ref": "T23"
+        "status": "done",
+        "plan_ref": "T23",
+        "started": "2026-04-22T20:52:58.325Z",
+        "completed": "2026-04-22T20:53:32.724Z",
+        "duration_ms": 120000,
+        "summary": "10 aggregate FILTER tests: COUNT/SUM/AVG/MIN/MAX FILTER, GROUP BY, complex conditions, parity. All pass."
       },
       {
         "id": "T25",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon depth check. 10 BUILDs done? Assess quality and direction."
-      },
-      {
-        "id": "T26",
-        "mode": "PLAN",
-        "status": "upcoming",
-        "goal": "HenryDB: JOIN subqueries in JOIN ON clause for Volcano",
-        "task": null
-      },
-      {
-        "id": "T27",
-        "mode": "BUILD",
-        "status": "upcoming",
-        "task": null,
-        "plan_ref": "T26",
-        "project": "henrydb"
-      },
-      {
-        "id": "T28",
-        "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push, broader test sweep"
-      },
-      {
-        "id": "T29",
-        "mode": "EXPLORE",
-        "status": "upcoming",
-        "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
-        "project": "henrydb"
+        "status": "done",
+        "task": "Afternoon depth check. 10 BUILDs done? Assess quality and direction.",
+        "started": "2026-04-22T20:53:40.973Z",
+        "completed": "2026-04-22T20:54:10.332Z",
+        "duration_ms": 60000,
+        "summary": "8 BUILDs, good depth: 3 surprises, 4+ lessons, 3 bugs found. Direction: fix correlated WHERE subquery (T30), then stress test (T29), then JOIN subqueries if time."
       },
       {
         "id": "T30",
         "mode": "THINK",
+        "status": "done",
+        "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano.",
+        "started": "2026-04-22T20:54:19.815Z",
+        "completed": "2026-04-22T20:57:09.163Z",
+        "duration_ms": 360000,
+        "summary": "Fixed correlated WHERE subqueries in Volcano. buildValueGetter now handles SUBQUERY type: correlated evals per row via buildCorrelatedSubqueryPlan, non-correlated evaluates eagerly. 168/168 tests pass, fixes subquery-stress failure."
+      },
+      {
+        "id": "T26",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: JOIN subqueries in JOIN ON clause for Volcano",
+        "task": null,
+        "started": "2026-04-22T20:57:20.043Z",
+        "completed": "2026-04-22T20:57:45.228Z",
+        "duration_ms": 60000,
+        "summary": "JOIN subqueries already work in Volcano (materialized at planner lines 154-184). No changes needed. Verified with test."
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "plan_ref": "T26",
+        "project": "henrydb",
+        "started": "2026-04-22T20:58:05.560Z",
+        "completed": "2026-04-22T20:58:05.703Z",
+        "duration_ms": 0,
+        "summary": "Skipped — JOIN subqueries already handled."
+      },
+      {
+        "id": "T28",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, broader test sweep",
+        "started": "2026-04-22T20:58:16.382Z",
+        "completed": "2026-04-22T20:59:05.284Z",
+        "duration_ms": 120000,
+        "summary": "Git pushed. Broader sweep: 331/354 (up from 306/337). LATERAL 18/18, subquery-stress fixed. Remaining 23 failures all pre-existing FTS/JSON gaps."
+      },
+      {
+        "id": "T29",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
+        "project": "henrydb",
+        "started": "2026-04-22T20:59:12.441Z",
+        "completed": "2026-04-22T21:01:40.927Z",
+        "duration_ms": 300000,
+        "summary": "Stress-tested 6 adversarial queries mixing CTEs+derived+correlated+FILTER. Found and fixed ctx propagation bug in buildValueGetter (COALESCE+scalar subquery). 5/6 adversarial pass, 1 edge case (triple-nested correlation) out of scope. 168/168 tests."
+      },
+      {
+        "id": "T32",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: what Volcano gaps remain? Prioritize for impact. Check DISTINCT aggregate, SELECT without FROM, JSON fixes.",
+        "project": "henrydb",
+        "started": "2026-04-22T21:02:06.967Z",
+        "completed": "2026-04-22T21:02:32.479Z",
+        "duration_ms": 60000,
+        "summary": "9 BUILDs so far, good depth. Quick wins: SELECT without FROM, DISTINCT aggregates. Then CTEs with UNION. Queue set for 5 more hours."
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Support SELECT without FROM in Volcano (SELECT 1+1, SELECT NOW())",
+        "project": "henrydb",
+        "started": "2026-04-22T21:02:37.706Z",
+        "completed": "2026-04-22T21:03:35.670Z",
+        "duration_ms": 120000,
+        "summary": "SELECT without FROM now works in Volcano. Virtual single-row iterator. 85/85 tests pass."
+      },
+      {
+        "id": "T34",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Support DISTINCT aggregates in Volcano (COUNT(DISTINCT x), SUM(DISTINCT x))",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-22T21:03:39.796Z"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano."
+        "task": "Add DISTINCT aggregate support to HashAggregate + planner",
+        "plan_ref": "T34",
+        "project": "henrydb"
+      },
+      {
+        "id": "T36",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, test sweep"
+      },
+      {
+        "id": "T37",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Support CTEs containing UNION in Volcano",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T37",
+        "project": "henrydb"
+      },
+      {
+        "id": "T39",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, test sweep, evening log"
+      },
+      {
+        "id": "T40",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Broader stress test sweep: run all tests, categorize remaining failures, update volcano-gaps.md",
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 28,
-    "blocksTotal": 31,
+    "blocksCompleted": 30,
+    "blocksTotal": 40,
     "modeDistribution": {
       "THINK": 7,
-      "PLAN": 5,
-      "BUILD": 9,
+      "PLAN": 6,
+      "BUILD": 10,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
