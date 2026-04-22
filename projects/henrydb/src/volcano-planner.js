@@ -633,8 +633,8 @@ function buildPredicate(expr, ctx) {
 
   switch (expr.type) {
     case 'COMPARE': {
-      const getLeft = buildValueGetter(expr.left);
-      const getRight = buildValueGetter(expr.right);
+      const getLeft = buildValueGetter(expr.left, ctx);
+      const getRight = buildValueGetter(expr.right, ctx);
       const cmp = comparators[expr.op];
       if (!cmp) throw new Error(`Unknown comparison: ${expr.op}`);
       return (row) => cmp(getLeft(row), getRight(row));
@@ -773,7 +773,7 @@ function buildPredicate(expr, ctx) {
   }
 }
 
-function buildValueGetter(expr) {
+function buildValueGetter(expr, ctx) {
   if (!expr) return () => null;
   
   switch (expr.type) {
@@ -870,6 +870,70 @@ function buildValueGetter(expr) {
           default: return v;
         }
       };
+    }
+    case 'SUBQUERY': {
+      // Scalar subquery in expressions (WHERE salary > (SELECT AVG(...)))
+      // Check if correlated by looking for outer references
+      const subAst = expr.subquery;
+      if (!ctx) return () => null;
+      
+      // Detect if subquery is correlated (references columns not in subquery's own tables)
+      const subTables = new Set();
+      if (subAst.from) {
+        const t = subAst.from.alias || subAst.from.table;
+        if (t) subTables.add(t.toLowerCase());
+      }
+      if (subAst.joins) {
+        for (const j of subAst.joins) {
+          const t = j.alias || j.table;
+          if (t) subTables.add(t.toLowerCase());
+        }
+      }
+      const whereStr = JSON.stringify(subAst.where || {});
+      const hasOuterRef = /column_ref.*?"name"\s*:\s*"([^"]+)"/.test(whereStr) &&
+        [...whereStr.matchAll(/"name"\s*:\s*"([^"]+)"/g)].some(m => {
+          const col = m[1];
+          if (col.includes('.')) {
+            const prefix = col.split('.')[0].toLowerCase();
+            return !subTables.has(prefix);
+          }
+          return false;
+        });
+      
+      if (hasOuterRef) {
+        // Correlated: evaluate per outer row
+        return (outerRow) => {
+          try {
+            const subPlan = buildCorrelatedSubqueryPlan(subAst, outerRow, ctx);
+            if (!subPlan) return null;
+            subPlan.open();
+            const row = subPlan.next();
+            subPlan.close();
+            if (row) {
+              for (const [k, v] of Object.entries(row)) {
+                if (!k.startsWith('_')) return v;
+              }
+            }
+            return null;
+          } catch (e) { return null; }
+        };
+      } else {
+        // Non-correlated: evaluate once eagerly
+        try {
+          const subPlan = buildPlan(subAst, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+          if (subPlan) {
+            subPlan.open();
+            const row = subPlan.next();
+            subPlan.close();
+            if (row) {
+              for (const [k, v] of Object.entries(row)) {
+                if (!k.startsWith('_')) return () => v;
+              }
+            }
+          }
+        } catch (e) { /* fall through */ }
+        return () => null;
+      }
     }
     default:
       return () => null;

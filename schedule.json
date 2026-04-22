@@ -255,15 +255,29 @@
       "id": "T31",
       "mode": "BUILD",
       "task": "Test FILTER clause: COUNT FILTER, SUM FILTER, mixed filtered/unfiltered aggregates",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T23",
-      "started": "2026-04-22T20:52:58.325Z"
+      "started": "2026-04-22T20:52:58.325Z",
+      "completed": "2026-04-22T20:53:32.724Z",
+      "duration_ms": 120000,
+      "summary": "10 aggregate FILTER tests: COUNT/SUM/AVG/MIN/MAX FILTER, GROUP BY, complex conditions, parity. All pass."
     },
     {
       "id": "T25",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon depth check. 10 BUILDs done? Assess quality and direction."
+      "status": "done",
+      "task": "Afternoon depth check. 10 BUILDs done? Assess quality and direction.",
+      "started": "2026-04-22T20:53:40.973Z",
+      "completed": "2026-04-22T20:54:10.332Z",
+      "duration_ms": 60000,
+      "summary": "8 BUILDs, good depth: 3 surprises, 4+ lessons, 3 bugs found. Direction: fix correlated WHERE subquery (T30), then stress test (T29), then JOIN subqueries if time."
+    },
+    {
+      "id": "T30",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano.",
+      "started": "2026-04-22T20:54:19.815Z"
     },
     {
       "id": "T26",
@@ -292,12 +306,6 @@
       "status": "upcoming",
       "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
       "project": "henrydb"
-    },
-    {
-      "id": "T30",
-      "mode": "THINK",
-      "status": "upcoming",
-      "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano."
     }
   ],
   "focusProjects": [
@@ -449,6 +457,10 @@
     {
       "time": "2026-04-22T20:51:35.996Z",
       "msg": "PLAN T23 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T20:54:02.447Z",
+      "msg": "Moved T30 after T25"
     }
   ]
 }

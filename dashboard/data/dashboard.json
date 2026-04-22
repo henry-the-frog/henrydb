@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T20:52:58.362Z",
+  "generated": "2026-04-22T20:54:19.851Z",
   "current": {
     "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Test FILTER clause: COUNT FILTER, SUM FILTER, mixed filtered/unfiltered aggregates",
-    "startedAt": "2026-04-22T20:52:58.362Z",
-    "taskId": "T31"
+    "mode": "THINK",
+    "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano.",
+    "startedAt": "2026-04-22T20:54:19.851Z",
+    "taskId": "T30"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1119,12 +1119,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 20,
+    "blocksCompleted": 22,
     "blocksTotal": 31,
     "modeDistribution": {
-      "THINK": 4,
+      "THINK": 5,
       "PLAN": 4,
-      "BUILD": 7,
+      "BUILD": 8,
       "MAINTAIN": 4,
       "EXPLORE": 1
     }
