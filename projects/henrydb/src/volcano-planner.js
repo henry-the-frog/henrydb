@@ -366,6 +366,8 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   function containsAggregate(node) {
     if (!node || typeof node !== 'object') return false;
     if (node.type === 'aggregate' || node.type === 'aggregate_expr') return true;
+    // Don't recurse into scalar subqueries — their aggregates are independent
+    if (node.type === 'scalar_subquery' || node.type === 'SUBQUERY') return false;
     return Object.values(node).some(v => {
       if (Array.isArray(v)) return v.some(containsAggregate);
       if (typeof v === 'object' && v !== null) return containsAggregate(v);
@@ -1257,8 +1259,33 @@ function buildProjections(columns, hasAggregates, ctx) {
       case 'function':
       case 'function_call':
         return { name: outputName, expr: buildValueGetter(col, ctx) };
-      case 'scalar_subquery':
-        // Correlated scalar subquery: (SELECT SUM(x) FROM t WHERE t.id = outer.id)
+      case 'scalar_subquery': {
+        // Scalar subquery: (SELECT SUM(x) FROM t WHERE ...)
+        // Pre-evaluate non-correlated subqueries to avoid heap cursor conflicts
+        let cachedValue = undefined;
+        let isCorrelated = false;
+        
+        if (ctx) {
+          try {
+            const subPlan = buildPlan(col.subquery, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+            subPlan.open();
+            const row = subPlan.next();
+            subPlan.close();
+            if (row) {
+              for (const [k, v] of Object.entries(row)) {
+                if (!k.startsWith('_')) { cachedValue = v; break; }
+              }
+            }
+            if (cachedValue === undefined) cachedValue = null;
+          } catch (e) {
+            isCorrelated = true; // buildPlan failed, likely correlated
+          }
+        }
+        
+        if (!isCorrelated && cachedValue !== undefined) {
+          return { name: outputName || 'subquery', expr: () => cachedValue };
+        }
+        
         return { name: outputName || 'subquery', expr: (outerRow) => {
           if (!ctx) return null;
           try {
@@ -1268,7 +1295,6 @@ function buildProjections(columns, hasAggregates, ctx) {
             const row = subPlan.next();
             subPlan.close();
             if (row) {
-              // Return first column value (scalar subquery)
               for (const [k, v] of Object.entries(row)) {
                 if (!k.startsWith('_')) return v;
               }
@@ -1276,6 +1302,7 @@ function buildProjections(columns, hasAggregates, ctx) {
             return null;
           } catch (e) { return null; }
         }};
+      }
       default:
         return { name: outputName, expr: () => null };
     }
