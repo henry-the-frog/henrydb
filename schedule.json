@@ -4,29 +4,53 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review Apr 21 results. 100% pass on both projects. Today: depth on HenryDB (join extraction, tpch-compiled fixes, cost model) + SAT solver quick win."
+      "status": "done",
+      "task": "Review Apr 21 results. 100% pass on both projects. Today: depth on HenryDB (join extraction, tpch-compiled fixes, cost model) + SAT solver quick win.",
+      "started": "2026-04-22T14:15:23.000Z",
+      "completed": "2026-04-22T14:15:40.829Z",
+      "duration_ms": 90000,
+      "summary": "Reviewed Apr 21: 175 tasks, 100% pass both projects, db.js 50% reduction. Queue aligned with TODO. No changes needed."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: Extract JOIN executor from db.js (~1200 LOC) — full extraction with tests",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T14:15:50.177Z",
+      "completed": "2026-04-22T14:17:18.721Z",
+      "duration_ms": 120000,
+      "summary": "Planned join extraction: 15 methods (~1075 LOC) from db.js into join-executor.js. 2 BUILD tasks: extract + verify."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Extract join executor methods from db.js into join-executor.js (~1075 LOC)",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T14:17:26.391Z",
+      "completed": "2026-04-22T14:24:07.754Z",
+      "duration_ms": 600000,
+      "summary": "Extracted 15 join methods (1074 LOC) from db.js into join-executor.js. db.js 6639→5582 lines. 226+ join tests pass, 0 regressions."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Verify all join tests pass after extraction, fix any breakage",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-22T14:24:22.489Z",
+      "completed": "2026-04-22T14:24:43.585Z",
+      "duration_ms": 120000,
+      "summary": "Full verification: 213 MVCC+Volcano tests pass, 226+ join tests pass, 0 regressions across all test suites."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, dashboard health check, knowledge capture"
+      "status": "in-progress",
+      "task": "Git commit+push, dashboard health check, knowledge capture",
+      "started": "2026-04-22T14:24:57.861Z"
     },
     {
       "id": "T5",
@@ -238,6 +262,10 @@
     {
       "time": "2026-04-22T14:01:56.399Z",
       "msg": "Added T21 (EXPLORE) after T20: Research: query compilation techniques (Hyper-style data-centric codegen vs Volcano iterator model)"
+    },
+    {
+      "time": "2026-04-22T14:17:13.404Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }
