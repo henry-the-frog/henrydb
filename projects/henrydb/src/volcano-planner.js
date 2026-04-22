@@ -1261,35 +1261,43 @@ function buildProjections(columns, hasAggregates, ctx) {
         return { name: outputName, expr: buildValueGetter(col, ctx) };
       case 'scalar_subquery': {
         // Scalar subquery: (SELECT SUM(x) FROM t WHERE ...)
-        // Pre-evaluate non-correlated subqueries to avoid heap cursor conflicts
-        let cachedValue = undefined;
-        let isCorrelated = false;
+        if (!ctx) return { name: outputName || 'subquery', expr: () => null };
         
-        if (ctx) {
+        // Detect if correlated by checking for outer table references in WHERE
+        const subAst = col.subquery;
+        const innerNames = new Set();
+        if (subAst.from) innerNames.add((subAst.from.alias || subAst.from.table || '').toLowerCase());
+        if (subAst.joins) for (const j of subAst.joins) innerNames.add((j.alias || j.table || '').toLowerCase());
+        const whereStr = JSON.stringify(subAst.where || {});
+        const hasOuterRefs = [...whereStr.matchAll(/"name"\s*:\s*"([^"]+)"/g)].some(m => {
+          const name = m[1];
+          if (name.includes('.')) {
+            const prefix = name.split('.')[0].toLowerCase();
+            return !innerNames.has(prefix);
+          }
+          return false;
+        });
+        
+        if (!hasOuterRefs) {
+          // Non-correlated: pre-evaluate once
           try {
-            const subPlan = buildPlan(col.subquery, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+            const subPlan = buildPlan(subAst, ctx.tables, ctx.indexCatalog, ctx.tableStats);
             subPlan.open();
             const row = subPlan.next();
             subPlan.close();
             if (row) {
               for (const [k, v] of Object.entries(row)) {
-                if (!k.startsWith('_')) { cachedValue = v; break; }
+                if (!k.startsWith('_')) return { name: outputName || 'subquery', expr: () => v };
               }
             }
-            if (cachedValue === undefined) cachedValue = null;
-          } catch (e) {
-            isCorrelated = true; // buildPlan failed, likely correlated
-          }
+            return { name: outputName || 'subquery', expr: () => null };
+          } catch (e) { /* fall through to correlated */ }
         }
         
-        if (!isCorrelated && cachedValue !== undefined) {
-          return { name: outputName || 'subquery', expr: () => cachedValue };
-        }
-        
+        // Correlated: evaluate per outer row
         return { name: outputName || 'subquery', expr: (outerRow) => {
-          if (!ctx) return null;
           try {
-            const subPlan = buildCorrelatedSubqueryPlan(col.subquery, outerRow, ctx);
+            const subPlan = buildCorrelatedSubqueryPlan(subAst, outerRow, ctx);
             if (!subPlan) return null;
             subPlan.open();
             const row = subPlan.next();
