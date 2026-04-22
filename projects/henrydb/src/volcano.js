@@ -448,11 +448,14 @@ export class HashJoin extends Iterator {
     let row;
     while ((row = this._build.next()) !== null) {
       const key = row[this._buildKey];
-      const keyStr = String(key);
-      if (!this._hashTable.has(keyStr)) {
-        this._hashTable.set(keyStr, []);
+      // SQL: NULL never equals anything, so don't hash null keys
+      if (key != null) {
+        const keyStr = String(key);
+        if (!this._hashTable.has(keyStr)) {
+          this._hashTable.set(keyStr, []);
+        }
+        this._hashTable.get(keyStr).push(row);
       }
-      this._hashTable.get(keyStr).push(row);
       this._allBuildRows.push(row);
       if (!this._buildCols) this._buildCols = Object.keys(row).filter(k => !k.startsWith('_'));
     }
@@ -508,8 +511,14 @@ export class HashJoin extends Iterator {
         this._probeCols = Object.keys(this._probeRow).filter(k => !k.startsWith('_'));
       }
 
-      const key = String(this._probeRow[this._probeKey]);
-      this._matches = this._hashTable.get(key) || [];
+      const probeKey = this._probeRow[this._probeKey];
+      // SQL: NULL never equals anything — treat as no match
+      if (probeKey == null) {
+        this._matches = [];
+      } else {
+        const key = String(probeKey);
+        this._matches = this._hashTable.get(key) || [];
+      }
       this._matchIdx = 0;
 
       if (this._matches.length === 0 && (this._joinType === 'left' || this._joinType === 'full')) {
