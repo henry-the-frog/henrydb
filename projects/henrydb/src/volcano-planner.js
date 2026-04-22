@@ -812,12 +812,12 @@ function buildValueGetter(expr) {
 }
 
 const comparators = {
-  EQ: (a, b) => a != null && b != null ? a === b : a == null && b == null ? null : false,
-  '=': (a, b) => a != null && b != null ? a === b : a == null && b == null ? null : false,
-  NE: (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a !== b,
-  NEQ: (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a !== b,
-  '!=': (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a !== b,
-  '<>': (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a !== b,
+  EQ: (a, b) => a != null && b != null ? a == b : a == null && b == null ? null : false,
+  '=': (a, b) => a != null && b != null ? a == b : a == null && b == null ? null : false,
+  NE: (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a != b,
+  NEQ: (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a != b,
+  '!=': (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a != b,
+  '<>': (a, b) => a == null || b == null ? (a == null && b == null ? false : true) : a != b,
   LT: (a, b) => a == null || b == null ? false : a < b,
   '<': (a, b) => a == null || b == null ? false : a < b,
   LE: (a, b) => a == null || b == null ? false : a <= b,
