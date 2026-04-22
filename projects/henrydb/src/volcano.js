@@ -1104,6 +1104,9 @@ export class Window extends Iterator {
         const orderKey = this._orderBy.map(o => JSON.stringify(r[o.column])).join('|');
 
         for (const wf of this._windowFuncs) {
+          // Helper to get value for a row (supports expression args)
+          const getVal = (row) => wf.argGetter ? wf.argGetter(row) : row[wf.arg];
+          
           switch (wf.func.toUpperCase()) {
             case 'ROW_NUMBER': r[wf.name] = i + 1; break;
             case 'RANK':
@@ -1115,15 +1118,15 @@ export class Window extends Iterator {
               r[wf.name] = denseRank; break;
             case 'LAG': {
               const off = wf.offset || 1;
-              r[wf.name] = i >= off ? rows[i - off][wf.arg] : (wf.defaultValue ?? null); break;
+              r[wf.name] = i >= off ? getVal(rows[i - off]) : (wf.defaultValue ?? null); break;
             }
             case 'LEAD': {
               const off = wf.offset || 1;
-              r[wf.name] = i + off < rows.length ? rows[i + off][wf.arg] : (wf.defaultValue ?? null); break;
+              r[wf.name] = i + off < rows.length ? getVal(rows[i + off]) : (wf.defaultValue ?? null); break;
             }
             case 'SUM': { 
               const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let s = 0; for (let j = 0; j <= end; j++) s += rows[j][wf.arg] || 0; 
+              let s = 0; for (let j = 0; j <= end; j++) s += getVal(rows[j]) || 0; 
               r[wf.name] = s; break; 
             }
             case 'COUNT': {
@@ -1131,25 +1134,25 @@ export class Window extends Iterator {
             }
             case 'AVG': { 
               const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let s = 0; for (let j = 0; j <= end; j++) s += rows[j][wf.arg] || 0; 
+              let s = 0; for (let j = 0; j <= end; j++) s += getVal(rows[j]) || 0; 
               r[wf.name] = s / (end + 1); break; 
             }
             case 'MIN': { 
               const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let m = Infinity; for (let j = 0; j <= end; j++) { const v = rows[j][wf.arg]; if (v != null && v < m) m = v; } 
+              let m = Infinity; for (let j = 0; j <= end; j++) { const v = getVal(rows[j]); if (v != null && v < m) m = v; } 
               r[wf.name] = m === Infinity ? null : m; break; 
             }
             case 'MAX': { 
               const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              let m = -Infinity; for (let j = 0; j <= end; j++) { const v = rows[j][wf.arg]; if (v != null && v > m) m = v; } 
+              let m = -Infinity; for (let j = 0; j <= end; j++) { const v = getVal(rows[j]); if (v != null && v > m) m = v; } 
               r[wf.name] = m === -Infinity ? null : m; break; 
             }
             case 'FIRST_VALUE': {
-              r[wf.name] = rows[0][wf.arg] ?? null; break;
+              r[wf.name] = getVal(rows[0]) ?? null; break;
             }
             case 'LAST_VALUE': {
               const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              r[wf.name] = rows[end][wf.arg] ?? null; break;
+              r[wf.name] = getVal(rows[end]) ?? null; break;
             }
             case 'NTILE': {
               const n = wf.ntile || wf.offset || 2;

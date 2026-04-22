@@ -518,11 +518,14 @@
     {
       "id": "T49",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement WindowFunction iterator and integrate with volcano-planner for ROW_NUMBER, RANK, DENSE_RANK, SUM/COUNT/AVG OVER",
       "plan_ref": "T48",
       "project": "henrydb",
-      "started": "2026-04-22T21:30:55.712Z"
+      "started": "2026-04-22T21:30:55.712Z",
+      "completed": "2026-04-22T21:38:15.935Z",
+      "duration_ms": 600000,
+      "summary": "Window functions in Volcano! ROW_NUMBER, RANK, DENSE_RANK, SUM/COUNT/AVG/MIN/MAX OVER, LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTILE. Partition sorting, full-partition vs running aggregates. 126/128 window tests pass (was 98). 2 frame-spec tests remaining."
     },
     {
       "id": "T53",
@@ -534,8 +537,9 @@
     {
       "id": "T50",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, test sweep"
+      "status": "in-progress",
+      "task": "Git push, test sweep",
+      "started": "2026-04-22T21:38:27.787Z"
     },
     {
       "id": "T51",

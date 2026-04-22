@@ -551,6 +551,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         func: wc.func,
         name: wc.alias || `${wc.func}()`,
         arg: typeof wc.arg === 'object' ? (wc.arg.type === 'literal' ? null : wc.arg.name) : wc.arg,
+        argGetter: typeof wc.arg === 'object' && wc.arg.type !== 'literal' && wc.arg.type !== 'column_ref' ? buildValueGetter(wc.arg) : null,
         ntile: wc.func === 'NTILE' && wc.arg?.type === 'literal' ? wc.arg.value : null,
         offset: wc.offset,
         defaultValue: wc.defaultValue,
