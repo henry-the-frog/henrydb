@@ -6,6 +6,7 @@
 
 import { exprContains, exprCollect } from './expr-walker.js';
 import { evalFunction as _evalFunctionImpl, dateArith as _dateArithImpl, likeToRegex as _likeToRegexImpl } from './sql-functions.js';
+import { tokenize } from './fulltext.js';
 
 /**
  * Install expression evaluation methods on Database.prototype.
