@@ -1554,9 +1554,76 @@
     {
       "id": "T145",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session sync",
-      "started": "2026-04-22T16:46:51.039Z"
+      "started": "2026-04-22T16:46:51.039Z",
+      "completed": "2026-04-22T16:47:06.310Z",
+      "duration_ms": 30000,
+      "summary": "Final sync done. All repos pushed."
+    },
+    {
+      "id": "T147",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Wire function evaluation (COALESCE, ABS, UPPER, LENGTH) into Volcano buildValueGetter",
+      "task": null,
+      "started": "2026-04-22T16:47:29.400Z",
+      "completed": "2026-04-22T16:48:08.349Z",
+      "duration_ms": 60000,
+      "summary": "Root cause: parser type=function/func, buildValueGetter handles function_call/name. Bug #16. Need alias."
+    },
+    {
+      "id": "T153",
+      "mode": "BUILD",
+      "task": "Fix function handling: parser uses type=function/func, buildValueGetter uses function_call/name. Add aliases.",
+      "status": "done",
+      "plan_ref": "T147",
+      "started": "2026-04-22T16:48:14.785Z",
+      "completed": "2026-04-22T16:49:49.031Z",
+      "duration_ms": 300000,
+      "summary": "Fixed function evaluation in Volcano. COALESCE, UPPER, ABS etc now work. Parser type=function vs function_call, plus buildProjections missing function case. Bugs #16-17."
+    },
+    {
+      "id": "T148",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: does Volcano handle multi-column GROUP BY correctly? Verify with edge cases",
+      "project": "henrydb",
+      "started": "2026-04-22T16:50:13.650Z",
+      "completed": "2026-04-22T16:50:31.607Z",
+      "duration_ms": 60000,
+      "summary": "Multi-column GROUP BY: 5/5 pass. Single, multi, HAVING, COUNT, no-group aggregate all correct."
+    },
+    {
+      "id": "T149",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Extract _handlePrepare + _handleExecute + _handleDeallocate (~100 LOC)",
+      "task": null,
+      "started": "2026-04-22T16:50:38.592Z",
+      "completed": "2026-04-22T16:50:38.737Z",
+      "duration_ms": 1000,
+      "summary": "Deferred: prepared statement extraction low priority."
+    },
+    {
+      "id": "T150",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push",
+      "started": "2026-04-22T16:50:46.701Z"
+    },
+    {
+      "id": "T151",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Run another comprehensive Volcano correctness sweep with updated fixes",
+      "project": "henrydb"
+    },
+    {
+      "id": "T152",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE"
     }
   ],
   "focusProjects": [
@@ -2168,6 +2235,34 @@
     {
       "time": "2026-04-22T16:44:33.886Z",
       "msg": "PLAN T143 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T16:47:16.242Z",
+      "msg": "Added T147 (PLAN) after end: HenryDB: Wire function evaluation (COALESCE, ABS, UPPER, LENGTH) into Volcano buildValueGetter"
+    },
+    {
+      "time": "2026-04-22T16:47:16.362Z",
+      "msg": "Added T148 (EXPLORE) after end: Test: does Volcano handle multi-column GROUP BY correctly? Verify with edge cases"
+    },
+    {
+      "time": "2026-04-22T16:47:16.482Z",
+      "msg": "Added T149 (PLAN) after end: HenryDB: Extract _handlePrepare + _handleExecute + _handleDeallocate (~100 LOC)"
+    },
+    {
+      "time": "2026-04-22T16:47:16.601Z",
+      "msg": "Added T150 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-22T16:47:16.721Z",
+      "msg": "Added T151 (EXPLORE) after end: Run another comprehensive Volcano correctness sweep with updated fixes"
+    },
+    {
+      "time": "2026-04-22T16:47:16.841Z",
+      "msg": "Added T152 (THINK) after end: Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE"
+    },
+    {
+      "time": "2026-04-22T16:48:01.465Z",
+      "msg": "PLAN T147 filled 1 BUILD tasks"
     }
   ]
 }

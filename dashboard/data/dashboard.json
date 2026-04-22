@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T16:46:51.077Z",
+  "generated": "2026-04-22T16:50:46.738Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Final session sync",
-    "startedAt": "2026-04-22T16:46:51.077Z",
-    "taskId": "T145"
+    "task": "Push",
+    "startedAt": "2026-04-22T16:50:46.738Z",
+    "taskId": "T150"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -2345,43 +2345,106 @@
       {
         "id": "T143",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix NULL comparison in Volcano: val > -1 returns NULL rows (should exclude them)",
         "task": null,
-        "started": "2026-04-22T16:43:38.495Z"
+        "started": "2026-04-22T16:43:38.495Z",
+        "completed": "2026-04-22T16:44:44.195Z",
+        "duration_ms": 30000,
+        "summary": "Root cause: JS null > -1 is true, SQL NULL > -1 is unknown/false. Comparators need NULL checks."
       },
       {
         "id": "T146",
         "mode": "BUILD",
         "task": "Add NULL-safety to Volcano comparators: return false if either operand is NULL (SQL three-valued logic)",
-        "status": "upcoming",
-        "plan_ref": "T143"
+        "status": "done",
+        "plan_ref": "T143",
+        "started": "2026-04-22T16:44:53.779Z",
+        "completed": "2026-04-22T16:45:55.250Z",
+        "duration_ms": 120000,
+        "summary": "Fixed NULL comparison: SQL three-valued logic in comparators. null > -1 now correctly returns false. Bug #15. 19/19 tests pass."
       },
       {
         "id": "T144",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Update volcano-gaps.md with all today's findings",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T16:46:02.975Z",
+        "completed": "2026-04-22T16:46:38.663Z",
+        "duration_ms": 120000,
+        "summary": "Updated volcano-gaps.md: 28+ patterns verified, 18 bugs fixed, 5 known gaps, performance profile. Comprehensive status doc."
       },
       {
         "id": "T145",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final session sync",
+        "started": "2026-04-22T16:46:51.039Z",
+        "completed": "2026-04-22T16:47:06.310Z",
+        "duration_ms": 30000,
+        "summary": "Final sync done. All repos pushed."
+      },
+      {
+        "id": "T147",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Wire function evaluation (COALESCE, ABS, UPPER, LENGTH) into Volcano buildValueGetter",
+        "task": null,
+        "started": "2026-04-22T16:47:29.400Z"
+      },
+      {
+        "id": "T153",
+        "mode": "BUILD",
+        "task": "Fix function handling: parser uses type=function/func, buildValueGetter uses function_call/name. Add aliases.",
         "status": "upcoming",
-        "task": "Final session sync"
+        "plan_ref": "T147"
+      },
+      {
+        "id": "T148",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Test: does Volcano handle multi-column GROUP BY correctly? Verify with edge cases",
+        "project": "henrydb"
+      },
+      {
+        "id": "T149",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: Extract _handlePrepare + _handleExecute + _handleDeallocate (~100 LOC)",
+        "task": null
+      },
+      {
+        "id": "T150",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Push"
+      },
+      {
+        "id": "T151",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Run another comprehensive Volcano correctness sweep with updated fixes",
+        "project": "henrydb"
+      },
+      {
+        "id": "T152",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Review: has today's session been too breadth-focused? Count BUILDs vs EXPLORE"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 145,
-    "blocksTotal": 146,
+    "blocksCompleted": 150,
+    "blocksTotal": 153,
     "modeDistribution": {
       "THINK": 21,
-      "PLAN": 38,
-      "BUILD": 33,
-      "MAINTAIN": 29,
-      "EXPLORE": 24
+      "PLAN": 40,
+      "BUILD": 34,
+      "MAINTAIN": 30,
+      "EXPLORE": 25
     }
   },
   "artifacts": [
