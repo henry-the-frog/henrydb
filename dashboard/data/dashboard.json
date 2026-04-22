@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T16:42:49.990Z",
+  "generated": "2026-04-22T16:46:51.077Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push updates",
-    "startedAt": "2026-04-22T16:42:49.990Z",
-    "taskId": "T141"
+    "task": "Final session sync",
+    "startedAt": "2026-04-22T16:46:51.077Z",
+    "taskId": "T145"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -2302,43 +2302,86 @@
       {
         "id": "T139",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix arithmetic in Volcano WHERE: a+b>15 returns 0 instead of 2",
         "task": null,
-        "started": "2026-04-22T16:40:25.235Z"
+        "started": "2026-04-22T16:40:25.235Z",
+        "completed": "2026-04-22T16:41:03.210Z",
+        "duration_ms": 30000,
+        "summary": "Root cause: parser uses type=arith, buildValueGetter handles type=binary_expr. Bug #14. Simple fix: add arith case."
       },
       {
         "id": "T142",
         "mode": "BUILD",
         "task": "Add arith case to buildValueGetter (alias for binary_expr) — parser uses arith, not binary_expr",
-        "status": "upcoming",
-        "plan_ref": "T139"
+        "status": "done",
+        "plan_ref": "T139",
+        "started": "2026-04-22T16:41:12.184Z",
+        "completed": "2026-04-22T16:41:57.272Z",
+        "duration_ms": 60000,
+        "summary": "Fixed arith in WHERE: parser uses arith, not binary_expr. Bug #14. One-line fix. a+b>15 now correct."
       },
       {
         "id": "T140",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Test Volcano with more complex expressions: COALESCE, string functions, math",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T16:42:07.480Z",
+        "completed": "2026-04-22T16:42:39.369Z",
+        "duration_ms": 120000,
+        "summary": "Complex expression testing: arith in WHERE works after fix. Functions (COALESCE, ABS, UPPER) return null — not wired. NULL comparison issue. 6/9 row counts match."
       },
       {
         "id": "T141",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push updates",
+        "started": "2026-04-22T16:42:49.953Z",
+        "completed": "2026-04-22T16:42:58.033Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
+      },
+      {
+        "id": "T143",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix NULL comparison in Volcano: val > -1 returns NULL rows (should exclude them)",
+        "task": null,
+        "started": "2026-04-22T16:43:38.495Z"
+      },
+      {
+        "id": "T146",
+        "mode": "BUILD",
+        "task": "Add NULL-safety to Volcano comparators: return false if either operand is NULL (SQL three-valued logic)",
         "status": "upcoming",
-        "task": "Push updates"
+        "plan_ref": "T143"
+      },
+      {
+        "id": "T144",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Update volcano-gaps.md with all today's findings",
+        "project": "henrydb"
+      },
+      {
+        "id": "T145",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final session sync"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 141,
-    "blocksTotal": 142,
+    "blocksCompleted": 145,
+    "blocksTotal": 146,
     "modeDistribution": {
       "THINK": 21,
-      "PLAN": 37,
-      "BUILD": 32,
-      "MAINTAIN": 28,
-      "EXPLORE": 23
+      "PLAN": 38,
+      "BUILD": 33,
+      "MAINTAIN": 29,
+      "EXPLORE": 24
     }
   },
   "artifacts": [

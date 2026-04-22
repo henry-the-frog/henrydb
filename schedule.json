@@ -1511,9 +1511,52 @@
     {
       "id": "T141",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push updates",
-      "started": "2026-04-22T16:42:49.953Z"
+      "started": "2026-04-22T16:42:49.953Z",
+      "completed": "2026-04-22T16:42:58.033Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T143",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix NULL comparison in Volcano: val > -1 returns NULL rows (should exclude them)",
+      "task": null,
+      "started": "2026-04-22T16:43:38.495Z",
+      "completed": "2026-04-22T16:44:44.195Z",
+      "duration_ms": 30000,
+      "summary": "Root cause: JS null > -1 is true, SQL NULL > -1 is unknown/false. Comparators need NULL checks."
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "task": "Add NULL-safety to Volcano comparators: return false if either operand is NULL (SQL three-valued logic)",
+      "status": "done",
+      "plan_ref": "T143",
+      "started": "2026-04-22T16:44:53.779Z",
+      "completed": "2026-04-22T16:45:55.250Z",
+      "duration_ms": 120000,
+      "summary": "Fixed NULL comparison: SQL three-valued logic in comparators. null > -1 now correctly returns false. Bug #15. 19/19 tests pass."
+    },
+    {
+      "id": "T144",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Update volcano-gaps.md with all today's findings",
+      "project": "henrydb",
+      "started": "2026-04-22T16:46:02.975Z",
+      "completed": "2026-04-22T16:46:38.663Z",
+      "duration_ms": 120000,
+      "summary": "Updated volcano-gaps.md: 28+ patterns verified, 18 bugs fixed, 5 known gaps, performance profile. Comprehensive status doc."
+    },
+    {
+      "id": "T145",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session sync",
+      "started": "2026-04-22T16:46:51.039Z"
     }
   ],
   "focusProjects": [
@@ -2109,6 +2152,22 @@
     {
       "time": "2026-04-22T16:40:57.121Z",
       "msg": "PLAN T139 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T16:43:20.735Z",
+      "msg": "Added T143 (PLAN) after end: Fix NULL comparison in Volcano: val > -1 returns NULL rows (should exclude them)"
+    },
+    {
+      "time": "2026-04-22T16:43:30.373Z",
+      "msg": "Added T144 (EXPLORE) after end: Update volcano-gaps.md with all today's findings"
+    },
+    {
+      "time": "2026-04-22T16:43:30.492Z",
+      "msg": "Added T145 (MAINTAIN) after end: Final session sync"
+    },
+    {
+      "time": "2026-04-22T16:44:33.886Z",
+      "msg": "PLAN T143 filled 1 BUILD tasks"
     }
   ]
 }
