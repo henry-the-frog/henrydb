@@ -160,26 +160,31 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         }
       }
       
-      // Handle NATURAL JOIN: find common column names and create equi-join condition
+      // Handle NATURAL JOIN / USING: find common column names and create equi-join condition
       let effectiveOn = join.on;
-      if (join.natural && !effectiveOn) {
-        const leftTable = tables.get(fromTableName) || tables.get(fromTableName?.toLowerCase());
-        const rightTable = tables.get(rightTableName) || tables.get(rightTableName?.toLowerCase());
-        if (leftTable?.schema && rightTable?.schema) {
-          const leftCols = new Set(leftTable.schema.map(s => s.name));
-          const commonCols = rightTable.schema.filter(s => leftCols.has(s.name)).map(s => s.name);
-          if (commonCols.length > 0) {
-            // Build AND chain of equi-join conditions
-            const leftAlias = ast.from.alias || fromTableName;
-            effectiveOn = commonCols.reduce((acc, col) => {
-              const cond = {
-                type: 'COMPARE', op: 'EQ',
-                left: { type: 'column_ref', name: `${leftAlias}.${col}` },
-                right: { type: 'column_ref', name: `${rightAlias}.${col}` }
-              };
-              return acc ? { type: 'AND', left: acc, right: cond } : cond;
-            }, null);
+      if (!effectiveOn) {
+        let commonCols = null;
+        if (join.natural) {
+          const leftTable = tables.get(fromTableName) || tables.get(fromTableName?.toLowerCase());
+          const rightTable = tables.get(rightTableName) || tables.get(rightTableName?.toLowerCase());
+          if (leftTable?.schema && rightTable?.schema) {
+            const leftCols = new Set(leftTable.schema.map(s => s.name));
+            commonCols = rightTable.schema.filter(s => leftCols.has(s.name)).map(s => s.name);
           }
+        } else if (join.usingColumns && join.usingColumns.length > 0) {
+          commonCols = join.usingColumns;
+        }
+        
+        if (commonCols && commonCols.length > 0) {
+          const leftAlias = ast.from.alias || fromTableName;
+          effectiveOn = commonCols.reduce((acc, col) => {
+            const cond = {
+              type: 'COMPARE', op: 'EQ',
+              left: { type: 'column_ref', name: `${leftAlias}.${col}` },
+              right: { type: 'column_ref', name: `${rightAlias}.${col}` }
+            };
+            return acc ? { type: 'AND', left: acc, right: cond } : cond;
+          }, null);
         }
       }
       
