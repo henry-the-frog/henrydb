@@ -2175,6 +2175,8 @@ export class Database {
     if (astStr.includes('"->>"') || astStr.toLowerCase().includes('"json_') || astStr.includes('"JSON_')) {
       return null;
     }
+    // Skip MATCH AGAINST (fulltext search) — not handled by Volcano predicate builder
+    if (astStr.includes('MATCH_AGAINST') || astStr.includes('TS_MATCH')) return null;
     
     // Build tables map including materialized CTE views
     let volcanoTables = this.tables;

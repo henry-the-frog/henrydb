@@ -430,10 +430,34 @@
     {
       "id": "T41",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: investigate JSON failures (22 tests). Triage into fixable vs complex. What's the root cause?",
       "project": "henrydb",
-      "started": "2026-04-22T21:16:57.250Z"
+      "started": "2026-04-22T21:16:57.250Z",
+      "completed": "2026-04-22T21:18:21.750Z",
+      "duration_ms": 180000,
+      "summary": "JSON failures root cause: Volcano guard checked lowercase json_ but parser produces uppercase JSON_EXTRACT. One-line fix: case-insensitive guard. 63/63 JSON tests now pass (was 41/63). 22 tests fixed!"
+    },
+    {
+      "id": "T42",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "HenryDB: investigate FTS failures (5 tests). What's wrong?",
+      "project": "henrydb",
+      "started": "2026-04-22T21:18:37.753Z"
+    },
+    {
+      "id": "T43",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "HenryDB: investigate TPC-H wire protocol failures (4 tests). What's wrong?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T44",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, full test sweep"
     }
   ],
   "focusProjects": [
@@ -633,6 +657,18 @@
     {
       "time": "2026-04-22T21:16:50.812Z",
       "msg": "Added T41 (THINK) after end: HenryDB: investigate JSON failures (22 tests). Triage into fixable vs complex. What's the root cause?"
+    },
+    {
+      "time": "2026-04-22T21:18:30.725Z",
+      "msg": "Added T42 (THINK) after end: HenryDB: investigate FTS failures (5 tests). What's wrong?"
+    },
+    {
+      "time": "2026-04-22T21:18:30.844Z",
+      "msg": "Added T43 (THINK) after T42: HenryDB: investigate TPC-H wire protocol failures (4 tests). What's wrong?"
+    },
+    {
+      "time": "2026-04-22T21:18:30.962Z",
+      "msg": "Added T44 (MAINTAIN) after T43: Git push, full test sweep"
     }
   ]
 }
