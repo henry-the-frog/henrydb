@@ -2099,7 +2099,21 @@ export class Database {
     try {
       // Optimize: decorrelate subqueries
       const optimizedAst = optimizeSelect(ast, this);
-      let result = this._selectInner(optimizedAst);
+      
+      // Try Volcano engine first (faster for many patterns, opt-in)
+      let result = null;
+      if (this._useVolcano === true) {
+        try {
+          result = this._tryVolcanoSelect(optimizedAst);
+        } catch (e) {
+          // Volcano failed — fall through to legacy
+          result = null;
+        }
+      }
+      
+      if (!result) {
+        result = this._selectInner(optimizedAst);
+      }
       
       // PIVOT: transform rows into crosstab
       if (ast.pivot) {
@@ -2123,6 +2137,37 @@ export class Database {
   _executeJoinWithRows(leftRows, rightRows, join, rightAlias) { return _executeJoinWithRowsImpl(this, leftRows, rightRows, join, rightAlias); }
 
   _selectInner(ast) { return _selectInnerImpl(this, ast); }
+  
+  _tryVolcanoSelect(ast) {
+    // Skip Volcano for unsupported patterns
+    if (!ast.from) return null; // No FROM clause (e.g., SELECT 1)
+    if (ast.from.subquery) return null; // Derived table in FROM (not JOIN)
+    if (ast.recursive) return null; // Recursive CTEs
+    
+    const plan = volcanoBuildPlan(ast, this.tables, this._indexes, this._tableStats);
+    if (!plan) return null;
+    
+    plan.open();
+    const rows = [];
+    let row;
+    while ((row = plan.next()) !== null) {
+      // Clean up row keys: use unqualified names, strip internal _keys
+      const clean = {};
+      for (const [k, v] of Object.entries(row)) {
+        if (k.startsWith('_')) continue;
+        // For qualified names (t.id), prefer unqualified form if not already present
+        if (k.includes('.')) {
+          const unqual = k.split('.').pop();
+          if (!(unqual in clean)) clean[unqual] = v;
+        } else {
+          clean[k] = v;
+        }
+      }
+      rows.push(clean);
+    }
+    plan.close();
+    return { rows, columns: rows.length > 0 ? Object.keys(rows[0]) : [] };
+  }
 
   _executeJoin(leftRows, join, leftAlias) { return _executeJoinImpl(this, leftRows, join, leftAlias); }
   _extractEquiJoinColumns(onExpr) { return _extractEquiJoinColumnsImpl(this, onExpr); }
