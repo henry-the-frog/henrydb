@@ -441,23 +441,31 @@
     {
       "id": "T42",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: investigate FTS failures (5 tests). What's wrong?",
       "project": "henrydb",
-      "started": "2026-04-22T21:18:37.753Z"
+      "started": "2026-04-22T21:18:37.753Z",
+      "completed": "2026-04-22T21:21:00.671Z",
+      "duration_ms": 180000,
+      "summary": "FTS failures: MATCH_AGAINST going through Volcano (no predicate support). Added guard. 49/49 FTS pass. Combined with JSON fix: 27 tests fixed total."
     },
     {
       "id": "T43",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: investigate TPC-H wire protocol failures (4 tests). What's wrong?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:21:07.261Z",
+      "completed": "2026-04-22T21:21:53.838Z",
+      "duration_ms": 60000,
+      "summary": "TPC-H wire failures: _slowQueryLog is not defined in wire protocol server. Pre-existing pg wire protocol bug, not Volcano related. Skip for now."
     },
     {
       "id": "T44",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, full test sweep"
+      "status": "in-progress",
+      "task": "Git push, full test sweep",
+      "started": "2026-04-22T21:22:00.148Z"
     }
   ],
   "focusProjects": [
