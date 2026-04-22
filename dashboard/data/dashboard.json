@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T14:31:26.982Z",
+  "generated": "2026-04-22T14:35:38.088Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git commit+push, knowledge capture",
-    "startedAt": "2026-04-22T14:31:26.982Z",
-    "taskId": "T12"
+    "task": "Git commit+push, dashboard regenerate",
+    "startedAt": "2026-04-22T14:35:38.088Z",
+    "taskId": "T15"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -935,37 +935,49 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Wire InstrumentedIterator for per-operator timing in EXPLAIN ANALYZE",
         "task": null,
-        "started": "2026-04-22T14:28:49.516Z"
+        "started": "2026-04-22T14:28:49.516Z",
+        "completed": "2026-04-22T14:29:23.835Z",
+        "duration_ms": 120000,
+        "summary": "Plan: build Volcano plan in EXPLAIN ANALYZE, wrap with instrumentPlan(), execute, add per-operator timing output."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Wire InstrumentedIterator into EXPLAIN ANALYZE: build+execute Volcano plan with timing, add per-operator output",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T14:29:29.090Z",
+        "completed": "2026-04-22T14:31:09.387Z",
+        "duration_ms": 360000,
+        "summary": "Wired InstrumentedIterator into EXPLAIN ANALYZE. Per-operator timing for all Volcano operators. 5 new tests + 80 existing pass."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, knowledge capture"
+        "status": "done",
+        "task": "Git commit+push, knowledge capture",
+        "started": "2026-04-22T14:31:26.945Z",
+        "completed": "2026-04-22T14:31:32.017Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed. Knowledge captured in daily log."
       },
       {
         "id": "T13",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: Volcano cost model — add selectivity heuristic to IndexScan vs SeqScan decision",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T14:31:36.491Z"
       },
       {
         "id": "T14",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Add selectivity-based IndexScan vs SeqScan decision in Volcano planner tryIndexScan, with tests",
         "plan_ref": "T13",
         "project": "henrydb"
       },
@@ -1020,13 +1032,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 12,
+    "blocksCompleted": 15,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 4,
-      "MAINTAIN": 2
+      "PLAN": 4,
+      "BUILD": 5,
+      "MAINTAIN": 3
     }
   },
   "artifacts": [
