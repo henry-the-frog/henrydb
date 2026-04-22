@@ -194,30 +194,36 @@
     {
       "id": "T19",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "Direction: fix LATERAL JOIN failures (8), then assess what other Volcano gaps to close. Check BUILD count (depth gate).",
-      "started": "2026-04-22T20:44:50.089Z"
+      "started": "2026-04-22T20:44:50.089Z",
+      "completed": "2026-04-22T20:50:11.052Z",
+      "duration_ms": 360000,
+      "summary": "Major insight: LATERAL failures (8/8) caused by Volcano not understanding outer row context. Fixed with Volcano skip guard. Also found correlated WHERE subquery (SELECT AVG...) is pre-existing failure. 398/403 broad test pass."
     },
     {
       "id": "T20",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "Fix LATERAL JOIN: top-N per group, LEFT LATERAL, LATERAL with aggregation",
-      "task": null
+      "task": null,
+      "skip_reason": ""
     },
     {
       "id": "T21",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "T20",
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": ""
     },
     {
       "id": "T22",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, test sweep, learning capture"
+      "status": "in-progress",
+      "task": "Git push, test sweep, learning capture",
+      "started": "2026-04-22T20:50:32.300Z"
     },
     {
       "id": "T23",
@@ -267,6 +273,12 @@
       "status": "upcoming",
       "task": "Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates",
       "project": "henrydb"
+    },
+    {
+      "id": "T30",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano."
     }
   ],
   "focusProjects": [
@@ -402,6 +414,18 @@
     {
       "time": "2026-04-22T20:44:40.021Z",
       "msg": "Added T29 (EXPLORE) after T28: Stress-test all new Volcano features: adversarial queries mixing CTEs, derived tables, correlated subqueries, func-wrapped aggregates"
+    },
+    {
+      "time": "2026-04-22T20:50:19.503Z",
+      "msg": "Removed T20: "
+    },
+    {
+      "time": "2026-04-22T20:50:19.621Z",
+      "msg": "Removed T21: "
+    },
+    {
+      "time": "2026-04-22T20:50:24.684Z",
+      "msg": "Added T30 (THINK) after end: Investigate correlated WHERE subquery failure: SELECT ... WHERE col > (SELECT AVG(...) WHERE correlated). Pre-existing, returns empty in Volcano."
     }
   ]
 }
