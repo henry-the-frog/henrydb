@@ -98,6 +98,8 @@ describe('Volcano Correctness: All SQL Patterns', () => {
   describe('Subqueries', () => {
     it('IN subquery', () => verifyMatch(db, "SELECT * FROM products WHERE id IN (SELECT product_id FROM orders WHERE customer = 'cust0')", 'IN subquery'));
     it('NOT IN subquery', () => verifyMatch(db, "SELECT * FROM products WHERE id NOT IN (SELECT product_id FROM orders WHERE customer = 'cust0')", 'NOT IN subquery'));
+    it('EXISTS', () => verifyMatch(db, "SELECT * FROM products WHERE EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id)", 'EXISTS'));
+    it('NOT EXISTS', () => verifyMatch(db, "SELECT * FROM products WHERE NOT EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id)", 'NOT EXISTS'));
   });
 
   describe('Window Functions', () => {
