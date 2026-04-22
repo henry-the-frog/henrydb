@@ -4,7 +4,7 @@
 (none)
 
 ### Normal
-- HenryDB: 3 Volcano operators partially wired (Window/Union/RecursiveCTE remain — CTE, MergeJoin, IndexScan done) (since 2026-04-20, updated 2026-04-21)
+- HenryDB: 1 Volcano operator remaining (Window — CTE, MergeJoin, IndexScan, Union all done) (since 2026-04-20, updated 2026-04-21)
 - HenryDB: db.js now at 5043 lines — continue extraction (join execution ~220 LOC, EXPLAIN ~350 LOC, _selectWithGroupBy ~166 LOC) (since 2026-04-20, updated 2026-04-21)
 - HenryDB: MVCC interception — MVCCHeap wrapper DONE, but findByPK still falls back to full scan. (since 2026-04-20, updated 2026-04-21)
 - HenryDB: Volcano planner needs cost model — currently no cost-based decisions (uses heuristics only) (since 2026-04-21)

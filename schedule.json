@@ -274,8 +274,39 @@
     {
       "id": "T26",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit Union wiring, push, verify",
+      "started": "2026-04-21T23:58:57.491Z",
+      "completed": "2026-04-21T23:59:02.553Z",
+      "duration_ms": 30000,
+      "summary": "Pushed to GitHub. All verified."
+    },
+    {
+      "id": "T27",
+      "mode": "THINK",
+      "status": "done",
+      "task": "TPC-H failure analysis: recursive CTE arithmetic in WHERE clause. Parser bug — rc.rkey + 1 in WHERE fails. Investigate and plan fix.",
+      "started": "2026-04-21T23:59:46.666Z",
+      "completed": "2026-04-22T00:01:04.078Z",
+      "duration_ms": 120000,
+      "summary": "Found the bug: parseComparison() line 1185 calls parsePrimary() for the RHS of comparison operators (=, <, >, etc.), but should call parsePrimaryWithConcat() to handle arithmetic. x = y + 1 parses RHS as just y, then + 1 is unexpected. Same bug in BETWEEN, LIKE, NOT IN value lists. Fix: change parsePrimary() to parsePrimaryWithConcat() in all RHS positions within parseComparison."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix recursive CTE WHERE arithmetic parser bug. Test with TPC-H query.",
+      "project": "henrydb",
+      "started": "2026-04-22T00:01:13.380Z",
+      "completed": "2026-04-22T00:03:00.234Z",
+      "duration_ms": 240000,
+      "summary": "Fixed parser bug: parseComparison RHS only called parsePrimary() instead of parsePrimaryWithConcat(), preventing arithmetic on right side of =, <, >, etc. Also fixed BETWEEN low/high and IN list values. This fixes the TPC-H recursive CTE failure (32/33 now). 46 parser tests + 38 query/advanced/CTE tests pass."
+    },
+    {
+      "id": "T29",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Commit Union wiring, push, verify"
+      "task": "Commit fix, push, run test sweep"
     }
   ],
   "focusProjects": [
@@ -403,6 +434,18 @@
     {
       "time": "2026-04-21T23:56:22.605Z",
       "msg": "PLAN T24 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-21T23:59:37.335Z",
+      "msg": "Added T27 (THINK) after end: TPC-H failure analysis: recursive CTE arithmetic in WHERE clause. Parser bug — rc.rkey + 1 in WHERE fails. Investigate and plan fix."
+    },
+    {
+      "time": "2026-04-21T23:59:43.140Z",
+      "msg": "Added T28 (BUILD) after T27: Fix recursive CTE WHERE arithmetic parser bug. Test with TPC-H query."
+    },
+    {
+      "time": "2026-04-21T23:59:43.258Z",
+      "msg": "Added T29 (MAINTAIN) after T28: Commit fix, push, run test sweep"
     }
   ]
 }

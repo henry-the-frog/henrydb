@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-21T23:58:47.593Z",
+  "generated": "2026-04-22T00:03:00.271Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Wire Union in volcano-planner.js: handle UNION/UNION ALL/INTERSECT/EXCEPT AST types. Build left+right plans, wrap in Union+Distinct or compute set differences. Add tests for UNION/INTERSECT/EXCEPT through Volcano.",
-    "completedAt": "2026-04-21T23:58:47.593Z",
-    "taskId": "T25",
-    "summary": "Wired UNION/INTERSECT/EXCEPT in volcano-planner. UNION ALL uses Union iterator. UNION adds Distinct with NormalizeIterator to strip qualified/internal columns. INTERSECT/EXCEPT materialize and compare normalized rows. 13 new tests, 127 total volcano tests pass.",
-    "durationMs": 480000
+    "task": "Fix recursive CTE WHERE arithmetic parser bug. Test with TPC-H query.",
+    "completedAt": "2026-04-22T00:03:00.271Z",
+    "taskId": "T28",
+    "summary": "Fixed parser bug: parseComparison RHS only called parsePrimary() instead of parsePrimaryWithConcat(), preventing arithmetic on right side of =, <, >, etc. Also fixed BETWEEN low/high and IN list values. This fixes the TPC-H recursive CTE failure (32/33 now). 46 parser tests + 38 query/advanced/CTE tests pass.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -286,13 +286,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 25,
+    "blocksCompleted": 28,
     "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 5,
+      "THINK": 6,
       "PLAN": 6,
-      "BUILD": 9,
-      "MAINTAIN": 5
+      "BUILD": 10,
+      "MAINTAIN": 6
     }
   }
 }

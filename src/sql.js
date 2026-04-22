@@ -1093,7 +1093,7 @@ export function parse(sql) {
         return { type: 'NOT', expr: { type: 'IN_SUBQUERY', left, subquery } };
       }
       const values = [];
-      do { values.push(parsePrimary()); } while (match(','));
+      do { values.push(parsePrimaryWithConcat()); } while (match(','));
       expect(')');
       return { type: 'NOT', expr: { type: 'IN_LIST', left, values } };
     }
@@ -1117,9 +1117,9 @@ export function parse(sql) {
     if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'BETWEEN') {
       advance(); // NOT
       advance(); // BETWEEN
-      const low = parsePrimary();
+      const low = parsePrimaryWithConcat();
       expect('KEYWORD', 'AND');
-      const high = parsePrimary();
+      const high = parsePrimaryWithConcat();
       return { type: 'NOT', expr: { type: 'BETWEEN', left, low, high } };
     }
 
@@ -1132,7 +1132,7 @@ export function parse(sql) {
         return { type: 'IN_SUBQUERY', left, subquery };
       }
       const values = [];
-      do { values.push(parsePrimary()); } while (match(','));
+      do { values.push(parsePrimaryWithConcat()); } while (match(','));
       expect(')');
       return { type: 'IN_LIST', left, values };
     }
@@ -1161,9 +1161,9 @@ export function parse(sql) {
 
     if (isKeyword('BETWEEN')) {
       advance();
-      const low = parsePrimary();
+      const low = parsePrimaryWithConcat();
       expect('KEYWORD', 'AND');
-      const high = parsePrimary();
+      const high = parsePrimaryWithConcat();
       return { type: 'BETWEEN', left, low, high };
     }
 
@@ -1182,7 +1182,7 @@ export function parse(sql) {
         expect(')');
         return { type: 'COMPARE', op, left, right: expr };
       }
-      const right = parsePrimary();
+      const right = parsePrimaryWithConcat();
       return { type: 'COMPARE', op, left, right };
     }
     return left;
