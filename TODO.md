@@ -4,7 +4,7 @@
 (none)
 
 ### Normal
-- HenryDB: Volcano engine COMPLETE — all operators wired. Next: wire into db.js executor (P0) (since 2026-04-20, updated 2026-04-21)
+- HenryDB: Volcano engine WIRED into db.js! Hash join now used for equi-joins. Next: RIGHT/FULL join support in Volcano, INLJ LEFT join. (since 2026-04-21)
 - HenryDB: db.js now at 4939 lines (SUB-5000 achieved!) — further extraction possible (join exec ~220, EXPLAIN ~350, GROUP BY ~166) (since 2026-04-20, updated 2026-04-21)
 - HenryDB: MVCC interception — MVCCHeap wrapper DONE, but findByPK still falls back to full scan. (since 2026-04-20, updated 2026-04-21)
 - HenryDB: Volcano planner fully cost-based. Consider integrating table stats from ANALYZE. (since 2026-04-21, updated 2026-04-21)

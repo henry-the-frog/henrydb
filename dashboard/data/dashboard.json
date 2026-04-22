@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-22T00:40:52.509Z",
+  "generated": "2026-04-22T00:41:27.295Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Implement tryVolcanoJoin() in db.js — delegate join execution to Volcano engine when hasJoins is true. Follow design doc.",
-    "completedAt": "2026-04-22T00:40:52.509Z",
-    "taskId": "T55",
-    "summary": "WIRED Volcano engine into db.js execution! _tryVolcanoJoin delegates INNER and LEFT equi-joins to Volcano (HashJoin/MergeJoin). Fixed INLJ bug: skips IndexNestedLoopJoin for LEFT joins (doesnt handle unmatched rows). All 41 join tests pass. 211 total tests pass (query/subquery/agg/join/volcano). This is the P0 feature — db.js now uses hash join for equi-joins!",
-    "durationMs": 1200000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Update TODO, TASKS, scratch notes with P0 completion. Update CURRENT.md.",
+    "startedAt": "2026-04-22T00:41:27.295Z",
+    "taskId": "T56"
   },
   "schedule": {
     "date": "2026-04-21",
