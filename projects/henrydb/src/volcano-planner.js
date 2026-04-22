@@ -981,6 +981,15 @@ function buildValueGetter(expr, ctx) {
           case 'LOWER': return String(vals[0]).toLowerCase();
           case 'LENGTH': return vals[0] != null ? String(vals[0]).length : null;
           case 'COALESCE': return vals.find(v => v != null) ?? null;
+          case 'IFNULL': case 'NVL': return vals[0] != null ? vals[0] : vals[1];
+          case 'TYPEOF': {
+            const v = vals[0];
+            if (v === null || v === undefined) return 'null';
+            if (typeof v === 'number') return Number.isInteger(v) ? 'integer' : 'real';
+            if (typeof v === 'string') return 'text';
+            if (typeof v === 'boolean') return 'integer';
+            return 'blob';
+          }
           case 'CONCAT_OP': case 'CONCAT': return vals.map(v => v ?? '').join('');
           case 'SUBSTR': case 'SUBSTRING': return String(vals[0]).substring((vals[1] || 1) - 1, vals[2] ? (vals[1] || 1) - 1 + vals[2] : undefined);
           case 'TRIM': return vals[0] != null ? String(vals[0]).trim() : null;

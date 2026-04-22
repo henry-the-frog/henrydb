@@ -615,10 +615,21 @@
     {
       "id": "T58",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement NTH_VALUE window function for 810/810 test pass",
       "project": "henrydb",
-      "started": "2026-04-22T21:58:09.371Z"
+      "started": "2026-04-22T21:58:09.371Z",
+      "completed": "2026-04-22T22:03:10.800Z",
+      "duration_ms": 240000,
+      "summary": "NTH_VALUE window function + frame-aware FIRST/LAST_VALUE. 128/128 window, 10/10 cross-feature. Found 16 more failures in broader test files (ROW_NUMBER in CASE, IFNULL, ORDER BY stress, etc)."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix broader test failures: IFNULL, ORDER BY column not in SELECT, ROW_NUMBER in CASE, window in CASE",
+      "project": "henrydb",
+      "started": "2026-04-22T22:03:30.302Z"
     }
   ],
   "focusProjects": [
@@ -886,6 +897,10 @@
     {
       "time": "2026-04-22T21:58:04.183Z",
       "msg": "Added T58 (BUILD) after end: Implement NTH_VALUE window function for 810/810 test pass"
+    },
+    {
+      "time": "2026-04-22T22:03:25.425Z",
+      "msg": "Added T59 (BUILD) after end: Fix broader test failures: IFNULL, ORDER BY column not in SELECT, ROW_NUMBER in CASE, window in CASE"
     }
   ]
 }
