@@ -2144,6 +2144,15 @@ export class Database {
     if (!ast.from) return null; // No FROM clause (e.g., SELECT 1)
     if (ast.from.subquery) return null; // Derived table in FROM (not JOIN)
     if (ast.recursive) return null; // Recursive CTEs
+    if (ast.pivot) return null; // PIVOT queries
+    if (ast.unpivot) return null; // UNPIVOT queries
+    // Skip if WINDOW is used with GROUP BY and aggregate window functions
+    const hasWindowFn = ast.columns.some(c => c.type === 'window' || (c.type === 'expression' && c.expr?.over));
+    if (hasWindowFn && ast.groupBy) return null; // Window + GROUP BY interaction
+    // Skip JSON operations
+    if (JSON.stringify(ast).includes('"->>"') || JSON.stringify(ast).includes('"json_')){
+      return null;
+    }
     
     const plan = volcanoBuildPlan(ast, this.tables, this._indexes, this._tableStats);
     if (!plan) return null;
