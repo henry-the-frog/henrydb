@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-22T00:48:13.493Z",
+  "generated": "2026-04-22T00:53:47.977Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Memory maintenance: update MEMORY.md with session B-2 key learnings. Clean up scratch/INDEX.md.",
-    "startedAt": "2026-04-22T00:48:13.493Z",
-    "taskId": "T61"
+    "status": "done",
+    "mode": "THINK",
+    "task": "Investigate SMT theory propagation bug: x > 10 AND x < 5 returns SAT. Read smt.cjs to understand the theory solver integration.",
+    "completedAt": "2026-04-22T00:53:47.977Z",
+    "taskId": "T66",
+    "summary": "FOUND ROOT CAUSE: _processAssertion handles <= and >= but NOT < or > (strict inequalities). When (> x 10) is asserted, it falls through without being processed — the assertion is silently ignored. Fix: add < and > cases, convert to weak inequalities for integers: x > 10 → x >= 11, x < 5 → x <= 4. This is a simple 8-line fix (add two else-if branches).",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-21",
@@ -284,13 +286,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 60,
+    "blocksCompleted": 66,
     "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 17,
+      "THINK": 21,
       "PLAN": 7,
       "BUILD": 19,
-      "MAINTAIN": 17
+      "MAINTAIN": 19
     }
   }
 }

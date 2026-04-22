@@ -642,9 +642,66 @@
     {
       "id": "T61",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Memory maintenance: update MEMORY.md with session B-2 key learnings. Clean up scratch/INDEX.md.",
-      "started": "2026-04-22T00:48:13.456Z"
+      "started": "2026-04-22T00:48:13.456Z",
+      "completed": "2026-04-22T00:49:14.425Z",
+      "duration_ms": 60000,
+      "summary": "Updated scratch INDEX.md: TPC-H 33/33, hash join wired with benchmark results, monolith analysis done (40% reduction), architecture + integration design docs."
+    },
+    {
+      "id": "T62",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate SSI false positive — deferred read recording. What lines in transactional-db.js record reads? Can we defer to post-WHERE?",
+      "project": "henrydb",
+      "started": "2026-04-22T00:49:36.164Z",
+      "completed": "2026-04-22T00:50:03.541Z",
+      "duration_ms": 60000,
+      "summary": "SSI false positive for UPDATEs is ALREADY mitigated! Lines 960-967 in transactional-db.js set _suppressSsiReads=true during UPDATE execution, preventing the SeqScan from recording reads for non-matching rows. Only the actual modified rows get conflict-tracked (via the delete interceptor at line 485). The remaining SSI false positives are for SELECT scans that read broadly."
+    },
+    {
+      "id": "T63",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review the MVCC findByPK optimization issue from TODO. What would it take to optimize PK lookups to avoid full scan?",
+      "project": "henrydb",
+      "started": "2026-04-22T00:50:16.676Z",
+      "completed": "2026-04-22T00:51:02.521Z",
+      "duration_ms": 120000,
+      "summary": "MVCC findByPK optimization: _tryIndexScan exists and works for equality lookups on indexed columns. The transactional layer intercepts heap operations but NOT index lookups. The remaining issue: index scan may return rows that are MVCC-invisible (deleted by concurrent tx or not yet visible). The fix: add MVCC visibility filtering after index lookup. Currently, the version map check happens in the heap scan interceptor but not in the index scan path."
+    },
+    {
+      "id": "T64",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session wrap: update CURRENT.md, daily log, git push",
+      "started": "2026-04-22T00:51:22.614Z",
+      "completed": "2026-04-22T00:51:31.335Z",
+      "duration_ms": 5000,
+      "summary": "Deferred — not at 8 PM yet. Continuing with exploration."
+    },
+    {
+      "id": "T65",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore SAT solver project: current state, potential improvements",
+      "project": "sat-solver",
+      "started": "2026-04-22T00:51:31.592Z",
+      "completed": "2026-04-22T00:52:25.410Z",
+      "duration_ms": 120000,
+      "summary": "SAT solver project: CDCL solver with 2-watched literals, VSIDS, 1UIP, LBD (903 LOC). SMT module for linear arithmetic (779 LOC). Simplex for theory solving (286 LOC). 22/23 tests pass. 1 failing test: SMT returns SAT for x > 10 AND x < 5 (should be UNSAT). This is a theory propagation bug worth investigating."
+    },
+    {
+      "id": "T66",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate SMT theory propagation bug: x > 10 AND x < 5 returns SAT. Read smt.cjs to understand the theory solver integration.",
+      "project": "sat-solver",
+      "started": "2026-04-22T00:52:39.164Z",
+      "completed": "2026-04-22T00:53:47.942Z",
+      "duration_ms": 180000,
+      "summary": "FOUND ROOT CAUSE: _processAssertion handles <= and >= but NOT < or > (strict inequalities). When (> x 10) is asserted, it falls through without being processed — the assertion is silently ignored. Fix: add < and > cases, convert to weak inequalities for integers: x > 10 → x >= 11, x < 5 → x <= 4. This is a simple 8-line fix (add two else-if branches)."
     }
   ],
   "focusProjects": [
@@ -912,6 +969,26 @@
     {
       "time": "2026-04-22T00:48:13.224Z",
       "msg": "Added T61 (MAINTAIN) after end: Memory maintenance: update MEMORY.md with session B-2 key learnings. Clean up scratch/INDEX.md."
+    },
+    {
+      "time": "2026-04-22T00:49:35.931Z",
+      "msg": "Added T62 (THINK) after end: Investigate SSI false positive — deferred read recording. What lines in transactional-db.js record reads? Can we defer to post-WHERE?"
+    },
+    {
+      "time": "2026-04-22T00:50:16.443Z",
+      "msg": "Added T63 (THINK) after end: Review the MVCC findByPK optimization issue from TODO. What would it take to optimize PK lookups to avoid full scan?"
+    },
+    {
+      "time": "2026-04-22T00:51:16.573Z",
+      "msg": "Added T64 (MAINTAIN) after end: Final session wrap: update CURRENT.md, daily log, git push"
+    },
+    {
+      "time": "2026-04-22T00:51:16.691Z",
+      "msg": "Added T65 (THINK) after T64: Explore SAT solver project: current state, potential improvements"
+    },
+    {
+      "time": "2026-04-22T00:52:38.929Z",
+      "msg": "Added T66 (THINK) after end: Investigate SMT theory propagation bug: x > 10 AND x < 5 returns SAT. Read smt.cjs to understand the theory solver integration."
     }
   ]
 }

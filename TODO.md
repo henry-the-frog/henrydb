@@ -23,3 +23,6 @@
 - Neural-net: stress-test transformer attention implementation
 - HenryDB: RIGHT/FULL join in Volcano, INLJ LEFT support
 - Git: explore current state and find depth opportunities
+
+### Quick Wins for Tomorrow
+- SAT solver: SMT strict inequality bug — _processAssertion ignores < and >. 8-line fix: add else-if for '>' (→ >=, value+1) and '<' (→ <=, value-1). See smt.cjs line ~720.
