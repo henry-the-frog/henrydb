@@ -37,10 +37,13 @@
 - `henrydb-monolith-analysis.md` — **DONE** db.js: 8247→4939 LOC (40% reduction)
 - `henrydb-architecture-apr21.md` — **NEW 2026-04-21** Architecture status + benchmark results
 - `volcano-dbjs-integration-design.md` — **DONE 2026-04-21** Volcano→db.js wiring design (implemented)
+- `henrydb-extraction-roadmap.md` — **NEW 2026-04-22** db.js extraction roadmap (3293 lines, 67% reduced from peak)
+- `extraction-lessons-2026-04-22.md` — **NEW 2026-04-22** Extraction patterns, AST mismatch bugs, common pitfalls
+- `volcano-gaps.md` — **NEW 2026-04-22** Volcano path gaps analysis + IN_LIST bug
 
 ## Performance/Research
 - `query-optimizer-gaps.md` — Optimizer improvements (parametric cost model done)
-- `query-compilation-research.md` — Copy-and-patch vs traditional codegen
+- `query-compilation-research.md` — **UPDATED 2026-04-22** Volcano vs HyPer codegen vs vectorized; JS-specific recommendations
 
 ## Reference
 - `README.md` — How to use scratch notes

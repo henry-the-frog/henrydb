@@ -4,8 +4,10 @@
 (none)
 
 ### Normal
-- HenryDB: db.js now at ~5582 lines — further extraction possible: EXPLAIN ~350, GROUP BY ~166, cost model ~200 (since 2026-04-20, updated 2026-04-22)
-- HenryDB: Volcano planner: integrate ANALYZE table stats for better cost estimates (since 2026-04-21)
+- HenryDB: db.js now at ~3293 lines — further extraction possible: ~1370 LOC in 9 blocks (see scratch/henrydb-extraction-roadmap.md) (since 2026-04-20, updated 2026-04-22)
+- HenryDB: Volcano planner: route CTEs through Volcano for 14x speedup (5ms vs 70ms) (since 2026-04-22)
+- HenryDB: Volcano path: add correlated subquery support (see scratch/volcano-gaps.md) (since 2026-04-22)
+- HenryDB: Parser inconsistency: aggregate arg is sometimes string, sometimes object (since 2026-04-22)
 - Neural-net: 3 pre-existing sliding-window.test.js failures (since 2026-04-21)
 
 ### Low
@@ -16,8 +18,8 @@
 - HenryDB: Hash-index performance (test takes 24s)
 - HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr
 - HenryDB: Unified expression walker migration
-- HenryDB: EXPLAIN ANALYZE: add est vs actual rows, Rows Removed by Filter (PG-style)
-- HenryDB: Vectorized (batch-at-a-time) execution in Volcano operators
+- HenryDB: Vectorized (batch-at-a-time) execution in Volcano operators (see scratch/query-compilation-research.md)
+- HenryDB: EXPLAIN ANALYZE: add Planning Time, startup vs total time per operator
 
 ### Blog Post Idea
 - "Wiring a Volcano Engine into a Database" — from Feature Theater to 37x speedup. Covers the integration strategy, EvalPlanQual bug find, and benchmark results. Good technical post.

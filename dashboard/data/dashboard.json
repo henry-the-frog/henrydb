@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T15:51:32.645Z",
+  "generated": "2026-04-22T15:58:56.980Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push",
-    "startedAt": "2026-04-22T15:51:32.645Z",
-    "taskId": "T83"
+    "task": "Commit and push all accumulated changes",
+    "startedAt": "2026-04-22T15:58:56.980Z",
+    "taskId": "T93"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1706,75 +1706,150 @@
       {
         "id": "T82",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Extract _union + _intersect + _except + helpers from db.js (~130 LOC)",
         "task": null,
-        "started": "2026-04-22T15:50:09.540Z"
+        "started": "2026-04-22T15:50:09.540Z",
+        "completed": "2026-04-22T15:50:28.660Z",
+        "duration_ms": 30000,
+        "summary": "4 set operations, 112 LOC total. Small, clean extraction."
       },
       {
         "id": "T91",
         "mode": "BUILD",
         "task": "Extract _union + _unionInner + _intersect + _except from db.js (~112 LOC)",
-        "status": "upcoming",
-        "plan_ref": "T82"
+        "status": "done",
+        "plan_ref": "T82",
+        "started": "2026-04-22T15:50:33.771Z",
+        "completed": "2026-04-22T15:51:17.183Z",
+        "duration_ms": 300000,
+        "summary": "Extracted set operations (112 LOC). db.js 3404→3293 (67% from peak). 61 tests pass. BUILD #20 — session cap reached."
       },
       {
         "id": "T83",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push"
+        "status": "done",
+        "task": "Git push",
+        "started": "2026-04-22T15:51:32.608Z",
+        "completed": "2026-04-22T15:51:41.406Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
       },
       {
         "id": "T84",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Session BUILD cap: 20 BUILDs reached. Must pivot to depth for rest of session."
+        "status": "done",
+        "task": "Session BUILD cap: 20 BUILDs reached. Must pivot to depth for rest of session.",
+        "started": "2026-04-22T15:51:51.370Z",
+        "completed": "2026-04-22T15:52:05.478Z",
+        "duration_ms": 30000,
+        "summary": "20 BUILD cap hit. 3412 LOC extracted, db.js 67% smaller, 7 bugs fixed. Pivoting to EXPLORE/THINK for 30+ min."
       },
       {
         "id": "T85",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Stress test: run tpch-mini and tpch-compiled benchmarks, check performance",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T15:52:12.679Z",
+        "completed": "2026-04-22T15:52:30.755Z",
+        "duration_ms": 120000,
+        "summary": "25/25 TPC-H tests pass (mini + compiled + benchmark). All clean."
       },
       {
         "id": "T86",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Test edge cases: empty tables, NULL values, very large GROUP BY, nested CTEs",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T15:52:37.165Z",
+        "completed": "2026-04-22T15:53:07.826Z",
+        "duration_ms": 180000,
+        "summary": "Edge cases all pass: empty tables, NULLs, 200-group GROUP BY, nested CTEs, CTE-referencing-CTE. No bugs."
       },
       {
         "id": "T87",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Investigate: can Volcano executor replace legacy path entirely? What's missing?",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T15:53:16.079Z",
+        "completed": "2026-04-22T15:54:29.357Z",
+        "duration_ms": 360000,
+        "summary": "Found IN_LIST bug in Volcano (returns all rows). Documented full gap analysis: IN list, correlated subqueries, complex expressions missing. Window functions work. Path to primary executor mapped."
       },
       {
         "id": "T88",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Update TODO.md and scratch/INDEX.md with today's findings"
+        "status": "done",
+        "task": "Update TODO.md and scratch/INDEX.md with today's findings",
+        "started": "2026-04-22T15:54:53.469Z",
+        "completed": "2026-04-22T15:55:40.669Z",
+        "duration_ms": 120000,
+        "summary": "Updated TODO.md (IN_LIST bug as Urgent), scratch/INDEX.md (3 new notes). Knowledge captured."
       },
       {
         "id": "T89",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final session sync: commit, push, update CURRENT.md",
+        "started": "2026-04-22T15:55:56.801Z",
+        "completed": "2026-04-22T15:55:56.945Z",
+        "duration_ms": 1000,
+        "summary": "Not final yet: 4h remaining. Continuing after depth pivot."
+      },
+      {
+        "id": "T92",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix IN_LIST bug in Volcano buildPredicate — correctness issue",
+        "task": null,
+        "started": "2026-04-22T15:56:27.510Z"
+      },
+      {
+        "id": "T97",
+        "mode": "BUILD",
+        "task": "Add IN_LIST case to buildPredicate (alias for IN with different field names)",
         "status": "upcoming",
-        "task": "Final session sync: commit, push, update CURRENT.md"
+        "plan_ref": "T92"
+      },
+      {
+        "id": "T93",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Commit and push all accumulated changes"
+      },
+      {
+        "id": "T94",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Run another 50-test random sweep after IN_LIST fix",
+        "project": "henrydb"
+      },
+      {
+        "id": "T95",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Daily log evening summary"
+      },
+      {
+        "id": "T96",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "End session: sync workspace and knowledge files"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 84,
-    "blocksTotal": 91,
+    "blocksCompleted": 93,
+    "blocksTotal": 97,
     "modeDistribution": {
-      "THINK": 13,
-      "PLAN": 22,
-      "BUILD": 25,
-      "MAINTAIN": 16,
-      "EXPLORE": 8
+      "THINK": 15,
+      "PLAN": 23,
+      "BUILD": 26,
+      "MAINTAIN": 18,
+      "EXPLORE": 11
     }
   },
   "artifacts": [
