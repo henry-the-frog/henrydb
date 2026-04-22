@@ -516,7 +516,8 @@ function buildValueGetter(expr) {
         }
         return row[name]; // undefined
       };
-    case 'binary_expr': {
+    case 'binary_expr':
+    case 'arith': {
       const left = buildValueGetter(expr.left);
       const right = buildValueGetter(expr.right);
       const op = expr.op;
