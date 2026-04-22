@@ -25,9 +25,9 @@
 ## Key Metrics
 - **Total projects**: 13+
 - **Total source LOC**: ~190K
-- **Total tests**: ~4000+
-- **All-green projects**: henrydb, neural-net, riscv, lambda-calc, git, forth, monkey-lang
-- **Known bugs**: SAT solver SMT strict inequality, SSI false positive (mitigated)
+- **Total tests**: ~25,000+ (estimated from test files)
+- **All-green projects**: All 12 testable projects pass their test suites
+- **Known bugs**: SAT solver SMT strict inequality (8-line fix)
 
 ## Portfolio Balance
 - **Database systems**: henrydb (deep, ongoing)
