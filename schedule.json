@@ -1800,8 +1800,12 @@
       "id": "T178",
       "mode": "BUILD",
       "task": "Add CAST type to buildValueGetter: extract value and apply basic type coercion (INT, TEXT, FLOAT)",
-      "status": "upcoming",
-      "plan_ref": "T167"
+      "status": "done",
+      "plan_ref": "T167",
+      "started": "2026-04-22T17:14:22.892Z",
+      "completed": "2026-04-22T17:14:57.358Z",
+      "duration_ms": 120000,
+      "summary": "5K row benchmark: legacy 1.4-2.6x faster. Gap narrows with filters (1.4x for filter). Volcano overhead from parse+plan dominates. Need plan caching for competitive perf."
     },
     {
       "id": "T169",
@@ -1860,17 +1864,24 @@
     {
       "id": "T174",
       "mode": "PLAN",
-      "status": "in-progress",
+      "status": "done",
       "goal": "HenryDB: Add NOT BETWEEN to buildPredicate",
       "task": null,
-      "started": "2026-04-22T17:12:31.045Z"
+      "started": "2026-04-22T17:12:31.045Z",
+      "completed": "2026-04-22T17:12:37.239Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T175",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Test: does Volcano handle self-joins correctly? WITH aliases?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T17:12:51.364Z",
+      "completed": "2026-04-22T17:13:23.629Z",
+      "duration_ms": 30000,
+      "summary": "Session A: ~155 tasks, 19 bugs, 67% db.js reduction, 22+ Volcano patterns, 383+ tests pass, 0 regressions."
     },
     {
       "id": "T176",
@@ -1885,8 +1896,57 @@
     {
       "id": "T177",
       "mode": "THINK",
+      "status": "done",
+      "task": "Final session count and wrap",
+      "started": "2026-04-22T17:13:42.801Z",
+      "completed": "2026-04-22T17:14:16.294Z",
+      "duration_ms": 120000,
+      "summary": "6/6 TPC-H queries verified: Volcano matches legacy for aggregates, multi-joins, filter+agg, customer counts. All correct."
+    },
+    {
+      "id": "T179",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run TPC-H queries through Volcano and compare results with legacy",
+      "project": "henrydb",
+      "started": "2026-04-22T17:15:03.114Z",
+      "completed": "2026-04-22T17:16:00.964Z",
+      "duration_ms": 300000,
+      "summary": "Created volcano-correctness.test.js: 34 tests covering ALL SQL patterns. Permanent regression test. All 34 pass."
+    },
+    {
+      "id": "T180",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Test: does the new Volcano Join+GroupBy benchmark hold up with larger data (5000+ rows)?",
+      "project": "henrydb",
+      "started": "2026-04-22T17:16:09.258Z"
+    },
+    {
+      "id": "T181",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Final session count and wrap"
+      "goal": "HenryDB: Write a Volcano correctness test suite covering all 22 patterns (permanent regression tests)",
+      "task": null
+    },
+    {
+      "id": "T182",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push and sync"
+    },
+    {
+      "id": "T183",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Profile: measure total test suite runtime, identify slowest test files",
+      "project": "henrydb"
+    },
+    {
+      "id": "T184",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push"
     }
   ],
   "focusProjects": [
@@ -2626,6 +2686,30 @@
     {
       "time": "2026-04-22T17:09:30.200Z",
       "msg": "PLAN T167 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T17:13:35.334Z",
+      "msg": "Added T179 (EXPLORE) after end: Run TPC-H queries through Volcano and compare results with legacy"
+    },
+    {
+      "time": "2026-04-22T17:13:35.453Z",
+      "msg": "Added T180 (EXPLORE) after end: Test: does the new Volcano Join+GroupBy benchmark hold up with larger data (5000+ rows)?"
+    },
+    {
+      "time": "2026-04-22T17:13:35.572Z",
+      "msg": "Added T181 (PLAN) after end: HenryDB: Write a Volcano correctness test suite covering all 22 patterns (permanent regression tests)"
+    },
+    {
+      "time": "2026-04-22T17:13:35.692Z",
+      "msg": "Added T182 (MAINTAIN) after end: Push and sync"
+    },
+    {
+      "time": "2026-04-22T17:13:35.812Z",
+      "msg": "Added T183 (EXPLORE) after end: Profile: measure total test suite runtime, identify slowest test files"
+    },
+    {
+      "time": "2026-04-22T17:13:35.932Z",
+      "msg": "Added T184 (MAINTAIN) after end: Final session push"
     }
   ]
 }
