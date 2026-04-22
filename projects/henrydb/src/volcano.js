@@ -750,6 +750,16 @@ export class HashAggregate extends Iterator {
       }
     }
     this._child.close();
+    
+    // For aggregates without GROUP BY on empty input, emit one row with default values
+    if (this._groups.size === 0 && this._groupBy.length === 0 && this._aggregates.length > 0) {
+      const defaultGroup = { key: '', values: {}, aggs: {} };
+      for (const agg of this._aggregates) {
+        defaultGroup.aggs[agg.name] = { func: agg.func, values: [] };
+      }
+      this._groups.set('', defaultGroup);
+    }
+    
     this._groupIter = this._groups.values();
   }
 
@@ -763,9 +773,11 @@ export class HashAggregate extends Iterator {
         case 'COUNT':
           row[name] = values.filter(v => v != null).length;
           break;
-        case 'SUM':
-          row[name] = values.reduce((a, b) => (a || 0) + (b || 0), 0);
+        case 'SUM': {
+          const nonNull = values.filter(v => v != null);
+          row[name] = nonNull.length ? nonNull.reduce((a, b) => a + b, 0) : null;
           break;
+        }
         case 'AVG': {
           const nonNull = values.filter(v => v != null);
           row[name] = nonNull.length ? nonNull.reduce((a, b) => a + b, 0) / nonNull.length : null;
