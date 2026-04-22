@@ -10,8 +10,8 @@ import {
 /**
  * Build a plan and return the EXPLAIN output string.
  */
-export function explainPlan(ast, tables, indexCatalog) {
-  const plan = buildPlan(ast, tables, indexCatalog);
+export function explainPlan(ast, tables, indexCatalog, tableStats) {
+  const plan = buildPlan(ast, tables, indexCatalog, tableStats);
   return plan.explain();
 }
 
@@ -21,13 +21,13 @@ export function explainPlan(ast, tables, indexCatalog) {
  * @param {Map} tables — database tables map (name → { heap, schema, indexes })
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
-export function buildPlan(ast, tables, indexCatalog) {
+export function buildPlan(ast, tables, indexCatalog, tableStats) {
   // Handle WITH (CTE)
   if (ast.type === 'WITH') {
     // Materialize each CTE as a temporary table
     const cteTables = new Map(tables);
     for (const cte of (ast.ctes || [])) {
-      const ctePlan = buildPlan(cte.query, cteTables, indexCatalog);
+      const ctePlan = buildPlan(cte.query, cteTables, indexCatalog, tableStats);
       // Materialize: execute the CTE plan and store results
       ctePlan.open();
       const rows = [];
@@ -43,13 +43,13 @@ export function buildPlan(ast, tables, indexCatalog) {
       });
     }
     // Build the main query plan with CTE tables available
-    return buildPlan(ast.query, cteTables, indexCatalog);
+    return buildPlan(ast.query, cteTables, indexCatalog, tableStats);
   }
 
   // Handle UNION/UNION ALL
   if (ast.type === 'UNION') {
-    const leftPlan = buildPlan(ast.left, tables, indexCatalog);
-    const rightPlan = buildPlan(ast.right, tables, indexCatalog);
+    const leftPlan = buildPlan(ast.left, tables, indexCatalog, tableStats);
+    const rightPlan = buildPlan(ast.right, tables, indexCatalog, tableStats);
     let iter = new Union(leftPlan, rightPlan);
     if (!ast.all) {
       iter = new Distinct(iter);
@@ -77,7 +77,8 @@ export function buildPlan(ast, tables, indexCatalog) {
     if (perTable[fromTableName]) {
       const pred = buildPredicate(perTable[fromTableName]);
       iter = new Filter(iter, pred);
-      iter._estimatedRows = Math.max(1, Math.round(fromRowCount * 0.33));
+      const sel = estimateSelectivity(perTable[fromTableName], fromTableName, tableStats);
+      iter._estimatedRows = Math.max(1, Math.round(fromRowCount * sel));
     }
     
     residualWhere = residual;
@@ -99,7 +100,8 @@ export function buildPlan(ast, tables, indexCatalog) {
       // Push per-table predicate into right scan
       if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
         rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias]));
-        rightIter._estimatedRows = Math.max(1, Math.round(rightRowCount * 0.33));
+        const sel = estimateSelectivity(_pushdownPredicates[rightAlias], rightTableName, tableStats);
+        rightIter._estimatedRows = Math.max(1, Math.round(rightRowCount * sel));
       }
       
       const predicate = join.on ? buildPredicate(join.on) : null;
@@ -153,7 +155,8 @@ export function buildPlan(ast, tables, indexCatalog) {
     } else {
       const pred = buildPredicate(effectiveWhere);
       iter = new Filter(iter, pred);
-      iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * 0.33));
+      const sel = estimateSelectivity(effectiveWhere, fromTableName, tableStats);
+      iter._estimatedRows = Math.max(1, Math.round((iter._estimatedRows || fromRowCount) * sel));
     }
   }
 
@@ -704,4 +707,56 @@ function walkExpr(expr, fn) {
   if (expr.args) for (const arg of expr.args) walkExpr(arg, fn);
   if (expr.operand) walkExpr(expr.operand, fn);
   if (expr.value && typeof expr.value === 'object') walkExpr(expr.value, fn);
+}
+
+/**
+ * Estimate selectivity of a WHERE predicate using table statistics.
+ * Returns fraction (0..1) of rows expected to pass the predicate.
+ */
+function estimateSelectivity(where, tableName, tableStats) {
+  if (!where || !tableStats) return 0.33; // default heuristic
+  
+  const stats = tableStats.get(tableName);
+  if (!stats || !stats.columns) return 0.33;
+  
+  if (where.type === 'COMPARE') {
+    const colName = where.left?.name?.includes('.') 
+      ? where.left.name.split('.').pop() 
+      : where.left?.name;
+    const colStats = colName ? stats.columns[colName] : null;
+    
+    if (where.op === 'EQ' && colStats?.distinct > 0) {
+      // Equality: selectivity = 1/ndistinct
+      return 1 / colStats.distinct;
+    }
+    if (['LT', 'LE', 'GT', 'GE'].includes(where.op)) {
+      // Range: use histogram if available, else default 33%
+      if (colStats?.histogram) {
+        // Simple histogram-based estimate: fraction of buckets matching
+        const val = where.right?.value;
+        if (val != null && colStats.histogram.length > 0) {
+          const h = colStats.histogram;
+          const matching = where.op.startsWith('G') 
+            ? h.filter(b => b >= val).length 
+            : h.filter(b => b <= val).length;
+          return Math.max(0.01, matching / h.length);
+        }
+      }
+      return 0.33;
+    }
+  }
+  
+  if (where.type === 'AND') {
+    const left = estimateSelectivity(where.left, tableName, tableStats);
+    const right = estimateSelectivity(where.right, tableName, tableStats);
+    return left * right; // Independence assumption
+  }
+  
+  if (where.type === 'OR') {
+    const left = estimateSelectivity(where.left, tableName, tableStats);
+    const right = estimateSelectivity(where.right, tableName, tableStats);
+    return Math.min(1, left + right - left * right);
+  }
+  
+  return 0.33;
 }

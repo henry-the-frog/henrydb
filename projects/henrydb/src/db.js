@@ -3609,7 +3609,7 @@ export class Database {
       // Volcano format: show the Volcano iterator plan tree
       if (format === 'volcano') {
         try {
-          const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+          const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes, this._tableStats);
           const lines = volcanoTree.split('\n');
           return { type: 'PLAN', rows: lines.map(l => ({ 'QUERY PLAN': l })) };
         } catch (e) {
@@ -3940,7 +3940,7 @@ export class Database {
         }
         // Add Volcano plan tree if available
         try {
-          const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+          const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes, this._tableStats);
           if (volcanoTree) {
             lines.push('');
             lines.push('Volcano Plan:');
@@ -4388,7 +4388,7 @@ export class Database {
     
     // Add Volcano plan tree with per-operator instrumentation
     try {
-      const rawPlan = volcanoBuildPlan(stmt, this.tables, this._indexes);
+      const rawPlan = volcanoBuildPlan(stmt, this.tables, this._indexes, this._tableStats);
       if (rawPlan) {
         const instrumented = instrumentPlan(rawPlan);
         // Execute through instrumented plan to collect real timings
@@ -4409,7 +4409,7 @@ export class Database {
     } catch (e) {
       // Volcano instrumentation failed — add static plan tree as fallback
       try {
-        const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+        const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes, this._tableStats);
         if (volcanoTree) {
           analyzeResult.rows.push({ 'QUERY PLAN': '' });
           analyzeResult.rows.push({ 'QUERY PLAN': 'Volcano Plan:' });
