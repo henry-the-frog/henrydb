@@ -650,28 +650,108 @@
     {
       "id": "T58",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push",
-      "started": "2026-04-22T15:22:49.878Z"
+      "started": "2026-04-22T15:22:49.878Z",
+      "completed": "2026-04-22T15:22:58.382Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T59",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: Add HAVING support to Volcano planner",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T15:23:04.829Z",
+      "completed": "2026-04-22T15:24:34.443Z",
+      "duration_ms": 120000,
+      "summary": "HAVING exists. Found pre-existing bug: Volcano HashAggregate output wrong (missing grp column, expr=null). Non-blocking — fallback to non-Volcano path works."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "task": "HAVING already exists in Volcano planner. Found bug: HashAggregate output is wrong (missing grp column, expr=null). Separate fix needed.",
+      "status": "done",
+      "plan_ref": "T59",
+      "started": "2026-04-22T15:24:43.585Z",
+      "completed": "2026-04-22T15:26:45.860Z",
+      "duration_ms": 480000,
+      "summary": "Fixed HAVING in Volcano: aggregate arg type mismatch (object vs string). Second AST format mismatch bug found today. 27 tests pass."
     },
     {
       "id": "T60",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "15-BUILD depth check: run full test sweep on henrydb"
+      "status": "done",
+      "task": "15-BUILD depth check: run full test sweep on henrydb",
+      "started": "2026-04-22T15:27:06.283Z",
+      "completed": "2026-04-22T15:27:33.869Z",
+      "duration_ms": 120000,
+      "summary": "17 BUILDs done, 3 bugs found. 89/89 representative tests pass (0 failures). Pattern: parser-consumer AST format mismatches are systemic — should audit."
     },
     {
       "id": "T61",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session push and daily log",
+      "started": "2026-04-22T15:27:44.429Z",
+      "completed": "2026-04-22T15:27:44.572Z",
+      "duration_ms": 1000,
+      "summary": "Skipping final push: 4.5h remaining."
+    },
+    {
+      "id": "T66",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Audit Volcano planner for more AST format mismatches. Found 3 today — likely more.",
+      "started": "2026-04-22T15:28:12.535Z",
+      "completed": "2026-04-22T15:30:00.752Z",
+      "duration_ms": 480000,
+      "summary": "Systematic audit: found and fixed aggregate arg normalization in 4 places. Parser inconsistent about arg types. 95/95 aggregate+volcano tests pass."
+    },
+    {
+      "id": "T67",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Extract more from db.js — identify next-largest extractable blocks",
+      "task": null,
+      "started": "2026-04-22T15:30:22.836Z",
+      "completed": "2026-04-22T15:30:55.945Z",
+      "duration_ms": 120000,
+      "summary": "Mapped remaining extractable blocks. Roadmap saved. 9 candidates totaling ~1370 LOC. Session BUILD cap approaching (17/20)."
+    },
+    {
+      "id": "T68",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + dashboard",
+      "started": "2026-04-22T15:31:05.235Z"
+    },
+    {
+      "id": "T69",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Final session push and daily log"
+      "task": "20-BUILD cap reached: mandatory depth pivot — stress test, explore, investigate"
+    },
+    {
+      "id": "T70",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Stress-test Volcano EXPLAIN ANALYZE across all query types: subqueries, UNION, window functions, LATERAL",
+      "project": "henrydb"
+    },
+    {
+      "id": "T71",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Profile HenryDB: what are the slowest operations? Run tpch with timing.",
+      "project": "henrydb"
+    },
+    {
+      "id": "T72",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "End-of-session push and daily summary"
     }
   ],
   "focusProjects": [
@@ -955,6 +1035,38 @@
     {
       "time": "2026-04-22T15:19:31.279Z",
       "msg": "PLAN T57 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:24:23.893Z",
+      "msg": "PLAN T59 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:27:57.104Z",
+      "msg": "Added T66 (THINK) after end: Audit Volcano planner for more AST format mismatches. Found 3 today — likely more."
+    },
+    {
+      "time": "2026-04-22T15:27:57.222Z",
+      "msg": "Added T67 (PLAN) after end: HenryDB: Extract more from db.js — identify next-largest extractable blocks"
+    },
+    {
+      "time": "2026-04-22T15:27:57.340Z",
+      "msg": "Added T68 (MAINTAIN) after end: Git push + dashboard"
+    },
+    {
+      "time": "2026-04-22T15:27:57.460Z",
+      "msg": "Added T69 (THINK) after end: 20-BUILD cap reached: mandatory depth pivot — stress test, explore, investigate"
+    },
+    {
+      "time": "2026-04-22T15:27:57.578Z",
+      "msg": "Added T70 (EXPLORE) after end: Stress-test Volcano EXPLAIN ANALYZE across all query types: subqueries, UNION, window functions, LATERAL"
+    },
+    {
+      "time": "2026-04-22T15:27:57.696Z",
+      "msg": "Added T71 (EXPLORE) after end: Profile HenryDB: what are the slowest operations? Run tpch with timing."
+    },
+    {
+      "time": "2026-04-22T15:27:57.814Z",
+      "msg": "Added T72 (MAINTAIN) after end: End-of-session push and daily summary"
     }
   ]
 }

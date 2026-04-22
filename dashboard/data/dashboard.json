@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T15:22:49.914Z",
+  "generated": "2026-04-22T15:31:05.271Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push",
-    "startedAt": "2026-04-22T15:22:49.914Z",
-    "taskId": "T58"
+    "task": "Git push + dashboard",
+    "startedAt": "2026-04-22T15:31:05.271Z",
+    "taskId": "T68"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1452,30 +1452,49 @@
       {
         "id": "T57",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Extract _selectInner from db.js (~700 LOC)",
         "task": null,
-        "started": "2026-04-22T15:18:56.511Z"
+        "started": "2026-04-22T15:18:56.511Z",
+        "completed": "2026-04-22T15:19:38.653Z",
+        "duration_ms": 60000,
+        "summary": "_selectInner: 681 LOC, 30 db deps. Extractable with db first-param pattern. Core SELECT execution."
       },
       {
         "id": "T64",
         "mode": "BUILD",
         "task": "Extract _selectInner from db.js into select-inner.js (~681 LOC, 30 db deps)",
-        "status": "upcoming",
-        "plan_ref": "T57"
+        "status": "done",
+        "plan_ref": "T57",
+        "started": "2026-04-22T15:19:46.220Z",
+        "completed": "2026-04-22T15:22:30.509Z",
+        "duration_ms": 360000,
+        "summary": "Extracted _selectInner (681 LOC) into select-inner.js. Fixed missing pushdownPredicates import. db.js 4381→3703 (63% from peak). 121 tests pass."
       },
       {
         "id": "T58",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push"
+        "status": "done",
+        "task": "Git push",
+        "started": "2026-04-22T15:22:49.878Z",
+        "completed": "2026-04-22T15:22:58.382Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
       },
       {
         "id": "T59",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: Add HAVING support to Volcano planner",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T15:23:04.829Z"
+      },
+      {
+        "id": "T65",
+        "mode": "BUILD",
+        "task": "HAVING already exists in Volcano planner. Found bug: HashAggregate output is wrong (missing grp column, expr=null). Separate fix needed.",
+        "status": "upcoming",
+        "plan_ref": "T59"
       },
       {
         "id": "T60",
@@ -1493,13 +1512,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 60,
-    "blocksTotal": 64,
+    "blocksCompleted": 67,
+    "blocksTotal": 65,
     "modeDistribution": {
-      "THINK": 9,
-      "PLAN": 17,
-      "BUILD": 21,
-      "MAINTAIN": 10,
+      "THINK": 11,
+      "PLAN": 19,
+      "BUILD": 22,
+      "MAINTAIN": 12,
       "EXPLORE": 3
     }
   },
