@@ -5440,6 +5440,19 @@ export class Database {
       planTree: planTree || null,
       planTreeText: planTree ? PlanFormatter.format(planTree, { analyze: true }) : null,
     };
+    
+    // Add Volcano plan tree if available
+    try {
+      const volcanoTree = volcanoExplainPlan(stmt, this.tables, this._indexes);
+      if (volcanoTree) {
+        analyzeResult.rows.push({ 'QUERY PLAN': '' });
+        analyzeResult.rows.push({ 'QUERY PLAN': 'Volcano Plan:' });
+        for (const line of volcanoTree.split('\n')) {
+          analyzeResult.rows.push({ 'QUERY PLAN': '  ' + line });
+        }
+      }
+    } catch (e) { /* skip if Volcano can't handle this query */ }
+    
     return analyzeResult;
   }
 

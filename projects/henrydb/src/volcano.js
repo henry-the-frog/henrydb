@@ -1199,3 +1199,129 @@ export class RecursiveCTE extends Iterator {
     };
   }
 }
+
+/**
+ * Instrumented iterator wrapper — measures execution time and row count.
+ * Used by EXPLAIN ANALYZE.
+ */
+export class InstrumentedIterator extends Iterator {
+  constructor(inner) {
+    super();
+    this._inner = inner;
+    this.rowCount = 0;
+    this.openTimeMs = 0;
+    this.nextTimeMs = 0;
+    this.closeTimeMs = 0;
+    this.totalTimeMs = 0;
+    // Recursively instrument children
+    this._instrumentChildren();
+  }
+  
+  _instrumentChildren() {
+    const desc = this._inner.describe();
+    if (!desc) return;
+    // Replace child references with instrumented versions
+    if (desc.children) {
+      for (const child of desc.children) {
+        // Children are already instrumented during plan traversal
+      }
+    }
+  }
+  
+  open() {
+    const t0 = performance.now();
+    this._inner.open();
+    this.openTimeMs = performance.now() - t0;
+  }
+  
+  next() {
+    const t0 = performance.now();
+    const row = this._inner.next();
+    const elapsed = performance.now() - t0;
+    this.nextTimeMs += elapsed;
+    if (row !== null) this.rowCount++;
+    return row;
+  }
+  
+  close() {
+    const t0 = performance.now();
+    this._inner.close();
+    this.closeTimeMs = performance.now() - t0;
+    this.totalTimeMs = this.openTimeMs + this.nextTimeMs + this.closeTimeMs;
+  }
+  
+  describe() {
+    const innerDesc = this._inner.describe();
+    return {
+      ...innerDesc,
+      instrumented: true,
+      rowCount: this.rowCount,
+      openTimeMs: this.openTimeMs,
+      nextTimeMs: this.nextTimeMs,
+      totalTimeMs: this.totalTimeMs,
+    };
+  }
+  
+  explain(indent = 0) {
+    const desc = this._inner.describe();
+    const prefix = '  '.repeat(indent) + (indent > 0 ? '→ ' : '→ ');
+    const type = desc.type || 'Unknown';
+    const details = desc.details || {};
+    const detailStr = Object.entries(details).map(([k, v]) => `${k}=${v}`).join(', ');
+    
+    const timing = `(rows=${this.rowCount} time=${this.totalTimeMs.toFixed(2)}ms)`;
+    
+    let line = `${prefix}${type}${detailStr ? ` (${detailStr})` : ''} ${timing}`;
+    
+    if (desc.children) {
+      for (const child of desc.children) {
+        if (child instanceof InstrumentedIterator) {
+          line += '\n' + child.explain(indent + 1);
+        }
+      }
+    }
+    
+    return line;
+  }
+}
+
+/**
+ * Recursively wrap a Volcano plan tree with InstrumentedIterator wrappers.
+ */
+export function instrumentPlan(iter) {
+  if (!iter || !(iter instanceof Iterator)) return iter;
+  
+  // Instrument children first
+  const desc = iter.describe();
+  if (desc && desc.children) {
+    for (let i = 0; i < desc.children.length; i++) {
+      const child = desc.children[i];
+      if (child instanceof Iterator) {
+        const instrumented = instrumentPlan(child);
+        // Replace child reference on the parent
+        // This requires knowing the internal field names
+        replaceChild(iter, child, instrumented);
+      }
+    }
+  }
+  
+  return new InstrumentedIterator(iter);
+}
+
+function replaceChild(parent, oldChild, newChild) {
+  // Try common field names for Volcano iterators
+  const fields = ['_input', '_child', '_outer', '_inner', '_probe', '_build', 
+                   '_baseCaseIter', '_source', '_left', '_right'];
+  for (const field of fields) {
+    if (parent[field] === oldChild) {
+      parent[field] = newChild;
+      return true;
+    }
+  }
+  // Try array fields
+  if (parent._inputs) {
+    const idx = parent._inputs.indexOf(oldChild);
+    if (idx !== -1) { parent._inputs[idx] = newChild; return true; }
+  }
+  return false;
+}
