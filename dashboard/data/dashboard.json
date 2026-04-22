@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-22T21:57:39.661Z",
+  "generated": "2026-04-22T21:58:09.407Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "Investigate 3 remaining failures: table-qualified outer row preservation for correlated subqueries in Volcano",
-    "completedAt": "2026-04-22T21:57:39.661Z",
-    "taskId": "T57",
-    "summary": "Fixed all 3 remaining subquery failures! Root cause: non-correlated detection didnt check for outer refs in WHERE, so correlated subqueries were wrongly pre-evaluated with undefined outer values. Now explicitly detect outer refs. 809/810 tests pass!",
-    "durationMs": 360000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Implement NTH_VALUE window function for 810/810 test pass",
+    "startedAt": "2026-04-22T21:58:09.407Z",
+    "taskId": "T58"
   },
   "schedule": {
     "date": "2026-04-22",

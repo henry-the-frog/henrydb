@@ -1171,16 +1171,25 @@ export class Window extends Iterator {
               r[wf.name] = m === -Infinity ? null : m; break; 
             }
             case 'FIRST_VALUE': {
-              r[wf.name] = getVal(rows[0]) ?? null; break;
+              r[wf.name] = getVal(rows[frameStart]) ?? null; break;
             }
             case 'LAST_VALUE': {
-              const end = this._orderBy.length > 0 ? i : rows.length - 1;
-              r[wf.name] = getVal(rows[end]) ?? null; break;
+              r[wf.name] = getVal(rows[frameEnd]) ?? null; break;
             }
             case 'NTILE': {
               const n = wf.ntile || wf.offset || 2;
               const size = Math.ceil(rows.length / n);
               r[wf.name] = Math.min(Math.floor(i / size) + 1, n); break;
+            }
+            case 'NTH_VALUE': {
+              const nth = (wf.offset || 1) - 1; // 1-based to 0-based
+              const frameIdx = frameStart + nth;
+              if (frameIdx >= frameStart && frameIdx <= frameEnd) {
+                r[wf.name] = getVal(rows[frameIdx]);
+              } else {
+                r[wf.name] = null;
+              }
+              break;
             }
           }
         }

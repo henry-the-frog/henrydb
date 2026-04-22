@@ -611,6 +611,14 @@
       "completed": "2026-04-22T21:57:39.624Z",
       "duration_ms": 360000,
       "summary": "Fixed all 3 remaining subquery failures! Root cause: non-correlated detection didnt check for outer refs in WHERE, so correlated subqueries were wrongly pre-evaluated with undefined outer values. Now explicitly detect outer refs. 809/810 tests pass!"
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement NTH_VALUE window function for 810/810 test pass",
+      "project": "henrydb",
+      "started": "2026-04-22T21:58:09.371Z"
     }
   ],
   "focusProjects": [
@@ -874,6 +882,10 @@
     {
       "time": "2026-04-22T21:52:25.823Z",
       "msg": "Added T57 (THINK) after end: Investigate 3 remaining failures: table-qualified outer row preservation for correlated subqueries in Volcano"
+    },
+    {
+      "time": "2026-04-22T21:58:04.183Z",
+      "msg": "Added T58 (BUILD) after end: Implement NTH_VALUE window function for 810/810 test pass"
     }
   ]
 }
