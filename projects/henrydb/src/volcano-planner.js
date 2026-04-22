@@ -60,12 +60,39 @@ export function buildPlan(ast, tables, indexCatalog) {
   // 1. Build scan for FROM table
   let iter = buildScanNode(ast.from, tables);
 
+  // Predicate pushdown: split WHERE into per-table conditions
+  let residualWhere = ast.where;
+  if (ast.where && ast.joins && ast.joins.length > 0) {
+    const fromTableName = ast.from.alias || ast.from.table;
+    const joinTableNames = ast.joins.map(j => j.alias || (typeof j.table === 'string' ? j.table : j.table));
+    const allTables = [fromTableName, ...joinTableNames];
+    
+    const { perTable, residual } = splitWhereByTable(ast.where, allTables);
+    
+    // Push FROM table predicates into a Filter on the FROM scan
+    if (perTable[fromTableName]) {
+      const pred = buildPredicate(perTable[fromTableName]);
+      iter = new Filter(iter, pred);
+    }
+    
+    residualWhere = residual;
+    
+    // Store per-table predicates for join table pushdown
+    var _pushdownPredicates = perTable;
+  }
+
   // 2. Build JOIN nodes
   if (ast.joins && ast.joins.length > 0) {
     for (const join of ast.joins) {
       const rightTableName = typeof join.table === 'string' ? join.table : join.table;
       const rightAlias = join.alias || rightTableName;
-      const rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, tables);
+      let rightIter = buildScanNode({ table: rightTableName, alias: rightAlias }, tables);
+      
+      // Push per-table predicate into right scan
+      if (_pushdownPredicates && _pushdownPredicates[rightAlias]) {
+        rightIter = new Filter(rightIter, buildPredicate(_pushdownPredicates[rightAlias]));
+      }
+      
       const predicate = join.on ? buildPredicate(join.on) : null;
       
       // Choose join strategy:
@@ -94,9 +121,10 @@ export function buildPlan(ast, tables, indexCatalog) {
     }
   }
 
-  // 3. WHERE filter — try IndexScan optimization first
-  if (ast.where) {
-    const indexScanResult = tryIndexScan(ast.where, ast.from, tables, indexCatalog);
+  // 3. WHERE filter — apply remaining (cross-table) predicates
+  const effectiveWhere = residualWhere !== undefined ? residualWhere : ast.where;
+  if (effectiveWhere) {
+    const indexScanResult = tryIndexScan(effectiveWhere, ast.from, tables, indexCatalog);
     if (indexScanResult) {
       // Replace SeqScan with IndexScan and apply remaining predicates
       iter = indexScanResult.scan;
@@ -104,7 +132,7 @@ export function buildPlan(ast, tables, indexCatalog) {
         iter = new Filter(iter, buildPredicate(indexScanResult.residual));
       }
     } else {
-      const pred = buildPredicate(ast.where);
+      const pred = buildPredicate(effectiveWhere);
       iter = new Filter(iter, pred);
     }
   }
@@ -551,4 +579,79 @@ function resolveOutputColumn(name, columns) {
     }
   }
   return name;
+}
+
+/**
+ * Split a WHERE clause into per-table and residual (cross-table) predicates.
+ * Splits on AND conjuncts. Each conjunct is assigned to a table if it references
+ * only that table's columns. Cross-table conditions become residual.
+ */
+function splitWhereByTable(where, tableNames) {
+  const perTable = {};
+  const residuals = [];
+  
+  // Split on AND
+  const conjuncts = splitAnd(where);
+  
+  for (const conj of conjuncts) {
+    const refs = collectTableRefs(conj);
+    // Filter to only known table names
+    const matchedTables = refs.filter(r => tableNames.includes(r));
+    
+    if (matchedTables.length === 1) {
+      // Single-table predicate — push down
+      const tableName = matchedTables[0];
+      if (!perTable[tableName]) {
+        perTable[tableName] = conj;
+      } else {
+        perTable[tableName] = { type: 'AND', left: perTable[tableName], right: conj };
+      }
+    } else if (matchedTables.length === 0 && refs.length === 0) {
+      // Constant expression (e.g., 1 = 1) — can push anywhere or keep as residual
+      residuals.push(conj);
+    } else {
+      // Cross-table or multi-table — residual
+      residuals.push(conj);
+    }
+  }
+  
+  // Reconstruct residual
+  let residual = null;
+  for (const r of residuals) {
+    residual = residual ? { type: 'AND', left: residual, right: r } : r;
+  }
+  
+  return { perTable, residual };
+}
+
+function splitAnd(expr) {
+  if (!expr) return [];
+  if (expr.type === 'AND') {
+    return [...splitAnd(expr.left), ...splitAnd(expr.right)];
+  }
+  return [expr];
+}
+
+function collectTableRefs(expr) {
+  const refs = new Set();
+  walkExpr(expr, node => {
+    if (node.type === 'column_ref') {
+      if (node.table) {
+        refs.add(node.table);
+      } else if (typeof node.name === 'string' && node.name.includes('.')) {
+        refs.add(node.name.split('.')[0]);
+      }
+    }
+  });
+  return [...refs];
+}
+
+function walkExpr(expr, fn) {
+  if (!expr || typeof expr !== 'object') return;
+  fn(expr);
+  if (expr.left) walkExpr(expr.left, fn);
+  if (expr.right) walkExpr(expr.right, fn);
+  if (expr.args) for (const arg of expr.args) walkExpr(arg, fn);
+  if (expr.operand) walkExpr(expr.operand, fn);
+  if (expr.value && typeof expr.value === 'object') walkExpr(expr.value, fn);
 }

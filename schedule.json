@@ -430,16 +430,56 @@
     {
       "id": "T41",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": null,
       "project": "henrydb",
-      "started": "2026-04-22T03:03:18.054Z"
+      "started": "2026-04-22T03:03:18.054Z",
+      "completed": "2026-04-22T03:04:30.588Z",
+      "duration_ms": 300000,
+      "summary": "EXPLAIN (FORMAT VOLCANO) implemented. Parser extended with VOLCANO format keyword. volcanoExplainPlan wired into _explain handler. Shows full iterator tree: SeqScan, HashJoin, HashAggregate, Sort, Limit, Project with parameters. 69 EXPLAIN tests pass."
     },
     {
       "id": "T42",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: Find the worst-performing TPC-H query and optimize it via Volcano",
+      "project": "henrydb",
+      "started": "2026-04-22T03:04:41.885Z",
+      "completed": "2026-04-22T03:05:56.617Z",
+      "duration_ms": 180000,
+      "summary": "TPC-H benchmark: Q1-Q10 all pass, 5-25ms range. Q3 (25ms) is slowest: Limit→Sort→Project→HashAggregate→Filter→HashJoin×2→SeqScan×3. Filter not pushed to scans (optimization opportunity). EXPLAIN FORMAT VOLCANO provides clear visibility into execution plans."
+    },
+    {
+      "id": "T44",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Predicate pushdown into Volcano SeqScan — push WHERE conditions into scan filter",
+      "task": null,
+      "started": "2026-04-22T03:06:23.202Z",
+      "completed": "2026-04-22T03:06:44.639Z",
+      "duration_ms": 60000,
+      "summary": "Plan: split WHERE conjuncts by table reference. Conjuncts referencing only one table get pushed into a Filter wrapping that SeqScan. Cross-table conjuncts stay in a Filter above the join. Use AST walking to determine which tables each conjunct references."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "task": "Implement predicate pushdown in volcano-planner: split WHERE into per-table conditions and push to SeqScans, verify with EXPLAIN FORMAT VOLCANO",
+      "status": "in-progress",
+      "plan_ref": "T44",
+      "started": "2026-04-22T03:06:49.083Z"
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: Full test suite sweep — find and count all test files, verify total pass rate",
       "project": "henrydb"
     }
   ],
@@ -636,6 +676,22 @@
     {
       "time": "2026-04-22T03:03:03.231Z",
       "msg": "PLAN T40 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T03:06:18.727Z",
+      "msg": "Added T44 (PLAN) after end: HenryDB: Predicate pushdown into Volcano SeqScan — push WHERE conditions into scan filter"
+    },
+    {
+      "time": "2026-04-22T03:06:18.845Z",
+      "msg": "Added T45 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-22T03:06:18.962Z",
+      "msg": "Added T46 (EXPLORE) after end: HenryDB: Full test suite sweep — find and count all test files, verify total pass rate"
+    },
+    {
+      "time": "2026-04-22T03:06:38.004Z",
+      "msg": "PLAN T44 filled 1 BUILD tasks"
     }
   ]
 }

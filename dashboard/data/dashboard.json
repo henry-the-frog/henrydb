@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T03:03:18.089Z",
+  "generated": "2026-04-22T03:06:49.119Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "",
-    "startedAt": "2026-04-22T03:03:18.089Z",
-    "taskId": "T41"
+    "task": "Implement predicate pushdown in volcano-planner: split WHERE into per-table conditions and push to SeqScans, verify with EXPLAIN FORMAT VOLCANO",
+    "startedAt": "2026-04-22T03:06:49.119Z",
+    "taskId": "T47"
   },
   "schedule": {
     "date": "2026-04-21",
@@ -423,10 +423,13 @@
       {
         "id": "T40",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Wire Volcano EXPLAIN into SQL EXPLAIN handler",
         "task": null,
-        "started": "2026-04-22T03:02:04.878Z"
+        "started": "2026-04-22T03:02:04.878Z",
+        "completed": "2026-04-22T03:03:08.032Z",
+        "duration_ms": 60000,
+        "summary": "Plan: add format=volcano to EXPLAIN handler, import volcanoExplainPlan. Wire into _explain method."
       },
       {
         "id": "T43",
@@ -438,28 +441,65 @@
       {
         "id": "T41",
         "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-22T03:03:18.054Z",
+        "completed": "2026-04-22T03:04:30.588Z",
+        "duration_ms": 300000,
+        "summary": "EXPLAIN (FORMAT VOLCANO) implemented. Parser extended with VOLCANO format keyword. volcanoExplainPlan wired into _explain handler. Shows full iterator tree: SeqScan, HashJoin, HashAggregate, Sort, Limit, Project with parameters. 69 EXPLAIN tests pass."
+      },
+      {
+        "id": "T42",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: Find the worst-performing TPC-H query and optimize it via Volcano",
+        "project": "henrydb",
+        "started": "2026-04-22T03:04:41.885Z",
+        "completed": "2026-04-22T03:05:56.617Z",
+        "duration_ms": 180000,
+        "summary": "TPC-H benchmark: Q1-Q10 all pass, 5-25ms range. Q3 (25ms) is slowest: Limit→Sort→Project→HashAggregate→Filter→HashJoin×2→SeqScan×3. Filter not pushed to scans (optimization opportunity). EXPLAIN FORMAT VOLCANO provides clear visibility into execution plans."
+      },
+      {
+        "id": "T44",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Predicate pushdown into Volcano SeqScan — push WHERE conditions into scan filter",
+        "task": null,
+        "started": "2026-04-22T03:06:23.202Z"
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "task": "Implement predicate pushdown in volcano-planner: split WHERE into per-table conditions and push to SeqScans, verify with EXPLAIN FORMAT VOLCANO",
+        "status": "upcoming",
+        "plan_ref": "T44"
+      },
+      {
+        "id": "T45",
+        "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
       },
       {
-        "id": "T42",
+        "id": "T46",
         "mode": "EXPLORE",
         "status": "upcoming",
-        "task": "HenryDB: Find the worst-performing TPC-H query and optimize it via Volcano",
+        "task": "HenryDB: Full test suite sweep — find and count all test files, verify total pass rate",
         "project": "henrydb"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 36,
-    "blocksTotal": 43,
+    "blocksCompleted": 39,
+    "blocksTotal": 47,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 10,
-      "BUILD": 16,
+      "PLAN": 11,
+      "BUILD": 17,
       "MAINTAIN": 2,
-      "EXPLORE": 4
+      "EXPLORE": 5
     }
   }
 }
