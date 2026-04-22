@@ -677,6 +677,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
           const name = col.alias || `expr`;
           const getter = buildValueGetter(rewrittenExprCols.get(col));
           finalProjections.push({ name, expr: getter });
+        } else if (col.type === 'star' || col.name === '*') {
+          // Star: mark for special Project handling
+          finalProjections.push({ name: '*', expr: (row) => row, star: true });
         } else {
           const name = col.alias || col.name;
           finalProjections.push({ name, expr: (row) => row[col.name] !== undefined ? row[col.name] : (row[name] !== undefined ? row[name] : (row[col.alias] !== undefined ? row[col.alias] : null)) });

@@ -177,8 +177,15 @@ export class Project extends Iterator {
     const row = this._child.next();
     if (row === null) return null;
     const out = {};
-    for (const { name, expr } of this._projections) {
-      out[name] = expr(row);
+    for (const proj of this._projections) {
+      if (proj.star) {
+        // Star expansion: copy all non-internal columns
+        for (const [k, v] of Object.entries(row)) {
+          if (!k.startsWith('_') && !k.startsWith('__win_')) out[k] = v;
+        }
+      } else {
+        out[proj.name] = proj.expr(row);
+      }
     }
     return out;
   }
