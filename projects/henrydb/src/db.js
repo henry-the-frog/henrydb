@@ -2154,7 +2154,7 @@ export class Database {
     if (ast.pivot) return null; // PIVOT queries
     if (ast.unpivot) return null; // UNPIVOT queries
     // Window functions — now supported in Volcano via Window iterator
-    const hasWindowFn = ast.columns.some(c => c.type === 'window' || (c.type === 'expression' && c.expr?.over));
+    // (including nested in expressions like CASE WHEN ROW_NUMBER() OVER ... = 1)
     // Function-wrapped aggregates (COALESCE(SUM(x), 0)) — now supported in Volcano
     // Skip unsupported aggregate functions
     const unsupportedAggs = ['PERCENTILE_CONT', 'PERCENTILE_DISC', 

@@ -665,6 +665,25 @@
       "completed": "2026-04-22T22:20:16.695Z",
       "duration_ms": 480000,
       "summary": "Fixed ORDER BY hidden column + window+hidden combination. Include hidden cols in pre-sort projection, strip after sort. 145/145 window+ORDER BY tests pass."
+    },
+    {
+      "id": "T63",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B final direction. 980/989 (99.09%). 16 BUILDs. Remaining 9 failures all need window-in-expression planner refactoring. Options: (1) tackle window-in-expression, (2) switch to different project, (3) write tests / documentation",
+      "project": "henrydb",
+      "started": "2026-04-22T22:27:49.875Z",
+      "completed": "2026-04-22T22:28:08.861Z",
+      "duration_ms": 60000,
+      "summary": "16 BUILDs, excellent depth. Window-in-expression is the biggest remaining gap (5/9 failures). Approach: extract nested windows from expressions, add to Window spec, replace with column refs. Similar to expression-wrapped aggregates pattern."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Window-in-expression: extract nested window functions from CASE/arithmetic, add to Window spec, replace with column refs",
+      "project": "henrydb",
+      "started": "2026-04-22T22:28:27.013Z"
     }
   ],
   "focusProjects": [
@@ -948,6 +967,14 @@
     {
       "time": "2026-04-22T22:14:10.731Z",
       "msg": "Added T62 (BUILD) after end: Fix ORDER BY column not in SELECT: include hidden columns in pre-sort projection, strip after sort"
+    },
+    {
+      "time": "2026-04-22T22:27:42.408Z",
+      "msg": "Added T63 (THINK) after end: Session B final direction. 980/989 (99.09%). 16 BUILDs. Remaining 9 failures all need window-in-expression planner refactoring. Options: (1) tackle window-in-expression, (2) switch to different project, (3) write tests / documentation"
+    },
+    {
+      "time": "2026-04-22T22:28:17.785Z",
+      "msg": "Added T64 (BUILD) after end: Window-in-expression: extract nested window functions from CASE/arithmetic, add to Window spec, replace with column refs"
     }
   ]
 }

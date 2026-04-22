@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-22T22:20:16.732Z",
+  "generated": "2026-04-22T22:28:27.050Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix ORDER BY column not in SELECT: include hidden columns in pre-sort projection, strip after sort",
-    "completedAt": "2026-04-22T22:20:16.732Z",
-    "taskId": "T62",
-    "summary": "Fixed ORDER BY hidden column + window+hidden combination. Include hidden cols in pre-sort projection, strip after sort. 145/145 window+ORDER BY tests pass.",
-    "durationMs": 480000
+    "task": "Window-in-expression: extract nested window functions from CASE/arithmetic, add to Window spec, replace with column refs",
+    "startedAt": "2026-04-22T22:28:27.050Z",
+    "taskId": "T64"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1376,10 +1374,10 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 58,
+    "blocksCompleted": 59,
     "blocksTotal": 53,
     "modeDistribution": {
-      "THINK": 12,
+      "THINK": 13,
       "PLAN": 8,
       "BUILD": 20,
       "MAINTAIN": 12,

@@ -520,7 +520,7 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
 
   // 6. SELECT projection
   const projections = buildProjections(ast.columns, hasAggregates, _ctx);
-  const hasWindowFns = ast.columns.some(c => c.type === 'window');
+  const hasWindowFns = ast.columns.some(c => c.type === 'window' || (c.type === 'expression' && containsWindow(c)));
   
   // Check if ORDER BY references columns not in SELECT
   const selectColNames = new Set(ast.columns.map(c => c.alias || c.name).filter(Boolean));
@@ -562,8 +562,21 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 6b. Window Functions
+  // Detect window functions both as top-level columns and nested in expressions
+  function containsWindow(node) {
+    if (!node || typeof node !== 'object') return false;
+    if (node.type === 'window') return true;
+    return Object.values(node).some(v => {
+      if (Array.isArray(v)) return v.some(containsWindow);
+      if (typeof v === 'object' && v !== null) return containsWindow(v);
+      return false;
+    });
+  }
+  
   const windowCols = ast.columns.filter(c => c.type === 'window');
-  if (windowCols.length > 0) {
+  const exprWindowCols = ast.columns.filter(c => c.type === 'expression' && containsWindow(c));
+  
+  if (windowCols.length > 0 || exprWindowCols.length > 0) {
     // Extract partition by, order by, and window function specs
     // Group by their OVER clause (same partition + order = same Window operator)
     const windowFuncs = windowCols.map(wc => {
@@ -590,6 +603,51 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       };
     });
     
+    // Extract window functions from expressions (CASE WHEN ROW_NUMBER() OVER ... = 1 THEN ...)
+    const rewrittenExprCols = new Map(); // Map col → rewritten expression
+    for (const ec of exprWindowCols) {
+      function extractWindows(node) {
+        if (!node || typeof node !== 'object') return node;
+        if (node.type === 'window') {
+          const syntheticName = `__win_${windowFuncs.length}`;
+          const partitionBy = (node.over?.partitionBy || []).map(p => {
+            if (typeof p === 'string') return p;
+            if (p.type === 'column_ref') return p.name;
+            return String(p);
+          });
+          const orderBy = (node.over?.orderBy || []).map(o => ({
+            column: typeof o.column === 'object' ? o.column.name : o.column,
+            desc: o.direction === 'DESC',
+          }));
+          windowFuncs.push({
+            func: node.func,
+            name: syntheticName,
+            arg: typeof node.arg === 'object' ? (node.arg?.type === 'literal' ? null : node.arg?.name) : node.arg,
+            argGetter: typeof node.arg === 'object' && node.arg?.type !== 'literal' && node.arg?.type !== 'column_ref' ? buildValueGetter(node.arg) : null,
+            ntile: node.func === 'NTILE' && node.arg?.type === 'literal' ? node.arg.value : null,
+            frame: node.over?.frame || null,
+            offset: node.offset,
+            defaultValue: node.defaultValue,
+            partitionBy,
+            orderBy,
+          });
+          return { type: 'column_ref', name: syntheticName };
+        }
+        // Recurse
+        const result = Array.isArray(node) ? [...node] : { ...node };
+        for (const key of Object.keys(result)) {
+          if (key === 'type') continue;
+          if (Array.isArray(result[key])) {
+            result[key] = result[key].map(extractWindows);
+          } else if (typeof result[key] === 'object' && result[key] !== null) {
+            result[key] = extractWindows(result[key]);
+          }
+        }
+        return result;
+      }
+      rewrittenExprCols.set(ec, extractWindows(ec.expr));
+    }
+    
     // Use first window function's partition/order for the Window operator
     // (simplification: assumes all window functions share the same OVER)
     const partitionBy = windowFuncs[0].partitionBy;
@@ -608,6 +666,11 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         if (col.type === 'window') {
           const name = col.alias || `${col.func}()`;
           finalProjections.push({ name, expr: (row) => row[name] });
+        } else if (rewrittenExprCols.has(col)) {
+          // Expression with extracted windows: evaluate rewritten expression
+          const name = col.alias || `expr`;
+          const getter = buildValueGetter(rewrittenExprCols.get(col));
+          finalProjections.push({ name, expr: getter });
         } else {
           const name = col.alias || col.name;
           finalProjections.push({ name, expr: (row) => row[col.name] !== undefined ? row[col.name] : (row[name] !== undefined ? row[name] : (row[col.alias] !== undefined ? row[col.alias] : null)) });
@@ -623,6 +686,10 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         if (col.type === 'window') {
           const name = col.alias || `${col.func}()`;
           tempProjections.push({ name, expr: (row) => row[name] });
+        } else if (rewrittenExprCols && rewrittenExprCols.has(col)) {
+          const name = col.alias || `expr`;
+          const getter = buildValueGetter(rewrittenExprCols.get(col));
+          tempProjections.push({ name, expr: getter });
         } else {
           const name = col.alias || col.name;
           tempProjections.push({ name, expr: (row) => {
