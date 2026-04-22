@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-22T17:53:35.886Z",
+  "generated": "2026-04-22T18:06:38.820Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Push",
-    "startedAt": "2026-04-22T17:53:35.886Z",
-    "taskId": "T226"
+    "status": "done",
+    "mode": "EXPLORE",
+    "task": "Investigate: what changes are needed to make Volcano default-on? Fix row format differences",
+    "completedAt": "2026-04-22T18:06:38.820Z",
+    "taskId": "T230",
+    "summary": "Volcano default-on fails 13 join tests: LEFT JOIN NULL representation, NULL in join conditions. Need to fix NULL handling before default-on. Reverted to opt-in.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-22",
@@ -2684,14 +2686,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 225,
+    "blocksCompleted": 230,
     "blocksTotal": 178,
     "modeDistribution": {
       "THINK": 29,
       "PLAN": 52,
       "BUILD": 36,
-      "MAINTAIN": 46,
-      "EXPLORE": 62
+      "MAINTAIN": 47,
+      "EXPLORE": 66
     }
   },
   "artifacts": [
