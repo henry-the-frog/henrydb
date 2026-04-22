@@ -610,10 +610,13 @@
     {
       "id": "T58",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: Add EXPLAIN test for Volcano predicate pushdown",
       "project": "henrydb",
-      "started": "2026-04-22T03:46:43.493Z"
+      "started": "2026-04-22T03:46:43.493Z",
+      "completed": "2026-04-22T03:47:38.757Z",
+      "duration_ms": 180000,
+      "summary": "11 EXPLAIN FORMAT VOLCANO tests: SeqScan, HashJoin, Filter, predicate pushdown, HashAggregate, Sort, Limit, Project, LEFT/FULL join, default EXPLAIN section. All pass."
     }
   ],
   "focusProjects": [
