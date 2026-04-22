@@ -1,11 +1,10 @@
 ## TODO
 
 ### Urgent
-- HenryDB: db.js join executor extraction (~1200 LOC) — estimate was 220, actual 1200. Needs full session. (since 2026-04-21)
 (none)
 
 ### Normal
-- HenryDB: db.js now at ~4950 lines — further extraction possible: join exec ~1200 LOC (much larger than estimated), EXPLAIN ~350, GROUP BY ~166 (since 2026-04-20, updated 2026-04-21)
+- HenryDB: db.js now at ~5582 lines — further extraction possible: EXPLAIN ~350, GROUP BY ~166, cost model ~200 (since 2026-04-20, updated 2026-04-22)
 - HenryDB: Volcano planner fully cost-based with predicate pushdown. Consider integrating table stats from ANALYZE. (since 2026-04-21, updated 2026-04-21)
 - HenryDB: 6 pre-existing tpch-compiled.test.js failures (CTE import issue — different from the fixed CTEIterator one). (since 2026-04-21)
 - Neural-net: 3 pre-existing sliding-window.test.js failures. (since 2026-04-21)
