@@ -6,6 +6,7 @@ import { createServer } from 'node:net';
 import { createHash } from 'node:crypto';
 import { Database } from './db.js';
 
+let _slowQueryLog = [];
 // --- PG Type OIDs ---
 const PG_OIDS = {
   INT: 23,        // int4

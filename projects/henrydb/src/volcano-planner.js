@@ -362,8 +362,18 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
   }
 
   // 4. GROUP BY + aggregates
-  const hasAggregates = ast.columns.some(c => c.type === 'aggregate' || 
-    ((c.type === 'function' || c.type === 'function_call') && c.args?.some(a => a.type === 'aggregate' || a.type === 'aggregate_expr')));
+    // Recursively check if a node contains an aggregate
+  function containsAggregate(node) {
+    if (!node || typeof node !== 'object') return false;
+    if (node.type === 'aggregate' || node.type === 'aggregate_expr') return true;
+    return Object.values(node).some(v => {
+      if (Array.isArray(v)) return v.some(containsAggregate);
+      if (typeof v === 'object' && v !== null) return containsAggregate(v);
+      return false;
+    });
+  }
+  
+  const hasAggregates = ast.columns.some(c => c.type === 'aggregate' || containsAggregate(c));
   let groupByExprs = [];
   let funcWrappedAggs = [];
   if (ast.groupBy || hasAggregates) {
@@ -460,6 +470,36 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
           }
         }
         funcWrappedAggs.push({ col, innerAggs });
+      } else if (col.type === 'expression' && containsAggregate(col)) {
+        // Expression containing aggregates: 100 * SUM(x) / SUM(y)
+        // Extract all nested aggregates and track the expression
+        const innerAggs = [];
+        function extractAggs(node) {
+          if (!node || typeof node !== 'object') return node;
+          if (node.type === 'aggregate' || node.type === 'aggregate_expr') {
+            const argStr = typeof node.arg === 'object' ? (node.arg.name || JSON.stringify(node.arg)) : node.arg;
+            const syntheticName = `__expr_agg_${aggregates.length}`;
+            const isExprArg = typeof node.arg === 'object' && node.arg?.type !== 'column_ref';
+            const valueGetter = isExprArg ? buildValueGetter(node.arg) : null;
+            aggregates.push({ name: syntheticName, func: node.func, column: argStr, valueGetter, distinct: node.distinct, filterPred: node.filter ? buildPredicate(node.filter) : null });
+            innerAggs.push({ syntheticName, originalNode: node });
+            // Return a placeholder that buildValueGetter can resolve later
+            return { type: 'column_ref', name: syntheticName };
+          }
+          // Recurse into object properties
+          const result = Array.isArray(node) ? [...node] : { ...node };
+          for (const key of Object.keys(result)) {
+            if (key === 'type') continue;
+            if (Array.isArray(result[key])) {
+              result[key] = result[key].map(extractAggs);
+            } else if (typeof result[key] === 'object' && result[key] !== null) {
+              result[key] = extractAggs(result[key]);
+            }
+          }
+          return result;
+        }
+        const rewrittenExpr = extractAggs(col.expr);
+        funcWrappedAggs.push({ col, innerAggs, rewrittenExpr });
       }
     }
     
@@ -1216,6 +1256,15 @@ function buildAggregateProjections(columns, groupByExprs, funcWrappedAggs) {
       return { name, expr: (row) => row[col.name] ?? row[name] };
     }
     // Expression columns (e.g., CASE WHEN ... AS band): look up in synthetic group columns
+    if (col.type === 'expression' && funcWrappedAggs) {
+      const fwa = funcWrappedAggs.find(f => f.col === col);
+      if (fwa && fwa.rewrittenExpr) {
+        // Expression containing aggregates: evaluate rewritten expression using aggregate results
+        const outputName = col.alias || `expr${idx}`;
+        const getter = buildValueGetter(fwa.rewrittenExpr);
+        return { name: outputName, expr: getter };
+      }
+    }
     if (col.type === 'expression' && groupByExprs && groupByExprs.length > 0) {
       const name = col.alias || 'expr';
       // Try to find a matching synthetic group expression
