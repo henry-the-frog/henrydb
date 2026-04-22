@@ -424,7 +424,7 @@ function buildPredicate(expr, ctx) {
       return (row) => left(row) || right(row);
     }
     case 'NOT': {
-      const inner = buildPredicate(expr.operand || expr.expr);
+      const inner = buildPredicate(expr.operand || expr.expr, ctx);
       return (row) => !inner(row);
     }
     case 'IS_NULL': {
