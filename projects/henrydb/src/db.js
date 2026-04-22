@@ -2158,7 +2158,7 @@ export class Database {
     if (hasWindowFn) return null; // Window functions not fully supported in Volcano
     // Function-wrapped aggregates (COALESCE(SUM(x), 0)) — now supported in Volcano
     // Skip unsupported aggregate functions
-    const unsupportedAggs = ['ARRAY_AGG', 'STRING_AGG', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 
+    const unsupportedAggs = ['PERCENTILE_CONT', 'PERCENTILE_DISC', 
       'STDDEV', 'STDDEV_POP', 'STDDEV_SAMP', 'VARIANCE', 'VAR_POP', 'VAR_SAMP', 'MODE', 'MEDIAN',
       'REGR_SLOPE', 'REGR_INTERCEPT', 'CORR', 'COVAR_POP', 'COVAR_SAMP'];
     const hasUnsupportedAgg = ast.columns.some(c => 

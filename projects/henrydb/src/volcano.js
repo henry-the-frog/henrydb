@@ -739,7 +739,7 @@ export class HashAggregate extends Iterator {
         const group = { key, values: {}, aggs: {} };
         for (const col of this._groupBy) group.values[col] = row[col];
         for (const agg of this._aggregates) {
-          group.aggs[agg.name] = { func: agg.func, values: [], distinct: agg.distinct };
+          group.aggs[agg.name] = { func: agg.func, values: [], distinct: agg.distinct, separator: agg.separator };
         }
         this._groups.set(key, group);
       }
@@ -757,7 +757,7 @@ export class HashAggregate extends Iterator {
     if (this._groups.size === 0 && this._groupBy.length === 0 && this._aggregates.length > 0) {
       const defaultGroup = { key: '', values: {}, aggs: {} };
       for (const agg of this._aggregates) {
-        defaultGroup.aggs[agg.name] = { func: agg.func, values: [], distinct: agg.distinct };
+        defaultGroup.aggs[agg.name] = { func: agg.func, values: [], distinct: agg.distinct, separator: agg.separator };
       }
       this._groups.set('', defaultGroup);
     }
@@ -770,7 +770,7 @@ export class HashAggregate extends Iterator {
     if (done) return null;
     
     const row = { ...value.values };
-    for (const [name, { func, values: rawValues, distinct }] of Object.entries(value.aggs)) {
+    for (const [name, { func, values: rawValues, distinct, separator }] of Object.entries(value.aggs)) {
       // Apply DISTINCT: deduplicate values
       const values = distinct ? [...new Set(rawValues)] : rawValues;
       switch (func.toUpperCase()) {
@@ -795,6 +795,23 @@ export class HashAggregate extends Iterator {
           row[name] = values.filter(v => v != null).reduce((a, b) => a > b ? a : b, -Infinity);
           if (row[name] === -Infinity) row[name] = null;
           break;
+        case 'STRING_AGG': {
+          const nonNull = values.filter(v => v != null);
+          // STRING_AGG(col, separator) — separator is the second value
+          const separator = value.aggs[name].separator || ',';
+          row[name] = nonNull.length ? nonNull.map(String).join(separator) : null;
+          break;
+        }
+        case 'ARRAY_AGG': {
+          row[name] = values.filter(v => v != null);
+          break;
+        }
+        case 'GROUP_CONCAT': {
+          // MySQL-compatible: same as STRING_AGG with comma separator
+          const nonNull = values.filter(v => v != null);
+          row[name] = nonNull.length ? nonNull.map(String).join(',') : null;
+          break;
+        }
       }
     }
     return row;

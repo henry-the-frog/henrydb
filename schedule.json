@@ -484,17 +484,21 @@
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix wire protocol _slowQueryLog bug",
       "project": "henrydb",
-      "started": "2026-04-22T21:23:55.431Z"
+      "started": "2026-04-22T21:23:55.431Z",
+      "completed": "2026-04-22T21:28:00.121Z",
+      "duration_ms": 360000,
+      "summary": "Wire protocol _slowQueryLog fixed (1 line). Also fixed expression-wrapped aggregates (100*SUM(CASE...)/SUM(x)). 36/36 TPC-H pass. Recursive containsAggregate detection."
     },
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Add STRING_AGG and ARRAY_AGG to Volcano HashAggregate",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:28:08.916Z"
     },
     {
       "id": "T48",
