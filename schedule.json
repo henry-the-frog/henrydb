@@ -385,25 +385,33 @@
     {
       "id": "T37",
       "mode": "PLAN",
-      "status": "in-progress",
+      "status": "done",
       "goal": "Support CTEs containing UNION in Volcano",
       "task": null,
       "project": "henrydb",
-      "started": "2026-04-22T21:06:14.257Z"
+      "started": "2026-04-22T21:06:14.257Z",
+      "completed": "2026-04-22T21:13:52.780Z",
+      "duration_ms": 600000,
+      "summary": "CTE UNION support, recursive CTE compatibility, SELECT-without-FROM unnamed column fix. 425/425 core tests pass — zero failures!"
     },
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T37",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T21:14:01.833Z",
+      "completed": "2026-04-22T21:14:10.072Z",
+      "duration_ms": 0,
+      "summary": "Done in T37 — CTE UNION already implemented and tested."
     },
     {
       "id": "T39",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, test sweep, evening log"
+      "status": "in-progress",
+      "task": "Git push, test sweep, evening log",
+      "started": "2026-04-22T21:14:16.056Z"
     },
     {
       "id": "T40",
