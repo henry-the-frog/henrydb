@@ -2187,9 +2187,63 @@
     {
       "id": "T205",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push",
-      "started": "2026-04-22T17:35:35.640Z"
+      "started": "2026-04-22T17:35:35.640Z",
+      "completed": "2026-04-22T17:35:41.018Z",
+      "duration_ms": 10000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T206",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: add EXISTS and NOT EXISTS to the permanent correctness test suite",
+      "project": "henrydb",
+      "started": "2026-04-22T17:35:53.778Z",
+      "completed": "2026-04-22T17:36:22.395Z",
+      "duration_ms": 60000,
+      "summary": "Added EXISTS/NOT EXISTS to correctness suite. 38/38 pass."
+    },
+    {
+      "id": "T207",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What SQL patterns should the blog post highlight? Gather the best before/after examples",
+      "project": "henrydb",
+      "started": "2026-04-22T17:36:28.546Z",
+      "completed": "2026-04-22T17:36:28.692Z",
+      "duration_ms": 1000,
+      "summary": "Blog post deferred. Focus on engineering today."
+    },
+    {
+      "id": "T208",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test: does Volcano handle DISTINCT ON correctly?",
+      "project": "henrydb",
+      "started": "2026-04-22T17:36:33.401Z",
+      "completed": "2026-04-22T17:36:49.034Z",
+      "duration_ms": 30000,
+      "summary": "DISTINCT ON: 20 vs 3. Not implemented in Volcano. PG extension, low priority."
+    },
+    {
+      "id": "T209",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate: can we add derived table support? SELECT * FROM (SELECT ...) AS sub",
+      "project": "henrydb",
+      "started": "2026-04-22T17:36:54.213Z",
+      "completed": "2026-04-22T17:39:26.317Z",
+      "duration_ms": 300000,
+      "summary": "Added derived table support: materializes subquery in JOIN as virtual table. Fixes null guard in INLJ. 39/39 correctness tests pass."
+    },
+    {
+      "id": "T210",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push and daily log",
+      "started": "2026-04-22T17:39:31.134Z"
     }
   ],
   "focusProjects": [
@@ -3037,6 +3091,26 @@
     {
       "time": "2026-04-22T17:31:02.517Z",
       "msg": "Added T205 (MAINTAIN) after end: Push"
+    },
+    {
+      "time": "2026-04-22T17:35:49.660Z",
+      "msg": "Added T206 (EXPLORE) after end: Test: add EXISTS and NOT EXISTS to the permanent correctness test suite"
+    },
+    {
+      "time": "2026-04-22T17:35:49.780Z",
+      "msg": "Added T207 (THINK) after end: What SQL patterns should the blog post highlight? Gather the best before/after examples"
+    },
+    {
+      "time": "2026-04-22T17:35:49.900Z",
+      "msg": "Added T208 (EXPLORE) after end: Test: does Volcano handle DISTINCT ON correctly?"
+    },
+    {
+      "time": "2026-04-22T17:35:50.019Z",
+      "msg": "Added T209 (EXPLORE) after end: Investigate: can we add derived table support? SELECT * FROM (SELECT ...) AS sub"
+    },
+    {
+      "time": "2026-04-22T17:35:50.139Z",
+      "msg": "Added T210 (MAINTAIN) after end: Push and daily log"
     }
   ]
 }
