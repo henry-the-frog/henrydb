@@ -522,28 +522,51 @@
     {
       "id": "T46",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push and sync",
-      "started": "2026-04-22T15:10:17.973Z"
+      "started": "2026-04-22T15:10:17.973Z",
+      "completed": "2026-04-22T15:10:25.332Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T47",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "10-BUILD depth check: review work quality, find something surprising"
+      "status": "done",
+      "task": "10-BUILD depth check: review work quality, find something surprising",
+      "started": "2026-04-22T15:10:31.340Z",
+      "completed": "2026-04-22T15:10:46.163Z",
+      "duration_ms": 60000,
+      "summary": "12 BUILDs done. Found 1 real bug (histogram selectivity). Mix of mechanical extraction + genuine improvements. Quality good."
     },
     {
       "id": "T48",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: Improve Volcano build for CTEs — currently falls back silently",
-      "task": null
+      "task": null,
+      "started": "2026-04-22T15:10:53.318Z",
+      "completed": "2026-04-22T15:12:14.201Z",
+      "duration_ms": 120000,
+      "summary": "Root cause: parser produces type=SELECT with ctes[], but buildPlan checks type=WITH. AST format mismatch. Simple fix."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "task": "Fix CTE handling in Volcano planner: parser produces type=SELECT with ctes array, not type=WITH",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-04-22T15:12:20.991Z",
+      "completed": "2026-04-22T15:13:30.745Z",
+      "duration_ms": 300000,
+      "summary": "Fixed CTE in Volcano: parser produces SELECT+ctes, not WITH. Also added rowCount to CTE virtual heap. 48 CTE + 14 Volcano tests pass."
     },
     {
       "id": "T49",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-afternoon push"
+      "status": "in-progress",
+      "task": "Mid-afternoon push",
+      "started": "2026-04-22T15:13:47.832Z"
     }
   ],
   "focusProjects": [
@@ -779,6 +802,10 @@
     {
       "time": "2026-04-22T15:08:32.503Z",
       "msg": "PLAN T45 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:12:09.537Z",
+      "msg": "PLAN T48 filled 1 BUILD tasks"
     }
   ]
 }

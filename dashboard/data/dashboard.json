@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T15:10:18.009Z",
+  "generated": "2026-04-22T15:13:47.868Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push and sync",
-    "startedAt": "2026-04-22T15:10:18.009Z",
-    "taskId": "T46"
+    "task": "Mid-afternoon push",
+    "startedAt": "2026-04-22T15:13:47.868Z",
+    "taskId": "T49"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1324,36 +1324,59 @@
       {
         "id": "T45",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Add 'Rows Removed by Filter' to InstrumentedIterator output",
         "task": null,
-        "started": "2026-04-22T15:08:11.025Z"
+        "started": "2026-04-22T15:08:11.025Z",
+        "completed": "2026-04-22T15:08:37.724Z",
+        "duration_ms": 30000,
+        "summary": "Plan: in InstrumentedIterator explain(), when inner is Filter, show child.rowCount - this.rowCount as rows removed."
       },
       {
         "id": "T52",
         "mode": "BUILD",
         "task": "Add Rows Removed by Filter to InstrumentedIterator explain output by comparing child vs parent row counts",
-        "status": "upcoming",
-        "plan_ref": "T45"
+        "status": "done",
+        "plan_ref": "T45",
+        "started": "2026-04-22T15:08:43.862Z",
+        "completed": "2026-04-22T15:09:58.054Z",
+        "duration_ms": 120000,
+        "summary": "Added Rows Removed by Filter to EXPLAIN ANALYZE. PG-style output. Computed from child vs parent row counts. 5 tests pass."
       },
       {
         "id": "T46",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push and sync"
+        "status": "done",
+        "task": "Git push and sync",
+        "started": "2026-04-22T15:10:17.973Z",
+        "completed": "2026-04-22T15:10:25.332Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
       },
       {
         "id": "T47",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "10-BUILD depth check: review work quality, find something surprising"
+        "status": "done",
+        "task": "10-BUILD depth check: review work quality, find something surprising",
+        "started": "2026-04-22T15:10:31.340Z",
+        "completed": "2026-04-22T15:10:46.163Z",
+        "duration_ms": 60000,
+        "summary": "12 BUILDs done. Found 1 real bug (histogram selectivity). Mix of mechanical extraction + genuine improvements. Quality good."
       },
       {
         "id": "T48",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: Improve Volcano build for CTEs — currently falls back silently",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T15:10:53.318Z"
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
+        "task": "Fix CTE handling in Volcano planner: parser produces type=SELECT with ctes array, not type=WITH",
+        "status": "upcoming",
+        "plan_ref": "T48"
       },
       {
         "id": "T49",
@@ -1365,13 +1388,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 48,
-    "blocksTotal": 52,
+    "blocksCompleted": 52,
+    "blocksTotal": 53,
     "modeDistribution": {
-      "THINK": 7,
-      "PLAN": 13,
-      "BUILD": 17,
-      "MAINTAIN": 8,
+      "THINK": 8,
+      "PLAN": 14,
+      "BUILD": 18,
+      "MAINTAIN": 9,
       "EXPLORE": 3
     }
   },
