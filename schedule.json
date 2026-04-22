@@ -405,28 +405,145 @@
     {
       "id": "T34",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard regenerate",
-      "started": "2026-04-22T14:54:20.664Z"
+      "started": "2026-04-22T14:54:20.664Z",
+      "completed": "2026-04-22T14:54:29.032Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T35",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon depth: stress-test one feature area. Find bugs."
+      "status": "done",
+      "task": "Afternoon depth: stress-test one feature area. Find bugs.",
+      "started": "2026-04-22T14:54:36.766Z",
+      "completed": "2026-04-22T14:54:52.106Z",
+      "duration_ms": 60000,
+      "summary": "8 BUILDs done, depth check triggered. Decision: stress-test join executor edge cases (NULL keys, many-to-many, CTE EXPLAIN). Need to find bugs."
     },
     {
       "id": "T36",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: Run full test suite, triage failures",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-22T14:54:57.466Z",
+      "completed": "2026-04-22T15:03:00.647Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed histogram selectivity bug. Object vs number comparison caused wrong estimates. Also confirmed: NULL join keys correct, many-to-many correct, CTE EXPLAIN has known gap."
     },
     {
       "id": "T37",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session A close: push, sync, daily summary",
+      "started": "2026-04-22T15:03:19.936Z",
+      "completed": "2026-04-22T15:03:20.241Z",
+      "duration_ms": 1000,
+      "summary": "Skipping session close: 5+ hours remain."
+    },
+    {
+      "id": "T42",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Choose next depth work: what areas of HenryDB need investigation? What broke during stress test?",
+      "started": "2026-04-22T15:03:28.531Z",
+      "completed": "2026-04-22T15:03:50.995Z",
+      "duration_ms": 60000,
+      "summary": "Generated 7 more tasks. Focus: join selectivity with stats, formatPlan extraction, Rows Removed by Filter, CTE Volcano support."
+    },
+    {
+      "id": "T43",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Improve join row estimates using ANALYZE stats (ndistinct-based join selectivity)",
+      "task": null,
+      "started": "2026-04-22T15:03:57.176Z",
+      "completed": "2026-04-22T15:04:20.536Z",
+      "duration_ms": 60000,
+      "summary": "Plan: use PG formula join_rows = max(left,right)/max(ndv_left,ndv_right). Need to look up ndistinct for join key columns from tableStats."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "task": "Use ndistinct-based join selectivity in Volcano planner: join_rows = max(left,right) / max(ndv_left,ndv_right)",
+      "status": "done",
+      "plan_ref": "T43",
+      "started": "2026-04-22T15:04:26.557Z",
+      "completed": "2026-04-22T15:05:47.297Z",
+      "duration_ms": 300000,
+      "summary": "Join selectivity using ndistinct: max(L,R)*min(L,R)/max(ndv_L,ndv_R). Tested with several join patterns, accurate results. 14/14 tests pass."
+    },
+    {
+      "id": "T44",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Extract _formatPlan from db.js (~200 LOC)",
+      "task": null,
+      "started": "2026-04-22T15:06:06.647Z",
+      "completed": "2026-04-22T15:06:36.222Z",
+      "duration_ms": 30000,
+      "summary": "3 formatting functions: _formatPlan(157), _planToYaml(34), _planToDot(24) = 215 LOC. Pure formatting, minimal db deps."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "task": "Extract _formatPlan, _planToYaml, _planToDot from db.js into plan-format.js (~215 LOC)",
+      "status": "done",
+      "plan_ref": "T44",
+      "started": "2026-04-22T15:06:40.456Z",
+      "completed": "2026-04-22T15:07:39.461Z",
+      "duration_ms": 180000,
+      "summary": "Extracted plan formatting (215 LOC). db.js 4591→4377 (56% from peak). 23 EXPLAIN tests pass."
+    },
+    {
+      "id": "T45",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: Add 'Rows Removed by Filter' to InstrumentedIterator output",
+      "task": null,
+      "started": "2026-04-22T15:08:11.025Z",
+      "completed": "2026-04-22T15:08:37.724Z",
+      "duration_ms": 30000,
+      "summary": "Plan: in InstrumentedIterator explain(), when inner is Filter, show child.rowCount - this.rowCount as rows removed."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "task": "Add Rows Removed by Filter to InstrumentedIterator explain output by comparing child vs parent row counts",
+      "status": "done",
+      "plan_ref": "T45",
+      "started": "2026-04-22T15:08:43.862Z",
+      "completed": "2026-04-22T15:09:58.054Z",
+      "duration_ms": 120000,
+      "summary": "Added Rows Removed by Filter to EXPLAIN ANALYZE. PG-style output. Computed from child vs parent row counts. 5 tests pass."
+    },
+    {
+      "id": "T46",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push and sync",
+      "started": "2026-04-22T15:10:17.973Z"
+    },
+    {
+      "id": "T47",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Session A close: push, sync, daily summary"
+      "task": "10-BUILD depth check: review work quality, find something surprising"
+    },
+    {
+      "id": "T48",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: Improve Volcano build for CTEs — currently falls back silently",
+      "task": null
+    },
+    {
+      "id": "T49",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-afternoon push"
     }
   ],
   "focusProjects": [
@@ -618,6 +735,50 @@
     {
       "time": "2026-04-22T14:51:06.843Z",
       "msg": "PLAN T32 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:03:13.466Z",
+      "msg": "Added T42 (THINK) after end: Choose next depth work: what areas of HenryDB need investigation? What broke during stress test?"
+    },
+    {
+      "time": "2026-04-22T15:03:43.898Z",
+      "msg": "Added T43 (PLAN) after end: HenryDB: Improve join row estimates using ANALYZE stats (ndistinct-based join selectivity)"
+    },
+    {
+      "time": "2026-04-22T15:03:44.128Z",
+      "msg": "Added T44 (PLAN) after end: HenryDB: Extract _formatPlan from db.js (~200 LOC)"
+    },
+    {
+      "time": "2026-04-22T15:03:44.343Z",
+      "msg": "Added T45 (PLAN) after end: HenryDB: Add 'Rows Removed by Filter' to InstrumentedIterator output"
+    },
+    {
+      "time": "2026-04-22T15:03:44.579Z",
+      "msg": "Added T46 (MAINTAIN) after end: Git push and sync"
+    },
+    {
+      "time": "2026-04-22T15:03:44.785Z",
+      "msg": "Added T47 (THINK) after end: 10-BUILD depth check: review work quality, find something surprising"
+    },
+    {
+      "time": "2026-04-22T15:03:44.993Z",
+      "msg": "Added T48 (PLAN) after end: HenryDB: Improve Volcano build for CTEs — currently falls back silently"
+    },
+    {
+      "time": "2026-04-22T15:03:45.204Z",
+      "msg": "Added T49 (MAINTAIN) after end: Mid-afternoon push"
+    },
+    {
+      "time": "2026-04-22T15:04:13.879Z",
+      "msg": "PLAN T43 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:06:29.053Z",
+      "msg": "PLAN T44 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-22T15:08:32.503Z",
+      "msg": "PLAN T45 filled 1 BUILD tasks"
     }
   ]
 }
