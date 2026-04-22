@@ -1871,17 +1871,8 @@ export class Database {
     const isStar = ast.columns.length === 1 && (ast.columns[0].name === '*' || ast.columns[0].type === 'star');
     const hasQualifiedStar = ast.columns.some(c => c.type === 'qualified_star');
     if (isStar) {
-      // For SELECT *, strip qualified column names (table.col) to avoid duplicates
-      // These are added for alias-prefixed references but shouldn't appear in output
-      rows = rows.map(row => {
-        const clean = {};
-        for (const [key, val] of Object.entries(row)) {
-          if (!key.includes('.') && !key.startsWith('__')) {
-            clean[key] = val;
-          }
-        }
-        return clean;
-      });
+      // For SELECT *, handle column name collisions from joins
+      rows = rows.map(row => this._projectStarRow(row));
     } else {
       // Non-star SELECT: project specific columns
       rows = rows.map(row => {
@@ -2468,16 +2459,8 @@ export class Database {
 
       // Project columns
       if (ast.columns.length === 1 && ast.columns[0]?.type === 'star') {
-        // Simple SELECT * — just strip qualified columns
-        rows = rows.map(row => {
-          const clean = {};
-          for (const [key, val] of Object.entries(row)) {
-            if (!key.includes('.') && !key.startsWith('__')) {
-              clean[key] = val;
-            }
-          }
-          return clean;
-        });
+        // SELECT * — handle column name collisions from joins
+        rows = rows.map(row => this._projectStarRow(row));
       } else {
         rows = rows.map(row => {
           const result = {};
@@ -2801,11 +2784,9 @@ export class Database {
       for (const col of ast.columns) {
         colIdx++;
         if (col.type === 'star') {
-          // Include all non-qualified, non-internal columns
+          // Include all columns, handling collisions
           hadStar = true;
-          for (const [key, val] of Object.entries(row)) {
-            if (!key.includes('.') && !key.startsWith('__')) result[key] = val;
-          }
+          Object.assign(result, this._projectStarRow(row));
         } else if (col.type === 'qualified_star') {
           // Include all columns from specified table
           const prefix = col.table + '.';

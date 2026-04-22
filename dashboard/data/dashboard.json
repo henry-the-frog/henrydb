@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-22T02:34:02.554Z",
+  "generated": "2026-04-22T02:46:42.039Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix ORDER BY to resolve SELECT aliases before raw columns, add test for COALESCE alias ordering",
-    "startedAt": "2026-04-22T02:34:02.554Z",
-    "taskId": "T27"
+    "task": "Fix SELECT * to detect column name collisions and use qualified names, add tests",
+    "startedAt": "2026-04-22T02:46:42.039Z",
+    "taskId": "T34"
   },
   "schedule": {
     "date": "2026-04-21",
@@ -198,77 +198,165 @@
       {
         "id": "T19",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: Fix ORDER BY alias resolution — prefer SELECT aliases over table columns",
         "task": null,
-        "started": "2026-04-22T02:32:42.942Z"
+        "started": "2026-04-22T02:32:42.942Z",
+        "completed": "2026-04-22T02:33:54.133Z",
+        "duration_ms": 120000,
+        "summary": "Root cause: ORDER BY sorts BEFORE SELECT projection. So ORDER BY product resolves to raw s.product (from join) not the COALESCE alias. Fix: resolve ORDER BY columns against SELECT aliases when the column name matches an alias. Adjust _orderByValue to accept selectCols and check aliases first."
       },
       {
         "id": "T27",
         "mode": "BUILD",
         "task": "Fix ORDER BY to resolve SELECT aliases before raw columns, add test for COALESCE alias ordering",
-        "status": "upcoming",
-        "plan_ref": "T19"
+        "status": "done",
+        "plan_ref": "T19",
+        "started": "2026-04-22T02:34:02.518Z",
+        "completed": "2026-04-22T02:40:44.516Z",
+        "duration_ms": 600000,
+        "summary": "Fixed ORDER BY alias resolution. Root cause: _selectInner checked raw column in row before alias expression map. Swapped priority so COALESCE/function aliases are preferred. Added _preComputeOrderByAliases for second exec path. 7 new tests all pass."
       },
       {
         "id": "T20",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T02:40:53.849Z",
+        "completed": "2026-04-22T02:40:53.990Z",
+        "duration_ms": 0,
+        "summary": "Placeholder — completed in T27."
       },
       {
         "id": "T21",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "Neural-net: Integrate FlashAttention into Transformer class as configurable attention mode",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T02:40:59.791Z",
+        "completed": "2026-04-22T02:41:28.761Z",
+        "duration_ms": 60000,
+        "summary": "Plan: Add attentionType option to TransformerEncoderBlock. Create MultiHeadFlashAttention class that splits Q,K,V into heads and runs flash attention per head. Accept attention={standard|flash} config in TransformerEncoderBlock constructor."
+      },
+      {
+        "id": "T28",
+        "mode": "BUILD",
+        "task": "Add attentionType option to TransformerEncoderBlock (standard|flash), create MultiHeadFlashAttention, add tests comparing outputs",
+        "status": "done",
+        "plan_ref": "T21",
+        "started": "2026-04-22T02:41:39.517Z",
+        "completed": "2026-04-22T02:43:35.584Z",
+        "duration_ms": 600000,
+        "summary": "MultiHeadFlashAttention implemented as drop-in replacement for MultiHeadAttention. TransformerEncoderBlock now accepts attention=flash option. Exact numerical match verified. 11 tests passing."
       },
       {
         "id": "T22",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "neural-net"
+        "project": "neural-net",
+        "started": "2026-04-22T02:43:45.356Z",
+        "completed": "2026-04-22T02:43:45.497Z",
+        "duration_ms": 0,
+        "summary": "Placeholder — completed in T28."
       },
       {
         "id": "T23",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "HenryDB: Extract JOIN executor from db.js into join-executor.js (~220 LOC)",
-        "task": null
+        "task": null,
+        "started": "2026-04-22T02:43:55.594Z",
+        "completed": "2026-04-22T02:44:13.055Z",
+        "duration_ms": 60000,
+        "summary": "Investigation: join executor in db.js is ~1200 LOC (not 220 as estimated). Includes _executeJoin, _executeJoinWithRows, _hashJoin, _mergeJoin, plus optimizer/rewrite logic. Too complex for evening extraction — deferring to full session."
       },
       {
         "id": "T24",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-22T02:44:22.049Z",
+        "completed": "2026-04-22T02:44:22.191Z",
+        "duration_ms": 0,
+        "summary": "Deferred — join extraction too large for evening session."
       },
       {
         "id": "T25",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Performance comparison: FlashAttention vs SelfAttention at various sequence lengths",
-        "project": "neural-net"
+        "project": "neural-net",
+        "started": "2026-04-22T02:44:27.698Z",
+        "completed": "2026-04-22T02:44:58.319Z",
+        "duration_ms": 120000,
+        "summary": "Performance comparison: Flash attention is 1-3x faster for small seqLens (8-64) due to cache effects, roughly equivalent for larger (128-256). Memory is the real win: 5.3x reduction at seqLen=128, 124x at seqLen=2048 (32MB→264KB). In JS without GPU SRAM, the compute is the same O(N²d) but memory savings prevent OOM for long sequences."
       },
       {
         "id": "T26",
         "mode": "MAINTAIN",
         "status": "upcoming",
         "task": "Final session push, daily log summary, test suite verification"
+      },
+      {
+        "id": "T29",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Mid-session direction: what next? Explore depth on existing work or extend.",
+        "started": "2026-04-22T02:45:24.167Z",
+        "completed": "2026-04-22T02:45:36.374Z",
+        "duration_ms": 30000,
+        "summary": "Direction: fix SELECT * column collision in FULL JOIN, then implement LR scheduler for neural-net."
+      },
+      {
+        "id": "T30",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: Fix SELECT * column name collision in FULL JOIN (same-name cols overwrite)",
+        "task": null,
+        "started": "2026-04-22T02:45:53.024Z"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "task": "Fix SELECT * to detect column name collisions and use qualified names, add tests",
+        "status": "upcoming",
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T32",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Neural-net: Implement learning rate scheduler (warmup + cosine decay)",
+        "task": null
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "neural-net"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 16,
-    "blocksTotal": 27,
+    "blocksCompleted": 26,
+    "blocksTotal": 34,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 4,
-      "BUILD": 6,
+      "THINK": 4,
+      "PLAN": 7,
+      "BUILD": 11,
       "MAINTAIN": 2,
-      "EXPLORE": 1
+      "EXPLORE": 2
     }
   }
 }

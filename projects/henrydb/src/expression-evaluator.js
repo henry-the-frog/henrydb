@@ -79,6 +79,85 @@ P._preComputeOrderByAliases = function(ast, rows) {
 }
 
 /**
+ * Project a row for SELECT *: handle column name collisions from joins.
+ * When multiple qualified keys (a.id, b.id) share the same unqualified name,
+ * use qualified names for those columns to prevent data loss.
+ */
+P._projectStarRow = function(row) {
+  const clean = {};
+  const qualifiedKeys = [];
+  const unqualifiedCount = {};
+  
+  for (const key of Object.keys(row)) {
+    if (key.startsWith('__')) continue;
+    if (key.includes('.')) {
+      qualifiedKeys.push(key);
+      const unqual = key.split('.').pop();
+      unqualifiedCount[unqual] = (unqualifiedCount[unqual] || 0) + 1;
+    }
+  }
+  
+  const hasCollisions = Object.values(unqualifiedCount).some(c => c > 1);
+  
+  if (hasCollisions && qualifiedKeys.length > 0) {
+    const colliding = new Set(Object.entries(unqualifiedCount).filter(([, c]) => c > 1).map(([k]) => k));
+    const seen = new Set();
+    
+    // For each colliding name, check if all qualified values are identical (equi-join/USING/NATURAL)
+    // If so, emit once with unqualified name. Otherwise emit qualified names.
+    const collidingValues = {};
+    for (const key of qualifiedKeys) {
+      const unqual = key.split('.').pop();
+      if (colliding.has(unqual)) {
+        if (!collidingValues[unqual]) collidingValues[unqual] = [];
+        collidingValues[unqual].push(row[key]);
+      }
+    }
+    
+    const canMerge = {};
+    for (const [name, vals] of Object.entries(collidingValues)) {
+      // Merge if all non-null values are identical (equi-join result)
+      const nonNull = vals.filter(v => v !== null && v !== undefined);
+      canMerge[name] = nonNull.length <= 1 || nonNull.every(v => v === nonNull[0]);
+    }
+    
+    for (const key of Object.keys(row)) {
+      if (key.startsWith('__')) continue;
+      if (key.includes('.')) {
+        const unqual = key.split('.').pop();
+        if (colliding.has(unqual)) {
+          if (canMerge[unqual]) {
+            // Merge: use unqualified name with the non-null value
+            if (!seen.has(unqual)) {
+              const nonNull = collidingValues[unqual].find(v => v !== null && v !== undefined);
+              clean[unqual] = nonNull !== undefined ? nonNull : null;
+              seen.add(unqual);
+            }
+          } else {
+            // Can't merge: different values — use qualified names
+            clean[key] = row[key];
+          }
+        } else if (!seen.has(unqual)) {
+          clean[unqual] = row[key];
+          seen.add(unqual);
+        }
+      } else {
+        if (!colliding.has(key)) {
+          clean[key] = row[key];
+        }
+      }
+    }
+  } else {
+    for (const [key, val] of Object.entries(row)) {
+      if (!key.includes('.') && !key.startsWith('__')) {
+        clean[key] = val;
+      }
+    }
+  }
+  return clean;
+}
+
+/**
  * Evaluate an expression in GROUP BY context, resolving aggregate sub-expressions.
  */
 P._evalGroupExpr = function(expr, groupRows, result, computeAgg) {
