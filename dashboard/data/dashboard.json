@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-23T16:47:14.878Z",
+  "generated": "2026-04-23T16:48:17.981Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "Read through db.js remaining methods — what else can be extracted? Categorize by risk and size.",
-    "completedAt": "2026-04-23T16:47:14.878Z",
-    "taskId": "T51",
-    "summary": "Mapped remaining extraction opportunities. Top 10: _tryIndexScan (251L), _insertRow (126L), _tryVolcanoSelect (121L), executePaginated (94L), _vacuum (89L), _analyzeTable (77L), _select (76L), _acquireRowLocks (61L), serialize (59L), _applySelectColumns (58L). Total: ~990 LOC extractable. db.js under 2000 is achievable.",
-    "durationMs": 300000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Extract vacuum-handler.js (~89 LOC) from db.js",
+    "startedAt": "2026-04-23T16:48:17.981Z",
+    "taskId": "T53"
   },
   "schedule": {
     "date": "2026-04-23",
@@ -514,32 +512,101 @@
       {
         "id": "T47",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: extract checkpoint + WAL methods from db.js",
         "task": null,
-        "started": "2026-04-23T16:42:27.244Z"
+        "started": "2026-04-23T16:42:27.244Z",
+        "completed": "2026-04-23T16:43:10.508Z",
+        "duration_ms": 60000,
+        "summary": "Planned: extract _checkpoint + AST-based prepared stmts from db.js. ~80 LOC."
       },
       {
         "id": "T49",
         "mode": "BUILD",
         "task": "Extract _checkpoint + AST-based prepared statements (_prepareSql, _executePrepared, _bindParams, _deallocate) from db.js",
-        "status": "upcoming",
-        "plan_ref": "T47"
+        "status": "done",
+        "plan_ref": "T47",
+        "started": "2026-04-23T16:43:17.271Z",
+        "completed": "2026-04-23T16:44:50.763Z",
+        "duration_ms": 300000,
+        "summary": "Extracted checkpoint-handler.js (30 LOC) + prepared-stmts-ast.js (110 LOC) from db.js. 53 tests pass. db.js now 2760 lines (was 3293 at start of session — 533 LOC extracted today!)."
       },
       {
         "id": "T48",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push + dashboard update",
+        "started": "2026-04-23T16:45:03.972Z",
+        "completed": "2026-04-23T16:45:11.472Z",
+        "duration_ms": 30000,
+        "summary": "Git push done. 20 BUILD cap reached — depth pivot starting."
+      },
+      {
+        "id": "T50",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Mandatory 20-BUILD depth pivot. Full test sweep of extracted modules, then investigate remaining 3 decorrelation failures.",
+        "started": "2026-04-23T16:45:28.100Z",
+        "completed": "2026-04-23T16:46:23.528Z",
+        "duration_ms": 600000,
+        "summary": "Depth pivot: (1) All 14 extraction-related test files pass 0 failures. (2) All 8 core test files pass 0 failures. (3) Investigated remaining 3 decorrelation failures: double-nested correlation + NULL handling. Documented in volcano-gaps.md as medium priority."
+      },
+      {
+        "id": "T51",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Read through db.js remaining methods — what else can be extracted? Categorize by risk and size.",
+        "project": "henrydb",
+        "started": "2026-04-23T16:46:50.503Z",
+        "completed": "2026-04-23T16:47:14.841Z",
+        "duration_ms": 300000,
+        "summary": "Mapped remaining extraction opportunities. Top 10: _tryIndexScan (251L), _insertRow (126L), _tryVolcanoSelect (121L), executePaginated (94L), _vacuum (89L), _analyzeTable (77L), _select (76L), _acquireRowLocks (61L), serialize (59L), _applySelectColumns (58L). Total: ~990 LOC extractable. db.js under 2000 is achievable."
+      },
+      {
+        "id": "T52",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: extract 4 low-risk methods (executePaginated, _vacuum, serialize, _acquireRowLocks) from db.js",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-23T16:48:01.164Z"
+      },
+      {
+        "id": "T53",
+        "mode": "BUILD",
+        "task": "Extract vacuum-handler.js (~89 LOC) from db.js",
         "status": "upcoming",
-        "task": "Git push + dashboard update"
+        "plan_ref": "T52"
+      },
+      {
+        "id": "T54",
+        "mode": "BUILD",
+        "task": "Extract serialize-handler.js (~59 LOC) from db.js",
+        "status": "upcoming",
+        "plan_ref": "T52"
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "task": "Extract row-lock.js (~61 LOC: _acquireRowLocks, _releaseRowLocks) from db.js",
+        "status": "upcoming",
+        "plan_ref": "T52"
+      },
+      {
+        "id": "T56",
+        "mode": "BUILD",
+        "task": "Extract paginated-exec.js (~94 LOC) from db.js",
+        "status": "upcoming",
+        "plan_ref": "T52"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 51,
-    "blocksTotal": 49,
+    "blocksCompleted": 52,
+    "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 8,
-      "PLAN": 12,
+      "PLAN": 13,
       "BUILD": 20,
       "MAINTAIN": 8,
       "EXPLORE": 3

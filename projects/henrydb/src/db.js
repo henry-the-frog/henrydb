@@ -41,6 +41,7 @@ import { handleForeignKeyDelete as _handleForeignKeyDeleteImpl, handleForeignKey
 import { validateConstraints as _validateConstraintsImpl, validateConstraintsForUpdate as _validateConstraintsForUpdateImpl } from './constraint-validator.js';
 import { handleAnalyze as _handleAnalyzeImpl, profile as _profileImpl } from './analyze-profile.js';
 import { handleCheckpoint as _handleCheckpointImpl } from './checkpoint-handler.js';
+import { handleVacuum as _handleVacuumImpl } from './vacuum-handler.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -1946,81 +1947,7 @@ export class Database {
     }
   }
 
-  _vacuum(ast) {
-    const tables = ast.table ? [this.tables.get(ast.table.toUpperCase()) || this.tables.get(ast.table)] 
-                             : [...this.tables.values()];
-    let totalDead = 0, totalBytes = 0, totalPages = 0, totalTables = 0;
-
-    // MVCC-level vacuum (clean old versions across all keys)
-    if (this._mvccManager) {
-      try {
-        const gcResult = this._mvccManager.gc();
-        totalDead += gcResult.cleaned;
-      } catch (e) {
-        // GC is best-effort
-      }
-    }
-
-    for (const table of tables) {
-      if (!table) continue;
-      totalTables++;
-      
-      // Table-level MVCC vacuum
-      if (table.mvccHeap && this._mvccManager) {
-        try {
-          const result = table.mvccHeap.vacuum(this._mvccManager);
-          totalDead += result.deadTuplesRemoved || 0;
-          totalBytes += result.bytesFreed || 0;
-          totalPages += result.pagesCompacted || 0;
-          
-          // After removing dead tuples, rebuild indexes to clear stale HOT chain entries
-          // and ensure all index entries point to live tuples
-          if (result.deadTuplesRemoved > 0 && table.indexes && table.indexes.size > 0) {
-            this._rebuildIndexes(table);
-          }
-        } catch (e) {
-          // Table-level vacuum not supported, skip
-        }
-        continue;
-      }
-      
-      // Non-MVCC vacuum: compact heap pages, update statistics
-      const heap = table.heap;
-      if (!heap) continue;
-      
-      // Count live tuples and update statistics
-      let liveRows = 0;
-      if (typeof heap.scan === 'function') {
-        for (const _ of heap.scan()) liveRows++;
-      } else if (heap.rowCount !== undefined) {
-        liveRows = heap.rowCount;
-      }
-      
-      // Update table-level stats
-      if (table.stats) {
-        table.stats.rowCount = liveRows;
-        table.stats.lastVacuum = Date.now();
-      }
-      // Reset dead tuple counter after vacuum
-      table.deadTupleCount = 0;
-      
-      // For file-backed heaps, flush dirty pages
-      if (typeof heap.flush === 'function') {
-        heap.flush();
-      }
-      
-      // Clear HOT chains and rebuild indexes after vacuum
-      if (heap._hotChains && heap._hotChains.size > 0 && table.indexes && table.indexes.size > 0) {
-        this._rebuildIndexes(table);
-      }
-    }
-
-    return {
-      type: 'OK',
-      message: `VACUUM: ${totalTables} table(s) processed, ${totalDead} dead tuples removed, ${totalBytes} bytes freed`,
-      details: { tablesProcessed: totalTables, deadTuplesRemoved: totalDead, bytesFreed: totalBytes, pagesCompacted: totalPages },
-    };
-  }
+  _vacuum(ast) { return _handleVacuumImpl(this, ast); }
 
   _checkpoint() { return _handleCheckpointImpl(this); }
 
