@@ -915,6 +915,17 @@
       "completed": "2026-04-23T00:37:18.830Z",
       "duration_ms": 420000,
       "summary": "Implemented NATURAL JOIN: parser recognizes NATURAL keyword, engine auto-generates ON condition from common column names between left/right tables using qualified names. Both table and view/CTE paths supported. Regression: 15→1 failure."
+    },
+    {
+      "id": "T86",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run full test suite sweep to verify 0 new regressions from all session B-2 changes",
+      "project": "henrydb",
+      "started": "2026-04-23T00:41:40.137Z",
+      "completed": "2026-04-23T00:47:16.963Z",
+      "duration_ms": 180000,
+      "summary": "Full test suite: 4,188/4,193 pass (99.88%), 2 fail (timing-dependent), 3 skipped. No new regressions from session B-2 changes."
     }
   ],
   "focusProjects": [
@@ -1286,6 +1297,10 @@
     {
       "time": "2026-04-23T00:30:26.462Z",
       "msg": "Added T85 (BUILD) after end: Implement NATURAL JOIN: match on common column names, deduplicate matched columns in result"
+    },
+    {
+      "time": "2026-04-23T00:41:34.965Z",
+      "msg": "Added T86 (EXPLORE) after end: Run full test suite sweep to verify 0 new regressions from all session B-2 changes"
     }
   ]
 }
