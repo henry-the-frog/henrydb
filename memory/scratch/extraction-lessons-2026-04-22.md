@@ -47,3 +47,9 @@ Always count before committing to an extraction.
 5. Aggregate arg normalization (4 instances)
 6. explain-executor: bare `this` references (4 instances)
 7. UNION EXPLAIN ANALYZE: wrong dispatch method
+
+### Correlated IN Subquery Bug Fix (2026-04-23)
+**Bug:** `val IN (SELECT MAX(val) FROM t t2 WHERE t2.grp = t1.grp)` returned all rows instead of matching ones.
+**Root cause:** Batch decorrelation removed the correlation predicate (`t2.grp = t1.grp`) but didn't add `GROUP BY grp` to the inner query. Without GROUP BY, `MAX(val)` aggregated the entire table. Also, column alias `__corr_t2_grp` wasn't appearing in GROUP BY query output because the engine's GROUP BY handler doesn't project additional SELECT columns.
+**Fix:** Generate SQL string (not AST) for inner query with explicit GROUP BY and unqualified column names. Lookup correlation key by unqualified name in result rows.
+**Lesson:** When removing correlation predicates from a subquery, check if the correlation was implicitly grouping rows. If the subquery has aggregates but no GROUP BY, the correlation predicate WAS the GROUP BY.

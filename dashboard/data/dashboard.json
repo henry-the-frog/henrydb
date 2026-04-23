@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-23T16:08:32.682Z",
+  "generated": "2026-04-23T16:19:33.977Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix correlated IN subquery bug: correlation columns not being substituted, returns all aggregated values instead of group-specific value",
-    "startedAt": "2026-04-23T16:08:32.682Z",
-    "taskId": "T19"
+    "task": "Extract savepoints (~111 LOC: _handleSavepoint, _handleRollbackToSavepoint, _handleReleaseSavepoint) from db.js to savepoint-handler.js",
+    "startedAt": "2026-04-23T16:19:33.977Z",
+    "taskId": "T32"
   },
   "schedule": {
     "date": "2026-04-23",
@@ -252,49 +252,114 @@
       {
         "id": "T18",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB Volcano correlated subquery support (see scratch/volcano-gaps.md)",
         "task": null,
-        "started": "2026-04-23T16:07:35.172Z"
+        "started": "2026-04-23T16:07:35.172Z",
+        "completed": "2026-04-23T16:08:24.015Z",
+        "duration_ms": 180000,
+        "summary": "Found real correlated IN subquery bug: both engines return all 4 rows when only 2 should match. Subquery correlation columns not being substituted. 1 BUILD task to fix."
       },
       {
         "id": "T19",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix correlated IN subquery bug: correlation columns not being substituted, returns all aggregated values instead of group-specific value",
         "plan_ref": "T18",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-23T16:08:32.645Z",
+        "completed": "2026-04-23T16:16:04.882Z",
+        "duration_ms": 600000,
+        "summary": "Fixed correlated IN subquery bug! Root cause: batch decorrelation missing GROUP BY + column alias resolution. Fix: SQL string generation with explicit GROUP BY. Both engines correct. Volcano gains CORRELATED_IN_HASHMAP. Pre-existing stress test: 7→6 failures (1 fixed)."
       },
       {
         "id": "T20",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard update"
+        "status": "done",
+        "task": "Git commit+push, dashboard update",
+        "started": "2026-04-23T16:16:30.643Z",
+        "completed": "2026-04-23T16:16:39.375Z",
+        "duration_ms": 30000,
+        "summary": "Git push done."
       },
       {
         "id": "T21",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research vectorized execution for JS engines — read scratch/vectorized-execution-explore.md, compare with DuckDB approach",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-23T16:16:44.677Z",
+        "completed": "2026-04-23T16:16:58.710Z",
+        "duration_ms": 120000,
+        "summary": "Reviewed vectorized execution research. Key: 2.85-5.8x speedup for deep pipelines. Hybrid Volcano-vectorized (batch 1024 rows internally) is the right approach. Priority: after extraction and correctness work completes."
       },
       {
         "id": "T22",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep-dive: AST format normalization strategies. Can we unify parser output to prevent future mismatch bugs?",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-23T16:17:12.840Z",
+        "completed": "2026-04-23T16:17:26.842Z",
+        "duration_ms": 120000,
+        "summary": "AST normalization: only 6 string/object mismatch sites across codebase. A normalizeArg() utility post-parse would be ~20 LOC. Low priority — existing workarounds work. Could prevent future bugs but ROI is marginal."
+      },
+      {
+        "id": "T28",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: 8 BUILD tasks done. Any surprises? What did I learn? Plan next extraction batch.",
+        "started": "2026-04-23T16:18:22.403Z",
+        "completed": "2026-04-23T16:18:36.880Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passes all 3 criteria: surprise (correlated IN bug root cause), learning (implicit GROUP BY in decorrelation), bug found (data correctness). Not in breadth spiral."
+      },
+      {
+        "id": "T29",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: extract savepoints + FK cascade handlers from db.js",
+        "task": null,
+        "started": "2026-04-23T16:18:49.830Z"
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Extract savepoints (~111 LOC: _handleSavepoint, _handleRollbackToSavepoint, _handleReleaseSavepoint) from db.js to savepoint-handler.js",
+        "status": "upcoming",
+        "plan_ref": "T29"
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "task": "Extract FK cascade (~107 LOC: _handleForeignKeyDelete, _handleForeignKeyUpdate) from db.js to fk-cascade.js",
+        "status": "upcoming",
+        "plan_ref": "T29"
+      },
+      {
+        "id": "T30",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Neural-net: implement Attention Sink for long context + KV cache optimization",
+        "task": null
+      },
+      {
+        "id": "T31",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git commit+push, dashboard update, daily log"
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 23,
-    "blocksTotal": 27,
+    "blocksCompleted": 29,
+    "blocksTotal": 33,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 5,
-      "BUILD": 9,
-      "MAINTAIN": 4
+      "THINK": 6,
+      "PLAN": 6,
+      "BUILD": 10,
+      "MAINTAIN": 5,
+      "EXPLORE": 2
     }
   }
 }

@@ -36,6 +36,7 @@ import { union_ as _unionImpl, unionInner as _unionInnerImpl, intersect as _inte
 import { recommendIndexes as _recommendIndexesImpl, applyRecommendedIndexes as _applyRecommendedIndexesImpl } from './index-advisor-impl.js';
 import { merge as _mergeImpl } from './merge-executor.js';
 import { handlePrepare as _handlePrepareImpl, handleExecute as _handleExecuteImpl, handleDeallocate as _handleDeallocateImpl } from './prepared-stmts.js';
+import { handleSavepoint as _handleSavepointImpl, handleRollbackToSavepoint as _handleRollbackToSavepointImpl, handleReleaseSavepoint as _handleReleaseSavepointImpl } from './savepoint-handler.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -363,112 +364,13 @@ export class Database {
   _handleDeallocate(sql) { return _handleDeallocateImpl(this, sql); }
 
   // SAVEPOINT name — save current state
-  _handleSavepoint(sql) {
-    const match = sql.match(/SAVEPOINT\s+(\w+)/i);
-    if (!match) throw new Error('Invalid SAVEPOINT syntax');
-    const name = match[1].replace(/;$/, '');
-    
-    // Snapshot: deep-clone each table's row data directly from heap scan
-    const snapshot = {};
-    for (const [tableName, table] of this.tables) {
-      const rows = [];
-      for (const item of table.heap.scan()) {
-        // Deep-clone row values to prevent mutation
-        rows.push({ values: item.values.map(v => v) });
-      }
-      snapshot[tableName] = rows;
-    }
-    
-    this._savepoints.push({ name, snapshot });
-    return { type: 'OK', message: `Savepoint "${name}" created` };
-  }
+  _handleSavepoint(sql) { return _handleSavepointImpl(this, sql); }
 
   // ROLLBACK TO [SAVEPOINT] name — restore to savepoint
-  _handleRollbackToSavepoint(sql) {
-    const match = sql.match(/ROLLBACK\s+TO\s+(?:SAVEPOINT\s+)?(\w+)/i);
-    if (!match) throw new Error('Invalid ROLLBACK TO syntax');
-    const name = match[1].replace(/;$/, '');
-    
-    // Find the savepoint
-    const idx = this._savepoints.findLastIndex(sp => sp.name === name);
-    if (idx === -1) throw new Error(`Savepoint "${name}" not found`);
-    
-    const { snapshot } = this._savepoints[idx];
-    
-    // Restore each table by replacing heap contents directly
-    for (const [tableName, savedRows] of Object.entries(snapshot)) {
-      const table = this.tables.get(tableName);
-      if (!table) continue;
-      
-      // Create a fresh heap of the same type and re-insert saved rows
-      const oldHeap = table.heap;
-      if (oldHeap instanceof BTreeTable) {
-        // BTreeTable: create fresh with same primary key column
-        const pkCol = table.schema?.findIndex(c => c.primaryKey);
-        table.heap = new BTreeTable(tableName, pkCol >= 0 ? pkCol : 0);
-      } else {
-        table.heap = this._heapFactory(tableName);
-      }
-      
-      // Copy HOT chains config
-      if (oldHeap._hotChains) {
-        table.heap._hotChains = new Map();
-      }
-      
-      for (const { values } of savedRows) {
-        table.heap.insert(values);
-      }
-      
-      // Rebuild indexes from the restored data
-      if (table.indexes) {
-        for (const [indexName, idx] of table.indexes) {
-          if (idx.clear) idx.clear();
-          else if (idx.root !== undefined) {
-            // B+Tree: create fresh
-            // Skip for now — indexes will be stale but queries fall back to heap scan
-          }
-        }
-        // Re-index all rows
-        for (const item of table.heap.scan()) {
-          for (const [indexName, idx] of table.indexes) {
-            if (idx.insert) {
-              try {
-                const keyCol = idx.column ?? idx.columns?.[0];
-                if (keyCol !== undefined) {
-                  const keyVal = typeof keyCol === 'number' ? item.values[keyCol] : item.values[table.schema.findIndex(c => c.name === keyCol)];
-                  idx.insert(keyVal, { pageId: item.pageId, slotIdx: item.slotIdx });
-                }
-              } catch (e) {
-                // Index rebuild failure is non-fatal for savepoint rollback
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    // Remove savepoints after the rollback target
-    this._savepoints.splice(idx + 1);
-    
-    // Clear result cache — stale cached query results from before rollback
-    if (this._resultCache) this._resultCache.clear();
-    
-    return { type: 'OK', message: `Rolled back to savepoint "${name}"` };
-  }
+  _handleRollbackToSavepoint(sql) { return _handleRollbackToSavepointImpl(this, sql); }
 
   // RELEASE [SAVEPOINT] name — remove savepoint
-  _handleReleaseSavepoint(sql) {
-    const match = sql.match(/RELEASE\s+(?:SAVEPOINT\s+)?(\w+)/i);
-    if (!match) throw new Error('Invalid RELEASE syntax');
-    const name = match[1].replace(/;$/, '');
-    
-    const idx = this._savepoints.findLastIndex(sp => sp.name === name);
-    if (idx === -1) throw new Error(`Savepoint "${name}" not found`);
-    
-    // Remove this and all later savepoints
-    this._savepoints.splice(idx);
-    return { type: 'OK', message: `Savepoint "${name}" released` };
-  }
+  _handleReleaseSavepoint(sql) { return _handleReleaseSavepointImpl(this, sql); }
 
   _handleAnalyze(sql) {
     const match = sql.match(/ANALYZE\s+(?:TABLE\s+)?(\w+)/i);
