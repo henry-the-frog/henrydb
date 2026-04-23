@@ -40,6 +40,8 @@ import { handleSavepoint as _handleSavepointImpl, handleRollbackToSavepoint as _
 import { handleForeignKeyDelete as _handleForeignKeyDeleteImpl, handleForeignKeyUpdate as _handleForeignKeyUpdateImpl } from './fk-cascade.js';
 import { validateConstraints as _validateConstraintsImpl, validateConstraintsForUpdate as _validateConstraintsForUpdateImpl } from './constraint-validator.js';
 import { handleAnalyze as _handleAnalyzeImpl, profile as _profileImpl } from './analyze-profile.js';
+import { handleCheckpoint as _handleCheckpointImpl } from './checkpoint-handler.js';
+import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -2020,119 +2022,19 @@ export class Database {
     };
   }
 
-  _checkpoint() {
-    // CHECKPOINT command — creates a WAL checkpoint for durability
-    // In the base Database class (no WAL), this is a no-op but still valid SQL.
-    // TransactionalDatabase overrides this with real fuzzy checkpoint logic.
-    const stats = {
-      tables: this.tables.size,
-      totalRows: 0,
-    };
-    for (const [, table] of this.tables) {
-      if (table.heap && table.heap._pages) {
-        for (const page of table.heap._pages) {
-          stats.totalRows += page ? page.filter(Boolean).length : 0;
-        }
-      }
-    }
-    return {
-      type: 'CHECKPOINT',
-      message: `CHECKPOINT complete: ${stats.tables} tables, ${stats.totalRows} rows`,
-      details: stats,
-    };
-  }
+  _checkpoint() { return _handleCheckpointImpl(this); }
 
   // === Prepared Statements ===
   
-  _prepareSql(ast) {
-    const name = ast.name;
-    if (this._prepared.has(name)) {
-      throw new Error(`Prepared statement '${name}' already exists`);
-    }
-    this._prepared.set(name, { ast: ast.query, name });
-    return { message: `PREPARE ${name}` };
-  }
+  _prepareSql(ast) { return _prepareSqlImpl(this, ast); }
 
-  _executePrepared(ast) {
-    const name = ast.name;
-    if (!this._prepared.has(name)) {
-      throw new Error(`Prepared statement '${name}' not found`);
-    }
-    const stmt = this._prepared.get(name);
-    
-    // Bind parameters: replace PARAM nodes in the AST with literal values
-    const paramValues = ast.params.map(p => {
-      if (p.type === 'literal') return p.value;
-      if (p.type === 'PARAM') throw new Error('Cannot use parameters in EXECUTE parameter list');
-      return p.value;
-    });
-    
-    const boundAst = this._bindParams(JSON.parse(JSON.stringify(stmt.ast)), paramValues);
-    return this.execute_ast(boundAst);
-  }
+  _executePrepared(ast) { return _executePreparedImpl(this, ast); }
 
-  _deallocate(ast) {
-    if (ast.all) {
-      const count = this._prepared.size;
-      this._prepared.clear();
-      return { message: `DEALLOCATE ALL (${count} statements)` };
-    }
-    if (!this._prepared.has(ast.name)) {
-      throw new Error(`Prepared statement '${ast.name}' not found`);
-    }
-    this._prepared.delete(ast.name);
-    return { message: `DEALLOCATE ${ast.name}` };
-  }
+  _deallocate(ast) { return _deallocateImpl(this, ast); }
 
-  /**
-   * Bind parameter values into an AST by replacing PARAM nodes with literals.
-   */
-  _bindParams(node, params) {
-    if (!node || typeof node !== 'object') return node;
-    
-    if (node.type === 'PARAM') {
-      const idx = node.index - 1; // $1 is index 0
-      if (idx < 0 || idx >= params.length) {
-        throw new Error(`Parameter $${node.index} not provided (got ${params.length} params)`);
-      }
-      return { type: 'literal', value: params[idx] };
-    }
-    
-    // Recursively bind in all object properties
-    for (const key of Object.keys(node)) {
-      if (Array.isArray(node[key])) {
-        node[key] = node[key].map(item => this._bindParams(item, params));
-      } else if (typeof node[key] === 'object' && node[key] !== null) {
-        node[key] = this._bindParams(node[key], params);
-      }
-    }
-    
-    return node;
-  }
+  _bindParams(node, params) { return _bindParamsImpl(node, params); }
 
-  /**
-   * Programmatic API: prepare a statement for repeated execution.
-   * Returns a PreparedStatement object.
-   */
-  prepare(sql) {
-    const ast = parse(sql);
-    const name = `__stmt_${this._prepared.size}`;
-    this._prepared.set(name, { ast, name });
-    
-    const db = this;
-    return {
-      name,
-      execute(...params) {
-        // Accept either execute([...params]) or execute(p1, p2, ...)
-        const flatParams = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
-        const bound = db._bindParams(JSON.parse(JSON.stringify(ast)), flatParams);
-        return db.execute_ast(bound);
-      },
-      close() {
-        db._prepared.delete(name);
-      },
-    };
-  }
+  prepare(sql) { return _prepareImpl(this, sql); }
 
   _analyzeTable(ast) {
     const planner = new QueryPlanner(this);
