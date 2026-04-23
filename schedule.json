@@ -784,10 +784,21 @@
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement gradient checkpointing for memory-efficient training",
       "project": "neural-net",
-      "started": "2026-04-23T17:37:54.868Z"
+      "started": "2026-04-23T17:37:54.868Z",
+      "completed": "2026-04-23T17:39:39.365Z",
+      "duration_ms": 300000,
+      "summary": "Gradient checkpointing from scratch. Chen et al. 2016. 9 tests all pass. CheckpointSegment for recompute-based memory savings. O(sqrt(L)) memory. 1000 layers: <100 activations stored."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural-net: implement multi-head attention with Flash Attention pattern (fused softmax+matmul)",
+      "project": "neural-net",
+      "started": "2026-04-23T17:40:06.281Z"
     }
   ],
   "focusProjects": [
@@ -1067,6 +1078,10 @@
     {
       "time": "2026-04-23T17:37:50.084Z",
       "msg": "Added T73 (BUILD) after end: Neural-net: implement gradient checkpointing for memory-efficient training"
+    },
+    {
+      "time": "2026-04-23T17:39:57.417Z",
+      "msg": "Added T74 (BUILD) after end: Neural-net: implement multi-head attention with Flash Attention pattern (fused softmax+matmul)"
     }
   ]
 }
