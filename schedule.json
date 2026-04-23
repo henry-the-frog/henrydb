@@ -1997,15 +1997,107 @@
     {
       "id": "T188",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log update",
-      "started": "2026-04-23T22:00:08.311Z"
+      "started": "2026-04-23T22:00:08.311Z",
+      "completed": "2026-04-23T22:00:40.918Z",
+      "duration_ms": 30000,
+      "summary": "Git push + daily log updated."
     },
     {
-      "id": "T136",
-      "mode": "THINK",
-      "status": "upcoming",
-      "task": "End of day: compile all findings into actionable tomorrow task list"
+      "id": "T189",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit loss functions: MSE, cross-entropy, hinge — are gradients correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:01:27.416Z",
+      "completed": "2026-04-23T22:02:03.897Z",
+      "duration_ms": 60000,
+      "summary": "Loss functions: MSE forward correct but gradient missing 1/n factor (forward divides by 2n, gradient is just p-t without /n). Cross-entropy assumes softmax output (gradient = p-t), which is correct for that case. Epsilon clamping for numerical stability."
+    },
+    {
+      "id": "T190",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study pg-server.js: does the PostgreSQL wire protocol work?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:02:23.004Z",
+      "completed": "2026-04-23T22:02:47.434Z",
+      "duration_ms": 60000,
+      "summary": "pg-server.js: real PostgreSQL wire protocol v3 implementation at 1936 lines. Handles: MD5 auth, query execution, RowDescription+DataRow messages, type OID mapping, parameter status. Can connect with psql! Impressive for a prototype database."
+    },
+    {
+      "id": "T191",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study VAE implementation: is the reparameterization trick correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:02:54.119Z",
+      "completed": "2026-04-23T22:03:40.263Z",
+      "duration_ms": 60000,
+      "summary": "VAE correct per Kingma & Welling 2014. Reparameterization: z = μ + exp(0.5·logvar)·ε (makes sampling differentiable). KL divergence: closed form for Gaussian. β-VAE support (Higgins 2017). Encode → latent sample → decode pipeline correct."
+    },
+    {
+      "id": "T192",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Read planner.js: how does the query planner choose between scan types?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:03:56.599Z",
+      "completed": "2026-04-23T22:04:57.582Z",
+      "duration_ms": 60000,
+      "summary": "Query planner: cost-based access path selection. TABLE_SCAN vs INDEX_SCAN based on IO+CPU cost. B+tree height estimated via log100(N). DP join reordering for multi-table. 890 lines. Correctly prefers index for low selectivity, scan for high."
+    },
+    {
+      "id": "T193",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit relative-position-bias.js: is T5-style relative attention correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:05:15.341Z",
+      "completed": "2026-04-23T22:06:22.510Z",
+      "duration_ms": 60000,
+      "summary": "T5 relative position bias correct per Raffel 2020. Bucketing: exact for small distances, logarithmic for large. Bidirectional (separate pos/neg). Learnable bias table (numBuckets × nHeads). Matches T5/HuggingFace implementation."
+    },
+    {
+      "id": "T194",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study result-cache.js: how does query result caching work?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:06:30.204Z",
+      "completed": "2026-04-23T22:07:14.936Z",
+      "duration_ms": 60000,
+      "summary": "Query cache: SQL+params key, FIFO eviction (maxSize=1000), table-based invalidation via string matching. extractTables parses FROM/JOIN/INSERT/UPDATE/DELETE. Hit rate tracking. Simple but functional — FIFO could be upgraded to LRU, string-match invalidation could over-invalidate."
+    },
+    {
+      "id": "T195",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run gradient check on GELU activation backward",
+      "project": "neural-net",
+      "started": "2026-04-23T22:07:22.422Z",
+      "completed": "2026-04-23T22:09:43.890Z",
+      "duration_ms": 120000,
+      "summary": "GELU exists in activation-functions.js but NOT in activation.js (which Dense uses). Two disconnected activation modules: activation.js (Dense-compatible with backward: sigmoid, relu, tanh, softmax) and activation-functions.js (standalone: gelu, silu, mish, elu, selu). Dense layers cant use GELU — design inconsistency."
+    },
+    {
+      "id": "T196",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit index-advisor.js: does it recommend useful indexes?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:09:58.887Z",
+      "completed": "2026-04-23T22:10:33.906Z",
+      "duration_ms": 60000,
+      "summary": "Index advisor: workload-based recommendation engine at 437 lines. Analyzes query patterns (WHERE, JOIN, ORDER BY, GROUP BY). Tracks column access frequency, identifies composite candidates, checks existing indexes. Generates CREATE INDEX SQL. Inspired by pg_qualstats. Sophisticated for a prototype."
+    },
+    {
+      "id": "T197",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:10:38.867Z"
     },
     {
       "id": "T179",
@@ -2018,6 +2110,12 @@
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final git push + CURRENT.md session end + daily log summary"
+    },
+    {
+      "id": "T136",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "End of day: compile all findings into actionable tomorrow task list"
     }
   ],
   "focusProjects": [
@@ -2785,6 +2883,46 @@
     {
       "time": "2026-04-23T21:53:41.137Z",
       "msg": "Added T188 (MAINTAIN) after T187: Git push + daily log update"
+    },
+    {
+      "time": "2026-04-23T22:01:08.145Z",
+      "msg": "Moved T136 after T137"
+    },
+    {
+      "time": "2026-04-23T22:01:08.265Z",
+      "msg": "Added T189 (EXPLORE) after T188: Audit loss functions: MSE, cross-entropy, hinge — are gradients correct?"
+    },
+    {
+      "time": "2026-04-23T22:01:08.385Z",
+      "msg": "Added T190 (EXPLORE) after T189: Study pg-server.js: does the PostgreSQL wire protocol work?"
+    },
+    {
+      "time": "2026-04-23T22:01:08.505Z",
+      "msg": "Added T191 (EXPLORE) after T190: Study VAE implementation: is the reparameterization trick correct?"
+    },
+    {
+      "time": "2026-04-23T22:01:08.625Z",
+      "msg": "Added T192 (EXPLORE) after T191: Read planner.js: how does the query planner choose between scan types?"
+    },
+    {
+      "time": "2026-04-23T22:01:08.745Z",
+      "msg": "Added T193 (EXPLORE) after T192: Audit relative-position-bias.js: is T5-style relative attention correct?"
+    },
+    {
+      "time": "2026-04-23T22:01:08.865Z",
+      "msg": "Added T194 (EXPLORE) after T193: Study result-cache.js: how does query result caching work?"
+    },
+    {
+      "time": "2026-04-23T22:01:08.986Z",
+      "msg": "Added T195 (EXPLORE) after T194: Run gradient check on GELU activation backward"
+    },
+    {
+      "time": "2026-04-23T22:01:09.107Z",
+      "msg": "Added T196 (EXPLORE) after T195: Audit index-advisor.js: does it recommend useful indexes?"
+    },
+    {
+      "time": "2026-04-23T22:01:09.226Z",
+      "msg": "Added T197 (MAINTAIN) after T196: Git push + daily log"
     }
   ]
 }
