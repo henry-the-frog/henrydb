@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-23T18:24:37.771Z",
+  "generated": "2026-04-23T18:25:50.578Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement Mamba-style Selective SSM (Gu & Dao 2023) - data-dependent state space model",
-    "completedAt": "2026-04-23T18:24:37.771Z",
-    "taskId": "T86",
-    "summary": "Mamba Selective SSM: input-dependent B/C/Δ, SiLU gating, step≡forward verified. 6 tests.",
-    "durationMs": 300000
+    "task": "Neural-net: implement AdaLN-Zero (Peebles & Xie 2023) for Diffusion Transformer conditioning",
+    "completedAt": "2026-04-23T18:25:50.578Z",
+    "taskId": "T87",
+    "summary": "AdaLN + AdaLN-Zero for DiT. Conditioning-dependent normalization with residual gating. 6 tests.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 86,
+    "blocksCompleted": 87,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 49,
+      "BUILD": 50,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }

@@ -932,6 +932,17 @@
       "completed": "2026-04-23T18:24:37.735Z",
       "duration_ms": 300000,
       "summary": "Mamba Selective SSM: input-dependent B/C/Δ, SiLU gating, step≡forward verified. 6 tests."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement AdaLN-Zero (Peebles & Xie 2023) for Diffusion Transformer conditioning",
+      "project": "neural-net",
+      "started": "2026-04-23T18:25:01.650Z",
+      "completed": "2026-04-23T18:25:50.542Z",
+      "duration_ms": 240000,
+      "summary": "AdaLN + AdaLN-Zero for DiT. Conditioning-dependent normalization with residual gating. 6 tests."
     }
   ],
   "focusProjects": [
@@ -1263,6 +1274,10 @@
     {
       "time": "2026-04-23T18:23:32.090Z",
       "msg": "Added T86 (BUILD) after end: Neural-net: implement Mamba-style Selective SSM (Gu & Dao 2023) - data-dependent state space model"
+    },
+    {
+      "time": "2026-04-23T18:25:01.392Z",
+      "msg": "Added T87 (BUILD) after end: Neural-net: implement AdaLN-Zero (Peebles & Xie 2023) for Diffusion Transformer conditioning"
     }
   ]
 }
