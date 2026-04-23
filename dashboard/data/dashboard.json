@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-23T16:43:17.314Z",
+  "generated": "2026-04-23T16:47:14.878Z",
   "current": {
-    "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Extract _checkpoint + AST-based prepared statements (_prepareSql, _executePrepared, _bindParams, _deallocate) from db.js",
-    "startedAt": "2026-04-23T16:43:17.314Z",
-    "taskId": "T49"
+    "status": "done",
+    "mode": "EXPLORE",
+    "task": "Read through db.js remaining methods — what else can be extracted? Categorize by risk and size.",
+    "completedAt": "2026-04-23T16:47:14.878Z",
+    "taskId": "T51",
+    "summary": "Mapped remaining extraction opportunities. Top 10: _tryIndexScan (251L), _insertRow (126L), _tryVolcanoSelect (121L), executePaginated (94L), _vacuum (89L), _analyzeTable (77L), _select (76L), _acquireRowLocks (61L), serialize (59L), _applySelectColumns (58L). Total: ~990 LOC extractable. db.js under 2000 is achievable.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -533,14 +535,14 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 51,
     "blocksTotal": 49,
     "modeDistribution": {
-      "THINK": 7,
+      "THINK": 8,
       "PLAN": 12,
-      "BUILD": 19,
-      "MAINTAIN": 7,
-      "EXPLORE": 2
+      "BUILD": 20,
+      "MAINTAIN": 8,
+      "EXPLORE": 3
     }
   }
 }

@@ -63,3 +63,12 @@
 - Root cause: likely in GROUP BY key computation — the CASE evaluator might return undefined for some rows instead of 'Y'
 - The GROUP BY expression is parsed correctly (type: case_expr with WHEN conditions)
 - Investigation needed: add logging to HashAggregate's key computation for CASE expressions
+
+### Remaining 3 Decorrelation Stress Test Failures (2026-04-23)
+1. **Correlated IN with aggregate + nested subquery** — Double-nested correlation (outer → inner → innermost). Batch decorrelation only handles single-level.
+2. **Correlated vs uncorrelated parity** — The uncorrelated version works, correlated returns empty. May be the same root cause as #1.
+3. **NULL handling** — Correlated IN with NULL values in the correlation column. NULL != NULL so the hashmap key lookup fails. Needs NULL-safe comparison in the hashmap.
+
+**Root causes:** All three require either (a) recursive batch decorrelation for multi-level nesting, or (b) NULL-safe hashmap keys. These are significant enhancements to the decorrelation optimizer.
+
+**Priority:** Medium. The basic correlated IN (single-level, non-NULL) now works correctly. These are edge cases.

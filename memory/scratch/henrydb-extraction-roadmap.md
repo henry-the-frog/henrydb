@@ -1,27 +1,60 @@
-# HenryDB db.js Extraction Roadmap (2026-04-22, updated end of session)
+# HenryDB Extraction Roadmap (Updated 2026-04-23)
 
-## Already Extracted (8 modules, 3412 LOC)
-- join-executor.js: 1074 LOC (15 join methods)
-- group-by-executor.js: 525 LOC (_selectWithGroupBy)
-- explain-executor.js: 496 LOC (_explain, _explainAnalyze, _explainCompiled, _fillScanActuals)
-- plan-format.js: 215 LOC (_formatPlan, _planToYaml, _planToDot)
-- select-inner.js: 681 LOC (_selectInner)
-- cte-executor.js: 159 LOC (_withCTEs, _executeRecursiveCTE)
-- catalog-queries.js: 150 LOC (_selectInfoSchema, _selectPgCatalog, _filterPgCatalogRows)
-- set-operations.js: 112 LOC (_union, _unionInner, _intersect, _except)
+## Status: db.js at 2760 lines (was 3293 at start of session, ~5000 originally)
 
-## db.js Status: 3,293 lines (67% reduction from ~10K peak)
+## Completed Extractions (Session A, 2026-04-23)
+| Module | LOC | Methods |
+|--------|-----|---------|
+| index-advisor-impl.js | 85 | _recommendIndexes, _applyRecommendedIndexes |
+| merge-executor.js | 75 | _merge |
+| prepared-stmts.js | 72 | _handlePrepare, _handleExecute, _handleDeallocate |
+| savepoint-handler.js | 120 | _handleSavepoint, _handleRollbackToSavepoint, _handleReleaseSavepoint |
+| fk-cascade.js | 115 | _handleForeignKeyDelete, _handleForeignKeyUpdate |
+| constraint-validator.js | 120 | _validateConstraints, _validateConstraintsForUpdate |
+| analyze-profile.js | 100 | _handleAnalyze, profile |
+| checkpoint-handler.js | 30 | _checkpoint |
+| prepared-stmts-ast.js | 110 | _prepareSql, _executePrepared, _bindParams, _deallocate, prepare |
 
-## Remaining Extraction Candidates
-1. `_recommendIndexes` + `_applyRecommendedIndexes`: ~70 LOC (need rename: index-advisor.js exists)
-2. `_validateConstraints` area: ~100 LOC
-3. `_handlePrepare/Execute/Deallocate`: ~100 LOC — prepared statements
-4. `_handleSavepoint/RollbackTo/Release`: ~100 LOC — savepoints
-5. `_handleForeignKeyDelete/Update`: ~100 LOC — FK cascades
-6. `_merge`: ~60 LOC
+**Total extracted today: ~830 LOC across 9 new modules**
 
-## Volcano Path Status
-- **27/27 SQL patterns** build+execute through Volcano
-- IN_SUBQUERY not handled (correctness bug — returns all rows)
-- CASE WHEN works in both WHERE and SELECT
-- Legacy is ~100x faster for small data (overhead from iterator objects)
+## Previously Extracted (before this session)
+- sql.js (parser)
+- select-inner.js
+- set-operations.js
+- having-impl.js
+- cte-executor.js
+- ddl-executor.js
+- insert-executor.js
+- trigger-executor.js
+- create-view.js
+- volcano-planner.js
+- expression-evaluator.js
+- decorrelate.js
+- btree-table.js
+- heap-page.js
+
+## Remaining Extraction Candidates (ordered by size)
+| Method | LOC | Risk | Notes |
+|--------|-----|------|-------|
+| _tryIndexScan | 251 | Medium | Index scan logic, complex but self-contained |
+| _insertRow | 126 | High | Hot path, uses many internal methods |
+| _tryVolcanoSelect | 121 | Medium | Volcano routing, references multiple planners |
+| executePaginated | 94 | Low | Simple pagination wrapper |
+| _vacuum | 89 | Low | VACUUM command, isolated |
+| _analyzeTable | 77 | Low | Table analysis (separate from _handleAnalyze) |
+| _select | 76 | High | Core select routing, many dependencies |
+| _acquireRowLocks | 61 | Low | Row locking, self-contained |
+| serialize | 59 | Low | Serialization, self-contained |
+| _applySelectColumns | 58 | Medium | Column projection logic |
+
+**Next priority: Low-risk first (executePaginated, _vacuum, serialize, _acquireRowLocks)**
+**Then medium: (_tryIndexScan, _tryVolcanoSelect, _applySelectColumns, _analyzeTable)**
+**Defer: High-risk (_insertRow, _select) — these are core and have many callees**
+
+## Extraction Pattern
+1. Create new file with extracted function
+2. First param is always `db` (the database instance)
+3. Add import to db.js
+4. Replace method body with one-liner delegation
+5. Run related tests
+6. Commit
