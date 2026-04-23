@@ -1198,28 +1198,119 @@
     {
       "id": "T111",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session: git push, dashboard regen, knowledge capture",
-      "started": "2026-04-23T20:28:28.482Z"
+      "started": "2026-04-23T20:28:28.482Z",
+      "completed": "2026-04-23T20:29:14.172Z",
+      "duration_ms": 120000,
+      "summary": "Git push done. Dashboard regenerated (114 blocks). Daily log updated. Knowledge captured: 8 broken neural-net tests, extraction declared done."
     },
     {
       "id": "T112",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Neural-net integration: which modules compose into a mini-LLM pipeline? Assess gaps."
+      "status": "done",
+      "task": "Neural-net integration: which modules compose into a mini-LLM pipeline? Assess gaps.",
+      "started": "2026-04-23T20:29:23.622Z",
+      "completed": "2026-04-23T20:30:02.195Z",
+      "duration_ms": 180000,
+      "summary": "Full LLM pipeline exists in neural-net: tokenizer, embeddings, RoPE, attention, FFN/SwiGLU, norms, KV cache, sampling, AdamW, LoRA, RLHF. mini-llm.js works (7/7 tests). Gaps: (1) 8 broken test files, (2) gqa-attention.js broken import, (3) no backward passes for Flash/GQA/Mamba, (4) no end-to-end training demo. Priority: fix broken tests, then e2e training script."
     },
     {
       "id": "T113",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study one backward pass in depth — verify gradient math for BatchNorm or GroupNorm",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-23T20:30:09.271Z",
+      "completed": "2026-04-23T20:30:43.298Z",
+      "duration_ms": 600000,
+      "summary": "GroupNorm backward pass verified: (1) Manual derivation matches Wu & He 2018 formula dx = (1/σ)(dy - mean(dy) - x̂·mean(dy·x̂)). (2) Numerical gradient check: max error 1.9e-5 (PASS). (3) All 9 tests pass. Code quality is solid — affine scaling properly applied in backward."
     },
     {
       "id": "T114",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push, daily log summary, CURRENT.md",
+      "started": "2026-04-23T20:31:13.183Z"
+    },
+    {
+      "id": "T115",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Final git push, daily log summary, CURRENT.md"
+      "task": "Investigate the 8 broken neural-net test files in detail — categorize root causes and plan fixes"
+    },
+    {
+      "id": "T116",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deep-dive: multi-head-flash-attention.test.js assertion failures — what's the expected vs actual?",
+      "project": "neural-net"
+    },
+    {
+      "id": "T117",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deep-dive: serialization-roundtrip.test.js TypeError — identify broken module",
+      "project": "neural-net"
+    },
+    {
+      "id": "T118",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB full test suite: identify categories of 292 pre-existing failures — which are implementable?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T119",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Review neural-net project README — does it accurately reflect current state? What's the story?"
+    },
+    {
+      "id": "T120",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Read BatchNorm backward pass — numerical gradient check like GroupNorm",
+      "project": "neural-net"
+    },
+    {
+      "id": "T121",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study Volcano planner SELECT * + window bug — what would it take to fix?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T122",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, dashboard regen, daily log update"
+    },
+    {
+      "id": "T123",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What should tomorrow look like? Neural-net cleanup day? HenryDB new features? Balance?"
+    },
+    {
+      "id": "T124",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Audit conv2d backward pass — is col2im correct? Numerical gradient check.",
+      "project": "neural-net"
+    },
+    {
+      "id": "T125",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Profile HenryDB: which queries are slowest? Where are the bottlenecks?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T126",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Evening git push + daily log summary"
     }
   ],
   "focusProjects": [
@@ -1663,6 +1754,54 @@
     {
       "time": "2026-04-23T20:16:06.703Z",
       "msg": "Added T114 (MAINTAIN) after T113: Final git push, daily log summary, CURRENT.md"
+    },
+    {
+      "time": "2026-04-23T20:31:05.553Z",
+      "msg": "Added T115 (THINK) after T114: Investigate the 8 broken neural-net test files in detail — categorize root causes and plan fixes"
+    },
+    {
+      "time": "2026-04-23T20:31:05.675Z",
+      "msg": "Added T116 (EXPLORE) after T115: Deep-dive: multi-head-flash-attention.test.js assertion failures — what's the expected vs actual?"
+    },
+    {
+      "time": "2026-04-23T20:31:05.796Z",
+      "msg": "Added T117 (EXPLORE) after T116: Deep-dive: serialization-roundtrip.test.js TypeError — identify broken module"
+    },
+    {
+      "time": "2026-04-23T20:31:05.918Z",
+      "msg": "Added T118 (EXPLORE) after T117: HenryDB full test suite: identify categories of 292 pre-existing failures — which are implementable?"
+    },
+    {
+      "time": "2026-04-23T20:31:06.041Z",
+      "msg": "Added T119 (THINK) after T118: Review neural-net project README — does it accurately reflect current state? What's the story?"
+    },
+    {
+      "time": "2026-04-23T20:31:06.162Z",
+      "msg": "Added T120 (EXPLORE) after T119: Read BatchNorm backward pass — numerical gradient check like GroupNorm"
+    },
+    {
+      "time": "2026-04-23T20:31:06.285Z",
+      "msg": "Added T121 (EXPLORE) after T120: Study Volcano planner SELECT * + window bug — what would it take to fix?"
+    },
+    {
+      "time": "2026-04-23T20:31:06.406Z",
+      "msg": "Added T122 (MAINTAIN) after T121: Git push, dashboard regen, daily log update"
+    },
+    {
+      "time": "2026-04-23T20:31:06.529Z",
+      "msg": "Added T123 (THINK) after T122: What should tomorrow look like? Neural-net cleanup day? HenryDB new features? Balance?"
+    },
+    {
+      "time": "2026-04-23T20:31:06.650Z",
+      "msg": "Added T124 (EXPLORE) after T123: Audit conv2d backward pass — is col2im correct? Numerical gradient check."
+    },
+    {
+      "time": "2026-04-23T20:31:06.772Z",
+      "msg": "Added T125 (EXPLORE) after T124: Profile HenryDB: which queries are slowest? Where are the bottlenecks?"
+    },
+    {
+      "time": "2026-04-23T20:31:06.893Z",
+      "msg": "Added T126 (MAINTAIN) after T125: Evening git push + daily log summary"
     }
   ]
 }
