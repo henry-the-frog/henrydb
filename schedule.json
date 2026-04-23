@@ -351,16 +351,20 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "Implement BPE tokenizer for neural-net: byte-pair encoding with merge rules, train on text corpus, encode/decode",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T30",
-      "started": "2026-04-23T16:23:54.367Z"
+      "started": "2026-04-23T16:23:54.367Z",
+      "completed": "2026-04-23T16:25:17.061Z",
+      "duration_ms": 600000,
+      "summary": "Implemented BPE tokenizer from scratch. Sennrich et al. 2016 algorithm. GPT-2 pre-tokenization, train/encode/decode/serialize/fromJSON. 12 tests all pass. Shakespeare compresses significantly with perfect roundtrip."
     },
     {
       "id": "T35",
       "mode": "BUILD",
       "task": "Add cosine annealing LR schedule to CharLM, test on Shakespeare corpus for improved convergence",
-      "status": "upcoming",
-      "plan_ref": "T30"
+      "status": "in-progress",
+      "plan_ref": "T30",
+      "started": "2026-04-23T16:25:30.065Z"
     },
     {
       "id": "T31",
