@@ -954,6 +954,17 @@
       "completed": "2026-04-23T18:27:06.347Z",
       "duration_ms": 300000,
       "summary": "DDPM noise scheduler: linear + cosine schedules, add noise, denoise, training loss. 9 tests."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement Classifier-Free Guidance (Ho & Salimans 2022) for conditional generation",
+      "project": "neural-net",
+      "started": "2026-04-23T18:27:27.849Z",
+      "completed": "2026-04-23T18:28:10.695Z",
+      "duration_ms": 240000,
+      "summary": "CFG + rescaled CFG + dynamic guidance + conditional dropout. 7 tests."
     }
   ],
   "focusProjects": [
@@ -1293,6 +1304,10 @@
     {
       "time": "2026-04-23T18:26:10.776Z",
       "msg": "Added T88 (BUILD) after end: Neural-net: implement DDPM noise scheduler and denoising step (Ho et al. 2020)"
+    },
+    {
+      "time": "2026-04-23T18:27:27.617Z",
+      "msg": "Added T89 (BUILD) after end: Neural-net: implement Classifier-Free Guidance (Ho & Salimans 2022) for conditional generation"
     }
   ]
 }

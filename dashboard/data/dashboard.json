@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-23T18:27:06.391Z",
+  "generated": "2026-04-23T18:28:10.731Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement DDPM noise scheduler and denoising step (Ho et al. 2020)",
-    "completedAt": "2026-04-23T18:27:06.391Z",
-    "taskId": "T88",
-    "summary": "DDPM noise scheduler: linear + cosine schedules, add noise, denoise, training loss. 9 tests.",
-    "durationMs": 300000
+    "task": "Neural-net: implement Classifier-Free Guidance (Ho & Salimans 2022) for conditional generation",
+    "completedAt": "2026-04-23T18:28:10.731Z",
+    "taskId": "T89",
+    "summary": "CFG + rescaled CFG + dynamic guidance + conditional dropout. 7 tests.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 88,
+    "blocksCompleted": 89,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 51,
+      "BUILD": 52,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }
