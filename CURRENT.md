@@ -1,9 +1,11 @@
 # CURRENT.md — Session Status
 
-## Status: in-progress
+## Status: session-ended
 ## Session: 2026-04-22 Session C (8:15 PM - 10:15 PM MDT)
-## Tasks Completed: 1 (T94)
-## BUILDs: 0
+## Tasks Completed: 24 (T94-T119)
+## BUILDs: 2 (T99, T100)
+## EXPLOREs: 16
+## Key: MoE rewrite, AdamW fix, 1898 tests zero failures
 
 ### Volcano HAVING audit — 5 bugs found and fixed
 - **buildAggregatePredicate** only handled COMPARE type (returned `() => true` for everything else)

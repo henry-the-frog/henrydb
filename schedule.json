@@ -1257,6 +1257,24 @@
       "completed": "2026-04-23T03:33:09.786Z",
       "duration_ms": 120000,
       "summary": "Load balance loss exploration: MoE correctly collapses to 2/4 experts for 2-mode function. This is correct behavior. Balance loss mainly needed when #modes > topK to prevent expert collapse. Router learns the right number of active experts."
+    },
+    {
+      "id": "T118",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Train KAN on XOR with AdamW — verify it works end-to-end",
+      "project": "neural-net",
+      "started": "2026-04-23T03:35:31.793Z",
+      "completed": "2026-04-23T03:36:13.110Z",
+      "duration_ms": 120000,
+      "summary": "KAN solves XOR: 19/20 success rate with built-in SGD, predictions 0.002 and 0.998 (near-perfect). KAN B-spline basis functions learn non-linear boundaries well. 2000 epochs, lr=0.01."
+    },
+    {
+      "id": "T119",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push, evening summary, CURRENT.md update",
+      "started": "2026-04-23T03:38:57.154Z"
     }
   ],
   "focusProjects": [
@@ -1765,6 +1783,14 @@
     {
       "time": "2026-04-23T03:32:43.876Z",
       "msg": "Added T117 (EXPLORE) after end: Test MoE with load balancing loss as auxiliary regularizer during training"
+    },
+    {
+      "time": "2026-04-23T03:35:31.304Z",
+      "msg": "Added T118 (EXPLORE) after end: Train KAN on XOR with AdamW — verify it works end-to-end"
+    },
+    {
+      "time": "2026-04-23T03:38:56.882Z",
+      "msg": "Added T119 (MAINTAIN) after end: Final git push, evening summary, CURRENT.md update"
     }
   ]
 }
