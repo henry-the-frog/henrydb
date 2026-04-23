@@ -910,6 +910,17 @@
       "completed": "2026-04-23T18:21:54.115Z",
       "duration_ms": 300000,
       "summary": "PPO with clip loss, GAE, KL penalty, RLHF reward, advantage normalization. 8 tests."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement RWKV linear attention (Peng 2023) - O(N) alternative to quadratic attention",
+      "project": "neural-net",
+      "started": "2026-04-23T18:22:14.971Z",
+      "completed": "2026-04-23T18:23:10.687Z",
+      "duration_ms": 300000,
+      "summary": "RWKV linear attention: O(N) forward, O(1) step-by-step inference. Step matches forward. 6 tests."
     }
   ],
   "focusProjects": [
@@ -1233,6 +1244,10 @@
     {
       "time": "2026-04-23T18:20:57.801Z",
       "msg": "Added T84 (BUILD) after end: Neural-net: implement PPO (Proximal Policy Optimization) for RLHF training loop"
+    },
+    {
+      "time": "2026-04-23T18:22:14.736Z",
+      "msg": "Added T85 (BUILD) after end: Neural-net: implement RWKV linear attention (Peng 2023) - O(N) alternative to quadratic attention"
     }
   ]
 }

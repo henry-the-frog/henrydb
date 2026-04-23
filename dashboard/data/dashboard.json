@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-23T18:21:54.152Z",
+  "generated": "2026-04-23T18:23:10.723Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement PPO (Proximal Policy Optimization) for RLHF training loop",
-    "completedAt": "2026-04-23T18:21:54.152Z",
-    "taskId": "T84",
-    "summary": "PPO with clip loss, GAE, KL penalty, RLHF reward, advantage normalization. 8 tests.",
+    "task": "Neural-net: implement RWKV linear attention (Peng 2023) - O(N) alternative to quadratic attention",
+    "completedAt": "2026-04-23T18:23:10.723Z",
+    "taskId": "T85",
+    "summary": "RWKV linear attention: O(N) forward, O(1) step-by-step inference. Step matches forward. 6 tests.",
     "durationMs": 300000
   },
   "schedule": {
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 84,
+    "blocksCompleted": 85,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 47,
+      "BUILD": 48,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }
