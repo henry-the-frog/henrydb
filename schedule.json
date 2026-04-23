@@ -2704,9 +2704,85 @@
     {
       "id": "T251",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:56:45.747Z",
+      "completed": "2026-04-23T22:57:21.748Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T252",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study access-method.js: pluggable index types?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:57:53.970Z",
+      "completed": "2026-04-23T22:58:33.235Z",
+      "duration_ms": 15000,
+      "summary": "Access method: 26-line pluggable index interface. insert/lookup/scan/rangeScan. Registry for plugging in new index types. Clean abstraction layer."
+    },
+    {
+      "id": "T253",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study analytics.js: OLAP capabilities",
+      "project": "henrydb",
+      "started": "2026-04-23T22:58:33.495Z",
+      "completed": "2026-04-23T22:59:37.134Z",
+      "duration_ms": 30000,
+      "summary": "Analytics: T-Digest (Dunning) for streaming quantile estimation + Segment Tree for range queries. T-Digest used by Redis, Elasticsearch, Druid. 177 lines."
+    },
+    {
+      "id": "T254",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study catalog.js: system catalog management",
+      "project": "henrydb",
+      "started": "2026-04-23T22:59:37.394Z",
+      "completed": "2026-04-23T23:00:11.572Z",
+      "duration_ms": 15000,
+      "summary": "Catalog: 29-line in-memory system catalog. Tables, indexes, column types. Simple CRUD. The real metadata is in db.tables Map — this is the formal catalog layer."
+    },
+    {
+      "id": "T255",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study attention-is-all-you-need.js: Vaswani 2017 implementation",
+      "project": "neural-net",
+      "started": "2026-04-23T23:00:11.832Z",
+      "completed": "2026-04-23T23:00:36.641Z",
+      "duration_ms": 10000,
+      "summary": "No dedicated attention-is-all-you-need module. The Vaswani 2017 architecture is split across existing modules: attention.js, transformer.js, positional-encoding.js."
+    },
+    {
+      "id": "T256",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study aggregate-cache.js: cached aggregate results",
+      "project": "henrydb",
+      "started": "2026-04-23T23:00:36.901Z",
+      "completed": "2026-04-23T23:01:21.739Z",
+      "duration_ms": 30000,
+      "summary": "Aggregate cache: TTL + table-level invalidation. SQL normalization for keys. LRU eviction. Dependency tracking (table→cached queries). 236 lines. Solves the dashboard-query problem for read-heavy workloads."
+    },
+    {
+      "id": "T257",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study focal-loss.js: class imbalance handling",
+      "project": "neural-net",
+      "started": "2026-04-23T23:01:22.001Z",
+      "completed": "2026-04-23T23:02:09.486Z",
+      "duration_ms": 30000,
+      "summary": "Focal loss (Lin 2017): -αt(1-pt)^γ·log(pt). Correct with alpha balancing, gamma modulation. γ=0 → cross-entropy. Also: Dice loss for segmentation (1 - 2|A∩B|/(|A|+|B|)). Hinge loss, Huber loss also in loss-functions.js."
+    },
+    {
+      "id": "T258",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:56:45.747Z"
+      "started": "2026-04-23T23:02:09.747Z"
     }
   ],
   "focusProjects": [
@@ -3770,6 +3846,34 @@
     {
       "time": "2026-04-23T22:51:44.150Z",
       "msg": "Added T251 (MAINTAIN) after T250: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:57:48.197Z",
+      "msg": "Added T252 (EXPLORE) after end: Study access-method.js: pluggable index types?"
+    },
+    {
+      "time": "2026-04-23T22:57:48.319Z",
+      "msg": "Added T253 (EXPLORE) after T252: Study analytics.js: OLAP capabilities"
+    },
+    {
+      "time": "2026-04-23T22:57:48.440Z",
+      "msg": "Added T254 (EXPLORE) after T253: Study catalog.js: system catalog management"
+    },
+    {
+      "time": "2026-04-23T22:57:48.560Z",
+      "msg": "Added T255 (EXPLORE) after T254: Study attention-is-all-you-need.js: Vaswani 2017 implementation"
+    },
+    {
+      "time": "2026-04-23T22:57:48.682Z",
+      "msg": "Added T256 (EXPLORE) after T255: Study aggregate-cache.js: cached aggregate results"
+    },
+    {
+      "time": "2026-04-23T22:57:48.803Z",
+      "msg": "Added T257 (EXPLORE) after T256: Study focal-loss.js: class imbalance handling"
+    },
+    {
+      "time": "2026-04-23T22:57:48.923Z",
+      "msg": "Added T258 (MAINTAIN) after T257: Git push + daily log"
     }
   ]
 }
