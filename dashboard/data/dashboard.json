@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-23T18:40:12.520Z",
+  "generated": "2026-04-23T18:41:18.774Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement Multi-Query Attention + Rotary Position embeddings integration test",
-    "completedAt": "2026-04-23T18:40:12.520Z",
-    "taskId": "T98",
-    "summary": "Tokenizer pipeline: BPE-backed encode/decode with special tokens, padding, attention masks. 7 tests.",
-    "durationMs": 300000
+    "task": "Neural-net: implement Relative Position Bias (T5-style, Raffel 2020) for attention",
+    "completedAt": "2026-04-23T18:41:18.774Z",
+    "taskId": "T99",
+    "summary": "T5 relative position bias with logarithmic bucketing. 7 tests.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 98,
+    "blocksCompleted": 99,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 61,
+      "BUILD": 62,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }

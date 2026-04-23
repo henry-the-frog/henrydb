@@ -1064,6 +1064,17 @@
       "completed": "2026-04-23T18:40:12.483Z",
       "duration_ms": 300000,
       "summary": "Tokenizer pipeline: BPE-backed encode/decode with special tokens, padding, attention masks. 7 tests."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement Relative Position Bias (T5-style, Raffel 2020) for attention",
+      "project": "neural-net",
+      "started": "2026-04-23T18:40:34.995Z",
+      "completed": "2026-04-23T18:41:18.738Z",
+      "duration_ms": 240000,
+      "summary": "T5 relative position bias with logarithmic bucketing. 7 tests."
     }
   ],
   "focusProjects": [
@@ -1443,6 +1454,10 @@
     {
       "time": "2026-04-23T18:38:44.844Z",
       "msg": "Added T98 (BUILD) after end: Neural-net: implement Multi-Query Attention + Rotary Position embeddings integration test"
+    },
+    {
+      "time": "2026-04-23T18:40:34.762Z",
+      "msg": "Added T99 (BUILD) after end: Neural-net: implement Relative Position Bias (T5-style, Raffel 2020) for attention"
     }
   ]
 }
