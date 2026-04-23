@@ -1031,6 +1031,17 @@
       "completed": "2026-04-23T18:35:40.585Z",
       "duration_ms": 240000,
       "summary": "EMA + Polyak averaging. Warmup, apply/reset. 6 tests."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement Knowledge Distillation (Hinton 2015) — soft targets + temperature",
+      "project": "neural-net",
+      "started": "2026-04-23T18:36:01.658Z",
+      "completed": "2026-04-23T18:36:55.423Z",
+      "duration_ms": 240000,
+      "summary": "Knowledge distillation: soft targets, temperature scaling, KL divergence, self-distillation. 7 tests."
     }
   ],
   "focusProjects": [
@@ -1398,6 +1409,10 @@
     {
       "time": "2026-04-23T18:34:43.853Z",
       "msg": "Added T95 (BUILD) after end: Neural-net: implement EMA (Exponential Moving Average) for model weights — used in diffusion & RL"
+    },
+    {
+      "time": "2026-04-23T18:36:01.426Z",
+      "msg": "Added T96 (BUILD) after end: Neural-net: implement Knowledge Distillation (Hinton 2015) — soft targets + temperature"
     }
   ]
 }
