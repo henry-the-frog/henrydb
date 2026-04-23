@@ -1420,42 +1420,152 @@
     {
       "id": "T132",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session git push + dashboard regen",
-      "started": "2026-04-23T21:01:34.915Z"
+      "started": "2026-04-23T21:01:34.915Z",
+      "completed": "2026-04-23T21:01:43.846Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
       "id": "T133",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Audit AdamW implementation: verify weight decay, bias correction, epsilon placement",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-23T21:01:51.963Z",
+      "completed": "2026-04-23T21:02:26.633Z",
+      "duration_ms": 180000,
+      "summary": "AdamW audit: moments, bias correction, epsilon placement, and weight decay decoupling all correct per Loshchilov & Hutter 2019. BUT found bug: this.step increments per-parameter-update instead of per-optimizer-step. With N params, param 1 gets step=1, param 2 gets step=2 etc. — bias correction diverges between params. Fix: increment step once per optimizer step, not per update() call."
     },
     {
       "id": "T134",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Read buffer-pool.js: is the LRU eviction policy correct? What happens under memory pressure?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-23T21:02:49.055Z",
+      "completed": "2026-04-23T21:03:53.986Z",
+      "duration_ms": 300000,
+      "summary": "Buffer pool is well-implemented: fixed frames + free list, pin counting, WAL force before dirty eviction, LRU/Clock replacer. 23/23 tests pass. Under memory pressure (all pinned): returns null — correct but no backpressure/retry. Good quality code."
     },
     {
       "id": "T135",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study LoRA implementation: are rank-1 updates mathematically correct?",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-23T21:04:03.891Z",
+      "completed": "2026-04-23T21:04:38.357Z",
+      "duration_ms": 300000,
+      "summary": "LoRA implementation is mathematically correct per Hu et al. 2021. Verified: A/B decomposition, zero-B init, α/r scaling, forward (base + LoRA path), backward (dB, dA, dInput), merge, frozen base. Numerical gradient check: 9.2e-13 (machine precision). Clean code."
     },
     {
-      "id": "T136",
-      "mode": "THINK",
-      "status": "upcoming",
-      "task": "End of day: compile all findings into actionable tomorrow task list"
+      "id": "T138",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Numerical gradient check: attention backward (SelfAttention) for correctness",
+      "project": "neural-net",
+      "started": "2026-04-23T21:05:33.112Z",
+      "completed": "2026-04-23T21:06:19.862Z",
+      "duration_ms": 180000,
+      "summary": "SelfAttention backward verified: numerical gradient check 1.45e-13 (machine precision). Correct chain rule through Wo, softmax, Q/K/V projections and biases. 7/7 gradient checks all pass now."
+    },
+    {
+      "id": "T139",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study B-tree implementation: is insert/delete/search correct? Edge cases?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:06:43.862Z",
+      "completed": "2026-04-23T21:08:53.492Z",
+      "duration_ms": 300000,
+      "summary": "B+ tree: 56/56 tests pass (unit, depth, stress). Insert with split, range scan via linked leaves, suffix trees for non-unique keys all correct. One simplification: no merge/rebalance on delete (tree can become unbalanced). Acceptable for prototype."
+    },
+    {
+      "id": "T140",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit PPO implementation: is the clipped surrogate objective correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:08:59.643Z",
+      "completed": "2026-04-23T21:09:38.952Z",
+      "duration_ms": 300000,
+      "summary": "PPO audit: clipped surrogate objective correct (min with negation for loss). GAE correct (reverse accumulation with gamma-lambda). RLHF reward formula correct. approxKL uses exact r-1-log(r) formula. Minor: klPenalty computes reverse KL direction (common approximation, works in practice). 8/8 tests pass."
+    },
+    {
+      "id": "T141",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study cost model: how are selectivity estimates computed? Are they reasonable?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:09:52.262Z",
+      "completed": "2026-04-23T21:10:38.403Z",
+      "duration_ms": 180000,
+      "summary": "Cost model is reasonable PostgreSQL-style: equality uses 1/ndistinct, range uses min/max, IN uses nValues/ndistinct. Join cardinality at 10% (crude but functional). Sort O(nlogn), NL join O(nm) correct. Missing: histograms, MCV, correlation. Good for a prototype."
+    },
+    {
+      "id": "T142",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study quantization.js: does it correctly simulate INT8 quantization?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:10:44.734Z",
+      "completed": "2026-04-23T21:11:19.235Z",
+      "duration_ms": 180000,
+      "summary": "Quantization correct: symmetric INT8 absmax and per-channel both verified. 5.3x compression, 52-56 dB SNR, max error ~0.001. Edge cases handled (zero rows). Missing: asymmetric/zero-point quantization, INT4, calibration. Good for post-training quantization."
+    },
+    {
+      "id": "T143",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Read expression-evaluator.js: are SQL expression types handled correctly?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:11:33.952Z",
+      "completed": "2026-04-23T21:12:11.243Z",
+      "duration_ms": 180000,
+      "summary": "Expression evaluator: 1191 lines, 113 case statements. Handles SQL NULL correctly (== null covers null+undefined, arithmetic with null returns null, division by zero returns null). Supports: arithmetic, comparisons, CAST, aggregates, boolean logic, IN/EXISTS/LIKE, CASE WHEN. Thorough implementation."
+    },
+    {
+      "id": "T144",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit DPO implementation against Rafailov et al. 2023 paper",
+      "project": "neural-net",
+      "started": "2026-04-23T21:12:23.836Z",
+      "completed": "2026-04-23T21:13:21.270Z",
+      "duration_ms": 180000,
+      "summary": "DPO implementation textbook-correct per Rafailov et al. 2023. Verified: loss formula, log-ratio over response tokens only, numerically stable log-sigmoid, implicit reward β·log(π/π_ref), gradient multiplier σ(-diff). 6/6 tests pass. High quality code with proper numerical stability."
+    },
+    {
+      "id": "T145",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study the parser: what SQL syntax is supported? What is missing?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:13:30.969Z",
+      "completed": "2026-04-23T21:15:04.046Z",
+      "duration_ms": 180000,
+      "summary": "Parser is 3206 lines — largest file in project. Hand-written recursive descent. Supports: CTEs (recursive), UNION/INTERSECT/EXCEPT, window fns with frames, MERGE, RETURNING, CASE WHEN, subqueries, all comparison operators, IN/LIKE/BETWEEN/EXISTS, all join types. Missing: LATERAL, GROUPING SETS, PIVOT, JSON operators. Very comprehensive for a hand-written parser."
+    },
+    {
+      "id": "T146",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Late afternoon git push + daily log",
+      "started": "2026-04-23T21:15:22.467Z"
     },
     {
       "id": "T137",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final git push + CURRENT.md session end + daily log summary"
+    },
+    {
+      "id": "T136",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "End of day: compile all findings into actionable tomorrow task list"
     }
   ],
   "focusProjects": [
@@ -1991,6 +2101,46 @@
     {
       "time": "2026-04-23T20:54:38.813Z",
       "msg": "Added T137 (MAINTAIN) after T136: Final git push + CURRENT.md session end + daily log summary"
+    },
+    {
+      "time": "2026-04-23T21:05:06.081Z",
+      "msg": "Moved T136 after T137"
+    },
+    {
+      "time": "2026-04-23T21:05:19.136Z",
+      "msg": "Added T138 (EXPLORE) after T135: Numerical gradient check: attention backward (SelfAttention) for correctness"
+    },
+    {
+      "time": "2026-04-23T21:05:19.255Z",
+      "msg": "Added T139 (EXPLORE) after T138: Study B-tree implementation: is insert/delete/search correct? Edge cases?"
+    },
+    {
+      "time": "2026-04-23T21:05:19.375Z",
+      "msg": "Added T140 (EXPLORE) after T139: Audit PPO implementation: is the clipped surrogate objective correct?"
+    },
+    {
+      "time": "2026-04-23T21:05:19.494Z",
+      "msg": "Added T141 (EXPLORE) after T140: Study cost model: how are selectivity estimates computed? Are they reasonable?"
+    },
+    {
+      "time": "2026-04-23T21:05:19.614Z",
+      "msg": "Added T142 (EXPLORE) after T141: Study quantization.js: does it correctly simulate INT8 quantization?"
+    },
+    {
+      "time": "2026-04-23T21:05:19.733Z",
+      "msg": "Added T143 (EXPLORE) after T142: Read expression-evaluator.js: are SQL expression types handled correctly?"
+    },
+    {
+      "time": "2026-04-23T21:05:19.852Z",
+      "msg": "Added T144 (EXPLORE) after T143: Audit DPO implementation against Rafailov et al. 2023 paper"
+    },
+    {
+      "time": "2026-04-23T21:05:19.973Z",
+      "msg": "Added T145 (EXPLORE) after T144: Study the parser: what SQL syntax is supported? What is missing?"
+    },
+    {
+      "time": "2026-04-23T21:05:20.092Z",
+      "msg": "Added T146 (MAINTAIN) after T145: Late afternoon git push + daily log"
     }
   ]
 }
