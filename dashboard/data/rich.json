@@ -689,7 +689,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 778,
+      "ageHours": 789,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -700,7 +700,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 798,
+      "ageHours": 809,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -711,7 +711,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 799,
+      "ageHours": 810,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -722,7 +722,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 799,
+      "ageHours": 810,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -733,7 +733,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 800,
+      "ageHours": 812,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -744,7 +744,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 802,
+      "ageHours": 814,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -755,7 +755,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 821,
+      "ageHours": 833,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -766,12 +766,30 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 848,
+      "ageHours": 860,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-22",
+      "blocksCompleted": 56,
+      "summary": "",
+      "highlights": [
+        "Reviewed Apr 21 results",
+        "Join extraction plan — 15 methods (~1075 LOC), 2 BUILD",
+        "Extracted join executor from db.js into join-executor.js",
+        "Full verification — 213 MVCC+Volcano tests, 226+ join tests,",
+        "Git pushed. Dashboard regenerated. Workspace clean"
+      ],
+      "modeDistribution": {
+        "THINK": 6,
+        "BUILD": 18,
+        "MAINTAIN": 2,
+        "EXPLORE": 26
+      }
+    },
     {
       "date": "2026-04-21",
       "blocksCompleted": 81,
@@ -853,90 +871,30 @@
       "modeDistribution": {
         "EXPLORE": 3
       }
-    },
-    {
-      "date": "2026-04-16",
-      "blocksCompleted": 2,
-      "summary": "",
-      "highlights": [
-        "Built 18-task queue",
-        "2,583 total tests across all projects, all passing",
-        "Yesterday: 1000 new tests in evening session, lambda",
-        "2 bugs found: SMT solver conflicting bounds, type-inference",
-        "No outstanding commitments (COMMITMENTS.md doesn't exist)"
-      ],
-      "modeDistribution": {
-        "BUILD": 1,
-        "EXPLORE": 1,
-        "THINK": 1,
-        "MAINTAIN": 1
-      }
     }
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 95,
-    "completedBlocks": 113,
-    "pastBlocks": 119,
-    "totalBlocks": 119,
+    "completionRate": 18,
+    "completedBlocks": 4,
+    "pastBlocks": 22,
+    "totalBlocks": 22,
     "plannedDist": {
-      "THINK": 20,
-      "PLAN": 13,
-      "BUILD": 37,
-      "MAINTAIN": 18,
-      "EXPLORE": 31
+      "THINK": 5,
+      "PLAN": 5,
+      "BUILD": 5,
+      "MAINTAIN": 5,
+      "EXPLORE": 2
     },
     "actualDist": {
-      "THINK": 20,
-      "PLAN": 11,
-      "BUILD": 33,
-      "MAINTAIN": 18,
-      "EXPLORE": 31
+      "THINK": 1,
+      "PLAN": 1,
+      "BUILD": 1,
+      "MAINTAIN": 1
     },
-    "pace": 14.2
+    "pace": 2.5
   },
-  "todayHighlights": [
-    {
-      "mode": "BUILD",
-      "time": "14:20",
-      "text": "Fixed CTE alias qualification bug."
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "14:40",
-      "text": "Fixed arith in WHERE (type=arith vs binary_expr)."
-    },
-    {
-      "mode": "THINK",
-      "time": "14:44",
-      "text": "Major insight: LATERAL failures (8/8) caused by Volcano not understanding outer row context."
-    },
-    {
-      "mode": "MAINTAIN",
-      "time": "14:50",
-      "text": "Fixed function evaluation: type=function vs function_call, plus buildProjections."
-    },
-    {
-      "mode": "THINK",
-      "time": "14:54",
-      "text": "Fixed correlated WHERE subqueries in Volcano."
-    },
-    {
-      "mode": "MAINTAIN",
-      "time": "14:58",
-      "text": "Git pushed. Broader sweep: 331/354 (up from 306/337)."
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "14:59",
-      "text": "Stress-tested 6 adversarial queries mixing CTEs+derived+correlated+FILTER."
-    },
-    {
-      "mode": "THINK",
-      "time": "15:16",
-      "text": "JSON failures root cause: Volcano guard checked lowercase json_ but parser…"
-    }
-  ],
+  "todayHighlights": [],
   "adjustments": [],
   "blockers": [],
   "projects": [
@@ -1342,7 +1300,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-23T03:44:00Z",
+      "pushedAt": "2026-04-23T15:50:52Z",
       "category": "utility"
     },
     {
@@ -2761,7 +2719,7 @@
     "totalProjectCount": 13,
     "totalBlogPosts": 61,
     "streak": 7,
-    "totalTasksWeek": 337,
+    "totalTasksWeek": 391,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2789,7 +2747,7 @@
       "srcFiles": 1234,
       "srcLines": 210361,
       "featureCount": 38,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2803,7 +2761,7 @@
       "srcFiles": 388,
       "srcLines": 43588,
       "featureCount": 0,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/lambda-calculus",
       "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
@@ -2859,7 +2817,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2873,7 +2831,7 @@
       "srcFiles": 6,
       "srcLines": 2227,
       "featureCount": 0,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     },
@@ -2887,7 +2845,7 @@
       "srcFiles": 5,
       "srcLines": 1628,
       "featureCount": 0,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2901,7 +2859,7 @@
       "srcFiles": 4,
       "srcLines": 2192,
       "featureCount": 0,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2915,7 +2873,7 @@
       "srcFiles": 2,
       "srcLines": 355,
       "featureCount": 14,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/sat-solver",
       "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
     },
@@ -2929,7 +2887,7 @@
       "srcFiles": 4,
       "srcLines": 842,
       "featureCount": 0,
-      "lastCommit": "2026-04-22 21:43:56 -0600",
+      "lastCommit": "2026-04-23 09:50:44 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2948,5 +2906,5 @@
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     }
   ],
-  "generated": "2026-04-23T04:15:51.777Z"
+  "generated": "2026-04-23T15:51:09.572Z"
 }

@@ -33,6 +33,7 @@ import { selectInner as _selectInnerImpl } from './select-inner.js';
 import { withCTEs as _withCTEsImpl, executeRecursiveCTE as _executeRecursiveCTEImpl } from './cte-executor.js';
 import { selectInfoSchema as _selectInfoSchemaImpl, selectPgCatalog as _selectPgCatalogImpl, filterPgCatalogRows as _filterPgCatalogRowsImpl } from './catalog-queries.js';
 import { union_ as _unionImpl, unionInner as _unionInnerImpl, intersect as _intersectImpl, except_ as _exceptImpl } from './set-operations.js';
+import { recommendIndexes as _recommendIndexesImpl, applyRecommendedIndexes as _applyRecommendedIndexesImpl } from './index-advisor-impl.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -777,75 +778,9 @@ export class Database {
     return this._planCache.stats();
   }
 
-  _recommendIndexes() {
-    // Refresh index list to catch any manually created indexes
-    this._indexAdvisor._existingIndexes = this._indexAdvisor._collectExistingIndexes();
-    const recs = this._indexAdvisor.recommend();
-    if (recs.length === 0) {
-      return {
-        type: 'ROWS',
-        rows: [{ recommendation: 'No index recommendations. Run more queries to build workload profile.', impact: '', sql: '' }],
-      };
-    }
-    return {
-      type: 'ROWS',
-      rows: recs.map(r => ({
-        table: r.table,
-        columns: r.columns.join(', '),
-        impact: r.level,
-        score: r.impact,
-        costReduction: r.costReduction != null ? `${r.costReduction}%` : null,
-        reason: r.reason,
-        sql: r.sql,
-      })),
-    };
-  }
+  _recommendIndexes() { return _recommendIndexesImpl(this); }
 
-  _applyRecommendedIndexes(minLevel = 'medium') {
-    // Refresh index list to catch any manually created indexes
-    this._indexAdvisor._existingIndexes = this._indexAdvisor._collectExistingIndexes();
-    const recs = this._indexAdvisor.recommend();
-    const levels = { high: 3, medium: 2, low: 1 };
-    const minLevelVal = levels[minLevel] || 2;
-    
-    const toApply = recs.filter(r => (levels[r.level] || 0) >= minLevelVal);
-    
-    if (toApply.length === 0) {
-      return {
-        type: 'OK',
-        message: 'No high/medium impact index recommendations to apply.',
-        rows: [],
-      };
-    }
-    
-    const results = [];
-    for (const rec of toApply) {
-      try {
-        this.execute_ast(parse(rec.sql));
-        results.push({
-          status: 'created',
-          sql: rec.sql,
-          impact: rec.level,
-          costReduction: rec.costReduction != null ? `${rec.costReduction}%` : null,
-        });
-      } catch (e) {
-        results.push({
-          status: 'failed',
-          sql: rec.sql,
-          error: e.message,
-        });
-      }
-    }
-    
-    // Refresh the advisor's index list
-    this._indexAdvisor._existingIndexes = this._indexAdvisor._collectExistingIndexes();
-    
-    return {
-      type: 'ROWS',
-      rows: results,
-      message: `Applied ${results.filter(r => r.status === 'created').length}/${toApply.length} recommended indexes`,
-    };
-  }
+  _applyRecommendedIndexes(minLevel = 'medium') { return _applyRecommendedIndexesImpl(this, minLevel); }
 
   /**
    * Serialize the entire database to a JSON-compatible object.

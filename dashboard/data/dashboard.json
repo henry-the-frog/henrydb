@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-23T15:50:40.008Z",
+  "generated": "2026-04-23T15:52:07.073Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git commit+push, dashboard health, knowledge capture",
-    "startedAt": "2026-04-23T15:50:40.008Z",
-    "taskId": "T4"
+    "mode": "BUILD",
+    "task": "Extract index-advisor (~70 LOC: _recommendIndexes + _applyRecommendedIndexes) from db.js to index-advisor-impl.js",
+    "startedAt": "2026-04-23T15:52:07.073Z",
+    "taskId": "T7"
   },
   "schedule": {
     "date": "2026-04-23",
@@ -25,45 +25,75 @@
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB full test suite sweep — verify 0 regressions from HAVING changes, Volcano fixes, and 5 module extractions",
         "task": null,
-        "started": "2026-04-23T14:15:50.129Z"
+        "started": "2026-04-23T14:15:50.129Z",
+        "completed": "2026-04-23T14:26:35.546Z",
+        "duration_ms": 120000,
+        "summary": "Planned test sweep: run all 868 test files, triage failures, fix regressions. One BUILD task."
       },
       {
         "id": "T3",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Run full 868-file test suite, triage failures, fix regressions from HAVING/Volcano/extraction changes",
         "plan_ref": "T2",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-23T14:26:44.098Z",
+        "completed": "2026-04-23T15:50:31.210Z",
+        "duration_ms": 1800000,
+        "summary": "Full 868-file test suite: 7370 pass, 292 fail (96.2%). 0 regressions from HAVING/Volcano/extraction changes. All HAVING, Volcano, CTE, join, set-ops, explain, groupby tests pass clean. 292 failures are pre-existing: unimplemented math functions (LN,LOG,SIGN), decorrelation edge cases, date functions. 40 crash files mostly stress/benchmark tests."
       },
       {
         "id": "T4",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard health, knowledge capture"
+        "status": "done",
+        "task": "Git commit+push, dashboard health, knowledge capture",
+        "started": "2026-04-23T15:50:39.971Z",
+        "completed": "2026-04-23T15:51:15.377Z",
+        "duration_ms": 120000,
+        "summary": "Git commit+push done. Dashboard healthy and regenerated. 22 blocks in queue, 4 done."
       },
       {
         "id": "T5",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Assess extraction roadmap: 1370 LOC remaining in db.js. Prioritize by risk and dependency."
+        "status": "done",
+        "task": "Assess extraction roadmap: 1370 LOC remaining in db.js. Prioritize by risk and dependency.",
+        "started": "2026-04-23T15:51:22.239Z",
+        "completed": "2026-04-23T15:51:32.790Z",
+        "duration_ms": 60000,
+        "summary": "Assessed extraction roadmap. Priority: index-advisor (70 LOC) → merge (60 LOC) → prepared-stmts (100 LOC) → savepoints (100 LOC) → FK cascades (100 LOC) → constraints (100 LOC). Low-risk first, hot paths last."
       },
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB db.js extraction: next modules from scratch/henrydb-extraction-roadmap.md",
-        "task": null
+        "task": null,
+        "started": "2026-04-23T15:51:39.739Z"
       },
       {
         "id": "T7",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Extract index-advisor (~70 LOC: _recommendIndexes + _applyRecommendedIndexes) from db.js to index-advisor-impl.js",
         "plan_ref": "T6",
         "project": "henrydb"
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "task": "Extract merge (~60 LOC: _merge) from db.js to merge-executor.js",
+        "status": "upcoming",
+        "plan_ref": "T6"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "Extract prepared-statements (~100 LOC: _handlePrepare/_handleExecute/_handleDeallocate) from db.js to prepared-stmts.js",
+        "status": "upcoming",
+        "plan_ref": "T6"
       },
       {
         "id": "T8",
@@ -169,12 +199,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 3,
-    "blocksTotal": 22,
+    "blocksCompleted": 6,
+    "blocksTotal": 24,
     "modeDistribution": {
-      "THINK": 1,
-      "PLAN": 1,
-      "BUILD": 1
+      "THINK": 2,
+      "PLAN": 2,
+      "BUILD": 1,
+      "MAINTAIN": 1
     }
   }
 }
