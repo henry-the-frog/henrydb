@@ -1314,35 +1314,51 @@
     {
       "id": "T122",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, dashboard regen, daily log update",
-      "started": "2026-04-23T20:48:27.628Z"
+      "started": "2026-04-23T20:48:27.628Z",
+      "completed": "2026-04-23T20:48:51.553Z",
+      "duration_ms": 60000,
+      "summary": "Git push, daily log updated with Session B progress."
     },
     {
       "id": "T123",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What should tomorrow look like? Neural-net cleanup day? HenryDB new features? Balance?"
+      "status": "done",
+      "task": "What should tomorrow look like? Neural-net cleanup day? HenryDB new features? Balance?",
+      "started": "2026-04-23T20:48:57.388Z",
+      "completed": "2026-04-23T20:49:12.826Z",
+      "duration_ms": 120000,
+      "summary": "Tomorrow plan: Morning = neural-net cleanup (fix 8 broken tests, update README, target 0 failures). Afternoon = HenryDB polish (trigger bug, optimizer-quality, SELECT *+window, NOT NOT NOT). Both projects need targeted fixes from todays analysis, not new features. Cleanup before growth."
     },
     {
       "id": "T124",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Audit conv2d backward pass — is col2im correct? Numerical gradient check.",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-23T20:49:21.744Z",
+      "completed": "2026-04-23T20:50:56.763Z",
+      "duration_ms": 300000,
+      "summary": "Conv2D backward pass (col2im) verified: numerical gradient check max error 1.29e-12 (machine precision). col2im correctly maps output gradients back to input space with proper accumulation for overlapping patches. All 3 gradient checks pass: GroupNorm 1.9e-5, BatchNorm 4.8e-10, Conv2D 1.3e-12."
     },
     {
       "id": "T125",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Profile HenryDB: which queries are slowest? Where are the bottlenecks?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-23T20:51:15.206Z",
+      "completed": "2026-04-23T20:53:48.330Z",
+      "duration_ms": 600000,
+      "summary": "Profiled HenryDB with 5000 rows: reads fast (10-26ms), writes slow (2ms/insert with index). Full scan 4.2μs/row, GROUP BY 14.5ms, Window fn 23.9ms over 5K rows. Main bottleneck: INSERT (constraint validation + btree + heap per stmt). Optimization path: batch inserts, skip redundant constraint checks during bulk load. No query-level bottlenecks found."
     },
     {
       "id": "T126",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Evening git push + daily log summary"
+      "status": "in-progress",
+      "task": "Evening git push + daily log summary",
+      "started": "2026-04-23T20:54:09.531Z"
     }
   ],
   "focusProjects": [
