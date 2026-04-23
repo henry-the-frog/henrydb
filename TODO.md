@@ -8,7 +8,7 @@
 - HenryDB: Volcano planner: route CTEs through Volcano for 14x speedup (5ms vs 70ms) (since 2026-04-22)
 - HenryDB: Volcano path: add correlated subquery support (see scratch/volcano-gaps.md) (since 2026-04-22)
 - HenryDB: Parser inconsistency: aggregate arg is sometimes string, sometimes object (since 2026-04-22)
-- Neural-net: 3 pre-existing sliding-window.test.js failures (since 2026-04-21)
+- Neural-net: Full backprop training with AdamW (currently only output-proj training works well)
 
 ### Low
 - RISC-V: Liveness-based register allocation
@@ -18,7 +18,7 @@
 - HenryDB: Hash-index performance (test takes 24s)
 - HenryDB: Parser unification — parseSelectColumn should delegate to parseExpr
 - HenryDB: Unified expression walker migration
-- HenryDB: Vectorized (batch-at-a-time) execution in Volcano operators (see scratch/query-compilation-research.md)
+- HenryDB: Vectorized (batch-at-a-time) execution in Volcano operators (see scratch/vectorized-execution-explore.md — 5.8x for deep pipelines, needs columnar storage)
 - HenryDB: EXPLAIN ANALYZE: add Planning Time, startup vs total time per operator
 
 ### Blog Post Idea

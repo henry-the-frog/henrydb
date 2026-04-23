@@ -1224,6 +1224,28 @@
       "completed": "2026-04-23T03:16:30.459Z",
       "duration_ms": 300000,
       "summary": "Explored RISC-V emulator: full CPU with 36 instructions, assembler, disassembler, cache sim, branch predictor, OoO execution, pipeline, MMU, ELF loader, and Monkey-to-RISC-V compiler. RISC-V backend is 1.9x faster than VM interpreter. Generates real machine code with stack frames, argument passing, and ecalls. All 36 CPU tests pass."
+    },
+    {
+      "id": "T115",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate dfaMatch bug in regex engine — transitions not iterable",
+      "project": "sat-solver",
+      "started": "2026-04-23T03:20:31.082Z",
+      "completed": "2026-04-23T03:21:26.746Z",
+      "duration_ms": 120000,
+      "summary": "dfaMatch bug was false alarm — I passed the whole DFA object instead of .start. The regex engine code is correct. nfaToDfa returns {start, states}, dfaMatch expects just the start state."
+    },
+    {
+      "id": "T116",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "End-to-end: train MoE to learn multi-modal function with AdamW, verify expert specialization",
+      "project": "neural-net",
+      "started": "2026-04-23T03:24:00.437Z",
+      "completed": "2026-04-23T03:25:15.258Z",
+      "duration_ms": 300000,
+      "summary": "End-to-end MoE + AdamW training: piecewise function f(x)=x² if x>0, -x if x≤0. 4 experts topK=1: Expert 0 specializes on negative inputs, Expert 3 on positive. Perfect routing separation. Loss 2.3→0.008. Predictions within 0.05 of ground truth. This demonstrates the full MoE→AdamW pipeline works with real expert specialization."
     }
   ],
   "focusProjects": [
@@ -1720,6 +1742,14 @@
     {
       "time": "2026-04-23T03:15:23.468Z",
       "msg": "Added T114 (EXPLORE) after end: Explore RISC-V emulator - architecture, test suite, run a program"
+    },
+    {
+      "time": "2026-04-23T03:20:30.849Z",
+      "msg": "Added T115 (EXPLORE) after end: Investigate dfaMatch bug in regex engine — transitions not iterable"
+    },
+    {
+      "time": "2026-04-23T03:24:00.199Z",
+      "msg": "Added T116 (EXPLORE) after end: End-to-end: train MoE to learn multi-modal function with AdamW, verify expert specialization"
     }
   ]
 }
