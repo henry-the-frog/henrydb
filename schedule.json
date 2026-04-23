@@ -806,10 +806,21 @@
     {
       "id": "T75",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement GroupNorm (Group Normalization) layer with forward/backward",
       "project": "neural-net",
-      "started": "2026-04-23T17:42:04.629Z"
+      "started": "2026-04-23T17:42:04.629Z",
+      "completed": "2026-04-23T17:43:34.517Z",
+      "duration_ms": 300000,
+      "summary": "GroupNorm (Wu & He 2018) from scratch. Forward+backward+affine parameters. 9 tests all pass. GroupNorm(1)=LayerNorm, GroupNorm(C)=InstanceNorm."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: extract _tryIndexScan (~251 LOC) from db.js — the big one",
+      "project": "henrydb",
+      "started": "2026-04-23T17:43:57.752Z"
     }
   ],
   "focusProjects": [
@@ -1097,6 +1108,10 @@
     {
       "time": "2026-04-23T17:41:59.047Z",
       "msg": "Added T75 (BUILD) after end: Neural-net: implement GroupNorm (Group Normalization) layer with forward/backward"
+    },
+    {
+      "time": "2026-04-23T17:43:51.922Z",
+      "msg": "Added T76 (BUILD) after end: HenryDB: extract _tryIndexScan (~251 LOC) from db.js — the big one"
     }
   ]
 }
