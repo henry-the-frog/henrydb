@@ -162,19 +162,26 @@ function tryBatchDecorrelate(expr, outerTables, db) {
       ? `${subquery.from.table} ${subquery.from.alias}` 
       : subquery.from.table;
     
+    // Build JOIN clauses if present
+    let joinClause = '';
+    if (subquery.joins && subquery.joins.length > 0) {
+      for (const join of subquery.joins) {
+        const joinType = join.joinType || 'INNER';
+        const tablePart = join.alias ? `${join.table} ${join.alias}` : join.table;
+        const onPart = join.on ? ' ON ' + serializeExpr(join.on) : '';
+        joinClause += ` ${joinType} JOIN ${tablePart}${onPart}`;
+      }
+    }
+    
     const whereClause = innerPreds.length > 0 
-      ? ' WHERE ' + innerPreds.map(p => {
-          const left = getColumnRef(p.left) || String(p.left?.value ?? p.left);
-          const right = getColumnRef(p.right) || String(p.right?.value ?? p.right);
-          return `${left} = ${right}`;
-        }).join(' AND ')
+      ? ' WHERE ' + innerPreds.map(p => serializeExpr(p)).join(' AND ')
       : '';
     
     const groupByClause = needsGroupBy 
       ? ' GROUP BY ' + innerColNamesUnqualified.join(', ')
       : (subquery.groupBy ? ' GROUP BY ' + subquery.groupBy.map(g => typeof g === 'string' ? g : (g.name || g)).join(', ') : '');
     
-    const sql = `SELECT ${aggCol}, ${innerColNamesUnqualified.join(', ')} FROM ${fromClause}${whereClause}${groupByClause}`;
+    const sql = `SELECT ${aggCol}, ${innerColNamesUnqualified.join(', ')} FROM ${fromClause}${joinClause}${whereClause}${groupByClause}`;
     
     // Execute the inner query once (no correlation)
     let result;
@@ -270,6 +277,23 @@ function extractEqMapping(pred, innerTables, outerTables) {
     return { innerCol: rightCol, outerCol: leftCol };
   }
   return null;
+}
+
+function serializeExpr(expr) {
+  if (!expr) return 'NULL';
+  if (expr.type === 'column_ref' || expr.type === 'column') return expr.name;
+  if (expr.type === 'literal') {
+    if (typeof expr.value === 'string') return `'${expr.value.replace(/'/g, "''")}'`;
+    return String(expr.value);
+  }
+  if (expr.type === 'COMPARE') {
+    const ops = { EQ: '=', NE: '!=', LT: '<', GT: '>', LE: '<=', GE: '>=' };
+    return `${serializeExpr(expr.left)} ${ops[expr.op] || expr.op} ${serializeExpr(expr.right)}`;
+  }
+  if (expr.type === 'AND') return `(${serializeExpr(expr.left)} AND ${serializeExpr(expr.right)})`;
+  if (expr.type === 'OR') return `(${serializeExpr(expr.left)} OR ${serializeExpr(expr.right)})`;
+  if (expr.type === 'aggregate') return `${expr.func}(${typeof expr.arg === 'object' ? '*' : expr.arg})`;
+  return String(expr.value ?? expr.name ?? expr);
 }
 
 function getColumnRef(expr) {

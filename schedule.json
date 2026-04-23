@@ -394,16 +394,38 @@
       "id": "T39",
       "mode": "BUILD",
       "task": "Extract constraint-validator.js (~124 LOC: _validateConstraints, _validateConstraintsForUpdate) from db.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T36",
-      "started": "2026-04-23T16:29:06.574Z"
+      "started": "2026-04-23T16:29:06.574Z",
+      "completed": "2026-04-23T16:30:48.324Z",
+      "duration_ms": 300000,
+      "summary": "Extracted constraint-validator.js (120 LOC) from db.js. All constraint/FK tests pass. db.js now 2940 lines — under 3000 milestone!"
     },
     {
       "id": "T37",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: fix remaining decorrelation stress test failures — investigate root causes of 6 pre-existing failures",
-      "task": null
+      "task": null,
+      "started": "2026-04-23T16:31:08.603Z",
+      "completed": "2026-04-23T16:32:02.973Z",
+      "duration_ms": 180000,
+      "summary": "Categorized 6 decorrelation failures: (1) self-reference nested correlation, (2) multi-column correlation, (3) NOT IN with JOIN, (4) aggregate with nested correlation, (5) correlated vs uncorrelated parity, (6) NULL handling. Root cause: batch decorrelation only handles simple single-table single-predicate cases."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Fix NOT IN correlated subquery with JOIN: batch decorrelation needs to handle JOIN + multi-predicate correlation",
+      "status": "in-progress",
+      "plan_ref": "T37",
+      "started": "2026-04-23T16:32:17.951Z"
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "Fix multi-column correlation: batch decorrelation with composite key lookup",
+      "status": "upcoming",
+      "plan_ref": "T37"
     },
     {
       "id": "T38",
@@ -569,6 +591,10 @@
     {
       "time": "2026-04-23T16:28:51.448Z",
       "msg": "PLAN T36 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T16:31:54.258Z",
+      "msg": "PLAN T37 filled 2 BUILD tasks"
     }
   ]
 }
