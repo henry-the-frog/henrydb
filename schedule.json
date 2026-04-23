@@ -610,10 +610,28 @@
     {
       "id": "T57",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Extract analyzeTable-handler.js (~77 LOC: _analyzeTable) from db.js",
       "project": "henrydb",
-      "started": "2026-04-23T16:54:53.122Z"
+      "started": "2026-04-23T16:54:53.122Z",
+      "completed": "2026-04-23T16:57:04.179Z",
+      "duration_ms": 300000,
+      "summary": "Extracted analyze-table.js (40 LOC) + removed 74-line dead code duplicate. db.js now 2414 lines!"
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Extract select-columns.js (~58 LOC: _applySelectColumns) from db.js",
+      "project": "henrydb",
+      "started": "2026-04-23T16:57:31.509Z"
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Extract matview-handler.js (~52 LOC: _createMatView, _refreshMatView) from db.js",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -829,6 +847,14 @@
     {
       "time": "2026-04-23T16:54:44.257Z",
       "msg": "Added T57 (BUILD) after end: Extract analyzeTable-handler.js (~77 LOC: _analyzeTable) from db.js"
+    },
+    {
+      "time": "2026-04-23T16:57:23.335Z",
+      "msg": "Added T58 (BUILD) after end: Extract select-columns.js (~58 LOC: _applySelectColumns) from db.js"
+    },
+    {
+      "time": "2026-04-23T16:57:23.454Z",
+      "msg": "Added T59 (BUILD) after end: Extract matview-handler.js (~52 LOC: _createMatView, _refreshMatView) from db.js"
     }
   ]
 }

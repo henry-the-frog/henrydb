@@ -46,6 +46,7 @@ import { serialize as _serializeImpl, save as _saveImpl, bulkInsert as _bulkInse
 import { acquireRowLocks as _acquireRowLocksImpl, releaseRowLocks as _releaseRowLocksImpl } from './row-lock.js';
 import { executePaginated as _executePaginatedImpl } from './paginated-exec.js';
 import { analyzeTable as _analyzeTableImpl } from './analyze-table.js';
+import { applySelectColumns as _applySelectColumnsImpl } from './select-columns.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -1185,64 +1186,7 @@ export class Database {
     return true;
   }
 
-  _applySelectColumns(ast, rows) {
-    // Pre-compute SELECT alias expressions for ORDER BY access
-    if (ast.orderBy && ast.columns) {
-      this._preComputeOrderByAliases(ast, rows);
-    }
-    
-    // Apply ORDER BY (with sort elimination for BTree tables)
-    if (ast.orderBy && !this._canEliminateSort(ast)) {
-      rows.sort((a, b) => {
-        for (const { column, direction } of ast.orderBy) {
-          const av = this._orderByValue(column, a);
-          const bv = this._orderByValue(column, b);
-          // NULL handling: NULL is smaller than any value (SQLite behavior)
-          const aNull = av === null || av === undefined;
-          const bNull = bv === null || bv === undefined;
-          if (aNull && bNull) continue;
-          if (aNull) return direction === 'DESC' ? 1 : -1; // null is smallest
-          if (bNull) return direction === 'DESC' ? -1 : 1;
-          if (av < bv) return direction === 'DESC' ? 1 : -1;
-          if (av > bv) return direction === 'DESC' ? -1 : 1;
-        }
-        return 0;
-      });
-    }
-    // Apply LIMIT/OFFSET
-    if (ast.offset) rows = rows.slice(Math.max(0, ast.offset));
-    if (ast.limit != null) rows = rows.slice(0, ast.limit);
-    
-    // Apply SELECT columns
-    const isStar = ast.columns.length === 1 && (ast.columns[0].name === '*' || ast.columns[0].type === 'star');
-    const hasQualifiedStar = ast.columns.some(c => c.type === 'qualified_star');
-    if (isStar) {
-      // For SELECT *, handle column name collisions from joins
-      rows = rows.map(row => this._projectStarRow(row));
-    } else {
-      // Non-star SELECT: project specific columns
-      rows = rows.map(row => {
-        const result = {};
-        for (const col of ast.columns) {
-          const alias = col.alias || col.name;
-          if (col.type === 'column') {
-            result[alias] = row[col.name];
-          } else if (col.type === 'expression' || col.type === 'aggregate') {
-            result[alias] = this._evalValue(col.expr || col, row);
-          } else if (col.type === 'function_call') {
-            result[alias] = this._evalValue(col, row);
-          } else if (col.type === 'window') {
-            // Window function values are pre-computed by _computeWindowFunctions
-            result[alias] = row[`__window_${alias}`];
-          } else {
-            result[alias] = this._evalValue(col, row);
-          }
-        }
-        return result;
-      });
-    }
-    return { type: 'ROWS', rows };
-  }
+  _applySelectColumns(ast, rows) { return _applySelectColumnsImpl(this, ast, rows); }
 
   _resolveDefault(defaultValue) {
     if (defaultValue == null) return null;
