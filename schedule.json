@@ -1097,6 +1097,17 @@
       "completed": "2026-04-23T18:43:35.965Z",
       "duration_ms": 240000,
       "summary": "Mixed precision: FP16/BF16 simulation, dynamic loss scaler, overflow detection. 8 tests."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement attention mask utilities (causal, sliding window, prefix, block-sparse)",
+      "project": "neural-net",
+      "started": "2026-04-23T18:43:59.297Z",
+      "completed": "2026-04-23T18:44:39.504Z",
+      "duration_ms": 240000,
+      "summary": "Attention masks: causal, sliding window, prefix, block-sparse, padding, combine. 6 tests."
     }
   ],
   "focusProjects": [
@@ -1488,6 +1499,10 @@
     {
       "time": "2026-04-23T18:42:50.380Z",
       "msg": "Added T101 (BUILD) after end: Neural-net: implement Mixed Precision Training simulation (FP16/BF16 numerical effects)"
+    },
+    {
+      "time": "2026-04-23T18:43:59.063Z",
+      "msg": "Added T102 (BUILD) after end: Neural-net: implement attention mask utilities (causal, sliding window, prefix, block-sparse)"
     }
   ]
 }
