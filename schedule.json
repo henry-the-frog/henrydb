@@ -1823,21 +1823,201 @@
     {
       "id": "T171",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-23T21:47:01.577Z"
+      "started": "2026-04-23T21:47:01.577Z",
+      "completed": "2026-04-23T21:47:39.181Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
-      "id": "T137",
+      "id": "T172",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit embedding.js: is token + position embedding correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:48:26.229Z",
+      "completed": "2026-04-23T21:48:52.555Z",
+      "duration_ms": 60000,
+      "summary": "Embedding: correct lookup table with 1/√d init, ID clamping, sparse backward (only updates seen token rows). Output flattened to [batch, seqLen*dim] (2D Matrix limitation). Standard implementation."
+    },
+    {
+      "id": "T173",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study WAL format: how are records serialized? Is the format durable?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:49:09.698Z",
+      "completed": "2026-04-23T21:49:33.319Z",
+      "duration_ms": 60000,
+      "summary": "WAL format: binary header (20 bytes: length+LSN+type+CRC32) + JSON payload + trailing length for backward scan. 12 record types. 16MB segment rotation. fsync for durability. CRC32 per-record integrity. Well-designed — mirrors PostgreSQL WAL structure."
+    },
+    {
+      "id": "T174",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit dropout.js: is the inverted dropout scaling correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:49:51.387Z",
+      "completed": "2026-04-23T21:50:14.189Z",
+      "duration_ms": 30000,
+      "summary": "Dropout: correct inverted dropout. Scale 1/(1-p) during training, mask reused in backward, no scaling at inference. Standard implementation per Srivastava 2014 + modern inversion."
+    },
+    {
+      "id": "T175",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep-read: slotted-page.js — how are records stored on pages?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:50:28.928Z",
+      "completed": "2026-04-23T21:50:56.746Z",
+      "duration_ms": 60000,
+      "summary": "Slotted page: textbook implementation. Header→slots→free→records layout, forward/backward growth. Lazy delete, in-place update when fits, automatic compaction. Matches Ramakrishnan & Gehrke page organization. Clean 134 lines."
+    },
+    {
+      "id": "T176",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study top-p-sampling.js: nucleus sampling correctness",
+      "project": "neural-net",
+      "started": "2026-04-23T21:51:12.591Z",
+      "completed": "2026-04-23T21:51:42.893Z",
+      "duration_ms": 60000,
+      "summary": "Nucleus sampling correct per Holtzman 2020. Temperature → softmax (stable) → sort descending → cumulative ≥ p → renormalize → sample. Also top-k and combined top-k+top-p. Clean implementation."
+    },
+    {
+      "id": "T177",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Count total test files and passing tests across both projects — final audit numbers",
+      "project": "henrydb",
+      "started": "2026-04-23T21:51:58.540Z",
+      "completed": "2026-04-23T21:52:30.813Z",
+      "duration_ms": 60000,
+      "summary": "Combined project stats: 536 source modules, 1018 test files, 104,298 LOC. Neural-net: 168 modules/150 tests/26K LOC. HenryDB: 368 modules/868 tests/78K LOC. HenryDB largest files: sql.js (3206), volcano-planner.js (2018), pg-server.js (1936), db.js (1633)."
+    },
+    {
+      "id": "T178",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Compile final Session B scoreboard: modules audited, bugs found, gradient checks",
+      "started": "2026-04-23T21:52:46.510Z",
+      "completed": "2026-04-23T21:53:20.206Z",
+      "duration_ms": 120000,
+      "summary": "Session B scoreboard: 73 tasks, 48 modules audited (28 neural-net, 20 henrydb), 10/10 gradient checks pass, 5 bugs found. Combined codebase: 536 modules, 1018 tests, 104K LOC. Key: all backward passes correct, extraction done, HenryDB 99% pass rate."
+    },
+    {
+      "id": "T180",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit LSTM implementation: are forget/input/output gates correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:53:58.611Z",
+      "completed": "2026-04-23T21:54:31.687Z",
+      "duration_ms": 30000,
+      "summary": "No LSTM/RNN/GRU implementation exists in neural-net. Notable gap — these are foundational sequence models. The library jumped from MLPs to transformers. Adding LSTM+GRU would round out the coverage."
+    },
+    {
+      "id": "T181",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study paginated-exec.js: how does cursor-based pagination work?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:54:38.620Z",
+      "completed": "2026-04-23T21:54:53.231Z",
+      "duration_ms": 30000,
+      "summary": "Paginated exec: simple offset pagination — executes full query then slices. Not true cursor-based (materializes all rows). Fine for small datasets, inefficient for large. Returns metadata (page, totalRows, hasNext/Prev)."
+    },
+    {
+      "id": "T182",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study positional-encoding.js: sinusoidal encoding vs RoPE",
+      "project": "neural-net",
+      "started": "2026-04-23T21:55:00.029Z",
+      "completed": "2026-04-23T21:55:59.006Z",
+      "duration_ms": 30000,
+      "summary": "Sinusoidal PE: correct per Vaswani 2017. sin/cos alternating with frequency decay. Adds to input (absolute position). RoPE: rotates Q/K (relative position). Both correct implementations of different approaches. Also has timestep embedding for diffusion."
+    },
+    {
+      "id": "T183",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit deserialize-handler.js: does data restoration work correctly?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:56:12.250Z",
+      "completed": "2026-04-23T21:56:40.143Z",
+      "duration_ms": 60000,
+      "summary": "Deserialize: restores tables, indexes (rebuilt from heap scan), views, triggers, sequences, matviews, comments, index catalog. Correct approach — indexes rebuilt rather than serialized. Minor: hardcoded BPlusTree(32) regardless of original order."
+    },
+    {
+      "id": "T184",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit GAN: does the adversarial training loop work?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:56:58.294Z",
+      "completed": "2026-04-23T21:57:43.170Z",
+      "duration_ms": 60000,
+      "summary": "GAN correct per Goodfellow 2014. D training: real→0.9 (label smoothing), fake→0. G training: fake→1 (non-saturating loss). Only G weights updated during G step. Correct discriminator freezing pattern. Full training loop with shuffling."
+    },
+    {
+      "id": "T185",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study savepoint-handler.js: nested savepoint support",
+      "project": "henrydb",
+      "started": "2026-04-23T21:57:58.579Z",
+      "completed": "2026-04-23T21:58:25.664Z",
+      "duration_ms": 60000,
+      "summary": "Savepoint: full-snapshot approach — clones all rows on SAVEPOINT. Rollback restores heap + rebuilds indexes. RELEASE removes savepoint stack. Nested savepoints via stack. O(total data) per savepoint (expensive but correct). Cache invalidated on rollback."
+    },
+    {
+      "id": "T186",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study weight-init.js: Xavier, He, Kaiming initialization correctness",
+      "project": "neural-net",
+      "started": "2026-04-23T21:58:32.389Z",
+      "completed": "2026-04-23T21:59:08.549Z",
+      "duration_ms": 30000,
+      "summary": "Weight init correct: Xavier (Glorot 2010) √(6/(fin+fout)), Kaiming (He 2015) √(2/fin), orthogonal via Gram-Schmidt, Box-Muller normal sampling. All match published formulas."
+    },
+    {
+      "id": "T187",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study compiled-query.js: what does query compilation do?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:59:23.191Z",
+      "completed": "2026-04-23T21:59:54.593Z",
+      "duration_ms": 60000,
+      "summary": "Compiled query engine: JIT compilation for queries with ≥5K rows. Integrates cost-based planner with pipeline codegen. Adaptive threshold (benchmarked: compiled is 3x slower below 1K rows). Falls back to Volcano when compilation fails or isnt worthwhile. 851 lines — sophisticated optimization layer."
+    },
+    {
+      "id": "T188",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push + CURRENT.md session end + daily log summary"
+      "status": "in-progress",
+      "task": "Git push + daily log update",
+      "started": "2026-04-23T22:00:08.311Z"
     },
     {
       "id": "T136",
       "mode": "THINK",
       "status": "upcoming",
       "task": "End of day: compile all findings into actionable tomorrow task list"
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + session end"
+    },
+    {
+      "id": "T137",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + CURRENT.md session end + daily log summary"
     }
   ],
   "focusProjects": [
@@ -2529,6 +2709,82 @@
     {
       "time": "2026-04-23T21:37:11.205Z",
       "msg": "Added T171 (MAINTAIN) after T170: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T21:48:03.729Z",
+      "msg": "Moved T137 after T136"
+    },
+    {
+      "time": "2026-04-23T21:48:03.849Z",
+      "msg": "Added T172 (EXPLORE) after T171: Audit embedding.js: is token + position embedding correct?"
+    },
+    {
+      "time": "2026-04-23T21:48:03.969Z",
+      "msg": "Added T173 (EXPLORE) after T172: Study WAL format: how are records serialized? Is the format durable?"
+    },
+    {
+      "time": "2026-04-23T21:48:04.089Z",
+      "msg": "Added T174 (EXPLORE) after T173: Audit dropout.js: is the inverted dropout scaling correct?"
+    },
+    {
+      "time": "2026-04-23T21:48:04.209Z",
+      "msg": "Added T175 (EXPLORE) after T174: Deep-read: slotted-page.js — how are records stored on pages?"
+    },
+    {
+      "time": "2026-04-23T21:48:04.329Z",
+      "msg": "Added T176 (EXPLORE) after T175: Study top-p-sampling.js: nucleus sampling correctness"
+    },
+    {
+      "time": "2026-04-23T21:48:04.450Z",
+      "msg": "Added T177 (EXPLORE) after T176: Count total test files and passing tests across both projects — final audit numbers"
+    },
+    {
+      "time": "2026-04-23T21:48:04.570Z",
+      "msg": "Added T178 (THINK) after T177: Compile final Session B scoreboard: modules audited, bugs found, gradient checks"
+    },
+    {
+      "time": "2026-04-23T21:48:04.689Z",
+      "msg": "Added T179 (MAINTAIN) after T178: Final git push + session end"
+    },
+    {
+      "time": "2026-04-23T21:53:40.034Z",
+      "msg": "Moved T179 after T136"
+    },
+    {
+      "time": "2026-04-23T21:53:40.155Z",
+      "msg": "Added T180 (EXPLORE) after T178: Audit LSTM implementation: are forget/input/output gates correct?"
+    },
+    {
+      "time": "2026-04-23T21:53:40.275Z",
+      "msg": "Added T181 (EXPLORE) after T180: Study paginated-exec.js: how does cursor-based pagination work?"
+    },
+    {
+      "time": "2026-04-23T21:53:40.395Z",
+      "msg": "Added T182 (EXPLORE) after T181: Study positional-encoding.js: sinusoidal encoding vs RoPE"
+    },
+    {
+      "time": "2026-04-23T21:53:40.515Z",
+      "msg": "Added T183 (EXPLORE) after T182: Audit deserialize-handler.js: does data restoration work correctly?"
+    },
+    {
+      "time": "2026-04-23T21:53:40.634Z",
+      "msg": "Added T184 (EXPLORE) after T183: Audit GAN: does the adversarial training loop work?"
+    },
+    {
+      "time": "2026-04-23T21:53:40.754Z",
+      "msg": "Added T185 (EXPLORE) after T184: Study savepoint-handler.js: nested savepoint support"
+    },
+    {
+      "time": "2026-04-23T21:53:40.875Z",
+      "msg": "Added T186 (EXPLORE) after T185: Study weight-init.js: Xavier, He, Kaiming initialization correctness"
+    },
+    {
+      "time": "2026-04-23T21:53:41.016Z",
+      "msg": "Added T187 (EXPLORE) after T186: Study compiled-query.js: what does query compilation do?"
+    },
+    {
+      "time": "2026-04-23T21:53:41.137Z",
+      "msg": "Added T188 (MAINTAIN) after T187: Git push + daily log update"
     }
   ]
 }
