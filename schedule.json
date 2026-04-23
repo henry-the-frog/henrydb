@@ -318,16 +318,20 @@
       "id": "T32",
       "mode": "BUILD",
       "task": "Extract savepoints (~111 LOC: _handleSavepoint, _handleRollbackToSavepoint, _handleReleaseSavepoint) from db.js to savepoint-handler.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T29",
-      "started": "2026-04-23T16:19:33.941Z"
+      "started": "2026-04-23T16:19:33.941Z",
+      "completed": "2026-04-23T16:20:52.660Z",
+      "duration_ms": 300000,
+      "summary": "Extracted savepoint-handler.js (120 LOC) from db.js. All savepoint+transaction tests pass. db.js now 3148 lines."
     },
     {
       "id": "T33",
       "mode": "BUILD",
       "task": "Extract FK cascade (~107 LOC: _handleForeignKeyDelete, _handleForeignKeyUpdate) from db.js to fk-cascade.js",
-      "status": "upcoming",
-      "plan_ref": "T29"
+      "status": "in-progress",
+      "plan_ref": "T29",
+      "started": "2026-04-23T16:21:06.106Z"
     },
     {
       "id": "T30",
