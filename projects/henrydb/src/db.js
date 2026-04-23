@@ -600,34 +600,6 @@ export class Database {
 
   static fromSerialized(data) { return _fromSerializedImpl(Database, data); }
 
-  prepare(sql) {
-    const ast = parse(sql);
-    const db = this;
-    return {
-      execute(params = []) {
-        // Clone AST and substitute $1, $2, etc with actual values
-        const cloned = JSON.parse(JSON.stringify(ast));
-        const substitute = (node) => {
-          if (!node || typeof node !== 'object') return node;
-          if (node.type === 'PARAM') {
-            const idx = node.index - 1;
-            return { type: 'literal', value: params[idx] };
-          }
-          for (const key of Object.keys(node)) {
-            if (Array.isArray(node[key])) {
-              node[key] = node[key].map(substitute);
-            } else if (typeof node[key] === 'object' && node[key] !== null) {
-              node[key] = substitute(node[key]);
-            }
-          }
-          return node;
-        };
-        substitute(cloned);
-        return db.execute_ast(cloned);
-      }
-    };
-  }
-
   // Execute a function with CTEs registered as temporary views
   _withCTEs(ast, fn) { return _withCTEsImpl(this, ast, fn); }
 
