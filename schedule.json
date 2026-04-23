@@ -2530,9 +2530,96 @@
     {
       "id": "T235",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:45:12.843Z",
+      "completed": "2026-04-23T22:45:56.425Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T236",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study ART (adaptive radix tree): modern index structure",
+      "project": "henrydb",
+      "started": "2026-04-23T22:46:30.864Z",
+      "completed": "2026-04-23T22:46:56.130Z",
+      "duration_ms": 30000,
+      "summary": "ART (Leis et al. 2013): 4 adaptive node types (4/16/48/256) with proper growth. Node4→16→48→256. 281 lines. Matches original paper. Used in HyPer/DuckDB for in-memory indexes."
+    },
+    {
+      "id": "T237",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study bloom-join.js: bloom filter join optimization",
+      "project": "henrydb",
+      "started": "2026-04-23T22:46:56.390Z",
+      "completed": "2026-04-23T22:47:29.250Z",
+      "duration_ms": 30000,
+      "summary": "Bloom join: build Bloom filter on join key column, probe to pre-filter non-matching rows. 1% false positive rate. Stats tracking (build/probe time, filtered vs passed rows). 132 lines. Effective for multi-way join pruning."
+    },
+    {
+      "id": "T238",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study b-epsilon-tree.js: write-optimized index",
+      "project": "henrydb",
+      "started": "2026-04-23T22:47:29.510Z",
+      "completed": "2026-04-23T22:48:13.107Z",
+      "duration_ms": 30000,
+      "summary": "B-epsilon tree: write-optimized B-tree with message buffers (Brodal & Fagerberg 2003). Buffer at internal nodes, flush when full → sequential I/O. Used in TokuDB/BetrFS. 188 lines. Advanced write-optimized index structure."
+    },
+    {
+      "id": "T239",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study conv1d.js: is the 1D convolution correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:48:13.367Z",
+      "completed": "2026-04-23T22:48:36.579Z",
+      "duration_ms": 30000,
+      "summary": "Conv1D: im2col/col2im approach like Conv2D but for sequences. Output length = floor((len+2*pad-kernel)/stride)+1. Kaiming init. Forward, backward, MaxPool1D all implemented. 276 lines."
+    },
+    {
+      "id": "T240",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study bitmap-index.js: bitmap index for OLAP",
+      "project": "henrydb",
+      "started": "2026-04-23T22:48:36.839Z",
+      "completed": "2026-04-23T22:49:16.746Z",
+      "duration_ms": 30000,
+      "summary": "Bitmap index: Uint32Array bit-vectors per value. AND/OR/NOT via bitwise ops. Popcount for counting. 201 lines. Standard OLAP bitmap index for low-cardinality columns."
+    },
+    {
+      "id": "T241",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit data-augmentation.js: what transforms exist?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:49:17.028Z",
+      "completed": "2026-04-23T22:49:49.259Z",
+      "duration_ms": 30000,
+      "summary": "Data augmentation: Gaussian noise, Mixup (Zhang 2018), CutMix (Yun 2019). Beta sampling simplified to uniform (should be proper Beta distribution for Mixup). Basic but functional augmentation pipeline."
+    },
+    {
+      "id": "T242",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study adaptive-engine.js: how does the engine choose execution strategy?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:49:49.519Z",
+      "completed": "2026-04-23T22:50:21.013Z",
+      "duration_ms": 60000,
+      "summary": "Adaptive engine: cost-based strategy selection with runtime feedback! Analyzes query, picks best engine (Vectorized/Codegen/Compiled/Volcano), tracks execution time per query shape, adapts over time. 307 lines. Genuinely sophisticated — CockroachDB/Oracle-level concept."
+    },
+    {
+      "id": "T243",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:45:12.843Z"
+      "started": "2026-04-23T22:50:21.274Z"
     }
   ],
   "focusProjects": [
@@ -3532,6 +3619,38 @@
     {
       "time": "2026-04-23T22:40:13.866Z",
       "msg": "Added T235 (MAINTAIN) after T234: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:46:11.401Z",
+      "msg": "Added T236 (EXPLORE) after end: Study ART (adaptive radix tree): modern index structure"
+    },
+    {
+      "time": "2026-04-23T22:46:11.521Z",
+      "msg": "Added T237 (EXPLORE) after T236: Study bloom-join.js: bloom filter join optimization"
+    },
+    {
+      "time": "2026-04-23T22:46:11.642Z",
+      "msg": "Added T238 (EXPLORE) after T237: Study b-epsilon-tree.js: write-optimized index"
+    },
+    {
+      "time": "2026-04-23T22:46:11.763Z",
+      "msg": "Added T239 (EXPLORE) after T238: Study conv1d.js: is the 1D convolution correct?"
+    },
+    {
+      "time": "2026-04-23T22:46:11.884Z",
+      "msg": "Added T240 (EXPLORE) after T239: Study bitmap-index.js: bitmap index for OLAP"
+    },
+    {
+      "time": "2026-04-23T22:46:12.005Z",
+      "msg": "Added T241 (EXPLORE) after T240: Audit data-augmentation.js: what transforms exist?"
+    },
+    {
+      "time": "2026-04-23T22:46:12.125Z",
+      "msg": "Added T242 (EXPLORE) after T241: Study adaptive-engine.js: how does the engine choose execution strategy?"
+    },
+    {
+      "time": "2026-04-23T22:46:12.245Z",
+      "msg": "Added T243 (MAINTAIN) after T242: Git push + daily log"
     }
   ]
 }
