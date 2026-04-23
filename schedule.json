@@ -1551,21 +1551,119 @@
     {
       "id": "T146",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Late afternoon git push + daily log",
-      "started": "2026-04-23T21:15:22.467Z"
+      "started": "2026-04-23T21:15:22.467Z",
+      "completed": "2026-04-23T21:15:57.585Z",
+      "duration_ms": 30000,
+      "summary": "Git push + daily log updated."
     },
     {
-      "id": "T137",
+      "id": "T147",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit beam search: is the implementation correct for autoregressive generation?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:16:53.857Z",
+      "completed": "2026-04-23T21:17:35.659Z",
+      "duration_ms": 120000,
+      "summary": "Beam search correct: numerically stable log-softmax, top-k expansion (2*beamWidth), length penalty 0.6 (Google NMT standard), proper EOS handling with separate completed list, final normalization. 5/5 tests pass."
+    },
+    {
+      "id": "T148",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study Volcano iterators: verify open/next/close protocol across all 15+ iterator types",
+      "project": "henrydb",
+      "started": "2026-04-23T21:18:01.715Z",
+      "completed": "2026-04-23T21:19:44.876Z",
+      "duration_ms": 180000,
+      "summary": "19 Volcano iterator types all follow open/next/close protocol. 72 tests pass (3+30+39). Types: SeqScan, ValuesIter, Filter, Project, Limit, Distinct, NLJoin, HashJoin, MergeJoin, Sort, HashAggregate, IndexScan, Union, IndexNLJoin, Window, CTE, RecursiveCTE, InstrumentedIterator. Solid implementation at 1483 lines."
+    },
+    {
+      "id": "T149",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study reward-model.js: is the Bradley-Terry preference model correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:20:03.886Z",
+      "completed": "2026-04-23T21:20:52.994Z",
+      "duration_ms": 180000,
+      "summary": "Reward model: Bradley-Terry loss correct (-log σ(r_w - r_l)), numerically stable. BUT bias gradients (db1, db2) are never computed — biases stay at 0 forever. Weights learn fine but biases are dead. 6/6 tests pass despite this (biases not needed for tests). Fix: add bias gradient accumulation in trainStep."
+    },
+    {
+      "id": "T150",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate the AFTER DELETE trigger bug from constraint-crash-depth.test.js",
+      "project": "henrydb",
+      "started": "2026-04-23T21:21:09.106Z",
+      "completed": "2026-04-23T21:23:39.409Z",
+      "duration_ms": 300000,
+      "summary": "Found root cause of AFTER DELETE trigger bug! _fireTriggers wrapper has 5 params but callers pass 6 args. The 6th arg (oldRowValues for OLD.column) is silently dropped by JS. OLD.column references are never substituted in trigger body. Fix: add 6th param to wrapper: _fireTriggers(timing, event, table, row, schema, oldRow)."
+    },
+    {
+      "id": "T151",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit learning-rate schedule: cosine annealing with warmup — correct formula?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:23:58.304Z",
+      "completed": "2026-04-23T21:24:23.046Z",
+      "duration_ms": 60000,
+      "summary": "LR schedule correct: linear warmup (step+1/warmupSteps), cosine decay (minLr + 0.5(maxLr-minLr)(1+cos(π·progress))), boundary conditions verified. WSD schedule also correct. Presets match published GPT-3/Llama-2 configs."
+    },
+    {
+      "id": "T152",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study the stats collector: does ANALYZE produce useful statistics?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:24:35.108Z",
+      "completed": "2026-04-23T21:25:41.122Z",
+      "duration_ms": 120000,
+      "summary": "Stats collector: comprehensive — row count, NDV, null fraction, min/max, MCV (top-k), equi-height histograms. Selectivity estimation uses MCV lookup with 1/NDV fallback. Supports sampling. Has features the cost model doesnt use yet (MCV, histograms). Good foundation for smarter query planning."
+    },
+    {
+      "id": "T153",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study tokenizer-pipeline.js: does BPE merging work correctly?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:25:54.337Z",
+      "completed": "2026-04-23T21:26:52.034Z",
+      "duration_ms": 120000,
+      "summary": "BPE tokenizer: correct implementation of Sennrich et al. 2016. Encode/decode roundtrip preserves text. 19/19 tests pass (12 BPE + 7 pipeline). Iterative pair counting + merging works correctly. Tokenizer pipeline adds pre/post processing."
+    },
+    {
+      "id": "T154",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit pruning.js: magnitude pruning — is mask application correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:27:05.554Z",
+      "completed": "2026-04-23T21:28:19.679Z",
+      "duration_ms": 120000,
+      "summary": "Pruning: magnitude, structured, lottery ticket, gradual schedule all implemented. Minor inconsistency: >= vs > threshold between Matrix/Array paths. Lottery ticket matches Frankle & Carlin 2019. Cubic pruning schedule matches Zhu & Gupta 2017. 3/3 structured pruning tests pass. No dedicated magnitude pruning test file."
+    },
+    {
+      "id": "T155",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push + CURRENT.md session end + daily log summary"
+      "status": "in-progress",
+      "task": "Git push + daily log update",
+      "started": "2026-04-23T21:28:34.369Z"
     },
     {
       "id": "T136",
       "mode": "THINK",
       "status": "upcoming",
       "task": "End of day: compile all findings into actionable tomorrow task list"
+    },
+    {
+      "id": "T137",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + CURRENT.md session end + daily log summary"
     }
   ],
   "focusProjects": [
@@ -2141,6 +2239,46 @@
     {
       "time": "2026-04-23T21:05:20.092Z",
       "msg": "Added T146 (MAINTAIN) after T145: Late afternoon git push + daily log"
+    },
+    {
+      "time": "2026-04-23T21:16:13.405Z",
+      "msg": "Moved T137 after T136"
+    },
+    {
+      "time": "2026-04-23T21:16:36.119Z",
+      "msg": "Added T147 (EXPLORE) after T146: Audit beam search: is the implementation correct for autoregressive generation?"
+    },
+    {
+      "time": "2026-04-23T21:16:36.238Z",
+      "msg": "Added T148 (EXPLORE) after T147: Study Volcano iterators: verify open/next/close protocol across all 15+ iterator types"
+    },
+    {
+      "time": "2026-04-23T21:16:36.357Z",
+      "msg": "Added T149 (EXPLORE) after T148: Study reward-model.js: is the Bradley-Terry preference model correct?"
+    },
+    {
+      "time": "2026-04-23T21:16:36.477Z",
+      "msg": "Added T150 (EXPLORE) after T149: Investigate the AFTER DELETE trigger bug from constraint-crash-depth.test.js"
+    },
+    {
+      "time": "2026-04-23T21:16:36.597Z",
+      "msg": "Added T151 (EXPLORE) after T150: Audit learning-rate schedule: cosine annealing with warmup — correct formula?"
+    },
+    {
+      "time": "2026-04-23T21:16:36.715Z",
+      "msg": "Added T152 (EXPLORE) after T151: Study the stats collector: does ANALYZE produce useful statistics?"
+    },
+    {
+      "time": "2026-04-23T21:16:36.834Z",
+      "msg": "Added T153 (EXPLORE) after T152: Study tokenizer-pipeline.js: does BPE merging work correctly?"
+    },
+    {
+      "time": "2026-04-23T21:16:36.955Z",
+      "msg": "Added T154 (EXPLORE) after T153: Audit pruning.js: magnitude pruning — is mask application correct?"
+    },
+    {
+      "time": "2026-04-23T21:16:37.074Z",
+      "msg": "Added T155 (MAINTAIN) after T154: Git push + daily log update"
     }
   ]
 }
