@@ -28,6 +28,7 @@ import {
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
   IndexScan, Union, CTE as CTEIterator, Window,
 } from './volcano.js';
+import { likeToRegex } from './sql-functions.js';
 
 /**
  * Build a plan and return the EXPLAIN output string.
@@ -1628,6 +1629,27 @@ function buildAggregatePredicate(expr, columns, ctx) {
   if (expr.type === 'IS_NOT_NULL') {
     const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
     return (row) => { const v = getVal(row); return v !== null && v !== undefined; };
+  }
+  if (expr.type === 'LIKE' || expr.type === 'ILIKE') {
+    const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getPat = buildAggregateValueGetter(expr.pattern, columns, ctx);
+    const caseInsensitive = expr.type === 'ILIKE';
+    return (row) => {
+      const val = getVal(row), pat = getPat(row);
+      if (val == null || pat == null) return null;
+      const regex = likeToRegex(String(pat));
+      return new RegExp(regex, caseInsensitive ? 'i' : '').test(String(val));
+    };
+  }
+  if (expr.type === 'NOT_LIKE') {
+    const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getPat = buildAggregateValueGetter(expr.pattern, columns, ctx);
+    return (row) => {
+      const val = getVal(row), pat = getPat(row);
+      if (val == null || pat == null) return null;
+      const regex = likeToRegex(String(pat));
+      return !new RegExp(regex).test(String(val));
+    };
   }
   if (expr.type === 'EXISTS') {
     // EXISTS subquery in HAVING
