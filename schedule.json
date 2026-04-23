@@ -1085,15 +1085,81 @@
     {
       "id": "T102",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Prototype vectorized filter in volcano.js - drop-in Iterator replacement, benchmark on TPC-H",
       "project": "henrydb",
-      "started": "2026-04-23T02:33:56.374Z"
+      "started": "2026-04-23T02:33:56.374Z",
+      "completed": "2026-04-23T02:37:34.944Z",
+      "duration_ms": 600000,
+      "summary": "Profiled HenryDB query execution: 54% HeapFile scan, 46% SQL/Volcano overhead. Vectorized prototype showed 5.8x on deep pipelines but ~35% overall gain in real queries due to scan dominance. Columnar storage would multiply benefit. Key insight: JS virtual dispatch is the bottleneck, not cache effects."
+    },
+    {
+      "id": "T103",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test modules with adversarial inputs",
+      "project": "neural-net",
+      "started": "2026-04-23T02:38:41.446Z",
+      "completed": "2026-04-23T02:41:37.746Z",
+      "duration_ms": 600000,
+      "summary": "Stress tested neural-net modules. MoE: rock solid with edge cases (zero inputs, extreme values, large batches, single expert, gradient accumulation). NeuralODE: convergence works, all edge cases fine. CapsuleLayer: works correctly (initial NaN was test error, wrong input dims). MicroGPT: full char-level transformer trains and generates (loss 4.4→2.1). Llama components: all 23 exports clean, full forward pass works with GQA. No new bugs found - modules are robust."
+    },
+    {
+      "id": "T104",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore full-stack MicroGPT training: backprop through transformer blocks, not just output proj",
+      "project": "neural-net",
+      "started": "2026-04-23T02:41:53.233Z",
+      "completed": "2026-04-23T02:42:43.966Z",
+      "duration_ms": 600000,
+      "summary": "Explored full-stack MicroGPT training. Full backprop works (loss 4.93→4.30 in 10 epochs) but converges slower than output-proj-only (4.40→2.04 in 50 epochs). Key insight: output-proj-only training is a linear probe on frozen features — fast convergence, good for demos. Full backprop needs AdamW + warmup + many epochs. This matches known ML behavior."
+    },
+    {
+      "id": "T105",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore training MicroGPT with AdamW optimizer on shakespeare-like text",
+      "project": "neural-net",
+      "started": "2026-04-23T02:44:29.901Z",
+      "completed": "2026-04-23T02:49:24.473Z",
+      "duration_ms": 600000,
+      "summary": "MAJOR BUG FIX: AdamW was silently no-op with Matrix objects (param[i] undefined for Matrix). Fix: use param.data ?? param. Before: loss stuck at 3.84. After: drops to 0.38 (8x better than SGD 2.99). CharLM generates real Shakespeare words now. Also fixed SGDMomentum same issue."
+    },
+    {
+      "id": "T106",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Hunt for more Matrix vs array boundary bugs across the codebase",
+      "project": "neural-net",
+      "started": "2026-04-23T02:49:38.385Z",
+      "completed": "2026-04-23T02:51:24.477Z",
+      "duration_ms": 300000,
+      "summary": "Hunted for Matrix vs array boundary bugs. Only AdamW/SGDMomentum in adamw.js had the issue (already fixed). optimizer.js uses Matrix methods (.mul, .sub) correctly. Added 2 regression tests to prevent recurrence."
+    },
+    {
+      "id": "T107",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Train CharLM with working AdamW on full Shakespeare soliloquy - see how good generation gets",
+      "project": "neural-net",
+      "started": "2026-04-23T02:51:36.398Z",
+      "completed": "2026-04-23T02:53:25.914Z",
+      "duration_ms": 600000,
+      "summary": "Trained CharLM with fixed AdamW on Shakespeare: loss 0.88 (vs SGD 3.07). Generates near-real phrases like To grunt and sweat of thought and For in the dream. Ay. 41K params, 5K steps, 65s. The AdamW fix made the difference between gibberish and coherent text."
+    },
+    {
+      "id": "T108",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Profile HenryDB EXPLAIN plan output — does it accurately show operators used?",
+      "project": "henrydb",
+      "started": "2026-04-23T02:53:37.056Z"
     }
   ],
   "focusProjects": [
     "henrydb",
-    "sat-solver"
+    "neural-net"
   ],
   "backlog": [],
   "adjustments": [
@@ -1536,6 +1602,30 @@
     {
       "time": "2026-04-23T02:33:52.996Z",
       "msg": "Added T102 (EXPLORE) after end: Prototype vectorized filter in volcano.js - drop-in Iterator replacement, benchmark on TPC-H"
+    },
+    {
+      "time": "2026-04-23T02:38:34.524Z",
+      "msg": "Added T103 (EXPLORE) after end: Stress-test modules with adversarial inputs"
+    },
+    {
+      "time": "2026-04-23T02:41:49.084Z",
+      "msg": "Added T104 (EXPLORE) after end: Explore full-stack MicroGPT training: backprop through transformer blocks, not just output proj"
+    },
+    {
+      "time": "2026-04-23T02:44:29.642Z",
+      "msg": "Added T105 (EXPLORE) after end: Explore training MicroGPT with AdamW optimizer on shakespeare-like text"
+    },
+    {
+      "time": "2026-04-23T02:49:38.151Z",
+      "msg": "Added T106 (EXPLORE) after end: Hunt for more Matrix vs array boundary bugs across the codebase"
+    },
+    {
+      "time": "2026-04-23T02:51:36.165Z",
+      "msg": "Added T107 (EXPLORE) after end: Train CharLM with working AdamW on full Shakespeare soliloquy - see how good generation gets"
+    },
+    {
+      "time": "2026-04-23T02:53:36.822Z",
+      "msg": "Added T108 (EXPLORE) after end: Profile HenryDB EXPLAIN plan output — does it accurately show operators used?"
     }
   ]
 }
