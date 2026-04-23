@@ -2095,15 +2095,102 @@
     {
       "id": "T197",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:10:38.867Z"
+      "started": "2026-04-23T22:10:38.867Z",
+      "completed": "2026-04-23T22:11:07.455Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
-      "id": "T179",
+      "id": "T198",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit diffusion.js: is the forward diffusion + denoising process correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:12:00.127Z",
+      "completed": "2026-04-23T22:12:36.626Z",
+      "duration_ms": 60000,
+      "summary": "DDPM correct per Ho et al. 2020. Forward: x_t = √ᾱ·x_0 + √(1-ᾱ)·ε. Linear + cosine (Nichol 2021) schedules. Model predicts noise, MSE loss. Cumulative alpha product for closed-form any-step sampling."
+    },
+    {
+      "id": "T199",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study pipeline-compiler.js: what does the JIT codegen produce?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:12:51.107Z",
+      "completed": "2026-04-23T22:13:09.993Z",
+      "duration_ms": 60000,
+      "summary": "Pipeline compiler: push-based compilation inspired by HyPer (Neumann 2011). Identifies pipeline segments between breakers (Sort, HashAggregate, etc). Generates tight JS functions eliminating Volcano virtual dispatch. Same approach as HyPer/DuckDB. 342 lines."
+    },
+    {
+      "id": "T200",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit contrastive-learning.js: is SimCLR/InfoNCE loss correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:13:27.097Z",
+      "completed": "2026-04-23T22:14:15.024Z",
+      "duration_ms": 60000,
+      "summary": "SimCLR/NT-Xent correct per Chen et al. 2020. Cosine similarity + temperature scaling + numerically stable log-softmax. Self-exclusion in denominator. Positive pair accuracy metric. Matches paper formulation exactly."
+    },
+    {
+      "id": "T201",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study transactional-db.js: how does it extend the base Database?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:14:30.904Z",
+      "completed": "2026-04-23T22:15:12.187Z",
+      "duration_ms": 60000,
+      "summary": "TransactionalDatabase: full ACID layer at 1404 lines. Integrates DiskManager, BufferPool, FileBackedHeap, FileWAL, MVCC/SSI. Session-based transactions. Catalog persistence. WAL recovery on open. Snapshot and serializable isolation. This is the full database engine."
+    },
+    {
+      "id": "T202",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study text-generation.js: autoregressive decoding correctness",
+      "project": "neural-net",
+      "started": "2026-04-23T22:15:29.876Z",
+      "completed": "2026-04-23T22:15:56.611Z",
+      "duration_ms": 30000,
+      "summary": "Text generation: greedy decode (argmax per step) + repetition detection (window-based pattern matching). Simple but correct for autoregressive generation."
+    },
+    {
+      "id": "T203",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit partition.js if exists: table partitioning",
+      "project": "henrydb",
+      "started": "2026-04-23T22:16:12.174Z",
+      "completed": "2026-04-23T22:16:44.241Z",
+      "duration_ms": 30000,
+      "summary": "Table partitioning: range (boundary-based) and hash (DJB2). Partition pruning skips irrelevant partitions on range predicates. Insert routes to correct partition. Both strategies well-implemented."
+    },
+    {
+      "id": "T204",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit knowledge-distillation.js: is the soft-label loss correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:16:50.427Z",
+      "completed": "2026-04-23T22:17:31.666Z",
+      "duration_ms": 60000,
+      "summary": "Knowledge distillation correct per Hinton et al. 2015. Temperature-scaled softmax, KL(teacher||student) direction correct, T² compensation factor, α-weighted combination with hard cross-entropy loss. Standard formulation."
+    },
+    {
+      "id": "T205",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:17:37.525Z"
+    },
+    {
+      "id": "T136",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Final git push + session end"
+      "task": "End of day: compile all findings into actionable tomorrow task list"
     },
     {
       "id": "T137",
@@ -2112,10 +2199,10 @@
       "task": "Final git push + CURRENT.md session end + daily log summary"
     },
     {
-      "id": "T136",
-      "mode": "THINK",
+      "id": "T179",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "End of day: compile all findings into actionable tomorrow task list"
+      "task": "Final git push + session end"
     }
   ],
   "focusProjects": [
@@ -2923,6 +3010,50 @@
     {
       "time": "2026-04-23T22:01:09.226Z",
       "msg": "Added T197 (MAINTAIN) after T196: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:11:39.189Z",
+      "msg": "Added T198 (EXPLORE) after end: Audit diffusion.js: is the forward diffusion + denoising process correct?"
+    },
+    {
+      "time": "2026-04-23T22:11:39.310Z",
+      "msg": "Added T199 (EXPLORE) after T198: Study pipeline-compiler.js: what does the JIT codegen produce?"
+    },
+    {
+      "time": "2026-04-23T22:11:39.430Z",
+      "msg": "Added T200 (EXPLORE) after T199: Audit contrastive-learning.js: is SimCLR/InfoNCE loss correct?"
+    },
+    {
+      "time": "2026-04-23T22:11:39.551Z",
+      "msg": "Added T201 (EXPLORE) after T200: Study transactional-db.js: how does it extend the base Database?"
+    },
+    {
+      "time": "2026-04-23T22:11:39.672Z",
+      "msg": "Added T202 (EXPLORE) after T201: Study text-generation.js: autoregressive decoding correctness"
+    },
+    {
+      "time": "2026-04-23T22:11:39.793Z",
+      "msg": "Added T203 (EXPLORE) after T202: Audit partition.js if exists: table partitioning"
+    },
+    {
+      "time": "2026-04-23T22:11:39.913Z",
+      "msg": "Added T204 (EXPLORE) after T203: Audit knowledge-distillation.js: is the soft-label loss correct?"
+    },
+    {
+      "time": "2026-04-23T22:11:40.033Z",
+      "msg": "Added T205 (MAINTAIN) after T204: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:12:50.872Z",
+      "msg": "Moved T179 after T205"
+    },
+    {
+      "time": "2026-04-23T22:13:26.862Z",
+      "msg": "Moved T137 after T205"
+    },
+    {
+      "time": "2026-04-23T22:14:30.668Z",
+      "msg": "Moved T136 after T205"
     }
   ]
 }
