@@ -3117,9 +3117,96 @@
     {
       "id": "T289",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + final session update",
-      "started": "2026-04-23T23:27:03.903Z"
+      "started": "2026-04-23T23:27:03.903Z",
+      "completed": "2026-04-23T23:28:07.482Z",
+      "duration_ms": 30000,
+      "summary": "Git push + final session update done. Architecture mapping complete."
+    },
+    {
+      "id": "T290",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study raft.js: Raft consensus algorithm for distributed DB",
+      "project": "henrydb",
+      "started": "2026-04-23T23:29:30.268Z",
+      "completed": "2026-04-23T23:30:22.397Z",
+      "duration_ms": 60000,
+      "summary": "Raft consensus: 353 lines implementing Ongaro & Ousterhout 2014. Leader election (randomized timeouts), log replication (AppendEntries), commit rules (majority), safety (election restriction), heartbeats, state machine. Simulated networking. Core protocol is correct."
+    },
+    {
+      "id": "T291",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study lsm-tree.js: Log-Structured Merge tree",
+      "project": "henrydb",
+      "started": "2026-04-23T23:30:22.658Z",
+      "completed": "2026-04-23T23:31:09.896Z",
+      "duration_ms": 60000,
+      "summary": "LSM tree: 893 lines total (tree + basic + compaction). SkipList memtable, SSTable sorted runs, TOMBSTONE deletes, multi-level with size ratios, leveled + tiered compaction. Foundation of RocksDB/LevelDB/Cassandra. Correct implementation."
+    },
+    {
+      "id": "T292",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study full-text-search.js: FTS capabilities",
+      "project": "henrydb",
+      "started": "2026-04-23T23:31:10.162Z",
+      "completed": "2026-04-23T23:31:48.651Z",
+      "duration_ms": 60000,
+      "summary": "Full-text search: 374 lines, PostgreSQL-compatible! TSVector + TSQuery, simplified Porter stemmer, stop words, inverted index, TF-IDF ranking, phrase matching, weight-based ranking (A/B/C/D). Complete FTS engine."
+    },
+    {
+      "id": "T293",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study graph.js: graph database features",
+      "project": "henrydb",
+      "started": "2026-04-23T23:31:48.911Z",
+      "completed": "2026-04-23T23:32:23.527Z",
+      "duration_ms": 30000,
+      "summary": "Graph: 120 lines. Adjacency list with BFS, DFS, Dijkstra, topological sort, cycle detection. Directed/undirected + weighted edges. Used internally for query plan optimization and dependency resolution."
+    },
+    {
+      "id": "T294",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study gossip.js: gossip protocol for cluster management",
+      "project": "henrydb",
+      "started": "2026-04-23T23:32:23.806Z",
+      "completed": "2026-04-23T23:33:07.207Z",
+      "duration_ms": 30000,
+      "summary": "SWIM gossip: 225 lines implementing Das et al. 2002. Random ping, indirect probe, suspicion + incarnation numbers, piggyback dissemination, O(1) per member. Same protocol as HashiCorp Memberlist (Consul/Nomad). Simulated but algorithm-correct."
+    },
+    {
+      "id": "T295",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study skip-list.js: probabilistic data structure",
+      "project": "henrydb",
+      "started": "2026-04-23T23:33:07.468Z",
+      "completed": "2026-04-23T23:33:48.518Z",
+      "duration_ms": 30000,
+      "summary": "Skip list: 235 lines, P=0.25 (Redis), MAX_LEVEL=32. Geometric level generation. O(log n) search/insert/delete. Range scan via level-0 links. Used as LSM memtable. Correct implementation per Pugh 1990."
+    },
+    {
+      "id": "T296",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study replication.js: database replication",
+      "project": "henrydb",
+      "started": "2026-04-23T23:33:48.804Z",
+      "completed": "2026-04-23T23:34:26.114Z",
+      "duration_ms": 30000,
+      "summary": "Replication: 172 lines. Primary-Replica via statement-based SQL forwarding over LISTEN/NOTIFY channel. Sequence numbers for ordering. ReplicationPublisher hooks execute(), ReplicationSubscriber replays. PostgreSQL-inspired architecture."
+    },
+    {
+      "id": "T297",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-23T23:34:26.374Z"
     }
   ],
   "focusProjects": [
@@ -4335,6 +4422,38 @@
     {
       "time": "2026-04-23T23:21:47.348Z",
       "msg": "Added T289 (MAINTAIN) after T288: Git push + final session update"
+    },
+    {
+      "time": "2026-04-23T23:29:07.811Z",
+      "msg": "Added T290 (EXPLORE) after end: Study raft.js: Raft consensus algorithm for distributed DB"
+    },
+    {
+      "time": "2026-04-23T23:29:07.934Z",
+      "msg": "Added T291 (EXPLORE) after T290: Study lsm-tree.js: Log-Structured Merge tree"
+    },
+    {
+      "time": "2026-04-23T23:29:08.056Z",
+      "msg": "Added T292 (EXPLORE) after T291: Study full-text-search.js: FTS capabilities"
+    },
+    {
+      "time": "2026-04-23T23:29:08.178Z",
+      "msg": "Added T293 (EXPLORE) after T292: Study graph.js: graph database features"
+    },
+    {
+      "time": "2026-04-23T23:29:08.299Z",
+      "msg": "Added T294 (EXPLORE) after T293: Study gossip.js: gossip protocol for cluster management"
+    },
+    {
+      "time": "2026-04-23T23:29:08.420Z",
+      "msg": "Added T295 (EXPLORE) after T294: Study skip-list.js: probabilistic data structure"
+    },
+    {
+      "time": "2026-04-23T23:29:08.543Z",
+      "msg": "Added T296 (EXPLORE) after T295: Study replication.js: database replication"
+    },
+    {
+      "time": "2026-04-23T23:29:08.663Z",
+      "msg": "Added T297 (MAINTAIN) after T296: Git push"
     }
   ]
 }
