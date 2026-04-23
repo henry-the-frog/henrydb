@@ -1151,10 +1151,21 @@
     {
       "id": "T108",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Profile HenryDB EXPLAIN plan output — does it accurately show operators used?",
       "project": "henrydb",
-      "started": "2026-04-23T02:53:37.056Z"
+      "started": "2026-04-23T02:53:37.056Z",
+      "completed": "2026-04-23T02:54:31.666Z",
+      "duration_ms": 300000,
+      "summary": "EXPLAIN ANALYZE works well: per-operator actual timing, rows examined, buffer stats, filter pushdown visible in plan. Selectivity estimates off (33% default vs reality) but structure is correct. JOINs show HashJoin with both legs filtered."
+    },
+    {
+      "id": "T109",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Explore adding basic table statistics (min/max/distinct count) for better selectivity estimates",
+      "project": "henrydb",
+      "started": "2026-04-23T02:54:42.964Z"
     }
   ],
   "focusProjects": [
@@ -1626,6 +1637,10 @@
     {
       "time": "2026-04-23T02:53:36.822Z",
       "msg": "Added T108 (EXPLORE) after end: Profile HenryDB EXPLAIN plan output — does it accurately show operators used?"
+    },
+    {
+      "time": "2026-04-23T02:54:42.731Z",
+      "msg": "Added T109 (EXPLORE) after end: Explore adding basic table statistics (min/max/distinct count) for better selectivity estimates"
     }
   ]
 }

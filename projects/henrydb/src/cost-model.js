@@ -13,6 +13,12 @@ export function estimateCost(root, tableStats = new Map()) {
   return _estimate(root, tableStats);
 }
 
+function _getColumnStats(stats, tableName, columnName) {
+  if (!tableName || !columnName) return null;
+  const tableInfo = stats.get(tableName) || stats.get(tableName?.toLowerCase());
+  return tableInfo?.columns?.[columnName] || null;
+}
+
 function _estimate(node, stats) {
   const type = node.constructor.name;
   const desc = node.describe();
@@ -32,8 +38,43 @@ function _estimate(node, stats) {
     
     case 'Filter': {
       const child = _estimate(desc.children[0], stats);
-      // Default selectivity: 1/3
-      const selectivity = 0.33;
+      // Smarter selectivity estimation based on predicate hint
+      const hint = desc.details?.predicateHint;
+      let selectivity = 0.33; // default
+      
+      if (hint) {
+        if (hint.type === 'eq') {
+          // Equality predicate: 1/ndistinct or 1/10 default
+          const colStats = _getColumnStats(stats, hint.table, hint.column);
+          selectivity = colStats?.ndistinct ? (1 / colStats.ndistinct) : 0.1;
+        } else if (hint.type === 'range') {
+          // Range predicate (>, <, >=, <=, BETWEEN): use min/max if available
+          const colStats = _getColumnStats(stats, hint.table, hint.column);
+          if (colStats?.min !== undefined && colStats?.max !== undefined && hint.value !== undefined) {
+            const range = colStats.max - colStats.min;
+            if (range > 0) {
+              if (hint.op === '>' || hint.op === '>=') {
+                selectivity = Math.max(0, Math.min(1, (colStats.max - hint.value) / range));
+              } else if (hint.op === '<' || hint.op === '<=') {
+                selectivity = Math.max(0, Math.min(1, (hint.value - colStats.min) / range));
+              }
+            }
+          } else {
+            selectivity = 0.33; // default for range
+          }
+        } else if (hint.type === 'in') {
+          // IN (...) predicate
+          const colStats = _getColumnStats(stats, hint.table, hint.column);
+          const nValues = hint.values?.length || 3;
+          selectivity = colStats?.ndistinct ? (nValues / colStats.ndistinct) : (nValues * 0.1);
+          selectivity = Math.min(1, selectivity);
+        } else if (hint.type === 'like') {
+          selectivity = 0.1; // LIKE is typically selective
+        } else if (hint.type === 'is_null') {
+          selectivity = 0.05; // NULL is typically rare
+        }
+      }
+      
       const rows = Math.max(1, Math.ceil(child.rows * selectivity));
       return { type, rows, cost: child.cost + rows, ioOps: child.ioOps };
     }

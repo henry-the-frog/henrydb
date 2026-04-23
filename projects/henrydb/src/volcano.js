@@ -133,11 +133,14 @@ export class Filter extends Iterator {
   /**
    * @param {Iterator} child — input iterator
    * @param {function} predicate — (row) => boolean
+   * @param {object} [predicateHint] — optional hint for cost estimation
+   *   { type: 'eq'|'range'|'in'|'like'|'other', column?: string, value?: any, op?: string }
    */
-  constructor(child, predicate) {
+  constructor(child, predicate, predicateHint) {
     super();
     this._child = child;
     this._predicate = predicate;
+    this._predicateHint = predicateHint || null;
   }
 
   open() { this._child.open(); }
@@ -153,7 +156,7 @@ export class Filter extends Iterator {
   close() { this._child.close(); }
 
   describe() {
-    return { type: 'Filter', children: [this._child], details: {} };
+    return { type: 'Filter', children: [this._child], details: { predicateHint: this._predicateHint } };
   }
 }
 
