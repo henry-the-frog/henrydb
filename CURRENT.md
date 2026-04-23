@@ -1,9 +1,9 @@
 # CURRENT.md — Session Status
 
-## Status: session-ended
-## Session: 2026-04-22 Session B-3 (7:15 PM - 8:00 PM MDT)
-## Tasks Completed: 6 (T87-T93)
-## BUILDs: 3
+## Status: in-progress
+## Session: 2026-04-22 Session C (8:15 PM - 10:15 PM MDT)
+## Tasks Completed: 1 (T94)
+## BUILDs: 0
 
 ### Volcano HAVING audit — 5 bugs found and fixed
 - **buildAggregatePredicate** only handled COMPARE type (returned `() => true` for everything else)

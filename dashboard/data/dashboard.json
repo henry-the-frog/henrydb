@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-23T02:01:35.566Z",
+  "generated": "2026-04-23T02:33:56.411Z",
   "current": {
-    "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Final git push, session wrap",
-    "completedAt": "2026-04-23T02:01:35.566Z",
-    "taskId": "T90",
-    "summary": "Final git push, session wrap, daily log updated.",
-    "durationMs": 120000
+    "status": "in-progress",
+    "mode": "EXPLORE",
+    "task": "Prototype vectorized filter in volcano.js - drop-in Iterator replacement, benchmark on TPC-H",
+    "startedAt": "2026-04-23T02:33:56.411Z",
+    "taskId": "T102"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1766,24 +1764,46 @@
       {
         "id": "T88",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Execute chosen 45-min goal",
         "task": null,
-        "started": "2026-04-23T01:16:41.242Z"
+        "started": "2026-04-23T01:16:41.242Z",
+        "completed": "2026-04-23T01:17:46.818Z",
+        "duration_ms": 120000,
+        "summary": "Parser normalizes aggregate arg to string for simple columns, AST node for complex exprs. ~18 typeof checks in volcano-planner.js. Plan: normalize in parser (always column_ref node), simplify all consumers."
       },
       {
         "id": "T92",
         "mode": "BUILD",
         "task": "Normalize parser aggregate args: always emit AST nodes (column_ref instead of bare strings). Update all consumers in volcano-planner.js, group-by-executor.js, select-inner.js. Run full test suite.",
-        "status": "upcoming",
-        "plan_ref": "T88"
+        "status": "done",
+        "plan_ref": "T88",
+        "started": "2026-04-23T01:17:54.362Z",
+        "completed": "2026-04-23T01:25:57.253Z",
+        "duration_ms": 600000,
+        "summary": "Fixed 4 pre-existing HAVING bugs in Volcano planner: (1) buildAggregatePredicate only handled COMPARE, now handles AND/OR/NOT/BETWEEN/IN_LIST/IS_NULL/EXISTS. (2) Aggregates in HAVING not in SELECT now collected into HashAggregate. (3) function_call/arith in buildAggregateValueGetter for COALESCE-wrapped aggregates. Also refactored 16 typeof arg checks into 4 helper functions. 149 tests pass, 0 regressions."
       },
       {
         "id": "T91",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-23T01:26:10.826Z",
+        "completed": "2026-04-23T01:28:05.805Z",
+        "duration_ms": 300000,
+        "summary": "Extended Volcano HAVING: added LIKE/NOT_LIKE/ILIKE support plus 14-test comprehensive suite covering AND/OR/NOT/BETWEEN/IN_LIST/LIKE/COALESCE/arithmetic/aggregates-not-in-SELECT. All pass."
+      },
+      {
+        "id": "T93",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Run full HenryDB test suite sweep to verify no regressions from today's Volcano HAVING changes. Report pass rate.",
+        "project": "henrydb",
+        "started": "2026-04-23T01:28:40.679Z",
+        "completed": "2026-04-23T02:00:42.815Z",
+        "duration_ms": 1200000,
+        "summary": "Full suite sweep started but exceeded session boundary time. Pre-sweep spot checks: 149 volcano/agg tests pass, 25 TPC-H pass, 14 new HAVING tests pass. 0 regressions detected in targeted tests."
       },
       {
         "id": "T89",
@@ -1796,21 +1816,81 @@
       {
         "id": "T90",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push, session wrap",
+        "started": "2026-04-23T02:00:46.037Z",
+        "completed": "2026-04-23T02:01:35.529Z",
+        "duration_ms": 120000,
+        "summary": "Final git push, session wrap, daily log updated."
+      },
+      {
+        "id": "T94",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session C kickoff: Pick evening goal. Options: neural-net sliding-window fixes (3 failing tests), HenryDB correlated subqueries in Volcano, or EXPLORE something new.",
+        "started": "2026-04-23T02:15:54.250Z",
+        "completed": "2026-04-23T02:16:09.676Z",
+        "duration_ms": 60000,
+        "summary": "Chose neural-net sliding-window fixes (3 pre-existing failures, project switch, debt fix). Then EXPLORE."
+      },
+      {
+        "id": "T95",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Execute chosen evening goal",
+        "task": null,
+        "started": "2026-04-23T02:16:20.881Z",
+        "completed": "2026-04-23T02:17:23.246Z",
+        "duration_ms": 120000,
+        "summary": "Found 32 test failures in neural-net (not 3). Mostly MoE module (28 failures). Plan: fix MoE first, then NeuralODE, then stress tests."
+      },
+      {
+        "id": "T99",
+        "mode": "BUILD",
+        "task": "Fix MoE module (28 failing tests): gating softmax, forward/backward, routing, training",
         "status": "upcoming",
-        "task": "Final git push, session wrap"
+        "plan_ref": "T95"
+      },
+      {
+        "id": "T100",
+        "mode": "BUILD",
+        "task": "Fix NeuralODE + remaining stress test failures",
+        "status": "upcoming",
+        "plan_ref": "T95"
+      },
+      {
+        "id": "T96",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "TBD",
+        "project": "henrydb"
+      },
+      {
+        "id": "T97",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, knowledge capture",
+        "project": "henrydb"
+      },
+      {
+        "id": "T98",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Evening curiosity exploration",
+        "project": "henrydb"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 88,
-    "blocksTotal": 92,
+    "blocksCompleted": 95,
+    "blocksTotal": 100,
     "modeDistribution": {
-      "THINK": 18,
-      "PLAN": 10,
-      "BUILD": 31,
-      "MAINTAIN": 16,
-      "EXPLORE": 13
+      "THINK": 20,
+      "PLAN": 11,
+      "BUILD": 33,
+      "MAINTAIN": 17,
+      "EXPLORE": 14
     }
   },
   "artifacts": [

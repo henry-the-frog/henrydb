@@ -998,6 +998,97 @@
       "completed": "2026-04-23T02:01:35.529Z",
       "duration_ms": 120000,
       "summary": "Final git push, session wrap, daily log updated."
+    },
+    {
+      "id": "T94",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session C kickoff: Pick evening goal. Options: neural-net sliding-window fixes (3 failing tests), HenryDB correlated subqueries in Volcano, or EXPLORE something new.",
+      "started": "2026-04-23T02:15:54.250Z",
+      "completed": "2026-04-23T02:16:09.676Z",
+      "duration_ms": 60000,
+      "summary": "Chose neural-net sliding-window fixes (3 pre-existing failures, project switch, debt fix). Then EXPLORE."
+    },
+    {
+      "id": "T95",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Execute chosen evening goal",
+      "task": null,
+      "started": "2026-04-23T02:16:20.881Z",
+      "completed": "2026-04-23T02:17:23.246Z",
+      "duration_ms": 120000,
+      "summary": "Found 32 test failures in neural-net (not 3). Mostly MoE module (28 failures). Plan: fix MoE first, then NeuralODE, then stress tests."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "task": "Fix MoE module (28 failing tests): gating softmax, forward/backward, routing, training",
+      "status": "done",
+      "plan_ref": "T95",
+      "started": "2026-04-23T02:17:33.585Z",
+      "completed": "2026-04-23T02:26:56.381Z",
+      "duration_ms": 600000,
+      "summary": "Fixed MoE module: (1) new constructor (inputSize,numExperts,dHidden,outputSize,topK), (2) simple ExpertFFN replacing SwiGLUFFN, (3) per-token cache to fix gradient corruption, (4) proper softmax Jacobian for router gradients, (5) router-path contribution to dInput, (6) gate.probs/weights compat. 32→4 failures (remaining are pre-existing import/missing-feature issues)."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "task": "Fix NeuralODE + remaining stress test failures",
+      "status": "done",
+      "plan_ref": "T95",
+      "started": "2026-04-23T02:27:16.391Z",
+      "completed": "2026-04-23T02:30:36.015Z",
+      "duration_ms": 600000,
+      "summary": "Fixed ALL remaining test failures: (1) quantization.js: added scalar overloads, quantizeWeights, bitsRequired, fakeQuantize, per-channel, dynamic quantize, k-means clustering - 15 tests. (2) lr-scheduler.js: added PyTorch-style aliases (StepLR, ExponentialLR, CosineAnnealingLR, WarmupLR, CyclicLR, OneCycleLR) with stateless getLR(step) - 6 tests. Full suite: 1343/1343 pass, 0 failures."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "TBD",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T97",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push, knowledge capture",
+      "project": "henrydb",
+      "started": "2026-04-23T02:30:53.060Z",
+      "completed": "2026-04-23T02:31:16.562Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed neural-net to GitHub. Updated daily log with session C MoE fix details."
+    },
+    {
+      "id": "T98",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Evening curiosity exploration",
+      "project": "henrydb",
+      "started": "2026-04-23T02:31:22.960Z",
+      "completed": "2026-04-23T02:33:25.997Z",
+      "duration_ms": 600000,
+      "summary": "Explored vectorized execution in JS. Found: (1) virtual dispatch is main bottleneck, not cache effects; (2) 5.8x speedup for deep 5-operator pipelines; (3) no benefit for GROUP BY; (4) requires columnar format — row objects kill benefit; (5) hybrid Volcano-Vectorized design is best approach (drop-in Iterator replacement that batches internally). Wrote scratch note."
+    },
+    {
+      "id": "T101",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Pick next exploration: vectorized prototype, HenryDB EXPLAIN ANALYZE, or neural-net depth work",
+      "started": "2026-04-23T02:33:39.646Z",
+      "completed": "2026-04-23T02:33:48.994Z",
+      "duration_ms": 60000,
+      "summary": "Chose vectorized filter prototype as EXPLORE (modify existing code, benchmark on real queries)."
+    },
+    {
+      "id": "T102",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Prototype vectorized filter in volcano.js - drop-in Iterator replacement, benchmark on TPC-H",
+      "project": "henrydb",
+      "started": "2026-04-23T02:33:56.374Z"
     }
   ],
   "focusProjects": [
@@ -1409,6 +1500,42 @@
     {
       "time": "2026-04-23T01:28:33.640Z",
       "msg": "Moved T93 after T91"
+    },
+    {
+      "time": "2026-04-23T02:15:28.458Z",
+      "msg": "Added T94 (THINK) after end: Session C kickoff: Pick evening goal. Options: neural-net sliding-window fixes (3 failing tests), HenryDB correlated subqueries in Volcano, or EXPLORE something new."
+    },
+    {
+      "time": "2026-04-23T02:15:33.497Z",
+      "msg": "Added T95 (PLAN) after end: Execute chosen evening goal"
+    },
+    {
+      "time": "2026-04-23T02:15:47.708Z",
+      "msg": "Added T96 (BUILD) after end: TBD"
+    },
+    {
+      "time": "2026-04-23T02:15:47.826Z",
+      "msg": "Added T97 (MAINTAIN) after end: Git push, knowledge capture"
+    },
+    {
+      "time": "2026-04-23T02:15:47.946Z",
+      "msg": "Added T98 (EXPLORE) after end: Evening curiosity exploration"
+    },
+    {
+      "time": "2026-04-23T02:17:27.483Z",
+      "msg": "PLAN T95 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T02:30:47.901Z",
+      "msg": "Removed T96: "
+    },
+    {
+      "time": "2026-04-23T02:33:35.891Z",
+      "msg": "Added T101 (THINK) after end: Pick next exploration: vectorized prototype, HenryDB EXPLAIN ANALYZE, or neural-net depth work"
+    },
+    {
+      "time": "2026-04-23T02:33:52.996Z",
+      "msg": "Added T102 (EXPLORE) after end: Prototype vectorized filter in volcano.js - drop-in Iterator replacement, benchmark on TPC-H"
     }
   ]
 }
