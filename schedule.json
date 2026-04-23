@@ -2182,15 +2182,102 @@
     {
       "id": "T205",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:17:37.525Z"
+      "started": "2026-04-23T22:17:37.525Z",
+      "completed": "2026-04-23T22:18:04.308Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
-      "id": "T136",
-      "mode": "THINK",
+      "id": "T206",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit MoE (mixture of experts): is the gating mechanism correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:18:48.630Z",
+      "completed": "2026-04-23T22:19:21.110Z",
+      "duration_ms": 60000,
+      "summary": "MoE correct per Shazeer 2017. Router (linear→scores), top-k routing with softmax over selected, weighted expert combination, load balancing auxiliary loss. No capacity factor (simplification). Each expert is independent FFN."
+    },
+    {
+      "id": "T207",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study vector.js: what vector operations are supported?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:19:39.746Z",
+      "completed": "2026-04-23T22:20:39.113Z",
+      "duration_ms": 30000,
+      "summary": "Vector store: pgvector-inspired with cosine, euclidean, dot product KNN. Brute-force linear scan (O(n)). Metadata-filtered search. No approximate index (HNSW/IVF). Clean 100 lines."
+    },
+    {
+      "id": "T208",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study normalization.js: what normalization variants exist?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:20:51.612Z",
+      "completed": "2026-04-23T22:21:13.368Z",
+      "duration_ms": 30000,
+      "summary": "Normalization module: LayerNorm, RMSNorm, InstanceNorm. All correct. RMSNorm (Zhang & Sennrich 2019) — no mean subtraction, just 1/√(mean(x²)+ε). Used in LLaMA/Mistral. InstanceNorm = LayerNorm for 2D (correct)."
+    },
+    {
+      "id": "T209",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit concurrency: deadlock detection in row-lock.js",
+      "project": "henrydb",
+      "started": "2026-04-23T22:21:27.758Z",
+      "completed": "2026-04-23T22:21:41.548Z",
+      "duration_ms": 30000,
+      "summary": "No deadlock detection in row-lock.js. Relies on NOWAIT (throw immediately) or SKIP LOCKED (skip locked rows). Since HenryDB is single-threaded, deadlocks are impossible in current architecture. Would need wait-for graph cycle detection for concurrent sessions."
+    },
+    {
+      "id": "T210",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit optimizer.js: SGD momentum implementation",
+      "project": "neural-net",
+      "started": "2026-04-23T22:21:54.963Z",
+      "completed": "2026-04-23T22:22:59.708Z",
+      "duration_ms": 60000,
+      "summary": "SGD momentum: correct v=μv+lr·g. Adam in optimizer.js has explicit step() method — better than AdamW (separate file) which auto-increments per-param. Adam also has L2 weight decay (coupled, not decoupled like AdamW). RMSProp presumably correct too. Key states per-param via Map."
+    },
+    {
+      "id": "T211",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study explain.js: EXPLAIN ANALYZE output",
+      "project": "henrydb",
+      "started": "2026-04-23T22:23:13.973Z",
+      "completed": "2026-04-23T22:23:49.798Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN system: PostgreSQL-style output at 874 lines. Plan nodes with estimated costs/rows + actual costs/rows (ANALYZE). Tree-structured output with proper indentation. Multiple formats. Predicate pushdown integration. Very polished feature."
+    },
+    {
+      "id": "T212",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study ResNet skip connections: is the identity shortcut correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:24:03.936Z",
+      "completed": "2026-04-23T22:24:43.229Z",
+      "duration_ms": 30000,
+      "summary": "Residual connection correct per He et al. 2015. Forward: output = input + sublayer(input). Backward: dInput = dOutput + sublayer.backward(dOutput) — gradient flows through both paths (identity skip + sublayer). Clean implementation."
+    },
+    {
+      "id": "T213",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:24:57.763Z"
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "End of day: compile all findings into actionable tomorrow task list"
+      "task": "Final git push + session end"
     },
     {
       "id": "T137",
@@ -2199,10 +2286,10 @@
       "task": "Final git push + CURRENT.md session end + daily log summary"
     },
     {
-      "id": "T179",
-      "mode": "MAINTAIN",
+      "id": "T136",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Final git push + session end"
+      "task": "End of day: compile all findings into actionable tomorrow task list"
     }
   ],
   "focusProjects": [
@@ -3054,6 +3141,50 @@
     {
       "time": "2026-04-23T22:14:30.668Z",
       "msg": "Moved T136 after T205"
+    },
+    {
+      "time": "2026-04-23T22:18:19.148Z",
+      "msg": "Added T206 (EXPLORE) after end: Audit MoE (mixture of experts): is the gating mechanism correct?"
+    },
+    {
+      "time": "2026-04-23T22:18:19.270Z",
+      "msg": "Added T207 (EXPLORE) after T206: Study vector.js: what vector operations are supported?"
+    },
+    {
+      "time": "2026-04-23T22:18:19.391Z",
+      "msg": "Added T208 (EXPLORE) after T207: Study normalization.js: what normalization variants exist?"
+    },
+    {
+      "time": "2026-04-23T22:18:19.512Z",
+      "msg": "Added T209 (EXPLORE) after T208: Audit concurrency: deadlock detection in row-lock.js"
+    },
+    {
+      "time": "2026-04-23T22:18:19.633Z",
+      "msg": "Added T210 (EXPLORE) after T209: Audit optimizer.js: SGD momentum implementation"
+    },
+    {
+      "time": "2026-04-23T22:18:19.753Z",
+      "msg": "Added T211 (EXPLORE) after T210: Study explain.js: EXPLAIN ANALYZE output"
+    },
+    {
+      "time": "2026-04-23T22:18:19.874Z",
+      "msg": "Added T212 (EXPLORE) after T211: Study ResNet skip connections: is the identity shortcut correct?"
+    },
+    {
+      "time": "2026-04-23T22:18:19.994Z",
+      "msg": "Added T213 (MAINTAIN) after T212: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:19:39.510Z",
+      "msg": "Moved T136 after T213"
+    },
+    {
+      "time": "2026-04-23T22:20:51.376Z",
+      "msg": "Moved T137 after T213"
+    },
+    {
+      "time": "2026-04-23T22:21:27.522Z",
+      "msg": "Moved T179 after T213"
     }
   ]
 }
