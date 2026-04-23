@@ -3351,6 +3351,79 @@
       "completed": "2026-04-23T23:45:07.994Z",
       "duration_ms": 30000,
       "summary": "Git push done."
+    },
+    {
+      "id": "T311",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study two-phase-commit.js: distributed transaction coordination",
+      "project": "henrydb",
+      "started": "2026-04-23T23:48:25.231Z",
+      "completed": "2026-04-23T23:48:53.824Z",
+      "duration_ms": 30000,
+      "summary": "2PC: 191 lines. Coordinator + Participant pattern. Phase 1 (Prepare/Vote), Phase 2 (Commit/Abort). Crash simulation + recovery. WAL logging. Correctly notes the blocking problem (2PC Achilles heel). Used in XA transactions."
+    },
+    {
+      "id": "T312",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study interval-tree.js: interval data structure",
+      "project": "henrydb",
+      "started": "2026-04-23T23:48:54.084Z",
+      "completed": "2026-04-23T23:49:35.991Z",
+      "duration_ms": 15000,
+      "summary": "Interval tree: 70 lines. Augmented BST with max-high tracking. Overlap query (point and range). O(log n + k) for k overlapping intervals. Used for temporal, scheduling, geospatial."
+    },
+    {
+      "id": "T313",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study hash-index.js: hash-based index",
+      "project": "henrydb",
+      "started": "2026-04-23T23:49:36.251Z",
+      "completed": "2026-04-23T23:50:15.893Z",
+      "duration_ms": 15000,
+      "summary": "Hash index: 104 lines. Chained hashing, 0.75 load factor threshold, dynamic doubling. O(1) average equality lookup. FNV-1a hash. Standard implementation."
+    },
+    {
+      "id": "T314",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study two-phase-locking.js: 2PL protocol",
+      "project": "henrydb",
+      "started": "2026-04-23T23:50:16.153Z",
+      "completed": "2026-04-23T23:50:59.055Z",
+      "duration_ms": 15000,
+      "summary": "2PL: 140 lines. Growing/shrinking phase enforcement. S/X lock modes. Phase violation detection (cant acquire in shrinking). Guarantees serializability. Separate from the 5-mode lock manager — this is strict 2PL protocol."
+    },
+    {
+      "id": "T315",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study snapshot.js: snapshot management",
+      "project": "henrydb",
+      "started": "2026-04-23T23:50:59.317Z",
+      "completed": "2026-04-23T23:51:41.067Z",
+      "duration_ms": 10000,
+      "summary": "Snapshot: 34 lines. Immutable frozen copy of Map data. Consistent-read semantics. SnapshotStore tracks history. Simple but correct."
+    },
+    {
+      "id": "T316",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study thread-pool.js: worker pool",
+      "project": "henrydb",
+      "started": "2026-04-23T23:51:41.328Z",
+      "completed": "2026-04-23T23:52:25.410Z",
+      "duration_ms": 30000,
+      "summary": "Work-stealing thread pool: 213 lines. Per-worker deques (owner bottom, thief top), random victim selection, idle work stealing. Blumofe & Leiserson 1999. Same algorithm as Java ForkJoinPool/Intel TBB/Tokio. Simulated but algorithm-correct."
+    },
+    {
+      "id": "T317",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-23T23:52:25.670Z"
     }
   ],
   "focusProjects": [
@@ -4650,6 +4723,34 @@
     {
       "time": "2026-04-23T23:41:39.294Z",
       "msg": "Added T310 (MAINTAIN) after T309: Git push + update scratch findings"
+    },
+    {
+      "time": "2026-04-23T23:48:02.369Z",
+      "msg": "Added T311 (EXPLORE) after end: Study two-phase-commit.js: distributed transaction coordination"
+    },
+    {
+      "time": "2026-04-23T23:48:02.492Z",
+      "msg": "Added T312 (EXPLORE) after T311: Study interval-tree.js: interval data structure"
+    },
+    {
+      "time": "2026-04-23T23:48:02.627Z",
+      "msg": "Added T313 (EXPLORE) after T312: Study hash-index.js: hash-based index"
+    },
+    {
+      "time": "2026-04-23T23:48:02.756Z",
+      "msg": "Added T314 (EXPLORE) after T313: Study two-phase-locking.js: 2PL protocol"
+    },
+    {
+      "time": "2026-04-23T23:48:02.876Z",
+      "msg": "Added T315 (EXPLORE) after T314: Study snapshot.js: snapshot management"
+    },
+    {
+      "time": "2026-04-23T23:48:03.019Z",
+      "msg": "Added T316 (EXPLORE) after T315: Study thread-pool.js: worker pool"
+    },
+    {
+      "time": "2026-04-23T23:48:03.139Z",
+      "msg": "Added T317 (MAINTAIN) after T316: Git push"
     }
   ]
 }
