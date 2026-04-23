@@ -795,10 +795,21 @@
     {
       "id": "T74",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement multi-head attention with Flash Attention pattern (fused softmax+matmul)",
       "project": "neural-net",
-      "started": "2026-04-23T17:40:06.281Z"
+      "started": "2026-04-23T17:40:06.281Z",
+      "completed": "2026-04-23T17:41:40.884Z",
+      "duration_ms": 600000,
+      "summary": "Flash Attention from scratch! Dao et al. 2022. Online softmax + tiled attention. O(N*d) memory. 9 tests: matches standard attention exactly. Causal mask + multi-head support."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural-net: implement GroupNorm (Group Normalization) layer with forward/backward",
+      "project": "neural-net",
+      "started": "2026-04-23T17:42:04.629Z"
     }
   ],
   "focusProjects": [
@@ -1082,6 +1093,10 @@
     {
       "time": "2026-04-23T17:39:57.417Z",
       "msg": "Added T74 (BUILD) after end: Neural-net: implement multi-head attention with Flash Attention pattern (fused softmax+matmul)"
+    },
+    {
+      "time": "2026-04-23T17:41:59.047Z",
+      "msg": "Added T75 (BUILD) after end: Neural-net: implement GroupNorm (Group Normalization) layer with forward/backward"
     }
   ]
 }
