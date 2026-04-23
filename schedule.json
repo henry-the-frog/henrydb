@@ -1162,15 +1162,52 @@
     {
       "id": "T109",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Explore adding basic table statistics (min/max/distinct count) for better selectivity estimates",
       "project": "henrydb",
-      "started": "2026-04-23T02:54:42.964Z"
+      "started": "2026-04-23T02:54:42.964Z",
+      "completed": "2026-04-23T03:03:13.589Z",
+      "duration_ms": 600000,
+      "summary": "Explored selectivity estimation. Found planner already has smart selectivity with ANALYZE stats + histograms (range estimates nearly exact). Added predicate hints to Filter for cost model path. Minor cleanup. EXPLAIN ANALYZE shows detailed per-operator timing with correct estimates after ANALYZE."
+    },
+    {
+      "id": "T110",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Train MicroGPT transformer with AdamW on repeated patterns - test if full transformer can memorize",
+      "project": "neural-net",
+      "started": "2026-04-23T03:03:40.780Z",
+      "completed": "2026-04-23T03:06:11.590Z",
+      "duration_ms": 300000,
+      "summary": "MicroGPT partially learns ABC pattern (output-proj training). Loss 3.39→0.50. Generates right character distribution but not strict cycle. Full backprop with AdamW needed for exact pattern learning. Higher temperatures add variety but also noise. Frozen transformer features limit pattern memorization."
+    },
+    {
+      "id": "T111",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore SAT solver architecture and test suite",
+      "project": "sat-solver",
+      "started": "2026-04-23T03:06:37.020Z",
+      "completed": "2026-04-23T03:09:46.172Z",
+      "duration_ms": 600000,
+      "summary": "Explored SAT solver: CDCL with VSIDS, 2WL, 1UIP. Solves 16-Queens in 23ms (6336 clauses), worlds hardest Sudoku in 8.4s. SMT handles EUF + linear arithmetic + disjunctions. 1100 fuzz tests pass with 0 failures. SMT scheduling problems work. Rock solid implementation."
+    },
+    {
+      "id": "T112",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Profile Sudoku solving bottleneck - 8.4s seems slow for CDCL, find optimization opportunities",
+      "project": "sat-solver",
+      "started": "2026-04-23T03:10:01.405Z",
+      "completed": "2026-04-23T03:11:13.588Z",
+      "duration_ms": 300000,
+      "summary": "Profiled Sudoku bottleneck: 3.17M propagations, 70K conflicts in 4.8s = 666K prop/sec. Bottleneck is watched-literal scanning in JS vs C (MiniSat does ~10M prop/sec). Implementation is correct MiniSat-style 2WL. 50x gap is expected JS-vs-C overhead. Micro-optimizations (TypedArrays, less allocation) could help but wont close the gap."
     }
   ],
   "focusProjects": [
     "henrydb",
-    "neural-net"
+    "neural-net",
+    "sat-solver"
   ],
   "backlog": [],
   "adjustments": [
@@ -1641,6 +1678,18 @@
     {
       "time": "2026-04-23T02:54:42.731Z",
       "msg": "Added T109 (EXPLORE) after end: Explore adding basic table statistics (min/max/distinct count) for better selectivity estimates"
+    },
+    {
+      "time": "2026-04-23T03:03:40.274Z",
+      "msg": "Added T110 (EXPLORE) after end: Train MicroGPT transformer with AdamW on repeated patterns - test if full transformer can memorize"
+    },
+    {
+      "time": "2026-04-23T03:06:36.595Z",
+      "msg": "Added T111 (EXPLORE) after end: Explore SAT solver architecture and test suite"
+    },
+    {
+      "time": "2026-04-23T03:10:01.083Z",
+      "msg": "Added T112 (EXPLORE) after end: Profile Sudoku solving bottleneck - 8.4s seems slow for CDCL, find optimization opportunities"
     }
   ]
 }
