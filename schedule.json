@@ -1042,6 +1042,17 @@
       "completed": "2026-04-23T18:36:55.423Z",
       "duration_ms": 240000,
       "summary": "Knowledge distillation: soft targets, temperature scaling, KL divergence, self-distillation. 7 tests."
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement Gradient Penalty (Gulrajani 2017) + Spectral Normalization (Miyato 2018)",
+      "project": "neural-net",
+      "started": "2026-04-23T18:37:21.250Z",
+      "completed": "2026-04-23T18:38:23.999Z",
+      "duration_ms": 240000,
+      "summary": "Gradient penalty (WGAN-GP), spectral normalization, L1/L2/elastic net. 7 tests."
     }
   ],
   "focusProjects": [
@@ -1413,6 +1424,10 @@
     {
       "time": "2026-04-23T18:36:01.426Z",
       "msg": "Added T96 (BUILD) after end: Neural-net: implement Knowledge Distillation (Hinton 2015) — soft targets + temperature"
+    },
+    {
+      "time": "2026-04-23T18:37:21.017Z",
+      "msg": "Added T97 (BUILD) after end: Neural-net: implement Gradient Penalty (Gulrajani 2017) + Spectral Normalization (Miyato 2018)"
     }
   ]
 }
