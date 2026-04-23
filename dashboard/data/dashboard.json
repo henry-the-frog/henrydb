@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-23T18:33:22.105Z",
+  "generated": "2026-04-23T18:34:22.884Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement CLIP loss (Radford 2021) for multimodal alignment",
-    "completedAt": "2026-04-23T18:33:22.105Z",
-    "taskId": "T93",
-    "summary": "CLIP loss + zero-shot classification. Symmetric cross-entropy on similarity matrix. 5 tests.",
+    "task": "Neural-net: implement cross-attention for encoder-decoder models + attention pooling",
+    "completedAt": "2026-04-23T18:34:22.884Z",
+    "taskId": "T94",
+    "summary": "Cross-attention + attention pooling. Multi-head, variable seq lengths. 6 tests.",
     "durationMs": 240000
   },
   "schedule": {
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 93,
+    "blocksCompleted": 94,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 56,
+      "BUILD": 57,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }

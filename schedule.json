@@ -1009,6 +1009,17 @@
       "completed": "2026-04-23T18:33:22.069Z",
       "duration_ms": 240000,
       "summary": "CLIP loss + zero-shot classification. Symmetric cross-entropy on similarity matrix. 5 tests."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement cross-attention for encoder-decoder models + attention pooling",
+      "project": "neural-net",
+      "started": "2026-04-23T18:33:42.390Z",
+      "completed": "2026-04-23T18:34:22.848Z",
+      "duration_ms": 240000,
+      "summary": "Cross-attention + attention pooling. Multi-head, variable seq lengths. 6 tests."
     }
   ],
   "focusProjects": [
@@ -1368,6 +1379,10 @@
     {
       "time": "2026-04-23T18:32:43.647Z",
       "msg": "Added T93 (BUILD) after end: Neural-net: implement CLIP loss (Radford 2021) for multimodal alignment"
+    },
+    {
+      "time": "2026-04-23T18:33:42.157Z",
+      "msg": "Added T94 (BUILD) after end: Neural-net: implement cross-attention for encoder-decoder models + attention pooling"
     }
   ]
 }
