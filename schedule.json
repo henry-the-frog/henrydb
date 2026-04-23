@@ -3280,9 +3280,74 @@
     {
       "id": "T304",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push",
-      "started": "2026-04-23T23:39:36.210Z"
+      "started": "2026-04-23T23:39:36.210Z",
+      "completed": "2026-04-23T23:40:52.432Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T305",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study consistent-hash.js: consistent hashing for distributed DB",
+      "project": "henrydb",
+      "started": "2026-04-23T23:41:54.441Z",
+      "completed": "2026-04-23T23:42:35.861Z",
+      "duration_ms": 15000,
+      "summary": "Consistent hashing: 158 lines. Karger 1997. FNV-1a hash, 150 vnodes/physical node, sorted ring with binary search. AddNode/RemoveNode redistributes ~1/N keys. DynamoDB/Cassandra-style."
+    },
+    {
+      "id": "T306",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study prepared-statements.js: prepared statement support",
+      "project": "henrydb",
+      "started": "2026-04-23T23:42:36.121Z",
+      "completed": "2026-04-23T23:43:03.167Z",
+      "duration_ms": 15000,
+      "summary": "Prepared statements: 179 lines. PREPARE/EXECUTE/DEALLOCATE with $1-style parameters. Plan caching, LRU eviction (max 100), type-safe binding, stats tracking. PostgreSQL-compatible."
+    },
+    {
+      "id": "T307",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study query-rewriter.js: SQL query rewriting optimizations",
+      "project": "henrydb",
+      "started": "2026-04-23T23:43:03.428Z",
+      "completed": "2026-04-23T23:43:45.714Z",
+      "duration_ms": 30000,
+      "summary": "Query rewriter: 365 lines, 5 AST-to-AST transformation rules: view expansion, predicate pushdown, subquery flattening, constant folding, redundant predicate elimination. Rule-based query optimizer. Stats tracking per rule."
+    },
+    {
+      "id": "T308",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study streaming.js: streaming query results",
+      "project": "henrydb",
+      "started": "2026-04-23T23:43:45.975Z",
+      "completed": "2026-04-23T23:44:10.521Z",
+      "duration_ms": 15000,
+      "summary": "Streaming: Count-Min Sketch (Cormode & Muthukrishnan 2005) at 145 lines. Probabilistic frequency counter. width×depth hash table. Query = min across all rows. Overestimates, never underestimates. Used in network monitoring, NLP, DB query optimization."
+    },
+    {
+      "id": "T309",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study cursor.js: database cursors",
+      "project": "henrydb",
+      "started": "2026-04-23T23:44:10.782Z",
+      "completed": "2026-04-23T23:44:39.104Z",
+      "duration_ms": 10000,
+      "summary": "Cursor: 36 lines. Simple array-backed cursor with next/peek/current/fetch(n)/reset/close. Iterator protocol support. Not lazy streaming (materializes results first)."
+    },
+    {
+      "id": "T310",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + update scratch findings",
+      "started": "2026-04-23T23:44:39.366Z"
     }
   ],
   "focusProjects": [
@@ -4558,6 +4623,30 @@
     {
       "time": "2026-04-23T23:35:45.328Z",
       "msg": "Added T304 (MAINTAIN) after T303: Git push"
+    },
+    {
+      "time": "2026-04-23T23:41:38.689Z",
+      "msg": "Added T305 (EXPLORE) after end: Study consistent-hash.js: consistent hashing for distributed DB"
+    },
+    {
+      "time": "2026-04-23T23:41:38.809Z",
+      "msg": "Added T306 (EXPLORE) after T305: Study prepared-statements.js: prepared statement support"
+    },
+    {
+      "time": "2026-04-23T23:41:38.931Z",
+      "msg": "Added T307 (EXPLORE) after T306: Study query-rewriter.js: SQL query rewriting optimizations"
+    },
+    {
+      "time": "2026-04-23T23:41:39.052Z",
+      "msg": "Added T308 (EXPLORE) after T307: Study streaming.js: streaming query results"
+    },
+    {
+      "time": "2026-04-23T23:41:39.174Z",
+      "msg": "Added T309 (EXPLORE) after T308: Study cursor.js: database cursors"
+    },
+    {
+      "time": "2026-04-23T23:41:39.294Z",
+      "msg": "Added T310 (MAINTAIN) after T309: Git push + update scratch findings"
     }
   ]
 }
