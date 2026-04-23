@@ -42,6 +42,7 @@ import { validateConstraints as _validateConstraintsImpl, validateConstraintsFor
 import { handleAnalyze as _handleAnalyzeImpl, profile as _profileImpl } from './analyze-profile.js';
 import { handleCheckpoint as _handleCheckpointImpl } from './checkpoint-handler.js';
 import { handleVacuum as _handleVacuumImpl } from './vacuum-handler.js';
+import { serialize as _serializeImpl, save as _saveImpl, bulkInsert as _bulkInsertImpl } from './serialize-handler.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -573,99 +574,11 @@ export class Database {
    * Serialize the entire database to a JSON-compatible object.
    * Includes table schemas, data, views, triggers.
    */
-  serialize() {
-    const tables = {};
-    for (const [name, table] of this.tables) {
-      const rows = [];
-      for (const { values } of table.heap.scan()) {
-        rows.push(values);
-      }
-      tables[name] = {
-        schema: table.schema,
-        rows,
-        indexes: [...table.indexes.keys()],
-        indexMeta: table.indexMeta ? Object.fromEntries(table.indexMeta) : {},
-      };
-    }
-    
-    const views = {};
-    for (const [name, view] of this.views) {
-      views[name] = view;
-    }
-    
-    // Serialize sequences
-    const sequences = {};
-    for (const [name, seq] of this.sequences) {
-      sequences[name] = {
-        current: seq.current,
-        increment: seq.increment,
-        min: seq.min,
-        max: seq.max,
-        cycle: seq.cycle,
-        ownedBy: seq.ownedBy,
-      };
-    }
-    
-    // Serialize materialized views
-    const matViews = {};
-    for (const [name, mv] of (this.materializedViews || new Map())) {
-      matViews[name] = mv;
-    }
-    
-    // Serialize comments
-    const comments = {};
-    for (const [key, val] of (this._comments || new Map())) {
-      comments[key] = val;
-    }
-    
-    return {
-      version: 1,
-      tables,
-      views,
-      triggers: this.triggers,
-      sequences,
-      materializedViews: matViews,
-      comments,
-      indexCatalog: Object.fromEntries(this.indexCatalog),
-    };
-  }
+  serialize() { return _serializeImpl(this); }
 
-  /**
-   * Save database to a file (Node.js environments).
-   */
-  save(path) {
-    const fs = globalThis.__fs || null;
-    if (!fs) {
-      // Return serialized string for environments without fs
-      return JSON.stringify(this.serialize());
-    }
-    fs.writeFileSync(path, JSON.stringify(this.serialize(), null, 2));
-    return { type: 'OK', message: `Database saved to ${path}` };
-  }
+  save(path) { return _saveImpl(this, path); }
 
-  /**
-   * Load database from a serialized object.
-   */
-  /**
-   * Bulk insert rows without parsing SQL for each row.
-   * Much faster than individual INSERT statements.
-   * 
-   * @param {string} tableName - Target table
-   * @param {Array<Array>} rows - Array of value arrays
-   * @returns {Object} Result with count
-   */
-  bulkInsert(tableName, rows) {
-    const table = this.tables.get(tableName);
-    if (!table) throw new Error(`Table ${tableName} not found`);
-    
-    let inserted = 0;
-    for (const values of rows) {
-      this._insertRow(table, null, values);
-      inserted++;
-    }
-    if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
-    return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
-  }
+  bulkInsert(tableName, rows) { return _bulkInsertImpl(this, tableName, rows); }
 
   /**
    * Execute a query and return paginated results.
