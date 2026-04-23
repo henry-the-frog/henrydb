@@ -578,16 +578,20 @@
       "id": "T54",
       "mode": "BUILD",
       "task": "Extract serialize-handler.js (~59 LOC) from db.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T52",
-      "started": "2026-04-23T16:49:44.875Z"
+      "started": "2026-04-23T16:49:44.875Z",
+      "completed": "2026-04-23T16:51:43.824Z",
+      "duration_ms": 300000,
+      "summary": "Extracted serialize-handler.js (95 LOC: serialize, save, bulkInsert). db.js now 2600 lines. Serializer 2/2, bulk 3/3 tests pass."
     },
     {
       "id": "T55",
       "mode": "BUILD",
       "task": "Extract row-lock.js (~61 LOC: _acquireRowLocks, _releaseRowLocks) from db.js",
-      "status": "upcoming",
-      "plan_ref": "T52"
+      "status": "in-progress",
+      "plan_ref": "T52",
+      "started": "2026-04-23T16:51:55.134Z"
     },
     {
       "id": "T56",

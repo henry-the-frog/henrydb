@@ -43,6 +43,7 @@ import { handleAnalyze as _handleAnalyzeImpl, profile as _profileImpl } from './
 import { handleCheckpoint as _handleCheckpointImpl } from './checkpoint-handler.js';
 import { handleVacuum as _handleVacuumImpl } from './vacuum-handler.js';
 import { serialize as _serializeImpl, save as _saveImpl, bulkInsert as _bulkInsertImpl } from './serialize-handler.js';
+import { acquireRowLocks as _acquireRowLocksImpl, releaseRowLocks as _releaseRowLocksImpl } from './row-lock.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -990,75 +991,9 @@ export class Database {
    * Acquire row-level locks for SELECT FOR UPDATE/SHARE.
    * Re-scans the heap to find RIDs for the selected rows.
    */
-  _acquireRowLocks(ast, rows) {
-    const tableName = ast.from?.table || ast.from?.name;
-    if (!tableName || tableName.startsWith('__')) return;
-    
-    const forMode = ast.forUpdate.includes('SHARE') ? 'SHARE' : 'UPDATE';
-    const nowait = ast.forUpdate.includes('NOWAIT');
-    const skipLocked = ast.forUpdate.includes('SKIP LOCKED');
-    const txId = this._currentTxId || 0;
-    
-    const table = this.tables.get(tableName);
-    if (!table) return;
-    
-    // Build a set of PKs from result rows to lock
-    const pkIndices = table.schema
-      .map((c, i) => c.primaryKey ? i : -1)
-      .filter(i => i >= 0);
-    const pkNames = pkIndices.map(i => table.schema[i].name);
-    
-    // For each result row, find its heap location and lock it
-    for (let i = rows.length - 1; i >= 0; i--) {
-      const row = rows[i];
-      
-      // Find the heap RID by scanning for matching PK
-      let rid = null;
-      for (const item of table.heap.scan()) {
-        const vals = item.values || item;
-        let match = true;
-        for (const pi of pkIndices) {
-          if (vals[pi] !== row[table.schema[pi].name]) { match = false; break; }
-        }
-        if (match) {
-          rid = { pageId: item.pageId, slotIdx: item.slotIdx };
-          break;
-        }
-      }
-      
-      if (!rid) continue;
-      
-      const lockKey = `${tableName}:${rid.pageId}:${rid.slotIdx}`;
-      const existingLock = this._rowLocks.get(lockKey);
-      
-      if (existingLock && existingLock.txId !== txId) {
-        if (existingLock.mode === 'UPDATE' || forMode === 'UPDATE') {
-          if (skipLocked) {
-            rows.splice(i, 1);
-            continue;
-          }
-          if (nowait) {
-            throw new Error(`Could not obtain lock on row in "${tableName}": locked by transaction ${existingLock.txId}`);
-          }
-          throw new Error(`Row locked by transaction ${existingLock.txId} in "${tableName}"`);
-        }
-        // SHARE + SHARE is compatible
-      }
-      
-      this._rowLocks.set(lockKey, { txId, mode: forMode });
-    }
-  }
+  _acquireRowLocks(ast, rows) { return _acquireRowLocksImpl(this, ast, rows); }
 
-  /**
-   * Release all row locks held by a transaction.
-   */
-  _releaseRowLocks(txId) {
-    for (const [key, lock] of this._rowLocks) {
-      if (lock.txId === txId) {
-        this._rowLocks.delete(key);
-      }
-    }
-  }
+  _releaseRowLocks(txId) { return _releaseRowLocksImpl(this, txId); }
 
   /**
    * ANALYZE: gather table statistics for query optimization.
