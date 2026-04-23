@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-23T18:41:18.774Z",
+  "generated": "2026-04-23T18:42:31.977Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement Relative Position Bias (T5-style, Raffel 2020) for attention",
-    "completedAt": "2026-04-23T18:41:18.774Z",
-    "taskId": "T99",
-    "summary": "T5 relative position bias with logarithmic bucketing. 7 tests.",
+    "task": "Neural-net: implement Gradient Clipping + Warmup schedules (linear warmup, warmup-cosine)",
+    "completedAt": "2026-04-23T18:42:31.977Z",
+    "taskId": "T100",
+    "summary": "Gradient clipping (norm + value) + 4 warmup schedules (linear, cosine, inv sqrt, polynomial). 7 tests.",
     "durationMs": 240000
   },
   "schedule": {
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 99,
+    "blocksCompleted": 100,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 62,
+      "BUILD": 63,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }

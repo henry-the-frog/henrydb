@@ -1075,6 +1075,17 @@
       "completed": "2026-04-23T18:41:18.738Z",
       "duration_ms": 240000,
       "summary": "T5 relative position bias with logarithmic bucketing. 7 tests."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement Gradient Clipping + Warmup schedules (linear warmup, warmup-cosine)",
+      "project": "neural-net",
+      "started": "2026-04-23T18:41:48.418Z",
+      "completed": "2026-04-23T18:42:31.941Z",
+      "duration_ms": 240000,
+      "summary": "Gradient clipping (norm + value) + 4 warmup schedules (linear, cosine, inv sqrt, polynomial). 7 tests."
     }
   ],
   "focusProjects": [
@@ -1458,6 +1469,10 @@
     {
       "time": "2026-04-23T18:40:34.762Z",
       "msg": "Added T99 (BUILD) after end: Neural-net: implement Relative Position Bias (T5-style, Raffel 2020) for attention"
+    },
+    {
+      "time": "2026-04-23T18:41:48.183Z",
+      "msg": "Added T100 (BUILD) after end: Neural-net: implement Gradient Clipping + Warmup schedules (linear warmup, warmup-cosine)"
     }
   ]
 }
