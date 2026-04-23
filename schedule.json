@@ -600,9 +600,20 @@
       "id": "T56",
       "mode": "BUILD",
       "task": "Extract paginated-exec.js (~94 LOC) from db.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T52",
-      "started": "2026-04-23T16:53:22.482Z"
+      "started": "2026-04-23T16:53:22.482Z",
+      "completed": "2026-04-23T16:54:28.476Z",
+      "duration_ms": 120000,
+      "summary": "Extracted paginated-exec.js (32 LOC). db.js now 2515 lines. Git pushed."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Extract analyzeTable-handler.js (~77 LOC: _analyzeTable) from db.js",
+      "project": "henrydb",
+      "started": "2026-04-23T16:54:53.122Z"
     }
   ],
   "focusProjects": [
@@ -814,6 +825,10 @@
     {
       "time": "2026-04-23T16:48:08.387Z",
       "msg": "PLAN T52 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T16:54:44.257Z",
+      "msg": "Added T57 (BUILD) after end: Extract analyzeTable-handler.js (~77 LOC: _analyzeTable) from db.js"
     }
   ]
 }
