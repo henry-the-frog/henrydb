@@ -1086,6 +1086,17 @@
       "completed": "2026-04-23T18:42:31.941Z",
       "duration_ms": 240000,
       "summary": "Gradient clipping (norm + value) + 4 warmup schedules (linear, cosine, inv sqrt, polynomial). 7 tests."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement Mixed Precision Training simulation (FP16/BF16 numerical effects)",
+      "project": "neural-net",
+      "started": "2026-04-23T18:42:50.613Z",
+      "completed": "2026-04-23T18:43:35.965Z",
+      "duration_ms": 240000,
+      "summary": "Mixed precision: FP16/BF16 simulation, dynamic loss scaler, overflow detection. 8 tests."
     }
   ],
   "focusProjects": [
@@ -1473,6 +1484,10 @@
     {
       "time": "2026-04-23T18:41:48.183Z",
       "msg": "Added T100 (BUILD) after end: Neural-net: implement Gradient Clipping + Warmup schedules (linear warmup, warmup-cosine)"
+    },
+    {
+      "time": "2026-04-23T18:42:50.380Z",
+      "msg": "Added T101 (BUILD) after end: Neural-net: implement Mixed Precision Training simulation (FP16/BF16 numerical effects)"
     }
   ]
 }
