@@ -44,6 +44,8 @@
 ## Performance/Research
 - `query-optimizer-gaps.md` — Optimizer improvements (parametric cost model done)
 - `query-compilation-research.md` — **UPDATED 2026-04-22** Volcano vs HyPer codegen vs vectorized; JS-specific recommendations
+- `vectorized-execution-explore.md` — **NEW 2026-04-22** Vectorized execution benchmarks: 5.8x for deep pipelines, HenryDB overhead profile, hybrid design sketch
+- `sat-solver-profile.md` — **NEW 2026-04-22** SAT solver performance: N-Queens, Sudoku, random 3-SAT phase transition, 666K prop/sec
 
 ## Reference
 - `README.md` — How to use scratch notes

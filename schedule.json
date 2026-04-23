@@ -1246,6 +1246,17 @@
       "completed": "2026-04-23T03:25:15.258Z",
       "duration_ms": 300000,
       "summary": "End-to-end MoE + AdamW training: piecewise function f(x)=x² if x>0, -x if x≤0. 4 experts topK=1: Expert 0 specializes on negative inputs, Expert 3 on positive. Perfect routing separation. Loss 2.3→0.008. Predictions within 0.05 of ground truth. This demonstrates the full MoE→AdamW pipeline works with real expert specialization."
+    },
+    {
+      "id": "T117",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test MoE with load balancing loss as auxiliary regularizer during training",
+      "project": "neural-net",
+      "started": "2026-04-23T03:32:44.412Z",
+      "completed": "2026-04-23T03:33:09.786Z",
+      "duration_ms": 120000,
+      "summary": "Load balance loss exploration: MoE correctly collapses to 2/4 experts for 2-mode function. This is correct behavior. Balance loss mainly needed when #modes > topK to prevent expert collapse. Router learns the right number of active experts."
     }
   ],
   "focusProjects": [
@@ -1750,6 +1761,10 @@
     {
       "time": "2026-04-23T03:24:00.199Z",
       "msg": "Added T116 (EXPLORE) after end: End-to-end: train MoE to learn multi-modal function with AdamW, verify expert specialization"
+    },
+    {
+      "time": "2026-04-23T03:32:43.876Z",
+      "msg": "Added T117 (EXPLORE) after end: Test MoE with load balancing loss as auxiliary regularizer during training"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-23T03:25:15.295Z",
+  "generated": "2026-04-23T03:33:09.878Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "End-to-end: train MoE to learn multi-modal function with AdamW, verify expert specialization",
-    "completedAt": "2026-04-23T03:25:15.295Z",
-    "taskId": "T116",
-    "summary": "End-to-end MoE + AdamW training: piecewise function f(x)=x² if x>0, -x if x≤0. 4 experts topK=1: Expert 0 specializes on negative inputs, Expert 3 on positive. Perfect routing separation. Loss 2.3→0.008. Predictions within 0.05 of ground truth. This demonstrates the full MoE→AdamW pipeline works with real expert specialization.",
-    "durationMs": 300000
+    "task": "Test MoE with load balancing loss as auxiliary regularizer during training",
+    "completedAt": "2026-04-23T03:33:09.878Z",
+    "taskId": "T117",
+    "summary": "Load balance loss exploration: MoE correctly collapses to 2/4 experts for 2-mode function. This is correct behavior. Balance loss mainly needed when #modes > topK to prevent expert collapse. Router learns the right number of active experts.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1885,14 +1885,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 110,
+    "blocksCompleted": 111,
     "blocksTotal": 100,
     "modeDistribution": {
       "THINK": 20,
       "PLAN": 11,
       "BUILD": 33,
       "MAINTAIN": 17,
-      "EXPLORE": 29
+      "EXPLORE": 30
     }
   },
   "artifacts": [
