@@ -39,6 +39,7 @@ import { handlePrepare as _handlePrepareImpl, handleExecute as _handleExecuteImp
 import { handleSavepoint as _handleSavepointImpl, handleRollbackToSavepoint as _handleRollbackToSavepointImpl, handleReleaseSavepoint as _handleReleaseSavepointImpl } from './savepoint-handler.js';
 import { handleForeignKeyDelete as _handleForeignKeyDeleteImpl, handleForeignKeyUpdate as _handleForeignKeyUpdateImpl } from './fk-cascade.js';
 import { validateConstraints as _validateConstraintsImpl, validateConstraintsForUpdate as _validateConstraintsForUpdateImpl } from './constraint-validator.js';
+import { handleAnalyze as _handleAnalyzeImpl, profile as _profileImpl } from './analyze-profile.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -374,95 +375,12 @@ export class Database {
   // RELEASE [SAVEPOINT] name — remove savepoint
   _handleReleaseSavepoint(sql) { return _handleReleaseSavepointImpl(this, sql); }
 
-  _handleAnalyze(sql) {
-    const match = sql.match(/ANALYZE\s+(?:TABLE\s+)?(\w+)/i);
-    if (!match) throw new Error('Invalid ANALYZE syntax. Use: ANALYZE TABLE name');
-    const tableName = match[1].replace(/;$/, '');
-    const table = this.tables.get(tableName) || this.tables.get(tableName.toLowerCase());
-    if (!table) throw new Error(`Table "${tableName}" not found`);
-    
-    // Collect all rows
-    const allRows = this.execute(`SELECT * FROM ${tableName}`).rows;
-    const rowCount = allRows.length;
-    
-    // Compute per-column statistics
-    const columns = {};
-    for (const col of table.schema) {
-      const values = allRows.map(r => r[col.name]);
-      const distinct = new Set(values.filter(v => v !== null && v !== undefined)).size;
-      const nulls = values.filter(v => v === null || v === undefined).length;
-      
-      const numericVals = values.filter(v => typeof v === 'number' && !isNaN(v));
-      const min = numericVals.length > 0 ? Math.min(...numericVals) : null;
-      const max = numericVals.length > 0 ? Math.max(...numericVals) : null;
-      
-      columns[col.name] = { distinct, nulls, min, max, selectivity: distinct > 0 ? 1 / distinct : 1 };
-    }
-    
-    this._tableStats.set(tableName, { rowCount, columns, analyzedAt: Date.now() });
-    
-    return {
-      type: 'ROWS',
-      rows: Object.entries(columns).map(([col, stats]) => ({
-        column: col,
-        distinct_values: stats.distinct,
-        null_count: stats.nulls,
-        min: stats.min,
-        max: stats.max,
-        selectivity: stats.selectivity.toFixed(4),
-      })),
-    };
-  }
+  _handleAnalyze(sql) { return _handleAnalyzeImpl(this, sql); }
 
   /**
    * Execute a query with detailed timing profile.
-   * Returns { result, profile } where profile has phase-level timing.
    */
-  profile(sql) {
-    const phases = [];
-    const t0 = performance.now();
-    
-    // PARSE phase
-    const parseStart = performance.now();
-    let ast = this._planCache.get(sql);
-    const cached = !!ast;
-    if (!ast) {
-      ast = parse(sql);
-      if (ast.type === 'SELECT') this._planCache.put(sql, ast);
-    }
-    const parseEnd = performance.now();
-    phases.push({ name: 'PARSE', durationMs: parseEnd - parseStart, cached });
-    
-    // EXECUTE phase (includes scan, filter, sort, aggregate)
-    const execStart = performance.now();
-    const result = this.execute_ast(ast);
-    const execEnd = performance.now();
-    phases.push({ name: 'EXECUTE', durationMs: execEnd - execStart, rows: result?.rows?.length || 0 });
-    
-    const totalMs = performance.now() - t0;
-    
-    // Format report
-    const lines = [`Query: ${sql.slice(0, 80)}${sql.length > 80 ? '...' : ''}`];
-    lines.push('─'.repeat(60));
-    lines.push(`${'Phase'.padEnd(15)} ${'Duration'.padStart(12)} ${'Pct'.padStart(6)} Details`);
-    lines.push('─'.repeat(60));
-    for (const p of phases) {
-      const pct = totalMs > 0 ? (p.durationMs / totalMs * 100).toFixed(1) : '0.0';
-      const details = p.cached ? '(cached)' : p.rows !== undefined ? `${p.rows} rows` : '';
-      lines.push(`${p.name.padEnd(15)} ${(p.durationMs.toFixed(3) + 'ms').padStart(12)} ${(pct + '%').padStart(6)} ${details}`);
-    }
-    lines.push('─'.repeat(60));
-    lines.push(`${'TOTAL'.padEnd(15)} ${(totalMs.toFixed(3) + 'ms').padStart(12)} ${'100%'.padStart(6)}`);
-    
-    return {
-      result,
-      profile: {
-        totalMs: parseFloat(totalMs.toFixed(3)),
-        phases,
-        formatted: lines.join('\n'),
-      },
-    };
-  }
+  profile(sql) { return _profileImpl(this, sql); }
 
   checkpoint() {
     if (this._dataDir) {

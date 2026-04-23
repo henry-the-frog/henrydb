@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-23T16:32:17.988Z",
+  "generated": "2026-04-23T16:38:41.022Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix NOT IN correlated subquery with JOIN: batch decorrelation needs to handle JOIN + multi-predicate correlation",
-    "startedAt": "2026-04-23T16:32:17.988Z",
-    "taskId": "T40"
+    "task": "Extract analyze-profile.js (~85 LOC: _handleAnalyze + profile method) from db.js",
+    "startedAt": "2026-04-23T16:38:41.021Z",
+    "taskId": "T45"
   },
   "schedule": {
     "date": "2026-04-23",
@@ -415,41 +415,88 @@
       {
         "id": "T37",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: fix remaining decorrelation stress test failures — investigate root causes of 6 pre-existing failures",
         "task": null,
-        "started": "2026-04-23T16:31:08.603Z"
+        "started": "2026-04-23T16:31:08.603Z",
+        "completed": "2026-04-23T16:32:02.973Z",
+        "duration_ms": 180000,
+        "summary": "Categorized 6 decorrelation failures: (1) self-reference nested correlation, (2) multi-column correlation, (3) NOT IN with JOIN, (4) aggregate with nested correlation, (5) correlated vs uncorrelated parity, (6) NULL handling. Root cause: batch decorrelation only handles simple single-table single-predicate cases."
       },
       {
         "id": "T40",
         "mode": "BUILD",
         "task": "Fix NOT IN correlated subquery with JOIN: batch decorrelation needs to handle JOIN + multi-predicate correlation",
-        "status": "upcoming",
-        "plan_ref": "T37"
+        "status": "done",
+        "plan_ref": "T37",
+        "started": "2026-04-23T16:32:17.951Z",
+        "completed": "2026-04-23T16:36:39.733Z",
+        "duration_ms": 900000,
+        "summary": "Fixed batch decorrelation: (1) WHERE clause was hardcoding = for all predicates (< became =), (2) JOINs not included in SQL. Added serializeExpr() utility. Stress test: 6→3 failures. 3 tests fixed: self-reference, multi-column, NOT IN with JOIN."
       },
       {
         "id": "T41",
         "mode": "BUILD",
         "task": "Fix multi-column correlation: batch decorrelation with composite key lookup",
-        "status": "upcoming",
-        "plan_ref": "T37"
+        "status": "done",
+        "plan_ref": "T37",
+        "started": "2026-04-23T16:37:00.116Z",
+        "completed": "2026-04-23T16:37:00.257Z",
+        "duration_ms": 10000,
+        "summary": "Multi-column correlation already fixed by T40 operator preservation. Test passes."
       },
       {
         "id": "T38",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push, dashboard update, CURRENT.md session end",
+        "started": "2026-04-23T16:37:31.982Z",
+        "completed": "2026-04-23T16:37:41.498Z",
+        "duration_ms": 30000,
+        "summary": "Git push. Not ending session — continuing work."
+      },
+      {
+        "id": "T42",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check at 15 BUILD tasks. Assess quality, surprises, learning.",
+        "started": "2026-04-23T16:37:49.105Z",
+        "completed": "2026-04-23T16:38:00.660Z",
+        "duration_ms": 60000,
+        "summary": "Depth check: 3/3 criteria met. Surprises: operator hardcoding bug, _select GROUP BY issue. Learning: 3 new insights. Bugs: 2 data-correctness fixes. Stress test 7→3 failures."
+      },
+      {
+        "id": "T43",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: extract _handleAnalyze + _handleExplainAnalyze from db.js",
+        "task": null,
+        "started": "2026-04-23T16:38:09.582Z"
+      },
+      {
+        "id": "T45",
+        "mode": "BUILD",
+        "task": "Extract analyze-profile.js (~85 LOC: _handleAnalyze + profile method) from db.js",
         "status": "upcoming",
-        "task": "Final git push, dashboard update, CURRENT.md session end"
+        "plan_ref": "T43"
+      },
+      {
+        "id": "T44",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Neural-net: implement weight initialization strategies (Xavier, Kaiming, orthogonal)",
+        "task": null
       }
     ]
   },
   "stats": {
-    "blocksCompleted": 38,
-    "blocksTotal": 41,
+    "blocksCompleted": 43,
+    "blocksTotal": 45,
     "modeDistribution": {
-      "THINK": 6,
-      "PLAN": 9,
-      "BUILD": 15,
-      "MAINTAIN": 6,
+      "THINK": 7,
+      "PLAN": 10,
+      "BUILD": 17,
+      "MAINTAIN": 7,
       "EXPLORE": 2
     }
   }

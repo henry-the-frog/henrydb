@@ -53,3 +53,9 @@ Always count before committing to an extraction.
 **Root cause:** Batch decorrelation removed the correlation predicate (`t2.grp = t1.grp`) but didn't add `GROUP BY grp` to the inner query. Without GROUP BY, `MAX(val)` aggregated the entire table. Also, column alias `__corr_t2_grp` wasn't appearing in GROUP BY query output because the engine's GROUP BY handler doesn't project additional SELECT columns.
 **Fix:** Generate SQL string (not AST) for inner query with explicit GROUP BY and unqualified column names. Lookup correlation key by unqualified name in result rows.
 **Lesson:** When removing correlation predicates from a subquery, check if the correlation was implicitly grouping rows. If the subquery has aggregates but no GROUP BY, the correlation predicate WAS the GROUP BY.
+
+### Batch Decorrelation Operator Bug (2026-04-23)
+**Bug:** WHERE clause builder in tryBatchDecorrelate hardcoded '=' for ALL predicates. So `sc.score < 80` became `sc.score = 80` in the generated SQL.
+**Impact:** 3+ stress tests failing, data incorrectness in correlated IN with non-equality inner predicates.
+**Fix:** Added serializeExpr() utility that properly renders COMPARE, AND, OR, literal, column_ref nodes to SQL. Also added JOIN clause support.
+**Lesson:** When building SQL from AST, always preserve the original operator. Never assume '=' for arbitrary predicates.
