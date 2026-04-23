@@ -2617,9 +2617,96 @@
     {
       "id": "T243",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:50:21.274Z",
+      "completed": "2026-04-23T22:51:18.611Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T244",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study bloom-filter.js: is the hash function and bit array correct?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:51:59.736Z",
+      "completed": "2026-04-23T22:52:34.207Z",
+      "duration_ms": 30000,
+      "summary": "Bloom filter: FNV-1a + double hashing (Kirsch & Mitzenmacher 2004). Optimal m/k calculation. Uint32Array bit array. 184 lines. Correct implementation with serialization support."
+    },
+    {
+      "id": "T245",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study advisory-locks.js: application-level locks",
+      "project": "henrydb",
+      "started": "2026-04-23T22:52:34.467Z",
+      "completed": "2026-04-23T22:53:15.658Z",
+      "duration_ms": 30000,
+      "summary": "Advisory locks: PostgreSQL-compatible. Session + transaction level. Exclusive + shared modes. Wait queue (FIFO). HAS deadlock detection (while row-lock.js does not!). 260 lines. Very complete implementation."
+    },
+    {
+      "id": "T246",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study cardinality.js: cardinality estimation methods",
+      "project": "henrydb",
+      "started": "2026-04-23T22:53:15.917Z",
+      "completed": "2026-04-23T22:54:02.710Z",
+      "duration_ms": 30000,
+      "summary": "HyperLogLog (Flajolet 2007): register-based with alpha correction, small/large range corrections. FNV-1a hash. clz32 for leading zeros. 100 lines. Also supports merge for distributed use. Correct implementation."
+    },
+    {
+      "id": "T247",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study multi-task-learning.js: shared representations",
+      "project": "neural-net",
+      "started": "2026-04-23T22:54:02.969Z",
+      "completed": "2026-04-23T22:54:35.431Z",
+      "duration_ms": 10000,
+      "summary": "No multi-task learning module exists. Gap in the library."
+    },
+    {
+      "id": "T248",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study band-join.js: range-based join",
+      "project": "henrydb",
+      "started": "2026-04-23T22:54:35.691Z",
+      "completed": "2026-04-23T22:55:38.797Z",
+      "duration_ms": 30000,
+      "summary": "Band join: sort-merge-sweep for range predicates (BETWEEN). Correct approach — hash join cant handle ranges. O(nlogn + mlogm + matches). 110 lines. Good for temporal/spatial joins."
+    },
+    {
+      "id": "T249",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study curriculum.js: curriculum learning",
+      "project": "neural-net",
+      "started": "2026-04-23T22:55:39.066Z",
+      "completed": "2026-04-23T22:56:00.831Z",
+      "duration_ms": 10000,
+      "summary": "No curriculum learning source module (test exists but no src). Gap."
+    },
+    {
+      "id": "T250",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study audit-log.js: change data capture",
+      "project": "henrydb",
+      "started": "2026-04-23T22:56:01.091Z",
+      "completed": "2026-04-23T22:56:45.487Z",
+      "duration_ms": 30000,
+      "summary": "Audit log: 9 event types (CONNECT, DISCONNECT, AUTH, DDL, DML, QUERY, ERROR, PRIVILEGE_CHECK). Per-entry: session, user, IP, statement, rows, duration. Circular buffer. Query/filter support. 212 lines. Enterprise-level audit capability."
+    },
+    {
+      "id": "T251",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:50:21.274Z"
+      "started": "2026-04-23T22:56:45.747Z"
     }
   ],
   "focusProjects": [
@@ -3651,6 +3738,38 @@
     {
       "time": "2026-04-23T22:46:12.245Z",
       "msg": "Added T243 (MAINTAIN) after T242: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:51:43.303Z",
+      "msg": "Added T244 (EXPLORE) after end: Study bloom-filter.js: is the hash function and bit array correct?"
+    },
+    {
+      "time": "2026-04-23T22:51:43.424Z",
+      "msg": "Added T245 (EXPLORE) after T244: Study advisory-locks.js: application-level locks"
+    },
+    {
+      "time": "2026-04-23T22:51:43.546Z",
+      "msg": "Added T246 (EXPLORE) after T245: Study cardinality.js: cardinality estimation methods"
+    },
+    {
+      "time": "2026-04-23T22:51:43.667Z",
+      "msg": "Added T247 (EXPLORE) after T246: Study multi-task-learning.js: shared representations"
+    },
+    {
+      "time": "2026-04-23T22:51:43.788Z",
+      "msg": "Added T248 (EXPLORE) after T247: Study band-join.js: range-based join"
+    },
+    {
+      "time": "2026-04-23T22:51:43.909Z",
+      "msg": "Added T249 (EXPLORE) after T248: Study curriculum.js: curriculum learning"
+    },
+    {
+      "time": "2026-04-23T22:51:44.030Z",
+      "msg": "Added T250 (EXPLORE) after T249: Study audit-log.js: change data capture"
+    },
+    {
+      "time": "2026-04-23T22:51:44.150Z",
+      "msg": "Added T251 (MAINTAIN) after T250: Git push + daily log"
     }
   ]
 }
