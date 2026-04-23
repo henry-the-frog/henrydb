@@ -1736,21 +1736,108 @@
     {
       "id": "T163",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + update scratch findings",
-      "started": "2026-04-23T21:36:04.213Z"
+      "started": "2026-04-23T21:36:04.213Z",
+      "completed": "2026-04-23T21:36:48.296Z",
+      "duration_ms": 30000,
+      "summary": "Git push + scratch findings updated."
     },
     {
-      "id": "T136",
-      "mode": "THINK",
-      "status": "upcoming",
-      "task": "End of day: compile all findings into actionable tomorrow task list"
+      "id": "T164",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit SwiGLU: is the gating mechanism correct per Shazeer 2020?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:37:41.740Z",
+      "completed": "2026-04-23T21:38:36.938Z",
+      "duration_ms": 120000,
+      "summary": "SwiGLU correct per Shazeer 2020. Forward: (xW1)⊙swish(xWgate)→W2. Backward: all 6 weight+bias gradients + dInput. Numerical gradient check: 1.66e-13 (machine precision). 9th module verified."
+    },
+    {
+      "id": "T165",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study heap-file: how are pages managed? Is compaction correct?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:38:44.852Z",
+      "completed": "2026-04-23T21:39:16.229Z",
+      "duration_ms": 60000,
+      "summary": "Heap file: FSM tracks free space, insert reuses space, update does in-place or delete+insert. Record IDs are stable (pageId, slotId). No explicit compaction — fragmentation handled by FSM reuse. Vacuum handler may compact. Clean 125-line implementation."
+    },
+    {
+      "id": "T166",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study mixed-precision training: does it correctly simulate FP16 forward + FP32 backward?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:39:28.358Z",
+      "completed": "2026-04-23T21:40:09.448Z",
+      "duration_ms": 120000,
+      "summary": "Mixed precision: correct FP16 simulation (range, underflow, 10-bit mantissa), BF16 (7-bit), dynamic loss scaling (grow/backoff), overflow detection + skip, master FP32 weights. Matches Micikevicius et al. 2018 and PyTorch GradScaler behavior."
+    },
+    {
+      "id": "T167",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit row-lock.js: does row-level locking prevent phantom reads?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:40:23.913Z",
+      "completed": "2026-04-23T21:40:56.318Z",
+      "duration_ms": 60000,
+      "summary": "Row locks: FOR UPDATE/SHARE, NOWAIT, SKIP LOCKED all correct. Lock compatibility matrix right (SHARE+SHARE OK, UPDATE conflicts). Does NOT prevent phantom reads (would need predicate locking). Expected limitation — even PostgreSQL needs SERIALIZABLE for phantom prevention."
+    },
+    {
+      "id": "T168",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study speculative decoding: is the accept/reject logic correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:41:12.888Z",
+      "completed": "2026-04-23T21:41:55.688Z",
+      "duration_ms": 120000,
+      "summary": "Speculative decoding correct per Leviathan/Chen 2023. Accept prob = min(1, p_target/p_draft). Reject → sample from max(0, p_target-p_draft). Break on first rejection (correct — cant accept after reject). All-accepted bonus token. Preserves exact target distribution. Implementation matches the paper."
+    },
+    {
+      "id": "T169",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study join executor: how does join order optimization work?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:42:07.842Z",
+      "completed": "2026-04-23T21:43:07.391Z",
+      "duration_ms": 120000,
+      "summary": "Join ordering: real System R-style DP over bitmask subsets. Only INNER joins reordered (outer preserved). Tracks join graph for connectivity. ≤6 table limit (O(2^n)). Uses table stats for cost estimation. Genuinely sophisticated for a prototype DB."
+    },
+    {
+      "id": "T170",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run gradient check on Dense layer backward",
+      "project": "neural-net",
+      "started": "2026-04-23T21:43:19.391Z",
+      "completed": "2026-04-23T21:46:41.002Z",
+      "duration_ms": 120000,
+      "summary": "Dense(ReLU) backward verified: 3.72e-13 gradient error. 10th module to pass numerical gradient check. All core backward passes in the neural-net library are mathematically correct."
+    },
+    {
+      "id": "T171",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T21:47:01.577Z"
     },
     {
       "id": "T137",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final git push + CURRENT.md session end + daily log summary"
+    },
+    {
+      "id": "T136",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "End of day: compile all findings into actionable tomorrow task list"
     }
   ],
   "focusProjects": [
@@ -2406,6 +2493,42 @@
     {
       "time": "2026-04-23T21:29:48.712Z",
       "msg": "Moved T137 after T136"
+    },
+    {
+      "time": "2026-04-23T21:37:10.246Z",
+      "msg": "Moved T136 after T137"
+    },
+    {
+      "time": "2026-04-23T21:37:10.366Z",
+      "msg": "Added T164 (EXPLORE) after T163: Audit SwiGLU: is the gating mechanism correct per Shazeer 2020?"
+    },
+    {
+      "time": "2026-04-23T21:37:10.486Z",
+      "msg": "Added T165 (EXPLORE) after T164: Study heap-file: how are pages managed? Is compaction correct?"
+    },
+    {
+      "time": "2026-04-23T21:37:10.606Z",
+      "msg": "Added T166 (EXPLORE) after T165: Study mixed-precision training: does it correctly simulate FP16 forward + FP32 backward?"
+    },
+    {
+      "time": "2026-04-23T21:37:10.727Z",
+      "msg": "Added T167 (EXPLORE) after T166: Audit row-lock.js: does row-level locking prevent phantom reads?"
+    },
+    {
+      "time": "2026-04-23T21:37:10.846Z",
+      "msg": "Added T168 (EXPLORE) after T167: Study speculative decoding: is the accept/reject logic correct?"
+    },
+    {
+      "time": "2026-04-23T21:37:10.966Z",
+      "msg": "Added T169 (EXPLORE) after T168: Study join executor: how does join order optimization work?"
+    },
+    {
+      "time": "2026-04-23T21:37:11.085Z",
+      "msg": "Added T170 (EXPLORE) after T169: Run gradient check on Dense layer backward"
+    },
+    {
+      "time": "2026-04-23T21:37:11.205Z",
+      "msg": "Added T171 (MAINTAIN) after T170: Git push + daily log"
     }
   ]
 }
