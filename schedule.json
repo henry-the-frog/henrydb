@@ -2356,9 +2356,28 @@
     {
       "id": "T221",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:31:22.681Z"
+      "started": "2026-04-23T22:31:22.681Z",
+      "completed": "2026-04-23T22:31:57.727Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T136",
+      "mode": "THINK",
+      "status": "done",
+      "task": "End of day: compile all findings into actionable tomorrow task list",
+      "started": "2026-04-23T22:32:21.018Z",
+      "completed": "2026-04-23T22:33:06.375Z",
+      "duration_ms": 120000,
+      "summary": "Compiled actionable TODO.md for tomorrow: 9 neural-net quick fixes, 4 HenryDB fixes, 2 nice-to-haves. All bugs from Session B depth exploration organized by priority and estimated effort."
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + session end"
     },
     {
       "id": "T137",
@@ -2367,16 +2386,77 @@
       "task": "Final git push + CURRENT.md session end + daily log summary"
     },
     {
-      "id": "T136",
-      "mode": "THINK",
-      "status": "upcoming",
-      "task": "End of day: compile all findings into actionable tomorrow task list"
+      "id": "T222",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit sampling.js: repetition penalty and temperature sampling",
+      "project": "neural-net",
+      "started": "2026-04-23T22:33:40.204Z",
+      "completed": "2026-04-23T22:34:49.627Z",
+      "duration_ms": 30000,
+      "summary": "Sampling: temperature, top-k, top-p (nucleus), repetition penalty (Keskar 2019), greedy, combined — all correct. Repetition penalty correctly handles positive (÷penalty) and negative (×penalty) logits. Numerically stable softmax throughout."
     },
     {
-      "id": "T179",
+      "id": "T223",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study file-backed-heap.js: disk-based heap file",
+      "project": "henrydb",
+      "started": "2026-04-23T22:34:49.909Z",
+      "completed": "2026-04-23T22:35:32.102Z",
+      "duration_ms": 60000,
+      "summary": "File-backed heap: 369 lines, binary page format via DataView (not JSON). Slotted page on disk with header (pageId, numSlots, freeSpaceEnd, pageLSN). Buffer pool integration. Tuple encoding/decoding. Proper database storage engineering — binary, not serialized."
+    },
+    {
+      "id": "T224",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study microgpt.js: what architecture decisions were made?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:35:32.361Z",
+      "completed": "2026-04-23T22:35:56.656Z",
+      "duration_ms": 30000,
+      "summary": "MicroGPT: 211-line clean GPT-style model. Embedding → PE → N×TransformerEncoder → LayerNorm → Dense(softmax). Uses existing infrastructure. Second e2e model (alongside char-lm). Key differences from char-lm: uses softmax output (char-lm uses custom), uses existing TransformerEncoderBlock."
+    },
+    {
+      "id": "T225",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study disk-manager.js: page I/O",
+      "project": "henrydb",
+      "started": "2026-04-23T22:35:56.936Z",
+      "completed": "2026-04-23T22:36:55.268Z",
+      "duration_ms": 30000,
+      "summary": "DiskManager: 191 lines, CMU 15-445 style. Fixed 4KB pages at pageId*pageSize offset. Read/write with fstatSync. Stats tracking. Clean bottom-of-stack implementation."
+    },
+    {
+      "id": "T226",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit optimizer-zoo.js: what exotic optimizers exist?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:36:55.529Z",
+      "completed": "2026-04-23T22:38:32.411Z",
+      "duration_ms": 30000,
+      "summary": "Optimizer zoo: SGD Momentum, AdaGrad (history accumulation), RMSprop (exponential decay), Lion (Chen 2023 — sign-based update, decoupled weight decay). All correct. Lion is notably simple — only uses sign of interpolated momentum."
+    },
+    {
+      "id": "T227",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study visibility-map.js: how does MVCC visibility work?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:38:32.670Z",
+      "completed": "2026-04-23T22:39:22.238Z",
+      "duration_ms": 60000,
+      "summary": "MVCC visibility: exact PostgreSQL model. Snapshot {xmin, xmax, activeSet}. Visibility: <xmin=visible, >=xmax=invisible, between=check activeSet. Version chain walk. Write-write conflict detection. READ COMMITTED (refresh per stmt) and REPEATABLE READ (frozen snapshot). 523 lines. Textbook correct."
+    },
+    {
+      "id": "T228",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push + session end"
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:39:22.497Z"
     }
   ],
   "focusProjects": [
@@ -3316,6 +3396,38 @@
     {
       "time": "2026-04-23T22:26:17.704Z",
       "msg": "Moved T137 after T221"
+    },
+    {
+      "time": "2026-04-23T22:32:20.782Z",
+      "msg": "Moved T137 after T179"
+    },
+    {
+      "time": "2026-04-23T22:33:33.584Z",
+      "msg": "Added T222 (EXPLORE) after end: Audit sampling.js: repetition penalty and temperature sampling"
+    },
+    {
+      "time": "2026-04-23T22:33:33.704Z",
+      "msg": "Added T223 (EXPLORE) after T222: Study file-backed-heap.js: disk-based heap file"
+    },
+    {
+      "time": "2026-04-23T22:33:33.825Z",
+      "msg": "Added T224 (EXPLORE) after T223: Study microgpt.js: what architecture decisions were made?"
+    },
+    {
+      "time": "2026-04-23T22:33:33.946Z",
+      "msg": "Added T225 (EXPLORE) after T224: Study disk-manager.js: page I/O"
+    },
+    {
+      "time": "2026-04-23T22:33:34.066Z",
+      "msg": "Added T226 (EXPLORE) after T225: Audit optimizer-zoo.js: what exotic optimizers exist?"
+    },
+    {
+      "time": "2026-04-23T22:33:34.187Z",
+      "msg": "Added T227 (EXPLORE) after T226: Study visibility-map.js: how does MVCC visibility work?"
+    },
+    {
+      "time": "2026-04-23T22:33:34.306Z",
+      "msg": "Added T228 (MAINTAIN) after T227: Git push + daily log"
     }
   ]
 }
