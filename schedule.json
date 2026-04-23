@@ -632,10 +632,21 @@
     {
       "id": "T59",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Extract matview-handler.js (~52 LOC: _createMatView, _refreshMatView) from db.js",
       "project": "henrydb",
-      "started": "2026-04-23T16:58:47.434Z"
+      "started": "2026-04-23T16:58:47.434Z",
+      "completed": "2026-04-23T17:00:01.877Z",
+      "duration_ms": 300000,
+      "summary": "Extracted matview-handler.js (74 LOC). db.js now 2297 lines. 16 modules extracted this session!"
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Extract _applySetOrderLimit + _remapUnionColumns from db.js to set-ops-helpers.js",
+      "project": "henrydb",
+      "started": "2026-04-23T17:00:21.723Z"
     }
   ],
   "focusProjects": [
@@ -859,6 +870,10 @@
     {
       "time": "2026-04-23T16:57:23.454Z",
       "msg": "Added T59 (BUILD) after end: Extract matview-handler.js (~52 LOC: _createMatView, _refreshMatView) from db.js"
+    },
+    {
+      "time": "2026-04-23T17:00:16.596Z",
+      "msg": "Added T60 (BUILD) after end: Extract _applySetOrderLimit + _remapUnionColumns from db.js to set-ops-helpers.js"
     }
   ]
 }

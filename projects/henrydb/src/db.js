@@ -48,6 +48,7 @@ import { executePaginated as _executePaginatedImpl } from './paginated-exec.js';
 import { analyzeTable as _analyzeTableImpl } from './analyze-table.js';
 import { applySelectColumns as _applySelectColumnsImpl } from './select-columns.js';
 import { createMatView as _createMatViewImpl, refreshMatView as _refreshMatViewImpl } from './matview-handler.js';
+import { applySetOrderLimit as _applySetOrderLimitImpl, remapUnionColumns as _remapUnionColumnsImpl } from './set-ops-helpers.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -1608,37 +1609,9 @@ export class Database {
   _intersect(ast) { return _intersectImpl(this, ast); }
   _except(ast) { return _exceptImpl(this, ast); }
 
-  _applySetOrderLimit(ast, rows) {
-    if (ast.orderBy) {
-      rows.sort((a, b) => {
-        for (const { column, direction } of ast.orderBy) {
-          const av = this._orderByValue(column, a);
-          const bv = this._orderByValue(column, b);
-          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
-          if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
-        }
-        return 0;
-      });
-    }
-    if (ast.offset) rows = rows.slice(Math.max(0, ast.offset));
-    if (ast.limit != null) rows = rows.slice(0, ast.limit);
-    return rows;
-  }
+  _applySetOrderLimit(ast, rows) { return _applySetOrderLimitImpl(this, ast, rows); }
 
-  /** Remap rows' column names to match target column names (for UNION/INTERSECT/EXCEPT) */
-  _remapUnionColumns(rows, targetCols) {
-    if (rows.length === 0 || targetCols.length === 0) return rows;
-    const srcCols = Object.keys(rows[0]);
-    if (srcCols.join() === targetCols.join()) return rows;
-    return rows.map(row => {
-      const mapped = {};
-      const vals = Object.values(row);
-      for (let i = 0; i < targetCols.length && i < vals.length; i++) {
-        mapped[targetCols[i]] = vals[i];
-      }
-      return mapped;
-    });
-  }
+  _remapUnionColumns(rows, targetCols) { return _remapUnionColumnsImpl(rows, targetCols); }
 
   _explain(ast) { return _explainImpl(this, ast); }
 
