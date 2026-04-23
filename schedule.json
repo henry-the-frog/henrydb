@@ -654,17 +654,21 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement gradient accumulation for CharLM training — simulate larger batch sizes",
       "project": "neural-net",
-      "started": "2026-04-23T17:02:40.691Z"
+      "started": "2026-04-23T17:02:40.691Z",
+      "completed": "2026-04-23T17:04:16.670Z",
+      "duration_ms": 300000,
+      "summary": "Gradient accumulation for CharLM: 46.8% loss improvement with 4-step accumulation. trainStepAccumulate + _saveGradients + _addGradients + _scaleGradients. All 13 tests pass."
     },
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Neural-net: implement dropout layer with training/eval mode toggle",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-23T17:04:22.047Z"
     },
     {
       "id": "T63",
