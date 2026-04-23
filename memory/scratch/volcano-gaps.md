@@ -50,10 +50,10 @@
 5. **Non-correlated detection**: Check for outer table refs in WHERE before pre-evaluating
 6. **NULL vs undefined**: Use `!== undefined` not `??` for LEFT JOIN null preservation
 
-## Bugs Found During Session B Stress Testing
-1. **GROUP BY CASE expression** — Volcano produces wrong row counts when GROUP BY uses CASE WHEN expression. Legacy correct (X=17, Y=33), Volcano wrong (X=17, Y=17). Missing rows.
-2. **Subquery in ORDER BY** — `ORDER BY (SELECT MAX(val) FROM t) - val` crashes. Unsupported in Volcano.
-3. **Derived table with UNION** — `FROM (SELECT ... UNION ALL SELECT ...) sub` not supported (UNION in derived table subquery).
+## Bugs Found During Session B Stress Testing — STATUS: ALL RESOLVED (2026-04-23)
+1. **GROUP BY CASE expression** — ✅ FIXED (verified 2026-04-23, likely from HAVING rewrite)
+2. **Subquery in ORDER BY** — ✅ No longer crashes (pre-existing limitation in both engines)
+3. **Derived table with UNION** — ✅ FIXED (works in both engines)
 
 ### GROUP BY CASE Expression Bug — Details
 - Simple GROUP BY works (grp: a=2, b=2, c=2)

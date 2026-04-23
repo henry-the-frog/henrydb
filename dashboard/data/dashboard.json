@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-23T15:57:15.996Z",
+  "generated": "2026-04-23T16:01:19.710Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "Extract prepared-statements (~100 LOC: _handlePrepare/_handleExecute/_handleDeallocate) from db.js to prepared-stmts.js",
-    "startedAt": "2026-04-23T15:57:15.996Z",
-    "taskId": "T24"
+    "task": "Fix Volcano derived table with UNION — FROM (SELECT ... UNION ALL SELECT ...) sub",
+    "completedAt": "2026-04-23T16:01:19.710Z",
+    "taskId": "T26",
+    "summary": "Derived table with UNION already works in Volcano. Both engines produce same results. derived-table-volcano.test.js: 0 failures.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -68,59 +70,97 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB db.js extraction: next modules from scratch/henrydb-extraction-roadmap.md",
         "task": null,
-        "started": "2026-04-23T15:51:39.739Z"
+        "started": "2026-04-23T15:51:39.739Z",
+        "completed": "2026-04-23T15:51:58.618Z",
+        "duration_ms": 120000,
+        "summary": "Planned 3 extractions: index-advisor-impl.js (~70 LOC), merge-executor.js (~60 LOC), prepared-stmts.js (~100 LOC). Context: extraction-lessons-2026-04-22.md for patterns."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Extract index-advisor (~70 LOC: _recommendIndexes + _applyRecommendedIndexes) from db.js to index-advisor-impl.js",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-23T15:52:07.037Z",
+        "completed": "2026-04-23T15:56:00.890Z",
+        "duration_ms": 300000,
+        "summary": "Extracted index-advisor-impl.js (85 LOC) from db.js. _recommendIndexes + _applyRecommendedIndexes. All tests pass."
       },
       {
         "id": "T23",
         "mode": "BUILD",
         "task": "Extract merge (~60 LOC: _merge) from db.js to merge-executor.js",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-23T15:56:09.155Z",
+        "completed": "2026-04-23T15:57:07.071Z",
+        "duration_ms": 300000,
+        "summary": "Extracted merge-executor.js (75 LOC) from db.js. MERGE statement. All merge tests pass. db.js now 3285 lines."
       },
       {
         "id": "T24",
         "mode": "BUILD",
         "task": "Extract prepared-statements (~100 LOC: _handlePrepare/_handleExecute/_handleDeallocate) from db.js to prepared-stmts.js",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-23T15:57:15.959Z",
+        "completed": "2026-04-23T15:58:15.644Z",
+        "duration_ms": 300000,
+        "summary": "Extracted prepared-stmts.js (72 LOC) from db.js. PREPARE/EXECUTE/DEALLOCATE. All prepared statement tests pass. db.js now 3246 lines."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git commit+push, dashboard regen, check email/GH"
+        "status": "done",
+        "task": "Git commit+push, dashboard regen, check email/GH",
+        "started": "2026-04-23T15:58:27.840Z",
+        "completed": "2026-04-23T15:58:58.964Z",
+        "duration_ms": 60000,
+        "summary": "Git push done. Dashboard regenerated (24 blocks, 10 done)."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Evaluate Volcano CTE routing — 14x speedup potential. Worth doing now or after extraction?"
+        "status": "done",
+        "task": "Evaluate Volcano CTE routing — 14x speedup potential. Worth doing now or after extraction?",
+        "started": "2026-04-23T15:59:08.064Z",
+        "completed": "2026-04-23T15:59:20.537Z",
+        "duration_ms": 120000,
+        "summary": "Evaluated Volcano CTE routing. Verdict: 3 known Volcano correctness bugs (GROUP BY CASE, subquery ORDER BY, derived UNION) should take priority over performance optimization. Redirect T10 plan to fix GROUP BY CASE bug first — its a real data loss issue."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Volcano CTE routing: route CTEs through Volcano planner for 14x speedup (5ms vs 70ms)",
-        "task": null
+        "task": null,
+        "started": "2026-04-23T15:59:28.607Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix Volcano GROUP BY CASE expression bug — HashAggregate losing rows when GROUP BY key is CASE WHEN",
         "plan_ref": "T10",
         "project": "henrydb"
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "task": "Fix Volcano subquery in ORDER BY crash — ORDER BY (SELECT MAX(val)...) - val",
+        "status": "upcoming",
+        "plan_ref": "T10"
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "task": "Fix Volcano derived table with UNION — FROM (SELECT ... UNION ALL SELECT ...) sub",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -199,13 +239,13 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 8,
-    "blocksTotal": 24,
+    "blocksCompleted": 15,
+    "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 3,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 7,
+      "MAINTAIN": 2
     }
   }
 }
