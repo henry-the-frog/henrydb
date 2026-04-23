@@ -50,6 +50,7 @@ import { applySelectColumns as _applySelectColumnsImpl } from './select-columns.
 import { createMatView as _createMatViewImpl, refreshMatView as _refreshMatViewImpl } from './matview-handler.js';
 import { applySetOrderLimit as _applySetOrderLimitImpl, remapUnionColumns as _remapUnionColumnsImpl } from './set-ops-helpers.js';
 import { callProcedure as _callProcedureImpl, callUserFunction as _callUserFunctionImpl } from './procedure-handler.js';
+import { fromSerialized as _fromSerializedImpl } from './deserialize-handler.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -597,77 +598,7 @@ export class Database {
    */
   executePaginated(sql, page = 1, pageSize = 100) { return _executePaginatedImpl(this, sql, page, pageSize); }
 
-  static fromSerialized(data) {
-    const obj = typeof data === 'string' ? JSON.parse(data) : data;
-    const db = new Database();
-    
-    // Restore tables
-    for (const [name, tableData] of Object.entries(obj.tables)) {
-      // Create table from schema
-      const schema = tableData.schema;
-      const heap = db._heapFactory(name);
-      const indexes = new Map();
-      const tableObj = { schema, heap, indexes };
-      db.tables.set(name, tableObj);
-      
-      // Insert rows
-      for (const values of tableData.rows) {
-        heap.insert(values);
-      }
-      
-      // Rebuild indexes
-      for (const colName of tableData.indexes || []) {
-        const colIdx = schema.findIndex(c => c.name === colName);
-        if (colIdx >= 0) {
-          const index = new BPlusTree(32);
-          for (const { pageId, slotIdx, values } of heap.scan()) {
-            index.insert(values[colIdx], { pageId, slotIdx });
-          }
-          indexes.set(colName, index);
-        }
-      }
-      
-      // Restore index metadata
-      if (tableData.indexMeta) {
-        if (!tableObj.indexMeta) tableObj.indexMeta = new Map();
-        for (const [key, meta] of Object.entries(tableData.indexMeta)) {
-          tableObj.indexMeta.set(key, meta);
-        }
-      }
-    }
-    
-    // Restore views
-    for (const [name, view] of Object.entries(obj.views || {})) {
-      db.views.set(name, view);
-    }
-    
-    // Restore triggers
-    db.triggers = obj.triggers || [];
-    
-    // Restore sequences
-    for (const [name, seq] of Object.entries(obj.sequences || {})) {
-      db.sequences.set(name, { ...seq });
-    }
-    
-    // Restore materialized views
-    for (const [name, mv] of Object.entries(obj.materializedViews || {})) {
-      if (!db.materializedViews) db.materializedViews = new Map();
-      db.materializedViews.set(name, mv);
-    }
-    
-    // Restore comments
-    for (const [key, val] of Object.entries(obj.comments || {})) {
-      if (!db._comments) db._comments = new Map();
-      db._comments.set(key, val);
-    }
-    
-    // Restore indexCatalog (for composite unique/PK constraints)
-    for (const [name, meta] of Object.entries(obj.indexCatalog || {})) {
-      db.indexCatalog.set(name, meta);
-    }
-    
-    return db;
-  }
+  static fromSerialized(data) { return _fromSerializedImpl(Database, data); }
 
   prepare(sql) {
     const ast = parse(sql);

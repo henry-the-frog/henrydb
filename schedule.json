@@ -708,10 +708,27 @@
     {
       "id": "T66",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement RoPE (Rotary Position Embedding) for attention",
       "project": "neural-net",
-      "started": "2026-04-23T17:10:01.512Z"
+      "started": "2026-04-23T17:10:01.512Z",
+      "completed": "2026-04-23T17:11:25.209Z",
+      "duration_ms": 600000,
+      "summary": "RoPE (Rotary Position Embedding) from scratch. Su et al. 2021. 9 tests all pass. Verified: norm preservation, backward=inverse rotation, relative position invariance, offset for KV cache."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: extract _fromSerialized + _loadFromFile from db.js to deserialize-handler.js",
+      "project": "henrydb",
+      "started": "2026-04-23T17:11:46.780Z"
+    },
+    {
+      "id": "T68",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "End session: final git push, CURRENT.md, daily log summary"
     }
   ],
   "focusProjects": [
@@ -963,6 +980,14 @@
     {
       "time": "2026-04-23T17:05:51.364Z",
       "msg": "Added T66 (BUILD) after end: Neural-net: implement RoPE (Rotary Position Embedding) for attention"
+    },
+    {
+      "time": "2026-04-23T17:11:38.752Z",
+      "msg": "Added T67 (BUILD) after end: HenryDB: extract _fromSerialized + _loadFromFile from db.js to deserialize-handler.js"
+    },
+    {
+      "time": "2026-04-23T17:11:38.872Z",
+      "msg": "Added T68 (MAINTAIN) after end: End session: final git push, CURRENT.md, daily log summary"
     }
   ]
 }
