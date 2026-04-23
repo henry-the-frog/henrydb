@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-23T15:56:09.191Z",
+  "generated": "2026-04-23T15:57:15.996Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Extract merge (~60 LOC: _merge) from db.js to merge-executor.js",
-    "startedAt": "2026-04-23T15:56:09.191Z",
-    "taskId": "T23"
+    "task": "Extract prepared-statements (~100 LOC: _handlePrepare/_handleExecute/_handleDeallocate) from db.js to prepared-stmts.js",
+    "startedAt": "2026-04-23T15:57:15.996Z",
+    "taskId": "T24"
   },
   "schedule": {
     "date": "2026-04-23",
@@ -199,12 +199,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 7,
+    "blocksCompleted": 8,
     "blocksTotal": 24,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 2,
+      "BUILD": 3,
       "MAINTAIN": 1
     }
   }

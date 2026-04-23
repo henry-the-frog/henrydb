@@ -35,6 +35,7 @@ import { selectInfoSchema as _selectInfoSchemaImpl, selectPgCatalog as _selectPg
 import { union_ as _unionImpl, unionInner as _unionInnerImpl, intersect as _intersectImpl, except_ as _exceptImpl } from './set-operations.js';
 import { recommendIndexes as _recommendIndexesImpl, applyRecommendedIndexes as _applyRecommendedIndexesImpl } from './index-advisor-impl.js';
 import { merge as _mergeImpl } from './merge-executor.js';
+import { handlePrepare as _handlePrepareImpl, handleExecute as _handleExecuteImpl, handleDeallocate as _handleDeallocateImpl } from './prepared-stmts.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -353,53 +354,13 @@ export class Database {
   }
 
   // PREPARE name AS sql_with_placeholders
-  _handlePrepare(sql) {
-    // PREPARE stmt_name AS SELECT ... WHERE id = $1
-    const match = sql.match(/PREPARE\s+(\w+)\s+AS\s+(.*)/is);
-    if (!match) throw new Error('Invalid PREPARE syntax. Use: PREPARE name AS sql');
-    const name = match[1];
-    const template = match[2].replace(/;$/, '').trim();
-    const ast = parse(template);
-    this._preparedStatements.set(name, { sql: template, ast });
-    return { type: 'OK', message: `Prepared statement "${name}" created` };
-  }
+  _handlePrepare(sql) { return _handlePrepareImpl(this, sql); }
 
   // EXECUTE name (val1, val2, ...)
-  _handleExecute(sql) {
-    const match = sql.match(/EXECUTE\s+(\w+)\s*(?:\(([^)]*)\))?/is);
-    if (!match) throw new Error('Invalid EXECUTE syntax. Use: EXECUTE name (val1, val2)');
-    const name = match[1];
-    const paramsStr = match[2] || '';
-    
-    const stmt = this._preparedStatements.get(name);
-    if (!stmt) throw new Error(`Prepared statement "${name}" not found`);
-    
-    // Parse parameter values
-    const params = paramsStr.split(',').map(p => p.trim()).filter(p => p);
-    
-    // Substitute $1, $2, etc. in the SQL
-    let resolved = stmt.sql;
-    for (let i = 0; i < params.length; i++) {
-      resolved = resolved.replace(new RegExp('\\$' + (i + 1), 'g'), params[i]);
-    }
-    
-    return this.execute(resolved);
-  }
+  _handleExecute(sql) { return _handleExecuteImpl(this, sql); }
 
   // DEALLOCATE name
-  _handleDeallocate(sql) {
-    const match = sql.match(/DEALLOCATE\s+(\w+)/i);
-    if (!match) throw new Error('Invalid DEALLOCATE syntax');
-    const name = match[1].replace(/;$/, '');
-    if (name.toUpperCase() === 'ALL') {
-      this._preparedStatements.clear();
-      return { type: 'OK', message: 'All prepared statements deallocated' };
-    }
-    if (!this._preparedStatements.delete(name)) {
-      throw new Error(`Prepared statement "${name}" not found`);
-    }
-    return { type: 'OK', message: `Prepared statement "${name}" deallocated` };
-  }
+  _handleDeallocate(sql) { return _handleDeallocateImpl(this, sql); }
 
   // SAVEPOINT name — save current state
   _handleSavepoint(sql) {

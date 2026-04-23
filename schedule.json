@@ -81,16 +81,20 @@
       "id": "T23",
       "mode": "BUILD",
       "task": "Extract merge (~60 LOC: _merge) from db.js to merge-executor.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-23T15:56:09.155Z"
+      "started": "2026-04-23T15:56:09.155Z",
+      "completed": "2026-04-23T15:57:07.071Z",
+      "duration_ms": 300000,
+      "summary": "Extracted merge-executor.js (75 LOC) from db.js. MERGE statement. All merge tests pass. db.js now 3285 lines."
     },
     {
       "id": "T24",
       "mode": "BUILD",
       "task": "Extract prepared-statements (~100 LOC: _handlePrepare/_handleExecute/_handleDeallocate) from db.js to prepared-stmts.js",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-23T15:57:15.959Z"
     },
     {
       "id": "T8",
