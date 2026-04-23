@@ -2867,9 +2867,96 @@
     {
       "id": "T266",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push",
+      "started": "2026-04-23T23:07:56.222Z",
+      "completed": "2026-04-23T23:08:40.862Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T267",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study pg-protocol.js: PostgreSQL protocol message handling",
+      "project": "henrydb",
+      "started": "2026-04-23T23:09:27.007Z",
+      "completed": "2026-04-23T23:10:03.999Z",
+      "duration_ms": 30000,
+      "summary": "PG protocol: 513 lines, PostgreSQL wire protocol v3. Messages: AuthOK/MD5, ParameterStatus, BackendKeyData, ReadyForQuery, RowDescription, DataRow, CommandComplete, ErrorResponse. Type OID mapping. Full psql session support."
+    },
+    {
+      "id": "T268",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study event-system.js if exists: database event notifications",
+      "project": "henrydb",
+      "started": "2026-04-23T23:10:04.259Z",
+      "completed": "2026-04-23T23:10:42.937Z",
+      "duration_ms": 30000,
+      "summary": "Event system: 510 lines total. LISTEN/NOTIFY (PostgreSQL pub/sub), event triggers (DDL hooks), DB events (query lifecycle), event emitter (28-line foundation). Full async notification system."
+    },
+    {
+      "id": "T269",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study avl-tree.js: balanced BST implementation",
+      "project": "henrydb",
+      "started": "2026-04-23T23:10:43.197Z",
+      "completed": "2026-04-23T23:11:15.915Z",
+      "duration_ms": 15000,
+      "summary": "AVL tree: 92 lines, clean balanced BST. LL/RR/LR/RL rotations. Balance factor = height(left)-height(right), maintained within [-1,1]. Stricter than RB tree."
+    },
+    {
+      "id": "T270",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study vision.js if exists: vision model components",
+      "project": "neural-net",
+      "started": "2026-04-23T23:11:16.175Z",
+      "completed": "2026-04-23T23:11:42.378Z",
+      "duration_ms": 10000,
+      "summary": "No ViT/vision modules. Conv2D and MaxPool2D exist for CNN image processing but no Vision Transformer. Gap."
+    },
+    {
+      "id": "T271",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study circular-log.js: circular buffer logging",
+      "project": "henrydb",
+      "started": "2026-04-23T23:11:42.652Z",
+      "completed": "2026-04-23T23:12:16.447Z",
+      "duration_ms": 10000,
+      "summary": "Circular doubly-linked list: 25 lines. O(1) add/remove. Used by Clock replacer in buffer pool. Clean implementation with iterator support."
+    },
+    {
+      "id": "T272",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study connection-pool.js: connection management",
+      "project": "henrydb",
+      "started": "2026-04-23T23:12:16.706Z",
+      "completed": "2026-04-23T23:12:56.997Z",
+      "duration_ms": 30000,
+      "summary": "Connection pool: 220 lines, production-quality. Async acquire with waiter queue, min/max size, health checks, idle timeout, max lifetime, acquire timeout, metrics. Used for PostgreSQL wire protocol server connections."
+    },
+    {
+      "id": "T273",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit sparse-attention.js: sparse attention patterns",
+      "project": "neural-net",
+      "started": "2026-04-23T23:12:57.257Z",
+      "completed": "2026-04-23T23:13:48.790Z",
+      "duration_ms": 30000,
+      "summary": "Sparse attention: 9 mask patterns (full, causal, local window, strided, dilated, global tokens, random, block-sparse, combined). BigBird-style and Longformer-style compositions. Sparse attention forward with mask application. Enables long-sequence processing."
+    },
+    {
+      "id": "T274",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push",
-      "started": "2026-04-23T23:07:56.222Z"
+      "started": "2026-04-23T23:13:49.070Z"
     }
   ],
   "focusProjects": [
@@ -3993,6 +4080,38 @@
     {
       "time": "2026-04-23T23:03:13.026Z",
       "msg": "Added T266 (MAINTAIN) after T265: Git push"
+    },
+    {
+      "time": "2026-04-23T23:09:09.899Z",
+      "msg": "Added T267 (EXPLORE) after end: Study pg-protocol.js: PostgreSQL protocol message handling"
+    },
+    {
+      "time": "2026-04-23T23:09:10.021Z",
+      "msg": "Added T268 (EXPLORE) after T267: Study event-system.js if exists: database event notifications"
+    },
+    {
+      "time": "2026-04-23T23:09:10.142Z",
+      "msg": "Added T269 (EXPLORE) after T268: Study avl-tree.js: balanced BST implementation"
+    },
+    {
+      "time": "2026-04-23T23:09:10.262Z",
+      "msg": "Added T270 (EXPLORE) after T269: Study vision.js if exists: vision model components"
+    },
+    {
+      "time": "2026-04-23T23:09:10.383Z",
+      "msg": "Added T271 (EXPLORE) after T270: Study circular-log.js: circular buffer logging"
+    },
+    {
+      "time": "2026-04-23T23:09:10.504Z",
+      "msg": "Added T272 (EXPLORE) after T271: Study connection-pool.js: connection management"
+    },
+    {
+      "time": "2026-04-23T23:09:10.626Z",
+      "msg": "Added T273 (EXPLORE) after T272: Audit sparse-attention.js: sparse attention patterns"
+    },
+    {
+      "time": "2026-04-23T23:09:10.747Z",
+      "msg": "Added T274 (MAINTAIN) after T273: Git push"
     }
   ]
 }
