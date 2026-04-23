@@ -998,6 +998,17 @@
       "completed": "2026-04-23T18:32:23.862Z",
       "duration_ms": 240000,
       "summary": "Contrastive learning: NT-Xent (SimCLR), InfoNCE, Triplet loss, cosine similarity. 8 tests."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement CLIP loss (Radford 2021) for multimodal alignment",
+      "project": "neural-net",
+      "started": "2026-04-23T18:32:43.881Z",
+      "completed": "2026-04-23T18:33:22.069Z",
+      "duration_ms": 240000,
+      "summary": "CLIP loss + zero-shot classification. Symmetric cross-entropy on similarity matrix. 5 tests."
     }
   ],
   "focusProjects": [
@@ -1353,6 +1364,10 @@
     {
       "time": "2026-04-23T18:31:38.005Z",
       "msg": "Added T92 (BUILD) after end: Neural-net: implement Contrastive Learning (SimCLR, Chen 2020) with NT-Xent loss"
+    },
+    {
+      "time": "2026-04-23T18:32:43.647Z",
+      "msg": "Added T93 (BUILD) after end: Neural-net: implement CLIP loss (Radford 2021) for multimodal alignment"
     }
   ]
 }
