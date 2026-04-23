@@ -817,10 +817,21 @@
     {
       "id": "T76",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: extract _tryIndexScan (~251 LOC) from db.js — the big one",
       "project": "henrydb",
-      "started": "2026-04-23T17:43:57.752Z"
+      "started": "2026-04-23T17:43:57.752Z",
+      "completed": "2026-04-23T17:46:22.751Z",
+      "duration_ms": 600000,
+      "summary": "Extracted index-scan.js (265 LOC) — the largest single extraction! db.js now 1851 lines. 20 modules extracted this session. Total: 1442 LOC moved."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: extract _insertRow (~126 LOC) from db.js to insert-row.js",
+      "project": "henrydb",
+      "started": "2026-04-23T17:46:38.420Z"
     }
   ],
   "focusProjects": [
@@ -1112,6 +1123,10 @@
     {
       "time": "2026-04-23T17:43:51.922Z",
       "msg": "Added T76 (BUILD) after end: HenryDB: extract _tryIndexScan (~251 LOC) from db.js — the big one"
+    },
+    {
+      "time": "2026-04-23T17:46:38.187Z",
+      "msg": "Added T77 (BUILD) after end: HenryDB: extract _insertRow (~126 LOC) from db.js to insert-row.js"
     }
   ]
 }
