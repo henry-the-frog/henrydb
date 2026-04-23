@@ -2269,15 +2269,96 @@
     {
       "id": "T213",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:24:57.763Z"
+      "started": "2026-04-23T22:24:57.763Z",
+      "completed": "2026-04-23T22:25:31.539Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
-      "id": "T179",
+      "id": "T214",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit normalizing-flows.js: is the change of variables formula correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:26:17.942Z",
+      "completed": "2026-04-23T22:26:59.450Z",
+      "duration_ms": 60000,
+      "summary": "Normalizing flows: Planar (Rezende 2015) + Affine Coupling (RealNVP, Dinh 2017). Both correct. Planar: log-det Jacobian via ψ trick, invertibility constraint via softplus. Affine coupling: diagonal Jacobian, exact inverse. Change of variables formula correct."
+    },
+    {
+      "id": "T215",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study vectorized.js: columnar execution engine",
+      "project": "henrydb",
+      "started": "2026-04-23T22:26:59.710Z",
+      "completed": "2026-04-23T22:27:47.371Z",
+      "duration_ms": 60000,
+      "summary": "Vectorized engine: MonetDB/X100 style at 463 lines. Column batches (1024 rows), columnar storage, batch operators. HenryDB now has THREE execution models: Volcano (row-at-a-time), Pipeline compiler (JIT push), Vectorized (columnar batch). Impressive for a prototype."
+    },
+    {
+      "id": "T216",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study adaln.js: is adaptive layer norm for diffusion correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:27:47.630Z",
+      "completed": "2026-04-23T22:28:20.069Z",
+      "duration_ms": 30000,
+      "summary": "AdaLN correct per DiT (Peebles & Xie 2023). Predicts γ,β from conditioning via MLP. AdaLN-Zero: α gate for residual (init 0 → identity). Used in Diffusion Transformers."
+    },
+    {
+      "id": "T217",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study SSI (serializable snapshot isolation): does it detect anomalies?",
+      "project": "henrydb",
+      "started": "2026-04-23T22:28:20.329Z",
+      "completed": "2026-04-23T22:29:38.614Z",
+      "duration_ms": 60000,
+      "summary": "SSI correct per Cahill 2008 / Ports & Grittner 2012. Tracks rw-antidependencies, detects dangerous structures (inConflict + outConflict on same tx), aborts to prevent anomalies. Same approach as PostgreSQL SERIALIZABLE. 277 lines. Academic-quality implementation."
+    },
+    {
+      "id": "T218",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study char-lm.js: character-level language model",
+      "project": "neural-net",
+      "started": "2026-04-23T22:29:38.873Z",
+      "completed": "2026-04-23T22:30:24.775Z",
+      "duration_ms": 60000,
+      "summary": "Character LM: 831-line end-to-end GPT-style model. CharTokenizer + Embedding + Decoder Transformer + Causal Attention + AdamW + Cosine LR + Text Generation. 13/13 tests pass including training convergence on repeating patterns. Working integration demo!"
+    },
+    {
+      "id": "T219",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit pushdown.js: predicate pushdown optimization",
+      "project": "henrydb",
+      "started": "2026-04-23T22:30:25.034Z",
+      "completed": "2026-04-23T22:30:49.402Z",
+      "duration_ms": 30000,
+      "summary": "Predicate pushdown: splits WHERE into conjuncts, identifies table refs, pushes single-table predicates below joins. Classic optimization. 154 lines. Reduces rows before join (early filtering)."
+    },
+    {
+      "id": "T220",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study darts.js: differentiable architecture search",
+      "project": "neural-net",
+      "started": "2026-04-23T22:30:49.662Z",
+      "completed": "2026-04-23T22:31:22.422Z",
+      "duration_ms": 30000,
+      "summary": "DARTS (Liu et al. 2019): continuous relaxation of architecture search. Mixed ops as softmax-weighted sums, alpha params learned via gradient descent. Cell-based architecture. 359 lines. Simplified but core concept is correct. Cutting-edge NAS."
+    },
+    {
+      "id": "T221",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push + session end"
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:31:22.681Z"
     },
     {
       "id": "T137",
@@ -2290,6 +2371,12 @@
       "mode": "THINK",
       "status": "upcoming",
       "task": "End of day: compile all findings into actionable tomorrow task list"
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + session end"
     }
   ],
   "focusProjects": [
@@ -3185,6 +3272,50 @@
     {
       "time": "2026-04-23T22:21:27.522Z",
       "msg": "Moved T179 after T213"
+    },
+    {
+      "time": "2026-04-23T22:26:06.200Z",
+      "msg": "Added T214 (EXPLORE) after end: Audit normalizing-flows.js: is the change of variables formula correct?"
+    },
+    {
+      "time": "2026-04-23T22:26:06.321Z",
+      "msg": "Added T215 (EXPLORE) after T214: Study vectorized.js: columnar execution engine"
+    },
+    {
+      "time": "2026-04-23T22:26:06.442Z",
+      "msg": "Added T216 (EXPLORE) after T215: Study adaln.js: is adaptive layer norm for diffusion correct?"
+    },
+    {
+      "time": "2026-04-23T22:26:06.562Z",
+      "msg": "Added T217 (EXPLORE) after T216: Study SSI (serializable snapshot isolation): does it detect anomalies?"
+    },
+    {
+      "time": "2026-04-23T22:26:06.683Z",
+      "msg": "Added T218 (EXPLORE) after T217: Study char-lm.js: character-level language model"
+    },
+    {
+      "time": "2026-04-23T22:26:06.803Z",
+      "msg": "Added T219 (EXPLORE) after T218: Audit pushdown.js: predicate pushdown optimization"
+    },
+    {
+      "time": "2026-04-23T22:26:06.923Z",
+      "msg": "Added T220 (EXPLORE) after T219: Study darts.js: differentiable architecture search"
+    },
+    {
+      "time": "2026-04-23T22:26:07.043Z",
+      "msg": "Added T221 (MAINTAIN) after T220: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:26:17.464Z",
+      "msg": "Moved T179 after T221"
+    },
+    {
+      "time": "2026-04-23T22:26:17.584Z",
+      "msg": "Moved T136 after T221"
+    },
+    {
+      "time": "2026-04-23T22:26:17.704Z",
+      "msg": "Moved T137 after T221"
     }
   ]
 }
