@@ -2780,9 +2780,96 @@
     {
       "id": "T258",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-23T23:02:09.747Z"
+      "started": "2026-04-23T23:02:09.747Z",
+      "completed": "2026-04-23T23:02:43.702Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T259",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study plsql.js: PL/SQL language support",
+      "project": "henrydb",
+      "started": "2026-04-23T23:03:31.377Z",
+      "completed": "2026-04-23T23:04:00.589Z",
+      "duration_ms": 60000,
+      "summary": "PL/HenryDB: full PL/pgSQL-like procedural language at 854 lines! Parser + interpreter. DECLARE/BEGIN/END, IF/ELSIF/ELSE, WHILE, FOR (REVERSE), RETURN, RAISE, EXECUTE (dynamic SQL), EXCEPTION handlers, variable scoping. Complete procedural language interpreter embedded in the database. Incredibly sophisticated."
+    },
+    {
+      "id": "T260",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study query-vm.js: SQL query virtual machine",
+      "project": "henrydb",
+      "started": "2026-04-23T23:04:00.849Z",
+      "completed": "2026-04-23T23:04:46.121Z",
+      "duration_ms": 60000,
+      "summary": "Query VM: SQLite VDBE-style bytecode engine! 30+ opcodes (control flow, data, arithmetic, comparison, string, aggregate, hash). Register file + bytecode compiler + interpreter. 595 lines. This is the FIFTH execution model in HenryDB! Five distinct engines in one database."
+    },
+    {
+      "id": "T261",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study group-by-executor.js: GROUP BY execution",
+      "project": "henrydb",
+      "started": "2026-04-23T23:04:46.381Z",
+      "completed": "2026-04-23T23:05:27.234Z",
+      "duration_ms": 30000,
+      "summary": "GROUP BY executor: 528 lines. Handles column names, expressions, aliases, ordinal positions (GROUP BY 1). HAVING clause. All aggregate functions. Multi-key grouping. Comprehensive GROUP BY support."
+    },
+    {
+      "id": "T262",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study sql-functions.js: built-in SQL functions",
+      "project": "henrydb",
+      "started": "2026-04-23T23:05:27.492Z",
+      "completed": "2026-04-23T23:06:13.938Z",
+      "duration_ms": 30000,
+      "summary": "SQL functions: 716 lines, 70+ functions. String: UPPER/LOWER/TRIM/REPLACE/SUBSTR/CONCAT/POSITION/INITCAP/SPLIT_PART/OVERLAY/TRANSLATE/MD5. DateTime: EXTRACT/DATE_TRUNC/DATE_ADD. Numeric: ABS/ROUND/CEIL/FLOOR/POWER/SQRT/SIGN. Type: COALESCE/NULLIF/CAST. Comprehensive SQL function library."
+    },
+    {
+      "id": "T263",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study select-inner.js: inner select execution",
+      "project": "henrydb",
+      "started": "2026-04-23T23:06:14.198Z",
+      "completed": "2026-04-23T23:06:51.966Z",
+      "duration_ms": 30000,
+      "summary": "select-inner.js: 686-line core SELECT orchestrator. Handles SELECT without FROM, GENERATE_SERIES, CTEs, table scanning, predicate pushdown, joins, subqueries, DISTINCT, ORDER BY, LIMIT/OFFSET, UNION/INTERSECT/EXCEPT. The heart of the query engine."
+    },
+    {
+      "id": "T264",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study data-loader.js: data pipeline",
+      "project": "neural-net",
+      "started": "2026-04-23T23:06:52.226Z",
+      "completed": "2026-04-23T23:07:16.591Z",
+      "duration_ms": 10000,
+      "summary": "No data-loader module. Training loops use inline data handling. Gap for a proper DataLoader with batching/shuffling."
+    },
+    {
+      "id": "T265",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study file-wal.js: file-backed WAL",
+      "project": "henrydb",
+      "started": "2026-04-23T23:07:16.851Z",
+      "completed": "2026-04-23T23:07:55.936Z",
+      "duration_ms": 30000,
+      "summary": "File WAL: 615 lines, 3 sync modes (immediate/batch/none). Group commit for throughput (PostgreSQL-style). Binary format, startup recovery, checkpoint tracking. Write buffer for batch mode. Production-grade WAL engineering."
+    },
+    {
+      "id": "T266",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-23T23:07:56.222Z"
     }
   ],
   "focusProjects": [
@@ -3874,6 +3961,38 @@
     {
       "time": "2026-04-23T22:57:48.923Z",
       "msg": "Added T258 (MAINTAIN) after T257: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T23:03:12.181Z",
+      "msg": "Added T259 (EXPLORE) after end: Study plsql.js: PL/SQL language support"
+    },
+    {
+      "time": "2026-04-23T23:03:12.301Z",
+      "msg": "Added T260 (EXPLORE) after T259: Study query-vm.js: SQL query virtual machine"
+    },
+    {
+      "time": "2026-04-23T23:03:12.422Z",
+      "msg": "Added T261 (EXPLORE) after T260: Study group-by-executor.js: GROUP BY execution"
+    },
+    {
+      "time": "2026-04-23T23:03:12.543Z",
+      "msg": "Added T262 (EXPLORE) after T261: Study sql-functions.js: built-in SQL functions"
+    },
+    {
+      "time": "2026-04-23T23:03:12.664Z",
+      "msg": "Added T263 (EXPLORE) after T262: Study select-inner.js: inner select execution"
+    },
+    {
+      "time": "2026-04-23T23:03:12.785Z",
+      "msg": "Added T264 (EXPLORE) after T263: Study data-loader.js: data pipeline"
+    },
+    {
+      "time": "2026-04-23T23:03:12.906Z",
+      "msg": "Added T265 (EXPLORE) after T264: Study file-wal.js: file-backed WAL"
+    },
+    {
+      "time": "2026-04-23T23:03:13.026Z",
+      "msg": "Added T266 (MAINTAIN) after T265: Git push"
     }
   ]
 }
