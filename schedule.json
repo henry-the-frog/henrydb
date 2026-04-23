@@ -589,16 +589,20 @@
       "id": "T55",
       "mode": "BUILD",
       "task": "Extract row-lock.js (~61 LOC: _acquireRowLocks, _releaseRowLocks) from db.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T52",
-      "started": "2026-04-23T16:51:55.134Z"
+      "started": "2026-04-23T16:51:55.134Z",
+      "completed": "2026-04-23T16:53:13.950Z",
+      "duration_ms": 300000,
+      "summary": "Extracted row-lock.js (78 LOC). 11/11 row-locking tests pass. db.js now 2535 lines."
     },
     {
       "id": "T56",
       "mode": "BUILD",
       "task": "Extract paginated-exec.js (~94 LOC) from db.js",
-      "status": "upcoming",
-      "plan_ref": "T52"
+      "status": "in-progress",
+      "plan_ref": "T52",
+      "started": "2026-04-23T16:53:22.482Z"
     }
   ],
   "focusProjects": [

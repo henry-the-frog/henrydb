@@ -44,6 +44,7 @@ import { handleCheckpoint as _handleCheckpointImpl } from './checkpoint-handler.
 import { handleVacuum as _handleVacuumImpl } from './vacuum-handler.js';
 import { serialize as _serializeImpl, save as _saveImpl, bulkInsert as _bulkInsertImpl } from './serialize-handler.js';
 import { acquireRowLocks as _acquireRowLocksImpl, releaseRowLocks as _releaseRowLocksImpl } from './row-lock.js';
+import { executePaginated as _executePaginatedImpl } from './paginated-exec.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -589,28 +590,7 @@ export class Database {
    * @param {number} pageSize - Rows per page
    * @returns {Object} Paginated result
    */
-  executePaginated(sql, page = 1, pageSize = 100) {
-    const result = this.execute(sql);
-    if (result.type !== 'ROWS') return result;
-    
-    const totalRows = result.rows.length;
-    const totalPages = Math.ceil(totalRows / pageSize);
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
-    
-    return {
-      type: 'ROWS',
-      rows: result.rows.slice(start, end),
-      pagination: {
-        page,
-        pageSize,
-        totalRows,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
-      },
-    };
-  }
+  executePaginated(sql, page = 1, pageSize = 100) { return _executePaginatedImpl(this, sql, page, pageSize); }
 
   static fromSerialized(data) {
     const obj = typeof data === 'string' ? JSON.parse(data) : data;
