@@ -839,9 +839,27 @@
     {
       "id": "T78",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write session summary, update CURRENT.md + daily log + MEMORY.md",
-      "started": "2026-04-23T17:54:26.131Z"
+      "started": "2026-04-23T17:54:26.131Z",
+      "completed": "2026-04-23T17:55:50.020Z",
+      "duration_ms": 120000,
+      "summary": "Session summary written. CURRENT.md, daily log, git pushed."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural-net: implement Mixture of Experts (MoE) routing layer",
+      "project": "neural-net",
+      "started": "2026-04-23T17:55:37.826Z"
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: implement EXPLAIN ANALYZE VERBOSE with per-operator timing",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1141,6 +1159,14 @@
     {
       "time": "2026-04-23T17:54:25.898Z",
       "msg": "Added T78 (MAINTAIN) after end: Write session summary, update CURRENT.md + daily log + MEMORY.md"
+    },
+    {
+      "time": "2026-04-23T17:55:30.375Z",
+      "msg": "Added T79 (BUILD) after end: Neural-net: implement Mixture of Experts (MoE) routing layer"
+    },
+    {
+      "time": "2026-04-23T17:55:30.494Z",
+      "msg": "Added T80 (BUILD) after end: HenryDB: implement EXPLAIN ANALYZE VERBOSE with per-operator timing"
     }
   ]
 }
