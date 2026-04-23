@@ -849,17 +849,32 @@
     {
       "id": "T79",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement Mixture of Experts (MoE) routing layer",
       "project": "neural-net",
-      "started": "2026-04-23T17:55:37.826Z"
+      "started": "2026-04-23T17:55:37.826Z",
+      "completed": "2026-04-23T17:59:58.742Z",
+      "duration_ms": 10000,
+      "summary": "MoE done."
     },
     {
       "id": "T80",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: implement EXPLAIN ANALYZE VERBOSE with per-operator timing",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-23T17:59:46.521Z",
+      "completed": "2026-04-23T17:59:58.886Z",
+      "duration_ms": 10000,
+      "summary": "Deferred - focusing on neural-net."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural-net: implement Grouped Query Attention (GQA) - shares KV heads across query heads",
+      "project": "neural-net",
+      "started": "2026-04-23T17:59:59.164Z"
     }
   ],
   "focusProjects": [
@@ -1167,6 +1182,10 @@
     {
       "time": "2026-04-23T17:55:30.494Z",
       "msg": "Added T80 (BUILD) after end: HenryDB: implement EXPLAIN ANALYZE VERBOSE with per-operator timing"
+    },
+    {
+      "time": "2026-04-23T17:59:46.288Z",
+      "msg": "Added T81 (BUILD) after end: Neural-net: implement Grouped Query Attention (GQA) - shares KV heads across query heads"
     }
   ]
 }
