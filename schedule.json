@@ -643,10 +643,34 @@
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Extract _applySetOrderLimit + _remapUnionColumns from db.js to set-ops-helpers.js",
       "project": "henrydb",
-      "started": "2026-04-23T17:00:21.723Z"
+      "started": "2026-04-23T17:00:21.723Z",
+      "completed": "2026-04-23T17:01:43.989Z",
+      "duration_ms": 180000,
+      "summary": "Extracted set-ops-helpers.js (50 LOC). db.js now 2270 lines. 17 modules extracted this session!"
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural-net: implement gradient accumulation for CharLM training — simulate larger batch sizes",
+      "project": "neural-net",
+      "started": "2026-04-23T17:02:40.691Z"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural-net: implement dropout layer with training/eval mode toggle",
+      "project": "neural-net"
+    },
+    {
+      "id": "T63",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session: git push, dashboard, CURRENT.md, daily log summary"
     }
   ],
   "focusProjects": [
@@ -874,6 +898,18 @@
     {
       "time": "2026-04-23T17:00:16.596Z",
       "msg": "Added T60 (BUILD) after end: Extract _applySetOrderLimit + _remapUnionColumns from db.js to set-ops-helpers.js"
+    },
+    {
+      "time": "2026-04-23T17:02:23.403Z",
+      "msg": "Added T61 (BUILD) after end: Neural-net: implement gradient accumulation for CharLM training — simulate larger batch sizes"
+    },
+    {
+      "time": "2026-04-23T17:02:23.521Z",
+      "msg": "Added T62 (BUILD) after end: Neural-net: implement dropout layer with training/eval mode toggle"
+    },
+    {
+      "time": "2026-04-23T17:02:31.102Z",
+      "msg": "Added T63 (MAINTAIN) after end: Final session: git push, dashboard, CURRENT.md, daily log summary"
     }
   ]
 }
