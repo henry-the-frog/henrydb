@@ -943,6 +943,17 @@
       "completed": "2026-04-23T18:25:50.542Z",
       "duration_ms": 240000,
       "summary": "AdaLN + AdaLN-Zero for DiT. Conditioning-dependent normalization with residual gating. 6 tests."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement DDPM noise scheduler and denoising step (Ho et al. 2020)",
+      "project": "neural-net",
+      "started": "2026-04-23T18:26:11.009Z",
+      "completed": "2026-04-23T18:27:06.347Z",
+      "duration_ms": 300000,
+      "summary": "DDPM noise scheduler: linear + cosine schedules, add noise, denoise, training loss. 9 tests."
     }
   ],
   "focusProjects": [
@@ -1278,6 +1289,10 @@
     {
       "time": "2026-04-23T18:25:01.392Z",
       "msg": "Added T87 (BUILD) after end: Neural-net: implement AdaLN-Zero (Peebles & Xie 2023) for Diffusion Transformer conditioning"
+    },
+    {
+      "time": "2026-04-23T18:26:10.776Z",
+      "msg": "Added T88 (BUILD) after end: Neural-net: implement DDPM noise scheduler and denoising step (Ho et al. 2020)"
     }
   ]
 }

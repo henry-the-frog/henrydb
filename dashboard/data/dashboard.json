@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-23T18:25:50.578Z",
+  "generated": "2026-04-23T18:27:06.391Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement AdaLN-Zero (Peebles & Xie 2023) for Diffusion Transformer conditioning",
-    "completedAt": "2026-04-23T18:25:50.578Z",
-    "taskId": "T87",
-    "summary": "AdaLN + AdaLN-Zero for DiT. Conditioning-dependent normalization with residual gating. 6 tests.",
-    "durationMs": 240000
+    "task": "Neural-net: implement DDPM noise scheduler and denoising step (Ho et al. 2020)",
+    "completedAt": "2026-04-23T18:27:06.391Z",
+    "taskId": "T88",
+    "summary": "DDPM noise scheduler: linear + cosine schedules, add noise, denoise, training loss. 9 tests.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 87,
+    "blocksCompleted": 88,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 50,
+      "BUILD": 51,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }
