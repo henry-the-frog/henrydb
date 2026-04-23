@@ -167,29 +167,49 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, dashboard update"
+      "status": "done",
+      "task": "Git commit+push, dashboard update",
+      "started": "2026-04-23T16:01:44.630Z",
+      "completed": "2026-04-23T16:02:10.452Z",
+      "duration_ms": 60000,
+      "summary": "Git push done. Dashboard updated."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection: extraction quality, test coverage, any surprising bugs?"
+      "status": "done",
+      "task": "Mid-day reflection: extraction quality, test coverage, any surprising bugs?",
+      "started": "2026-04-23T16:02:14.300Z",
+      "completed": "2026-04-23T16:02:29.114Z",
+      "duration_ms": 120000,
+      "summary": "Mid-session reflection: 13 tasks done. 3 extractions, 0 regressions. Surprise: macOS lacks timeout cmd (cost 45min). All 3 Volcano gaps pre-resolved. Quality good, extraction pattern solid."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net: GAN output activation fix + full backprop CharLM with AdamW",
-      "task": null
+      "task": null,
+      "started": "2026-04-23T16:02:38.301Z",
+      "completed": "2026-04-23T16:03:44.309Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 tasks: GAN activation fix + GAN tests, CharLM AdamW stress test. AdamW was fixed yesterday. GAN has sigmoid-only output (should be configurable)."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Fix GAN generator output activation: add configurable activation (tanh/sigmoid/none), write GAN test suite",
       "plan_ref": "T14",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-23T16:03:51.369Z"
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Stress-test CharLM with AdamW on Shakespeare: verify convergence, sample quality, learning rate scheduling",
+      "status": "upcoming",
+      "plan_ref": "T14"
     },
     {
       "id": "T16",
@@ -348,6 +368,10 @@
     {
       "time": "2026-04-23T15:59:36.039Z",
       "msg": "PLAN T10 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T16:03:39.727Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
     }
   ]
 }
