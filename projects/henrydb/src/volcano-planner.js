@@ -1,6 +1,28 @@
 // volcano-planner.js — Converts SQL AST to volcano iterator tree
 // Bridges the SQL parser to the volcano execution engine
 
+// --- Aggregate arg normalization helpers ---
+// Parser emits arg as string for simple columns, AST node for expressions.
+// These helpers eliminate the typeof checks scattered through the planner.
+function aggArgStr(arg) {
+  if (arg === '*') return '*';
+  if (typeof arg === 'object') return arg.name || JSON.stringify(arg);
+  return arg; // string
+}
+function isExprAgg(arg) {
+  return typeof arg === 'object' && arg !== null && arg.type !== 'column_ref';
+}
+// Window function arg: extract column name (null for literals like NTILE(4))
+function winArgName(arg) {
+  if (arg == null || arg === '*') return arg;
+  if (typeof arg === 'object') return arg.type === 'literal' ? null : (arg.name || null);
+  return arg; // string
+}
+function winArgGetter(arg) {
+  if (typeof arg === 'object' && arg !== null && arg.type !== 'literal' && arg.type !== 'column_ref') return buildValueGetter(arg);
+  return null;
+}
+
 import {
   SeqScan, ValuesIter, Filter, Project, Limit, Distinct,
   NestedLoopJoin, HashJoin, Sort, HashAggregate, IndexNestedLoopJoin,
@@ -448,12 +470,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     funcWrappedAggs.length = 0; // Track function-wrapped aggregates for projection
     for (const col of ast.columns) {
       if (col.type === 'aggregate') {
-        // Normalize arg: parser may give string 'val' or object {type:'column_ref', name:'val'}
-        const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+        const argStr = aggArgStr(col.arg);
         const name = col.alias || `${col.func}(${argStr})`;
-        // For expression args (arith, function_call), pass a valueGetter so HashAggregate can evaluate
-        const isExprArg = typeof col.arg === 'object' && col.arg.type !== 'column_ref';
-        const valueGetter = isExprArg ? buildValueGetter(col.arg) : null;
+        const valueGetter = isExprAgg(col.arg) ? buildValueGetter(col.arg) : null;
         const filterPred = col.filter ? buildPredicate(col.filter) : null;
         aggregates.push({ name, func: col.func, column: argStr, valueGetter, filterPred, distinct: col.distinct, separator: col.separator });
       } else if ((col.type === 'function' || col.type === 'function_call') && 
@@ -463,10 +482,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         const innerAggs = [];
         for (const arg of col.args) {
           if (arg.type === 'aggregate' || arg.type === 'aggregate_expr') {
-            const innerArgStr = typeof arg.arg === 'object' ? (arg.arg.name || JSON.stringify(arg.arg)) : arg.arg;
+            const innerArgStr = aggArgStr(arg.arg);
             const syntheticName = `__func_agg_${aggregates.length}`;
-            const isExprArg = typeof arg.arg === 'object' && arg.arg?.type !== 'column_ref';
-            const valueGetter = isExprArg ? buildValueGetter(arg.arg) : null;
+            const valueGetter = isExprAgg(arg.arg) ? buildValueGetter(arg.arg) : null;
             aggregates.push({ name: syntheticName, func: arg.func, column: innerArgStr, valueGetter, distinct: arg.distinct });
             innerAggs.push({ syntheticName, originalArg: arg });
           }
@@ -479,10 +497,9 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         function extractAggs(node) {
           if (!node || typeof node !== 'object') return node;
           if (node.type === 'aggregate' || node.type === 'aggregate_expr') {
-            const argStr = typeof node.arg === 'object' ? (node.arg.name || JSON.stringify(node.arg)) : node.arg;
+            const argStr = aggArgStr(node.arg);
             const syntheticName = `__expr_agg_${aggregates.length}`;
-            const isExprArg = typeof node.arg === 'object' && node.arg?.type !== 'column_ref';
-            const valueGetter = isExprArg ? buildValueGetter(node.arg) : null;
+            const valueGetter = isExprAgg(node.arg) ? buildValueGetter(node.arg) : null;
             aggregates.push({ name: syntheticName, func: node.func, column: argStr, valueGetter, distinct: node.distinct, filterPred: node.filter ? buildPredicate(node.filter) : null });
             innerAggs.push({ syntheticName, originalNode: node });
             // Return a placeholder that buildValueGetter can resolve later
@@ -502,6 +519,33 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
         }
         const rewrittenExpr = extractAggs(col.expr);
         funcWrappedAggs.push({ col, innerAggs, rewrittenExpr });
+      }
+    }
+    
+    // Collect aggregates from HAVING that aren't already in SELECT columns
+    if (ast.having) {
+      const havingAggs = [];
+      (function collectHavingAggs(node) {
+        if (!node || typeof node !== 'object') return;
+        if (node.type === 'aggregate_expr') {
+          havingAggs.push(node);
+          return;
+        }
+        for (const key of Object.keys(node)) {
+          if (key === 'type') continue;
+          const val = node[key];
+          if (Array.isArray(val)) val.forEach(collectHavingAggs);
+          else if (typeof val === 'object' && val !== null) collectHavingAggs(val);
+        }
+      })(ast.having);
+      for (const agg of havingAggs) {
+        const argStr = aggArgStr(agg.arg);
+        const name = `${agg.func}(${argStr})`;
+        // Only add if not already present
+        if (!aggregates.some(a => a.name === name)) {
+          const valueGetter = isExprAgg(agg.arg) ? buildValueGetter(agg.arg) : null;
+          aggregates.push({ name, func: agg.func, column: argStr, valueGetter, distinct: agg.distinct || false });
+        }
       }
     }
     
@@ -592,8 +636,8 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       return {
         func: wc.func,
         name: wc.alias || `${wc.func}()`,
-        arg: typeof wc.arg === 'object' ? (wc.arg.type === 'literal' ? null : wc.arg.name) : wc.arg,
-        argGetter: typeof wc.arg === 'object' && wc.arg.type !== 'literal' && wc.arg.type !== 'column_ref' ? buildValueGetter(wc.arg) : null,
+        arg: winArgName(wc.arg),
+        argGetter: winArgGetter(wc.arg),
         ntile: wc.func === 'NTILE' && wc.arg?.type === 'literal' ? wc.arg.value : null,
         frame: wc.over?.frame || null,
         offset: wc.offset,
@@ -622,8 +666,8 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
           windowFuncs.push({
             func: node.func,
             name: syntheticName,
-            arg: typeof node.arg === 'object' ? (node.arg?.type === 'literal' ? null : node.arg?.name) : node.arg,
-            argGetter: typeof node.arg === 'object' && node.arg?.type !== 'literal' && node.arg?.type !== 'column_ref' ? buildValueGetter(node.arg) : null,
+            arg: winArgName(node.arg),
+            argGetter: winArgGetter(node.arg),
             ntile: node.func === 'NTILE' && node.arg?.type === 'literal' ? node.arg.value : null,
             frame: node.over?.frame || null,
             offset: node.offset,
@@ -1479,7 +1523,7 @@ function buildProjections(columns, hasAggregates, ctx) {
 function buildAggregateProjections(columns, groupByExprs, funcWrappedAggs) {
   return columns.map((col, idx) => {
     if (col.type === 'aggregate') {
-      const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+      const argStr = aggArgStr(col.arg);
       const name = col.alias || `${col.func}(${argStr})`;
       return { name: col.alias || name, expr: (row) => row[name] };
     }
@@ -1537,6 +1581,69 @@ function buildAggregatePredicate(expr, columns, ctx) {
     const cmp = comparators[expr.op];
     return (row) => cmp(getLeft(row), getRight(row));
   }
+  if (expr.type === 'AND') {
+    const left = buildAggregatePredicate(expr.left, columns, ctx);
+    const right = buildAggregatePredicate(expr.right, columns, ctx);
+    return (row) => left(row) && right(row);
+  }
+  if (expr.type === 'OR') {
+    const left = buildAggregatePredicate(expr.left, columns, ctx);
+    const right = buildAggregatePredicate(expr.right, columns, ctx);
+    return (row) => left(row) || right(row);
+  }
+  if (expr.type === 'NOT') {
+    const inner = buildAggregatePredicate(expr.expr, columns, ctx);
+    return (row) => !inner(row);
+  }
+  if (expr.type === 'BETWEEN') {
+    const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getLow = buildAggregateValueGetter(expr.low, columns, ctx);
+    const getHigh = buildAggregateValueGetter(expr.high, columns, ctx);
+    return (row) => {
+      const v = getVal(row), lo = getLow(row), hi = getHigh(row);
+      return v >= lo && v <= hi;
+    };
+  }
+  if (expr.type === 'NOT_BETWEEN') {
+    const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getLow = buildAggregateValueGetter(expr.low, columns, ctx);
+    const getHigh = buildAggregateValueGetter(expr.high, columns, ctx);
+    return (row) => {
+      const v = getVal(row), lo = getLow(row), hi = getHigh(row);
+      return v < lo || v > hi;
+    };
+  }
+  if (expr.type === 'IN_LIST') {
+    const getLeft = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getters = expr.values.map(v => buildAggregateValueGetter(v, columns, ctx));
+    return (row) => {
+      const val = getLeft(row);
+      return getters.some(g => g(row) === val);
+    };
+  }
+  if (expr.type === 'IS_NULL') {
+    const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
+    return (row) => { const v = getVal(row); return v === null || v === undefined; };
+  }
+  if (expr.type === 'IS_NOT_NULL') {
+    const getVal = buildAggregateValueGetter(expr.left, columns, ctx);
+    return (row) => { const v = getVal(row); return v !== null && v !== undefined; };
+  }
+  if (expr.type === 'EXISTS') {
+    // EXISTS subquery in HAVING
+    if (ctx) {
+      try {
+        const subPlan = buildPlan(expr.subquery, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+        if (subPlan) {
+          subPlan.open();
+          const hasRow = subPlan.next() !== null;
+          subPlan.close();
+          return () => hasRow;
+        }
+      } catch (e) { /* fall through */ }
+    }
+    return () => false;
+  }
   return () => true;
 }
 
@@ -1563,11 +1670,52 @@ function buildAggregateValueGetter(expr, columns, ctx) {
   if (expr.type === 'aggregate_expr') {
     // Find the matching aggregate column's output name
     // Normalize arg: parser may give {type:'column_ref', name:'val'} or just 'val'
-    const exprArg = typeof expr.arg === 'object' ? expr.arg.name : expr.arg;
+    const exprArg = aggArgStr(expr.arg);
     const match = columns.find(c => c.type === 'aggregate' && c.func === expr.func && 
-      ((typeof c.arg === 'object' ? c.arg.name : c.arg) === exprArg));
-    const name = match ? (match.alias || `${match.func}(${typeof match.arg === 'object' ? match.arg.name : match.arg})`) : `${expr.func}(${exprArg})`;
+      (aggArgStr(c.arg) === exprArg));
+    const name = match ? (match.alias || `${match.func}(${aggArgStr(match.arg)})`) : `${expr.func}(${exprArg})`;
     return (row) => row[name];
+  }
+  if (expr.type === 'column_ref') {
+    const name = expr.name;
+    return (row) => row[name];
+  }
+  if (expr.type === 'function_call' || expr.type === 'function') {
+    // Function wrapping aggregate args: COALESCE(SUM(x), 0), NULLIF(AVG(x), 0), etc.
+    const argGetters = (expr.args || []).map(a => buildAggregateValueGetter(a, columns, ctx));
+    const fn = expr.func.toUpperCase();
+    return (row) => {
+      const args = argGetters.map(g => g(row));
+      switch (fn) {
+        case 'COALESCE': return args.find(a => a !== null && a !== undefined) ?? null;
+        case 'NULLIF': return args[0] === args[1] ? null : args[0];
+        case 'GREATEST': return Math.max(...args.filter(a => a != null));
+        case 'LEAST': return Math.min(...args.filter(a => a != null));
+        case 'ABS': return args[0] != null ? Math.abs(args[0]) : null;
+        case 'ROUND': return args[0] != null ? Math.round(args[0] * (10 ** (args[1] || 0))) / (10 ** (args[1] || 0)) : null;
+        case 'CEIL': case 'CEILING': return args[0] != null ? Math.ceil(args[0]) : null;
+        case 'FLOOR': return args[0] != null ? Math.floor(args[0]) : null;
+        default: return null;
+      }
+    };
+  }
+  if (expr.type === 'arith' || expr.type === 'binary_expr') {
+    // Arithmetic in HAVING: SUM(x) * 100
+    const getLeft = buildAggregateValueGetter(expr.left, columns, ctx);
+    const getRight = buildAggregateValueGetter(expr.right, columns, ctx);
+    const op = expr.op;
+    return (row) => {
+      const l = getLeft(row), r = getRight(row);
+      if (l == null || r == null) return null;
+      switch (op) {
+        case '+': return l + r;
+        case '-': return l - r;
+        case '*': return l * r;
+        case '/': return r === 0 ? null : l / r;
+        case '%': return r === 0 ? null : l % r;
+        default: return null;
+      }
+    };
   }
   return buildValueGetter(expr);
 }
@@ -1580,7 +1728,7 @@ function resolveOutputColumn(name, columns) {
       const col = columns[idx];
       if (col.alias) return col.alias;
       if (col.type === 'aggregate') {
-        const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+        const argStr = aggArgStr(col.arg);
         return col.alias || `${col.func}(${argStr})`;
       }
       return col.name || col.alias;
@@ -1592,7 +1740,7 @@ function resolveOutputColumn(name, columns) {
     for (const col of columns) {
       if (col.alias === name) {
         if (col.type === 'aggregate') {
-          const argStr = typeof col.arg === 'object' ? (col.arg.name || JSON.stringify(col.arg)) : col.arg;
+          const argStr = aggArgStr(col.arg);
           return col.alias || `${col.func}(${argStr})`;
         }
         return col.alias || col.name;
