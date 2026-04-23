@@ -329,16 +329,38 @@
       "id": "T33",
       "mode": "BUILD",
       "task": "Extract FK cascade (~107 LOC: _handleForeignKeyDelete, _handleForeignKeyUpdate) from db.js to fk-cascade.js",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T29",
-      "started": "2026-04-23T16:21:06.106Z"
+      "started": "2026-04-23T16:21:06.106Z",
+      "completed": "2026-04-23T16:22:32.790Z",
+      "duration_ms": 300000,
+      "summary": "Extracted fk-cascade.js (115 LOC) from db.js. FK CASCADE/SET NULL/RESTRICT for DELETE+UPDATE. All FK tests pass. db.js now 3057 lines."
     },
     {
       "id": "T30",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net: implement Attention Sink for long context + KV cache optimization",
-      "task": null
+      "task": null,
+      "started": "2026-04-23T16:22:42.797Z",
+      "completed": "2026-04-23T16:23:41.930Z",
+      "duration_ms": 120000,
+      "summary": "Attention Sink + KV cache already implemented. Redirected to BPE tokenizer + cosine annealing LR schedule."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Implement BPE tokenizer for neural-net: byte-pair encoding with merge rules, train on text corpus, encode/decode",
+      "status": "in-progress",
+      "plan_ref": "T30",
+      "started": "2026-04-23T16:23:54.367Z"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Add cosine annealing LR schedule to CharLM, test on Shakespeare corpus for improved convergence",
+      "status": "upcoming",
+      "plan_ref": "T30"
     },
     {
       "id": "T31",
@@ -484,6 +506,10 @@
     {
       "time": "2026-04-23T16:19:16.013Z",
       "msg": "PLAN T29 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T16:23:35.862Z",
+      "msg": "PLAN T30 filled 2 BUILD tasks"
     }
   ]
 }

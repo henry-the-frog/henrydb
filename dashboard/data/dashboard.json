@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-23T16:21:06.143Z",
+  "generated": "2026-04-23T16:23:54.403Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Extract FK cascade (~107 LOC: _handleForeignKeyDelete, _handleForeignKeyUpdate) from db.js to fk-cascade.js",
-    "startedAt": "2026-04-23T16:21:06.143Z",
-    "taskId": "T33"
+    "task": "Implement BPE tokenizer for neural-net: byte-pair encoding with merge rules, train on text corpus, encode/decode",
+    "startedAt": "2026-04-23T16:23:54.403Z",
+    "taskId": "T34"
   },
   "schedule": {
     "date": "2026-04-23",
@@ -317,31 +317,57 @@
       {
         "id": "T29",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: extract savepoints + FK cascade handlers from db.js",
         "task": null,
-        "started": "2026-04-23T16:18:49.830Z"
+        "started": "2026-04-23T16:18:49.830Z",
+        "completed": "2026-04-23T16:19:20.903Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 extractions: savepoint-handler.js (~111 LOC) and fk-cascade.js (~107 LOC). Total ~218 LOC out of db.js."
       },
       {
         "id": "T32",
         "mode": "BUILD",
         "task": "Extract savepoints (~111 LOC: _handleSavepoint, _handleRollbackToSavepoint, _handleReleaseSavepoint) from db.js to savepoint-handler.js",
-        "status": "upcoming",
-        "plan_ref": "T29"
+        "status": "done",
+        "plan_ref": "T29",
+        "started": "2026-04-23T16:19:33.941Z",
+        "completed": "2026-04-23T16:20:52.660Z",
+        "duration_ms": 300000,
+        "summary": "Extracted savepoint-handler.js (120 LOC) from db.js. All savepoint+transaction tests pass. db.js now 3148 lines."
       },
       {
         "id": "T33",
         "mode": "BUILD",
         "task": "Extract FK cascade (~107 LOC: _handleForeignKeyDelete, _handleForeignKeyUpdate) from db.js to fk-cascade.js",
-        "status": "upcoming",
-        "plan_ref": "T29"
+        "status": "done",
+        "plan_ref": "T29",
+        "started": "2026-04-23T16:21:06.106Z",
+        "completed": "2026-04-23T16:22:32.790Z",
+        "duration_ms": 300000,
+        "summary": "Extracted fk-cascade.js (115 LOC) from db.js. FK CASCADE/SET NULL/RESTRICT for DELETE+UPDATE. All FK tests pass. db.js now 3057 lines."
       },
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Neural-net: implement Attention Sink for long context + KV cache optimization",
-        "task": null
+        "task": null,
+        "started": "2026-04-23T16:22:42.797Z"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "task": "Implement BPE tokenizer for neural-net: byte-pair encoding with merge rules, train on text corpus, encode/decode",
+        "status": "upcoming",
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "Add cosine annealing LR schedule to CharLM, test on Shakespeare corpus for improved convergence",
+        "status": "upcoming",
+        "plan_ref": "T30"
       },
       {
         "id": "T31",
@@ -352,12 +378,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 30,
-    "blocksTotal": 33,
+    "blocksCompleted": 32,
+    "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 6,
-      "BUILD": 11,
+      "PLAN": 7,
+      "BUILD": 12,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
