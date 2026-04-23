@@ -47,6 +47,7 @@ import { acquireRowLocks as _acquireRowLocksImpl, releaseRowLocks as _releaseRow
 import { executePaginated as _executePaginatedImpl } from './paginated-exec.js';
 import { analyzeTable as _analyzeTableImpl } from './analyze-table.js';
 import { applySelectColumns as _applySelectColumnsImpl } from './select-columns.js';
+import { createMatView as _createMatViewImpl, refreshMatView as _refreshMatViewImpl } from './matview-handler.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -1065,71 +1066,9 @@ export class Database {
 
   _createView(ast) { return _createViewImpl(this, ast); }
 
-  _createMatView(ast) {
-    // Execute the query and store results as a materialized table
-    const result = this._select(ast.query);
-    
-    if (result.rows.length === 0) {
-      this.views.set(ast.name, { query: ast.query, materializedRows: [], isMaterialized: true });
-      return { type: 'OK', message: `Materialized view ${ast.name} created (empty)` };
-    }
+  _createMatView(ast) { return _createMatViewImpl(this, ast); }
 
-    const firstRow = result.rows[0];
-    const schema = Object.keys(firstRow).filter(k => !k.includes('.')).map(name => ({
-      name,
-      type: typeof firstRow[name] === 'number' ? 'INT' : 'TEXT',
-      primaryKey: false,
-    }));
-
-    // Store as a real table + view metadata
-    const heap = this._heapFactory(ast.name);
-    const indexes = new Map();
-    const tableObj = { schema, heap, indexes };
-    this.tables.set(ast.name, tableObj);
-
-    for (const row of result.rows) {
-      const values = schema.map(col => row[col.name]);
-      this._insertRow(tableObj, null, values);
-    }
-
-    // Also store the query for REFRESH
-    this.views.set(ast.name, { query: ast.query, isMaterialized: true });
-
-    return { type: 'OK', message: `Materialized view ${ast.name} created with ${result.rows.length} rows` };
-  }
-
-  _refreshMatView(ast) {
-    const viewDef = this.views.get(ast.name);
-    if (!viewDef || !viewDef.isMaterialized) {
-      throw new Error(`${ast.name} is not a materialized view`);
-    }
-
-    // Re-execute the query
-    const result = this._select(viewDef.query);
-    
-    // Replace the table data
-    const table = this.tables.get(ast.name);
-    if (table) {
-      // Clear old data — delete all existing rows
-      if (table.heap.truncate) {
-        table.heap.truncate(); // FileBackedHeap: clear all pages
-      } else {
-        // In-memory HeapFile: replace with new one
-        table.heap = this._heapFactory(ast.name);
-      }
-      
-      // Re-insert new data
-      for (const row of result.rows) {
-        const values = table.schema.map(col => row[col.name]);
-        this._insertRow(table, null, values);
-      }
-    }
-
-    // Invalidate result cache since materialized view data changed
-    if (this._resultCache) this._resultCache.clear();
-
-    return { type: 'OK', message: `Materialized view ${ast.name} refreshed with ${result.rows.length} rows` };
-  }
+  _refreshMatView(ast) { return _refreshMatViewImpl(this, ast); }
 
   _dropView(ast) { return _dropViewImpl(this, ast); }
 
