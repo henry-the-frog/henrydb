@@ -2954,9 +2954,96 @@
     {
       "id": "T274",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push",
+      "started": "2026-04-23T23:13:49.070Z",
+      "completed": "2026-04-23T23:14:29.799Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T275",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study column-store.js: columnar storage for OLAP",
+      "project": "henrydb",
+      "started": "2026-04-23T23:15:32.953Z",
+      "completed": "2026-04-23T23:16:18.129Z",
+      "duration_ms": 30000,
+      "summary": "Column store: 228 lines. Per-column array storage, batch append, column-wise SUM/AVG/MIN/MAX, row reconstruction, projection. SIMD-friendly layout. Used by DuckDB/ClickHouse/Vertica. Good OLAP foundation."
+    },
+    {
+      "id": "T276",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study column-compression.js: columnar compression",
+      "project": "henrydb",
+      "started": "2026-04-23T23:16:18.409Z",
+      "completed": "2026-04-23T23:17:04.814Z",
+      "duration_ms": 15000,
+      "summary": "Column compression: RLE + delta encoding + bit-packing at 123 lines. Same techniques as Apache Parquet/ORC. RLE for sorted, delta for timestamps, bit-packing for small integers. Correct implementations."
+    },
+    {
+      "id": "T277",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study cola.js: cache-oblivious lookahead array",
+      "project": "henrydb",
+      "started": "2026-04-23T23:17:05.093Z",
+      "completed": "2026-04-23T23:17:54.069Z",
+      "duration_ms": 30000,
+      "summary": "COLA: 117 lines. Hierarchical sorted arrays, cascade merge when full. O(log²N/B) amortized inserts. Mathematically cleaner than LSM-trees. Academic data structure (Bender, Farach-Colton). Correct merge + lookup + range scan."
+    },
+    {
+      "id": "T278",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study clock-replacer.js: Clock page replacement",
+      "project": "henrydb",
+      "started": "2026-04-23T23:17:54.330Z",
+      "completed": "2026-04-23T23:18:41.451Z",
+      "duration_ms": 15000,
+      "summary": "Clock replacer: 199 lines. PostgreSQL-style clock sweep with usage_count (0..5). Increment on access, decrement on sweep. Better than LRU for sequential flooding resistance. Heat-based eviction. Also implements LRU for comparison."
+    },
+    {
+      "id": "T279",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study batch-executor.js: batch DML operations",
+      "project": "henrydb",
+      "started": "2026-04-23T23:18:41.735Z",
+      "completed": "2026-04-23T23:19:31.416Z",
+      "duration_ms": 15000,
+      "summary": "Batch executor: 114 lines. SQL script execution with statement parsing, transaction wrapping, error handling, progress callback."
+    },
+    {
+      "id": "T280",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study checksum.js: data integrity",
+      "project": "henrydb",
+      "started": "2026-04-23T23:19:31.676Z",
+      "completed": "2026-04-23T23:19:43.156Z",
+      "duration_ms": 10000,
+      "summary": "Checksum: 18 lines. Adler-32, Fletcher-16, XOR. All correct. Adler-32 used in zlib, Fletcher-16 in TCP."
+    },
+    {
+      "id": "T281",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study aries-recovery.js: ARIES recovery algorithm",
+      "project": "henrydb",
+      "started": "2026-04-23T23:19:43.416Z",
+      "completed": "2026-04-23T23:20:37.117Z",
+      "duration_ms": 60000,
+      "summary": "ARIES recovery: 479 lines implementing Mohan et al. 1992. Three-phase (Analysis->Redo->Undo). CLR records for idempotent undo. DPT + ATT for checkpoint. prevLsn chains for undo traversal. undoNextLsn in CLRs. THE foundational crash recovery algorithm. Production databases use this exact approach."
+    },
+    {
+      "id": "T282",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push",
-      "started": "2026-04-23T23:13:49.070Z"
+      "started": "2026-04-23T23:20:37.376Z"
     }
   ],
   "focusProjects": [
@@ -4112,6 +4199,38 @@
     {
       "time": "2026-04-23T23:09:10.747Z",
       "msg": "Added T274 (MAINTAIN) after T273: Git push"
+    },
+    {
+      "time": "2026-04-23T23:15:15.079Z",
+      "msg": "Added T275 (EXPLORE) after end: Study column-store.js: columnar storage for OLAP"
+    },
+    {
+      "time": "2026-04-23T23:15:15.201Z",
+      "msg": "Added T276 (EXPLORE) after T275: Study column-compression.js: columnar compression"
+    },
+    {
+      "time": "2026-04-23T23:15:15.322Z",
+      "msg": "Added T277 (EXPLORE) after T276: Study cola.js: cache-oblivious lookahead array"
+    },
+    {
+      "time": "2026-04-23T23:15:15.444Z",
+      "msg": "Added T278 (EXPLORE) after T277: Study clock-replacer.js: Clock page replacement"
+    },
+    {
+      "time": "2026-04-23T23:15:15.565Z",
+      "msg": "Added T279 (EXPLORE) after T278: Study batch-executor.js: batch DML operations"
+    },
+    {
+      "time": "2026-04-23T23:15:15.687Z",
+      "msg": "Added T280 (EXPLORE) after T279: Study checksum.js: data integrity"
+    },
+    {
+      "time": "2026-04-23T23:15:15.809Z",
+      "msg": "Added T281 (EXPLORE) after T280: Study aries-recovery.js: ARIES recovery algorithm"
+    },
+    {
+      "time": "2026-04-23T23:15:15.929Z",
+      "msg": "Added T282 (MAINTAIN) after T281: Git push"
     }
   ]
 }
