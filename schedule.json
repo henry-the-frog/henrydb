@@ -68,18 +68,22 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Extract index-advisor (~70 LOC: _recommendIndexes + _applyRecommendedIndexes) from db.js to index-advisor-impl.js",
       "plan_ref": "T6",
       "project": "henrydb",
-      "started": "2026-04-23T15:52:07.037Z"
+      "started": "2026-04-23T15:52:07.037Z",
+      "completed": "2026-04-23T15:56:00.890Z",
+      "duration_ms": 300000,
+      "summary": "Extracted index-advisor-impl.js (85 LOC) from db.js. _recommendIndexes + _applyRecommendedIndexes. All tests pass."
     },
     {
       "id": "T23",
       "mode": "BUILD",
       "task": "Extract merge (~60 LOC: _merge) from db.js to merge-executor.js",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-23T15:56:09.155Z"
     },
     {
       "id": "T24",

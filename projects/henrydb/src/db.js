@@ -34,6 +34,7 @@ import { withCTEs as _withCTEsImpl, executeRecursiveCTE as _executeRecursiveCTEI
 import { selectInfoSchema as _selectInfoSchemaImpl, selectPgCatalog as _selectPgCatalogImpl, filterPgCatalogRows as _filterPgCatalogRowsImpl } from './catalog-queries.js';
 import { union_ as _unionImpl, unionInner as _unionInnerImpl, intersect as _intersectImpl, except_ as _exceptImpl } from './set-operations.js';
 import { recommendIndexes as _recommendIndexesImpl, applyRecommendedIndexes as _applyRecommendedIndexesImpl } from './index-advisor-impl.js';
+import { merge as _mergeImpl } from './merge-executor.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -2324,68 +2325,7 @@ export class Database {
     return { type: 'OK', message: `Sequence ${ast.name} created` };
   }
 
-  _merge(ast) {
-    const targetTable = this.tables.get(ast.target);
-    if (!targetTable) throw new Error(`Table ${ast.target} not found`);
-    const sourceTable = this.tables.get(ast.source);
-    if (!sourceTable) throw new Error(`Table ${ast.source} not found`);
-    
-    const targetAlias = ast.targetAlias || ast.target;
-    const sourceAlias = ast.sourceAlias || ast.source;
-    
-    let updated = 0, inserted = 0;
-    
-    // For each source row, check if it matches any target row
-    for (const sourceItem of sourceTable.heap.scan()) {
-      const sourceRow = this._valuesToRow(sourceItem.values, sourceTable.schema, sourceAlias);
-      
-      let matched = false;
-      
-      // Check against all target rows
-      for (const targetItem of targetTable.heap.scan()) {
-        const targetRow = this._valuesToRow(targetItem.values, targetTable.schema, targetAlias);
-        const mergedRow = { ...targetRow, ...sourceRow };
-        
-        if (this._evalExpr(ast.on, mergedRow)) {
-          matched = true;
-          
-          // Find WHEN MATCHED clause
-          const matchClause = ast.whenClauses.find(c => c.type === 'MATCHED');
-          if (matchClause && matchClause.action === 'UPDATE') {
-            const newValues = [...targetItem.values];
-            for (const assignment of matchClause.assignments) {
-              const colIdx = targetTable.schema.findIndex(c => c.name === assignment.column);
-              if (colIdx >= 0) {
-                newValues[colIdx] = this._evalValue(assignment.value, mergedRow);
-              }
-            }
-            // Validate constraints before modifying
-            this._validateConstraintsForUpdate(targetTable, newValues, { pageId: targetItem.pageId, slotIdx: targetItem.slotIdx }, targetItem.values);
-            targetTable.heap.delete(targetItem.pageId, targetItem.slotIdx);
-            targetTable.heap.insert(newValues);
-            updated++;
-          }
-          break; // Only match once per source row
-        }
-      }
-      
-      if (!matched) {
-        // Find WHEN NOT MATCHED clause
-        const notMatchClause = ast.whenClauses.find(c => c.type === 'NOT_MATCHED');
-        if (notMatchClause && notMatchClause.action === 'INSERT') {
-          const values = notMatchClause.values.map(v => this._evalValue(v, sourceRow));
-          this._validateConstraints(targetTable, values);
-          targetTable.heap.insert(values);
-          inserted++;
-        }
-      }
-    }
-    
-    // Invalidate cache
-    if (this._resultCache) this._resultCache.clear();
-    
-    return { type: 'OK', message: `MERGE: ${updated} updated, ${inserted} inserted`, updated, inserted };
-  }
+  _merge(ast) { return _mergeImpl(this, ast); }
 
   _showTables() {
     const rows = [];
