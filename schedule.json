@@ -2454,9 +2454,85 @@
     {
       "id": "T228",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push + daily log",
+      "started": "2026-04-23T22:39:22.497Z",
+      "completed": "2026-04-23T22:39:56.741Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T229",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study matrix.js: core tensor operations — is anything slow or incorrect?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:40:30.808Z",
+      "completed": "2026-04-23T22:41:31.161Z",
+      "duration_ms": 60000,
+      "summary": "Matrix.js: 256 lines, Float64Array storage. Core ops: dot (O(n³), correct but cache-unfriendly access pattern for K dimension), transpose, add/sub/mul, map, sum, argmax, slice. No bugs found. Double precision is why gradient checks achieve 1e-13 accuracy."
+    },
+    {
+      "id": "T230",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study vector-clock.js: distributed system primitive",
+      "project": "henrydb",
+      "started": "2026-04-23T22:41:31.421Z",
+      "completed": "2026-04-23T22:42:05.088Z",
+      "duration_ms": 30000,
+      "summary": "No vector-clock module. BUT discovered HenryDB has 30+ additional data structures including: ART (adaptive radix tree), B-epsilon tree, bloom filters, bloom join, bitmap index, AVL tree, circular list, band join, advisory locks, audit log. The project is much larger than initially surveyed."
+    },
+    {
+      "id": "T231",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit lr-scheduler.js: cosine annealing + warm restarts",
+      "project": "neural-net",
+      "started": "2026-04-23T22:42:05.347Z",
+      "completed": "2026-04-23T22:42:43.997Z",
+      "duration_ms": 30000,
+      "summary": "LR scheduler: Constant, CosineDecay, StepDecay, OneCycle (Smith 2018), WarmupScheduler (composable). All formulas correct. No warm restarts (SGDR/T_mult). Clean composable design."
+    },
+    {
+      "id": "T232",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study vectorized-codegen.js: codegen for vectorized engine",
+      "project": "henrydb",
+      "started": "2026-04-23T22:42:44.255Z",
+      "completed": "2026-04-23T22:43:25.312Z",
+      "duration_ms": 30000,
+      "summary": "Vectorized codegen: DuckDB-style columnar batch + JIT. FOURTH execution model in HenryDB (Volcano, Pipeline, Vectorized, VecCodegen). 454 lines. Generates tight columnar loops for scans and joins. Impressive breadth of execution strategies."
+    },
+    {
+      "id": "T233",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study maxpool.js: is the backward pass correct for max pooling?",
+      "project": "neural-net",
+      "started": "2026-04-23T22:43:25.573Z",
+      "completed": "2026-04-23T22:44:12.154Z",
+      "duration_ms": 30000,
+      "summary": "MaxPool2D backward correct: routes gradient only to max-index position (saved during forward). Standard approach. Tie-breaking: first max wins (correct for argmax). No learnable params. Channel-preserving pooling."
+    },
+    {
+      "id": "T234",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study decorrelation.js: subquery decorrelation technique",
+      "project": "henrydb",
+      "started": "2026-04-23T22:44:12.413Z",
+      "completed": "2026-04-23T22:45:12.582Z",
+      "duration_ms": 30000,
+      "summary": "Decorrelation: 432 lines. Transforms IN/EXISTS subqueries → semi-joins. Detects correlation via column reference analysis. Key optimization: O(n²) nested loop → O(n+m) hash semi-join. 15/15 tests pass (verified earlier)."
+    },
+    {
+      "id": "T235",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push + daily log",
-      "started": "2026-04-23T22:39:22.497Z"
+      "started": "2026-04-23T22:45:12.843Z"
     }
   ],
   "focusProjects": [
@@ -3428,6 +3504,34 @@
     {
       "time": "2026-04-23T22:33:34.306Z",
       "msg": "Added T228 (MAINTAIN) after T227: Git push + daily log"
+    },
+    {
+      "time": "2026-04-23T22:40:13.143Z",
+      "msg": "Added T229 (EXPLORE) after end: Study matrix.js: core tensor operations — is anything slow or incorrect?"
+    },
+    {
+      "time": "2026-04-23T22:40:13.264Z",
+      "msg": "Added T230 (EXPLORE) after T229: Study vector-clock.js: distributed system primitive"
+    },
+    {
+      "time": "2026-04-23T22:40:13.384Z",
+      "msg": "Added T231 (EXPLORE) after T230: Audit lr-scheduler.js: cosine annealing + warm restarts"
+    },
+    {
+      "time": "2026-04-23T22:40:13.505Z",
+      "msg": "Added T232 (EXPLORE) after T231: Study vectorized-codegen.js: codegen for vectorized engine"
+    },
+    {
+      "time": "2026-04-23T22:40:13.625Z",
+      "msg": "Added T233 (EXPLORE) after T232: Study maxpool.js: is the backward pass correct for max pooling?"
+    },
+    {
+      "time": "2026-04-23T22:40:13.746Z",
+      "msg": "Added T234 (EXPLORE) after T233: Study decorrelation.js: subquery decorrelation technique"
+    },
+    {
+      "time": "2026-04-23T22:40:13.866Z",
+      "msg": "Added T235 (MAINTAIN) after T234: Git push + daily log"
     }
   ]
 }
