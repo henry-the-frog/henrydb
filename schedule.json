@@ -3041,9 +3041,85 @@
     {
       "id": "T282",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push",
-      "started": "2026-04-23T23:20:37.376Z"
+      "started": "2026-04-23T23:20:37.376Z",
+      "completed": "2026-04-23T23:21:22.729Z",
+      "duration_ms": 30000,
+      "summary": "Git push done. 200+ audits."
+    },
+    {
+      "id": "T283",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study advanced-ds.js: advanced data structures collection",
+      "project": "henrydb",
+      "started": "2026-04-23T23:22:06.607Z",
+      "completed": "2026-04-23T23:22:33.701Z",
+      "duration_ms": 30000,
+      "summary": "Advanced DS: Fenwick Tree (BIT, i&-i trick correct), Segment Tree (configurable op, O(log n) range query), Union-Find (path compression + rank), Suffix Array (LCP), Double Hashing. Competitive programming foundations. All correct."
+    },
+    {
+      "id": "T284",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study bitwise-trie.js: bitwise prefix tree",
+      "project": "henrydb",
+      "started": "2026-04-23T23:22:33.961Z",
+      "completed": "2026-04-23T23:23:19.882Z",
+      "duration_ms": 15000,
+      "summary": "Bitwise trie: 68 lines. HAMT-style with 5 bits/level, 32 children, 6 levels for 32-bit keys. O(7) lookup. Same approach as Clojure persistent vectors. Used for integer key indexes."
+    },
+    {
+      "id": "T285",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study btree-table.js: B-tree backed table",
+      "project": "henrydb",
+      "started": "2026-04-23T23:23:20.143Z",
+      "completed": "2026-04-23T23:24:46.407Z",
+      "duration_ms": 30000,
+      "summary": "B+tree table: 265 lines. Clustered B+tree storage (SQLite/InnoDB style). Rows sorted by PK in leaf nodes. O(log n) point lookup, ordered range scan. HeapFile-compatible interface. THIRD storage layout in HenryDB (heap, columnar, clustered btree)."
+    },
+    {
+      "id": "T286",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study connection-string.js: connection string parsing",
+      "project": "henrydb",
+      "started": "2026-04-23T23:24:46.666Z",
+      "completed": "2026-04-23T23:25:27.639Z",
+      "duration_ms": 15000,
+      "summary": "Connection string parser: 164 lines. Parses postgres:// URLs and key=value DSN format. Extracts host, port, database, user, password, ssl, options. Environment variable fallbacks. PostgreSQL-compatible."
+    },
+    {
+      "id": "T287",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study catalog-queries.js: information_schema queries",
+      "project": "henrydb",
+      "started": "2026-04-23T23:25:27.899Z",
+      "completed": "2026-04-23T23:26:12.775Z",
+      "duration_ms": 15000,
+      "summary": "Catalog queries: information_schema.tables, information_schema.columns, pg_catalog support. Makes database introspectable by tools (DBeaver, pgAdmin, psql). 296 lines."
+    },
+    {
+      "id": "T288",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study cli.js: command-line interface",
+      "project": "henrydb",
+      "started": "2026-04-23T23:26:13.035Z",
+      "completed": "2026-04-23T23:27:03.643Z",
+      "duration_ms": 15000,
+      "summary": "CLI: psql-like REPL at 244 lines. Connects via PostgreSQL wire protocol. Supports -h host, -p port, -U user, -d dbname. Readline-based with history. Renders query results as formatted tables. Complete client for HenryDB server."
+    },
+    {
+      "id": "T289",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + final session update",
+      "started": "2026-04-23T23:27:03.903Z"
     }
   ],
   "focusProjects": [
@@ -4231,6 +4307,34 @@
     {
       "time": "2026-04-23T23:15:15.929Z",
       "msg": "Added T282 (MAINTAIN) after T281: Git push"
+    },
+    {
+      "time": "2026-04-23T23:21:46.621Z",
+      "msg": "Added T283 (EXPLORE) after end: Study advanced-ds.js: advanced data structures collection"
+    },
+    {
+      "time": "2026-04-23T23:21:46.741Z",
+      "msg": "Added T284 (EXPLORE) after T283: Study bitwise-trie.js: bitwise prefix tree"
+    },
+    {
+      "time": "2026-04-23T23:21:46.862Z",
+      "msg": "Added T285 (EXPLORE) after T284: Study btree-table.js: B-tree backed table"
+    },
+    {
+      "time": "2026-04-23T23:21:46.985Z",
+      "msg": "Added T286 (EXPLORE) after T285: Study connection-string.js: connection string parsing"
+    },
+    {
+      "time": "2026-04-23T23:21:47.106Z",
+      "msg": "Added T287 (EXPLORE) after T286: Study catalog-queries.js: information_schema queries"
+    },
+    {
+      "time": "2026-04-23T23:21:47.227Z",
+      "msg": "Added T288 (EXPLORE) after T287: Study cli.js: command-line interface"
+    },
+    {
+      "time": "2026-04-23T23:21:47.348Z",
+      "msg": "Added T289 (MAINTAIN) after T288: Git push + final session update"
     }
   ]
 }
