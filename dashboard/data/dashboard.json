@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-23T18:23:10.723Z",
+  "generated": "2026-04-23T18:24:37.771Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Neural-net: implement RWKV linear attention (Peng 2023) - O(N) alternative to quadratic attention",
-    "completedAt": "2026-04-23T18:23:10.723Z",
-    "taskId": "T85",
-    "summary": "RWKV linear attention: O(N) forward, O(1) step-by-step inference. Step matches forward. 6 tests.",
+    "task": "Neural-net: implement Mamba-style Selective SSM (Gu & Dao 2023) - data-dependent state space model",
+    "completedAt": "2026-04-23T18:24:37.771Z",
+    "taskId": "T86",
+    "summary": "Mamba Selective SSM: input-dependent B/C/Δ, SiLU gating, step≡forward verified. 6 tests.",
     "durationMs": 300000
   },
   "schedule": {
@@ -604,12 +604,12 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 85,
+    "blocksCompleted": 86,
     "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 13,
-      "BUILD": 48,
+      "BUILD": 49,
       "MAINTAIN": 10,
       "EXPLORE": 3
     }
