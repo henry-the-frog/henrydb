@@ -871,18 +871,24 @@
     {
       "id": "T81",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement Grouped Query Attention (GQA) - shares KV heads across query heads",
       "project": "neural-net",
-      "started": "2026-04-23T17:59:59.164Z"
+      "started": "2026-04-23T17:59:59.164Z",
+      "completed": "2026-04-23T18:20:35.420Z",
+      "duration_ms": 300000,
+      "summary": "GQA implemented with full forward pass, 8 tests. Ainslie 2023."
     },
     {
       "id": "T82",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement SwiGLU activation (Shazeer 2020) used in LLaMA/Mistral",
       "project": "neural-net",
-      "started": "2026-04-23T18:07:31.020Z"
+      "started": "2026-04-23T18:07:31.020Z",
+      "completed": "2026-04-23T18:20:45.706Z",
+      "duration_ms": 300000,
+      "summary": "SwiGLU with full forward+backward, 8 tests. Shazeer 2020."
     },
     {
       "id": "T83",
@@ -893,6 +899,17 @@
       "completed": "2026-04-23T18:18:52.782Z",
       "duration_ms": 120000,
       "summary": "Final reflection: extraction pattern mechanical after 3 iterations. Neural-net modular and test-verified. Gaps: integration training, backward passes for Flash/GQA, benchmarks."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement PPO (Proximal Policy Optimization) for RLHF training loop",
+      "project": "neural-net",
+      "started": "2026-04-23T18:21:01.901Z",
+      "completed": "2026-04-23T18:21:54.115Z",
+      "duration_ms": 300000,
+      "summary": "PPO with clip loss, GAE, KL penalty, RLHF reward, advantage normalization. 8 tests."
     }
   ],
   "focusProjects": [
@@ -1212,6 +1229,10 @@
     {
       "time": "2026-04-23T18:18:33.920Z",
       "msg": "Added T83 (THINK) after end: Final session reflection: 20+ ML implementations, 22 db.js extractions. What would make this even better?"
+    },
+    {
+      "time": "2026-04-23T18:20:57.801Z",
+      "msg": "Added T84 (BUILD) after end: Neural-net: implement PPO (Proximal Policy Optimization) for RLHF training loop"
     }
   ]
 }
