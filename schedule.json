@@ -1020,6 +1020,17 @@
       "completed": "2026-04-23T18:34:22.848Z",
       "duration_ms": 240000,
       "summary": "Cross-attention + attention pooling. Multi-head, variable seq lengths. 6 tests."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: implement EMA (Exponential Moving Average) for model weights — used in diffusion & RL",
+      "project": "neural-net",
+      "started": "2026-04-23T18:34:44.085Z",
+      "completed": "2026-04-23T18:35:40.585Z",
+      "duration_ms": 240000,
+      "summary": "EMA + Polyak averaging. Warmup, apply/reset. 6 tests."
     }
   ],
   "focusProjects": [
@@ -1383,6 +1394,10 @@
     {
       "time": "2026-04-23T18:33:42.157Z",
       "msg": "Added T94 (BUILD) after end: Neural-net: implement cross-attention for encoder-decoder models + attention pooling"
+    },
+    {
+      "time": "2026-04-23T18:34:43.853Z",
+      "msg": "Added T95 (BUILD) after end: Neural-net: implement EMA (Exponential Moving Average) for model weights — used in diffusion & RL"
     }
   ]
 }
