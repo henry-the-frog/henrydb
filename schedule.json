@@ -198,18 +198,22 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix GAN generator output activation: add configurable activation (tanh/sigmoid/none), write GAN test suite",
       "plan_ref": "T14",
       "project": "neural-net",
-      "started": "2026-04-23T16:03:51.369Z"
+      "started": "2026-04-23T16:03:51.369Z",
+      "completed": "2026-04-23T16:04:50.460Z",
+      "duration_ms": 300000,
+      "summary": "GAN: added configurable generatorOutputActivation (tanh/sigmoid/linear/none) and lossType. Wrote 12-test suite: all pass. Tests cover shape, loss convergence, tanh range, simple distribution learning."
     },
     {
       "id": "T27",
       "mode": "BUILD",
       "task": "Stress-test CharLM with AdamW on Shakespeare: verify convergence, sample quality, learning rate scheduling",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-23T16:04:58.922Z"
     },
     {
       "id": "T16",
