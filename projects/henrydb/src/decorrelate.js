@@ -140,23 +140,49 @@ function tryBatchDecorrelate(expr, outerTables, db) {
     const innerSelectCols = [...(subquery.columns || [])];
     // Add correlation inner columns if not already selected
     const innerColNames = mappings.map(m => m.innerCol);
+    // Strip table alias prefix for SELECT/GROUP BY (engine expects unqualified names)
+    const innerColNamesUnqualified = innerColNames.map(c => c.includes('.') ? c.split('.').pop() : c);
     
     // Build a modified subquery AST without correlation predicates
-    const modifiedSubquery = {
-      ...subquery,
-      where: innerPreds.length > 0 ? buildAnd(innerPreds) : null,
-      columns: [
-        ...innerSelectCols,
-        ...innerColNames.map(col => ({
-          type: 'column',
-          name: col,
-          alias: `__corr_${col.replace(/\./g, '_')}`,
-        })),
-      ],
-    };
+    // When the original subquery uses aggregate + correlation as implicit GROUP BY,
+    // we need to add explicit GROUP BY on the inner correlation columns.
+    const needsGroupBy = subquery.columns?.some(c => c.type === 'aggregate') && !subquery.groupBy;
+    
+    // Build SQL string for the modified inner query (more reliable than AST manipulation
+    // since _select may not include GROUP BY keys in output when they're not in SELECT)
+    const aggCol = subquery.columns.map(c => {
+      if (c.type === 'aggregate') {
+        let argStr = c.distinct ? `DISTINCT ${c.arg}` : (typeof c.arg === 'object' ? '*' : c.arg);
+        return `${c.func}(${argStr})`;
+      }
+      return c.alias || c.name;
+    }).join(', ');
+    
+    const fromClause = subquery.from.alias 
+      ? `${subquery.from.table} ${subquery.from.alias}` 
+      : subquery.from.table;
+    
+    const whereClause = innerPreds.length > 0 
+      ? ' WHERE ' + innerPreds.map(p => {
+          const left = getColumnRef(p.left) || String(p.left?.value ?? p.left);
+          const right = getColumnRef(p.right) || String(p.right?.value ?? p.right);
+          return `${left} = ${right}`;
+        }).join(' AND ')
+      : '';
+    
+    const groupByClause = needsGroupBy 
+      ? ' GROUP BY ' + innerColNamesUnqualified.join(', ')
+      : (subquery.groupBy ? ' GROUP BY ' + subquery.groupBy.map(g => typeof g === 'string' ? g : (g.name || g)).join(', ') : '');
+    
+    const sql = `SELECT ${aggCol}, ${innerColNamesUnqualified.join(', ')} FROM ${fromClause}${whereClause}${groupByClause}`;
     
     // Execute the inner query once (no correlation)
-    const result = db._select(modifiedSubquery);
+    let result;
+    try {
+      result = db.execute(sql);
+    } catch (e) {
+      return null; // SQL approach failed, fall back to correlated execution
+    }
     
     // Build multi-valued hash map: compositeKey → Set<innerVal>
     const hashMap = new Map();
@@ -165,10 +191,10 @@ function tryBatchDecorrelate(expr, outerTables, db) {
       (selectCol?.type === 'aggregate' ? `${selectCol.func}(${selectCol.arg})` : null);
     
     for (const row of result.rows) {
-      // Build composite key from correlation columns
-      const keyParts = mappings.map(m => {
-        const alias = `__corr_${m.innerCol.replace(/\./g, '_')}`;
-        return row[alias] ?? row[m.innerCol] ?? row[m.innerCol.split('.').pop()];
+      // Build composite key from correlation columns (unqualified names)
+      const keyParts = mappings.map((m, i) => {
+        const unqualified = innerColNamesUnqualified[i];
+        return row[unqualified] ?? row[m.innerCol] ?? row[m.innerCol.split('.').pop()];
       });
       const key = keyParts.length === 1 ? String(keyParts[0]) : keyParts.map(String).join('\0');
       

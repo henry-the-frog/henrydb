@@ -1083,11 +1083,72 @@ function buildPredicate(expr, ctx) {
       }
       return (row) => hashSet.has(val(row));
     }
+    case 'CORRELATED_IN_HASHMAP': {
+      // Batch-decorrelated correlated IN subquery: lookup per outer row via hash map
+      const val = buildValueGetter(expr.left);
+      const outerColGetters = expr.outerCols.map(col => buildValueGetter({ type: 'column_ref', name: col }));
+      const hashMap = expr.hashMap;
+      const negated = expr.negated || false;
+      return (row) => {
+        const keyParts = outerColGetters.map(g => g(row));
+        const key = keyParts.length === 1 ? String(keyParts[0]) : keyParts.map(String).join('\0');
+        const valueSet = hashMap.get(key);
+        const inSet = valueSet ? valueSet.has(val(row)) : false;
+        return negated ? !inSet : inSet;
+      };
+    }
     case 'IN_SUBQUERY': {
       const val = buildValueGetter(expr.left);
       if (ctx && ctx.tables) {
+        const subAst = expr.subquery;
+        
+        // Detect if subquery is correlated (references outer table columns)
+        const subTables = new Set();
+        if (subAst.from) {
+          const t = subAst.from.alias || subAst.from.table;
+          if (t) subTables.add(t.toLowerCase());
+        }
+        if (subAst.joins) {
+          for (const j of subAst.joins) {
+            const t = j.alias || j.table;
+            if (t) subTables.add(t.toLowerCase());
+          }
+        }
+        const whereStr = JSON.stringify(subAst.where || {});
+        const hasOuterRef = /column_ref.*?"name"\s*:\s*"([^"]+)"/.test(whereStr) &&
+          [...whereStr.matchAll(/"name"\s*:\s*"([^"]+)"/g)].some(m => {
+            const col = m[1];
+            if (col.includes('.')) {
+              const prefix = col.split('.')[0].toLowerCase();
+              return !subTables.has(prefix);
+            }
+            return false;
+          });
+        
+        if (hasOuterRef) {
+          // Correlated IN: evaluate subquery per outer row
+          const negated = !!expr.negated;
+          return (outerRow) => {
+            try {
+              const subPlan = buildCorrelatedSubqueryPlan(subAst, outerRow, ctx);
+              if (!subPlan) return negated; // no plan → treat as empty set
+              subPlan.open();
+              const values = new Set();
+              let r;
+              while ((r = subPlan.next()) !== null) {
+                const keys = Object.keys(r);
+                if (keys.length > 0) values.add(r[keys[0]]);
+              }
+              subPlan.close();
+              const inSet = values.has(val(outerRow));
+              return negated ? !inSet : inSet;
+            } catch (e) { return negated; }
+          };
+        }
+        
+        // Non-correlated: evaluate once eagerly
         try {
-          const subPlan = buildPlan(expr.subquery, ctx.tables, ctx.indexCatalog, ctx.tableStats);
+          const subPlan = buildPlan(subAst, ctx.tables, ctx.indexCatalog, ctx.tableStats);
           if (subPlan) {
             subPlan.open();
             const values = new Set();
@@ -1097,6 +1158,9 @@ function buildPredicate(expr, ctx) {
               if (keys.length > 0) values.add(row[keys[0]]);
             }
             subPlan.close();
+            if (expr.negated) {
+              return (row) => !values.has(val(row));
+            }
             return (row) => values.has(val(row));
           }
         } catch (e) { /* fall through */ }

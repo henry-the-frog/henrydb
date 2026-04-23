@@ -211,36 +211,52 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "Stress-test CharLM with AdamW on Shakespeare: verify convergence, sample quality, learning rate scheduling",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-23T16:04:58.922Z"
+      "started": "2026-04-23T16:04:58.922Z",
+      "completed": "2026-04-23T16:06:51.046Z",
+      "duration_ms": 600000,
+      "summary": "CharLM AdamW integration: 22.4% loss improvement over SGD in 200 steps. Added optimizer param to train() and updateAdamW() method. Warmup scheduling support via adamw-warmup."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit+push, dashboard, knowledge capture"
+      "status": "done",
+      "task": "Git commit+push, dashboard, knowledge capture",
+      "started": "2026-04-23T16:07:00.052Z",
+      "completed": "2026-04-23T16:07:07.275Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
       "id": "T17",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evaluate parser inconsistency (aggregate arg sometimes string, sometimes object). Systemic fix?"
+      "status": "done",
+      "task": "Evaluate parser inconsistency (aggregate arg sometimes string, sometimes object). Systemic fix?",
+      "started": "2026-04-23T16:07:11.111Z",
+      "completed": "2026-04-23T16:07:25.708Z",
+      "duration_ms": 120000,
+      "summary": "Evaluated parser inconsistency. Decision: not worth a systemic fix now. Documented pattern works (typeof x === object ? x.name : x). Added to TODO.md Low priority. A normalizeArg() utility would help but is low-ROI vs active features."
     },
     {
       "id": "T18",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB Volcano correlated subquery support (see scratch/volcano-gaps.md)",
-      "task": null
+      "task": null,
+      "started": "2026-04-23T16:07:35.172Z",
+      "completed": "2026-04-23T16:08:24.015Z",
+      "duration_ms": 180000,
+      "summary": "Found real correlated IN subquery bug: both engines return all 4 rows when only 2 should match. Subquery correlation columns not being substituted. 1 BUILD task to fix."
     },
     {
       "id": "T19",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Fix correlated IN subquery bug: correlation columns not being substituted, returns all aggregated values instead of group-specific value",
       "plan_ref": "T18",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-23T16:08:32.645Z"
     },
     {
       "id": "T20",
@@ -376,6 +392,10 @@
     {
       "time": "2026-04-23T16:03:39.727Z",
       "msg": "PLAN T14 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T16:08:18.406Z",
+      "msg": "PLAN T18 filled 1 BUILD tasks"
     }
   ]
 }
