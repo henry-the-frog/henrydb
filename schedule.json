@@ -1649,9 +1649,96 @@
     {
       "id": "T155",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log update",
-      "started": "2026-04-23T21:28:34.369Z"
+      "started": "2026-04-23T21:28:34.369Z",
+      "completed": "2026-04-23T21:29:08.004Z",
+      "duration_ms": 30000,
+      "summary": "Git push + daily log."
+    },
+    {
+      "id": "T156",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit RoPE: verify frequency precomputation and rotation application",
+      "project": "neural-net",
+      "started": "2026-04-23T21:30:00.433Z",
+      "completed": "2026-04-23T21:30:44.123Z",
+      "duration_ms": 120000,
+      "summary": "RoPE correct: θ_i = 1/10000^(2i/d), rotation via [cos,-sin;sin,cos], backward via transpose (orthogonal matrix). Numerical gradient check: 1.77e-12. Position offset for KV cache. Confirmed: gqa-attention.js import bug is just applyRoPEToSequence → should be applyRoPE."
+    },
+    {
+      "id": "T157",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study checkpoint-handler.js: is WAL checkpointing correct?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:30:50.379Z",
+      "completed": "2026-04-23T21:31:31.205Z",
+      "duration_ms": 60000,
+      "summary": "Checkpoint: simple marker-based approach. WAL writeCheckpoint syncs to disk, findLastCheckpoint locates replay boundary. getRecordsAfterCheckpoint provides records for recovery. Simplified ARIES approach — no dirty page table or active transaction list in checkpoint. Adequate for prototype."
+    },
+    {
+      "id": "T158",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit KV cache: is the sliding window / eviction correct?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:31:45.389Z",
+      "completed": "2026-04-23T21:32:22.346Z",
+      "duration_ms": 120000,
+      "summary": "Two KV cache impls: per-head (kv-cache.js) and per-layer (kv-cache-impl.js). Both correct: pre-allocated, append-only, O(1) per new token. Both throw on overflow — no sliding window or eviction. Clone support for beam search. Missing: sliding window (Mistral-style), ring buffer, paged attention."
+    },
+    {
+      "id": "T159",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study matview-handler.js: does materialized view refresh work?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:32:33.854Z",
+      "completed": "2026-04-23T21:33:14.296Z",
+      "duration_ms": 60000,
+      "summary": "Matview: full-refresh implementation. CREATE executes query + stores in real table. REFRESH truncates + re-inserts. Cache invalidation on refresh. Correct but no incremental refresh. Schema inference simplistic (number=INT, else=TEXT)."
+    },
+    {
+      "id": "T160",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit cross-attention.js: encoder-decoder attention backward",
+      "project": "neural-net",
+      "started": "2026-04-23T21:33:34.196Z",
+      "completed": "2026-04-23T21:34:36.319Z",
+      "duration_ms": 60000,
+      "summary": "Cross-attention forward correct: Q from decoder, K/V from encoder, scaled dot-product, multi-head, numerically stable softmax. Attention pooling also correct. No backward pass — forward-only. 6/6 tests pass."
+    },
+    {
+      "id": "T161",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study procedure-handler.js: does stored procedure execution work?",
+      "project": "henrydb",
+      "started": "2026-04-23T21:34:43.728Z",
+      "completed": "2026-04-23T21:35:11.060Z",
+      "duration_ms": 60000,
+      "summary": "Procedure handler: text-based parameter substitution with proper string escaping. SQL functions execute as SELECT, return first col/row. TABLE return type supported. JS functions via new Function() (eval-like, security concern). Limitation: param names in string literals get substituted."
+    },
+    {
+      "id": "T162",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study gradient-accumulator.js: does micro-batch accumulation work?",
+      "project": "neural-net",
+      "started": "2026-04-23T21:35:25.618Z",
+      "completed": "2026-04-23T21:35:50.073Z",
+      "duration_ms": 30000,
+      "summary": "Gradient accumulator: correct. Sums gradients over accumSteps micro-batches, averages on completion. Reset zeroes buffer. Ready signal for optimizer coordination. Standard implementation — simulates large batches without extra memory."
+    },
+    {
+      "id": "T163",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + update scratch findings",
+      "started": "2026-04-23T21:36:04.213Z"
     },
     {
       "id": "T136",
@@ -2279,6 +2366,46 @@
     {
       "time": "2026-04-23T21:16:37.074Z",
       "msg": "Added T155 (MAINTAIN) after T154: Git push + daily log update"
+    },
+    {
+      "time": "2026-04-23T21:29:21.542Z",
+      "msg": "Added T156 (EXPLORE) after T155: Audit RoPE: verify frequency precomputation and rotation application"
+    },
+    {
+      "time": "2026-04-23T21:29:21.662Z",
+      "msg": "Added T157 (EXPLORE) after T156: Study checkpoint-handler.js: is WAL checkpointing correct?"
+    },
+    {
+      "time": "2026-04-23T21:29:21.782Z",
+      "msg": "Added T158 (EXPLORE) after T157: Audit KV cache: is the sliding window / eviction correct?"
+    },
+    {
+      "time": "2026-04-23T21:29:21.922Z",
+      "msg": "Added T159 (EXPLORE) after T158: Study matview-handler.js: does materialized view refresh work?"
+    },
+    {
+      "time": "2026-04-23T21:29:22.042Z",
+      "msg": "Added T160 (EXPLORE) after T159: Audit cross-attention.js: encoder-decoder attention backward"
+    },
+    {
+      "time": "2026-04-23T21:29:22.162Z",
+      "msg": "Added T161 (EXPLORE) after T160: Study procedure-handler.js: does stored procedure execution work?"
+    },
+    {
+      "time": "2026-04-23T21:29:22.282Z",
+      "msg": "Added T162 (EXPLORE) after T161: Study gradient-accumulator.js: does micro-batch accumulation work?"
+    },
+    {
+      "time": "2026-04-23T21:29:22.400Z",
+      "msg": "Added T163 (MAINTAIN) after T162: Git push + update scratch findings"
+    },
+    {
+      "time": "2026-04-23T21:29:48.592Z",
+      "msg": "Moved T136 after T163"
+    },
+    {
+      "time": "2026-04-23T21:29:48.712Z",
+      "msg": "Moved T137 after T136"
     }
   ]
 }
