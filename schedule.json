@@ -3204,9 +3204,85 @@
     {
       "id": "T297",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push",
+      "started": "2026-04-23T23:34:26.374Z",
+      "completed": "2026-04-23T23:35:07.945Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T298",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study jsonpath.js: JSONPath query support",
+      "project": "henrydb",
+      "started": "2026-04-23T23:36:01.683Z",
+      "completed": "2026-04-23T23:36:37.648Z",
+      "duration_ms": 30000,
+      "summary": "JSONPath: 389 lines implementing RFC 9535 / PostgreSQL jsonpath. Supports $, .key, [index], [*], .*, .. (recursive descent), filter expressions. Tokenizer + compiler + evaluator. Complete JSON query engine."
+    },
+    {
+      "id": "T299",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study type-system.js: database type system",
+      "project": "henrydb",
+      "started": "2026-04-23T23:36:37.908Z",
+      "completed": "2026-04-23T23:37:02.529Z",
+      "duration_ms": 10000,
+      "summary": "Type system: 36 lines. 6 types (INT, FLOAT, VARCHAR, BOOL, DATE, NULL). Type inference, coercion, compatibility checking. Simple but functional."
+    },
+    {
+      "id": "T300",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study zone-maps.js: zone maps for pruning",
+      "project": "henrydb",
+      "started": "2026-04-23T23:37:02.809Z",
+      "completed": "2026-04-23T23:37:45.940Z",
+      "duration_ms": 15000,
+      "summary": "Zone maps: 163 lines. Per-page min/max tracking. Predicate-based page pruning (skip impossible pages). 1024 rows/page. Same as Parquet row group statistics / DuckDB zone maps. Supports =, <, >, <=, >=, BETWEEN predicates."
+    },
+    {
+      "id": "T301",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study schema-diff.js: schema comparison",
+      "project": "henrydb",
+      "started": "2026-04-23T23:37:46.202Z",
+      "completed": "2026-04-23T23:38:26.826Z",
+      "duration_ms": 15000,
+      "summary": "Schema diff: 113 lines. Compares source/target schemas. Detects added/removed/modified tables and columns. Generates migration SQL (CREATE TABLE, ADD COLUMN, ALTER COLUMN). Like pg_diff/sqldiff."
+    },
+    {
+      "id": "T302",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study lock-manager.js: comprehensive lock management",
+      "project": "henrydb",
+      "started": "2026-04-23T23:38:27.106Z",
+      "completed": "2026-04-23T23:39:03.072Z",
+      "duration_ms": 30000,
+      "summary": "Lock manager: 162 lines. 5 lock modes (IS, IX, S, SIX, X) with full 5x5 compatibility matrix. Deadlock detection via waits-for graph cycle detection! Lock upgrade, wait queue, per-tx tracking. Textbook 2PL implementation."
+    },
+    {
+      "id": "T303",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study migrations.js: schema migrations",
+      "project": "henrydb",
+      "started": "2026-04-23T23:39:03.333Z",
+      "completed": "2026-04-23T23:39:35.949Z",
+      "duration_ms": 15000,
+      "summary": "Migrations: 198 lines. Versioned up/down migrations with _migrations tracking table. Transaction-wrapped, rollback support, status display. Like Alembic/Flyway/knex. Complete schema migration system."
+    },
+    {
+      "id": "T304",
+      "mode": "MAINTAIN",
       "status": "in-progress",
       "task": "Git push",
-      "started": "2026-04-23T23:34:26.374Z"
+      "started": "2026-04-23T23:39:36.210Z"
     }
   ],
   "focusProjects": [
@@ -4454,6 +4530,34 @@
     {
       "time": "2026-04-23T23:29:08.663Z",
       "msg": "Added T297 (MAINTAIN) after T296: Git push"
+    },
+    {
+      "time": "2026-04-23T23:35:44.600Z",
+      "msg": "Added T298 (EXPLORE) after end: Study jsonpath.js: JSONPath query support"
+    },
+    {
+      "time": "2026-04-23T23:35:44.721Z",
+      "msg": "Added T299 (EXPLORE) after T298: Study type-system.js: database type system"
+    },
+    {
+      "time": "2026-04-23T23:35:44.843Z",
+      "msg": "Added T300 (EXPLORE) after T299: Study zone-maps.js: zone maps for pruning"
+    },
+    {
+      "time": "2026-04-23T23:35:44.964Z",
+      "msg": "Added T301 (EXPLORE) after T300: Study schema-diff.js: schema comparison"
+    },
+    {
+      "time": "2026-04-23T23:35:45.085Z",
+      "msg": "Added T302 (EXPLORE) after T301: Study lock-manager.js: comprehensive lock management"
+    },
+    {
+      "time": "2026-04-23T23:35:45.207Z",
+      "msg": "Added T303 (EXPLORE) after T302: Study migrations.js: schema migrations"
+    },
+    {
+      "time": "2026-04-23T23:35:45.328Z",
+      "msg": "Added T304 (MAINTAIN) after T303: Git push"
     }
   ]
 }
