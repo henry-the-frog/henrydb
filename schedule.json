@@ -362,15 +362,54 @@
       "id": "T35",
       "mode": "BUILD",
       "task": "Add cosine annealing LR schedule to CharLM, test on Shakespeare corpus for improved convergence",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T30",
-      "started": "2026-04-23T16:25:30.065Z"
+      "started": "2026-04-23T16:25:30.065Z",
+      "completed": "2026-04-23T16:27:28.446Z",
+      "duration_ms": 300000,
+      "summary": "Added cosine annealing LR schedule to CharLM. Options: cosine, cosine-warmup. Warmup enables 3x higher peak LR safely. 3.6% loss improvement. All 13 CharLM tests pass."
     },
     {
       "id": "T31",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git commit+push, dashboard update, daily log",
+      "started": "2026-04-23T16:27:38.561Z",
+      "completed": "2026-04-23T16:27:46.665Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
+    },
+    {
+      "id": "T36",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: extract _validateConstraints and _validateConstraintsForUpdate from db.js",
+      "task": null,
+      "started": "2026-04-23T16:28:23.453Z",
+      "completed": "2026-04-23T16:28:56.479Z",
+      "duration_ms": 60000,
+      "summary": "Planned constraint-validator extraction. ~124 LOC, hot path for INSERT/UPDATE. Uses _evalExpr for CHECK constraints."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Extract constraint-validator.js (~124 LOC: _validateConstraints, _validateConstraintsForUpdate) from db.js",
+      "status": "in-progress",
+      "plan_ref": "T36",
+      "started": "2026-04-23T16:29:06.574Z"
+    },
+    {
+      "id": "T37",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Git commit+push, dashboard update, daily log"
+      "goal": "HenryDB: fix remaining decorrelation stress test failures — investigate root causes of 6 pre-existing failures",
+      "task": null
+    },
+    {
+      "id": "T38",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push, dashboard update, CURRENT.md session end"
     }
   ],
   "focusProjects": [
@@ -514,6 +553,22 @@
     {
       "time": "2026-04-23T16:23:35.862Z",
       "msg": "PLAN T30 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-23T16:28:00.368Z",
+      "msg": "Added T36 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-23T16:28:05.351Z",
+      "msg": "Added T37 (PLAN) after end: null"
+    },
+    {
+      "time": "2026-04-23T16:28:11.573Z",
+      "msg": "Added T38 (MAINTAIN) after end: Final git push, dashboard update, CURRENT.md session end"
+    },
+    {
+      "time": "2026-04-23T16:28:51.448Z",
+      "msg": "PLAN T36 filled 1 BUILD tasks"
     }
   ]
 }

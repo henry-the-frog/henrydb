@@ -38,6 +38,7 @@ import { merge as _mergeImpl } from './merge-executor.js';
 import { handlePrepare as _handlePrepareImpl, handleExecute as _handleExecuteImpl, handleDeallocate as _handleDeallocateImpl } from './prepared-stmts.js';
 import { handleSavepoint as _handleSavepointImpl, handleRollbackToSavepoint as _handleRollbackToSavepointImpl, handleReleaseSavepoint as _handleReleaseSavepointImpl } from './savepoint-handler.js';
 import { handleForeignKeyDelete as _handleForeignKeyDeleteImpl, handleForeignKeyUpdate as _handleForeignKeyUpdateImpl } from './fk-cascade.js';
+import { validateConstraints as _validateConstraintsImpl, validateConstraintsForUpdate as _validateConstraintsForUpdateImpl } from './constraint-validator.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
@@ -1464,127 +1465,9 @@ export class Database {
   // Validate column constraints (NOT NULL, CHECK) for a row
   _fireTriggers(event, table, row, newRow, schema) { return _fireTriggersImpl(this, event, table, row, newRow, schema); }
 
-  _validateConstraints(table, values) {
-    return this._validateConstraintsForUpdate(table, values, null);
-  }
+  _validateConstraints(table, values) { return _validateConstraintsImpl(this, table, values); }
 
-  /**
-   * Validate constraints, optionally excluding a specific row (for UPDATE/UPSERT
-   * where the old row should not trigger UNIQUE false positives).
-   */
-  _validateConstraintsForUpdate(table, values, excludeRid, oldValues) {
-    for (let i = 0; i < table.schema.length; i++) {
-      const col = table.schema[i];
-      const val = values[i];
-
-      // Skip UNIQUE check if value hasn't changed (UPDATE with same PK/UNIQUE value)
-      // This avoids false positives when HOT chains make index RIDs stale
-      if (excludeRid && oldValues && (col.unique || col.primaryKey) && val === oldValues[i]) {
-        continue;  // Value unchanged — it was already validated when first inserted
-      }
-
-      // NOT NULL constraint (PRIMARY KEY columns are implicitly NOT NULL)
-      if ((col.notNull || col.primaryKey) && val == null) {
-        throw new Error(`NOT NULL constraint violated for column ${col.name}`);
-      }
-
-      // CHECK constraint
-      if (col.check) {
-        const row = {};
-        for (let j = 0; j < table.schema.length; j++) {
-          row[table.schema[j].name] = values[j];
-        }
-        // Per SQL standard: CHECK passes when result is TRUE or NULL (unknown)
-        // NULL values in the check expression should cause it to pass
-        // Check if the column being checked is NULL — if so, skip the check
-        const colIdx = table.schema.indexOf(col);
-        if (colIdx >= 0 && values[colIdx] == null) continue;
-        const result = this._evalExpr(col.check, row);
-        if (!result) {
-          throw new Error(`CHECK constraint violated for column ${col.name}`);
-        }
-      }
-
-    // Table-level CHECK constraints
-    if (table.tableChecks && table.tableChecks.length > 0) {
-      const row = {};
-      for (let j = 0; j < table.schema.length; j++) {
-        row[table.schema[j].name] = values[j];
-      }
-      for (const checkExpr of table.tableChecks) {
-        const result = this._evalExpr(checkExpr, row);
-        // Per SQL standard: CHECK passes when result is TRUE or NULL (unknown)
-        if (result === false) {
-          throw new Error('CHECK constraint violated');
-        }
-      }
-    }
-
-      // UNIQUE and PRIMARY KEY uniqueness check
-      if ((col.unique || col.primaryKey) && val != null) {
-        // Try fast index-based lookup first (O(log N) instead of O(N))
-        const index = table.indexes?.get(col.name);
-        if (index && typeof index.search === 'function') {
-          const found = index.search(val);
-          if (found !== undefined && found !== null) {
-            const rids = Array.isArray(found) ? found : [found];
-            // Filter out stale index entries (deleted rows, HOT chain ghosts)
-            const liveRids = rids.filter(r => {
-              if (excludeRid && r.pageId === excludeRid.pageId && r.slotIdx === excludeRid.slotIdx) return false;
-              // Verify the row actually exists in the heap
-              try {
-                const row = table.heap.get(r.pageId, r.slotIdx);
-                return row !== null && row !== undefined;
-              } catch { return false; }
-            });
-            if (liveRids.length > 0) {
-              throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
-            }
-          }
-        } else {
-          // Fallback: full heap scan (slow, O(N))
-          for (const tuple of table.heap.scan()) {
-            if (excludeRid && tuple.pageId === excludeRid.pageId && tuple.slotIdx === excludeRid.slotIdx) continue;
-            const tupleValues = tuple.values || tuple;
-            if (tupleValues[i] === val) {
-              throw new Error(`UNIQUE constraint violated: duplicate value '${val}' for column ${col.name}`);
-            }
-          }
-        }
-      }
-
-      // FOREIGN KEY constraint
-      if (col.references && val != null) {
-        const refTable = this.tables.get(col.references.table);
-        if (!refTable) throw new Error(`Referenced table ${col.references.table} not found`);
-        const refColIdx = refTable.schema.findIndex(c => c.name === col.references.column);
-        let found = false;
-        for (const { values: refValues } of refTable.heap.scan()) {
-          if (refValues[refColIdx] === val) { found = true; break; }
-        }
-        if (!found) {
-          throw new Error(`Foreign key constraint violated: ${val} not found in ${col.references.table}(${col.references.column})`);
-        }
-      }
-    }
-    // Composite PRIMARY KEY uniqueness check
-    const pkIndices = [];
-    for (let i = 0; i < table.schema.length; i++) {
-      if (table.schema[i].primaryKey) pkIndices.push(i);
-    }
-    if (pkIndices.length > 1) {
-      for (const { values: existing } of table.heap.scan()) {
-        let match = true;
-        for (const idx of pkIndices) {
-          if (existing[idx] !== values[idx]) { match = false; break; }
-        }
-        if (match) {
-          const keyDesc = pkIndices.map(i => `${table.schema[i].name}=${values[i]}`).join(', ');
-          throw new Error(`Duplicate key value violates unique constraint: (${keyDesc})`);
-        }
-      }
-    }
-  }
+  _validateConstraintsForUpdate(table, values, excludeRid, oldValues) { return _validateConstraintsForUpdateImpl(this, table, values, excludeRid, oldValues); }
 
   /**
    * Check if ORDER BY sort can be eliminated because the table's storage engine
