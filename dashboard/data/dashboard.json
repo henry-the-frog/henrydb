@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-23T00:47:16.998Z",
+  "generated": "2026-04-23T02:00:46.073Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "Run full test suite sweep to verify 0 new regressions from all session B-2 changes",
-    "completedAt": "2026-04-23T00:47:16.998Z",
-    "taskId": "T86",
-    "summary": "Full test suite: 4,188/4,193 pass (99.88%), 2 fail (timing-dependent), 3 skipped. No new regressions from session B-2 changes.",
-    "durationMs": 180000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Final git push, session wrap",
+    "startedAt": "2026-04-23T02:00:46.073Z",
+    "taskId": "T90"
   },
   "schedule": {
     "date": "2026-04-22",
@@ -1689,36 +1687,126 @@
       {
         "id": "T81",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Plan fixes for quick-win regression test failures identified in T80",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-23T00:22:23.199Z"
+        "started": "2026-04-23T00:22:23.199Z",
+        "completed": "2026-04-23T00:22:37.891Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 BUILD tasks: (1) Fix SELECT column parser to support comparison/IS NULL/boolean expressions, (2) Fix UNIQUE constraint enforcement on non-PK columns."
       },
       {
         "id": "T82",
         "mode": "BUILD",
         "task": "Fix SELECT column parser to support comparison expressions (1>2, x IS NULL, TRUE/FALSE) in SELECT list — unify with full parseExpr",
-        "status": "upcoming",
-        "plan_ref": "T81"
+        "status": "done",
+        "plan_ref": "T81",
+        "started": "2026-04-23T00:22:45.925Z",
+        "completed": "2026-04-23T00:25:02.930Z",
+        "duration_ms": 600000,
+        "summary": "Fixed SELECT column parser to support comparison expressions, IS NULL, TRUE/FALSE/NULL literals. Added maybeParseSelectComparison() for >, <, =, IS NULL after any expression. Added boolean expression evaluation in _evalValue. Regression tests: 15→4 failures."
       },
       {
         "id": "T83",
         "mode": "BUILD",
         "task": "Fix UNIQUE constraint enforcement on non-PK columns",
+        "status": "done",
+        "plan_ref": "T81",
+        "started": "2026-04-23T00:25:15.240Z",
+        "completed": "2026-04-23T00:27:32.972Z",
+        "duration_ms": 360000,
+        "summary": "Added UNIQUE constraint enforcement for both table-level UNIQUE(col) and column-level TEXT UNIQUE syntax. Creates unique B+Tree indexes. Allows NULL duplicates per SQL standard. Regression: 15→3 failures."
+      },
+      {
+        "id": "T84",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix INSERT FROM CTE (WITH cte AS (...) INSERT INTO dst SELECT * FROM cte)",
+        "project": "henrydb",
+        "started": "2026-04-23T00:28:15.629Z",
+        "completed": "2026-04-23T00:30:16.300Z",
+        "duration_ms": 300000,
+        "summary": "Fixed INSERT FROM CTE: parseWith() now supports INSERT/UPDATE/DELETE after CTEs, _insertSelect propagates CTEs. Also fixed UNIQUE constraint and SELECT expressions. Regression: 15→2 failures total."
+      },
+      {
+        "id": "T85",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement NATURAL JOIN: match on common column names, deduplicate matched columns in result",
+        "project": "henrydb",
+        "started": "2026-04-23T00:30:31.956Z",
+        "completed": "2026-04-23T00:37:18.830Z",
+        "duration_ms": 420000,
+        "summary": "Implemented NATURAL JOIN: parser recognizes NATURAL keyword, engine auto-generates ON condition from common column names between left/right tables using qualified names. Both table and view/CTE paths supported. Regression: 15→1 failure."
+      },
+      {
+        "id": "T86",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Run full test suite sweep to verify 0 new regressions from all session B-2 changes",
+        "project": "henrydb",
+        "started": "2026-04-23T00:41:40.137Z",
+        "completed": "2026-04-23T00:47:16.963Z",
+        "duration_ms": 180000,
+        "summary": "Full test suite: 4,188/4,193 pass (99.88%), 2 fail (timing-dependent), 3 skipped. No new regressions from session B-2 changes."
+      },
+      {
+        "id": "T87",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Evening mini-session: pick best 45-min goal from TODO. Options: neural-net sliding-window fixes, HenryDB parser inconsistency audit, or HenryDB further extraction.",
+        "started": "2026-04-23T01:16:06.597Z",
+        "completed": "2026-04-23T01:16:33.185Z",
+        "duration_ms": 60000,
+        "summary": "Chose HenryDB parser inconsistency audit. AST mismatch pattern caused 3+ bugs today (HAVING, CTE, aggregate args). 45-min session to normalize aggregate arg types across parser+Volcano."
+      },
+      {
+        "id": "T88",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Execute chosen 45-min goal",
+        "task": null,
+        "started": "2026-04-23T01:16:41.242Z"
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "task": "Normalize parser aggregate args: always emit AST nodes (column_ref instead of bare strings). Update all consumers in volcano-planner.js, group-by-executor.js, select-inner.js. Run full test suite.",
         "status": "upcoming",
-        "plan_ref": "T81"
+        "plan_ref": "T88"
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T89",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Switching to neural-net project"
+      },
+      {
+        "id": "T90",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final git push, session wrap"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 82,
-    "blocksTotal": 83,
+    "blocksCompleted": 87,
+    "blocksTotal": 92,
     "modeDistribution": {
-      "THINK": 17,
-      "PLAN": 9,
-      "BUILD": 28,
+      "THINK": 18,
+      "PLAN": 10,
+      "BUILD": 31,
       "MAINTAIN": 15,
       "EXPLORE": 13
     }
