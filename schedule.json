@@ -665,16 +665,45 @@
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural-net: implement dropout layer with training/eval mode toggle",
       "project": "neural-net",
-      "started": "2026-04-23T17:04:22.047Z"
+      "started": "2026-04-23T17:04:22.047Z",
+      "completed": "2026-04-23T17:05:32.650Z",
+      "duration_ms": 180000,
+      "summary": "Wrote 9-test dropout suite. All pass. Tests inverted dropout scaling, train/eval mode, gradient propagation, expected value preservation."
     },
     {
       "id": "T63",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session: git push, dashboard, CURRENT.md, daily log summary",
+      "started": "2026-04-23T17:06:02.497Z",
+      "completed": "2026-04-23T17:06:10.115Z",
+      "duration_ms": 30000,
+      "summary": "Mid-session push. Not ending."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: extract _callProcedure from db.js to procedure-handler.js",
+      "project": "henrydb",
+      "started": "2026-04-23T17:06:15.725Z"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session: git push, dashboard, CURRENT.md, daily log summary"
+      "task": "Neural-net: implement label smoothing for cross-entropy loss",
+      "project": "neural-net"
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural-net: implement RoPE (Rotary Position Embedding) for attention",
+      "project": "neural-net"
     }
   ],
   "focusProjects": [
@@ -914,6 +943,18 @@
     {
       "time": "2026-04-23T17:02:31.102Z",
       "msg": "Added T63 (MAINTAIN) after end: Final session: git push, dashboard, CURRENT.md, daily log summary"
+    },
+    {
+      "time": "2026-04-23T17:05:51.125Z",
+      "msg": "Added T64 (BUILD) after end: HenryDB: extract _callProcedure from db.js to procedure-handler.js"
+    },
+    {
+      "time": "2026-04-23T17:05:51.245Z",
+      "msg": "Added T65 (BUILD) after end: Neural-net: implement label smoothing for cross-entropy loss"
+    },
+    {
+      "time": "2026-04-23T17:05:51.364Z",
+      "msg": "Added T66 (BUILD) after end: Neural-net: implement RoPE (Rotary Position Embedding) for attention"
     }
   ]
 }

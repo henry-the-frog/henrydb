@@ -49,6 +49,7 @@ import { analyzeTable as _analyzeTableImpl } from './analyze-table.js';
 import { applySelectColumns as _applySelectColumnsImpl } from './select-columns.js';
 import { createMatView as _createMatViewImpl, refreshMatView as _refreshMatViewImpl } from './matview-handler.js';
 import { applySetOrderLimit as _applySetOrderLimitImpl, remapUnionColumns as _remapUnionColumnsImpl } from './set-ops-helpers.js';
+import { callProcedure as _callProcedureImpl, callUserFunction as _callUserFunctionImpl } from './procedure-handler.js';
 import { prepareSql as _prepareSqlImpl, executePrepared as _executePreparedImpl, deallocate as _deallocateImpl, bindParams as _bindParamsImpl, prepare as _prepareImpl } from './prepared-stmts-ast.js';
 import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
@@ -987,83 +988,9 @@ export class Database {
 
   _dropFunction(ast) { return _dropFunctionImpl(this, ast); }
 
-  _callProcedure(ast) {
-    const funcDef = this._functions.get(ast.name.toLowerCase());
-    if (!funcDef) throw new Error(`Procedure ${ast.name} not found`);
-    
-    const args = ast.args.map(a => this._evalValue(a, {}));
-    
-    // Execute procedure body
-    let body = funcDef.body;
-    for (let i = 0; i < funcDef.params.length; i++) {
-      const param = funcDef.params[i];
-      const val = args[i];
-      const regex = new RegExp('\\b' + param.name + '\\b', 'gi');
-      if (val === null) {
-        body = body.replace(regex, 'NULL');
-      } else if (typeof val === 'number') {
-        body = body.replace(regex, String(val));
-      } else {
-        body = body.replace(regex, `'${String(val).replace(/'/g, "''")}'`);
-      }
-    }
-    
-    return this.execute(body);
-  }
+  _callProcedure(ast) { return _callProcedureImpl(this, ast); }
 
-  /**
-   * Evaluate a user-defined SQL function call.
-   * Substitutes parameter values into the body expression and evaluates it.
-   */
-  _callUserFunction(funcDef, args) {
-    if (funcDef.language === 'sql') {
-      let body = funcDef.body;
-      
-      // Handle RETURN expr → SELECT expr
-      if (body.toUpperCase().startsWith('RETURN ')) {
-        body = 'SELECT ' + body.substring(7);
-      }
-      
-      if (body.toUpperCase().startsWith('SELECT')) {
-        // Substitute params
-        for (let i = 0; i < funcDef.params.length; i++) {
-          const param = funcDef.params[i];
-          const val = args[i];
-          const regex = new RegExp('\\b' + param.name + '\\b', 'gi');
-          if (val === null) {
-            body = body.replace(regex, 'NULL');
-          } else if (typeof val === 'number') {
-            body = body.replace(regex, String(val));
-          } else {
-            body = body.replace(regex, `'${String(val).replace(/'/g, "''")}'`);
-          }
-        }
-        const result = this.execute(body);
-        const rows = result.rows || result;
-
-        // Table-returning function: return the full result set
-        if (funcDef.returnType === 'TABLE') {
-          return { type: 'TABLE_RESULT', rows: rows || [] };
-        }
-
-        // Scalar function: return first column of first row
-        if (!rows || rows.length === 0) return null;
-        const firstRow = rows[0];
-        const keys = Object.keys(firstRow);
-        return firstRow[keys[0]];
-      }
-      throw new Error(`Function body must start with SELECT: ${body}`);
-    } else if (funcDef.language === 'js') {
-      const paramNames = funcDef.params.map(p => p.name);
-      try {
-        const fn = new Function(...paramNames, `return ${funcDef.body}`);
-        return fn(...args);
-      } catch (e) {
-        throw new Error(`Error in JS function: ${e.message}`);
-      }
-    }
-    throw new Error(`Unsupported function language: ${funcDef.language}`);
-  }
+  _callUserFunction(funcDef, args) { return _callUserFunctionImpl(this, funcDef, args); }
 
   _createView(ast) { return _createViewImpl(this, ast); }
 
