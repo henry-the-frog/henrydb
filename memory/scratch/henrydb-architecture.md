@@ -18,15 +18,18 @@
 5. **Query VM** (bytecode, 30+ opcodes) — 595 lines (SQLite VDBE style)
 6. **Adaptive Engine** — 307 lines, picks best engine per query with runtime feedback
 
-## Index Types (7+)
+## Index Types (10+)
 - B+ tree (432 lines, 56/56 tests)
 - ART — Adaptive Radix Tree (281 lines, Leis et al. 2013)
 - B-epsilon tree (188 lines, write-optimized)
+- GiST — Generalized Search Tree (335 lines, Hellerstein 1995)
 - Bitmap index (201 lines, OLAP)
-- Bloom filter (184 lines, FNV-1a + double hashing)
-- Bitwise trie (68 lines, HAMT-style)
-- AVL tree (92 lines)
-- Skip list (235 lines, P=0.25, used as LSM memtable)
+- Hash index (104 lines, chained)
+- R-tree (136 lines, spatial/PostGIS)
+- Bloom filter (184 lines, probabilistic membership)
+- Inverted index (189 lines, full-text search)
+- Predicate index (145 lines, materialized partial index)
+- Skip list (235 lines, P=0.25, LSM memtable)
 - LSM tree (893 lines total, leveled + tiered compaction)
 
 ## Query Processing
@@ -51,11 +54,15 @@
 - **ARIES Recovery**: Full Mohan et al. 1992 — Analysis→Redo→Undo, CLRs, DPT+ATT (479 lines)
 - **Crash Recovery**: 31 tests pass (12 crash + 7 wal + 12 aries)
 
-## Distributed Systems
+## Distributed Systems (8 primitives)
 - **Raft Consensus** (353 lines, Ongaro 2014)
 - **SWIM Gossip** (225 lines, Das et al. 2002)
 - **Consistent Hashing** (158 lines, Karger 1997, 150 vnodes)
 - **Replication**: Statement-based primary-replica (172 lines)
+- **2PC**: Two-Phase Commit with crash recovery (191 lines)
+- **Vector Clocks** (172 lines, Lamport/Fidge): Event ordering
+- **Phi Detector** (169 lines, Hayashibara 2004): Failure detection
+- **Merkle Tree** (148 lines): Data integrity/sync
 
 ## Data Processing
 - **Full-Text Search**: TSVector/TSQuery, Porter stemmer, TF-IDF, inverted index (374 lines)
@@ -133,6 +140,18 @@
 - Write batch (16 lines, atomic batch writer)
 - Checksum (18 lines: Adler-32, Fletcher-16, XOR)
 - Cursor (36 lines: array-backed iterator)
+
+## Concurrency Control (ALL 4 major schemes!)
+- **2PL** (Eswaran 1976): Growing/shrinking phases (140 lines)
+- **MVCC** (Reed 1978): PostgreSQL snapshot model (523 lines)
+- **SSI** (Cahill 2008): Serializable snapshot isolation (277 lines)
+- **OCC** (Kung & Robinson 1981): Validation-based optimistic CC (100 lines)
+
+## Security
+- **RBAC** (333 lines): Roles, privileges, GRANT/REVOKE
+- **Row-Level Security** (226 lines): Policy expressions per table
+- **SCRAM-SHA-256** (230 lines): Modern authentication (PG 10+)
+- **Audit Log** (212 lines): 9 event types, enterprise compliance
 
 ## Known Bugs (found in Session B)
 1. AFTER DELETE trigger: _fireTriggers wrapper drops OLD row values (6th arg)
