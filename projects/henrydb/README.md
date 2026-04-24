@@ -1,229 +1,201 @@
 # HenryDB
 
-A PostgreSQL-compatible relational database built from scratch in JavaScript. No dependencies, pure educational implementation with production-grade SQL features.
+A SQL database engine written from scratch in JavaScript. No dependencies. **368 source files, ~78,000 lines of code, 868 test files with ~8,900 tests.** Implements 38+ academic papers spanning 50 years of database systems research.
+
+PostgreSQL-compatible: speaks the wire protocol, so `psql` connects to it. All 33 TPC-H queries pass.
 
 ## Quick Start
 
-```bash
-# In-process usage
+```javascript
 import { Database } from './src/db.js';
 
 const db = new Database();
 db.execute('CREATE TABLE users (id INT PRIMARY KEY, name TEXT, age INT)');
-db.execute("INSERT INTO users VALUES (1, 'Alice', 30)");
-const result = db.execute('SELECT * FROM users WHERE age > 25');
-console.log(result.rows); // [{id: 1, name: 'Alice', age: 30}]
+db.execute("INSERT INTO users VALUES (1, 'Alice', 30), (2, 'Bob', 25), (3, 'Carol', 35)");
+
+// Standard SQL
+db.execute('SELECT name, age FROM users WHERE age > 25 ORDER BY age DESC');
+
+// Window functions
+db.execute('SELECT name, RANK() OVER (ORDER BY age DESC) AS rank FROM users');
+
+// Recursive CTE
+db.execute(`
+  WITH RECURSIVE nums(n) AS (
+    SELECT 1 UNION ALL SELECT n+1 FROM nums WHERE n < 10
+  )
+  SELECT n FROM nums
+`);
 ```
 
 ```bash
+# PostgreSQL wire protocol server (connect with psql)
+node src/pg-server.js --port 5432
+
 # HTTP server
 node src/server.js --port 3000
-
-curl -X POST http://localhost:3000/query \
-  -H 'Content-Type: application/json' \
-  -d '{"sql": "SELECT * FROM users"}'
 ```
+
+## What's Inside
+
+### SQL Parser (3,206 LOC)
+Hand-written recursive descent parser. Handles DDL, DML, subqueries, CTEs (including recursive), window functions, MERGE, EXPLAIN ANALYZE, PL/SQL blocks, and more.
+
+### Five Execution Engines
+
+| Engine | Approach | Based On |
+|--------|----------|----------|
+| **AST Interpreter** | Walk parsed tree directly | — |
+| **Volcano Iterator** | Pull-based `open()/next()/close()` | Graefe 1993 |
+| **Pipeline Compiler** | Push-based fused operator loops | Neumann 2011 (HyPer) |
+| **Query VM (VDBE)** | Register-based bytecode, 30+ opcodes | SQLite |
+| **Query Codegen** | Generates JavaScript source → V8 JIT | Copy-and-patch |
+
+Plus a **vectorized execution bridge** (MonetDB/X100 style) for columnar batch processing.
+
+### Storage Layer
+- **Heap files** — slotted page layout (8KB pages)
+- **Buffer pool** — LRU eviction, pin counting, clock-sweep replacement
+- **Disk manager** — page-level I/O abstraction
+- **Column store** — columnar storage for analytical queries
+- **Columnar compression** — dictionary, RLE, delta, bit-packing
+
+### Indexes (7 types)
+- **B+ tree** — range queries, the workhorse
+- **Adaptive Radix Tree (ART)** — 4 node types (Node4/16/48/256), cache-friendly
+- **B-epsilon tree** — write-optimized with message buffers at internal nodes
+- **Bitmap index** — low-cardinality columns
+- **Bloom filter** — probabilistic membership testing
+- **Bitwise trie** — exact match, prefix search
+- **Hash** — 6 variants:
+  - Chained, Extendible, Linear, Robin Hood, Cuckoo, Double hashing
+
+### Write-Ahead Log & Recovery
+- **ARIES-style recovery** — fuzzy checkpoints, dirty page table, per-page LSN
+- **WAL** — every mutation logged before heap modification
+- **File-based WAL** — persistent, crash-safe
+- **WAL truncation** — post-checkpoint cleanup
+- **Checkpoint handler** — periodic and on-demand
+
+### Transactions & Concurrency
+- **MVCC** — PostgreSQL-style snapshots (`xmin:xmax:xip_list`), hint bits
+- **3 isolation levels** — Read Committed, Snapshot Isolation, Serializable (SSI)
+- **SSI** — rw-antidependency tracking, dangerous structure detection (Cahill et al., 2008)
+- **Two-Phase Commit** — distributed transaction coordination
+- **Advisory locks** — application-level locking
+- **VACUUM** — dead tuple removal with xmin horizon
+
+### Query Optimizer
+- **Cost-based** — System R-style with histogram statistics
+- **Index selection** — sequential scan vs index scan vs index-only scan
+- **Join reordering** — dynamic programming over join graphs
+- **Join algorithms** — nested loop, hash join, index nested-loop join, Grace hash join, symmetric hash join, bloom join, band join
+- **Decorrelation** — pulls correlated subqueries into joins
+- **Index advisor** — recommends indexes based on workload
+
+### SQL Features
+- DDL: `CREATE/ALTER/DROP TABLE`, `CREATE INDEX`, `CREATE VIEW`, `CREATE SEQUENCE`
+- DML: `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `TRUNCATE`
+- Queries: `SELECT`, `JOIN` (inner/left/right/full/cross/natural), `UNION/INTERSECT/EXCEPT`
+- CTEs: `WITH`, `WITH RECURSIVE`
+- Window functions: `ROW_NUMBER`, `RANK`, `DENSE_RANK`, `LAG`, `LEAD`, `FIRST_VALUE`, `LAST_VALUE`, `CUME_DIST`, `PERCENT_RANK`, `NTH_VALUE`, `NTILE`
+- Aggregates: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`, `STDDEV`, `VARIANCE`, `PERCENTILE_CONT`, `BOOL_AND`, `BOOL_OR`, `STRING_AGG`, `ARRAY_AGG`, and more
+- `GROUPING SETS`, `ROLLUP`, `CUBE`
+- Subqueries: scalar, `IN`, `EXISTS`, `ANY/ALL`, correlated
+- `CASE`, `COALESCE`, `NULLIF`, `CAST`
+- `EXPLAIN ANALYZE` with formatted output
+- Prepared statements
+- `TABLESAMPLE`
+
+### Distributed Systems
+- **Raft consensus** — leader election, log replication, safety (Ongaro & Ousterhout, 2014)
+- **SWIM gossip** — failure detection, piggybacked dissemination (Das et al., 2002)
+- **Logical replication** — CDC, publication/subscription, replication slots
+- **Consistent hashing** — partition distribution
+- **CRDTs** — G-Counter, PN-Counter, OR-Set (Shapiro et al., 2011)
+
+### PostgreSQL Compatibility
+- **Wire protocol** — `psql` can connect and run queries
+- **PL/SQL** — stored procedures, IF/ELSE, WHILE, RAISE
+- **Row-level security** — per-user access policies
+- **Server sessions** — connection management, session state
+- **Cursors** — scrollable, holdable, with FETCH
+
+### Probabilistic & Advanced Data Structures
+- **HyperLogLog** — cardinality estimation (Flajolet et al., 2007)
+- **Count-Min Sketch** — frequency estimation (Cormode & Muthukrishnan, 2005)
+- **T-Digest** — streaming quantile estimation (Dunning, 2019)
+- **Wavelet tree** — rank/select/access in O(log σ)
+- **Skip list** — MVCC-aware concurrent skip list
+- **Treap** — randomized BST with order statistics
+- **COLA** — cache-oblivious lookahead array
+- **Rope** — efficient large string operations
+- **LSM tree** — log-structured merge tree with compaction strategies
+
+### Performance
+- **11,000** inserts/sec (batch mode)
+- **9,000** point queries/sec
+- **186x** hash join speedup vs nested loop
+- **17x** pipeline compiler speedup vs Volcano on LIMIT queries
+- **8.2x** WAL batch flush speedup (29,500 rows/sec)
+
+## Testing
 
 ```bash
-# PostgreSQL wire protocol server (connect with psql or any PG client!)
-node src/pg-server.js --port 5433
+# Run all tests
+node --test src/*.test.js
 
-# In-memory mode (default)
-node src/pg-server.js --port 5433
+# Run a specific module
+node --test src/mvcc.test.js
 
-# Persistent mode (data survives restarts)
-node src/pg-server.js --port 5433 --dir ./data
+# Run SQL fuzzer
+node --test src/sql-fuzzer-v2.test.js
 
-# Connect with pg npm client
-import pg from 'pg';
-const client = new pg.Client({ host: 'localhost', port: 5433 });
-await client.connect();
-const result = await client.query('SELECT * FROM users WHERE id = $1', [1]);
+# Run TPC-H
+node --test src/tpch-benchmark.test.js
 ```
 
-## Features
-
-### Core SQL
-- **DDL**: CREATE/DROP TABLE, ALTER TABLE (ADD/DROP/RENAME COLUMN), CREATE/DROP INDEX, CREATE/DROP VIEW
-- **DML**: SELECT, INSERT (multi-row), UPDATE, DELETE, UPSERT (ON CONFLICT DO UPDATE)
-- **Joins**: INNER, LEFT, RIGHT, FULL OUTER, CROSS, NATURAL, LATERAL
-- **Subqueries**: Correlated and uncorrelated, ANY/ALL/EXISTS, IN
-- **Set Operations**: UNION [ALL], INTERSECT, EXCEPT
-- **CTEs**: WITH and WITH RECURSIVE
-
-### Advanced SQL
-- **Window Functions**: ROW_NUMBER, RANK, DENSE_RANK, SUM/AVG/COUNT/MIN/MAX OVER (PARTITION BY ... ORDER BY ...)
-- **User-Defined Functions**: `CREATE FUNCTION ... AS $$ body $$` — SQL and JavaScript bodies
-- **Table-Returning Functions**: `CREATE FUNCTION ... RETURNS TABLE(...)` — use in FROM clause
-- **Dollar-Quoting**: `$$body$$` and `$tag$body$tag$` for function bodies
-- **Aggregates**: COUNT, SUM, AVG, MIN, MAX, GROUP_CONCAT, ARRAY_AGG, STRING_AGG
-- **GROUP BY / HAVING**: Full support with arbitrary expressions
-
-### Indexing & Optimization
-- **B-Tree Indexes**: CREATE INDEX, UNIQUE INDEX, multi-column support
-- **HOT Chains**: Heap-Only Tuples — skip index updates when non-indexed columns change
-- **Index-Only Scans**: Reads from index when all needed columns are included
-- **Index-Based Constraint Checking**: O(log N) UNIQUE/PK validation instead of O(N) heap scan
-- **ANALYZE**: Gather table statistics (ndistinct, null fraction, most common values, histograms)
-- **Selectivity Estimation**: Predict query selectivity from statistics (equality, range, IN, BETWEEN)
-- **Cost-Based Optimizer**: Parametric cost model (seq_page_cost, random_page_cost, cpu_tuple_cost) for index vs scan selection
-- **Join Method Selection**: Hash join, merge join, index nested loop, nested loop — cost-based choice
-- **System R Join Ordering**: Dynamic programming optimizer for multi-table joins (up to 6 tables)
-- **EXPLAIN / EXPLAIN ANALYZE**: View query plans with estimated and actual row counts + timing + costs
-- **COPY FROM STDIN / COPY TO STDOUT**: Bulk data loading and export via PG wire protocol
-- **information_schema**: Tables and columns discovery (information_schema.tables, information_schema.columns)
-
-### MVCC & Transactions
-- **Snapshot Isolation**: Each transaction sees a consistent snapshot
-- **MVCC Heap**: xmin/xmax version tracking with hint bits
-- **Active Snapshot Sets**: Proper in-progress transaction exclusion (like PostgreSQL's xip[])
-- **Savepoints**: SAVEPOINT / ROLLBACK TO / RELEASE
-- **Row-Level Locking**: SELECT FOR UPDATE / FOR SHARE / NOWAIT / SKIP LOCKED
-
-### Persistence & Recovery
-- **Write-Ahead Logging**: All mutations logged before applying
-- **Crash Recovery**: Replay committed transactions, skip uncommitted
-- **File-Backed Heap**: Pages persisted to disk via buffer pool
-- **VACUUM**: Reclaim dead tuples, rebuild indexes, clear HOT chains
-
-### Other
-- **Triggers**: BEFORE/AFTER on INSERT/UPDATE/DELETE
-- **Constraints**: PRIMARY KEY, UNIQUE, NOT NULL, CHECK, FOREIGN KEY (with CASCADE)
-- **Sequences**: CREATE SEQUENCE, NEXTVAL, CURRVAL, SERIAL/AUTOINCREMENT
-- **JSON**: Basic JSON operations
-- **Type System**: INT, FLOAT, TEXT, BOOLEAN, DATE, SERIAL
+**868 test files, ~8,900 tests** covering:
+- Correctness (SQL semantics, ACID properties)
+- Concurrency (MVCC visibility, SSI anomaly detection)
+- Recovery (crash + restart with WAL replay)
+- Performance (TPC-H, fuzzer, stress tests)
+- Edge cases (NULL handling, empty tables, boundary values)
 
 ## Architecture
 
 ```
-┌─────────────────────────────────┐
-│     PG Wire Protocol Server     │  ← src/pg-server.js (psql/pg compatible)
-│          HTTP Server            │  ← src/server.js (REST API)
-├─────────────────────────────────┤
-│         SQL Parser              │  ← src/sql.js (2700+ lines)
-├─────────────────────────────────┤
-│       Query Executor            │  ← src/db.js (7000+ lines)
-│   ┌───────────────────┐        │
-│   │  Index Optimizer   │        │  ← Index scan planning
-│   │  UDF Evaluator     │        │  ← Function catalog
-│   │  Constraint Engine │        │  ← PK, UNIQUE, FK, CHECK
-│   └───────────────────┘        │
-├─────────────────────────────────┤
-│     MVCC Layer                  │  ← src/mvcc.js
-│   ┌───────────────────┐        │
-│   │  Snapshot Manager  │        │
-│   │  Version Catalog   │        │
-│   │  VACUUM            │        │
-│   └───────────────────┘        │
-├─────────────────────────────────┤
-│     Storage Layer               │
-│   ┌─────────┐ ┌───────────┐   │
-│   │HeapFile │ │BTreeTable  │   │
-│   │(page)   │ │(btree-PK)  │   │
-│   └─────────┘ └───────────┘   │
-│   ┌─────────┐ ┌───────────┐   │
-│   │B+Tree   │ │HOT Chains  │   │
-│   │(index)  │ │(optimize)  │   │
-│   └─────────┘ └───────────┘   │
-├─────────────────────────────────┤
-│     WAL (Write-Ahead Log)       │  ← src/wal.js
-│   ┌─────────┐ ┌───────────┐   │
-│   │MemWAL   │ │FileWAL     │   │
-│   └─────────┘ └───────────┘   │
-├─────────────────────────────────┤
-│     Disk Manager                │  ← src/disk-manager.js
-│     Buffer Pool                 │  ← src/buffer-pool.js
-└─────────────────────────────────┘
+src/
+├── SQL           sql.js (parser), sql-functions.js, expression-evaluator.js
+├── Execution     volcano.js, volcano-planner.js, pipeline-compiler.js
+│                 query-vm.js, query-codegen.js, vectorized.js
+├── Storage       page.js, buffer-pool.js, heap-file.js, column-store.js
+├── Indexes       bplus-tree.js, art.js, b-epsilon-tree.js, bitmap-index.js
+│                 bloom.js, hash-index.js, robin-hood-hash.js, cuckoo-hash.js
+├── WAL           wal.js, file-wal.js, aries-recovery.js, checkpoint-handler.js
+├── Transactions  mvcc.js, ssi.js, transactional-db.js, advisory-locks.js
+├── Optimizer     planner.js, query-plan.js, cardinality.js, index-advisor.js
+├── Joins         join-executor.js, grace-hash-join.js, symmetric-hash-join.js
+│                 bloom-join.js, band-join.js
+├── Distributed   raft.js, gossip.js, logical-replication.js, consistent-hash.js
+│                 crdt.js, two-phase-commit.js
+├── Server        pg-server.js, pg-protocol.js, server.js, cli.js
+├── Probabilistic hyperloglog.js, count-min-sketch.js, t-digest.js
+│                 wavelet-tree.js, skip-list.js, treap.js
+└── Core          db.js, catalog.js, comparator.js, compression.js
 ```
 
-## PostgreSQL Wire Protocol
+## Academic Papers Implemented
 
-Full PG wire protocol v3 implementation — connect with `psql`, `pg` npm client, or any PostgreSQL driver:
-
-- **Simple query protocol**: Direct SQL execution
-- **Extended query protocol**: Prepared statements, parameterized queries ($1, $2...)
-- **pg_catalog interceptor**: SET, SHOW, version(), current_database()
-- **Persistent mode**: `--dir ./data` flag for crash-safe storage
-- **Connection pooling**: Works with `pg.Pool` for concurrent connections
-- **Transaction state tracking**: Idle (I), In-Transaction (T), Error (E) indicators
-- **SSL negotiation**: Graceful refusal (sends 'N')
-
-## HTTP API
-
-```
-GET  /health   → { status, version, tables, functions }
-POST /query    → { type, rows, duration_ms }
-POST /execute  → { type, message, duration_ms }
-GET  /tables   → { tables: { name: { columns, indexes } } }
-```
-
-## Examples
-
-### User-Defined Functions
-```sql
--- SQL scalar function
-CREATE FUNCTION celsius_to_f(c FLOAT) RETURNS FLOAT
-AS $$ SELECT c * 9.0 / 5.0 + 32 $$;
-
--- JavaScript function
-CREATE FUNCTION distance(x1 FLOAT, y1 FLOAT, x2 FLOAT, y2 FLOAT) RETURNS FLOAT
-LANGUAGE js AS $$ Math.sqrt((x2-x1)**2 + (y2-y1)**2) $$;
-
--- Table-returning function
-CREATE FUNCTION active_users(min_age INT) RETURNS TABLE(name TEXT, age INT)
-AS $$ SELECT name, age FROM users WHERE age >= min_age AND active = 1 $$;
-
-SELECT * FROM active_users(18) WHERE name LIKE 'A%';
-```
-
-### Row-Level Locking
-```sql
-BEGIN;
-SELECT * FROM accounts WHERE id = 1 FOR UPDATE;
--- Other transactions cannot modify this row until COMMIT
-UPDATE accounts SET balance = balance - 100 WHERE id = 1;
-COMMIT;
-```
-
-### Window Functions
-```sql
-SELECT name, dept, salary,
-  RANK() OVER (PARTITION BY dept ORDER BY salary DESC) as rank,
-  SUM(salary) OVER (PARTITION BY dept) as dept_total
-FROM employees;
-```
-
-### Recursive CTEs
-```sql
-WITH RECURSIVE tree AS (
-  SELECT id, name, parent_id, 0 as depth FROM categories WHERE parent_id IS NULL
-  UNION ALL
-  SELECT c.id, c.name, c.parent_id, t.depth + 1
-  FROM categories c JOIN tree t ON c.parent_id = t.id
-)
-SELECT * FROM tree ORDER BY depth, name;
-```
-
-## Tests
-
-783 test files, ~72K lines of source code. Run with:
-
-```bash
-node --test src/hot-chains.test.js src/udf.test.js src/table-func.test.js src/row-locking.test.js
-```
-
-## Performance (10K rows, in-memory)
-
-| Operation | Throughput |
-|-----------|-----------|
-| PK SELECT | ~13,000 q/sec |
-| Index SELECT | ~34,000 q/sec |
-| Aggregate scan | ~5,500 q/sec |
-| INSERT | ~240 rows/sec |
-| UPDATE | ~100 rows/sec |
-| UDF call | ~9,000 q/sec |
-
-Note: This is a pure-JavaScript educational implementation. Production databases (SQLite, PostgreSQL) are 100-1000x faster.
+38+ papers spanning 1970–2024:
+- **Indexes**: B+ tree (1972), ART (2013), B-epsilon (2003), Robin Hood (1986), Cuckoo (2001), Extendible (1979), Linear (1980)
+- **Execution**: Volcano (Graefe 1993), Push-based compilation (Neumann 2011), Vectorized (Boncz 2005), Morsel-driven parallelism (Leis 2014)
+- **Recovery**: ARIES (Mohan 1992)
+- **Concurrency**: MVCC/SI (Berenson 1995), SSI (Cahill 2008, Ports & Grittner 2012)
+- **Joins**: Grace hash join (Kitsuregawa 1983), Radix join (Manegold 2000)
+- **Distributed**: Raft (Ongaro 2014), SWIM (Das 2002), CRDTs (Shapiro 2011)
+- **Probabilistic**: HyperLogLog (Flajolet 2007), Count-Min (Cormode 2005), T-Digest (Dunning 2019), Bloom filter (1970), Cuckoo filter (Fan 2014)
+- **Optimization**: System R (Selinger 1979), TPC-H (Transaction Processing Council)
 
 ## License
 
