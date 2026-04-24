@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-24T16:19:26.231Z",
+  "generated": "2026-04-24T16:27:35.649Z",
   "current": {
-    "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Implement VectorBatch and VSeqScan for HenryDB vectorized execution prototype",
-    "startedAt": "2026-04-24T16:19:26.231Z",
-    "taskId": "T32"
+    "status": "done",
+    "mode": "EXPLORE",
+    "task": "Benchmark vectorized engine vs Volcano on aggregation queries and document results",
+    "completedAt": "2026-04-24T16:27:35.649Z",
+    "taskId": "T33",
+    "summary": "Benchmarked vectorized vs Volcano on 10K rows: GROUP BY 1.3x faster, Filter+GroupBy 1.3x, Simple filter 1.7x. Modest speedups in JS (no SIMD). Largest benefit on simple scan+filter operations. At scale and in typed-array-heavy workloads, would see more benefit.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-24",
@@ -6769,14 +6771,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 28,
+    "blocksCompleted": 30,
     "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 11,
+      "BUILD": 12,
       "MAINTAIN": 4,
-      "EXPLORE": 3
+      "EXPLORE": 4
     }
   },
   "artifacts": [

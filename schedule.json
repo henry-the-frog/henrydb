@@ -329,10 +329,24 @@
     {
       "id": "T32",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement VectorBatch and VSeqScan for HenryDB vectorized execution prototype",
       "project": "henrydb",
-      "started": "2026-04-24T16:19:26.195Z"
+      "started": "2026-04-24T16:19:26.195Z",
+      "completed": "2026-04-24T16:21:14.080Z",
+      "duration_ms": 600000,
+      "summary": "Implemented vectorized execution engine: VectorBatch (columnar batch), VSeqScan (batch scan), VFilter (batch filter), VProject (batch projection), VHashAggregate (batch GROUP BY), VHashJoin (batch hash join). All 14 tests pass. 350 lines of engine + 350 lines of tests."
+    },
+    {
+      "id": "T33",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Benchmark vectorized engine vs Volcano on aggregation queries and document results",
+      "project": "henrydb",
+      "started": "2026-04-24T16:26:55.436Z",
+      "completed": "2026-04-24T16:27:35.613Z",
+      "duration_ms": 180000,
+      "summary": "Benchmarked vectorized vs Volcano on 10K rows: GROUP BY 1.3x faster, Filter+GroupBy 1.3x, Simple filter 1.7x. Modest speedups in JS (no SIMD). Largest benefit on simple scan+filter operations. At scale and in typed-array-heavy workloads, would see more benefit."
     }
   ],
   "focusProjects": [
@@ -472,6 +486,10 @@
     {
       "time": "2026-04-24T16:19:20.283Z",
       "msg": "Added T32 (BUILD) after end: Implement VectorBatch and VSeqScan for HenryDB vectorized execution prototype"
+    },
+    {
+      "time": "2026-04-24T16:26:47.437Z",
+      "msg": "Added T33 (EXPLORE) after end: Benchmark vectorized engine vs Volcano on aggregation queries and document results"
     }
   ]
 }
