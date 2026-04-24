@@ -174,9 +174,18 @@ export function evalFunction(db, func, args, row) {
     case 'SUBSTRING': {
       const str = db._evalValue(args[0], row);
       if (str == null) return null;
-      const start = (db._evalValue(args[1], row) || 1) - 1; // SQL is 1-indexed
+      const s = String(str);
+      let startVal = db._evalValue(args[1], row) || 1;
       const len = args[2] ? db._evalValue(args[2], row) : undefined;
-      return String(str).substring(start, len !== undefined ? start + len : undefined);
+      // SQLite: negative start means from the end
+      let start;
+      if (startVal < 0) {
+        start = s.length + startVal;  // -3 → length-3
+        if (start < 0) start = 0;
+      } else {
+        start = startVal - 1; // SQL is 1-indexed
+      }
+      return s.substring(start, len !== undefined ? start + len : undefined);
     }
     case 'REPLACE': {
       const str = db._evalValue(args[0], row);
@@ -188,6 +197,13 @@ export function evalFunction(db, func, args, row) {
     case 'TRIM': {
       const str = db._evalValue(args[0], row);
       return str != null ? String(str).trim() : null;
+    }
+    case 'INSTR': {
+      const str = db._evalValue(args[0], row);
+      const search = db._evalValue(args[1], row);
+      if (str == null || search == null) return null;
+      const idx = String(str).indexOf(String(search));
+      return idx === -1 ? 0 : idx + 1;  // SQL 1-indexed, 0 = not found
     }
     case 'ABS': {
       const val = db._evalValue(args[0], row);
