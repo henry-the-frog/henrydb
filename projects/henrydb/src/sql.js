@@ -1353,7 +1353,7 @@ export function parse(sql) {
     // Check for || concatenation or arithmetic operators
     const nextTok = peek();
     const nextType = nextTok ? nextTok.type : null;
-    if (nextType === 'CONCAT_OP' || nextType === 'CAST_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD') {
+    if (nextType === 'CONCAT_OP' || nextType === 'CAST_OP' || nextType === 'PLUS' || nextType === 'MINUS' || nextType === '*' || nextType === 'SLASH' || nextType === 'MOD' || nextType === 'EQ' || nextType === 'NE' || nextType === 'LT' || nextType === 'GT' || nextType === 'LE' || nextType === 'GE') {
       let seed = colTok.type === 'STRING' || colTok.type === 'NUMBER'
         ? { type: 'literal', value: col, ...(colTok.isFloat ? { isFloat: true } : {}) }
         : { type: 'column_ref', name: col };
@@ -1401,6 +1401,14 @@ export function parse(sql) {
         const typeTok = advance();
         const targetType = (typeTok.originalValue || typeTok.value).toUpperCase();
         left = { type: 'cast', expr: left, targetType };
+      }
+      // Handle comparison operators after arithmetic: s + n > 5
+      const compOps = { 'EQ': '=', 'NE': '!=', 'LT': '<', 'GT': '>', 'LE': '<=', 'GE': '>=' };
+      if (compOps[peek().type]) {
+        const op = peek().type;
+        advance();
+        const right = parsePrimaryWithConcat();
+        left = { type: 'COMPARE', op, left, right };
       }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
