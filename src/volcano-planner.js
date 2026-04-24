@@ -661,7 +661,14 @@ function extractEquiJoinKeys(on, leftFrom, rightJoin) {
   if (lName.includes('.') && rName.includes('.')) {
     const [lTable, lCol] = lName.split('.');
     const [rTable, rCol] = rName.split('.');
-    // build side = right table (smaller side), probe = left (already built)
+    // Determine which column belongs to which table
+    // build side = right table, probe = left table
+    if (lTable === rightAlias) {
+      return { buildKey: lName, probeKey: rName };
+    } else if (rTable === rightAlias) {
+      return { buildKey: rName, probeKey: lName };
+    }
+    // Fallback: assume left = probe, right = build (original ON order)
     return { buildKey: rName, probeKey: lName };
   }
   
