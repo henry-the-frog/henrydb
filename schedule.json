@@ -505,10 +505,35 @@
     {
       "id": "T48",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add DATE/TIME/DATETIME functions for 100% SQLite SQL coverage",
       "project": "henrydb",
-      "started": "2026-04-24T17:03:49.472Z"
+      "started": "2026-04-24T17:03:49.472Z",
+      "completed": "2026-04-24T17:05:40.461Z",
+      "duration_ms": 120000,
+      "summary": "Added DATE/TIME/DATETIME/JULIANDAY/UNIXEPOCH functions. HenryDB now has 100% SQLite SQL coverage for common features (47/47). UTC-aware parsing for TIME function."
+    },
+    {
+      "id": "T49",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: generate a comprehensive feature comparison table vs popular JS ML libraries",
+      "project": "neural-net",
+      "started": "2026-04-24T17:06:10.229Z",
+      "completed": "2026-04-24T17:06:47.116Z",
+      "duration_ms": 120000,
+      "summary": "Feature comparison: neural-net covers 40+ architectures with 0 dependencies and 2300+ tests. No other JS ML library has transformers, GANs, RL, GNNs, diffusion, KAN, Mamba, LoRA, DARTS, and MAML all in pure JS. TensorFlow.js has GPU acceleration but fewer architecture types. Brain.js and Synaptic are much simpler."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: add code examples section to README showing key architectures",
+      "project": "neural-net",
+      "started": "2026-04-24T17:07:10.367Z",
+      "completed": "2026-04-24T17:08:26.406Z",
+      "duration_ms": 120000,
+      "summary": "Added 4 code examples to README: Transformer (MultiHeadAttention), DQN (RL agent), MoE (routing), VAE (generation). All use collapsible details sections."
     }
   ],
   "focusProjects": [
@@ -712,6 +737,14 @@
     {
       "time": "2026-04-24T17:03:43.001Z",
       "msg": "Added T48 (BUILD) after end: HenryDB: add DATE/TIME/DATETIME functions for 100% SQLite SQL coverage"
+    },
+    {
+      "time": "2026-04-24T17:06:00.892Z",
+      "msg": "Added T49 (EXPLORE) after end: Neural-net: generate a comprehensive feature comparison table vs popular JS ML libraries"
+    },
+    {
+      "time": "2026-04-24T17:07:02.884Z",
+      "msg": "Added T50 (BUILD) after end: Neural-net: add code examples section to README showing key architectures"
     }
   ]
 }
