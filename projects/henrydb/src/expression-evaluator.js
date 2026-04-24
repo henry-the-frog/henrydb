@@ -958,7 +958,9 @@ P._computeAggregates = function(columns, rows) {
     }
     if (col.type !== 'aggregate') continue;
     const argStr = typeof col.arg === 'object' ? 'expr' : col.arg;
-    const name = col.alias || `${col.func}(${argStr})`;
+    let name = col.alias || `${col.func}(${argStr})`;
+    // Deduplicate: SUM(a), SUM(a) → SUM(a), SUM(a)_1
+    if (name in result) { let s = 1; while (`${name}_${s}` in result) s++; name = `${name}_${s}`; }
     
     // Apply FILTER clause: only include rows matching the filter condition
     let filteredRows = rows;

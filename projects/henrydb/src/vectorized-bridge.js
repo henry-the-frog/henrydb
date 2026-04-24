@@ -186,7 +186,8 @@ function _buildRowFromSelectList(ast, groupCols, groupValues, aggSpecs, aggValue
         val = val.count > 0 ? val.sum / val.count : 0;
       }
       // Use alias if provided, otherwise standard naming: FUNC(arg)
-      const name = col.alias || `${spec.func}(${spec.arg})`;
+      let name = col.alias || `${spec.func}(${spec.arg})`;
+      if (name in obj) { let s = 1; while (`${name}_${s}` in obj) s++; name = `${name}_${s}`; }
       obj[name] = val;
       aggIdx++;
     } else if (col.type === 'column') {

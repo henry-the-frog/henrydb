@@ -376,7 +376,8 @@ export function selectWithGroupBy(db, ast, rows) {
     // Add aggregate and non-aggregate columns
     for (const col of ast.columns) {
       if (col.type === 'aggregate') {
-        const name = col.alias || `${col.func}(${col.arg})`;
+        let name = col.alias || `${col.func}(${col.arg})`;
+        if (name in result) { let s = 1; while (`${name}_${s}` in result) s++; name = `${name}_${s}`; }
         result[name] = computeAgg(col.func, col.arg, col.distinct, { separator: col.separator, aggOrderBy: col.aggOrderBy, filter: col.filter, groupRows, aggArg: col.arg, percentile: col.percentile, arg2: col.arg2 });
         // Also store under canonical key for HAVING resolution
         const canonKey = `${col.func}(${col.arg})`;
