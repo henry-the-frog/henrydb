@@ -90,7 +90,7 @@ export function selectInner(db, ast) {
     if (hasAgg) return { type: 'ROWS', rows: [db._computeAggregates(ast.columns, rows)] };
     
     if (ast.orderBy) rows = db._sortRows(rows, ast.orderBy);
-    if (ast.limit != null) rows = rows.slice(ast.offset || 0, (ast.offset || 0) + ast.limit);
+    if (ast.limit != null && ast.limit >= 0) rows = rows.slice(ast.offset || 0, (ast.offset || 0) + ast.limit);
     return { type: 'ROWS', rows };
   }
 
@@ -267,7 +267,7 @@ export function selectInner(db, ast) {
     }
 
     if (ast.offset) rows = rows.slice(Math.max(0, ast.offset));
-    if (ast.limit != null) rows = rows.slice(0, ast.limit);
+    if (ast.limit != null && ast.limit >= 0) rows = rows.slice(0, ast.limit);
 
     // Project columns
     if (ast.columns.length === 1 && ast.columns[0]?.type === 'star') {
@@ -383,7 +383,7 @@ export function selectInner(db, ast) {
       // Can push limit into scan when: no ORDER BY, no GROUP BY, no DISTINCT, no HAVING, no windows
       const canEarlyLimit = ast.limit != null && !ast.orderBy && !ast.groupBy && !ast.distinct &&
         !ast.having && !db._columnsHaveWindow(ast.columns);
-      const earlyLimit = canEarlyLimit ? (ast.limit + (ast.offset || 0)) : Infinity;
+      const earlyLimit = canEarlyLimit && ast.limit >= 0 ? (ast.limit + (ast.offset || 0)) : Infinity;
       
       for (const { pageId, slotIdx, values } of table.heap.scan()) {
         const row = db._valuesToRow(values, table.schema, ast.from.alias || ast.from.table);
@@ -542,7 +542,7 @@ export function selectInner(db, ast) {
   if (ast.offset && !ast.distinct) rows = rows.slice(Math.max(0, ast.offset));
 
   // LIMIT (only apply before projection if no DISTINCT)
-  if (ast.limit != null && !ast.distinct) rows = rows.slice(0, ast.limit);
+  if (ast.limit != null && ast.limit >= 0 && !ast.distinct) rows = rows.slice(0, ast.limit);
 
   // Materialize correlated scalar subqueries: pre-compute once with GROUP BY
   // instead of re-executing per row. Transforms O(n*m) to O(n+m).
@@ -676,7 +676,7 @@ export function selectInner(db, ast) {
       }
     }
     if (ast.offset) finalRows = finalRows.slice(Math.max(0, ast.offset));
-    if (ast.limit != null) finalRows = finalRows.slice(0, ast.limit);
+    if (ast.limit != null && ast.limit >= 0) finalRows = finalRows.slice(0, ast.limit);
   } else if (ast.distinct) {
     const seen = new Set();
     finalRows = projected.filter(row => {
@@ -687,7 +687,7 @@ export function selectInner(db, ast) {
     });
     // Apply OFFSET and LIMIT after DISTINCT
     if (ast.offset) finalRows = finalRows.slice(Math.max(0, ast.offset));
-    if (ast.limit != null) finalRows = finalRows.slice(0, ast.limit);
+    if (ast.limit != null && ast.limit >= 0) finalRows = finalRows.slice(0, ast.limit);
   }
 
   return { type: 'ROWS', rows: finalRows };
@@ -769,7 +769,7 @@ function _tryVectorizedGroupBy(db, ast, rows) {
     
     // Apply LIMIT/OFFSET
     if (ast.offset != null) resultRows = resultRows.slice(ast.offset);
-    if (ast.limit != null) resultRows = resultRows.slice(0, ast.limit);
+    if (ast.limit != null && ast.limit >= 0) resultRows = resultRows.slice(0, ast.limit);
     
     return { type: 'ROWS', rows: resultRows };
   } catch {
