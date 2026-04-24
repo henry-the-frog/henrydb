@@ -666,6 +666,17 @@
       "completed": "2026-04-24T17:33:04.969Z",
       "duration_ms": 300000,
       "summary": "Documented 4 root causes for vectorized integration failures: (1) missing non-aggregate GROUP BY columns, (2) column value resolution from heap, (3) expression evaluation format mismatch, (4) result column ordering differs from standard path. Saved detailed analysis to scratch/vectorized-integration-issues.md. 4 specific fixes needed for auto-enable."
+    },
+    {
+      "id": "T63",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: edge case SQL testing — NULL handling, empty results, type coercion",
+      "project": "henrydb",
+      "started": "2026-04-24T17:34:12.905Z",
+      "completed": "2026-04-24T17:34:40.355Z",
+      "duration_ms": 120000,
+      "summary": "Found 5 edge case bugs: (1) NULL = NULL returns rows (should be 0 per SQL standard), (2) string + number does concat instead of coerce, (3) division by 0 throws instead of NULL, (4) modulo by 0 throws instead of NULL, (5) negative number literal not parsed. 14/19 edge cases pass. Added to TODO for future fix."
     }
   ],
   "focusProjects": [
@@ -925,6 +936,10 @@
     {
       "time": "2026-04-24T17:30:14.399Z",
       "msg": "Added T62 (EXPLORE) after end: Document the 15 vectorized engine integration failures for future fix session"
+    },
+    {
+      "time": "2026-04-24T17:34:06.913Z",
+      "msg": "Added T63 (EXPLORE) after end: HenryDB: edge case SQL testing — NULL handling, empty results, type coercion"
     }
   ]
 }
