@@ -1410,6 +1410,12 @@ export function parse(sql) {
         const right = parsePrimaryWithConcat();
         left = { type: 'COMPARE', op, left, right };
       }
+      // Handle logical AND/OR after comparisons: a > 1 AND b < 5
+      while (isKeyword('AND') || isKeyword('OR')) {
+        const logicOp = advance().value.toUpperCase();
+        const right = parseComparison();
+        left = { type: logicOp, left, right };
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr: left, alias };
