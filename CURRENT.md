@@ -1,13 +1,26 @@
 # CURRENT.md — Session State
 
 ## Status
-status: in-progress
+status: session-ended
 mode: BUILD
-task: Fix all 7 neural-net bugs
 session: Session B evening (Apr 23, 2026, 19:30-20:15 MDT)
-current_position: T328
-started: 2026-04-24T01:32:13Z
-tasks_completed_this_session: 3
+tasks_completed_this_session: 8 (T179, T137, T326-T333)
+
+## Session B Evening Results
+- Fixed **6 neural-net bugs**: rope.js exports, FlashAttention positional args, reward model bias grads, MoE serialization (up/down), EarlyStopping API upgrade
+- Fixed **1 HenryDB bug**: BEFORE/AFTER DELETE trigger support added to _delete
+- Fixed **CI blocker**: trainWithEarlyStopping missing export + implementation
+- **Reverted MSE gradient /n** (was double-counting with Network.backward batch division)
+- **AdamW step counter**: verified correct (not a bug)
+- **Pruning threshold**: verified intentional (>= for magnitude, > for structured)
+
+## Tomorrow's Remaining Focus
+1. ~~Fix neural-net bugs~~ ✅ DONE
+2. Update neural-net README (168 modules, 26K LOC, etc.)
+3. ~~Fix HenryDB AFTER DELETE trigger~~ ✅ DONE  
+4. Fix HenryDB optimizer-quality test
+5. Fix SELECT * + window Volcano bug
+6. Write blog post
 
 ## Session B Results
 - **95% source coverage** (510/536 modules explored)
