@@ -92,10 +92,47 @@
 - **Audit Log**: 9 event types (212 lines)
 - **Index Advisor**: Workload-based recommendations (437 lines)
 
-## Advanced Data Structures
-- Fenwick Tree, Segment Tree, Union-Find, Suffix Array, Double Hashing
-- COLA (Cache-Oblivious Lookahead Array, 117 lines)
-- Circular list (25 lines, Clock replacer)
+## Hash Tables (6 variants!)
+1. Chained hashing (hash-index.js, 104 lines)
+2. Extendible hashing (extendible-hash.js, 284 lines, CMU 15-445)
+3. Linear hashing (linear-hashing.js, 115 lines, round-robin split)
+4. Robin Hood hashing (robin-hood-hash.js, 254 lines, variance-reducing)
+5. Cuckoo hashing (cuckoo-hash.js, 161 lines, O(1) worst-case)
+6. Double hashing (advanced-ds.js, open addressing probe)
+
+## Additional Data Structures
+- van Emde Boas tree (103 lines): O(log log u) predecessor/successor
+- Wavelet tree (125 lines): O(log σ) rank/select/access on sequences
+- Treap (144 lines): BST + heap, expected O(log n)
+- R-tree (136 lines): Spatial index (PostGIS-style)
+- Interval tree (70 lines): Augmented BST for temporal queries
+- Skip list (235 lines, P=0.25): LSM memtable
+- Trie (157 lines): Prefix tree for strings
+- Wildcard trie (78 lines): LIKE query support
+- Bitwise trie (68 lines): HAMT-style, 5 bits/level
+- AVL tree (92 lines): Balanced BST
+- Fenwick tree, Segment tree, Union-Find, Suffix Array
+- COLA (117 lines): Cache-oblivious lookahead array
+- Circular list (25 lines): Clock replacer
+
+## Parallelism
+- Morsel-driven parallelism (204 lines, Leis et al. 2014)
+- Work-stealing thread pool (213 lines, Blumofe & Leiserson 1999)
+- SIMD-style numeric operations (103 lines)
+
+## Probabilistic / Streaming
+- Bloom filter (184 lines): FNV-1a + double hashing
+- Cuckoo filter: Probabilistic membership with deletion
+- Count-Min Sketch (145 lines): Frequency estimation
+- HyperLogLog (100 lines): Cardinality estimation
+- T-Digest: Streaming quantile estimation
+- Zobrist hash (87 lines): Incremental XOR hashing
+
+## Miscellaneous
+- Varint encoding (31 lines, protobuf/SQLite style)
+- Write batch (16 lines, atomic batch writer)
+- Checksum (18 lines: Adler-32, Fletcher-16, XOR)
+- Cursor (36 lines: array-backed iterator)
 
 ## Known Bugs (found in Session B)
 1. AFTER DELETE trigger: _fireTriggers wrapper drops OLD row values (6th arg)
