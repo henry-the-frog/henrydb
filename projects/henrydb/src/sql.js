@@ -120,6 +120,40 @@ export function tokenize(sql) {
       continue;
     }
 
+    // Backtick-quoted identifier: `table name`
+    if (src[i] === '`') {
+      i++;
+      let ident = '';
+      while (i < src.length && src[i] !== '`') {
+        if (src[i] === '`' && i + 1 < src.length && src[i + 1] === '`') {
+          ident += '`'; i += 2;  // escaped backtick
+        } else {
+          ident += src[i++];
+        }
+      }
+      if (i >= src.length) throw new Error('Unterminated backtick identifier');
+      i++;  // closing backtick
+      tokens.push({ type: 'IDENT', value: ident.toUpperCase(), originalValue: ident });
+      continue;
+    }
+
+    // Double-quoted identifier: "column name"
+    if (src[i] === '"') {
+      i++;
+      let ident = '';
+      while (i < src.length && src[i] !== '"') {
+        if (src[i] === '"' && i + 1 < src.length && src[i + 1] === '"') {
+          ident += '"'; i += 2;  // escaped double-quote
+        } else {
+          ident += src[i++];
+        }
+      }
+      if (i >= src.length) throw new Error('Unterminated double-quoted identifier');
+      i++;  // closing double-quote
+      tokens.push({ type: 'IDENT', value: ident.toUpperCase(), originalValue: ident });
+      continue;
+    }
+
     // Number
     if (/[0-9]/.test(src[i]) || (src[i] === '-' && /[0-9]/.test(src[i + 1]) && (tokens.length === 0 || !['NUMBER', 'IDENT', ')', 'STRING'].includes(tokens[tokens.length-1]?.type)))) {
       let num = '';
