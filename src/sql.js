@@ -546,8 +546,13 @@ export function parse(sql) {
       ctes.push({ name, query: baseQuery, unionQuery, recursive, columnList });
     } while (match(','));
 
-    // Main query
-    const mainQuery = parseSelect();
+    // Main query — can be SELECT or INSERT
+    let mainQuery;
+    if (isKeyword('INSERT')) {
+      mainQuery = parseInsert();
+    } else {
+      mainQuery = parseSelect();
+    }
     mainQuery.ctes = ctes;
     return mainQuery;
   }

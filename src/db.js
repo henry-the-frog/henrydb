@@ -1361,27 +1361,44 @@ export class Database {
     const table = this._getTable(ast.table);
     if (!table) throw new Error(`Table ${ast.table} not found`);
 
-    const result = this.execute_ast(ast.query);
-    let inserted = 0;
-    for (const row of result.rows) {
-      // Extract values matching target table schema
-      const values = [];
-      if (ast.columns) {
-        // Map by column names
-        for (const col of ast.columns) {
-          values.push(row[col] !== undefined ? row[col] : null);
-        }
-      } else {
-        // Map by target schema column names
-        for (const col of table.schema) {
-          values.push(row[col.name] !== undefined ? row[col.name] : null);
-        }
+    // Resolve CTEs if present
+    const cteNames = [];
+    if (ast.ctes) {
+      for (const cte of ast.ctes) {
+        const cteResult = this._select(cte.query);
+        this.views.set(cte.name, { materializedRows: cteResult.rows, isCTE: true });
+        cteNames.push(cte.name);
       }
-      this._insertRow(table, null, values);
-      inserted++;
     }
 
-    return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
+    try {
+      const result = this.execute_ast(ast.query);
+      let inserted = 0;
+      for (const row of result.rows) {
+        // Extract values matching target table schema
+        const values = [];
+        if (ast.columns) {
+          // Map by column names
+          for (const col of ast.columns) {
+            values.push(row[col] !== undefined ? row[col] : null);
+          }
+        } else {
+          // Map by target schema column names
+          for (const col of table.schema) {
+            values.push(row[col.name] !== undefined ? row[col.name] : null);
+          }
+        }
+        this._insertRow(table, null, values);
+        inserted++;
+      }
+
+      return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
+    } finally {
+      // Clean up CTE views
+      for (const name of cteNames) {
+        this.views.delete(name);
+      }
+    }
   }
 
   // Validate column constraints (NOT NULL, CHECK) for a row
@@ -2028,6 +2045,13 @@ export class Database {
           }
           return newRow;
         });
+      }
+
+      // Handle JOINs on view results
+      if (ast.joins && ast.joins.length > 0) {
+        for (const join of ast.joins) {
+          rows = this._executeJoin(rows, join, alias);
+        }
       }
 
       // Apply WHERE
