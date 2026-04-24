@@ -187,6 +187,17 @@ export function installExpressionEvaluator(DatabaseClass) {
         default: return val;
       }
     }
+    if (node.type === 'IS_NULL') {
+      const val = this._evalValue(node.left, row);
+      return (val === null || val === undefined) ? 1 : 0;
+    }
+    if (node.type === 'IS_NOT_NULL') {
+      const val = this._evalValue(node.left, row);
+      return (val !== null && val !== undefined) ? 1 : 0;
+    }
+    if (node.type === 'COMPARE') {
+      return this._evalExpr(node, row) ? 1 : 0;
+    }
     if (node.type === 'case_expr') {
       for (const { condition, result } of node.whens) {
         if (this._evalExpr(condition, row)) {
@@ -768,7 +779,11 @@ export function installExpressionEvaluator(DatabaseClass) {
           }
           break;
         }
-        case 'SUM': result[name] = values.reduce((s, v) => s + v, 0); break;
+        case 'SUM': {
+          const nonNull = values.filter(v => v !== null && v !== undefined);
+          result[name] = nonNull.length > 0 ? nonNull.reduce((s, v) => s + v, 0) : null;
+          break;
+        }
         case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + v, 0) / values.length : null; break;
         case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
         case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;

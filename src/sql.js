@@ -871,14 +871,41 @@ export function parse(sql) {
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
     }
+    // NULL literal, TRUE, FALSE as expression
+    if (peek().type === 'KEYWORD' && (peek().value === 'NULL' || peek().value === 'TRUE' || peek().value === 'FALSE')) {
+      const kw = advance().value;
+      let node = { type: 'literal', value: kw === 'NULL' ? null : kw === 'TRUE' ? true : false };
+      // Check for IS NULL / IS NOT NULL
+      if (isKeyword('IS')) {
+        advance();
+        if (isKeyword('NOT')) { advance(); expect('KEYWORD', 'NULL'); node = { type: 'IS_NOT_NULL', left: node }; }
+        else { expect('KEYWORD', 'NULL'); node = { type: 'IS_NULL', left: node }; }
+      }
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      return { type: 'expression', expr: node, alias };
+    }
     // Literal number or string as expression
     if (peek().type === 'NUMBER' || peek().type === 'STRING') {
       const tok = advance();
       let node = { type: 'literal', value: tok.value, isFloat: tok.isFloat || false };
+      // Check for IS NULL / IS NOT NULL
+      if (isKeyword('IS')) {
+        advance();
+        if (isKeyword('NOT')) { advance(); expect('KEYWORD', 'NULL'); node = { type: 'IS_NOT_NULL', left: node }; }
+        else { expect('KEYWORD', 'NULL'); node = { type: 'IS_NULL', left: node }; }
+      }
       // Check for arithmetic
       const nt = peek().type;
       if (nt === 'CONCAT_OP' || nt === 'PLUS' || nt === 'MINUS' || nt === '*' || nt === 'SLASH' || nt === 'MOD') {
         node = parseSelectArithExpr(node);
+      }
+      // Check for comparison operators (SELECT 1 > 2, SELECT x = y)
+      const cmpOps = { 'GT': 'GT', 'LT': 'LT', 'GE': 'GE', 'LE': 'LE', '=': 'EQ', 'NE': 'NE' };
+      if (cmpOps[peek().type]) {
+        const op = cmpOps[advance().type];
+        const right = parsePrimaryWithConcat();
+        node = { type: 'COMPARE', op, left: node, right };
       }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
