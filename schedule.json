@@ -3648,30 +3648,42 @@
     {
       "id": "T337",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + knowledge capture",
-      "started": "2026-04-24T02:19:35.579Z"
+      "started": "2026-04-24T02:19:35.579Z",
+      "completed": "2026-04-24T02:19:40.493Z",
+      "duration_ms": 30000,
+      "summary": "Git push done. TODO.md updated."
     },
     {
       "id": "T338",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Update neural-net README to reflect 168 modules, 26K LOC, full architecture",
-      "task": null
+      "task": null,
+      "started": "2026-04-24T02:19:46.379Z",
+      "completed": "2026-04-24T02:20:21.541Z",
+      "duration_ms": 60000,
+      "summary": "Planned README rewrite. 168 source modules, 150 test files, 26K LOC. Will organize by category: core, layers, architectures, training, LLM pipeline, neuroscience, research."
     },
     {
       "id": "T339",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Rewrite neural-net README with 168 modules, 26K LOC, organized by era/capability",
       "plan_ref": "T338",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T02:20:29.033Z",
+      "completed": "2026-04-24T02:21:41.592Z",
+      "duration_ms": 600000,
+      "summary": "Rewrote neural-net README: 168 modules, 26K LOC, 150 test files. Organized by category (core, layers, sequences, transformers, LLM pipeline, RLHF, efficiency, neuro, research, generative). Pushed to GitHub."
     },
     {
       "id": "T340",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push"
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-24T02:21:53.854Z"
     },
     {
       "id": "T341",
@@ -5118,6 +5130,10 @@
     {
       "time": "2026-04-24T02:18:58.220Z",
       "msg": "PLAN T335 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T02:20:16.130Z",
+      "msg": "PLAN T338 filled 1 BUILD tasks"
     }
   ]
 }
