@@ -3681,16 +3681,77 @@
     {
       "id": "T340",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push",
-      "started": "2026-04-24T02:21:53.854Z"
+      "started": "2026-04-24T02:21:53.854Z",
+      "completed": "2026-04-24T02:21:59.037Z",
+      "duration_ms": 30000,
+      "summary": "Git push done."
     },
     {
       "id": "T341",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Explore an interesting HenryDB or neural-net module in depth",
+      "project": "henrydb",
+      "started": "2026-04-24T02:22:02.749Z",
+      "completed": "2026-04-24T02:23:02.540Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into HenryDB query execution: explored query-vm.js (VDBE-style, 30+ opcodes), query-codegen.js (copy-and-patch JS codegen), pipeline-compiler.js (push-based JIT). Wrote scratch note documenting the 5-engine architecture. Genuine insight: the engines form a compilation spectrum matching database research progression."
+    },
+    {
+      "id": "T342",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess: what's the most impactful use of remaining 1.5 hours? Blog post vs more bug fixes vs exploration",
+      "started": "2026-04-24T02:23:23.934Z",
+      "completed": "2026-04-24T02:23:31.184Z",
+      "duration_ms": 30000,
+      "summary": "Blog post is highest impact. All bugs fixed, README updated. Evening writing time is ideal. Proceeding with HenryDB blog post."
+    },
+    {
+      "id": "T343",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Write blog post: Building a Database from Scratch in JavaScript",
+      "task": null,
+      "started": "2026-04-24T02:23:37.850Z",
+      "completed": "2026-04-24T02:24:08.457Z",
+      "duration_ms": 60000,
+      "summary": "Planned blog post structure. HenryDB: 368 source files, 78K LOC, 868 test files, ~8890 tests. Post will cover: motivation, architecture overview (5 engines, storage, SQL), key technical decisions, hardest bugs, numbers."
+    },
+    {
+      "id": "T344",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write and publish blog post: Building a Database from Scratch in JavaScript",
+      "plan_ref": "T343",
+      "project": "henrydb",
+      "started": "2026-04-24T02:24:15.539Z",
+      "completed": "2026-04-24T02:25:25.788Z",
+      "duration_ms": 900000,
+      "summary": "Published blog post: Building a Database from Scratch in JavaScript. Covers 5 execution engines, WAL, MVCC/SSI, optimizer, TPC-H, hardest bugs, key insights. ~110 lines, pushed to GitHub Pages."
+    },
+    {
+      "id": "T345",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push blog post",
+      "started": "2026-04-24T02:25:33.038Z"
+    },
+    {
+      "id": "T346",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deep dive into HenryDB ARIES/WAL recovery or distributed system modules",
       "project": "henrydb"
+    },
+    {
+      "id": "T347",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study neural-net architecture: KAN or Neural ODE implementation quality",
+      "project": "neural-net"
     }
   ],
   "focusProjects": [
@@ -5134,6 +5195,34 @@
     {
       "time": "2026-04-24T02:20:16.130Z",
       "msg": "PLAN T338 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T02:23:14.620Z",
+      "msg": "Added T342 (THINK) after end: Assess: what's the most impactful use of remaining 1.5 hours? Blog post vs more bug fixes vs exploration"
+    },
+    {
+      "time": "2026-04-24T02:23:14.741Z",
+      "msg": "Added T343 (PLAN) after end: Write blog post: Building a Database from Scratch in JavaScript"
+    },
+    {
+      "time": "2026-04-24T02:23:14.884Z",
+      "msg": "Added T344 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T02:23:15.005Z",
+      "msg": "Added T345 (MAINTAIN) after end: Git push blog post"
+    },
+    {
+      "time": "2026-04-24T02:23:15.127Z",
+      "msg": "Added T346 (EXPLORE) after end: Deep dive into HenryDB ARIES/WAL recovery or distributed system modules"
+    },
+    {
+      "time": "2026-04-24T02:23:15.248Z",
+      "msg": "Added T347 (EXPLORE) after end: Study neural-net architecture: KAN or Neural ODE implementation quality"
+    },
+    {
+      "time": "2026-04-24T02:24:03.151Z",
+      "msg": "PLAN T343 filled 1 BUILD tasks"
     }
   ]
 }
