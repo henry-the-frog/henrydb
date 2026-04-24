@@ -11,10 +11,9 @@
 - ~~Fix AFTER DELETE trigger~~ ✅ Added BEFORE/AFTER DELETE _fireTriggers calls
 - ~~Fix trainWithEarlyStopping missing~~ ✅ Added function + upgraded EarlyStopping API (mode, summary, bestEpoch)
 
-## Top Priority: Remaining Bugs
-### HenryDB (30 min)
-1. Fix optimizer-quality test — investigate cost model issue — 20 min
-2. Fix SELECT * + window Volcano bug — expand * to base-table columns at final projection — 1-2 tasks
+## ✅ DONE (Session C, Apr 23)
+- ~~Fix optimizer-quality test~~ ✅ All 22 cost-model-accuracy tests pass, 12 cost-optimizer tests pass
+- ~~Fix SELECT * + window Volcano bug~~ ✅ Both default and Volcano engines return correct results for SELECT * + window functions
 
 ## Priority 2: Update Neural-net README
 - 168 modules not 71, 26K LOC not 15.6K
@@ -25,10 +24,7 @@
 - RLHF: PPO + DPO + reward model
 - Cutting-edge: KAN, RWKV, Mamba, Flash Attention, speculative decoding
 
-## Priority 3: SELECT * + Window Volcano Bug (1-2 BUILD tasks)
-Expand `*` to base-table columns at final projection (not window-internal columns)
-
-## Priority 4: Write Blog Post
+## Priority 3: Write Blog Post
 "Building a Database from Scratch in JavaScript: What I Learned from 78K Lines of Code"
 - 5 execution engines
 - 7+ index types
