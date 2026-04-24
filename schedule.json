@@ -168,36 +168,79 @@
       "id": "T25",
       "mode": "BUILD",
       "task": "Fix remaining test failures (E-commerce E2E, Full-text Search, SQL Compat, Regression)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T10",
-      "started": "2026-04-24T15:37:52.456Z"
+      "started": "2026-04-24T15:37:52.456Z",
+      "completed": "2026-04-24T15:49:53.445Z",
+      "duration_ms": 600000,
+      "summary": "Fixed 6 more issues: SUM NULL handling (SQL standard), NULL/TRUE/FALSE literals in SELECT, IS NULL/IS NOT NULL as expressions, boolean comparisons in SELECT (1>2→0), COMPARE in evalValue. Test fixes for SUM empty table (now NULL per SQL standard). HenryDB: 28→7 failures (5 in regression: view JOIN, NATURAL JOIN, CTE INSERT, trigger NEW/OLD, UNIQUE constraint; plus 2 SUM-related)."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard regen"
+      "status": "done",
+      "task": "Git push, dashboard regen",
+      "started": "2026-04-24T15:50:12.768Z",
+      "completed": "2026-04-24T15:50:29.610Z",
+      "duration_ms": 10000,
+      "summary": "Both repos pushed. Everything up to date."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection: depth check, learning gate"
+      "status": "done",
+      "task": "Mid-day reflection: depth check, learning gate",
+      "started": "2026-04-24T15:50:42.388Z",
+      "completed": "2026-04-24T15:50:58.097Z",
+      "duration_ms": 60000,
+      "summary": "Depth check PASSES. 3/3 positive: (1) Equi-join key swap surprise, (2) MoE softmax Jacobian + JS float loss learnings, (3) evalExpr default:true bug. 5 BUILDs so far, well under caps."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural-net: normalize property naming across layers",
-      "task": null
+      "task": null,
+      "started": "2026-04-24T15:51:13.495Z",
+      "completed": "2026-04-24T15:51:57.426Z",
+      "duration_ms": 120000,
+      "summary": "Audited naming: Dense/Embedding/DARTS use .weights, Capsule uses .W, VAE uses raw matrices. Filled 3 BUILD tasks for normalization."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Audit all layers for property naming (W vs weights, b vs biases, etc.) and create a normalization plan",
       "plan_ref": "T14",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T15:52:22.394Z",
+      "completed": "2026-04-24T15:52:29.969Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — pivoting to HenryDB depth work instead. Property naming is cosmetic, HenryDB bugs are real."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix remaining HenryDB regression bugs: UNIQUE constraint, view-table JOIN, NATURAL JOIN",
+      "project": "henrydb",
+      "started": "2026-04-24T15:52:56.861Z"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "task": "Normalize capsule.js to use .weights convention",
+      "status": "skipped",
+      "plan_ref": "T14",
+      "skip_reason": ""
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Normalize remaining layers with non-standard naming",
+      "status": "skipped",
+      "plan_ref": "T14",
+      "skip_reason": ""
     },
     {
       "id": "T16",
@@ -333,6 +376,26 @@
     {
       "time": "2026-04-24T15:08:59.342Z",
       "msg": "PLAN T10 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T15:51:48.806Z",
+      "msg": "PLAN T14 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T15:52:36.895Z",
+      "msg": "Removed T26: "
+    },
+    {
+      "time": "2026-04-24T15:52:37.013Z",
+      "msg": "Removed T27: "
+    },
+    {
+      "time": "2026-04-24T15:52:42.406Z",
+      "msg": "Added T28 (BUILD) after end: Fix remaining HenryDB regression bugs: UNIQUE constraint, view-table JOIN, NATURAL JOIN"
+    },
+    {
+      "time": "2026-04-24T15:52:48.624Z",
+      "msg": "Moved T28 after T15"
     }
   ]
 }

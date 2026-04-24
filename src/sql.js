@@ -7,7 +7,7 @@ const KEYWORDS = new Set([
   'FALSE', 'ORDER', 'BY', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'AS',
   'INT', 'INTEGER', 'TEXT', 'VARCHAR', 'FLOAT', 'BOOL', 'BOOLEAN',
   'PRIMARY', 'KEY', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'ARRAY_AGG', 'JSON_AGG', 'BOOL_AND', 'BOOL_OR', 'STDDEV', 'STDDEV_SAMP', 'STDDEV_POP', 'VARIANCE', 'VAR_SAMP', 'VAR_POP', 'MEDIAN',
-  'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
+  'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING', 'NATURAL',
   'INDEX', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
   'LIKE', 'ILIKE', 'UPPER', 'LOWER', 'LENGTH', 'CONCAT', 'BETWEEN',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTILE', 'NTH_VALUE', 'PERCENT_RANK', 'CUME_DIST', 'VIEW', 'DISTINCT',
@@ -600,7 +600,7 @@ export function parse(sql) {
       }
 
       // JOINs
-      while (isKeyword('JOIN') || isKeyword('INNER') || isKeyword('LEFT') || isKeyword('RIGHT') || isKeyword('CROSS')) {
+      while (isKeyword('JOIN') || isKeyword('INNER') || isKeyword('LEFT') || isKeyword('RIGHT') || isKeyword('CROSS') || isKeyword('NATURAL')) {
         joins.push(parseJoin());
       }
     }
@@ -1022,6 +1022,8 @@ export function parse(sql) {
 
   function parseJoin() {
     let joinType = 'INNER';
+    let natural = false;
+    if (isKeyword('NATURAL')) { natural = true; advance(); }
     if (isKeyword('LEFT')) { joinType = 'LEFT'; advance(); }
     else if (isKeyword('RIGHT')) { joinType = 'RIGHT'; advance(); }
     else if (isKeyword('CROSS')) { joinType = 'CROSS'; advance(); }
@@ -1065,7 +1067,7 @@ export function parse(sql) {
       advance();
       on = parseExpr();
     }
-    return { type: 'JOIN', joinType, table, alias, on };
+    return { type: 'JOIN', joinType, table, alias, on, natural };
   }
 
   function parseExpr() { return parseOr(); }

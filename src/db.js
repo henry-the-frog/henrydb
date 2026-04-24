@@ -631,6 +631,13 @@ export class Database {
         if (c.type === 'CHECK') {
           tableChecks.push(c.expression);
         }
+        if (c.type === 'UNIQUE') {
+          // Create a unique index for each UNIQUE constraint
+          for (const col of c.columns) {
+            const index = new BPlusTree(32, { unique: true });
+            indexes.set(col, index);
+          }
+        }
       }
     }
 
@@ -2152,6 +2159,36 @@ export class Database {
 
     // Handle JOINs — try Volcano engine first for performance
     if (ast.joins && ast.joins.length > 0) {
+      // Resolve NATURAL joins: generate ON condition from common column names
+      for (const join of ast.joins) {
+        if (join.natural && !join.on) {
+          const leftTable = ast.from.table || ast.from.name;
+          const rightTable = join.table;
+          const leftSchema = this.tables.get(leftTable)?.schema;
+          const rightSchema = this.tables.get(rightTable)?.schema;
+          if (leftSchema && rightSchema) {
+            const leftCols = leftSchema.map(c => c.name);
+            const rightCols = rightSchema.map(c => c.name);
+            const commonCols = leftCols.filter(c => rightCols.includes(c));
+            if (commonCols.length > 0) {
+              const leftAlias = ast.from.alias || leftTable;
+              const rightAlias = join.alias || rightTable;
+              // Build AND chain of equality conditions
+              let onExpr = null;
+              for (const col of commonCols) {
+                const eq = {
+                  type: 'COMPARE', op: 'EQ',
+                  left: { type: 'column_ref', name: `${leftAlias}.${col}` },
+                  right: { type: 'column_ref', name: `${rightAlias}.${col}` },
+                };
+                onExpr = onExpr ? { type: 'AND', left: onExpr, right: eq } : eq;
+              }
+              join.on = onExpr;
+            }
+          }
+        }
+      }
+      
       const volcanoRows = this._tryVolcanoJoin(ast, rows);
       if (volcanoRows !== null) {
         rows = volcanoRows;
