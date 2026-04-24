@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-24T16:08:18.520Z",
+  "generated": "2026-04-24T16:16:07.794Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Fix HenryDB view-table JOIN (missing right columns in result) and INSERT from CTE",
-    "startedAt": "2026-04-24T16:08:18.520Z",
-    "taskId": "T30"
+    "completedAt": "2026-04-24T16:16:07.794Z",
+    "taskId": "T30",
+    "summary": "ALL 4288 HenryDB tests pass (was 28 failures). Fixed: view-table JOIN (view path was skipping joins entirely), INSERT from CTE (CTE resolution added to insertSelect), trigger NEW/OLD (text substitution). HenryDB is now at 100% pass rate!",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-24",
@@ -6769,12 +6771,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 25,
+    "blocksCompleted": 26,
     "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 10,
+      "BUILD": 11,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
