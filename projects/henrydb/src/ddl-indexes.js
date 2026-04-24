@@ -2,6 +2,7 @@
 // Extracted from db.js to reduce monolith size
 
 import { BPlusTree } from './btree.js';
+import { makeCompositeKey } from './composite-key.js';
 
 export function createIndex(db, ast) {
   const table = db.tables.get(ast.table);
