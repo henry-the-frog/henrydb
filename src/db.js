@@ -33,7 +33,7 @@ export class Database {
     this._currentTxId = 0;  // 0 = auto-commit mode
     this._planCache = new PlanCache(256);
     
-    // Vectorized execution engine (opt-in via { vectorized: true })
+    // Vectorized execution engine (opt-in — auto-enable has 15 compat issues)
     this._useVectorized = !!options.vectorized;
     
     // MVCC support (opt-in)
@@ -5129,10 +5129,12 @@ Database.prototype._tryVectorizedSelect = function(ast) {
     
     for (const col of ast.columns) {
       if (col.type === 'aggregate') {
-        const aggCol = col.arg || col.args?.[0]?.name || '*';
+        const aggCol = col.arg || '*';
         const fn = (col.func || col.fn || '').toUpperCase();
         const name = col.alias || `${fn}(${aggCol})`;
-        aggregates.push({ name, fn, col: aggCol === '*' ? colNames[0] : aggCol });
+        // For COUNT(*), use the first column as the actual counting target
+        const actualCol = aggCol === '*' ? colNames[0] : aggCol;
+        aggregates.push({ name, fn, col: actualCol });
       }
     }
     

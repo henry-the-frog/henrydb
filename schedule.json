@@ -611,6 +611,25 @@
       "completed": "2026-04-24T17:24:40.731Z",
       "duration_ms": 60000,
       "summary": "Differential fuzzer passes all tests — HenryDB matches SQLite behavior on basic, extended, and GROUP BY random queries. No divergences found."
+    },
+    {
+      "id": "T58",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate vectorized engine column naming: what exactly fails and how to fix it",
+      "project": "henrydb",
+      "started": "2026-04-24T17:25:24.082Z",
+      "completed": "2026-04-24T17:25:47.164Z",
+      "duration_ms": 120000,
+      "summary": "Root cause identified: vectorized engine produces different column names for un-aliased aggregates. COUNT(*) becomes COUNT(id) in vectorized but COUNT(*) in regular path. Fix: use exact same naming convention. The vectorized engine IS correct for aliased aggregates — the column naming mismatch is the only issue."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix vectorized engine column naming for un-aliased aggregates and enable auto-select",
+      "project": "henrydb",
+      "started": "2026-04-24T17:26:00.399Z"
     }
   ],
   "focusProjects": [
@@ -850,6 +869,14 @@
     {
       "time": "2026-04-24T17:24:15.864Z",
       "msg": "Added T57 (EXPLORE) after end: HenryDB: run differential fuzzer against SQLite for 1000 random queries"
+    },
+    {
+      "time": "2026-04-24T17:25:17.622Z",
+      "msg": "Added T58 (EXPLORE) after end: Investigate vectorized engine column naming: what exactly fails and how to fix it"
+    },
+    {
+      "time": "2026-04-24T17:25:54.149Z",
+      "msg": "Added T59 (BUILD) after end: Fix vectorized engine column naming for un-aliased aggregates and enable auto-select"
     }
   ]
 }

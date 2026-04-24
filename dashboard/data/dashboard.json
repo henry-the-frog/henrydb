@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-24T17:24:40.768Z",
+  "generated": "2026-04-24T17:26:00.436Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB: run differential fuzzer against SQLite for 1000 random queries",
-    "completedAt": "2026-04-24T17:24:40.768Z",
-    "taskId": "T57",
-    "summary": "Differential fuzzer passes all tests — HenryDB matches SQLite behavior on basic, extended, and GROUP BY random queries. No divergences found.",
-    "durationMs": 60000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Fix vectorized engine column naming for un-aliased aggregates and enable auto-select",
+    "startedAt": "2026-04-24T17:26:00.436Z",
+    "taskId": "T59"
   },
   "schedule": {
     "date": "2026-04-24",
@@ -6771,14 +6769,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 54,
+    "blocksCompleted": 55,
     "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
       "BUILD": 20,
       "MAINTAIN": 4,
-      "EXPLORE": 17
+      "EXPLORE": 18
     }
   },
   "artifacts": [
