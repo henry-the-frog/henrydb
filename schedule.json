@@ -4320,6 +4320,332 @@
       "completed": "2026-04-24T03:09:00.511Z",
       "duration_ms": 120000,
       "summary": "Differentiable sorting (134 LOC): softSort (optimal transport via Sinkhorn → doubly-stochastic permutation matrix), sinkhorn (alternating row/col normalization), softRank (sigmoid-approximated argsort), softTopK (differentiable element selection), neuralSort (Grover et al. stochastic sorting). Complete differentiable sorting toolkit."
+    },
+    {
+      "id": "T399",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net predictive coding — hierarchical prediction error minimization",
+      "project": "neural-net",
+      "started": "2026-04-24T03:09:29.620Z",
+      "completed": "2026-04-24T03:09:44.188Z",
+      "duration_ms": 120000,
+      "summary": "Predictive coding (257 LOC): hierarchical prediction error minimization (Rao & Ballard 1999). Each layer: value nodes μ, error nodes ε, generative weights W, precision Π. Top-down predictions, bottom-up errors. LOCAL learning only — no backprop needed! Connected to Free Energy Principle (Friston 2005). Separate inference and learning phases."
+    },
+    {
+      "id": "T400",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB SipHash — cryptographic hash for security-sensitive contexts",
+      "project": "henrydb",
+      "started": "2026-04-24T03:09:50.117Z",
+      "completed": "2026-04-24T03:10:01.534Z",
+      "duration_ms": 60000,
+      "summary": "SipHash (29 LOC): SipHash-2-4 with BigInt arithmetic. 4 state variables, rotl mixing, 2 compression rounds per 8-byte block, 4 finalization rounds. DoS-resistant hash for hash tables (Python dict, Rust HashMap, Redis). Compact and correct."
+    },
+    {
+      "id": "T401",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net BPE tokenizer implementation",
+      "project": "neural-net",
+      "started": "2026-04-24T03:10:09.778Z",
+      "completed": "2026-04-24T03:10:24.253Z",
+      "duration_ms": 120000,
+      "summary": "BPE tokenizer (211 LOC): train (char-level → iterative pair merging → vocab), encode (chars → apply merges), decode (token ID → string). Special tokens support, whitespace-aware word splitting, word count stats. Correct Sennrich et al. 2016 implementation."
+    },
+    {
+      "id": "T402",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB skip list — MVCC-aware concurrent data structure",
+      "project": "henrydb",
+      "started": "2026-04-24T03:10:30.412Z",
+      "completed": "2026-04-24T03:10:49.227Z",
+      "duration_ms": 60000,
+      "summary": "Skip list (174 LOC): MAX_LEVEL 32, P=0.25 (Redis-style). O(log n) insert/search/delete with probabilistic levels. Range scan via forward pointers. Custom comparator support. Used in Redis sorted sets, LevelDB/RocksDB memtable."
+    },
+    {
+      "id": "T403",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net capsule network — dynamic routing between capsules",
+      "project": "neural-net",
+      "started": "2026-04-24T03:11:14.796Z",
+      "completed": "2026-04-24T03:11:27.906Z",
+      "duration_ms": 120000,
+      "summary": "Capsule networks (345 LOC): squash activation (direction-preserving, length → [0,1]), full backward gradient. CapsuleLayer with dynamic routing: transformation matrices W[i][j], iterative coupling coefficient updates, agreement-based routing. Margin loss for classification. Correct Sabour, Frosst, Hinton 2017."
+    },
+    {
+      "id": "T404",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB Zobrist hashing — for transposition tables",
+      "project": "henrydb",
+      "started": "2026-04-24T03:11:39.841Z",
+      "completed": "2026-04-24T03:11:58.213Z",
+      "duration_ms": 60000,
+      "summary": "Zobrist hashing (84 LOC): random 64-bit BigInt table (positions × values), O(1) incremental XOR updates (XOR is self-inverse). Set variant with lazy hash table. Used in chess engines, DB deduplication, change detection."
+    },
+    {
+      "id": "T405",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net VAE — variational autoencoder with reparameterization",
+      "project": "neural-net",
+      "started": "2026-04-24T03:12:24.279Z",
+      "completed": "2026-04-24T03:12:38.836Z",
+      "duration_ms": 120000,
+      "summary": "VAE (244 LOC): encoder (x → μ, logσ²), reparameterization trick (z = μ + σ·ε), decoder (z → x̂). ELBO loss = reconstruction + β·KL. β-VAE support (Higgins 2017). Full training loop with backward pass through reparameterization. Correct Kingma & Welling 2014."
+    },
+    {
+      "id": "T406",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB perfect hashing — minimal perfect hash function",
+      "project": "henrydb",
+      "started": "2026-04-24T03:12:43.470Z",
+      "completed": "2026-04-24T03:13:03.681Z",
+      "duration_ms": 60000,
+      "summary": "Perfect hashing (58 LOC): two-level scheme. Level 1: distribute keys into buckets by h(key,0). Level 2: find per-bucket seed that maps all keys to unique slots. O(N) build, O(1) lookup, zero collisions. Only for static key sets."
+    },
+    {
+      "id": "T407",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net contrastive learning — SimCLR",
+      "project": "neural-net",
+      "started": "2026-04-24T03:13:13.645Z",
+      "completed": "2026-04-24T03:13:27.654Z",
+      "duration_ms": 120000,
+      "summary": "SimCLR contrastive learning (167 LOC): NT-Xent loss with cosine similarity / temperature. Positive pairs (z[2i], z[2i+1]) = augmented views. 2N×2N similarity matrix, numerically stable log-sum-exp, accuracy tracking. Data augmentation pipeline (noise, mask, scale). Correct Chen et al. 2020."
+    },
+    {
+      "id": "T408",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session C wind-down: final daily log, MEMORY.md update, git push",
+      "started": "2026-04-24T03:25:11.377Z"
+    },
+    {
+      "id": "T409",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net MAML — model-agnostic meta-learning (few-shot)",
+      "project": "neural-net",
+      "started": "2026-04-24T03:14:06.784Z",
+      "completed": "2026-04-24T03:14:24.657Z",
+      "duration_ms": 120000,
+      "summary": "MAML (215 LOC): inner loop (gradient descent on support set, fast adaptation), outer loop (gradient on adapted model query set performance). Clone-and-adapt architecture. Few-shot learning via learned initialization. Correct Finn et al. 2017."
+    },
+    {
+      "id": "T410",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB EBM — energy-based models",
+      "project": "neural-net",
+      "started": "2026-04-24T03:14:34.971Z",
+      "completed": "2026-04-24T03:14:50.004Z",
+      "duration_ms": 60000,
+      "summary": "EBM (192 LOC): energy function via MLP, energy gradient for Langevin dynamics MCMC sampling, contrastive divergence training (positive vs negative samples), temperature parameter. Low energy = likely data. LeCun et al. 2006 framework."
+    },
+    {
+      "id": "T411",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net DQN — deep Q-network",
+      "project": "neural-net",
+      "started": "2026-04-24T03:15:03.277Z",
+      "completed": "2026-04-24T03:15:17.624Z",
+      "duration_ms": 120000,
+      "summary": "DQN (210 LOC): experience replay buffer (circular, capacity-bounded), target network (periodic sync), epsilon-greedy exploration with decay, TD learning (Q(s,a) = r + gamma * max Q target(s,a)), batch training from replay buffer. Correct Mnih et al. 2015."
+    },
+    {
+      "id": "T412",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net lottery ticket, hypernetwork, DARTS",
+      "project": "neural-net",
+      "started": "2026-04-24T03:15:39.958Z",
+      "completed": "2026-04-24T03:15:59.583Z",
+      "duration_ms": 120000,
+      "summary": "Quick scan: Lottery Ticket (260 LOC, iterative magnitude pruning + mask + reset to init), Hypernetwork (193 LOC, task-conditioned weight generation), DARTS (359 LOC, continuous architecture relaxation with softmax-weighted mixed operations, alpha learned via gradient descent). All correct implementations."
+    },
+    {
+      "id": "T413",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: HenryDB two-phase commit, advisory locks, data masking",
+      "project": "henrydb",
+      "started": "2026-04-24T03:16:04.155Z",
+      "completed": "2026-04-24T03:16:31.574Z",
+      "duration_ms": 60000,
+      "summary": "Quick scan: Two-Phase Commit (191 LOC, coordinator/participant, prepare/commit/abort, WAL decision records, failure handling), Advisory Locks (260 LOC, PostgreSQL-compatible, session + transaction level, exclusive + shared modes, pg_advisory_lock API). Both production-quality."
+    },
+    {
+      "id": "T414",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net RBM — restricted Boltzmann machine + contrastive divergence",
+      "project": "neural-net",
+      "started": "2026-04-24T03:16:57.796Z",
+      "completed": "2026-04-24T03:17:21.050Z",
+      "duration_ms": 120000,
+      "summary": "RBM (210 LOC): energy E(v,h) = -a^T v - b^T h - v^T W h. CD-k training (clamp → sample hidden → reconstruct → sample hidden). Weight update: positive (data) - negative (reconstruction) phase. Momentum, weight decay, free energy monitoring, Gibbs sampling. Correct Hinton 2002."
+    },
+    {
+      "id": "T415",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net neuroevolution — genetic algorithm for neural network optimization",
+      "project": "neural-net",
+      "started": "2026-04-24T03:17:27.499Z",
+      "completed": "2026-04-24T03:17:47.589Z",
+      "duration_ms": 60000,
+      "summary": "Neuroevolution (280 LOC): NeuralGenome (flat weight vector), Gaussian mutation, uniform/single-point crossover, tournament selection, elitism. GeneticAlgorithm class with evolve loop. Evolution strategies as gradient-free alternative to backprop."
+    },
+    {
+      "id": "T416",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net SOM — self-organizing map",
+      "project": "neural-net",
+      "started": "2026-04-24T03:18:12.951Z",
+      "completed": "2026-04-24T03:18:26.134Z",
+      "duration_ms": 60000,
+      "summary": "SOM (118 LOC): 2D grid of weight vectors, BMU finding, Gaussian neighborhood function, learning rate + neighborhood decay. Topology-preserving dimensionality reduction. Correct Kohonen 1982."
+    },
+    {
+      "id": "T417",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: HenryDB learned index, Tomasulo executor, morsel-driven parallelism",
+      "project": "henrydb",
+      "started": "2026-04-24T03:18:35.277Z",
+      "completed": "2026-04-24T03:19:11.140Z",
+      "duration_ms": 120000,
+      "summary": "Quick scan: Fenwick Tree (41 LOC, O(log n) prefix sums), Wildcard Trie (78 LOC, ? and * matching for LIKE), Counting Bloom Filter (179 LOC, deletion-capable Bloom), Top-K (30 LOC, streaming min-heap), Merge Iterator (126 LOC, k-way merge). More data structure depth than expected."
+    },
+    {
+      "id": "T418",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net mixture density networks",
+      "project": "neural-net",
+      "started": "2026-04-24T03:19:32.826Z",
+      "completed": "2026-04-24T03:19:44.234Z",
+      "duration_ms": 60000,
+      "summary": "MDN (112 LOC): Gaussian mixture output (pi/mu/sigma per component), NLL loss, softmax mixing coefficients, exp variance, sampling via mixture selection + Gaussian noise. For multi-modal distributions. Bishop 1994."
+    },
+    {
+      "id": "T419",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB system catalog + sequences",
+      "project": "henrydb",
+      "started": "2026-04-24T03:19:53.158Z",
+      "completed": "2026-04-24T03:20:16.418Z",
+      "duration_ms": 60000,
+      "summary": "System catalog (269 LOC) + sequences (26 LOC): PostgreSQL-compatible catalog with OID assignment (starting at 16384), type→OID mapping (23 types), pg_catalog tables, information_schema views. Sequences with 20-value cache for performance."
+    },
+    {
+      "id": "T420",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net context distillation — distill system prompts into model weights",
+      "project": "neural-net",
+      "started": "2026-04-24T03:20:36.280Z",
+      "completed": "2026-04-24T03:20:57.857Z",
+      "duration_ms": 30000,
+      "summary": "Context distillation (29 LOC): KL(prompted || base) loss with temperature scaling. Train base model to produce prompted distribution without the prompt. Anthropic technique for internalizing system prompt behavior."
+    },
+    {
+      "id": "T421",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net continuous batching — dynamic batch management for inference",
+      "project": "neural-net",
+      "started": "2026-04-24T03:21:02.298Z",
+      "completed": "2026-04-24T03:21:19.630Z",
+      "duration_ms": 60000,
+      "summary": "Continuous batching (152 LOC): Request state machine (QUEUED→PREFILL→RUNNING→DONE), dynamic scheduler with eviction/admission per iteration, separate prefill+decode phases, latency tracking. Used by vLLM/TGI/Orca. Solves GPU waste from static batching."
+    },
+    {
+      "id": "T422",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net token healing + multi-token prediction",
+      "project": "neural-net",
+      "started": "2026-04-24T03:21:45.787Z",
+      "completed": "2026-04-24T03:21:59.303Z",
+      "duration_ms": 60000,
+      "summary": "Token healing (29 LOC): backtrack to last complete token boundary before generation. Multi-token prediction (24 LOC): N prediction heads with cross-entropy per head, discount factor for further tokens. Both compact and correct."
+    },
+    {
+      "id": "T423",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB tablesample — random row sampling",
+      "project": "henrydb",
+      "started": "2026-04-24T03:22:04.872Z",
+      "completed": "2026-04-24T03:22:21.841Z",
+      "duration_ms": 30000,
+      "summary": "TABLESAMPLE is inline in the SQL parser/executor, not a separate module. Skipped."
+    },
+    {
+      "id": "T424",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net reward model — learned reward from human preferences",
+      "project": "neural-net",
+      "started": "2026-04-24T03:22:37.242Z",
+      "completed": "2026-04-24T03:22:58.610Z",
+      "duration_ms": 60000,
+      "summary": "Reward model (145 LOC): FFN encoding → scalar reward. Bradley-Terry preference loss: -log sigma(r(y_w) - r(y_l)). Training on preference pairs. Core of RLHF pipeline (Ouyang et al. 2022). Forward + backward + update for gradient-based training."
+    },
+    {
+      "id": "T425",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB ER diagram generator — database visualization",
+      "project": "henrydb",
+      "started": "2026-04-24T03:23:07.605Z",
+      "completed": "2026-04-24T03:23:22.050Z",
+      "duration_ms": 60000,
+      "summary": "ER diagram generator (228 LOC): SVG output from database schema. Grid layout, table boxes with columns (PK/FK markers, type annotations), relationship lines between foreign keys. GitHub dark theme colors. SQL integration via SELECT FROM catalog."
+    },
+    {
+      "id": "T426",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net constrained decoding — grammar-guided generation",
+      "project": "neural-net",
+      "started": "2026-04-24T03:23:40.309Z",
+      "completed": "2026-04-24T03:24:00.688Z",
+      "duration_ms": 60000,
+      "summary": "Constrained decoding (144 LOC): token masking (disallowed → -Inf), JSON constraint (state machine: start/object/key/colon/value/comma/end), regex constraint, choice constraint, composable intersection. Used by Outlines/Guidance/vLLM for structured output."
+    },
+    {
+      "id": "T427",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB change data capture events",
+      "project": "henrydb",
+      "started": "2026-04-24T03:24:05.435Z",
+      "completed": "2026-04-24T03:24:25.949Z",
+      "duration_ms": 60000,
+      "summary": "HenryDB CDC and events: GraphDB (BFS/DFS/shortest path), Event Triggers (PostgreSQL-compatible: ddl_command_start/end, table_rewrite, sql_drop), DB Events (change data capture stream). 470+ LOC across 4 files."
+    },
+    {
+      "id": "T428",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Final exploration: neural-net prefix caching and logit processors",
+      "project": "neural-net",
+      "started": "2026-04-24T03:24:36.528Z",
+      "completed": "2026-04-24T03:25:07.163Z",
+      "duration_ms": 60000,
+      "summary": "Prefix caching (106 LOC): hash-based KV-cache lookup for shared prompts, LRU eviction, hit/miss tracking (vLLM/SGLang). Logit processors (40 LOC): composable pipeline with temperature, repetition penalty, token banning. Both correct."
     }
   ],
   "focusProjects": [
@@ -5995,6 +6321,126 @@
     {
       "time": "2026-04-24T03:07:43.823Z",
       "msg": "Added T398 (EXPLORE) after end: Study neural-net differentiable sorting — Sinkhorn"
+    },
+    {
+      "time": "2026-04-24T03:09:23.172Z",
+      "msg": "Added T399 (EXPLORE) after end: Study neural-net predictive coding — hierarchical prediction error minimization"
+    },
+    {
+      "time": "2026-04-24T03:09:23.304Z",
+      "msg": "Added T400 (EXPLORE) after end: Study HenryDB SipHash — cryptographic hash for security-sensitive contexts"
+    },
+    {
+      "time": "2026-04-24T03:09:23.427Z",
+      "msg": "Added T401 (EXPLORE) after end: Study neural-net BPE tokenizer implementation"
+    },
+    {
+      "time": "2026-04-24T03:09:23.550Z",
+      "msg": "Added T402 (EXPLORE) after end: Study HenryDB skip list — MVCC-aware concurrent data structure"
+    },
+    {
+      "time": "2026-04-24T03:11:05.093Z",
+      "msg": "Added T403 (EXPLORE) after end: Study neural-net capsule network — dynamic routing between capsules"
+    },
+    {
+      "time": "2026-04-24T03:11:05.217Z",
+      "msg": "Added T404 (EXPLORE) after end: Study HenryDB Zobrist hashing — for transposition tables"
+    },
+    {
+      "time": "2026-04-24T03:12:14.211Z",
+      "msg": "Added T405 (EXPLORE) after end: Study neural-net VAE — variational autoencoder with reparameterization"
+    },
+    {
+      "time": "2026-04-24T03:12:14.334Z",
+      "msg": "Added T406 (EXPLORE) after end: Study HenryDB perfect hashing — minimal perfect hash function"
+    },
+    {
+      "time": "2026-04-24T03:12:14.457Z",
+      "msg": "Added T407 (EXPLORE) after end: Study neural-net contrastive learning — SimCLR"
+    },
+    {
+      "time": "2026-04-24T03:12:14.579Z",
+      "msg": "Added T408 (MAINTAIN) after end: Session C wind-down: final daily log, MEMORY.md update, git push"
+    },
+    {
+      "time": "2026-04-24T03:13:51.581Z",
+      "msg": "Added T409 (EXPLORE) after end: Study neural-net MAML — model-agnostic meta-learning (few-shot)"
+    },
+    {
+      "time": "2026-04-24T03:13:51.704Z",
+      "msg": "Added T410 (EXPLORE) after end: Study HenryDB EBM — energy-based models"
+    },
+    {
+      "time": "2026-04-24T03:13:51.829Z",
+      "msg": "Added T411 (EXPLORE) after end: Study neural-net DQN — deep Q-network"
+    },
+    {
+      "time": "2026-04-24T03:15:29.303Z",
+      "msg": "Added T412 (EXPLORE) after end: Quick scan: neural-net lottery ticket, hypernetwork, DARTS"
+    },
+    {
+      "time": "2026-04-24T03:15:29.427Z",
+      "msg": "Added T413 (EXPLORE) after end: Quick scan: HenryDB two-phase commit, advisory locks, data masking"
+    },
+    {
+      "time": "2026-04-24T03:16:48.235Z",
+      "msg": "Added T414 (EXPLORE) after end: Study neural-net RBM — restricted Boltzmann machine + contrastive divergence"
+    },
+    {
+      "time": "2026-04-24T03:16:48.359Z",
+      "msg": "Added T415 (EXPLORE) after end: Study neural-net neuroevolution — genetic algorithm for neural network optimization"
+    },
+    {
+      "time": "2026-04-24T03:18:06.666Z",
+      "msg": "Added T416 (EXPLORE) after end: Study neural-net SOM — self-organizing map"
+    },
+    {
+      "time": "2026-04-24T03:18:06.789Z",
+      "msg": "Added T417 (EXPLORE) after end: Quick scan: HenryDB learned index, Tomasulo executor, morsel-driven parallelism"
+    },
+    {
+      "time": "2026-04-24T03:19:23.806Z",
+      "msg": "Added T418 (EXPLORE) after end: Study neural-net mixture density networks"
+    },
+    {
+      "time": "2026-04-24T03:19:23.930Z",
+      "msg": "Added T419 (EXPLORE) after end: Study HenryDB system catalog + sequences"
+    },
+    {
+      "time": "2026-04-24T03:20:27.639Z",
+      "msg": "Added T420 (EXPLORE) after end: Study neural-net context distillation — distill system prompts into model weights"
+    },
+    {
+      "time": "2026-04-24T03:20:27.762Z",
+      "msg": "Added T421 (EXPLORE) after end: Study neural-net continuous batching — dynamic batch management for inference"
+    },
+    {
+      "time": "2026-04-24T03:21:34.480Z",
+      "msg": "Added T422 (EXPLORE) after end: Study neural-net token healing + multi-token prediction"
+    },
+    {
+      "time": "2026-04-24T03:21:34.603Z",
+      "msg": "Added T423 (EXPLORE) after end: Study HenryDB tablesample — random row sampling"
+    },
+    {
+      "time": "2026-04-24T03:22:36.977Z",
+      "msg": "Added T424 (EXPLORE) after end: Study neural-net reward model — learned reward from human preferences"
+    },
+    {
+      "time": "2026-04-24T03:22:37.119Z",
+      "msg": "Added T425 (EXPLORE) after end: Study HenryDB ER diagram generator — database visualization"
+    },
+    {
+      "time": "2026-04-24T03:23:40.065Z",
+      "msg": "Added T426 (EXPLORE) after end: Study neural-net constrained decoding — grammar-guided generation"
+    },
+    {
+      "time": "2026-04-24T03:23:40.187Z",
+      "msg": "Added T427 (EXPLORE) after end: Study HenryDB change data capture events"
+    },
+    {
+      "time": "2026-04-24T03:24:36.406Z",
+      "msg": "Added T428 (EXPLORE) after end: Final exploration: neural-net prefix caching and logit processors"
     }
   ]
 }
