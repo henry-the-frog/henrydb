@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-24T21:21:39.440Z",
+  "generated": "2026-04-24T23:19:33.140Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push, update daily log",
-    "startedAt": "2026-04-24T21:21:39.440Z",
-    "taskId": "T142"
+    "task": "Mid-session push and daily log",
+    "startedAt": "2026-04-24T23:19:33.140Z",
+    "taskId": "T366"
   },
   "schedule": {
     "date": "2026-04-24",
@@ -7938,30 +7938,495 @@
       {
         "id": "T140",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: add LIMIT with OFFSET for pagination",
         "task": null,
-        "started": "2026-04-24T21:18:30.576Z"
+        "started": "2026-04-24T21:18:30.576Z",
+        "completed": "2026-04-24T21:21:11.601Z",
+        "duration_ms": 300000,
+        "summary": "LIMIT/OFFSET already existed. Found and fixed LIMIT -1 bug: earlyLimit=-1 caused 0-row scan. Now matches SQLite: LIMIT -1 = no limit. 6 paths fixed."
       },
       {
         "id": "T144",
         "mode": "BUILD",
         "task": "Fix LIMIT -1 (no limit) to match SQLite behavior",
-        "status": "upcoming",
-        "plan_ref": "T140"
+        "status": "done",
+        "plan_ref": "T140",
+        "started": "2026-04-24T21:21:20.580Z",
+        "completed": "2026-04-24T21:21:20.727Z",
+        "duration_ms": 5000,
+        "summary": "Already committed."
       },
       {
         "id": "T141",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder"
+      },
+      {
+        "id": "T142",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, update daily log",
+        "started": "2026-04-24T21:21:39.402Z",
+        "completed": "2026-04-24T21:21:50.090Z",
+        "duration_ms": 30000,
+        "summary": "All repos pushed. HenryDB, neural-net, workspace synced."
+      },
+      {
+        "id": "T145",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: comprehensive SELECT expression edge case sweep",
+        "project": "henrydb",
+        "started": "2026-04-24T21:22:09.121Z",
+        "completed": "2026-04-24T21:23:15.881Z",
+        "duration_ms": 300000,
+        "summary": "Edge case sweep: 12 tests, 11 pass immediately. Found BETWEEN NULL bug (returned false instead of null). Fixed. All 12 pass now."
+      },
+      {
+        "id": "T146",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: fix column dedup for aggregate columns too",
+        "task": null,
+        "started": "2026-04-24T21:23:22.255Z",
+        "completed": "2026-04-24T21:30:18.865Z",
+        "duration_ms": 600000,
+        "summary": "Column dedup applied to vectorized, standard GROUP BY, and non-group aggregate paths. SUM(a),SUM(a) now produces 2 columns across all execution paths."
+      },
+      {
+        "id": "T152",
+        "mode": "BUILD",
+        "task": "Apply column dedup to vectorized-bridge and group-by-executor aggregate paths",
+        "status": "done",
+        "plan_ref": "T146",
+        "started": "2026-04-24T21:30:24.758Z",
+        "completed": "2026-04-24T21:30:24.905Z",
+        "duration_ms": 5000,
+        "summary": "Already committed."
+      },
+      {
+        "id": "T147",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Unfilled"
+      },
+      {
+        "id": "T148",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Neural-net: test all layer types integration (Dense+Conv+LSTM)",
+        "project": "neural-net",
+        "started": "2026-04-24T21:30:32.025Z",
+        "completed": "2026-04-24T21:31:36.512Z",
+        "duration_ms": 120000,
+        "summary": "Layer integration test: Dense, Conv2D, LSTM, GRU, RNN, Embedding all instantiate and produce correct output shapes. Library has 49 exported classes. All healthy."
+      },
+      {
+        "id": "T149",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: add BETWEEN support in SELECT column expressions",
+        "task": null,
+        "started": "2026-04-24T21:31:43.326Z",
+        "completed": "2026-04-24T21:32:01.682Z",
+        "duration_ms": 15000,
+        "summary": "BETWEEN already works in SELECT expressions. No fix needed."
+      },
+      {
+        "id": "T150",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Already works"
+      },
+      {
+        "id": "T151",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push",
+        "started": "2026-04-24T21:32:08.413Z",
+        "completed": "2026-04-24T21:32:17.785Z",
+        "duration_ms": 15000,
+        "summary": "Repos pushed."
+      },
+      {
+        "id": "T153",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: 15+ BUILDs in session B",
+        "started": "2026-04-24T21:32:37.665Z",
+        "completed": "2026-04-24T21:32:52.843Z",
+        "duration_ms": 60000,
+        "summary": "Depth check PASSES 3/3. Session B is depth-heavy: column dedup across 5 paths, LIMIT -1 early termination, BETWEEN NULL. Vectorized path silently handling queries was a debugging insight."
+      },
+      {
+        "id": "T154",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: stress test window functions (ROW_NUMBER, RANK, LEAD, LAG)",
+        "project": "henrydb",
+        "started": "2026-04-24T21:32:59.282Z",
+        "completed": "2026-04-24T21:33:24.604Z",
+        "duration_ms": 120000,
+        "summary": "9/9 window function stress tests pass: ROW_NUMBER, RANK, DENSE_RANK, PARTITION BY, LEAD, LAG, running SUM, multiple windows, NTILE. All correct. Zero bugs found."
+      },
+      {
+        "id": "T155",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: fix parseSelectColumn to use parseExpr for general expressions (tech debt)",
+        "task": null,
+        "started": "2026-04-24T21:33:32.091Z",
+        "completed": "2026-04-24T21:33:51.665Z",
+        "duration_ms": 120000,
+        "summary": "Assessed refactor: parseSelectColumn has 500+ lines of manual expression parsing. Best approach: try parseExpr for general fallback case, keep special cases (aggregates, *, CASE, etc). Risk: high regression potential."
+      },
+      {
+        "id": "T160",
+        "mode": "BUILD",
+        "task": "Refactor parseSelectColumn: try parseExpr for general column expressions with fallback",
+        "status": "skipped",
+        "plan_ref": "T155",
+        "skip_reason": "Too risky for late session — defer to dedicated session"
+      },
+      {
+        "id": "T156",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Placeholder"
+      },
+      {
+        "id": "T157",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: stress test UPDATE and DELETE with complex WHERE",
+        "project": "henrydb",
+        "started": "2026-04-24T21:34:10.239Z",
+        "completed": "2026-04-24T21:34:29.154Z",
+        "duration_ms": 60000,
+        "summary": "7/7 UPDATE/DELETE stress tests pass: complex WHERE, subquery, IN, expression updates. All correct."
+      },
+      {
+        "id": "T158",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push",
+        "started": "2026-04-24T21:34:37.889Z",
+        "completed": "2026-04-24T21:34:45.515Z",
+        "duration_ms": 10000,
+        "summary": "All repos up to date."
+      },
+      {
+        "id": "T159",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test UPSERT/ON CONFLICT support",
+        "project": "henrydb",
+        "started": "2026-04-24T21:34:51.961Z",
+        "completed": "2026-04-24T21:35:15.470Z",
+        "duration_ms": 60000,
+        "summary": "UPSERT: ON CONFLICT DO UPDATE works, ON CONFLICT DO NOTHING works. 5/7 pass. Missing: REPLACE INTO and INSERT OR REPLACE (SQLite-specific, low priority)."
+      },
+      {
+        "id": "T161",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test transaction isolation (BEGIN, COMMIT, ROLLBACK, SAVEPOINT)",
+        "project": "henrydb",
+        "started": "2026-04-24T21:35:34.571Z",
+        "completed": "2026-04-24T21:35:54.417Z",
+        "duration_ms": 60000,
+        "summary": "16/16 transaction tests pass: BEGIN, COMMIT, ROLLBACK, SAVEPOINT, ROLLBACK TO SAVEPOINT. All isolation semantics correct."
+      },
+      {
+        "id": "T162",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Neural-net: add Dropout + BatchNorm integration test",
+        "task": null,
+        "started": "2026-04-24T21:36:02.169Z",
+        "completed": "2026-04-24T21:36:26.135Z",
+        "duration_ms": 30000,
+        "summary": "Dropout and BatchNorm both work with Dense layers and training. No issues found. Skipping BUILD task."
+      },
+      {
+        "id": "T163",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "neural-net",
+        "skip_reason": "Already works"
+      },
+      {
+        "id": "T164",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: differential fuzzer — random generated queries round 2",
+        "project": "henrydb",
+        "started": "2026-04-24T21:36:33.759Z",
+        "completed": "2026-04-24T21:37:58.867Z",
+        "duration_ms": 300000,
+        "summary": "Diff fuzzer round 2: 12/15 pass, 3 divergences: (1) float precision 3.3000...003, (2) AVG returns 2 not 2.0 (JS number display), (3) NULL in UNION normalization. None are logic bugs."
+      },
+      {
+        "id": "T165",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: add INSERT OR REPLACE/INSERT OR IGNORE syntax support",
+        "task": null,
+        "started": "2026-04-24T21:38:05.602Z",
+        "completed": "2026-04-24T21:38:20.933Z",
+        "duration_ms": 30000,
+        "summary": "Planned: add INSERT OR REPLACE/IGNORE and REPLACE INTO. Parser needs OR keyword after INSERT, executor needs conflict resolution modes."
+      },
+      {
+        "id": "T168",
+        "mode": "BUILD",
+        "task": "Add INSERT OR REPLACE/IGNORE and REPLACE INTO syntax to parser and executor",
+        "status": "done",
+        "plan_ref": "T165",
+        "started": "2026-04-24T21:38:30.276Z",
+        "completed": "2026-04-24T21:41:09.479Z",
+        "duration_ms": 300000,
+        "summary": "Added INSERT OR REPLACE/IGNORE and REPLACE INTO. Parser handles OR keyword after INSERT. Executor synthesizes onConflict from conflictAction. 8/8 tests pass."
+      },
+      {
+        "id": "T166",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder"
+      },
+      {
+        "id": "T169",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test ALTER TABLE operations (ADD COLUMN, DROP COLUMN, RENAME)",
+        "project": "henrydb",
+        "started": "2026-04-24T21:41:39.368Z",
+        "completed": "2026-04-24T21:42:00.535Z",
+        "duration_ms": 60000,
+        "summary": "10/10 ALTER TABLE tests pass: ADD COLUMN, ADD with DEFAULT, DROP COLUMN, RENAME TABLE, RENAME COLUMN. All correct."
+      },
+      {
+        "id": "T170",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test CREATE INDEX + query optimization with EXPLAIN ANALYZE",
+        "project": "henrydb",
+        "started": "2026-04-24T21:42:06.858Z",
+        "completed": "2026-04-24T21:43:11.171Z",
+        "duration_ms": 120000,
+        "summary": "Found composite index crash: makeCompositeKey not imported in ddl-indexes.js. Fixed. Single index EXPLAIN ANALYZE works. Composite index now works."
+      },
+      {
+        "id": "T171",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Neural-net: add confusion matrix visualization (text-based)",
+        "task": null,
+        "started": "2026-04-24T21:43:36.130Z",
+        "completed": "2026-04-24T21:43:36.277Z",
+        "duration_ms": 10000,
+        "summary": "printConfusionMatrix already exists in metrics.js. Skipping."
+      },
+      {
+        "id": "T172",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "neural-net",
+        "skip_reason": "Already exists"
+      },
+      {
+        "id": "T173",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test foreign key constraints (ON DELETE CASCADE)",
+        "project": "henrydb",
+        "started": "2026-04-24T21:43:42.654Z",
+        "completed": "2026-04-24T21:44:18.288Z",
+        "duration_ms": 120000,
+        "summary": "Found FK cascade bug: ON DELETE CASCADE executes but SELECT still returns deleted rows (heap scan doesn't skip deleted). COUNT(*) correctly shows 1. FK violation insert works correctly. Heap visibility bug logged."
+      },
+      {
+        "id": "T174",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: add string functions: INSTR, LTRIM, RTRIM, SUBSTR negative index",
+        "task": null,
+        "started": "2026-04-24T21:44:26.102Z",
+        "completed": "2026-04-24T21:44:47.389Z",
+        "duration_ms": 30000,
+        "summary": "LTRIM, RTRIM work. INSTR missing. SUBSTR with negative index broken (returns full string instead of last N chars). Filled 1 BUILD."
+      },
+      {
+        "id": "T177",
+        "mode": "BUILD",
+        "task": "Add INSTR function and fix SUBSTR negative index",
+        "status": "done",
+        "plan_ref": "T174",
+        "started": "2026-04-24T21:44:55.481Z",
+        "completed": "2026-04-24T21:46:31.477Z",
+        "duration_ms": 300000,
+        "summary": "Added INSTR function (1-indexed position, 0=not found). Fixed SUBSTR negative index: -3 now returns last 3 chars per SQLite. 7/7 tests pass."
+      },
+      {
+        "id": "T175",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder"
+      },
+      {
+        "id": "T176",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push, update daily log",
+        "started": "2026-04-24T21:46:44.222Z",
+        "completed": "2026-04-24T21:46:51.060Z",
+        "duration_ms": 15000,
+        "summary": "HenryDB pushed. Neural-net up to date."
+      },
+      {
+        "id": "T178",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: fix FK CASCADE DELETE visibility bug (deleted rows still visible in SELECT)",
+        "task": null,
+        "started": "2026-04-24T21:47:09.190Z",
+        "completed": "2026-04-24T21:52:54.550Z",
+        "duration_ms": 300000,
+        "summary": "Root cause: FK CASCADE deletes rows from heap correctly (rowCount drops, manual scan shows correct rows), but SELECT reads from MVCC snapshot taken before cascade. Snapshot isolation issue — cascade writes arent visible to current snapshot. Deep MVCC bug. Deferred."
+      },
+      {
+        "id": "T184",
+        "mode": "BUILD",
+        "task": "Document FK CASCADE MVCC visibility bug (snapshot isolation issue, deferred to future)",
+        "status": "done",
+        "plan_ref": "T178",
+        "started": "2026-04-24T21:53:06.208Z",
+        "completed": "2026-04-24T21:53:06.355Z",
+        "duration_ms": 5000,
+        "summary": "Bug documented. Root cause: MVCC snapshot isolation doesnt include FK CASCADE writes."
+      },
+      {
+        "id": "T179",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "henrydb",
+        "skip_reason": "Unfilled placeholder"
+      },
+      {
+        "id": "T180",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test CREATE VIEW + materialized view support",
+        "project": "henrydb",
+        "started": "2026-04-24T21:53:22.024Z",
+        "completed": "2026-04-24T21:53:43.013Z",
+        "duration_ms": 30000,
+        "summary": "7/7 VIEW tests pass: CREATE VIEW, query view, aggregate view, filter view, DROP VIEW. All correct."
+      },
+      {
+        "id": "T181",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test trigger support (BEFORE/AFTER INSERT/UPDATE/DELETE)",
+        "project": "henrydb",
+        "started": "2026-04-24T21:53:48.520Z",
+        "completed": "2026-04-24T21:54:10.012Z",
+        "duration_ms": 60000,
+        "summary": "Triggers CREATE successfully but NEVER FIRE — audit_log stays empty. Known bug from blog post: NEW/OLD substitution never wired up. Trigger creation/parsing works, execution does not."
+      },
+      {
+        "id": "T182",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: test CHECK constraints",
+        "project": "henrydb",
+        "started": "2026-04-24T21:54:20.236Z",
+        "completed": "2026-04-24T21:54:46.158Z",
+        "duration_ms": 30000,
+        "summary": "12/12 constraint tests pass: CHECK (single-col and multi-col), NOT NULL, UNIQUE. All constraints correctly enforce and reject violations."
+      },
+      {
+        "id": "T183",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push, daily log, session end",
+        "started": "2026-04-24T21:55:00.969Z",
+        "completed": "2026-04-24T21:55:14.229Z",
+        "duration_ms": 10000,
+        "summary": "Pushed. Continuing work."
+      },
+      {
+        "id": "T185",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: 20 BUILDs in session — mandatory pivot",
+        "started": "2026-04-24T21:55:23.421Z",
+        "completed": "2026-04-24T21:55:41.240Z",
+        "duration_ms": 60000,
+        "summary": "17 BUILDs, 42 daily total. Under all caps. Depth check passes: dual HeapFile surprise, MVCC visibility boundary, composite index bug found+fixed. Remaining BUILDs: trigger execution."
+      },
+      {
+        "id": "T186",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: run full test suite sweep on src/ test files",
+        "project": "henrydb",
+        "started": "2026-04-24T21:55:47.635Z",
+        "completed": "2026-04-24T22:07:37.402Z",
+        "duration_ms": 300000,
+        "summary": "Test suite sweep: 206 tests across 42 files. 205/206 pass. Found stale import in regression-tests.test.js (applyWindowFunctions removed but test remained). Fixed."
+      },
+      {
+        "id": "T187",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: wire up trigger execution (BEFORE/AFTER INSERT/UPDATE/DELETE)",
+        "task": null,
+        "started": "2026-04-24T22:07:43.842Z"
+      },
+      {
+        "id": "T191",
+        "mode": "BUILD",
+        "task": "Wire up trigger execution in INSERT/UPDATE/DELETE paths",
+        "status": "upcoming",
+        "plan_ref": "T187"
+      },
+      {
+        "id": "T188",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "henrydb"
       },
       {
-        "id": "T142",
+        "id": "T189",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "HenryDB: test MVCC snapshot isolation with concurrent-like operations",
+        "project": "henrydb"
+      },
+      {
+        "id": "T190",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Git push, update daily log"
+        "task": "Git push, update TODO, session wrap"
       },
       {
         "id": "T84",
@@ -7970,29 +8435,35 @@
         "task": "Final git push, session wrap"
       },
       {
+        "id": "T134",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, daily log, session wrap"
+      },
+      {
         "id": "T128",
         "mode": "MAINTAIN",
         "status": "upcoming",
         "task": "Final git push, daily log, session wrap"
       },
       {
-        "id": "T134",
+        "id": "T167",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Git push, daily log, session wrap"
+        "task": "Git push, daily log"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 117,
-    "blocksTotal": 144,
+    "blocksCompleted": 326,
+    "blocksTotal": 191,
     "modeDistribution": {
-      "THINK": 16,
-      "PLAN": 24,
-      "BUILD": 39,
-      "MAINTAIN": 9,
-      "EXPLORE": 29
+      "THINK": 20,
+      "PLAN": 34,
+      "BUILD": 44,
+      "MAINTAIN": 32,
+      "EXPLORE": 196
     }
   },
   "artifacts": [
