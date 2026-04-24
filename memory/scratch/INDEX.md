@@ -47,8 +47,11 @@
 - `vectorized-execution-explore.md` — **NEW 2026-04-22** Vectorized execution benchmarks: 5.8x for deep pipelines, HenryDB overhead profile, hybrid design sketch
 - `sat-solver-profile.md` — **NEW 2026-04-22** SAT solver performance: N-Queens, Sudoku, random 3-SAT phase transition, 666K prop/sec
 - `vectorized-execution.md` — **NEW 2026-04-24** DuckDB-style vectorized batch engine design + implementation notes
+- `vectorized-integration-issues.md` — **NEW 2026-04-24** 4 root causes for auto-enable failures + fix strategy
 - `moe-gradient-learning.md` — **NEW 2026-04-24** MoE gradient computation: softmax Jacobian, batch accumulation, gate gradient
 - `henrydb-bug-fixes-apr24.md` — **NEW 2026-04-24** 7 bugs found+fixed: equi-join key swap, float division, evalExpr default, view JOIN, NATURAL JOIN, trigger NEW/OLD, CTE INSERT
+- `cross-project-neural-query-opt.md` — **NEW 2026-04-24** Design for using neural-net to optimize HenryDB query plans
+- `blog-henrydb-outline.md` — **NEW 2026-04-24** Blog post outline: "Building a SQL Database in JavaScript"
 
 ## Reference
 - `README.md` — How to use scratch notes
