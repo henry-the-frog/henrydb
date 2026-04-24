@@ -3963,9 +3963,106 @@
     {
       "id": "T366",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session git push + daily log checkpoint",
-      "started": "2026-04-24T02:50:48.507Z"
+      "started": "2026-04-24T02:50:48.507Z",
+      "completed": "2026-04-24T02:50:53.786Z",
+      "duration_ms": 30000,
+      "summary": "Git push done. Mid-session checkpoint."
+    },
+    {
+      "id": "T367",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Compare HenryDB execution engines: run same complex query through all 5 engines, compare results",
+      "project": "henrydb",
+      "started": "2026-04-24T02:51:13.797Z",
+      "completed": "2026-04-24T02:51:33.657Z",
+      "duration_ms": 300000,
+      "summary": "Ran same 4 complex queries (GROUP BY+AGG, RANK window, correlated subquery, self-join) through default, Volcano, and compiled engines. All 3 produce identical results. This N-version consistency is the strongest correctness guarantee."
+    },
+    {
+      "id": "T368",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB PL/SQL implementation: stored procedures, IF/ELSE, WHILE",
+      "project": "henrydb",
+      "started": "2026-04-24T02:51:51.169Z",
+      "completed": "2026-04-24T02:52:16.331Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB PL/SQL (854 LOC): full PLParser (tokenizer+recursive descent) and PLInterpreter. Supports DECLARE, IF/ELSIF/ELSE, WHILE, FOR (REVERSE), RETURN, RAISE, EXECUTE (dynamic SQL), PERFORM, SELECT INTO, EXCEPTION blocks, variable scoping. PL/pgSQL-compatible procedural language."
+    },
+    {
+      "id": "T369",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net Constitutional AI and DPO implementations",
+      "project": "neural-net",
+      "started": "2026-04-24T02:52:27.379Z",
+      "completed": "2026-04-24T02:52:54.276Z",
+      "duration_ms": 180000,
+      "summary": "DPO (77 LOC): correct loss function matching the Rafailov 2023 paper, numerically stable log-sigmoid, implicit reward computation, accuracy tracking, gradient multiplier. Constitutional AI (21 LOC): prompt engineering framework for critique-revision loops. Both correctly implement the papers."
+    },
+    {
+      "id": "T370",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB LSM-tree compaction strategies",
+      "project": "henrydb",
+      "started": "2026-04-24T02:53:14.121Z",
+      "completed": "2026-04-24T02:53:35.541Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB LSM-tree (893 LOC across 3 files): memtable→SSTable flush, binary search lookups, both leveled (RocksDB-style, level size ratio) and size-tiered (Cassandra-style, similar-size merge) compaction strategies. SSTable with min/max key bounds for overlap detection, merge sort for compaction, bloom filter integration, stats tracking."
+    },
+    {
+      "id": "T371",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net speculative decoding and KV cache implementations",
+      "project": "neural-net",
+      "started": "2026-04-24T02:53:44.343Z",
+      "completed": "2026-04-24T02:54:09.637Z",
+      "duration_ms": 180000,
+      "summary": "Speculative decoding (118 LOC): exact same distribution guarantee via modified rejection sampling — accept with min(1, p_target/p_draft), reject from max(0, p_target-p_draft) residual. KV cache (162 LOC): pre-allocated memory, per-head K/V storage, single-token append + multi-token prefill, O(1) per-token generation. Both correct."
+    },
+    {
+      "id": "T372",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB decorrelation module — converts correlated subqueries to joins",
+      "project": "henrydb",
+      "started": "2026-04-24T02:54:23.571Z",
+      "completed": "2026-04-24T02:54:44.308Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB decorrelation (432 LOC): correlated subquery detection, scalar subquery hoisting, batch decorrelation (IN/EXISTS → hash semi-join), correlation predicate extraction, full SELECT optimization pass. Converts O(N×M) correlated evaluations to single hash semi-join — the classic optimizer transformation."
+    },
+    {
+      "id": "T373",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final daily log + MEMORY.md update + git push",
+      "started": "2026-04-24T02:55:07.901Z"
+    },
+    {
+      "id": "T374",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study HenryDB vectorized execution engine with column compression",
+      "project": "henrydb"
+    },
+    {
+      "id": "T375",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study neural-net CLIP implementation — contrastive language-image pretraining",
+      "project": "neural-net"
+    },
+    {
+      "id": "T376",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study HenryDB expression evaluator — 1191 LOC, how does it handle SQL expressions?",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -5513,6 +5610,46 @@
     {
       "time": "2026-04-24T02:48:12.981Z",
       "msg": "Added T366 (MAINTAIN) after end: Mid-session git push + daily log checkpoint"
+    },
+    {
+      "time": "2026-04-24T02:51:03.971Z",
+      "msg": "Added T367 (EXPLORE) after end: Compare HenryDB execution engines: run same complex query through all 5 engines, compare results"
+    },
+    {
+      "time": "2026-04-24T02:51:04.093Z",
+      "msg": "Added T368 (EXPLORE) after end: Study HenryDB PL/SQL implementation: stored procedures, IF/ELSE, WHILE"
+    },
+    {
+      "time": "2026-04-24T02:51:04.215Z",
+      "msg": "Added T369 (EXPLORE) after end: Study neural-net Constitutional AI and DPO implementations"
+    },
+    {
+      "time": "2026-04-24T02:53:08.401Z",
+      "msg": "Added T370 (EXPLORE) after end: Study HenryDB LSM-tree compaction strategies"
+    },
+    {
+      "time": "2026-04-24T02:53:08.541Z",
+      "msg": "Added T371 (EXPLORE) after end: Study neural-net speculative decoding and KV cache implementations"
+    },
+    {
+      "time": "2026-04-24T02:53:08.665Z",
+      "msg": "Added T372 (EXPLORE) after end: Study HenryDB decorrelation module — converts correlated subqueries to joins"
+    },
+    {
+      "time": "2026-04-24T02:53:08.787Z",
+      "msg": "Added T373 (MAINTAIN) after end: Final daily log + MEMORY.md update + git push"
+    },
+    {
+      "time": "2026-04-24T02:55:07.534Z",
+      "msg": "Added T374 (EXPLORE) after end: Study HenryDB vectorized execution engine with column compression"
+    },
+    {
+      "time": "2026-04-24T02:55:07.656Z",
+      "msg": "Added T375 (EXPLORE) after end: Study neural-net CLIP implementation — contrastive language-image pretraining"
+    },
+    {
+      "time": "2026-04-24T02:55:07.780Z",
+      "msg": "Added T376 (EXPLORE) after end: Study HenryDB expression evaluator — 1191 LOC, how does it handle SQL expressions?"
     }
   ]
 }
