@@ -46,6 +46,9 @@
 - `query-compilation-research.md` — **UPDATED 2026-04-22** Volcano vs HyPer codegen vs vectorized; JS-specific recommendations
 - `vectorized-execution-explore.md` — **NEW 2026-04-22** Vectorized execution benchmarks: 5.8x for deep pipelines, HenryDB overhead profile, hybrid design sketch
 - `sat-solver-profile.md` — **NEW 2026-04-22** SAT solver performance: N-Queens, Sudoku, random 3-SAT phase transition, 666K prop/sec
+- `vectorized-execution.md` — **NEW 2026-04-24** DuckDB-style vectorized batch engine design + implementation notes
+- `moe-gradient-learning.md` — **NEW 2026-04-24** MoE gradient computation: softmax Jacobian, batch accumulation, gate gradient
+- `henrydb-bug-fixes-apr24.md` — **NEW 2026-04-24** 7 bugs found+fixed: equi-join key swap, float division, evalExpr default, view JOIN, NATURAL JOIN, trigger NEW/OLD, CTE INSERT
 
 ## Reference
 - `README.md` — How to use scratch notes
