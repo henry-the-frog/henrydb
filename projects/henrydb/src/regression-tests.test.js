@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { BPlusTree } from './bplus-tree.js';
+import { Database } from './db.js';
 import { SkipList } from './skip-list.js';
 import { CuckooHashTable } from './cuckoo-hash.js';
 import { RobinHoodHashMap } from './robin-hood-hash.js';
@@ -20,7 +21,7 @@ import { SlottedPage } from './slotted-page.js';
 import { HeapFile } from './heap-file.js';
 import { TupleDescriptor } from './tuple-descriptor.js';
 import { JSONSerde, BinarySerde, CSVSerde } from './serde.js';
-import { applyWindowFunctions } from './window-functions.js';
+import { exprContainsWindow, columnsHaveWindow } from './window-functions.js';
 import { ConstantFolder } from './constant-folding.js';
 import { QueryRewriter } from './query-rewriter.js';
 import { PlanVisualizer } from './plan-viz.js';
@@ -104,9 +105,11 @@ describe('Cross-validation: Serde roundtrips', () => {
 });
 
 describe('Regression: Window functions with empty partition', () => {
-  it('handles empty input', () => {
-    const result = applyWindowFunctions([], [{ func: 'ROW_NUMBER', alias: 'rn' }]);
-    assert.deepEqual(result, []);
+  it('handles empty input via DB (window function on empty table)', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE empty_t (id INT)');
+    const r = db.execute('SELECT ROW_NUMBER() OVER (ORDER BY id) AS rn FROM empty_t');
+    assert.deepEqual(r.rows, []);
   });
 });
 
