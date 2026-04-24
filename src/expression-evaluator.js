@@ -563,6 +563,43 @@ export function installExpressionEvaluator(DatabaseClass) {
       case 'RANDOM': return Math.random();
       
       // Date/time functions
+      case 'DATE': {
+        const val = args[0] ? this._evalValue(args[0], row) : null;
+        if (!val || val === 'now') return new Date().toISOString().split('T')[0];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+        try {
+          const d = new Date(val + (val.includes('Z') || val.includes('+') ? '' : 'Z'));
+          return d.toISOString().split('T')[0];
+        } catch { return null; }
+      }
+      case 'TIME': {
+        const val = args[0] ? this._evalValue(args[0], row) : null;
+        if (!val || val === 'now') {
+          const d = new Date();
+          return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}`;
+        }
+        // If input is already a time string
+        if (/^\d{2}:\d{2}/.test(val)) return val.split('.')[0];
+        try {
+          const d = new Date(val + (val.includes('T') ? '' : 'T00:00:00') + (val.includes('Z') ? '' : 'Z'));
+          return d.toISOString().split('T')[1].split('.')[0];
+        } catch { return null; }
+      }
+      case 'DATETIME': {
+        const val = args[0] ? this._evalValue(args[0], row) : null;
+        if (!val || val === 'now') { const d = new Date(); return d.toISOString().replace('T', ' ').split('.')[0]; }
+        try { return new Date(val).toISOString().replace('T', ' ').split('.')[0]; } catch { return null; }
+      }
+      case 'JULIANDAY': {
+        const val = args[0] ? this._evalValue(args[0], row) : null;
+        const d = val && val !== 'now' ? new Date(val) : new Date();
+        return d.getTime() / 86400000 + 2440587.5;
+      }
+      case 'UNIXEPOCH': {
+        const val = args[0] ? this._evalValue(args[0], row) : null;
+        const d = val && val !== 'now' ? new Date(val) : new Date();
+        return Math.floor(d.getTime() / 1000);
+      }
       case 'CURRENT_TIMESTAMP': case 'NOW': return new Date().toISOString();
       case 'CURRENT_DATE': return new Date().toISOString().split('T')[0];
       case 'STRFTIME': {
