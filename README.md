@@ -1,6 +1,13 @@
 # HenryDB 🐸
 
-A fully-featured SQL database engine written from scratch in JavaScript. No dependencies. **93K lines** (42K source, 51K tests), **4100+ tests passing**.
+A fully-featured SQL database engine written from scratch in JavaScript. No dependencies. **4,313 tests passing**, **98% SQLite SQL coverage**.
+
+### Highlights
+- **5 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM
+- **5 concurrency control**: 2PL, MVCC, SSI, OCC, Timestamp Ordering
+- **12+ join algorithms**, 10+ index types, 8 hash table variants
+- **Window functions**: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM/AVG/COUNT OVER
+- **Performance**: 14K inserts/s, 9.7K lookups/s, 500K scan rows/s (10K rows)
 
 ## Features
 

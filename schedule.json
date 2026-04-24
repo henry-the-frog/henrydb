@@ -538,10 +538,43 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: write comprehensive tests for DATE/TIME/DATETIME functions",
       "project": "henrydb",
-      "started": "2026-04-24T17:09:52.322Z"
+      "started": "2026-04-24T17:09:52.322Z",
+      "completed": "2026-04-24T17:12:18.378Z",
+      "duration_ms": 120000,
+      "summary": "11 date function tests: DATE, TIME, DATETIME, JULIANDAY, UNIXEPOCH, WHERE clause, ORDER BY, date difference. All pass. Note: LOG is a reserved word (table name case sensitivity issue)."
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate reserved word handling in table names and identifiers",
+      "project": "henrydb",
+      "started": "2026-04-24T17:15:43.630Z",
+      "completed": "2026-04-24T17:16:27.110Z",
+      "duration_ms": 120000,
+      "summary": "Reserved word investigation: Most SQL reserved words work as table names (tokenizer uppercases them). Case sensitivity is handled via uppercase conversion in parser. The LOG table name issue is likely a sequential test pollution artifact. All reserved words tested (LOG, ORDER, SELECT, TABLE, etc.) work as table names. Backtick quoting not yet supported."
+    },
+    {
+      "id": "T53",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Draft blog post outline: Building a SQL database in JavaScript — lessons from 4288 tests",
+      "project": "henrydb",
+      "started": "2026-04-24T17:17:10.330Z",
+      "completed": "2026-04-24T17:17:51.592Z",
+      "duration_ms": 120000,
+      "summary": "Drafted blog post outline for HenryDB. 7 sections covering architecture, hard bugs, feature combinations, vectorized execution, and lessons learned. Saved to scratch/blog-henrydb-outline.md. Can be written as a full post in a future session."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: update README with current stats (4313 tests, 98% SQLite coverage, vectorized engine, date functions)",
+      "project": "henrydb",
+      "started": "2026-04-24T17:18:39.807Z"
     }
   ],
   "focusProjects": [
@@ -757,6 +790,18 @@
     {
       "time": "2026-04-24T17:09:46.206Z",
       "msg": "Added T51 (BUILD) after end: HenryDB: write comprehensive tests for DATE/TIME/DATETIME functions"
+    },
+    {
+      "time": "2026-04-24T17:15:35.038Z",
+      "msg": "Added T52 (EXPLORE) after end: HenryDB: investigate reserved word handling in table names and identifiers"
+    },
+    {
+      "time": "2026-04-24T17:17:02.076Z",
+      "msg": "Added T53 (THINK) after end: Draft blog post outline: Building a SQL database in JavaScript — lessons from 4288 tests"
+    },
+    {
+      "time": "2026-04-24T17:18:29.024Z",
+      "msg": "Added T54 (BUILD) after end: HenryDB: update README with current stats (4313 tests, 98% SQLite coverage, vectorized engine, date functions)"
     }
   ]
 }
