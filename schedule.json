@@ -677,6 +677,14 @@
       "completed": "2026-04-24T17:34:40.355Z",
       "duration_ms": 120000,
       "summary": "Found 5 edge case bugs: (1) NULL = NULL returns rows (should be 0 per SQL standard), (2) string + number does concat instead of coerce, (3) division by 0 throws instead of NULL, (4) modulo by 0 throws instead of NULL, (5) negative number literal not parsed. 14/19 edge cases pass. Added to TODO for future fix."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Quick fix: HenryDB division/modulo by zero should return NULL not throw",
+      "project": "henrydb",
+      "started": "2026-04-24T17:35:25.744Z"
     }
   ],
   "focusProjects": [
@@ -940,6 +948,10 @@
     {
       "time": "2026-04-24T17:34:06.913Z",
       "msg": "Added T63 (EXPLORE) after end: HenryDB: edge case SQL testing — NULL handling, empty results, type coercion"
+    },
+    {
+      "time": "2026-04-24T17:35:19.641Z",
+      "msg": "Added T64 (BUILD) after end: Quick fix: HenryDB division/modulo by zero should return NULL not throw"
     }
   ]
 }

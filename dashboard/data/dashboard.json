@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-24T17:34:40.393Z",
+  "generated": "2026-04-24T17:35:25.806Z",
   "current": {
-    "status": "done",
-    "mode": "EXPLORE",
-    "task": "HenryDB: edge case SQL testing — NULL handling, empty results, type coercion",
-    "completedAt": "2026-04-24T17:34:40.393Z",
-    "taskId": "T63",
-    "summary": "Found 5 edge case bugs: (1) NULL = NULL returns rows (should be 0 per SQL standard), (2) string + number does concat instead of coerce, (3) division by 0 throws instead of NULL, (4) modulo by 0 throws instead of NULL, (5) negative number literal not parsed. 14/19 edge cases pass. Added to TODO for future fix.",
-    "durationMs": 120000
+    "status": "in-progress",
+    "mode": "BUILD",
+    "task": "Quick fix: HenryDB division/modulo by zero should return NULL not throw",
+    "startedAt": "2026-04-24T17:35:25.806Z",
+    "taskId": "T64"
   },
   "schedule": {
     "date": "2026-04-24",
