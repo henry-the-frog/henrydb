@@ -707,9 +707,79 @@
     {
       "id": "T66",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Verify DQN learns GridWorld, document end-to-end RL training",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T18:30:46.229Z",
+      "completed": "2026-04-24T18:31:55.169Z",
+      "duration_ms": 300000,
+      "summary": "DQN fully verified: 15/15 unit tests pass, 6/6 stress tests pass, 9/9 REINFORCE tests pass. End-to-end GridWorld training: reward 0.727→0.968, greedy policy 20/20 success, agent correctly learns down+right from (0,0) to (2,2). Q-values sensible. CartPole and REINFORCE also verified."
+    },
+    {
+      "id": "T67",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess remaining time: what can fit in 1.5 hours? CI for monkey-lang, vectorized engine fixes, or blog post",
+      "started": "2026-04-24T18:32:31.346Z",
+      "completed": "2026-04-24T18:32:40.699Z",
+      "duration_ms": 60000,
+      "summary": "1.5h remaining, locked to neural-net/henrydb. Vectorized engine auto-enable is highest impact (15 compat issues documented in scratch). Also: HenryDB edge case bugs (4 remaining from earlier exploration). Go deep on vectorized."
+    },
+    {
+      "id": "T69",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix vectorized engine auto-enable (15 compat issues)",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-24T18:32:51.282Z",
+      "completed": "2026-04-24T18:35:27.375Z",
+      "duration_ms": 120000,
+      "summary": "Diagnosed 4 root causes for vectorized integration. Filled 3 BUILD tasks: fix bridge (multi-group, naming, ordering), wire into select-inner.js, write integration tests."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "task": "Fix vectorized bridge: multi-group column support + column naming + result ordering to match standard path",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-24T18:35:35.659Z",
+      "completed": "2026-04-24T18:37:21.961Z",
+      "duration_ms": 300000,
+      "summary": "Fixed vectorized bridge: multi-group column support via composite key batching, column naming matches standard path exactly (alias or FUNC(arg)), result ordering follows SELECT list. All 10 bridge tests pass."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "task": "Wire vectorized bridge into select-inner.js with canVectorize gate, ensure HAVING/ORDER BY/LIMIT applied after",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-24T18:37:29.017Z",
+      "completed": "2026-04-24T19:45:22.287Z",
+      "duration_ms": 1200000,
+      "summary": "Wired vectorized bridge into select-inner.js. Auto-selects for eligible queries (simple GROUP BY + aggregates, no aliases/HAVING/FILTER/CASE/expressions/ROLLUP). Falls through to standard path for complex cases. Tested: 188 GROUP BY tests pass (71+117), 365 subquery/join/window/TPC-H pass, 676/678 infra pass (2 pre-existing test-ordering issues). Zero regressions."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "task": "Write integration tests: vectorized auto-select vs standard path differential for 10+ GROUP BY patterns",
+      "status": "upcoming",
+      "plan_ref": "T69"
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T68",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "Add GitHub Actions CI to monkey-lang",
+      "task": null,
+      "skip_reason": "Locked to neural-net/henrydb"
     }
   ],
   "focusProjects": [
@@ -985,6 +1055,30 @@
     {
       "time": "2026-04-24T17:42:38.440Z",
       "msg": "Added T66 (EXPLORE) after end: Verify DQN learns GridWorld, document end-to-end RL training"
+    },
+    {
+      "time": "2026-04-24T18:32:16.180Z",
+      "msg": "Added T67 (THINK) after T66: Assess remaining time: what can fit in 1.5 hours? CI for monkey-lang, vectorized engine fixes, or blog post"
+    },
+    {
+      "time": "2026-04-24T18:32:20.281Z",
+      "msg": "Added T68 (PLAN) after T67: Add GitHub Actions CI to monkey-lang"
+    },
+    {
+      "time": "2026-04-24T18:32:28.317Z",
+      "msg": "Removed T68: Locked to neural-net/henrydb"
+    },
+    {
+      "time": "2026-04-24T18:32:44.138Z",
+      "msg": "Added T69 (PLAN) after T67: Fix vectorized engine auto-enable (15 compat issues)"
+    },
+    {
+      "time": "2026-04-24T18:32:48.094Z",
+      "msg": "Added T70 (BUILD) after T69: null"
+    },
+    {
+      "time": "2026-04-24T18:35:22.346Z",
+      "msg": "PLAN T69 filled 3 BUILD tasks"
     }
   ]
 }
