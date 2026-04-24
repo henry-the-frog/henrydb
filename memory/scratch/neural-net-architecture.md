@@ -81,10 +81,68 @@
 5. **Pruning**: >= vs > threshold inconsistency between Matrix/Array paths
 6. **GELU missing**: In activation.js (Dense can't use it), only in activation-functions.js
 
-## Gaps
-- No LSTM/RNN/GRU
-- No Vision Transformer (ViT)
-- No multi-task learning
-- No data loader utility
+## Additional Modules (discovered late in audit, 80+ unaudited)
+### Sequence Models
+- **RNN/LSTM/GRU** (651 lines!) — full recurrent networks
+- **RWKV** (174 lines, Peng 2023) — linear attention O(N) time
+- **ESN** (Echo State Networks)
+
+### Architecture Search / Meta-Learning
+- **KAN** (300 lines, Liu 2024) — Kolmogorov-Arnold Networks with B-spline activations
+- **MAML** (250 lines, Finn 2017) — meta-learning for fast adaptation
+- **Neuroevolution** — evolutionary architecture search
+- **AutoML** — automated model selection
+
+### Neuroscience-Inspired
+- **SNN** (321 lines) — Spiking Neural Networks with LIF neurons + STDP
+- **Hopfield** (267 lines) — associative memory, energy minimization
+- **NTM** (282 lines, Graves 2014) — Neural Turing Machine with external memory
+- **SOM** — Self-Organizing Maps
+- **Predictive Coding**
+
+### Computer Vision
+- **Capsule Networks** (267 lines, Sabour 2017) — dynamic routing
+- **CLIP** (90 lines, Radford 2021) — contrastive language-image pretraining
+
+### Continuous Models
+- **Neural ODEs** (297 lines, Chen 2018) — continuous-depth networks
+- **EBM** (216 lines) — energy-based models with contrastive divergence
+
+### Reinforcement Learning
+- **DQN** (370 lines) — Deep Q-Network
+- **REINFORCE** — policy gradient
+
+### LLM Engineering
+- **RAG** (21 lines) — retrieval-augmented generation
+- **Constitutional AI** (21 lines, Bai 2022) — self-critique
+- **Think Tokens** (26 lines) — chain-of-thought (DeepSeek R1 style)
+- **Scaling Laws** (24 lines, Hoffman 2022) — Chinchilla compute-optimal
+- **Continuous Batching**, **Prefix Caching**, **Sliding Window**, **Rotary Cache**
+- **Constrained Decoding**, **Token Healing**, **Multi-Token Prediction**
+- **Position Interpolation** — context length extension
+- **Prefix Tuning** — efficient fine-tuning
+
+### Graph / Structured
+- **GNN** (318 lines) — Graph Neural Networks
+- **MDN** — Mixture Density Networks
+
+### Utilities
+- **Data Loader**, **Cross-Validation**, **Early Stopping**, **Callbacks**
+- **Training Logger**, **Metrics**, **Label Smoothing**
+- **Model Parallelism**, **Sequence Packing**, **Weight Tying**
+- **EMA** — Exponential Moving Average
+
+### Papers Verified Against (25+)
+Vaswani 2017, Rafailov 2023, Schulman 2017, Ho 2020, Chen 2020 (SimCLR),
+Hu 2021 (LoRA), Shazeer 2020 (SwiGLU), Su 2021 (RoPE), Dao 2022 (Flash Attention),
+Gu 2023 (Mamba), Hinton 2015 (KD), Goodfellow 2014 (GAN), Kingma 2014 (VAE),
+Lin 2017 (Focal), Holtzman 2020 (Top-p), Leviathan 2023 (Speculative),
+Peebles 2023 (DiT/AdaLN), Rezende 2015 (Planar Flows), Dinh 2017 (RealNVP),
+Liu 2019 (DARTS), Raffel 2020 (T5), Chen 2020 (MoCo), Zhang 2018 (Mixup),
+Srivastava 2014 (Dropout), He 2015 (ResNet), Ioffe 2015 (BatchNorm),
+Ba 2016 (LayerNorm), Wu 2018 (GroupNorm), Sennrich 2016 (BPE)
+
+## Actual Gaps (post-comprehensive audit)
 - Cross-attention: no backward pass
 - Flash Attention/GQA/Mamba: no backward passes (forward-only)
+- No Vision Transformer (ViT) specifically, though all components exist
