@@ -342,7 +342,16 @@ export function fireTriggers(db, timing, event, tableName, rowValues, schema, ol
             bodySql = bodySql.replace(new RegExp(`OLD\\.${colName}\\b`, 'gi'), sqlVal);
           }
         }
-        db.execute(bodySql);
+        // Strip BEGIN...END wrapper
+        let cleanSql = bodySql.trim();
+        if (cleanSql.toUpperCase().startsWith('BEGIN')) cleanSql = cleanSql.slice(5).trim();
+        if (cleanSql.toUpperCase().endsWith('END')) cleanSql = cleanSql.slice(0, -3).trim();
+        
+        // Split on semicolons for multi-statement triggers
+        const statements = cleanSql.split(';').map(s => s.trim()).filter(Boolean);
+        for (const stmt of statements) {
+          db.execute(stmt);
+        }
       } catch (e) {
         // Trigger errors propagate
         throw new Error(`Trigger ${trigger.name} failed: ${e.message}`);

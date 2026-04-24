@@ -913,7 +913,7 @@ export class Database {
   _insertSelect(ast) { return _insertSelectImpl(this, ast); }
 
   // Validate column constraints (NOT NULL, CHECK) for a row
-  _fireTriggers(event, table, row, newRow, schema) { return _fireTriggersImpl(this, event, table, row, newRow, schema); }
+  _fireTriggers(timing, event, tableName, rowValues, schema, oldRowValues) { return _fireTriggersImpl(this, timing, event, tableName, rowValues, schema, oldRowValues); }
 
   _validateConstraints(table, values) { return _validateConstraintsImpl(this, table, values); }
 
