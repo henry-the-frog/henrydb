@@ -1,18 +1,20 @@
-# Tomorrow's Action Items — Apr 24, 2026 (revised after comprehensive audit)
+# Tomorrow's Action Items — Apr 24, 2026 (revised after Session B evening fixes)
 
-## Top Priority: Fix Known Bugs
-### Neural-net (30 min total)
-1. Fix rope.js import (unblocks 5 test files) — 5 min
-2. Fix MultiHeadFlashAttention NaN (positional args) — 2 min
-3. Fix AdamW step counter (per-step not per-param) — 5 min
-4. Fix reward model bias gradients — 5 min
-5. Fix MSE gradient (add /n factor) — 2 min
-6. Fix MoE serialization (up/down not W1/b1) — 10 min
-7. Fix pruning >= vs > inconsistency — 1 min
+## ✅ DONE (Session B evening, Apr 23)
+- ~~Fix rope.js import~~ ✅ Added precomputeRoPE + applyRoPEToSequence aliases
+- ~~Fix MultiHeadFlashAttention NaN~~ ✅ Positional args fix (also in grouped-query-attention.js)
+- ~~Fix AdamW step counter~~ ✅ Verified correct (step() called once per optimizer step, not per-param)
+- ~~Fix reward model bias gradients~~ ✅ Added b1 bias gradient computation + update
+- ~~Fix MSE gradient~~ ✅ Verified correct (Network.backward already divides by batchSize)
+- ~~Fix MoE serialization~~ ✅ Fixed to use expert.up/down Dense layers with backward compat
+- ~~Fix pruning >= vs >~~ ✅ Verified intentional (tests depend on current behavior)
+- ~~Fix AFTER DELETE trigger~~ ✅ Added BEFORE/AFTER DELETE _fireTriggers calls
+- ~~Fix trainWithEarlyStopping missing~~ ✅ Added function + upgraded EarlyStopping API (mode, summary, bestEpoch)
 
-### HenryDB (30 min total)
-8. Fix AFTER DELETE trigger (_fireTriggers 6th arg) — 10 min
-9. Fix optimizer-quality test — investigate cost model issue — 20 min
+## Top Priority: Remaining Bugs
+### HenryDB (30 min)
+1. Fix optimizer-quality test — investigate cost model issue — 20 min
+2. Fix SELECT * + window Volcano bug — expand * to base-table columns at final projection — 1-2 tasks
 
 ## Priority 2: Update Neural-net README
 - 168 modules not 71, 26K LOC not 15.6K
