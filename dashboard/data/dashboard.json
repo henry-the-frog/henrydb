@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-24T04:15:28.293Z",
+  "generated": "2026-04-24T14:02:05.574Z",
   "current": {
     "status": "session-ended",
     "mode": "MAINTAIN",
@@ -10,7 +10,7 @@
     "estimatedBlocks": 0
   },
   "schedule": {
-    "date": "2026-04-23",
+    "date": "2026-04-24",
     "blocks": [
       {
         "time": "08:15",
@@ -6509,22 +6509,149 @@
         "completedAt": "2026-04-24T03:45:13.992Z"
       }
     ],
-    "backlog": []
+    "backlog": [],
+    "queue": [
+      {
+        "id": "T1",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Review Apr 23 results, set direction: neural-net README + CI fix, HenryDB depth, blog"
+      },
+      {
+        "id": "T2",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Fix neural-net GitHub Actions CI (150+ consecutive failures)",
+        "task": null
+      },
+      {
+        "id": "T3",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T2",
+        "project": "neural-net"
+      },
+      {
+        "id": "T4",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, dashboard health check"
+      },
+      {
+        "id": "T5",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Reflect on CI fix, assess neural-net README accuracy"
+      },
+      {
+        "id": "T6",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Update neural-net README (168 modules, 26K LOC)",
+        "task": null
+      },
+      {
+        "id": "T7",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T6",
+        "project": "neural-net"
+      },
+      {
+        "id": "T8",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, dashboard regen, knowledge capture"
+      },
+      {
+        "id": "T9",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Assess HenryDB priorities: trigger parser bug, depth work"
+      },
+      {
+        "id": "T10",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB depth: trigger parser SQL formatting bug + test hardening",
+        "task": null
+      },
+      {
+        "id": "T11",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T10",
+        "project": "henrydb"
+      },
+      {
+        "id": "T12",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, dashboard regen"
+      },
+      {
+        "id": "T13",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Mid-day reflection: depth check, learning gate"
+      },
+      {
+        "id": "T14",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Neural-net: normalize property naming across layers",
+        "task": null
+      },
+      {
+        "id": "T15",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T14",
+        "project": "neural-net"
+      },
+      {
+        "id": "T16",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push, dashboard regen"
+      },
+      {
+        "id": "T17",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Evening direction: explore priorities"
+      },
+      {
+        "id": "T18",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Monkey-lang codebase audit: what needs attention after 3 weeks",
+        "project": "neural-net"
+      },
+      {
+        "id": "T19",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Vectorized execution strategies for HenryDB",
+        "project": "henrydb"
+      },
+      {
+        "id": "T20",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final git push, knowledge capture, daily log summary"
+      }
+    ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 464,
-    "blocksTotal": 464,
-    "modeDistribution": {
-      "THINK": 21,
-      "PLAN": 19,
-      "BUILD": 75,
-      "MAINTAIN": 51,
-      "EXPLORE": 298
-    },
-    "totalMinutes": 1080,
-    "totalMs": 64775000,
-    "avgDurationMs": 139601
+    "blocksCompleted": 0,
+    "blocksTotal": 20,
+    "modeDistribution": {}
   },
   "artifacts": [
     {
