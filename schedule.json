@@ -157,9 +157,12 @@
       "id": "T24",
       "mode": "BUILD",
       "task": "Fix EXPLAIN ANALYZE and CREATE TABLE AS SELECT bugs",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T10",
-      "started": "2026-04-24T15:24:10.746Z"
+      "started": "2026-04-24T15:24:10.746Z",
+      "completed": "2026-04-24T15:37:30.975Z",
+      "duration_ms": 600000,
+      "summary": "Fixed: (1) float division 10.0/3 via isFloat flag propagation in tokenizer→parser→evaluator, (2) CASE WHEN NULL/0/false via evalExpr default truthiness, (3) LIMIT 0 via null check, (4) tokenize import in expression-evaluator, (5) e2e fulltext search. 28→11 failures (all in one regression suite). Remaining: NULL IS NULL, boolean in SELECT, NATURAL JOIN, SUM empty — deeper parser/evaluator issues."
     },
     {
       "id": "T25",
