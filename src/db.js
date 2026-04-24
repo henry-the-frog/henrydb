@@ -33,6 +33,9 @@ export class Database {
     this._currentTxId = 0;  // 0 = auto-commit mode
     this._planCache = new PlanCache(256);
     
+    // Vectorized execution engine (opt-in via { vectorized: true })
+    this._useVectorized = !!options.vectorized;
+    
     // MVCC support (opt-in)
     this._mvccEnabled = !!options.mvcc;
     this._mvcc = this._mvccEnabled ? new MVCCManager() : null;
@@ -1641,9 +1644,11 @@ export class Database {
   }
 
   _select(ast) {
-    // Vectorized path disabled pending further testing
-    // const vectorResult = this._tryVectorizedSelect(ast);
-    // if (vectorResult) return vectorResult;
+    // Try vectorized fast path for simple single-table aggregate queries
+    if (this._useVectorized) {
+      const vectorResult = this._tryVectorizedSelect(ast);
+      if (vectorResult) return vectorResult;
+    }
 
     // Handle CTEs — register as temporary views
     const tempViews = [];
@@ -5091,76 +5096,59 @@ import { VSeqScan, VFilter, VHashAggregate } from './vector-engine.js';
  * Returns null if the query is too complex for the vectorized path.
  */
 Database.prototype._tryVectorizedSelect = function(ast) {
-  // Only handle simple single-table queries without joins, subqueries, or CTEs
+  // VERY conservative: only simple aggregate queries
+  // Only handle: SELECT agg(col) FROM table [GROUP BY col]
+  // No WHERE, no HAVING, no ORDER BY, no LIMIT, no DISTINCT, no JOINs, no subqueries
   if (ast.ctes || ast.joins?.length > 0 || !ast.from?.table) return null;
+  if (ast.where || ast.having || ast.orderBy || ast.limit != null || ast.distinct) return null;
+  if (ast.from.alias) return null; // Aliased tables complicate column resolution
   
   const tableName = ast.from.table;
   const table = this.tables.get(tableName);
   if (!table) return null;
-  
-  // Don't use for views
   if (this.views.has(tableName)) return null;
   
-  // Must be simple columns or aggregates (not *)
+  // Must have aggregates
+  const hasAggregates = ast.columns?.some(c => c.type === 'aggregate');
+  if (!hasAggregates) return null;
+  
+  // All non-aggregate columns must be simple column references (for GROUP BY)
+  for (const col of ast.columns) {
+    if (col.type !== 'aggregate' && col.type !== 'column') return null;
+  }
+  
   const schema = table.schema;
   const colNames = schema.map(c => c.name);
-  
-  // Check for simple GROUP BY with aggregates
   const hasGroupBy = ast.groupBy && ast.groupBy.length > 0;
-  const hasAggregates = ast.columns?.some(c => c.type === 'aggregate');
-  
-  // Only use vectorized for aggregate queries or simple scans with WHERE
-  if (!hasAggregates && !ast.where) return null;
   
   try {
-    // Build scan operator
-    const heap = table.heap;
-    const scan = new VSeqScan(heap, colNames, ast.from.alias || tableName);
+    const scan = new VSeqScan(table.heap, colNames);
     
-    // Add filter if WHERE clause exists
-    let pipeline = scan;
-    if (ast.where) {
-      const db = this;
-      pipeline = new VFilter(pipeline, (row) => {
-        try {
-          return db._evalExpr(ast.where, row);
-        } catch { return false; }
-      });
-    }
+    const groupCols = hasGroupBy ? ast.groupBy.map(g => typeof g === 'string' ? g : (g.name || g.column)) : [];
+    const aggregates = [];
     
-    // If aggregate query, use VHashAggregate
-    if (hasAggregates) {
-      const groupCols = hasGroupBy ? ast.groupBy.map(g => g.name || g.column) : [];
-      const aggregates = [];
-      const projections = [];
-      
-      for (const col of ast.columns) {
-        if (col.type === 'aggregate') {
-          const aggCol = col.args?.[0]?.name || col.args?.[0]?.column || '*';
-          aggregates.push({
-            name: col.alias || `${col.fn}(${aggCol})`,
-            fn: col.fn.toUpperCase(),
-            col: aggCol === '*' ? colNames[0] : aggCol,
-          });
-        } else if (col.type === 'column') {
-          projections.push(col.name || col.column);
-        }
+    for (const col of ast.columns) {
+      if (col.type === 'aggregate') {
+        const aggCol = col.arg || col.args?.[0]?.name || '*';
+        const fn = (col.func || col.fn || '').toUpperCase();
+        const name = col.alias || `${fn}(${aggCol})`;
+        aggregates.push({ name, fn, col: aggCol === '*' ? colNames[0] : aggCol });
       }
-      
-      pipeline = new VHashAggregate(pipeline, groupCols, aggregates);
     }
     
-    // Execute
-    pipeline.open();
+    const agg = new VHashAggregate(scan, groupCols, aggregates);
+    agg.open();
     const rows = [];
     let batch;
-    while ((batch = pipeline.nextBatch()) !== null) {
+    while ((batch = agg.nextBatch()) !== null) {
       rows.push(...batch.toRows());
     }
-    pipeline.close();
+    agg.close();
     
-    return { rows, columns: Object.keys(rows[0] || {}) };
+    if (rows.length === 0) return null; // Fall back to standard path
+    
+    return { rows, columns: Object.keys(rows[0]) };
   } catch {
-    return null; // Fall back to standard execution
+    return null;
   }
 };

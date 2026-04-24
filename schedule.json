@@ -435,6 +435,14 @@
       "completed": "2026-04-24T16:46:12.176Z",
       "duration_ms": 120000,
       "summary": "MVCC stress test: 100 random transfers, 10K total conserved, no overdrafts. Write skew test: invariant held correctly. HenryDB MVCC is solid for sequential transactions. Note: true concurrent testing would need multi-worker or async patterns."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix vectorized engine column naming compatibility and enable integration for simple queries",
+      "project": "henrydb",
+      "started": "2026-04-24T16:46:42.775Z"
     }
   ],
   "focusProjects": [
@@ -610,6 +618,10 @@
     {
       "time": "2026-04-24T16:45:25.179Z",
       "msg": "Added T41 (EXPLORE) after end: HenryDB: write a concurrent transaction stress test that hammers MVCC, SSI, and WAL"
+    },
+    {
+      "time": "2026-04-24T16:46:38.250Z",
+      "msg": "Added T42 (BUILD) after end: HenryDB: fix vectorized engine column naming compatibility and enable integration for simple queries"
     }
   ]
 }
