@@ -836,26 +836,26 @@ P._evalValue = function(node, row) {
     if (left && left.__interval && node.op === '+') {
       return this._dateArith(right, left.value, '+');
     }
+    // SQL arithmetic: coerce string operands to numbers (SQLite compat)
+    const l = typeof left === 'string' ? (isNaN(Number(left)) ? 0 : Number(left)) : left;
+    const r = typeof right === 'string' ? (isNaN(Number(right)) ? 0 : Number(right)) : right;
     switch (node.op) {
-      case '+': return left + right;
-      case '-': return left - right;
-      case '*': return left * right;
+      case '||': return String(left ?? '') + String(right ?? '');  // SQL concat — no coercion
+      case '+': return l + r;
+      case '-': return l - r;
+      case '*': return l * r;
       case '/': {
-        if (right === 0) return null;
-        const result = left / right;
+        if (r === 0) return null;
+        const result = l / r;
         // Integer division when both operands are integer-typed (SQL standard).
-        // Check 1: literal floats (10.0) bypass truncation via isFloat flag.
-        // Check 2: column values from DECIMAL/NUMERIC/REAL/FLOAT/DOUBLE types
-        //          should never truncate, even when JS value passes Number.isInteger.
         const leftIsFloat = node.left?.isFloat || false;
         const rightIsFloat = node.right?.isFloat || false;
         if (leftIsFloat || rightIsFloat) return result;
-        if (!Number.isInteger(left) || !Number.isInteger(right)) return result;
-        // Check if either operand is a column_ref with float/decimal type
+        if (!Number.isInteger(l) || !Number.isInteger(r)) return result;
         if (this._isFloatColumnRef(node.left, row) || this._isFloatColumnRef(node.right, row)) return result;
         return Math.trunc(result);
       }
-      case '%': return right === 0 ? null : left % right;
+      case '%': return r === 0 ? null : l % r;
     }
   }
   if (node.type === 'aggregate_expr') {

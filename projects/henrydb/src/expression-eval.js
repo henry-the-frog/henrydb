@@ -37,9 +37,13 @@ export class ExpressionEvaluator {
   }
 
   _arithmetic(expr, row) {
-    const l = this.evaluate(expr.left, row);
-    const r = this.evaluate(expr.right, row);
-    if (l == null || r == null) return null;
+    const left = this.evaluate(expr.left, row);
+    const right = this.evaluate(expr.right, row);
+    if (left == null || right == null) return null;
+    if (expr.op === '||') return String(left) + String(right);  // SQL concat
+    // SQL arithmetic: coerce string operands to numbers (SQLite compat)
+    const l = typeof left === 'string' ? (isNaN(Number(left)) ? 0 : Number(left)) : left;
+    const r = typeof right === 'string' ? (isNaN(Number(right)) ? 0 : Number(right)) : right;
     switch (expr.op) {
       case '+': return l + r;
       case '-': return l - r;
