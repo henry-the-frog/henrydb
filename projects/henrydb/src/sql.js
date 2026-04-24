@@ -1280,7 +1280,21 @@ export function parse(sql) {
     }
     // CASE expression in SELECT
     if (peek().type === 'KEYWORD' && peek().value === 'CASE') {
-      const expr = parseCaseExpr();
+      let expr = parseCaseExpr();
+      // Handle trailing arithmetic, comparison, and logical operators after CASE
+      expr = parseTrailingArithmetic(expr);
+      const compOps2 = { 'EQ': '=', 'NE': '!=', 'LT': '<', 'GT': '>', 'LE': '<=', 'GE': '>=' };
+      if (compOps2[peek().type]) {
+        const op = peek().type;
+        advance();
+        const right = parsePrimaryWithConcat();
+        expr = { type: 'COMPARE', op, left: expr, right };
+      }
+      while (isKeyword('AND') || isKeyword('OR')) {
+        const logicOp = advance().value.toUpperCase();
+        const right = parseComparison();
+        expr = { type: logicOp, left: expr, right };
+      }
       let alias = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       return { type: 'expression', expr, alias };
@@ -1480,9 +1494,15 @@ export function parse(sql) {
       if (isKeyword('NOT')) { not = true; advance(); }
       if (isKeyword('NULL')) {
         advance();
-        const expr = not 
+        let expr = not 
           ? { type: 'IS_NOT_NULL', left: { type: 'column_ref', name: col } }
           : { type: 'IS_NULL', left: { type: 'column_ref', name: col } };
+        // Handle trailing AND/OR after IS [NOT] NULL
+        while (isKeyword('AND') || isKeyword('OR')) {
+          const logicOp = advance().value.toUpperCase();
+          const right = parseComparison();
+          expr = { type: logicOp, left: expr, right };
+        }
         if (isKeyword('AS')) { advance(); alias = readAlias(); }
         else if (peek().type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('ORDER') && !isKeyword('GROUP') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
           alias = readAlias();
