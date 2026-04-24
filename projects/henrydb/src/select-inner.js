@@ -4,6 +4,14 @@
 import { pushdownPredicates } from './pushdown.js';
 import { canVectorize, vectorizedGroupBy } from './vectorized-bridge.js';
 
+// Deduplicate column name within a result row object
+function dedup(name, result) {
+  if (!(name in result)) return name;
+  let suffix = 1;
+  while (`${name}_${suffix}` in result) suffix++;
+  return `${name}_${suffix}`;
+}
+
 export function selectInner(db, ast) {
   // Handle SELECT without FROM (e.g., SELECT 1 AS n)
   if (!ast.from) {
@@ -22,7 +30,7 @@ export function selectInner(db, ast) {
         // If the column name is a number literal, use it directly
         row[name] = typeof col.name === 'number' ? col.name : col.name;
       } else if (col.type === 'function') {
-        const name = col.alias || `${col.func}(...)`;
+        const name = dedup(col.alias || `${col.func}(...)`, row);
         row[name] = db._evalFunction(col.func, col.args, {});
       }
     }
@@ -600,7 +608,7 @@ export function selectInner(db, ast) {
           }
         }
       } else if (col.type === 'function') {
-        const name = col.alias || `${col.func}(...)`;
+        const name = dedup(col.alias || `${col.func}(...)`, result);
         result[name] = db._evalFunction(col.func, col.args, row);
       } else if (col.type === 'expression') {
         const name = col.alias || `expr_${exprIdx++}`;

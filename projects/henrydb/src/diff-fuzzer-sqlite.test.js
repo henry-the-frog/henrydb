@@ -85,8 +85,8 @@ describe('Differential Fuzzer: HenryDB vs SQLite', () => {
     'SELECT ABS(-5)',
     'SELECT 10 / 3',
     'SELECT 10 % 3',
-    'SELECT TYPEOF(1) AS t1, TYPEOF(1.5) AS t2, TYPEOF(NULL) AS t3',
-    'SELECT NULLIF(1, 1) AS n1, NULLIF(1, 2) AS n2',
+    'SELECT TYPEOF(1), TYPEOF(1.5), TYPEOF(NULL)',
+    'SELECT NULLIF(1, 1), NULLIF(1, 2)',
     'SELECT IIF(1 > 0, 10, 20)',
   ];
 
