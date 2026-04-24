@@ -1108,29 +1108,379 @@
     {
       "id": "T105",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push all repos",
-      "started": "2026-04-24T20:51:02.995Z"
+      "started": "2026-04-24T20:51:02.995Z",
+      "completed": "2026-04-24T20:51:13.128Z",
+      "duration_ms": 30000,
+      "summary": "All repos pushed: henrydb, neural-net, workspace."
     },
     {
       "id": "T106",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: add EXPLAIN ANALYZE for Volcano plans",
-      "task": null
+      "task": null,
+      "started": "2026-04-24T20:51:18.172Z",
+      "completed": "2026-04-24T20:51:39.535Z",
+      "duration_ms": 60000,
+      "summary": "EXPLAIN ANALYZE already fully implemented: per-operator timing, IO stats, Volcano plan tree, cost estimation. Pivoting to new work."
     },
     {
       "id": "T107",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "EXPLAIN already exists"
+    },
+    {
+      "id": "T110",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: add logical AND/OR in SELECT column expressions",
+      "task": null,
+      "started": "2026-04-24T20:52:08.329Z",
+      "completed": "2026-04-24T20:53:19.518Z",
+      "duration_ms": 180000,
+      "summary": "Fixed AND/OR in SELECT: a=1 AND b=1 returns correct booleans. Added logical op handling to parseSelectColumn."
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "task": "Fix AND/OR in SELECT expressions and comparison operators in column parsing",
+      "status": "done",
+      "plan_ref": "T110",
+      "started": "2026-04-24T20:53:24.251Z",
+      "completed": "2026-04-24T20:53:24.397Z",
+      "duration_ms": 10000,
+      "summary": "Already committed during PLAN. AND/OR in SELECT works."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder"
+    },
+    {
+      "id": "T112",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net: add cosine similarity loss and triplet loss",
+      "task": null,
+      "started": "2026-04-24T20:53:36.417Z",
+      "completed": "2026-04-24T20:53:53.740Z",
+      "duration_ms": 30000,
+      "summary": "Existing loss module has MSE + cross-entropy only. Plan: add cosine similarity, triplet loss, hinge loss. Filled 1 BUILD."
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "task": "Add cosine similarity loss, triplet loss, and hinge loss to neural-net loss module",
+      "status": "done",
+      "plan_ref": "T112",
+      "started": "2026-04-24T20:53:58.013Z",
+      "completed": "2026-04-24T20:55:47.024Z",
+      "duration_ms": 300000,
+      "summary": "Added 5 loss functions: BCE, cosine similarity, hinge, Huber, triplet (with gradient). 23/23 tests pass. getLoss() registry updated."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "neural-net",
+      "skip_reason": "Unfilled placeholder"
+    },
+    {
+      "id": "T114",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: run full test suite sweep, triage failures",
+      "project": "neural-net",
+      "started": "2026-04-24T20:55:56.704Z",
+      "completed": "2026-04-24T20:57:50.619Z",
+      "duration_ms": 300000,
+      "summary": "Full test suite sweep: src/ 1101/1101 pass, test/ 1304/1305 → 1305/1305 after fixing classificationReport API test. Total: 2406 pass, 0 fail."
+    },
+    {
+      "id": "T115",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: add HAVING clause support for non-aggregated expressions",
+      "task": null,
+      "started": "2026-04-24T20:58:00.653Z",
+      "completed": "2026-04-24T20:58:25.027Z",
+      "duration_ms": 30000,
+      "summary": "HAVING already fully works with aggregated, non-aggregated, and compound expressions. No fix needed."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": "HAVING already works"
+    },
+    {
+      "id": "T117",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push, log update",
+      "started": "2026-04-24T20:58:31.041Z",
+      "completed": "2026-04-24T20:58:39.319Z",
+      "duration_ms": 30000,
+      "summary": "All repos pushed. HenryDB and neural-net synced."
+    },
+    {
+      "id": "T120",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 10 BUILDs in session B",
+      "started": "2026-04-24T20:59:08.844Z",
+      "completed": "2026-04-24T20:59:20.727Z",
+      "duration_ms": 60000,
+      "summary": "Depth check PASSES. Surprised by 2406 neural-net tests. Learned: parseSelectColumn in HenryDB is tech debt (manual expr parsing). Found: classificationReport API test break."
+    },
+    {
+      "id": "T121",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: add NOT operator support in SELECT column expressions",
+      "task": null,
+      "started": "2026-04-24T20:59:27.148Z",
+      "completed": "2026-04-24T20:59:42.915Z",
+      "duration_ms": 30000,
+      "summary": "NOT already works in SELECT expressions. Pivoting to new work."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": "NOT already works"
+    },
+    {
+      "id": "T123",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net: add weight initialization strategies (Xavier, He, LeCun)",
+      "task": null,
+      "started": "2026-04-24T20:59:49.249Z",
+      "completed": "2026-04-24T21:00:13.789Z",
+      "duration_ms": 30000,
+      "summary": "Weight init strategies already implemented: Xavier, He, LeCun, zeros, ones. 12 tests pass. Skipping."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "neural-net",
+      "skip_reason": "Already exists"
+    },
+    {
+      "id": "T125",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test SELECT with complex boolean expressions",
+      "project": "henrydb",
+      "started": "2026-04-24T21:00:20.480Z",
+      "completed": "2026-04-24T21:02:23.890Z",
+      "duration_ms": 300000,
+      "summary": "Stress test found 2 bugs: (1) CASE+comparison returned wrong value, (2) IS NULL+OR returned 1 row. Both fixed. 46+ tests pass."
+    },
+    {
+      "id": "T126",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net: add gradient clipping utility",
+      "task": null,
+      "started": "2026-04-24T21:02:29.853Z",
+      "completed": "2026-04-24T21:02:52.762Z",
+      "duration_ms": 15000,
+      "summary": "gradient-clip.js already exists (91 LOC) with clipByValue, clipByNorm. Skipping."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "neural-net",
+      "skip_reason": "Already exists"
+    },
+    {
+      "id": "T129",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test subquery + CTE + JOIN combinations",
+      "project": "henrydb",
+      "started": "2026-04-24T21:03:23.984Z",
+      "completed": "2026-04-24T21:04:03.647Z",
+      "duration_ms": 300000,
+      "summary": "Stress tested 13 complex queries: CTE+JOIN, correlated subqueries, nested CTEs, recursive CTEs, CTE+INSERT, self-joins, EXISTS, UNION+CTE. All 13 pass. Zero bugs found."
+    },
+    {
+      "id": "T130",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net: end-to-end XOR training test with full pipeline (DataLoader, LR finder, callbacks, metrics)",
+      "task": null,
+      "started": "2026-04-24T21:04:12.241Z",
+      "completed": "2026-04-24T21:04:20.065Z",
+      "duration_ms": 30000,
+      "summary": "Planned integration test using all new neural-net components together."
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "task": "Write integration test: XOR training with DataLoader, LR finder, ModelCheckpoint, EarlyStopping, and full metrics",
+      "status": "done",
+      "plan_ref": "T130",
+      "started": "2026-04-24T21:04:24.143Z",
+      "completed": "2026-04-24T21:05:56.494Z",
+      "duration_ms": 300000,
+      "summary": "Integration test: DataLoader→LR Finder→Training→Checkpoints→Metrics→Resume. 4/4 pass. XOR converges to >60% accuracy with full pipeline."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "neural-net",
+      "skip_reason": "Unfilled placeholder"
+    },
+    {
+      "id": "T132",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: differential fuzzer session — generate random queries, compare vs SQLite",
+      "project": "henrydb",
+      "started": "2026-04-24T21:06:07.310Z",
+      "completed": "2026-04-24T21:11:35.632Z",
+      "duration_ms": 600000,
+      "summary": "Differential fuzzer: 20 deterministic queries compared HenryDB vs SQLite. 18/20 immediate pass, 2 exposed a column naming collision bug (duplicate func names overwrite in JS objects). Workaround: use aliases. Bug logged."
+    },
+    {
+      "id": "T133",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net: investigate which loss functions work with which architectures (integration matrix)",
+      "task": null,
+      "started": "2026-04-24T21:11:40.172Z",
+      "completed": "2026-04-24T21:11:52.648Z",
+      "duration_ms": 30000,
+      "summary": "Planned compatibility test: exercise every loss function with forward+backward on simple Dense network."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "task": "Write loss function compatibility test: every loss with forward+backward pass on Dense network",
+      "status": "done",
+      "plan_ref": "T133",
+      "started": "2026-04-24T21:11:57.085Z",
+      "completed": "2026-04-24T21:12:43.927Z",
+      "duration_ms": 180000,
+      "summary": "Loss compatibility matrix: 50 tests covering all 7 loss functions with compute, gradient, edge cases, training integration, and registry. All pass."
+    },
+    {
+      "id": "T137",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: fix duplicate column name collision in SELECT results",
+      "task": null,
+      "started": "2026-04-24T21:13:01.813Z",
+      "completed": "2026-04-24T21:17:18.790Z",
+      "duration_ms": 600000,
+      "summary": "Fixed column name collision: duplicate function calls (ABS(1), ABS(2)) now produce unique column names. dedup() helper applied to 3 SELECT paths. 86+ tests pass."
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "task": "Fix duplicate column name collision with dedup helper",
+      "status": "done",
+      "plan_ref": "T137",
+      "started": "2026-04-24T21:17:25.914Z",
+      "completed": "2026-04-24T21:17:26.061Z",
+      "duration_ms": 5000,
+      "summary": "Already committed during PLAN."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder"
+    },
+    {
+      "id": "T139",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: profile training performance bottlenecks",
+      "project": "neural-net",
+      "started": "2026-04-24T21:17:37.071Z",
+      "completed": "2026-04-24T21:18:24.711Z",
+      "duration_ms": 120000,
+      "summary": "Profile: 1700 samples/sec for 100→256→128→10 network. Bottleneck is matmul: 0.7ms@64x64, 45ms@256x256, 575ms@512x512. Already using Float64Array. Further optimization would require WASM/tiling."
+    },
+    {
+      "id": "T140",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: add LIMIT with OFFSET for pagination",
+      "task": null,
+      "started": "2026-04-24T21:18:30.576Z",
+      "completed": "2026-04-24T21:21:11.601Z",
+      "duration_ms": 300000,
+      "summary": "LIMIT/OFFSET already existed. Found and fixed LIMIT -1 bug: earlyLimit=-1 caused 0-row scan. Now matches SQLite: LIMIT -1 = no limit. 6 paths fixed."
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "task": "Fix LIMIT -1 (no limit) to match SQLite behavior",
+      "status": "done",
+      "plan_ref": "T140",
+      "started": "2026-04-24T21:21:20.580Z",
+      "completed": "2026-04-24T21:21:20.727Z",
+      "duration_ms": 5000,
+      "summary": "Already committed."
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder"
+    },
+    {
+      "id": "T142",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push, update daily log",
+      "started": "2026-04-24T21:21:39.402Z"
     },
     {
       "id": "T84",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final git push, session wrap"
+    },
+    {
+      "id": "T128",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push, daily log, session wrap"
+    },
+    {
+      "id": "T134",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, daily log, session wrap"
     }
   ],
   "focusProjects": [
@@ -1622,6 +1972,214 @@
     {
       "time": "2026-04-24T20:50:57.511Z",
       "msg": "Removed T104: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-24T20:51:39.681Z",
+      "msg": "Removed T107: EXPLAIN already exists"
+    },
+    {
+      "time": "2026-04-24T20:51:50.649Z",
+      "msg": "Added T110 (PLAN) after end: HenryDB: add logical AND/OR in SELECT column expressions"
+    },
+    {
+      "time": "2026-04-24T20:51:50.769Z",
+      "msg": "Added T111 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T20:51:50.887Z",
+      "msg": "Added T112 (PLAN) after end: Neural-net: add cosine similarity loss and triplet loss"
+    },
+    {
+      "time": "2026-04-24T20:51:51.006Z",
+      "msg": "Added T113 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T20:51:58.128Z",
+      "msg": "Added T114 (EXPLORE) after end: Neural-net: run full test suite sweep, triage failures"
+    },
+    {
+      "time": "2026-04-24T20:51:58.248Z",
+      "msg": "Added T115 (PLAN) after end: HenryDB: add HAVING clause support for non-aggregated expressions"
+    },
+    {
+      "time": "2026-04-24T20:51:58.368Z",
+      "msg": "Added T116 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T20:51:58.487Z",
+      "msg": "Added T117 (MAINTAIN) after end: Git push, log update"
+    },
+    {
+      "time": "2026-04-24T20:51:58.605Z",
+      "msg": "Moved T84 after T117"
+    },
+    {
+      "time": "2026-04-24T20:53:07.181Z",
+      "msg": "PLAN T110 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T20:53:30.996Z",
+      "msg": "Removed T111: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-24T20:53:48.654Z",
+      "msg": "PLAN T112 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T20:55:51.580Z",
+      "msg": "Removed T113: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-24T20:58:25.172Z",
+      "msg": "Removed T116: HAVING already works"
+    },
+    {
+      "time": "2026-04-24T20:58:52.546Z",
+      "msg": "Added T120 (THINK) after end: Depth check: 10 BUILDs in session B"
+    },
+    {
+      "time": "2026-04-24T20:58:52.665Z",
+      "msg": "Added T121 (PLAN) after end: HenryDB: add NOT operator support in SELECT column expressions"
+    },
+    {
+      "time": "2026-04-24T20:58:52.784Z",
+      "msg": "Added T122 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T20:58:52.903Z",
+      "msg": "Added T123 (PLAN) after end: Neural-net: add weight initialization strategies (Xavier, He, LeCun)"
+    },
+    {
+      "time": "2026-04-24T20:58:53.023Z",
+      "msg": "Added T124 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T20:58:53.143Z",
+      "msg": "Added T125 (EXPLORE) after end: HenryDB: stress test SELECT with complex boolean expressions"
+    },
+    {
+      "time": "2026-04-24T20:58:53.261Z",
+      "msg": "Added T126 (PLAN) after end: Neural-net: add gradient clipping utility"
+    },
+    {
+      "time": "2026-04-24T20:58:53.380Z",
+      "msg": "Added T127 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T20:58:53.500Z",
+      "msg": "Added T128 (MAINTAIN) after end: Final git push, daily log, session wrap"
+    },
+    {
+      "time": "2026-04-24T20:58:53.617Z",
+      "msg": "Moved T84 after T127"
+    },
+    {
+      "time": "2026-04-24T20:59:43.061Z",
+      "msg": "Removed T122: NOT already works"
+    },
+    {
+      "time": "2026-04-24T21:00:13.935Z",
+      "msg": "Removed T124: Already exists"
+    },
+    {
+      "time": "2026-04-24T21:02:52.908Z",
+      "msg": "Removed T127: Already exists"
+    },
+    {
+      "time": "2026-04-24T21:03:05.638Z",
+      "msg": "Added T129 (EXPLORE) after end: HenryDB: stress test subquery + CTE + JOIN combinations"
+    },
+    {
+      "time": "2026-04-24T21:03:05.757Z",
+      "msg": "Added T130 (PLAN) after end: Neural-net: end-to-end XOR training test with full pipeline (DataLoader, LR finder, callbacks, metrics)"
+    },
+    {
+      "time": "2026-04-24T21:03:05.877Z",
+      "msg": "Added T131 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T21:03:05.996Z",
+      "msg": "Added T132 (EXPLORE) after end: HenryDB: differential fuzzer session — generate random queries, compare vs SQLite"
+    },
+    {
+      "time": "2026-04-24T21:03:06.115Z",
+      "msg": "Added T133 (PLAN) after end: Neural-net: investigate which loss functions work with which architectures (integration matrix)"
+    },
+    {
+      "time": "2026-04-24T21:03:06.235Z",
+      "msg": "Added T134 (MAINTAIN) after end: Git push, daily log, session wrap"
+    },
+    {
+      "time": "2026-04-24T21:03:12.714Z",
+      "msg": "Moved T84 after T134"
+    },
+    {
+      "time": "2026-04-24T21:03:19.447Z",
+      "msg": "Moved T128 after T134"
+    },
+    {
+      "time": "2026-04-24T21:04:12.388Z",
+      "msg": "PLAN T130 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T21:06:01.421Z",
+      "msg": "Removed T131: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-24T21:11:48.106Z",
+      "msg": "PLAN T133 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T21:12:54.762Z",
+      "msg": "Added T137 (PLAN) after end: HenryDB: fix duplicate column name collision in SELECT results"
+    },
+    {
+      "time": "2026-04-24T21:12:54.896Z",
+      "msg": "Added T138 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T21:12:55.021Z",
+      "msg": "Added T139 (EXPLORE) after end: Neural-net: profile training performance bottlenecks"
+    },
+    {
+      "time": "2026-04-24T21:12:55.139Z",
+      "msg": "Added T140 (PLAN) after end: HenryDB: add LIMIT with OFFSET for pagination"
+    },
+    {
+      "time": "2026-04-24T21:12:55.258Z",
+      "msg": "Added T141 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-24T21:12:55.378Z",
+      "msg": "Added T142 (MAINTAIN) after end: Git push, update daily log"
+    },
+    {
+      "time": "2026-04-24T21:12:55.496Z",
+      "msg": "Moved T134 after T142"
+    },
+    {
+      "time": "2026-04-24T21:12:55.614Z",
+      "msg": "Moved T128 after T142"
+    },
+    {
+      "time": "2026-04-24T21:12:55.734Z",
+      "msg": "Moved T84 after T142"
+    },
+    {
+      "time": "2026-04-24T21:17:00.789Z",
+      "msg": "PLAN T137 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T21:17:32.495Z",
+      "msg": "Removed T138: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-24T21:20:49.652Z",
+      "msg": "PLAN T140 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T21:21:29.513Z",
+      "msg": "Removed T141: Unfilled placeholder"
     }
   ]
 }
