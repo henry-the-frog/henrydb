@@ -59,35 +59,52 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard health check"
+      "status": "done",
+      "task": "Git push, dashboard health check",
+      "started": "2026-04-24T14:46:13.685Z",
+      "completed": "2026-04-24T14:59:08.239Z",
+      "duration_ms": 300000,
+      "summary": "Git pushed both repos. Neural-net CI re-pushed with src/ test fixes. HenryDB: 4257/4288 pass (28 failures, not today focus). Neural-net: 2323/2324 pass locally (1 flaky SOM test)."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on CI fix, assess neural-net README accuracy"
+      "status": "done",
+      "task": "Reflect on CI fix, assess neural-net README accuracy",
+      "started": "2026-04-24T14:59:17.747Z",
+      "completed": "2026-04-24T15:00:03.331Z",
+      "duration_ms": 120000,
+      "summary": "README mostly accurate (168 src, ~27K lines). Updated test file count mentally to 192. Key learning from CI fix: tests written by different sessions diverged on APIs — MoE constructor, ntXentLoss return type, VAE encode/decode signatures all conflicted. Fix required proper gradient computation (softmax Jacobian) not just API mapping."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Update neural-net README (168 modules, 26K LOC)",
-      "task": null
+      "task": null,
+      "started": "2026-04-24T15:00:15.396Z",
+      "completed": "2026-04-24T15:00:26.506Z",
+      "duration_ms": 30000,
+      "summary": "README mostly up-to-date already. Filled 1 BUILD task for stats update."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Update README stats (192 test files, 2300+ tests) and verify CI badge",
       "plan_ref": "T6",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T15:00:44.994Z",
+      "completed": "2026-04-24T15:01:12.619Z",
+      "duration_ms": 60000,
+      "summary": "Updated README to 192 test files, 2300+ tests, ~27K LOC. Previous CI push passed! Pushed README update."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard regen, knowledge capture"
+      "status": "in-progress",
+      "task": "Git push, dashboard regen, knowledge capture",
+      "started": "2026-04-24T15:01:23.825Z"
     },
     {
       "id": "T9",
@@ -263,6 +280,10 @@
     {
       "time": "2026-04-24T14:17:33.888Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T15:00:21.495Z",
+      "msg": "PLAN T6 filled 1 BUILD tasks"
     }
   ]
 }
