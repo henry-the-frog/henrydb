@@ -490,6 +490,17 @@
       "completed": "2026-04-24T17:01:39.861Z",
       "duration_ms": 180000,
       "summary": "HenryDB benchmark on 10K rows: INSERT 14K rows/s, Point lookup 9.7K q/s, Full scan 500K rows/s, GROUP BY 24ms, Window func 45ms, JOIN 55ms, Complex 26ms. Performance is reasonable for a pure-JS in-memory database."
+    },
+    {
+      "id": "T47",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: compare feature coverage with SQLite feature list — what percentage of SQLite SQL is supported?",
+      "project": "henrydb",
+      "started": "2026-04-24T17:02:26.362Z",
+      "completed": "2026-04-24T17:03:03.617Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB covers 98% of common SQLite SQL features (46/47 tested). Only missing: DATE() function. Supports: DDL (CREATE/ALTER/DROP table/index/view/trigger), DML (INSERT/UPDATE/DELETE/UPSERT), SELECT (WHERE/ORDER/LIMIT/GROUP/HAVING/DISTINCT/JOIN/LEFT JOIN/NATURAL JOIN/SUBQUERY/EXISTS/CTE/UNION/INTERSECT/EXCEPT/CASE/COALESCE/CAST/LIKE/IN/BETWEEN/Window), Functions (ABS/UPPER/LOWER/LENGTH/SUBSTR/REPLACE/TRIM/ROUND/RANDOM/TYPEOF/IIF/GROUP_CONCAT)."
     }
   ],
   "focusProjects": [
@@ -685,6 +696,10 @@
     {
       "time": "2026-04-24T16:59:47.115Z",
       "msg": "Added T46 (BUILD) after end: HenryDB: write comprehensive benchmark suite and document performance characteristics"
+    },
+    {
+      "time": "2026-04-24T17:02:15.371Z",
+      "msg": "Added T47 (EXPLORE) after end: HenryDB: compare feature coverage with SQLite feature list — what percentage of SQLite SQL is supported?"
     }
   ]
 }
