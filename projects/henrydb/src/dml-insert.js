@@ -5,6 +5,30 @@ export function insert(db, ast) {
   const table = db.tables.get(ast.table);
   if (!table) throw new Error(`Table ${ast.table} not found`);
 
+  // Handle INSERT OR REPLACE/IGNORE: synthesize onConflict
+  if (ast.conflictAction && !ast.onConflict) {
+    if (ast.conflictAction === 'REPLACE') {
+      // REPLACE = ON CONFLICT (pk) DO UPDATE SET all columns = new values
+      const pkCol = table.schema.find(c => c.primaryKey);
+      if (pkCol) {
+        ast.onConflict = {
+          column: pkCol.name,
+          action: 'UPDATE',
+          sets: table.schema.map(c => ({
+            column: c.name,
+            value: { type: 'column_ref', name: `excluded.${c.name}` }
+          }))
+        };
+      }
+    } else if (ast.conflictAction === 'IGNORE') {
+      const pkCol = table.schema.find(c => c.primaryKey);
+      ast.onConflict = {
+        column: pkCol?.name || null,
+        action: 'NOTHING'
+      };
+    }
+  }
+
   let inserted = 0;
   const returnedRows = [];
   

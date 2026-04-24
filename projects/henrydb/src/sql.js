@@ -302,6 +302,7 @@ export function parse(sql) {
   if (isKeyword('VALUES')) return parseValuesClause();
   if (isKeyword('MERGE')) return parseMerge();
   if (isKeyword('INSERT')) return parseInsert();
+  if (isKeyword('REPLACE')) return parseReplace();
   if (isKeyword('UPDATE')) return parseUpdate();
   if (isKeyword('DELETE')) return parseDelete();
   if (isKeyword('ALTER')) return parseAlter();
@@ -2510,8 +2511,54 @@ export function parse(sql) {
     return { type: 'MERGE', target, targetAlias, source, sourceAlias, on: onCondition, whenClauses };
   }
 
+  function parseReplace() {
+    advance(); // REPLACE
+    // REPLACE INTO is equivalent to INSERT OR REPLACE INTO
+    // Don't call expect for INTO — parseInsert will handle it
+    // We'll manually set up the AST
+    expect('KEYWORD', 'INTO');
+    const tableTok = advance();
+    const table = tableTok.originalValue || tableTok.value;
+
+    let columns = null;
+    if (match('(')) {
+      columns = [];
+      do { const tok = advance(); columns.push(tok.originalValue || tok.value); } while (match(','));
+      expect(')');
+    }
+
+    expect('KEYWORD', 'VALUES');
+    const rows = [];
+    do {
+      expect('(');
+      const values = [];
+      do { values.push(parseExpr()); } while (match(','));
+      expect(')');
+      rows.push(values);
+    } while (match(','));
+
+    let returning = null;
+    if (isKeyword('RETURNING')) {
+      returning = parseReturningClause();
+    }
+
+    return { type: 'INSERT', table, columns, rows, onConflict: null, returning, conflictAction: 'REPLACE' };
+  }
+
   function parseInsert() {
     advance(); // INSERT
+    // Handle INSERT OR REPLACE/IGNORE/ABORT/ROLLBACK/FAIL
+    let conflictAction = null;
+    if (isKeyword('OR')) {
+      advance(); // OR
+      const actionTok = advance();
+      const action = (actionTok.originalValue || actionTok.value).toUpperCase();
+      if (['REPLACE', 'IGNORE', 'ABORT', 'ROLLBACK', 'FAIL'].includes(action)) {
+        conflictAction = action;
+      } else {
+        throw new Error(`Expected REPLACE, IGNORE, ABORT, ROLLBACK, or FAIL after INSERT OR, got ${action}`);
+      }
+    }
     expect('KEYWORD', 'INTO');
     const tableTok = advance();
     const table = tableTok.originalValue || tableTok.value;
@@ -2580,7 +2627,7 @@ export function parse(sql) {
       returning = parseReturningClause();
     }
 
-    return { type: 'INSERT', table, columns, rows, onConflict, returning };
+    return { type: 'INSERT', table, columns, rows, onConflict, returning, conflictAction };
   }
 
   function parseUpdate() {
