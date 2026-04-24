@@ -4693,6 +4693,281 @@
       "completed": "2026-04-24T03:27:39.580Z",
       "duration_ms": 30000,
       "summary": "Data augmentation (25 LOC): Gaussian noise, Mixup (linear interpolation of inputs+labels, Zhang 2017), CutMix (patch replacement + adjusted label, Yun 2019). Modern training regularization in minimal code."
+    },
+    {
+      "id": "T433",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net attention entropy and sinks",
+      "project": "neural-net",
+      "started": "2026-04-24T03:28:07.476Z",
+      "completed": "2026-04-24T03:28:24.947Z",
+      "duration_ms": 60000,
+      "summary": "Attention entropy (69 LOC): per-row entropy (focused vs diffuse), average entropy, max entropy reference, head redundancy (cosine similarity between heads), attention sink detection (Xiao et al. 2023). Diagnostic tools for understanding attention patterns."
+    },
+    {
+      "id": "T434",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB compression module — dictionary, RLE, delta, bit-packing",
+      "project": "henrydb",
+      "started": "2026-04-24T03:28:31.843Z",
+      "completed": "2026-04-24T03:28:45.369Z",
+      "duration_ms": 60000,
+      "summary": "Columnar compression (272 LOC): 4 codecs — RLE (consecutive repeats), Delta (differences), Dictionary (value→code mapping), Bit-Packing (minimal bit-width per integer). Plus LZ77-style general compression (44 LOC). Parquet/ORC/Arrow standard codecs."
+    },
+    {
+      "id": "T435",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net GRU — gated recurrent unit",
+      "project": "neural-net",
+      "started": "2026-04-24T03:28:53.420Z",
+      "completed": "2026-04-24T03:29:30.847Z",
+      "duration_ms": 120000,
+      "summary": "GRU (in rnn.js, ~120 LOC): 2-gate architecture (update z, reset r). Forward: z=sigma, r=sigma, candidate=tanh(W[r*h,x]), h=(1-z)*h_prev+z*candidate. Full BPTT backward with gradient caching. Simpler than LSTM with comparable performance. Cho et al. 2014."
+    },
+    {
+      "id": "T436",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB prepared statements",
+      "project": "henrydb",
+      "started": "2026-04-24T03:29:35.537Z",
+      "completed": "2026-04-24T03:29:55.770Z",
+      "duration_ms": 60000,
+      "summary": "Prepared statements (179 LOC): PREPARE/EXECUTE/DEALLOCATE, plan caching, $1 parameter binding with type checking, LRU cache eviction (max 100), stats tracking (prepares/executions/cache hits). PostgreSQL-compatible."
+    },
+    {
+      "id": "T437",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net weight tying + parameter counting",
+      "project": "neural-net",
+      "started": "2026-04-24T03:30:14.390Z",
+      "completed": "2026-04-24T03:30:32.538Z",
+      "duration_ms": 60000,
+      "summary": "Weight tying (53 LOC): shares embedding (vocabSize×dModel) with LM head (logits = hidden @ embedding^T). Saves vocabSize*dModel params. Press & Wolf 2017. With forward + backward for both operations."
+    },
+    {
+      "id": "T438",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB views — CREATE VIEW, materialized views",
+      "project": "henrydb",
+      "started": "2026-04-24T03:30:36.483Z",
+      "completed": "2026-04-24T03:30:56.269Z",
+      "duration_ms": 60000,
+      "summary": "Materialized views (354 LOC, 2 files): CREATE/DROP, REFRESH (re-execute + store), stale detection (dependency tracking → mark stale on DML), refresh stats. Plus regular views stored as SQL definitions. PostgreSQL-compatible."
+    },
+    {
+      "id": "T439",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net quantization — int8 and float16",
+      "project": "neural-net",
+      "started": "2026-04-24T03:31:06.285Z",
+      "completed": "2026-04-24T03:31:22.995Z",
+      "duration_ms": 60000,
+      "summary": "Quantization (104 LOC): absmax INT8 (scale by absolute max to [-127,127]), zeropoint INT8 (scale + offset), per-channel quantization (separate scale per output channel). Dequantize back for inference. 8x memory savings FP64→INT8."
+    },
+    {
+      "id": "T440",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net EMA — exponential moving average",
+      "project": "neural-net",
+      "started": "2026-04-24T03:31:43.743Z",
+      "completed": "2026-04-24T03:31:58.939Z",
+      "duration_ms": 30000,
+      "summary": "EMA (84 LOC): shadow weights, θ_ema = β*θ_ema + (1-β)*θ_model, bias correction for early training, copyTo/restore for inference. Used in DDPM, BYOL, DINO, DQN target networks."
+    },
+    {
+      "id": "T441",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net model parallelism — tensor and pipeline parallelism",
+      "project": "neural-net",
+      "started": "2026-04-24T03:32:10.396Z",
+      "completed": "2026-04-24T03:32:27.456Z",
+      "duration_ms": 30000,
+      "summary": "Model parallelism (34 LOC): tensor parallel (column split across devices + all-gather), pipeline parallel (layer stages). Simulated. Megatron-LM style concepts."
+    },
+    {
+      "id": "T442",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB radix sort",
+      "project": "henrydb",
+      "started": "2026-04-24T03:32:31.632Z",
+      "completed": "2026-04-24T03:33:06.819Z",
+      "duration_ms": 30000,
+      "summary": "Radix sort (66 LOC): LSD radix sort with counting sort subroutine. O(n*d) where d = digits. Non-comparison, stable. Plus counting sort and objectRadixSort for sorting rows by integer column."
+    },
+    {
+      "id": "T443",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net pruning — magnitude and structured",
+      "project": "neural-net",
+      "started": "2026-04-24T03:33:14.468Z",
+      "completed": "2026-04-24T03:33:27.349Z",
+      "duration_ms": 60000,
+      "summary": "Pruning (178 LOC): magnitude pruning (sort by abs, zero smallest), structured pruning (entire channels/filters), binary mask tracking, sparsity measurement, iterative pruning (gradual sparsity increase). Correct LeCun 1990 / Han et al. 2015."
+    },
+    {
+      "id": "T444",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB triggers — row-level and statement-level triggers",
+      "project": "henrydb",
+      "started": "2026-04-24T03:33:34.454Z",
+      "completed": "2026-04-24T03:33:58.493Z",
+      "duration_ms": 60000,
+      "summary": "Triggers (281 LOC): CREATE TRIGGER BEFORE/AFTER INSERT/UPDATE/DELETE ON table FOR EACH ROW. PL/SQL trigger bodies with NEW/OLD row references. WHEN conditions. Cascade protection. PostgreSQL-compatible."
+    },
+    {
+      "id": "T445",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net lr-scheduler, early-stopping, callbacks",
+      "project": "neural-net",
+      "started": "2026-04-24T03:34:18.740Z",
+      "completed": "2026-04-24T03:34:33.547Z",
+      "duration_ms": 60000,
+      "summary": "LR schedulers (321 LOC, 7 types: constant, warmup, cosine, step, one-cycle, exponential, plateau), early stopping (121 LOC, patience-based, min/max mode, best model restore), callbacks (97 LOC, event hooks for training loop)."
+    },
+    {
+      "id": "T446",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: HenryDB set-operations, comparator, type system",
+      "project": "henrydb",
+      "started": "2026-04-24T03:34:37.684Z",
+      "completed": "2026-04-24T03:34:52.298Z",
+      "duration_ms": 30000,
+      "summary": "Set ops (115 LOC): UNION/INTERSECT/EXCEPT with ALL/DISTINCT using hash-based dedup. Comparator (26 LOC): type-aware null-safe comparison. Type system (36 LOC): SQL types, casting rules."
+    },
+    {
+      "id": "T447",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net optimizer-zoo, metrics, datasets",
+      "project": "neural-net",
+      "started": "2026-04-24T03:35:01.178Z",
+      "completed": "2026-04-24T03:35:19.049Z",
+      "duration_ms": 60000,
+      "summary": "Optimizer zoo (86 LOC, 6 optimizers: SGD/Momentum/Nesterov/Adam/RMSprop/AdaGrad), metrics (41 LOC, confusion matrix + precision/recall/F1), datasets (164 LOC, 6 synthetic generators: spiral/moons/circles/blobs/XOR/sine), preprocessing (146 LOC, StandardScaler/MinMaxScaler/one-hot/train-test split)."
+    },
+    {
+      "id": "T448",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net ESN (echo state network)",
+      "project": "neural-net",
+      "started": "2026-04-24T03:35:41.639Z",
+      "completed": "2026-04-24T03:35:58.078Z",
+      "duration_ms": 60000,
+      "summary": "ESN (349 LOC): random fixed sparse reservoir (spectral radius controlled), trainable output via ridge regression (no backprop). Leaky integrator neurons, noise injection, reservoir state collection + readout training. Jaeger 2001 reservoir computing."
+    },
+    {
+      "id": "T449",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: HenryDB bitwise-trie and space-filling curves",
+      "project": "henrydb",
+      "started": "2026-04-24T03:36:04.616Z",
+      "completed": "2026-04-24T03:36:25.728Z",
+      "duration_ms": 30000,
+      "summary": "Bitwise trie (68 LOC): 5-bit radix trie (32-way branching, HAMT-style). O(7) lookup for 32-bit keys. Used in Clojure/Scala persistent vectors, IP routing, HAMTs. No space-filling curves found."
+    },
+    {
+      "id": "T450",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net sampling module — top-k, top-p, temperature",
+      "project": "neural-net",
+      "started": "2026-04-24T03:36:29.948Z",
+      "completed": "2026-04-24T03:36:46.222Z",
+      "duration_ms": 30000,
+      "summary": "Sampling (176 LOC): temperature, top-k (keep k highest), top-p/nucleus (cumulative prob ≤ p), greedy (argmax), combined pipeline (temp→top-k→top-p→sample), repetition penalty. Complete LLM decoding toolkit."
+    },
+    {
+      "id": "T451",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net model-zoo, automl, training-logger",
+      "project": "neural-net",
+      "started": "2026-04-24T03:37:04.209Z",
+      "completed": "2026-04-24T03:37:19.763Z",
+      "duration_ms": 60000,
+      "summary": "Model zoo (148 LOC, 5 pre-configured: XOR/classifier/autoencoder/timeSeries/anomaly), AutoML (118 LOC, architecture search + cross-validation), Training logger (194 LOC, metrics tracking + ASCII charts + JSON/CSV export)."
+    },
+    {
+      "id": "T452",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: HenryDB MERGE statement, foreign keys, CHECK constraints",
+      "project": "henrydb",
+      "started": "2026-04-24T03:37:23.607Z",
+      "completed": "2026-04-24T03:37:53.156Z",
+      "duration_ms": 60000,
+      "summary": "Constraint validator (127 LOC): NOT NULL, UNIQUE, CHECK, FK validation for INSERT/UPDATE. Foreign Data Wrapper (217 LOC): CREATE SERVER, CREATE FOREIGN TABLE, user mappings, predicate pushdown. PostgreSQL-compatible."
+    },
+    {
+      "id": "T453",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net beam-search, text-generation",
+      "project": "neural-net",
+      "started": "2026-04-24T03:38:11.540Z",
+      "completed": "2026-04-24T03:38:25.818Z",
+      "duration_ms": 30000,
+      "summary": "Beam search (75 LOC): maintain B beams, expand all, keep top-B by score, length penalty, EOS early termination. Text generation (17 LOC): greedy decode + repetition check."
+    },
+    {
+      "id": "T454",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: HenryDB checksum, health-check, data masking",
+      "project": "henrydb",
+      "started": "2026-04-24T03:38:34.113Z",
+      "completed": "2026-04-24T03:38:53.376Z",
+      "duration_ms": 30000,
+      "summary": "Checksum (18 LOC): Adler32 + Fletcher16 for data integrity. Health check (106 LOC): connectivity test, table integrity, query performance measurement, comprehensive diagnostics."
+    },
+    {
+      "id": "T455",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick scan: neural-net embedding, relative position bias",
+      "project": "neural-net",
+      "started": "2026-04-24T03:38:57.394Z",
+      "completed": "2026-04-24T03:39:11.087Z",
+      "duration_ms": 30000,
+      "summary": "Embedding (91 LOC, lookup table + similarity search + gradient), Relative Position Bias (88 LOC, T5-style logarithmic bucketing, Raffel 2020), Positional Encoding (104 LOC, sinusoidal Vaswani 2017). 3 position representation approaches."
+    },
+    {
+      "id": "T456",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Final scans: neural-net conv1d, groupnorm, knowledge-distillation",
+      "project": "neural-net",
+      "started": "2026-04-24T03:39:32.470Z",
+      "completed": "2026-04-24T03:39:49.725Z",
+      "duration_ms": 60000,
+      "summary": "Conv1D (276 LOC, causal mode), GroupNorm (156 LOC, Wu & He 2018, interpolates between LayerNorm and InstanceNorm), Knowledge Distillation (163 LOC, temperature-scaled KL divergence, teacher→student, Hinton 2015)."
+    },
+    {
+      "id": "T457",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Final scans: HenryDB JSONB, lateral join, table partitioning",
+      "project": "henrydb",
+      "started": "2026-04-24T03:39:58.767Z",
+      "completed": "2026-04-24T03:40:28.038Z",
+      "duration_ms": 60000,
+      "summary": "JSONPath (389 LOC): full query engine — root, member, array, wildcard, recursive descent, filter expressions (RFC 9535). Table partitioning (505 LOC, 3 files): range/list/hash partitioning with partition pruning for query optimization."
     }
   ],
   "focusProjects": [
@@ -6504,6 +6779,106 @@
     {
       "time": "2026-04-24T03:26:13.644Z",
       "msg": "Added T432 (EXPLORE) after end: Study HenryDB data augmentation"
+    },
+    {
+      "time": "2026-04-24T03:27:59.657Z",
+      "msg": "Added T433 (EXPLORE) after end: Study neural-net attention entropy and sinks"
+    },
+    {
+      "time": "2026-04-24T03:27:59.781Z",
+      "msg": "Added T434 (EXPLORE) after end: Study HenryDB compression module — dictionary, RLE, delta, bit-packing"
+    },
+    {
+      "time": "2026-04-24T03:27:59.904Z",
+      "msg": "Added T435 (EXPLORE) after end: Study neural-net GRU — gated recurrent unit"
+    },
+    {
+      "time": "2026-04-24T03:28:00.029Z",
+      "msg": "Added T436 (EXPLORE) after end: Study HenryDB prepared statements"
+    },
+    {
+      "time": "2026-04-24T03:30:09.440Z",
+      "msg": "Added T437 (EXPLORE) after end: Study neural-net weight tying + parameter counting"
+    },
+    {
+      "time": "2026-04-24T03:30:09.563Z",
+      "msg": "Added T438 (EXPLORE) after end: Study HenryDB views — CREATE VIEW, materialized views"
+    },
+    {
+      "time": "2026-04-24T03:30:09.687Z",
+      "msg": "Added T439 (EXPLORE) after end: Study neural-net quantization — int8 and float16"
+    },
+    {
+      "time": "2026-04-24T03:31:36.540Z",
+      "msg": "Added T440 (EXPLORE) after end: Study neural-net EMA — exponential moving average"
+    },
+    {
+      "time": "2026-04-24T03:31:36.664Z",
+      "msg": "Added T441 (EXPLORE) after end: Study neural-net model parallelism — tensor and pipeline parallelism"
+    },
+    {
+      "time": "2026-04-24T03:31:36.787Z",
+      "msg": "Added T442 (EXPLORE) after end: Study HenryDB radix sort"
+    },
+    {
+      "time": "2026-04-24T03:31:36.910Z",
+      "msg": "Added T443 (EXPLORE) after end: Study neural-net pruning — magnitude and structured"
+    },
+    {
+      "time": "2026-04-24T03:31:37.033Z",
+      "msg": "Added T444 (EXPLORE) after end: Study HenryDB triggers — row-level and statement-level triggers"
+    },
+    {
+      "time": "2026-04-24T03:34:11.212Z",
+      "msg": "Added T445 (EXPLORE) after end: Quick scan: neural-net lr-scheduler, early-stopping, callbacks"
+    },
+    {
+      "time": "2026-04-24T03:34:11.336Z",
+      "msg": "Added T446 (EXPLORE) after end: Quick scan: HenryDB set-operations, comparator, type system"
+    },
+    {
+      "time": "2026-04-24T03:34:11.460Z",
+      "msg": "Added T447 (EXPLORE) after end: Quick scan: neural-net optimizer-zoo, metrics, datasets"
+    },
+    {
+      "time": "2026-04-24T03:35:32.973Z",
+      "msg": "Added T448 (EXPLORE) after end: Quick scan: neural-net ESN (echo state network)"
+    },
+    {
+      "time": "2026-04-24T03:35:33.096Z",
+      "msg": "Added T449 (EXPLORE) after end: Quick scan: HenryDB bitwise-trie and space-filling curves"
+    },
+    {
+      "time": "2026-04-24T03:35:33.220Z",
+      "msg": "Added T450 (EXPLORE) after end: Quick scan: neural-net sampling module — top-k, top-p, temperature"
+    },
+    {
+      "time": "2026-04-24T03:36:57.548Z",
+      "msg": "Added T451 (EXPLORE) after end: Quick scan: neural-net model-zoo, automl, training-logger"
+    },
+    {
+      "time": "2026-04-24T03:36:57.669Z",
+      "msg": "Added T452 (EXPLORE) after end: Quick scan: HenryDB MERGE statement, foreign keys, CHECK constraints"
+    },
+    {
+      "time": "2026-04-24T03:38:04.429Z",
+      "msg": "Added T453 (EXPLORE) after end: Quick scan: neural-net beam-search, text-generation"
+    },
+    {
+      "time": "2026-04-24T03:38:04.553Z",
+      "msg": "Added T454 (EXPLORE) after end: Quick scan: HenryDB checksum, health-check, data masking"
+    },
+    {
+      "time": "2026-04-24T03:38:04.676Z",
+      "msg": "Added T455 (EXPLORE) after end: Quick scan: neural-net embedding, relative position bias"
+    },
+    {
+      "time": "2026-04-24T03:39:27.777Z",
+      "msg": "Added T456 (EXPLORE) after end: Final scans: neural-net conv1d, groupnorm, knowledge-distillation"
+    },
+    {
+      "time": "2026-04-24T03:39:27.900Z",
+      "msg": "Added T457 (EXPLORE) after end: Final scans: HenryDB JSONB, lateral join, table partitioning"
     }
   ]
 }
