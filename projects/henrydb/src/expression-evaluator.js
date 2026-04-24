@@ -643,7 +643,7 @@ P._evalExpr = function(expr, row) {
       const val = this._evalValue(expr.left, row);
       let low = this._evalValue(expr.low, row);
       let high = this._evalValue(expr.high, row);
-      if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return false;
+      if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return null;
       if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
       return val >= low && val <= high;
     }
@@ -651,7 +651,7 @@ P._evalExpr = function(expr, row) {
       const val = this._evalValue(expr.left, row);
       let low = this._evalValue(expr.low, row);
       let high = this._evalValue(expr.high, row);
-      if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return false;
+      if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return null;
       if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
       return val < low || val > high;
     }
