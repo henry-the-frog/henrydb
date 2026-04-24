@@ -2796,6 +2796,11 @@ export class Database {
     for (const { pageId, slotIdx } of toDelete) {
       const values = table.heap.get(pageId, slotIdx);
       
+      // BEFORE DELETE triggers
+      if (values) {
+        this._fireTriggers('BEFORE', 'DELETE', ast.table, null, values);
+      }
+      
       // Check foreign key constraints from child tables
       if (values) {
         this._handleForeignKeyDelete(ast.table, table, values);
@@ -2821,6 +2826,11 @@ export class Database {
         const txId = this._currentTxId || this._nextTxId++;
         this.wal.appendDelete(txId, ast.table, pageId, slotIdx, values);
         if (!this._currentTxId) this.wal.appendCommit(txId);
+      }
+      
+      // AFTER DELETE triggers
+      if (values) {
+        this._fireTriggers('AFTER', 'DELETE', ast.table, null, values);
       }
       
       deleted++;
