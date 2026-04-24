@@ -1,6 +1,8 @@
 // expression-evaluator.js — SQL expression evaluation engine
 // Extracted from db.js. Mixin pattern: installExpressionEvaluator(Database) adds methods to prototype.
 
+import { tokenize } from './fulltext.js';
+
 /**
  * Install expression evaluation methods on Database.
  * Methods: _collectAggregateExprs, _resolveColumn, _evalExpr, _evalValue,
@@ -145,7 +147,12 @@ export function installExpressionEvaluator(DatabaseClass) {
           case 'GE': return left >= right;
         }
       }
-      default: return true;
+      default: {
+        // For literals, column refs, and other value expressions, evaluate and check truthiness
+        const val = this._evalValue(expr, row);
+        if (val === null || val === undefined || val === 0 || val === false || val === '') return false;
+        return true;
+      }
     }
   }
   
@@ -199,8 +206,10 @@ export function installExpressionEvaluator(DatabaseClass) {
         case '/': {
           if (right === 0) return null;
           const result = left / right;
-          // Integer division when both operands are integers
-          if (Number.isInteger(left) && Number.isInteger(right)) return Math.trunc(result);
+          // Integer division when both operands are integers AND neither was a float literal
+          const leftIsFloat = node.left?.isFloat || !Number.isInteger(left);
+          const rightIsFloat = node.right?.isFloat || !Number.isInteger(right);
+          if (!leftIsFloat && !rightIsFloat && Number.isInteger(left) && Number.isInteger(right)) return Math.trunc(result);
           return result;
         }
         case '%': return right === 0 ? null : left % right;

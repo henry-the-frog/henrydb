@@ -80,7 +80,7 @@ export function tokenize(sql) {
     if (/[0-9]/.test(src[i])) {
       let num = '';
       while (i < src.length && /[0-9.]/.test(src[i])) num += src[i++];
-      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num) });
+      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num), isFloat: num.includes('.') });
       continue;
     }
 
@@ -105,7 +105,7 @@ export function tokenize(sql) {
       let num = '-';
       i++;
       while (i < src.length && /[0-9.]/.test(src[i])) num += src[i++];
-      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num) });
+      tokens.push({ type: 'NUMBER', value: num.includes('.') ? parseFloat(num) : parseInt(num), isFloat: num.includes('.') });
       continue;
     }
     if (src[i] === '-') { tokens.push({ type: 'MINUS' }); i++; continue; }
@@ -874,7 +874,7 @@ export function parse(sql) {
     // Literal number or string as expression
     if (peek().type === 'NUMBER' || peek().type === 'STRING') {
       const tok = advance();
-      let node = { type: 'literal', value: tok.value };
+      let node = { type: 'literal', value: tok.value, isFloat: tok.isFloat || false };
       // Check for arithmetic
       const nt = peek().type;
       if (nt === 'CONCAT_OP' || nt === 'PLUS' || nt === 'MINUS' || nt === '*' || nt === 'SLASH' || nt === 'MOD') {
@@ -1232,7 +1232,7 @@ export function parse(sql) {
 
   function parsePrimary() {
     const t = peek();
-    if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value }; }
+    if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value, isFloat: t.isFloat }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
     // Unary minus
