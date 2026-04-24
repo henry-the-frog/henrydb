@@ -3735,22 +3735,65 @@
     {
       "id": "T345",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push blog post",
-      "started": "2026-04-24T02:25:33.038Z"
+      "started": "2026-04-24T02:25:33.038Z",
+      "completed": "2026-04-24T02:25:38.273Z",
+      "duration_ms": 30000,
+      "summary": "Git push done. All repos up to date."
     },
     {
       "id": "T346",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive into HenryDB ARIES/WAL recovery or distributed system modules",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-24T02:25:44.681Z",
+      "completed": "2026-04-24T02:26:22.163Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into HenryDB distributed systems: Raft consensus (353 LOC, leader election + log replication + partitioning), SWIM gossip (225 LOC, failure detection + incarnation refutation), Logical Replication CDC (277 LOC, pub/sub + replication slots + LSN). All clean implementations following the original papers."
     },
     {
       "id": "T347",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study neural-net architecture: KAN or Neural ODE implementation quality",
+      "project": "neural-net",
+      "started": "2026-04-24T02:26:32.800Z",
+      "completed": "2026-04-24T02:26:56.137Z",
+      "duration_ms": 600000,
+      "summary": "Studied KAN (300 LOC) and Neural ODE (297 LOC). KAN: correct B-spline basis (Cox-de Boor), learnable edge activations + residual, finite-diff backward. Neural ODE: 3 solvers (Euler/RK4/adaptive BS2/3), adjoint backward, encoder-ODE-decoder architecture. Both are clean, correct implementations following the original papers."
+    },
+    {
+      "id": "T348",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run full neural-net test suite — verify all 150 test files pass after Session B fixes",
+      "project": "neural-net",
+      "started": "2026-04-24T02:27:15.807Z",
+      "completed": "2026-04-24T02:31:15.526Z",
+      "duration_ms": 600000,
+      "summary": "Ran full neural-net test suite: 1018/1018 pass. Fixed 2 failing tests — MoE serialization round-trip had 3 bugs: (1) constructor arg order wrong, (2) router property name mismatch (router vs routerW), (3) inputDim vs inputSize naming. Learning: the naming inconsistency pattern from Session B depth findings struck again."
+    },
+    {
+      "id": "T349",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-24T02:31:26.080Z"
+    },
+    {
+      "id": "T350",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study HenryDB MVCC + SSI implementation depth",
+      "project": "henrydb"
+    },
+    {
+      "id": "T351",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Study Mamba SSM or RWKV implementation in neural-net",
       "project": "neural-net"
     }
   ],
@@ -5223,6 +5266,22 @@
     {
       "time": "2026-04-24T02:24:03.151Z",
       "msg": "PLAN T343 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-24T02:27:08.836Z",
+      "msg": "Added T348 (EXPLORE) after end: Run full neural-net test suite — verify all 150 test files pass after Session B fixes"
+    },
+    {
+      "time": "2026-04-24T02:27:08.958Z",
+      "msg": "Added T349 (MAINTAIN) after end: Git push + daily log"
+    },
+    {
+      "time": "2026-04-24T02:27:09.080Z",
+      "msg": "Added T350 (EXPLORE) after end: Study HenryDB MVCC + SSI implementation depth"
+    },
+    {
+      "time": "2026-04-24T02:27:09.207Z",
+      "msg": "Added T351 (EXPLORE) after end: Study Mamba SSM or RWKV implementation in neural-net"
     }
   ]
 }
