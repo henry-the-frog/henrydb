@@ -3778,23 +3778,63 @@
     {
       "id": "T349",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + daily log",
-      "started": "2026-04-24T02:31:26.080Z"
+      "started": "2026-04-24T02:31:26.080Z",
+      "completed": "2026-04-24T02:32:11.391Z",
+      "duration_ms": 120000,
+      "summary": "Git push + daily log updated with Session C progress."
     },
     {
       "id": "T350",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study HenryDB MVCC + SSI implementation depth",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-24T02:32:15.335Z",
+      "completed": "2026-04-24T02:33:08.181Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into HenryDB MVCC (523 LOC) and SSI (277 LOC). MVCC: PostgreSQL-style snapshots (xmin:xmax:xip_list), hint bits for lazy commit status caching, MVCCHeap with xmin/xmax per row, VACUUM with xmin horizon. SSI: rw-antidependency tracking, dangerous structure detection (Cahill/Fekete 2008), commit-time abort with first-committer-wins. Both follow the papers exactly."
     },
     {
       "id": "T351",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study Mamba SSM or RWKV implementation in neural-net",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T02:33:18.366Z",
+      "completed": "2026-04-24T02:33:43.642Z",
+      "duration_ms": 600000,
+      "summary": "Studied Mamba SSM (216 LOC) and RWKV (174 LOC). Mamba: input-dependent B/C/Δ (the key selective innovation), diagonal A with HiPPO-like init, zero-order hold discretization, SiLU gating, single-step inference. RWKV: WKV mechanism with exponential decay, receptance gate, per-dim learned time decay, O(1) per-token inference. Both are correct implementations of the state-of-the-art linear attention alternatives."
+    },
+    {
+      "id": "T352",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run a batch of HenryDB edge-case tests — find any remaining failures",
+      "project": "henrydb",
+      "started": "2026-04-24T02:34:05.100Z",
+      "completed": "2026-04-24T02:36:20.755Z",
+      "duration_ms": 600000,
+      "summary": "Ran edge-case test sweep: 20+ test files sampled including TPC-H, MVCC, SSI, WAL, ARIES recovery, Raft, gossip, CTE, query VM/codegen, pipeline compiler, Grace/symmetric hash join, B-epsilon tree, ART, bitmap index, vacuum, logical replication, persistent DB. All pass (0 failures in ~200 tests). Codebase is clean."
+    },
+    {
+      "id": "T353",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB B-epsilon tree and ART index implementations",
+      "project": "henrydb",
+      "started": "2026-04-24T02:36:35.729Z",
+      "completed": "2026-04-24T02:37:00.880Z",
+      "duration_ms": 600000,
+      "summary": "Studied B-epsilon tree (188 LOC, message buffers at internal nodes, flush-on-full, check-buffer-on-get) and ART (281 LOC, 4 node types with adaptive growth, Node48 indirect array, prefix search). Both are clean implementations of the papers."
+    },
+    {
+      "id": "T354",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push + daily log update",
+      "started": "2026-04-24T02:37:15.119Z"
     }
   ],
   "focusProjects": [
@@ -5282,6 +5322,18 @@
     {
       "time": "2026-04-24T02:27:09.207Z",
       "msg": "Added T351 (EXPLORE) after end: Study Mamba SSM or RWKV implementation in neural-net"
+    },
+    {
+      "time": "2026-04-24T02:33:56.950Z",
+      "msg": "Added T352 (EXPLORE) after end: Run a batch of HenryDB edge-case tests — find any remaining failures"
+    },
+    {
+      "time": "2026-04-24T02:33:57.072Z",
+      "msg": "Added T353 (EXPLORE) after end: Study HenryDB B-epsilon tree and ART index implementations"
+    },
+    {
+      "time": "2026-04-24T02:33:57.193Z",
+      "msg": "Added T354 (MAINTAIN) after end: Final git push + daily log update"
     }
   ]
 }
