@@ -4423,9 +4423,12 @@
     {
       "id": "T408",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session C wind-down: final daily log, MEMORY.md update, git push",
-      "started": "2026-04-24T03:25:11.377Z"
+      "started": "2026-04-24T03:25:11.377Z",
+      "completed": "2026-04-24T03:25:57.754Z",
+      "duration_ms": 120000,
+      "summary": "Session C wind-down complete. Daily log updated with evening summary. CURRENT.md set to session-ended. Final git push done."
     },
     {
       "id": "T409",
@@ -4646,6 +4649,50 @@
       "completed": "2026-04-24T03:25:07.163Z",
       "duration_ms": 60000,
       "summary": "Prefix caching (106 LOC): hash-based KV-cache lookup for shared prompts, LRU eviction, hit/miss tracking (vLLM/SGLang). Logit processors (40 LOC): composable pipeline with temperature, repetition penalty, token banning. Both correct."
+    },
+    {
+      "id": "T429",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net PPO — proximal policy optimization for LLM fine-tuning",
+      "project": "neural-net",
+      "started": "2026-04-24T03:26:20.064Z",
+      "completed": "2026-04-24T03:26:37.438Z",
+      "duration_ms": 60000,
+      "summary": "PPO (128 LOC): clipped surrogate objective L_CLIP, GAE (backward scan lambda-return), KL penalty for RLHF. Clip fraction tracking, reward computation with KL divergence. Correct Schulman et al. 2017. The core of RLHF."
+    },
+    {
+      "id": "T430",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB sequence packing — efficient variable-length batch processing",
+      "project": "henrydb",
+      "started": "2026-04-24T03:26:41.782Z",
+      "completed": "2026-04-24T03:26:55.492Z",
+      "duration_ms": 30000,
+      "summary": "Sequence packing (31 LOC): first-fit decreasing bin packing. Sort by length, pack into bins up to maxLen with separator tokens. Efficiency metric: total_tokens / packed_slots. Minimizes GPU padding waste."
+    },
+    {
+      "id": "T431",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net cross-attention — encoder-decoder bridge",
+      "project": "neural-net",
+      "started": "2026-04-24T03:27:01.459Z",
+      "completed": "2026-04-24T03:27:13.061Z",
+      "duration_ms": 60000,
+      "summary": "Cross-attention (109 LOC): Q from decoder, K/V from encoder. Multi-head, optional causal mask. Also: AttentionPooling (weighted sum of sequence using learned query). Used in encoder-decoder, DALL-E, image captioning."
+    },
+    {
+      "id": "T432",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB data augmentation",
+      "project": "henrydb",
+      "started": "2026-04-24T03:27:28.873Z",
+      "completed": "2026-04-24T03:27:39.580Z",
+      "duration_ms": 30000,
+      "summary": "Data augmentation (25 LOC): Gaussian noise, Mixup (linear interpolation of inputs+labels, Zhang 2017), CutMix (patch replacement + adjusted label, Yun 2019). Modern training regularization in minimal code."
     }
   ],
   "focusProjects": [
@@ -6441,6 +6488,22 @@
     {
       "time": "2026-04-24T03:24:36.406Z",
       "msg": "Added T428 (EXPLORE) after end: Final exploration: neural-net prefix caching and logit processors"
+    },
+    {
+      "time": "2026-04-24T03:26:13.274Z",
+      "msg": "Added T429 (EXPLORE) after end: Study neural-net PPO — proximal policy optimization for LLM fine-tuning"
+    },
+    {
+      "time": "2026-04-24T03:26:13.397Z",
+      "msg": "Added T430 (EXPLORE) after end: Study HenryDB sequence packing — efficient variable-length batch processing"
+    },
+    {
+      "time": "2026-04-24T03:26:13.520Z",
+      "msg": "Added T431 (EXPLORE) after end: Study neural-net cross-attention — encoder-decoder bridge"
+    },
+    {
+      "time": "2026-04-24T03:26:13.644Z",
+      "msg": "Added T432 (EXPLORE) after end: Study HenryDB data augmentation"
     }
   ]
 }
