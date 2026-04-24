@@ -248,28 +248,44 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git push, dashboard regen"
+      "status": "done",
+      "task": "Git push, dashboard regen",
+      "started": "2026-04-24T15:58:20.006Z",
+      "completed": "2026-04-24T15:58:20.152Z",
+      "duration_ms": 5000,
+      "summary": "Git pushed."
     },
     {
       "id": "T17",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening direction: explore priorities"
+      "status": "done",
+      "task": "Evening direction: explore priorities",
+      "started": "2026-04-24T15:58:34.704Z",
+      "completed": "2026-04-24T15:58:34.848Z",
+      "duration_ms": 10000,
+      "summary": "Not evening yet (10 AM). Continue with remaining tasks. Good session so far: neural-net CI green (1305/1305→2323/2324), HenryDB 28→3 failures. Focus remaining time on EXPLORE tasks and one more HenryDB depth pass."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Monkey-lang codebase audit: what needs attention after 3 weeks",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T15:58:49.839Z",
+      "completed": "2026-04-24T16:00:05.701Z",
+      "duration_ms": 120000,
+      "summary": "Monkey-lang: healthy. 894/894 tests pass. 67 src files, 523 test files. Last touched Apr 16. No CI. README says 38 test files (severely outdated). No urgent issues. Low-priority: update README stats."
     },
     {
       "id": "T19",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Vectorized execution strategies for HenryDB",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-24T16:00:15.031Z",
+      "completed": "2026-04-24T16:01:08.079Z",
+      "duration_ms": 120000,
+      "summary": "Explored vectorized execution strategies for HenryDB. Wrote scratch note. Recommended DuckDB-style vectorized batches (nextBatch() alongside next()). Can coexist with volcano model for gradual migration. Expected 2-5x improvement. Created design sketch with VectorBatch, VSeqScan, VFilter."
     },
     {
       "id": "T20",

@@ -1385,13 +1385,34 @@ export class Database {
   }
 
   // Validate column constraints (NOT NULL, CHECK) for a row
-  _fireTriggers(timing, event, tableName, rowValues) {
+  _fireTriggers(timing, event, tableName, newRow, oldRow) {
     for (const trigger of this.triggers) {
       if (trigger.timing === timing && trigger.event === event && trigger.table === tableName) {
         try {
-          this.execute(trigger.bodySql);
+          let bodySql = trigger.bodySql;
+          
+          // Get table schema to resolve NEW.col / OLD.col references
+          const table = this.tables.get(tableName);
+          const schema = table?.schema || [];
+          
+          const resolveRow = (prefix, row) => {
+            if (!row) return;
+            for (let i = 0; i < schema.length; i++) {
+              const colName = schema[i].name;
+              const val = row[colName] ?? (Array.isArray(row) ? row[i] : null);
+              const replacement = val === null || val === undefined ? 'NULL'
+                : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'`
+                : String(val);
+              const regex = new RegExp(`${prefix}\\.${colName}\\b`, 'gi');
+              bodySql = bodySql.replace(regex, replacement);
+            }
+          };
+          
+          resolveRow('NEW', newRow);
+          resolveRow('OLD', oldRow);
+          
+          this.execute(bodySql);
         } catch (e) {
-          // Trigger errors propagate
           throw new Error(`Trigger ${trigger.name} failed: ${e.message}`);
         }
       }
