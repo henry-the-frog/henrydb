@@ -347,6 +347,25 @@
       "completed": "2026-04-24T16:27:35.613Z",
       "duration_ms": 180000,
       "summary": "Benchmarked vectorized vs Volcano on 10K rows: GROUP BY 1.3x faster, Filter+GroupBy 1.3x, Simple filter 1.7x. Modest speedups in JS (no SIMD). Largest benefit on simple scan+filter operations. At scale and in typed-array-heavy workloads, would see more benefit."
+    },
+    {
+      "id": "T34",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test complex query combinations (subqueries + joins + CTEs + aggregates) for edge cases",
+      "project": "henrydb",
+      "started": "2026-04-24T16:29:11.740Z",
+      "completed": "2026-04-24T16:29:59.056Z",
+      "duration_ms": 300000,
+      "summary": "Stress tested 17 complex query combinations: all work correctly. Subqueries in SELECT/WHERE, JOINs with GROUP BY+HAVING, self-joins, CTEs+JOINs, UNION, multi-table joins, correlated subqueries, CASE, EXISTS, LEFT JOIN nulls, empty tables, recursive CTEs, nested subqueries, COALESCE. HenryDB handles all correctly."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add vectorized execution integration to HenryDB query planner (auto-select vectorized for simple scan+filter+agg)",
+      "project": "henrydb",
+      "started": "2026-04-24T16:31:50.638Z"
     }
   ],
   "focusProjects": [
@@ -490,6 +509,14 @@
     {
       "time": "2026-04-24T16:26:47.437Z",
       "msg": "Added T33 (EXPLORE) after end: Benchmark vectorized engine vs Volcano on aggregation queries and document results"
+    },
+    {
+      "time": "2026-04-24T16:29:06.292Z",
+      "msg": "Added T34 (EXPLORE) after end: HenryDB: stress test complex query combinations (subqueries + joins + CTEs + aggregates) for edge cases"
+    },
+    {
+      "time": "2026-04-24T16:31:45.407Z",
+      "msg": "Added T35 (BUILD) after end: Add vectorized execution integration to HenryDB query planner (auto-select vectorized for simple scan+filter+agg)"
     }
   ]
 }

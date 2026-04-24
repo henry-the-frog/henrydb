@@ -1641,6 +1641,10 @@ export class Database {
   }
 
   _select(ast) {
+    // Vectorized path disabled pending further testing
+    // const vectorResult = this._tryVectorizedSelect(ast);
+    // if (vectorResult) return vectorResult;
+
     // Handle CTEs — register as temporary views
     const tempViews = [];
     if (ast.ctes) {
@@ -5078,3 +5082,85 @@ installSetOperations(Database);
 
 // Install expression evaluation methods
 installExpressionEvaluator(Database);
+
+// Install vectorized execution fast path
+import { VSeqScan, VFilter, VHashAggregate } from './vector-engine.js';
+
+/**
+ * Try to use vectorized execution for simple queries.
+ * Returns null if the query is too complex for the vectorized path.
+ */
+Database.prototype._tryVectorizedSelect = function(ast) {
+  // Only handle simple single-table queries without joins, subqueries, or CTEs
+  if (ast.ctes || ast.joins?.length > 0 || !ast.from?.table) return null;
+  
+  const tableName = ast.from.table;
+  const table = this.tables.get(tableName);
+  if (!table) return null;
+  
+  // Don't use for views
+  if (this.views.has(tableName)) return null;
+  
+  // Must be simple columns or aggregates (not *)
+  const schema = table.schema;
+  const colNames = schema.map(c => c.name);
+  
+  // Check for simple GROUP BY with aggregates
+  const hasGroupBy = ast.groupBy && ast.groupBy.length > 0;
+  const hasAggregates = ast.columns?.some(c => c.type === 'aggregate');
+  
+  // Only use vectorized for aggregate queries or simple scans with WHERE
+  if (!hasAggregates && !ast.where) return null;
+  
+  try {
+    // Build scan operator
+    const heap = table.heap;
+    const scan = new VSeqScan(heap, colNames, ast.from.alias || tableName);
+    
+    // Add filter if WHERE clause exists
+    let pipeline = scan;
+    if (ast.where) {
+      const db = this;
+      pipeline = new VFilter(pipeline, (row) => {
+        try {
+          return db._evalExpr(ast.where, row);
+        } catch { return false; }
+      });
+    }
+    
+    // If aggregate query, use VHashAggregate
+    if (hasAggregates) {
+      const groupCols = hasGroupBy ? ast.groupBy.map(g => g.name || g.column) : [];
+      const aggregates = [];
+      const projections = [];
+      
+      for (const col of ast.columns) {
+        if (col.type === 'aggregate') {
+          const aggCol = col.args?.[0]?.name || col.args?.[0]?.column || '*';
+          aggregates.push({
+            name: col.alias || `${col.fn}(${aggCol})`,
+            fn: col.fn.toUpperCase(),
+            col: aggCol === '*' ? colNames[0] : aggCol,
+          });
+        } else if (col.type === 'column') {
+          projections.push(col.name || col.column);
+        }
+      }
+      
+      pipeline = new VHashAggregate(pipeline, groupCols, aggregates);
+    }
+    
+    // Execute
+    pipeline.open();
+    const rows = [];
+    let batch;
+    while ((batch = pipeline.nextBatch()) !== null) {
+      rows.push(...batch.toRows());
+    }
+    pipeline.close();
+    
+    return { rows, columns: Object.keys(rows[0] || {}) };
+  } catch {
+    return null; // Fall back to standard execution
+  }
+};
