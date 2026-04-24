@@ -2,6 +2,7 @@
 // Functions take "db" as first parameter (database context)
 
 import { pushdownPredicates } from './pushdown.js';
+import { canVectorize, vectorizedGroupBy } from './vectorized-bridge.js';
 
 export function selectInner(db, ast) {
   // Handle SELECT without FROM (e.g., SELECT 1 AS n)
@@ -433,7 +434,7 @@ export function selectInner(db, ast) {
   const hasWindow = db._columnsHaveWindow(ast.columns);
 
   if (ast.groupBy) {
-    return db._selectWithGroupBy(ast, rows);
+    return _tryVectorizedGroupBy(db, ast, rows) || db._selectWithGroupBy(ast, rows);
   }
   if (hasAggregates && !hasWindow) {
     const aggRow = db._computeAggregates(ast.columns, rows);
@@ -682,5 +683,90 @@ export function selectInner(db, ast) {
   }
 
   return { type: 'ROWS', rows: finalRows };
+}
+
+/**
+ * Try to execute a GROUP BY query via the vectorized engine.
+ * Returns null if the query isn't eligible (falls through to standard path).
+ * Only handles simple cases: no HAVING, no window functions, no GROUPING SETS,
+ * no alias references in GROUP BY (must reference actual column names).
+ */
+function _tryVectorizedGroupBy(db, ast, rows) {
+  // Skip if query has features the vectorized path doesn't handle well
+  if (ast.having) return null;
+  if (ast.groupingSets || ast.rollup || ast.cube) return null;
+  if (!Array.isArray(ast.groupBy)) return null; // ROLLUP/CUBE/GROUPING SETS
+  if (db._columnsHaveWindow(ast.columns)) return null;
+  if (!rows.length) return null;
+  
+  // Skip if any aggregate has FILTER clause (vectorized doesn't support it)
+  for (const col of ast.columns) {
+    if (col.type === 'aggregate' && col.filter) return null;
+  }
+  
+  // Skip if any column is a CASE expression, function-wrapped aggregate, or expression
+  // The vectorized path only handles raw columns and simple aggregates
+  for (const col of ast.columns) {
+    if (col.type !== 'column' && col.type !== 'aggregate') return null;
+  }
+  
+  // Check if the query shape is eligible
+  if (!canVectorize(ast)) return null;
+  
+  // Verify GROUP BY columns are actual columns in the row data (not aliases)
+  const sampleRow = rows[0];
+  for (const groupCol of ast.groupBy) {
+    if (typeof groupCol !== 'string') return null;
+    if (!(groupCol in sampleRow)) return null; // alias or expression — bail
+  }
+  
+  // Verify aggregate source columns exist in row data
+  for (const col of ast.columns) {
+    if (col.type === 'aggregate' && col.arg !== '*' && typeof col.arg === 'string') {
+      if (!(col.arg in sampleRow)) return null;
+    }
+  }
+  
+  try {
+    let resultRows = vectorizedGroupBy(rows, ast);
+    
+    // Apply ORDER BY if present
+    if (ast.orderBy) {
+      resultRows.sort((a, b) => {
+        for (const { column, direction } of ast.orderBy) {
+          let av, bv;
+          if (typeof column === 'string') {
+            av = a[column];
+            bv = b[column];
+            // Try resolving via db if not found directly
+            if (av === undefined) av = db._orderByValue(column, a);
+            if (bv === undefined) bv = db._orderByValue(column, b);
+          } else if (typeof column === 'number') {
+            const selCol = ast.columns[column - 1];
+            const name = selCol?.alias || selCol?.name;
+            if (name) { av = a[name]; bv = b[name]; }
+          } else {
+            av = db._evalValue(column, a);
+            bv = db._evalValue(column, b);
+          }
+          if (av == null && bv == null) continue;
+          if (av == null) return direction === 'DESC' ? -1 : 1;
+          if (bv == null) return direction === 'DESC' ? 1 : -1;
+          if (av < bv) return direction === 'DESC' ? 1 : -1;
+          if (av > bv) return direction === 'DESC' ? -1 : 1;
+        }
+        return 0;
+      });
+    }
+    
+    // Apply LIMIT/OFFSET
+    if (ast.offset != null) resultRows = resultRows.slice(ast.offset);
+    if (ast.limit != null) resultRows = resultRows.slice(0, ast.limit);
+    
+    return { type: 'ROWS', rows: resultRows };
+  } catch {
+    // Vectorized failed — fall through to standard path
+    return null;
+  }
 }
 
