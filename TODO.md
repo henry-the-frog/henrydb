@@ -1,17 +1,20 @@
-# TODO.md — Task Intake Buffer
+# TODO.md
 
 ## Urgent
-*(none)*
+- (since 2026-04-24) Fix FK CASCADE MVCC visibility bug — heap deletes work but MVCC snapshot doesn't see them
 
 ## Normal
-- Vectorized engine integration: fix column naming compat for auto-enable (currently 21 failures when enabled)
-- Add CI (GitHub Actions) to monkey-lang project
-- Update monkey-lang README (38 test files → 523, add CI badge)
-- Blog post: "Building a SQL Database in JavaScript" (outline at scratch/blog-henrydb-outline.md)
-- Implement learned cardinality estimation (cross-project neural-net + HenryDB)
-- Add backtick/double-quote identifier quoting to HenryDB parser
+- HenryDB: Add DATE/TIME modifier support (+30 days, -1 month, 'now')
+- HenryDB: Refactor parseSelectColumn to use parseExpr for general expressions
+- HenryDB: Fix TRUE/FALSE as boolean keywords (currently parsed as strings)
+- HenryDB: Add REGEXP support
+- HenryDB: Fix LIMIT with subquery (returns all rows instead of subquery result)
+- Neural-net: Write training tutorial/walkthrough
+- Update HenryDB blog post with 167 features and trigger fix
+- monkey-lang: Add CI + README update
 
 ## Low
-- Neural-net property naming normalization (W vs weights)
-- Investigate ORDER BY function expressions (DATE(col))
-- Blog post: neural-net architecture showcase
+- HenryDB: Add GENERATED columns
+- HenryDB: Add ATTACH DATABASE
+- HenryDB: Add CROSS APPLY / OUTER APPLY (SQL Server syntax)
+- HenryDB: Expression indexes
