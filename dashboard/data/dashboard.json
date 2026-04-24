@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-24T16:16:07.794Z",
+  "generated": "2026-04-24T16:19:26.231Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix HenryDB view-table JOIN (missing right columns in result) and INSERT from CTE",
-    "completedAt": "2026-04-24T16:16:07.794Z",
-    "taskId": "T30",
-    "summary": "ALL 4288 HenryDB tests pass (was 28 failures). Fixed: view-table JOIN (view path was skipping joins entirely), INSERT from CTE (CTE resolution added to insertSelect), trigger NEW/OLD (text substitution). HenryDB is now at 100% pass rate!",
-    "durationMs": 600000
+    "task": "Implement VectorBatch and VSeqScan for HenryDB vectorized execution prototype",
+    "startedAt": "2026-04-24T16:19:26.231Z",
+    "taskId": "T32"
   },
   "schedule": {
     "date": "2026-04-24",
@@ -6771,14 +6769,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 26,
+    "blocksCompleted": 28,
     "blocksTotal": 27,
     "modeDistribution": {
-      "THINK": 5,
+      "THINK": 6,
       "PLAN": 4,
       "BUILD": 11,
       "MAINTAIN": 4,
-      "EXPLORE": 2
+      "EXPLORE": 3
     }
   },
   "artifacts": [
