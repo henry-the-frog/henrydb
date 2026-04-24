@@ -1,40 +1,55 @@
-# Tomorrow's Action Items — Apr 24, 2026
+# Tomorrow's Action Items — Apr 24, 2026 (revised after comprehensive audit)
 
-## Neural-net: Cleanup Day (Priority 1)
+## Top Priority: Fix Known Bugs
+### Neural-net (30 min total)
+1. Fix rope.js import (unblocks 5 test files) — 5 min
+2. Fix MultiHeadFlashAttention NaN (positional args) — 2 min
+3. Fix AdamW step counter (per-step not per-param) — 5 min
+4. Fix reward model bias gradients — 5 min
+5. Fix MSE gradient (add /n factor) — 2 min
+6. Fix MoE serialization (up/down not W1/b1) — 10 min
+7. Fix pruning >= vs > inconsistency — 1 min
 
-### Quick Fixes (~1 hour total)
-1. **Fix rope.js import bug** — Add `applyRoPEToSequence` wrapper or fix gqa-attention.js to use `applyRoPE`. Unblocks 5 test files.
-2. **Fix MultiHeadFlashAttention NaN** — Change `flashAttention(Q,K,V, {blockSize, causal})` → `flashAttention(Q,K,V, blockSize, causal)`. 1 line.
-3. **Fix MoE serialization** — Update network.js to use `expert.up`/`expert.down` instead of `expert.W1`/`expert.b1`. ~30 LOC.
-4. **Fix AdamW step counter** — Don't increment `this.step` in `update()`. Add `step()` method like optimizer.js's Adam.
-5. **Fix reward model bias** — Add `db1[j] += dReward`, `db2[j] += dReward` in trainStep.
-6. **Fix MSE gradient** — Add `/n` factor to match forward's `/(2n)`.
-7. **Fix pruning consistency** — Use `>` (not `>=`) for threshold in Matrix path too.
+### HenryDB (30 min total)
+8. Fix AFTER DELETE trigger (_fireTriggers 6th arg) — 10 min
+9. Fix optimizer-quality test — investigate cost model issue — 20 min
 
-### Moderate Fixes (~30 min)
-8. **Update README.md** — 168 modules not 71, 26K LOC not 15.6K, 150 test files not 100.
-9. **Delete or fix grouped-query-attention.js** — Duplicate of working gqa.js. Either delete + redirect tests, or fix the 3/8 failures.
+## Priority 2: Update Neural-net README
+- 168 modules not 71, 26K LOC not 15.6K
+- Spans Hopfield (1982) to KAN (2024) — 42 years of NN research
+- Full LLM pipeline: tokenizer → embedding → transformer → KV cache → sampling → training
+- 10/10 gradient checks pass (machine precision)
+- Working e2e models: char-lm.js, MicroGPT, mini-llm.js
+- RLHF: PPO + DPO + reward model
+- Cutting-edge: KAN, RWKV, Mamba, Flash Attention, speculative decoding
 
-### After fixes: run full test suite targeting 0 failures
+## Priority 3: SELECT * + Window Volcano Bug (1-2 BUILD tasks)
+Expand `*` to base-table columns at final projection (not window-internal columns)
 
-## HenryDB: Polish Day (Priority 2)
+## Priority 4: Write Blog Post
+"Building a Database from Scratch in JavaScript: What I Learned from 78K Lines of Code"
+- 5 execution engines
+- 7+ index types
+- 38+ academic papers implemented
+- Raft, gossip, LSM, ARIES — distributed systems in a DB
 
-### Bug Fixes
-1. **AFTER DELETE trigger** — Add 6th parameter to `_fireTriggers` wrapper: `_fireTriggers(timing, event, table, row, schema, oldRow)`.
-2. **Optimizer-quality test failure** — Investigate, likely cost model estimation issue.
+## Architectural Insights (from Session B)
+### HenryDB is not just a database — it's a CS textbook
+- **5 execution engines** (Volcano, Pipeline, Vectorized, VecCodegen, Query VM)
+- **3 storage layouts** (heap, columnar, clustered B+tree)
+- **7+ index types** (B+tree, ART, B-epsilon, bitmap, bloom, bitwise trie, hash)
+- **6 hash table variants** (chained, extendible, linear, Robin Hood, cuckoo, double)
+- **38+ papers** implemented (ARIES, System R, Raft, SWIM, Pugh, Karger, etc.)
+- **Distributed systems**: Raft, gossip, 2PC, consistent hashing, replication
+- **Full PostgreSQL compatibility**: wire protocol, prepared statements, LISTEN/NOTIFY
 
-### Volcano Gaps
-3. **SELECT * + window** — At final projection, expand `*` to base-table columns only, then append window result columns. ~1-2 BUILD tasks.
-4. **NOT NOT NOT parser** — Parser bug, low priority.
+### Neural-net is a comprehensive deep learning library
+- **168 modules** covering every major architecture 1982-2024
+- **Gradient-verified**: 10 backward passes confirmed at machine precision
+- **Full pipeline**: tokenizer → training → RLHF → deployment
+- **Novel architectures**: KAN, RWKV, Neural ODE, NTM, SNN, Capsule nets
 
-### Nice-to-have
-5. **Connect stats collector to cost model** — MCV + histograms exist but aren't used.
-6. **Query cache: upgrade FIFO → LRU** — Simple improvement.
-
-## Key Metrics from Session B
-- 120+ modules audited across both projects
-- 10/10 numerical gradient checks pass
-- 5 bugs found (3 neural-net, 2 HenryDB)
-- Combined: 536 source modules, 1018 test files, 104K LOC
-- HenryDB true test pass rate: ~99% (not 66% as morning sweep suggested)
-- All backward passes verified correct
+## NOT priority (avoid tomorrow)
+- New features for either project — cleanup first
+- More extraction — declared done (db.js at 1633 lines is core)
+- More module creation — fix existing 7 bugs before building more
