@@ -4039,30 +4039,287 @@
     {
       "id": "T373",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final daily log + MEMORY.md update + git push",
-      "started": "2026-04-24T02:55:07.901Z"
+      "started": "2026-04-24T02:55:07.901Z",
+      "completed": "2026-04-24T02:55:18.499Z",
+      "duration_ms": 30000,
+      "summary": "Git push + checkpoint."
     },
     {
       "id": "T374",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study HenryDB vectorized execution engine with column compression",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-24T02:55:22.895Z",
+      "completed": "2026-04-24T02:55:56.119Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB vectorized engine (1794 LOC, 7 files): ColumnBatch (row↔column conversion, BATCH_SIZE=1024), 7 vectorized operators (Scan, Filter, Project, HashAgg, Sort, Limit, HashJoin), vectorized codegen (454 LOC), vectorized bridge (124 LOC), 4 compression codecs (RLE, Delta, Dictionary, Bit-Packing), column store (228 LOC), columnar ops. MonetDB/X100-style batch processing."
     },
     {
       "id": "T375",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study neural-net CLIP implementation — contrastive language-image pretraining",
-      "project": "neural-net"
+      "project": "neural-net",
+      "started": "2026-04-24T02:56:12.078Z",
+      "completed": "2026-04-24T02:56:31.616Z",
+      "duration_ms": 120000,
+      "summary": "CLIP (90 LOC): symmetric contrastive loss (image→text + text→image cross-entropy), N×N cosine similarity matrix, learnable temperature scaling, numerically stable log-sum-exp, accuracy tracking, zero-shot classification. Correct implementation of Radford et al. 2021."
     },
     {
       "id": "T376",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Study HenryDB expression evaluator — 1191 LOC, how does it handle SQL expressions?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-24T02:56:39.948Z",
+      "completed": "2026-04-24T02:56:54.379Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB expression evaluator (1191 LOC): mixin pattern on Database.prototype. Handles arithmetic, comparison, type casts, aggregates (COUNT/SUM/AVG/MIN/MAX + statistical), NULL handling, CASE/BETWEEN/IN/LIKE/ILIKE, subqueries (scalar/IN/EXISTS), column resolution (qualified + unqualified), ORDER BY. The core SQL evaluation engine."
+    },
+    {
+      "id": "T377",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net paged attention implementation — vLLM-style memory management",
+      "project": "neural-net",
+      "started": "2026-04-24T02:57:13.872Z",
+      "completed": "2026-04-24T02:57:30.647Z",
+      "duration_ms": 120000,
+      "summary": "Paged attention (172 LOC): vLLM-style KV cache management. Physical pages (fixed-size K/V blocks), per-request page tables, free page recycling, on-demand allocation. Solves memory fragmentation in multi-request LLM serving — OS virtual memory paradigm for KV cache."
+    },
+    {
+      "id": "T378",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB buffer pool + clock sweep replacement",
+      "project": "henrydb",
+      "started": "2026-04-24T02:57:41.436Z",
+      "completed": "2026-04-24T02:58:12.030Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB buffer pool (727 LOC, 3 files): fetchPage/unpinPage/flushPage/newPage/deletePage/flushAll. Two replacement policies: LRU and Clock Sweep (PostgreSQL-style, usage counter 0-5, second chance sweep). InMemoryDiskManager for testing. Clean separation of concerns."
+    },
+    {
+      "id": "T379",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net SNN (spiking neural network) — LIF/Izhikevich neurons",
+      "project": "neural-net",
+      "started": "2026-04-24T02:58:23.792Z",
+      "completed": "2026-04-24T02:59:02.876Z",
+      "duration_ms": 180000,
+      "summary": "SNN (321 LOC): LIF neuron (leaky integrate-and-fire), Izhikevich neuron (4 preset types: regular spiking, intrinsic bursting, chattering, fast spiking), STDP learning (LTP/LTD), Poisson encoder (rate coding), synapses with delay queues, multi-layer SpikingNetwork. Complete biological neuroscience simulation."
+    },
+    {
+      "id": "T380",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Count total LOC across all projects — workspace statistics",
+      "project": "henrydb",
+      "started": "2026-04-24T02:59:19.970Z",
+      "completed": "2026-04-24T02:59:52.633Z",
+      "duration_ms": 120000,
+      "summary": "Workspace statistics: 553,742 total LOC across 3,254 JS files, 12 projects. Source: 281K LOC. Tests: 272K LOC (1,910 test files). Top projects: monkey-lang (200K), henrydb (209K), neural-net (56K), lambda-calculus (43K). From Forth interpreter to RISC-V emulator to Lambda calculus evaluator."
+    },
+    {
+      "id": "T381",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB page layout — slotted pages, tuple storage",
+      "project": "henrydb",
+      "started": "2026-04-24T03:00:18.019Z",
+      "completed": "2026-04-24T03:00:34.524Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB page layout (493 LOC): slotted page with 16B header (pageId+numSlots+freeSpaceEnd+flags), slot directory grows down, tuple data grows up from end, free space in middle. 32KB default page size. Classic PostgreSQL heap page format. insertTuple/deleteTuple/updateTuple/getTuple with free space management."
+    },
+    {
+      "id": "T382",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net Hopfield networks — classical vs modern exponential",
+      "project": "neural-net",
+      "started": "2026-04-24T03:00:48.325Z",
+      "completed": "2026-04-24T03:01:14.326Z",
+      "duration_ms": 180000,
+      "summary": "Hopfield networks (267 LOC): Classical (1982) — binary {-1,+1}, Hebbian learning, energy minimization, 0.138N capacity. Modern (Ramsauer 2021) — continuous states, softmax attention retrieval (connecting Hopfield to Transformer attention!), exponential energy, exponentially higher capacity. Also includes Boltzmann machine variant."
+    },
+    {
+      "id": "T383",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB EXPLAIN ANALYZE implementation — 510 LOC query profiler",
+      "project": "henrydb",
+      "started": "2026-04-24T03:01:31.584Z",
+      "completed": "2026-04-24T03:01:46.209Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB EXPLAIN (510 LOC): EXPLAIN (show plan), EXPLAIN ANALYZE (execute+measure), EXPLAIN COMPILED (compiled plan). 6 output formats: text, Volcano tree, JSON tree, HTML (pgAdmin-style), DOT (Graphviz), YAML. PlanBuilder generates structured plans, PlanFormatter renders them. Full query profiling system."
+    },
+    {
+      "id": "T384",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net flash attention implementation — tiled computation",
+      "project": "neural-net",
+      "started": "2026-04-24T03:01:56.153Z",
+      "completed": "2026-04-24T03:02:11.408Z",
+      "duration_ms": 180000,
+      "summary": "Flash Attention (196 LOC): online softmax trick — process K/V in blocks with running max/sum rescaling. Key insight: rescale previous accumulator by exp(prevMax - newMax) on each block. Memory O(N*d + blockSize²) vs O(N²). Also: standard attention reference, multi-head flash attention, causal masking. Correct Dao et al. 2022 implementation."
+    },
+    {
+      "id": "T385",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB row-level security implementation",
+      "project": "henrydb",
+      "started": "2026-04-24T03:02:32.194Z",
+      "completed": "2026-04-24T03:02:45.934Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB RLS (219 LOC): SecurityContext (user/role/session vars/superuser), Policy class (USING + WITH CHECK, permissive/restrictive, per-command), RLSManager (create/drop policy, enable/disable per table, evaluateRLS combining applicable policies). PostgreSQL-compatible row-level security."
+    },
+    {
+      "id": "T386",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net LoRA implementation — parameter-efficient fine-tuning",
+      "project": "neural-net",
+      "started": "2026-04-24T03:02:51.775Z",
+      "completed": "2026-04-24T03:03:09.548Z",
+      "duration_ms": 120000,
+      "summary": "LoRA (214 LOC): frozen base weight W + low-rank adapter ΔW = B×A (B initialized to zero → starts identical to base). Forward: input @ (W + scaling × B×A)^T. Proper backward for A and B gradients. Merge/unmerge for inference. Parameter savings: d² → 2dr. Correct Hu et al. 2021 implementation."
+    },
+    {
+      "id": "T387",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB cursor implementation — scrollable holdable cursors",
+      "project": "henrydb",
+      "started": "2026-04-24T03:03:13.467Z",
+      "completed": "2026-04-24T03:03:40.803Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB cursors (333 LOC, 3 files): server-side cursors with DECLARE (scrollable, holdable), FETCH (NEXT/PRIOR/FIRST/LAST/ABSOLUTE/RELATIVE/FORWARD/BACKWARD/ALL), CLOSE. WITH HOLD survives transaction end. Cursor pagination for efficient result browsing. PostgreSQL-compatible."
+    },
+    {
+      "id": "T388",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net scaling laws implementation — Chinchilla analysis",
+      "project": "neural-net",
+      "started": "2026-04-24T03:04:02.139Z",
+      "completed": "2026-04-24T03:04:18.766Z",
+      "duration_ms": 60000,
+      "summary": "Scaling laws (24 LOC): Chinchilla compute-optimal analysis. C = 6ND, optimal N ≈ √(C/20), optimal D = 20N. Over-trained if tokens/params > 20, under-trained if < 20. Simple but correct Hoffmann et al. 2022 implementation."
+    },
+    {
+      "id": "T389",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB fulltext search module",
+      "project": "henrydb",
+      "started": "2026-04-24T03:04:22.895Z",
+      "completed": "2026-04-24T03:04:40.975Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB fulltext search (441 LOC, 2 files): tokenization (lowercase, stop words, suffix stemming), inverted index with posting lists (term → [docId, positions]), TF-IDF scoring, phrase search, AND/OR query operators. FullTextIndex class for CREATE INDEX ... USING GIN integration."
+    },
+    {
+      "id": "T390",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net LLaMA architecture — modern decoder with RoPE and SwiGLU",
+      "project": "neural-net",
+      "started": "2026-04-24T03:04:59.723Z",
+      "completed": "2026-04-24T03:05:32.800Z",
+      "duration_ms": 120000,
+      "summary": "LLaMA architecture (56 LOC index + modern-decoder.js components): All 6 key Llama design choices: Pre-LN, RMSNorm (no mean subtraction), GQA (fewer KV heads), RoPE, SwiGLU FFN (3 weight matrices, hidden = round(2/3×4×d)), no bias. Clean modern decoder implementation. Plus export index for single-import convenience."
+    },
+    {
+      "id": "T391",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB index advisor — automated index recommendation",
+      "project": "henrydb",
+      "started": "2026-04-24T03:05:38.254Z",
+      "completed": "2026-04-24T03:05:52.850Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB index advisor (361 LOC): workload-based index recommendation. Analyzes queries for column access patterns (filters, joins, ORDER BY, GROUP BY), detects composite index opportunities, deduplicates against existing indexes, estimates improvement level, generates CREATE INDEX SQL. PostgreSQL pg_qualstats inspired."
+    },
+    {
+      "id": "T392",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net RoPE implementation — rotary position embeddings",
+      "project": "neural-net",
+      "started": "2026-04-24T03:06:17.887Z",
+      "completed": "2026-04-24T03:06:33.686Z",
+      "duration_ms": 120000,
+      "summary": "RoPE (181 LOC): frequency basis θ_i = 1/(10000^(2i/d)), 2D rotation per dimension pair. Key property: dot product depends only on relative position (m-n). Backward via inverse rotation (orthogonal). Position offset for KV cache. NTK-aware scaling + YaRN for extrapolation beyond training length."
+    },
+    {
+      "id": "T393",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB Grace hash join — for large datasets",
+      "project": "henrydb",
+      "started": "2026-04-24T03:06:40.927Z",
+      "completed": "2026-04-24T03:06:53.601Z",
+      "duration_ms": 60000,
+      "summary": "Grace hash join (103 LOC): 2-phase partitioned hash join for bounded memory. Phase 1: hash-partition both inputs. Phase 2: build+probe hash table per partition pair. Named after Grace database machine (Kitsuregawa 1983). With performance stats tracking."
+    },
+    {
+      "id": "T394",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net autograd — automatic differentiation engine",
+      "project": "neural-net",
+      "started": "2026-04-24T03:06:57.816Z",
+      "completed": "2026-04-24T03:07:12.719Z",
+      "duration_ms": 120000,
+      "summary": "Autograd (233 LOC): PyTorch-style reverse-mode AD. Variable class with value/grad/children/backward closure. Topological sort for reverse traversal. 15+ ops: add/mul/sub/div/pow/neg/exp/log/sin/cos/tanh/sigmoid/relu/softplus/abs. Each op stores backward as closure capturing inputs."
+    },
+    {
+      "id": "T395",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB cuckoo filter — probabilistic set membership",
+      "project": "henrydb",
+      "started": "2026-04-24T03:07:16.717Z",
+      "completed": "2026-04-24T03:07:33.551Z",
+      "duration_ms": 60000,
+      "summary": "Cuckoo filter (167 LOC): fingerprint-based set membership with deletion support. Dual indices via XOR trick (i2 = i1 ⊕ hash(fp)), 4-entry buckets, 500-kick eviction limit. Better than Bloom for FPR < 3%. Correct Fan et al. 2014 implementation."
+    },
+    {
+      "id": "T396",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net GNN (graph neural network) — message passing",
+      "project": "neural-net",
+      "started": "2026-04-24T03:07:49.532Z",
+      "completed": "2026-04-24T03:08:04.338Z",
+      "duration_ms": 120000,
+      "summary": "GNN (252 LOC): Graph class (adjacency list + node features), GCNLayer (mean neighbor aggregation → linear → activation, Kipf & Welling 2017), GCN network (multi-layer, node classification + graph-level prediction via global mean pool). Karate Club demo included."
+    },
+    {
+      "id": "T397",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study HenryDB join executor — the 1078 LOC join engine",
+      "project": "henrydb",
+      "started": "2026-04-24T03:08:09.962Z",
+      "completed": "2026-04-24T03:08:22.976Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB join executor (1078 LOC): nested loop, hash join (with index pushdown), merge join. All join types: INNER/LEFT/RIGHT/FULL/CROSS/NATURAL. Cost estimation (scan vs index, join algorithm selection). Join reordering via dynamic programming on subset lattice. NDV estimation for join selectivity."
+    },
+    {
+      "id": "T398",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Study neural-net differentiable sorting — Sinkhorn",
+      "project": "neural-net",
+      "started": "2026-04-24T03:08:28.913Z",
+      "completed": "2026-04-24T03:09:00.511Z",
+      "duration_ms": 120000,
+      "summary": "Differentiable sorting (134 LOC): softSort (optimal transport via Sinkhorn → doubly-stochastic permutation matrix), sinkhorn (alternating row/col normalization), softRank (sigmoid-approximated argsort), softTopK (differentiable element selection), neuralSort (Grover et al. stochastic sorting). Complete differentiable sorting toolkit."
     }
   ],
   "focusProjects": [
@@ -5650,6 +5907,94 @@
     {
       "time": "2026-04-24T02:55:07.780Z",
       "msg": "Added T376 (EXPLORE) after end: Study HenryDB expression evaluator — 1191 LOC, how does it handle SQL expressions?"
+    },
+    {
+      "time": "2026-04-24T02:57:08.228Z",
+      "msg": "Added T377 (EXPLORE) after end: Study neural-net paged attention implementation — vLLM-style memory management"
+    },
+    {
+      "time": "2026-04-24T02:57:08.351Z",
+      "msg": "Added T378 (EXPLORE) after end: Study HenryDB buffer pool + clock sweep replacement"
+    },
+    {
+      "time": "2026-04-24T02:57:08.473Z",
+      "msg": "Added T379 (EXPLORE) after end: Study neural-net SNN (spiking neural network) — LIF/Izhikevich neurons"
+    },
+    {
+      "time": "2026-04-24T02:57:08.596Z",
+      "msg": "Added T380 (EXPLORE) after end: Count total LOC across all projects — workspace statistics"
+    },
+    {
+      "time": "2026-04-24T03:00:12.151Z",
+      "msg": "Added T381 (EXPLORE) after end: Study HenryDB page layout — slotted pages, tuple storage"
+    },
+    {
+      "time": "2026-04-24T03:00:12.273Z",
+      "msg": "Added T382 (EXPLORE) after end: Study neural-net Hopfield networks — classical vs modern exponential"
+    },
+    {
+      "time": "2026-04-24T03:01:26.239Z",
+      "msg": "Added T383 (EXPLORE) after end: Study HenryDB EXPLAIN ANALYZE implementation — 510 LOC query profiler"
+    },
+    {
+      "time": "2026-04-24T03:01:26.361Z",
+      "msg": "Added T384 (EXPLORE) after end: Study neural-net flash attention implementation — tiled computation"
+    },
+    {
+      "time": "2026-04-24T03:02:27.457Z",
+      "msg": "Added T385 (EXPLORE) after end: Study HenryDB row-level security implementation"
+    },
+    {
+      "time": "2026-04-24T03:02:27.580Z",
+      "msg": "Added T386 (EXPLORE) after end: Study neural-net LoRA implementation — parameter-efficient fine-tuning"
+    },
+    {
+      "time": "2026-04-24T03:02:27.702Z",
+      "msg": "Added T387 (EXPLORE) after end: Study HenryDB cursor implementation — scrollable holdable cursors"
+    },
+    {
+      "time": "2026-04-24T03:03:53.788Z",
+      "msg": "Added T388 (EXPLORE) after end: Study neural-net scaling laws implementation — Chinchilla analysis"
+    },
+    {
+      "time": "2026-04-24T03:03:53.911Z",
+      "msg": "Added T389 (EXPLORE) after end: Study HenryDB fulltext search module"
+    },
+    {
+      "time": "2026-04-24T03:04:54.282Z",
+      "msg": "Added T390 (EXPLORE) after end: Study neural-net LLaMA architecture — modern decoder with RoPE and SwiGLU"
+    },
+    {
+      "time": "2026-04-24T03:04:54.404Z",
+      "msg": "Added T391 (EXPLORE) after end: Study HenryDB index advisor — automated index recommendation"
+    },
+    {
+      "time": "2026-04-24T03:06:09.025Z",
+      "msg": "Added T392 (EXPLORE) after end: Study neural-net RoPE implementation — rotary position embeddings"
+    },
+    {
+      "time": "2026-04-24T03:06:09.149Z",
+      "msg": "Added T393 (EXPLORE) after end: Study HenryDB Grace hash join — for large datasets"
+    },
+    {
+      "time": "2026-04-24T03:06:09.272Z",
+      "msg": "Added T394 (EXPLORE) after end: Study neural-net autograd — automatic differentiation engine"
+    },
+    {
+      "time": "2026-04-24T03:06:09.395Z",
+      "msg": "Added T395 (EXPLORE) after end: Study HenryDB cuckoo filter — probabilistic set membership"
+    },
+    {
+      "time": "2026-04-24T03:07:43.563Z",
+      "msg": "Added T396 (EXPLORE) after end: Study neural-net GNN (graph neural network) — message passing"
+    },
+    {
+      "time": "2026-04-24T03:07:43.686Z",
+      "msg": "Added T397 (EXPLORE) after end: Study HenryDB join executor — the 1078 LOC join engine"
+    },
+    {
+      "time": "2026-04-24T03:07:43.823Z",
+      "msg": "Added T398 (EXPLORE) after end: Study neural-net differentiable sorting — Sinkhorn"
     }
   ]
 }

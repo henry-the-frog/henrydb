@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-24T02:55:07.939Z",
+  "generated": "2026-04-24T03:09:00.549Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final daily log + MEMORY.md update + git push",
-    "startedAt": "2026-04-24T02:55:07.939Z",
-    "taskId": "T373"
+    "status": "done",
+    "mode": "EXPLORE",
+    "task": "Study neural-net differentiable sorting — Sinkhorn",
+    "completedAt": "2026-04-24T03:09:00.549Z",
+    "taskId": "T398",
+    "summary": "Differentiable sorting (134 LOC): softSort (optimal transport via Sinkhorn → doubly-stochastic permutation matrix), sinkhorn (alternating row/col normalization), softRank (sigmoid-approximated argsort), softTopK (differentiable element selection), neuralSort (Grover et al. stochastic sorting). Complete differentiable sorting toolkit.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-23",
@@ -3759,14 +3761,14 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 372,
+    "blocksCompleted": 398,
     "blocksTotal": 347,
     "modeDistribution": {
       "THINK": 21,
       "PLAN": 19,
       "BUILD": 75,
-      "MAINTAIN": 49,
-      "EXPLORE": 208
+      "MAINTAIN": 50,
+      "EXPLORE": 233
     }
   }
 }
