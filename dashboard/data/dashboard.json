@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T23:11:33.660Z",
+  "generated": "2026-04-25T23:12:34.545Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB pg-server (PostgreSQL wire protocol)",
-    "completedAt": "2026-04-25T23:11:33.660Z",
-    "taskId": "T160",
-    "summary": "HenryDB pg-server: full PostgreSQL wire protocol v3 (1936 LOC). Type OIDs (23 types), startup/auth/query/parse/bind/execute flow, pg_catalog interceptor (pg_class, pg_type, pg_attribute, information_schema). Connects via psql. Slow query log. Production-grade compatibility layer.",
+    "task": "EXPLORE: Test more utilities: yaml, toml, protobuf, cron-parser, event-sourcing",
+    "completedAt": "2026-04-25T23:12:34.545Z",
+    "taskId": "T161",
+    "summary": "4 more verified: YAML parser (nested objects, arrays), TOML parser (sections, types), Protobuf (schema/encode/decode roundtrip), event-sourcing (stream-based events). Total: ~75 verified.",
     "durationMs": 240000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 158,
+    "blocksCompleted": 159,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 24,
-      "EXPLORE": 27
+      "EXPLORE": 28
     }
   },
   "artifacts": [
