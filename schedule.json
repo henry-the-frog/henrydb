@@ -1812,6 +1812,17 @@
       "completed": "2026-04-25T23:21:50.569Z",
       "duration_ms": 120000,
       "summary": "ORM: Active Record pattern. defineModel creates model classes with create/find/findAll/where/first/last/findBy. In-memory storage. Schema with types and defaults. CRUD + query all working."
+    },
+    {
+      "id": "T170",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Run HenryDB differential fuzzer and analyze remaining 2.4% failures",
+      "project": "henrydb",
+      "started": "2026-04-25T23:22:07.383Z",
+      "completed": "2026-04-25T23:22:33.880Z",
+      "duration_ms": 300000,
+      "summary": "Fuzzer analysis: 5 runs of 100 queries each. Pass rates: 98%, 99%, 100%, 97%, 99%. Average 98.6% (up from 97.6%). Remaining failures all involve mixed type comparisons in WHERE + UNION (string vs number affinity). Type edge cases are the long tail."
     }
   ],
   "focusProjects": [
@@ -2483,6 +2494,10 @@
     {
       "time": "2026-04-25T23:18:34.698Z",
       "msg": "Added T169 (EXPLORE) after end: EXPLORE: Test ORM project — what SQL does it generate?"
+    },
+    {
+      "time": "2026-04-25T23:22:03.926Z",
+      "msg": "Added T170 (EXPLORE) after end: EXPLORE: Run HenryDB differential fuzzer and analyze remaining 2.4% failures"
     }
   ]
 }
