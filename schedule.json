@@ -5880,10 +5880,46 @@
     {
       "id": "T552",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session C final: daily log, git push, CURRENT.md update",
       "project": "workspace",
-      "started": "2026-04-25T03:31:50.373Z"
+      "started": "2026-04-25T03:31:50.373Z",
+      "completed": "2026-04-25T03:33:18.356Z",
+      "duration_ms": 120000,
+      "summary": "Session C wrap: daily log written, git pushed, CURRENT.md updated. 48 tasks completed."
+    },
+    {
+      "id": "T553",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test ALTER TABLE operations under MVCC",
+      "project": "henrydb",
+      "started": "2026-04-25T03:33:39.541Z",
+      "completed": "2026-04-25T03:34:15.713Z",
+      "duration_ms": 60000,
+      "summary": "ALTER TABLE works: ADD COLUMN (+DEFAULT), DROP COLUMN (schema-only, data persists — bug), RENAME COLUMN/TABLE, ADD CONSTRAINT, ALTER in transaction. ALTER TYPE not supported. DDL within transactions works! Found: DROP COLUMN doesn't clean existing data, and CONSTRAINT column leaks into row results."
+    },
+    {
+      "id": "T554",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: test autograd system for automatic differentiation",
+      "project": "neural-net",
+      "started": "2026-04-25T03:34:32.987Z",
+      "completed": "2026-04-25T03:35:18.222Z",
+      "duration_ms": 60000,
+      "summary": "Autograd works perfectly. Reverse-mode automatic differentiation: d/dx(x²)=6, d/dx(x⁶)=192 (chain rule), multi-variable gradients correct. ReLU gradient: 0/1 for neg/pos. Sigmoid and tanh forward pass work. Variable class with .value and .grad properties. Add/mul/sub/div/pow/neg/relu/sigmoid/tanh all implemented."
+    },
+    {
+      "id": "T555",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test COPY, EXPORT, backup/restore features",
+      "project": "henrydb",
+      "started": "2026-04-25T03:35:36.748Z",
+      "completed": "2026-04-25T03:36:08.397Z",
+      "duration_ms": 30000,
+      "summary": "COPY/BACKUP/DUMP not implemented as SQL commands. The database focuses on query engine, MVCC, and storage — administrative tools would need to be programmatic APIs or CLI tools. Expected gap for an educational database."
     }
   ],
   "focusProjects": [
@@ -8891,6 +8927,18 @@
     {
       "time": "2026-04-25T03:31:26.052Z",
       "msg": "Added T552 (MAINTAIN) after end: Session C final: daily log, git push, CURRENT.md update"
+    },
+    {
+      "time": "2026-04-25T03:33:32.162Z",
+      "msg": "Added T553 (EXPLORE) after end: HenryDB: test ALTER TABLE operations under MVCC"
+    },
+    {
+      "time": "2026-04-25T03:34:27.818Z",
+      "msg": "Added T554 (EXPLORE) after end: neural-net: test autograd system for automatic differentiation"
+    },
+    {
+      "time": "2026-04-25T03:35:29.734Z",
+      "msg": "Added T555 (EXPLORE) after end: HenryDB: test COPY, EXPORT, backup/restore features"
     }
   ]
 }
