@@ -942,6 +942,17 @@
       "completed": "2026-04-25T16:45:34.960Z",
       "duration_ms": 60000,
       "summary": "Session cleanup. 75 tasks. All repos pushed. CURRENT.md updated. Evening summary finalized."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add UNION and UNION ALL queries to differential fuzzer",
+      "project": "henrydb",
+      "started": "2026-04-25T16:47:12.267Z",
+      "completed": "2026-04-25T16:47:59.737Z",
+      "duration_ms": 180000,
+      "summary": "Added UNION/UNION ALL to fuzzer. 100% pass on seed=42 (500 queries, 37 UNIONs). Comprehensive query coverage: INSERT, UPDATE, DELETE, SELECT variants, JOIN, GROUP BY, HAVING, subquery, CTE, window, UNION."
     }
   ],
   "focusProjects": [
@@ -1285,6 +1296,10 @@
     {
       "time": "2026-04-25T16:44:52.964Z",
       "msg": "Added T86 (MAINTAIN) after end: MAINTAIN: Final session cleanup — update evening summary, push all repos, update CURRENT.md"
+    },
+    {
+      "time": "2026-04-25T16:47:06.978Z",
+      "msg": "Added T87 (BUILD) after end: Add UNION and UNION ALL queries to differential fuzzer"
     }
   ]
 }
