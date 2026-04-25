@@ -581,22 +581,124 @@
     {
       "id": "T52",
       "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:04:12.339Z",
+      "completed": "2026-04-25T21:04:12.483Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: run comprehensive test sweep after all changes",
+      "project": "henrydb",
+      "started": "2026-04-25T21:04:18.048Z",
+      "completed": "2026-04-25T21:07:32.600Z",
+      "duration_ms": 120000,
+      "summary": "Comprehensive test sweep: core SQL, window functions, aggregates, expression eval, insert, persistence, selectivity — all passing. No regressions from type affinity, GROUPS/EXCLUDE, or comparison changes."
+    },
+    {
+      "id": "T54",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session final",
+      "started": "2026-04-25T21:07:39.693Z",
+      "completed": "2026-04-25T21:07:40.133Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 2h+ remaining."
+    },
+    {
+      "id": "T58",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: add comment syntax (// line comments and /* */ block comments)",
+      "task": null,
+      "started": "2026-04-25T21:08:14.582Z",
+      "completed": "2026-04-25T21:08:40.901Z",
+      "duration_ms": 60000,
+      "summary": "Simple lexer change: extend skipWhitespace to handle // and /* */. Skip after detecting / followed by / or *."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "task": "Add // line comments and /* */ block comments to lexer",
+      "status": "done",
+      "plan_ref": "T58",
+      "started": "2026-04-25T21:08:46.780Z",
+      "completed": "2026-04-25T21:09:40.414Z",
+      "duration_ms": 180000,
+      "summary": "Comments added! // line comments and /* */ block comments. Division still works. All tests pass. 29 lines."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
       "status": "upcoming",
       "task": "placeholder",
       "project": "monkey-lang"
     },
     {
-      "id": "T53",
-      "mode": "EXPLORE",
+      "id": "T60",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "HenryDB: run comprehensive test sweep after all changes",
+      "goal": "HenryDB: add db.execute(sql, params) tests and MEDIAN tests",
+      "task": null
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
       "project": "henrydb"
     },
     {
-      "id": "T54",
+      "id": "T62",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "monkey-lang: run full test suite to count total tests",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T63",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: add string interpolation syntax",
+      "task": null
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T65",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Session final"
+      "task": "Push + housekeeping"
+    },
+    {
+      "id": "T66",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: fix non-aggregated column in aggregate query returning undefined",
+      "task": null
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "henrydb"
+    },
+    {
+      "id": "T68",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push and session wrap-up"
     }
   ],
   "focusProjects": [
@@ -820,6 +922,54 @@
     {
       "time": "2026-04-25T21:02:20.137Z",
       "msg": "PLAN T51 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:07:52.905Z",
+      "msg": "Added T58 (PLAN) after end: monkey-lang: add comment syntax (// line comments and /* */ block comments)"
+    },
+    {
+      "time": "2026-04-25T21:07:53.026Z",
+      "msg": "Added T59 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:07:53.305Z",
+      "msg": "Added T60 (PLAN) after end: HenryDB: add db.execute(sql, params) tests and MEDIAN tests"
+    },
+    {
+      "time": "2026-04-25T21:07:53.511Z",
+      "msg": "Added T61 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:08:01.313Z",
+      "msg": "Added T62 (EXPLORE) after end: monkey-lang: run full test suite to count total tests"
+    },
+    {
+      "time": "2026-04-25T21:08:01.542Z",
+      "msg": "Added T63 (PLAN) after end: monkey-lang: add string interpolation syntax"
+    },
+    {
+      "time": "2026-04-25T21:08:01.797Z",
+      "msg": "Added T64 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:08:02.057Z",
+      "msg": "Added T65 (MAINTAIN) after end: Push + housekeeping"
+    },
+    {
+      "time": "2026-04-25T21:08:02.243Z",
+      "msg": "Added T66 (PLAN) after end: HenryDB: fix non-aggregated column in aggregate query returning undefined"
+    },
+    {
+      "time": "2026-04-25T21:08:02.468Z",
+      "msg": "Added T67 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:08:08.522Z",
+      "msg": "Added T68 (MAINTAIN) after end: Git push and session wrap-up"
+    },
+    {
+      "time": "2026-04-25T21:08:35.115Z",
+      "msg": "PLAN T58 filled 1 BUILD tasks"
     }
   ]
 }

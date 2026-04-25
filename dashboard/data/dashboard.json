@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:04:07.617Z",
+  "generated": "2026-04-25T21:09:40.527Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add monkey-lang prelude: compile map, filter, reduce, any, all, find as standard library",
-    "completedAt": "2026-04-25T21:04:07.617Z",
-    "taskId": "T57",
-    "summary": "Prelude with 9 HOFs: map, filter, reduce, any, all, find, flat_map, take, drop. Compiled as monkey-lang bytecode. 21/21 tests pass. compileWithPrelude() convenience.",
-    "durationMs": 600000
+    "task": "Add // line comments and /* */ block comments to lexer",
+    "completedAt": "2026-04-25T21:09:40.527Z",
+    "taskId": "T69",
+    "summary": "Comments added! // line comments and /* */ block comments. Division still works. All tests pass. 29 lines.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8343,50 +8343,152 @@
       {
         "id": "T51",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: add VM callback mechanism for HOF builtins (map, filter, reduce)",
         "task": null,
-        "started": "2026-04-25T21:02:10.114Z"
+        "started": "2026-04-25T21:02:10.114Z",
+        "completed": "2026-04-25T21:02:25.167Z",
+        "duration_ms": 120000,
+        "summary": "Approach: compile HOFs as monkey-lang prelude (standard library). map/filter/reduce written in monkey-lang, compiled to bytecode at VM init. Simpler and more maintainable than callback mechanism."
       },
       {
         "id": "T57",
         "mode": "BUILD",
         "task": "Add monkey-lang prelude: compile map, filter, reduce, any, all, find as standard library",
-        "status": "upcoming",
-        "plan_ref": "T51"
+        "status": "done",
+        "plan_ref": "T51",
+        "started": "2026-04-25T21:02:30.494Z",
+        "completed": "2026-04-25T21:04:07.581Z",
+        "duration_ms": 600000,
+        "summary": "Prelude with 9 HOFs: map, filter, reduce, any, all, find, flat_map, take, drop. Compiled as monkey-lang bytecode. 21/21 tests pass. compileWithPrelude() convenience."
       },
       {
         "id": "T52",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:04:12.339Z",
+        "completed": "2026-04-25T21:04:12.483Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
+      },
+      {
+        "id": "T53",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: run comprehensive test sweep after all changes",
+        "project": "henrydb",
+        "started": "2026-04-25T21:04:18.048Z",
+        "completed": "2026-04-25T21:07:32.600Z",
+        "duration_ms": 120000,
+        "summary": "Comprehensive test sweep: core SQL, window functions, aggregates, expression eval, insert, persistence, selectivity — all passing. No regressions from type affinity, GROUPS/EXCLUDE, or comparison changes."
+      },
+      {
+        "id": "T54",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session final",
+        "started": "2026-04-25T21:07:39.693Z",
+        "completed": "2026-04-25T21:07:40.133Z",
+        "duration_ms": 0,
+        "summary": "Deferred — 2h+ remaining."
+      },
+      {
+        "id": "T58",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: add comment syntax (// line comments and /* */ block comments)",
+        "task": null,
+        "started": "2026-04-25T21:08:14.582Z"
+      },
+      {
+        "id": "T69",
+        "mode": "BUILD",
+        "task": "Add // line comments and /* */ block comments to lexer",
+        "status": "upcoming",
+        "plan_ref": "T58"
+      },
+      {
+        "id": "T59",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "monkey-lang"
       },
       {
-        "id": "T53",
-        "mode": "EXPLORE",
+        "id": "T60",
+        "mode": "PLAN",
         "status": "upcoming",
-        "task": "HenryDB: run comprehensive test sweep after all changes",
+        "goal": "HenryDB: add db.execute(sql, params) tests and MEDIAN tests",
+        "task": null
+      },
+      {
+        "id": "T61",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
         "project": "henrydb"
       },
       {
-        "id": "T54",
+        "id": "T62",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "monkey-lang: run full test suite to count total tests",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T63",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: add string interpolation syntax",
+        "task": null
+      },
+      {
+        "id": "T64",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T65",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Session final"
+        "task": "Push + housekeeping"
+      },
+      {
+        "id": "T66",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: fix non-aggregated column in aggregate query returning undefined",
+        "task": null
+      },
+      {
+        "id": "T67",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "henrydb"
+      },
+      {
+        "id": "T68",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push and session wrap-up"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 53,
-    "blocksTotal": 57,
+    "blocksCompleted": 58,
+    "blocksTotal": 69,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 11,
-      "BUILD": 24,
-      "MAINTAIN": 9,
-      "EXPLORE": 4
+      "PLAN": 12,
+      "BUILD": 26,
+      "MAINTAIN": 10,
+      "EXPLORE": 5
     }
   },
   "artifacts": [
