@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:17:15.859Z",
+  "generated": "2026-04-25T18:18:11.615Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB INTERSECT, EXCEPT, and complex HAVING",
-    "completedAt": "2026-04-25T18:17:15.859Z",
-    "taskId": "T153",
-    "summary": "EXPLORE: INTERSECT, EXCEPT, complex HAVING all work. Set operations correct ({3,4,5}, {1,2}, {6,7}). HAVING with multiple aggregate conditions works.",
+    "task": "EXPLORE: Test HenryDB VACUUM, PRAGMA, and information_schema",
+    "completedAt": "2026-04-25T18:18:11.615Z",
+    "taskId": "T154",
+    "summary": "EXPLORE: information_schema.tables works (PG-style catalog with table_catalog, table_schema, table_name, table_type, column_count). VACUUM works. PRAGMA not supported (SQLite-style, this is PG-style DB).",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 153,
+    "blocksCompleted": 154,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 18,
-      "EXPLORE": 54
+      "EXPLORE": 55
     }
   },
   "artifacts": [

@@ -1670,6 +1670,17 @@
       "completed": "2026-04-25T18:17:15.821Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: INTERSECT, EXCEPT, complex HAVING all work. Set operations correct ({3,4,5}, {1,2}, {6,7}). HAVING with multiple aggregate conditions works."
+    },
+    {
+      "id": "T154",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB VACUUM, PRAGMA, and information_schema",
+      "project": "henrydb",
+      "started": "2026-04-25T18:17:39.023Z",
+      "completed": "2026-04-25T18:18:11.578Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: information_schema.tables works (PG-style catalog with table_catalog, table_schema, table_name, table_type, column_count). VACUUM works. PRAGMA not supported (SQLite-style, this is PG-style DB)."
     }
   ],
   "focusProjects": [
@@ -2269,6 +2280,10 @@
     {
       "time": "2026-04-25T18:16:47.092Z",
       "msg": "Added T153 (EXPLORE) after end: EXPLORE: Test HenryDB INTERSECT, EXCEPT, and complex HAVING"
+    },
+    {
+      "time": "2026-04-25T18:17:32.509Z",
+      "msg": "Added T154 (EXPLORE) after end: EXPLORE: Test HenryDB VACUUM, PRAGMA, and information_schema"
     }
   ]
 }
