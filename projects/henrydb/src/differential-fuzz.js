@@ -73,11 +73,30 @@ function genSelect(tables) {
   
   const parts = [`SELECT`];
   
-  // Decide: simple query or JOIN
-  const doJoin = rand() < 0.3 && tableNames.length >= 2;
+  // Decide: simple query, JOIN, or GROUP BY
+  const doJoin = rand() < 0.2 && tableNames.length >= 2;
+  const doGroupBy = rand() < 0.25 && !doJoin;
   
   // Columns
-  if (rand() < 0.3 && !doJoin) {
+  if (doGroupBy) {
+    const groupCol = pick(tables[name].map(c => c.name));
+    const aggFunc = pick(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX']);
+    const aggCol = pick(tables[name].map(c => c.name));
+    parts.push(`${groupCol}, ${aggFunc}(${aggCol}) as agg_val`);
+    parts.push(`FROM ${name}`);
+    
+    // WHERE (before GROUP BY)
+    if (rand() < 0.3) {
+      parts.push(`WHERE ${groupCol} ${pick(['=', '!=', '<', '>'])} ${genLiteral()}`);
+    }
+    
+    parts.push(`GROUP BY ${groupCol}`);
+    
+    // HAVING
+    if (rand() < 0.4) {
+      parts.push(`HAVING ${aggFunc}(${aggCol}) ${pick(['>', '<', '>=', '<='])} ${genIntLiteral()}`);
+    }
+  } else if (rand() < 0.3 && !doJoin) {
     parts.push('*');
   } else {
     const ncols = randInt(1, 3);
