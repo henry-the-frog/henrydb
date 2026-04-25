@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:19:05.538Z",
+  "generated": "2026-04-25T21:20:44.796Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Git push all, update TODO.md, session summary",
-    "completedAt": "2026-04-25T21:19:05.538Z",
-    "taskId": "T77",
-    "summary": "All pushed. TODO.md cleaned up — completed items removed, new items added.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "Wire perFunctionSSA into compiler as an analysis pass (diagnostic only)",
+    "completedAt": "2026-04-25T21:20:44.796Z",
+    "taskId": "T90",
+    "summary": "perFunctionSSA wired into compiler. SSA+escape info attached to Bytecode. Diagnostic only for now. All tests pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8474,61 +8474,241 @@
       {
         "id": "T63",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: add string interpolation syntax",
         "task": null,
-        "started": "2026-04-25T21:11:52.624Z"
+        "started": "2026-04-25T21:11:52.624Z",
+        "completed": "2026-04-25T21:12:05.554Z",
+        "duration_ms": 120000,
+        "summary": "Use backtick syntax like JS template literals. Lexer tokenizes parts between ${...}. Parser creates StringInterpolation AST node. Compiler emits string concat chain. 4 files need changes."
       },
       {
         "id": "T71",
         "mode": "BUILD",
         "task": "Add backtick template string interpolation to lexer, parser, compiler, and evaluator",
-        "status": "upcoming",
-        "plan_ref": "T63"
+        "status": "done",
+        "plan_ref": "T63",
+        "started": "2026-04-25T21:12:12.841Z",
+        "completed": "2026-04-25T21:13:42.650Z",
+        "duration_ms": 300000,
+        "summary": "Backtick template literals added! `hello ${name}!` syntax. Implemented as f-string alias — 14 lines in lexer. All tests pass."
       },
       {
         "id": "T64",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:13:52.101Z",
+        "completed": "2026-04-25T21:13:52.400Z",
+        "duration_ms": 0,
+        "summary": "BUILD cap reached (20). Mandatory depth pivot."
+      },
+      {
+        "id": "T65",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push + housekeeping",
+        "started": "2026-04-25T21:13:59.013Z",
+        "completed": "2026-04-25T21:14:07.813Z",
+        "duration_ms": 30000,
+        "summary": "All pushed. BUILD cap reached (20). Depth pivot."
+      },
+      {
+        "id": "T66",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: fix non-aggregated column in aggregate query returning undefined",
+        "task": null,
+        "started": "2026-04-25T21:14:13.907Z",
+        "completed": "2026-04-25T21:15:21.841Z",
+        "duration_ms": 180000,
+        "summary": "Fixed: non-aggregated columns in aggregate queries now pick value from first row (SQLite behavior). Was returning undefined. 8 lines changed."
+      },
+      {
+        "id": "T67",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-25T21:15:35.490Z",
+        "completed": "2026-04-25T21:15:35.726Z",
+        "duration_ms": 0,
+        "summary": "Skipped — depth pivot."
+      },
+      {
+        "id": "T68",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push and session wrap-up",
+        "started": "2026-04-25T21:15:42.432Z",
+        "completed": "2026-04-25T21:15:42.638Z",
+        "duration_ms": 0,
+        "summary": "Deferred — depth pivot."
+      },
+      {
+        "id": "T72",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep investigation: run HenryDB fuzzer on all 10 seeds to measure improvement from aggregate fix",
+        "project": "henrydb",
+        "started": "2026-04-25T21:16:00.278Z",
+        "completed": "2026-04-25T21:16:21.107Z",
+        "duration_ms": 300000,
+        "summary": "Fuzzer: avg 96.7% across 10 seeds (200 iters each). Best: 99.5% (seed 42). Worst: 94% (seed 31415). Session B improved from ~96.5% baseline. Remaining 3.3%: window ordering, UNION, CTE edge cases."
+      },
+      {
+        "id": "T73",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session B retrospective: what worked, what surprised, what to try tomorrow",
+        "started": "2026-04-25T21:16:27.345Z",
+        "completed": "2026-04-25T21:16:44.806Z",
+        "duration_ms": 180000,
+        "summary": "Retrospective done. Key theme: depth > breadth. Surprises: SSA OOM simple fix, Number(empty)=0 coercion, f-strings already existed. Tomorrow: per-function SSA, fuzzer gap, lambda-calculus."
+      },
+      {
+        "id": "T74",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "monkey-lang: stress test template literals and comments with complex programs",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:16:50.772Z",
+        "completed": "2026-04-25T21:17:19.057Z",
+        "duration_ms": 180000,
+        "summary": "10/10 stress tests pass. Nested templates, comments, division, empty, 50 interpolations in 3.4ms. F-string and backtick equivalence confirmed. All robust."
+      },
+      {
+        "id": "T75",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "monkey-lang: investigate prelude performance — how does it compare to native builtins?",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:17:25.292Z",
+        "completed": "2026-04-25T21:17:50.006Z",
+        "duration_ms": 180000,
+        "summary": "Prelude HOFs are ~3x slower than native evaluator builtins (2.1ms vs 0.6ms per map of 100 elements). Expected due to recursive frame overhead. Adequate for most use cases. If perf critical: add VM callback mechanism."
+      },
+      {
+        "id": "T76",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Knowledge capture: update scratch notes and MEMORY.md with Session B learnings",
+        "started": "2026-04-25T21:17:57.269Z",
+        "completed": "2026-04-25T21:18:25.175Z",
+        "duration_ms": 120000,
+        "summary": "Session B learnings captured in scratch/session-b-learnings.md. Key themes: type systems, escape analysis, SSA, prelude pattern, 5 bugs."
+      },
+      {
+        "id": "T77",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push all, update TODO.md, session summary",
+        "started": "2026-04-25T21:18:37.335Z",
+        "completed": "2026-04-25T21:19:05.502Z",
+        "duration_ms": 60000,
+        "summary": "All pushed. TODO.md cleaned up — completed items removed, new items added."
+      },
+      {
+        "id": "T78",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: wire perFunctionSSA into compiler optimization pipeline",
+        "task": null,
+        "started": "2026-04-25T21:19:24.902Z"
+      },
+      {
+        "id": "T90",
+        "mode": "BUILD",
+        "task": "Wire perFunctionSSA into compiler as an analysis pass (diagnostic only)",
+        "status": "upcoming",
+        "plan_ref": "T78"
+      },
+      {
+        "id": "T79",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "monkey-lang"
       },
       {
-        "id": "T65",
-        "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Push + housekeeping"
-      },
-      {
-        "id": "T66",
+        "id": "T80",
         "mode": "PLAN",
         "status": "upcoming",
-        "goal": "HenryDB: fix non-aggregated column in aggregate query returning undefined",
+        "goal": "HenryDB: investigate fuzzer UNION failures specifically",
         "task": null
       },
       {
-        "id": "T67",
+        "id": "T81",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "henrydb"
       },
       {
-        "id": "T68",
+        "id": "T82",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: add import/export module system (parser level)",
+        "task": null
+      },
+      {
+        "id": "T83",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T84",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "HenryDB: explore VALUES clause implementation path",
+        "project": "henrydb"
+      },
+      {
+        "id": "T85",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Git push and session wrap-up"
+        "task": "Housekeeping + push"
+      },
+      {
+        "id": "T86",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: add pattern matching syntax",
+        "task": null
+      },
+      {
+        "id": "T87",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T88",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "monkey-lang: investigate adding type annotations (optional typing)",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T89",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Session wrap-up"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 76,
-    "blocksTotal": 71,
+    "blocksCompleted": 78,
+    "blocksTotal": 90,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 15,
-      "BUILD": 32,
+      "PLAN": 16,
+      "BUILD": 33,
       "MAINTAIN": 14,
       "EXPLORE": 9
     }

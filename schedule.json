@@ -824,6 +824,103 @@
       "completed": "2026-04-25T21:19:05.502Z",
       "duration_ms": 60000,
       "summary": "All pushed. TODO.md cleaned up — completed items removed, new items added."
+    },
+    {
+      "id": "T78",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: wire perFunctionSSA into compiler optimization pipeline",
+      "task": null,
+      "started": "2026-04-25T21:19:24.902Z",
+      "completed": "2026-04-25T21:19:37.938Z",
+      "duration_ms": 60000,
+      "summary": "Plan: add optional SSA analysis pass to compiler. Run perFunctionSSA after compilation, store results on Compiler for introspection. No optimization yet — just wiring."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "task": "Wire perFunctionSSA into compiler as an analysis pass (diagnostic only)",
+      "status": "done",
+      "plan_ref": "T78",
+      "started": "2026-04-25T21:19:44.273Z",
+      "completed": "2026-04-25T21:20:44.761Z",
+      "duration_ms": 180000,
+      "summary": "perFunctionSSA wired into compiler. SSA+escape info attached to Bytecode. Diagnostic only for now. All tests pass."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T80",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: investigate fuzzer UNION failures specifically",
+      "task": null
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "henrydb"
+    },
+    {
+      "id": "T82",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: add import/export module system (parser level)",
+      "task": null
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T84",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: explore VALUES clause implementation path",
+      "project": "henrydb"
+    },
+    {
+      "id": "T85",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + push"
+    },
+    {
+      "id": "T86",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: add pattern matching syntax",
+      "task": null
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T88",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "monkey-lang: investigate adding type annotations (optional typing)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T89",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session wrap-up"
     }
   ],
   "focusProjects": [
@@ -1127,6 +1224,58 @@
     {
       "time": "2026-04-25T21:15:53.360Z",
       "msg": "Added T77 (MAINTAIN) after end: Git push all, update TODO.md, session summary"
+    },
+    {
+      "time": "2026-04-25T21:19:17.740Z",
+      "msg": "Added T78 (PLAN) after end: monkey-lang: wire perFunctionSSA into compiler optimization pipeline"
+    },
+    {
+      "time": "2026-04-25T21:19:17.858Z",
+      "msg": "Added T79 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:19:17.976Z",
+      "msg": "Added T80 (PLAN) after end: HenryDB: investigate fuzzer UNION failures specifically"
+    },
+    {
+      "time": "2026-04-25T21:19:18.094Z",
+      "msg": "Added T81 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:19:18.213Z",
+      "msg": "Added T82 (PLAN) after end: monkey-lang: add import/export module system (parser level)"
+    },
+    {
+      "time": "2026-04-25T21:19:18.330Z",
+      "msg": "Added T83 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:19:18.447Z",
+      "msg": "Added T84 (EXPLORE) after end: HenryDB: explore VALUES clause implementation path"
+    },
+    {
+      "time": "2026-04-25T21:19:18.565Z",
+      "msg": "Added T85 (MAINTAIN) after end: Housekeeping + push"
+    },
+    {
+      "time": "2026-04-25T21:19:18.684Z",
+      "msg": "Added T86 (PLAN) after end: monkey-lang: add pattern matching syntax"
+    },
+    {
+      "time": "2026-04-25T21:19:18.819Z",
+      "msg": "Added T87 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T21:19:18.938Z",
+      "msg": "Added T88 (EXPLORE) after end: monkey-lang: investigate adding type annotations (optional typing)"
+    },
+    {
+      "time": "2026-04-25T21:19:19.056Z",
+      "msg": "Added T89 (MAINTAIN) after end: Session wrap-up"
+    },
+    {
+      "time": "2026-04-25T21:19:37.790Z",
+      "msg": "PLAN T78 filled 1 BUILD tasks"
     }
   ]
 }
