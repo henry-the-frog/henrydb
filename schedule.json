@@ -417,6 +417,28 @@
       "completed": "2026-04-25T15:07:36.348Z",
       "duration_ms": 180000,
       "summary": "Verified all tutorial examples run. Fixed getRow→slice(). XOR converges, sin(x) loss=0.0003. Pushed."
+    },
+    {
+      "id": "T39",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Stress test monkey-lang RISC-V backend with edge cases",
+      "project": "monkey-lang",
+      "started": "2026-04-25T15:08:43.146Z",
+      "completed": "2026-04-25T15:11:34.290Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Stress tested monkey-lang VM. Everything works: nested closures, recursion, higher-order funcs, eval/VM parity (9/9). Found README discrepancy (claims WASM+RISC-V backends that dont exist). Mutable closure state unsupported (by design). 0/3 hypotheses confirmed — system is more robust than expected."
+    },
+    {
+      "id": "T40",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Fix monkey-lang README: remove claims about WASM and RISC-V backends that dont exist",
+      "project": "monkey-lang",
+      "started": "2026-04-25T15:11:49.654Z",
+      "completed": "2026-04-25T15:12:17.922Z",
+      "duration_ms": 60000,
+      "summary": "Fixed monkey-lang README: removed false claims about WASM and RISC-V backends, pattern matching, generators. Accurate docs."
     }
   ],
   "focusProjects": [
@@ -568,6 +590,14 @@
     {
       "time": "2026-04-25T15:04:53.463Z",
       "msg": "PLAN T36 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T15:08:36.797Z",
+      "msg": "Added T39 (EXPLORE) after end: EXPLORE: Stress test monkey-lang RISC-V backend with edge cases"
+    },
+    {
+      "time": "2026-04-25T15:11:45.039Z",
+      "msg": "Added T40 (MAINTAIN) after end: Fix monkey-lang README: remove claims about WASM and RISC-V backends that dont exist"
     }
   ]
 }
