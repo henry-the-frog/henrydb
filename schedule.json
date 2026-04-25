@@ -3087,6 +3087,30 @@
       "completed": "2026-04-25T19:48:21.832Z",
       "duration_ms": 60000,
       "summary": "DEFAULT values work! String, integer, and expression defaults (datetime now). Partial INSERT fills missing with defaults. Even dynamic expression defaults."
+    },
+    {
+      "id": "T284",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB DENSE_RANK vs RANK vs ROW_NUMBER",
+      "project": "henrydb",
+      "started": "2026-04-25T19:48:41.783Z",
+      "completed": "2026-04-25T19:48:58.754Z",
+      "duration_ms": 60000,
+      "summary": "ROW_NUMBER vs RANK vs DENSE_RANK all correct! Ties handled properly. ROW_NUMBER always unique, RANK skips, DENSE_RANK continuous."
+    },
+    {
+      "id": "T285",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang while loop with break/return",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T286",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: FINAL session end — write evening summary, push all"
     }
   ],
   "focusProjects": [
@@ -4206,6 +4230,18 @@
     {
       "time": "2026-04-25T19:47:59.494Z",
       "msg": "Added T283 (EXPLORE) after end: EXPLORE: Test HenryDB DEFAULT values and expressions"
+    },
+    {
+      "time": "2026-04-25T19:48:31.409Z",
+      "msg": "Added T284 (EXPLORE) after end: EXPLORE: Test HenryDB DENSE_RANK vs RANK vs ROW_NUMBER"
+    },
+    {
+      "time": "2026-04-25T19:48:31.531Z",
+      "msg": "Added T285 (EXPLORE) after end: EXPLORE: Test monkey-lang while loop with break/return"
+    },
+    {
+      "time": "2026-04-25T19:48:31.652Z",
+      "msg": "Added T286 (MAINTAIN) after end: MAINTAIN: FINAL session end — write evening summary, push all"
     }
   ]
 }

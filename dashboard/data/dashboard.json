@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:48:21.869Z",
+  "generated": "2026-04-25T19:48:58.791Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB DEFAULT values and expressions",
-    "completedAt": "2026-04-25T19:48:21.869Z",
-    "taskId": "T283",
-    "summary": "DEFAULT values work! String, integer, and expression defaults (datetime now). Partial INSERT fills missing with defaults. Even dynamic expression defaults.",
+    "task": "EXPLORE: Test HenryDB DENSE_RANK vs RANK vs ROW_NUMBER",
+    "completedAt": "2026-04-25T19:48:58.791Z",
+    "taskId": "T284",
+    "summary": "ROW_NUMBER vs RANK vs DENSE_RANK all correct! Ties handled properly. ROW_NUMBER always unique, RANK skips, DENSE_RANK continuous.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 283,
+    "blocksCompleted": 284,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 30,
-      "EXPLORE": 169
+      "EXPLORE": 170
     }
   },
   "artifacts": [
