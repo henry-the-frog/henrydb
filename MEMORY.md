@@ -18,7 +18,15 @@
 - **Features**: Full SQL (DDL, DML, JOINs, CTEs, window functions, triggers, views), WAL, B-tree storage, prepared statements, ARRAY literals, VALUES clause, GENERATE_SERIES, UNNEST
 - **Key module**: `type-affinity.js` for SQLite-compatible comparisons and INSERT coercion
 
-### Other Projects (/Users/henry/projects/)
+### neural-net — Deep Learning Framework (38K LOC, 318 files)
+- **Larger than monkey-lang** (38K vs 22K LOC!)
+- **Architectures**: Transformer, RNN, VAE, Autoencoder, Capsule, SNN, SOM, MOE
+- **LLM Features**: BPE tokenizer, beam search, speculative decoding, think tokens, constitutional AI, context distillation, continuous batching, token healing
+- **Attention**: Multi-head, sparse, sliding window, attention sinks, entropy analysis
+- **Training**: Autograd, AdamW, schedulers, mixed precision, scaling laws, sequence packing, structured pruning
+- **Activations**: SwiGLU, and standard activations
+- **Demo**: Shakespeare character LM training
+
 - **215 projects** — comprehensive CS fundamentals implementation collection
 - **~81 actively verified, ~103 importable** (as of Apr 25 Session B)
 - **Languages**: scheme-interp (full Scheme with tail calls), mini-lisp, calc-lang, brainfuck, tinylang
