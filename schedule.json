@@ -3196,6 +3196,17 @@
       "completed": "2026-04-25T19:52:57.592Z",
       "duration_ms": 60000,
       "summary": "Hash operations: keys(), values(), merge(), bracket access. len(hash) not supported but keys+values work. Complete hash introspection."
+    },
+    {
+      "id": "T294",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB LEFT JOIN with NULL checking",
+      "project": "henrydb",
+      "started": "2026-04-25T19:53:06.749Z",
+      "completed": "2026-04-25T19:53:22.679Z",
+      "duration_ms": 60000,
+      "summary": "LEFT JOIN (no-match via IS NULL), RIGHT JOIN, CROSS JOIN all work. Charlie found with no orders via LEFT+IS NULL pattern."
     }
   ],
   "focusProjects": [
@@ -4355,6 +4366,10 @@
     {
       "time": "2026-04-25T19:52:40.453Z",
       "msg": "Added T293 (EXPLORE) after end: EXPLORE: Test monkey-lang hash iteration (keys, values, entries)"
+    },
+    {
+      "time": "2026-04-25T19:53:06.512Z",
+      "msg": "Added T294 (EXPLORE) after end: EXPLORE: Test HenryDB LEFT JOIN with NULL checking"
     }
   ]
 }
