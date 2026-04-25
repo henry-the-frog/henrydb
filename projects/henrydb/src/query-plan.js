@@ -261,7 +261,12 @@ export class PlanBuilder {
     if (ast.where && !ast.joins?.length) {
       const indexScan = this._checkIndexScan(table, ast.where, tableName);
       if (indexScan) {
-        return indexScan;
+        // Cost-based comparison: only use index if cheaper than seq scan
+        const seqCost = (pageCount * 1.0) + (rowCount * 0.01);
+        if (indexScan.estimatedCost <= seqCost) {
+          return indexScan;
+        }
+        // Index is more expensive — fall through to seq scan
       }
     }
 

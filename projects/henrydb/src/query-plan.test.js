@@ -559,3 +559,17 @@ describe('PlanFormatter - YAML output', () => {
     assert.ok(yaml.includes('Seq Scan'));
   });
 });
+
+describe('Classic planner cost comparison', () => {
+  it('uses index scan when cheaper than seq scan', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE items (id INT PRIMARY KEY, name TEXT)');
+    for (let i = 1; i <= 100; i++) db.execute(`INSERT INTO items VALUES (${i}, 'item${i}')`);
+    db.execute('ANALYZE items');
+    
+    const r = db.execute('EXPLAIN SELECT * FROM items WHERE id = 50');
+    const plan = r.rows[0]['QUERY PLAN'];
+    // PK lookup should use index (very selective)
+    assert.ok(plan.includes('Index') || plan.includes('BTree'), `PK lookup should use index, got: ${plan}`);
+  });
+});
