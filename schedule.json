@@ -1313,6 +1313,17 @@
       "completed": "2026-04-25T17:44:05.478Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Type checker is fully working. Hindley-Milner with Algorithm W. Correctly catches: int+string, bool+int, function arity mismatches. Infers function types. 9 built-in type signatures. 82 tests in typechecker.test.js."
+    },
+    {
+      "id": "T121",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB EXPLAIN ANALYZE — verify query plan statistics",
+      "project": "henrydb",
+      "started": "2026-04-25T17:44:28.631Z",
+      "completed": "2026-04-25T17:44:47.539Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: EXPLAIN ANALYZE is PostgreSQL-quality. Shows: cost estimation, actual vs estimated rows, per-operator timing, buffer stats, volcano plan with operator details, selectivity estimates. Full query planning infrastructure."
     }
   ],
   "focusProjects": [
@@ -1780,6 +1791,10 @@
     {
       "time": "2026-04-25T17:43:27.376Z",
       "msg": "Added T120 (EXPLORE) after end: EXPLORE: Test monkey-lang type checker on complex programs — does it catch type errors?"
+    },
+    {
+      "time": "2026-04-25T17:44:22.904Z",
+      "msg": "Added T121 (EXPLORE) after end: EXPLORE: Test HenryDB EXPLAIN ANALYZE — verify query plan statistics"
     }
   ]
 }
