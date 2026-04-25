@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T20:18:22.012Z",
+  "generated": "2026-04-25T20:26:43.526Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Verify VM closure mutation is fixed — write regression tests",
-    "completedAt": "2026-04-25T20:18:22.012Z",
-    "taskId": "T21",
-    "summary": "9 closure mutation regression tests: counter, shared state, nested, accumulator, decrement, toggle, independent, loop, string. All pass eval+VM. Bug was already fixed.",
-    "durationMs": 180000
+    "task": "Run fuzzer across 10 seeds to measure improvement",
+    "completedAt": "2026-04-25T20:26:43.526Z",
+    "taskId": "T23",
+    "summary": "Fuzzer results across 10 seeds (200 iters each): avg 96.5%. Best 99.5%, worst 94%. Remaining failures: window function ORDER BY, UNION type issues. Also fixed fuzzer match variable bug.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -7798,43 +7798,77 @@
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix monkey-lang VM closure mutation (evaluator returns 3, VM returns 0)",
         "task": null,
-        "started": "2026-04-25T20:16:42.073Z"
+        "started": "2026-04-25T20:16:42.073Z",
+        "completed": "2026-04-25T20:17:46.264Z",
+        "duration_ms": 120000,
+        "summary": "VM closure mutation already fixed by Session A const-subst removeMutated fix! All 4 mutation patterns match (counter, shared state, nested, accumulator). Filling BUILD with regression tests."
       },
       {
         "id": "T21",
         "mode": "BUILD",
         "task": "Verify VM closure mutation is fixed — write regression tests",
-        "status": "upcoming",
-        "plan_ref": "T2"
+        "status": "done",
+        "plan_ref": "T2",
+        "started": "2026-04-25T20:17:54.379Z",
+        "completed": "2026-04-25T20:18:21.975Z",
+        "duration_ms": 180000,
+        "summary": "9 closure mutation regression tests: counter, shared state, nested, accumulator, decrement, toggle, independent, loop, string. All pass eval+VM. Bug was already fixed."
       },
       {
         "id": "T3",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T20:18:36.367Z",
+        "completed": "2026-04-25T20:18:36.511Z",
+        "duration_ms": 0,
+        "summary": "Skipped — placeholder no longer needed."
       },
       {
         "id": "T4",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard health"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard health",
+        "started": "2026-04-25T20:18:39.800Z",
+        "completed": "2026-04-25T20:20:17.424Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed workspace + monkey-lang. Located henrydb at projects/henrydb/."
       },
       {
         "id": "T5",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on VM closure fix. Pick next depth target."
+        "status": "done",
+        "task": "Reflect on VM closure fix. Pick next depth target.",
+        "started": "2026-04-25T20:20:20.699Z",
+        "completed": "2026-04-25T20:20:30.871Z",
+        "duration_ms": 60000,
+        "summary": "VM closure was already fixed. Queue order good: type affinity → escape analysis. No changes."
       },
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: close fuzzer type affinity gap (TEXT >= INT coercion in WHERE)",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T20:20:35.707Z"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Add SQLite type affinity on INSERT — coerce values based on column type declarations",
+        "status": "upcoming",
+        "plan_ref": "T6"
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "task": "Run fuzzer across 10 seeds to measure improvement",
+        "status": "upcoming",
+        "plan_ref": "T6"
       },
       {
         "id": "T7",
@@ -7934,12 +7968,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 3,
-    "blocksTotal": 21,
+    "blocksCompleted": 9,
+    "blocksTotal": 23,
     "modeDistribution": {
-      "THINK": 1,
-      "PLAN": 1,
-      "BUILD": 1
+      "THINK": 2,
+      "PLAN": 2,
+      "BUILD": 4,
+      "MAINTAIN": 1
     }
   },
   "artifacts": [

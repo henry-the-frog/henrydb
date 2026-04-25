@@ -36,28 +36,66 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T20:18:36.367Z",
+      "completed": "2026-04-25T20:18:36.511Z",
+      "duration_ms": 0,
+      "summary": "Skipped — placeholder no longer needed."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard health",
+      "started": "2026-04-25T20:18:39.800Z",
+      "completed": "2026-04-25T20:20:17.424Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed workspace + monkey-lang. Located henrydb at projects/henrydb/."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on VM closure fix. Pick next depth target."
+      "status": "done",
+      "task": "Reflect on VM closure fix. Pick next depth target.",
+      "started": "2026-04-25T20:20:20.699Z",
+      "completed": "2026-04-25T20:20:30.871Z",
+      "duration_ms": 60000,
+      "summary": "VM closure was already fixed. Queue order good: type affinity → escape analysis. No changes."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: close fuzzer type affinity gap (TEXT >= INT coercion in WHERE)",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T20:20:35.707Z",
+      "completed": "2026-04-25T20:21:44.413Z",
+      "duration_ms": 180000,
+      "summary": "Root cause: HenryDB stores int 42 in TEXT column as int, SQLite coerces to string. Fix: add applyAffinity() in insert-row.js after value resolution. SQLite affinity rules: TEXT→string, INT→tryNumber, REAL→tryFloat, NUMERIC→flexible."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Add SQLite type affinity on INSERT — coerce values based on column type declarations",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-25T20:21:47.917Z",
+      "completed": "2026-04-25T20:25:41.135Z",
+      "duration_ms": 300000,
+      "summary": "Created type-affinity.js shared module. INSERT now coerces values via applyAffinity(). ORDER BY uses sqliteCompare(). All existing tests pass."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "Run fuzzer across 10 seeds to measure improvement",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-25T20:25:45.207Z",
+      "completed": "2026-04-25T20:26:43.491Z",
+      "duration_ms": 300000,
+      "summary": "Fuzzer results across 10 seeds (200 iters each): avg 96.5%. Best 99.5%, worst 94%. Remaining failures: window function ORDER BY, UNION type issues. Also fixed fuzzer match variable bug."
     },
     {
       "id": "T7",
@@ -251,6 +289,10 @@
     {
       "time": "2026-04-25T20:17:40.823Z",
       "msg": "PLAN T2 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T20:21:36.618Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
