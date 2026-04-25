@@ -1422,6 +1422,17 @@
       "completed": "2026-04-25T17:55:16.927Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Accurate LOC: 559,837 lines of JavaScript. henrydb: 212K, monkey-lang: 200K, neural-net: 59K, lambda-calculus: 43K, blog: 16K, riscv: 15K, git: 5K, fft: 3K, type-inference: 2K, regex: 2K, forth: 2K, huffman: 1K."
+    },
+    {
+      "id": "T131",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Start HenryDB server and test via pg client",
+      "project": "henrydb",
+      "started": "2026-04-25T17:55:36.307Z",
+      "completed": "2026-04-25T17:55:57.336Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: HenryDB server starts on port 15432 with PG wire protocol. Can connect with psql -h localhost -p 15432. Internal queries work. HTTP + PG protocol dual server."
     }
   ],
   "focusProjects": [
@@ -1929,6 +1940,10 @@
     {
       "time": "2026-04-25T17:54:54.155Z",
       "msg": "Added T130 (EXPLORE) after end: EXPLORE: How many total LOC across all projects? (accurate count)"
+    },
+    {
+      "time": "2026-04-25T17:55:30.578Z",
+      "msg": "Added T131 (EXPLORE) after end: EXPLORE: Start HenryDB server and test via pg client"
     }
   ]
 }
