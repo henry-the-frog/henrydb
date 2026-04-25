@@ -351,5 +351,25 @@ describe('Database', () => {
       const r = db.execute('SELECT * FROM flags WHERE active = TRUE');
       assert.equal(r.rows.length, 2);
     });
+
+    it('REGEXP operator matches rows', () => {
+      db.execute('CREATE TABLE words (w TEXT)');
+      db.execute("INSERT INTO words VALUES ('hello')");
+      db.execute("INSERT INTO words VALUES ('world')");
+      db.execute("INSERT INTO words VALUES ('hello123')");
+      db.execute("INSERT INTO words VALUES ('test')");
+      
+      const r1 = db.execute("SELECT * FROM words WHERE w REGEXP 'hello'");
+      assert.equal(r1.rows.length, 2); // hello, hello123
+      
+      const r2 = db.execute("SELECT * FROM words WHERE w REGEXP '\\d+'");
+      assert.equal(r2.rows.length, 1); // hello123
+      
+      const r3 = db.execute("SELECT * FROM words WHERE w NOT REGEXP 'hello'");
+      assert.equal(r3.rows.length, 2); // world, test
+      
+      const r4 = db.execute("SELECT * FROM words WHERE w RLIKE '^h'");
+      assert.equal(r4.rows.length, 2); // hello, hello123
+    });
   });
 });

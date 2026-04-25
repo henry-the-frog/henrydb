@@ -639,6 +639,16 @@ P._evalExpr = function(expr, row) {
       regex += '$';
       return new RegExp(regex).test(String(val));
     }
+    case 'REGEXP': {
+      const val = this._evalValue(expr.left, row);
+      const pattern = this._evalValue(expr.pattern, row);
+      if (val == null || pattern == null) return null;
+      try {
+        return new RegExp(String(pattern)).test(String(val));
+      } catch {
+        return false; // Invalid regex pattern
+      }
+    }
     case 'BETWEEN': {
       const val = this._evalValue(expr.left, row);
       let low = this._evalValue(expr.low, row);
@@ -765,7 +775,7 @@ P._evalValue = function(node, row) {
   // Boolean expression types — delegate to _evalExpr and return true/false as values
   if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' ||
       node.type === 'COMPARE' || node.type === 'BETWEEN' || node.type === 'NOT_BETWEEN' ||
-      node.type === 'LIKE' || node.type === 'ILIKE' ||
+      node.type === 'LIKE' || node.type === 'ILIKE' || node.type === 'REGEXP' ||
       node.type === 'TS_MATCH' ||
       node.type === 'IN_LIST' || node.type === 'IN_SUBQUERY' ||
       node.type === 'NOT_IN' || node.type === 'NOT_LIKE' ||

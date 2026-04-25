@@ -43,7 +43,7 @@ const KEYWORDS = new Set([
   'FULLTEXT', 'MATCH', 'AGAINST',
   'GENERATE_SERIES', 'LATERAL', 'UNNEST',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
-  'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
+  'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP', 'RLIKE', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
   'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW', 'COMMENT',
   'FUNCTION', 'RETURNS', 'LANGUAGE', 'PROCEDURE', 'CALL', 'IMMUTABLE', 'VOLATILE', 'STABLE',
   'NOWAIT', 'LOCKED', 'SKIP',
@@ -1874,6 +1874,14 @@ export function parse(sql) {
       return { type: 'NOT', expr: { type: 'LIKE', left, pattern, escape } };
     }
 
+    // NOT REGEXP
+    if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && (tokens[pos + 1]?.value === 'REGEXP' || tokens[pos + 1]?.value === 'RLIKE')) {
+      advance(); // NOT
+      advance(); // REGEXP/RLIKE
+      const pattern = parsePrimaryWithConcat();
+      return { type: 'NOT', expr: { type: 'REGEXP', left, pattern } };
+    }
+
     // NOT BETWEEN
     if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'BETWEEN') {
       advance(); // NOT
@@ -1926,6 +1934,13 @@ export function parse(sql) {
       if (isKeyword('TO')) advance(); // TO
       const pattern = parsePrimaryWithConcat();
       return { type: 'SIMILAR_TO', left, pattern };
+    }
+
+    // REGEXP / RLIKE
+    if (isKeyword('REGEXP') || isKeyword('RLIKE')) {
+      advance();
+      const pattern = parsePrimaryWithConcat();
+      return { type: 'REGEXP', left, pattern };
     }
 
     if (isKeyword('IS')) {
