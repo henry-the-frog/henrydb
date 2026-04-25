@@ -561,6 +561,17 @@
       "completed": "2026-04-25T15:34:29.569Z",
       "duration_ms": 300000,
       "summary": "EXPLORE: Type system deep dive. Real HM implementation (Algorithm W). Let-polymorphism works, occurs check works, type errors caught. Mutual recursion unsupported (forward refs). Only 2 tests for the whole system — major gap. 2/3 hypotheses confirmed."
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Investigate monkey-lang SSA + optimization pipeline",
+      "project": "monkey-lang",
+      "started": "2026-04-25T15:35:00.633Z",
+      "completed": "2026-04-25T15:36:25.340Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: SSA + optimization pipeline investigation. Real Cytron SSA, constant propagation (a=10+20→30), dead code detection, escape analysis. All analysis works but results NOT applied to code generation. Pipeline is infrastructure waiting for optimization passes to wire in."
     }
   ],
   "focusProjects": [
@@ -764,6 +775,10 @@
     {
       "time": "2026-04-25T15:32:41.655Z",
       "msg": "Added T51 (EXPLORE) after end: EXPLORE: Deep dive into monkey-lang type system — test edge cases of Algorithm W inference"
+    },
+    {
+      "time": "2026-04-25T15:34:53.682Z",
+      "msg": "Added T52 (EXPLORE) after end: EXPLORE: Investigate monkey-lang SSA + optimization pipeline"
     }
   ]
 }
