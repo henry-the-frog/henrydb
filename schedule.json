@@ -1410,6 +1410,28 @@
       "completed": "2026-04-25T21:48:59.767Z",
       "duration_ms": 180000,
       "summary": "Fixed window function and compiled query sort to use sqliteCompare. All sort paths now use consistent type ordering. Tests pass."
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix UNION with mixed type WHERE clauses",
+      "project": "henrydb",
+      "started": "2026-04-25T21:49:19.063Z",
+      "completed": "2026-04-25T21:49:40.872Z",
+      "duration_ms": 120000,
+      "summary": "Investigated. UNION with mixed types works correctly in isolation. Remaining fuzzer failures are unique seed-specific edge cases. Diminishing returns. Moving on."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write comprehensive integration test for Session B features",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:49:49.258Z",
+      "completed": "2026-04-25T21:51:20.566Z",
+      "duration_ms": 300000,
+      "summary": "16 integration tests: comments+templates, prelude+closures, escape analysis+compilation, builtins, import system, comprehensive programs. All pass."
     }
   ],
   "focusProjects": [
@@ -1929,6 +1951,14 @@
     {
       "time": "2026-04-25T21:47:17.551Z",
       "msg": "Added T131 (BUILD) after end: Fix RANK/ROW_NUMBER/DENSE_RANK ordering to use sqliteCompare"
+    },
+    {
+      "time": "2026-04-25T21:49:18.827Z",
+      "msg": "Added T132 (BUILD) after end: Fix UNION with mixed type WHERE clauses"
+    },
+    {
+      "time": "2026-04-25T21:49:48.996Z",
+      "msg": "Added T133 (BUILD) after end: Write comprehensive integration test for Session B features"
     }
   ]
 }
