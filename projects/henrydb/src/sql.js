@@ -27,7 +27,7 @@ const KEYWORDS = new Set([
   'BEGIN', 'COMMIT', 'ROLLBACK', 'TRANSACTION', 'VACUUM', 'CHECKPOINT',
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
-  'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'RANGE', 'CURRENT',
+  'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'RANGE', 'GROUPS', 'EXCLUDE', 'TIES', 'OTHERS', 'CURRENT',
   'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET', 'TEMPORARY', 'TEMP',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
@@ -2430,9 +2430,9 @@ export function parse(sql) {
       expect('KEYWORD', 'BY');
       orderBy = parseOrderBy();
     }
-    // Optional frame clause: ROWS|RANGE BETWEEN ... AND ...
-    if (isKeyword('ROWS') || isKeyword('RANGE')) {
-      const frameType = advance().value; // ROWS or RANGE
+    // Optional frame clause: ROWS|RANGE|GROUPS BETWEEN ... AND ...
+    if (isKeyword('ROWS') || isKeyword('RANGE') || isKeyword('GROUPS')) {
+      const frameType = advance().value; // ROWS, RANGE, or GROUPS
       if (isKeyword('BETWEEN')) {
         advance(); // BETWEEN
         const start = parseFrameBound();
@@ -2443,6 +2443,27 @@ export function parse(sql) {
         // Single bound: ROWS UNBOUNDED PRECEDING or ROWS N PRECEDING
         const bound = parseFrameBound();
         frame = { type: frameType, start: bound, end: { type: 'CURRENT ROW' } };
+      }
+      // Optional EXCLUDE clause
+      if (isKeyword('EXCLUDE')) {
+        advance(); // EXCLUDE
+        if (isKeyword('CURRENT')) {
+          advance(); // CURRENT
+          expect('KEYWORD', 'ROW');
+          frame.exclude = 'CURRENT ROW';
+        } else if (isKeyword('GROUP')) {
+          advance();
+          frame.exclude = 'GROUP';
+        } else if (isKeyword('TIES')) {
+          advance();
+          frame.exclude = 'TIES';
+        } else if (isKeyword('NO')) {
+          advance(); // NO
+          expect('KEYWORD', 'OTHERS');
+          frame.exclude = 'NO OTHERS';
+        } else {
+          throw new Error('Expected CURRENT ROW, GROUP, TIES, or NO OTHERS after EXCLUDE');
+        }
       }
     }
     expect(')');

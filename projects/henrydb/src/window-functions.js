@@ -98,10 +98,55 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
         
         // RANGE mode: offset is based on ORDER BY value, not row position
         const isRange = frame.type === 'RANGE';
+        const isGroups = frame.type === 'GROUPS';
         
         let start = 0, end = len - 1;
         
-        if (isRange && orderBy && orderBy.length > 0) {
+        if (isGroups && orderBy && orderBy.length > 0) {
+          // GROUPS mode: offset counts groups of peer rows
+          const orderCol = orderBy[0].column;
+          const vals = partition.map(r => Number(db._orderByValue(orderCol, r)));
+          
+          // Build group boundaries: groups[g] = { startIdx, endIdx }
+          const groups = [];
+          let gStart = 0;
+          for (let j = 1; j <= len; j++) {
+            if (j === len || vals[j] !== vals[j - 1]) {
+              groups.push({ start: gStart, end: j - 1 });
+              gStart = j;
+            }
+          }
+          
+          // Find which group current row belongs to
+          let currentGroup = 0;
+          for (let g = 0; g < groups.length; g++) {
+            if (i >= groups[g].start && i <= groups[g].end) { currentGroup = g; break; }
+          }
+          
+          // Start bound
+          if (frame.start.type === 'UNBOUNDED' && frame.start.direction === 'PRECEDING') {
+            start = 0;
+          } else if (frame.start.type === 'CURRENT ROW') {
+            start = groups[currentGroup].start;
+          } else if (frame.start.type === 'OFFSET') {
+            const gIdx = frame.start.direction === 'PRECEDING'
+              ? Math.max(0, currentGroup - frame.start.offset)
+              : Math.min(groups.length - 1, currentGroup + frame.start.offset);
+            start = groups[gIdx].start;
+          }
+          
+          // End bound
+          if (frame.end.type === 'UNBOUNDED' && frame.end.direction === 'FOLLOWING') {
+            end = len - 1;
+          } else if (frame.end.type === 'CURRENT ROW') {
+            end = groups[currentGroup].end;
+          } else if (frame.end.type === 'OFFSET') {
+            const gIdx = frame.end.direction === 'FOLLOWING'
+              ? Math.min(groups.length - 1, currentGroup + frame.end.offset)
+              : Math.max(0, currentGroup - frame.end.offset);
+            end = groups[gIdx].end;
+          }
+        } else if (isRange && orderBy && orderBy.length > 0) {
           // RANGE mode: find frame bounds by comparing ORDER BY values
           const orderCol = orderBy[0].column;
           const currentVal = Number(db._orderByValue(orderCol, partition[i]));
@@ -170,7 +215,44 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
             }
           }
         }
-        return [start, end];
+        
+        // Apply EXCLUDE clause
+        let excludeSet = null;
+        if (frame.exclude) {
+          excludeSet = new Set();
+          if (frame.exclude === 'CURRENT ROW') {
+            excludeSet.add(i);
+          } else if (frame.exclude === 'GROUP' || frame.exclude === 'TIES') {
+            // Find peer group (rows with same ORDER BY values)
+            if (orderBy && orderBy.length > 0) {
+              const orderCol = orderBy[0].column;
+              const currentVal = Number(db._orderByValue(orderCol, partition[i]));
+              for (let j = start; j <= end; j++) {
+                if (Number(db._orderByValue(orderCol, partition[j])) === currentVal) {
+                  if (frame.exclude === 'GROUP') {
+                    excludeSet.add(j); // Exclude entire group
+                  } else if (j !== i) {
+                    excludeSet.add(j); // TIES: exclude peers but keep current
+                  }
+                }
+              }
+            }
+          }
+          // NO OTHERS = exclude nothing (default)
+        }
+        
+        return [start, end, excludeSet];
+      };
+
+      // Helper: get frame rows for row at index i, respecting EXCLUDE
+      const getFrameRows = (i, partition) => {
+        const [start, end, excludeSet] = getFrameBounds(i, partition.length);
+        const rows = [];
+        for (let j = start; j <= end; j++) {
+          if (excludeSet && excludeSet.has(j)) continue;
+          rows.push(partition[j]);
+        }
+        return { start, end, excludeSet, rows };
       };
 
       // Helper: resolve window function argument value from a row
@@ -219,17 +301,17 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
         }
         case 'COUNT': {
           for (let i = 0; i < partition.length; i++) {
-            const [start, end] = getFrameBounds(i, partition.length);
-            partition[i][`__window_${name}`] = end - start + 1;
+            const { rows } = getFrameRows(i, partition);
+            partition[i][`__window_${name}`] = rows.length;
           }
           break;
         }
         case 'SUM': {
           for (let i = 0; i < partition.length; i++) {
-            const [start, end] = getFrameBounds(i, partition.length);
+            const { rows } = getFrameRows(i, partition);
             let sum = 0;
-            for (let j = start; j <= end; j++) {
-              const val = resolveArg(col.arg, partition[j]);
+            for (const row of rows) {
+              const val = resolveArg(col.arg, row);
               const num = Number(val);
               sum += (isNaN(num) ? 0 : num);
             }
@@ -239,24 +321,23 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
         }
         case 'AVG': {
           for (let i = 0; i < partition.length; i++) {
-            const [start, end] = getFrameBounds(i, partition.length);
+            const { rows } = getFrameRows(i, partition);
             let sum = 0;
-            const count = end - start + 1;
-            for (let j = start; j <= end; j++) {
-              const val = resolveArg(col.arg, partition[j]);
+            for (const row of rows) {
+              const val = resolveArg(col.arg, row);
               const num = Number(val);
               sum += (isNaN(num) ? 0 : num);
             }
-            partition[i][`__window_${name}`] = count > 0 ? sum / count : null;
+            partition[i][`__window_${name}`] = rows.length > 0 ? sum / rows.length : null;
           }
           break;
         }
         case 'MIN': {
           for (let i = 0; i < partition.length; i++) {
-            const [start, end] = getFrameBounds(i, partition.length);
+            const { rows } = getFrameRows(i, partition);
             let min = Infinity;
-            for (let j = start; j <= end; j++) {
-              const v = resolveArg(col.arg, partition[j]);
+            for (const row of rows) {
+              const v = resolveArg(col.arg, row);
               if (v != null && v < min) min = v;
             }
             partition[i][`__window_${name}`] = min === Infinity ? null : min;
@@ -265,10 +346,10 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
         }
         case 'MAX': {
           for (let i = 0; i < partition.length; i++) {
-            const [start, end] = getFrameBounds(i, partition.length);
+            const { rows } = getFrameRows(i, partition);
             let max = -Infinity;
-            for (let j = start; j <= end; j++) {
-              const v = resolveArg(col.arg, partition[j]);
+            for (const row of rows) {
+              const v = resolveArg(col.arg, row);
               if (v != null && v > max) max = v;
             }
             partition[i][`__window_${name}`] = max === -Infinity ? null : max;
