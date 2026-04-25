@@ -75,9 +75,23 @@ function genSelect(tables) {
   
   // Decide: simple query, JOIN, or GROUP BY
   const doJoin = rand() < 0.2 && tableNames.length >= 2;
-  const doGroupBy = rand() < 0.25 && !doJoin;
-  const doSubquery = rand() < 0.15 && !doJoin && !doGroupBy;
-  const doCTE = rand() < 0.10 && !doJoin && !doGroupBy && !doSubquery;
+  const doGroupBy = rand() < 0.20 && !doJoin;
+  const doSubquery = rand() < 0.10 && !doJoin && !doGroupBy;
+  const doCTE = rand() < 0.08 && !doJoin && !doGroupBy && !doSubquery;
+  // Window function
+  if (rand() < 0.10 && !doJoin && !doGroupBy && !doSubquery && !doCTE) {
+    const col = pick(tables[name].map(c => c.name));
+    const winFunc = pick(['ROW_NUMBER', 'RANK', 'SUM', 'COUNT', 'AVG']);
+    const orderCol = pick(tables[name].map(c => c.name));
+    if (winFunc === 'ROW_NUMBER' || winFunc === 'RANK') {
+      parts.push(`${col}, ${winFunc}() OVER (ORDER BY ${orderCol}) as win_val`);
+    } else {
+      parts.push(`${col}, ${winFunc}(${col}) OVER (ORDER BY ${orderCol}) as win_val`);
+    }
+    parts.push(`FROM ${name}`);
+    if (rand() < 0.3) parts.push(`LIMIT ${randInt(1, 10)}`);
+    return parts.join(' ');
+  }
   
   // CTE
   if (doCTE) {
@@ -263,7 +277,8 @@ async function fuzz() {
     total++;
     
     // Track query type
-    if (sql.includes('WITH ')) queryTypes.cte++;
+    if (sql.includes('OVER (')) queryTypes.window = (queryTypes.window || 0) + 1;
+    else if (sql.includes('WITH ')) queryTypes.cte++;
     else if (sql.includes('SELECT') && sql.includes('(SELECT')) queryTypes.subquery++;
     else if (sql.includes('GROUP BY')) queryTypes.groupby++;
     else if (sql.includes('JOIN')) queryTypes.join++;
