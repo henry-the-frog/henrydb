@@ -20,7 +20,7 @@
 
 ### Other Projects (/Users/henry/projects/)
 - **215 projects** — comprehensive CS fundamentals implementation collection
-- **~50 verified working** (as of Apr 25 Session B)
+- **~81 actively verified, ~103 importable** (as of Apr 25 Session B)
 - **Languages**: scheme-interp (full Scheme with tail calls), mini-lisp, calc-lang, brainfuck, tinylang
 - **Types**: type-infer (HM, 23 tests), typechecker (union/intersection/generics)
 - **Data Structures**: btree, bloom-filter, skip-list, lru-cache, trie (with autocomplete), heap, linked-list, ring-buffer, deque, AVL tree, union-find
@@ -34,10 +34,18 @@
 - **Games**: game-of-life, chess-engine (legal moves)
 - **Graphics**: ray-tracer (working renders)
 
-### HenryDB Query Engine Architecture
+### HenryDB Full Architecture
 - **3 execution strategies**: AST interpreter, Volcano iterators (13 operators), VDBE-style bytecode VM
 - **Cost-based optimizer**: Column histograms, MCV tracking, DP join reordering
 - **Volcano operators**: SeqScan, IndexScan, Filter, Project, Sort, HashAggregate, NestedLoopJoin, HashJoin, IndexNestedLoopJoin, Window, Limit, Distinct, Union, CTE
+- **WAL**: Binary format, CRC32 checksums, LSN tracking, ARIES-style redo recovery (1200 LOC)
+- **MVCC**: PostgreSQL-style snapshots (xmin/xmax/activeSet), READ COMMITTED & REPEATABLE READ (3589 LOC)
+- **SSI**: Serializable Snapshot Isolation (Cahill 2008, Ports&Grittner 2012) — rw-antidependency tracking (277 LOC)
+- **Indexes**: B+ tree (composite keys), index scan optimizer, index advisor (5102 LOC)
+- **PL/SQL**: Parser + interpreter exist (854 LOC) but NOT wired to procedure handler
+- **pg-server**: Full PostgreSQL wire protocol v3 (1936 LOC) — psql-compatible
+- **Known bug**: COUNT(DISTINCT) doesn't deduplicate in multi-join scenarios
+- **Fuzzer**: 98.6% average, remaining failures are mixed type comparisons
 
 ## Key Technical Insights
 
@@ -60,7 +68,9 @@
 - GC tracking can be skipped for non-escaping closures (escape analysis optimization)
 
 ## TODO Priorities (as of Apr 25)
-1. Per-function SSA → wire into compiler for dead code elimination
-2. HenryDB fuzzer gap (2.4% remaining) — long-tail type edge cases
-3. Lambda-calculus project exploration
-4. VM callback mechanism for native HOF builtins (performance)
+1. Per-function SSA → dead code elimination (SSA-level annotation, ~200 LOC)
+2. HenryDB fuzzer gap (1.4%) — mixed type comparisons + UNION type affinity
+3. VM callback mechanism for native HOF builtins (prelude is 19x slower)
+4. Wire PL/SQL to procedure handler (implementation exists)
+5. Fix COUNT(DISTINCT) bug in multi-join scenarios
+6. WASM compiler (4-phase design, ~4300 LOC, 2-3 weeks)

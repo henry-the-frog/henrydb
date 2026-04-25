@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T23:24:27.644Z",
+  "generated": "2026-04-25T23:25:44.077Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang closures and scoping edge cases",
-    "completedAt": "2026-04-25T23:24:27.644Z",
-    "taskId": "T172",
-    "summary": "Closure tests: counter (mutable state), nested (currying), mutation (set in closure), function composition, IIFE, recursive closures, hash methods all work. Only failure: array indexing with function call syntax [0]() fails parser.",
+    "mode": "MAINTAIN",
+    "task": "MAINTAIN: Update MEMORY.md with complete HenryDB architecture (WAL, MVCC, SSI, indexes, PL-SQL, pg-server)",
+    "completedAt": "2026-04-25T23:25:44.077Z",
+    "taskId": "T173",
+    "summary": "MEMORY.md updated with complete HenryDB architecture: WAL (1200 LOC), MVCC (3589 LOC), SSI (277 LOC), indexes (5102 LOC), PL/SQL (854 LOC unwired), pg-server (1936 LOC). Also updated project count (81 verified), fuzzer (98.6%), and TODO priorities.",
     "durationMs": 180000
   },
   "schedule": {
@@ -8983,13 +8983,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 169,
+    "blocksCompleted": 170,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 31,
       "BUILD": 66,
-      "MAINTAIN": 24,
+      "MAINTAIN": 25,
       "EXPLORE": 36
     }
   },
