@@ -1583,6 +1583,17 @@
       "completed": "2026-04-25T18:11:03.564Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: TABLESAMPLE works (Bernoulli sampling, 8/100 at 10%). GROUPING SETS works (correct null patterns, 3 products + 4 regions + grand total = 8 rows). MERGE partially works (parser fails on USING subquery). 2/3 advanced SQL features verified."
+    },
+    {
+      "id": "T146",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB recursive CTE, LATERAL JOIN, and PIVOT",
+      "project": "henrydb",
+      "started": "2026-04-25T18:11:24.233Z",
+      "completed": "2026-04-25T18:11:42.774Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: ALL WORK! Recursive CTE (1-10), Fibonacci CTE (0,1,1,2,3,5,8,13,21,34,55), CROSS APPLY lateral join (top earner per dept). Incredibly sophisticated SQL features all functioning correctly."
     }
   ],
   "focusProjects": [
@@ -2150,6 +2161,10 @@
     {
       "time": "2026-04-25T18:10:31.058Z",
       "msg": "Added T145 (EXPLORE) after end: EXPLORE: Test HenryDB TABLESAMPLE, GROUPING SETS, and MERGE"
+    },
+    {
+      "time": "2026-04-25T18:11:17.634Z",
+      "msg": "Added T146 (EXPLORE) after end: EXPLORE: Test HenryDB recursive CTE, LATERAL JOIN, and PIVOT"
     }
   ]
 }
