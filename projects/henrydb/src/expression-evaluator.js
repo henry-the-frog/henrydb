@@ -990,10 +990,10 @@ P._computeAggregates = function(columns, rows) {
       continue;
     }
     if (col.type !== 'aggregate') {
-      // Non-aggregated column in aggregate query: pick value from first row (SQLite behavior)
+      // Non-aggregated column in aggregate query: pick value from last row (SQLite behavior)
       const name = col.alias || col.name || (col.expr?.name);
       if (name && rows.length > 0) {
-        result[name] = this._resolveColumn(name, rows[0]);
+        result[name] = this._resolveColumn(name, rows[rows.length - 1]);
       }
       continue;
     }
