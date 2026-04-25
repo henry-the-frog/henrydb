@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:11:42.812Z",
+  "generated": "2026-04-25T18:12:29.495Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB recursive CTE, LATERAL JOIN, and PIVOT",
-    "completedAt": "2026-04-25T18:11:42.812Z",
-    "taskId": "T146",
-    "summary": "EXPLORE: ALL WORK! Recursive CTE (1-10), Fibonacci CTE (0,1,1,2,3,5,8,13,21,34,55), CROSS APPLY lateral join (top earner per dept). Incredibly sophisticated SQL features all functioning correctly.",
+    "task": "EXPLORE: Test HenryDB WINDOW functions (LEAD, LAG, NTILE, PERCENTILE)",
+    "completedAt": "2026-04-25T18:12:29.495Z",
+    "taskId": "T147",
+    "summary": "EXPLORE: All window functions work! ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTILE. PARTITION BY, ORDER BY, null boundaries. PostgreSQL-quality window function support verified.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 146,
+    "blocksCompleted": 147,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 17,
-      "EXPLORE": 48
+      "EXPLORE": 49
     }
   },
   "artifacts": [
