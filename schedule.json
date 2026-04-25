@@ -2302,6 +2302,17 @@
       "completed": "2026-04-25T19:05:57.827Z",
       "duration_ms": 60000,
       "summary": "TODO.md updated with 16 discovered items from session: parameter binding, window GROUPS/EXCLUDE, MEDIAN, VM closures, escape analysis, module system, etc. Organized by priority."
+    },
+    {
+      "id": "T212",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB adaptive engine selection — when does it choose Volcano vs Classic?",
+      "project": "henrydb",
+      "started": "2026-04-25T19:06:10.048Z",
+      "completed": "2026-04-25T19:06:27.804Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Query plans use Volcano planner. Index Scan for id=42 (cost 0.50), Seq Scan for num>500 (cost 0.00-201). Adaptive engine selects at higher level. All queries produce correct plans."
     }
   ],
   "focusProjects": [
@@ -3133,6 +3144,10 @@
     {
       "time": "2026-04-25T19:05:31.284Z",
       "msg": "Added T211 (MAINTAIN) after end: MAINTAIN: Update TODO.md with remaining work items from session discoveries"
+    },
+    {
+      "time": "2026-04-25T19:06:09.813Z",
+      "msg": "Added T212 (EXPLORE) after end: EXPLORE: Test HenryDB adaptive engine selection — when does it choose Volcano vs Classic?"
     }
   ]
 }

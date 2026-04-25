@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:05:57.864Z",
+  "generated": "2026-04-25T19:06:27.841Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "MAINTAIN: Update TODO.md with remaining work items from session discoveries",
-    "completedAt": "2026-04-25T19:05:57.864Z",
-    "taskId": "T211",
-    "summary": "TODO.md updated with 16 discovered items from session: parameter binding, window GROUPS/EXCLUDE, MEDIAN, VM closures, escape analysis, module system, etc. Organized by priority.",
+    "mode": "EXPLORE",
+    "task": "EXPLORE: Test HenryDB adaptive engine selection — when does it choose Volcano vs Classic?",
+    "completedAt": "2026-04-25T19:06:27.841Z",
+    "taskId": "T212",
+    "summary": "EXPLORE: Query plans use Volcano planner. Index Scan for id=42 (cost 0.50), Seq Scan for num>500 (cost 0.00-201). Adaptive engine selects at higher level. All queries produce correct plans.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 211,
+    "blocksCompleted": 212,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 24,
-      "EXPLORE": 105
+      "EXPLORE": 106
     }
   },
   "artifacts": [
