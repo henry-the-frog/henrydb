@@ -1681,6 +1681,17 @@
       "completed": "2026-04-25T18:18:11.578Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: information_schema.tables works (PG-style catalog with table_catalog, table_schema, table_name, table_type, column_count). VACUUM works. PRAGMA not supported (SQLite-style, this is PG-style DB)."
+    },
+    {
+      "id": "T155",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Run a complex analytical query — year-over-year growth with window functions",
+      "project": "henrydb",
+      "started": "2026-04-25T18:18:36.692Z",
+      "completed": "2026-04-25T18:18:59.519Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Complex analytical query works! CTE + window SUM (running total) + LAG(12) (YoY comparison) + PARTITION BY + ROWS UNBOUNDED PRECEDING. Real-world analytics pipeline."
     }
   ],
   "focusProjects": [
@@ -2284,6 +2295,10 @@
     {
       "time": "2026-04-25T18:17:32.509Z",
       "msg": "Added T154 (EXPLORE) after end: EXPLORE: Test HenryDB VACUUM, PRAGMA, and information_schema"
+    },
+    {
+      "time": "2026-04-25T18:18:28.381Z",
+      "msg": "Added T155 (EXPLORE) after end: EXPLORE: Run a complex analytical query — year-over-year growth with window functions"
     }
   ]
 }
