@@ -315,6 +315,51 @@
       "completed": "2026-04-25T14:55:58.001Z",
       "duration_ms": 240000,
       "summary": "Added TIME() and DATETIME() with modifiers. Handles space-separated timestamps, chained modifiers. 31/31 date/time tests pass."
+    },
+    {
+      "id": "T30",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Unify classic/Volcano selectivity estimator",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-25T14:56:53.604Z",
+      "completed": "2026-04-25T14:57:08.616Z",
+      "duration_ms": 60000,
+      "summary": "Plan: 3 tasks — extract selectivity.js, wire into classic planner, add agreement tests. Prior knowledge: scratch/henrydb-optimizer-gaps.md consulted."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Extract selectivity estimator into shared src/selectivity.js from volcano-planner.js",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-25T14:57:15.400Z",
+      "completed": "2026-04-25T14:58:57.821Z",
+      "duration_ms": 300000,
+      "summary": "Extracted selectivity estimator into shared selectivity.js. Volcano planner now imports from shared module. 9/9 volcano tests pass. No behavior change."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Wire shared selectivity into classic planner (query-plan.js)",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-25T14:59:03.755Z",
+      "completed": "2026-04-25T15:01:03.208Z",
+      "duration_ms": 240000,
+      "summary": "Wired shared selectivity into classic planner. Now uses ANALYZE stats (ndistinct, histograms) when available. Both planners produce same estimates. 37/37 tests pass."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Add tests verifying classic/Volcano plan agreement with ANALYZE stats",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-25T15:01:14.023Z",
+      "completed": "2026-04-25T15:01:49.651Z",
+      "duration_ms": 180000,
+      "summary": "Added 12 tests for shared selectivity estimator: heuristic mode, stats-based (ndistinct, histogram), AND/OR, getColumnNdv. All pass."
     }
   ],
   "focusProjects": [
@@ -442,6 +487,14 @@
     {
       "time": "2026-04-25T14:51:46.727Z",
       "msg": "PLAN T27 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T14:56:48.390Z",
+      "msg": "Added T30 (PLAN) after end: Plan cost model unification: extract Volcano selectivity estimator into shared module, wire into classic planner"
+    },
+    {
+      "time": "2026-04-25T14:57:03.084Z",
+      "msg": "PLAN T30 filled 3 BUILD tasks"
     }
   ]
 }

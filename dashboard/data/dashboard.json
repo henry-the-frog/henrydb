@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T14:55:58.036Z",
+  "generated": "2026-04-25T15:01:49.687Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add TIME() and DATETIME() modifier support + tests",
-    "completedAt": "2026-04-25T14:55:58.036Z",
-    "taskId": "T29",
-    "summary": "Added TIME() and DATETIME() with modifiers. Handles space-separated timestamps, chained modifiers. 31/31 date/time tests pass.",
-    "durationMs": 240000
+    "task": "Add tests verifying classic/Volcano plan agreement with ANALYZE stats",
+    "completedAt": "2026-04-25T15:01:49.687Z",
+    "taskId": "T33",
+    "summary": "Added 12 tests for shared selectivity estimator: heuristic mode, stats-based (ndistinct, histogram), AND/OR, getColumnNdv. All pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8069,36 +8069,77 @@
       {
         "id": "T27",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB DATE/TIME modifiers",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-25T14:51:24.045Z"
+        "started": "2026-04-25T14:51:24.045Z",
+        "completed": "2026-04-25T14:51:51.565Z",
+        "duration_ms": 120000,
+        "summary": "Plan: Extend DATE() with SQLite-compatible modifiers (+N days, -N months, start of month, now). 2 BUILD tasks."
       },
       {
         "id": "T28",
         "mode": "BUILD",
         "task": "Implement DATE/TIME modifiers in sql-functions.js (SQLite-compatible) + tests",
-        "status": "upcoming",
-        "plan_ref": "T27"
+        "status": "done",
+        "plan_ref": "T27",
+        "started": "2026-04-25T14:52:01.727Z",
+        "completed": "2026-04-25T14:54:10.694Z",
+        "duration_ms": 360000,
+        "summary": "Added SQLite-compatible DATE modifiers. Supports +N days/months/years, start of month/year/day, now, chained modifiers. 19/19 tests pass."
       },
       {
         "id": "T29",
         "mode": "BUILD",
         "task": "Add TIME() and DATETIME() modifier support + tests",
+        "status": "done",
+        "plan_ref": "T27",
+        "started": "2026-04-25T14:54:30.905Z",
+        "completed": "2026-04-25T14:55:58.001Z",
+        "duration_ms": 240000,
+        "summary": "Added TIME() and DATETIME() with modifiers. Handles space-separated timestamps, chained modifiers. 31/31 date/time tests pass."
+      },
+      {
+        "id": "T30",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Unify classic/Volcano selectivity estimator",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-25T14:56:53.604Z"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Extract selectivity estimator into shared src/selectivity.js from volcano-planner.js",
         "status": "upcoming",
-        "plan_ref": "T27"
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Wire shared selectivity into classic planner (query-plan.js)",
+        "status": "upcoming",
+        "plan_ref": "T30"
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "task": "Add tests verifying classic/Volcano plan agreement with ANALYZE stats",
+        "status": "upcoming",
+        "plan_ref": "T30"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 29,
-    "blocksTotal": 29,
+    "blocksCompleted": 33,
+    "blocksTotal": 33,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 5,
-      "BUILD": 13,
+      "PLAN": 6,
+      "BUILD": 16,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
