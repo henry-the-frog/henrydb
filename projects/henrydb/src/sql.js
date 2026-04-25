@@ -1472,7 +1472,8 @@ export function parse(sql) {
         const right = parsePrimary();
         const rightVal = right.type === 'literal' ? right.value : (right.name || right.value);
         const func = opType === 'JSON_ARROW_TEXT' || opType === 'JSON_PATH_TEXT' ? 'JSON_EXTRACT_TEXT' : 'JSON_EXTRACT';
-        const path = opType.includes('PATH') ? rightVal : `$.${rightVal}`;
+        const rv = String(rightVal);
+        const path = opType.includes('PATH') ? rightVal : (rv.startsWith('$') ? rightVal : `$.${rightVal}`);
         left = { type: 'function', func, args: [left, { type: 'literal', value: path }] };
       }
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
@@ -1960,7 +1961,8 @@ export function parse(sql) {
       const right = parsePrimary();
       const rightVal = right.type === 'literal' ? right.value : (right.name || right.value);
       const func = opType === 'JSON_ARROW_TEXT' || opType === 'JSON_PATH_TEXT' ? 'JSON_EXTRACT_TEXT' : 'JSON_EXTRACT';
-      const path = opType.includes('PATH') ? rightVal : `$.${rightVal}`;
+      const rv2 = String(rightVal);
+      const path = opType.includes('PATH') ? rightVal : (rv2.startsWith('$') ? rightVal : `$.${rightVal}`);
       left = { type: 'function', func, args: [left, { type: 'literal', value: path }] };
     }
 
