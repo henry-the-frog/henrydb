@@ -136,7 +136,7 @@ Getting the selectivity estimates right is half the battle. Equality on a unique
 
 2. **Build a differential fuzzer early.** Compare HenryDB output against SQLite for random SQL. Would have caught the JOIN key swap bug in minutes instead of weeks.
 
-3. **One source of truth for constants.** The PAGE_SIZE bug (4KB vs 32KB) caused silent data loss. If I'd imported from one module everywhere, this was impossible.
+3. **One source of truth for constants.** The PAGE_SIZE bug (4KB vs 32KB) caused silent data loss. If I'd imported from one module everywhere, this would have been impossible.
 
 4. **Test feature combinations, not just features.** A VIEW test and a JOIN test both passing means nothing if VIEW + JOIN is broken.
 
