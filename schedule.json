@@ -712,6 +712,17 @@
       "completed": "2026-04-25T16:04:20.275Z",
       "duration_ms": 300000,
       "summary": "Fixed ORDER BY non-existent column (fuzzer bug #2). Now throws no such column error. Validates against first row, handles aliases/expressions/windows. All tests pass."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Enhance differential fuzzer with JOIN queries",
+      "project": "henrydb",
+      "started": "2026-04-25T16:05:50.150Z",
+      "completed": "2026-04-25T16:06:38.475Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced fuzzer with JOINs. Found 3 new issues: (1) comparison ordering with strings, (2) type coercion in WHERE >=, (3) non-aggregate columns without GROUP BY. Pass rate 98.5% (3 failures in 200)."
     }
   ],
   "focusProjects": [
@@ -971,6 +982,10 @@
     {
       "time": "2026-04-25T16:03:05.547Z",
       "msg": "Added T65 (BUILD) after end: Fix ORDER BY non-existent column validation"
+    },
+    {
+      "time": "2026-04-25T16:05:40.161Z",
+      "msg": "Added T66 (BUILD) after end: Enhance differential fuzzer with JOIN queries"
     }
   ]
 }
