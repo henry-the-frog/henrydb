@@ -3130,6 +3130,17 @@
       "completed": "2026-04-25T19:50:15.685Z",
       "duration_ms": 60000,
       "summary": "COUNT DISTINCT works standalone (A=2, B=3). Bug: COUNT DISTINCT within GROUP BY returns total instead of distinct. SELECT DISTINCT works correctly."
+    },
+    {
+      "id": "T288",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CAST conversions",
+      "project": "henrydb",
+      "started": "2026-04-25T19:50:25.794Z",
+      "completed": "2026-04-25T19:50:41.332Z",
+      "duration_ms": 60000,
+      "summary": "All CAST conversions work! INT, TEXT, REAL, BOOLEAN. String→int, float→int (truncate), int→text, string→real, int→bool."
     }
   ],
   "focusProjects": [
@@ -4265,6 +4276,10 @@
     {
       "time": "2026-04-25T19:49:34.481Z",
       "msg": "Added T287 (EXPLORE) after end: EXPLORE: Test HenryDB COUNT DISTINCT"
+    },
+    {
+      "time": "2026-04-25T19:50:25.557Z",
+      "msg": "Added T288 (EXPLORE) after end: EXPLORE: Test HenryDB CAST conversions"
     }
   ]
 }

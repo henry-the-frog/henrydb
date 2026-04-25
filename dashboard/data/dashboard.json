@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:50:15.722Z",
+  "generated": "2026-04-25T19:50:41.370Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB COUNT DISTINCT",
-    "completedAt": "2026-04-25T19:50:15.722Z",
-    "taskId": "T287",
-    "summary": "COUNT DISTINCT works standalone (A=2, B=3). Bug: COUNT DISTINCT within GROUP BY returns total instead of distinct. SELECT DISTINCT works correctly.",
+    "task": "EXPLORE: Test HenryDB CAST conversions",
+    "completedAt": "2026-04-25T19:50:41.370Z",
+    "taskId": "T288",
+    "summary": "All CAST conversions work! INT, TEXT, REAL, BOOLEAN. String→int, float→int (truncate), int→text, string→real, int→bool.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 287,
+    "blocksCompleted": 288,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 31,
-      "EXPLORE": 172
+      "EXPLORE": 173
     }
   },
   "artifacts": [
