@@ -442,27 +442,119 @@
     {
       "id": "T37",
       "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "henrydb",
+      "started": "2026-04-25T20:56:06.589Z",
+      "completed": "2026-04-25T20:56:06.732Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
+    },
+    {
+      "id": "T38",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping",
+      "started": "2026-04-25T20:56:12.831Z",
+      "completed": "2026-04-25T20:56:19.704Z",
+      "duration_ms": 30000,
+      "summary": "All pushed."
+    },
+    {
+      "id": "T39",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Late session: assess learning, plan tomorrow",
+      "started": "2026-04-25T20:56:24.519Z",
+      "completed": "2026-04-25T20:56:42.373Z",
+      "duration_ms": 60000,
+      "summary": "Great depth session. 8 features, 2 bug fixes, 3 critical findings. Next: fix SSA OOM to unblock per-function SSA, then fuzzer gap work."
+    },
+    {
+      "id": "T40",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final: evening summary, git push all",
+      "started": "2026-04-25T20:56:49.790Z",
+      "completed": "2026-04-25T20:56:49.934Z",
+      "duration_ms": 0,
+      "summary": "Deferred — still 3h+ remaining."
+    },
+    {
+      "id": "T46",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix SSA toSSA() OOM on function body CFGs — debug and fix the infinite allocation",
+      "task": null,
+      "started": "2026-04-25T20:56:55.103Z",
+      "completed": "2026-04-25T20:57:44.493Z",
+      "duration_ms": 180000,
+      "summary": "Root cause: toSSA() only accepted strings, not CFG objects. Passing a CFG triggered infinite Lexer parsing → OOM. Fix: toSSA() now accepts both. SSABuilder already works perfectly with function body CFGs."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "task": "Fix toSSA() to accept CFG objects, add per-function SSA pipeline",
+      "status": "done",
+      "plan_ref": "T46",
+      "started": "2026-04-25T20:57:49.763Z",
+      "completed": "2026-04-25T20:58:29.651Z",
+      "duration_ms": 300000,
+      "summary": "Fixed toSSA() OOM (accepted CFG as string). Added perFunctionSSA() pipeline — extracts functions, builds per-function CFG+SSA, handles nesting. 62 lines added."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T48",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: investigate and fix remaining fuzzer failures (window ORDER BY, UNION types)",
+      "task": null
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
       "status": "upcoming",
       "task": "placeholder",
       "project": "henrydb"
     },
     {
-      "id": "T38",
+      "id": "T50",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Housekeeping"
+      "task": "Mid-push"
     },
     {
-      "id": "T39",
-      "mode": "THINK",
+      "id": "T51",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Late session: assess learning, plan tomorrow"
+      "goal": "monkey-lang: add VM callback mechanism for HOF builtins (map, filter, reduce)",
+      "task": null
     },
     {
-      "id": "T40",
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: run comprehensive test sweep after all changes",
+      "project": "henrydb"
+    },
+    {
+      "id": "T54",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final: evening summary, git push all"
+      "task": "Session final"
     }
   ],
   "focusProjects": [
@@ -638,6 +730,46 @@
     {
       "time": "2026-04-25T20:52:30.887Z",
       "msg": "PLAN T36 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T20:56:42.517Z",
+      "msg": "Added T46 (PLAN) after end: Fix SSA toSSA() OOM on function body CFGs — debug and fix the infinite allocation"
+    },
+    {
+      "time": "2026-04-25T20:56:42.634Z",
+      "msg": "Added T47 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T20:56:42.752Z",
+      "msg": "Added T48 (PLAN) after end: HenryDB: investigate and fix remaining fuzzer failures (window ORDER BY, UNION types)"
+    },
+    {
+      "time": "2026-04-25T20:56:42.868Z",
+      "msg": "Added T49 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T20:56:42.986Z",
+      "msg": "Added T50 (MAINTAIN) after end: Mid-push"
+    },
+    {
+      "time": "2026-04-25T20:56:43.104Z",
+      "msg": "Added T51 (PLAN) after end: monkey-lang: add VM callback mechanism for HOF builtins (map, filter, reduce)"
+    },
+    {
+      "time": "2026-04-25T20:56:43.221Z",
+      "msg": "Added T52 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T20:56:43.338Z",
+      "msg": "Added T53 (EXPLORE) after end: HenryDB: run comprehensive test sweep after all changes"
+    },
+    {
+      "time": "2026-04-25T20:56:43.455Z",
+      "msg": "Added T54 (MAINTAIN) after end: Session final"
+    },
+    {
+      "time": "2026-04-25T20:57:36.170Z",
+      "msg": "PLAN T46 filled 1 BUILD tasks"
     }
   ]
 }

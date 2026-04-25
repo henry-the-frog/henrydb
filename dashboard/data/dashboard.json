@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T20:56:00.456Z",
+  "generated": "2026-04-25T20:58:29.686Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add GROUPS frame type and EXCLUDE clause to window frame parser and executor",
-    "completedAt": "2026-04-25T20:56:00.456Z",
-    "taskId": "T45",
-    "summary": "GROUPS frame type + EXCLUDE clause implemented. Parser updated with 4 keywords. Executor handles GROUPS (peer group counting) and EXCLUDE (4 modes). All existing window tests pass. 124 lines added.",
-    "durationMs": 600000
+    "task": "Fix toSSA() to accept CFG objects, add per-function SSA pipeline",
+    "completedAt": "2026-04-25T20:58:29.686Z",
+    "taskId": "T55",
+    "summary": "Fixed toSSA() OOM (accepted CFG as string). Added perFunctionSSA() pipeline — extracts functions, builds per-function CFG+SSA, handles nesting. 62 lines added.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8204,54 +8204,146 @@
       {
         "id": "T36",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: add GROUPS and EXCLUDE to window frame parser",
         "task": null,
-        "started": "2026-04-25T20:52:08.800Z"
+        "started": "2026-04-25T20:52:08.800Z",
+        "completed": "2026-04-25T20:52:37.960Z",
+        "duration_ms": 120000,
+        "summary": "GROUPS is another frame type like ROWS/RANGE. EXCLUDE has 4 modes: CURRENT ROW, GROUP, TIES, NO OTHERS. Parser needs GROUPS keyword + EXCLUDE clause after frame bounds. Executor needs group counting logic."
       },
       {
         "id": "T45",
         "mode": "BUILD",
         "task": "Add GROUPS frame type and EXCLUDE clause to window frame parser and executor",
-        "status": "upcoming",
-        "plan_ref": "T36"
+        "status": "done",
+        "plan_ref": "T36",
+        "started": "2026-04-25T20:52:41.823Z",
+        "completed": "2026-04-25T20:56:00.420Z",
+        "duration_ms": 600000,
+        "summary": "GROUPS frame type + EXCLUDE clause implemented. Parser updated with 4 keywords. Executor handles GROUPS (peer group counting) and EXCLUDE (4 modes). All existing window tests pass. 124 lines added."
       },
       {
         "id": "T37",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-25T20:56:06.589Z",
+        "completed": "2026-04-25T20:56:06.732Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
+      },
+      {
+        "id": "T38",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-25T20:56:12.831Z",
+        "completed": "2026-04-25T20:56:19.704Z",
+        "duration_ms": 30000,
+        "summary": "All pushed."
+      },
+      {
+        "id": "T39",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Late session: assess learning, plan tomorrow",
+        "started": "2026-04-25T20:56:24.519Z",
+        "completed": "2026-04-25T20:56:42.373Z",
+        "duration_ms": 60000,
+        "summary": "Great depth session. 8 features, 2 bug fixes, 3 critical findings. Next: fix SSA OOM to unblock per-function SSA, then fuzzer gap work."
+      },
+      {
+        "id": "T40",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final: evening summary, git push all",
+        "started": "2026-04-25T20:56:49.790Z",
+        "completed": "2026-04-25T20:56:49.934Z",
+        "duration_ms": 0,
+        "summary": "Deferred — still 3h+ remaining."
+      },
+      {
+        "id": "T46",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix SSA toSSA() OOM on function body CFGs — debug and fix the infinite allocation",
+        "task": null,
+        "started": "2026-04-25T20:56:55.103Z"
+      },
+      {
+        "id": "T55",
+        "mode": "BUILD",
+        "task": "Fix toSSA() to accept CFG objects, add per-function SSA pipeline",
+        "status": "upcoming",
+        "plan_ref": "T46"
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T48",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: investigate and fix remaining fuzzer failures (window ORDER BY, UNION types)",
+        "task": null
+      },
+      {
+        "id": "T49",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "henrydb"
       },
       {
-        "id": "T38",
+        "id": "T50",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Housekeeping"
+        "task": "Mid-push"
       },
       {
-        "id": "T39",
-        "mode": "THINK",
+        "id": "T51",
+        "mode": "PLAN",
         "status": "upcoming",
-        "task": "Late session: assess learning, plan tomorrow"
+        "goal": "monkey-lang: add VM callback mechanism for HOF builtins (map, filter, reduce)",
+        "task": null
       },
       {
-        "id": "T40",
+        "id": "T52",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T53",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "HenryDB: run comprehensive test sweep after all changes",
+        "project": "henrydb"
+      },
+      {
+        "id": "T54",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Final: evening summary, git push all"
+        "task": "Session final"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 40,
-    "blocksTotal": 45,
+    "blocksCompleted": 46,
+    "blocksTotal": 55,
     "modeDistribution": {
-      "THINK": 4,
-      "PLAN": 8,
-      "BUILD": 18,
-      "MAINTAIN": 6,
+      "THINK": 5,
+      "PLAN": 9,
+      "BUILD": 20,
+      "MAINTAIN": 8,
       "EXPLORE": 4
     }
   },
