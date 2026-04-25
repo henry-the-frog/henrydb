@@ -230,7 +230,8 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
             let sum = 0;
             for (let j = start; j <= end; j++) {
               const val = resolveArg(col.arg, partition[j]);
-              sum += (val || 0);
+              const num = Number(val);
+              sum += (isNaN(num) ? 0 : num);
             }
             partition[i][`__window_${name}`] = sum;
           }
@@ -242,7 +243,9 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
             let sum = 0;
             const count = end - start + 1;
             for (let j = start; j <= end; j++) {
-              sum += (resolveArg(col.arg, partition[j]) || 0);
+              const val = resolveArg(col.arg, partition[j]);
+              const num = Number(val);
+              sum += (isNaN(num) ? 0 : num);
             }
             partition[i][`__window_${name}`] = count > 0 ? sum / count : null;
           }
