@@ -1619,8 +1619,12 @@
     {
       "id": "T151",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "THINK: Analyze monkey-lang GC implementation — what are the collection strategies?"
+      "status": "done",
+      "task": "THINK: Analyze monkey-lang GC implementation — what are the collection strategies?",
+      "started": "2026-04-25T23:00:57.957Z",
+      "completed": "2026-04-25T23:01:20.690Z",
+      "duration_ms": 180000,
+      "summary": "GC analysis: mark-sweep with generational option. Young/old gens, promotion after 2 minor GCs, major every 5 minors. Write barriers (remembered set), weak refs, immortal objects (TRUE/FALSE/NULL). 547 LOC GC + 729 LOC tests. Object graph follows arrays, hashes, closures, cells, free vars."
     },
     {
       "id": "T152",
