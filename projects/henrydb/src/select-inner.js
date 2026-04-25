@@ -493,6 +493,21 @@ export function selectInner(db, ast) {
 
   // ORDER BY
   if (ast.orderBy) {
+    // Validate ORDER BY columns exist (when we have rows to check against)
+    if (rows.length > 0) {
+      for (const { column } of ast.orderBy) {
+        if (typeof column === 'number') continue; // Numeric ref — validated later
+        if (typeof column === 'object') continue; // Expression — validated during eval
+        if (aliasExprs.has(column)) continue; // SELECT alias
+        const sample = rows[0];
+        if (sample[`__window_${column}`] !== undefined) continue; // Window function
+        if (column in sample) continue; // Direct column
+        const resolved = db._resolveColumn(column, sample);
+        if (resolved === undefined && !Object.keys(sample).some(k => k.toLowerCase() === column.toLowerCase())) {
+          throw new Error(`no such column: ${column}`);
+        }
+      }
+    }
     rows.sort((a, b) => {
       for (const { column, direction, nulls } of ast.orderBy) {
         let av, bv;
