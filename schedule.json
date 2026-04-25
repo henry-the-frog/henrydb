@@ -1975,6 +1975,17 @@
       "completed": "2026-04-25T18:45:54.131Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Materialized views work! CREATE MATERIALIZED VIEW, query (instant), REFRESH. Shows correct aggregated data. Another advanced SQL feature confirmed."
+    },
+    {
+      "id": "T182",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB LISTEN/NOTIFY events",
+      "project": "henrydb",
+      "started": "2026-04-25T18:46:18.491Z",
+      "completed": "2026-04-25T18:46:46.496Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Event system exists (db-events.js, 11 tests pass). LISTEN/NOTIFY via programmatic API, not SQL syntax. event-emitter also works (separate test file). Event triggers for DML operations."
     }
   ],
   "focusProjects": [
@@ -2686,6 +2697,10 @@
     {
       "time": "2026-04-25T18:43:43.259Z",
       "msg": "Added T181 (EXPLORE) after end: EXPLORE: Test HenryDB materialized views if they exist"
+    },
+    {
+      "time": "2026-04-25T18:46:13.312Z",
+      "msg": "Added T182 (EXPLORE) after end: EXPLORE: Test HenryDB LISTEN/NOTIFY events"
     }
   ]
 }
