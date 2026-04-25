@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T16:32:12.383Z",
+  "generated": "2026-04-25T16:36:52.107Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add --stats flag to differential fuzzer showing query type breakdown",
-    "completedAt": "2026-04-25T16:32:12.383Z",
-    "taskId": "T81",
-    "summary": "Added --stats to fuzzer. Distribution: 94 simple, 41 GROUP BY, 23 subquery, 22 JOIN, 15 CTE, 105 INSERT. 100% pass.",
-    "durationMs": 120000
+    "task": "Add UPDATE and DELETE queries to differential fuzzer",
+    "completedAt": "2026-04-25T16:36:52.107Z",
+    "taskId": "T82",
+    "summary": "Added UPDATE + DELETE to fuzzer. 100% on seed=42. Cross-seed 89-100%. No new bugs found — UPDATE/DELETE work correctly.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 81,
+    "blocksCompleted": 82,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
-      "BUILD": 34,
+      "BUILD": 35,
       "MAINTAIN": 8,
       "EXPLORE": 20
     }

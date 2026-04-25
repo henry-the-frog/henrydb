@@ -888,6 +888,17 @@
       "completed": "2026-04-25T16:32:12.348Z",
       "duration_ms": 120000,
       "summary": "Added --stats to fuzzer. Distribution: 94 simple, 41 GROUP BY, 23 subquery, 22 JOIN, 15 CTE, 105 INSERT. 100% pass."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add UPDATE and DELETE queries to differential fuzzer",
+      "project": "henrydb",
+      "started": "2026-04-25T16:36:11.848Z",
+      "completed": "2026-04-25T16:36:52.071Z",
+      "duration_ms": 180000,
+      "summary": "Added UPDATE + DELETE to fuzzer. 100% on seed=42. Cross-seed 89-100%. No new bugs found — UPDATE/DELETE work correctly."
     }
   ],
   "focusProjects": [
@@ -1211,6 +1222,10 @@
     {
       "time": "2026-04-25T16:31:20.507Z",
       "msg": "Added T81 (BUILD) after end: Add --stats flag to differential fuzzer showing query type breakdown"
+    },
+    {
+      "time": "2026-04-25T16:36:04.209Z",
+      "msg": "Added T82 (BUILD) after end: Add UPDATE and DELETE queries to differential fuzzer"
     }
   ]
 }
