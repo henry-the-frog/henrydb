@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:29:24.043Z",
+  "generated": "2026-04-25T19:29:41.407Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB CASE expression with different forms",
-    "completedAt": "2026-04-25T19:29:24.043Z",
-    "taskId": "T215",
-    "summary": "All CASE forms work! Simple, searched, NULL, nested, in GROUP BY (tier bucketing), in ORDER BY (custom sort). Complete CASE expression support.",
+    "task": "EXPLORE: Test HenryDB WITH CHECK OPTION on views",
+    "completedAt": "2026-04-25T19:29:41.407Z",
+    "taskId": "T216",
+    "summary": "WITH CHECK OPTION parses. View SELECT works correctly (filters eng dept). INSERT through views not supported (updatable views not implemented). View read path is solid.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 220,
+    "blocksCompleted": 221,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 24,
-      "EXPLORE": 113
+      "EXPLORE": 114
     }
   },
   "artifacts": [
