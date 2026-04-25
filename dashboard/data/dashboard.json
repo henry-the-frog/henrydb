@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T18:24:21.829Z",
+  "generated": "2026-04-25T18:25:10.775Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
     "task": "EXPLORE: Continue HenryDB feature verification",
-    "completedAt": "2026-04-25T18:24:21.829Z",
-    "taskId": "T161",
-    "summary": "EXPLORE: Query planner works correctly. Index Scan for PK lookup (cost 0.50), Seq Scan for range queries (cost 101). Correct cost estimation, cardinality, width. PostgreSQL-quality EXPLAIN.",
-    "durationMs": 120000
+    "completedAt": "2026-04-25T18:25:10.775Z",
+    "taskId": "T162",
+    "summary": "4/5: NATURAL JOIN, CROSS JOIN, EXISTS correlated subquery, NOT IN all work. VALUES clause not supported. HenryDB handles all standard join types and subquery forms.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 161,
+    "blocksCompleted": 162,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 18,
-      "EXPLORE": 62
+      "EXPLORE": 63
     }
   },
   "artifacts": [
