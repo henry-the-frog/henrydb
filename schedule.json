@@ -1335,6 +1335,17 @@
       "completed": "2026-04-25T17:46:03.655Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: HenryDB distributed stack verified: Raft (10 tests), CRDTs (13 tests), Gossip/SWIM (7 tests). All 30 distributed tests pass. Full consensus + conflict resolution + membership."
+    },
+    {
+      "id": "T123",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB PL/SQL stored procedures with embedded SQL",
+      "project": "henrydb",
+      "started": "2026-04-25T17:46:25.618Z",
+      "completed": "2026-04-25T17:47:01.480Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: PL/SQL works — procedures created and called. 20 PL/SQL tests pass. Dollar-quoted body syntax. CALL works. Full PostgreSQL-style stored procedures with embedded SQL."
     }
   ],
   "focusProjects": [
@@ -1810,6 +1821,10 @@
     {
       "time": "2026-04-25T17:45:01.672Z",
       "msg": "Added T122 (EXPLORE) after end: EXPLORE: Test HenryDB Raft consensus — can we actually create a cluster?"
+    },
+    {
+      "time": "2026-04-25T17:46:20.139Z",
+      "msg": "Added T123 (EXPLORE) after end: EXPLORE: Test HenryDB PL/SQL stored procedures with embedded SQL"
     }
   ]
 }
