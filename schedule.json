@@ -1714,6 +1714,17 @@
       "completed": "2026-04-25T18:20:38.001Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Error messages are good for most cases: identifier not found, type mismatch, not a function, index OOB returns null. Weak on: wrong arg count (shows type mismatch), unclosed string (no error), division by zero (Infinity)."
+    },
+    {
+      "id": "T158",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB ALTER TABLE support",
+      "project": "henrydb",
+      "started": "2026-04-25T18:21:05.757Z",
+      "completed": "2026-04-25T18:21:21.347Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: All ALTER TABLE operations work! ADD COLUMN, RENAME COLUMN, DROP COLUMN, RENAME TABLE. Complete DDL support."
     }
   ],
   "focusProjects": [
@@ -2329,6 +2340,10 @@
     {
       "time": "2026-04-25T18:20:07.096Z",
       "msg": "Added T157 (EXPLORE) after end: EXPLORE: How does monkey-lang handle error messages? Test with common mistakes"
+    },
+    {
+      "time": "2026-04-25T18:20:59.510Z",
+      "msg": "Added T158 (EXPLORE) after end: EXPLORE: Test HenryDB ALTER TABLE support"
     }
   ]
 }
