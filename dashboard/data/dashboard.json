@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:00:51.728Z",
+  "generated": "2026-04-25T19:01:29.698Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB UNPIVOT and more exotic SQL",
-    "completedAt": "2026-04-25T19:00:51.728Z",
-    "taskId": "T201",
-    "summary": "EXPLORE: UNPIVOT (columns→rows, 6 rows from 2 wide rows) and FILTER clause (conditional aggregation: count_a=2, sum_b=70) both work! Advanced SQL features rarely found even in production DBs.",
+    "task": "EXPLORE: Test HenryDB FETCH FIRST, OFFSET, and row limiting clause",
+    "completedAt": "2026-04-25T19:01:29.698Z",
+    "taskId": "T202",
+    "summary": "OFFSET, FETCH FIRST, pagination, HAVING with subquery all work. SQL:2008 standard. Real-world pagination pattern (LIMIT 3 OFFSET 3 → page 2).",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 201,
+    "blocksCompleted": 202,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 21,
-      "EXPLORE": 98
+      "EXPLORE": 99
     }
   },
   "artifacts": [

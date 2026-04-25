@@ -2195,6 +2195,17 @@
       "completed": "2026-04-25T19:00:51.692Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: UNPIVOT (columns→rows, 6 rows from 2 wide rows) and FILTER clause (conditional aggregation: count_a=2, sum_b=70) both work! Advanced SQL features rarely found even in production DBs."
+    },
+    {
+      "id": "T202",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB FETCH FIRST, OFFSET, and row limiting clause",
+      "project": "henrydb",
+      "started": "2026-04-25T19:01:04.102Z",
+      "completed": "2026-04-25T19:01:29.661Z",
+      "duration_ms": 60000,
+      "summary": "OFFSET, FETCH FIRST, pagination, HAVING with subquery all work. SQL:2008 standard. Real-world pagination pattern (LIMIT 3 OFFSET 3 → page 2)."
     }
   ],
   "focusProjects": [
@@ -2986,6 +2997,10 @@
     {
       "time": "2026-04-25T19:00:24.298Z",
       "msg": "Added T201 (EXPLORE) after end: EXPLORE: Test HenryDB UNPIVOT and more exotic SQL"
+    },
+    {
+      "time": "2026-04-25T19:01:03.866Z",
+      "msg": "Added T202 (EXPLORE) after end: EXPLORE: Test HenryDB FETCH FIRST, OFFSET, and row limiting clause"
     }
   ]
 }
