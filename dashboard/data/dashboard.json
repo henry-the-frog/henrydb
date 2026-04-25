@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-25T14:33:53.261Z",
+  "generated": "2026-04-25T14:36:35.248Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard, check PRs",
-    "startedAt": "2026-04-25T14:33:53.261Z",
-    "taskId": "T8"
+    "task": "Housekeeping: git push, dashboard update",
+    "startedAt": "2026-04-25T14:36:35.248Z",
+    "taskId": "T12"
   },
   "schedule": {
     "date": "2026-04-25",
@@ -7850,59 +7850,90 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB bug batch: EXPLAIN plan disagreement + WAL syncMode validation + LIMIT subquery",
         "task": null,
-        "started": "2026-04-25T14:27:03.955Z"
+        "started": "2026-04-25T14:27:03.955Z",
+        "completed": "2026-04-25T14:27:56.914Z",
+        "duration_ms": 180000,
+        "summary": "Planned 3 bug fixes: WAL syncMode validation (throw on bad values), EXPLAIN classic cost comparison (align with Volcano), LIMIT subquery evaluation. Prior knowledge: failures.md consulted."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix WAL syncMode validation: throw on unrecognized values + add test",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T14:28:10.979Z",
+        "completed": "2026-04-25T14:29:05.473Z",
+        "duration_ms": 180000,
+        "summary": "Added WAL syncMode validation. Invalid values now throw descriptive error. Test added (9/9 pass)."
       },
       {
         "id": "T20",
         "mode": "BUILD",
         "task": "Fix EXPLAIN classic planner: add cost comparison for index vs seq scan + test",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-25T14:29:18.432Z",
+        "completed": "2026-04-25T14:30:51.560Z",
+        "duration_ms": 240000,
+        "summary": "Fixed EXPLAIN classic planner: added cost comparison for index vs seq scan. Index only chosen when cheaper. 37/37 tests pass."
       },
       {
         "id": "T21",
         "mode": "BUILD",
         "task": "Fix LIMIT subquery: evaluate subquery at execution time + test",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-25T14:31:10.734Z",
+        "completed": "2026-04-25T14:33:40.227Z",
+        "duration_ms": 300000,
+        "summary": "Fixed LIMIT subquery: stored limitExpr during parse, resolved at execution in selectInner(). Works with scalar subqueries and cross-table lookups. 48/48 sql tests pass."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, check PRs"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, check PRs",
+        "started": "2026-04-25T14:33:53.225Z",
+        "completed": "2026-04-25T14:34:03.566Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed all changes. Dashboard healthy."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day reflection. Assess progress, consider blog or monkey-lang CI."
+        "status": "done",
+        "task": "Mid-day reflection. Assess progress, consider blog or monkey-lang CI.",
+        "started": "2026-04-25T14:34:13.671Z",
+        "completed": "2026-04-25T14:34:27.220Z",
+        "duration_ms": 60000,
+        "summary": "9 tasks done in ~50 min. Bug batch done early. Next: monkey-lang CI (quick), then more TODO bugs before blog post. Blog can cover all fixes."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: Add CI workflow + update README with current stats",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T14:34:37.451Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Create CI workflow (.github/workflows/ci.yml) for monkey-lang",
         "plan_ref": "T10",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Update monkey-lang README with test count + CI badge",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -7955,13 +7986,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 10,
-    "blocksTotal": 21,
+    "blocksCompleted": 15,
+    "blocksTotal": 22,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 5,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 7,
+      "MAINTAIN": 2
     }
   },
   "artifacts": [

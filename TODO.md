@@ -4,7 +4,7 @@
 (none)
 
 ## Urgent
-(none)
+- monkey-lang: git push needs `workflow` scope on GitHub token (since 2026-04-25)
 
 ## Normal
 - HenryDB: EXPLAIN classic/Volcano plan disagree on scan type (classic uses selectivity heuristic, Volcano uses cost model)
