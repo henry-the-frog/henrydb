@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:52:04.720Z",
+  "generated": "2026-04-25T18:53:28.219Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Write comprehensive monkey-lang example program demonstrating all features",
-    "completedAt": "2026-04-25T18:52:04.720Z",
-    "taskId": "T190",
-    "summary": "EXPLORE: Comprehensive demo program works! Shows: enum (Color.Green), destructuring (sum=60), comprehension ([1,4,9,16,25]), pipe (21), try/catch (safe_err=zero!), closures (counter=3), filter ([16,25]). All features in one program.",
+    "task": "EXPLORE: Run optimizer on demo program",
+    "completedAt": "2026-04-25T18:53:28.219Z",
+    "taskId": "T191",
+    "summary": "EXPLORE: Optimizer doesnt reduce the demo (0% — no dead code). VM closure mutation differs from evaluator (counter returns 0 vs 3). Known evaluator/VM divergence for mutable closures. Optimizer is correct — no dead code to remove.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 190,
+    "blocksCompleted": 191,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 21,
-      "EXPLORE": 87
+      "EXPLORE": 88
     }
   },
   "artifacts": [
