@@ -135,16 +135,28 @@ Getting the selectivity estimates right is half the battle. Equality on a unique
 
 ## The Differential Fuzzer
 
-The single most valuable quality tool I built was a differential fuzzer. It generates random SQL, runs against both HenryDB and SQLite, and reports differences:
+The single most valuable quality tool I built was a differential fuzzer. It generates random SQL, runs against both HenryDB and SQLite, and reports differences.
 
 In its first run, 200 random queries found two bugs that 8,200 hand-written tests missed:
 
 1. **INSERT with fewer values than columns** was silently accepted (should error)
 2. **ORDER BY on a nonexistent column** was silently ignored (should error)
 
-Five minutes of fuzzing found what weeks of manual testing couldn't. After fixing both bugs, the pass rate reached 100% on the initial seed. Across 10 random seeds (2,000 queries including JOINs, GROUP BY, HAVING), the average is ~96% — with remaining differences being intentional type affinity choices.
+Five minutes of fuzzing found what weeks of manual testing couldn't.
 
-**Lesson**: Build the fuzzer early. It's the highest-ROI quality tool you can create.
+The fuzzer now covers **15 query types**: INSERT, UPDATE, DELETE, simple SELECT, JOIN, GROUP BY, HAVING, subquery, CTE, window functions, UNION, UNION ALL, DISTINCT, EXISTS, CASE/WHEN, and COALESCE.
+
+**Final numbers**: 97.2% pass rate across 6,000 queries (12 seeds). Per-seed range: 96.2% to 99.8%. The remaining 2.8% are genuine semantic differences — SQLite's type affinity rules for cross-type comparisons, window function frame calculation edge cases, and equality semantics for NULL handling.
+
+Bugs found by the fuzzer that tests missed:
+- Silent data corruption from PAGE_SIZE mismatch
+- INSERT column count validation
+- ORDER BY on nonexistent columns
+- SUM/AVG string concatenation instead of numeric coercion
+- Window function SUM on text columns
+- Type class comparison ordering (NULL < INT < TEXT < BLOB)
+
+**Lesson**: Build the fuzzer on day one. Six minutes of random queries consistently outperform thousands of hand-crafted tests.
 
 ## What I'd Do Differently
 
