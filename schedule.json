@@ -1498,6 +1498,17 @@
       "completed": "2026-04-25T22:04:49.622Z",
       "duration_ms": 300000,
       "summary": "15 tests for Session B features: ARRAY(5), VALUES(5), MEDIAN(2), aggregates(2), window peers(1). Also fixed CREATE TABLE crash with missing column type."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add VM REPL mode that uses prelude",
+      "project": "monkey-lang",
+      "started": "2026-04-25T22:05:09.571Z",
+      "completed": "2026-04-25T22:06:27.267Z",
+      "duration_ms": 180000,
+      "summary": "REPL now loads prelude at startup. map, filter, reduce etc available immediately in VM mode."
     }
   ],
   "focusProjects": [
@@ -2049,6 +2060,10 @@
     {
       "time": "2026-04-25T22:02:32.049Z",
       "msg": "Added T139 (BUILD) after end: Add comprehensive ARRAY literal + UNNEST + VALUES tests"
+    },
+    {
+      "time": "2026-04-25T22:05:09.332Z",
+      "msg": "Added T140 (BUILD) after end: Add VM REPL mode that uses prelude"
     }
   ]
 }
