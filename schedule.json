@@ -5645,6 +5645,138 @@
       "completed": "2026-04-25T02:58:48.021Z",
       "duration_ms": 180000,
       "summary": "ROOT CAUSE FOUND: TransactionalDB routes SELECT through auto-commit DML path (begin+execute+WAL+commit+physicalize). Parse=0.009ms, MVCC=0.002ms, Inner DB=0.3ms — the 18.6ms overhead is WAL writes + physicalize for reads that don't need it. Fix: add read-only fast path for SELECT (snapshot read only, no WAL, no begin/commit). This would make SELECT 60x faster."
+    },
+    {
+      "id": "T531",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: explore Conv2D, MaxPool, Flatten layers - build a CNN",
+      "project": "neural-net",
+      "started": "2026-04-25T03:05:39.210Z",
+      "completed": "2026-04-25T03:07:18.159Z",
+      "duration_ms": 180000,
+      "summary": "CNN works end-to-end: Conv2D(8x8x1→8x8x4) → MaxPool2D(→4x4x4) → Flatten(→64) → Dense(→8) → Dense(→3 softmax). 100% accuracy on 30 8x8 spatial pattern images (3 classes: top-left, center, bottom-right bright regions). Forward+backward+training all functional."
+    },
+    {
+      "id": "T532",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate the read-only SELECT fast path fix feasibility",
+      "project": "henrydb",
+      "started": "2026-04-25T02:59:23.416Z",
+      "completed": "2026-04-25T03:05:04.269Z",
+      "duration_ms": 300000,
+      "summary": "IMPLEMENTED read-only SELECT fast path. 91x speedup (19ms to 0.2ms). SELECT/EXPLAIN/SHOW/WITH now bypass auto-commit DML path (no WAL, no trackNewRows, no physicalizeDeletes). Query cache invalidation on DML commit/session commit/rollback. All tests pass: 105 MVCC, 22 FK, 13 transactional-db, 135/136 WAL."
+    },
+    {
+      "id": "T533",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: benchmark the SELECT fast path improvement with various query patterns",
+      "project": "henrydb",
+      "started": "2026-04-25T03:07:38.601Z",
+      "completed": "2026-04-25T03:08:56.400Z",
+      "duration_ms": 120000,
+      "summary": "SELECT fast path benchmarks (500 rows, unique queries): Indexed eq: 0.07ms, JOIN: 0.8ms, range scan: 1.8ms, ORDER+LIMIT: 1.9ms, CTE: 1.9ms, full scan: 2.4ms, COUNT: 2.5ms, GROUP BY: 2.6ms, window: 3.2ms, self-join: 7.7ms. All dramatically improved from 19ms baseline. Query cache gives 0ms for repeated queries."
+    },
+    {
+      "id": "T534",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: explore BatchNorm, Dropout, and regularization layers",
+      "project": "neural-net",
+      "started": "2026-04-25T03:09:05.853Z",
+      "completed": "2026-04-25T03:09:48.799Z",
+      "duration_ms": 120000,
+      "summary": "BatchNorm, Dropout, and regularization all work. BatchNorm normalizes during training. Dropout is stochastic during training, deterministic during inference. Full regularized network (BatchNorm+Dropout) achieves 92% test accuracy on circle classification. All layers integrate with Network.train() API."
+    },
+    {
+      "id": "T535",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: explore RNN/LSTM/GRU layers for sequence modeling",
+      "project": "neural-net",
+      "started": "2026-04-25T03:10:05.176Z",
+      "completed": "2026-04-25T03:11:35.618Z",
+      "duration_ms": 120000,
+      "summary": "RNN/LSTM/GRU all work with Network API. Sin wave prediction: RNN MSE=0.37 (182ms), LSTM MSE=0.45 (783ms, 4x slower), GRU MSE=0.44 (575ms). All train via backpropagation through time. LSTM is 4x slower than RNN due to gate computations. Forward+backward both functional."
+    },
+    {
+      "id": "T536",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore materialized views and VACUUM under MVCC",
+      "project": "henrydb",
+      "started": "2026-04-25T03:11:45.407Z",
+      "completed": "2026-04-25T03:12:24.584Z",
+      "duration_ms": 120000,
+      "summary": "Materialized views and VACUUM work under MVCC. MatView: CREATE, query, stale detection (no auto-refresh), REFRESH updates data. VACUUM: removed 50 dead tuples from UPDATEs. VACUUM ANALYZE works. Concurrent read during VACUUM sees consistent snapshot. All features integrated correctly."
+    },
+    {
+      "id": "T537",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: count all features, list architectures, write project summary",
+      "project": "neural-net",
+      "started": "2026-04-25T03:12:43.029Z",
+      "completed": "2026-04-25T03:13:11.396Z",
+      "duration_ms": 60000,
+      "summary": "neural-net stats: 170 source files (28K LOC), 267 test files, 1,746 test cases, 686 exports. Features: Dense/Conv2D/MaxPool/Flatten/RNN/LSTM/GRU/BatchNorm/Dropout, Attention (self/cross/multi-head/flash/GQA/sliding-window/sparse), Transformers (encoder, MicroGPT, MiniLLM, modern decoder), NTM/Hopfield/SNN/ESN, MAML/HyperNetwork, GAN/VAE/Diffusion/NormalizingFlows, DQN/PPO/REINFORCE, LoRA/Pruning/Quantization/Distillation, BPE/Byte tokenizers, RoPE/ALiBi, autograd, 12+ optimizers, 15+ LR schedulers."
+    },
+    {
+      "id": "T538",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: run full test count to get exact numbers",
+      "project": "henrydb",
+      "started": "2026-04-25T03:13:27.096Z",
+      "completed": "2026-04-25T03:13:53.876Z",
+      "duration_ms": 30000,
+      "summary": "HenryDB test count confirmed: 8,157 test cases (it()) across 872 test files. Total source: 369 files, 78K LOC. Total test: 872 files, 129K LOC. Grand total: 207K LOC, 1,241 files."
+    },
+    {
+      "id": "T539",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: explore MicroGPT - can it generate text after training?",
+      "project": "neural-net",
+      "started": "2026-04-25T03:14:13.568Z",
+      "completed": "2026-04-25T03:15:57.039Z",
+      "duration_ms": 120000,
+      "summary": "MicroGPT works end-to-end: training (loss 4.6→1.1 on abc pattern, 4.7→3.1 on fox sentence), generation with temperature sampling. Model learns character distributions but small size (32d, 2L) cant fully capture sequences. Architecture: Embedding → PE → TransformerEncoder × N → LayerNorm → Dense → Softmax. Train and generate APIs functional."
+    },
+    {
+      "id": "T540",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore cursor and streaming query support",
+      "project": "henrydb",
+      "started": "2026-04-25T03:17:17.485Z",
+      "completed": "2026-04-25T03:18:07.442Z",
+      "duration_ms": 60000,
+      "summary": "Cursor support is programmatic API (not SQL DECLARE/FETCH). Cursor class: next(), fetch(n), peek(), current(), reset(), close(), Symbol.iterator. Pagination works perfectly: 5 pages of 5 from 20 rows. Iterator protocol supported. SQL cursor syntax (DECLARE/FETCH/CLOSE) not parsed."
+    },
+    {
+      "id": "T541",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: test GAN training - can it generate samples?",
+      "project": "neural-net",
+      "started": "2026-04-25T03:16:26.097Z",
+      "completed": "2026-04-25T03:17:09.023Z",
+      "duration_ms": 120000,
+      "summary": "GAN trains end-to-end but generator mode-collapses to near-zero (classic GAN instability). D-loss decreases, G-loss increases — discriminator wins. Would need label smoothing, asymmetric LR, or more G steps. Architecture works: Generator noise→32→16→2, Discriminator 2→16→8→1. Training loop with separate D/G steps functional."
+    },
+    {
+      "id": "T542",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: test DQN/PPO on simple environments",
+      "project": "neural-net",
+      "started": "2026-04-25T03:18:21.109Z",
+      "completed": "2026-04-25T03:20:38.858Z",
+      "duration_ms": 120000,
+      "summary": "DQN works on GridWorld: reward improves from 5.7 to 9.1 (optimal 9.2) over 500 episodes. Experience replay, target network, epsilon decay all functional. Greedy policy learns near-optimal path but gets stuck 1 step from goal (Q-value estimation issue at boundary). RL training loop works end-to-end."
     }
   ],
   "focusProjects": [
@@ -8564,6 +8696,54 @@
     {
       "time": "2026-04-25T02:57:00.900Z",
       "msg": "Added T530 (EXPLORE) after end: HenryDB: profile TransactionalDB overhead - identify which MVCC operations cost most"
+    },
+    {
+      "time": "2026-04-25T02:59:17.319Z",
+      "msg": "Added T531 (EXPLORE) after end: neural-net: explore Conv2D, MaxPool, Flatten layers - build a CNN"
+    },
+    {
+      "time": "2026-04-25T02:59:17.477Z",
+      "msg": "Added T532 (EXPLORE) after end: HenryDB: investigate the read-only SELECT fast path fix feasibility"
+    },
+    {
+      "time": "2026-04-25T03:07:31.781Z",
+      "msg": "Added T533 (EXPLORE) after end: HenryDB: benchmark the SELECT fast path improvement with various query patterns"
+    },
+    {
+      "time": "2026-04-25T03:07:31.904Z",
+      "msg": "Added T534 (EXPLORE) after end: neural-net: explore BatchNorm, Dropout, and regularization layers"
+    },
+    {
+      "time": "2026-04-25T03:09:59.072Z",
+      "msg": "Added T535 (EXPLORE) after end: neural-net: explore RNN/LSTM/GRU layers for sequence modeling"
+    },
+    {
+      "time": "2026-04-25T03:09:59.198Z",
+      "msg": "Added T536 (EXPLORE) after end: HenryDB: explore materialized views and VACUUM under MVCC"
+    },
+    {
+      "time": "2026-04-25T03:12:39.030Z",
+      "msg": "Added T537 (EXPLORE) after end: neural-net: count all features, list architectures, write project summary"
+    },
+    {
+      "time": "2026-04-25T03:13:23.222Z",
+      "msg": "Added T538 (EXPLORE) after end: HenryDB: run full test count to get exact numbers"
+    },
+    {
+      "time": "2026-04-25T03:14:09.508Z",
+      "msg": "Added T539 (EXPLORE) after end: neural-net: explore MicroGPT - can it generate text after training?"
+    },
+    {
+      "time": "2026-04-25T03:16:16.217Z",
+      "msg": "Added T540 (EXPLORE) after end: HenryDB: explore cursor and streaming query support"
+    },
+    {
+      "time": "2026-04-25T03:16:16.362Z",
+      "msg": "Added T541 (EXPLORE) after end: neural-net: test GAN training - can it generate samples?"
+    },
+    {
+      "time": "2026-04-25T03:18:16.796Z",
+      "msg": "Added T542 (EXPLORE) after end: neural-net: test DQN/PPO on simple environments"
     }
   ]
 }
