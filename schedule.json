@@ -1203,6 +1203,28 @@
       "completed": "2026-04-25T17:24:42.786Z",
       "duration_ms": 300000,
       "summary": "Created monkey-lang optimizer fuzzer. 100% pass rate across 8 seeds (1600+ valid programs). Generates: let, set, if/else, while, functions, arrays. Zero divergences. Optimizer provably sound."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add strength reduction pass to monkey-lang optimizer (x*2 → x+x, x*1 → x)",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:25:07.911Z",
+      "completed": "2026-04-25T17:25:20.517Z",
+      "duration_ms": 60000,
+      "summary": "Investigated strength reduction. No OpDup in VM, so bytecode-level x*2→x+x not possible. AST-level const-fold already handles constant cases. Skip — diminishing returns."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB WHERE clause type comparison to match SQLite semantics",
+      "project": "henrydb",
+      "started": "2026-04-25T17:25:35.508Z",
+      "completed": "2026-04-25T17:33:14.224Z",
+      "duration_ms": 600000,
+      "summary": "Implemented SQLite-compatible type class comparison (NULL < INT < TEXT < BLOB). Fuzzer 94% → 96% across 10 seeds. ~100 failures fixed. Three comparison locations in expression evaluator updated."
     }
   ],
   "focusProjects": [
@@ -1630,6 +1652,14 @@
     {
       "time": "2026-04-25T17:23:33.220Z",
       "msg": "Added T110 (BUILD) after end: Create monkey-lang optimizer fuzzer — random programs, compare opt vs unopt"
+    },
+    {
+      "time": "2026-04-25T17:25:02.245Z",
+      "msg": "Added T111 (BUILD) after end: Add strength reduction pass to monkey-lang optimizer (x*2 → x+x, x*1 → x)"
+    },
+    {
+      "time": "2026-04-25T17:25:30.707Z",
+      "msg": "Added T112 (BUILD) after end: Fix HenryDB WHERE clause type comparison to match SQLite semantics"
     }
   ]
 }

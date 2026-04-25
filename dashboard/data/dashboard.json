@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T17:24:42.823Z",
+  "generated": "2026-04-25T17:33:14.354Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Create monkey-lang optimizer fuzzer — random programs, compare opt vs unopt",
-    "completedAt": "2026-04-25T17:24:42.823Z",
-    "taskId": "T110",
-    "summary": "Created monkey-lang optimizer fuzzer. 100% pass rate across 8 seeds (1600+ valid programs). Generates: let, set, if/else, while, functions, arrays. Zero divergences. Optimizer provably sound.",
-    "durationMs": 300000
+    "task": "Fix HenryDB WHERE clause type comparison to match SQLite semantics",
+    "completedAt": "2026-04-25T17:33:14.354Z",
+    "taskId": "T112",
+    "summary": "Implemented SQLite-compatible type class comparison (NULL < INT < TEXT < BLOB). Fuzzer 94% → 96% across 10 seeds. ~100 failures fixed. Three comparison locations in expression evaluator updated.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,12 +8917,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 110,
+    "blocksCompleted": 112,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
-      "BUILD": 51,
+      "BUILD": 53,
       "MAINTAIN": 10,
       "EXPLORE": 26
     }
