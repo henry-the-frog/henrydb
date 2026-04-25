@@ -3218,6 +3218,17 @@
       "completed": "2026-04-25T19:53:46.448Z",
       "duration_ms": 60000,
       "summary": "Self JOIN works! Org chart: CEO→null, VP→CEO, Director→VP, Manager→VP, Dev→Director. LEFT self-join with alias."
+    },
+    {
+      "id": "T296",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB HAVING without GROUP BY",
+      "project": "henrydb",
+      "started": "2026-04-25T19:53:55.227Z",
+      "completed": "2026-04-25T19:54:09.252Z",
+      "duration_ms": 60000,
+      "summary": "HAVING works! With GROUP BY, without GROUP BY, multiple conditions. Correct aggregate filtering."
     }
   ],
   "focusProjects": [
@@ -4385,6 +4396,10 @@
     {
       "time": "2026-04-25T19:53:31.516Z",
       "msg": "Added T295 (EXPLORE) after end: EXPLORE: Test HenryDB SELF JOIN"
+    },
+    {
+      "time": "2026-04-25T19:53:54.991Z",
+      "msg": "Added T296 (EXPLORE) after end: EXPLORE: Test HenryDB HAVING without GROUP BY"
     }
   ]
 }
