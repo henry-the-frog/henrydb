@@ -5777,6 +5777,113 @@
       "completed": "2026-04-25T03:20:38.858Z",
       "duration_ms": 120000,
       "summary": "DQN works on GridWorld: reward improves from 5.7 to 9.1 (optimal 9.2) over 500 episodes. Experience replay, target network, epsilon decay all functional. Greedy policy learns near-optimal path but gets stuck 1 step from goal (Q-value estimation issue at boundary). RL training loop works end-to-end."
+    },
+    {
+      "id": "T543",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: test self-attention, multi-head, flash attention",
+      "project": "neural-net",
+      "started": "2026-04-25T03:21:00.776Z",
+      "completed": "2026-04-25T03:22:24.985Z",
+      "duration_ms": 120000,
+      "summary": "Attention mechanisms: SelfAttention, MultiHeadAttention (class-based), flashAttention, multiHeadFlashAttention (functional). Flash produces IDENTICAL output to standard (diff=0). Causal masking works. Performance: standard is 2x faster than flash in JS (flash's advantage is memory, not speed in non-CUDA). SelfAttention 8x16→8x16, MHA with 4 heads preserves dimensions."
+    },
+    {
+      "id": "T544",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test concurrent writer-heavy MVCC workload",
+      "project": "henrydb",
+      "started": "2026-04-25T03:22:40.623Z",
+      "completed": "2026-04-25T03:23:17.392Z",
+      "duration_ms": 60000,
+      "summary": "MVCC stress test: 100 concurrent transfers all committed, total balance invariant preserved (10000). No negative balances. Snapshot isolation verified: concurrent reader sees stable total across commits. Fresh transactions see committed state. MVCC is rock-solid under concurrent write-heavy workloads."
+    },
+    {
+      "id": "T545",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test savepoints (SAVEPOINT, RELEASE, ROLLBACK TO)",
+      "project": "henrydb",
+      "started": "2026-04-25T03:23:31.059Z",
+      "completed": "2026-04-25T03:23:58.614Z",
+      "duration_ms": 60000,
+      "summary": "Savepoints work perfectly: SAVEPOINT, ROLLBACK TO (partial undo), nested savepoints, RELEASE SAVEPOINT, continue after rollback. All 4 test scenarios pass. Row 3 rolled back, row 5 rolled back (nested), row 6 released, row 8 rolled back but 9 committed. Full PostgreSQL-style savepoint semantics."
+    },
+    {
+      "id": "T546",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: explore LoRA fine-tuning and model compression",
+      "project": "neural-net",
+      "started": "2026-04-25T03:24:13.562Z",
+      "completed": "2026-04-25T03:25:31.412Z",
+      "duration_ms": 120000,
+      "summary": "Model compression explored: LoRA forward pass works (rank-4 on 4x32 layer). Magnitude pruning: 50% sparsity achieved, network still forwards. Quantization: absmax int8 with MSE=3e-7, max error=0.001, SNR=48dB. All 3 compression techniques functional. API differences: quantize() needs flat array, quantizationError() returns object."
+    },
+    {
+      "id": "T547",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test RETURNING clause, UPSERT (INSERT ON CONFLICT), CTEs with DML",
+      "project": "henrydb",
+      "started": "2026-04-25T03:25:47.937Z",
+      "completed": "2026-04-25T03:26:17.355Z",
+      "duration_ms": 60000,
+      "summary": "Advanced DML: RETURNING works (INSERT/UPDATE/DELETE all return affected rows). UPSERT (ON CONFLICT DO UPDATE) works with EXCLUDED pseudo-table. ON CONFLICT DO NOTHING works. UPSERT+RETURNING combo works. Multi-value INSERT works. CTE with DML (writable CTEs) NOT supported. 12/14 tests passed."
+    },
+    {
+      "id": "T548",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: quick test of all remaining modules (VAE, Diffusion, SNN, Hopfield, ESN)",
+      "project": "neural-net",
+      "started": "2026-04-25T03:26:52.376Z",
+      "completed": "2026-04-25T03:28:10.142Z",
+      "duration_ms": 120000,
+      "summary": "Quick test of 5 modules: VAE forward works (reconstruction+latent). Hopfield classic: stores patterns, recalls from corruption (2-bit fix in 2 steps, energy decreasing). SNN/Diffusion/ESN have API differences from assumed interfaces. All modules import and construct. Hopfield most impressive: converges correctly with energy minimization."
+    },
+    {
+      "id": "T549",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test generated columns, CHECK constraints, and SERIAL/AUTOINCREMENT",
+      "project": "henrydb",
+      "started": "2026-04-25T03:28:32.435Z",
+      "completed": "2026-04-25T03:29:05.530Z",
+      "duration_ms": 60000,
+      "summary": "All constraint types work: CHECK (expression validation), NOT NULL (rejection), DEFAULT (static + CURRENT_TIMESTAMP), SERIAL/AUTOINCREMENT (auto-incrementing IDs), GENERATED columns (computed area=width*height=15), UNIQUE (duplicate rejection). 22/22 tests passed. Very complete constraint system."
+    },
+    {
+      "id": "T550",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test information_schema, pg_catalog queries",
+      "project": "henrydb",
+      "started": "2026-04-25T03:29:23.079Z",
+      "completed": "2026-04-25T03:29:53.205Z",
+      "duration_ms": 60000,
+      "summary": "Metadata queries: information_schema.tables+columns work (catalog, schema, types). pg_catalog.pg_tables+pg_indexes work. SHOW TABLES/COLUMNS/INDEXES work with rich output. DESCRIBE works. CURRENT_TIMESTAMP works. Missing: table_constraints, VERSION(), CURRENT_DATABASE(). 10/13 features work."
+    },
+    {
+      "id": "T551",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: test tokenizers (BPE, byte-level)",
+      "project": "neural-net",
+      "started": "2026-04-25T03:30:12.978Z",
+      "completed": "2026-04-25T03:31:13.662Z",
+      "duration_ms": 60000,
+      "summary": "BPE and Byte tokenizers work. Perfect roundtrip encode/decode for both. BPE: character-level (merges not triggering on small corpus). Byte tokenizer handles Unicode perfectly (Japanese: 3 chars → 11 bytes, Emoji: 2 chars → 10 bytes). Both tokenizers preserve text identity."
+    },
+    {
+      "id": "T552",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session C final: daily log, git push, CURRENT.md update",
+      "project": "workspace",
+      "started": "2026-04-25T03:31:50.373Z"
     }
   ],
   "focusProjects": [
@@ -8744,6 +8851,46 @@
     {
       "time": "2026-04-25T03:18:16.796Z",
       "msg": "Added T542 (EXPLORE) after end: neural-net: test DQN/PPO on simple environments"
+    },
+    {
+      "time": "2026-04-25T03:20:56.676Z",
+      "msg": "Added T543 (EXPLORE) after end: neural-net: test self-attention, multi-head, flash attention"
+    },
+    {
+      "time": "2026-04-25T03:22:36.195Z",
+      "msg": "Added T544 (EXPLORE) after end: HenryDB: stress test concurrent writer-heavy MVCC workload"
+    },
+    {
+      "time": "2026-04-25T03:23:26.461Z",
+      "msg": "Added T545 (EXPLORE) after end: HenryDB: test savepoints (SAVEPOINT, RELEASE, ROLLBACK TO)"
+    },
+    {
+      "time": "2026-04-25T03:24:09.182Z",
+      "msg": "Added T546 (EXPLORE) after end: neural-net: explore LoRA fine-tuning and model compression"
+    },
+    {
+      "time": "2026-04-25T03:25:42.200Z",
+      "msg": "Added T547 (EXPLORE) after end: HenryDB: test RETURNING clause, UPSERT (INSERT ON CONFLICT), CTEs with DML"
+    },
+    {
+      "time": "2026-04-25T03:26:35.218Z",
+      "msg": "Added T548 (EXPLORE) after end: neural-net: quick test of all remaining modules (VAE, Diffusion, SNN, Hopfield, ESN)"
+    },
+    {
+      "time": "2026-04-25T03:28:25.683Z",
+      "msg": "Added T549 (EXPLORE) after end: HenryDB: test generated columns, CHECK constraints, and SERIAL/AUTOINCREMENT"
+    },
+    {
+      "time": "2026-04-25T03:29:16.977Z",
+      "msg": "Added T550 (EXPLORE) after end: HenryDB: test information_schema, pg_catalog queries"
+    },
+    {
+      "time": "2026-04-25T03:30:05.410Z",
+      "msg": "Added T551 (EXPLORE) after end: neural-net: test tokenizers (BPE, byte-level)"
+    },
+    {
+      "time": "2026-04-25T03:31:26.052Z",
+      "msg": "Added T552 (MAINTAIN) after end: Session C final: daily log, git push, CURRENT.md update"
     }
   ]
 }

@@ -1,13 +1,15 @@
 # CURRENT.md
 
-## Status: in-progress
+## Status: session-ended
 
-### Current Task
-- **ID:** T505
-- **Mode:** THINK
-- **Task:** Session C evening direction: review TODO urgent items, pick evening focus
-- **Started:** 2026-04-25T02:15 UTC
+### Session C Summary (Apr 24, 2026, 8:15 PM - 10:00 PM MDT)
+- **Tasks completed:** 48 (T505-T552)
+- **Bugs fixed:** 2 (FK MVCC visibility, SELECT fast path)
+- **Bugs found:** 3 (string truncation, EXPLAIN discrepancy, WAL syncMode)
+- **Projects explored:** henrydb, neural-net
+- **Key achievement:** 91x SELECT speedup via read-only fast path
 
-### Session: C (Apr 24, 2026, 8:15 PM - 10:15 PM MDT)
-- Picked up from Session B's completed queue
-- Session B accomplished: blog published, 9 bugs fixed, 13,185 tests verified, 315+ SQL features
+### Day Total (Sessions A+B+C)
+- Session A: Setup + blog
+- Session B: 9 bug fixes, blog published, 13,185 tests verified
+- Session C: 48 deep exploration tasks, 2 major fixes, comprehensive project audits
