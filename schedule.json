@@ -1605,6 +1605,17 @@
       "completed": "2026-04-25T18:12:29.458Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: All window functions work! ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, NTILE. PARTITION BY, ORDER BY, null boundaries. PostgreSQL-quality window function support verified."
+    },
+    {
+      "id": "T148",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB triggers (BEFORE/AFTER INSERT/UPDATE/DELETE)",
+      "project": "henrydb",
+      "started": "2026-04-25T18:12:50.753Z",
+      "completed": "2026-04-25T18:13:10.056Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Triggers work perfectly! AFTER UPDATE with NEW/OLD references. Automatically computed balance difference (500) and logged to audit table with timestamp. Full trigger support."
     }
   ],
   "focusProjects": [
@@ -2180,6 +2191,10 @@
     {
       "time": "2026-04-25T18:11:56.690Z",
       "msg": "Added T147 (EXPLORE) after end: EXPLORE: Test HenryDB WINDOW functions (LEAD, LAG, NTILE, PERCENTILE)"
+    },
+    {
+      "time": "2026-04-25T18:12:43.955Z",
+      "msg": "Added T148 (EXPLORE) after end: EXPLORE: Test HenryDB triggers (BEFORE/AFTER INSERT/UPDATE/DELETE)"
     }
   ]
 }
