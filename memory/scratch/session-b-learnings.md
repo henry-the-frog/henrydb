@@ -40,3 +40,35 @@
 - Shared `type-affinity.js` module for INSERT coercion and ORDER BY comparison
 - Shared `percentile.js` for MEDIAN/PERCENTILE_CONT across 4 aggregate paths
 - `prelude.js` pattern for VM HOFs — monkey-lang source compiled to bytecode
+
+## MAJOR Discovery: neural-net (38K LOC)
+
+This is not just "a neural network" — it's a **comprehensive deep learning framework** implementing state-of-the-art ML research in JavaScript:
+
+### Paper Implementations
+- Mamba SSM (Gu & Dao, 2023)
+- Flash Attention (Dao et al., 2022)
+- DPO (Rafailov et al., 2023)
+- LoRA (Hu et al., 2021)
+- CLIP (Radford et al., 2021)
+- Constitutional AI (Bai et al., 2022)
+- Chinchilla Scaling Laws (Hoffmann et al., 2022)
+- Speculative Decoding (Leviathan et al., 2023)
+- SimCLR (Chen et al., 2020)
+- AdaLN/DiT (Peebles & Xie, 2023)
+- Attention Sink/StreamingLLM
+- Think Tokens (DeepSeek R1)
+
+### Infrastructure
+- BPE Tokenizer (GPT-style)
+- GQA + KV-Cache (LLaMA-style)
+- Continuous Batching (vLLM-style)
+- Quantization (PTQ)
+- MicroGPT (char-level transformer)
+- AdamW optimizer
+- Data loaders + augmentation
+- Training callbacks (EarlyStopping)
+- Autograd (reverse-mode AD)
+- AutoML (hyperparameter search)
+
+This is the most impressive project in the collection, surpassing even monkey-lang in scope.
