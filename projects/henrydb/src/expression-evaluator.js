@@ -9,6 +9,29 @@ import { evalFunction as _evalFunctionImpl, dateArith as _dateArithImpl, likeToR
 import { tokenize } from './fulltext.js';
 
 /**
+ * SQLite-compatible type class comparison.
+ * Type ordering: NULL < INTEGER/REAL < TEXT < BLOB
+ * When comparing values of different types, use type class ordering.
+ */
+function typeClass(v) {
+  if (v == null) return 0;
+  if (typeof v === 'number') return 1;
+  if (typeof v === 'string') return 2;
+  if (Buffer.isBuffer(v) || v instanceof Uint8Array) return 3;
+  return 1; // default to numeric
+}
+
+function sqliteCompare(left, right) {
+  const lc = typeClass(left);
+  const rc = typeClass(right);
+  if (lc !== rc) return lc - rc; // different type classes → order by class
+  // Same type class → normal comparison
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
+/**
  * Install expression evaluation methods on Database.prototype.
  * @param {Function} Database - The Database class
  */
@@ -231,10 +254,10 @@ P._evalGroupCond = function(cond, groupRows, result, computeAgg) {
     switch (cond.op) {
       case 'EQ': case '=': return left === right;
       case 'NE': case '!=': case '<>': return left !== right;
-      case 'LT': case '<': return left < right;
-      case 'GT': case '>': return left > right;
-      case 'LE': case '<=': return left <= right;
-      case 'GE': case '>=': return left >= right;
+      case 'LT': case '<': return sqliteCompare(left, right) < 0;
+      case 'GT': case '>': return sqliteCompare(left, right) > 0;
+      case 'LE': case '<=': return sqliteCompare(left, right) <= 0;
+      case 'GE': case '>=': return sqliteCompare(left, right) >= 0;
     }
   }
   if (cond.type === 'AND') return this._evalGroupCond(cond.left, groupRows, result, computeAgg) && this._evalGroupCond(cond.right, groupRows, result, computeAgg);
@@ -710,10 +733,10 @@ P._evalExpr = function(expr, row) {
         switch (expr.op) {
           case 'EQ': return left === right;
           case 'NE': return left !== right;
-          case 'LT': return left < right;
-          case 'GT': return left > right;
-          case 'LE': return left <= right;
-          case 'GE': return left >= right;
+          case 'LT': return sqliteCompare(left, right) < 0;
+          case 'GT': return sqliteCompare(left, right) > 0;
+          case 'LE': return sqliteCompare(left, right) <= 0;
+          case 'GE': return sqliteCompare(left, right) >= 0;
         }
       };
       if (expr.quantifier === 'ANY') {
@@ -744,10 +767,10 @@ P._evalExpr = function(expr, row) {
       switch (expr.op) {
         case 'EQ': return left === right;
         case 'NE': return left !== right;
-        case 'LT': return left < right;
-        case 'GT': return left > right;
-        case 'LE': return left <= right;
-        case 'GE': return left >= right;
+        case 'LT': return sqliteCompare(left, right) < 0;
+        case 'GT': return sqliteCompare(left, right) > 0;
+        case 'LE': return sqliteCompare(left, right) <= 0;
+        case 'GE': return sqliteCompare(left, right) >= 0;
       }
     }
     default: {
