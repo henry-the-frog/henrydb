@@ -1947,9 +1947,13 @@
     {
       "id": "T182",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "THINK: Design a class syntax for monkey-lang — what would it look like?",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T23:35:14.807Z",
+      "completed": "2026-04-25T23:35:39.482Z",
+      "duration_ms": 180000,
+      "summary": "Class syntax design: 3 options. Recommended: Option A (compile to closures, ~200 LOC, 1 day). class/init/extends/super keywords, explicit self parameter. Parser: ClassStatement AST. Compiler: generates closure factory. No new runtime needed."
     }
   ],
   "focusProjects": [
