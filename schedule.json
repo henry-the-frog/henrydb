@@ -953,6 +953,13 @@
       "completed": "2026-04-25T16:47:59.737Z",
       "duration_ms": 180000,
       "summary": "Added UNION/UNION ALL to fuzzer. 100% pass on seed=42 (500 queries, 37 UNIONs). Comprehensive query coverage: INSERT, UPDATE, DELETE, SELECT variants, JOIN, GROUP BY, HAVING, subquery, CTE, window, UNION."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add CASE/WHEN and COALESCE to differential fuzzer",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1300,6 +1307,10 @@
     {
       "time": "2026-04-25T16:47:06.978Z",
       "msg": "Added T87 (BUILD) after end: Add UNION and UNION ALL queries to differential fuzzer"
+    },
+    {
+      "time": "2026-04-25T16:51:13.932Z",
+      "msg": "Added T88 (BUILD) after end: Add CASE/WHEN and COALESCE to differential fuzzer"
     }
   ]
 }
