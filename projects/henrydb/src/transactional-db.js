@@ -441,6 +441,31 @@ export class TransactionalDatabase {
       return result;
     }
 
+    // Read-only fast path: SELECT/EXPLAIN don't need WAL or full transaction
+    const isReadOnly = trimmed.startsWith('SELECT') || trimmed.startsWith('EXPLAIN') ||
+                       trimmed.startsWith('SHOW') || trimmed.startsWith('DESCRIBE') ||
+                       trimmed.startsWith('WITH');
+    if (isReadOnly) {
+      // Create lightweight snapshot for MVCC visibility without WAL overhead
+      const tx = this._mvcc.begin();
+      this._activeTx = tx;
+      this._setHeapTxId(tx.txId);
+      try {
+        const result = this._db.execute(sql);
+        this._mvcc.commit(tx.txId);
+        this._activeTx = null;
+        this._setHeapTxId(0);
+        // Cache the result
+        if (this._queryCache) this._queryCache.set(sql, result);
+        return result;
+      } catch (e) {
+        try { this._mvcc.rollback(tx.txId); } catch (_) {}
+        this._activeTx = null;
+        this._setHeapTxId(0);
+        throw e;
+      }
+    }
+
     // DML: wrap in auto-commit transaction
     const tx = this._mvcc.begin();
     this._activeTx = tx;
@@ -459,6 +484,7 @@ export class TransactionalDatabase {
       this._setHeapTxId(0);
       // Invalidate result cache - DML changed data, cached SELECTs may be stale
       if (this._db._resultCache) this._db._resultCache.clear();
+      if (this._queryCache) this._queryCache.clear();
       return result;
     } catch (e) {
       // Rollback: undo any heap modifications
@@ -1159,6 +1185,7 @@ export class TransactionSession {
     this._tx = null;
     // Invalidate result cache - committed data may change query results
     if (this._tdb._db._resultCache) this._tdb._db._resultCache.clear();
+    if (this._tdb._queryCache) this._tdb._queryCache.clear();
 
     // Auto-checkpoint if WAL exceeds threshold
     this._tdb._maybeAutoCheckpoint();
@@ -1175,6 +1202,7 @@ export class TransactionSession {
     // Release row-level locks held by this transaction
     this._tdb._db._releaseRowLocks(txId);
     this._tx = null;
+    if (this._tdb._queryCache) this._tdb._queryCache.clear();
     return { type: 'OK', message: 'ROLLBACK' };
   }
 
