@@ -1572,6 +1572,17 @@
       "completed": "2026-04-25T18:10:10.979Z",
       "duration_ms": 120000,
       "summary": "Final reflection written. 143 tasks, 312 commits, 14 bugs, 97.2% fuzzer, 1053/1053 tests. Key insights: silent failures > crashes, fuzz on day one, optimization needs write-tracking."
+    },
+    {
+      "id": "T145",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB TABLESAMPLE, GROUPING SETS, and MERGE",
+      "project": "henrydb",
+      "started": "2026-04-25T18:10:38.189Z",
+      "completed": "2026-04-25T18:11:03.564Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: TABLESAMPLE works (Bernoulli sampling, 8/100 at 10%). GROUPING SETS works (correct null patterns, 3 products + 4 regions + grand total = 8 rows). MERGE partially works (parser fails on USING subquery). 2/3 advanced SQL features verified."
     }
   ],
   "focusProjects": [
@@ -2135,6 +2146,10 @@
     {
       "time": "2026-04-25T18:09:22.798Z",
       "msg": "Added T144 (MAINTAIN) after end: MAINTAIN: Final reflection update and evening summary prep"
+    },
+    {
+      "time": "2026-04-25T18:10:31.058Z",
+      "msg": "Added T145 (EXPLORE) after end: EXPLORE: Test HenryDB TABLESAMPLE, GROUPING SETS, and MERGE"
     }
   ]
 }
