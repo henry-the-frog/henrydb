@@ -1,6 +1,8 @@
 // group-by-executor.js — GROUP BY executor extracted from db.js
 // Functions take "db" as first parameter (database context)
 
+import { percentileCont, median } from './percentile.js';
+
 export function selectWithGroupBy(db, ast, rows) {
   // Build alias→expression map from SELECT columns
   const aliasMap = new Map();
@@ -219,6 +221,7 @@ export function selectWithGroupBy(db, ast, rows) {
         case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
         case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
         case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
+        case 'MEDIAN': return median(values);
         case 'GROUP_CONCAT':
         case 'STRING_AGG': {
           const sep = extra.separator || ',';
@@ -286,14 +289,7 @@ export function selectWithGroupBy(db, ast, rows) {
         }
         case 'PERCENTILE_CONT': {
           const fraction = extra.percentile ?? 0.5;
-          const sorted = values.map(Number).sort((a, b) => a - b);
-          if (sorted.length === 0) return null;
-          if (sorted.length === 1) return sorted[0];
-          const pos = fraction * (sorted.length - 1);
-          const lower = Math.floor(pos);
-          const upper = Math.ceil(pos);
-          const weight = pos - lower;
-          return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+          return percentileCont(values, fraction);
         }
         case 'PERCENTILE_DISC': {
           const fraction2 = extra.percentile ?? 0.5;

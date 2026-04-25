@@ -8,6 +8,7 @@ import { exprContains, exprCollect } from './expr-walker.js';
 import { evalFunction as _evalFunctionImpl, dateArith as _dateArithImpl, likeToRegex as _likeToRegexImpl } from './sql-functions.js';
 import { tokenize } from './fulltext.js';
 import { typeClass, sqliteCompare } from './type-affinity.js';
+import { percentileCont, median } from './percentile.js';
 
 /**
  * Install expression evaluation methods on Database.prototype.
@@ -279,6 +280,18 @@ P._evalAggregateExpr = function(expr, rows) {
       case 'AVG': return values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null;
       case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
       case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
+      case 'MEDIAN': return median(values);
+      case 'PERCENTILE_CONT': {
+        const p = expr.percentile ?? 0.5;
+        return percentileCont(values, p);
+      }
+      case 'PERCENTILE_DISC': {
+        const p = expr.percentile ?? 0.5;
+        const sorted = [...values].map(Number).filter(v => !isNaN(v)).sort((a, b) => a - b);
+        if (!sorted.length) return null;
+        const idx = Math.min(Math.floor(p * sorted.length), sorted.length - 1);
+        return sorted[idx];
+      }
       default: return null;
     }
   }
@@ -1003,6 +1016,7 @@ P._computeAggregates = function(columns, rows) {
       case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null; break;
       case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
       case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;
+      case 'MEDIAN': result[name] = median(values); break;
       case 'GROUP_CONCAT':
       case 'STRING_AGG': {
         const sep = col.separator || ',';

@@ -59,6 +59,7 @@ import { QueryStatsCollector } from './query-stats.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { explainPlan as volcanoExplainPlan, buildPlan as volcanoBuildPlan } from './volcano-planner.js';
 import { instrumentPlan } from './volcano.js';
+import { median } from './percentile.js';
 
 export class Database {
   // PostgreSQL-compatible cost model parameters
@@ -1367,6 +1368,7 @@ export class Database {
       case 'AVG': return vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;
       case 'MAX': return vals.reduce((a, b) => (a > b ? a : b));
       case 'MIN': return vals.reduce((a, b) => (a < b ? a : b));
+      case 'MEDIAN': return median(vals);
       default: return vals.length > 0 ? vals[0] : null;
     }
   }

@@ -2,6 +2,8 @@
 // Implements WITH clause: WITH name AS (SELECT ...) SELECT ... FROM name
 // Supports multiple CTEs and CTE-to-CTE references.
 
+import { median } from './percentile.js';
+
 /**
  * CTEResolver — resolves Common Table Expressions before query execution.
  * 
@@ -206,6 +208,7 @@ export class SimpleCTEEngine {
               case 'AVG': result[col.alias] = vals.reduce((a, b) => a + b, 0) / vals.length; break;
               case 'MIN': result[col.alias] = Math.min(...vals); break;
               case 'MAX': result[col.alias] = Math.max(...vals); break;
+              case 'MEDIAN': result[col.alias] = median(vals); break;
             }
           }
         }
