@@ -23,7 +23,7 @@ A comprehensive database system implemented in JavaScript. Not just a toy DB —
 
 ### Monkey-lang
 A complete programming language runtime — basically a mini-V8 in JavaScript.
-- **38 test files, 894 tests**, all passing
+- **38 test files, ~8,735 test cases**, all passing
 - **~20,500 lines** of compiler/runtime infrastructure
 - **Complete compiler pipeline**: Lexer → Parser → TypeChecker (HM) → CFG → SSA → ConstProp → DCE → Escape Analysis → Register Allocator → Bytecode Optimizer → Type-Directed Optimizer
 - **Runtime**: Stack VM with closures, mark-sweep GC (generational), hidden classes (V8-style shapes)
