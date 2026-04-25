@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:45:04.371Z",
+  "generated": "2026-04-25T19:45:26.608Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB CHECK constraints",
-    "completedAt": "2026-04-25T19:45:04.371Z",
-    "taskId": "T275",
-    "summary": "CHECK constraints work! age>=0&&age<=150 enforced. Negative age, NULL name, age 200 all rejected with clear error messages. NOT NULL also works.",
+    "task": "EXPLORE: Test HenryDB EXPLAIN output",
+    "completedAt": "2026-04-25T19:45:26.608Z",
+    "taskId": "T276",
+    "summary": "EXPLAIN with cost estimates! Index Scan for PK (cost=0.50, rows=1), Index Scan for category (rows=17), Seq Scan for GROUP BY/ORDER BY. Real cost-based planner.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 275,
+    "blocksCompleted": 276,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 29,
-      "EXPLORE": 163
+      "EXPLORE": 164
     }
   },
   "artifacts": [
