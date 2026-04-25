@@ -165,10 +165,23 @@ function genSelect(tables) {
     parts.push(`FROM ${name}`);
   }
   
-  // WHERE
-  if (rand() < 0.5) {
-    const prefix = doJoin ? name + '.' : '';
-    parts.push(`WHERE ${prefix}${genWhere()}`);
+  // WHERE (or EXISTS)
+  if (rand() < 0.5 && !doGroupBy) {
+    if (rand() < 0.15 && tableNames.length >= 2) {
+      // EXISTS subquery
+      const other = pick(tableNames.filter(t => t !== name));
+      if (other) {
+        const col = pick(tables[name].map(c => c.name));
+        const ocol = pick(tables[other].map(c => c.name));
+        parts.push(`WHERE EXISTS (SELECT 1 FROM ${other} WHERE ${other}.${ocol} = ${name}.${col})`);
+      } else {
+        const prefix = doJoin ? name + '.' : '';
+        parts.push(`WHERE ${prefix}${genWhere()}`);
+      }
+    } else {
+      const prefix = doJoin ? name + '.' : '';
+      parts.push(`WHERE ${prefix}${genWhere()}`);
+    }
   }
   
   // ORDER BY
