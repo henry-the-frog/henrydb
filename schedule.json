@@ -1703,6 +1703,17 @@
       "completed": "2026-04-25T18:19:49.150Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Prepared statements ($1,$2 and :name style) accept params but dont bind them (nulls). Multi-statement executes only last. COPY not at SQL level (wire protocol only). Parameter binding needs work."
+    },
+    {
+      "id": "T157",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: How does monkey-lang handle error messages? Test with common mistakes",
+      "project": "monkey-lang",
+      "started": "2026-04-25T18:20:12.463Z",
+      "completed": "2026-04-25T18:20:38.001Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Error messages are good for most cases: identifier not found, type mismatch, not a function, index OOB returns null. Weak on: wrong arg count (shows type mismatch), unclosed string (no error), division by zero (Infinity)."
     }
   ],
   "focusProjects": [
@@ -2314,6 +2325,10 @@
     {
       "time": "2026-04-25T18:19:15.493Z",
       "msg": "Added T156 (EXPLORE) after end: EXPLORE: Test HenryDB COPY, prepared statements, and multiple statements"
+    },
+    {
+      "time": "2026-04-25T18:20:07.096Z",
+      "msg": "Added T157 (EXPLORE) after end: EXPLORE: How does monkey-lang handle error messages? Test with common mistakes"
     }
   ]
 }
