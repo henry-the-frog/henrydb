@@ -1432,6 +1432,17 @@
       "completed": "2026-04-25T21:51:20.566Z",
       "duration_ms": 300000,
       "summary": "16 integration tests: comments+templates, prelude+closures, escape analysis+compilation, builtins, import system, comprehensive programs. All pass."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add chars builtin to VM (missing from eval-VM parity)",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:51:48.489Z",
+      "completed": "2026-04-25T21:52:39.730Z",
+      "duration_ms": 60000,
+      "summary": "chars builtin added to VM. Now 51 VM builtins. Eval-VM parity improved."
     }
   ],
   "focusProjects": [
@@ -1959,6 +1970,10 @@
     {
       "time": "2026-04-25T21:49:48.996Z",
       "msg": "Added T133 (BUILD) after end: Write comprehensive integration test for Session B features"
+    },
+    {
+      "time": "2026-04-25T21:51:48.216Z",
+      "msg": "Added T134 (BUILD) after end: Add chars builtin to VM (missing from eval-VM parity)"
     }
   ]
 }
