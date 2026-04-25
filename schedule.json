@@ -1587,9 +1587,13 @@
     {
       "id": "T148",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Run monkey-lang benchmark with prelude HOFs vs native builtins — quantify overhead",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T22:55:16.361Z",
+      "completed": "2026-04-25T22:59:08.805Z",
+      "duration_ms": 300000,
+      "summary": "Benchmark results: VM 2.8-3.6x faster for computation. Evaluator 19x faster for HOFs (native vs prelude). VM handles deep recursion (TCO), evaluator crashes. Key gap: prelude HOFs need VM callback mechanism for competitive performance."
     },
     {
       "id": "T149",
