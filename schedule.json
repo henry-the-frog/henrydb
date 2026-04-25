@@ -167,36 +167,85 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard update",
-      "started": "2026-04-25T14:36:35.213Z"
+      "started": "2026-04-25T14:36:35.213Z",
+      "completed": "2026-04-25T14:36:40.970Z",
+      "duration_ms": 30000,
+      "summary": "Workspace pushed. monkey-lang push pending (workflow scope)."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction check. Most impactful remaining work?"
+      "status": "done",
+      "task": "Afternoon direction check. Most impactful remaining work?",
+      "started": "2026-04-25T14:36:48.427Z",
+      "completed": "2026-04-25T14:37:05.546Z",
+      "duration_ms": 60000,
+      "summary": "Cleaned TODO (removed 4 done items). Next: TRUE/FALSE booleans + REGEXP (quick wins, good blog content), then blog post."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix TRUE/FALSE as boolean keywords + test",
+      "project": "henrydb",
+      "started": "2026-04-25T14:37:48.687Z",
+      "completed": "2026-04-25T14:39:14.842Z",
+      "duration_ms": 180000,
+      "summary": "Fixed TRUE/FALSE as boolean literals in SELECT. SELECT TRUE now returns boolean true instead of string. 50/50 sql tests pass."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add REGEXP operator support + test",
+      "project": "henrydb",
+      "started": "2026-04-25T14:39:27.451Z",
+      "completed": "2026-04-25T14:41:25.161Z",
+      "duration_ms": 180000,
+      "summary": "Added REGEXP/RLIKE operator. Supports column REGEXP pattern, NOT REGEXP, RLIKE alias. Invalid regex handled gracefully. 51/51 sql tests pass."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB blog post update — 167 features, 4288 tests, architecture",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T14:41:37.438Z",
+      "completed": "2026-04-25T14:45:39.410Z",
+      "duration_ms": 120000,
+      "summary": "Plan: blog post with updated stats (369 src files, 873 test files, ~8172 tests, 207K LOC). 2 BUILD tasks: write + proofread."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Write HenryDB blog post — 369 source files, 8172 tests, architecture + bug stories + lessons",
       "plan_ref": "T14",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T14:45:47.615Z",
+      "completed": "2026-04-25T14:46:52.870Z",
+      "duration_ms": 600000,
+      "summary": "Wrote HenryDB blog post (~2000 words). Covers architecture, silent data loss bug, feature combinations, vectorized execution, WAL, query optimizer, lessons. Committed."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Proofread and commit blog post",
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-04-25T14:47:05.355Z",
+      "completed": "2026-04-25T14:47:29.341Z",
+      "duration_ms": 60000,
+      "summary": "Proofread blog post. Minor grammar fix. Committed and pushed."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, final afternoon commit"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, final afternoon commit",
+      "started": "2026-04-25T14:47:43.450Z"
     },
     {
       "id": "T17",
@@ -306,6 +355,26 @@
     {
       "time": "2026-04-25T14:35:13.733Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T14:37:15.046Z",
+      "msg": "Added T23 (BUILD) after end: Fix TRUE/FALSE as boolean keywords + test"
+    },
+    {
+      "time": "2026-04-25T14:37:18.602Z",
+      "msg": "Added T24 (BUILD) after end: Add REGEXP operator support + test"
+    },
+    {
+      "time": "2026-04-25T14:37:38.214Z",
+      "msg": "Moved T23 after T13"
+    },
+    {
+      "time": "2026-04-25T14:37:42.494Z",
+      "msg": "Moved T24 after T23"
+    },
+    {
+      "time": "2026-04-25T14:45:33.544Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
     }
   ]
 }

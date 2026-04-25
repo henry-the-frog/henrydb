@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-25T14:36:35.248Z",
+  "generated": "2026-04-25T14:47:43.537Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard update",
-    "startedAt": "2026-04-25T14:36:35.248Z",
-    "taskId": "T12"
+    "task": "Housekeeping: git push, final afternoon commit",
+    "startedAt": "2026-04-25T14:47:43.537Z",
+    "taskId": "T16"
   },
   "schedule": {
     "date": "2026-04-25",
@@ -7915,52 +7915,101 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: Add CI workflow + update README with current stats",
         "task": null,
-        "started": "2026-04-25T14:34:37.451Z"
+        "started": "2026-04-25T14:34:37.451Z",
+        "completed": "2026-04-25T14:35:17.621Z",
+        "duration_ms": 60000,
+        "summary": "Plan: CI workflow + README update. 894 tests, all passing. 2 BUILD tasks created."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Create CI workflow (.github/workflows/ci.yml) for monkey-lang",
         "plan_ref": "T10",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T14:35:26.568Z",
+        "completed": "2026-04-25T14:35:42.682Z",
+        "duration_ms": 60000,
+        "summary": "Created .github/workflows/ci.yml — runs tests on Node 20+22 for push/PR."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Update monkey-lang README with test count + CI badge",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-25T14:35:49.070Z",
+        "completed": "2026-04-25T14:36:18.337Z",
+        "duration_ms": 60000,
+        "summary": "Updated README with CI badge + 894 test count. Push blocked by workflow scope — needs manual push or token update."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard update"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard update",
+        "started": "2026-04-25T14:36:35.213Z",
+        "completed": "2026-04-25T14:36:40.970Z",
+        "duration_ms": 30000,
+        "summary": "Workspace pushed. monkey-lang push pending (workflow scope)."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon direction check. Most impactful remaining work?"
+        "status": "done",
+        "task": "Afternoon direction check. Most impactful remaining work?",
+        "started": "2026-04-25T14:36:48.427Z",
+        "completed": "2026-04-25T14:37:05.546Z",
+        "duration_ms": 60000,
+        "summary": "Cleaned TODO (removed 4 done items). Next: TRUE/FALSE booleans + REGEXP (quick wins, good blog content), then blog post."
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix TRUE/FALSE as boolean keywords + test",
+        "project": "henrydb",
+        "started": "2026-04-25T14:37:48.687Z",
+        "completed": "2026-04-25T14:39:14.842Z",
+        "duration_ms": 180000,
+        "summary": "Fixed TRUE/FALSE as boolean literals in SELECT. SELECT TRUE now returns boolean true instead of string. 50/50 sql tests pass."
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add REGEXP operator support + test",
+        "project": "henrydb",
+        "started": "2026-04-25T14:39:27.451Z",
+        "completed": "2026-04-25T14:41:25.161Z",
+        "duration_ms": 180000,
+        "summary": "Added REGEXP/RLIKE operator. Supports column REGEXP pattern, NOT REGEXP, RLIKE alias. Invalid regex handled gracefully. 51/51 sql tests pass."
       },
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB blog post update — 167 features, 4288 tests, architecture",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T14:41:37.438Z"
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Write HenryDB blog post — 369 source files, 8172 tests, architecture + bug stories + lessons",
         "plan_ref": "T14",
         "project": "henrydb"
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "task": "Proofread and commit blog post",
+        "status": "upcoming",
+        "plan_ref": "T14"
       },
       {
         "id": "T16",
@@ -7986,13 +8035,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
-    "blocksTotal": 22,
+    "blocksCompleted": 22,
+    "blocksTotal": 25,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 7,
-      "MAINTAIN": 2
+      "THINK": 4,
+      "PLAN": 4,
+      "BUILD": 11,
+      "MAINTAIN": 3
     }
   },
   "artifacts": [
