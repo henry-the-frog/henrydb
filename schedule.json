@@ -1783,9 +1783,13 @@
     {
       "id": "T167",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Deep dive into HenryDB MVCC — test concurrent transactions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T23:19:41.270Z",
+      "completed": "2026-04-25T23:20:18.928Z",
+      "duration_ms": 240000,
+      "summary": "MVCC deep dive: PostgreSQL-style snapshots (xmin/xmax/activeSet), READ COMMITTED and REPEATABLE READ isolation, undo log, write set tracking. SSI: Cahill/Ports&Grittner algorithm (277 LOC) detects dangerous structures via rw-antidependency tracking. 3589 LOC total for MVCC subsystem."
     },
     {
       "id": "T168",
