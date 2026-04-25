@@ -19,11 +19,25 @@
 - **Key module**: `type-affinity.js` for SQLite-compatible comparisons and INSERT coercion
 
 ### Other Projects (/Users/henry/projects/)
-- **215+ small projects** — PL implementation playground
-- **type-infer**: Hindley-Milner type inference (working, 23 tests)
-- **calc-lang**: Calculator language (working, 20 tests)
-- **json-parser, regex-engine, mini-lisp**: All functional implementations
-- **typechecker**: Union/intersection types with generics
+- **215 projects** — comprehensive CS fundamentals implementation collection
+- **~50 verified working** (as of Apr 25 Session B)
+- **Languages**: scheme-interp (full Scheme with tail calls), mini-lisp, calc-lang, brainfuck, tinylang
+- **Types**: type-infer (HM, 23 tests), typechecker (union/intersection/generics)
+- **Data Structures**: btree, bloom-filter, skip-list, lru-cache, trie (with autocomplete), heap, linked-list, ring-buffer, deque, AVL tree, union-find
+- **Algorithms**: graph (BFS/DFS/Dijkstra), A* pathfinding, toposort, sorting
+- **ML/AI**: neural-net (learns XOR), gradient-descent, kmeans, decision-tree, naive-bayes
+- **Crypto/Security**: sha256 (correct hashes), jwt (sign/verify), huffman compression
+- **Networking**: http-server, rate-limiter, circuit-breaker
+- **Systems**: virtual-dom (React-like diffing), event-emitter, promise (A+), state-machine, blockchain (PoW), CRDTs
+- **Parsing**: json-parser, regex-engine, csv-parser, ini-parser, markup-lang (Markdown→HTML)
+- **Utilities**: base64, uuid (v4), semver, glob, dotenv, rpn calculator
+- **Games**: game-of-life, chess-engine (legal moves)
+- **Graphics**: ray-tracer (working renders)
+
+### HenryDB Query Engine Architecture
+- **3 execution strategies**: AST interpreter, Volcano iterators (13 operators), VDBE-style bytecode VM
+- **Cost-based optimizer**: Column histograms, MCV tracking, DP join reordering
+- **Volcano operators**: SeqScan, IndexScan, Filter, Project, Sort, HashAggregate, NestedLoopJoin, HashJoin, IndexNestedLoopJoin, Window, Limit, Distinct, Union, CTE
 
 ## Key Technical Insights
 
