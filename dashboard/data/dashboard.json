@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:04:59.003Z",
+  "generated": "2026-04-25T19:05:22.790Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB EXPLAIN VERBOSE and query plan statistics",
-    "completedAt": "2026-04-25T19:04:59.003Z",
-    "taskId": "T209",
-    "summary": "EXPLAIN ANALYZE produces PostgreSQL-quality output: adaptive engine selection, per-operator timing (SeqScan 0.38ms), cost estimation (0-101), row width (57 bytes), actual vs estimated rows. Production-grade query analysis.",
+    "task": "EXPLORE: Count total HenryDB SQL features — how many SQL constructs are supported?",
+    "completedAt": "2026-04-25T19:05:22.790Z",
+    "taskId": "T210",
+    "summary": "EXPLORE: 112 distinct SQL constructs verified! DML(11), DDL(10), Queries(20), JOINs(5), CTEs(2), Window(10), Subqueries(4), Expressions(7), Aggregates(11), Functions(15+), Constraints(5), Transactions(4), Other(8). EVERY ONE WORKS.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 209,
+    "blocksCompleted": 210,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 23,
-      "EXPLORE": 104
+      "EXPLORE": 105
     }
   },
   "artifacts": [

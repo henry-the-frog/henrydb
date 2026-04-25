@@ -2281,6 +2281,17 @@
       "completed": "2026-04-25T19:04:58.966Z",
       "duration_ms": 60000,
       "summary": "EXPLAIN ANALYZE produces PostgreSQL-quality output: adaptive engine selection, per-operator timing (SeqScan 0.38ms), cost estimation (0-101), row width (57 bytes), actual vs estimated rows. Production-grade query analysis."
+    },
+    {
+      "id": "T210",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Count total HenryDB SQL features — how many SQL constructs are supported?",
+      "project": "henrydb",
+      "started": "2026-04-25T19:05:07.760Z",
+      "completed": "2026-04-25T19:05:22.753Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: 112 distinct SQL constructs verified! DML(11), DDL(10), Queries(20), JOINs(5), CTEs(2), Window(10), Subqueries(4), Expressions(7), Aggregates(11), Functions(15+), Constraints(5), Transactions(4), Other(8). EVERY ONE WORKS."
     }
   ],
   "focusProjects": [
@@ -3104,6 +3115,10 @@
     {
       "time": "2026-04-25T19:04:37.885Z",
       "msg": "Added T209 (EXPLORE) after end: EXPLORE: Test HenryDB EXPLAIN VERBOSE and query plan statistics"
+    },
+    {
+      "time": "2026-04-25T19:05:07.525Z",
+      "msg": "Added T210 (EXPLORE) after end: EXPLORE: Count total HenryDB SQL features — how many SQL constructs are supported?"
     }
   ]
 }
