@@ -3113,8 +3113,23 @@
     {
       "id": "T286",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "MAINTAIN: FINAL session end — write evening summary, push all"
+      "status": "done",
+      "task": "MAINTAIN: FINAL session end — write evening summary, push all",
+      "started": "2026-04-25T19:49:42.579Z",
+      "completed": "2026-04-25T19:49:42.729Z",
+      "duration_ms": 5000,
+      "summary": "Not time yet — 10 min remaining."
+    },
+    {
+      "id": "T287",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB COUNT DISTINCT",
+      "project": "henrydb",
+      "started": "2026-04-25T19:49:50.071Z",
+      "completed": "2026-04-25T19:50:15.685Z",
+      "duration_ms": 60000,
+      "summary": "COUNT DISTINCT works standalone (A=2, B=3). Bug: COUNT DISTINCT within GROUP BY returns total instead of distinct. SELECT DISTINCT works correctly."
     }
   ],
   "focusProjects": [
@@ -4246,6 +4261,10 @@
     {
       "time": "2026-04-25T19:48:31.652Z",
       "msg": "Added T286 (MAINTAIN) after end: MAINTAIN: FINAL session end — write evening summary, push all"
+    },
+    {
+      "time": "2026-04-25T19:49:34.481Z",
+      "msg": "Added T287 (EXPLORE) after end: EXPLORE: Test HenryDB COUNT DISTINCT"
     }
   ]
 }
