@@ -67,38 +67,59 @@ function genWhere() {
 }
 
 function genSelect(tables) {
-  const name = pick(Object.keys(tables));
-  if (!name) return null;
+  const tableNames = Object.keys(tables);
+  if (tableNames.length === 0) return null;
+  const name = pick(tableNames);
   
   const parts = [`SELECT`];
   
+  // Decide: simple query or JOIN
+  const doJoin = rand() < 0.3 && tableNames.length >= 2;
+  
   // Columns
-  if (rand() < 0.3) {
+  if (rand() < 0.3 && !doJoin) {
     parts.push('*');
   } else {
     const ncols = randInt(1, 3);
     const cols = [];
     for (let i = 0; i < ncols; i++) {
-      if (rand() < 0.4) {
+      if (rand() < 0.4 && !doJoin) {
         const func = pick(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX']);
-        cols.push(`${func}(${genColumnName()}) as ${func.toLowerCase()}_val`);
+        cols.push(`${func}(${doJoin ? name + '.' : ''}${genColumnName()}) as ${func.toLowerCase()}_val`);
       } else {
-        cols.push(genColumnName());
+        const prefix = doJoin ? name + '.' : '';
+        cols.push(`${prefix}${genColumnName()}`);
       }
     }
     parts.push(cols.join(', '));
   }
   
-  parts.push(`FROM ${name}`);
+  if (doJoin) {
+    const other = pick(tableNames.filter(t => t !== name));
+    if (other) {
+      const joinType = pick(['INNER JOIN', 'LEFT JOIN']);
+      const joinCol = genColumnName();
+      parts.push(`FROM ${name} ${joinType} ${other} ON ${name}.${joinCol} = ${other}.${joinCol}`);
+    } else {
+      parts.push(`FROM ${name}`);
+    }
+  } else {
+    parts.push(`FROM ${name}`);
+  }
   
   // WHERE
   if (rand() < 0.5) {
-    parts.push(`WHERE ${genWhere()}`);
+    const prefix = doJoin ? name + '.' : '';
+    parts.push(`WHERE ${prefix}${genWhere()}`);
   }
   
   // ORDER BY
   if (rand() < 0.3) {
-    parts.push(`ORDER BY ${genColumnName()} ${pick(['ASC', 'DESC'])}`);
+    const col = genColumnName();
+    // Only order by columns that exist in the table to avoid the new validation
+    const validCols = tables[name]?.map(c => c.name) || [];
+    const orderCol = validCols.length > 0 ? pick(validCols) : col;
+    parts.push(`ORDER BY ${orderCol} ${pick(['ASC', 'DESC'])}`);
   }
   
   // LIMIT
