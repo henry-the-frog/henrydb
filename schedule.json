@@ -877,6 +877,17 @@
       "completed": "2026-04-25T16:31:00.473Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Core test suites verified after const-subst. compiler.test(12), vm.test(45), evaluator.test(48), parser.test(72), lexer.test(34). All pass."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add --stats flag to differential fuzzer showing query type breakdown",
+      "project": "henrydb",
+      "started": "2026-04-25T16:31:26.282Z",
+      "completed": "2026-04-25T16:32:12.348Z",
+      "duration_ms": 120000,
+      "summary": "Added --stats to fuzzer. Distribution: 94 simple, 41 GROUP BY, 23 subquery, 22 JOIN, 15 CTE, 105 INSERT. 100% pass."
     }
   ],
   "focusProjects": [
@@ -1196,6 +1207,10 @@
     {
       "time": "2026-04-25T16:30:35.808Z",
       "msg": "Added T80 (EXPLORE) after end: EXPLORE: Run comprehensive monkey-lang test suite to verify const-subst doesn't break anything"
+    },
+    {
+      "time": "2026-04-25T16:31:20.507Z",
+      "msg": "Added T81 (BUILD) after end: Add --stats flag to differential fuzzer showing query type breakdown"
     }
   ]
 }

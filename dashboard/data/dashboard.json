@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T16:31:00.508Z",
+  "generated": "2026-04-25T16:32:12.383Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Run comprehensive monkey-lang test suite to verify const-subst doesn't break anything",
-    "completedAt": "2026-04-25T16:31:00.508Z",
-    "taskId": "T80",
-    "summary": "EXPLORE: Core test suites verified after const-subst. compiler.test(12), vm.test(45), evaluator.test(48), parser.test(72), lexer.test(34). All pass.",
+    "mode": "BUILD",
+    "task": "Add --stats flag to differential fuzzer showing query type breakdown",
+    "completedAt": "2026-04-25T16:32:12.383Z",
+    "taskId": "T81",
+    "summary": "Added --stats to fuzzer. Distribution: 94 simple, 41 GROUP BY, 23 subquery, 22 JOIN, 15 CTE, 105 INSERT. 100% pass.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 80,
+    "blocksCompleted": 81,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
-      "BUILD": 33,
+      "BUILD": 34,
       "MAINTAIN": 8,
       "EXPLORE": 20
     }
