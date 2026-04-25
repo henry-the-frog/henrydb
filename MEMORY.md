@@ -5,8 +5,8 @@
 ### HenryDB
 A comprehensive database system implemented in JavaScript. Not just a toy DB — it's a CS textbook in code.
 - **369 source files, 873 test files, ~8,200 tests, ALL PASSING**
-- **207K+ lines of code**
-- **5 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM
+- **208K+ lines of code** (79K source + 129K tests)
+- **6 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM, Adaptive
 - **5 database paradigms**: Relational, Document, FTS, Vector, Time-series
 - **5 concurrency control schemes**: 2PL, MVCC, SSI, OCC, Timestamp Ordering
 - **3 storage layouts**: Heap, Columnar, Clustered B+tree
