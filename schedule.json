@@ -439,6 +439,73 @@
       "completed": "2026-04-25T15:12:17.922Z",
       "duration_ms": 60000,
       "summary": "Fixed monkey-lang README: removed false claims about WASM and RISC-V backends, pattern matching, generators. Accurate docs."
+    },
+    {
+      "id": "T41",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Full test sweep: run key HenryDB test suites to verify all changes",
+      "project": "henrydb",
+      "started": "2026-04-25T15:12:46.773Z",
+      "completed": "2026-04-25T15:13:41.776Z",
+      "duration_ms": 120000,
+      "summary": "Full sweep: 12 key test files, 227 tests, ALL PASS. No regressions from today's changes (PAGE_SIZE, WAL syncMode, selectivity, REGEXP, TRUE/FALSE, LIMIT subquery, DATE modifiers)."
+    },
+    {
+      "id": "T42",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Assess parseSelectColumn refactor — complexity, risk, and approach",
+      "project": "henrydb",
+      "started": "2026-04-25T15:14:03.713Z",
+      "completed": "2026-04-25T15:14:26.341Z",
+      "duration_ms": 60000,
+      "summary": "parseSelectColumn is 700 lines — too risky for mid-session refactor. Deferred to fresh morning. Remaining time better spent on focused improvements."
+    },
+    {
+      "id": "T43",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Run HenryDB compliance suite, analyze failure patterns",
+      "project": "henrydb",
+      "started": "2026-04-25T15:14:43.081Z",
+      "completed": "2026-04-25T15:16:12.133Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Ran 8 stress/compliance suites (compliance-edge, ACID, aggregate, datetime, window, subquery, CTE, null-handling). ALL PASS (134 tests total). System is extremely robust. 0/3 hypotheses confirmed — no failures found."
+    },
+    {
+      "id": "T44",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB GENERATED columns",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-25T15:16:39.202Z",
+      "completed": "2026-04-25T15:17:31.591Z",
+      "duration_ms": 120000,
+      "summary": "GENERATED columns already fully implemented! Parser, schema, INSERT, UPDATE all handle them correctly. Tested: CREATE TABLE with GENERATED ALWAYS AS, INSERT auto-computes, UPDATE re-computes. No new work needed."
+    },
+    {
+      "id": "T45",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Write evening summary, update MEMORY.md with today's lessons",
+      "project": "henrydb",
+      "started": "2026-04-25T15:18:24.672Z",
+      "completed": "2026-04-25T15:19:26.510Z",
+      "duration_ms": 180000,
+      "summary": "Updated MEMORY.md with Apr 25 learnings: data corruption fix, two-source constant problem, feature combination gap. Updated HenryDB stats (369 src, 8172 tests). Added monkey-lang section. Updated reference docs list."
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Run HenryDB benchmark suite, capture performance baselines",
+      "project": "henrydb",
+      "started": "2026-04-25T15:19:32.047Z",
+      "completed": "2026-04-25T15:21:45.984Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Ran benchmarks. Data structure shootout: RobinHood fastest lookup (0.22µs), SortedArr fastest insert (0.46µs). B+Tree: 1.03µs insert, 0.41µs lookup. All benchmarks pass. Baselines captured."
     }
   ],
   "focusProjects": [
@@ -598,6 +665,30 @@
     {
       "time": "2026-04-25T15:11:45.039Z",
       "msg": "Added T40 (MAINTAIN) after end: Fix monkey-lang README: remove claims about WASM and RISC-V backends that dont exist"
+    },
+    {
+      "time": "2026-04-25T15:12:42.639Z",
+      "msg": "Added T41 (MAINTAIN) after end: Full test sweep: run key HenryDB test suites to verify all changes"
+    },
+    {
+      "time": "2026-04-25T15:13:59.450Z",
+      "msg": "Added T42 (THINK) after end: THINK: Assess parseSelectColumn refactor — complexity, risk, and approach"
+    },
+    {
+      "time": "2026-04-25T15:14:37.600Z",
+      "msg": "Added T43 (EXPLORE) after end: EXPLORE: Run HenryDB compliance suite, analyze failure patterns"
+    },
+    {
+      "time": "2026-04-25T15:16:33.162Z",
+      "msg": "Added T44 (PLAN) after end: Plan GENERATED columns for HenryDB (stored computed columns)"
+    },
+    {
+      "time": "2026-04-25T15:18:10.766Z",
+      "msg": "Added T45 (MAINTAIN) after end: MAINTAIN: Write evening summary, update MEMORY.md with today's lessons"
+    },
+    {
+      "time": "2026-04-25T15:18:18.731Z",
+      "msg": "Added T46 (EXPLORE) after end: EXPLORE: Run HenryDB benchmark suite, capture performance baselines"
     }
   ]
 }

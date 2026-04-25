@@ -5,10 +5,9 @@
 
 ## Normal
 - HenryDB: Refactor parseSelectColumn to use parseExpr for general expressions
-- Explore regex-engine or lambda-calculus projects for depth
+- Explore other projects (regex-engine, lambda-calculus) for depth
 
 ## Low
-- HenryDB: Add GENERATED columns
 - HenryDB: Add ATTACH DATABASE
 - HenryDB: Add CROSS APPLY / OUTER APPLY (SQL Server syntax)
 - HenryDB: Expression indexes
