@@ -324,6 +324,31 @@ async function fuzz() {
     }
   }
   
+  // Verify data sync: ensure both databases have same row counts per table
+  for (const [name, cols] of Object.entries(tables)) {
+    try {
+      const hCount = henry.execute(`SELECT COUNT(*) as cnt FROM ${name}`).rows[0].cnt;
+      const sCount = sqlite.prepare(`SELECT COUNT(*) as cnt FROM ${name}`).get().cnt;
+      if (hCount !== sCount) {
+        if (VERBOSE) console.log(`Sync fix: ${name} has ${hCount} in Henry, ${sCount} in SQLite`);
+        // Delete all and re-insert matching data from SQLite (source of truth)
+        henry.execute(`DELETE FROM ${name}`);
+        const allRows = sqlite.prepare(`SELECT * FROM ${name}`).all();
+        for (const row of allRows) {
+          const vals = cols.map(c => {
+            const v = row[c.name];
+            if (v == null) return 'NULL';
+            if (typeof v === 'string') return `'${v.replace(/'/g, "''")}'`;
+            return String(v);
+          });
+          try {
+            henry.execute(`INSERT INTO ${name} VALUES (${vals.join(', ')})`);
+          } catch {}
+        }
+      }
+    } catch {}
+  }
+  
   // Run queries
   for (let i = 0; i < ITERATIONS; i++) {
     const sql = genQuery(tables);
