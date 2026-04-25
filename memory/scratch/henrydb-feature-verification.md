@@ -96,3 +96,34 @@ All features verified by running actual queries during Session A.
 - 875 test files
 - 8,982 individual test cases
 - All passing
+
+## Additional Verifications (Tasks 151-160+)
+
+### Constraints ✅
+- CHECK constraints (rejects invalid values)
+- NOT NULL (rejects nulls)
+- UNIQUE (rejects duplicates with value in error)
+- FOREIGN KEY (referential integrity enforced)
+- PRIMARY KEY
+
+### DDL ✅
+- ALTER TABLE ADD COLUMN
+- ALTER TABLE RENAME COLUMN
+- ALTER TABLE DROP COLUMN
+- ALTER TABLE RENAME TABLE
+
+### Set Operations ✅
+- INTERSECT
+- EXCEPT
+- UNION / UNION ALL (verified earlier)
+
+### Views ✅
+- CREATE VIEW (with aggregation)
+- Query, filter, JOIN through views
+
+### Functions (17/18) ✅
+- String: UPPER, LOWER, SUBSTR, LENGTH, REPLACE, TRIM, INSTR
+- Math: ABS, ROUND
+- Date: DATE('now'), DATETIME('now')
+- CAST (INT↔TEXT), IIF, NULLIF, IFNULL
+- LIKE, BETWEEN, IN
