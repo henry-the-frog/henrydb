@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:53:22.716Z",
+  "generated": "2026-04-25T19:53:46.485Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB LEFT JOIN with NULL checking",
-    "completedAt": "2026-04-25T19:53:22.716Z",
-    "taskId": "T294",
-    "summary": "LEFT JOIN (no-match via IS NULL), RIGHT JOIN, CROSS JOIN all work. Charlie found with no orders via LEFT+IS NULL pattern.",
+    "task": "EXPLORE: Test HenryDB SELF JOIN",
+    "completedAt": "2026-04-25T19:53:46.485Z",
+    "taskId": "T295",
+    "summary": "Self JOIN works! Org chart: CEO→null, VP→CEO, Director→VP, Manager→VP, Dev→Director. LEFT self-join with alias.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 294,
+    "blocksCompleted": 295,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 31,
-      "EXPLORE": 179
+      "EXPLORE": 180
     }
   },
   "artifacts": [

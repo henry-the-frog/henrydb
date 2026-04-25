@@ -3207,6 +3207,17 @@
       "completed": "2026-04-25T19:53:22.679Z",
       "duration_ms": 60000,
       "summary": "LEFT JOIN (no-match via IS NULL), RIGHT JOIN, CROSS JOIN all work. Charlie found with no orders via LEFT+IS NULL pattern."
+    },
+    {
+      "id": "T295",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB SELF JOIN",
+      "project": "henrydb",
+      "started": "2026-04-25T19:53:31.753Z",
+      "completed": "2026-04-25T19:53:46.448Z",
+      "duration_ms": 60000,
+      "summary": "Self JOIN works! Org chart: CEO→null, VP→CEO, Director→VP, Manager→VP, Dev→Director. LEFT self-join with alias."
     }
   ],
   "focusProjects": [
@@ -4370,6 +4381,10 @@
     {
       "time": "2026-04-25T19:53:06.512Z",
       "msg": "Added T294 (EXPLORE) after end: EXPLORE: Test HenryDB LEFT JOIN with NULL checking"
+    },
+    {
+      "time": "2026-04-25T19:53:31.516Z",
+      "msg": "Added T295 (EXPLORE) after end: EXPLORE: Test HenryDB SELF JOIN"
     }
   ]
 }
