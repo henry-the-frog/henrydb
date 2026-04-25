@@ -723,6 +723,17 @@
       "completed": "2026-04-25T16:06:38.475Z",
       "duration_ms": 300000,
       "summary": "Enhanced fuzzer with JOINs. Found 3 new issues: (1) comparison ordering with strings, (2) type coercion in WHERE >=, (3) non-aggregate columns without GROUP BY. Pass rate 98.5% (3 failures in 200)."
+    },
+    {
+      "id": "T67",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Investigate 3 new fuzzer-found issues (comparison order, type coercion, non-aggregate cols)",
+      "project": "henrydb",
+      "started": "2026-04-25T16:07:07.869Z",
+      "completed": "2026-04-25T16:08:07.247Z",
+      "duration_ms": 180000,
+      "summary": "All 3 issues are type affinity differences, not bugs. Type system design choices, not correctness bugs."
     }
   ],
   "focusProjects": [
@@ -986,6 +997,10 @@
     {
       "time": "2026-04-25T16:05:40.161Z",
       "msg": "Added T66 (BUILD) after end: Enhance differential fuzzer with JOIN queries"
+    },
+    {
+      "time": "2026-04-25T16:07:01.930Z",
+      "msg": "Added T67 (EXPLORE) after end: EXPLORE: Investigate 3 new fuzzer-found issues (comparison order, type coercion, non-aggregate cols)"
     }
   ]
 }
