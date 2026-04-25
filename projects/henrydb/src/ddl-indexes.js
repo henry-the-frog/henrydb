@@ -8,15 +8,17 @@ export function createIndex(db, ast) {
   const table = db.tables.get(ast.table);
   if (!table) throw new Error(`Table ${ast.table} not found`);
 
-  // Check IF NOT EXISTS / duplicate index
-  const colName = ast.columns.join(',');
+  // Normalize columns — handle both simple names and expressions
+  const isExpressionIndex = ast.columns.some(c => typeof c === 'object' && c.expression);
+  const colNames = ast.columns.map(c => typeof c === 'object' ? c.text : c);
+  const colName = ast.name || colNames.join(',');
+  
   if (table.indexes?.has(colName)) {
     if (ast.ifNotExists) {
       return { type: 'OK', message: 'CREATE INDEX' };
     }
     throw new Error(`Index on column(s) ${colName} already exists on table ${ast.table}`);
   }
-  // Also check by index name if provided
   if (ast.indexName && table._indexNames?.has(ast.indexName)) {
     if (ast.ifNotExists) {
       return { type: 'OK', message: 'CREATE INDEX' };
@@ -24,16 +26,26 @@ export function createIndex(db, ast) {
     throw new Error(`Index ${ast.indexName} already exists`);
   }
 
-  // Validate columns exist
-  for (const col of ast.columns) {
+  // Validate columns exist (only for non-expression columns)
+  const simpleColumns = ast.columns.filter(c => typeof c === 'string');
+  for (const col of simpleColumns) {
     if (!table.schema.find(c => c.name.toLowerCase() === col.toLowerCase())) {
       throw new Error(`Column ${col} not found in table ${ast.table}`);
     }
   }
 
-  // For simplicity, support single-column indexes (composite uses CompositeKey)
-  const isComposite = ast.columns.length > 1;
-  const colIndices = ast.columns.map(c => table.schema.findIndex(s => s.name.toLowerCase() === c.toLowerCase()));
+  // For simple column indexes
+  const isComposite = !isExpressionIndex && ast.columns.length > 1;
+  const colIndices = isExpressionIndex ? [] : ast.columns.map(c => {
+    if (typeof c === 'string') return table.schema.findIndex(s => s.name.toLowerCase() === c.toLowerCase());
+    return -1;
+  });
+
+  // Expression columns: store expressions for key computation
+  const expressions = isExpressionIndex ? ast.columns.map(c => {
+    if (typeof c === 'object' && c.expression) return c.expression;
+    return null;
+  }) : null;
 
   // Choose index type: HASH or BTREE (default)
   const indexType = (ast.indexType || 'BTREE').toUpperCase();
@@ -67,9 +79,15 @@ export function createIndex(db, ast) {
       if (!db._evalExpr(ast.where, row)) continue;
     }
     
-    const key = isComposite
-      ? makeCompositeKey(colIndices.map(i => values[i]))
-      : values[colIdx];
+    const key = isExpressionIndex
+      ? (() => {
+          const row = db._valuesToRow(values, table.schema, ast.table);
+          if (expressions.length === 1) return db._evalValue(expressions[0], row);
+          return makeCompositeKey(expressions.map(e => db._evalValue(e, row)));
+        })()
+      : isComposite
+        ? makeCompositeKey(colIndices.map(i => values[i]))
+        : values[colIdx];
     if (ast.unique && !index._isHash) {
       const existing = index.search(key);
       if (existing !== undefined) {
@@ -140,6 +158,8 @@ export function createIndex(db, ast) {
   table.indexMeta.set(colName, {
     name: ast.name,
     columns: ast.columns,
+    expressions: expressions,
+    isExpressionIndex,
     include: ast.include || [],
     unique: ast.unique || false,
     partial: ast.where || null,

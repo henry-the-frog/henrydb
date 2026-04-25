@@ -371,5 +371,17 @@ describe('Database', () => {
       const r4 = db.execute("SELECT * FROM words WHERE w RLIKE '^h'");
       assert.equal(r4.rows.length, 2); // hello, hello123
     });
+
+    it('expression index on function', () => {
+      db.execute('CREATE TABLE names (name TEXT)');
+      db.execute("INSERT INTO names VALUES ('Hello')");
+      db.execute("INSERT INTO names VALUES ('World')");
+      db.execute("INSERT INTO names VALUES ('HELLO')");
+      
+      db.execute('CREATE INDEX idx_lower_name ON names (LOWER(name))');
+      
+      const r = db.execute("SELECT * FROM names WHERE LOWER(name) = 'hello'");
+      assert.equal(r.rows.length, 2);
+    });
   });
 });

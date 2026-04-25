@@ -3125,7 +3125,31 @@ export function parse(sql) {
     }
     expect('(');
     const columns = [];
-    do { const tok = advance(); columns.push(tok.originalValue || tok.value); } while (match(','));
+    do {
+      // Check if this is an expression (function call like LOWER(name)) or a simple column
+      if (peek().type === 'KEYWORD' || peek().type === 'IDENT') {
+        const saved = pos;
+        const name = advance();
+        if (peek().type === '(') {
+          // It's a function call — backtrack and parse as expression
+          pos = saved;
+          const exprStart = pos;
+          const expr = parseExpr();
+          // Build text from consumed tokens
+          const exprText = tokens.slice(exprStart, pos).map(t => t.originalValue || t.value).join(' ').replace(/ \( /g, '(').replace(/ \) /g, ')').replace(/ ,/g, ',');
+          columns.push({ expression: expr, text: exprText });
+        } else {
+          // Simple column name
+          columns.push(name.originalValue || name.value);
+        }
+      } else {
+        // Fallback: parse as expression
+        const exprStart = pos;
+        const expr = parseExpr();
+        const exprText = tokens.slice(exprStart, pos).map(t => t.originalValue || t.value).join(' ');
+        columns.push({ expression: expr, text: exprText });
+      }
+    } while (match(','));
     expect(')');
     // INCLUDE clause for covering indexes
     let include = null;
