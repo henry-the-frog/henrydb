@@ -1062,6 +1062,17 @@
       "completed": "2026-04-25T17:08:21.757Z",
       "duration_ms": 600000,
       "summary": "EXPLORE: Triaged 33 failures → found root cause: const-subst ignoring set statements. Fixed by adding removeMutated() scan. 28 tests fixed (33→5). Remaining 5: debugger breakpoints (3) + optimizer nested-if (1) + GC stress (1)."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix optimizer nested-if miscompilation (optimizer.test.js)",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:08:45.477Z",
+      "completed": "2026-04-25T17:10:03.755Z",
+      "duration_ms": 300000,
+      "summary": "Fixed optimizer jump target remapping. rebuildBytecode now finds nearest surviving instruction when target is removed by DCE. 916/920 tests pass (was 915). Nested-if miscompilation fixed."
     }
   ],
   "focusProjects": [
@@ -1441,6 +1452,10 @@
     {
       "time": "2026-04-25T17:04:34.956Z",
       "msg": "Added T97 (EXPLORE) after end: EXPLORE: Triage the 33 pre-existing monkey-lang test failures — categorize and fix easy ones"
+    },
+    {
+      "time": "2026-04-25T17:08:41.928Z",
+      "msg": "Added T98 (BUILD) after end: Fix optimizer nested-if miscompilation (optimizer.test.js)"
     }
   ]
 }

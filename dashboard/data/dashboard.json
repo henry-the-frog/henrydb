@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T17:08:21.793Z",
+  "generated": "2026-04-25T17:10:03.791Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Triage the 33 pre-existing monkey-lang test failures — categorize and fix easy ones",
-    "completedAt": "2026-04-25T17:08:21.793Z",
-    "taskId": "T97",
-    "summary": "EXPLORE: Triaged 33 failures → found root cause: const-subst ignoring set statements. Fixed by adding removeMutated() scan. 28 tests fixed (33→5). Remaining 5: debugger breakpoints (3) + optimizer nested-if (1) + GC stress (1).",
-    "durationMs": 600000
+    "mode": "BUILD",
+    "task": "Fix optimizer nested-if miscompilation (optimizer.test.js)",
+    "completedAt": "2026-04-25T17:10:03.791Z",
+    "taskId": "T98",
+    "summary": "Fixed optimizer jump target remapping. rebuildBytecode now finds nearest surviving instruction when target is removed by DCE. 916/920 tests pass (was 915). Nested-if miscompilation fixed.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8825,12 +8825,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 97,
+    "blocksCompleted": 98,
     "blocksTotal": 96,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 10,
-      "BUILD": 44,
+      "BUILD": 45,
       "MAINTAIN": 9,
       "EXPLORE": 23
     }
