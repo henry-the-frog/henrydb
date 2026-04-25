@@ -899,6 +899,17 @@
       "completed": "2026-04-25T16:36:52.071Z",
       "duration_ms": 180000,
       "summary": "Added UPDATE + DELETE to fuzzer. 100% on seed=42. Cross-seed 89-100%. No new bugs found — UPDATE/DELETE work correctly."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add window function queries to differential fuzzer",
+      "project": "henrydb",
+      "started": "2026-04-25T16:40:27.872Z",
+      "completed": "2026-04-25T16:41:46.575Z",
+      "duration_ms": 300000,
+      "summary": "Added window functions to fuzzer (ROW_NUMBER, RANK, SUM, COUNT, AVG OVER). Window queries pass 100%. Overall 96.4% on seed=123 (500 queries). Remaining diffs still type affinity."
     }
   ],
   "focusProjects": [
@@ -1226,6 +1237,10 @@
     {
       "time": "2026-04-25T16:36:04.209Z",
       "msg": "Added T82 (BUILD) after end: Add UPDATE and DELETE queries to differential fuzzer"
+    },
+    {
+      "time": "2026-04-25T16:40:21.895Z",
+      "msg": "Added T83 (BUILD) after end: Add window function queries to differential fuzzer"
     }
   ]
 }
