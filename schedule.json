@@ -550,6 +550,17 @@
       "completed": "2026-04-25T15:32:09.003Z",
       "duration_ms": 180000,
       "summary": "Fixed SUM/AVG text coercion. SUM now converts text→number (abc→0). Fixed all 4 code paths. 13/13 aggregate + 52/52 sql tests pass."
+    },
+    {
+      "id": "T51",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Deep dive into monkey-lang type system — test edge cases of Algorithm W inference",
+      "project": "monkey-lang",
+      "started": "2026-04-25T15:32:47.726Z",
+      "completed": "2026-04-25T15:34:29.569Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Type system deep dive. Real HM implementation (Algorithm W). Let-polymorphism works, occurs check works, type errors caught. Mutual recursion unsupported (forward refs). Only 2 tests for the whole system — major gap. 2/3 hypotheses confirmed."
     }
   ],
   "focusProjects": [
@@ -749,6 +760,10 @@
     {
       "time": "2026-04-25T15:30:40.228Z",
       "msg": "Added T50 (BUILD) after end: Fix SUM/AVG to convert text to numbers instead of concatenating"
+    },
+    {
+      "time": "2026-04-25T15:32:41.655Z",
+      "msg": "Added T51 (EXPLORE) after end: EXPLORE: Deep dive into monkey-lang type system — test edge cases of Algorithm W inference"
     }
   ]
 }

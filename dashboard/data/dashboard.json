@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:32:09.039Z",
+  "generated": "2026-04-25T15:34:29.605Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fix SUM/AVG to convert text to numbers instead of concatenating",
-    "completedAt": "2026-04-25T15:32:09.039Z",
-    "taskId": "T50",
-    "summary": "Fixed SUM/AVG text coercion. SUM now converts text→number (abc→0). Fixed all 4 code paths. 13/13 aggregate + 52/52 sql tests pass.",
-    "durationMs": 180000
+    "mode": "EXPLORE",
+    "task": "EXPLORE: Deep dive into monkey-lang type system — test edge cases of Algorithm W inference",
+    "completedAt": "2026-04-25T15:34:29.605Z",
+    "taskId": "T51",
+    "summary": "EXPLORE: Type system deep dive. Real HM implementation (Algorithm W). Let-polymorphism works, occurs check works, type errors caught. Mutual recursion unsupported (forward refs). Only 2 tests for the whole system — major gap. 2/3 hypotheses confirmed.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 50,
+    "blocksCompleted": 51,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
       "BUILD": 21,
       "MAINTAIN": 7,
-      "EXPLORE": 6
+      "EXPLORE": 7
     }
   },
   "artifacts": [
