@@ -7,29 +7,7 @@
 import { exprContains, exprCollect } from './expr-walker.js';
 import { evalFunction as _evalFunctionImpl, dateArith as _dateArithImpl, likeToRegex as _likeToRegexImpl } from './sql-functions.js';
 import { tokenize } from './fulltext.js';
-
-/**
- * SQLite-compatible type class comparison.
- * Type ordering: NULL < INTEGER/REAL < TEXT < BLOB
- * When comparing values of different types, use type class ordering.
- */
-function typeClass(v) {
-  if (v == null) return 0;
-  if (typeof v === 'number') return 1;
-  if (typeof v === 'string') return 2;
-  if (Buffer.isBuffer(v) || v instanceof Uint8Array) return 3;
-  return 1; // default to numeric
-}
-
-function sqliteCompare(left, right) {
-  const lc = typeClass(left);
-  const rc = typeClass(right);
-  if (lc !== rc) return lc - rc; // different type classes → order by class
-  // Same type class → normal comparison
-  if (left < right) return -1;
-  if (left > right) return 1;
-  return 0;
-}
+import { typeClass, sqliteCompare } from './type-affinity.js';
 
 /**
  * Install expression evaluation methods on Database.prototype.

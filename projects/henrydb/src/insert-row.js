@@ -1,6 +1,8 @@
 // insert-row.js — Extracted from db.js (2026-04-23)
 // Core row insertion logic with constraint validation, triggers, WAL, and index maintenance
 
+import { applyAffinity } from './type-affinity.js';
+
 /**
  * Insert a single row into a table.
  * Handles: column ordering, defaults, constraint validation, triggers, WAL, indexes.
@@ -109,6 +111,12 @@ export function insertRow(db, table, columns, values) {
       orderedValues[i] = db._evalValue(table.schema[i].generated, row);
     }
 }
+
+  // Apply SQLite-compatible type affinity: coerce values based on column type
+  for (let i = 0; i < table.schema.length; i++) {
+    if (orderedValues[i] == null) continue;
+    orderedValues[i] = applyAffinity(orderedValues[i], table.schema[i].type);
+  }
 
   db._validateConstraints(table, orderedValues);
 

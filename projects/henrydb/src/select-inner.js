@@ -3,6 +3,7 @@
 
 import { pushdownPredicates } from './pushdown.js';
 import { canVectorize, vectorizedGroupBy } from './vectorized-bridge.js';
+import { sqliteCompare } from './type-affinity.js';
 
 // Deduplicate column name within a result row object
 function dedup(name, result) {
@@ -266,7 +267,7 @@ export function selectInner(db, ast) {
           if (aNull && bNull) continue;
           if (aNull) return direction === 'DESC' ? 1 : -1;
           if (bNull) return direction === 'DESC' ? -1 : 1;
-          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          const cmp = sqliteCompare(av, bv);
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;
@@ -553,7 +554,7 @@ export function selectInner(db, ast) {
         if (av == null && bv == null) continue;
         if (av == null) return nullsFirst ? -1 : 1;
         if (bv == null) return nullsFirst ? 1 : -1;
-        const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+        const cmp = sqliteCompare(av, bv);
         if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
       }
       return 0;
