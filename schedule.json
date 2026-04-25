@@ -1433,6 +1433,17 @@
       "completed": "2026-04-25T17:55:57.336Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: HenryDB server starts on port 15432 with PG wire protocol. Can connect with psql -h localhost -p 15432. Internal queries work. HTTP + PG protocol dual server."
+    },
+    {
+      "id": "T132",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang debugger — can we step through code?",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:56:20.026Z",
+      "completed": "2026-04-25T17:56:54.672Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Debugger works — DebugVM executes programs correctly (let x=5; let y=x*2; y+1 → 11). Step-by-step execution with state tracking. 25 tests pass."
     }
   ],
   "focusProjects": [
@@ -1944,6 +1955,10 @@
     {
       "time": "2026-04-25T17:55:30.578Z",
       "msg": "Added T131 (EXPLORE) after end: EXPLORE: Start HenryDB server and test via pg client"
+    },
+    {
+      "time": "2026-04-25T17:56:13.069Z",
+      "msg": "Added T132 (EXPLORE) after end: EXPLORE: Test monkey-lang debugger — can we step through code?"
     }
   ]
 }
