@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T17:17:53.854Z",
+  "generated": "2026-04-25T17:19:09.438Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add ORDER BY normalization to fuzzer comparison (handle ties)",
-    "completedAt": "2026-04-25T17:17:53.854Z",
-    "taskId": "T104",
-    "summary": "Added ORDER BY normalization to fuzzer. 90.2% → 94.0% across 10 seeds. Row ordering differences no longer counted as failures. Remaining 6% = genuine type affinity differences.",
-    "durationMs": 300000
+    "task": "Add numeric comparison tolerance to fuzzer (int 42 == string 42)",
+    "completedAt": "2026-04-25T17:19:09.438Z",
+    "taskId": "T105",
+    "summary": "Added type affinity tolerance. 94% pass rate stable. Remaining 6% = WHERE clause type comparison (deep semantic), not value format. Would need SQLite-style type affinity in expression evaluator to fix.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,12 +8917,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 104,
+    "blocksCompleted": 105,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 11,
-      "BUILD": 49,
+      "BUILD": 50,
       "MAINTAIN": 9,
       "EXPLORE": 24
     }
