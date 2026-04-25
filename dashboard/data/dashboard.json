@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:47:04.355Z",
+  "generated": "2026-04-25T21:48:59.833Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Deep investigation: categorize all fuzzer failures and find highest-impact fix",
-    "completedAt": "2026-04-25T21:47:04.355Z",
-    "taskId": "T130",
-    "summary": "Found and fixed: MIN/MAX using JS comparison instead of sqliteCompare for mixed types. Strings rank above numbers in SQLite. Fuzzer avg 97.5% (was 97.1%). Best seed at 99.5%.",
-    "durationMs": 600000
+    "mode": "BUILD",
+    "task": "Fix RANK/ROW_NUMBER/DENSE_RANK ordering to use sqliteCompare",
+    "completedAt": "2026-04-25T21:48:59.833Z",
+    "taskId": "T131",
+    "summary": "Fixed window function and compiled query sort to use sqliteCompare. All sort paths now use consistent type ordering. Tests pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,12 +8983,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 129,
+    "blocksCompleted": 130,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 31,
-      "BUILD": 56,
+      "BUILD": 57,
       "MAINTAIN": 22,
       "EXPLORE": 14
     }

@@ -1399,6 +1399,17 @@
       "completed": "2026-04-25T21:47:04.319Z",
       "duration_ms": 600000,
       "summary": "Found and fixed: MIN/MAX using JS comparison instead of sqliteCompare for mixed types. Strings rank above numbers in SQLite. Fuzzer avg 97.5% (was 97.1%). Best seed at 99.5%."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix RANK/ROW_NUMBER/DENSE_RANK ordering to use sqliteCompare",
+      "project": "henrydb",
+      "started": "2026-04-25T21:47:17.788Z",
+      "completed": "2026-04-25T21:48:59.767Z",
+      "duration_ms": 180000,
+      "summary": "Fixed window function and compiled query sort to use sqliteCompare. All sort paths now use consistent type ordering. Tests pass."
     }
   ],
   "focusProjects": [
@@ -1914,6 +1925,10 @@
     {
       "time": "2026-04-25T21:45:15.110Z",
       "msg": "Added T130 (EXPLORE) after end: Deep investigation: categorize all fuzzer failures and find highest-impact fix"
+    },
+    {
+      "time": "2026-04-25T21:47:17.551Z",
+      "msg": "Added T131 (BUILD) after end: Fix RANK/ROW_NUMBER/DENSE_RANK ordering to use sqliteCompare"
     }
   ]
 }
