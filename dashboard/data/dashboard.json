@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:40:30.906Z",
+  "generated": "2026-04-25T15:44:11.098Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Document fuzzer-found bugs and test reproducibility",
-    "completedAt": "2026-04-25T15:40:30.906Z",
-    "taskId": "T55",
-    "summary": "EXPLORE: Both fuzzer bugs reproduced and documented. Bug 1: INSERT with fewer values fills NULL silently (should error). Bug 2: ORDER BY non-existent column silently ignored (should error). Fix locations identified.",
-    "durationMs": 120000
+    "task": "EXPLORE: Investigate monkey-lang register allocator + interference graph",
+    "completedAt": "2026-04-25T15:44:11.098Z",
+    "taskId": "T58",
+    "summary": "EXPLORE: Register allocator is real Chaitin-Briggs (simplify/spill/select). Works correctly: 4 vars/3 regs → optimal coloring, 5 fully-connected/3 regs → 2 spills. BUT pipeline only does top-level SSA, not per-function. Interference graph is always empty because straight-line code has no overlapping lifetimes. Gap: need per-function CFG/SSA/liveness for regalloc to be useful.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 55,
+    "blocksCompleted": 58,
     "blocksTotal": 38,
     "modeDistribution": {
-      "THINK": 8,
+      "THINK": 9,
       "PLAN": 9,
       "BUILD": 22,
       "MAINTAIN": 7,
-      "EXPLORE": 9
+      "EXPLORE": 11
     }
   },
   "artifacts": [
