@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:01:43.244Z",
+  "generated": "2026-04-25T21:04:07.617Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Investigate and fix fuzzer WHERE b > empty string mismatch",
-    "completedAt": "2026-04-25T21:01:43.244Z",
-    "taskId": "T56",
-    "summary": "Fixed WHERE comparison coercion bug: empty string was coerced to 0 via Number(empty)=0, causing 42>empty to be true. Now only EQ/NE coerce (not LT/GT). Seeds 42,123,999 now at 99-100%. Avg ~96.7%.",
-    "durationMs": 300000
+    "task": "Add monkey-lang prelude: compile map, filter, reduce, any, all, find as standard library",
+    "completedAt": "2026-04-25T21:04:07.617Z",
+    "taskId": "T57",
+    "summary": "Prelude with 9 HOFs: map, filter, reduce, any, all, find, flat_map, take, drop. Compiled as monkey-lang bytecode. 21/21 tests pass. compileWithPrelude() convenience.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8300,37 +8300,60 @@
       {
         "id": "T48",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: investigate and fix remaining fuzzer failures (window ORDER BY, UNION types)",
         "task": null,
-        "started": "2026-04-25T20:58:42.264Z"
+        "started": "2026-04-25T20:58:42.264Z",
+        "completed": "2026-04-25T21:00:08.737Z",
+        "duration_ms": 180000,
+        "summary": "Investigated. 3 failure patterns: (1) non-aggregated col in aggregate query → undefined, (2) WHERE type comparison edge cases, (3) row count mismatches from type coercion. The sqliteCompare is correct but storage types may differ. Filling BUILD for targeted fix."
       },
       {
         "id": "T56",
         "mode": "BUILD",
         "task": "Investigate and fix fuzzer WHERE b > empty string mismatch",
-        "status": "upcoming",
-        "plan_ref": "T48"
+        "status": "done",
+        "plan_ref": "T48",
+        "started": "2026-04-25T21:00:15.267Z",
+        "completed": "2026-04-25T21:01:43.209Z",
+        "duration_ms": 300000,
+        "summary": "Fixed WHERE comparison coercion bug: empty string was coerced to 0 via Number(empty)=0, causing 42>empty to be true. Now only EQ/NE coerce (not LT/GT). Seeds 42,123,999 now at 99-100%. Avg ~96.7%."
       },
       {
         "id": "T49",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T21:01:50.651Z",
+        "completed": "2026-04-25T21:01:50.794Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T50",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-push"
+        "status": "done",
+        "task": "Mid-push",
+        "started": "2026-04-25T21:01:57.358Z",
+        "completed": "2026-04-25T21:02:04.756Z",
+        "duration_ms": 30000,
+        "summary": "All pushed."
       },
       {
         "id": "T51",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: add VM callback mechanism for HOF builtins (map, filter, reduce)",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T21:02:10.114Z"
+      },
+      {
+        "id": "T57",
+        "mode": "BUILD",
+        "task": "Add monkey-lang prelude: compile map, filter, reduce, any, all, find as standard library",
+        "status": "upcoming",
+        "plan_ref": "T51"
       },
       {
         "id": "T52",
@@ -8356,13 +8379,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 49,
-    "blocksTotal": 56,
+    "blocksCompleted": 53,
+    "blocksTotal": 57,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 10,
-      "BUILD": 22,
-      "MAINTAIN": 8,
+      "PLAN": 11,
+      "BUILD": 24,
+      "MAINTAIN": 9,
       "EXPLORE": 4
     }
   },

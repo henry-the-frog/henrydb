@@ -538,22 +538,45 @@
     {
       "id": "T49",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T21:01:50.651Z",
+      "completed": "2026-04-25T21:01:50.794Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
     },
     {
       "id": "T50",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-push"
+      "status": "done",
+      "task": "Mid-push",
+      "started": "2026-04-25T21:01:57.358Z",
+      "completed": "2026-04-25T21:02:04.756Z",
+      "duration_ms": 30000,
+      "summary": "All pushed."
     },
     {
       "id": "T51",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: add VM callback mechanism for HOF builtins (map, filter, reduce)",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T21:02:10.114Z",
+      "completed": "2026-04-25T21:02:25.167Z",
+      "duration_ms": 120000,
+      "summary": "Approach: compile HOFs as monkey-lang prelude (standard library). map/filter/reduce written in monkey-lang, compiled to bytecode at VM init. Simpler and more maintainable than callback mechanism."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "task": "Add monkey-lang prelude: compile map, filter, reduce, any, all, find as standard library",
+      "status": "done",
+      "plan_ref": "T51",
+      "started": "2026-04-25T21:02:30.494Z",
+      "completed": "2026-04-25T21:04:07.581Z",
+      "duration_ms": 600000,
+      "summary": "Prelude with 9 HOFs: map, filter, reduce, any, all, find, flat_map, take, drop. Compiled as monkey-lang bytecode. 21/21 tests pass. compileWithPrelude() convenience."
     },
     {
       "id": "T52",
@@ -793,6 +816,10 @@
     {
       "time": "2026-04-25T21:00:08.589Z",
       "msg": "PLAN T48 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:02:20.137Z",
+      "msg": "PLAN T51 filled 1 BUILD tasks"
     }
   ]
 }
