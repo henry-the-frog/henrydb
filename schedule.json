@@ -1106,6 +1106,39 @@
       "completed": "2026-04-25T17:13:32.051Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Optimizer benchmarks. fib(25): 7% faster (88→82ms). nested-if: 62% smaller bytecode (42→16 bytes). Arithmetic: 10% smaller. Main benefit is bytecode size reduction; VM dispatch already efficient."
+    },
+    {
+      "id": "T102",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Fix type affinity to close 3.7% fuzzer gap",
+      "task": null,
+      "started": "2026-04-25T17:13:50.139Z",
+      "completed": "2026-04-25T17:16:39.808Z",
+      "duration_ms": 600000,
+      "summary": "PLAN: Fixed schema tracking bug (duplicate table names). Added INSERT rollback. 90.2% across 10 seeds. Remaining = type affinity + ordering differences. 2 BUILD tasks for further improvement."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "task": "Improve fuzzer INSERT rollback — sync databases after divergent DML",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-04-25T17:16:43.464Z",
+      "completed": "2026-04-25T17:17:14.929Z",
+      "duration_ms": 180000,
+      "summary": "Improved INSERT rollback with column-specific DELETE. Remaining failures are semantic: row ordering (no ORDER BY), type affinity on text columns, window functions on text. These are genuine HenryDB vs SQLite differences, not sync issues."
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "task": "Add ORDER BY normalization to fuzzer comparison (handle ties)",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-04-25T17:17:18.773Z",
+      "completed": "2026-04-25T17:17:53.817Z",
+      "duration_ms": 300000,
+      "summary": "Added ORDER BY normalization to fuzzer. 90.2% → 94.0% across 10 seeds. Row ordering differences no longer counted as failures. Remaining 6% = genuine type affinity differences."
     }
   ],
   "focusProjects": [
@@ -1501,6 +1534,14 @@
     {
       "time": "2026-04-25T17:13:10.674Z",
       "msg": "Added T101 (EXPLORE) after end: Benchmark bytecode optimizer impact — compare fib(25) speed with/without optimization"
+    },
+    {
+      "time": "2026-04-25T17:13:46.510Z",
+      "msg": "Added T102 (PLAN) after end: PLAN: Fix type affinity to close 3.7% fuzzer gap"
+    },
+    {
+      "time": "2026-04-25T17:16:33.941Z",
+      "msg": "PLAN T102 filled 2 BUILD tasks"
     }
   ]
 }

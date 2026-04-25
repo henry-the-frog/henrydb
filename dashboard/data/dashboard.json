@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T17:13:32.107Z",
+  "generated": "2026-04-25T17:17:53.854Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Benchmark bytecode optimizer impact — compare fib(25) speed with/without optimization",
-    "completedAt": "2026-04-25T17:13:32.107Z",
-    "taskId": "T101",
-    "summary": "EXPLORE: Optimizer benchmarks. fib(25): 7% faster (88→82ms). nested-if: 62% smaller bytecode (42→16 bytes). Arithmetic: 10% smaller. Main benefit is bytecode size reduction; VM dispatch already efficient.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "Add ORDER BY normalization to fuzzer comparison (handle ties)",
+    "completedAt": "2026-04-25T17:17:53.854Z",
+    "taskId": "T104",
+    "summary": "Added ORDER BY normalization to fuzzer. 90.2% → 94.0% across 10 seeds. Row ordering differences no longer counted as failures. Remaining 6% = genuine type affinity differences.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8795,42 +8795,134 @@
       {
         "id": "T93",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "PLAN: Wire monkey-lang bytecode optimizer into default compilation path",
         "task": null,
-        "started": "2026-04-25T17:00:08.261Z"
+        "started": "2026-04-25T17:00:08.261Z",
+        "completed": "2026-04-25T17:00:54.939Z",
+        "duration_ms": 120000,
+        "summary": "PLAN: Wire optimizer.js optimize() into compiler.bytecode(). Add optimize flag (default true). 3 BUILD tasks created."
       },
       {
         "id": "T94",
         "mode": "BUILD",
         "task": "Wire bytecode optimizer into compiler.bytecode() with opt-out flag",
-        "status": "upcoming",
-        "plan_ref": "T93"
+        "status": "done",
+        "plan_ref": "T93",
+        "started": "2026-04-25T17:01:01.075Z",
+        "completed": "2026-04-25T17:03:14.628Z",
+        "duration_ms": 300000,
+        "summary": "Wired bytecode optimizer into compiler.bytecode() with opt-in flag. 50% reduction on conditionals. 0 new regressions (870 pass, 33 pre-existing). try/catch for safety."
       },
       {
         "id": "T95",
         "mode": "BUILD",
         "task": "Add integration tests: optimized bytecode produces same results as unoptimized",
-        "status": "upcoming",
-        "plan_ref": "T93"
+        "status": "done",
+        "plan_ref": "T93",
+        "started": "2026-04-25T17:03:21.014Z",
+        "completed": "2026-04-25T17:03:56.719Z",
+        "duration_ms": 180000,
+        "summary": "17 optimizer integration tests: arithmetic, conditionals, variables, functions, fib(10), fact(5), strings, arrays, hashes. All produce identical results with/without optimization."
       },
       {
         "id": "T96",
         "mode": "BUILD",
         "task": "Run full test suite to verify no regressions",
+        "status": "done",
+        "plan_ref": "T93",
+        "started": "2026-04-25T17:04:02.700Z",
+        "completed": "2026-04-25T17:04:16.384Z",
+        "duration_ms": 60000,
+        "summary": "Full suite: 920 tests, 887 pass, 33 fail (all pre-existing). 17 new tests added, 0 new regressions. Optimizer wiring is safe."
+      },
+      {
+        "id": "T97",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "EXPLORE: Triage the 33 pre-existing monkey-lang test failures — categorize and fix easy ones",
+        "project": "monkey-lang",
+        "started": "2026-04-25T17:04:38.368Z",
+        "completed": "2026-04-25T17:08:21.757Z",
+        "duration_ms": 600000,
+        "summary": "EXPLORE: Triaged 33 failures → found root cause: const-subst ignoring set statements. Fixed by adding removeMutated() scan. 28 tests fixed (33→5). Remaining 5: debugger breakpoints (3) + optimizer nested-if (1) + GC stress (1)."
+      },
+      {
+        "id": "T98",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix optimizer nested-if miscompilation (optimizer.test.js)",
+        "project": "monkey-lang",
+        "started": "2026-04-25T17:08:45.477Z",
+        "completed": "2026-04-25T17:10:03.755Z",
+        "duration_ms": 300000,
+        "summary": "Fixed optimizer jump target remapping. rebuildBytecode now finds nearest surviving instruction when target is removed by DCE. 916/920 tests pass (was 915). Nested-if miscompilation fixed."
+      },
+      {
+        "id": "T99",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix 4 remaining debugger test failures in monkey-lang",
+        "project": "monkey-lang",
+        "started": "2026-04-25T17:10:24.519Z",
+        "completed": "2026-04-25T17:11:34.532Z",
+        "duration_ms": 300000,
+        "summary": "MILESTONE: 920/920 monkey-lang tests pass (100%). Fixed by gating constant substitution behind optimize flag. Debugger tests now pass with optimize:false. From 33 failures to 0 in one session."
+      },
+      {
+        "id": "T100",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Enable bytecode optimizer by default and verify 920/920 still pass",
+        "project": "monkey-lang",
+        "started": "2026-04-25T17:11:55.466Z",
+        "completed": "2026-04-25T17:12:52.757Z",
+        "duration_ms": 180000,
+        "summary": "MILESTONE: Bytecode optimizer enabled by default. 920/920 tests still pass. DCE, peephole, jump threading run automatically on all compiled code. 50% reduction on conditionals."
+      },
+      {
+        "id": "T101",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Benchmark bytecode optimizer impact — compare fib(25) speed with/without optimization",
+        "project": "monkey-lang",
+        "started": "2026-04-25T17:13:13.898Z",
+        "completed": "2026-04-25T17:13:32.051Z",
+        "duration_ms": 120000,
+        "summary": "EXPLORE: Optimizer benchmarks. fib(25): 7% faster (88→82ms). nested-if: 62% smaller bytecode (42→16 bytes). Arithmetic: 10% smaller. Main benefit is bytecode size reduction; VM dispatch already efficient."
+      },
+      {
+        "id": "T102",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "PLAN: Fix type affinity to close 3.7% fuzzer gap",
+        "task": null,
+        "started": "2026-04-25T17:13:50.139Z"
+      },
+      {
+        "id": "T103",
+        "mode": "BUILD",
+        "task": "Improve fuzzer INSERT rollback — sync databases after divergent DML",
         "status": "upcoming",
-        "plan_ref": "T93"
+        "plan_ref": "T102"
+      },
+      {
+        "id": "T104",
+        "mode": "BUILD",
+        "task": "Add ORDER BY normalization to fuzzer comparison (handle ties)",
+        "status": "upcoming",
+        "plan_ref": "T102"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 101,
-    "blocksTotal": 96,
+    "blocksCompleted": 104,
+    "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 11,
-      "PLAN": 10,
-      "BUILD": 47,
+      "PLAN": 11,
+      "BUILD": 49,
       "MAINTAIN": 9,
       "EXPLORE": 24
     }
