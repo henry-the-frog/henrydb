@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T18:02:26.926Z",
+  "generated": "2026-04-25T18:03:27.567Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Stress test HenryDB — 100K rows, complex queries, large JOINs",
-    "completedAt": "2026-04-25T18:02:26.926Z",
-    "taskId": "T137",
-    "summary": "EXPLORE: HenryDB stress test at 1K rows. INSERT 1K=55ms (55μs/row), COUNT=11ms, GROUP BY=6ms, filtered=7ms, subquery=3ms. Good performance for pure JS. 10K rows times out in memory (~30s INSERT phase).",
-    "durationMs": 180000
+    "task": "EXPLORE: Build a realistic e-commerce schema in HenryDB — users, products, orders, reviews",
+    "completedAt": "2026-04-25T18:03:27.567Z",
+    "taskId": "T138",
+    "summary": "EXPLORE: E-commerce schema works! 5 tables, 1150 rows, 3 indexes. Complex queries: TOP 5 spenders=8ms, category ratings=2ms, top rated in-stock=8ms. Real-world SQL (JOIN+GROUP BY+HAVING+ORDER BY+LIMIT+COALESCE+LEFT JOIN) all work correctly.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 137,
+    "blocksCompleted": 138,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 56,
       "MAINTAIN": 14,
-      "EXPLORE": 44
+      "EXPLORE": 45
     }
   },
   "artifacts": [

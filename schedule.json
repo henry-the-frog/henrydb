@@ -1498,6 +1498,17 @@
       "completed": "2026-04-25T18:02:26.888Z",
       "duration_ms": 180000,
       "summary": "EXPLORE: HenryDB stress test at 1K rows. INSERT 1K=55ms (55μs/row), COUNT=11ms, GROUP BY=6ms, filtered=7ms, subquery=3ms. Good performance for pure JS. 10K rows times out in memory (~30s INSERT phase)."
+    },
+    {
+      "id": "T138",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Build a realistic e-commerce schema in HenryDB — users, products, orders, reviews",
+      "project": "henrydb",
+      "started": "2026-04-25T18:02:59.393Z",
+      "completed": "2026-04-25T18:03:27.530Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: E-commerce schema works! 5 tables, 1150 rows, 3 indexes. Complex queries: TOP 5 spenders=8ms, category ratings=2ms, top rated in-stock=8ms. Real-world SQL (JOIN+GROUP BY+HAVING+ORDER BY+LIMIT+COALESCE+LEFT JOIN) all work correctly."
     }
   ],
   "focusProjects": [
@@ -2033,6 +2044,10 @@
     {
       "time": "2026-04-25T18:01:13.564Z",
       "msg": "Added T137 (EXPLORE) after end: EXPLORE: Stress test HenryDB — 100K rows, complex queries, large JOINs"
+    },
+    {
+      "time": "2026-04-25T18:02:55.429Z",
+      "msg": "Added T138 (EXPLORE) after end: EXPLORE: Build a realistic e-commerce schema in HenryDB — users, products, orders, reviews"
     }
   ]
 }
