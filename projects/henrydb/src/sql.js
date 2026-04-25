@@ -1670,9 +1670,35 @@ export function parse(sql) {
       }
       return { table: '__unnest', alias, arrayExpr, columnAlias };
     }
-    // Subquery in FROM
+    // Subquery or VALUES in FROM
     if (peek().type === '(') {
       advance(); // (
+      // Check for VALUES clause inside parens
+      if (isKeyword('VALUES')) {
+        advance(); // VALUES
+        const tuples = [];
+        do {
+          expect('(');
+          const values = [];
+          values.push(parseExpr());
+          while (match(',')) values.push(parseExpr());
+          expect(')');
+          tuples.push(values);
+        } while (match(','));
+        expect(')'); // closing paren of FROM (VALUES ...)
+        let alias = null;
+        let columnAliases = null;
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        else if (peek().type === 'IDENT') alias = advance().value;
+        // Optional column aliases: AS t(col1, col2, ...)
+        if (match('(')) {
+          columnAliases = [];
+          columnAliases.push(advance().value);
+          while (match(',')) columnAliases.push(advance().value);
+          expect(')');
+        }
+        return { table: '__values', alias, tuples, columnAliases };
+      }
       const subquery = parseSelect();
       expect(')');
       let alias = null;

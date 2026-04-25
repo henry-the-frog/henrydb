@@ -122,6 +122,49 @@ export function selectInner(db, ast) {
     tableName = '__subquery';
   }
 
+  // VALUES clause in FROM: (VALUES (1, 'a'), (2, 'b')) AS t(id, name)
+  if (tableName === '__values') {
+    const tuples = ast.from.tuples;
+    const columnAliases = ast.from.columnAliases;
+    const alias = ast.from.alias || '__values';
+    
+    let rows = tuples.map(tuple => {
+      const row = {};
+      tuple.forEach((val, i) => {
+        const colName = columnAliases?.[i] || `column${i + 1}`;
+        if (val.type === 'number') row[colName] = val.value;
+        else if (val.type === 'string') row[colName] = val.value;
+        else if (val.type === 'literal' && val.value === null) row[colName] = null;
+        else if (val.type === 'null' || val.type === 'NULL') row[colName] = null;
+        else if (val.type === 'literal') row[colName] = val.value;
+        else if (val.type === 'column_ref') {
+          // Unquoted identifier parsed as column_ref — treat as string value
+          row[colName] = val.name;
+        } else if (val.type === 'COMPARE' || val.type === 'MATH' || val.type === 'function_call') {
+          row[colName] = db._evalExpression(val, {});
+        } else {
+          row[colName] = val.value ?? val;
+        }
+      });
+      return row;
+    });
+    
+    // Add alias-prefixed columns
+    if (alias) {
+      rows = rows.map(row => {
+        const newRow = { ...row };
+        for (const key of Object.keys(row)) {
+          if (!key.includes('.')) newRow[`${alias}.${key}`] = row[key];
+        }
+        return newRow;
+      });
+    }
+    
+    // Create a temporary AST that treats this like a subquery result
+    ast.from = { table: '__subquery', alias, subquery: { _virtualRows: rows } };
+    tableName = '__subquery';
+  }
+
   // Check if FROM is a subquery
   if (tableName === '__subquery') {
     const subAst = ast.from.subquery;
