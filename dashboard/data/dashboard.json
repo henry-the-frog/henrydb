@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-25T14:47:43.537Z",
+  "generated": "2026-04-25T14:55:58.036Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, final afternoon commit",
-    "startedAt": "2026-04-25T14:47:43.537Z",
-    "taskId": "T16"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "Add TIME() and DATETIME() modifier support + tests",
+    "completedAt": "2026-04-25T14:55:58.036Z",
+    "taskId": "T29",
+    "summary": "Added TIME() and DATETIME() with modifiers. Handles space-separated timestamps, chained modifiers. 31/31 date/time tests pass.",
+    "durationMs": 240000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -7991,57 +7993,114 @@
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB blog post update — 167 features, 4288 tests, architecture",
         "task": null,
-        "started": "2026-04-25T14:41:37.438Z"
+        "started": "2026-04-25T14:41:37.438Z",
+        "completed": "2026-04-25T14:45:39.410Z",
+        "duration_ms": 120000,
+        "summary": "Plan: blog post with updated stats (369 src files, 873 test files, ~8172 tests, 207K LOC). 2 BUILD tasks: write + proofread."
       },
       {
         "id": "T15",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Write HenryDB blog post — 369 source files, 8172 tests, architecture + bug stories + lessons",
         "plan_ref": "T14",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T14:45:47.615Z",
+        "completed": "2026-04-25T14:46:52.870Z",
+        "duration_ms": 600000,
+        "summary": "Wrote HenryDB blog post (~2000 words). Covers architecture, silent data loss bug, feature combinations, vectorized execution, WAL, query optimizer, lessons. Committed."
       },
       {
         "id": "T25",
         "mode": "BUILD",
         "task": "Proofread and commit blog post",
-        "status": "upcoming",
-        "plan_ref": "T14"
+        "status": "done",
+        "plan_ref": "T14",
+        "started": "2026-04-25T14:47:05.355Z",
+        "completed": "2026-04-25T14:47:29.341Z",
+        "duration_ms": 60000,
+        "summary": "Proofread blog post. Minor grammar fix. Committed and pushed."
       },
       {
         "id": "T16",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, final afternoon commit"
+        "status": "done",
+        "task": "Housekeeping: git push, final afternoon commit",
+        "started": "2026-04-25T14:47:43.450Z",
+        "completed": "2026-04-25T14:47:49.735Z",
+        "duration_ms": 30000,
+        "summary": "All pushed."
       },
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research: allocation sinking / escape analysis for JIT",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T14:47:56.932Z",
+        "completed": "2026-04-25T14:48:56.731Z",
+        "duration_ms": 300000,
+        "summary": "EXPLORE: Escape analysis exists in monkey-lang but results unused. Closures are always heap-allocated. Documented implementation plan for stack-allocated closures (3 phases). All 3 hypotheses confirmed."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive: HenryDB query optimizer gaps — cost model unification",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T14:49:11.532Z",
+        "completed": "2026-04-25T14:50:29.449Z",
+        "duration_ms": 300000,
+        "summary": "EXPLORE: Found 4 optimizer gaps. (1) Dual cost model: classic uses hardcoded selectivity, Volcano uses stats. (2) No INLJ. (3) No subquery decorrelation. (4) No CTE materialization. All 3 hypotheses confirmed. Documented in scratch."
+      },
+      {
+        "id": "T26",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Assess which TODO Normal item has best depth-to-effort ratio. Plan next cycle.",
+        "started": "2026-04-25T14:51:00.686Z",
+        "completed": "2026-04-25T14:51:13.861Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passed (3/3 yes). Next: DATE/TIME modifiers. Saved parseSelectColumn refactor for fresh morning. 18 tasks done so far."
+      },
+      {
+        "id": "T27",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB DATE/TIME modifiers",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-25T14:51:24.045Z"
+      },
+      {
+        "id": "T28",
+        "mode": "BUILD",
+        "task": "Implement DATE/TIME modifiers in sql-functions.js (SQLite-compatible) + tests",
+        "status": "upcoming",
+        "plan_ref": "T27"
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "task": "Add TIME() and DATETIME() modifier support + tests",
+        "status": "upcoming",
+        "plan_ref": "T27"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 22,
-    "blocksTotal": 25,
+    "blocksCompleted": 29,
+    "blocksTotal": 29,
     "modeDistribution": {
-      "THINK": 4,
-      "PLAN": 4,
-      "BUILD": 11,
-      "MAINTAIN": 3
+      "THINK": 5,
+      "PLAN": 5,
+      "BUILD": 13,
+      "MAINTAIN": 4,
+      "EXPLORE": 2
     }
   },
   "artifacts": [

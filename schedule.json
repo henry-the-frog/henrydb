@@ -243,23 +243,78 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, final afternoon commit",
-      "started": "2026-04-25T14:47:43.450Z"
+      "started": "2026-04-25T14:47:43.450Z",
+      "completed": "2026-04-25T14:47:49.735Z",
+      "duration_ms": 30000,
+      "summary": "All pushed."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research: allocation sinking / escape analysis for JIT",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T14:47:56.932Z",
+      "completed": "2026-04-25T14:48:56.731Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Escape analysis exists in monkey-lang but results unused. Closures are always heap-allocated. Documented implementation plan for stack-allocated closures (3 phases). All 3 hypotheses confirmed."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive: HenryDB query optimizer gaps — cost model unification",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T14:49:11.532Z",
+      "completed": "2026-04-25T14:50:29.449Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Found 4 optimizer gaps. (1) Dual cost model: classic uses hardcoded selectivity, Volcano uses stats. (2) No INLJ. (3) No subquery decorrelation. (4) No CTE materialization. All 3 hypotheses confirmed. Documented in scratch."
+    },
+    {
+      "id": "T26",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Assess which TODO Normal item has best depth-to-effort ratio. Plan next cycle.",
+      "started": "2026-04-25T14:51:00.686Z",
+      "completed": "2026-04-25T14:51:13.861Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passed (3/3 yes). Next: DATE/TIME modifiers. Saved parseSelectColumn refactor for fresh morning. 18 tasks done so far."
+    },
+    {
+      "id": "T27",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB DATE/TIME modifiers",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-25T14:51:24.045Z",
+      "completed": "2026-04-25T14:51:51.565Z",
+      "duration_ms": 120000,
+      "summary": "Plan: Extend DATE() with SQLite-compatible modifiers (+N days, -N months, start of month, now). 2 BUILD tasks."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Implement DATE/TIME modifiers in sql-functions.js (SQLite-compatible) + tests",
+      "status": "done",
+      "plan_ref": "T27",
+      "started": "2026-04-25T14:52:01.727Z",
+      "completed": "2026-04-25T14:54:10.694Z",
+      "duration_ms": 360000,
+      "summary": "Added SQLite-compatible DATE modifiers. Supports +N days/months/years, start of month/year/day, now, chained modifiers. 19/19 tests pass."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Add TIME() and DATETIME() modifier support + tests",
+      "status": "done",
+      "plan_ref": "T27",
+      "started": "2026-04-25T14:54:30.905Z",
+      "completed": "2026-04-25T14:55:58.001Z",
+      "duration_ms": 240000,
+      "summary": "Added TIME() and DATETIME() with modifiers. Handles space-separated timestamps, chained modifiers. 31/31 date/time tests pass."
     }
   ],
   "focusProjects": [
@@ -375,6 +430,18 @@
     {
       "time": "2026-04-25T14:45:33.544Z",
       "msg": "PLAN T14 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T14:50:56.448Z",
+      "msg": "Added T26 (THINK) after end: THINK: Assess which TODO Normal item has best depth-to-effort ratio. Plan next cycle."
+    },
+    {
+      "time": "2026-04-25T14:51:20.182Z",
+      "msg": "Added T27 (PLAN) after end: Plan DATE/TIME modifier support (DATE(expr, modifier), +N days, -N months, start of month, etc.)"
+    },
+    {
+      "time": "2026-04-25T14:51:46.727Z",
+      "msg": "PLAN T27 filled 2 BUILD tasks"
     }
   ]
 }
