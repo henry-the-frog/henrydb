@@ -1761,6 +1761,45 @@
       "completed": "2026-04-25T23:18:17.000Z",
       "duration_ms": 300000,
       "summary": "Comprehensive project catalog written (7KB). 215 projects categorized: 2 tier-1 (monkey-lang, HenryDB), 75+ tier-2, organized by domain (languages, databases, data structures, ML, crypto, networking, parsing, patterns, distributed, math). Full feature details and LOC counts."
+    },
+    {
+      "id": "T165",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test autograd project — automatic differentiation implementation",
+      "project": "monkey-lang",
+      "started": "2026-04-25T23:18:44.563Z",
+      "completed": "2026-04-25T23:19:31.931Z",
+      "duration_ms": 180000,
+      "summary": "Autograd: reverse-mode AD. f(2)=x^2+3x+1=11, df/dx=7. Chain rule correct. Partial derivatives correct. Core Value class works perfectly."
+    },
+    {
+      "id": "T166",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test http-server project with actual HTTP requests",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T167",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Deep dive into HenryDB MVCC — test concurrent transactions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T168",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "THINK: What would a monkey-lang to WASM compiler look like?",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T169",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test ORM project — what SQL does it generate?",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2412,6 +2451,26 @@
     {
       "time": "2026-04-25T23:13:07.006Z",
       "msg": "Added T164 (THINK) after end: THINK: Write comprehensive project collection catalog document"
+    },
+    {
+      "time": "2026-04-25T23:18:34.198Z",
+      "msg": "Added T165 (EXPLORE) after end: EXPLORE: Test autograd project — automatic differentiation implementation"
+    },
+    {
+      "time": "2026-04-25T23:18:34.318Z",
+      "msg": "Added T166 (EXPLORE) after end: EXPLORE: Test http-server project with actual HTTP requests"
+    },
+    {
+      "time": "2026-04-25T23:18:34.437Z",
+      "msg": "Added T167 (EXPLORE) after end: EXPLORE: Deep dive into HenryDB MVCC — test concurrent transactions"
+    },
+    {
+      "time": "2026-04-25T23:18:34.573Z",
+      "msg": "Added T168 (THINK) after end: THINK: What would a monkey-lang to WASM compiler look like?"
+    },
+    {
+      "time": "2026-04-25T23:18:34.698Z",
+      "msg": "Added T169 (EXPLORE) after end: EXPLORE: Test ORM project — what SQL does it generate?"
     }
   ]
 }
