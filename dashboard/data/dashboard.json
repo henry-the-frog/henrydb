@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:18:59.555Z",
+  "generated": "2026-04-25T18:19:49.186Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Run a complex analytical query — year-over-year growth with window functions",
-    "completedAt": "2026-04-25T18:18:59.555Z",
-    "taskId": "T155",
-    "summary": "EXPLORE: Complex analytical query works! CTE + window SUM (running total) + LAG(12) (YoY comparison) + PARTITION BY + ROWS UNBOUNDED PRECEDING. Real-world analytics pipeline.",
+    "task": "EXPLORE: Test HenryDB COPY, prepared statements, and multiple statements",
+    "completedAt": "2026-04-25T18:19:49.186Z",
+    "taskId": "T156",
+    "summary": "EXPLORE: Prepared statements ($1,$2 and :name style) accept params but dont bind them (nulls). Multi-statement executes only last. COPY not at SQL level (wire protocol only). Parameter binding needs work.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 155,
+    "blocksCompleted": 156,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 18,
-      "EXPLORE": 56
+      "EXPLORE": 57
     }
   },
   "artifacts": [
