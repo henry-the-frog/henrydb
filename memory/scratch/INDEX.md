@@ -52,6 +52,15 @@
 - `henrydb-bug-fixes-apr24.md` — **NEW 2026-04-24** 7 bugs found+fixed: equi-join key swap, float division, evalExpr default, view JOIN, NATURAL JOIN, trigger NEW/OLD, CTE INSERT
 - `cross-project-neural-query-opt.md` — **NEW 2026-04-24** Design for using neural-net to optimize HenryDB query plans
 - `blog-henrydb-outline.md` — **NEW 2026-04-24** Blog post outline: "Building a SQL Database in JavaScript"
+- `henrydb-string-truncation-fix.md` — **NEW 2026-04-25** PAGE_SIZE data corruption fix (4096→32768)
+- `henrydb-optimizer-gaps.md` — **NEW 2026-04-25** 4 optimizer gaps: dual cost model, INLJ (already done), decorrelation, CTE materialization
+- `henrydb-performance-baselines.md` — **NEW 2026-04-25** Data structure benchmark results (RobinHood, B+Tree, etc.)
+- `henrydb-type-coercion-edge-cases.md` — **NEW 2026-04-25** Type coercion investigation: NULL arithmetic, SUM(text), boolean arithmetic
+- `henrydb-fuzzer-bugs.md` — **NEW 2026-04-25** 2 fuzzer-found bugs: INSERT column count, ORDER BY validation
+- `monkey-escape-analysis-research.md` — **NEW 2026-04-25** Escape analysis → stack closures plan
+- `monkey-vm-stress-test.md` — **NEW 2026-04-25** VM stress test: all edge cases pass, README discrepancy
+- `monkey-type-system-investigation.md` — **NEW 2026-04-25** HM/Algorithm W: polymorphism works, occurs check, no mutual recursion
+- `monkey-ssa-pipeline-investigation.md` — **NEW 2026-04-25** SSA + optimization pipeline: constant prop works but unused by codegen
 
 ## Reference
 - `README.md` — How to use scratch notes

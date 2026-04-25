@@ -593,6 +593,17 @@
       "completed": "2026-04-25T15:39:18.231Z",
       "duration_ms": 600000,
       "summary": "Created differential fuzzer. 94% pass rate (200 iterations). Found 2 bugs: (1) HenryDB accepts INSERT with fewer columns than table should error. (2) Non-existent columns in ORDER BY silently ignored. BUILD count: 20 (CAP HIT)."
+    },
+    {
+      "id": "T55",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Document fuzzer-found bugs and test reproducibility",
+      "project": "henrydb",
+      "started": "2026-04-25T15:39:58.250Z",
+      "completed": "2026-04-25T15:40:30.870Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Both fuzzer bugs reproduced and documented. Bug 1: INSERT with fewer values fills NULL silently (should error). Bug 2: ORDER BY non-existent column silently ignored (should error). Fix locations identified."
     }
   ],
   "focusProjects": [
@@ -808,6 +819,10 @@
     {
       "time": "2026-04-25T15:37:39.212Z",
       "msg": "Added T54 (BUILD) after end: BUILD: Create HenryDB differential fuzzer (generate random SQL, compare against SQLite)"
+    },
+    {
+      "time": "2026-04-25T15:39:49.948Z",
+      "msg": "Added T55 (EXPLORE) after end: EXPLORE: Document fuzzer-found bugs and test reproducibility"
     }
   ]
 }
