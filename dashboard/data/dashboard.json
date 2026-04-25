@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T16:12:25.484Z",
+  "generated": "2026-04-25T16:14:29.375Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Wire monkey-lang constant propagation into compiler — emit OpConstant for propagated values",
-    "completedAt": "2026-04-25T16:12:25.484Z",
-    "taskId": "T68",
-    "summary": "Wired constant propagation into monkey-lang compiler! New const-subst.js replaces variable refs with known values. let x=30; let y=x*3 now compiles to constants [30,90] instead of runtime multiply. All compiler+VM tests pass.",
-    "durationMs": 600000
+    "task": "Add comprehensive type checker tests for monkey-lang (target 30+)",
+    "completedAt": "2026-04-25T16:14:29.375Z",
+    "taskId": "T69",
+    "summary": "Type checker already has 68 tests (was counting wrong — node --test shows suite count, not test count). Plus 14 integration tests = 82 total. No new tests needed! Read the actual file to verify.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 68,
+    "blocksCompleted": 69,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 9,
-      "BUILD": 26,
+      "BUILD": 27,
       "MAINTAIN": 8,
       "EXPLORE": 16
     }

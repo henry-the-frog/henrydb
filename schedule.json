@@ -745,6 +745,17 @@
       "completed": "2026-04-25T16:12:25.449Z",
       "duration_ms": 600000,
       "summary": "Wired constant propagation into monkey-lang compiler! New const-subst.js replaces variable refs with known values. let x=30; let y=x*3 now compiles to constants [30,90] instead of runtime multiply. All compiler+VM tests pass."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add comprehensive type checker tests for monkey-lang (target 30+)",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:13:13.829Z",
+      "completed": "2026-04-25T16:14:29.339Z",
+      "duration_ms": 300000,
+      "summary": "Type checker already has 68 tests (was counting wrong — node --test shows suite count, not test count). Plus 14 integration tests = 82 total. No new tests needed! Read the actual file to verify."
     }
   ],
   "focusProjects": [
@@ -1016,6 +1027,10 @@
     {
       "time": "2026-04-25T16:08:33.766Z",
       "msg": "Added T68 (BUILD) after end: Wire monkey-lang constant propagation into compiler — emit OpConstant for propagated values"
+    },
+    {
+      "time": "2026-04-25T16:13:05.489Z",
+      "msg": "Added T69 (BUILD) after end: Add comprehensive type checker tests for monkey-lang (target 30+)"
     }
   ]
 }
