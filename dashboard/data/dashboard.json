@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T18:41:39.916Z",
+  "generated": "2026-04-25T18:43:06.127Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Write a mini Lisp evaluator in monkey-lang",
-    "completedAt": "2026-04-25T18:41:39.916Z",
-    "taskId": "T177",
-    "summary": "EXPLORE: Hit a bug: recursive hash evaluation crashes the evaluator (evalExpressions on non-iterable). Nested hash access + recursive function call triggers internal error. Not critical but worth noting.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "BUILD: Fix monkey-lang evaluator crash on recursive hash + function calls",
+    "completedAt": "2026-04-25T18:43:06.127Z",
+    "taskId": "T178",
+    "summary": "Fixed evaluator crash on recursive hash + function calls. Guard evalExpressions against undefined arguments. 1053/1053 still pass. Mini Lisp evaluator now works in monkey-lang. Bug #15 fixed.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,12 +8917,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 177,
+    "blocksCompleted": 178,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
-      "BUILD": 58,
+      "BUILD": 59,
       "MAINTAIN": 20,
       "EXPLORE": 76
     }

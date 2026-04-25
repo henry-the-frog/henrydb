@@ -1932,6 +1932,17 @@
       "completed": "2026-04-25T18:41:39.880Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Hit a bug: recursive hash evaluation crashes the evaluator (evalExpressions on non-iterable). Nested hash access + recursive function call triggers internal error. Not critical but worth noting."
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Fix monkey-lang evaluator crash on recursive hash + function calls",
+      "project": "monkey-lang",
+      "started": "2026-04-25T18:42:02.392Z",
+      "completed": "2026-04-25T18:43:06.090Z",
+      "duration_ms": 180000,
+      "summary": "Fixed evaluator crash on recursive hash + function calls. Guard evalExpressions against undefined arguments. 1053/1053 still pass. Mini Lisp evaluator now works in monkey-lang. Bug #15 fixed."
     }
   ],
   "focusProjects": [
@@ -2627,6 +2638,10 @@
     {
       "time": "2026-04-25T18:41:05.487Z",
       "msg": "Added T177 (EXPLORE) after end: EXPLORE: Write a mini Lisp evaluator in monkey-lang"
+    },
+    {
+      "time": "2026-04-25T18:41:55.505Z",
+      "msg": "Added T178 (BUILD) after end: BUILD: Fix monkey-lang evaluator crash on recursive hash + function calls"
     }
   ]
 }
