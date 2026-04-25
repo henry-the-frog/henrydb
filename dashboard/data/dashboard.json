@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T17:19:09.438Z",
+  "generated": "2026-04-25T17:20:03.689Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Add numeric comparison tolerance to fuzzer (int 42 == string 42)",
-    "completedAt": "2026-04-25T17:19:09.438Z",
-    "taskId": "T105",
-    "summary": "Added type affinity tolerance. 94% pass rate stable. Remaining 6% = WHERE clause type comparison (deep semantic), not value format. Would need SQLite-style type affinity in expression evaluator to fix.",
-    "durationMs": 180000
+    "mode": "EXPLORE",
+    "task": "EXPLORE: Investigate the 33 pre-existing monkey-lang failures that were silently wrong — write lessons learned",
+    "completedAt": "2026-04-25T17:20:03.689Z",
+    "taskId": "T106",
+    "summary": "EXPLORE: Wrote detailed lessons learned for const-subst bug. Key insight: any optimization that caches known values must be invalidated by writes. 28 of 33 failures from one missing write-check. SSA const-prop handles this correctly; AST-level const-subst didnt.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 105,
+    "blocksCompleted": 106,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 11,
       "PLAN": 11,
       "BUILD": 50,
       "MAINTAIN": 9,
-      "EXPLORE": 24
+      "EXPLORE": 25
     }
   },
   "artifacts": [

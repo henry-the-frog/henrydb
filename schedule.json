@@ -1150,6 +1150,17 @@
       "completed": "2026-04-25T17:19:09.402Z",
       "duration_ms": 180000,
       "summary": "Added type affinity tolerance. 94% pass rate stable. Remaining 6% = WHERE clause type comparison (deep semantic), not value format. Would need SQLite-style type affinity in expression evaluator to fix."
+    },
+    {
+      "id": "T106",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Investigate the 33 pre-existing monkey-lang failures that were silently wrong — write lessons learned",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:19:34.090Z",
+      "completed": "2026-04-25T17:20:03.652Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Wrote detailed lessons learned for const-subst bug. Key insight: any optimization that caches known values must be invalidated by writes. 28 of 33 failures from one missing write-check. SSA const-prop handles this correctly; AST-level const-subst didnt."
     }
   ],
   "focusProjects": [
@@ -1557,6 +1568,10 @@
     {
       "time": "2026-04-25T17:18:11.678Z",
       "msg": "Added T105 (BUILD) after end: Add numeric comparison tolerance to fuzzer (int 42 == string 42)"
+    },
+    {
+      "time": "2026-04-25T17:19:28.695Z",
+      "msg": "Added T106 (EXPLORE) after end: EXPLORE: Investigate the 33 pre-existing monkey-lang failures that were silently wrong — write lessons learned"
     }
   ]
 }
