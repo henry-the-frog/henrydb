@@ -120,7 +120,13 @@ export class Database {
     this._savepoints = [];
   }
 
-  execute(sql) {
+  execute(sql, params = null) {
+    // If params provided, parse SQL, bind parameters, and execute
+    if (params && Array.isArray(params) && params.length > 0) {
+      const ast = parse(sql);
+      const bound = _bindParamsImpl(ast, params);
+      return this.execute_ast(bound);
+    }
     // Handle special commands
     const trimmed = sql.trim().toUpperCase();
     if (trimmed === 'RECOMMEND INDEXES' || trimmed === 'RECOMMEND INDEXES;') {

@@ -37,6 +37,13 @@ export function handleExecute(db, sql) {
   // Parse parameter values
   const params = paramsStr.split(',').map(p => p.trim()).filter(p => p);
   
+  // Validate param count: find max $N in the SQL
+  const paramRefs = [...stmt.sql.matchAll(/\$(\d+)/g)].map(m => parseInt(m[1]));
+  const maxParam = paramRefs.length > 0 ? Math.max(...paramRefs) : 0;
+  if (params.length < maxParam) {
+    throw new Error(`Prepared statement "${name}" requires ${maxParam} parameters, got ${params.length}`);
+  }
+  
   // Substitute $1, $2, etc. in the SQL
   let resolved = stmt.sql;
   for (let i = 0; i < params.length; i++) {
