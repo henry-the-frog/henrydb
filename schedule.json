@@ -1943,6 +1943,30 @@
       "completed": "2026-04-25T18:43:06.090Z",
       "duration_ms": 180000,
       "summary": "Fixed evaluator crash on recursive hash + function calls. Guard evalExpressions against undefined arguments. 1053/1053 still pass. Mini Lisp evaluator now works in monkey-lang. Bug #15 fixed."
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Write session-A-final scratch note with all key metrics",
+      "started": "2026-04-25T18:43:50.154Z",
+      "completed": "2026-04-25T18:44:28.449Z",
+      "duration_ms": 120000,
+      "summary": "Session A final scratch note written with all key metrics. 178+ tasks, 15 bugs, 97.2% fuzzer, 1053/1053 tests, 559K lines, 22K tests."
+    },
+    {
+      "id": "T180",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Run monkey-lang Lisp evaluator through the VM compiler path",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T181",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB materialized views if they exist",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2642,6 +2666,18 @@
     {
       "time": "2026-04-25T18:41:55.505Z",
       "msg": "Added T178 (BUILD) after end: BUILD: Fix monkey-lang evaluator crash on recursive hash + function calls"
+    },
+    {
+      "time": "2026-04-25T18:43:43.019Z",
+      "msg": "Added T179 (MAINTAIN) after end: MAINTAIN: Write session-A-final scratch note with all key metrics"
+    },
+    {
+      "time": "2026-04-25T18:43:43.140Z",
+      "msg": "Added T180 (EXPLORE) after end: EXPLORE: Run monkey-lang Lisp evaluator through the VM compiler path"
+    },
+    {
+      "time": "2026-04-25T18:43:43.259Z",
+      "msg": "Added T181 (EXPLORE) after end: EXPLORE: Test HenryDB materialized views if they exist"
     }
   ]
 }
