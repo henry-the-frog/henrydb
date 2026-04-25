@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T22:02:08.536Z",
+  "generated": "2026-04-25T22:04:49.658Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Extend prelude with take_while, group_by, chunk, scan",
-    "completedAt": "2026-04-25T22:02:08.536Z",
-    "taskId": "T138",
-    "summary": "Prelude extended: take_while, scan, chunk. 12 total HOFs. All work: take_while([1..5], <4)=[1,2,3], scan(cumsum)=[1,3,6,10,15], chunk([1..7],3)=[[1,2,3],[4,5,6],[7]].",
-    "durationMs": 180000
+    "task": "Add comprehensive ARRAY literal + UNNEST + VALUES tests",
+    "completedAt": "2026-04-25T22:04:49.658Z",
+    "taskId": "T139",
+    "summary": "15 tests for Session B features: ARRAY(5), VALUES(5), MEDIAN(2), aggregates(2), window peers(1). Also fixed CREATE TABLE crash with missing column type.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,12 +8983,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 137,
+    "blocksCompleted": 138,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 31,
-      "BUILD": 63,
+      "BUILD": 64,
       "MAINTAIN": 22,
       "EXPLORE": 15
     }
