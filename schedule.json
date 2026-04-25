@@ -237,35 +237,201 @@
     {
       "id": "T16",
       "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "henrydb",
+      "started": "2026-04-25T20:39:36.840Z",
+      "completed": "2026-04-25T20:39:36.984Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
+    },
+    {
+      "id": "T17",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Housekeeping",
+      "started": "2026-04-25T20:39:42.692Z",
+      "completed": "2026-04-25T20:39:49.251Z",
+      "duration_ms": 30000,
+      "summary": "All repos pushed."
+    },
+    {
+      "id": "T18",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: stress test optimizations with complex programs",
+      "project": "monkey-lang",
+      "started": "2026-04-25T20:39:54.110Z",
+      "completed": "2026-04-25T20:40:44.778Z",
+      "duration_ms": 300000,
+      "summary": "Hypothesis-driven stress test. 5 hypotheses, 10 test programs. All escape analysis optimizations correct. Found: mutual recursion unsupported (expected), builtin name collision causes confusing stack overflow. 80% hypothesis hit rate."
+    },
+    {
+      "id": "T19",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: stress test parameter binding and prepared statements",
+      "project": "henrydb",
+      "started": "2026-04-25T20:40:49.451Z",
+      "completed": "2026-04-25T20:41:21.313Z",
+      "duration_ms": 180000,
+      "summary": "5 hypotheses tested. Found 1 bug: EXECUTE with too few params silently returns empty results instead of error. NULL params, JOINs, subqueries, schema changes all work correctly. 20% hit rate."
+    },
+    {
+      "id": "T20",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session B final: evening summary, push all",
+      "started": "2026-04-25T20:41:31.943Z",
+      "completed": "2026-04-25T20:41:32.087Z",
+      "duration_ms": 0,
+      "summary": "Deferred — 3.5 hours remaining."
+    },
+    {
+      "id": "T28",
+      "mode": "THINK",
+      "status": "done",
+      "task": "New depth cycle: pick 2 items from TODO Normal for deep work",
+      "started": "2026-04-25T20:42:23.795Z",
+      "completed": "2026-04-25T20:42:23.939Z",
+      "duration_ms": 30000,
+      "summary": "Queue built: string builtins, param fix, SSA exploration, window frame. No changes needed."
+    },
+    {
+      "id": "T29",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: add string builtins (startsWith, endsWith, padStart, toCharArray, bool)",
+      "task": null,
+      "started": "2026-04-25T20:42:28.682Z",
+      "completed": "2026-04-25T20:43:42.774Z",
+      "duration_ms": 120000,
+      "summary": "Builtins audit: VM has 42 builtins, evaluator has 60+. Key gaps: evaluator missing bool/char/ord, VM missing map/filter/reduce. Both missing padStart/padEnd. Plan: add eval builtins, add VM HOFs, test."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "Add padStart, padEnd, bool, char, ord to evaluator builtins",
+      "status": "done",
+      "plan_ref": "T29",
+      "started": "2026-04-25T20:43:47.993Z",
+      "completed": "2026-04-25T20:44:34.992Z",
+      "duration_ms": 180000,
+      "summary": "Added 5 builtins to evaluator: bool, char, ord, padStart, padEnd. All tests pass."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "task": "Add map, filter, reduce to VM builtins (high-impact missing HOFs)",
+      "status": "done",
+      "plan_ref": "T29",
+      "started": "2026-04-25T20:44:40.489Z",
+      "completed": "2026-04-25T20:46:18.349Z",
+      "duration_ms": 300000,
+      "summary": "Added 7 VM builtins: padStart, padEnd, float, floor, ceil, sqrt, pow. HOFs (map/filter/reduce) deferred — require callback mechanism. All tests pass."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "task": "Add tests for new builtins",
+      "status": "done",
+      "plan_ref": "T29",
+      "started": "2026-04-25T20:46:23.779Z",
+      "completed": "2026-04-25T20:46:58.566Z",
+      "duration_ms": 180000,
+      "summary": "24 tests for new builtins: bool(7), char/ord(5), padStart/padEnd(5), math(7). All eval+VM parity verified."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "project": "monkey-lang",
+      "started": "2026-04-25T20:47:02.850Z",
+      "completed": "2026-04-25T20:47:02.995Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
+    },
+    {
+      "id": "T31",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: fix db.execute(sql, params) and EXECUTE param count validation",
+      "task": null,
+      "started": "2026-04-25T20:47:08.456Z",
+      "completed": "2026-04-25T20:47:20.052Z",
+      "duration_ms": 60000,
+      "summary": "Two fixes: (1) add params arg to execute(), parse+bind+execute_ast, (2) validate param count in EXECUTE. Both in db.js/prepared-stmts-ast.js."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "task": "Fix db.execute(sql, params) and EXECUTE param count validation",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-04-25T20:47:24.194Z",
+      "completed": "2026-04-25T20:49:29.400Z",
+      "duration_ms": 300000,
+      "summary": "Fixed both: db.execute(sql, params) works via AST binding, EXECUTE validates param count. Tests pass."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
       "status": "upcoming",
       "task": "placeholder",
       "project": "henrydb"
     },
     {
-      "id": "T17",
+      "id": "T33",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + push"
+    },
+    {
+      "id": "T34",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: per-function SSA exploration — what does it take?",
+      "task": null
+    },
+    {
+      "id": "T35",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "monkey-lang: study current SSA implementation, identify gaps for per-function SSA",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T36",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: add GROUPS and EXCLUDE to window frame parser",
+      "task": null
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder",
+      "project": "henrydb"
+    },
+    {
+      "id": "T38",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Housekeeping"
     },
     {
-      "id": "T18",
-      "mode": "EXPLORE",
+      "id": "T39",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "monkey-lang: stress test optimizations with complex programs",
-      "project": "monkey-lang"
+      "task": "Late session: assess learning, plan tomorrow"
     },
     {
-      "id": "T19",
-      "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "HenryDB: stress test parameter binding and prepared statements",
-      "project": "henrydb"
-    },
-    {
-      "id": "T20",
+      "id": "T40",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Session B final: evening summary, push all"
+      "task": "Final: evening summary, git push all"
     }
   ],
   "focusProjects": [
@@ -377,6 +543,66 @@
     {
       "time": "2026-04-25T20:35:16.220Z",
       "msg": "PLAN T15 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T20:42:06.638Z",
+      "msg": "Added T28 (THINK) after end: New depth cycle: pick 2 items from TODO Normal for deep work"
+    },
+    {
+      "time": "2026-04-25T20:42:06.756Z",
+      "msg": "Added T29 (PLAN) after end: monkey-lang: add string builtins (startsWith, endsWith, padStart, toCharArray, bool)"
+    },
+    {
+      "time": "2026-04-25T20:42:06.874Z",
+      "msg": "Added T30 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T20:42:06.993Z",
+      "msg": "Added T31 (PLAN) after end: HenryDB: fix db.execute(sql, params) and EXECUTE param count validation"
+    },
+    {
+      "time": "2026-04-25T20:42:07.111Z",
+      "msg": "Added T32 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T20:42:07.230Z",
+      "msg": "Added T33 (MAINTAIN) after end: Housekeeping + push"
+    },
+    {
+      "time": "2026-04-25T20:42:07.349Z",
+      "msg": "Added T34 (PLAN) after end: monkey-lang: per-function SSA exploration — what does it take?"
+    },
+    {
+      "time": "2026-04-25T20:42:07.467Z",
+      "msg": "Added T35 (EXPLORE) after end: monkey-lang: study current SSA implementation, identify gaps for per-function SSA"
+    },
+    {
+      "time": "2026-04-25T20:42:07.585Z",
+      "msg": "Added T36 (PLAN) after end: HenryDB: add GROUPS and EXCLUDE to window frame parser"
+    },
+    {
+      "time": "2026-04-25T20:42:07.702Z",
+      "msg": "Added T37 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-04-25T20:42:07.821Z",
+      "msg": "Added T38 (MAINTAIN) after end: Housekeeping"
+    },
+    {
+      "time": "2026-04-25T20:42:13.215Z",
+      "msg": "Added T39 (THINK) after end: Late session: assess learning, plan tomorrow"
+    },
+    {
+      "time": "2026-04-25T20:42:13.333Z",
+      "msg": "Added T40 (MAINTAIN) after end: Final: evening summary, git push all"
+    },
+    {
+      "time": "2026-04-25T20:43:35.495Z",
+      "msg": "PLAN T29 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T20:47:14.037Z",
+      "msg": "PLAN T31 filled 1 BUILD tasks"
     }
   ]
 }

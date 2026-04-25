@@ -4,12 +4,10 @@
 - monkey-lang: GitHub token needs `workflow` scope for CI (since 2026-04-25)
 
 ## Normal
-- HenryDB: Close remaining 2.8% fuzzer gap (type coercion edge cases in WHERE)
-- HenryDB: Fix parameter binding ($1, $2 params not injected into queries)
+- HenryDB: Close remaining ~3.5% fuzzer gap (window function ORDER BY, UNION type issues)
+- HenryDB: Fix db.execute(sql, params) convenience method (PREPARE/EXECUTE works, direct doesn't)
+- HenryDB: Fix EXECUTE with too few params silently returns empty (should error)
 - HenryDB: Add GROUPS and EXCLUDE to window frame parser
-- HenryDB: Add MEDIAN and PERCENTILE_CONT aggregates
-- monkey-lang: Fix VM closure mutation (evaluator returns 3, VM returns 0 for counter pattern)
-- monkey-lang: Wire escape analysis for stack-allocated closures
 - monkey-lang: Per-function SSA (enable register allocator for real interference)
 - monkey-lang: Add startsWith, endsWith, padStart, toCharArray, bool built-ins
 - lambda-calculus: Deep exploration — 190 PL theory modules, potential blog post
@@ -23,7 +21,9 @@
 - monkey-lang: Add import/export module system (AST exists, parser needed)
 - All projects: Add CI workflows (need workflow scope on token)
 
-## Completed (Session A, Apr 25)
-**210+ tasks**, 15 bugs fixed, 2 fuzzers, 1053/1053 monkey-lang (100%),
-97.2% HenryDB fuzzer, 112 SQL constructs verified, 40+ feature categories,
-559K lines, 22K tests, 320+ commits.
+## Completed (Session B, Apr 25)
+- ~~VM closure mutation~~ — was already fixed by Session A
+- ~~Type affinity on INSERT~~ — implemented, fuzzer improved to 96.5%
+- ~~Escape analysis wired into compiler~~ — end-to-end pipeline working
+- ~~MEDIAN and PERCENTILE_CONT/DISC aggregates~~ — added to all paths
+- ~~Wire escape analysis for stack-allocated closures~~ — done
