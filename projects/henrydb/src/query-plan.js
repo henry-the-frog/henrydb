@@ -13,6 +13,7 @@
 //           ->  Seq Scan on users  (cost=0.00..25.00 rows=500) (actual rows=500 time=1.2ms)
 
 import { pushdownPredicates } from './pushdown.js';
+import { estimateSelectivity as sharedEstimateSelectivity } from './selectivity.js';
 
 /**
  * Base plan node. All operator nodes extend this.
@@ -281,7 +282,7 @@ export class PlanBuilder {
     // Show pushed-down filter from predicate pushdown
     if (ast.from?.filter) {
       scan.filter = this._conditionToString(ast.from.filter);
-      const selectivity = this._estimateSelectivity(ast.from.filter);
+      const selectivity = this._estimateSelectivity(ast.from.filter, tableName);
       scan.estimatedRows = Math.max(1, Math.ceil(rowCount * selectivity));
     }
 
@@ -394,7 +395,7 @@ export class PlanBuilder {
       // Show pushed-down filter on right side
       if (join.filter) {
         rightScan.filter = this._conditionToString(join.filter);
-        const sel = this._estimateSelectivity(join.filter);
+        const sel = this._estimateSelectivity(join.filter, joinTable);
         rightScan.estimatedRows = Math.max(1, Math.ceil(rightRows * sel));
       }
 
@@ -447,7 +448,7 @@ export class PlanBuilder {
     if (node.type === 'Seq Scan' && !ast.joins?.length) {
       // Attach filter info to the scan node itself
       node.filter = this._conditionToString(ast.where);
-      const selectivity = this._estimateSelectivity(ast.where);
+      const selectivity = this._estimateSelectivity(ast.where, node.table);
       node.estimatedRows = Math.max(1, Math.ceil(node.estimatedRows * selectivity));
       return node;
     }
@@ -603,29 +604,13 @@ export class PlanBuilder {
     return 'complex condition';
   }
 
-  _estimateSelectivity(where) {
-    if (!where) return 1.0;
-    if (where.type === 'binary' || where.type === 'COMPARE') {
-      const op = where.operator || where.op;
-      switch (op) {
-        case '=': case 'EQ': return 0.1;
-        case '<': case '>': case '<=': case '>=': case 'LT': case 'GT': case 'LE': case 'GE': return 0.33;
-        case '!=': case '<>': case 'NE': return 0.9;
-        case 'LIKE': case 'ILIKE': return 0.25;
-        default: return 0.5;
-      }
+  _estimateSelectivity(where, tableName) {
+    // Use shared selectivity estimator with stats when available
+    if (tableName && this.db?._analyzeStats) {
+      return sharedEstimateSelectivity(where, tableName, this.db._analyzeStats);
     }
-    if (where.type === 'AND') return this._estimateSelectivity(where.left) * this._estimateSelectivity(where.right);
-    if (where.type === 'OR') {
-      const sl = this._estimateSelectivity(where.left);
-      const sr = this._estimateSelectivity(where.right);
-      return sl + sr - sl * sr;
-    }
-    if (where.type === 'BETWEEN') return 0.25;
-    if (where.type === 'IN') return 0.15;
-    if (where.type === 'IS_NULL') return 0.05;
-    if (where.type === 'LIKE') return 0.25;
-    return 0.5;
+    // Fallback: hardcoded heuristics (no stats)
+    return sharedEstimateSelectivity(where, null, null);
   }
 
   _getPKColumn(tableName) {
