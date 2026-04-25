@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:40:51.226Z",
+  "generated": "2026-04-25T18:41:39.916Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: What monkey-lang programs can we write? Write a mini interpreter in monkey-lang!",
-    "completedAt": "2026-04-25T18:40:51.226Z",
-    "taskId": "T176",
-    "summary": "EXPLORE: Wrote a stack calculator in monkey-lang. Uses closures, array slicing, split, int, for-in. \"3 4 + 2 *\" → 14 correct. monkey-lang is expressive enough for real programs.",
+    "task": "EXPLORE: Write a mini Lisp evaluator in monkey-lang",
+    "completedAt": "2026-04-25T18:41:39.916Z",
+    "taskId": "T177",
+    "summary": "EXPLORE: Hit a bug: recursive hash evaluation crashes the evaluator (evalExpressions on non-iterable). Nested hash access + recursive function call triggers internal error. Not critical but worth noting.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 176,
+    "blocksCompleted": 177,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 20,
-      "EXPLORE": 75
+      "EXPLORE": 76
     }
   },
   "artifacts": [

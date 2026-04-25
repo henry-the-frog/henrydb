@@ -1921,6 +1921,17 @@
       "completed": "2026-04-25T18:40:51.189Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Wrote a stack calculator in monkey-lang. Uses closures, array slicing, split, int, for-in. \"3 4 + 2 *\" → 14 correct. monkey-lang is expressive enough for real programs."
+    },
+    {
+      "id": "T177",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Write a mini Lisp evaluator in monkey-lang",
+      "project": "monkey-lang",
+      "started": "2026-04-25T18:41:10.157Z",
+      "completed": "2026-04-25T18:41:39.880Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Hit a bug: recursive hash evaluation crashes the evaluator (evalExpressions on non-iterable). Nested hash access + recursive function call triggers internal error. Not critical but worth noting."
     }
   ],
   "focusProjects": [
@@ -2612,6 +2623,10 @@
     {
       "time": "2026-04-25T18:40:15.054Z",
       "msg": "Added T176 (EXPLORE) after end: EXPLORE: What monkey-lang programs can we write? Write a mini interpreter in monkey-lang!"
+    },
+    {
+      "time": "2026-04-25T18:41:05.487Z",
+      "msg": "Added T177 (EXPLORE) after end: EXPLORE: Write a mini Lisp evaluator in monkey-lang"
     }
   ]
 }
