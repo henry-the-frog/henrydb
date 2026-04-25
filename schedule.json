@@ -1729,6 +1729,30 @@
       "completed": "2026-04-25T23:12:34.509Z",
       "duration_ms": 240000,
       "summary": "4 more verified: YAML parser (nested objects, arrays), TOML parser (sections, types), Protobuf (schema/encode/decode roundtrip), event-sourcing (stream-based events). Total: ~75 verified."
+    },
+    {
+      "id": "T162",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Deep dive into monkey-lang pattern matching — test complex patterns",
+      "project": "monkey-lang",
+      "started": "2026-04-25T23:13:10.578Z",
+      "completed": "2026-04-25T23:14:17.628Z",
+      "duration_ms": 240000,
+      "summary": "Pattern matching deep dive: integer/string/bool/wildcard/nested/expression patterns all work. Also verified: for-in, C-for, comprehensions, try-catch, pipe operator, enums, spread/rest, ternary. Array destructuring in match patterns fails (parser limitation)."
+    },
+    {
+      "id": "T163",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test 25 more projects to reach 100 verified",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T164",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "THINK: Write comprehensive project collection catalog document"
     }
   ],
   "focusProjects": [
@@ -2368,6 +2392,18 @@
     {
       "time": "2026-04-25T23:07:53.640Z",
       "msg": "Added T161 (EXPLORE) after end: EXPLORE: Test more utilities: yaml, toml, protobuf, cron-parser, event-sourcing"
+    },
+    {
+      "time": "2026-04-25T23:12:53.276Z",
+      "msg": "Added T162 (EXPLORE) after end: EXPLORE: Deep dive into monkey-lang pattern matching — test complex patterns"
+    },
+    {
+      "time": "2026-04-25T23:13:02.899Z",
+      "msg": "Added T163 (EXPLORE) after end: EXPLORE: Test 25 more projects to reach 100 verified"
+    },
+    {
+      "time": "2026-04-25T23:13:07.006Z",
+      "msg": "Added T164 (THINK) after end: THINK: Write comprehensive project collection catalog document"
     }
   ]
 }

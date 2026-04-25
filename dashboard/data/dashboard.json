@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T23:12:34.545Z",
+  "generated": "2026-04-25T23:14:17.665Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test more utilities: yaml, toml, protobuf, cron-parser, event-sourcing",
-    "completedAt": "2026-04-25T23:12:34.545Z",
-    "taskId": "T161",
-    "summary": "4 more verified: YAML parser (nested objects, arrays), TOML parser (sections, types), Protobuf (schema/encode/decode roundtrip), event-sourcing (stream-based events). Total: ~75 verified.",
+    "task": "EXPLORE: Deep dive into monkey-lang pattern matching — test complex patterns",
+    "completedAt": "2026-04-25T23:14:17.665Z",
+    "taskId": "T162",
+    "summary": "Pattern matching deep dive: integer/string/bool/wildcard/nested/expression patterns all work. Also verified: for-in, C-for, comprehensions, try-catch, pipe operator, enums, spread/rest, ternary. Array destructuring in match patterns fails (parser limitation).",
     "durationMs": 240000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 159,
+    "blocksCompleted": 160,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 24,
-      "EXPLORE": 28
+      "EXPLORE": 29
     }
   },
   "artifacts": [
