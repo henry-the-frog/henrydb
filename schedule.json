@@ -1095,6 +1095,17 @@
       "completed": "2026-04-25T17:12:52.757Z",
       "duration_ms": 180000,
       "summary": "MILESTONE: Bytecode optimizer enabled by default. 920/920 tests still pass. DCE, peephole, jump threading run automatically on all compiled code. 50% reduction on conditionals."
+    },
+    {
+      "id": "T101",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Benchmark bytecode optimizer impact — compare fib(25) speed with/without optimization",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:13:13.898Z",
+      "completed": "2026-04-25T17:13:32.051Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Optimizer benchmarks. fib(25): 7% faster (88→82ms). nested-if: 62% smaller bytecode (42→16 bytes). Arithmetic: 10% smaller. Main benefit is bytecode size reduction; VM dispatch already efficient."
     }
   ],
   "focusProjects": [
@@ -1486,6 +1497,10 @@
     {
       "time": "2026-04-25T17:11:52.063Z",
       "msg": "Added T100 (BUILD) after end: Enable bytecode optimizer by default and verify 920/920 still pass"
+    },
+    {
+      "time": "2026-04-25T17:13:10.674Z",
+      "msg": "Added T101 (EXPLORE) after end: Benchmark bytecode optimizer impact — compare fib(25) speed with/without optimization"
     }
   ]
 }
