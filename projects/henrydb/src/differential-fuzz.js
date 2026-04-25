@@ -403,7 +403,6 @@ async function fuzz() {
         if (hRows.length === sRows.length) {
           passed++;
         } else {
-          match = false;
           failed++;
           failures.push({ sql, issue: `Row count: HenryDB=${hRows.length}, SQLite=${sRows.length}` });
           if (VERBOSE) console.log(`  SQL: ${sql}\n  Issue: Row count: HenryDB=${hRows.length}, SQLite=${sRows.length}`);
