@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:41:45.073Z",
+  "generated": "2026-04-25T19:42:10.596Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB triggers (BEFORE/AFTER)",
-    "completedAt": "2026-04-25T19:41:45.073Z",
-    "taskId": "T266",
-    "summary": "Triggers work! AFTER INSERT and AFTER UPDATE both fire correctly. NEW pseudo-row works. Automatic audit trail maintained.",
+    "task": "EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK/SAVEPOINT)",
+    "completedAt": "2026-04-25T19:42:10.596Z",
+    "taskId": "T267",
+    "summary": "Transactions work! BEGIN/COMMIT persists, BEGIN/ROLLBACK undoes, SAVEPOINT+ROLLBACK TO enables partial rollback. Full ACID transaction support.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 266,
+    "blocksCompleted": 267,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 29,
-      "EXPLORE": 154
+      "EXPLORE": 155
     }
   },
   "artifacts": [

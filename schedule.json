@@ -2902,6 +2902,31 @@
       "completed": "2026-04-25T19:41:45.036Z",
       "duration_ms": 60000,
       "summary": "Triggers work! AFTER INSERT and AFTER UPDATE both fire correctly. NEW pseudo-row works. Automatic audit trail maintained."
+    },
+    {
+      "id": "T267",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK/SAVEPOINT)",
+      "project": "henrydb",
+      "started": "2026-04-25T19:41:55.866Z",
+      "completed": "2026-04-25T19:42:10.559Z",
+      "duration_ms": 60000,
+      "summary": "Transactions work! BEGIN/COMMIT persists, BEGIN/ROLLBACK undoes, SAVEPOINT+ROLLBACK TO enables partial rollback. Full ACID transaction support."
+    },
+    {
+      "id": "T268",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang array slicing",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T269",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB MERGE statement",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3953,6 +3978,18 @@
     {
       "time": "2026-04-25T19:40:31.164Z",
       "msg": "Added T266 (EXPLORE) after end: EXPLORE: Test HenryDB triggers (BEFORE/AFTER)"
+    },
+    {
+      "time": "2026-04-25T19:41:51.852Z",
+      "msg": "Added T267 (EXPLORE) after end: EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK/SAVEPOINT)"
+    },
+    {
+      "time": "2026-04-25T19:41:51.973Z",
+      "msg": "Added T268 (EXPLORE) after end: EXPLORE: Test monkey-lang array slicing"
+    },
+    {
+      "time": "2026-04-25T19:41:52.094Z",
+      "msg": "Added T269 (EXPLORE) after end: EXPLORE: Test HenryDB MERGE statement"
     }
   ]
 }
