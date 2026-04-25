@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:55:25.181Z",
+  "generated": "2026-04-25T22:00:44.634Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add sin, cos, E, PI, merge, product to VM builtins",
-    "completedAt": "2026-04-25T21:55:25.181Z",
-    "taskId": "T136",
-    "summary": "4 VM builtins added: sin, cos, merge, product. 55 total VM builtins now. merge fixed to handle ShapedHash.",
-    "durationMs": 180000
+    "task": "Add ARRAY[...] literal syntax to HenryDB parser",
+    "completedAt": "2026-04-25T22:00:44.634Z",
+    "taskId": "T137",
+    "summary": "ARRAY[...] literal syntax added! Tokenizer, parser, expression evaluator. Works with UNNEST, WHERE, aggregation. 26 lines. All tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,12 +8983,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 135,
+    "blocksCompleted": 136,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 31,
-      "BUILD": 61,
+      "BUILD": 62,
       "MAINTAIN": 22,
       "EXPLORE": 15
     }
