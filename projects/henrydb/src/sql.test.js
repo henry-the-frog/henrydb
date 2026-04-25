@@ -312,5 +312,26 @@ describe('Database', () => {
       const result = db.execute('SELECT * FROM big WHERE id >= 50');
       assert.equal(result.rows.length, 50);
     });
+
+    it('LIMIT with scalar subquery', () => {
+      db.execute('CREATE TABLE items (id INT)');
+      for (let i = 1; i <= 20; i++) db.execute(`INSERT INTO items VALUES (${i})`);
+      
+      // LIMIT (SELECT 5)
+      const r1 = db.execute('SELECT * FROM items ORDER BY id LIMIT (SELECT 5)');
+      assert.equal(r1.rows.length, 5);
+      assert.equal(r1.rows[0].id, 1);
+      assert.equal(r1.rows[4].id, 5);
+    });
+
+    it('LIMIT with subquery from another table', () => {
+      db.execute('CREATE TABLE data (id INT)');
+      for (let i = 1; i <= 10; i++) db.execute(`INSERT INTO data VALUES (${i})`);
+      db.execute("CREATE TABLE config (key TEXT, val INT)");
+      db.execute("INSERT INTO config VALUES ('limit', 3)");
+      
+      const r = db.execute("SELECT * FROM data ORDER BY id LIMIT (SELECT val FROM config WHERE key = 'limit')");
+      assert.equal(r.rows.length, 3);
+    });
   });
 });

@@ -13,6 +13,13 @@ function dedup(name, result) {
 }
 
 export function selectInner(db, ast) {
+  // Resolve limitExpr (e.g., subqueries) at execution time
+  if (ast.limitExpr != null && ast.limit == null) {
+    const limitVal = db._evalValue(ast.limitExpr, {});
+    if (typeof limitVal === 'number') {
+      ast = { ...ast, limit: limitVal, limitExpr: null };
+    }
+  }
   // Handle SELECT without FROM (e.g., SELECT 1 AS n)
   if (!ast.from) {
     const row = {};

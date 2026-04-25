@@ -589,7 +589,7 @@ export function parse(sql) {
     }
     const columns = parseSelectList();
     let from = null;
-    let where = null, orderBy = null, limit = null, offset = null;
+    let where = null, orderBy = null, limit = null, offset = null, limitExpr = null;
     let joins = [];
     let groupBy = null, having = null;
 
@@ -714,6 +714,10 @@ export function parse(sql) {
             limit = evalArith(e);
           } catch { limit = null; }
         }
+        // Store full expression for runtime evaluation (subqueries, etc.)
+        if (limit == null) {
+          limitExpr = e;
+        }
       }
     }
     if (isKeyword('OFFSET')) {
@@ -814,7 +818,7 @@ export function parse(sql) {
       }
     }
 
-    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, offset, forUpdate, pivot, unpivot, windowDefs };
+    let result = { type: 'SELECT', distinct, distinctOn, columns, from, joins, where, groupBy, having, orderBy, limit, limitExpr, offset, forUpdate, pivot, unpivot, windowDefs };
 
     // UNION / UNION ALL / INTERSECT / EXCEPT
     if (isKeyword('UNION')) {
