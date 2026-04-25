@@ -883,16 +883,35 @@
     {
       "id": "T81",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T21:23:01.438Z",
+      "completed": "2026-04-25T21:23:01.581Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
     },
     {
       "id": "T82",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: add import/export module system (parser level)",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T21:23:07.978Z",
+      "completed": "2026-04-25T21:23:28.444Z",
+      "duration_ms": 60000,
+      "summary": "ImportStatement AST exists. Parser needs: import/export keywords, parseImport(), parseExport(). Supports selective and alias imports. No module resolution yet."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "task": "Add import/export parsing to parser — AST exists, parser needs keyword handling and statement parsing",
+      "status": "done",
+      "plan_ref": "T82",
+      "started": "2026-04-25T21:23:35.270Z",
+      "completed": "2026-04-25T21:26:18.880Z",
+      "duration_ms": 300000,
+      "summary": "Import/export module system at parser level. 3 import styles (whole, selective, alias) + export. 65 lines. All tests pass. No module resolution yet."
     },
     {
       "id": "T83",
@@ -1299,6 +1318,10 @@
     {
       "time": "2026-04-25T21:21:32.669Z",
       "msg": "PLAN T80 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:23:28.295Z",
+      "msg": "PLAN T82 filled 1 BUILD tasks"
     }
   ]
 }

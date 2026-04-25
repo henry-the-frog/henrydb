@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T21:22:54.384Z",
+  "generated": "2026-04-25T21:26:18.916Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix window COUNT with default RANGE frame for peer groups",
-    "completedAt": "2026-04-25T21:22:54.384Z",
-    "taskId": "T91",
-    "summary": "Fixed default RANGE frame for peers. Was using ROWS semantics. Now includes all peers. Fuzzer improved to 97.1% avg.",
+    "task": "Add import/export parsing to parser — AST exists, parser needs keyword handling and statement parsing",
+    "completedAt": "2026-04-25T21:26:18.916Z",
+    "taskId": "T92",
+    "summary": "Import/export module system at parser level. 3 import styles (whole, selective, alias) + export. 65 lines. All tests pass. No module resolution yet.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8645,31 +8645,50 @@
       {
         "id": "T80",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: investigate fuzzer UNION failures specifically",
         "task": null,
-        "started": "2026-04-25T21:20:57.371Z"
+        "started": "2026-04-25T21:20:57.371Z",
+        "completed": "2026-04-25T21:21:32.818Z",
+        "duration_ms": 180000,
+        "summary": "Fuzzer failures: (1) Window COUNT default RANGE frame not handling peers, (2) UNION with mixed types, (3) ORDER BY mixed types. Root: RANGE frame should include all peers at current position but HenryDB uses ROWS semantics by default."
       },
       {
         "id": "T91",
         "mode": "BUILD",
         "task": "Fix window COUNT with default RANGE frame for peer groups",
-        "status": "upcoming",
-        "plan_ref": "T80"
+        "status": "done",
+        "plan_ref": "T80",
+        "started": "2026-04-25T21:21:40.267Z",
+        "completed": "2026-04-25T21:22:54.350Z",
+        "duration_ms": 300000,
+        "summary": "Fixed default RANGE frame for peers. Was using ROWS semantics. Now includes all peers. Fuzzer improved to 97.1% avg."
       },
       {
         "id": "T81",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T21:23:01.438Z",
+        "completed": "2026-04-25T21:23:01.581Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T82",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: add import/export module system (parser level)",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T21:23:07.978Z"
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "task": "Add import/export parsing to parser — AST exists, parser needs keyword handling and statement parsing",
+        "status": "upcoming",
+        "plan_ref": "T82"
       },
       {
         "id": "T83",
@@ -8722,12 +8741,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 81,
-    "blocksTotal": 91,
+    "blocksCompleted": 84,
+    "blocksTotal": 92,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 17,
-      "BUILD": 35,
+      "PLAN": 18,
+      "BUILD": 37,
       "MAINTAIN": 14,
       "EXPLORE": 9
     }
