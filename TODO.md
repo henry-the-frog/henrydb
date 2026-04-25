@@ -7,7 +7,6 @@
 (none)
 
 ## Normal
-- HenryDB: Strings >4068 bytes silently truncated (data corruption) — need TOAST or error on oversized values
 - HenryDB: EXPLAIN classic/Volcano plan disagree on scan type (classic uses selectivity heuristic, Volcano uses cost model)
 - HenryDB: WAL syncMode validation — unrecognized values silently disable sync
 - HenryDB: Add DATE/TIME modifier support (+30 days, -1 month, 'now')

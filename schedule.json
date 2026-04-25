@@ -48,36 +48,74 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard health, knowledge capture",
-      "started": "2026-04-25T14:25:38.168Z"
+      "started": "2026-04-25T14:25:38.168Z",
+      "completed": "2026-04-25T14:26:15.243Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, scratch notes captured for string truncation fix, dashboard healthy."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on string fix. Review TODO Normal items — pick next HenryDB priority."
+      "status": "done",
+      "task": "Reflect on string fix. Review TODO Normal items — pick next HenryDB priority.",
+      "started": "2026-04-25T14:26:29.167Z",
+      "completed": "2026-04-25T14:26:48.984Z",
+      "duration_ms": 90000,
+      "summary": "Reflected on string fix: 2-source constant problem. Lesson: define constants in ONE place. Removed string truncation from TODO (fixed). Next priority: bug batch (EXPLAIN, WAL syncMode, LIMIT subquery)."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB bug batch: EXPLAIN plan disagreement + WAL syncMode validation + LIMIT subquery",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T14:27:03.955Z",
+      "completed": "2026-04-25T14:27:56.914Z",
+      "duration_ms": 180000,
+      "summary": "Planned 3 bug fixes: WAL syncMode validation (throw on bad values), EXPLAIN classic cost comparison (align with Volcano), LIMIT subquery evaluation. Prior knowledge: failures.md consulted."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix WAL syncMode validation: throw on unrecognized values + add test",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T14:28:10.979Z",
+      "completed": "2026-04-25T14:29:05.473Z",
+      "duration_ms": 180000,
+      "summary": "Added WAL syncMode validation. Invalid values now throw descriptive error. Test added (9/9 pass)."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Fix EXPLAIN classic planner: add cost comparison for index vs seq scan + test",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-25T14:29:18.432Z",
+      "completed": "2026-04-25T14:30:51.560Z",
+      "duration_ms": 240000,
+      "summary": "Fixed EXPLAIN classic planner: added cost comparison for index vs seq scan. Index only chosen when cheaper. 37/37 tests pass."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Fix LIMIT subquery: evaluate subquery at execution time + test",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-25T14:31:10.734Z",
+      "completed": "2026-04-25T14:33:40.227Z",
+      "duration_ms": 300000,
+      "summary": "Fixed LIMIT subquery: stored limitExpr during parse, resolved at execution in selectInner(). Works with scalar subqueries and cross-table lookups. 48/48 sql tests pass."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard, check PRs"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, check PRs",
+      "started": "2026-04-25T14:33:53.225Z"
     },
     {
       "id": "T9",
@@ -233,6 +271,10 @@
     {
       "time": "2026-04-25T14:19:24.362Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T14:27:52.204Z",
+      "msg": "PLAN T6 filled 3 BUILD tasks"
     }
   ]
 }
