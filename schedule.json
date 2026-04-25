@@ -1541,6 +1541,17 @@
       "completed": "2026-04-25T18:06:44.572Z",
       "duration_ms": 180000,
       "summary": "Added 100 optimizer fuzzer tests as proper test file. 1020/1020 monkey-lang tests now pass (was 920). Zero new failures."
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add 50 more fuzzer tests with closures and conditionals",
+      "project": "monkey-lang",
+      "started": "2026-04-25T18:07:11.087Z",
+      "completed": "2026-04-25T18:08:08.747Z",
+      "duration_ms": 180000,
+      "summary": "Added 33 advanced optimizer tests: closures, conditionals, functions (fib, factorial, compose), loops (for, while, break, continue), arrays, hashes, strings. 1053/1053 total."
     }
   ],
   "focusProjects": [
@@ -2092,6 +2103,10 @@
     {
       "time": "2026-04-25T18:05:45.783Z",
       "msg": "Added T141 (BUILD) after end: BUILD: Add optimizer fuzzer as a proper test file (run via node --test)"
+    },
+    {
+      "time": "2026-04-25T18:07:06.820Z",
+      "msg": "Added T142 (BUILD) after end: BUILD: Add 50 more fuzzer tests with closures and conditionals"
     }
   ]
 }
