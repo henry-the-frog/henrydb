@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T19:34:08.867Z",
+  "generated": "2026-04-25T19:34:44.394Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: One final HenryDB test — the hardest query I can think of",
-    "completedAt": "2026-04-25T19:34:08.867Z",
-    "taskId": "T243",
-    "summary": "Already verified: enterprise analytics query with 2 CTEs + 5 aggregates + 4 window functions + CASE + ROUND. The ultimate query.",
-    "durationMs": 5000
+    "task": "EXPLORE: Test HenryDB INTERSECT and EXCEPT set operations",
+    "completedAt": "2026-04-25T19:34:44.394Z",
+    "taskId": "T244",
+    "summary": "INTERSECT, EXCEPT, UNION, UNION ALL all work! Correct set operations: ∩={3,4,5}, \\={1,2}, ∪={1-7}, ALL=10 rows.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 243,
+    "blocksCompleted": 244,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 28,
-      "EXPLORE": 132
+      "EXPLORE": 133
     }
   },
   "artifacts": [

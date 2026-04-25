@@ -2650,6 +2650,72 @@
       "completed": "2026-04-25T19:34:08.830Z",
       "duration_ms": 5000,
       "summary": "Already verified: enterprise analytics query with 2 CTEs + 5 aggregates + 4 window functions + CASE + ROUND. The ultimate query."
+    },
+    {
+      "id": "T244",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB INTERSECT and EXCEPT set operations",
+      "project": "henrydb",
+      "started": "2026-04-25T19:34:31.907Z",
+      "completed": "2026-04-25T19:34:44.357Z",
+      "duration_ms": 60000,
+      "summary": "INTERSECT, EXCEPT, UNION, UNION ALL all work! Correct set operations: ∩={3,4,5}, \\={1,2}, ∪={1-7}, ALL=10 rows."
+    },
+    {
+      "id": "T245",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang destructuring patterns",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T246",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB correlated subqueries",
+      "project": "henrydb"
+    },
+    {
+      "id": "T247",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang optional chaining and nullish coalescing",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T248",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB generate_series table-valued function",
+      "project": "henrydb"
+    },
+    {
+      "id": "T249",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang match expressions",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T250",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB Fibonacci via recursive CTE",
+      "project": "henrydb"
+    },
+    {
+      "id": "T251",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang enum type",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T252",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: Session end — final summary, push all, CURRENT.md"
     }
   ],
   "focusProjects": [
@@ -3609,6 +3675,42 @@
     {
       "time": "2026-04-25T19:27:15.373Z",
       "msg": "Added T243 (EXPLORE) after end: EXPLORE: One final HenryDB test — the hardest query I can think of"
+    },
+    {
+      "time": "2026-04-25T19:34:27.320Z",
+      "msg": "Added T244 (EXPLORE) after end: EXPLORE: Test HenryDB INTERSECT and EXCEPT set operations"
+    },
+    {
+      "time": "2026-04-25T19:34:27.441Z",
+      "msg": "Added T245 (EXPLORE) after end: EXPLORE: Test monkey-lang destructuring patterns"
+    },
+    {
+      "time": "2026-04-25T19:34:27.563Z",
+      "msg": "Added T246 (EXPLORE) after end: EXPLORE: Test HenryDB correlated subqueries"
+    },
+    {
+      "time": "2026-04-25T19:34:27.683Z",
+      "msg": "Added T247 (EXPLORE) after end: EXPLORE: Test monkey-lang optional chaining and nullish coalescing"
+    },
+    {
+      "time": "2026-04-25T19:34:27.806Z",
+      "msg": "Added T248 (EXPLORE) after end: EXPLORE: Test HenryDB generate_series table-valued function"
+    },
+    {
+      "time": "2026-04-25T19:34:27.927Z",
+      "msg": "Added T249 (EXPLORE) after end: EXPLORE: Test monkey-lang match expressions"
+    },
+    {
+      "time": "2026-04-25T19:34:28.048Z",
+      "msg": "Added T250 (EXPLORE) after end: EXPLORE: Test HenryDB Fibonacci via recursive CTE"
+    },
+    {
+      "time": "2026-04-25T19:34:28.169Z",
+      "msg": "Added T251 (EXPLORE) after end: EXPLORE: Test monkey-lang enum type"
+    },
+    {
+      "time": "2026-04-25T19:34:28.291Z",
+      "msg": "Added T252 (MAINTAIN) after end: MAINTAIN: Session end — final summary, push all, CURRENT.md"
     }
   ]
 }
