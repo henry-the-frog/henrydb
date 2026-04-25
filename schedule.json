@@ -2968,6 +2968,24 @@
       "completed": "2026-04-25T19:43:50.441Z",
       "duration_ms": 60000,
       "summary": "Materialized views + REFRESH work! CREATE snapshots data, REFRESH updates. Stale until refreshed. A:250→300, B:200→300 after insert+refresh."
+    },
+    {
+      "id": "T273",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB string functions (UPPER, LOWER, TRIM, REPLACE, LENGTH)",
+      "project": "henrydb",
+      "started": "2026-04-25T19:44:01.265Z",
+      "completed": "2026-04-25T19:44:15.166Z",
+      "duration_ms": 60000,
+      "summary": "14/18 SQL functions work! UPPER, LOWER, TRIM, LTRIM, RTRIM, REPLACE, LENGTH, SUBSTR, INSTR, ABS, TYPEOF, RANDOM. Missing: PRINTF, HEX, scalar MAX/MIN."
+    },
+    {
+      "id": "T274",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang closures + higher-order patterns",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -4043,6 +4061,14 @@
     {
       "time": "2026-04-25T19:42:55.290Z",
       "msg": "Added T272 (EXPLORE) after end: EXPLORE: Test HenryDB materialized views + REFRESH"
+    },
+    {
+      "time": "2026-04-25T19:43:57.297Z",
+      "msg": "Added T273 (EXPLORE) after end: EXPLORE: Test HenryDB string functions (UPPER, LOWER, TRIM, REPLACE, LENGTH)"
+    },
+    {
+      "time": "2026-04-25T19:43:57.418Z",
+      "msg": "Added T274 (EXPLORE) after end: EXPLORE: Test monkey-lang closures + higher-order patterns"
     }
   ]
 }

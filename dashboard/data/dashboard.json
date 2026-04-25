@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:43:50.478Z",
+  "generated": "2026-04-25T19:44:15.203Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB materialized views + REFRESH",
-    "completedAt": "2026-04-25T19:43:50.478Z",
-    "taskId": "T272",
-    "summary": "Materialized views + REFRESH work! CREATE snapshots data, REFRESH updates. Stale until refreshed. A:250→300, B:200→300 after insert+refresh.",
+    "task": "EXPLORE: Test HenryDB string functions (UPPER, LOWER, TRIM, REPLACE, LENGTH)",
+    "completedAt": "2026-04-25T19:44:15.203Z",
+    "taskId": "T273",
+    "summary": "14/18 SQL functions work! UPPER, LOWER, TRIM, LTRIM, RTRIM, REPLACE, LENGTH, SUBSTR, INSTR, ABS, TYPEOF, RANDOM. Missing: PRINTF, HEX, scalar MAX/MIN.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 272,
+    "blocksCompleted": 273,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 29,
-      "EXPLORE": 160
+      "EXPLORE": 161
     }
   },
   "artifacts": [
