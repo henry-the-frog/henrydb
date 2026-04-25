@@ -1280,6 +1280,17 @@
       "completed": "2026-04-25T17:40:43.559Z",
       "duration_ms": 120000,
       "summary": "Updated HenryDB blog post: fuzzer section now has final numbers (97.2%, 6000 queries, 15 query types, 6 bugs found). More detailed and accurate."
+    },
+    {
+      "id": "T118",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Profile monkey-lang VM on complex programs — where are the bottlenecks?",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:41:15.323Z",
+      "completed": "2026-04-25T17:41:47.849Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Profiled VM vs evaluator. VM 3.8x faster on fib(30), 1.7x on strings, 1.1x on arrays. Evaluator 2x faster on closures (V8 closure optimization). Bottleneck: VM closure allocation is expensive (heap alloc per invocation)."
     }
   ],
   "focusProjects": [
@@ -1735,6 +1746,10 @@
     {
       "time": "2026-04-25T17:39:59.330Z",
       "msg": "Added T117 (MAINTAIN) after end: MAINTAIN: Update HenryDB blog post with fuzzer results and final stats"
+    },
+    {
+      "time": "2026-04-25T17:41:10.209Z",
+      "msg": "Added T118 (EXPLORE) after end: EXPLORE: Profile monkey-lang VM on complex programs — where are the bottlenecks?"
     }
   ]
 }
