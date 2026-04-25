@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T23:29:55.555Z",
+  "generated": "2026-04-25T23:30:51.636Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: HenryDB adaptive engine — how does it choose between execution strategies?",
-    "completedAt": "2026-04-25T23:29:55.555Z",
-    "taskId": "T177",
-    "summary": "Adaptive engine: 4 strategies (vectorized, codegen, compiled/closure, volcano). Analyzes query characteristics + runtime feedback (shape hashing, 3+ sample threshold). Tracks stats per engine. Auto-selects optimal strategy and learns over time. Truly production-grade architecture.",
-    "durationMs": 120000
+    "task": "EXPLORE: Test monkey-lang VM opcodes — how many and what are they?",
+    "completedAt": "2026-04-25T23:30:51.636Z",
+    "taskId": "T178",
+    "summary": "38 VM opcodes: arithmetic (6), comparison (4), prefix (2), literals (3), stack (2), variables (10: global/local/free/builtin + raw variants), control flow (3: jump/tailcall), functions (4: call/return/closure/current-closure), data (3: array/hash/index), memory (1: MakeCell).",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 174,
+    "blocksCompleted": 175,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 13,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 25,
-      "EXPLORE": 39
+      "EXPLORE": 40
     }
   },
   "artifacts": [
