@@ -747,14 +747,17 @@ P._evalExpr = function(expr, row) {
         if (expr.op === 'IS_NOT') return left !== right;
         return null;
       }
-      // Implicit type coercion: if one is number and other is string, try numeric comparison
-      if (typeof left === 'number' && typeof right === 'string') {
-        const n = Number(right);
-        if (!isNaN(n)) right = n;
-      } else if (typeof left === 'string' && typeof right === 'number') {
-        const n = Number(left);
-        if (!isNaN(n)) left = n;
+      // For EQ/NE: apply implicit coercion (one number, one numeric string → compare as numbers)
+      if (expr.op === 'EQ' || expr.op === 'NE') {
+        if (typeof left === 'number' && typeof right === 'string') {
+          const n = Number(right);
+          if (!isNaN(n) && right.trim() !== '') right = n;
+        } else if (typeof left === 'string' && typeof right === 'number') {
+          const n = Number(left);
+          if (!isNaN(n) && left.trim() !== '') left = n;
+        }
       }
+      // For ordering comparisons: use sqliteCompare (type-class aware, no coercion)
       switch (expr.op) {
         case 'EQ': return left === right;
         case 'NE': return left !== right;
