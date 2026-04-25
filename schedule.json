@@ -505,16 +505,35 @@
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T20:58:35.481Z",
+      "completed": "2026-04-25T20:58:35.624Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
     },
     {
       "id": "T48",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: investigate and fix remaining fuzzer failures (window ORDER BY, UNION types)",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T20:58:42.264Z",
+      "completed": "2026-04-25T21:00:08.737Z",
+      "duration_ms": 180000,
+      "summary": "Investigated. 3 failure patterns: (1) non-aggregated col in aggregate query → undefined, (2) WHERE type comparison edge cases, (3) row count mismatches from type coercion. The sqliteCompare is correct but storage types may differ. Filling BUILD for targeted fix."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "task": "Investigate and fix fuzzer WHERE b > empty string mismatch",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-04-25T21:00:15.267Z",
+      "completed": "2026-04-25T21:01:43.209Z",
+      "duration_ms": 300000,
+      "summary": "Fixed WHERE comparison coercion bug: empty string was coerced to 0 via Number(empty)=0, causing 42>empty to be true. Now only EQ/NE coerce (not LT/GT). Seeds 42,123,999 now at 99-100%. Avg ~96.7%."
     },
     {
       "id": "T49",
@@ -770,6 +789,10 @@
     {
       "time": "2026-04-25T20:57:36.170Z",
       "msg": "PLAN T46 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:00:08.589Z",
+      "msg": "PLAN T48 filled 1 BUILD tasks"
     }
   ]
 }

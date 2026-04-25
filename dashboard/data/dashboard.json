@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T20:58:29.686Z",
+  "generated": "2026-04-25T21:01:43.244Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix toSSA() to accept CFG objects, add per-function SSA pipeline",
-    "completedAt": "2026-04-25T20:58:29.686Z",
-    "taskId": "T55",
-    "summary": "Fixed toSSA() OOM (accepted CFG as string). Added perFunctionSSA() pipeline — extracts functions, builds per-function CFG+SSA, handles nesting. 62 lines added.",
+    "task": "Investigate and fix fuzzer WHERE b > empty string mismatch",
+    "completedAt": "2026-04-25T21:01:43.244Z",
+    "taskId": "T56",
+    "summary": "Fixed WHERE comparison coercion bug: empty string was coerced to 0 via Number(empty)=0, causing 42>empty to be true. Now only EQ/NE coerce (not LT/GT). Seeds 42,123,999 now at 99-100%. Avg ~96.7%.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8267,31 +8267,50 @@
       {
         "id": "T46",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix SSA toSSA() OOM on function body CFGs — debug and fix the infinite allocation",
         "task": null,
-        "started": "2026-04-25T20:56:55.103Z"
+        "started": "2026-04-25T20:56:55.103Z",
+        "completed": "2026-04-25T20:57:44.493Z",
+        "duration_ms": 180000,
+        "summary": "Root cause: toSSA() only accepted strings, not CFG objects. Passing a CFG triggered infinite Lexer parsing → OOM. Fix: toSSA() now accepts both. SSABuilder already works perfectly with function body CFGs."
       },
       {
         "id": "T55",
         "mode": "BUILD",
         "task": "Fix toSSA() to accept CFG objects, add per-function SSA pipeline",
-        "status": "upcoming",
-        "plan_ref": "T46"
+        "status": "done",
+        "plan_ref": "T46",
+        "started": "2026-04-25T20:57:49.763Z",
+        "completed": "2026-04-25T20:58:29.651Z",
+        "duration_ms": 300000,
+        "summary": "Fixed toSSA() OOM (accepted CFG as string). Added perFunctionSSA() pipeline — extracts functions, builds per-function CFG+SSA, handles nesting. 62 lines added."
       },
       {
         "id": "T47",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T20:58:35.481Z",
+        "completed": "2026-04-25T20:58:35.624Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T48",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: investigate and fix remaining fuzzer failures (window ORDER BY, UNION types)",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T20:58:42.264Z"
+      },
+      {
+        "id": "T56",
+        "mode": "BUILD",
+        "task": "Investigate and fix fuzzer WHERE b > empty string mismatch",
+        "status": "upcoming",
+        "plan_ref": "T48"
       },
       {
         "id": "T49",
@@ -8337,12 +8356,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 46,
-    "blocksTotal": 55,
+    "blocksCompleted": 49,
+    "blocksTotal": 56,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 9,
-      "BUILD": 20,
+      "PLAN": 10,
+      "BUILD": 22,
       "MAINTAIN": 8,
       "EXPLORE": 4
     }
