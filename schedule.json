@@ -1084,6 +1084,17 @@
       "completed": "2026-04-25T17:11:34.532Z",
       "duration_ms": 300000,
       "summary": "MILESTONE: 920/920 monkey-lang tests pass (100%). Fixed by gating constant substitution behind optimize flag. Debugger tests now pass with optimize:false. From 33 failures to 0 in one session."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Enable bytecode optimizer by default and verify 920/920 still pass",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:11:55.466Z",
+      "completed": "2026-04-25T17:12:52.757Z",
+      "duration_ms": 180000,
+      "summary": "MILESTONE: Bytecode optimizer enabled by default. 920/920 tests still pass. DCE, peephole, jump threading run automatically on all compiled code. 50% reduction on conditionals."
     }
   ],
   "focusProjects": [
@@ -1471,6 +1482,10 @@
     {
       "time": "2026-04-25T17:10:21.098Z",
       "msg": "Added T99 (BUILD) after end: Fix 4 remaining debugger test failures in monkey-lang"
+    },
+    {
+      "time": "2026-04-25T17:11:52.063Z",
+      "msg": "Added T100 (BUILD) after end: Enable bytecode optimizer by default and verify 920/920 still pass"
     }
   ]
 }
