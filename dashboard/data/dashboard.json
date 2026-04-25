@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T20:49:29.437Z",
+  "generated": "2026-04-25T20:56:00.456Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix db.execute(sql, params) and EXECUTE param count validation",
-    "completedAt": "2026-04-25T20:49:29.437Z",
-    "taskId": "T44",
-    "summary": "Fixed both: db.execute(sql, params) works via AST binding, EXECUTE validates param count. Tests pass.",
-    "durationMs": 300000
+    "task": "Add GROUPS frame type and EXCLUDE clause to window frame parser and executor",
+    "completedAt": "2026-04-25T20:56:00.456Z",
+    "taskId": "T45",
+    "summary": "GROUPS frame type + EXCLUDE clause implemented. Parser updated with 4 keywords. Executor handles GROUPS (peer group counting) and EXCLUDE (4 modes). All existing window tests pass. 124 lines added.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8139,51 +8139,82 @@
       {
         "id": "T31",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: fix db.execute(sql, params) and EXECUTE param count validation",
         "task": null,
-        "started": "2026-04-25T20:47:08.456Z"
+        "started": "2026-04-25T20:47:08.456Z",
+        "completed": "2026-04-25T20:47:20.052Z",
+        "duration_ms": 60000,
+        "summary": "Two fixes: (1) add params arg to execute(), parse+bind+execute_ast, (2) validate param count in EXECUTE. Both in db.js/prepared-stmts-ast.js."
       },
       {
         "id": "T44",
         "mode": "BUILD",
         "task": "Fix db.execute(sql, params) and EXECUTE param count validation",
-        "status": "upcoming",
-        "plan_ref": "T31"
+        "status": "done",
+        "plan_ref": "T31",
+        "started": "2026-04-25T20:47:24.194Z",
+        "completed": "2026-04-25T20:49:29.400Z",
+        "duration_ms": 300000,
+        "summary": "Fixed both: db.execute(sql, params) works via AST binding, EXECUTE validates param count. Tests pass."
       },
       {
         "id": "T32",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T20:49:34.189Z",
+        "completed": "2026-04-25T20:49:34.334Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T33",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping + push"
+        "status": "done",
+        "task": "Housekeeping + push",
+        "started": "2026-04-25T20:49:40.449Z",
+        "completed": "2026-04-25T20:49:47.929Z",
+        "duration_ms": 30000,
+        "summary": "All repos pushed."
       },
       {
         "id": "T34",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "monkey-lang: per-function SSA exploration — what does it take?",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T20:49:52.889Z",
+        "completed": "2026-04-25T20:50:30.736Z",
+        "duration_ms": 120000,
+        "summary": "Per-function SSA is achievable: CFGBuilder already handles statement lists. Need to: (1) extract FunctionLiterals, (2) build CFG per function body, (3) run SSA per function. ~200 LOC new code. Not filling BUILD — this is a PLAN only."
       },
       {
         "id": "T35",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "monkey-lang: study current SSA implementation, identify gaps for per-function SSA",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T20:50:35.703Z",
+        "completed": "2026-04-25T20:52:04.963Z",
+        "duration_ms": 300000,
+        "summary": "Key finding: toSSA() goes OOM when run on function body CFG — likely interface mismatch between CFG format and SSA expectations. SSA tests pass on simple inputs but fail on function bodies. This is the core blocker for per-function SSA. ~2h fix estimated."
       },
       {
         "id": "T36",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: add GROUPS and EXCLUDE to window frame parser",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T20:52:08.800Z"
+      },
+      {
+        "id": "T45",
+        "mode": "BUILD",
+        "task": "Add GROUPS frame type and EXCLUDE clause to window frame parser and executor",
+        "status": "upcoming",
+        "plan_ref": "T36"
       },
       {
         "id": "T37",
@@ -8214,14 +8245,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 34,
-    "blocksTotal": 44,
+    "blocksCompleted": 40,
+    "blocksTotal": 45,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 6,
-      "BUILD": 16,
-      "MAINTAIN": 5,
-      "EXPLORE": 3
+      "PLAN": 8,
+      "BUILD": 18,
+      "MAINTAIN": 6,
+      "EXPLORE": 4
     }
   },
   "artifacts": [
