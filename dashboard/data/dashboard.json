@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:29:41.407Z",
+  "generated": "2026-04-25T19:29:59.855Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB WITH CHECK OPTION on views",
-    "completedAt": "2026-04-25T19:29:41.407Z",
-    "taskId": "T216",
-    "summary": "WITH CHECK OPTION parses. View SELECT works correctly (filters eng dept). INSERT through views not supported (updatable views not implemented). View read path is solid.",
+    "task": "EXPLORE: Rapid verification T219",
+    "completedAt": "2026-04-25T19:29:59.855Z",
+    "taskId": "T217",
+    "summary": "UPSERT, BETWEEN, NOT BETWEEN, IN subquery, LIKE patterns (%,_) all work perfectly. 7 features verified.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 221,
+    "blocksCompleted": 222,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 24,
-      "EXPLORE": 114
+      "EXPLORE": 115
     }
   },
   "artifacts": [
