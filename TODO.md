@@ -5,9 +5,7 @@
 
 ## Normal
 - HenryDB: Refactor parseSelectColumn to use parseExpr for general expressions
-- HenryDB: Unify cost model — share selectivity estimator between classic and Volcano planners
-- HenryDB: Add Index Nested Loop Join to join optimizer
-- Neural-net: Write training tutorial/walkthrough
+- Explore regex-engine or lambda-calculus projects for depth
 
 ## Low
 - HenryDB: Add GENERATED columns

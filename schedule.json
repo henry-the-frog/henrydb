@@ -360,6 +360,63 @@
       "completed": "2026-04-25T15:01:49.651Z",
       "duration_ms": 180000,
       "summary": "Added 12 tests for shared selectivity estimator: heuristic mode, stats-based (ndistinct, histogram), AND/OR, getColumnNdv. All pass."
+    },
+    {
+      "id": "T34",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add Index Nested Loop Join to join optimizer",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-25T15:02:28.633Z",
+      "completed": "2026-04-25T15:03:27.756Z",
+      "duration_ms": 120000,
+      "summary": "INLJ already implemented in join-optimizer.js! costNestedLoopJoin uses index cost when inner.hasIndex(joinCol). Verified: INLJ wins for small outer + large indexed inner. No new work needed."
+    },
+    {
+      "id": "T35",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Plan neural-net training tutorial structure",
+      "project": "neural-net",
+      "started": "2026-04-25T15:04:25.203Z",
+      "completed": "2026-04-25T15:04:42.255Z",
+      "duration_ms": 60000,
+      "summary": "Tutorial structure: 8 sections from matrices to digit classification. Focus on beginner-friendly explanations with runnable code. Switched project from HenryDB to neural-net for variety."
+    },
+    {
+      "id": "T36",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural-net training tutorial",
+      "task": null,
+      "project": "neural-net",
+      "started": "2026-04-25T15:04:47.748Z",
+      "completed": "2026-04-25T15:04:58.420Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 2 tasks — write tutorial with runnable examples, verify examples work."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "Write neural-net training tutorial (docs/tutorial.md) with runnable examples",
+      "status": "done",
+      "plan_ref": "T36",
+      "started": "2026-04-25T15:05:03.748Z",
+      "completed": "2026-04-25T15:06:08.139Z",
+      "duration_ms": 600000,
+      "summary": "Wrote neural-net training tutorial (~2000 words, 8 sections). Covers matrices → forward pass → backprop → training loop → examples. All code examples use actual API."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "Verify tutorial code examples actually run",
+      "status": "done",
+      "plan_ref": "T36",
+      "started": "2026-04-25T15:06:23.375Z",
+      "completed": "2026-04-25T15:07:36.348Z",
+      "duration_ms": 180000,
+      "summary": "Verified all tutorial examples run. Fixed getRow→slice(). XOR converges, sin(x) loss=0.0003. Pushed."
     }
   ],
   "focusProjects": [
@@ -495,6 +552,22 @@
     {
       "time": "2026-04-25T14:57:03.084Z",
       "msg": "PLAN T30 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T15:02:24.041Z",
+      "msg": "Added T34 (PLAN) after end: Plan Index Nested Loop Join (INLJ) addition to join optimizer"
+    },
+    {
+      "time": "2026-04-25T15:04:12.435Z",
+      "msg": "Added T35 (THINK) after end: THINK: Plan neural-net training tutorial structure"
+    },
+    {
+      "time": "2026-04-25T15:04:18.342Z",
+      "msg": "Added T36 (PLAN) after end: Plan neural-net training tutorial — beginner-friendly walkthrough of building and training a network"
+    },
+    {
+      "time": "2026-04-25T15:04:53.463Z",
+      "msg": "PLAN T36 filled 2 BUILD tasks"
     }
   ]
 }

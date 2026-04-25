@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T15:01:49.687Z",
+  "generated": "2026-04-25T15:07:36.384Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add tests verifying classic/Volcano plan agreement with ANALYZE stats",
-    "completedAt": "2026-04-25T15:01:49.687Z",
-    "taskId": "T33",
-    "summary": "Added 12 tests for shared selectivity estimator: heuristic mode, stats-based (ndistinct, histogram), AND/OR, getColumnNdv. All pass.",
+    "task": "Verify tutorial code examples actually run",
+    "completedAt": "2026-04-25T15:07:36.384Z",
+    "taskId": "T38",
+    "summary": "Verified all tutorial examples run. Fixed getRow→slice(). XOR converges, sin(x) loss=0.0003. Pushed.",
     "durationMs": 180000
   },
   "schedule": {
@@ -8103,43 +8103,104 @@
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Unify classic/Volcano selectivity estimator",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-25T14:56:53.604Z"
+        "started": "2026-04-25T14:56:53.604Z",
+        "completed": "2026-04-25T14:57:08.616Z",
+        "duration_ms": 60000,
+        "summary": "Plan: 3 tasks — extract selectivity.js, wire into classic planner, add agreement tests. Prior knowledge: scratch/henrydb-optimizer-gaps.md consulted."
       },
       {
         "id": "T31",
         "mode": "BUILD",
         "task": "Extract selectivity estimator into shared src/selectivity.js from volcano-planner.js",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-25T14:57:15.400Z",
+        "completed": "2026-04-25T14:58:57.821Z",
+        "duration_ms": 300000,
+        "summary": "Extracted selectivity estimator into shared selectivity.js. Volcano planner now imports from shared module. 9/9 volcano tests pass. No behavior change."
       },
       {
         "id": "T32",
         "mode": "BUILD",
         "task": "Wire shared selectivity into classic planner (query-plan.js)",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-25T14:59:03.755Z",
+        "completed": "2026-04-25T15:01:03.208Z",
+        "duration_ms": 240000,
+        "summary": "Wired shared selectivity into classic planner. Now uses ANALYZE stats (ndistinct, histograms) when available. Both planners produce same estimates. 37/37 tests pass."
       },
       {
         "id": "T33",
         "mode": "BUILD",
         "task": "Add tests verifying classic/Volcano plan agreement with ANALYZE stats",
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-25T15:01:14.023Z",
+        "completed": "2026-04-25T15:01:49.651Z",
+        "duration_ms": 180000,
+        "summary": "Added 12 tests for shared selectivity estimator: heuristic mode, stats-based (ndistinct, histogram), AND/OR, getColumnNdv. All pass."
+      },
+      {
+        "id": "T34",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Add Index Nested Loop Join to join optimizer",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-25T15:02:28.633Z",
+        "completed": "2026-04-25T15:03:27.756Z",
+        "duration_ms": 120000,
+        "summary": "INLJ already implemented in join-optimizer.js! costNestedLoopJoin uses index cost when inner.hasIndex(joinCol). Verified: INLJ wins for small outer + large indexed inner. No new work needed."
+      },
+      {
+        "id": "T35",
+        "mode": "THINK",
+        "status": "done",
+        "task": "THINK: Plan neural-net training tutorial structure",
+        "project": "neural-net",
+        "started": "2026-04-25T15:04:25.203Z",
+        "completed": "2026-04-25T15:04:42.255Z",
+        "duration_ms": 60000,
+        "summary": "Tutorial structure: 8 sections from matrices to digit classification. Focus on beginner-friendly explanations with runnable code. Switched project from HenryDB to neural-net for variety."
+      },
+      {
+        "id": "T36",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Neural-net training tutorial",
+        "task": null,
+        "project": "neural-net",
+        "started": "2026-04-25T15:04:47.748Z"
+      },
+      {
+        "id": "T37",
+        "mode": "BUILD",
+        "task": "Write neural-net training tutorial (docs/tutorial.md) with runnable examples",
         "status": "upcoming",
-        "plan_ref": "T30"
+        "plan_ref": "T36"
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "task": "Verify tutorial code examples actually run",
+        "status": "upcoming",
+        "plan_ref": "T36"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 33,
-    "blocksTotal": 33,
+    "blocksCompleted": 38,
+    "blocksTotal": 38,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 6,
-      "BUILD": 16,
+      "THINK": 6,
+      "PLAN": 8,
+      "BUILD": 18,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
