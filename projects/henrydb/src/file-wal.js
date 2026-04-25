@@ -26,7 +26,11 @@ export class FileWAL {
     this._lastCheckpointLsn = 0;
     
     // Group commit settings
+    const validSyncModes = ['immediate', 'batch', 'none'];
     this._syncMode = options.syncMode || 'immediate';
+    if (!validSyncModes.includes(this._syncMode)) {
+      throw new Error(`Invalid WAL syncMode '${this._syncMode}'. Must be one of: ${validSyncModes.join(', ')}`);
+    }
     this._batchIntervalMs = options.batchIntervalMs || 5;
     this._batchTimer = null;
     this._pendingSync = false; // true if writes happened since last fsync

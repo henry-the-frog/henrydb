@@ -312,4 +312,22 @@ describe('Crash Recovery', () => {
       dm.close();
     }
   });
+
+  it('throws on invalid syncMode', () => {
+    const testFile = `/tmp/wal-syncmode-test-${Date.now()}.wal`;
+    assert.throws(
+      () => new FileWAL(testFile, { syncMode: 'typo' }),
+      /Invalid WAL syncMode 'typo'/
+    );
+    assert.throws(
+      () => new FileWAL(testFile, { syncMode: 'IMMEDIATE' }),
+      /Invalid WAL syncMode 'IMMEDIATE'/
+    );
+    // Valid modes should not throw
+    for (const mode of ['immediate', 'batch', 'none']) {
+      const wal = new FileWAL(testFile, { syncMode: mode });
+      wal.close();
+      try { unlinkSync(testFile); } catch {}
+    }
+  });
 });
