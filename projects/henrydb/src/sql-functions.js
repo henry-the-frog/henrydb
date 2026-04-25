@@ -634,6 +634,61 @@ export function evalFunction(db, func, args, row) {
       
       return d.toISOString().split('T')[0];
     }
+    case 'TIME': {
+      // TIME(value, modifier1, modifier2, ...) — SQLite-compatible time function
+      // Returns HH:MM:SS
+      let v = db._evalValue(args[0], row);
+      if (v == null) return null;
+      let s = String(v);
+      if (s.toLowerCase() === 'now') s = new Date().toISOString();
+      
+      let d;
+      // Parse time from various formats
+      const timeOnly = s.match(/^(\d{2}):(\d{2}):(\d{2})/);
+      if (timeOnly) {
+        d = new Date(Date.UTC(2000, 0, 1, parseInt(timeOnly[1]), parseInt(timeOnly[2]), parseInt(timeOnly[3])));
+      } else {
+        d = new Date(s.includes('T') ? s : s + 'T00:00:00Z');
+      }
+      if (isNaN(d.getTime())) return null;
+      
+      for (let i = 1; i < args.length; i++) {
+        const mod = String(db._evalValue(args[i], row)).trim().toLowerCase();
+        d = _applyDateModifier(d, mod);
+        if (!d || isNaN(d.getTime())) return null;
+      }
+      
+      return d.toISOString().split('T')[1].replace('Z', '').replace(/\.\d+$/, '');
+    }
+    case 'DATETIME': {
+      // DATETIME(value, modifier1, modifier2, ...) — SQLite-compatible datetime function
+      // Returns YYYY-MM-DD HH:MM:SS
+      let v = db._evalValue(args[0], row);
+      if (v == null) return null;
+      let s = String(v);
+      if (s.toLowerCase() === 'now') s = new Date().toISOString();
+      
+      const dateMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+      let d;
+      if (dateMatch && (s.includes('T') || s.includes(' '))) {
+        // Handle both ISO format and space-separated: '2024-01-15 10:30:00'
+        d = new Date(s.replace(' ', 'T') + (s.includes('Z') ? '' : 'Z'));
+      } else if (dateMatch) {
+        d = new Date(s + 'T00:00:00Z');
+      } else {
+        d = new Date(s);
+      }
+      if (isNaN(d.getTime())) return null;
+      
+      for (let i = 1; i < args.length; i++) {
+        const mod = String(db._evalValue(args[i], row)).trim().toLowerCase();
+        d = _applyDateModifier(d, mod);
+        if (!d || isNaN(d.getTime())) return null;
+      }
+      
+      const iso = d.toISOString();
+      return iso.split('T')[0] + ' ' + iso.split('T')[1].replace('Z', '').replace(/\.\d+$/, '');
+    }
     case 'AGE': {
       // AGE(date1, date2) — interval between two dates (PG-style)
       // AGE(date) — interval from date to CURRENT_DATE

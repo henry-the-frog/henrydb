@@ -116,3 +116,63 @@ describe('DATE modifiers (SQLite-compatible)', () => {
     assert.equal(r.rows[0].id, 1);
   });
 });
+
+describe('TIME modifiers (SQLite-compatible)', () => {
+  let db;
+  it('setup', () => { db = new Database(); });
+
+  it('TIME() extracts time', () => {
+    const r = db.execute("SELECT TIME('2024-01-15T10:30:45Z') as t");
+    assert.equal(r.rows[0].t, '10:30:45');
+  });
+
+  it('TIME() with +N hours', () => {
+    const r = db.execute("SELECT TIME('10:30:00', '+2 hours') as t");
+    assert.equal(r.rows[0].t, '12:30:00');
+  });
+
+  it('TIME() with +N minutes', () => {
+    const r = db.execute("SELECT TIME('10:30:00', '+45 minutes') as t");
+    assert.equal(r.rows[0].t, '11:15:00');
+  });
+
+  it("TIME('now') returns current time", () => {
+    const r = db.execute("SELECT TIME('now') as t");
+    assert.ok(r.rows[0].t.match(/^\d{2}:\d{2}:\d{2}$/));
+  });
+});
+
+describe('DATETIME modifiers (SQLite-compatible)', () => {
+  let db;
+  it('setup', () => { db = new Database(); });
+
+  it('DATETIME() returns full timestamp', () => {
+    const r = db.execute("SELECT DATETIME('2024-01-15T10:30:00Z') as dt");
+    assert.equal(r.rows[0].dt, '2024-01-15 10:30:00');
+  });
+
+  it('DATETIME() with space-separated input', () => {
+    const r = db.execute("SELECT DATETIME('2024-01-15 10:30:00', '+1 month') as dt");
+    assert.equal(r.rows[0].dt, '2024-02-15 10:30:00');
+  });
+
+  it('DATETIME() with date-only input', () => {
+    const r = db.execute("SELECT DATETIME('2024-01-15', '+1 month') as dt");
+    assert.equal(r.rows[0].dt, '2024-02-15 00:00:00');
+  });
+
+  it('DATETIME() chained modifiers', () => {
+    const r = db.execute("SELECT DATETIME('2024-01-15', '+1 month', '+2 hours', '+30 minutes') as dt");
+    assert.equal(r.rows[0].dt, '2024-02-15 02:30:00');
+  });
+
+  it('DATETIME() start of month preserves time', () => {
+    const r = db.execute("SELECT DATETIME('2024-03-15 14:30:00', 'start of month') as dt");
+    assert.equal(r.rows[0].dt, '2024-03-01 00:00:00');
+  });
+
+  it("DATETIME('now')", () => {
+    const r = db.execute("SELECT DATETIME('now') as dt");
+    assert.ok(r.rows[0].dt.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/));
+  });
+});
