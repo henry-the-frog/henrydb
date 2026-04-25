@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:13:10.093Z",
+  "generated": "2026-04-25T18:13:52.369Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB triggers (BEFORE/AFTER INSERT/UPDATE/DELETE)",
-    "completedAt": "2026-04-25T18:13:10.093Z",
-    "taskId": "T148",
-    "summary": "EXPLORE: Triggers work perfectly! AFTER UPDATE with NEW/OLD references. Automatically computed balance difference (500) and logged to audit table with timestamp. Full trigger support.",
+    "task": "EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK) with MVCC",
+    "completedAt": "2026-04-25T18:13:52.369Z",
+    "taskId": "T149",
+    "summary": "EXPLORE: Transactions work perfectly! BEGIN/COMMIT (transfer works), ROLLBACK (reverts changes), SAVEPOINT (partial rollback). ACID-compliant. Bank transfer scenario verified.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 148,
+    "blocksCompleted": 149,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 17,
-      "EXPLORE": 50
+      "EXPLORE": 51
     }
   },
   "artifacts": [

@@ -1616,6 +1616,17 @@
       "completed": "2026-04-25T18:13:10.056Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Triggers work perfectly! AFTER UPDATE with NEW/OLD references. Automatically computed balance difference (500) and logged to audit table with timestamp. Full trigger support."
+    },
+    {
+      "id": "T149",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK) with MVCC",
+      "project": "henrydb",
+      "started": "2026-04-25T18:13:34.866Z",
+      "completed": "2026-04-25T18:13:52.332Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Transactions work perfectly! BEGIN/COMMIT (transfer works), ROLLBACK (reverts changes), SAVEPOINT (partial rollback). ACID-compliant. Bank transfer scenario verified."
     }
   ],
   "focusProjects": [
@@ -2195,6 +2206,10 @@
     {
       "time": "2026-04-25T18:12:43.955Z",
       "msg": "Added T148 (EXPLORE) after end: EXPLORE: Test HenryDB triggers (BEFORE/AFTER INSERT/UPDATE/DELETE)"
+    },
+    {
+      "time": "2026-04-25T18:13:28.560Z",
+      "msg": "Added T149 (EXPLORE) after end: EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK) with MVCC"
     }
   ]
 }
