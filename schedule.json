@@ -1604,6 +1604,63 @@
       "completed": "2026-04-25T22:59:48.475Z",
       "duration_ms": 120000,
       "summary": "INDEX.md updated with 6 new Session B scratch files. 105 total scratch notes."
+    },
+    {
+      "id": "T150",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Deep dive into HenryDB WAL (Write-Ahead Log) implementation",
+      "project": "henrydb",
+      "started": "2026-04-25T23:00:10.126Z",
+      "completed": "2026-04-25T23:00:41.319Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB WAL: proper implementation with binary records, CRC32 checksums, LSN tracking, ARIES-style redo recovery. Transaction layer: MVCC with snapshot and serializable isolation (SSI). 4000 LOC for WAL+transactions alone."
+    },
+    {
+      "id": "T151",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "THINK: Analyze monkey-lang GC implementation — what are the collection strategies?"
+    },
+    {
+      "id": "T152",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test 20 more projects — reach 70 verified",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T153",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Investigate HenryDB stored procedures (PL/SQL)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T154",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "THINK: Write lessons learned from Session B — what worked, what to change"
+    },
+    {
+      "id": "T155",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test waldb project — another database implementation?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T156",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test vecdb project — vector database?",
+      "project": "henrydb"
+    },
+    {
+      "id": "T157",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: Final evening summary and session cleanup"
     }
   ],
   "focusProjects": [
@@ -2195,6 +2252,38 @@
     {
       "time": "2026-04-25T22:46:11.679Z",
       "msg": "Added T149 (MAINTAIN) after end: MAINTAIN: Clean up daily log, ensure all scratch notes indexed"
+    },
+    {
+      "time": "2026-04-25T23:00:02.422Z",
+      "msg": "Added T150 (EXPLORE) after end: EXPLORE: Deep dive into HenryDB WAL (Write-Ahead Log) implementation"
+    },
+    {
+      "time": "2026-04-25T23:00:02.542Z",
+      "msg": "Added T151 (THINK) after end: THINK: Analyze monkey-lang GC implementation — what are the collection strategies?"
+    },
+    {
+      "time": "2026-04-25T23:00:02.663Z",
+      "msg": "Added T152 (EXPLORE) after end: EXPLORE: Test 20 more projects — reach 70 verified"
+    },
+    {
+      "time": "2026-04-25T23:00:02.781Z",
+      "msg": "Added T153 (EXPLORE) after end: EXPLORE: Investigate HenryDB stored procedures (PL/SQL)"
+    },
+    {
+      "time": "2026-04-25T23:00:02.902Z",
+      "msg": "Added T154 (THINK) after end: THINK: Write lessons learned from Session B — what worked, what to change"
+    },
+    {
+      "time": "2026-04-25T23:00:03.021Z",
+      "msg": "Added T155 (EXPLORE) after end: EXPLORE: Test waldb project — another database implementation?"
+    },
+    {
+      "time": "2026-04-25T23:00:03.156Z",
+      "msg": "Added T156 (EXPLORE) after end: EXPLORE: Test vecdb project — vector database?"
+    },
+    {
+      "time": "2026-04-25T23:00:03.275Z",
+      "msg": "Added T157 (MAINTAIN) after end: MAINTAIN: Final evening summary and session cleanup"
     }
   ]
 }
