@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:02:33.451Z",
+  "generated": "2026-04-25T19:03:00.949Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB INSERT SELECT and CREATE TABLE AS SELECT",
-    "completedAt": "2026-04-25T19:02:33.451Z",
-    "taskId": "T204",
-    "summary": "INSERT SELECT, CTAS (CREATE TABLE AS SELECT), REPLACE INTO, TRUNCATE TABLE all work. Complete DML coverage.",
+    "task": "EXPLORE: Final HenryDB SQL feature — test EXCLUDE in window frames",
+    "completedAt": "2026-04-25T19:03:00.949Z",
+    "taskId": "T205",
+    "summary": "RANGE window frames work. EXCLUDE and GROUPS not supported by parser. Window frames support: ROWS (full), RANGE (basic), GROUPS (no). EXCLUDE (no). Still very comprehensive.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 204,
+    "blocksCompleted": 205,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 22,
-      "EXPLORE": 100
+      "EXPLORE": 101
     }
   },
   "artifacts": [

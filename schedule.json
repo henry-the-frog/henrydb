@@ -2227,6 +2227,17 @@
       "completed": "2026-04-25T19:02:33.414Z",
       "duration_ms": 60000,
       "summary": "INSERT SELECT, CTAS (CREATE TABLE AS SELECT), REPLACE INTO, TRUNCATE TABLE all work. Complete DML coverage."
+    },
+    {
+      "id": "T205",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Final HenryDB SQL feature — test EXCLUDE in window frames",
+      "project": "henrydb",
+      "started": "2026-04-25T19:02:42.702Z",
+      "completed": "2026-04-25T19:03:00.912Z",
+      "duration_ms": 60000,
+      "summary": "RANGE window frames work. EXCLUDE and GROUPS not supported by parser. Window frames support: ROWS (full), RANGE (basic), GROUPS (no). EXCLUDE (no). Still very comprehensive."
     }
   ],
   "focusProjects": [
@@ -3030,6 +3041,10 @@
     {
       "time": "2026-04-25T19:02:15.044Z",
       "msg": "Added T204 (EXPLORE) after end: EXPLORE: Test HenryDB INSERT SELECT and CREATE TABLE AS SELECT"
+    },
+    {
+      "time": "2026-04-25T19:02:42.467Z",
+      "msg": "Added T205 (EXPLORE) after end: EXPLORE: Final HenryDB SQL feature — test EXCLUDE in window frames"
     }
   ]
 }
