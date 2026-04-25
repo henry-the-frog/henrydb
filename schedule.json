@@ -668,23 +668,46 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T21:11:07.903Z",
+      "completed": "2026-04-25T21:11:08.279Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
     },
     {
       "id": "T62",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "monkey-lang: run full test suite to count total tests",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:11:14.422Z",
+      "completed": "2026-04-25T21:11:44.835Z",
+      "duration_ms": 60000,
+      "summary": "monkey-lang: 1120/1120 tests pass! 214 suites. Up from 1053 at session start (+67 tests). All in 11s."
     },
     {
       "id": "T63",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: add string interpolation syntax",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T21:11:52.624Z",
+      "completed": "2026-04-25T21:12:05.554Z",
+      "duration_ms": 120000,
+      "summary": "Use backtick syntax like JS template literals. Lexer tokenizes parts between ${...}. Parser creates StringInterpolation AST node. Compiler emits string concat chain. 4 files need changes."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "task": "Add backtick template string interpolation to lexer, parser, compiler, and evaluator",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-04-25T21:12:12.841Z",
+      "completed": "2026-04-25T21:13:42.650Z",
+      "duration_ms": 300000,
+      "summary": "Backtick template literals added! `hello ${name}!` syntax. Implemented as f-string alias — 14 lines in lexer. All tests pass."
     },
     {
       "id": "T64",
@@ -993,6 +1016,10 @@
     {
       "time": "2026-04-25T21:09:58.300Z",
       "msg": "PLAN T60 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:12:05.235Z",
+      "msg": "PLAN T63 filled 1 BUILD tasks"
     }
   ]
 }
