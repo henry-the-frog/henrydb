@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T20:26:43.526Z",
+  "generated": "2026-04-25T20:34:04.290Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Run fuzzer across 10 seeds to measure improvement",
-    "completedAt": "2026-04-25T20:26:43.526Z",
-    "taskId": "T23",
-    "summary": "Fuzzer results across 10 seeds (200 iters each): avg 96.5%. Best 99.5%, worst 94%. Remaining failures: window function ORDER BY, UNION type issues. Also fixed fuzzer match variable bug.",
-    "durationMs": 300000
+    "task": "Add escape analysis tests for compiler integration",
+    "completedAt": "2026-04-25T20:34:04.290Z",
+    "taskId": "T26",
+    "summary": "13 escape analysis integration tests: 4 detection, 3 compiler annotations, 6 VM correctness. All pass. Complete end-to-end pipeline verified.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -7851,37 +7851,56 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: close fuzzer type affinity gap (TEXT >= INT coercion in WHERE)",
         "task": null,
-        "started": "2026-04-25T20:20:35.707Z"
+        "started": "2026-04-25T20:20:35.707Z",
+        "completed": "2026-04-25T20:21:44.413Z",
+        "duration_ms": 180000,
+        "summary": "Root cause: HenryDB stores int 42 in TEXT column as int, SQLite coerces to string. Fix: add applyAffinity() in insert-row.js after value resolution. SQLite affinity rules: TEXT→string, INT→tryNumber, REAL→tryFloat, NUMERIC→flexible."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Add SQLite type affinity on INSERT — coerce values based on column type declarations",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-25T20:21:47.917Z",
+        "completed": "2026-04-25T20:25:41.135Z",
+        "duration_ms": 300000,
+        "summary": "Created type-affinity.js shared module. INSERT now coerces values via applyAffinity(). ORDER BY uses sqliteCompare(). All existing tests pass."
       },
       {
         "id": "T23",
         "mode": "BUILD",
         "task": "Run fuzzer across 10 seeds to measure improvement",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-25T20:25:45.207Z",
+        "completed": "2026-04-25T20:26:43.491Z",
+        "duration_ms": 300000,
+        "summary": "Fuzzer results across 10 seeds (200 iters each): avg 96.5%. Best 99.5%, worst 94%. Remaining failures: window function ORDER BY, UNION type issues. Also fixed fuzzer match variable bug."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T20:26:48.613Z",
+        "completed": "2026-04-25T20:26:48.761Z",
+        "duration_ms": 0,
+        "summary": "Skipped — placeholder, actual BUILD work done in T22/T23."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: git push, knowledge capture",
+        "started": "2026-04-25T20:26:52.977Z",
+        "completed": "2026-04-25T20:26:58.638Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed. All clean."
       },
       {
         "id": "T9",
@@ -7894,22 +7913,52 @@
       {
         "id": "T10",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive into henrydb parameter binding ( params)",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T20:27:01.985Z",
+        "completed": "2026-04-25T20:27:59.303Z",
+        "duration_ms": 180000,
+        "summary": "Parameter binding explored. PREPARE/EXECUTE works. Programmatic prepare().execute([params]) works. Missing: db.execute(sql, [params]) convenience method. Fix: parse SQL, bindParams, then execute_ast."
       },
       {
         "id": "T11",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-session: assess progress, plan next depth cycle"
+        "status": "done",
+        "task": "Mid-session: assess progress, plan next depth cycle",
+        "started": "2026-04-25T20:28:02.946Z",
+        "completed": "2026-04-25T20:28:17.248Z",
+        "duration_ms": 60000,
+        "summary": "13 min in, real work: type affinity module, 9 regression tests, fuzzer at 96.5%. Next: escape analysis (deepest), then MEDIAN, then param binding fix."
       },
       {
         "id": "T12",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: wire escape analysis into stack-allocated closures",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T20:28:20.556Z"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "Wire escape analysis into compiler: annotate CompiledFunction with escape info",
+        "status": "upcoming",
+        "plan_ref": "T12"
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "task": "Add non-escaping closure optimization: skip GC tracking for stack-local closures",
+        "status": "upcoming",
+        "plan_ref": "T12"
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "task": "Add escape analysis tests for compiler integration",
+        "status": "upcoming",
+        "plan_ref": "T12"
       },
       {
         "id": "T13",
@@ -7968,13 +8017,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 9,
-    "blocksTotal": 23,
+    "blocksCompleted": 17,
+    "blocksTotal": 26,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 4,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 8,
+      "MAINTAIN": 2,
+      "EXPLORE": 1
     }
   },
   "artifacts": [
