@@ -93,7 +93,16 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
         if (!frame) {
           // Default: with ORDER BY → RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
           // Without ORDER BY → entire partition
-          return orderBy ? [0, i] : [0, len - 1];
+          if (!orderBy) return [0, len - 1, null];
+          
+          // RANGE semantics: include all peers (rows with same ORDER BY value)
+          const orderCol = orderBy[0].column;
+          const currentVal = db._orderByValue(orderCol, partition[i]);
+          let end = i;
+          while (end + 1 < len && db._orderByValue(orderCol, partition[end + 1]) === currentVal) {
+            end++;
+          }
+          return [0, end, null];
         }
         
         // RANGE mode: offset is based on ORDER BY value, not row position
