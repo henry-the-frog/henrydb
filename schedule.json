@@ -1725,6 +1725,17 @@
       "completed": "2026-04-25T18:21:21.347Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: All ALTER TABLE operations work! ADD COLUMN, RENAME COLUMN, DROP COLUMN, RENAME TABLE. Complete DDL support."
+    },
+    {
+      "id": "T159",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Final verification batch — CHECK, NOT NULL, UNIQUE, DEFAULT constraints",
+      "project": "henrydb",
+      "started": "2026-04-25T18:22:11.076Z",
+      "completed": "2026-04-25T18:22:11.223Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: CHECK, NOT NULL, UNIQUE all enforce correctly. CHECK rejects invalid values with clear error messages. NOT NULL rejects NULLs. UNIQUE rejects duplicates with the specific value in the error."
     }
   ],
   "focusProjects": [
@@ -2344,6 +2355,10 @@
     {
       "time": "2026-04-25T18:20:59.510Z",
       "msg": "Added T158 (EXPLORE) after end: EXPLORE: Test HenryDB ALTER TABLE support"
+    },
+    {
+      "time": "2026-04-25T18:22:02.287Z",
+      "msg": "Added T159 (EXPLORE) after end: EXPLORE: Final verification batch — CHECK, NOT NULL, UNIQUE, DEFAULT constraints"
     }
   ]
 }

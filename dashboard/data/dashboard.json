@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:21:21.382Z",
+  "generated": "2026-04-25T18:22:11.260Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB ALTER TABLE support",
-    "completedAt": "2026-04-25T18:21:21.382Z",
-    "taskId": "T158",
-    "summary": "EXPLORE: All ALTER TABLE operations work! ADD COLUMN, RENAME COLUMN, DROP COLUMN, RENAME TABLE. Complete DDL support.",
+    "task": "EXPLORE: Final verification batch — CHECK, NOT NULL, UNIQUE, DEFAULT constraints",
+    "completedAt": "2026-04-25T18:22:11.260Z",
+    "taskId": "T159",
+    "summary": "EXPLORE: CHECK, NOT NULL, UNIQUE all enforce correctly. CHECK rejects invalid values with clear error messages. NOT NULL rejects NULLs. UNIQUE rejects duplicates with the specific value in the error.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 158,
+    "blocksCompleted": 159,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 18,
-      "EXPLORE": 59
+      "EXPLORE": 60
     }
   },
   "artifacts": [
