@@ -789,6 +789,17 @@
       "completed": "2026-04-25T16:18:19.140Z",
       "duration_ms": 300000,
       "summary": "EXPLORE: Bytecode optimizer has 3 passes: DCE (unreachable code), peephole (4 patterns: jump-to-next, true+JumpNotTruthy, false+JumpNotTruthy, null+JumpNotTruthy), jump threading (chain collapse). The 42% reduction on if(true) comes from eliminating the dead else branch + removing redundant jumps. Well-implemented, correct."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Update monkey-lang README to reflect true scope (mini-V8, 20K lines, compiler pipeline)",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:18:59.152Z",
+      "completed": "2026-04-25T16:20:03.923Z",
+      "duration_ms": 300000,
+      "summary": "Updated monkey-lang README with true scope: mini-V8, 20.5K lines, 12 compiler modules, GC, debugger, hidden classes, 8735 tests. Fixed pipeline diagram, added runtime section."
     }
   ],
   "focusProjects": [
@@ -1076,6 +1087,10 @@
     {
       "time": "2026-04-25T16:17:47.353Z",
       "msg": "Added T72 (EXPLORE) after end: EXPLORE: Deep dive into monkey-lang bytecode optimizer passes"
+    },
+    {
+      "time": "2026-04-25T16:18:51.563Z",
+      "msg": "Added T73 (BUILD) after end: Update monkey-lang README to reflect true scope (mini-V8, 20K lines, compiler pipeline)"
     }
   ]
 }
