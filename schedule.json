@@ -744,15 +744,82 @@
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T21:15:35.490Z",
+      "completed": "2026-04-25T21:15:35.726Z",
+      "duration_ms": 0,
+      "summary": "Skipped — depth pivot."
     },
     {
       "id": "T68",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Git push and session wrap-up",
+      "started": "2026-04-25T21:15:42.432Z",
+      "completed": "2026-04-25T21:15:42.638Z",
+      "duration_ms": 0,
+      "summary": "Deferred — depth pivot."
+    },
+    {
+      "id": "T72",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep investigation: run HenryDB fuzzer on all 10 seeds to measure improvement from aggregate fix",
+      "project": "henrydb",
+      "started": "2026-04-25T21:16:00.278Z",
+      "completed": "2026-04-25T21:16:21.107Z",
+      "duration_ms": 300000,
+      "summary": "Fuzzer: avg 96.7% across 10 seeds (200 iters each). Best: 99.5% (seed 42). Worst: 94% (seed 31415). Session B improved from ~96.5% baseline. Remaining 3.3%: window ordering, UNION, CTE edge cases."
+    },
+    {
+      "id": "T73",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B retrospective: what worked, what surprised, what to try tomorrow",
+      "started": "2026-04-25T21:16:27.345Z",
+      "completed": "2026-04-25T21:16:44.806Z",
+      "duration_ms": 180000,
+      "summary": "Retrospective done. Key theme: depth > breadth. Surprises: SSA OOM simple fix, Number(empty)=0 coercion, f-strings already existed. Tomorrow: per-function SSA, fuzzer gap, lambda-calculus."
+    },
+    {
+      "id": "T74",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: stress test template literals and comments with complex programs",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:16:50.772Z",
+      "completed": "2026-04-25T21:17:19.057Z",
+      "duration_ms": 180000,
+      "summary": "10/10 stress tests pass. Nested templates, comments, division, empty, 50 interpolations in 3.4ms. F-string and backtick equivalence confirmed. All robust."
+    },
+    {
+      "id": "T75",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: investigate prelude performance — how does it compare to native builtins?",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:17:25.292Z",
+      "completed": "2026-04-25T21:17:50.006Z",
+      "duration_ms": 180000,
+      "summary": "Prelude HOFs are ~3x slower than native evaluator builtins (2.1ms vs 0.6ms per map of 100 elements). Expected due to recursive frame overhead. Adequate for most use cases. If perf critical: add VM callback mechanism."
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Knowledge capture: update scratch notes and MEMORY.md with Session B learnings",
+      "started": "2026-04-25T21:17:57.269Z",
+      "completed": "2026-04-25T21:18:25.175Z",
+      "duration_ms": 120000,
+      "summary": "Session B learnings captured in scratch/session-b-learnings.md. Key themes: type systems, escape analysis, SSA, prelude pattern, 5 bugs."
+    },
+    {
+      "id": "T77",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Git push and session wrap-up"
+      "task": "Git push all, update TODO.md, session summary"
     }
   ],
   "focusProjects": [
@@ -1032,6 +1099,30 @@
     {
       "time": "2026-04-25T21:12:05.235Z",
       "msg": "PLAN T63 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:15:52.753Z",
+      "msg": "Added T72 (EXPLORE) after end: Deep investigation: run HenryDB fuzzer on all 10 seeds to measure improvement from aggregate fix"
+    },
+    {
+      "time": "2026-04-25T21:15:52.877Z",
+      "msg": "Added T73 (THINK) after end: Session B retrospective: what worked, what surprised, what to try tomorrow"
+    },
+    {
+      "time": "2026-04-25T21:15:52.995Z",
+      "msg": "Added T74 (EXPLORE) after end: monkey-lang: stress test template literals and comments with complex programs"
+    },
+    {
+      "time": "2026-04-25T21:15:53.114Z",
+      "msg": "Added T75 (EXPLORE) after end: monkey-lang: investigate prelude performance — how does it compare to native builtins?"
+    },
+    {
+      "time": "2026-04-25T21:15:53.242Z",
+      "msg": "Added T76 (MAINTAIN) after end: Knowledge capture: update scratch notes and MEMORY.md with Session B learnings"
+    },
+    {
+      "time": "2026-04-25T21:15:53.360Z",
+      "msg": "Added T77 (MAINTAIN) after end: Git push all, update TODO.md, session summary"
     }
   ]
 }
