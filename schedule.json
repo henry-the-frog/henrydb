@@ -1073,6 +1073,17 @@
       "completed": "2026-04-25T17:10:03.755Z",
       "duration_ms": 300000,
       "summary": "Fixed optimizer jump target remapping. rebuildBytecode now finds nearest surviving instruction when target is removed by DCE. 916/920 tests pass (was 915). Nested-if miscompilation fixed."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix 4 remaining debugger test failures in monkey-lang",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:10:24.519Z",
+      "completed": "2026-04-25T17:11:34.532Z",
+      "duration_ms": 300000,
+      "summary": "MILESTONE: 920/920 monkey-lang tests pass (100%). Fixed by gating constant substitution behind optimize flag. Debugger tests now pass with optimize:false. From 33 failures to 0 in one session."
     }
   ],
   "focusProjects": [
@@ -1456,6 +1467,10 @@
     {
       "time": "2026-04-25T17:08:41.928Z",
       "msg": "Added T98 (BUILD) after end: Fix optimizer nested-if miscompilation (optimizer.test.js)"
+    },
+    {
+      "time": "2026-04-25T17:10:21.098Z",
+      "msg": "Added T99 (BUILD) after end: Fix 4 remaining debugger test failures in monkey-lang"
     }
   ]
 }
