@@ -1,18 +1,17 @@
-# CURRENT.md — Session State
+# CURRENT.md
 
-## Status
-status: session-ended
-mode: N/A
-task: Session A complete (Apr 24, 2026, afternoon)
-session: Session A continued (Apr 24, 2026, 12:30-14:15 MDT)
-tasks_completed_this_session: 6
-builds: 3
-explores: 1
-thinks: 1
-plans: 1
-started: 2026-04-24T18:30:00Z
-ended: 2026-04-24T19:45:00Z
+## Status: session-ended
 
-## Session Highlights
-- DQN/REINFORCE RL verification: 30/30 tests pass, DQN learns GridWorld perfectly (20/20 greedy success)
-- Vectorized GROUP BY integration: auto-select for eligible queries, multi-group support, zero regressions across 1200+ tests
+### Last Session: Session B (Apr 24, 2026, 2:15 PM - 8:00 PM MDT)
+- **Blog published**: "4,313 Tests Later: Building a SQL Database in JavaScript"
+- **Bugs fixed**: 9 in HenryDB
+- **Tests verified**: 13,185 (HenryDB 10,725 + neural-net 2,460), 99.5% pass
+- **SQL features**: 315+ verified through manual exploration
+- **Key demos**: PG wire protocol, TPC-H Q1+Q3, vectorized engine, WAL persistence, EXPLAIN ANALYZE
+
+### Project Stats
+- **HenryDB**: 369 source files, 496,834 LOC, 871 test files, ~15,552 tests
+- **Neural-net**: 168 source files, 2,460 tests (0 failures)
+
+### Repos
+- All pushed and synced
