@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:46:46.533Z",
+  "generated": "2026-04-25T18:47:50.504Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB LISTEN/NOTIFY events",
-    "completedAt": "2026-04-25T18:46:46.533Z",
-    "taskId": "T182",
-    "summary": "EXPLORE: Event system exists (db-events.js, 11 tests pass). LISTEN/NOTIFY via programmatic API, not SQL syntax. event-emitter also works (separate test file). Event triggers for DML operations.",
+    "task": "EXPLORE: Test HenryDB MVCC isolation levels",
+    "completedAt": "2026-04-25T18:47:50.504Z",
+    "taskId": "T183",
+    "summary": "EXPLORE: MVCC verified. 17 MVCC test files. mvcc.test.js (6 pass), mvcc-isolation.test.js (12 pass). Supports: READ COMMITTED, REPEATABLE READ, SERIALIZABLE. Full snapshot isolation.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 182,
+    "blocksCompleted": 183,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 21,
-      "EXPLORE": 79
+      "EXPLORE": 80
     }
   },
   "artifacts": [

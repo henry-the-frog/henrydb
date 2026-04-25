@@ -1986,6 +1986,31 @@
       "completed": "2026-04-25T18:46:46.496Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Event system exists (db-events.js, 11 tests pass). LISTEN/NOTIFY via programmatic API, not SQL syntax. event-emitter also works (separate test file). Event triggers for DML operations."
+    },
+    {
+      "id": "T183",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB MVCC isolation levels",
+      "project": "henrydb",
+      "started": "2026-04-25T18:47:10.163Z",
+      "completed": "2026-04-25T18:47:50.468Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: MVCC verified. 17 MVCC test files. mvcc.test.js (6 pass), mvcc-isolation.test.js (12 pass). Supports: READ COMMITTED, REPEATABLE READ, SERIALIZABLE. Full snapshot isolation."
+    },
+    {
+      "id": "T184",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB advisory locks",
+      "project": "henrydb"
+    },
+    {
+      "id": "T185",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Count total features verified today",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2701,6 +2726,18 @@
     {
       "time": "2026-04-25T18:46:13.312Z",
       "msg": "Added T182 (EXPLORE) after end: EXPLORE: Test HenryDB LISTEN/NOTIFY events"
+    },
+    {
+      "time": "2026-04-25T18:47:01.368Z",
+      "msg": "Added T183 (EXPLORE) after end: EXPLORE: Test HenryDB MVCC isolation levels"
+    },
+    {
+      "time": "2026-04-25T18:47:01.485Z",
+      "msg": "Added T184 (EXPLORE) after end: EXPLORE: Test HenryDB advisory locks"
+    },
+    {
+      "time": "2026-04-25T18:47:01.602Z",
+      "msg": "Added T185 (EXPLORE) after end: EXPLORE: Count total features verified today"
     }
   ]
 }
