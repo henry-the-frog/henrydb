@@ -1899,6 +1899,17 @@
       "completed": "2026-04-25T18:36:42.307Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Column store (5 tests) and vectorized execution (23 tests) both pass. HenryDB has 3 storage engines: row store (heap), column store (OLAP), vectorized (batch). Complete hybrid OLTP/OLAP."
+    },
+    {
+      "id": "T175",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang stdlib — what built-in functions exist beyond len/push?",
+      "project": "monkey-lang",
+      "started": "2026-04-25T18:38:27.534Z",
+      "completed": "2026-04-25T18:39:40.936Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: 26/30 built-in functions work! Core (len,push,type,str,int,float), Functional (map,filter,reduce,range), Array (keys,values,reverse,sort,flatten,contains), String (join,split,indexOf,trim). 81 MonkeyBuiltin registrations total."
     }
   ],
   "focusProjects": [
@@ -2582,6 +2593,10 @@
     {
       "time": "2026-04-25T18:36:05.647Z",
       "msg": "Added T174 (EXPLORE) after end: EXPLORE: Test HenryDB column store and vectorized execution"
+    },
+    {
+      "time": "2026-04-25T18:38:22.295Z",
+      "msg": "Added T175 (EXPLORE) after end: EXPLORE: Test monkey-lang stdlib — what built-in functions exist beyond len/push?"
     }
   ]
 }

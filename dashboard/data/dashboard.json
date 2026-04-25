@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T18:36:42.344Z",
+  "generated": "2026-04-25T18:39:40.973Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB column store and vectorized execution",
-    "completedAt": "2026-04-25T18:36:42.344Z",
-    "taskId": "T174",
-    "summary": "EXPLORE: Column store (5 tests) and vectorized execution (23 tests) both pass. HenryDB has 3 storage engines: row store (heap), column store (OLAP), vectorized (batch). Complete hybrid OLTP/OLAP.",
-    "durationMs": 60000
+    "task": "EXPLORE: Test monkey-lang stdlib — what built-in functions exist beyond len/push?",
+    "completedAt": "2026-04-25T18:39:40.973Z",
+    "taskId": "T175",
+    "summary": "EXPLORE: 26/30 built-in functions work! Core (len,push,type,str,int,float), Functional (map,filter,reduce,range), Array (keys,values,reverse,sort,flatten,contains), String (join,split,indexOf,trim). 81 MonkeyBuiltin registrations total.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 174,
+    "blocksCompleted": 175,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 20,
-      "EXPLORE": 73
+      "EXPLORE": 74
     }
   },
   "artifacts": [
