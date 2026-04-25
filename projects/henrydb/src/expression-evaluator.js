@@ -278,8 +278,8 @@ P._evalAggregateExpr = function(expr, rows) {
       case 'COUNT': return isStarArg ? rows.length : values.length;
       case 'SUM': return values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) : null;
       case 'AVG': return values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null;
-      case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
-      case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
+      case 'MIN': return values.length ? values.reduce((a, b) => sqliteCompare(a, b) < 0 ? a : b) : null;
+      case 'MAX': return values.length ? values.reduce((a, b) => sqliteCompare(a, b) > 0 ? a : b) : null;
       case 'MEDIAN': return median(values);
       case 'PERCENTILE_CONT': {
         const p = expr.percentile ?? 0.5;
@@ -944,8 +944,8 @@ P._computeSingleAggregate = function(func, arg, rows, distinct) {
     case 'COUNT': return arg.type === 'literal' && arg.value === '*' ? rows.length : vals.length;
     case 'SUM': return vals.reduce((a, b) => Number(a) + Number(b), 0);
     case 'AVG': return vals.length > 0 ? vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length : null;
-    case 'MAX': return vals.length > 0 ? vals.reduce((a, b) => a > b ? a : b) : null;
-    case 'MIN': return vals.length > 0 ? vals.reduce((a, b) => a < b ? a : b) : null;
+    case 'MAX': return vals.length > 0 ? vals.reduce((a, b) => sqliteCompare(a, b) > 0 ? a : b) : null;
+    case 'MIN': return vals.length > 0 ? vals.reduce((a, b) => sqliteCompare(a, b) < 0 ? a : b) : null;
     default: return null;
   }
 }
@@ -1024,8 +1024,8 @@ P._computeAggregates = function(columns, rows) {
       }
       case 'SUM': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) : null; break;
       case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null; break;
-      case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
-      case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;
+      case 'MIN': result[name] = values.length ? values.reduce((a, b) => sqliteCompare(a, b) < 0 ? a : b) : null; break;
+      case 'MAX': result[name] = values.length ? values.reduce((a, b) => sqliteCompare(a, b) > 0 ? a : b) : null; break;
       case 'MEDIAN': result[name] = median(values); break;
       case 'GROUP_CONCAT':
       case 'STRING_AGG': {

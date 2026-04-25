@@ -2,6 +2,7 @@
 // Functions take "db" as first parameter (database context)
 
 import { percentileCont, median } from './percentile.js';
+import { sqliteCompare } from './type-affinity.js';
 
 export function selectWithGroupBy(db, ast, rows) {
   // Build alias→expression map from SELECT columns
@@ -219,8 +220,8 @@ export function selectWithGroupBy(db, ast, rows) {
         }
         case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
         case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
-        case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
-        case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
+        case 'MIN': return values.length ? values.reduce((a, b) => sqliteCompare(a, b) < 0 ? a : b) : null;
+        case 'MAX': return values.length ? values.reduce((a, b) => sqliteCompare(a, b) > 0 ? a : b) : null;
         case 'MEDIAN': return median(values);
         case 'GROUP_CONCAT':
         case 'STRING_AGG': {
