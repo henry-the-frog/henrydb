@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T17:33:14.354Z",
+  "generated": "2026-04-25T17:35:23.743Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fix HenryDB WHERE clause type comparison to match SQLite semantics",
-    "completedAt": "2026-04-25T17:33:14.354Z",
-    "taskId": "T112",
-    "summary": "Implemented SQLite-compatible type class comparison (NULL < INT < TEXT < BLOB). Fuzzer 94% → 96% across 10 seeds. ~100 failures fixed. Three comparison locations in expression evaluator updated.",
+    "mode": "EXPLORE",
+    "task": "EXPLORE: Analyze remaining 4% fuzzer failures — what specific queries fail?",
+    "completedAt": "2026-04-25T17:35:23.743Z",
+    "taskId": "T113",
+    "summary": "EXPLORE: Analyzed remaining failures. Found: (1) window SUM on text concatenating instead of returning 0 — FIXED (96→96.3%). (2) SELECT * LIMIT without ORDER BY = row ordering differences. (3) Some type coercion edge cases in UNION. Most remaining 3.7% is row ordering without ORDER BY.",
     "durationMs": 600000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 112,
+    "blocksCompleted": 113,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 53,
       "MAINTAIN": 10,
-      "EXPLORE": 26
+      "EXPLORE": 27
     }
   },
   "artifacts": [

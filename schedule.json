@@ -1225,6 +1225,17 @@
       "completed": "2026-04-25T17:33:14.224Z",
       "duration_ms": 600000,
       "summary": "Implemented SQLite-compatible type class comparison (NULL < INT < TEXT < BLOB). Fuzzer 94% → 96% across 10 seeds. ~100 failures fixed. Three comparison locations in expression evaluator updated."
+    },
+    {
+      "id": "T113",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Analyze remaining 4% fuzzer failures — what specific queries fail?",
+      "project": "henrydb",
+      "started": "2026-04-25T17:33:43.763Z",
+      "completed": "2026-04-25T17:35:23.621Z",
+      "duration_ms": 600000,
+      "summary": "EXPLORE: Analyzed remaining failures. Found: (1) window SUM on text concatenating instead of returning 0 — FIXED (96→96.3%). (2) SELECT * LIMIT without ORDER BY = row ordering differences. (3) Some type coercion edge cases in UNION. Most remaining 3.7% is row ordering without ORDER BY."
     }
   ],
   "focusProjects": [
@@ -1660,6 +1671,10 @@
     {
       "time": "2026-04-25T17:25:30.707Z",
       "msg": "Added T112 (BUILD) after end: Fix HenryDB WHERE clause type comparison to match SQLite semantics"
+    },
+    {
+      "time": "2026-04-25T17:33:37.726Z",
+      "msg": "Added T113 (EXPLORE) after end: EXPLORE: Analyze remaining 4% fuzzer failures — what specific queries fail?"
     }
   ]
 }
