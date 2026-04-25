@@ -928,6 +928,19 @@ export function parse(sql) {
 
 
   function parseSelectColumn() {
+    // Boolean literals TRUE/FALSE
+    if (peek().type === 'KEYWORD' && (peek().value === 'TRUE' || peek().value === 'FALSE')) {
+      const val = advance().value === 'TRUE';
+      let expr = { type: 'literal', value: val };
+      // Handle trailing arithmetic: TRUE AND x, etc.
+      expr = parseTrailingArithmetic(expr);
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      else if (peek().type === 'IDENT' && !isKeyword('FROM') && !isKeyword('WHERE') && !isKeyword('JOIN') && !isKeyword('ON') && !isKeyword('GROUP') && !isKeyword('ORDER') && !isKeyword('HAVING') && !isKeyword('LIMIT') && !isKeyword('UNION') && !isKeyword('INTERSECT') && !isKeyword('EXCEPT')) {
+        alias = readAlias();
+      }
+      return { type: 'expression', expr, alias: alias || (val ? 'TRUE' : 'FALSE') };
+    }
     // CURRENT_TIMESTAMP, CURRENT_DATE (no parens)
     if (peek().type === 'KEYWORD' && (peek().value === 'CURRENT_TIMESTAMP' || peek().value === 'CURRENT_DATE' || peek().value === 'CURRENT_TIME')) {
       const func = advance().value;

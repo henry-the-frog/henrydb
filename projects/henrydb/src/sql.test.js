@@ -333,5 +333,23 @@ describe('Database', () => {
       const r = db.execute("SELECT * FROM data ORDER BY id LIMIT (SELECT val FROM config WHERE key = 'limit')");
       assert.equal(r.rows.length, 3);
     });
+
+    it('TRUE/FALSE as boolean literals in SELECT', () => {
+      const r1 = db.execute('SELECT TRUE as v');
+      assert.strictEqual(r1.rows[0].v, true);
+      
+      const r2 = db.execute('SELECT FALSE as v');
+      assert.strictEqual(r2.rows[0].v, false);
+    });
+
+    it('TRUE/FALSE in WHERE clauses', () => {
+      db.execute('CREATE TABLE flags (id INT, active BOOLEAN)');
+      db.execute('INSERT INTO flags VALUES (1, TRUE)');
+      db.execute('INSERT INTO flags VALUES (2, FALSE)');
+      db.execute('INSERT INTO flags VALUES (3, TRUE)');
+      
+      const r = db.execute('SELECT * FROM flags WHERE active = TRUE');
+      assert.equal(r.rows.length, 2);
+    });
   });
 });
