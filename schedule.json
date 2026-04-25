@@ -734,6 +734,17 @@
       "completed": "2026-04-25T16:08:07.247Z",
       "duration_ms": 180000,
       "summary": "All 3 issues are type affinity differences, not bugs. Type system design choices, not correctness bugs."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire monkey-lang constant propagation into compiler — emit OpConstant for propagated values",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:08:39.006Z",
+      "completed": "2026-04-25T16:12:25.449Z",
+      "duration_ms": 600000,
+      "summary": "Wired constant propagation into monkey-lang compiler! New const-subst.js replaces variable refs with known values. let x=30; let y=x*3 now compiles to constants [30,90] instead of runtime multiply. All compiler+VM tests pass."
     }
   ],
   "focusProjects": [
@@ -1001,6 +1012,10 @@
     {
       "time": "2026-04-25T16:07:01.930Z",
       "msg": "Added T67 (EXPLORE) after end: EXPLORE: Investigate 3 new fuzzer-found issues (comparison order, type coercion, non-aggregate cols)"
+    },
+    {
+      "time": "2026-04-25T16:08:33.766Z",
+      "msg": "Added T68 (BUILD) after end: Wire monkey-lang constant propagation into compiler — emit OpConstant for propagated values"
     }
   ]
 }
