@@ -778,6 +778,17 @@
       "completed": "2026-04-25T16:17:22.745Z",
       "duration_ms": 180000,
       "summary": "Updated blog post: added fuzzer story section, updated stats (6 engines, 208K lines, distributed features, PL/SQL, wire protocol). Pushed."
+    },
+    {
+      "id": "T72",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Deep dive into monkey-lang bytecode optimizer passes",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:17:52.082Z",
+      "completed": "2026-04-25T16:18:19.140Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Bytecode optimizer has 3 passes: DCE (unreachable code), peephole (4 patterns: jump-to-next, true+JumpNotTruthy, false+JumpNotTruthy, null+JumpNotTruthy), jump threading (chain collapse). The 42% reduction on if(true) comes from eliminating the dead else branch + removing redundant jumps. Well-implemented, correct."
     }
   ],
   "focusProjects": [
@@ -1061,6 +1072,10 @@
     {
       "time": "2026-04-25T16:16:28.224Z",
       "msg": "Added T71 (BUILD) after end: Update HenryDB blog post with fuzzer story and latest stats (6 engines, 208K lines)"
+    },
+    {
+      "time": "2026-04-25T16:17:47.353Z",
+      "msg": "Added T72 (EXPLORE) after end: EXPLORE: Deep dive into monkey-lang bytecode optimizer passes"
     }
   ]
 }
