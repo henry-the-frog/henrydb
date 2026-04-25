@@ -262,15 +262,17 @@ async function fuzz() {
       henry.execute(sql);
       sqlite.exec(sql);
       
-      // Track table schema
+      // Track table schema (only if not already tracked — IF NOT EXISTS means first one wins)
       const match = sql.match(/CREATE TABLE IF NOT EXISTS (\w+) \((.+)\)/);
       if (match) {
         const name = match[1];
-        const cols = match[2].split(',').map(c => {
-          const parts = c.trim().split(' ');
-          return { name: parts[0], type: parts[1] };
-        });
-        tables[name] = cols;
+        if (!tables[name]) {
+          const cols = match[2].split(',').map(c => {
+            const parts = c.trim().split(' ');
+            return { name: parts[0], type: parts[1] };
+          });
+          tables[name] = cols;
+        }
       }
     } catch (e) {
       // Both should handle the same errors
@@ -287,10 +289,18 @@ async function fuzz() {
     
     // If one succeeded but other didn't, rollback the one that succeeded
     if (henryOk && !sqliteOk) {
-      // HenryDB accepted but SQLite didn't — delete the last row
-      // For simplicity, just note the mismatch
+      // HenryDB accepted but SQLite didn't — rollback HenryDB insert
+      try {
+        const tbl = sql.match(/INSERT INTO (\w+)/)?.[1];
+        if (tbl) henry.execute(`DELETE FROM ${tbl} WHERE rowid = (SELECT MAX(rowid) FROM ${tbl})`);
+      } catch {}
       if (VERBOSE) console.log(`INSERT mismatch (Henry OK, SQLite fail): ${sql}`);
     } else if (!henryOk && sqliteOk) {
+      // SQLite accepted but HenryDB didn't — rollback SQLite insert
+      try {
+        const tbl = sql.match(/INSERT INTO (\w+)/)?.[1];
+        if (tbl) sqlite.exec(`DELETE FROM ${tbl} WHERE rowid = (SELECT MAX(rowid) FROM ${tbl})`);
+      } catch {}
       if (VERBOSE) console.log(`INSERT mismatch (Henry fail, SQLite OK): ${sql}`);
     }
   }
