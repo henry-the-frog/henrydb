@@ -767,6 +767,17 @@
       "completed": "2026-04-25T16:16:03.457Z",
       "duration_ms": 300000,
       "summary": "Enhanced fuzzer with GROUP BY + HAVING. 100% on seed=42 (300 queries). Cross-seed avg ~96% (type affinity only). No new logic bugs found — GROUP BY/HAVING is correct."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Update HenryDB blog post with fuzzer story and latest stats (6 engines, 208K lines)",
+      "project": "henrydb",
+      "started": "2026-04-25T16:16:33.592Z",
+      "completed": "2026-04-25T16:17:22.745Z",
+      "duration_ms": 180000,
+      "summary": "Updated blog post: added fuzzer story section, updated stats (6 engines, 208K lines, distributed features, PL/SQL, wire protocol). Pushed."
     }
   ],
   "focusProjects": [
@@ -1046,6 +1057,10 @@
     {
       "time": "2026-04-25T16:15:16.382Z",
       "msg": "Added T70 (BUILD) after end: Enhance fuzzer with GROUP BY and HAVING queries"
+    },
+    {
+      "time": "2026-04-25T16:16:28.224Z",
+      "msg": "Added T71 (BUILD) after end: Update HenryDB blog post with fuzzer story and latest stats (6 engines, 208K lines)"
     }
   ]
 }
