@@ -1324,6 +1324,17 @@
       "completed": "2026-04-25T17:44:47.539Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: EXPLAIN ANALYZE is PostgreSQL-quality. Shows: cost estimation, actual vs estimated rows, per-operator timing, buffer stats, volcano plan with operator details, selectivity estimates. Full query planning infrastructure."
+    },
+    {
+      "id": "T122",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB Raft consensus — can we actually create a cluster?",
+      "project": "henrydb",
+      "started": "2026-04-25T17:45:05.601Z",
+      "completed": "2026-04-25T17:46:03.655Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: HenryDB distributed stack verified: Raft (10 tests), CRDTs (13 tests), Gossip/SWIM (7 tests). All 30 distributed tests pass. Full consensus + conflict resolution + membership."
     }
   ],
   "focusProjects": [
@@ -1795,6 +1806,10 @@
     {
       "time": "2026-04-25T17:44:22.904Z",
       "msg": "Added T121 (EXPLORE) after end: EXPLORE: Test HenryDB EXPLAIN ANALYZE — verify query plan statistics"
+    },
+    {
+      "time": "2026-04-25T17:45:01.672Z",
+      "msg": "Added T122 (EXPLORE) after end: EXPLORE: Test HenryDB Raft consensus — can we actually create a cluster?"
     }
   ]
 }
