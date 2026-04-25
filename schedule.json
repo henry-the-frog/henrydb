@@ -1411,6 +1411,17 @@
       "completed": "2026-04-25T17:54:32.350Z",
       "duration_ms": 300000,
       "summary": "Fixed JSON arrow operators (-> and ->>). Path $.name was doubled to $.$.name. Now checks for $ prefix before prepending. All 4 variants work: ->>$.name, ->>name, ->$.name, JSON_EXTRACT."
+    },
+    {
+      "id": "T130",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: How many total LOC across all projects? (accurate count)",
+      "project": "henrydb",
+      "started": "2026-04-25T17:55:01.151Z",
+      "completed": "2026-04-25T17:55:16.927Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Accurate LOC: 559,837 lines of JavaScript. henrydb: 212K, monkey-lang: 200K, neural-net: 59K, lambda-calculus: 43K, blog: 16K, riscv: 15K, git: 5K, fft: 3K, type-inference: 2K, regex: 2K, forth: 2K, huffman: 1K."
     }
   ],
   "focusProjects": [
@@ -1914,6 +1925,10 @@
     {
       "time": "2026-04-25T17:52:09.777Z",
       "msg": "Added T129 (BUILD) after end: Fix HenryDB ->> (JSON arrow) operator — currently returns null for $.path"
+    },
+    {
+      "time": "2026-04-25T17:54:54.155Z",
+      "msg": "Added T130 (EXPLORE) after end: EXPLORE: How many total LOC across all projects? (accurate count)"
     }
   ]
 }
