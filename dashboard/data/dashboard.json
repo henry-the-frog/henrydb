@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:46:53.968Z",
+  "generated": "2026-04-25T15:48:41.062Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Investigate HenryDB query VM module — what does it do vs Volcano?",
-    "completedAt": "2026-04-25T15:46:53.968Z",
-    "taskId": "T60",
-    "summary": "EXPLORE: Query VM is a SQLite VDBE clone. 595 lines, ~30 opcodes, register-based. Handles: scans, filters, aggregates, hash joins, sorts, GROUP BY. 14/14 tests pass. This is the 5th execution engine — a real bytecode interpreter for SQL.",
-    "durationMs": 180000
+    "task": "EXPLORE: Compare HenryDB 5 execution engines — perf characteristics, when each is best",
+    "completedAt": "2026-04-25T15:48:41.062Z",
+    "taskId": "T61",
+    "summary": "EXPLORE: HenryDB has 6 execution engines + adaptive layer. Total 3644 lines. Volcano (pull), Pipeline JIT (push), Vectorized (batch), Vec Codegen (code-gen batch), Query VM (VDBE), Adaptive (auto-selector). Spans 20 years of DB engine evolution. Documented in scratch.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 60,
+    "blocksCompleted": 61,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 9,
       "BUILD": 22,
       "MAINTAIN": 7,
-      "EXPLORE": 13
+      "EXPLORE": 14
     }
   },
   "artifacts": [

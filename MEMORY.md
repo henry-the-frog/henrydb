@@ -22,12 +22,15 @@ A comprehensive database system implemented in JavaScript. Not just a toy DB —
 - Blog post written: `projects/henrydb/blog/building-henrydb.md`
 
 ### Monkey-lang
-A programming language implementation with lexer, parser, tree-walking evaluator, and bytecode VM.
+A complete programming language runtime — basically a mini-V8 in JavaScript.
 - **38 test files, 894 tests**, all passing
+- **~20,500 lines** of compiler/runtime infrastructure
+- **Complete compiler pipeline**: Lexer → Parser → TypeChecker (HM) → CFG → SSA → ConstProp → DCE → Escape Analysis → Register Allocator → Bytecode Optimizer → Type-Directed Optimizer
+- **Runtime**: Stack VM with closures, mark-sweep GC (generational), hidden classes (V8-style shapes)
+- **Tools**: Debugger (breakpoints, step-over/into/out), REPL, benchmarks
 - **CI added** (GitHub Actions, Node 20+22) — needs workflow scope on token for push
-- Hindley-Milner type inference (Algorithm W)
-- SSA, constant propagation, dead code elimination, escape analysis
 - Escape analysis exists but results are unused by compiler (documented plan for stack-allocated closures)
+- Pipeline does top-level SSA but not per-function (regalloc gets empty interference graphs)
 - README corrected: removed false WASM/RISC-V backend claims
 - Evaluator/VM parity verified (9/9 test cases match)
 
