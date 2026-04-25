@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:29:01.644Z",
+  "generated": "2026-04-25T19:29:24.043Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB NULL handling (IS NULL, IS NOT NULL, COALESCE, NULLIF)",
-    "completedAt": "2026-04-25T19:29:01.644Z",
-    "taskId": "T214",
-    "summary": "NULL handling perfect! IS NULL, IS NOT NULL, COALESCE, NULLIF, IFNULL, NULL in aggregates (AVG ignores, COUNT(*) vs COUNT(col)), three-valued logic (NULL=NULL→NULL). All correct.",
+    "task": "EXPLORE: Test HenryDB CASE expression with different forms",
+    "completedAt": "2026-04-25T19:29:24.043Z",
+    "taskId": "T215",
+    "summary": "All CASE forms work! Simple, searched, NULL, nested, in GROUP BY (tier bucketing), in ORDER BY (custom sort). Complete CASE expression support.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 219,
+    "blocksCompleted": 220,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 24,
-      "EXPLORE": 112
+      "EXPLORE": 113
     }
   },
   "artifacts": [
