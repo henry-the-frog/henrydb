@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T16:28:51.297Z",
+  "generated": "2026-04-25T16:29:57.762Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB adaptive engine — does it pick the right engine for different queries?",
-    "completedAt": "2026-04-25T16:28:51.297Z",
-    "taskId": "T78",
-    "summary": "EXPLORE: Adaptive engine correctly selects Volcano for small tables (<5000 rows). Would need 5000+ rows to see Vectorized kick in. All queries return correct results through the adaptive layer.",
-    "durationMs": 180000
+    "task": "EXPLORE: Run HenryDB with realistic e-commerce schema + queries",
+    "completedAt": "2026-04-25T16:29:57.762Z",
+    "taskId": "T79",
+    "summary": "EXPLORE: Realistic e-commerce workload. 100 customers, 50 products, 500 orders, 1500 items. All queries work: multi-table JOINs, GROUP BY+HAVING, revenue by category, monthly trends, low stock alerts. Production-quality SQL execution.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 78,
+    "blocksCompleted": 79,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
       "BUILD": 33,
       "MAINTAIN": 8,
-      "EXPLORE": 18
+      "EXPLORE": 19
     }
   },
   "artifacts": [

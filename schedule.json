@@ -855,6 +855,17 @@
       "completed": "2026-04-25T16:28:51.261Z",
       "duration_ms": 180000,
       "summary": "EXPLORE: Adaptive engine correctly selects Volcano for small tables (<5000 rows). Would need 5000+ rows to see Vectorized kick in. All queries return correct results through the adaptive layer."
+    },
+    {
+      "id": "T79",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Run HenryDB with realistic e-commerce schema + queries",
+      "project": "henrydb",
+      "started": "2026-04-25T16:29:26.570Z",
+      "completed": "2026-04-25T16:29:57.727Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Realistic e-commerce workload. 100 customers, 50 products, 500 orders, 1500 items. All queries work: multi-table JOINs, GROUP BY+HAVING, revenue by category, monthly trends, low stock alerts. Production-quality SQL execution."
     }
   ],
   "focusProjects": [
@@ -1166,6 +1177,10 @@
     {
       "time": "2026-04-25T16:28:00.771Z",
       "msg": "Added T78 (EXPLORE) after end: EXPLORE: Test HenryDB adaptive engine — does it pick the right engine for different queries?"
+    },
+    {
+      "time": "2026-04-25T16:29:21.570Z",
+      "msg": "Added T79 (EXPLORE) after end: EXPLORE: Run HenryDB with realistic e-commerce schema + queries"
     }
   ]
 }
