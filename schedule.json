@@ -1838,9 +1838,13 @@
     {
       "id": "T172",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang closures and scoping edge cases",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T23:23:54.582Z",
+      "completed": "2026-04-25T23:24:27.608Z",
+      "duration_ms": 180000,
+      "summary": "Closure tests: counter (mutable state), nested (currying), mutation (set in closure), function composition, IIFE, recursive closures, hash methods all work. Only failure: array indexing with function call syntax [0]() fails parser."
     }
   ],
   "focusProjects": [
