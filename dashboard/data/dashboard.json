@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T20:34:04.290Z",
+  "generated": "2026-04-25T20:39:32.231Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add escape analysis tests for compiler integration",
-    "completedAt": "2026-04-25T20:34:04.290Z",
-    "taskId": "T26",
-    "summary": "13 escape analysis integration tests: 4 detection, 3 compiler annotations, 6 VM correctness. All pass. Complete end-to-end pipeline verified.",
-    "durationMs": 180000
+    "task": "Implement MEDIAN and PERCENTILE_CONT aggregates across all aggregate paths",
+    "completedAt": "2026-04-25T20:39:32.231Z",
+    "taskId": "T27",
+    "summary": "MEDIAN and PERCENTILE_CONT/DISC added across all aggregate paths. New shared percentile.js. Parser updated. All tests pass. MEDIAN(score) = 88 verified.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -7934,51 +7934,82 @@
       {
         "id": "T12",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: wire escape analysis into stack-allocated closures",
         "task": null,
-        "started": "2026-04-25T20:28:20.556Z"
+        "started": "2026-04-25T20:28:20.556Z",
+        "completed": "2026-04-25T20:29:34.162Z",
+        "duration_ms": 180000,
+        "summary": "Plan: (1) Run escape analysis during compilation, annotate CompiledFunction with escapesScope flag, (2) VM skips _track for non-escaping closures, (3) Test coverage. Key insight: JS VM cannot do real stack alloc, but can skip GC tracking."
       },
       {
         "id": "T24",
         "mode": "BUILD",
         "task": "Wire escape analysis into compiler: annotate CompiledFunction with escape info",
-        "status": "upcoming",
-        "plan_ref": "T12"
+        "status": "done",
+        "plan_ref": "T12",
+        "started": "2026-04-25T20:29:37.925Z",
+        "completed": "2026-04-25T20:32:49.578Z",
+        "duration_ms": 600000,
+        "summary": "Wired escape analysis into compiler. Fixed 2 escape analysis bugs (anonymous FunctionLiteral handling, implicit return detection). CompiledFunction now has escapes field. All tests pass."
       },
       {
         "id": "T25",
         "mode": "BUILD",
         "task": "Add non-escaping closure optimization: skip GC tracking for stack-local closures",
-        "status": "upcoming",
-        "plan_ref": "T12"
+        "status": "done",
+        "plan_ref": "T12",
+        "started": "2026-04-25T20:32:53.167Z",
+        "completed": "2026-04-25T20:33:26.464Z",
+        "duration_ms": 180000,
+        "summary": "VM now skips _track() for non-escaping closures. Optimization wired end-to-end: escape analysis → compiler annotation → VM optimization. All tests pass."
       },
       {
         "id": "T26",
         "mode": "BUILD",
         "task": "Add escape analysis tests for compiler integration",
-        "status": "upcoming",
-        "plan_ref": "T12"
+        "status": "done",
+        "plan_ref": "T12",
+        "started": "2026-04-25T20:33:30.011Z",
+        "completed": "2026-04-25T20:34:04.246Z",
+        "duration_ms": 180000,
+        "summary": "13 escape analysis integration tests: 4 detection, 3 compiler annotations, 6 VM correctness. All pass. Complete end-to-end pipeline verified."
       },
       {
         "id": "T13",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T20:34:13.424Z",
+        "completed": "2026-04-25T20:34:13.569Z",
+        "duration_ms": 0,
+        "summary": "Skipped — placeholder. Escape analysis work done in T24/T25/T26."
       },
       {
         "id": "T14",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping + knowledge capture"
+        "status": "done",
+        "task": "Housekeeping + knowledge capture",
+        "started": "2026-04-25T20:34:17.700Z",
+        "completed": "2026-04-25T20:34:23.852Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed all repos."
       },
       {
         "id": "T15",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: add MEDIAN and PERCENTILE_CONT aggregates",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T20:34:28.568Z"
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "task": "Implement MEDIAN and PERCENTILE_CONT aggregates across all aggregate paths",
+        "status": "upcoming",
+        "plan_ref": "T15"
       },
       {
         "id": "T16",
@@ -8017,13 +8048,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 17,
-    "blocksTotal": 26,
+    "blocksCompleted": 21,
+    "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 8,
-      "MAINTAIN": 2,
+      "PLAN": 4,
+      "BUILD": 10,
+      "MAINTAIN": 3,
       "EXPLORE": 1
     }
   },
