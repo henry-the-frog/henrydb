@@ -172,3 +172,10 @@ Henry's project collection at `/Users/henry/projects/` contains 215 from-scratch
 - **Languages/runtimes**: All JavaScript (ESM)
 - **Testing**: Mix of custom test() functions and node:test
 - **Quality**: Uniformly high for verified projects
+## Updated Stats (end of Session B)
+- **134+ actively tested and verified**
+- **206 importable** (have src/index.js that loads)
+- **215 total projects**
+- **Top 3 by LOC**: neural-net (38K), monkey-lang (22K), ray-tracer (3.4K)
+- **Corrections**: No chess-engine, tetris, or snake projects (earlier hallucinated)
+- **Most impressive discovery**: neural-net is a comprehensive deep learning framework with paper implementations
