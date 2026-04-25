@@ -159,9 +159,9 @@ describe('Persistence End-to-End', () => {
     const bp = new BufferPool(4);
     const heap = new FileBackedHeap('stats', dm, bp);
     
-    // Insert data across multiple pages
+    // Insert data across multiple pages (larger tuples to exceed 4-page pool with 32KB pages)
     for (let i = 0; i < 200; i++) {
-      heap.insert([i, 'x'.repeat(200)]);
+      heap.insert([i, 'x'.repeat(2000)]);
     }
     
     const stats = bp.stats();

@@ -121,11 +121,10 @@ describe('FileBackedHeap', () => {
     // Pool size 4 but we use more pages
     const { heap, dm } = createHeap('test', 4);
     
-    // Insert enough data to use many pages
-    // Use larger values to fill pages faster
+    // Insert enough data to use many pages (32KB pages need ~5000 bytes per tuple to fill 4+ pages)
     const rids = [];
     for (let i = 0; i < 200; i++) {
-      rids.push(heap.insert([i, 'x'.repeat(200)])); // ~200 bytes per tuple → ~20 per page
+      rids.push(heap.insert([i, 'x'.repeat(2000)])); // ~2000 bytes per tuple → ~16 per page
     }
     
     // Should work even though pool is tiny

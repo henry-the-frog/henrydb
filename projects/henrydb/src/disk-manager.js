@@ -15,7 +15,7 @@ import { openSync, readSync, writeSync, closeSync, fstatSync, ftruncateSync, unl
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-export const PAGE_SIZE = 4096;
+export const PAGE_SIZE = 32768; // 32KB — matches page.js in-memory page size
 
 /**
  * DiskManager — File-backed page storage.
@@ -26,13 +26,13 @@ export class DiskManager {
    * @param {string} filePath - Path to the database file
    * @param {number} pageSize - Size of each page in bytes (default: 4096)
    */
-  constructor(filePath, pageSizeOrOpts = 4096) {
+  constructor(filePath, pageSizeOrOpts = PAGE_SIZE) {
     this.filePath = filePath;
     // Accept either a number (pageSize) or options object
     if (typeof pageSizeOrOpts === 'object' && pageSizeOrOpts !== null) {
-      this.pageSize = pageSizeOrOpts.pageSize ?? 4096;
+      this.pageSize = pageSizeOrOpts.pageSize ?? PAGE_SIZE;
     } else {
-      this.pageSize = pageSizeOrOpts ?? 4096;
+      this.pageSize = pageSizeOrOpts ?? PAGE_SIZE;
     }
     this._fd = openSync(filePath, 'a+'); // Create if not exists, read+write
     // Reopen with r+ for proper random access

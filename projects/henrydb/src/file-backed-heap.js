@@ -204,6 +204,10 @@ export class FileBackedHeap {
     const page = this._fetchPage(pageId);
     page.initialize();
     const slotIdx = page.insertTuple(tupleBytes);
+    if (slotIdx < 0) {
+      this._unpinPage(pageId, false);
+      throw new Error(`Row too large: encoded size ${tupleBytes.length} bytes exceeds page capacity of ${PAGE_SIZE} bytes`);
+    }
     this._fsm.update(pageId, page.freeSpace());
     if (this._wal) {
       const lsn = this._wal.appendInsert(this._currentTxId || 0, this.name, pageId, slotIdx, values);
