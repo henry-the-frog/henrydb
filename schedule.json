@@ -1443,6 +1443,28 @@
       "completed": "2026-04-25T21:52:39.730Z",
       "duration_ms": 60000,
       "summary": "chars builtin added to VM. Now 51 VM builtins. Eval-VM parity improved."
+    },
+    {
+      "id": "T135",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Systematic eval-VM builtin parity audit",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:52:55.843Z",
+      "completed": "2026-04-25T21:53:15.607Z",
+      "duration_ms": 120000,
+      "summary": "Parity audit: 30+ eval builtins missing from VM. HOFs handled by prelude. Simple additions possible: sin, cos, E, PI, merge, product. Naming differences: starts_with vs startsWith."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add sin, cos, E, PI, merge, product to VM builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:53:15.990Z",
+      "completed": "2026-04-25T21:55:25.116Z",
+      "duration_ms": 180000,
+      "summary": "4 VM builtins added: sin, cos, merge, product. 55 total VM builtins now. merge fixed to handle ShapedHash."
     }
   ],
   "focusProjects": [
@@ -1974,6 +1996,14 @@
     {
       "time": "2026-04-25T21:51:48.216Z",
       "msg": "Added T134 (BUILD) after end: Add chars builtin to VM (missing from eval-VM parity)"
+    },
+    {
+      "time": "2026-04-25T21:52:55.575Z",
+      "msg": "Added T135 (EXPLORE) after end: Systematic eval-VM builtin parity audit"
+    },
+    {
+      "time": "2026-04-25T21:53:15.760Z",
+      "msg": "Added T136 (BUILD) after end: Add sin, cos, E, PI, merge, product to VM builtins"
     }
   ]
 }

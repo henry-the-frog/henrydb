@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:52:39.766Z",
+  "generated": "2026-04-25T21:55:25.181Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add chars builtin to VM (missing from eval-VM parity)",
-    "completedAt": "2026-04-25T21:52:39.766Z",
-    "taskId": "T134",
-    "summary": "chars builtin added to VM. Now 51 VM builtins. Eval-VM parity improved.",
-    "durationMs": 60000
+    "task": "Add sin, cos, E, PI, merge, product to VM builtins",
+    "completedAt": "2026-04-25T21:55:25.181Z",
+    "taskId": "T136",
+    "summary": "4 VM builtins added: sin, cos, merge, product. 55 total VM builtins now. merge fixed to handle ShapedHash.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 133,
+    "blocksCompleted": 135,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 31,
-      "BUILD": 60,
+      "BUILD": 61,
       "MAINTAIN": 22,
-      "EXPLORE": 14
+      "EXPLORE": 15
     }
   },
   "artifacts": [
