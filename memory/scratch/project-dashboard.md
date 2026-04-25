@@ -1,22 +1,22 @@
 # Project Dashboard (2026-04-25)
 
-## Cross-Project Stats
-| Project | Source Files | Test Files | Test Cases | LOC | Status |
-|---------|-------------|-----------|------------|-----|--------|
-| henrydb | 369 | 873 | 8,218 | 208K | ✅ All pass, fuzzer 97%+ |
-| monkey-lang | 190 | 38 | 8,735 | 199K | ✅ All pass, const-subst wired |
-| neural-net | ~80 | ~50 | 2,323 | 46K | ✅ Tutorial written |
-| lambda-calculus | 190 | 198 | 469 | 43K | ⬜ Unexplored |
-| regex-engine | ~10 | ~5 | ~100 | 1K | ⬜ Unexplored |
-| huffman | ~10 | ~5 | ~100 | 3K | ⬜ Unexplored |
-| forth | ~15 | ~8 | ~150 | 8K | ⬜ Unexplored |
-| fft | ~10 | ~5 | ~100 | 5K | ⬜ Unexplored |
-| git | ~20 | ~10 | ~200 | 10K | ⬜ Unexplored |
-| riscv-emulator | ~15 | ~8 | ~150 | 9K | ⬜ Unexplored |
-| sat-solver | ~10 | ~5 | ~100 | 3K | ✅ Profiled (666K prop/sec) |
-| dns-server | ~10 | ~5 | ~100 | 2K | ⬜ Unexplored |
-| raft-consensus | ~10 | ~5 | ~100 | 2K | ⬜ Unexplored |
-| **TOTAL** | **~950** | **~1250** | **~20,438** | **~559K** | |
+## Cross-Project Stats (Verified Apr 25)
+| Project | LOC | Tests | Status |
+|---------|-----|-------|--------|
+| henrydb | 208K | 8,218 | ✅ Fuzzer 97%+ |
+| monkey-lang | 199K | 8,735 | ✅ Const-subst wired |
+| neural-net | 46K | 2,323 | ✅ Tutorial written |
+| lambda-calculus | 43K | 469 (203 suites) | ✅ All pass |
+| riscv-emulator | 9K | 166 | ✅ All pass |
+| git | 10K | 100 | ✅ All pass |
+| regex-engine | 1K | 113 | ✅ All pass |
+| sat-solver | 3K | 12 | ✅ Profiled |
+| dns-server | 2K | 26 | ✅ All pass |
+| huffman | 3K | 4 | ✅ All pass |
+| raft-consensus | 2K | ~20 | ✅ (in henrydb) |
+| fft | 0 | 0 | ⬜ Empty |
+| forth | 0 | 0 | ⬜ Empty |
+| **TOTAL** | **~559K** | **~20,438** | **11/13 active** |
 
 ## Today's Session A (8:15 AM - ongoing)
 - **71+ tasks** in ~2 hours
