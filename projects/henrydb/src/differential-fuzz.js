@@ -76,6 +76,31 @@ function genSelect(tables) {
   // Decide: simple query, JOIN, or GROUP BY
   const doJoin = rand() < 0.2 && tableNames.length >= 2;
   const doGroupBy = rand() < 0.25 && !doJoin;
+  const doSubquery = rand() < 0.15 && !doJoin && !doGroupBy;
+  const doCTE = rand() < 0.10 && !doJoin && !doGroupBy && !doSubquery;
+  
+  // CTE
+  if (doCTE) {
+    const col = pick(tables[name].map(c => c.name));
+    const aggFunc = pick(['COUNT', 'SUM', 'MAX', 'MIN']);
+    parts.push(`WITH cte AS (SELECT ${col}, ${aggFunc}(${col}) as agg FROM ${name} GROUP BY ${col})`);
+    parts.push(`SELECT * FROM cte`);
+    if (rand() < 0.3) parts.push(`WHERE agg ${pick(['>', '<', '>='])} ${genIntLiteral()}`);
+    if (rand() < 0.3) parts.push(`LIMIT ${randInt(1, 10)}`);
+    return parts.join(' ');
+  }
+  
+  // Subquery in WHERE
+  if (doSubquery) {
+    const col = pick(tables[name].map(c => c.name));
+    const op = pick(['>', '<', '>=', '<=', '=']);
+    const aggFunc = pick(['AVG', 'MIN', 'MAX']);
+    parts.push(`*`);
+    parts.push(`FROM ${name}`);
+    parts.push(`WHERE ${col} ${op} (SELECT ${aggFunc}(${col}) FROM ${name})`);
+    if (rand() < 0.3) parts.push(`LIMIT ${randInt(1, 10)}`);
+    return parts.join(' ');
+  }
   
   // Columns
   if (doGroupBy) {
