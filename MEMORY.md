@@ -4,8 +4,10 @@
 
 ### HenryDB
 A comprehensive database system implemented in JavaScript. Not just a toy DB — it's a CS textbook in code.
-- **369 source files, 873 test files, ~8,200 tests, ALL PASSING**
-- **208K+ lines of code** (79K source + 129K tests)
+- **875 test files, 8,982 test cases, ALL PASSING**
+- **212K lines of code**
+- **Differential fuzzer**: 97.2% match rate vs SQLite (6000 queries, 15 types)
+- **14 bugs found and fixed** (Apr 25 session)
 - **6 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM, Adaptive
 - **5 database paradigms**: Relational, Document, FTS, Vector, Time-series
 - **5 concurrency control schemes**: 2PL, MVCC, SSI, OCC, Timestamp Ordering
@@ -23,8 +25,10 @@ A comprehensive database system implemented in JavaScript. Not just a toy DB —
 
 ### Monkey-lang
 A complete programming language runtime — basically a mini-V8 in JavaScript.
-- **38 test files, ~8,735 test cases**, all passing
-- **~20,500 lines** of compiler/runtime infrastructure
+- **39 test files, 920/920 test cases (100% pass rate)**
+- **200K lines** of compiler/runtime infrastructure
+- **Optimizer fuzzer**: 100% pass rate (1600+ random programs)
+- **Bytecode optimizer**: DCE + peephole + jump threading, default-on, 50% bytecode reduction
 - **Complete compiler pipeline**: Lexer → Parser → TypeChecker (HM) → CFG → SSA → ConstProp → DCE → Escape Analysis → Register Allocator → Bytecode Optimizer → Type-Directed Optimizer
 - **Runtime**: Stack VM with closures, mark-sweep GC (generational), hidden classes (V8-style shapes)
 - **Tools**: Debugger (breakpoints, step-over/into/out), REPL, benchmarks
