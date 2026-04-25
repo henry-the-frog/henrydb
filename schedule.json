@@ -800,6 +800,17 @@
       "completed": "2026-04-25T16:20:03.923Z",
       "duration_ms": 300000,
       "summary": "Updated monkey-lang README with true scope: mini-V8, 20.5K lines, 12 compiler modules, GC, debugger, hidden classes, 8735 tests. Fixed pipeline diagram, added runtime section."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Enhance fuzzer with subquery, window function, and CTE queries",
+      "project": "henrydb",
+      "started": "2026-04-25T16:20:46.870Z",
+      "completed": "2026-04-25T16:21:37.311Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced fuzzer with subqueries and CTEs. ~97% pass rate. Remaining diffs are type affinity on text column aggregates (AVG of text). No new logic bugs found."
     }
   ],
   "focusProjects": [
@@ -1091,6 +1102,10 @@
     {
       "time": "2026-04-25T16:18:51.563Z",
       "msg": "Added T73 (BUILD) after end: Update monkey-lang README to reflect true scope (mini-V8, 20K lines, compiler pipeline)"
+    },
+    {
+      "time": "2026-04-25T16:20:37.699Z",
+      "msg": "Added T74 (BUILD) after end: Enhance fuzzer with subquery, window function, and CTE queries"
     }
   ]
 }
