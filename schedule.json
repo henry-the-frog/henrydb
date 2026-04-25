@@ -2008,6 +2008,31 @@
       "completed": "2026-04-25T23:48:33.098Z",
       "duration_ms": 60000,
       "summary": "No concurrency features — no goroutines, channels, async/await, or threading. monkey-lang is purely single-threaded. Makes sense for a language focused on compilation pipeline and VM design. Concurrency would be a major feature addition."
+    },
+    {
+      "id": "T188",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB EXPLAIN ANALYZE with actual timing",
+      "project": "henrydb",
+      "started": "2026-04-25T23:59:20.373Z",
+      "completed": "2026-04-25T23:59:40.966Z",
+      "duration_ms": 120000,
+      "summary": "EXPLAIN ANALYZE: PostgreSQL-style output with per-operator timing (SeqScan 1.9ms, Filter 2.6ms, Sort 2.9ms, Limit 3.0ms), buffer stats (heap_scans, buffer_reads, index_lookups), rows examined/removed, estimation accuracy. Planning 0.1ms, execution 8.5ms for 1000-row scan."
+    },
+    {
+      "id": "T189",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net training on MNIST-like data",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T190",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Understand HenryDB storage engine — B-tree tables, pages, buffer pool",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -2751,6 +2776,18 @@
     {
       "time": "2026-04-25T23:47:41.043Z",
       "msg": "Added T187 (EXPLORE) after end: EXPLORE: Test monkey-lang concurrent/parallel features — goroutines?"
+    },
+    {
+      "time": "2026-04-25T23:59:15.671Z",
+      "msg": "Added T188 (EXPLORE) after end: EXPLORE: Test HenryDB EXPLAIN ANALYZE with actual timing"
+    },
+    {
+      "time": "2026-04-25T23:59:15.791Z",
+      "msg": "Added T189 (EXPLORE) after end: EXPLORE: Test neural-net training on MNIST-like data"
+    },
+    {
+      "time": "2026-04-25T23:59:15.912Z",
+      "msg": "Added T190 (EXPLORE) after end: EXPLORE: Understand HenryDB storage engine — B-tree tables, pages, buffer pool"
     }
   ]
 }
