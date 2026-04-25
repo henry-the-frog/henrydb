@@ -1,109 +1,52 @@
-# MEMORY.md — Long-Term Memory
+# MEMORY.md - Long-Term Memory
 
 ## Projects
 
-### HenryDB
-A comprehensive database system implemented in JavaScript. Not just a toy DB — it's a CS textbook in code.
-- **875 test files, 8,982 test cases, ALL PASSING**
-- **212K lines of code**
-- **Differential fuzzer**: 97.2% match rate vs SQLite (6000 queries, 15 types)
-- **14 bugs found and fixed** (Apr 25 session)
-- **6 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM, Adaptive
-- **5 database paradigms**: Relational, Document, FTS, Vector, Time-series
-- **5 concurrency control schemes**: 2PL, MVCC, SSI, OCC, Timestamp Ordering
-- **3 storage layouts**: Heap, Columnar, Clustered B+tree
-- **12+ join algorithms**, 10+ index types, 8 hash table variants, 8 cache policies
-- Window functions, CTEs, triggers, NATURAL JOIN, UNIQUE constraints
-- DATE/TIME/DATETIME modifiers (SQLite-compatible: +N days, start of month, etc.)
-- REGEXP/RLIKE operator support
-- TRUE/FALSE as proper boolean literals in SELECT
-- LIMIT with subquery evaluation
-- GENERATED columns (GENERATED ALWAYS AS expr STORED)
-- Unified selectivity estimator (shared between classic and Volcano planners)
-- Performance: 14K inserts/s, 9.7K lookups/s, 500K scan rows/s on 10K rows
-- Blog post written: `projects/henrydb/blog/building-henrydb.md`
+### monkey-lang (/Users/henry/projects/monkey-lang)
+- **What**: Complete programming language: lexer → parser → AST → evaluator & bytecode compiler → VM
+- **Size**: 22K LOC, 1149 tests, 78 source files, 2200+ commits
+- **Language features**: closures, pattern matching, destructuring, for-in, comprehensions, spread/rest, template literals, comments, import/export, enums, try-catch, pipe operator, ranges
+- **Infrastructure**: CFG, SSA, liveness analysis, escape analysis, register allocation, type inference, type checker, inline caching, GC
+- **55 VM builtins + 17 prelude HOFs** (map, filter, reduce, etc.)
+- **VM is 3-6x faster than tree-walking evaluator** for computation
+- **Zero test failures**
 
-### Monkey-lang
-A complete programming language runtime — basically a mini-V8 in JavaScript.
-- **39 test files, 920/920 test cases (100% pass rate)**
-- **200K lines** of compiler/runtime infrastructure
-- **Optimizer fuzzer**: 100% pass rate (1600+ random programs)
-- **Bytecode optimizer**: DCE + peephole + jump threading, default-on, 50% bytecode reduction
-- **Complete compiler pipeline**: Lexer → Parser → TypeChecker (HM) → CFG → SSA → ConstProp → DCE → Escape Analysis → Register Allocator → Bytecode Optimizer → Type-Directed Optimizer
-- **Runtime**: Stack VM with closures, mark-sweep GC (generational), hidden classes (V8-style shapes)
-- **Tools**: Debugger (breakpoints, step-over/into/out), REPL, benchmarks
-- **CI added** (GitHub Actions, Node 20+22) — needs workflow scope on token for push
-- Escape analysis exists but results are unused by compiler (documented plan for stack-allocated closures)
-- Pipeline does top-level SSA but not per-function (regalloc gets empty interference graphs)
-- README corrected: removed false WASM/RISC-V backend claims
-- Evaluator/VM parity verified (9/9 test cases match)
+### HenryDB (/Users/henry/.openclaw/workspace/projects/henrydb)
+- **What**: SQLite-compatible relational database from scratch in JavaScript
+- **Size**: 209K LOC, 1249 files, 4100+ commits
+- **97.6% SQLite compatibility** (differential fuzzer)
+- **Features**: Full SQL (DDL, DML, JOINs, CTEs, window functions, triggers, views), WAL, B-tree storage, prepared statements, ARRAY literals, VALUES clause, GENERATE_SERIES, UNNEST
+- **Key module**: `type-affinity.js` for SQLite-compatible comparisons and INSERT coercion
 
-### Neural-net
-A comprehensive deep learning library spanning 42 years of research (Hopfield 1982 → KAN 2024).
-- **168 source modules, 192 test files, 2323+ tests, ~27K LOC**
-- **CI GREEN** on GitHub Actions (Node 22)
-- **166/166 library modules import successfully** (fixed llama.js re-exports Apr 24)
-- **0 dependencies** — everything from scratch
-- 40+ architectures: Transformer, MoE, GAN, VAE, DQN, PPO, MAML, GNN, Diffusion, KAN, Mamba, LoRA, DARTS...
-- 10+ optimizers: SGD, Adam, AdamW, RMSProp, KFAC + 10+ LR schedulers
-- MoE: proper softmax Jacobian gate gradient, batch gradient accumulation (fixed Apr 24)
-- Full LLM pipeline: tokenizer → embedding → transformer → KV cache → sampling → training
-- RLHF stack: PPO, DPO, reward model, Constitutional AI
-- ~1 flaky test per run (~33% chance) due to random initialization
+### Other Projects (/Users/henry/projects/)
+- **215+ small projects** — PL implementation playground
+- **type-infer**: Hindley-Milner type inference (working, 23 tests)
+- **calc-lang**: Calculator language (working, 20 tests)
+- **json-parser, regex-engine, mini-lisp**: All functional implementations
+- **typechecker**: Union/intersection types with generics
 
-## Key Learnings (Apr 25, 2026)
+## Key Technical Insights
 
-### Silent Data Loss: The Scariest Bug
-- HenryDB disk-manager.js had PAGE_SIZE=4096, while page.js had PAGE_SIZE=32768
-- Rows >4076 bytes silently vanished — INSERT succeeded but SELECT returned no rows
-- Root cause: `insertTuple` returned -1, code continued with negative slotIdx
-- Fix: increased disk PAGE_SIZE to 32KB, added error check on insertTuple failure
-- **Lesson**: Define constants in ONE place. Check return values. -1 is not a valid slot.
-- **Pattern**: Same as Apr 24 "path not handled" — but this time it's DATA CORRUPTION
+### Type Systems
+- `Number('')` === 0 in JavaScript — this broke WHERE comparisons
+- SQLite type affinity: TEXT columns coerce integers to strings on INSERT
+- `sqliteCompare` must be used everywhere for mixed-type comparisons (ORDER BY, MIN/MAX, window functions)
+- Coerce for EQ/NE but NOT for LT/GT/LE/GE comparisons
 
-### Two-Source Constant Problem
-- The DiskManager constructor had BOTH a default parameter value (4096) AND a constant (PAGE_SIZE)
-- Even after changing PAGE_SIZE, the default parameter shadowed it
-- **Lesson**: Don't double-define defaults. Use `param = CONSTANT`, not hardcoded values.
+### Compiler Design
+- Escape analysis needs to handle: anonymous FunctionLiterals, implicit returns (last ExpressionStatement)
+- Per-function SSA works by building CFG from function body statements
+- `toSSA()` must accept both strings and CFG objects (was string-only → OOM)
+- Prelude approach: HOFs as compiled monkey-lang source, not native builtins (simpler, 3x slower but adequate)
 
-### Feature Combination Testing Gap
-- VIEW + JOIN, CTE + INSERT, LIMIT + subquery, EXPLAIN classic vs Volcano — all individual features worked
-- The combinations failed silently
-- **Lesson**: Test the cross-product of composable features. Individual feature tests guarantee nothing about combinations.
+### VM Design
+- Builtins are positional — compiler and VM must have identical lists
+- Adding HOF builtins to VM needs callback mechanism (frame pushing from within builtins)
+- Workaround: prelude compiles HOFs as monkey-lang, available at startup
+- GC tracking can be skipped for non-escaping closures (escape analysis optimization)
 
-## Key Learnings (Apr 24, 2026)
-
-### MoE Gradient Computation
-- Shared experts across batch samples require external gradient accumulators (Dense.backward replaces, not accumulates)
-- Gate gradient needs proper softmax Jacobian: `dL/ds_e = Σ_j dL/dy_j * Σ_k expertOut_k_j * w_k * (δ_{ke} - w_e)`
-- See `memory/scratch/moe-gradient-learning.md`
-
-### HenryDB Bug Pattern: "Path Not Handled"
-- 5/7 bugs were missing feature combinations: view path skipped joins, WITH didn't handle INSERT, NATURAL not in keywords, triggers didn't resolve NEW/OLD, UNIQUE not creating indexes
-- The pattern: individual features work fine, combinations fail silently
-- See `memory/scratch/henrydb-bug-fixes-apr24.md`
-
-### JS Float Type Loss
-- `parseFloat("10.0") === 10` and `Number.isInteger(10) === true`
-- Must explicitly preserve `isFloat` flag through tokenizer → parser → evaluator
-
-### Expression Evaluator Safety
-- `default: return true` in switch statements is dangerous — makes all unrecognized types truthy
-- Better: `default: evaluate as value and check truthiness`
-
-## Key Decisions (Apr 24, 2026)
-- Neural-net CI: Node 22 only (18/20 have flaky random-init tests)
-- Vectorized engine: opt-in only (auto-enable causes 21 failures from column naming compat)
-- HenryDB extraction: DONE (db.js is core dispatch/txn/eval)
-
-## Reference Documents
-- `memory/scratch/henrydb-architecture.md` — comprehensive architecture reference
-- `memory/scratch/neural-net-architecture.md` — comprehensive ML library reference
-- `memory/scratch/vectorized-execution.md` — vectorized batch engine design
-- `memory/scratch/moe-gradient-learning.md` — MoE gradient computation
-- `memory/scratch/henrydb-bug-fixes-apr24.md` — 7 bugs found+fixed
-- `memory/scratch/henrydb-string-truncation-fix.md` — PAGE_SIZE data corruption fix (Apr 25)
-- `memory/scratch/henrydb-optimizer-gaps.md` — 4 optimizer gaps identified (Apr 25)
-- `memory/scratch/monkey-escape-analysis-research.md` — escape analysis → stack closures plan
-- `memory/scratch/monkey-vm-stress-test.md` — VM stress test results
-- `memory/scratch/INDEX.md` — full scratch note index
+## TODO Priorities (as of Apr 25)
+1. Per-function SSA → wire into compiler for dead code elimination
+2. HenryDB fuzzer gap (2.4% remaining) — long-tail type edge cases
+3. Lambda-calculus project exploration
+4. VM callback mechanism for native HOF builtins (performance)
