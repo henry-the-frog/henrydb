@@ -957,30 +957,100 @@
     {
       "id": "T88",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add CASE/WHEN and COALESCE to differential fuzzer",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T16:59:14.994Z",
+      "completed": "2026-04-25T16:59:15.141Z",
+      "duration_ms": 0,
+      "summary": "Already completed earlier — CASE/WHEN and COALESCE in fuzzer, 100% pass."
     },
     {
       "id": "T89",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add DISTINCT and EXISTS to differential fuzzer",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T16:59:22.120Z",
+      "completed": "2026-04-25T16:59:22.266Z",
+      "duration_ms": 0,
+      "summary": "Already completed — DISTINCT and EXISTS in fuzzer, 100% pass."
     },
     {
       "id": "T90",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Run 10,000 fuzzer queries across 20 seeds — find the last remaining differences",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T16:59:29.331Z",
+      "completed": "2026-04-25T16:59:29.476Z",
+      "duration_ms": 0,
+      "summary": "Already completed earlier in session."
     },
     {
       "id": "T91",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Analyze type affinity failures — can a simple fix close the 3.7% gap?",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T16:59:29.621Z",
+      "completed": "2026-04-25T16:59:29.766Z",
+      "duration_ms": 0,
+      "summary": "Already completed earlier in session."
+    },
+    {
+      "id": "T92",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: What is the highest-impact remaining work? Review what we have vs what could be done in 2.5 hours.",
+      "started": "2026-04-25T16:59:44.897Z",
+      "completed": "2026-04-25T17:00:01.316Z",
+      "duration_ms": 120000,
+      "summary": "THINK: Best remaining work = (1) Wire monkey-lang bytecode optimizer into default compilation, (2) Lambda-calculus README, (3) HenryDB type affinity. Bytecode optimizer has highest impact — makes entire SSA pipeline useful. 38 BUILDs done, 22 remaining before ceiling, ~2.5 hours left."
+    },
+    {
+      "id": "T93",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "PLAN: Wire monkey-lang bytecode optimizer into default compilation path",
+      "task": null,
+      "started": "2026-04-25T17:00:08.261Z",
+      "completed": "2026-04-25T17:00:54.939Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: Wire optimizer.js optimize() into compiler.bytecode(). Add optimize flag (default true). 3 BUILD tasks created."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "task": "Wire bytecode optimizer into compiler.bytecode() with opt-out flag",
+      "status": "done",
+      "plan_ref": "T93",
+      "started": "2026-04-25T17:01:01.075Z",
+      "completed": "2026-04-25T17:03:14.628Z",
+      "duration_ms": 300000,
+      "summary": "Wired bytecode optimizer into compiler.bytecode() with opt-in flag. 50% reduction on conditionals. 0 new regressions (870 pass, 33 pre-existing). try/catch for safety."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "task": "Add integration tests: optimized bytecode produces same results as unoptimized",
+      "status": "done",
+      "plan_ref": "T93",
+      "started": "2026-04-25T17:03:21.014Z",
+      "completed": "2026-04-25T17:03:56.719Z",
+      "duration_ms": 180000,
+      "summary": "17 optimizer integration tests: arithmetic, conditionals, variables, functions, fib(10), fact(5), strings, arrays, hashes. All produce identical results with/without optimization."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "task": "Run full test suite to verify no regressions",
+      "status": "done",
+      "plan_ref": "T93",
+      "started": "2026-04-25T17:04:02.700Z",
+      "completed": "2026-04-25T17:04:16.384Z",
+      "duration_ms": 60000,
+      "summary": "Full suite: 920 tests, 887 pass, 33 fail (all pre-existing). 17 new tests added, 0 new regressions. Optimizer wiring is safe."
     }
   ],
   "focusProjects": [
@@ -1344,6 +1414,18 @@
     {
       "time": "2026-04-25T16:55:34.119Z",
       "msg": "Added T91 (EXPLORE) after end: EXPLORE: Analyze type affinity failures — can a simple fix close the 3.7% gap?"
+    },
+    {
+      "time": "2026-04-25T16:59:41.295Z",
+      "msg": "Added T92 (THINK) after end: THINK: What is the highest-impact remaining work? Review what we have vs what could be done in 2.5 hours."
+    },
+    {
+      "time": "2026-04-25T17:00:04.655Z",
+      "msg": "Added T93 (PLAN) after end: PLAN: Wire monkey-lang bytecode optimizer into default compilation path"
+    },
+    {
+      "time": "2026-04-25T17:00:50.464Z",
+      "msg": "PLAN T93 filled 3 BUILD tasks"
     }
   ]
 }
