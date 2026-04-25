@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T16:02:35.855Z",
+  "generated": "2026-04-25T16:04:20.312Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix INSERT column count validation — reject INSERT with fewer values than columns",
-    "completedAt": "2026-04-25T16:02:35.855Z",
-    "taskId": "T64",
-    "summary": "Fixed INSERT column count validation. Now throws table X has N columns but M values when values < columns and missing columns lack defaults. Still allows short inserts with defaults/SERIAL/GENERATED. All tests pass.",
+    "task": "Fix ORDER BY non-existent column validation",
+    "completedAt": "2026-04-25T16:04:20.312Z",
+    "taskId": "T65",
+    "summary": "Fixed ORDER BY non-existent column (fuzzer bug #2). Now throws no such column error. Validates against first row, handles aliases/expressions/windows. All tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 64,
+    "blocksCompleted": 65,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 9,
-      "BUILD": 23,
+      "BUILD": 24,
       "MAINTAIN": 8,
       "EXPLORE": 15
     }

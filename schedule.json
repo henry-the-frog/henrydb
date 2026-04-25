@@ -701,6 +701,17 @@
       "completed": "2026-04-25T16:02:35.818Z",
       "duration_ms": 300000,
       "summary": "Fixed INSERT column count validation. Now throws table X has N columns but M values when values < columns and missing columns lack defaults. Still allows short inserts with defaults/SERIAL/GENERATED. All tests pass."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix ORDER BY non-existent column validation",
+      "project": "henrydb",
+      "started": "2026-04-25T16:03:10.614Z",
+      "completed": "2026-04-25T16:04:20.275Z",
+      "duration_ms": 300000,
+      "summary": "Fixed ORDER BY non-existent column (fuzzer bug #2). Now throws no such column error. Validates against first row, handles aliases/expressions/windows. All tests pass."
     }
   ],
   "focusProjects": [
@@ -956,6 +967,10 @@
     {
       "time": "2026-04-25T16:01:01.619Z",
       "msg": "Added T64 (BUILD) after end: Fix INSERT column count validation — reject INSERT with fewer values than columns"
+    },
+    {
+      "time": "2026-04-25T16:03:05.547Z",
+      "msg": "Added T65 (BUILD) after end: Fix ORDER BY non-existent column validation"
     }
   ]
 }
