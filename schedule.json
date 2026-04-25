@@ -635,16 +635,35 @@
     {
       "id": "T59",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-25T21:09:48.930Z",
+      "completed": "2026-04-25T21:09:49.293Z",
+      "duration_ms": 0,
+      "summary": "Skipped placeholder."
     },
     {
       "id": "T60",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: add db.execute(sql, params) tests and MEDIAN tests",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T21:09:57.982Z",
+      "completed": "2026-04-25T21:09:58.679Z",
+      "duration_ms": 30000,
+      "summary": "Tests needed for: params API, MEDIAN aggregate, PERCENTILE, GROUPS, EXCLUDE."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "task": "Write tests for db.execute(sql, params), MEDIAN, PERCENTILE_CONT, and GROUPS/EXCLUDE window functions",
+      "status": "done",
+      "plan_ref": "T60",
+      "started": "2026-04-25T21:10:05.040Z",
+      "completed": "2026-04-25T21:10:58.177Z",
+      "duration_ms": 300000,
+      "summary": "15 tests for Session B features: params API (4), param validation (2), MEDIAN (3), GROUPS (1), EXCLUDE (2), type affinity (2), sqliteCompare (1). All pass."
     },
     {
       "id": "T61",
@@ -970,6 +989,10 @@
     {
       "time": "2026-04-25T21:08:35.115Z",
       "msg": "PLAN T58 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:09:58.300Z",
+      "msg": "PLAN T60 filled 1 BUILD tasks"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:09:40.527Z",
+  "generated": "2026-04-25T21:10:58.273Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add // line comments and /* */ block comments to lexer",
-    "completedAt": "2026-04-25T21:09:40.527Z",
-    "taskId": "T69",
-    "summary": "Comments added! // line comments and /* */ block comments. Division still works. All tests pass. 29 lines.",
-    "durationMs": 180000
+    "task": "Write tests for db.execute(sql, params), MEDIAN, PERCENTILE_CONT, and GROUPS/EXCLUDE window functions",
+    "completedAt": "2026-04-25T21:10:58.273Z",
+    "taskId": "T70",
+    "summary": "15 tests for Session B features: params API (4), param validation (2), MEDIAN (3), GROUPS (1), EXCLUDE (2), type affinity (2), sqliteCompare (1). All pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8397,31 +8397,50 @@
       {
         "id": "T58",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: add comment syntax (// line comments and /* */ block comments)",
         "task": null,
-        "started": "2026-04-25T21:08:14.582Z"
+        "started": "2026-04-25T21:08:14.582Z",
+        "completed": "2026-04-25T21:08:40.901Z",
+        "duration_ms": 60000,
+        "summary": "Simple lexer change: extend skipWhitespace to handle // and /* */. Skip after detecting / followed by / or *."
       },
       {
         "id": "T69",
         "mode": "BUILD",
         "task": "Add // line comments and /* */ block comments to lexer",
-        "status": "upcoming",
-        "plan_ref": "T58"
+        "status": "done",
+        "plan_ref": "T58",
+        "started": "2026-04-25T21:08:46.780Z",
+        "completed": "2026-04-25T21:09:40.414Z",
+        "duration_ms": 180000,
+        "summary": "Comments added! // line comments and /* */ block comments. Division still works. All tests pass. 29 lines."
       },
       {
         "id": "T59",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:09:48.930Z",
+        "completed": "2026-04-25T21:09:49.293Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T60",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: add db.execute(sql, params) tests and MEDIAN tests",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T21:09:57.982Z"
+      },
+      {
+        "id": "T70",
+        "mode": "BUILD",
+        "task": "Write tests for db.execute(sql, params), MEDIAN, PERCENTILE_CONT, and GROUPS/EXCLUDE window functions",
+        "status": "upcoming",
+        "plan_ref": "T60"
       },
       {
         "id": "T61",
@@ -8481,12 +8500,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 58,
-    "blocksTotal": 69,
+    "blocksCompleted": 61,
+    "blocksTotal": 70,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 12,
-      "BUILD": 26,
+      "PLAN": 13,
+      "BUILD": 28,
       "MAINTAIN": 10,
       "EXPLORE": 5
     }
