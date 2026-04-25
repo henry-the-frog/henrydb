@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T02:49:55.879Z",
+  "generated": "2026-04-25T02:58:48.098Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: explore trigger and view edge cases under MVCC",
-    "completedAt": "2026-04-25T02:49:55.879Z",
-    "taskId": "T525",
-    "summary": "Triggers and views work correctly under MVCC. Trigger INSERT/UPDATE fire properly with OLD/NEW. Trigger effects rolled back with tx rollback. Views are virtual, reflect changes, work in transactions. All 6 scenarios passed.",
-    "durationMs": 120000
+    "task": "HenryDB: profile TransactionalDB overhead - identify which MVCC operations cost most",
+    "completedAt": "2026-04-25T02:58:48.098Z",
+    "taskId": "T530",
+    "summary": "ROOT CAUSE FOUND: TransactionalDB routes SELECT through auto-commit DML path (begin+execute+WAL+commit+physicalize). Parse=0.009ms, MVCC=0.002ms, Inner DB=0.3ms — the 18.6ms overhead is WAL writes + physicalize for reads that don't need it. Fix: add read-only fast path for SELECT (snapshot read only, no WAL, no begin/commit). This would make SELECT 60x faster.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-24",
@@ -11939,14 +11939,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 487,
+    "blocksCompleted": 492,
     "blocksTotal": 512,
     "modeDistribution": {
       "THINK": 21,
       "PLAN": 35,
       "BUILD": 46,
       "MAINTAIN": 55,
-      "EXPLORE": 330
+      "EXPLORE": 335
     }
   },
   "artifacts": [

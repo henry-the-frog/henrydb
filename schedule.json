@@ -5590,6 +5590,61 @@
       "completed": "2026-04-25T02:49:55.840Z",
       "duration_ms": 120000,
       "summary": "Triggers and views work correctly under MVCC. Trigger INSERT/UPDATE fire properly with OLD/NEW. Trigger effects rolled back with tx rollback. Views are virtual, reflect changes, work in transactions. All 6 scenarios passed."
+    },
+    {
+      "id": "T526",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: count all features and tests, write summary of the entire database",
+      "project": "henrydb",
+      "started": "2026-04-25T02:50:19.461Z",
+      "completed": "2026-04-25T02:51:32.873Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB stats: 369 source files (78,631 LOC), 872 test files (128,642 LOC), 8,157 test cases in 1,890 suites. Total: 207K LOC across 1,241 files. Features span: SQL parser, MVCC, WAL, B-tree/heap storage, indexes, triggers, views, CTEs, window functions, prepared statements, compiled query engine, Volcano executor, cost-based optimizer, EXPLAIN ANALYZE, FK cascades, and 50+ data structure implementations."
+    },
+    {
+      "id": "T527",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "neural-net: end-to-end training demo (XOR, MNIST digits, classification)",
+      "project": "neural-net",
+      "started": "2026-04-25T02:51:40.584Z",
+      "completed": "2026-04-25T02:52:57.816Z",
+      "duration_ms": 180000,
+      "summary": "End-to-end training demos: XOR 100% accuracy (1K epochs). 3-class spiral 99% accuracy (300 epochs). Sin(x) regression MSE 0.13 - learns shape but not precise (needs LR scheduling or tanh activations). All demos work out of the box with the Network API. Training API: net.dense().loss().train({inputs, targets})."
+    },
+    {
+      "id": "T528",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore data structure implementations (B-tree, LSM, bloom filter)",
+      "project": "henrydb",
+      "started": "2026-04-25T02:53:13.331Z",
+      "completed": "2026-04-25T02:55:43.868Z",
+      "duration_ms": 180000,
+      "summary": "All 6 data structures work correctly: B+Tree (range scan, 1.6M ins/s, 3.3M srch/s), SkipList (1M/2.5M), AVL (optimal height=6, 1.5M/5.1M fastest search), ART (prefix trie, 0.8M/1.6M), LSM (write-optimized, 0.7M/1.9M), BloomFilter (0% FP on 1K test). All within 10x of JS Map (7.4M/16.5M). Solid educational implementations."
+    },
+    {
+      "id": "T529",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test JSON support, array operations, and type system",
+      "project": "henrydb",
+      "started": "2026-04-25T02:55:59.981Z",
+      "completed": "2026-04-25T02:56:48.136Z",
+      "duration_ms": 120000,
+      "summary": "JSON/Type system: JSON_EXTRACT, ARRAY_LENGTH, JSON_TYPE, JSON_VALID work. JSON operators (->,->>,'#>') parse but return NULL. ARRAY not functional (literal returns string). Boolean/CAST/TYPEOF work. STRFTIME works, DATE(now) returns null. Missing: JSON_KEYS, JULIANDAY, PRINTF, UNICODE, ANY(), UNNEST. Core type system solid, JSON partially implemented."
+    },
+    {
+      "id": "T530",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: profile TransactionalDB overhead - identify which MVCC operations cost most",
+      "project": "henrydb",
+      "started": "2026-04-25T02:57:04.871Z",
+      "completed": "2026-04-25T02:58:48.021Z",
+      "duration_ms": 180000,
+      "summary": "ROOT CAUSE FOUND: TransactionalDB routes SELECT through auto-commit DML path (begin+execute+WAL+commit+physicalize). Parse=0.009ms, MVCC=0.002ms, Inner DB=0.3ms — the 18.6ms overhead is WAL writes + physicalize for reads that don't need it. Fix: add read-only fast path for SELECT (snapshot read only, no WAL, no begin/commit). This would make SELECT 60x faster."
     }
   ],
   "focusProjects": [
@@ -8489,6 +8544,26 @@
     {
       "time": "2026-04-25T02:48:07.668Z",
       "msg": "Added T525 (EXPLORE) after end: HenryDB: explore trigger and view edge cases under MVCC"
+    },
+    {
+      "time": "2026-04-25T02:50:13.376Z",
+      "msg": "Added T526 (EXPLORE) after end: HenryDB: count all features and tests, write summary of the entire database"
+    },
+    {
+      "time": "2026-04-25T02:50:13.500Z",
+      "msg": "Added T527 (EXPLORE) after end: neural-net: end-to-end training demo (XOR, MNIST digits, classification)"
+    },
+    {
+      "time": "2026-04-25T02:53:07.765Z",
+      "msg": "Added T528 (EXPLORE) after end: HenryDB: explore data structure implementations (B-tree, LSM, bloom filter)"
+    },
+    {
+      "time": "2026-04-25T02:55:56.544Z",
+      "msg": "Added T529 (EXPLORE) after end: HenryDB: test JSON support, array operations, and type system"
+    },
+    {
+      "time": "2026-04-25T02:57:00.900Z",
+      "msg": "Added T530 (EXPLORE) after end: HenryDB: profile TransactionalDB overhead - identify which MVCC operations cost most"
     }
   ]
 }

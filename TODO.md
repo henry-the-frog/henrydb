@@ -3,6 +3,9 @@
 ## Urgent
 (none)
 
+## Urgent
+- (since 2026-04-24) HenryDB: SELECT goes through auto-commit DML path (18ms overhead) — add read-only fast path for 60x speedup
+
 ## Normal
 - HenryDB: Strings >4068 bytes silently truncated (data corruption) — need TOAST or error on oversized values
 - HenryDB: EXPLAIN classic/Volcano plan disagree on scan type (classic uses selectivity heuristic, Volcano uses cost model)
