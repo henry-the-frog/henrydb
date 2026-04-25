@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T23:38:05.066Z",
+  "generated": "2026-04-25T23:48:09.270Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "MAINTAIN: Update reflections with final Session B accomplishments",
-    "completedAt": "2026-04-25T23:38:05.066Z",
-    "taskId": "T185",
-    "summary": "Reflections updated with final stats: 182 tasks, ~89 verified projects, 10+ scratch docs, 6 execution engines discovered, debugger found. Tomorrow priorities: DCE, VM callbacks, PL/SQL wiring, COUNT(DISTINCT), class syntax, WASM Phase 1.",
-    "durationMs": 60000
+    "mode": "EXPLORE",
+    "task": "EXPLORE: Test HenryDB JSON functions — does it support JSON_EXTRACT, JSON_OBJECT?",
+    "completedAt": "2026-04-25T23:48:09.270Z",
+    "taskId": "T186",
+    "summary": "JSON functions: json_extract (with JSONPath $ and array indexing), json_object, json_array, json_type, json_array_length all work. json_each table-valued function not supported. JSON support is solid for scalar extraction and construction.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 182,
+    "blocksCompleted": 183,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 26,
-      "EXPLORE": 45
+      "EXPLORE": 46
     }
   },
   "artifacts": [
