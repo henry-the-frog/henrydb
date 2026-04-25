@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T17:47:01.517Z",
+  "generated": "2026-04-25T17:48:06.935Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB PL/SQL stored procedures with embedded SQL",
-    "completedAt": "2026-04-25T17:47:01.517Z",
-    "taskId": "T123",
-    "summary": "EXPLORE: PL/SQL works — procedures created and called. 20 PL/SQL tests pass. Dollar-quoted body syntax. CALL works. Full PostgreSQL-style stored procedures with embedded SQL.",
+    "task": "EXPLORE: Test HenryDB PostgreSQL wire protocol — can psql connect?",
+    "completedAt": "2026-04-25T17:48:06.935Z",
+    "taskId": "T124",
+    "summary": "EXPLORE: PostgreSQL wire protocol is massive — 72 server test files, PG protocol tests (15 pass), wire basic (3 pass). Full pg_dump, knex, sequelize, pgdriver compatibility. Prepared statements, pipelining, COPY, LISTEN/NOTIFY, cursors, savepoints.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 123,
+    "blocksCompleted": 124,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 55,
       "MAINTAIN": 12,
-      "EXPLORE": 33
+      "EXPLORE": 34
     }
   },
   "artifacts": [
