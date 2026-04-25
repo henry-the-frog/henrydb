@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:42:47.553Z",
+  "generated": "2026-04-25T19:43:12.353Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB MERGE statement",
-    "completedAt": "2026-04-25T19:42:47.553Z",
-    "taskId": "T269",
-    "summary": "MERGE works! USING source ON match, WHEN MATCHED UPDATE, WHEN NOT MATCHED INSERT. Bob updated, Charlie inserted, Alice untouched. SQL:2003 MERGE.",
+    "task": "EXPLORE: Test HenryDB FOREIGN KEY constraints",
+    "completedAt": "2026-04-25T19:43:12.353Z",
+    "taskId": "T270",
+    "summary": "FOREIGN KEY constraints work! Valid insert ok, invalid FK rejected with clear error. ON DELETE CASCADE removes child rows. Referential integrity enforced.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 269,
+    "blocksCompleted": 270,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 29,
-      "EXPLORE": 157
+      "EXPLORE": 158
     }
   },
   "artifacts": [

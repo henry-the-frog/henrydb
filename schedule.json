@@ -2935,6 +2935,31 @@
       "completed": "2026-04-25T19:42:47.516Z",
       "duration_ms": 60000,
       "summary": "MERGE works! USING source ON match, WHEN MATCHED UPDATE, WHEN NOT MATCHED INSERT. Bob updated, Charlie inserted, Alice untouched. SQL:2003 MERGE."
+    },
+    {
+      "id": "T270",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB FOREIGN KEY constraints",
+      "project": "henrydb",
+      "started": "2026-04-25T19:42:59.004Z",
+      "completed": "2026-04-25T19:43:12.316Z",
+      "duration_ms": 60000,
+      "summary": "FOREIGN KEY constraints work! Valid insert ok, invalid FK rejected with clear error. ON DELETE CASCADE removes child rows. Referential integrity enforced."
+    },
+    {
+      "id": "T271",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang built-in functions (map, filter, reduce, sort, flatten)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T272",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB materialized views + REFRESH",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3998,6 +4023,18 @@
     {
       "time": "2026-04-25T19:41:52.094Z",
       "msg": "Added T269 (EXPLORE) after end: EXPLORE: Test HenryDB MERGE statement"
+    },
+    {
+      "time": "2026-04-25T19:42:55.048Z",
+      "msg": "Added T270 (EXPLORE) after end: EXPLORE: Test HenryDB FOREIGN KEY constraints"
+    },
+    {
+      "time": "2026-04-25T19:42:55.169Z",
+      "msg": "Added T271 (EXPLORE) after end: EXPLORE: Test monkey-lang built-in functions (map, filter, reduce, sort, flatten)"
+    },
+    {
+      "time": "2026-04-25T19:42:55.290Z",
+      "msg": "Added T272 (EXPLORE) after end: EXPLORE: Test HenryDB materialized views + REFRESH"
     }
   ]
 }
