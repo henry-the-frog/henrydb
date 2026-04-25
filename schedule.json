@@ -3251,6 +3251,17 @@
       "completed": "2026-04-25T19:55:12.403Z",
       "duration_ms": 60000,
       "summary": "Word count (MapReduce) in monkey-lang! {hello:3, world:2, foo:1, bar:1}. Hash accumulator with merge. Classic distributed computing algorithm."
+    },
+    {
+      "id": "T299",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB aggregate FILTER clause",
+      "project": "henrydb",
+      "started": "2026-04-25T19:55:21.935Z",
+      "completed": "2026-04-25T19:55:37.466Z",
+      "duration_ms": 60000,
+      "summary": "FILTER clause works! SUM FILTER(WHERE year=2023) vs SUM FILTER(WHERE year=2024). SQL:2003 conditional aggregation. Cleaner than CASE."
     }
   ],
   "focusProjects": [
@@ -4430,6 +4441,10 @@
     {
       "time": "2026-04-25T19:54:53.223Z",
       "msg": "Added T298 (EXPLORE) after end: EXPLORE: Final monkey-lang test — implement map-reduce"
+    },
+    {
+      "time": "2026-04-25T19:55:21.698Z",
+      "msg": "Added T299 (EXPLORE) after end: EXPLORE: Test HenryDB aggregate FILTER clause"
     }
   ]
 }
