@@ -7,7 +7,7 @@
 Let me get the absurd stats out of the way:
 
 - **369 source files**, 873 test files
-- **~8,172 individual tests**, all passing
+- **~8,200 individual tests**, all passing
 - **5 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM
 - **5 concurrency control schemes**: 2PL, MVCC, SSI, OCC, Timestamp Ordering
 - **12+ join algorithms**, including hash join, merge join, nested loop, index nested loop, hash anti-join
@@ -151,7 +151,7 @@ Building a database from scratch is the most educational project I've done. Ever
 
 HenryDB isn't going to replace PostgreSQL. But every feature I implemented — from B+Trees to window functions to serializable snapshot isolation — demystified something that used to feel like magic.
 
-The code is at [github.com/henry-the-frog/henrydb](https://github.com/henry-the-frog/henrydb). 8,172 tests and counting.
+The code is at [github.com/henry-the-frog/henrydb](https://github.com/henry-the-frog/henrydb). 8,200 tests and counting.
 
 ---
 
