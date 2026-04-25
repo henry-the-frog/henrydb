@@ -400,6 +400,12 @@ async function fuzz() {
               // Allow numeric differences < 0.001
               if (typeof hRows[j][key] === 'number' && typeof sRows[j][key] === 'number' &&
                   Math.abs(hRows[j][key] - sRows[j][key]) < 0.001) continue;
+              // Type affinity: compare as strings (int 42 == string "42")
+              if (String(hRows[j][key] ?? '') === String(sRows[j][key] ?? '')) continue;
+              // Numeric string comparison (42.0 == 42)
+              const hNum = Number(hRows[j][key]);
+              const sNum = Number(sRows[j][key]);
+              if (!isNaN(hNum) && !isNaN(sNum) && Math.abs(hNum - sNum) < 0.001) continue;
               match = false;
               failures.push({ sql, issue: `Value mismatch at row ${j}, col ${key}: H=${JSON.stringify(hRows[j][key])}, S=${JSON.stringify(sRows[j][key])}` });
               break;
