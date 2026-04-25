@@ -29,6 +29,7 @@ import {
   IndexScan, Union, CTE as CTEIterator, Window,
 } from './volcano.js';
 import { likeToRegex } from './sql-functions.js';
+import { estimateSelectivity, getColumnNdv } from './selectivity.js';
 
 /**
  * Build a plan and return the EXPLAIN output string.
@@ -1911,87 +1912,7 @@ function walkExpr(expr, fn) {
   if (expr.value && typeof expr.value === 'object') walkExpr(expr.value, fn);
 }
 
-/**
- * Estimate selectivity of a WHERE predicate using table statistics.
- * Returns fraction (0..1) of rows expected to pass the predicate.
- */
-function estimateSelectivity(where, tableName, tableStats) {
-  if (!where || !tableStats) return 0.33; // default heuristic
-  
-  const stats = tableStats.get(tableName);
-  if (!stats || !stats.columns) return 0.33;
-  
-  if (where.type === 'COMPARE') {
-    const colName = where.left?.name?.includes('.') 
-      ? where.left.name.split('.').pop() 
-      : where.left?.name;
-    const colStats = colName ? stats.columns[colName] : null;
-    
-    if (where.op === 'EQ' && colStats?.distinct > 0) {
-      // Equality: selectivity = 1/ndistinct
-      return 1 / colStats.distinct;
-    }
-    if (['LT', 'LE', 'GT', 'GE'].includes(where.op)) {
-      // Range: use histogram if available, else default 33%
-      if (colStats?.histogram && colStats.histogram.length > 0) {
-        const val = where.right?.value ?? where.left?.value;
-        if (val != null) {
-          const h = colStats.histogram;
-          const totalCount = h.reduce((s, b) => s + b.count, 0);
-          if (totalCount > 0) {
-            let matchingCount = 0;
-            for (const bucket of h) {
-              if (where.op === 'GT' || where.op === 'GE') {
-                // col > val: count rows in buckets where hi >= val
-                if (bucket.lo >= val) matchingCount += bucket.count;
-                else if (bucket.hi >= val) {
-                  // Partial bucket: interpolate
-                  const frac = (bucket.hi - val) / Math.max(1, bucket.hi - bucket.lo);
-                  matchingCount += Math.round(bucket.count * frac);
-                }
-              } else { // LT or LE
-                // col < val: count rows in buckets where lo <= val
-                if (bucket.hi <= val) matchingCount += bucket.count;
-                else if (bucket.lo <= val) {
-                  const frac = (val - bucket.lo) / Math.max(1, bucket.hi - bucket.lo);
-                  matchingCount += Math.round(bucket.count * frac);
-                }
-              }
-            }
-            return Math.max(0.01, matchingCount / totalCount);
-          }
-        }
-      }
-      return 0.33;
-    }
-  }
-  
-  if (where.type === 'AND') {
-    const left = estimateSelectivity(where.left, tableName, tableStats);
-    const right = estimateSelectivity(where.right, tableName, tableStats);
-    return left * right; // Independence assumption
-  }
-  
-  if (where.type === 'OR') {
-    const left = estimateSelectivity(where.left, tableName, tableStats);
-    const right = estimateSelectivity(where.right, tableName, tableStats);
-    return Math.min(1, left + right - left * right);
-  }
-  
-  return 0.33;
-}
-
-/**
- * Get ndistinct for a column from ANALYZE stats.
- */
-function getColumnNdv(tableName, columnName, tableStats) {
-  if (!tableStats || !tableName || !columnName) return null;
-  // Strip table alias prefix from column name (e.g., "o.customer" → "customer")
-  const col = columnName.includes('.') ? columnName.split('.').pop() : columnName;
-  const stats = tableStats.get(tableName);
-  if (!stats || !stats.columns) return null;
-  return stats.columns[col]?.distinct || null;
-}
+// estimateSelectivity and getColumnNdv are now imported from selectivity.js
 
 /**
  * Apply a scalar SQL function to pre-computed argument values.
