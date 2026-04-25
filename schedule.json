@@ -2990,6 +2990,30 @@
       "completed": "2026-04-25T19:44:37.393Z",
       "duration_ms": 60000,
       "summary": "Closures with mutable state! Counter(inc×3,dec×1→2), factory(make_adder(10)(5)=15). Private mutable state via closures. OOP foundation."
+    },
+    {
+      "id": "T275",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CHECK constraints",
+      "project": "henrydb",
+      "started": "2026-04-25T19:44:50.386Z",
+      "completed": "2026-04-25T19:45:04.335Z",
+      "duration_ms": 60000,
+      "summary": "CHECK constraints work! age>=0&&age<=150 enforced. Negative age, NULL name, age 200 all rejected with clear error messages. NOT NULL also works."
+    },
+    {
+      "id": "T276",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB EXPLAIN output",
+      "project": "henrydb"
+    },
+    {
+      "id": "T277",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: Final session end — daily log, CURRENT.md, git push"
     }
   ],
   "focusProjects": [
@@ -4073,6 +4097,18 @@
     {
       "time": "2026-04-25T19:43:57.418Z",
       "msg": "Added T274 (EXPLORE) after end: EXPLORE: Test monkey-lang closures + higher-order patterns"
+    },
+    {
+      "time": "2026-04-25T19:44:44.571Z",
+      "msg": "Added T275 (EXPLORE) after end: EXPLORE: Test HenryDB CHECK constraints"
+    },
+    {
+      "time": "2026-04-25T19:44:44.693Z",
+      "msg": "Added T276 (EXPLORE) after end: EXPLORE: Test HenryDB EXPLAIN output"
+    },
+    {
+      "time": "2026-04-25T19:44:44.816Z",
+      "msg": "Added T277 (MAINTAIN) after end: MAINTAIN: Final session end — daily log, CURRENT.md, git push"
     }
   ]
 }
