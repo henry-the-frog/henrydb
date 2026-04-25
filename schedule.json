@@ -2742,8 +2742,58 @@
     {
       "id": "T252",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Session end — final summary, push all, CURRENT.md",
+      "started": "2026-04-25T19:37:07.061Z",
+      "completed": "2026-04-25T19:37:07.208Z",
+      "duration_ms": 5000,
+      "summary": "Not ending yet — 20+ min remaining. Continuing exploration."
+    },
+    {
+      "id": "T253",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang try/catch/finally",
+      "project": "monkey-lang",
+      "started": "2026-04-25T19:37:10.728Z",
+      "completed": "2026-04-25T19:37:23.122Z",
+      "duration_ms": 60000,
+      "summary": "try/catch works! throw(msg) caught by catch(e). 1/0→Infinity (no throw). No-error returns try body. Catch modifies outer vars."
+    },
+    {
+      "id": "T254",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "MAINTAIN: Session end — final summary, push all, CURRENT.md"
+      "task": "EXPLORE: Test HenryDB LATERAL join",
+      "project": "henrydb"
+    },
+    {
+      "id": "T255",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang pipe operator",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T256",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB PIVOT/UNPIVOT",
+      "project": "henrydb"
+    },
+    {
+      "id": "T257",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang array comprehensions",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T258",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB TABLESAMPLE",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3739,6 +3789,30 @@
     {
       "time": "2026-04-25T19:34:28.291Z",
       "msg": "Added T252 (MAINTAIN) after end: MAINTAIN: Session end — final summary, push all, CURRENT.md"
+    },
+    {
+      "time": "2026-04-25T19:37:01.793Z",
+      "msg": "Added T253 (EXPLORE) after end: EXPLORE: Test monkey-lang try/catch/finally"
+    },
+    {
+      "time": "2026-04-25T19:37:01.915Z",
+      "msg": "Added T254 (EXPLORE) after end: EXPLORE: Test HenryDB LATERAL join"
+    },
+    {
+      "time": "2026-04-25T19:37:02.037Z",
+      "msg": "Added T255 (EXPLORE) after end: EXPLORE: Test monkey-lang pipe operator"
+    },
+    {
+      "time": "2026-04-25T19:37:02.159Z",
+      "msg": "Added T256 (EXPLORE) after end: EXPLORE: Test HenryDB PIVOT/UNPIVOT"
+    },
+    {
+      "time": "2026-04-25T19:37:02.280Z",
+      "msg": "Added T257 (EXPLORE) after end: EXPLORE: Test monkey-lang array comprehensions"
+    },
+    {
+      "time": "2026-04-25T19:37:02.402Z",
+      "msg": "Added T258 (EXPLORE) after end: EXPLORE: Test HenryDB TABLESAMPLE"
     }
   ]
 }
