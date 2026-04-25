@@ -28,8 +28,19 @@ export function insertRow(db, table, columns, values) {
     }
   } else {
     orderedValues = values;
-    // Pad short value arrays with defaults (e.g., after ALTER TABLE ADD COLUMN)
+    // Validate value count when no explicit column list provided
     if (orderedValues.length < table.schema.length) {
+      // Check if ALL missing columns have defaults or are SERIAL/GENERATED
+      const missingCols = table.schema.slice(orderedValues.length);
+      const allHaveDefaults = missingCols.every(col => 
+        col.defaultValue !== undefined && col.defaultValue !== null ||
+        col.type === 'SERIAL' ||
+        col.generated
+      );
+      if (!allHaveDefaults) {
+        throw new Error(`table ${table.name || table.tableName || 'unknown'} has ${table.schema.length} columns but ${orderedValues.length} values were supplied`);
+      }
+      // Pad with defaults for columns that have them
       orderedValues = [...orderedValues];
       for (let i = orderedValues.length; i < table.schema.length; i++) {
         if (table.schema[i].defaultValue !== undefined && table.schema[i].defaultValue !== null) {
