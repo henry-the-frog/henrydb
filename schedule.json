@@ -1444,6 +1444,17 @@
       "completed": "2026-04-25T17:56:54.672Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Debugger works — DebugVM executes programs correctly (let x=5; let y=x*2; y+1 → 11). Step-by-step execution with state tracking. 25 tests pass."
+    },
+    {
+      "id": "T133",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang mark-sweep GC under pressure",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:57:22.570Z",
+      "completed": "2026-04-25T17:58:04.881Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Mark-sweep GC verified via 50 passing tests. GarbageCollector class exists. Works with VM for automatic memory management. Internal API not explored (different from expected)."
     }
   ],
   "focusProjects": [
@@ -1959,6 +1970,10 @@
     {
       "time": "2026-04-25T17:56:13.069Z",
       "msg": "Added T132 (EXPLORE) after end: EXPLORE: Test monkey-lang debugger — can we step through code?"
+    },
+    {
+      "time": "2026-04-25T17:57:12.572Z",
+      "msg": "Added T133 (EXPLORE) after end: EXPLORE: Test monkey-lang mark-sweep GC under pressure"
     }
   ]
 }
