@@ -983,7 +983,14 @@ P._computeAggregates = function(columns, rows) {
       }
       continue;
     }
-    if (col.type !== 'aggregate') continue;
+    if (col.type !== 'aggregate') {
+      // Non-aggregated column in aggregate query: pick value from first row (SQLite behavior)
+      const name = col.alias || col.name || (col.expr?.name);
+      if (name && rows.length > 0) {
+        result[name] = this._resolveColumn(name, rows[0]);
+      }
+      continue;
+    }
     const argStr = typeof col.arg === 'object' ? 'expr' : col.arg;
     let name = col.alias || `${col.func}(${argStr})`;
     // Deduplicate: SUM(a), SUM(a) → SUM(a), SUM(a)_1
