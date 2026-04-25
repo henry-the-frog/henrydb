@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T21:20:44.796Z",
+  "generated": "2026-04-25T21:22:54.384Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Wire perFunctionSSA into compiler as an analysis pass (diagnostic only)",
-    "completedAt": "2026-04-25T21:20:44.796Z",
-    "taskId": "T90",
-    "summary": "perFunctionSSA wired into compiler. SSA+escape info attached to Bytecode. Diagnostic only for now. All tests pass.",
-    "durationMs": 180000
+    "task": "Fix window COUNT with default RANGE frame for peer groups",
+    "completedAt": "2026-04-25T21:22:54.384Z",
+    "taskId": "T91",
+    "summary": "Fixed default RANGE frame for peers. Was using ROWS semantics. Now includes all peers. Fuzzer improved to 97.1% avg.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8612,31 +8612,50 @@
       {
         "id": "T78",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: wire perFunctionSSA into compiler optimization pipeline",
         "task": null,
-        "started": "2026-04-25T21:19:24.902Z"
+        "started": "2026-04-25T21:19:24.902Z",
+        "completed": "2026-04-25T21:19:37.938Z",
+        "duration_ms": 60000,
+        "summary": "Plan: add optional SSA analysis pass to compiler. Run perFunctionSSA after compilation, store results on Compiler for introspection. No optimization yet — just wiring."
       },
       {
         "id": "T90",
         "mode": "BUILD",
         "task": "Wire perFunctionSSA into compiler as an analysis pass (diagnostic only)",
-        "status": "upcoming",
-        "plan_ref": "T78"
+        "status": "done",
+        "plan_ref": "T78",
+        "started": "2026-04-25T21:19:44.273Z",
+        "completed": "2026-04-25T21:20:44.761Z",
+        "duration_ms": 180000,
+        "summary": "perFunctionSSA wired into compiler. SSA+escape info attached to Bytecode. Diagnostic only for now. All tests pass."
       },
       {
         "id": "T79",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:20:51.581Z",
+        "completed": "2026-04-25T21:20:51.725Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T80",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: investigate fuzzer UNION failures specifically",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T21:20:57.371Z"
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "task": "Fix window COUNT with default RANGE frame for peer groups",
+        "status": "upcoming",
+        "plan_ref": "T80"
       },
       {
         "id": "T81",
@@ -8703,12 +8722,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 78,
-    "blocksTotal": 90,
+    "blocksCompleted": 81,
+    "blocksTotal": 91,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 16,
-      "BUILD": 33,
+      "PLAN": 17,
+      "BUILD": 35,
       "MAINTAIN": 14,
       "EXPLORE": 9
     }
