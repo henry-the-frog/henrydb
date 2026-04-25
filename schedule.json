@@ -822,6 +822,17 @@
       "completed": "2026-04-25T16:24:47.912Z",
       "duration_ms": 300000,
       "summary": "Created evaluator vs VM benchmark. VM 2.35x faster for deep recursion (Fibonacci), 0.01-0.47x slower for simple ops. JS engine optimizes tree-walking dispatch so well that VM only wins on deep computation."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write monkey-lang blog post — building a language runtime from scratch",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:25:21.376Z",
+      "completed": "2026-04-25T16:26:27.337Z",
+      "duration_ms": 600000,
+      "summary": "Wrote monkey-lang blog post (~2500 words). Architecture, Algorithm W, constant propagation, evaluator vs VM benchmarks, hidden classes, analysis gap. Committed."
     }
   ],
   "focusProjects": [
@@ -1121,6 +1132,10 @@
     {
       "time": "2026-04-25T16:23:12.724Z",
       "msg": "Added T75 (BUILD) after end: Create monkey-lang evaluator vs VM benchmark comparison"
+    },
+    {
+      "time": "2026-04-25T16:25:12.479Z",
+      "msg": "Added T76 (BUILD) after end: Write monkey-lang blog post — building a language runtime from scratch"
     }
   ]
 }
