@@ -5,8 +5,8 @@ A SQLite-compatible relational database written from scratch in JavaScript. Impl
 ## Stats
 - **209,000+ lines** of JavaScript
 - **1,249 source files**
-- **4,029+ commits**
-- **97.1% SQLite compatibility** (differential fuzzer, 10 seeds × 200 iterations)
+- **4,100+ commits**
+- **97.5% SQLite compatibility** (differential fuzzer, 10 seeds × 200 iterations)
 
 ## SQL Support
 
