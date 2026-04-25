@@ -690,6 +690,17 @@
       "completed": "2026-04-25T15:55:06.158Z",
       "duration_ms": 120000,
       "summary": "Session A evening summary written. 53+ tasks, 9 bugs found, 6 execution engines discovered. 8218 HenryDB + 894 monkey-lang = 9112 tests."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix INSERT column count validation — reject INSERT with fewer values than columns",
+      "project": "henrydb",
+      "started": "2026-04-25T16:01:09.935Z",
+      "completed": "2026-04-25T16:02:35.818Z",
+      "duration_ms": 300000,
+      "summary": "Fixed INSERT column count validation. Now throws table X has N columns but M values when values < columns and missing columns lack defaults. Still allows short inserts with defaults/SERIAL/GENERATED. All tests pass."
     }
   ],
   "focusProjects": [
@@ -941,6 +952,10 @@
     {
       "time": "2026-04-25T15:53:44.774Z",
       "msg": "Added T63 (MAINTAIN) after end: MAINTAIN: Write session A evening summary draft"
+    },
+    {
+      "time": "2026-04-25T16:01:01.619Z",
+      "msg": "Added T64 (BUILD) after end: Fix INSERT column count validation — reject INSERT with fewer values than columns"
     }
   ]
 }
