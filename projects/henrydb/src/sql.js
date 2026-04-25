@@ -222,6 +222,10 @@ export function tokenize(sql) {
       continue;
     }
 
+    // Square brackets for ARRAY literals
+    if (src[i] === '[') { tokens.push({ type: '[' }); i++; continue; }
+    if (src[i] === ']') { tokens.push({ type: ']' }); i++; continue; }
+
     i++; // skip unknown
   }
 
@@ -2112,6 +2116,22 @@ export function parse(sql) {
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value, isFloat: t.isFloat || false }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
+    // ARRAY[...] literal
+    if (t.type === 'IDENT' && t.value.toUpperCase() === 'ARRAY') {
+      advance(); // ARRAY
+      if (peek().type === '[') {
+        advance(); // [
+        const elements = [];
+        if (peek().type !== ']') {
+          elements.push(parseExpr());
+          while (match(',')) elements.push(parseExpr());
+        }
+        expect(']');
+        return { type: 'array_literal', elements };
+      }
+      // Not followed by [ — treat as identifier
+      return { type: 'column_ref', name: t.value };
+    }
     // INTERVAL 'N unit'
     if (t.type === 'KEYWORD' && t.value === 'INTERVAL') {
       advance(); // consume INTERVAL

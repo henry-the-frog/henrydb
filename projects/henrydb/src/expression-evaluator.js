@@ -522,6 +522,9 @@ P._evalExpr = function(expr, row) {
       if (expr.value == null) return null; // Preserve NULL for three-valued logic
       return !!expr.value; // 0/false → false, others → true
     }
+    case 'array_literal': {
+      return expr.elements.map(el => this._evalExpr(el, row));
+    }
     case 'AND': {
       const left = this._evalExpr(expr.left, row);
       const right = this._evalExpr(expr.right, row);
@@ -783,6 +786,9 @@ P._evalExpr = function(expr, row) {
 
 P._evalValue = function(node, row) {
   if (node.type === 'literal') return node.value;
+  if (node.type === 'array_literal') {
+    return node.elements.map(el => this._evalValue(el, row));
+  }
   if (node.type === 'column_ref') return this._resolveColumn(node.name, row);
   // Window function node — resolve pre-computed value
   if (node.type === 'window') {
