@@ -1291,6 +1291,17 @@
       "completed": "2026-04-25T17:41:47.849Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Profiled VM vs evaluator. VM 3.8x faster on fib(30), 1.7x on strings, 1.1x on arrays. Evaluator 2x faster on closures (V8 closure optimization). Bottleneck: VM closure allocation is expensive (heap alloc per invocation)."
+    },
+    {
+      "id": "T119",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "MAINTAIN: Update monkey-lang README benchmarks with actual measured numbers",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:42:09.672Z",
+      "completed": "2026-04-25T17:43:02.875Z",
+      "duration_ms": 120000,
+      "summary": "Updated monkey-lang README with real benchmarks: fib(30) 3.8x VM advantage, closures 2x evaluator advantage. Added optimizer stats (50% size reduction). Pushed to remote."
     }
   ],
   "focusProjects": [
@@ -1750,6 +1761,10 @@
     {
       "time": "2026-04-25T17:41:10.209Z",
       "msg": "Added T118 (EXPLORE) after end: EXPLORE: Profile monkey-lang VM on complex programs — where are the bottlenecks?"
+    },
+    {
+      "time": "2026-04-25T17:42:03.799Z",
+      "msg": "Added T119 (MAINTAIN) after end: MAINTAIN: Update monkey-lang README benchmarks with actual measured numbers"
     }
   ]
 }

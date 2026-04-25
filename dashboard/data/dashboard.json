@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T17:41:47.886Z",
+  "generated": "2026-04-25T17:43:02.912Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Profile monkey-lang VM on complex programs — where are the bottlenecks?",
-    "completedAt": "2026-04-25T17:41:47.885Z",
-    "taskId": "T118",
-    "summary": "EXPLORE: Profiled VM vs evaluator. VM 3.8x faster on fib(30), 1.7x on strings, 1.1x on arrays. Evaluator 2x faster on closures (V8 closure optimization). Bottleneck: VM closure allocation is expensive (heap alloc per invocation).",
+    "mode": "MAINTAIN",
+    "task": "MAINTAIN: Update monkey-lang README benchmarks with actual measured numbers",
+    "completedAt": "2026-04-25T17:43:02.912Z",
+    "taskId": "T119",
+    "summary": "Updated monkey-lang README with real benchmarks: fib(30) 3.8x VM advantage, closures 2x evaluator advantage. Added optimizer stats (50% size reduction). Pushed to remote.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,13 +8917,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 118,
+    "blocksCompleted": 119,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 55,
-      "MAINTAIN": 11,
+      "MAINTAIN": 12,
       "EXPLORE": 29
     }
   },
