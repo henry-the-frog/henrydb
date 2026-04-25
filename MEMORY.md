@@ -19,13 +19,13 @@
 - **Key module**: `type-affinity.js` for SQLite-compatible comparisons and INSERT coercion
 
 ### neural-net — Deep Learning Framework (38K LOC, 318 files)
-- **Larger than monkey-lang** (38K vs 22K LOC!)
-- **Architectures**: Transformer, RNN, VAE, Autoencoder, Capsule, SNN, SOM, MOE
-- **LLM Features**: BPE tokenizer, beam search, speculative decoding, think tokens, constitutional AI, context distillation, continuous batching, token healing
-- **Attention**: Multi-head, sparse, sliding window, attention sinks, entropy analysis
-- **Training**: Autograd, AdamW, schedulers, mixed precision, scaling laws, sequence packing, structured pruning
-- **Activations**: SwiGLU, and standard activations
-- **Demo**: Shakespeare character LM training
+- **Largest project** in the collection (38K LOC, bigger than monkey-lang's 22K!)
+- **162 modules** with paper citations, 168 non-test files
+- **Architectures**: Transformer, MicroGPT, Mamba SSM, RNN, VAE, Autoencoder, Capsule, SNN, SOM, MOE
+- **Paper implementations**: Flash Attention (Dao 2022), DPO (Rafailov 2023), LoRA (Hu 2021), CLIP (Radford 2021), Constitutional AI (Bai 2022), Chinchilla (Hoffmann 2022), Speculative Decoding (Leviathan 2023), SimCLR (Chen 2020), AdaLN/DiT (Peebles 2023), Mamba SSM (Gu & Dao 2023)
+- **LLM Infrastructure**: BPE tokenizer, GQA + KV-cache, continuous batching (vLLM-style), attention sinks (StreamingLLM), quantization, think tokens (DeepSeek R1)
+- **Training**: Autograd, AdamW, schedulers, mixed precision, scaling laws, data augmentation, callbacks
+- **This is a mini PyTorch implemented in JavaScript**
 
 - **215 projects** — comprehensive CS fundamentals implementation collection
 - **~81 actively verified, ~103 importable** (as of Apr 25 Session B)
