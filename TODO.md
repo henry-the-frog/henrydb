@@ -4,17 +4,23 @@
 - monkey-lang: GitHub token needs `workflow` scope for CI (since 2026-04-25)
 
 ## Normal
-- HenryDB: Close remaining ~2.4% fuzzer gap (long-tail type edge cases)
-- monkey-lang: Per-function SSA → dead code elimination (analysis wired, optimization next)
-- monkey-lang: VM callback mechanism for native HOF builtins (prelude is 3x slower)
-- lambda-calculus/PL theory: Deep exploration of 215-project collection
+- monkey-lang: Per-function SSA → dead code elimination (SSA-level annotation, ~200 LOC)
+- monkey-lang: VM callback mechanism for native HOF builtins (prelude is 19x slower)
+- HenryDB: Fix COUNT(DISTINCT) bug in multi-join scenarios
+- HenryDB: Wire PL/SQL to procedure handler (854 LOC exists, just needs connection)
+- HenryDB: Close remaining ~1.4% fuzzer gap (mixed type comparisons + UNION type affinity)
+- monkey-lang: Class syntax (design ready, ~200 LOC implementation)
+- monkey-lang: WASM compiler Phase 1 (int+fn, ~500 LOC)
+- neural-net: Deep exploration of 38K LOC ML framework
 
 ## Low
+- HenryDB: Add json_each table-valued function
 - HenryDB: Add LATERAL joins
 - HenryDB: Add recursive CTEs
-- HenryDB: Improve GENERATE_SERIES step parameter handling
-- monkey-lang: Add import statement resolution (filesystem, not just STDLIB)
-- monkey-lang: Add type annotations (:: syntax to avoid : hash conflict)
+- HenryDB: UPDATE OF column syntax for triggers
+- monkey-lang: Concurrency (goroutines/channels, major addition)
+- monkey-lang: Array destructuring in match patterns
+- monkey-lang: Fix arr[0]() syntax (index + call)
 - type-infer: Add recursive types and polymorphic container tests
 - regex-engine: Fix empty string matching and anchor support
-- All projects: Systematic test addition across 215 projects
+- All projects: Continue verification (126/215 done, 206/215 importable)
