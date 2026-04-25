@@ -4,7 +4,7 @@
 (none)
 
 ## Urgent
-- (since 2026-04-24) HenryDB: SELECT goes through auto-commit DML path (18ms overhead) — add read-only fast path for 60x speedup
+(none)
 
 ## Normal
 - HenryDB: Strings >4068 bytes silently truncated (data corruption) — need TOAST or error on oversized values
