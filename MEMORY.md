@@ -39,8 +39,8 @@
 - **Systems**: virtual-dom (React-like diffing), event-emitter, promise (A+), state-machine, blockchain (PoW), CRDTs
 - **Parsing**: json-parser, regex-engine, csv-parser, ini-parser, markup-lang (Markdown→HTML)
 - **Utilities**: base64, uuid (v4), semver, glob, dotenv, rpn calculator
-- **Games**: game-of-life, chess-engine (legal moves)
-- **Graphics**: ray-tracer (working renders)
+- **Games**: game-of-life, game-engine (2D with collision)
+- **Graphics**: ray-tracer (3371 LOC, BVH, PBR), physics (529 LOC)
 
 ### HenryDB Full Architecture
 - **6 execution strategies** (11K LOC): AST interpreter, Volcano iterators (13 operators), VDBE bytecode VM, vectorized (MonetDB-style), codegen (JIT), vectorized-codegen (DuckDB-style)
