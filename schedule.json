@@ -921,6 +921,17 @@
       "completed": "2026-04-25T16:43:43.915Z",
       "duration_ms": 300000,
       "summary": "Added 9 tests for constant substitution. All edge cases pass: propagation, folding, chains, function body safety, eval/VM agreement, arrays."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add benchmark results to monkey-lang README",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:44:05.727Z",
+      "completed": "2026-04-25T16:44:39.108Z",
+      "duration_ms": 120000,
+      "summary": "Added benchmark table to monkey-lang README. VM 2.35x on Fibonacci, evaluator 2-100x on simple ops. Key insight: V8 optimizes interpreter dispatch."
     }
   ],
   "focusProjects": [
@@ -1256,6 +1267,10 @@
     {
       "time": "2026-04-25T16:42:57.176Z",
       "msg": "Added T84 (BUILD) after end: Add tests for monkey-lang constant substitution pass"
+    },
+    {
+      "time": "2026-04-25T16:43:59.488Z",
+      "msg": "Added T85 (BUILD) after end: Add benchmark results to monkey-lang README"
     }
   ]
 }
