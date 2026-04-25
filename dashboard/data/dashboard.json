@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T17:51:32.031Z",
+  "generated": "2026-04-25T17:54:32.387Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Accurate cross-project test count — count it() calls in all projects",
-    "completedAt": "2026-04-25T17:51:32.031Z",
-    "taskId": "T128",
-    "summary": "EXPLORE: Accurate test count: 22,535 test cases across 13 projects. henrydb: 8963, monkey-lang: 9530, neural-net: 1780, riscv-emulator: 735, lambda-calculus: 702, git: 348, fft: 151, type-inference: 148, forth: 91, regex-engine: 66, huffman: 21.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "Fix HenryDB ->> (JSON arrow) operator — currently returns null for $.path",
+    "completedAt": "2026-04-25T17:54:32.387Z",
+    "taskId": "T129",
+    "summary": "Fixed JSON arrow operators (-> and ->>). Path $.name was doubled to $.$.name. Now checks for $ prefix before prepending. All 4 variants work: ->>$.name, ->>name, ->$.name, JSON_EXTRACT.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8917,12 +8917,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 128,
+    "blocksCompleted": 129,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
-      "BUILD": 55,
+      "BUILD": 56,
       "MAINTAIN": 13,
       "EXPLORE": 37
     }

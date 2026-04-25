@@ -1400,6 +1400,17 @@
       "completed": "2026-04-25T17:51:31.994Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Accurate test count: 22,535 test cases across 13 projects. henrydb: 8963, monkey-lang: 9530, neural-net: 1780, riscv-emulator: 735, lambda-calculus: 702, git: 348, fft: 151, type-inference: 148, forth: 91, regex-engine: 66, huffman: 21."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB ->> (JSON arrow) operator — currently returns null for $.path",
+      "project": "henrydb",
+      "started": "2026-04-25T17:52:13.642Z",
+      "completed": "2026-04-25T17:54:32.350Z",
+      "duration_ms": 300000,
+      "summary": "Fixed JSON arrow operators (-> and ->>). Path $.name was doubled to $.$.name. Now checks for $ prefix before prepending. All 4 variants work: ->>$.name, ->>name, ->$.name, JSON_EXTRACT."
     }
   ],
   "focusProjects": [
@@ -1899,6 +1910,10 @@
     {
       "time": "2026-04-25T17:51:07.160Z",
       "msg": "Added T128 (EXPLORE) after end: EXPLORE: Accurate cross-project test count — count it() calls in all projects"
+    },
+    {
+      "time": "2026-04-25T17:52:09.777Z",
+      "msg": "Added T129 (BUILD) after end: Fix HenryDB ->> (JSON arrow) operator — currently returns null for $.path"
     }
   ]
 }
