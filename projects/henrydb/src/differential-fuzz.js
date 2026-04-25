@@ -188,6 +188,7 @@ async function fuzz() {
   const tables = {};
   let total = 0, passed = 0, failed = 0, errors = 0, skipped = 0;
   const failures = [];
+  const queryTypes = { simple: 0, join: 0, groupby: 0, subquery: 0, cte: 0, insert: 0 };
   
   console.log(`Differential fuzzer: ${ITERATIONS} iterations, seed=${seed}`);
   console.log('---');
@@ -237,6 +238,14 @@ async function fuzz() {
     const sql = genQuery(tables);
     if (!sql) { skipped++; continue; }
     total++;
+    
+    // Track query type
+    if (sql.includes('WITH ')) queryTypes.cte++;
+    else if (sql.includes('SELECT') && sql.includes('(SELECT')) queryTypes.subquery++;
+    else if (sql.includes('GROUP BY')) queryTypes.groupby++;
+    else if (sql.includes('JOIN')) queryTypes.join++;
+    else if (sql.startsWith('INSERT')) queryTypes.insert++;
+    else queryTypes.simple++;
     
     let henryResult, sqliteResult;
     let henryError, sqliteError;
@@ -301,6 +310,13 @@ async function fuzz() {
   console.log('\n=== Results ===');
   console.log(`Total: ${total}, Passed: ${passed}, Failed: ${failed}, Skipped: ${skipped}`);
   console.log(`Pass rate: ${(passed / total * 100).toFixed(1)}%`);
+  
+  if (process.argv.includes('--stats')) {
+    console.log('\n=== Query Type Breakdown ===');
+    for (const [type, count] of Object.entries(queryTypes)) {
+      if (count > 0) console.log(`  ${type.padEnd(12)}: ${count}`);
+    }
+  }
   
   if (failures.length > 0) {
     console.log(`\n=== Failures (${failures.length}) ===`);
