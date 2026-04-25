@@ -2085,6 +2085,17 @@
       "completed": "2026-04-25T18:53:28.183Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: Optimizer doesnt reduce the demo (0% — no dead code). VM closure mutation differs from evaluator (counter returns 0 vs 3). Known evaluator/VM divergence for mutable closures. Optimizer is correct — no dead code to remove."
+    },
+    {
+      "id": "T192",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang match expression with patterns",
+      "project": "monkey-lang",
+      "started": "2026-04-25T18:53:47.415Z",
+      "completed": "2026-04-25T18:54:09.751Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Match expressions work! Pattern matching on: integers (3 → three), booleans (true → yes), strings (hello → 2), wildcard _ (99 → default). Full pattern matching."
     }
   ],
   "focusProjects": [
@@ -2836,6 +2847,10 @@
     {
       "time": "2026-04-25T18:52:39.065Z",
       "msg": "Added T191 (EXPLORE) after end: EXPLORE: Run optimizer on demo program"
+    },
+    {
+      "time": "2026-04-25T18:53:47.160Z",
+      "msg": "Added T192 (EXPLORE) after end: EXPLORE: Test monkey-lang match expression with patterns"
     }
   ]
 }
