@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:13:52.369Z",
+  "generated": "2026-04-25T18:14:34.324Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK) with MVCC",
-    "completedAt": "2026-04-25T18:13:52.369Z",
-    "taskId": "T149",
-    "summary": "EXPLORE: Transactions work perfectly! BEGIN/COMMIT (transfer works), ROLLBACK (reverts changes), SAVEPOINT (partial rollback). ACID-compliant. Bank transfer scenario verified.",
+    "task": "EXPLORE: Test HenryDB UPSERT (INSERT OR REPLACE) and RETURNING",
+    "completedAt": "2026-04-25T18:14:34.324Z",
+    "taskId": "T150",
+    "summary": "EXPLORE: UPSERT + RETURNING all work! INSERT OR REPLACE (update/insert), ON CONFLICT DO UPDATE (conflict resolution), INSERT RETURNING (returns inserted row), DELETE RETURNING (returns deleted row). Full PostgreSQL-style DML.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 149,
+    "blocksCompleted": 150,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 17,
-      "EXPLORE": 51
+      "EXPLORE": 52
     }
   },
   "artifacts": [

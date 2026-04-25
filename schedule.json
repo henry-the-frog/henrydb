@@ -1627,6 +1627,17 @@
       "completed": "2026-04-25T18:13:52.332Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Transactions work perfectly! BEGIN/COMMIT (transfer works), ROLLBACK (reverts changes), SAVEPOINT (partial rollback). ACID-compliant. Bank transfer scenario verified."
+    },
+    {
+      "id": "T150",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB UPSERT (INSERT OR REPLACE) and RETURNING",
+      "project": "henrydb",
+      "started": "2026-04-25T18:14:13.661Z",
+      "completed": "2026-04-25T18:14:34.287Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: UPSERT + RETURNING all work! INSERT OR REPLACE (update/insert), ON CONFLICT DO UPDATE (conflict resolution), INSERT RETURNING (returns inserted row), DELETE RETURNING (returns deleted row). Full PostgreSQL-style DML."
     }
   ],
   "focusProjects": [
@@ -2210,6 +2221,10 @@
     {
       "time": "2026-04-25T18:13:28.560Z",
       "msg": "Added T149 (EXPLORE) after end: EXPLORE: Test HenryDB transactions (BEGIN/COMMIT/ROLLBACK) with MVCC"
+    },
+    {
+      "time": "2026-04-25T18:14:09.114Z",
+      "msg": "Added T150 (EXPLORE) after end: EXPLORE: Test HenryDB UPSERT (INSERT OR REPLACE) and RETURNING"
     }
   ]
 }
