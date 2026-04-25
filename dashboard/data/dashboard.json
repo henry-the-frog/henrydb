@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:21:46.020Z",
+  "generated": "2026-04-25T15:26:02.220Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "EXPLORE: Run HenryDB benchmark suite, capture performance baselines",
-    "completedAt": "2026-04-25T15:21:46.020Z",
-    "taskId": "T46",
-    "summary": "EXPLORE: Ran benchmarks. Data structure shootout: RobinHood fastest lookup (0.22µs), SortedArr fastest insert (0.46µs). B+Tree: 1.03µs insert, 0.41µs lookup. All benchmarks pass. Baselines captured.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "Add expression index support (CREATE INDEX ON t (LOWER(name)))",
+    "completedAt": "2026-04-25T15:26:02.220Z",
+    "taskId": "T47",
+    "summary": "Added expression index support. CREATE INDEX idx ON t (LOWER(name)) works — parser handles function calls in index columns, builder evaluates expressions. 52/52 sql tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 46,
+    "blocksCompleted": 47,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 18,
+      "BUILD": 19,
       "MAINTAIN": 7,
       "EXPLORE": 5
     }

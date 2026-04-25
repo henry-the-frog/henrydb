@@ -506,6 +506,17 @@
       "completed": "2026-04-25T15:21:45.984Z",
       "duration_ms": 300000,
       "summary": "EXPLORE: Ran benchmarks. Data structure shootout: RobinHood fastest lookup (0.22µs), SortedArr fastest insert (0.46µs). B+Tree: 1.03µs insert, 0.41µs lookup. All benchmarks pass. Baselines captured."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add expression index support (CREATE INDEX ON t (LOWER(name)))",
+      "project": "henrydb",
+      "started": "2026-04-25T15:22:40.965Z",
+      "completed": "2026-04-25T15:26:02.184Z",
+      "duration_ms": 600000,
+      "summary": "Added expression index support. CREATE INDEX idx ON t (LOWER(name)) works — parser handles function calls in index columns, builder evaluates expressions. 52/52 sql tests pass."
     }
   ],
   "focusProjects": [
@@ -689,6 +700,10 @@
     {
       "time": "2026-04-25T15:18:18.731Z",
       "msg": "Added T46 (EXPLORE) after end: EXPLORE: Run HenryDB benchmark suite, capture performance baselines"
+    },
+    {
+      "time": "2026-04-25T15:22:32.602Z",
+      "msg": "Added T47 (BUILD) after end: Add expression index support (CREATE INDEX ON t (LOWER(name)))"
     }
   ]
 }
