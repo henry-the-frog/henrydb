@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T16:41:46.610Z",
+  "generated": "2026-04-25T16:43:43.950Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add window function queries to differential fuzzer",
-    "completedAt": "2026-04-25T16:41:46.610Z",
-    "taskId": "T83",
-    "summary": "Added window functions to fuzzer (ROW_NUMBER, RANK, SUM, COUNT, AVG OVER). Window queries pass 100%. Overall 96.4% on seed=123 (500 queries). Remaining diffs still type affinity.",
+    "task": "Add tests for monkey-lang constant substitution pass",
+    "completedAt": "2026-04-25T16:43:43.950Z",
+    "taskId": "T84",
+    "summary": "Added 9 tests for constant substitution. All edge cases pass: propagation, folding, chains, function body safety, eval/VM agreement, arrays.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 83,
+    "blocksCompleted": 84,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
-      "BUILD": 36,
+      "BUILD": 37,
       "MAINTAIN": 8,
       "EXPLORE": 20
     }

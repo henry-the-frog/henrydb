@@ -910,6 +910,17 @@
       "completed": "2026-04-25T16:41:46.575Z",
       "duration_ms": 300000,
       "summary": "Added window functions to fuzzer (ROW_NUMBER, RANK, SUM, COUNT, AVG OVER). Window queries pass 100%. Overall 96.4% on seed=123 (500 queries). Remaining diffs still type affinity."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add tests for monkey-lang constant substitution pass",
+      "project": "monkey-lang",
+      "started": "2026-04-25T16:43:02.669Z",
+      "completed": "2026-04-25T16:43:43.915Z",
+      "duration_ms": 300000,
+      "summary": "Added 9 tests for constant substitution. All edge cases pass: propagation, folding, chains, function body safety, eval/VM agreement, arrays."
     }
   ],
   "focusProjects": [
@@ -1241,6 +1252,10 @@
     {
       "time": "2026-04-25T16:40:21.895Z",
       "msg": "Added T83 (BUILD) after end: Add window function queries to differential fuzzer"
+    },
+    {
+      "time": "2026-04-25T16:42:57.176Z",
+      "msg": "Added T84 (BUILD) after end: Add tests for monkey-lang constant substitution pass"
     }
   ]
 }
