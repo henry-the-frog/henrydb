@@ -370,6 +370,22 @@ async function fuzz() {
       
       // Normalize row order when no ORDER BY (order is undefined)
       const hasOrderBy = sql.toUpperCase().includes('ORDER BY');
+      const hasLimit = sql.toUpperCase().includes('LIMIT');
+      
+      // LIMIT without ORDER BY is non-deterministic — different rows are valid
+      // Just check row counts match in this case
+      if (hasLimit && !hasOrderBy) {
+        if (hRows.length === sRows.length) {
+          passed++;
+        } else {
+          match = false;
+          failed++;
+          failures.push({ sql, issue: `Row count: HenryDB=${hRows.length}, SQLite=${sRows.length}` });
+          if (VERBOSE) console.log(`  SQL: ${sql}\n  Issue: Row count: HenryDB=${hRows.length}, SQLite=${sRows.length}`);
+        }
+        continue; // Skip per-row comparison
+      }
+      
       if (!hasOrderBy) {
         const sortRows = (rows) => [...rows].sort((a, b) => {
           const keys = Object.keys(a).sort();
