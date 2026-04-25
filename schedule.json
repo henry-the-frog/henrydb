@@ -1640,9 +1640,13 @@
     {
       "id": "T153",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Investigate HenryDB stored procedures (PL/SQL)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T23:05:13.656Z",
+      "completed": "2026-04-25T23:05:48.727Z",
+      "duration_ms": 240000,
+      "summary": "HenryDB PL/SQL: Parser (854 LOC) + Interpreter exist but NOT wired to procedure handler. Only SQL and JS languages supported. SQL functions work (double_it(21)=42). PL/SQL has full grammar: DECLARE, IF/ELSIF, WHILE, FOR, RETURN, RAISE, EXECUTE, EXCEPTION. Wiring PL/SQL to handler is a BUILD task."
     },
     {
       "id": "T154",
