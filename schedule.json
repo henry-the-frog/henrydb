@@ -844,6 +844,17 @@
       "completed": "2026-04-25T16:27:11.769Z",
       "duration_ms": 120000,
       "summary": "Top 5 production gaps: (1) No concurrent multi-client. (2) Durability under-tested. (3) No memory limits. (4) No auth/TLS. (5) No query timeout. Bonus: SQLite compatibility mode for type coercion."
+    },
+    {
+      "id": "T78",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB adaptive engine — does it pick the right engine for different queries?",
+      "project": "henrydb",
+      "started": "2026-04-25T16:28:05.747Z",
+      "completed": "2026-04-25T16:28:51.261Z",
+      "duration_ms": 180000,
+      "summary": "EXPLORE: Adaptive engine correctly selects Volcano for small tables (<5000 rows). Would need 5000+ rows to see Vectorized kick in. All queries return correct results through the adaptive layer."
     }
   ],
   "focusProjects": [
@@ -1151,6 +1162,10 @@
     {
       "time": "2026-04-25T16:26:48.596Z",
       "msg": "Added T77 (THINK) after end: THINK: What would a production-ready HenryDB look like? What are the 5 biggest gaps?"
+    },
+    {
+      "time": "2026-04-25T16:28:00.771Z",
+      "msg": "Added T78 (EXPLORE) after end: EXPLORE: Test HenryDB adaptive engine — does it pick the right engine for different queries?"
     }
   ]
 }

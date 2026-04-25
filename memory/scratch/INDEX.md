@@ -56,6 +56,7 @@
 - `henrydb-optimizer-gaps.md` — **NEW 2026-04-25** 4 optimizer gaps: dual cost model, INLJ (already done), decorrelation, CTE materialization
 - `henrydb-performance-baselines.md` — **NEW 2026-04-25** Data structure benchmark results (RobinHood, B+Tree, etc.)
 - `henrydb-type-coercion-edge-cases.md` — **NEW 2026-04-25** Type coercion investigation: NULL arithmetic, SUM(text), boolean arithmetic
+- `henrydb-execution-engines-comparison.md` — **NEW 2026-04-25** 6 engines + adaptive layer (3644 lines), spans 20 years of DB engine evolution
 - `henrydb-fuzzer-bugs.md` — **NEW 2026-04-25** 2 fuzzer-found bugs: INSERT column count, ORDER BY validation
 - `monkey-escape-analysis-research.md` — **NEW 2026-04-25** Escape analysis → stack closures plan
 - `monkey-vm-stress-test.md` — **NEW 2026-04-25** VM stress test: all edge cases pass, README discrepancy
