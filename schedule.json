@@ -1838,15 +1838,23 @@
     {
       "id": "T169",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB GRANT/REVOKE and user permissions if they exist",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T18:30:59.786Z",
+      "completed": "2026-04-25T18:31:41.767Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: RBAC exists (21 tests pass). CREATE USER/GRANT/REVOKE not at SQL parser level but rbac.js module works via API. Roles, permissions, GRANT/REVOKE all tested."
     },
     {
       "id": "T170",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "MAINTAIN: Update PORTFOLIO.md with final session stats"
+      "status": "done",
+      "task": "MAINTAIN: Update PORTFOLIO.md with final session stats",
+      "started": "2026-04-25T18:31:49.381Z",
+      "completed": "2026-04-25T18:32:27.546Z",
+      "duration_ms": 120000,
+      "summary": "PORTFOLIO.md fully updated with final stats: 559K LOC, 22,535 tests, 30+ SQL features, 49 AST node types, 97.2% fuzzer, 100% monkey-lang, 14 bugs fixed."
     }
   ],
   "focusProjects": [
