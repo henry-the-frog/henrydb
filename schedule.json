@@ -1888,6 +1888,17 @@
       "completed": "2026-04-25T18:35:26.182Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: 141 data structure test files! Hash(20), MVCC(17), WAL(16), B-tree(14), Heap(7), Buffer(4), Bloom(4). 32 distinct data structures have dedicated tests. Thoroughly tested infrastructure."
+    },
+    {
+      "id": "T174",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB column store and vectorized execution",
+      "project": "henrydb",
+      "started": "2026-04-25T18:36:12.529Z",
+      "completed": "2026-04-25T18:36:42.307Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Column store (5 tests) and vectorized execution (23 tests) both pass. HenryDB has 3 storage engines: row store (heap), column store (OLAP), vectorized (batch). Complete hybrid OLTP/OLAP."
     }
   ],
   "focusProjects": [
@@ -2567,6 +2578,10 @@
     {
       "time": "2026-04-25T18:34:45.261Z",
       "msg": "Added T173 (EXPLORE) after end: EXPLORE: What HenryDB data structures have dedicated tests?"
+    },
+    {
+      "time": "2026-04-25T18:36:05.647Z",
+      "msg": "Added T174 (EXPLORE) after end: EXPLORE: Test HenryDB column store and vectorized execution"
     }
   ]
 }
