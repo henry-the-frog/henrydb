@@ -36,6 +36,10 @@ Encyclopedia of programming language theory: Church encoding, SKI, System F, abs
 
 ## Quality
 
-- **20,438 individual test cases** across all projects
-- **Differential fuzzer** for HenryDB: 2000 queries, 100% pass rate
+- **20,438+ individual test cases** across all projects
+- **Differential fuzzer** for HenryDB: 6,000 queries across 12 seeds, **97.2% pass rate**, 15 query types
+- **Optimizer fuzzer** for monkey-lang: 1,600+ programs, **100% pass rate** (opt vs unopt)
+- **monkey-lang**: 920/920 tests (**100% pass rate**)
 - All 10 active projects pass their test suites ✅
+- HenryDB: 8,218 tests, 6 execution engines, Raft + CRDTs + Gossip, PostgreSQL wire protocol (72 test files)
+- monkey-lang: 920 tests, bytecode optimizer (DCE + peephole + jump threading), Hindley-Milner type checker
