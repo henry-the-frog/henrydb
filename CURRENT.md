@@ -2,14 +2,13 @@
 
 ## Status: session-ended
 
-### Session C Summary (Apr 24, 2026, 8:15 PM - 10:00 PM MDT)
-- **Tasks completed:** 48 (T505-T552)
-- **Bugs fixed:** 2 (FK MVCC visibility, SELECT fast path)
-- **Bugs found:** 3 (string truncation, EXPLAIN discrepancy, WAL syncMode)
-- **Projects explored:** henrydb, neural-net
-- **Key achievement:** 91x SELECT speedup via read-only fast path
+### Session C (Apr 24, 2026, 8:15 PM - 10:00 PM MDT)
+- **Tasks completed:** 55+ (T505-T555+)
+- **Mode:** Pure EXPLORE (evening depth session)
+- **Bugs fixed:** 2 (FK MVCC visibility, SELECT fast path = 91x speedup)
+- **Bugs found:** 5 (string truncation, EXPLAIN discrepancy, WAL syncMode, DROP COLUMN data retention, Window FILTER ignored)
+- **Key achievement:** SELECT fast path 91x speedup (19ms → 0.2ms)
 
-### Day Total (Sessions A+B+C)
-- Session A: Setup + blog
-- Session B: 9 bug fixes, blog published, 13,185 tests verified
-- Session C: 48 deep exploration tasks, 2 major fixes, comprehensive project audits
+### Day Total (Apr 24)
+- Session A+B: Bug fixes, blog, infrastructure
+- Session C: 55+ deep exploration tasks across HenryDB (109 SQL features) and neural-net (170 source files, 30 modules)
