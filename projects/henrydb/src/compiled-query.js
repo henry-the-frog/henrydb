@@ -5,6 +5,7 @@
 import { QueryPlanner } from './planner.js';
 import { compilePipelineJIT, JITCompiledIterator, compilePipeline, CompiledIterator } from './pipeline-compiler.js';
 import { SeqScan, Filter, Project, Limit, HashJoin, Sort, HashAggregate } from './volcano.js';
+import { sqliteCompare } from './type-affinity.js';
 
 /**
  * CompiledQueryEngine — takes a Database, plans queries, and compiles execution.
@@ -279,11 +280,11 @@ export class CompiledQueryEngine {
     // Sort both sides
     const sortedLeft = [...leftRows].sort((a, b) => {
       const av = a[resolved.left], bv = b[resolved.left];
-      return av < bv ? -1 : av > bv ? 1 : 0;
+      return sqliteCompare(av, bv);
     });
     const sortedRight = [...rightRows].sort((a, b) => {
       const av = a[resolved.right], bv = b[resolved.right];
-      return av < bv ? -1 : av > bv ? 1 : 0;
+      return sqliteCompare(av, bv);
     });
 
     const result = [];

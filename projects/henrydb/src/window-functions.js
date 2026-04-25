@@ -1,6 +1,8 @@
 // window-functions.js — SQL window function evaluator
 // Extracted from db.js to reduce monolith size (~420 LOC)
 
+import { sqliteCompare } from './type-affinity.js';
+
 import { exprContains, exprCollect } from './expr-walker.js';
 
 export function exprContainsWindow(db, node) {
@@ -80,7 +82,7 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
           for (const { column, direction } of orderBy) {
             const av = db._orderByValue(column, a);
             const bv = db._orderByValue(column, b);
-            const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+            const cmp = sqliteCompare(av, bv);
             if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
           }
           return 0;
@@ -496,7 +498,7 @@ export function computeWindowFunctions(db, columns, rows, windowDefs) {
         for (const { column, direction } of firstOrderBy) {
           const av = typeof column === 'string' ? db._resolveColumn(column, a) : db._evalValue(column, a);
           const bv = typeof column === 'string' ? db._resolveColumn(column, b) : db._evalValue(column, b);
-          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          const cmp = sqliteCompare(av, bv);
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;
