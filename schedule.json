@@ -517,6 +517,17 @@
       "completed": "2026-04-25T15:26:02.184Z",
       "duration_ms": 600000,
       "summary": "Added expression index support. CREATE INDEX idx ON t (LOWER(name)) works — parser handles function calls in index columns, builder evaluates expressions. 52/52 sql tests pass."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add CROSS APPLY / OUTER APPLY support (SQL Server lateral join syntax)",
+      "project": "henrydb",
+      "started": "2026-04-25T15:26:46.701Z",
+      "completed": "2026-04-25T15:28:53.836Z",
+      "duration_ms": 180000,
+      "summary": "CROSS APPLY and OUTER APPLY already work! Feature is fully implemented. Initial test showed nulls due to JS quoting issue (double quotes parsed as SQL identifiers). Verified: CROSS APPLY acts as INNER lateral join, OUTER APPLY as LEFT lateral join."
     }
   ],
   "focusProjects": [
@@ -704,6 +715,10 @@
     {
       "time": "2026-04-25T15:22:32.602Z",
       "msg": "Added T47 (BUILD) after end: Add expression index support (CREATE INDEX ON t (LOWER(name)))"
+    },
+    {
+      "time": "2026-04-25T15:26:38.199Z",
+      "msg": "Added T48 (BUILD) after end: Add CROSS APPLY / OUTER APPLY support (SQL Server lateral join syntax)"
     }
   ]
 }

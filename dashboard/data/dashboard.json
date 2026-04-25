@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:26:02.220Z",
+  "generated": "2026-04-25T15:28:53.871Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add expression index support (CREATE INDEX ON t (LOWER(name)))",
-    "completedAt": "2026-04-25T15:26:02.220Z",
-    "taskId": "T47",
-    "summary": "Added expression index support. CREATE INDEX idx ON t (LOWER(name)) works — parser handles function calls in index columns, builder evaluates expressions. 52/52 sql tests pass.",
-    "durationMs": 600000
+    "task": "Add CROSS APPLY / OUTER APPLY support (SQL Server lateral join syntax)",
+    "completedAt": "2026-04-25T15:28:53.871Z",
+    "taskId": "T48",
+    "summary": "CROSS APPLY and OUTER APPLY already work! Feature is fully implemented. Initial test showed nulls due to JS quoting issue (double quotes parsed as SQL identifiers). Verified: CROSS APPLY acts as INNER lateral join, OUTER APPLY as LEFT lateral join.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 48,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 19,
+      "BUILD": 20,
       "MAINTAIN": 7,
       "EXPLORE": 5
     }
