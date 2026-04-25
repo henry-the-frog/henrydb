@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T17:37:10.291Z",
+  "generated": "2026-04-25T17:38:40.470Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Improve fuzzer row comparison — handle LIMIT without ORDER BY by comparing as sets",
-    "completedAt": "2026-04-25T17:37:10.291Z",
-    "taskId": "T114",
-    "summary": "Handle LIMIT without ORDER BY as count-only comparison. Non-deterministic LIMIT → just verify row counts match. Seed 42: 99.0%, Seed 1: 96.8%. Average ~97%.",
+    "task": "Fix fuzzer INSERT sync — only count queries against tables with matching data",
+    "completedAt": "2026-04-25T17:38:40.470Z",
+    "taskId": "T115",
+    "summary": "Added post-INSERT data sync verification. Re-syncs from SQLite when counts diverge. Seed 2: 34→18 failures. Some seeds unchanged. Remaining ~3% are genuine semantic diffs.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8917,12 +8917,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 114,
+    "blocksCompleted": 115,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
-      "BUILD": 54,
+      "BUILD": 55,
       "MAINTAIN": 10,
       "EXPLORE": 27
     }

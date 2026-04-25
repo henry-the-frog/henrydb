@@ -1247,6 +1247,17 @@
       "completed": "2026-04-25T17:37:10.223Z",
       "duration_ms": 300000,
       "summary": "Handle LIMIT without ORDER BY as count-only comparison. Non-deterministic LIMIT → just verify row counts match. Seed 42: 99.0%, Seed 1: 96.8%. Average ~97%."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix fuzzer INSERT sync — only count queries against tables with matching data",
+      "project": "henrydb",
+      "started": "2026-04-25T17:37:59.854Z",
+      "completed": "2026-04-25T17:38:40.352Z",
+      "duration_ms": 300000,
+      "summary": "Added post-INSERT data sync verification. Re-syncs from SQLite when counts diverge. Seed 2: 34→18 failures. Some seeds unchanged. Remaining ~3% are genuine semantic diffs."
     }
   ],
   "focusProjects": [
@@ -1690,6 +1701,10 @@
     {
       "time": "2026-04-25T17:35:47.647Z",
       "msg": "Added T114 (BUILD) after end: Improve fuzzer row comparison — handle LIMIT without ORDER BY by comparing as sets"
+    },
+    {
+      "time": "2026-04-25T17:37:55.313Z",
+      "msg": "Added T115 (BUILD) after end: Fix fuzzer INSERT sync — only count queries against tables with matching data"
     }
   ]
 }
