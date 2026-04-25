@@ -6,12 +6,15 @@
 
 Let me get the absurd stats out of the way:
 
-- **369 source files**, 873 test files
+- **369 source files**, 873 test files, **208,000 lines of code**
 - **~8,200 individual tests**, all passing
-- **5 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM
+- **6 execution engines**: Volcano, Pipeline JIT, Vectorized, Vec Codegen, Query VM, Adaptive
 - **5 concurrency control schemes**: 2PL, MVCC, SSI, OCC, Timestamp Ordering
 - **12+ join algorithms**, including hash join, merge join, nested loop, index nested loop, hash anti-join
-- **10+ index types**: B+Tree, hash, GiST, GIN, R-Tree, bitmap, partial, expression
+- **10+ index types**: B+Tree, hash, GiST, GIN, R-Tree, bitmap, partial, expression indexes
+- **Distributed**: Raft consensus, SWIM gossip, CRDTs
+- **PL/SQL**: Stored procedures with variables, loops, embedded SQL
+- **Wire protocol**: PostgreSQL-compatible
 - Pure JavaScript. Zero native dependencies.
 
 This isn't a toy. It parses real SQL, has a cost-based query optimizer, does WAL-based crash recovery, and handles concurrent transactions with serializable snapshot isolation.
@@ -129,6 +132,19 @@ IndexScan cost = index_height × random_page_cost + matched_rows × cpu_tuple_co
 ```
 
 Getting the selectivity estimates right is half the battle. Equality on a unique column? Selectivity = 1/N. Range scan? Assume 30%. LIKE with leading wildcard? Full scan.
+
+## The Differential Fuzzer
+
+The single most valuable quality tool I built was a differential fuzzer. It generates random SQL, runs against both HenryDB and SQLite, and reports differences:
+
+In its first run, 200 random queries found two bugs that 8,200 hand-written tests missed:
+
+1. **INSERT with fewer values than columns** was silently accepted (should error)
+2. **ORDER BY on a nonexistent column** was silently ignored (should error)
+
+Five minutes of fuzzing found what weeks of manual testing couldn't. After fixing both bugs, the pass rate reached 100% on the initial seed. Across 10 random seeds (2,000 queries including JOINs, GROUP BY, HAVING), the average is ~96% — with remaining differences being intentional type affinity choices.
+
+**Lesson**: Build the fuzzer early. It's the highest-ROI quality tool you can create.
 
 ## What I'd Do Differently
 
