@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:01:00.953Z",
+  "generated": "2026-04-25T18:02:26.926Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Stress test monkey-lang — large arrays, deep recursion, memory-heavy programs",
-    "completedAt": "2026-04-25T18:01:00.953Z",
-    "taskId": "T136",
-    "summary": "EXPLORE: Stress tests: Sum 100K=43ms, Fib(30)=972ms, Closures 1K=11ms, Compose=1ms. Array 50K push=17.2s (O(n²) immutable copies). String 10K=358ms. VM handles 100K iterations in 43ms. Bottleneck: immutable array push.",
+    "task": "EXPLORE: Stress test HenryDB — 100K rows, complex queries, large JOINs",
+    "completedAt": "2026-04-25T18:02:26.926Z",
+    "taskId": "T137",
+    "summary": "EXPLORE: HenryDB stress test at 1K rows. INSERT 1K=55ms (55μs/row), COUNT=11ms, GROUP BY=6ms, filtered=7ms, subquery=3ms. Good performance for pure JS. 10K rows times out in memory (~30s INSERT phase).",
     "durationMs": 180000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 136,
+    "blocksCompleted": 137,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 56,
       "MAINTAIN": 14,
-      "EXPLORE": 43
+      "EXPLORE": 44
     }
   },
   "artifacts": [
