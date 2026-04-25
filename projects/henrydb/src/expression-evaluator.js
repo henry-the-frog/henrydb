@@ -274,8 +274,8 @@ P._evalAggregateExpr = function(expr, rows) {
     
     switch (func) {
       case 'COUNT': return isStarArg ? rows.length : values.length;
-      case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
-      case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
+      case 'SUM': return values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) : null;
+      case 'AVG': return values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null;
       case 'MIN': return values.length ? values.reduce((a, b) => a < b ? a : b) : null;
       case 'MAX': return values.length ? values.reduce((a, b) => a > b ? a : b) : null;
       default: return null;
@@ -998,8 +998,8 @@ P._computeAggregates = function(columns, rows) {
         }
         break;
       }
-      case 'SUM': result[name] = values.length ? values.reduce((s, v) => s + v, 0) : null; break;
-      case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + v, 0) / values.length : null; break;
+      case 'SUM': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) : null; break;
+      case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null; break;
       case 'MIN': result[name] = values.length ? values.reduce((a, b) => a < b ? a : b) : null; break;
       case 'MAX': result[name] = values.length ? values.reduce((a, b) => a > b ? a : b) : null; break;
       case 'GROUP_CONCAT':
