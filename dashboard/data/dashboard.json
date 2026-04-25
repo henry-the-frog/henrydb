@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T21:35:55.493Z",
+  "generated": "2026-04-25T21:38:26.063Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Add VALUES as FROM source in parser and executor",
-    "completedAt": "2026-04-25T21:35:55.493Z",
-    "taskId": "T113",
-    "summary": "VALUES clause as FROM source! Parser + executor. Supports column aliasing, WHERE, aggregation, NULL. 70 lines. All tests pass.",
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-25T21:38:26.063Z",
+    "taskId": "T106",
+    "summary": "Fixed module import: import() works as function call AND as statement keyword. 1120/1120 tests now pass (was 1118/1120).",
     "durationMs": 300000
   },
   "schedule": {
@@ -8894,31 +8894,50 @@
       {
         "id": "T104",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: add VALUES clause as table source",
         "task": null,
-        "started": "2026-04-25T21:32:54.679Z"
+        "started": "2026-04-25T21:32:54.679Z",
+        "completed": "2026-04-25T21:33:21.368Z",
+        "duration_ms": 60000,
+        "summary": "VALUES keyword exists, used in INSERT. Need to add VALUES as FROM source: parser change in parseFromClause + executor generates in-memory rows."
       },
       {
         "id": "T113",
         "mode": "BUILD",
         "task": "Add VALUES as FROM source in parser and executor",
-        "status": "upcoming",
-        "plan_ref": "T104"
+        "status": "done",
+        "plan_ref": "T104",
+        "started": "2026-04-25T21:33:29.130Z",
+        "completed": "2026-04-25T21:35:55.458Z",
+        "duration_ms": 300000,
+        "summary": "VALUES clause as FROM source! Parser + executor. Supports column aliasing, WHERE, aggregation, NULL. 70 lines. All tests pass."
       },
       {
         "id": "T105",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T21:36:02.566Z",
+        "completed": "2026-04-25T21:36:02.710Z",
+        "duration_ms": 0,
+        "summary": "Skipped."
       },
       {
         "id": "T106",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: fix module import resolution (2 failing tests)",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T21:36:09.655Z"
+      },
+      {
+        "id": "T114",
+        "mode": "BUILD",
+        "task": "Done: fixed import() as function call alongside import statement",
+        "status": "upcoming",
+        "plan_ref": "T106"
       },
       {
         "id": "T107",
@@ -8964,12 +8983,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 104,
-    "blocksTotal": 113,
+    "blocksCompleted": 106,
+    "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 24,
-      "BUILD": 44,
+      "PLAN": 25,
+      "BUILD": 45,
       "MAINTAIN": 18,
       "EXPLORE": 12
     }

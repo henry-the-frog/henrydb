@@ -1132,16 +1132,31 @@
     {
       "id": "T105",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "placeholder",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T21:36:02.566Z",
+      "completed": "2026-04-25T21:36:02.710Z",
+      "duration_ms": 0,
+      "summary": "Skipped."
     },
     {
       "id": "T106",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: fix module import resolution (2 failing tests)",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T21:36:09.655Z",
+      "completed": "2026-04-25T21:38:26.028Z",
+      "duration_ms": 300000,
+      "summary": "Fixed module import: import() works as function call AND as statement keyword. 1120/1120 tests now pass (was 1118/1120)."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "task": "Done: fixed import() as function call alongside import statement",
+      "status": "upcoming",
+      "plan_ref": "T106"
     },
     {
       "id": "T107",
@@ -1629,6 +1644,10 @@
     {
       "time": "2026-04-25T21:33:21.218Z",
       "msg": "PLAN T104 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-25T21:38:25.877Z",
+      "msg": "PLAN T106 filled 1 BUILD tasks"
     }
   ]
 }
