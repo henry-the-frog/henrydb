@@ -1932,6 +1932,24 @@
       "completed": "2026-04-25T23:34:12.160Z",
       "duration_ms": 120000,
       "summary": "No class/inheritance syntax — monkey-lang is functional. OOP achieved via closure-based module pattern (closures + hashes). Tested: Animal factory with speak/getName, Dog composition with inherited speak + added fetch. Works well but verbose compared to class syntax."
+    },
+    {
+      "id": "T181",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB triggers and views — test complex triggers",
+      "project": "henrydb",
+      "started": "2026-04-25T23:34:35.177Z",
+      "completed": "2026-04-25T23:35:05.309Z",
+      "duration_ms": 180000,
+      "summary": "Triggers: AFTER INSERT (NEW.name), BEFORE DELETE (OLD.name) both work. Audit log correctly captures 3 events. Views: simple, aggregate (GROUP BY), and views in subqueries all work. UPDATE OF column syntax not supported."
+    },
+    {
+      "id": "T182",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "THINK: Design a class syntax for monkey-lang — what would it look like?",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -2647,6 +2665,14 @@
     {
       "time": "2026-04-25T23:33:34.252Z",
       "msg": "Added T180 (EXPLORE) after end: EXPLORE: Deep dive into monkey-lang class system — does it support classes/inheritance?"
+    },
+    {
+      "time": "2026-04-25T23:34:29.612Z",
+      "msg": "Added T181 (EXPLORE) after end: EXPLORE: HenryDB triggers and views — test complex triggers"
+    },
+    {
+      "time": "2026-04-25T23:34:29.732Z",
+      "msg": "Added T182 (THINK) after end: THINK: Design a class syntax for monkey-lang — what would it look like?"
     }
   ]
 }
