@@ -30,6 +30,79 @@ export function jsonExtract(obj, path) {
   return current;
 }
 
+/**
+ * Apply a SQLite-style date modifier to a Date object.
+ * Modifiers: '+N days', '-N months', '+N years', '+N hours', '+N minutes', '+N seconds',
+ *            'start of month', 'start of year', 'start of day', 'now', 'weekday N'
+ */
+function _applyDateModifier(d, mod) {
+  // 'now' — replace with current time
+  if (mod === 'now') return new Date();
+  
+  // 'start of ...'
+  if (mod === 'start of month') {
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
+  }
+  if (mod === 'start of year') {
+    return new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  }
+  if (mod === 'start of day') {
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  }
+  
+  // 'localtime' / 'utc' — for now, treat as no-op (we always use UTC)
+  if (mod === 'localtime' || mod === 'utc') return d;
+  
+  // 'weekday N' — advance to the next day that is weekday N (0=Sunday, 6=Saturday)
+  const weekdayMatch = mod.match(/^weekday\s+(\d)$/);
+  if (weekdayMatch) {
+    const target = parseInt(weekdayMatch[1]);
+    if (target < 0 || target > 6) return null;
+    const result = new Date(d.getTime());
+    const current = result.getUTCDay();
+    let diff = target - current;
+    if (diff <= 0) diff += 7; // Always advance (if already target day, go to next week)
+    if (diff === 7 && current === target) diff = 0; // Same day stays
+    result.setUTCDate(result.getUTCDate() + diff);
+    return result;
+  }
+  
+  // '+N unit' or '-N unit'
+  const numMatch = mod.match(/^([+-])\s*(\d+)\s+(day|days|month|months|year|years|hour|hours|minute|minutes|second|seconds)$/);
+  if (numMatch) {
+    const sign = numMatch[1] === '+' ? 1 : -1;
+    const n = parseInt(numMatch[2]) * sign;
+    const unit = numMatch[3].replace(/s$/, ''); // normalize to singular
+    const result = new Date(d.getTime());
+    
+    switch (unit) {
+      case 'day':
+        result.setUTCDate(result.getUTCDate() + n);
+        break;
+      case 'month':
+        result.setUTCMonth(result.getUTCMonth() + n);
+        break;
+      case 'year':
+        result.setUTCFullYear(result.getUTCFullYear() + n);
+        break;
+      case 'hour':
+        result.setUTCHours(result.getUTCHours() + n);
+        break;
+      case 'minute':
+        result.setUTCMinutes(result.getUTCMinutes() + n);
+        break;
+      case 'second':
+        result.setUTCSeconds(result.getUTCSeconds() + n);
+        break;
+      default:
+        return null;
+    }
+    return result;
+  }
+  
+  return null; // Unknown modifier
+}
+
 export function dateArith(dateStr, intervalStr, op) {
   const d = new Date(String(dateStr));
   if (isNaN(d.getTime())) return null;
@@ -532,15 +605,33 @@ export function evalFunction(db, func, args, row) {
       return matches ? JSON.stringify(matches) : null;
     }
     case 'DATE': {
-      // DATE(value) — cast to date string (YYYY-MM-DD)
-      const v = db._evalValue(args[0], row);
+      // DATE(value, modifier1, modifier2, ...) — SQLite-compatible date function
+      // Modifiers: '+N days', '-N months', '+N years', '+N hours', '+N minutes', '+N seconds',
+      //            'start of month', 'start of year', 'start of day', 'now', 'localtime', 'utc'
+      let v = db._evalValue(args[0], row);
       if (v == null) return null;
-      const s = String(v);
-      // If it already looks like YYYY-MM-DD, extract directly
+      let s = String(v);
+      
+      // Handle 'now' as first argument
+      if (s.toLowerCase() === 'now') s = new Date().toISOString();
+      
+      // Parse initial date
       const dateMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-      if (dateMatch) return dateMatch[1];
-      const d = new Date(s);
+      let d;
+      if (dateMatch) {
+        d = new Date(dateMatch[1] + 'T00:00:00Z');
+      } else {
+        d = new Date(s);
+      }
       if (isNaN(d.getTime())) return null;
+      
+      // Apply modifiers (args[1], args[2], ...)
+      for (let i = 1; i < args.length; i++) {
+        const mod = String(db._evalValue(args[i], row)).trim().toLowerCase();
+        d = _applyDateModifier(d, mod);
+        if (!d || isNaN(d.getTime())) return null;
+      }
+      
       return d.toISOString().split('T')[0];
     }
     case 'AGE': {
