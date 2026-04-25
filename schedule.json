@@ -1302,6 +1302,17 @@
       "completed": "2026-04-25T17:43:02.875Z",
       "duration_ms": 120000,
       "summary": "Updated monkey-lang README with real benchmarks: fib(30) 3.8x VM advantage, closures 2x evaluator advantage. Added optimizer stats (50% size reduction). Pushed to remote."
+    },
+    {
+      "id": "T120",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang type checker on complex programs — does it catch type errors?",
+      "project": "monkey-lang",
+      "started": "2026-04-25T17:43:32.840Z",
+      "completed": "2026-04-25T17:44:05.478Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: Type checker is fully working. Hindley-Milner with Algorithm W. Correctly catches: int+string, bool+int, function arity mismatches. Infers function types. 9 built-in type signatures. 82 tests in typechecker.test.js."
     }
   ],
   "focusProjects": [
@@ -1765,6 +1776,10 @@
     {
       "time": "2026-04-25T17:42:03.799Z",
       "msg": "Added T119 (MAINTAIN) after end: MAINTAIN: Update monkey-lang README benchmarks with actual measured numbers"
+    },
+    {
+      "time": "2026-04-25T17:43:27.376Z",
+      "msg": "Added T120 (EXPLORE) after end: EXPLORE: Test monkey-lang type checker on complex programs — does it catch type errors?"
     }
   ]
 }
