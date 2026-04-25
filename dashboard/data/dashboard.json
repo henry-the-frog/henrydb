@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T22:00:44.634Z",
+  "generated": "2026-04-25T22:02:08.536Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add ARRAY[...] literal syntax to HenryDB parser",
-    "completedAt": "2026-04-25T22:00:44.634Z",
-    "taskId": "T137",
-    "summary": "ARRAY[...] literal syntax added! Tokenizer, parser, expression evaluator. Works with UNNEST, WHERE, aggregation. 26 lines. All tests pass.",
-    "durationMs": 300000
+    "task": "Extend prelude with take_while, group_by, chunk, scan",
+    "completedAt": "2026-04-25T22:02:08.536Z",
+    "taskId": "T138",
+    "summary": "Prelude extended: take_while, scan, chunk. 12 total HOFs. All work: take_while([1..5], <4)=[1,2,3], scan(cumsum)=[1,3,6,10,15], chunk([1..7],3)=[[1,2,3],[4,5,6],[7]].",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,12 +8983,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 136,
+    "blocksCompleted": 137,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 31,
-      "BUILD": 62,
+      "BUILD": 63,
       "MAINTAIN": 22,
       "EXPLORE": 15
     }

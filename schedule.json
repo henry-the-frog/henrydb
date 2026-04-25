@@ -1476,6 +1476,17 @@
       "completed": "2026-04-25T22:00:44.597Z",
       "duration_ms": 300000,
       "summary": "ARRAY[...] literal syntax added! Tokenizer, parser, expression evaluator. Works with UNNEST, WHERE, aggregation. 26 lines. All tests pass."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Extend prelude with take_while, group_by, chunk, scan",
+      "project": "monkey-lang",
+      "started": "2026-04-25T22:01:05.209Z",
+      "completed": "2026-04-25T22:02:08.500Z",
+      "duration_ms": 180000,
+      "summary": "Prelude extended: take_while, scan, chunk. 12 total HOFs. All work: take_while([1..5], <4)=[1,2,3], scan(cumsum)=[1,3,6,10,15], chunk([1..7],3)=[[1,2,3],[4,5,6],[7]]."
     }
   ],
   "focusProjects": [
@@ -2019,6 +2030,10 @@
     {
       "time": "2026-04-25T21:55:52.705Z",
       "msg": "Added T137 (BUILD) after end: Add ARRAY[...] literal syntax to HenryDB parser"
+    },
+    {
+      "time": "2026-04-25T22:01:04.941Z",
+      "msg": "Added T138 (BUILD) after end: Extend prelude with take_while, group_by, chunk, scan"
     }
   ]
 }
