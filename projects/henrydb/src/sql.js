@@ -3032,7 +3032,7 @@ export function parse(sql) {
       const name = tok.originalValue || tok.value;
       let dataType = advance().value;
       let isSerial = false;
-      if (dataType.toUpperCase() === 'SERIAL' || dataType.toUpperCase() === 'BIGSERIAL') {
+      if (dataType && (dataType.toUpperCase() === 'SERIAL' || dataType.toUpperCase() === 'BIGSERIAL')) {
         isSerial = true;
         dataType = dataType.toUpperCase() === 'BIGSERIAL' ? 'BIGINT' : 'INT';
       }
