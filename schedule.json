@@ -1736,6 +1736,17 @@
       "completed": "2026-04-25T18:22:11.223Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: CHECK, NOT NULL, UNIQUE all enforce correctly. CHECK rejects invalid values with clear error messages. NOT NULL rejects NULLs. UNIQUE rejects duplicates with the specific value in the error."
+    },
+    {
+      "id": "T160",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB FOREIGN KEY constraints",
+      "project": "henrydb",
+      "started": "2026-04-25T18:22:34.859Z",
+      "completed": "2026-04-25T18:22:53.778Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: FOREIGN KEYS work perfectly! Invalid parent_id=999 rejected. Delete parent with children rejected. Full referential integrity enforcement with clear error messages."
     }
   ],
   "focusProjects": [
@@ -2359,6 +2370,10 @@
     {
       "time": "2026-04-25T18:22:02.287Z",
       "msg": "Added T159 (EXPLORE) after end: EXPLORE: Final verification batch — CHECK, NOT NULL, UNIQUE, DEFAULT constraints"
+    },
+    {
+      "time": "2026-04-25T18:22:28.851Z",
+      "msg": "Added T160 (EXPLORE) after end: EXPLORE: Test HenryDB FOREIGN KEY constraints"
     }
   ]
 }

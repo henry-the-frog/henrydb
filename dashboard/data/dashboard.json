@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:22:11.260Z",
+  "generated": "2026-04-25T18:22:53.820Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Final verification batch — CHECK, NOT NULL, UNIQUE, DEFAULT constraints",
-    "completedAt": "2026-04-25T18:22:11.260Z",
-    "taskId": "T159",
-    "summary": "EXPLORE: CHECK, NOT NULL, UNIQUE all enforce correctly. CHECK rejects invalid values with clear error messages. NOT NULL rejects NULLs. UNIQUE rejects duplicates with the specific value in the error.",
+    "task": "EXPLORE: Test HenryDB FOREIGN KEY constraints",
+    "completedAt": "2026-04-25T18:22:53.820Z",
+    "taskId": "T160",
+    "summary": "EXPLORE: FOREIGN KEYS work perfectly! Invalid parent_id=999 rejected. Delete parent with children rejected. Full referential integrity enforcement with clear error messages.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 159,
+    "blocksCompleted": 160,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 58,
       "MAINTAIN": 18,
-      "EXPLORE": 60
+      "EXPLORE": 61
     }
   },
   "artifacts": [
