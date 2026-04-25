@@ -176,8 +176,31 @@ function genSelect(tables) {
 
 function genQuery(tables) {
   if (Object.keys(tables).length === 0) return null;
-  if (rand() < 0.4) return genInsert(tables);
+  const r = rand();
+  if (r < 0.35) return genInsert(tables);
+  if (r < 0.45) return genUpdate(tables);
+  if (r < 0.50) return genDelete(tables);
   return genSelect(tables);
+}
+
+function genUpdate(tables) {
+  const name = pick(Object.keys(tables));
+  if (!name) return null;
+  const cols = tables[name];
+  const col = pick(cols);
+  const val = col.type === 'INT' ? genIntLiteral() : genStringLiteral();
+  const whereCol = pick(cols);
+  const whereVal = whereCol.type === 'INT' ? genIntLiteral() : genStringLiteral();
+  return `UPDATE ${name} SET ${col.name} = ${val} WHERE ${whereCol.name} = ${whereVal}`;
+}
+
+function genDelete(tables) {
+  const name = pick(Object.keys(tables));
+  if (!name) return null;
+  const cols = tables[name];
+  const col = pick(cols);
+  const val = col.type === 'INT' ? genIntLiteral() : genStringLiteral();
+  return `DELETE FROM ${name} WHERE ${col.name} = ${val}`;
 }
 
 // Main fuzzer
