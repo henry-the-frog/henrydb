@@ -287,20 +287,39 @@ async function fuzz() {
     try { henry.execute(sql); henryOk = true; } catch {}
     try { sqlite.exec(sql); sqliteOk = true; } catch {}
     
-    // If one succeeded but other didn't, rollback the one that succeeded
+    // If one succeeded but other didn't, undo the successful one to keep in sync
     if (henryOk && !sqliteOk) {
-      // HenryDB accepted but SQLite didn't — rollback HenryDB insert
-      try {
-        const tbl = sql.match(/INSERT INTO (\w+)/)?.[1];
-        if (tbl) henry.execute(`DELETE FROM ${tbl} WHERE rowid = (SELECT MAX(rowid) FROM ${tbl})`);
-      } catch {}
+      // Undo HenryDB insert — simplest: track row count and delete excess
+      const tbl = sql.match(/INSERT INTO (\w+)/)?.[1];
+      if (tbl) {
+        try {
+          // Use a subquery to find and delete the just-inserted row
+          // Since we don't have rowid, delete where all columns match the inserted values
+          const valMatch = sql.match(/VALUES \((.+)\)/);
+          if (valMatch) {
+            const vals = valMatch[1];
+            const cols = tables[tbl];
+            if (cols) {
+              const conditions = cols.map((c, i) => {
+                const v = vals.split(',')[i]?.trim();
+                return v ? `${c.name} = ${v}` : null;
+              }).filter(Boolean);
+              if (conditions.length > 0) {
+                henry.execute(`DELETE FROM ${tbl} WHERE ${conditions.join(' AND ')} LIMIT 1`);
+              }
+            }
+          }
+        } catch {}
+      }
       if (VERBOSE) console.log(`INSERT mismatch (Henry OK, SQLite fail): ${sql}`);
     } else if (!henryOk && sqliteOk) {
-      // SQLite accepted but HenryDB didn't — rollback SQLite insert
-      try {
-        const tbl = sql.match(/INSERT INTO (\w+)/)?.[1];
-        if (tbl) sqlite.exec(`DELETE FROM ${tbl} WHERE rowid = (SELECT MAX(rowid) FROM ${tbl})`);
-      } catch {}
+      // Undo SQLite insert
+      const tbl = sql.match(/INSERT INTO (\w+)/)?.[1];
+      if (tbl) {
+        try {
+          sqlite.exec(`DELETE FROM ${tbl} WHERE rowid = (SELECT MAX(rowid) FROM ${tbl})`);
+        } catch {}
+      }
       if (VERBOSE) console.log(`INSERT mismatch (Henry fail, SQLite OK): ${sql}`);
     }
   }
@@ -348,6 +367,22 @@ async function fuzz() {
       // Compare row counts and values
       const hRows = henryResult?.rows || [];
       const sRows = sqliteResult?.rows || [];
+      
+      // Normalize row order when no ORDER BY (order is undefined)
+      const hasOrderBy = sql.toUpperCase().includes('ORDER BY');
+      if (!hasOrderBy) {
+        const sortRows = (rows) => [...rows].sort((a, b) => {
+          const keys = Object.keys(a).sort();
+          for (const k of keys) {
+            const av = String(a[k] ?? ''), bv = String(b[k] ?? '');
+            if (av < bv) return -1;
+            if (av > bv) return 1;
+          }
+          return 0;
+        });
+        hRows.splice(0, hRows.length, ...sortRows(hRows));
+        sRows.splice(0, sRows.length, ...sortRows(sRows));
+      }
       
       if (hRows.length !== sRows.length) {
         failed++;
