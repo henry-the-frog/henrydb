@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T18:47:50.504Z",
+  "generated": "2026-04-25T18:48:25.911Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB MVCC isolation levels",
-    "completedAt": "2026-04-25T18:47:50.504Z",
-    "taskId": "T183",
-    "summary": "EXPLORE: MVCC verified. 17 MVCC test files. mvcc.test.js (6 pass), mvcc-isolation.test.js (12 pass). Supports: READ COMMITTED, REPEATABLE READ, SERIALIZABLE. Full snapshot isolation.",
+    "task": "EXPLORE: Test HenryDB advisory locks",
+    "completedAt": "2026-04-25T18:48:25.911Z",
+    "taskId": "T184",
+    "summary": "EXPLORE: Advisory locks (6 tests), lock manager (6 tests), deadlock detector (16 tests), 2PL (10 tests), row locking all pass. Complete concurrency control stack.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 183,
+    "blocksCompleted": 184,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 59,
       "MAINTAIN": 21,
-      "EXPLORE": 80
+      "EXPLORE": 81
     }
   },
   "artifacts": [
