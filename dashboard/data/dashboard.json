@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:44:11.098Z",
+  "generated": "2026-04-25T15:46:53.968Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Investigate monkey-lang register allocator + interference graph",
-    "completedAt": "2026-04-25T15:44:11.098Z",
-    "taskId": "T58",
-    "summary": "EXPLORE: Register allocator is real Chaitin-Briggs (simplify/spill/select). Works correctly: 4 vars/3 regs → optimal coloring, 5 fully-connected/3 regs → 2 spills. BUT pipeline only does top-level SSA, not per-function. Interference graph is always empty because straight-line code has no overlapping lifetimes. Gap: need per-function CFG/SSA/liveness for regalloc to be useful.",
-    "durationMs": 300000
+    "task": "EXPLORE: Investigate HenryDB query VM module — what does it do vs Volcano?",
+    "completedAt": "2026-04-25T15:46:53.968Z",
+    "taskId": "T60",
+    "summary": "EXPLORE: Query VM is a SQLite VDBE clone. 595 lines, ~30 opcodes, register-based. Handles: scans, filters, aggregates, hash joins, sorts, GROUP BY. 14/14 tests pass. This is the 5th execution engine — a real bytecode interpreter for SQL.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 58,
+    "blocksCompleted": 60,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 9,
       "BUILD": 22,
       "MAINTAIN": 7,
-      "EXPLORE": 11
+      "EXPLORE": 13
     }
   },
   "artifacts": [

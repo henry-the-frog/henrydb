@@ -636,6 +636,28 @@
       "completed": "2026-04-25T15:44:11.062Z",
       "duration_ms": 300000,
       "summary": "EXPLORE: Register allocator is real Chaitin-Briggs (simplify/spill/select). Works correctly: 4 vars/3 regs → optimal coloring, 5 fully-connected/3 regs → 2 spills. BUT pipeline only does top-level SSA, not per-function. Interference graph is always empty because straight-line code has no overlapping lifetimes. Gap: need per-function CFG/SSA/liveness for regalloc to be useful."
+    },
+    {
+      "id": "T59",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Investigate monkey-lang GAN and RL modules — how complete are they?",
+      "project": "monkey-lang",
+      "started": "2026-04-25T15:44:55.756Z",
+      "completed": "2026-04-25T15:45:50.147Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: monkey-lang has an incredibly complete compiler infrastructure. 12 modules: lexer→parser→typechecker→CFG→SSA→constprop→DCE→escape→regalloc→bytecode-optimizer→type-directed-optimizer→hidden-classes. Basically a mini-V8. Bytecode optimizer: 42% reduction on simple code (dead branch elimination). Most analysis results are correct but not wired into final codegen."
+    },
+    {
+      "id": "T60",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Investigate HenryDB query VM module — what does it do vs Volcano?",
+      "project": "henrydb",
+      "started": "2026-04-25T15:46:03.803Z",
+      "completed": "2026-04-25T15:46:53.932Z",
+      "duration_ms": 180000,
+      "summary": "EXPLORE: Query VM is a SQLite VDBE clone. 595 lines, ~30 opcodes, register-based. Handles: scans, filters, aggregates, hash joins, sorts, GROUP BY. 14/14 tests pass. This is the 5th execution engine — a real bytecode interpreter for SQL."
     }
   ],
   "focusProjects": [
@@ -867,6 +889,14 @@
     {
       "time": "2026-04-25T15:43:07.000Z",
       "msg": "Added T58 (EXPLORE) after end: EXPLORE: Investigate monkey-lang register allocator + interference graph"
+    },
+    {
+      "time": "2026-04-25T15:44:34.554Z",
+      "msg": "Added T59 (EXPLORE) after end: EXPLORE: Investigate monkey-lang GAN and RL modules — how complete are they?"
+    },
+    {
+      "time": "2026-04-25T15:44:47.987Z",
+      "msg": "Added T60 (EXPLORE) after end: EXPLORE: Investigate HenryDB query VM module — what does it do vs Volcano?"
     }
   ]
 }
