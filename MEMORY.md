@@ -35,9 +35,9 @@
 - **Graphics**: ray-tracer (working renders)
 
 ### HenryDB Full Architecture
-- **3 execution strategies**: AST interpreter, Volcano iterators (13 operators), VDBE-style bytecode VM
+- **6 execution strategies** (11K LOC): AST interpreter, Volcano iterators (13 operators), VDBE bytecode VM, vectorized (MonetDB-style), codegen (JIT), vectorized-codegen (DuckDB-style)
+- **Adaptive engine**: Auto-selects strategy based on query analysis + runtime feedback (shape hashing, 3+ sample learning)
 - **Cost-based optimizer**: Column histograms, MCV tracking, DP join reordering
-- **Volcano operators**: SeqScan, IndexScan, Filter, Project, Sort, HashAggregate, NestedLoopJoin, HashJoin, IndexNestedLoopJoin, Window, Limit, Distinct, Union, CTE
 - **WAL**: Binary format, CRC32 checksums, LSN tracking, ARIES-style redo recovery (1200 LOC)
 - **MVCC**: PostgreSQL-style snapshots (xmin/xmax/activeSet), READ COMMITTED & REPEATABLE READ (3589 LOC)
 - **SSI**: Serializable Snapshot Isolation (Cahill 2008, Ports&Grittner 2012) — rw-antidependency tracking (277 LOC)
