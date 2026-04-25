@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T17:49:45.133Z",
+  "generated": "2026-04-25T17:50:53.632Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB Full-Text Search (FTS5)",
-    "completedAt": "2026-04-25T17:49:45.133Z",
-    "taskId": "T126",
-    "summary": "EXPLORE: FTS is tokenizer + inverted index level (13 tests pass). Stop words, stemming-ready tokenizer, inverted index. Not SQL-level CREATE VIRTUAL TABLE yet. Core infrastructure exists.",
+    "task": "EXPLORE: Test HenryDB JSON operators (->>, JSON_EXTRACT, JSON_ARRAY)",
+    "completedAt": "2026-04-25T17:50:53.632Z",
+    "taskId": "T127",
+    "summary": "EXPLORE: JSON support verified. JSON_EXTRACT, JSON_ARRAY, JSON_OBJECT all work. WHERE filtering on JSON fields works. ->> operator needs path fix. Comprehensive JSON support.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 126,
+    "blocksCompleted": 127,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 55,
       "MAINTAIN": 13,
-      "EXPLORE": 35
+      "EXPLORE": 36
     }
   },
   "artifacts": [

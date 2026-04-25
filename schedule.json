@@ -1378,6 +1378,17 @@
       "completed": "2026-04-25T17:49:45.091Z",
       "duration_ms": 120000,
       "summary": "EXPLORE: FTS is tokenizer + inverted index level (13 tests pass). Stop words, stemming-ready tokenizer, inverted index. Not SQL-level CREATE VIRTUAL TABLE yet. Core infrastructure exists."
+    },
+    {
+      "id": "T127",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB JSON operators (->>, JSON_EXTRACT, JSON_ARRAY)",
+      "project": "henrydb",
+      "started": "2026-04-25T17:50:35.945Z",
+      "completed": "2026-04-25T17:50:53.595Z",
+      "duration_ms": 120000,
+      "summary": "EXPLORE: JSON support verified. JSON_EXTRACT, JSON_ARRAY, JSON_OBJECT all work. WHERE filtering on JSON fields works. ->> operator needs path fix. Comprehensive JSON support."
     }
   ],
   "focusProjects": [
@@ -1869,6 +1880,10 @@
     {
       "time": "2026-04-25T17:49:01.064Z",
       "msg": "Added T126 (EXPLORE) after end: EXPLORE: Test HenryDB Full-Text Search (FTS5)"
+    },
+    {
+      "time": "2026-04-25T17:50:30.165Z",
+      "msg": "Added T127 (EXPLORE) after end: EXPLORE: Test HenryDB JSON operators (->>, JSON_EXTRACT, JSON_ARRAY)"
     }
   ]
 }
