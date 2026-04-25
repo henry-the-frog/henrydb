@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-25T15:48:41.062Z",
+  "generated": "2026-04-25T15:51:27.918Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Compare HenryDB 5 execution engines — perf characteristics, when each is best",
-    "completedAt": "2026-04-25T15:48:41.062Z",
-    "taskId": "T61",
-    "summary": "EXPLORE: HenryDB has 6 execution engines + adaptive layer. Total 3644 lines. Volcano (pull), Pipeline JIT (push), Vectorized (batch), Vec Codegen (code-gen batch), Query VM (VDBE), Adaptive (auto-selector). Spans 20 years of DB engine evolution. Documented in scratch.",
-    "durationMs": 300000
+    "task": "EXPLORE: Feature count audit — how many SQL features does HenryDB actually support?",
+    "completedAt": "2026-04-25T15:51:27.918Z",
+    "taskId": "T62",
+    "summary": "EXPLORE: Feature audit. README claims 78 features. All spot-checked features exist and tests pass: Raft (353 lines, passing), CRDTs (169 lines, passing), SWIM gossip (225 lines), PL/SQL (854 lines, passing), wire protocol (multiple test files). Feature count is genuine — this is a comprehensive database system.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 61,
+    "blocksCompleted": 62,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 9,
       "BUILD": 22,
       "MAINTAIN": 7,
-      "EXPLORE": 14
+      "EXPLORE": 15
     }
   },
   "artifacts": [
