@@ -1566,9 +1566,13 @@
     {
       "id": "T146",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Stress test HenryDB with complex multi-join queries",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T22:52:58.913Z",
+      "completed": "2026-04-25T22:53:51.546Z",
+      "duration_ms": 300000,
+      "summary": "Stress tested HenryDB with complex queries. Subqueries, window functions (running totals), CTEs, CASE, HAVING, EXISTS all work correctly. Found 1 bug: COUNT(DISTINCT) doesnt deduplicate in multi-join scenarios. Filed to TODO."
     },
     {
       "id": "T147",
