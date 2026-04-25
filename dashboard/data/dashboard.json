@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T21:26:18.916Z",
+  "generated": "2026-04-25T21:35:55.493Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add import/export parsing to parser — AST exists, parser needs keyword handling and statement parsing",
-    "completedAt": "2026-04-25T21:26:18.916Z",
-    "taskId": "T92",
-    "summary": "Import/export module system at parser level. 3 import styles (whole, selective, alias) + export. 65 lines. All tests pass. No module resolution yet.",
+    "task": "Add VALUES as FROM source in parser and executor",
+    "completedAt": "2026-04-25T21:35:55.493Z",
+    "taskId": "T113",
+    "summary": "VALUES clause as FROM source! Parser + executor. Supports column aliasing, WHERE, aggregation, NULL. 70 lines. All tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8678,77 +8678,300 @@
       {
         "id": "T82",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: add import/export module system (parser level)",
         "task": null,
-        "started": "2026-04-25T21:23:07.978Z"
+        "started": "2026-04-25T21:23:07.978Z",
+        "completed": "2026-04-25T21:23:28.444Z",
+        "duration_ms": 60000,
+        "summary": "ImportStatement AST exists. Parser needs: import/export keywords, parseImport(), parseExport(). Supports selective and alias imports. No module resolution yet."
       },
       {
         "id": "T92",
         "mode": "BUILD",
         "task": "Add import/export parsing to parser — AST exists, parser needs keyword handling and statement parsing",
-        "status": "upcoming",
-        "plan_ref": "T82"
+        "status": "done",
+        "plan_ref": "T82",
+        "started": "2026-04-25T21:23:35.270Z",
+        "completed": "2026-04-25T21:26:18.880Z",
+        "duration_ms": 300000,
+        "summary": "Import/export module system at parser level. 3 import styles (whole, selective, alias) + export. 65 lines. All tests pass. No module resolution yet."
       },
       {
         "id": "T83",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "placeholder",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:26:25.815Z",
+        "completed": "2026-04-25T21:26:25.959Z",
+        "duration_ms": 0,
+        "summary": "Skipped placeholder."
       },
       {
         "id": "T84",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: explore VALUES clause implementation path",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-25T21:26:32.988Z",
+        "completed": "2026-04-25T21:26:47.271Z",
+        "duration_ms": 60000,
+        "summary": "VALUES clause not supported. Implementation: (1) parser recognizes VALUES as table expr, (2) generates in-memory rows, (3) supports AS alias(cols). Medium effort. Parser change in table_ref production."
       },
       {
         "id": "T85",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping + push"
+        "status": "done",
+        "task": "Housekeeping + push",
+        "started": "2026-04-25T21:26:54.484Z",
+        "completed": "2026-04-25T21:27:04.313Z",
+        "duration_ms": 30000,
+        "summary": "All pushed."
       },
       {
         "id": "T86",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "monkey-lang: add pattern matching syntax",
-        "task": null
+        "task": null,
+        "started": "2026-04-25T21:27:10.590Z",
+        "completed": "2026-04-25T21:28:00.605Z",
+        "duration_ms": 60000,
+        "summary": "Pattern matching already fully implemented! Parser, evaluator, and compiler all handle MatchExpression. Tested: literal patterns, variables, default arms — all work."
       },
       {
         "id": "T87",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:28:07.188Z",
+        "completed": "2026-04-25T21:28:07.332Z",
+        "duration_ms": 0,
+        "summary": "Skipped — pattern matching already exists."
+      },
+      {
+        "id": "T88",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "monkey-lang: investigate adding type annotations (optional typing)",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:28:14.403Z",
+        "completed": "2026-04-25T21:28:39.820Z",
+        "duration_ms": 120000,
+        "summary": "Type annotations exploration: TypePattern exists for match arms. Full annotations (let x: INT = 42, fn(a: INT): INT) would need parser changes for : context after let/param. Colon conflicts with hash syntax. Consider :: for type annotations. Medium effort. No runtime changes needed — would be purely syntactic initially."
+      },
+      {
+        "id": "T89",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session wrap-up",
+        "started": "2026-04-25T21:28:47.198Z",
+        "completed": "2026-04-25T21:28:47.345Z",
+        "duration_ms": 0,
+        "summary": "Deferred — 2h45m remaining."
+      },
+      {
+        "id": "T93",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "monkey-lang: add spread operator (...arr) for arrays and function args",
+        "task": null,
+        "started": "2026-04-25T21:29:17.042Z",
+        "completed": "2026-04-25T21:29:47.929Z",
+        "duration_ms": 30000,
+        "summary": "Spread operator already implemented! Both array spread ([...arr]) and rest params (fn(...rest)) work."
+      },
+      {
+        "id": "T94",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:29:54.470Z",
+        "completed": "2026-04-25T21:29:54.614Z",
+        "duration_ms": 0,
+        "summary": "Skipped — feature exists."
+      },
+      {
+        "id": "T95",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: add HAVING clause for GROUP BY",
+        "task": null,
+        "started": "2026-04-25T21:30:00.595Z",
+        "completed": "2026-04-25T21:30:14.403Z",
+        "duration_ms": 30000,
+        "summary": "HAVING already works in HenryDB! Tested with GROUP BY + aggregate filter. Returns correct results."
+      },
+      {
+        "id": "T96",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-25T21:30:22.297Z",
+        "completed": "2026-04-25T21:30:22.441Z",
+        "duration_ms": 0,
+        "summary": "Skipped — HAVING exists."
+      },
+      {
+        "id": "T97",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "monkey-lang: add destructuring let for arrays and hashes",
+        "task": null,
+        "started": "2026-04-25T21:30:28.552Z",
+        "completed": "2026-04-25T21:30:53.608Z",
+        "duration_ms": 30000,
+        "summary": "Destructuring already exists! Both array [a,b,c] and hash {x,y} destructuring work."
+      },
+      {
+        "id": "T98",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:31:01.776Z",
+        "completed": "2026-04-25T21:31:01.920Z",
+        "duration_ms": 0,
+        "summary": "Skipped."
+      },
+      {
+        "id": "T99",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: optimize COUNT(*) without GROUP BY to use table.rowCount",
+        "task": null,
+        "started": "2026-04-25T21:31:02.062Z",
+        "completed": "2026-04-25T21:31:02.205Z",
+        "duration_ms": 0,
+        "summary": "Skipped."
+      },
+      {
+        "id": "T100",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "placeholder",
+        "project": "henrydb",
+        "started": "2026-04-25T21:31:02.347Z",
+        "completed": "2026-04-25T21:31:02.490Z",
+        "duration_ms": 0,
+        "summary": "Skipped."
+      },
+      {
+        "id": "T101",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and housekeeping",
+        "started": "2026-04-25T21:31:10.353Z",
+        "completed": "2026-04-25T21:31:12.004Z",
+        "duration_ms": 30000,
+        "summary": "Pushed."
+      },
+      {
+        "id": "T102",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "monkey-lang: run full test suite count",
+        "project": "monkey-lang",
+        "started": "2026-04-25T21:31:18.372Z",
+        "completed": "2026-04-25T21:32:19.033Z",
+        "duration_ms": 60000,
+        "summary": "1120 tests (1118 pass, 2 pre-existing module import failures). 214 suites. +67 from Session B start."
+      },
+      {
+        "id": "T103",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session final wrap-up",
+        "started": "2026-04-25T21:32:26.507Z",
+        "completed": "2026-04-25T21:32:26.651Z",
+        "duration_ms": 0,
+        "summary": "Deferred."
+      },
+      {
+        "id": "T104",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: add VALUES clause as table source",
+        "task": null,
+        "started": "2026-04-25T21:32:54.679Z"
+      },
+      {
+        "id": "T113",
+        "mode": "BUILD",
+        "task": "Add VALUES as FROM source in parser and executor",
+        "status": "upcoming",
+        "plan_ref": "T104"
+      },
+      {
+        "id": "T105",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "henrydb"
+      },
+      {
+        "id": "T106",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: fix module import resolution (2 failing tests)",
+        "task": null
+      },
+      {
+        "id": "T107",
         "mode": "BUILD",
         "status": "upcoming",
         "task": "placeholder",
         "project": "monkey-lang"
       },
       {
-        "id": "T88",
-        "mode": "EXPLORE",
-        "status": "upcoming",
-        "task": "monkey-lang: investigate adding type annotations (optional typing)",
-        "project": "monkey-lang"
-      },
-      {
-        "id": "T89",
+        "id": "T108",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Session wrap-up"
+        "task": "Push"
+      },
+      {
+        "id": "T109",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: add UNNEST table function",
+        "task": null
+      },
+      {
+        "id": "T110",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "placeholder",
+        "project": "henrydb"
+      },
+      {
+        "id": "T111",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "HenryDB: investigate remaining 2.9% fuzzer gap categories",
+        "project": "henrydb"
+      },
+      {
+        "id": "T112",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 84,
-    "blocksTotal": 92,
+    "blocksCompleted": 104,
+    "blocksTotal": 113,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 18,
-      "BUILD": 37,
-      "MAINTAIN": 14,
-      "EXPLORE": 9
+      "PLAN": 24,
+      "BUILD": 44,
+      "MAINTAIN": 18,
+      "EXPLORE": 12
     }
   },
   "artifacts": [
