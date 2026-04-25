@@ -98,11 +98,42 @@ export function validateConstraintsForUpdate(db, table, values, excludeRid, oldV
       if (!refTable) throw new Error(`Referenced table ${col.references.table} not found`);
       const refColIdx = refTable.schema.findIndex(c => c.name === col.references.column);
       let found = false;
-      for (const { values: refValues } of refTable.heap.scan()) {
-        if (refValues[refColIdx] === val) { found = true; break; }
+      let foundPageId = null, foundSlotIdx = null;
+      for (const { pageId, slotIdx, values: refValues } of refTable.heap.scan()) {
+        if (refValues[refColIdx] === val) {
+          found = true;
+          foundPageId = pageId;
+          foundSlotIdx = slotIdx;
+          break;
+        }
       }
       if (!found) {
         throw new Error(`Foreign key constraint violated: ${val} not found in ${col.references.table}(${col.references.column})`);
+      }
+      // MVCC visibility check: if another active transaction has marked this row
+      // for deletion (xmax set to another tx's id), reject the FK reference to prevent
+      // orphaned references after both transactions commit.
+      if (found && db._tdb) {
+        const tdb = db._tdb;
+        const refTableName = col.references.table;
+        const vm = tdb._versionMaps && tdb._versionMaps.get(refTableName);
+        const activeTx = tdb._activeTx;
+        if (vm && activeTx) {
+          const key = `${foundPageId}:${foundSlotIdx}`;
+          const ver = vm.get(key);
+          if (ver && ver.xmax !== 0 && ver.xmax !== activeTx.txId) {
+            // Another transaction is deleting this row — check if it's still active
+            const otherTx = activeTx.manager && activeTx.manager.activeTxns
+              ? activeTx.manager.activeTxns.get(ver.xmax)
+              : null;
+            if (otherTx && !otherTx.committed && !otherTx.aborted) {
+              throw new Error(
+                `Foreign key constraint violated: referenced row in ${refTableName}(${col.references.column}) ` +
+                `is being deleted by another transaction`
+              );
+            }
+          }
+        }
       }
     }
   }

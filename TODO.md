@@ -1,7 +1,7 @@
 # TODO.md
 
 ## Urgent
-- (since 2026-04-24) Fix FK CASCADE MVCC visibility bug — heap deletes work but MVCC snapshot doesn't see them
+(none)
 
 ## Normal
 - HenryDB: Add DATE/TIME modifier support (+30 days, -1 month, 'now')

@@ -302,6 +302,7 @@ export class TransactionalDatabase {
 
   constructor(db, dirPath, wal, mvcc, diskManagers, heaps, versionMaps, catalogPath, poolSize) {
     this._db = db;
+    this._db._tdb = this; // Back-reference for MVCC-aware FK validation
     this._dirPath = dirPath;
     this._wal = wal;
     // Patch logDDL onto the inner Database's WAL so ALTER TABLE/CREATE INDEX/DROP INDEX
