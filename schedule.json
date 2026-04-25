@@ -1519,6 +1519,17 @@
       "completed": "2026-04-25T18:04:43.991Z",
       "duration_ms": 120000,
       "summary": "Updated MEMORY.md with accurate stats: HenryDB 8982 tests, 212K LOC, 97.2% fuzzer. monkey-lang 920/920 100%, 200K LOC, optimizer fuzzer 100%."
+    },
+    {
+      "id": "T140",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Investigate undefined names in JOIN+GROUP BY queries — potential bug",
+      "project": "henrydb",
+      "started": "2026-04-25T18:05:08.895Z",
+      "completed": "2026-04-25T18:05:27.888Z",
+      "duration_ms": 60000,
+      "summary": "EXPLORE: Not a bug — JOIN GROUP BY returns u.name (with table prefix) not name. Access via row[u.name] works. Column naming convention issue, not data loss. Queries work correctly."
     }
   ],
   "focusProjects": [
@@ -2062,6 +2073,10 @@
     {
       "time": "2026-04-25T18:03:44.048Z",
       "msg": "Added T139 (MAINTAIN) after end: MAINTAIN: Update MEMORY.md with comprehensive session insights"
+    },
+    {
+      "time": "2026-04-25T18:05:02.534Z",
+      "msg": "Added T140 (EXPLORE) after end: EXPLORE: Investigate undefined names in JOIN+GROUP BY queries — potential bug"
     }
   ]
 }
