@@ -1888,6 +1888,31 @@
       "completed": "2026-04-25T23:29:20.093Z",
       "duration_ms": 180000,
       "summary": "Theoretical max: ~99.5%. Current 98.6%. Fix 3 things: (1) consistent sqliteCompare in all WHERE paths (+0.5%), (2) UNION dedup with type-aware comparison (+0.3%), (3) empty string handling (+0.2%). Remaining 0.5% is edge cases (collation, float precision, expression affinity). 100% not achievable in JS."
+    },
+    {
+      "id": "T177",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: HenryDB adaptive engine — how does it choose between execution strategies?",
+      "project": "henrydb",
+      "started": "2026-04-25T23:29:40.142Z",
+      "completed": "2026-04-25T23:29:55.518Z",
+      "duration_ms": 120000,
+      "summary": "Adaptive engine: 4 strategies (vectorized, codegen, compiled/closure, volcano). Analyzes query characteristics + runtime feedback (shape hashing, 3+ sample threshold). Tracks stats per engine. Auto-selects optimal strategy and learns over time. Truly production-grade architecture."
+    },
+    {
+      "id": "T178",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM opcodes — how many and what are they?",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T179",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test 10 more projects from unexplored categories",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -2587,6 +2612,18 @@
     {
       "time": "2026-04-25T23:26:58.732Z",
       "msg": "Added T176 (THINK) after end: THINK: What is the theoretical maximum SQLite compatibility achievable?"
+    },
+    {
+      "time": "2026-04-25T23:29:34.655Z",
+      "msg": "Added T177 (EXPLORE) after end: EXPLORE: HenryDB adaptive engine — how does it choose between execution strategies?"
+    },
+    {
+      "time": "2026-04-25T23:29:34.775Z",
+      "msg": "Added T178 (EXPLORE) after end: EXPLORE: Test monkey-lang VM opcodes — how many and what are they?"
+    },
+    {
+      "time": "2026-04-25T23:29:34.895Z",
+      "msg": "Added T179 (EXPLORE) after end: EXPLORE: Test 10 more projects from unexplored categories"
     }
   ]
 }
