@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T15:28:53.871Z",
+  "generated": "2026-04-25T15:32:09.039Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add CROSS APPLY / OUTER APPLY support (SQL Server lateral join syntax)",
-    "completedAt": "2026-04-25T15:28:53.871Z",
-    "taskId": "T48",
-    "summary": "CROSS APPLY and OUTER APPLY already work! Feature is fully implemented. Initial test showed nulls due to JS quoting issue (double quotes parsed as SQL identifiers). Verified: CROSS APPLY acts as INNER lateral join, OUTER APPLY as LEFT lateral join.",
+    "task": "Fix SUM/AVG to convert text to numbers instead of concatenating",
+    "completedAt": "2026-04-25T15:32:09.039Z",
+    "taskId": "T50",
+    "summary": "Fixed SUM/AVG text coercion. SUM now converts text→number (abc→0). Fixed all 4 code paths. 13/13 aggregate + 52/52 sql tests pass.",
     "durationMs": 180000
   },
   "schedule": {
@@ -8195,14 +8195,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 48,
+    "blocksCompleted": 50,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 9,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 7,
-      "EXPLORE": 5
+      "EXPLORE": 6
     }
   },
   "artifacts": [
