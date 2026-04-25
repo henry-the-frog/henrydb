@@ -2328,9 +2328,13 @@
     {
       "id": "T214",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB NULL handling (IS NULL, IS NOT NULL, COALESCE, NULLIF)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T19:28:45.151Z",
+      "completed": "2026-04-25T19:29:01.608Z",
+      "duration_ms": 60000,
+      "summary": "NULL handling perfect! IS NULL, IS NOT NULL, COALESCE, NULLIF, IFNULL, NULL in aggregates (AVG ignores, COUNT(*) vs COUNT(col)), three-valued logic (NULL=NULL→NULL). All correct."
     },
     {
       "id": "T215",
@@ -2531,6 +2535,25 @@
       "status": "upcoming",
       "task": "EXPLORE: Run monkey-lang REPL interactively",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T241",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: Update CURRENT.md for 250-task milestone"
+    },
+    {
+      "id": "T242",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "MAINTAIN: Prepare session end — final daily log, CURRENT.md, push all"
+    },
+    {
+      "id": "T243",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: One final HenryDB test — the hardest query I can think of",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3478,6 +3501,18 @@
     {
       "time": "2026-04-25T19:19:40.881Z",
       "msg": "Added T240 (EXPLORE) after end: EXPLORE: Run monkey-lang REPL interactively"
+    },
+    {
+      "time": "2026-04-25T19:23:36.996Z",
+      "msg": "Added T241 (MAINTAIN) after end: MAINTAIN: Update CURRENT.md for 250-task milestone"
+    },
+    {
+      "time": "2026-04-25T19:27:15.251Z",
+      "msg": "Added T242 (MAINTAIN) after end: MAINTAIN: Prepare session end — final daily log, CURRENT.md, push all"
+    },
+    {
+      "time": "2026-04-25T19:27:15.373Z",
+      "msg": "Added T243 (EXPLORE) after end: EXPLORE: One final HenryDB test — the hardest query I can think of"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T19:11:48.701Z",
+  "generated": "2026-04-25T19:29:01.644Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Rapid verification T225",
-    "completedAt": "2026-04-25T19:11:48.701Z",
-    "taskId": "T223",
-    "summary": "Production analytics dashboard! CTE + 7-day moving average (window AVG ROWS 6 PRECEDING) + WoW comparison (LAG 7) + CASE trend + ROUND. Real-world metrics dashboard query works perfectly.",
+    "task": "EXPLORE: Test HenryDB NULL handling (IS NULL, IS NOT NULL, COALESCE, NULLIF)",
+    "completedAt": "2026-04-25T19:29:01.644Z",
+    "taskId": "T214",
+    "summary": "NULL handling perfect! IS NULL, IS NOT NULL, COALESCE, NULLIF, IFNULL, NULL in aggregates (AVG ignores, COUNT(*) vs COUNT(col)), three-valued logic (NULL=NULL→NULL). All correct.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8917,14 +8917,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 218,
+    "blocksCompleted": 219,
     "blocksTotal": 104,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 11,
       "BUILD": 60,
       "MAINTAIN": 24,
-      "EXPLORE": 111
+      "EXPLORE": 112
     }
   },
   "artifacts": [
