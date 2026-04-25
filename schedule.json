@@ -2313,6 +2313,17 @@
       "completed": "2026-04-25T19:06:27.804Z",
       "duration_ms": 60000,
       "summary": "EXPLORE: Query plans use Volcano planner. Index Scan for id=42 (cost 0.50), Seq Scan for num>500 (cost 0.00-201). Adaptive engine selects at higher level. All queries produce correct plans."
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BUILD: Add comprehensive monkey-lang demo to README",
+      "project": "monkey-lang",
+      "started": "2026-04-25T19:06:37.118Z",
+      "completed": "2026-04-25T19:07:07.358Z",
+      "duration_ms": 120000,
+      "summary": "Added comprehensive language feature docs to monkey-lang README. Full examples for enums, destructuring, comprehensions, pipe, try/catch, closures, FP, switch/match. Feature list and code examples."
     }
   ],
   "focusProjects": [
@@ -3148,6 +3159,10 @@
     {
       "time": "2026-04-25T19:06:09.813Z",
       "msg": "Added T212 (EXPLORE) after end: EXPLORE: Test HenryDB adaptive engine selection — when does it choose Volcano vs Classic?"
+    },
+    {
+      "time": "2026-04-25T19:06:36.883Z",
+      "msg": "Added T213 (BUILD) after end: BUILD: Add comprehensive monkey-lang demo to README"
     }
   ]
 }
