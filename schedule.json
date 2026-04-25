@@ -1870,9 +1870,13 @@
     {
       "id": "T175",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: HenryDB advanced features — test vectorized execution engine",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T23:28:12.614Z",
+      "completed": "2026-04-25T23:28:39.339Z",
+      "duration_ms": 180000,
+      "summary": "Vectorized engine: 2153 LOC. Bridge detects vectorizable queries (GROUP BY + aggregates), converts row→column, executes in batches of 1024. Code generation (DuckDB-style) produces JS functions for columnar processing. 3 operators: scan, filter, hash aggregate."
     },
     {
       "id": "T176",
