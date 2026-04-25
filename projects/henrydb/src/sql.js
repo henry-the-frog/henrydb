@@ -1645,9 +1645,16 @@ export function parse(sql) {
       if (match(',')) step = parseExpr();
       expect(')');
       let alias = null;
+      let columnAliases = null;
       if (isKeyword('AS')) { advance(); alias = readAlias(); }
       else if (peek().type === 'IDENT') alias = advance().value;
-      return { table: '__generate_series', alias, start, stop, step };
+      if (match('(')) {
+        columnAliases = [];
+        columnAliases.push(advance().value);
+        while (match(',')) columnAliases.push(advance().value);
+        expect(')');
+      }
+      return { table: '__generate_series', alias, start, stop, step, columnAliases };
     }
     // UNNEST(array_expr)
     if (isKeyword('UNNEST')) {

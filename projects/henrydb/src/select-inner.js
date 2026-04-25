@@ -51,14 +51,15 @@ export function selectInner(db, ast) {
     const start = db._evalValue(ast.from.start, {});
     const stop = db._evalValue(ast.from.stop, {});
     const step = ast.from.step ? db._evalValue(ast.from.step, {}) : 1;
+    const colName = ast.from.columnAliases?.[0] || 'value';
     let rows = [];
     if (step > 0) {
       for (let i = start; i <= stop; i += step) {
-        rows.push({ value: i });
+        rows.push({ [colName]: i });
       }
     } else if (step < 0) {
       for (let i = start; i >= stop; i += step) {
-        rows.push({ value: i });
+        rows.push({ [colName]: i });
       }
     }
     // Apply WHERE
