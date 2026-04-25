@@ -191,10 +191,22 @@ function genSelect(tables) {
 function genQuery(tables) {
   if (Object.keys(tables).length === 0) return null;
   const r = rand();
-  if (r < 0.35) return genInsert(tables);
-  if (r < 0.45) return genUpdate(tables);
-  if (r < 0.50) return genDelete(tables);
+  if (r < 0.30) return genInsert(tables);
+  if (r < 0.38) return genUpdate(tables);
+  if (r < 0.42) return genDelete(tables);
+  if (r < 0.50) return genUnion(tables);
   return genSelect(tables);
+}
+
+function genUnion(tables) {
+  const tableNames = Object.keys(tables);
+  if (tableNames.length === 0) return null;
+  const name = pick(tableNames);
+  const cols = tables[name];
+  if (cols.length === 0) return null;
+  const col = pick(cols).name;
+  const unionType = rand() < 0.5 ? 'UNION' : 'UNION ALL';
+  return `SELECT ${col} FROM ${name} WHERE ${col} ${pick(['>', '<', '='])} ${genLiteral()} ${unionType} SELECT ${col} FROM ${name} WHERE ${col} ${pick(['>', '<', '='])} ${genLiteral()}`;
 }
 
 function genUpdate(tables) {
@@ -278,6 +290,7 @@ async function fuzz() {
     
     // Track query type
     if (sql.includes('OVER (')) queryTypes.window = (queryTypes.window || 0) + 1;
+    else if (sql.includes('UNION')) queryTypes.union = (queryTypes.union || 0) + 1;
     else if (sql.includes('WITH ')) queryTypes.cte++;
     else if (sql.includes('SELECT') && sql.includes('(SELECT')) queryTypes.subquery++;
     else if (sql.includes('GROUP BY')) queryTypes.groupby++;
