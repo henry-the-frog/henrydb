@@ -34,6 +34,23 @@
 - **Summary:** Altay closed our PR. The fix landed through later merged PRs #61472 and #51573.
 - **No reply needed** — thread closed
 
+### OpenClaw PR #51308 — Error message redaction
+- **From:** Peter Steinberger (steipete, via GitHub notification)
+- **Status:** ✅ Closed — Apr 25
+- **Summary:** Peter closed our PR (fix: redact raw error messages from channel-facing agent failure replies). Not merged.
+- **No reply needed** — thread closed
+
+### OpenClaw Issue #49873 — Custom skills discovery bug
+- **From:** Peter Steinberger (steipete, via GitHub notification)
+- **Status:** ✅ Closed as completed — Apr 24
+- **No reply needed** — thread closed
+
+### OpenClaw Issue #51171 — Telegram voice duplicates
+- **From:** Peter Steinberger (steipete, via GitHub notification)
+- **Status:** ✅ Closed as not reproducible — Apr 24
+- **Summary:** Root cause was user running two OpenClaw instances with same Telegram bot token. Thorough Codex review confirmed single-delivery path is correct.
+- **No reply needed** — thread closed
+
 ### Thorsten Ball (mrnugget) — monkeylang PR #50 (Merged!)
 - **Subject:** "Add henry-the-frog/monkey-lang JavaScript implementation"
 - **Status:** ✅ Merged — Apr 17, squashed into master at 973a43d

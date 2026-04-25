@@ -4,29 +4,53 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday's depth findings, prioritize Saturday goals. String truncation bug = data corruption — top priority."
+      "status": "done",
+      "task": "Review yesterday's depth findings, prioritize Saturday goals. String truncation bug = data corruption — top priority.",
+      "started": "2026-04-25T14:15:28.002Z",
+      "completed": "2026-04-25T14:15:51.111Z",
+      "duration_ms": 60000,
+      "summary": "Reviewed yesterday: 7 bugs fixed, pattern = path-not-handled. Queue priorities confirmed — string truncation (data corruption) stays #1. No queue changes."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix HenryDB string truncation bug (TOAST or error on oversized values)",
-      "task": null
+      "task": null,
+      "started": "2026-04-25T14:16:06.932Z",
+      "completed": "2026-04-25T14:19:38.254Z",
+      "duration_ms": 120000,
+      "summary": "Root cause: disk-manager PAGE_SIZE=4096 vs page.js PAGE_SIZE=32768. FileBackedHeap.insert silently returns slotIdx=-1 for rows >4076 bytes. Plan: increase disk PAGE_SIZE to 32KB, add error check on insert failure."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add oversized-row error in FileBackedHeap.insert() + increase disk PAGE_SIZE to 32KB + add TOAST-like error for extreme rows",
       "plan_ref": "T2",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T14:19:48.730Z",
+      "completed": "2026-04-25T14:24:28.624Z",
+      "duration_ms": 600000,
+      "summary": "Fixed string truncation: increased disk PAGE_SIZE 4096→32768, added error on oversized rows. Root cause was PAGE_SIZE mismatch between disk-manager (4096) and page.js (32768). All persistence tests pass."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Write tests for string truncation fix (boundary cases, persistence roundtrip)",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-25T14:24:46.857Z",
+      "completed": "2026-04-25T14:25:22.973Z",
+      "duration_ms": 300000,
+      "summary": "Wrote 7 regression tests for string truncation fix: PAGE_SIZE check, in-memory large strings, persistent storage up to 30KB, close/reopen roundtrip, oversized error, old boundary cases, multiple large strings. All pass."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, knowledge capture",
+      "started": "2026-04-25T14:25:38.168Z"
     },
     {
       "id": "T5",
@@ -205,6 +229,10 @@
     {
       "time": "2026-04-25T14:01:22.154Z",
       "msg": "Added T18 (EXPLORE) after T17: Deep dive: HenryDB query optimizer gaps — cost model unification"
+    },
+    {
+      "time": "2026-04-25T14:19:24.362Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }

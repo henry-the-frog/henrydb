@@ -1,11 +1,11 @@
 # CURRENT.md
 
-status: upcoming
-mode: THINK
-task: Review yesterday's depth findings, prioritize Saturday goals. String truncation bug = data corruption — top priority.
-context-files: memory/scratch/henrydb-bug-fixes-apr24.md, memory/scratch/blog-henrydb-outline.md
-started:
-completed:
+status: done
+mode: BUILD
+task: String truncation regression tests — 7 tests all pass
+context-files: src/string-truncation.test.js
+started: 2026-04-25T14:24:46Z
+completed: 2026-04-25T14:25:22Z
 reason:
-current_position: T1
-tasks_completed_this_session: 0
+current_position: T19
+tasks_completed_this_session: 4
