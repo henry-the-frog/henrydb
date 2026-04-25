@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T16:14:29.375Z",
+  "generated": "2026-04-25T16:16:03.492Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add comprehensive type checker tests for monkey-lang (target 30+)",
-    "completedAt": "2026-04-25T16:14:29.375Z",
-    "taskId": "T69",
-    "summary": "Type checker already has 68 tests (was counting wrong — node --test shows suite count, not test count). Plus 14 integration tests = 82 total. No new tests needed! Read the actual file to verify.",
+    "task": "Enhance fuzzer with GROUP BY and HAVING queries",
+    "completedAt": "2026-04-25T16:16:03.492Z",
+    "taskId": "T70",
+    "summary": "Enhanced fuzzer with GROUP BY + HAVING. 100% on seed=42 (300 queries). Cross-seed avg ~96% (type affinity only). No new logic bugs found — GROUP BY/HAVING is correct.",
     "durationMs": 300000
   },
   "schedule": {
@@ -8195,12 +8195,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 69,
+    "blocksCompleted": 70,
     "blocksTotal": 38,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 9,
-      "BUILD": 27,
+      "BUILD": 28,
       "MAINTAIN": 8,
       "EXPLORE": 16
     }

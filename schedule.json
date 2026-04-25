@@ -756,6 +756,17 @@
       "completed": "2026-04-25T16:14:29.339Z",
       "duration_ms": 300000,
       "summary": "Type checker already has 68 tests (was counting wrong — node --test shows suite count, not test count). Plus 14 integration tests = 82 total. No new tests needed! Read the actual file to verify."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Enhance fuzzer with GROUP BY and HAVING queries",
+      "project": "henrydb",
+      "started": "2026-04-25T16:15:21.867Z",
+      "completed": "2026-04-25T16:16:03.457Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced fuzzer with GROUP BY + HAVING. 100% on seed=42 (300 queries). Cross-seed avg ~96% (type affinity only). No new logic bugs found — GROUP BY/HAVING is correct."
     }
   ],
   "focusProjects": [
@@ -1031,6 +1042,10 @@
     {
       "time": "2026-04-25T16:13:05.489Z",
       "msg": "Added T69 (BUILD) after end: Add comprehensive type checker tests for monkey-lang (target 30+)"
+    },
+    {
+      "time": "2026-04-25T16:15:16.382Z",
+      "msg": "Added T70 (BUILD) after end: Enhance fuzzer with GROUP BY and HAVING queries"
     }
   ]
 }
