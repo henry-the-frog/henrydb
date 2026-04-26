@@ -2048,6 +2048,17 @@
       "completed": "2026-04-26T00:01:25.362Z",
       "duration_ms": 120000,
       "summary": "HenryDB subsystem LOC: Execution 7661, Parser 3453, MVCC 2580, Indexes 2528, Planning 2458, WAL 2298, Expression 2112, PG Wire 1936, Storage 1724, Core 1641, Joins 1078, PL/SQL 854, Windows 520. Source total: ~30.8K LOC. Tests: 129.5K LOC (4x source). Grand total: 209K LOC."
+    },
+    {
+      "id": "T192",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Count total SQL features in HenryDB — comprehensive feature catalog",
+      "project": "henrydb",
+      "started": "2026-04-26T00:04:05.151Z",
+      "completed": "2026-04-26T00:04:37.217Z",
+      "duration_ms": 180000,
+      "summary": "120+ SQL features cataloged. DDL (CREATE TABLE/INDEX/VIEW/TRIGGER/FUNCTION), DML (INSERT/UPDATE/DELETE/MERGE/UPSERT), SELECT (subqueries, LATERAL, CTE, recursive CTE), JOINs (6 types), Set ops (UNION/INTERSECT/EXCEPT), 10+ window functions, 8 aggregates, JSON functions, string/math/date functions, table functions, prepared stmts, EXPLAIN ANALYZE, MVCC, SSI, WAL, PG wire protocol."
     }
   ],
   "focusProjects": [
@@ -2807,6 +2818,10 @@
     {
       "time": "2026-04-26T00:00:52.944Z",
       "msg": "Added T191 (EXPLORE) after end: EXPLORE: HenryDB total subsystem LOC breakdown"
+    },
+    {
+      "time": "2026-04-26T00:03:58.399Z",
+      "msg": "Added T192 (EXPLORE) after end: EXPLORE: Count total SQL features in HenryDB — comprehensive feature catalog"
     }
   ]
 }
