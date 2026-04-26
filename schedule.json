@@ -4503,9 +4503,13 @@
     {
       "id": "T439",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB complex WHERE with BETWEEN and IN",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:40:50.775Z",
+      "completed": "2026-04-26T01:40:55.745Z",
+      "duration_ms": 10000,
+      "summary": "BETWEEN+IN: val BETWEEN 10 AND 40 AND cat IN ('A','B'). Filters to 3 rows. Combined predicates correct."
     },
     {
       "id": "T440",
@@ -4513,6 +4517,32 @@
       "status": "upcoming",
       "task": "EXPLORE: Test monkey-lang VM recursive flatten",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T441",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB COUNT DISTINCT multiple columns",
+      "project": "henrydb",
+      "started": "2026-04-26T01:41:07.345Z",
+      "completed": "2026-04-26T01:41:13.515Z",
+      "duration_ms": 10000,
+      "summary": "BUG: COUNT(DISTINCT sub) returns 3 for A (should be 2: x,y). Not deduplicating in grouped context. Known issue."
+    },
+    {
+      "id": "T442",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM functional map over hash",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T443",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB window dense_rank",
+      "project": "henrydb",
+      "started": "2026-04-26T01:41:18.696Z"
     }
   ],
   "focusProjects": [
@@ -6268,6 +6298,18 @@
     {
       "time": "2026-04-26T01:40:17.182Z",
       "msg": "Added T440 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive flatten"
+    },
+    {
+      "time": "2026-04-26T01:41:01.452Z",
+      "msg": "Added T441 (EXPLORE) after end: EXPLORE: Test HenryDB COUNT DISTINCT multiple columns"
+    },
+    {
+      "time": "2026-04-26T01:41:01.575Z",
+      "msg": "Added T442 (EXPLORE) after end: EXPLORE: Test monkey-lang VM functional map over hash"
+    },
+    {
+      "time": "2026-04-26T01:41:01.697Z",
+      "msg": "Added T443 (EXPLORE) after end: EXPLORE: Test HenryDB window dense_rank"
     }
   ]
 }
