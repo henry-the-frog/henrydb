@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:50:07.613Z",
+  "generated": "2026-04-26T15:51:29.601Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Change parseMethodCall to index-based dispatch + VM builtin fallback",
-    "completedAt": "2026-04-26T15:50:07.613Z",
-    "taskId": "T48",
-    "summary": "Compile-time method dispatch: dot-calls resolve to symbols/builtins at compile time. arr.len() works (builtin), rex.speak() works (class method). Collision still exists for dot-syntax but Cat__speak(cat) works for explicit dispatch. 1232 tests pass.",
-    "durationMs": 600000
+    "task": "Update tests for hash-based method dispatch",
+    "completedAt": "2026-04-26T15:51:29.601Z",
+    "taskId": "T49",
+    "summary": "4 method dispatch tests added (class dot, builtin array/string, mangled collision avoidance). 1236 total tests.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 48,
+    "blocksCompleted": 49,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 9,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 7,
       "EXPLORE": 4
     }
