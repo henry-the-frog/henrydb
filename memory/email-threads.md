@@ -40,6 +40,18 @@
 - **Summary:** Peter closed our PR (fix: redact raw error messages from channel-facing agent failure replies). Not merged.
 - **No reply needed** — thread closed
 
+### OpenClaw PR #50001 — Export HTML template placeholders
+- **From:** clawsweeper[bot] (via GitHub notification)
+- **Status:** ✅ Closed — Apr 26 (superseded by #41861)
+- **Summary:** Bot closed our PR as duplicate. #41861 is the canonical fix — restores placeholders AND fixes JS string-replacement `$` hazard.
+- **No reply needed** — thread closed
+
+### OpenClaw PR #51292 — Configurable exec approval timeout
+- **From:** clawsweeper[bot] (via GitHub notification)
+- **Status:** ✅ Closed — Apr 26 (superseded by #57816)
+- **Summary:** Bot closed our PR. The practical fix already shipped in #57816 (default raised to 30 min). Exact configurable knob tracked in #51287/#25789.
+- **No reply needed** — thread closed
+
 ### OpenClaw Issue #49873 — Custom skills discovery bug
 - **From:** Peter Steinberger (steipete, via GitHub notification)
 - **Status:** ✅ Closed as completed — Apr 24
