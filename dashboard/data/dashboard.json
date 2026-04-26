@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:29:06.478Z",
+  "generated": "2026-04-26T14:31:15.935Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Mid-day reflection. Review VM callback work. What next for HenryDB fuzzer gap?",
-    "completedAt": "2026-04-26T14:29:06.478Z",
-    "taskId": "T9",
-    "summary": "VM callback was a clean win. HenryDB fuzzer gap: 1.4% from type affinity (3 fixes identified in scratch notes). Queue order good.",
-    "durationMs": 45000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-26T14:31:15.935Z",
+    "taskId": "T10",
+    "summary": "Planned 2 BUILD tasks: (1) sqliteCompare for WHERE, (2) sqliteCompare for UNION ORDER BY. Targeting 98.6% → 99%+.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7505,52 +7505,79 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "VM callback mechanism for native HOF builtins (prelude 19x slower than native)",
         "task": null,
-        "started": "2026-04-26T14:19:22.198Z"
+        "started": "2026-04-26T14:19:22.198Z",
+        "completed": "2026-04-26T14:20:19.418Z",
+        "duration_ms": 90000,
+        "summary": "Planned VM callback: callClosureSync method + native map/filter/reduce builtins. 2 BUILD tasks."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement callClosureSync in VM + native map/filter/reduce builtins",
         "plan_ref": "T6",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-26T14:20:32.071Z",
+        "completed": "2026-04-26T14:26:57.070Z",
+        "duration_ms": 600000,
+        "summary": "VM callback mechanism implemented. callClosureSync enables native HOF builtins. map 4x faster, filter 3.9x, reduce 1.5x. 1149/1149 tests passing."
       },
       {
         "id": "T19",
         "mode": "BUILD",
         "task": "Benchmark native vs prelude HOFs, add tests",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-26T14:27:14.073Z",
+        "completed": "2026-04-26T14:28:14.725Z",
+        "duration_ms": 180000,
+        "summary": "Added 21 native HOF tests (edge cases: nested, closures, recursion, chaining) + bench-hof.js. All pass."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: commit, push, dashboard, notifications"
+        "status": "done",
+        "task": "Housekeeping: commit, push, dashboard, notifications",
+        "started": "2026-04-26T14:28:24.861Z",
+        "completed": "2026-04-26T14:28:30.647Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed (both repos), CI running, dashboard ok."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day reflection. Review VM callback work. What next for HenryDB fuzzer gap?"
+        "status": "done",
+        "task": "Mid-day reflection. Review VM callback work. What next for HenryDB fuzzer gap?",
+        "started": "2026-04-26T14:28:37.931Z",
+        "completed": "2026-04-26T14:29:06.441Z",
+        "duration_ms": 45000,
+        "summary": "VM callback was a clean win. HenryDB fuzzer gap: 1.4% from type affinity (3 fixes identified in scratch notes). Queue order good."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: close fuzzer gap - mixed type comparisons and UNION type affinity",
-        "task": null
+        "task": null,
+        "started": "2026-04-26T14:29:14.816Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Add sqliteCompare function + use in WHERE COMPARE (LT/GT/LE/GE)",
         "plan_ref": "T10",
         "project": "henrydb"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "Use sqliteCompare in UNION/set-ops ORDER BY + run diff fuzzer to measure improvement",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -7603,11 +7630,11 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 10,
-    "blocksTotal": 19,
+    "blocksCompleted": 11,
+    "blocksTotal": 20,
     "modeDistribution": {
       "THINK": 3,
-      "PLAN": 2,
+      "PLAN": 3,
       "BUILD": 3,
       "MAINTAIN": 2
     }

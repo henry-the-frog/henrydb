@@ -111,17 +111,28 @@
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: close fuzzer gap - mixed type comparisons and UNION type affinity",
-      "task": null
+      "task": null,
+      "started": "2026-04-26T14:29:14.816Z",
+      "completed": "2026-04-26T14:31:15.900Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILD tasks: (1) sqliteCompare for WHERE, (2) sqliteCompare for UNION ORDER BY. Targeting 98.6% → 99%+."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Add sqliteCompare function + use in WHERE COMPARE (LT/GT/LE/GE)",
       "plan_ref": "T10",
       "project": "henrydb"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Use sqliteCompare in UNION/set-ops ORDER BY + run diff fuzzer to measure improvement",
+      "status": "upcoming",
+      "plan_ref": "T10"
     },
     {
       "id": "T12",
@@ -260,6 +271,10 @@
     {
       "time": "2026-04-26T14:20:14.139Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-26T14:31:09.684Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
     }
   ]
 }
