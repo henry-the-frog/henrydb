@@ -16,6 +16,7 @@ import { MVCCManager } from './mvcc.js';
 import { installPgCatalog } from './pg-catalog.js';
 import { installSetOperations } from './set-operations.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
+import { sqliteCompare } from './sqlite-compare.js';
 
 export class Database {
   constructor(options = {}) {
@@ -2096,7 +2097,7 @@ export class Database {
               return nullFirst ? 1 : -1;
             }
             
-            const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+            const cmp = sqliteCompare(av, bv);
             if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
           }
           return 0;
@@ -2328,7 +2329,7 @@ export class Database {
             return nullFirst ? 1 : -1;
           }
           
-          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          const cmp = sqliteCompare(av, bv);
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;
@@ -4440,7 +4441,7 @@ export class Database {
             for (const { column, direction } of orderBy) {
               const av = this._resolveColumn(column, a);
               const bv = this._resolveColumn(column, b);
-              const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+              const cmp = sqliteCompare(av, bv);
               if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
             }
             return 0;
@@ -4814,7 +4815,7 @@ export class Database {
             av = a[column] !== undefined ? a[column] : this._resolveColumn(column, a);
             bv = b[column] !== undefined ? b[column] : this._resolveColumn(column, b);
           }
-          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          const cmp = sqliteCompare(av, bv);
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;

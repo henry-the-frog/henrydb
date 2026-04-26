@@ -6,7 +6,8 @@ import { execSync } from 'child_process';
 function sqliteEval(expr) {
   try {
     const result = execSync(`sqlite3 :memory: "SELECT ${expr};"`, { encoding: 'utf8', timeout: 5000 }).trim();
-    return parseFloat(result) || result;
+    const n = parseFloat(result);
+    return !isNaN(n) ? n : result;
   } catch {
     return null;
   }

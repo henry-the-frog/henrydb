@@ -1,6 +1,8 @@
 // set-operations.js — UNION, INTERSECT, EXCEPT operations
 // Extracted from db.js. Mixin pattern: installSetOperations(Database) adds methods to prototype.
 
+import { sqliteCompare } from './sqlite-compare.js';
+
 /**
  * Install UNION, INTERSECT, and EXCEPT methods on Database.
  * @param {Function} DatabaseClass — the Database constructor
@@ -38,7 +40,7 @@ export function installSetOperations(DatabaseClass) {
             av = this._resolveColumn(column, a);
             bv = this._resolveColumn(column, b);
           }
-          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          const cmp = sqliteCompare(av, bv);
           if (cmp !== 0) return direction === 'DESC' ? -cmp : cmp;
         }
         return 0;

@@ -2,6 +2,7 @@
 // Extracted from db.js. Mixin pattern: installExpressionEvaluator(Database) adds methods to prototype.
 
 import { tokenize } from './fulltext.js';
+import { sqliteCompare } from './sqlite-compare.js';
 
 /**
  * Install expression evaluation methods on Database.
@@ -131,7 +132,7 @@ export function installExpressionEvaluator(DatabaseClass) {
         const val = this._evalValue(expr.left, row);
         const low = this._evalValue(expr.low, row);
         const high = this._evalValue(expr.high, row);
-        return val >= low && val <= high;
+        return sqliteCompare(val, low) >= 0 && sqliteCompare(val, high) <= 0;
       }
       case 'COMPARE': {
         const left = this._evalValue(expr.left, row);
@@ -141,10 +142,11 @@ export function installExpressionEvaluator(DatabaseClass) {
         switch (expr.op) {
           case 'EQ': return left === right;
           case 'NE': return left !== right;
-          case 'LT': return left < right;
-          case 'GT': return left > right;
-          case 'LE': return left <= right;
-          case 'GE': return left >= right;
+          // Use SQLite-compatible type-aware comparison for ordering operators
+          case 'LT': return sqliteCompare(left, right) < 0;
+          case 'GT': return sqliteCompare(left, right) > 0;
+          case 'LE': return sqliteCompare(left, right) <= 0;
+          case 'GE': return sqliteCompare(left, right) >= 0;
         }
       }
       default: {
