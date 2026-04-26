@@ -2637,6 +2637,31 @@
       "completed": "2026-04-26T00:45:02.598Z",
       "duration_ms": 30000,
       "summary": "Correlated subquery works: WHERE salary > (SELECT AVG(salary) WHERE dept = outer.dept). Correctly identifies employees above their department average."
+    },
+    {
+      "id": "T248",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB WITH ... INSERT (CTE with INSERT)",
+      "project": "henrydb",
+      "started": "2026-04-26T00:45:36.381Z",
+      "completed": "2026-04-26T00:45:55.154Z",
+      "duration_ms": 30000,
+      "summary": "WITH...INSERT works. CTE + INSERT INTO SELECT from CTE. x=3, y=2 correctly computed and inserted."
+    },
+    {
+      "id": "T249",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang import of string module functions",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T250",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB EXISTS vs IN performance comparison",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3620,6 +3645,18 @@
     {
       "time": "2026-04-26T00:44:34.321Z",
       "msg": "Added T247 (EXPLORE) after end: EXPLORE: Test HenryDB correlated subqueries"
+    },
+    {
+      "time": "2026-04-26T00:45:27.611Z",
+      "msg": "Added T248 (EXPLORE) after end: EXPLORE: Test HenryDB WITH ... INSERT (CTE with INSERT)"
+    },
+    {
+      "time": "2026-04-26T00:45:27.731Z",
+      "msg": "Added T249 (EXPLORE) after end: EXPLORE: Test monkey-lang import of string module functions"
+    },
+    {
+      "time": "2026-04-26T00:45:27.852Z",
+      "msg": "Added T250 (EXPLORE) after end: EXPLORE: Test HenryDB EXISTS vs IN performance comparison"
     }
   ]
 }

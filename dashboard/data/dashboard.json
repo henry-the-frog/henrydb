@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:45:02.633Z",
+  "generated": "2026-04-26T00:45:55.190Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB correlated subqueries",
-    "completedAt": "2026-04-26T00:45:02.633Z",
-    "taskId": "T247",
-    "summary": "Correlated subquery works: WHERE salary > (SELECT AVG(salary) WHERE dept = outer.dept). Correctly identifies employees above their department average.",
+    "task": "EXPLORE: Test HenryDB WITH ... INSERT (CTE with INSERT)",
+    "completedAt": "2026-04-26T00:45:55.190Z",
+    "taskId": "T248",
+    "summary": "WITH...INSERT works. CTE + INSERT INTO SELECT from CTE. x=3, y=2 correctly computed and inserted.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 237,
+    "blocksCompleted": 238,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 98
+      "EXPLORE": 99
     }
   },
   "artifacts": [
