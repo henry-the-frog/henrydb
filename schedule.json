@@ -2102,9 +2102,13 @@
     {
       "id": "T197",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test neural-net MicroGPT — can it train on a small corpus?",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:09:44.245Z",
+      "completed": "2026-04-26T00:10:18.905Z",
+      "duration_ms": 180000,
+      "summary": "MicroGPT: Creates successfully with embedding, PE, transformer blocks, output projection. generate() works (produces tokens). Training produces NaN loss — numerical stability issue in softmax/cross-entropy. Structure correct, gradients need debugging."
     }
   ],
   "focusProjects": [
