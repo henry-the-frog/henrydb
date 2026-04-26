@@ -306,9 +306,27 @@
     {
       "id": "T29",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Add class inheritance (extends + super) to monkey-lang",
-      "task": null
+      "task": null,
+      "started": "2026-04-26T15:12:01.155Z",
+      "completed": "2026-04-26T15:12:06.668Z",
+      "duration_ms": 15000,
+      "summary": "Plan: 2 tasks — compile inheritance + test it"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Compile class inheritance: extends copies parent methods, super.method() calls parent",
+      "status": "upcoming",
+      "plan_ref": "T29"
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Test inheritance: basic extends, method override, super calls",
+      "status": "upcoming",
+      "plan_ref": "T29"
     },
     {
       "id": "T30",
@@ -439,6 +457,10 @@
     {
       "time": "2026-04-26T15:11:47.698Z",
       "msg": "Added T30 (PLAN) after end: WASM compiler Phase 1: integer + function compilation"
+    },
+    {
+      "time": "2026-04-26T15:12:01.298Z",
+      "msg": "PLAN T29 filled 2 BUILD tasks"
     }
   ]
 }

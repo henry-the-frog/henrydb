@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:11:42.525Z",
+  "generated": "2026-04-26T15:12:06.703Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Choose next depth project: HenryDB COUNT(DISTINCT) bug vs monkey-lang inheritance vs WASM Phase 1",
-    "completedAt": "2026-04-26T15:11:42.525Z",
-    "taskId": "T28",
-    "summary": "Inheritance first (completes class feature, 30-60 min), then WASM Phase 1 if time. Both are depth work.",
-    "durationMs": 30000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-26T15:12:06.703Z",
+    "taskId": "T29",
+    "summary": "Plan: 2 tasks — compile inheritance + test it",
+    "durationMs": 15000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7700,41 +7700,95 @@
       {
         "id": "T24",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Implement monkey-lang class syntax (parser + compiler + VM support)",
         "task": null,
-        "started": "2026-04-26T14:55:56.835Z"
+        "started": "2026-04-26T14:55:56.835Z",
+        "completed": "2026-04-26T14:56:03.626Z",
+        "duration_ms": 30000,
+        "summary": "Plan: 3 tasks — (1) lexer/parser/AST, (2) compiler (closure factory), (3) tests"
       },
       {
         "id": "T25",
         "mode": "BUILD",
         "task": "Add CLASS token + ClassStatement AST node + parser support",
-        "status": "upcoming",
-        "plan_ref": "T24"
+        "status": "done",
+        "plan_ref": "T24",
+        "started": "2026-04-26T14:56:07.773Z",
+        "completed": "2026-04-26T14:59:40.157Z",
+        "duration_ms": 300000,
+        "summary": "Parser done: CLASS/EXTENDS/SUPER tokens, ClassStatement + SuperExpression AST, parseClassStatement, dotted set assignment. 1179 tests pass."
       },
       {
         "id": "T26",
         "mode": "BUILD",
         "task": "Compile ClassStatement to closure factory function (Option A)",
-        "status": "upcoming",
-        "plan_ref": "T24"
+        "status": "done",
+        "plan_ref": "T24",
+        "started": "2026-04-26T14:59:53.857Z",
+        "completed": "2026-04-26T15:09:27.979Z",
+        "duration_ms": 900000,
+        "summary": "Class compilation complete. ClassStatement → factory fn + method let-bindings. New OpSetIndex opcode for property mutation. Both speak(rex) and rex.speak() work. 1179/1179 tests pass."
       },
       {
         "id": "T27",
         "mode": "BUILD",
         "task": "Add class tests (basic, inheritance, methods, super calls)",
+        "status": "done",
+        "plan_ref": "T24",
+        "started": "2026-04-26T15:09:44.080Z",
+        "completed": "2026-04-26T15:11:02.070Z",
+        "duration_ms": 300000,
+        "summary": "15 class tests added — basic, methods, mutation, edge cases. All 1194 tests pass."
+      },
+      {
+        "id": "T28",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Choose next depth project: HenryDB COUNT(DISTINCT) bug vs monkey-lang inheritance vs WASM Phase 1",
+        "started": "2026-04-26T15:11:28.838Z",
+        "completed": "2026-04-26T15:11:42.489Z",
+        "duration_ms": 30000,
+        "summary": "Inheritance first (completes class feature, 30-60 min), then WASM Phase 1 if time. Both are depth work."
+      },
+      {
+        "id": "T29",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Add class inheritance (extends + super) to monkey-lang",
+        "task": null,
+        "started": "2026-04-26T15:12:01.155Z"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Compile class inheritance: extends copies parent methods, super.method() calls parent",
         "status": "upcoming",
-        "plan_ref": "T24"
+        "plan_ref": "T29"
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Test inheritance: basic extends, method override, super calls",
+        "status": "upcoming",
+        "plan_ref": "T29"
+      },
+      {
+        "id": "T30",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "WASM compiler Phase 1: integer + function compilation",
+        "task": null
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 28,
-    "blocksTotal": 27,
+    "blocksCompleted": 29,
+    "blocksTotal": 32,
     "modeDistribution": {
       "THINK": 6,
-      "PLAN": 5,
+      "PLAN": 6,
       "BUILD": 11,
       "MAINTAIN": 4,
       "EXPLORE": 2
