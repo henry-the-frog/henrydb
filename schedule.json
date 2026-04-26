@@ -3444,8 +3444,62 @@
     {
       "id": "T328",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang pattern matching exhaustiveness",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:18:55.989Z",
+      "completed": "2026-04-26T01:19:07.650Z",
+      "duration_ms": 15000,
+      "summary": "Pattern matching: simple literal matching works (match 42 { 42 => 'forty-two', _ => 'other' }). OR patterns (|) have lexer issue with => token."
+    },
+    {
+      "id": "T329",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CASE WHEN expression",
+      "project": "henrydb",
+      "started": "2026-04-26T01:19:22.089Z",
+      "completed": "2026-04-26T01:19:28.149Z",
+      "duration_ms": 10000,
+      "summary": "CASE WHEN: searched CASE with multiple WHEN/THEN + ELSE. Grade classification: 95=A, 85=B, 72=C, 58=F. All correct."
+    },
+    {
+      "id": "T330",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM closures with mutation (cells)",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:19:34.056Z",
+      "completed": "2026-04-26T01:19:40.889Z",
+      "duration_ms": 10000,
+      "summary": "Mutable closures via cells: makeCounter() with inc/get closures sharing count. 3 increments → get()=3. OpMakeCell/OpSetFree working correctly."
+    },
+    {
+      "id": "T331",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB self-join",
+      "project": "henrydb"
+    },
+    {
+      "id": "T332",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net BPE tokenizer",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T333",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB DELETE with complex WHERE",
+      "project": "henrydb"
+    },
+    {
+      "id": "T334",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM with 1000 recursive fibonacci",
       "project": "monkey-lang"
     }
   ],
@@ -4754,6 +4808,30 @@
     {
       "time": "2026-04-26T01:17:37.012Z",
       "msg": "Added T328 (EXPLORE) after end: EXPLORE: Test monkey-lang pattern matching exhaustiveness"
+    },
+    {
+      "time": "2026-04-26T01:19:14.490Z",
+      "msg": "Added T329 (EXPLORE) after end: EXPLORE: Test HenryDB CASE WHEN expression"
+    },
+    {
+      "time": "2026-04-26T01:19:14.611Z",
+      "msg": "Added T330 (EXPLORE) after end: EXPLORE: Test monkey-lang VM closures with mutation (cells)"
+    },
+    {
+      "time": "2026-04-26T01:19:14.732Z",
+      "msg": "Added T331 (EXPLORE) after end: EXPLORE: Test HenryDB self-join"
+    },
+    {
+      "time": "2026-04-26T01:19:14.854Z",
+      "msg": "Added T332 (EXPLORE) after end: EXPLORE: Test neural-net BPE tokenizer"
+    },
+    {
+      "time": "2026-04-26T01:19:14.976Z",
+      "msg": "Added T333 (EXPLORE) after end: EXPLORE: Test HenryDB DELETE with complex WHERE"
+    },
+    {
+      "time": "2026-04-26T01:19:15.099Z",
+      "msg": "Added T334 (EXPLORE) after end: EXPLORE: Test monkey-lang VM with 1000 recursive fibonacci"
     }
   ]
 }
