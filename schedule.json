@@ -4422,6 +4422,57 @@
       "task": "EXPLORE: Test monkey-lang VM fizzbuzz implementation",
       "project": "monkey-lang",
       "started": "2026-04-26T01:39:15.763Z"
+    },
+    {
+      "id": "T430",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM higher-order reduce to build histogram",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T431",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB window frame GROUPS mode",
+      "project": "henrydb"
+    },
+    {
+      "id": "T432",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM recursive tree traversal",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:39:40.658Z",
+      "completed": "2026-04-26T01:39:46.074Z",
+      "duration_ms": 10000,
+      "summary": "Binary tree inorder traversal: correct order 4,2,5,1,6,3,7 but nested arrays from spread. flatten() needed for flat output."
+    },
+    {
+      "id": "T433",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB nested CTE (CTE referencing CTE)",
+      "project": "henrydb",
+      "started": "2026-04-26T01:39:51.318Z",
+      "completed": "2026-04-26T01:39:56.403Z",
+      "duration_ms": 10000,
+      "summary": "Nested CTEs: base→doubled→tripled. Each references previous CTE. 10→20→60. CTE chaining works."
+    },
+    {
+      "id": "T434",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM tail-recursive map",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T435",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB row_number for pagination",
+      "project": "henrydb",
+      "started": "2026-04-26T01:40:02.248Z"
     }
   ],
   "focusProjects": [
@@ -6133,6 +6184,30 @@
     {
       "time": "2026-04-26T01:38:58.732Z",
       "msg": "Added T429 (EXPLORE) after end: EXPLORE: Test monkey-lang VM fizzbuzz implementation"
+    },
+    {
+      "time": "2026-04-26T01:39:32.176Z",
+      "msg": "Added T430 (EXPLORE) after end: EXPLORE: Test monkey-lang VM higher-order reduce to build histogram"
+    },
+    {
+      "time": "2026-04-26T01:39:32.300Z",
+      "msg": "Added T431 (EXPLORE) after end: EXPLORE: Test HenryDB window frame GROUPS mode"
+    },
+    {
+      "time": "2026-04-26T01:39:32.422Z",
+      "msg": "Added T432 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive tree traversal"
+    },
+    {
+      "time": "2026-04-26T01:39:32.543Z",
+      "msg": "Added T433 (EXPLORE) after end: EXPLORE: Test HenryDB nested CTE (CTE referencing CTE)"
+    },
+    {
+      "time": "2026-04-26T01:39:32.666Z",
+      "msg": "Added T434 (EXPLORE) after end: EXPLORE: Test monkey-lang VM tail-recursive map"
+    },
+    {
+      "time": "2026-04-26T01:39:32.788Z",
+      "msg": "Added T435 (EXPLORE) after end: EXPLORE: Test HenryDB row_number for pagination"
     }
   ]
 }
