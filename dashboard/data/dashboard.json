@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:10:18.942Z",
+  "generated": "2026-04-26T00:10:53.580Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test neural-net MicroGPT — can it train on a small corpus?",
-    "completedAt": "2026-04-26T00:10:18.942Z",
-    "taskId": "T197",
-    "summary": "MicroGPT: Creates successfully with embedding, PE, transformer blocks, output projection. generate() works (produces tokens). Training produces NaN loss — numerical stability issue in softmax/cross-entropy. Structure correct, gradients need debugging.",
-    "durationMs": 180000
+    "task": "EXPLORE: Run monkey-lang demo program and verify all features work together",
+    "completedAt": "2026-04-26T00:10:53.580Z",
+    "taskId": "T196",
+    "summary": "Demo runs 15+ features before crashing on index-of-error. Working: template literals, closures, counter factory, match expression, destructuring, comprehensions, spread/rest, sqrt/pow/floor/ceil/padStart/char/ord builtins. Crash at hash method call — known parser limitation (arr[0]() syntax).",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 192,
+    "blocksCompleted": 193,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 54
+      "EXPLORE": 55
     }
   },
   "artifacts": [

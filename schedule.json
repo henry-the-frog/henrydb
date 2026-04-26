@@ -2095,9 +2095,13 @@
     {
       "id": "T196",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Run monkey-lang demo program and verify all features work together",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:10:29.742Z",
+      "completed": "2026-04-26T00:10:53.545Z",
+      "duration_ms": 120000,
+      "summary": "Demo runs 15+ features before crashing on index-of-error. Working: template literals, closures, counter factory, match expression, destructuring, comprehensions, spread/rest, sqrt/pow/floor/ceil/padStart/char/ord builtins. Crash at hash method call — known parser limitation (arr[0]() syntax)."
     },
     {
       "id": "T197",
