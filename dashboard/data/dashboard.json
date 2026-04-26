@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:38:09.771Z",
+  "generated": "2026-04-26T00:38:57.941Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang math builtins — abs, min, max, floor, ceil, sqrt, pow, sin, cos",
-    "completedAt": "2026-04-26T00:38:09.771Z",
-    "taskId": "T240",
-    "summary": "All 10 VM math builtins verified: abs, min, max, floor, ceil, sqrt, pow, sin, cos, float. All correct values.",
+    "task": "EXPLORE: Test monkey-lang switch expression",
+    "completedAt": "2026-04-26T00:38:57.941Z",
+    "taskId": "T238",
+    "summary": "Switch expression works with parenthesized discriminant: switch(3) { case 1: 'Mon' case 3: 'Wed' default: 'Unknown' } → 'Wednesday'.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 227,
+    "blocksCompleted": 228,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 88
+      "EXPLORE": 89
     }
   },
   "artifacts": [
