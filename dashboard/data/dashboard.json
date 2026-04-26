@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:39:32.351Z",
+  "generated": "2026-04-26T00:39:59.240Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB FULL OUTER JOIN",
-    "completedAt": "2026-04-26T00:39:32.351Z",
-    "taskId": "T237",
-    "summary": "FULL OUTER JOIN perfect: left-only (NULL right), matches (both), right-only (NULL left). Correct NULL filling and COALESCE ordering.",
+    "task": "EXPLORE: Test HenryDB INSERT...SELECT",
+    "completedAt": "2026-04-26T00:39:59.240Z",
+    "taskId": "T239",
+    "summary": "INSERT...SELECT works with WHERE filter (3 rows) and GROUP BY aggregation (category counts). Both correct.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 229,
+    "blocksCompleted": 230,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 90
+      "EXPLORE": 91
     }
   },
   "artifacts": [
