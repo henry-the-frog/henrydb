@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:28:38.479Z",
+  "generated": "2026-04-26T00:29:17.367Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Total LOC across all 215 projects",
-    "completedAt": "2026-04-26T00:28:38.479Z",
-    "taskId": "T224",
-    "summary": "Total LOC across all projects: 342,017. HenryDB 212,628 (62%), all others 129,389. Top 3: HenryDB 213K, neural-net 38K, monkey-lang 22K. Remaining ~185 projects: 69K LOC.",
-    "durationMs": 60000
+    "task": "EXPLORE: Test HenryDB DISTINCT ON and ORDER BY expressions",
+    "completedAt": "2026-04-26T00:29:17.367Z",
+    "taskId": "T223",
+    "summary": "ORDER BY expression (val%2), ORDER BY column number (2), DISTINCT ON (PostgreSQL extension). All work correctly. DISTINCT ON picks first row per group.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 215,
+    "blocksCompleted": 216,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 76
+      "EXPLORE": 77
     }
   },
   "artifacts": [
