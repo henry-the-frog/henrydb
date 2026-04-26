@@ -432,6 +432,38 @@
       "completed": "2026-04-26T15:30:20.127Z",
       "duration_ms": 300000,
       "summary": "WASM for-loop compilation. C-style for→block/loop. sum_range and power tests. 1232 total tests."
+    },
+    {
+      "id": "T41",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "[DEPTH PIVOT] Full test sweep of monkey-lang",
+      "project": "monkey-lang",
+      "started": "2026-04-26T15:30:38.354Z",
+      "completed": "2026-04-26T15:30:56.238Z",
+      "duration_ms": 60000,
+      "summary": "Full monkey-lang sweep: 1232/1232 tests pass. Zero failures. Clean."
+    },
+    {
+      "id": "T42",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "[DEPTH PIVOT] Stress-test WASM compiler edge cases - find bugs",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T43",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "[DEPTH PIVOT] Stress-test class compilation edge cases - find bugs",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T44",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "[DEPTH PIVOT] Full test sweep of HenryDB",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -583,6 +615,22 @@
     {
       "time": "2026-04-26T15:27:44.867Z",
       "msg": "Added T40 (BUILD) after end: WASM: Add for..range compilation"
+    },
+    {
+      "time": "2026-04-26T15:30:31.916Z",
+      "msg": "Added T41 (MAINTAIN) after end: [DEPTH PIVOT] Full test sweep of monkey-lang"
+    },
+    {
+      "time": "2026-04-26T15:30:32.035Z",
+      "msg": "Added T42 (EXPLORE) after end: [DEPTH PIVOT] Stress-test WASM compiler edge cases - find bugs"
+    },
+    {
+      "time": "2026-04-26T15:30:32.154Z",
+      "msg": "Added T43 (EXPLORE) after end: [DEPTH PIVOT] Stress-test class compilation edge cases - find bugs"
+    },
+    {
+      "time": "2026-04-26T15:30:32.272Z",
+      "msg": "Added T44 (MAINTAIN) after end: [DEPTH PIVOT] Full test sweep of HenryDB"
     }
   ]
 }
