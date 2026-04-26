@@ -676,16 +676,24 @@
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add monkey-lang REPL command --wasm to compile and run WASM",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:30:44.507Z",
+      "completed": "2026-04-26T17:34:28.177Z",
+      "duration_ms": 120000,
+      "summary": "Added --engine=wasm to REPL with --wasm-type=i32|i64|f64 support. File execution and interactive modes both work. All existing engines unchanged."
     },
     {
       "id": "T64",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "WASM: Add import support for linking multiple WASM modules",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:34:35.473Z",
+      "completed": "2026-04-26T17:38:25.423Z",
+      "duration_ms": 300000,
+      "summary": "Added WASM import section to wasm.js builder (addImport method, import section encoding). WasmCompiler processes Monkey import statements into WASM imports with importSignatures option. 5 new tests all passing. Backward compatible."
     },
     {
       "id": "T65",
@@ -710,16 +718,24 @@
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Enhanced benchmark: compare i32/i64/f64/VM across fibonacci, Mandelbrot, and iterative algorithms",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:38:34.157Z",
+      "completed": "2026-04-26T17:42:11.849Z",
+      "duration_ms": 300000,
+      "summary": "Built comprehensive benchmark-wasm.js comparing VM vs WASM (i32/i64/f64) across 6 algorithms. WASM is 14-800x faster. i64 slightly faster than i32 for iteration, i32 better for recursion, f64 consistently slowest WASM variant."
     },
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Update monkey-lang README with WASM compilation docs and benchmark results",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:42:20.397Z",
+      "completed": "2026-04-26T17:43:28.031Z",
+      "duration_ms": 180000,
+      "summary": "Updated README with comprehensive WASM benchmarks (6 algorithms, 3 types), REPL --engine=wasm docs, import support docs. Updated test count to 1,250."
     },
     {
       "id": "T69",
@@ -757,8 +773,66 @@
     {
       "id": "T72",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Write scratch note: runtime dispatch implementation notes for tomorrow",
+      "started": "2026-04-26T16:59:11.207Z",
+      "completed": "2026-04-26T16:59:17.895Z",
+      "duration_ms": 10000,
+      "summary": "Already completed during T71 — scratch/runtime-dispatch-plan.md has full implementation notes."
+    },
+    {
+      "id": "T73",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test WASM compiler with edge cases: empty functions, deeply nested ifs, large constants, 0-arg functions",
+      "project": "monkey-lang",
+      "started": "2026-04-26T16:59:36.365Z",
+      "completed": "2026-04-26T17:30:23.823Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T74",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: run differential fuzzer, analyze remaining failure patterns",
+      "project": "henrydb",
+      "started": "2026-04-26T17:43:37.230Z",
+      "completed": "2026-04-26T17:45:13.884Z",
+      "duration_ms": 300000,
+      "summary": "Ran differential fuzzer: 99.3% pass rate (993/1000). 7 failures all trace to type affinity in comparisons — UNION dedup, window ORDER BY, and subquery AVG comparison dont use sqliteCompare. Documented in scratch note."
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design WASM Phase 2: string support via linear memory",
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:45:22.545Z",
+      "completed": "2026-04-26T17:45:39.308Z",
+      "duration_ms": 120000,
+      "summary": "Reviewed projects-level wasm-compiler string approach: linear memory + data segments + host imports for str ops. Root-level compiler should add: memory section, data section, string host imports. Alternatively, promote projects-level compiler as canonical. Recommend extending root-level for pedagogical clarity."
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update monkey-lang stats in README (test count, LOC)",
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:45:47.599Z"
+    },
+    {
+      "id": "T77",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Write scratch note: runtime dispatch implementation notes for tomorrow"
+      "task": "Test HenryDB PL/SQL with complex programs (cursors, exception handling, bulk operations)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T78",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Analyze monkey-lang optimizer pipeline: what optimizations actually fire on real programs?",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -1030,6 +1104,30 @@
     {
       "time": "2026-04-26T16:43:35.722Z",
       "msg": "Added T72 (MAINTAIN) after end: Write scratch note: runtime dispatch implementation notes for tomorrow"
+    },
+    {
+      "time": "2026-04-26T16:59:32.742Z",
+      "msg": "Added T73 (EXPLORE) after end: Stress-test WASM compiler with edge cases: empty functions, deeply nested ifs, large constants, 0-arg functions"
+    },
+    {
+      "time": "2026-04-26T16:59:32.861Z",
+      "msg": "Added T74 (EXPLORE) after end: HenryDB: run differential fuzzer, analyze remaining failure patterns"
+    },
+    {
+      "time": "2026-04-26T16:59:32.980Z",
+      "msg": "Added T75 (THINK) after end: Design WASM Phase 2: string support via linear memory"
+    },
+    {
+      "time": "2026-04-26T16:59:33.099Z",
+      "msg": "Added T76 (MAINTAIN) after end: Update monkey-lang stats in README (test count, LOC)"
+    },
+    {
+      "time": "2026-04-26T16:59:33.217Z",
+      "msg": "Added T77 (EXPLORE) after end: Test HenryDB PL/SQL with complex programs (cursors, exception handling, bulk operations)"
+    },
+    {
+      "time": "2026-04-26T16:59:33.336Z",
+      "msg": "Added T78 (THINK) after end: Analyze monkey-lang optimizer pipeline: what optimizations actually fire on real programs?"
     }
   ]
 }
