@@ -2652,9 +2652,13 @@
     {
       "id": "T249",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang import of string module functions",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:46:11.769Z",
+      "completed": "2026-04-26T00:46:43.135Z",
+      "duration_ms": 30000,
+      "summary": "String module exists in evaluator (import('string') works) but VM doesn't have import() builtin. Module system is evaluator-only — not compiled to bytecode."
     },
     {
       "id": "T250",
