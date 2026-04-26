@@ -3339,16 +3339,24 @@
     {
       "id": "T318",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM import string module functions",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:15:00.813Z",
+      "completed": "2026-04-26T01:15:09.480Z",
+      "duration_ms": 10000,
+      "summary": "String module in VM: capitalize('hello world')='Hello world', words(3), reverse('abcdef')='fedcba', padLeft('42',5,'0')='00042'. All correct."
     },
     {
       "id": "T319",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB OVER (PARTITION BY a, b ORDER BY c) multi-partition",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:15:17.782Z",
+      "completed": "2026-04-26T01:15:26.747Z",
+      "duration_ms": 10000,
+      "summary": "Multi-column PARTITION BY: SUM OVER(region,quarter) and RANK OVER(region) in same query. Both partitions computed correctly."
     },
     {
       "id": "T320",
