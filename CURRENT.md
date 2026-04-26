@@ -1,8 +1,8 @@
 status: done
-mode: MAINTAIN
-task: Housekeeping: commit, push, dashboard health, email check
-current_position: T4
-context-files:
-started: 2026-04-26T14:18:33Z
-completed: 2026-04-26T14:18:46Z
-tasks_completed_this_session: 4
+mode: BUILD
+task: Implement callClosureSync in VM + native map/filter/reduce builtins
+current_position: T7
+context-files: /Users/henry/repos/monkey-lang/src/vm.js, /Users/henry/repos/monkey-lang/src/prelude.js
+started: 2026-04-26T14:20:32Z
+completed: 2026-04-26T14:26:57Z
+tasks_completed_this_session: 7
