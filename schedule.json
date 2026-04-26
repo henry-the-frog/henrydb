@@ -2454,6 +2454,31 @@
       "completed": "2026-04-26T00:32:05.623Z",
       "duration_ms": 30000,
       "summary": "15 string builtins working: split, join, trim, upper, lower, contains, indexOf, replace, padStart, padEnd, char, ord. startsWith/endsWith return objects (not bool). repeat creates array not string. Comprehensive string support."
+    },
+    {
+      "id": "T231",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB foreign keys with ON DELETE CASCADE",
+      "project": "henrydb",
+      "started": "2026-04-26T00:33:06.319Z",
+      "completed": "2026-04-26T00:33:35.570Z",
+      "duration_ms": 30000,
+      "summary": "Foreign keys can be defined in DDL but ON DELETE CASCADE not enforced (like SQLite with PRAGMA foreign_keys=OFF). PRAGMA not supported. FK constraints are decorative only."
+    },
+    {
+      "id": "T232",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang format builtin with different format strings",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T233",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Final monkey-lang feature count — comprehensive census",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3369,6 +3394,18 @@
     {
       "time": "2026-04-26T00:31:05.254Z",
       "msg": "Added T230 (EXPLORE) after end: EXPLORE: Test monkey-lang string methods — split, join, trim, upper, lower, contains"
+    },
+    {
+      "time": "2026-04-26T00:32:59.320Z",
+      "msg": "Added T231 (EXPLORE) after end: EXPLORE: Test HenryDB foreign keys with ON DELETE CASCADE"
+    },
+    {
+      "time": "2026-04-26T00:32:59.441Z",
+      "msg": "Added T232 (EXPLORE) after end: EXPLORE: Test monkey-lang format builtin with different format strings"
+    },
+    {
+      "time": "2026-04-26T00:32:59.562Z",
+      "msg": "Added T233 (EXPLORE) after end: EXPLORE: Final monkey-lang feature count — comprehensive census"
     }
   ]
 }

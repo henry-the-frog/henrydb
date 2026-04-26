@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:32:42.574Z",
+  "generated": "2026-04-26T00:33:35.606Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB CHECK constraints",
-    "completedAt": "2026-04-26T00:32:42.574Z",
-    "taskId": "T229",
-    "summary": "All constraints work: CHECK (balance>=0 rejects -100), NOT NULL (rejects NULL name), UNIQUE (rejects duplicate email). Proper error messages for each violation.",
+    "task": "EXPLORE: Test HenryDB foreign keys with ON DELETE CASCADE",
+    "completedAt": "2026-04-26T00:33:35.606Z",
+    "taskId": "T231",
+    "summary": "Foreign keys can be defined in DDL but ON DELETE CASCADE not enforced (like SQLite with PRAGMA foreign_keys=OFF). PRAGMA not supported. FK constraints are decorative only.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 221,
+    "blocksCompleted": 222,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 82
+      "EXPLORE": 83
     }
   },
   "artifacts": [
