@@ -735,9 +735,13 @@
     {
       "id": "T70",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Investigate monkey-lang constant propagation (SCCP) accuracy with complex programs",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T16:57:37.532Z",
+      "completed": "2026-04-26T16:58:38.907Z",
+      "duration_ms": 300000,
+      "summary": "SCCP bug found: propagateConstants uses toSSA which gives empty results for function bodies. Needs perFunctionSSA. SCCP is currently useless for real programs."
     },
     {
       "id": "T71",
