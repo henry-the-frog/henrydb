@@ -2203,6 +2203,38 @@
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "MAINTAIN: Final daily log wrap-up and evening summary"
+    },
+    {
+      "id": "T207",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB COALESCE, NULLIF, IIF, IFNULL",
+      "project": "henrydb"
+    },
+    {
+      "id": "T208",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: monkey-lang — test all 55 VM builtins",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T209",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB date functions with time arithmetic",
+      "project": "henrydb"
+    },
+    {
+      "id": "T210",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: What is the most complex single SQL query HenryDB can handle?",
+      "project": "henrydb",
+      "started": "2026-04-26T00:17:27.659Z",
+      "completed": "2026-04-26T00:17:57.892Z",
+      "duration_ms": 120000,
+      "summary": "Monster query: 2 CTEs + multiple JOINs + Window (RANK PARTITION BY) + CASE + WHERE + ORDER BY. All features work together in a single complex query. CTE stats computed correctly, window function ranks, CASE expression evaluated. HenryDB handles production-complexity SQL."
     }
   ],
   "focusProjects": [
@@ -3022,6 +3054,22 @@
     {
       "time": "2026-04-26T00:14:44.428Z",
       "msg": "Added T206 (MAINTAIN) after end: MAINTAIN: Final daily log wrap-up and evening summary"
+    },
+    {
+      "time": "2026-04-26T00:17:21.580Z",
+      "msg": "Added T207 (EXPLORE) after end: EXPLORE: Test HenryDB COALESCE, NULLIF, IIF, IFNULL"
+    },
+    {
+      "time": "2026-04-26T00:17:21.700Z",
+      "msg": "Added T208 (EXPLORE) after end: EXPLORE: monkey-lang — test all 55 VM builtins"
+    },
+    {
+      "time": "2026-04-26T00:17:21.821Z",
+      "msg": "Added T209 (EXPLORE) after end: EXPLORE: Test HenryDB date functions with time arithmetic"
+    },
+    {
+      "time": "2026-04-26T00:17:21.940Z",
+      "msg": "Added T210 (EXPLORE) after end: EXPLORE: What is the most complex single SQL query HenryDB can handle?"
     }
   ]
 }
