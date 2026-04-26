@@ -3324,7 +3324,8 @@ export class Database {
     }
     // Parse the body SQL expression once (may fail for PL/SQL bodies — that's OK)
     let bodyAst = null;
-    const isPLSQL = (ast.language === 'plsql' || ast.language === 'plpgsql' ||
+    let funcLanguage = ast.language || 'sql';
+    const isPLSQL = (funcLanguage === 'plsql' || funcLanguage === 'plpgsql' ||
                      /^\s*(DECLARE|BEGIN)\b/i.test(ast.body));
     if (!isPLSQL) {
       try {
@@ -3336,13 +3337,15 @@ export class Database {
           throw new Error(`Invalid function body: ${e2.message}`);
         }
       }
+    } else if (funcLanguage === 'sql') {
+      funcLanguage = 'plsql';
     }
     this._functions.set(name, {
       params: ast.params,
       returnType: ast.returnType,
       body: ast.body,
       bodyAst,
-      language: ast.language || 'sql',
+      language: funcLanguage,
     });
     return { type: 'OK', message: `CREATE FUNCTION ${name}` };
   }

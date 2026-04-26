@@ -797,6 +797,14 @@ export class PLInterpreter {
       return !this._evalSimpleExpr(expr.replace(/^\s*NOT\s+/i, ''), scope);
     }
 
+    // Handle unary minus (- expr where expr is not a literal number)
+    const unaryMinusMatch = expr.match(/^\s*-\s*(.+)$/);
+    if (unaryMinusMatch && !/^-?\d+(\.\d+)?$/.test(expr.trim())) {
+      const inner = unaryMinusMatch[1].trim();
+      const val = this._evalSimpleExpr(inner, scope);
+      if (typeof val === 'number') return -val;
+    }
+
     // Handle arithmetic
     const addMatch = expr.match(/^(.+)\s*([+\-])\s*([^+\-]+)$/);
     if (addMatch) {
