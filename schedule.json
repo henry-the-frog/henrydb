@@ -3031,6 +3031,99 @@
       "status": "upcoming",
       "task": "EXPLORE: Test neural-net embedding layer",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T288",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB COUNT(*) performance on 10K rows",
+      "project": "henrydb",
+      "started": "2026-04-26T01:04:38.055Z",
+      "completed": "2026-04-26T01:04:54.595Z",
+      "duration_ms": 10000,
+      "summary": "COUNT(*) on 10K rows: 1.1ms. Very fast for in-memory database."
+    },
+    {
+      "id": "T289",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM product, merge, isEmpty",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T290",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test neural-net positional encoding",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:05:01.659Z",
+      "completed": "2026-04-26T01:05:08.811Z",
+      "duration_ms": 10000,
+      "summary": "Positional encoding: sin/cos PE added to input vectors. dModel=16, maxLen=100. Correct shape output."
+    },
+    {
+      "id": "T291",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB multiple UNION chains",
+      "project": "henrydb",
+      "started": "2026-04-26T01:05:17.048Z",
+      "completed": "2026-04-26T01:05:24.155Z",
+      "duration_ms": 10000,
+      "summary": "Triple UNION [1,2,3,4,5], Triple INTERSECT [3]. Multiple chained set ops work correctly."
+    },
+    {
+      "id": "T292",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: monkey-lang — total VM builtin count check",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T293",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB MAX/MIN with strings",
+      "project": "henrydb",
+      "started": "2026-04-26T01:05:33.896Z",
+      "completed": "2026-04-26T01:05:41.998Z",
+      "duration_ms": 10000,
+      "summary": "MAX/MIN strings: MAX='c', MIN='a'. Multi-column ORDER BY (val ASC, name DESC) correctly applies secondary sort. All correct."
+    },
+    {
+      "id": "T294",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net LayerNorm",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T295",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB CAST with different types",
+      "project": "henrydb"
+    },
+    {
+      "id": "T296",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang boolean operations (and, or, not)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T297",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multiple ORDER BY columns",
+      "project": "henrydb"
+    },
+    {
+      "id": "T298",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang hash iteration",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -4174,6 +4267,50 @@
     {
       "time": "2026-04-26T01:01:42.206Z",
       "msg": "Added T287 (EXPLORE) after end: EXPLORE: Test neural-net embedding layer"
+    },
+    {
+      "time": "2026-04-26T01:04:27.904Z",
+      "msg": "Added T288 (EXPLORE) after end: EXPLORE: Test HenryDB COUNT(*) performance on 10K rows"
+    },
+    {
+      "time": "2026-04-26T01:04:28.024Z",
+      "msg": "Added T289 (EXPLORE) after end: EXPLORE: Test monkey-lang VM product, merge, isEmpty"
+    },
+    {
+      "time": "2026-04-26T01:04:28.145Z",
+      "msg": "Added T290 (EXPLORE) after end: EXPLORE: Test neural-net positional encoding"
+    },
+    {
+      "time": "2026-04-26T01:04:28.267Z",
+      "msg": "Added T291 (EXPLORE) after end: EXPLORE: Test HenryDB multiple UNION chains"
+    },
+    {
+      "time": "2026-04-26T01:04:28.388Z",
+      "msg": "Added T292 (EXPLORE) after end: EXPLORE: monkey-lang — total VM builtin count check"
+    },
+    {
+      "time": "2026-04-26T01:04:28.509Z",
+      "msg": "Added T293 (EXPLORE) after end: EXPLORE: Test HenryDB MAX/MIN with strings"
+    },
+    {
+      "time": "2026-04-26T01:04:28.630Z",
+      "msg": "Added T294 (EXPLORE) after end: EXPLORE: Test neural-net LayerNorm"
+    },
+    {
+      "time": "2026-04-26T01:04:28.751Z",
+      "msg": "Added T295 (EXPLORE) after end: EXPLORE: Test HenryDB CAST with different types"
+    },
+    {
+      "time": "2026-04-26T01:04:28.872Z",
+      "msg": "Added T296 (EXPLORE) after end: EXPLORE: Test monkey-lang boolean operations (and, or, not)"
+    },
+    {
+      "time": "2026-04-26T01:04:28.994Z",
+      "msg": "Added T297 (EXPLORE) after end: EXPLORE: Test HenryDB multiple ORDER BY columns"
+    },
+    {
+      "time": "2026-04-26T01:04:29.115Z",
+      "msg": "Added T298 (EXPLORE) after end: EXPLORE: Test monkey-lang hash iteration"
     }
   ]
 }
