@@ -47,8 +47,12 @@
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?"
+      "status": "done",
+      "task": "Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?",
+      "started": "2026-04-26T14:19:01.837Z",
+      "completed": "2026-04-26T14:19:13.426Z",
+      "duration_ms": 45000,
+      "summary": "SSA pipeline real but low-impact vs VM callbacks (19x perf gap). Keep queue order: VM callbacks first, SSA→DCE later."
     },
     {
       "id": "T6",
