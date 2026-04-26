@@ -2207,9 +2207,13 @@
     {
       "id": "T207",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB COALESCE, NULLIF, IIF, IFNULL",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T00:18:14.607Z",
+      "completed": "2026-04-26T00:18:31.251Z",
+      "duration_ms": 60000,
+      "summary": "All NULL-handling functions work: COALESCE (multi-arg), NULLIF (equal→NULL), IFNULL (2-arg coalesce), IIF (inline if), TYPEOF (returns integer/text/null/real). Complete NULL handling."
     },
     {
       "id": "T208",

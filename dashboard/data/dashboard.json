@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:17:57.928Z",
+  "generated": "2026-04-26T00:18:31.288Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: What is the most complex single SQL query HenryDB can handle?",
-    "completedAt": "2026-04-26T00:17:57.928Z",
-    "taskId": "T210",
-    "summary": "Monster query: 2 CTEs + multiple JOINs + Window (RANK PARTITION BY) + CASE + WHERE + ORDER BY. All features work together in a single complex query. CTE stats computed correctly, window function ranks, CASE expression evaluated. HenryDB handles production-complexity SQL.",
-    "durationMs": 120000
+    "task": "EXPLORE: Test HenryDB COALESCE, NULLIF, IIF, IFNULL",
+    "completedAt": "2026-04-26T00:18:31.288Z",
+    "taskId": "T207",
+    "summary": "All NULL-handling functions work: COALESCE (multi-arg), NULLIF (equal→NULL), IFNULL (2-arg coalesce), IIF (inline if), TYPEOF (returns integer/text/null/real). Complete NULL handling.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 201,
+    "blocksCompleted": 202,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 63
+      "EXPLORE": 64
     }
   },
   "artifacts": [
