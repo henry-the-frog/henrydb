@@ -639,6 +639,24 @@
       "completed": "2026-04-26T16:21:00.969Z",
       "duration_ms": 600000,
       "summary": "8 PL/SQL integration tests added. Fixed unary minus bug in expression evaluator. Fixed auto-detected PL/SQL language assignment. All tests pass."
+    },
+    {
+      "id": "T60",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test PL/SQL: edge cases, error handling, nested blocks",
+      "project": "henrydb",
+      "started": "2026-04-26T16:21:45.448Z",
+      "completed": "2026-04-26T16:22:11.742Z",
+      "duration_ms": 300000,
+      "summary": "PL/SQL stress test: nested IF ✅, FOR loop ✅. BUGS: recursive functions return NaN (expression evaluator cant handle function calls), PL→PL calls return string (same root cause). Expression evaluator is string-based regex, needs enhancement for function calls."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add FOR loop support to PL/SQL integration (FOR i IN 1..10 LOOP)",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -858,6 +876,14 @@
     {
       "time": "2026-04-26T16:14:23.463Z",
       "msg": "Added T59 (BUILD) after end: Add PL/SQL integration tests to main HenryDB test suite"
+    },
+    {
+      "time": "2026-04-26T16:21:40.425Z",
+      "msg": "Added T60 (EXPLORE) after end: Stress-test PL/SQL: edge cases, error handling, nested blocks"
+    },
+    {
+      "time": "2026-04-26T16:21:40.544Z",
+      "msg": "Added T61 (BUILD) after end: Add FOR loop support to PL/SQL integration (FOR i IN 1..10 LOOP)"
     }
   ]
 }

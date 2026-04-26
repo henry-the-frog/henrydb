@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T16:21:01.005Z",
+  "generated": "2026-04-26T16:22:11.777Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Add PL/SQL integration tests to main HenryDB test suite",
-    "completedAt": "2026-04-26T16:21:01.005Z",
-    "taskId": "T59",
-    "summary": "8 PL/SQL integration tests added. Fixed unary minus bug in expression evaluator. Fixed auto-detected PL/SQL language assignment. All tests pass.",
-    "durationMs": 600000
+    "mode": "EXPLORE",
+    "task": "Stress-test PL/SQL: edge cases, error handling, nested blocks",
+    "completedAt": "2026-04-26T16:22:11.777Z",
+    "taskId": "T60",
+    "summary": "PL/SQL stress test: nested IF ✅, FOR loop ✅. BUGS: recursive functions return NaN (expression evaluator cant handle function calls), PL→PL calls return string (same root cause). Expression evaluator is string-based regex, needs enhancement for function calls.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,14 +7970,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 59,
+    "blocksCompleted": 60,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
       "BUILD": 27,
       "MAINTAIN": 9,
-      "EXPLORE": 4
+      "EXPLORE": 5
     }
   },
   "artifacts": [],
