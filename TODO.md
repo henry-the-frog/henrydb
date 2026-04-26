@@ -4,7 +4,6 @@
 (none)
 
 ## Normal
-- monkey-lang: Per-function SSA → dead code elimination (SSA-level annotation, ~200 LOC)
 - HenryDB: Fix COUNT(DISTINCT) bug in multi-join scenarios
 - HenryDB: Wire PL/SQL to procedure handler (854 LOC exists, just needs connection)
 - monkey-lang: Class syntax (design ready, ~200 LOC implementation)
