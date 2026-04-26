@@ -3517,6 +3517,60 @@
       "completed": "2026-04-26T01:20:44.944Z",
       "duration_ms": 10000,
       "summary": "fib(30)=832040 in 922ms. ~1.8M recursive VM calls without stack overflow. Deep recursion handles well."
+    },
+    {
+      "id": "T335",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CROSS JOIN",
+      "project": "henrydb",
+      "started": "2026-04-26T01:21:01.533Z",
+      "completed": "2026-04-26T01:21:06.267Z",
+      "duration_ms": 10000,
+      "summary": "CROSS JOIN: 2×3=6 rows. Cartesian product of colors×sizes. All combinations present."
+    },
+    {
+      "id": "T336",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM enum values",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:21:11.132Z",
+      "completed": "2026-04-26T01:21:15.916Z",
+      "duration_ms": 10000,
+      "summary": "Enums: Color.Red, Color.Green, Color.Blue with dot access. enum keyword compiled to VM. Values are enum objects."
+    },
+    {
+      "id": "T337",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-table UPDATE with FROM",
+      "project": "henrydb"
+    },
+    {
+      "id": "T338",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net Chinchilla scaling laws",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T339",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB NATURAL JOIN",
+      "project": "henrydb",
+      "started": "2026-04-26T01:21:20.691Z",
+      "completed": "2026-04-26T01:21:26.531Z",
+      "duration_ms": 10000,
+      "summary": "NATURAL JOIN: auto-matches on shared column 'id'. Returns 2 matching rows. No ON clause needed."
+    },
+    {
+      "id": "T340",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM template literal interpolation",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -4848,6 +4902,30 @@
     {
       "time": "2026-04-26T01:19:15.099Z",
       "msg": "Added T334 (EXPLORE) after end: EXPLORE: Test monkey-lang VM with 1000 recursive fibonacci"
+    },
+    {
+      "time": "2026-04-26T01:20:56.146Z",
+      "msg": "Added T335 (EXPLORE) after end: EXPLORE: Test HenryDB CROSS JOIN"
+    },
+    {
+      "time": "2026-04-26T01:20:56.268Z",
+      "msg": "Added T336 (EXPLORE) after end: EXPLORE: Test monkey-lang VM enum values"
+    },
+    {
+      "time": "2026-04-26T01:20:56.392Z",
+      "msg": "Added T337 (EXPLORE) after end: EXPLORE: Test HenryDB multi-table UPDATE with FROM"
+    },
+    {
+      "time": "2026-04-26T01:20:56.513Z",
+      "msg": "Added T338 (EXPLORE) after end: EXPLORE: Test neural-net Chinchilla scaling laws"
+    },
+    {
+      "time": "2026-04-26T01:20:56.644Z",
+      "msg": "Added T339 (EXPLORE) after end: EXPLORE: Test HenryDB NATURAL JOIN"
+    },
+    {
+      "time": "2026-04-26T01:20:56.765Z",
+      "msg": "Added T340 (EXPLORE) after end: EXPLORE: Test monkey-lang VM template literal interpolation"
     }
   ]
 }
