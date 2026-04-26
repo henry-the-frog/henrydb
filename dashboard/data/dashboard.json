@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:56:03.661Z",
+  "generated": "2026-04-26T14:59:40.193Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-26T14:56:03.661Z",
-    "taskId": "T24",
-    "summary": "Plan: 3 tasks — (1) lexer/parser/AST, (2) compiler (closure factory), (3) tests",
-    "durationMs": 30000
+    "mode": "BUILD",
+    "task": "Add CLASS token + ClassStatement AST node + parser support",
+    "completedAt": "2026-04-26T14:59:40.193Z",
+    "taskId": "T25",
+    "summary": "Parser done: CLASS/EXTENDS/SUPER tokens, ClassStatement + SuperExpression AST, parseClassStatement, dotted set assignment. 1179 tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7730,12 +7730,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 24,
+    "blocksCompleted": 25,
     "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 8,
+      "BUILD": 9,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
