@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T01:11:22.700Z",
+  "generated": "2026-04-26T01:11:48.740Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB aggregate FILTER clause",
-    "completedAt": "2026-04-26T01:11:22.700Z",
-    "taskId": "T309",
-    "summary": "Aggregate FILTER clause (SQL:2003): COUNT(*) FILTER(WHERE cat='A')=2, SUM FILTER(WHERE cat='B')=7. Conditional aggregation in single query.",
+    "task": "EXPLORE: Test HenryDB window frame ROWS vs RANGE vs GROUPS semantics",
+    "completedAt": "2026-04-26T01:11:48.740Z",
+    "taskId": "T307",
+    "summary": "ROWS vs RANGE: ROWS=physical (1 preceding), RANGE=logical (peers included). RANGE correctly includes all rows with same value in running sum.",
     "durationMs": 10000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 283,
+    "blocksCompleted": 284,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 143
+      "EXPLORE": 144
     }
   },
   "artifacts": [
