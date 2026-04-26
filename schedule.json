@@ -5606,6 +5606,72 @@
       "completed": "2026-04-26T03:06:35.563Z",
       "duration_ms": 300000,
       "summary": "FULL TEST SWEEP ALL PROJECTS: ZERO FAILURES. FFT: 5/5 test files. Forth: 2/2. Huffman: 1/1. Regex: 1/1. RISC-V: 20/20 test files (CPU, M-ext, MMU, cache, GC, closures, codegen, pipeline, peephole, regalloc, strings, stress). SAT: 4/4 (solver, simplex, SMT, stress). Type-inference: 3/3. Combined with lambda-calculus (198/198): 234 test files, zero failures across 7 projects."
+    },
+    {
+      "id": "T521",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep-dive RISC-V: codegen pipeline, GC, MMU, peephole optimizer",
+      "project": "monkey-lang",
+      "started": "2026-04-26T03:06:58.247Z",
+      "completed": "2026-04-26T03:08:22.404Z",
+      "duration_ms": 180000,
+      "summary": "RISC-V codegen pipeline: Monkey→RISC-V assembly→machine code→CPU execution. fib(10)=55 in 5669 cycles (70 instructions). With peephole optimizer: 5315 cycles (61 instructions) — 6% speedup, 13% smaller code. Full compilation pipeline includes: parser→AST→type inference→closure analysis→codegen→assembler→CPU. Also has register allocator, peephole optimizer, out-of-order execution engine, pipeline, MMU, branch predictor, cache."
+    },
+    {
+      "id": "T522",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore SMT solver and simplex LP solver",
+      "project": "monkey-lang",
+      "started": "2026-04-26T03:08:34.760Z",
+      "completed": "2026-04-26T03:10:54.583Z",
+      "duration_ms": 120000,
+      "summary": "SMT solver: EUF (Equality with Uninterpreted Functions) detects congruence closure conflicts. f(a)=x,f(b)=y,a=b,x≠y → conflict. Bounds solver: checks interval consistency. Simplex LP: feasibility checking with linear constraints, supports backtracking. x+y≤10,x≥6,y≥6 → infeasible. CDCL SAT + theory solvers = full SMT architecture."
+    },
+    {
+      "id": "T523",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore git implementation — objects, packfiles, diff",
+      "project": "henrydb",
+      "started": "2026-04-26T03:11:08.244Z",
+      "completed": "2026-04-26T03:12:32.631Z",
+      "duration_ms": 120000,
+      "summary": "Git implementation: init/add/commit/log/branch/refs all work. 3 commits, 3 branches (main, feature, develop). 15/15 test files pass covering: objects, index, commands, refs, diff, merge, cherry-pick, checkout, reset, stash, tags, pack files, clone, compat, stress tests. Full git from scratch in 4671 LOC."
+    },
+    {
+      "id": "T524",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore FFT synth and wavelet transform",
+      "project": "henrydb",
+      "started": "2026-04-26T03:12:47.698Z",
+      "completed": "2026-04-26T03:13:31.889Z",
+      "duration_ms": 60000,
+      "summary": "Wavelet transform: Haar DWT decomposes [1..8] into 1 approx coefficient + 3 detail levels (4,2,1 coefficients). IDWT round-trip error < 5e-15 (machine epsilon). Supports Haar and DB2/DB3 wavelets, hard/soft thresholding for denoising, universal threshold computation."
+    },
+    {
+      "id": "T525",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "RISC-V: out-of-order execution, branch predictor, cache",
+      "project": "henrydb",
+      "started": "2026-04-26T03:13:42.880Z",
+      "completed": "2026-04-26T03:14:51.016Z",
+      "duration_ms": 120000,
+      "summary": "Tomasulo OoO CPU: processes instructions out-of-order with reservation stations and ROB, IPC=1.0, 10K cycles. Cache: direct-mapped 4096B, 64B lines, LRU, 96.9% hit rate on sequential access. Full microarchitecture simulation: fetch→decode→issue→execute→complete→commit pipeline."
+    },
+    {
+      "id": "T526",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: RLHF, DPO, mixture of experts",
+      "project": "henrydb",
+      "started": "2026-04-26T03:15:01.609Z",
+      "completed": "2026-04-26T03:16:48.564Z",
+      "duration_ms": 120000,
+      "summary": "DPO: dpoLoss correctly computes preference loss. 100% accuracy when model prefers chosen tokens. Returns loss, chosenRewards, rejectedRewards, accuracy, margin. MoE: 4 experts with top-2 routing, correct output shape (6x8), no NaN values. All 4 test files pass (DPO, MoE, reward model, mixture of agents)."
     }
   ],
   "focusProjects": [
@@ -7681,6 +7747,30 @@
     {
       "time": "2026-04-26T03:05:55.874Z",
       "msg": "Added T520 (EXPLORE) after end: Full test sweep of all projects"
+    },
+    {
+      "time": "2026-04-26T03:06:58.004Z",
+      "msg": "Added T521 (EXPLORE) after end: Deep-dive RISC-V: codegen pipeline, GC, MMU, peephole optimizer"
+    },
+    {
+      "time": "2026-04-26T03:08:34.498Z",
+      "msg": "Added T522 (EXPLORE) after end: Explore SMT solver and simplex LP solver"
+    },
+    {
+      "time": "2026-04-26T03:11:08.005Z",
+      "msg": "Added T523 (EXPLORE) after end: Explore git implementation — objects, packfiles, diff"
+    },
+    {
+      "time": "2026-04-26T03:12:47.457Z",
+      "msg": "Added T524 (EXPLORE) after end: Explore FFT synth and wavelet transform"
+    },
+    {
+      "time": "2026-04-26T03:13:42.640Z",
+      "msg": "Added T525 (EXPLORE) after end: RISC-V: out-of-order execution, branch predictor, cache"
+    },
+    {
+      "time": "2026-04-26T03:15:01.369Z",
+      "msg": "Added T526 (EXPLORE) after end: Neural-net: RLHF, DPO, mixture of experts"
     }
   ]
 }

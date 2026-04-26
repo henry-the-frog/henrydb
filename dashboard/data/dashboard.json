@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T03:06:35.600Z",
+  "generated": "2026-04-26T03:16:48.602Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Full test sweep of all projects",
-    "completedAt": "2026-04-26T03:06:35.600Z",
-    "taskId": "T520",
-    "summary": "FULL TEST SWEEP ALL PROJECTS: ZERO FAILURES. FFT: 5/5 test files. Forth: 2/2. Huffman: 1/1. Regex: 1/1. RISC-V: 20/20 test files (CPU, M-ext, MMU, cache, GC, closures, codegen, pipeline, peephole, regalloc, strings, stress). SAT: 4/4 (solver, simplex, SMT, stress). Type-inference: 3/3. Combined with lambda-calculus (198/198): 234 test files, zero failures across 7 projects.",
-    "durationMs": 300000
+    "task": "Neural-net: RLHF, DPO, mixture of experts",
+    "completedAt": "2026-04-26T03:16:48.602Z",
+    "taskId": "T526",
+    "summary": "DPO: dpoLoss correctly computes preference loss. 100% accuracy when model prefers chosen tokens. Returns loss, chosenRewards, rejectedRewards, accuracy, margin. MoE: 4 experts with top-2 routing, correct output shape (6x8), no NaN values. All 4 test files pass (DPO, MoE, reward model, mixture of agents).",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 519,
+    "blocksCompleted": 525,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 38,
-      "EXPLORE": 369
+      "EXPLORE": 375
     }
   },
   "artifacts": [
