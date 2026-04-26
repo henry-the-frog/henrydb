@@ -2564,9 +2564,13 @@
     {
       "id": "T241",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB multi-table UPDATE and DELETE with JOIN",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T00:43:17.727Z",
+      "completed": "2026-04-26T00:43:44.712Z",
+      "duration_ms": 30000,
+      "summary": "UPDATE SET salary = salary * 1.1 WHERE dept_id = (subquery) works. DELETE WHERE dept_id = (subquery) works. JS float precision artifacts present but results correct."
     },
     {
       "id": "T242",
