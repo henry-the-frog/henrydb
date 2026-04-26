@@ -3861,23 +3861,32 @@
     {
       "id": "T370",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM hash merge builtin",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:27:32.740Z",
+      "completed": "2026-04-26T01:27:39.091Z",
+      "duration_ms": 10000,
+      "summary": "Hash merge: {a:1,b:2} merge {b:3,c:4} → {a:1,b:3,c:4}. Second overwrites first."
     },
     {
       "id": "T371",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB UPDATE with subquery in SET",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:27:44.310Z",
+      "completed": "2026-04-26T01:27:49.498Z",
+      "duration_ms": 10000,
+      "summary": "UPDATE SET val=(subquery): correlated subquery in SET clause. 10×2=20, 20×3=60, 30×4=120. Complex updates work."
     },
     {
       "id": "T372",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "EXPLORE: Test monkey-lang VM recursive map implementation",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:27:56.822Z"
     }
   ],
   "focusProjects": [
