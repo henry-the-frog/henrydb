@@ -661,6 +661,17 @@
       "completed": "2026-04-26T16:22:24.820Z",
       "duration_ms": 5000,
       "summary": "FOR loops already work (confirmed in EXPLORE). Skipping."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix PL/SQL expression evaluator: handle function calls in expressions",
+      "project": "henrydb",
+      "started": "2026-04-26T16:22:30.802Z",
+      "completed": "2026-04-26T16:24:42.781Z",
+      "duration_ms": 300000,
+      "summary": "Fixed PL/SQL expression evaluator for function calls. Recursive PL/SQL (rec_fact(5)=120) and nested PL→PL (inc(inc(40))=42) now work. 11/11 PL/SQL tests pass."
     }
   ],
   "focusProjects": [
@@ -888,6 +899,10 @@
     {
       "time": "2026-04-26T16:21:40.544Z",
       "msg": "Added T61 (BUILD) after end: Add FOR loop support to PL/SQL integration (FOR i IN 1..10 LOOP)"
+    },
+    {
+      "time": "2026-04-26T16:22:30.686Z",
+      "msg": "Added T62 (BUILD) after end: Fix PL/SQL expression evaluator: handle function calls in expressions"
     }
   ]
 }

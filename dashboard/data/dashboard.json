@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T16:22:24.856Z",
+  "generated": "2026-04-26T16:24:42.822Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add FOR loop support to PL/SQL integration (FOR i IN 1..10 LOOP)",
-    "completedAt": "2026-04-26T16:22:24.856Z",
-    "taskId": "T61",
-    "summary": "FOR loops already work (confirmed in EXPLORE). Skipping.",
-    "durationMs": 5000
+    "task": "Fix PL/SQL expression evaluator: handle function calls in expressions",
+    "completedAt": "2026-04-26T16:24:42.822Z",
+    "taskId": "T62",
+    "summary": "Fixed PL/SQL expression evaluator for function calls. Recursive PL/SQL (rec_fact(5)=120) and nested PL→PL (inc(inc(40))=42) now work. 11/11 PL/SQL tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 61,
+    "blocksCompleted": 62,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
-      "BUILD": 28,
+      "BUILD": 29,
       "MAINTAIN": 9,
       "EXPLORE": 5
     }
