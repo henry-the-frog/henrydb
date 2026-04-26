@@ -4,10 +4,10 @@
 (none)
 
 ## Normal
-- HenryDB: Wire PL/SQL to procedure handler (854 LOC exists, just needs connection)
 - monkey-lang: WASM Phase 2 (strings, closures, arrays)
 - monkey-lang: Wire SSA DCE analysis into compilation pipeline (currently standalone)
 - monkey-lang: super.method() for non-init methods (currently only super.init works)
+- monkey-lang: Fix class method collision (needs runtime dispatch - hash lookup → builtin fallback)
 - neural-net: Deep exploration of 38K LOC ML framework
 
 ## Low
