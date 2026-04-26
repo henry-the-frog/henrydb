@@ -14,15 +14,19 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix monkey-lang GitHub token workflow scope + CI pipeline",
-      "task": null
+      "task": null,
+      "started": "2026-04-26T14:16:04.097Z",
+      "completed": "2026-04-26T14:17:05.762Z",
+      "duration_ms": 45000,
+      "summary": "Planned CI fix: copy workflow to repo root, push with workflow scope. Single BUILD task."
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Copy CI workflow to repo root .github/workflows/, push with workflow scope token, verify CI runs",
       "plan_ref": "T2",
       "project": "monkey-lang"
     },
@@ -209,6 +213,10 @@
     {
       "time": "2026-04-26T14:01:28.000Z",
       "msg": "Added T18 (EXPLORE) after T17: HenryDB query optimizer: cost model unification across 6 execution engines"
+    },
+    {
+      "time": "2026-04-26T14:17:01.438Z",
+      "msg": "PLAN T2 filled 1 BUILD tasks"
     }
   ]
 }
