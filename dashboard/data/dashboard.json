@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:59:40.193Z",
+  "generated": "2026-04-26T15:09:28.015Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add CLASS token + ClassStatement AST node + parser support",
-    "completedAt": "2026-04-26T14:59:40.193Z",
-    "taskId": "T25",
-    "summary": "Parser done: CLASS/EXTENDS/SUPER tokens, ClassStatement + SuperExpression AST, parseClassStatement, dotted set assignment. 1179 tests pass.",
-    "durationMs": 300000
+    "task": "Compile ClassStatement to closure factory function (Option A)",
+    "completedAt": "2026-04-26T15:09:28.015Z",
+    "taskId": "T26",
+    "summary": "Class compilation complete. ClassStatement → factory fn + method let-bindings. New OpSetIndex opcode for property mutation. Both speak(rex) and rex.speak() work. 1179/1179 tests pass.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7730,12 +7730,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 25,
+    "blocksCompleted": 26,
     "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 5,
-      "BUILD": 9,
+      "BUILD": 10,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
