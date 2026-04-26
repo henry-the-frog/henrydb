@@ -4189,9 +4189,53 @@
     {
       "id": "T403",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB complex subquery nesting (3 levels)",
+      "project": "henrydb",
+      "started": "2026-04-26T01:34:58.444Z",
+      "completed": "2026-04-26T01:35:03.499Z",
+      "duration_ms": 10000,
+      "summary": "3-level subquery nesting: GROUP BY → filter total>20 → ORDER BY DESC. B=70, A=40, C=40. Deep nesting works."
+    },
+    {
+      "id": "T404",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM Y-combinator",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:35:17.453Z",
+      "completed": "2026-04-26T01:35:23.256Z",
+      "duration_ms": 10000,
+      "summary": "Y-COMBINATOR: Y(fn(self){fn(n){...self(n-1)+self(n-2)}}) → fib(10)=55. Fixed-point combinator for anonymous recursion. Lambda calculus milestone!"
+    },
+    {
+      "id": "T405",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB window NTH_VALUE",
+      "project": "henrydb",
+      "started": "2026-04-26T01:35:28.567Z"
+    },
+    {
+      "id": "T406",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM pipe operator or composition",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T407",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB INTERSECT ALL",
       "project": "henrydb"
+    },
+    {
+      "id": "T408",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM flatMap via prelude",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -5799,6 +5843,26 @@
     {
       "time": "2026-04-26T01:33:58.404Z",
       "msg": "Added T403 (EXPLORE) after end: EXPLORE: Test HenryDB complex subquery nesting (3 levels)"
+    },
+    {
+      "time": "2026-04-26T01:35:10.561Z",
+      "msg": "Added T404 (EXPLORE) after end: EXPLORE: Test monkey-lang VM Y-combinator"
+    },
+    {
+      "time": "2026-04-26T01:35:10.682Z",
+      "msg": "Added T405 (EXPLORE) after end: EXPLORE: Test HenryDB window NTH_VALUE"
+    },
+    {
+      "time": "2026-04-26T01:35:10.804Z",
+      "msg": "Added T406 (EXPLORE) after end: EXPLORE: Test monkey-lang VM pipe operator or composition"
+    },
+    {
+      "time": "2026-04-26T01:35:10.926Z",
+      "msg": "Added T407 (EXPLORE) after end: EXPLORE: Test HenryDB INTERSECT ALL"
+    },
+    {
+      "time": "2026-04-26T01:35:11.048Z",
+      "msg": "Added T408 (EXPLORE) after end: EXPLORE: Test monkey-lang VM flatMap via prelude"
     }
   ]
 }
