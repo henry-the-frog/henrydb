@@ -4034,6 +4034,60 @@
       "task": "EXPLORE: Test monkey-lang VM math builtins comprehensive",
       "project": "monkey-lang",
       "started": "2026-04-26T01:31:20.477Z"
+    },
+    {
+      "id": "T388",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CUBE grouping",
+      "project": "henrydb",
+      "started": "2026-04-26T01:31:40.409Z",
+      "completed": "2026-04-26T01:31:47.058Z",
+      "duration_ms": 10000,
+      "summary": "CUBE: all 2^n grouping combinations. 9 rows: detail(4), by-a(2), by-b(2), grand total(1). SQL:1999 OLAP."
+    },
+    {
+      "id": "T389",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM closure over loop variable",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T390",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB GENERATE_SERIES",
+      "project": "henrydb",
+      "started": "2026-04-26T01:31:51.832Z",
+      "completed": "2026-04-26T01:31:58.483Z",
+      "duration_ms": 10000,
+      "summary": "GENERATE_SERIES: (1,5)=[1-5], (0,20,5)=[0,5,10,15,20]. Table-valued function for sequences."
+    },
+    {
+      "id": "T391",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM recursive fibonacci with memoization",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:32:05.970Z",
+      "completed": "2026-04-26T01:32:12.311Z",
+      "duration_ms": 15000,
+      "summary": "fib(30)=832040 in 15ms. Attempted memoization but hash literal 'key' not dynamic (computed key limitation). Pure recursion still fast."
+    },
+    {
+      "id": "T392",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB table column info (PRAGMA)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T393",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM pipeline of transformations",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -5577,6 +5631,30 @@
     {
       "time": "2026-04-26T01:30:18.356Z",
       "msg": "Added T387 (EXPLORE) after end: EXPLORE: Test monkey-lang VM math builtins comprehensive"
+    },
+    {
+      "time": "2026-04-26T01:31:34.391Z",
+      "msg": "Added T388 (EXPLORE) after end: EXPLORE: Test HenryDB CUBE grouping"
+    },
+    {
+      "time": "2026-04-26T01:31:34.513Z",
+      "msg": "Added T389 (EXPLORE) after end: EXPLORE: Test monkey-lang VM closure over loop variable"
+    },
+    {
+      "time": "2026-04-26T01:31:34.636Z",
+      "msg": "Added T390 (EXPLORE) after end: EXPLORE: Test HenryDB GENERATE_SERIES"
+    },
+    {
+      "time": "2026-04-26T01:31:34.757Z",
+      "msg": "Added T391 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive fibonacci with memoization"
+    },
+    {
+      "time": "2026-04-26T01:31:34.879Z",
+      "msg": "Added T392 (EXPLORE) after end: EXPLORE: Test HenryDB table column info (PRAGMA)"
+    },
+    {
+      "time": "2026-04-26T01:31:35.017Z",
+      "msg": "Added T393 (EXPLORE) after end: EXPLORE: Test monkey-lang VM pipeline of transformations"
     }
   ]
 }
