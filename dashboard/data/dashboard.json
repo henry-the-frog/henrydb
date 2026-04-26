@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:32:05.660Z",
+  "generated": "2026-04-26T00:32:42.574Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang string methods — split, join, trim, upper, lower, contains",
-    "completedAt": "2026-04-26T00:32:05.660Z",
-    "taskId": "T230",
-    "summary": "15 string builtins working: split, join, trim, upper, lower, contains, indexOf, replace, padStart, padEnd, char, ord. startsWith/endsWith return objects (not bool). repeat creates array not string. Comprehensive string support.",
+    "task": "EXPLORE: Test HenryDB CHECK constraints",
+    "completedAt": "2026-04-26T00:32:42.574Z",
+    "taskId": "T229",
+    "summary": "All constraints work: CHECK (balance>=0 rejects -100), NOT NULL (rejects NULL name), UNIQUE (rejects duplicate email). Proper error messages for each violation.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 220,
+    "blocksCompleted": 221,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 81
+      "EXPLORE": 82
     }
   },
   "artifacts": [

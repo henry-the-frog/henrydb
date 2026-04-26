@@ -2436,9 +2436,13 @@
     {
       "id": "T229",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB CHECK constraints",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T00:32:20.962Z",
+      "completed": "2026-04-26T00:32:42.538Z",
+      "duration_ms": 30000,
+      "summary": "All constraints work: CHECK (balance>=0 rejects -100), NOT NULL (rejects NULL name), UNIQUE (rejects duplicate email). Proper error messages for each violation."
     },
     {
       "id": "T230",
