@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:51:29.601Z",
+  "generated": "2026-04-26T15:53:42.937Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Update tests for hash-based method dispatch",
-    "completedAt": "2026-04-26T15:51:29.601Z",
-    "taskId": "T49",
-    "summary": "4 method dispatch tests added (class dot, builtin array/string, mangled collision avoidance). 1236 total tests.",
-    "durationMs": 120000
+    "task": "Build a real monkey-lang program using classes + WASM: benchmark project (Mandelbrot set computation)",
+    "completedAt": "2026-04-26T15:53:42.937Z",
+    "taskId": "T50",
+    "summary": "Mandelbrot benchmark: WASM vs VM. Results match. 330x speedup (0.7ms vs 231ms for 80x60 grid). 301-byte WASM binary. Fixed i32 overflow issue with x100 scale.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 49,
+    "blocksCompleted": 50,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 9,
-      "BUILD": 21,
+      "BUILD": 22,
       "MAINTAIN": 7,
       "EXPLORE": 4
     }

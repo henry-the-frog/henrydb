@@ -532,6 +532,17 @@
       "completed": "2026-04-26T15:51:29.565Z",
       "duration_ms": 120000,
       "summary": "4 method dispatch tests added (class dot, builtin array/string, mangled collision avoidance). 1236 total tests."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a real monkey-lang program using classes + WASM: benchmark project (Mandelbrot set computation)",
+      "project": "monkey-lang",
+      "started": "2026-04-26T15:52:00.334Z",
+      "completed": "2026-04-26T15:53:42.901Z",
+      "duration_ms": 300000,
+      "summary": "Mandelbrot benchmark: WASM vs VM. Results match. 330x speedup (0.7ms vs 231ms for 80x60 grid). 301-byte WASM binary. Fixed i32 overflow issue with x100 scale."
     }
   ],
   "focusProjects": [
@@ -711,6 +722,10 @@
     {
       "time": "2026-04-26T15:40:30.638Z",
       "msg": "PLAN T46 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-26T15:51:53.581Z",
+      "msg": "Added T50 (BUILD) after end: Build a real monkey-lang program using classes + WASM: benchmark project (Mandelbrot set computation)"
     }
   ]
 }
