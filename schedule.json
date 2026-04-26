@@ -3921,23 +3921,32 @@
     {
       "id": "T376",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM tail call optimization",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:28:57.137Z",
+      "completed": "2026-04-26T01:29:03.796Z",
+      "duration_ms": 10000,
+      "summary": "Tail call optimization: sum(1..10000)=50005000 in 26ms. 10K recursive calls, no stack overflow. OpTailCall reuses frames."
     },
     {
       "id": "T377",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB SAVEPOINT/ROLLBACK TO",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:29:09.321Z",
+      "completed": "2026-04-26T01:29:15.508Z",
+      "duration_ms": 10000,
+      "summary": "SAVEPOINT sp1 → ROLLBACK TO sp1: undoes row 3, keeps rows 1,2,4. Nested transaction control works."
     },
     {
       "id": "T378",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "EXPLORE: Test monkey-lang VM hash keys/values builtins",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:29:20.889Z"
     },
     {
       "id": "T379",
