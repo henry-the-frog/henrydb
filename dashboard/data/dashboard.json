@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T01:33:35.528Z",
+  "generated": "2026-04-26T01:34:21.188Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang VM iterative binary search",
-    "completedAt": "2026-04-26T01:33:35.528Z",
-    "taskId": "T397",
-    "summary": "Binary search BUG: arr[floor(x)] returns NULL. Array indexing may not accept float even after floor(). INTEGER/NULL comparison fails. Needs investigation.",
-    "durationMs": 15000
+    "task": "EXPLORE: Test monkey-lang VM curry function",
+    "completedAt": "2026-04-26T01:34:21.188Z",
+    "taskId": "T400",
+    "summary": "Currying: curry(add) → add5(3)=8, add5(10)=15, add(1)(2)=3. Partial application via closures.",
+    "durationMs": 10000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 345,
+    "blocksCompleted": 348,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 205
+      "EXPLORE": 208
     }
   },
   "artifacts": [

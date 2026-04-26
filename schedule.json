@@ -4137,8 +4137,55 @@
     {
       "id": "T398",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB multi-column INSERT with RETURNING *",
+      "project": "henrydb",
+      "started": "2026-04-26T01:33:46.621Z",
+      "completed": "2026-04-26T01:33:51.949Z",
+      "duration_ms": 10000,
+      "summary": "RETURNING *: all columns including auto-generated id. Multi-row INSERT returns both rows with correct AUTOINCREMENT values."
+    },
+    {
+      "id": "T399",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB window PERCENT_RANK and CUME_DIST",
+      "project": "henrydb",
+      "started": "2026-04-26T01:34:03.671Z",
+      "completed": "2026-04-26T01:34:09.710Z",
+      "duration_ms": 10000,
+      "summary": "PERCENT_RANK: 0,0.25,0.5,0.75,1. CUME_DIST: 0.2,0.4,0.6,0.8,1. SQL distribution window functions."
+    },
+    {
+      "id": "T400",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM curry function",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:34:15.630Z",
+      "completed": "2026-04-26T01:34:21.151Z",
+      "duration_ms": 10000,
+      "summary": "Currying: curry(add) → add5(3)=8, add5(10)=15, add(1)(2)=3. Partial application via closures."
+    },
+    {
+      "id": "T401",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB UNNEST array",
+      "project": "henrydb"
+    },
+    {
+      "id": "T402",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM church encoding",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T403",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB complex subquery nesting (3 levels)",
       "project": "henrydb"
     }
   ],
@@ -5727,6 +5774,26 @@
     {
       "time": "2026-04-26T01:32:50.365Z",
       "msg": "Added T398 (EXPLORE) after end: EXPLORE: Test HenryDB multi-column INSERT with RETURNING *"
+    },
+    {
+      "time": "2026-04-26T01:33:57.893Z",
+      "msg": "Added T399 (EXPLORE) after end: EXPLORE: Test HenryDB window PERCENT_RANK and CUME_DIST"
+    },
+    {
+      "time": "2026-04-26T01:33:58.015Z",
+      "msg": "Added T400 (EXPLORE) after end: EXPLORE: Test monkey-lang VM curry function"
+    },
+    {
+      "time": "2026-04-26T01:33:58.137Z",
+      "msg": "Added T401 (EXPLORE) after end: EXPLORE: Test HenryDB UNNEST array"
+    },
+    {
+      "time": "2026-04-26T01:33:58.281Z",
+      "msg": "Added T402 (EXPLORE) after end: EXPLORE: Test monkey-lang VM church encoding"
+    },
+    {
+      "time": "2026-04-26T01:33:58.404Z",
+      "msg": "Added T403 (EXPLORE) after end: EXPLORE: Test HenryDB complex subquery nesting (3 levels)"
     }
   ]
 }
