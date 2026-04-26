@@ -4241,6 +4241,43 @@
       "task": "EXPLORE: Test monkey-lang VM flatMap via prelude",
       "project": "monkey-lang",
       "started": "2026-04-26T01:35:52.824Z"
+    },
+    {
+      "id": "T409",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM state machine pattern",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:36:15.359Z",
+      "completed": "2026-04-26T01:36:23.340Z",
+      "duration_ms": 10000,
+      "summary": "FSM: idle→running→paused→running→idle. State machine via closures + hash transitions. Design pattern in monkey-lang."
+    },
+    {
+      "id": "T410",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB WITH insert (CTE + INSERT)",
+      "project": "henrydb",
+      "started": "2026-04-26T01:36:28.436Z",
+      "completed": "2026-04-26T01:36:34.966Z",
+      "duration_ms": 10000,
+      "summary": "WITH...INSERT: CTE filtered (id>1) then INSERT INTO dst. Data movement with CTE source."
+    },
+    {
+      "id": "T411",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM iterator protocol",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T412",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB complex analytics query",
+      "project": "henrydb",
+      "started": "2026-04-26T01:36:42.165Z"
     }
   ],
   "focusProjects": [
@@ -5868,6 +5905,22 @@
     {
       "time": "2026-04-26T01:35:11.048Z",
       "msg": "Added T408 (EXPLORE) after end: EXPLORE: Test monkey-lang VM flatMap via prelude"
+    },
+    {
+      "time": "2026-04-26T01:36:05.804Z",
+      "msg": "Added T409 (EXPLORE) after end: EXPLORE: Test monkey-lang VM state machine pattern"
+    },
+    {
+      "time": "2026-04-26T01:36:05.927Z",
+      "msg": "Added T410 (EXPLORE) after end: EXPLORE: Test HenryDB WITH insert (CTE + INSERT)"
+    },
+    {
+      "time": "2026-04-26T01:36:06.049Z",
+      "msg": "Added T411 (EXPLORE) after end: EXPLORE: Test monkey-lang VM iterator protocol"
+    },
+    {
+      "time": "2026-04-26T01:36:06.171Z",
+      "msg": "Added T412 (EXPLORE) after end: EXPLORE: Test HenryDB complex analytics query"
     }
   ]
 }
