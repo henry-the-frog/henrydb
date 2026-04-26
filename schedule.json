@@ -815,24 +815,289 @@
     {
       "id": "T76",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update monkey-lang stats in README (test count, LOC)",
       "project": "monkey-lang",
-      "started": "2026-04-26T17:45:47.599Z"
+      "started": "2026-04-26T17:45:47.599Z",
+      "completed": "2026-04-26T17:46:30.414Z",
+      "duration_ms": 60000,
+      "summary": "Updated README stats: 24.8K LOC, 91 files, 1250 tests, 2200+ commits. Pushed."
     },
     {
       "id": "T77",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Test HenryDB PL/SQL with complex programs (cursors, exception handling, bulk operations)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T17:46:48.530Z",
+      "completed": "2026-04-26T17:48:12.208Z",
+      "duration_ms": 180000,
+      "summary": "PL/HenryDB tested: DECLARE+IF/ELSIF+WHILE+FOR+SELECT INTO+EXCEPTION all work. Missing: CASE statement (parser crash), cursors, DML inside PL blocks (INSERT/UPDATE/DELETE not recognized), PERFORM, NOTICE with format. Core procedural logic is solid."
     },
     {
       "id": "T78",
       "mode": "THINK",
-      "status": "upcoming",
+      "status": "done",
       "task": "Analyze monkey-lang optimizer pipeline: what optimizations actually fire on real programs?",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:48:24.284Z",
+      "completed": "2026-04-26T17:49:39.646Z",
+      "duration_ms": 180000,
+      "summary": "Pipeline has 7 passes (TypeCheck,DCE,CFG,SSA,ConstProp,Liveness,Escape) but only DCE modifies code (constant branch elimination). Dead var detection works but doesnt remove. ConstProp counts but doesnt propagate. Escape analysis is purely informational. The pipeline is analysis-only, not transformational — real work would be: (1) DCE that removes dead let stmts, (2) ConstProp that replaces references."
+    },
+    {
+      "id": "T79",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design pipeline DCE: remove dead let statements from AST",
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:50:35.514Z",
+      "completed": "2026-04-26T17:50:48.067Z",
+      "duration_ms": 60000,
+      "summary": "Design: removeDeadLets(program, deadVars) in dce.js. Side-effect check: literals/fn-lits/identifiers safe to remove, function calls convert to ExpressionStatement. Wire into pipeline after findDeadVariables."
+    },
+    {
+      "id": "T80",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Wire dead variable removal into DCE pass + compiler pipeline",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:51:02.045Z",
+      "completed": "2026-04-26T17:51:08.010Z",
+      "duration_ms": 15000,
+      "summary": "Plan: 2 BUILD tasks — (1) removeDeadLets with side-effect analysis, (2) wire into pipeline + tests"
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "task": "Implement removeDeadLets in dce.js with side-effect analysis",
+      "status": "done",
+      "plan_ref": "T80",
+      "started": "2026-04-26T17:51:17.368Z",
+      "completed": "2026-04-26T17:52:07.625Z",
+      "duration_ms": 180000,
+      "summary": "Added removeDeadLets() and isSideEffectFree() to dce.js. Handles safe removal (literals, fn lits) and side-effect conversion (calls). All existing DCE tests pass."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "task": "Wire removeDeadLets into pipeline, add tests for dead let removal",
+      "status": "done",
+      "plan_ref": "T80",
+      "started": "2026-04-26T17:52:17.040Z",
+      "completed": "2026-04-26T17:54:21.926Z",
+      "duration_ms": 180000,
+      "summary": "Wired removeDeadLets into pipeline. Pipeline now actually removes dead let statements. Fixed 3 existing tests, added 2 new tests. 15/15 pipeline tests passing."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement AST-level dead let removal in DCE pass",
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:54:32.535Z",
+      "completed": "2026-04-26T17:54:32.681Z",
+      "duration_ms": 5000,
+      "summary": "Already completed as part of T87+T88. removeDeadLets implemented and wired into pipeline."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix class method collision: hash-based dispatch on instance",
+      "project": "monkey-lang",
+      "started": "2026-04-26T17:54:39.771Z",
+      "completed": "2026-04-26T18:01:04.591Z",
+      "duration_ms": 600000,
+      "summary": "Fixed class method collision with hash-based dispatch. Methods stored on instance hash, builtins still scope-dispatched. Inheritance chains resolve correctly (3-level). 24/24 class tests pass."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add super.method() support for non-init methods",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:01:14.724Z",
+      "completed": "2026-04-26T18:01:36.835Z",
+      "duration_ms": 60000,
+      "summary": "super.method() already works for non-init methods — tested 3-level chain (Base→Mid→Leaf) with super.foo() chaining. The compiler resolves super.method() using _currentSuperClass + mangled names."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: Add memory section + data segment for string constants",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:01:48.138Z",
+      "completed": "2026-04-26T18:04:29.798Z",
+      "duration_ms": 300000,
+      "summary": "Added WASM memory section + data segments to wasm.js. addMemory(), addDataSegment(), addStringConstant() with [i32 len][utf8] format. exportMemory(). 7 new tests all passing."
+    },
+    {
+      "id": "T85",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test class inheritance: diamond, 5-level chain, method override edge cases",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:04:42.927Z",
+      "completed": "2026-04-26T18:07:45.188Z",
+      "duration_ms": 300000,
+      "summary": "Found and fixed prototype pollution bug in lexer KEYWORDS map (toString/constructor broken). Also verified: 5-level chain, super chain, two-branch inheritance, instance isolation, complex methods all work. 0 test regressions."
+    },
+    {
+      "id": "T86",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep dive neural-net 38K LOC: RLHF, mixture of experts, vision transformer",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:07:58.516Z",
+      "completed": "2026-04-26T18:10:38.494Z",
+      "duration_ms": 300000,
+      "summary": "Neural-net deep dive: MoE (forward/backward/update works, learns simple tasks), Transformer (PE, MHA, Encoder, Decoder, CrossAttn all work), 1337 tests all passing. Framework is solid with autograd, 20K LOC, 96 files. No RLHF class but has REINFORCE policy gradient."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix arr[0]() syntax: index then immediate call",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:11:13.050Z",
+      "completed": "2026-04-26T18:11:36.310Z",
+      "duration_ms": 30000,
+      "summary": "arr[0]() already works — tested arrays, hashes, nested arrays, all produce correct results. No fix needed."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add CASE statement to PL/HenryDB parser and interpreter",
+      "project": "henrydb",
+      "started": "2026-04-26T18:11:47.946Z",
+      "completed": "2026-04-26T18:14:38.320Z",
+      "duration_ms": 300000,
+      "summary": "Added CASE statement to PL/HenryDB — simple CASE (CASE expr WHEN val) and searched CASE (CASE WHEN cond). Nested CASE, CASE in loops, CASE_NOT_FOUND error. All PL tests pass."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add DML (INSERT/UPDATE/DELETE) inside PL/HenryDB BEGIN blocks",
+      "project": "henrydb",
+      "started": "2026-04-26T18:14:49.648Z",
+      "completed": "2026-04-26T18:16:29.303Z",
+      "duration_ms": 180000,
+      "summary": "Added INSERT/UPDATE/DELETE inside PL/HenryDB blocks. DML parsed as raw SQL with variable substitution. Works with loops, CASE, IF. All PL tests pass."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: Add global section for mutable global variables",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:16:42.255Z",
+      "completed": "2026-04-26T18:18:50.136Z",
+      "duration_ms": 180000,
+      "summary": "Added WASM global section: addGlobal(), exportGlobal(), encodeF64/F32 helpers. Mutable globals work as counters/state. All WASM tests pass."
+    },
+    {
+      "id": "T93",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run full monkey-lang test suite, check for any new failures from recent changes",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:19:03.901Z",
+      "completed": "2026-04-26T18:19:19.744Z",
+      "duration_ms": 30000,
+      "summary": "Full monkey-lang test suite: 1257 tests, 0 failures. All recent changes (class dispatch, lexer fix, DCE, WASM features) clean."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM compiler: use globals for top-level let variables",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:19:44.988Z",
+      "completed": "2026-04-26T18:23:53.985Z",
+      "duration_ms": 300000,
+      "summary": "WASM compiler now uses globals for top-level let variables. __init function initializes them, main calls __init first. Functions can close over globals. All WASM tests pass."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add cursor support to PL/HenryDB (DECLARE CURSOR, OPEN, FETCH, CLOSE)",
+      "project": "henrydb",
+      "started": "2026-04-26T18:24:11.950Z",
+      "completed": "2026-04-26T18:29:46.983Z",
+      "duration_ms": 600000,
+      "summary": "Added cursor support to PL/HenryDB: DECLARE CURSOR FOR, OPEN/FETCH INTO/CLOSE, EXIT WHEN NOT FOUND, LOOP, RECORD type, record field access. All PL tests pass."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add WASM table section + indirect calls for higher-order functions",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:30:11.307Z",
+      "completed": "2026-04-26T18:32:37.059Z",
+      "duration_ms": 300000,
+      "summary": "Added WASM table + element sections: addTable, addTableElement, call_indirect opcode, exportTable. Indirect function calls work correctly. All WASM tests pass."
+    },
+    {
+      "id": "T97",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run henrydb full test suite, check for regressions",
+      "project": "henrydb",
+      "started": "2026-04-26T18:32:48.289Z",
+      "completed": "2026-04-26T18:38:08.645Z",
+      "duration_ms": 60000,
+      "summary": "PL tests all pass. SQL/joins pass. 1 pre-existing window function failure (running sum partition). No regressions from CASE/DML/cursor changes."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM compiler: compile higher-order functions using table + call_indirect",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:38:33.470Z",
+      "completed": "2026-04-26T18:40:30.274Z",
+      "duration_ms": 300000,
+      "summary": "WASM compiler now supports higher-order functions: functions as values via table indices, call_indirect for dynamic dispatch. apply(double, 21) → 42. All tests pass."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add PL/HenryDB stored functions: CREATE FUNCTION + call from SQL",
+      "project": "henrydb",
+      "started": "2026-04-26T18:40:44.936Z",
+      "completed": "2026-04-26T18:42:51.416Z",
+      "duration_ms": 240000,
+      "summary": "Wired PL/HenryDB as stored function language: CREATE FUNCTION ... LANGUAGE plhenrydb. Functions callable from SQL (SELECT, WHERE). Parameters, DB access, all working. 38/38 tests pass."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add string interpolation syntax: f-strings or template literals",
+      "project": "monkey-lang",
+      "started": "2026-04-26T18:43:03.357Z",
+      "completed": "2026-04-26T18:44:06.125Z",
+      "duration_ms": 30000,
+      "summary": "Template literals (backtick + dollar-brace) already implemented. Tested: string interpolation, expressions in templates, f-strings. All working."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB running sum window function partition bug",
+      "project": "henrydb",
+      "started": "2026-04-26T18:44:13.873Z",
+      "completed": "2026-04-26T18:45:21.142Z",
+      "duration_ms": 120000,
+      "summary": "Window function test was wrong, not the engine. RANGE framing includes all tied ORDER BY rows. Fixed test expectations. Verified against SQLite."
     }
   ],
   "focusProjects": [
@@ -1128,6 +1393,94 @@
     {
       "time": "2026-04-26T16:59:33.336Z",
       "msg": "Added T78 (THINK) after end: Analyze monkey-lang optimizer pipeline: what optimizations actually fire on real programs?"
+    },
+    {
+      "time": "2026-04-26T17:50:24.026Z",
+      "msg": "Added T79 (THINK) after end: Design pipeline DCE: remove dead let statements from AST"
+    },
+    {
+      "time": "2026-04-26T17:50:24.148Z",
+      "msg": "Added T80 (PLAN) after end: Wire dead variable removal into DCE pass + compiler pipeline"
+    },
+    {
+      "time": "2026-04-26T17:50:24.267Z",
+      "msg": "Added T81 (BUILD) after end: Implement AST-level dead let removal in DCE pass"
+    },
+    {
+      "time": "2026-04-26T17:50:24.386Z",
+      "msg": "Added T82 (BUILD) after end: Fix class method collision: hash-based dispatch on instance"
+    },
+    {
+      "time": "2026-04-26T17:50:24.505Z",
+      "msg": "Added T83 (BUILD) after end: Add super.method() support for non-init methods"
+    },
+    {
+      "time": "2026-04-26T17:50:24.623Z",
+      "msg": "Added T84 (BUILD) after end: WASM: Add memory section + data segment for string constants"
+    },
+    {
+      "time": "2026-04-26T17:50:24.743Z",
+      "msg": "Added T85 (EXPLORE) after end: Stress test class inheritance: diamond, 5-level chain, method override edge cases"
+    },
+    {
+      "time": "2026-04-26T17:50:24.861Z",
+      "msg": "Added T86 (EXPLORE) after end: Deep dive neural-net 38K LOC: RLHF, mixture of experts, vision transformer"
+    },
+    {
+      "time": "2026-04-26T17:51:02.190Z",
+      "msg": "PLAN T80 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-26T18:10:59.668Z",
+      "msg": "Added T89 (BUILD) after end: Fix arr[0]() syntax: index then immediate call"
+    },
+    {
+      "time": "2026-04-26T18:10:59.788Z",
+      "msg": "Added T90 (BUILD) after end: Add CASE statement to PL/HenryDB parser and interpreter"
+    },
+    {
+      "time": "2026-04-26T18:10:59.915Z",
+      "msg": "Added T91 (BUILD) after end: Add DML (INSERT/UPDATE/DELETE) inside PL/HenryDB BEGIN blocks"
+    },
+    {
+      "time": "2026-04-26T18:11:00.048Z",
+      "msg": "Added T92 (BUILD) after end: WASM: Add global section for mutable global variables"
+    },
+    {
+      "time": "2026-04-26T18:11:00.173Z",
+      "msg": "Added T93 (EXPLORE) after end: Run full monkey-lang test suite, check for any new failures from recent changes"
+    },
+    {
+      "time": "2026-04-26T18:19:33.390Z",
+      "msg": "Added T94 (BUILD) after end: WASM compiler: use globals for top-level let variables"
+    },
+    {
+      "time": "2026-04-26T18:19:33.509Z",
+      "msg": "Added T95 (BUILD) after end: Add cursor support to PL/HenryDB (DECLARE CURSOR, OPEN, FETCH, CLOSE)"
+    },
+    {
+      "time": "2026-04-26T18:19:33.628Z",
+      "msg": "Added T96 (BUILD) after end: Add WASM table section + indirect calls for higher-order functions"
+    },
+    {
+      "time": "2026-04-26T18:19:33.746Z",
+      "msg": "Added T97 (EXPLORE) after end: Run henrydb full test suite, check for regressions"
+    },
+    {
+      "time": "2026-04-26T18:38:25.457Z",
+      "msg": "Added T98 (BUILD) after end: WASM compiler: compile higher-order functions using table + call_indirect"
+    },
+    {
+      "time": "2026-04-26T18:38:25.733Z",
+      "msg": "Added T99 (BUILD) after end: Add PL/HenryDB stored functions: CREATE FUNCTION + call from SQL"
+    },
+    {
+      "time": "2026-04-26T18:38:25.981Z",
+      "msg": "Added T100 (BUILD) after end: Monkey: add string interpolation syntax: f-strings or template literals"
+    },
+    {
+      "time": "2026-04-26T18:38:26.320Z",
+      "msg": "Added T101 (BUILD) after end: Fix HenryDB running sum window function partition bug"
     }
   ]
 }
