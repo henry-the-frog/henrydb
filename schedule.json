@@ -2600,6 +2600,24 @@
       "completed": "2026-04-26T00:41:41.828Z",
       "duration_ms": 30000,
       "summary": "Hash: keys, values, type, str, merge. VM builtins: merge({x:1},{y:2})={x:1,y:2}, product([2,3,4])=24, isEmpty([])=true, compact removes null. count is string-based (not array)."
+    },
+    {
+      "id": "T245",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB VACUUM and ANALYZE commands",
+      "project": "henrydb"
+    },
+    {
+      "id": "T246",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang import/export module system",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:42:07.837Z",
+      "completed": "2026-04-26T00:43:00.372Z",
+      "duration_ms": 60000,
+      "summary": "Module system: import('math') returns module with abs/max/min/clamp/pow/factorial. clamp(15,0,10)=10, pow(2,8)=256, abs(-42)=42. String module also available. Export parsing needs { } syntax."
     }
   ],
   "focusProjects": [
@@ -3571,6 +3589,14 @@
     {
       "time": "2026-04-26T00:40:14.559Z",
       "msg": "Added T244 (EXPLORE) after end: EXPLORE: Test monkey-lang hash methods — keys, values, pairs"
+    },
+    {
+      "time": "2026-04-26T00:41:58.998Z",
+      "msg": "Added T245 (EXPLORE) after end: EXPLORE: Test HenryDB VACUUM and ANALYZE commands"
+    },
+    {
+      "time": "2026-04-26T00:41:59.118Z",
+      "msg": "Added T246 (EXPLORE) after end: EXPLORE: Test monkey-lang import/export module system"
     }
   ]
 }
