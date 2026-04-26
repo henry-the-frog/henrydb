@@ -2080,6 +2080,31 @@
       "completed": "2026-04-26T00:08:04.525Z",
       "duration_ms": 120000,
       "summary": "MEMORY.md updated with final verified counts (206 importable, 166 functional, 141 verified). Daily log has comprehensive summary."
+    },
+    {
+      "id": "T195",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB performance — query 10K rows with complex joins",
+      "project": "henrydb",
+      "started": "2026-04-26T00:08:28.275Z",
+      "completed": "2026-04-26T00:09:29.383Z",
+      "duration_ms": 300000,
+      "summary": "10K row performance: JOIN+GROUP BY in 39ms, Window+HAVING+LIMIT in 43ms. 10000 orders × 1000 customers. Results correct (4 regions × 2500). Very good performance for JS implementation."
+    },
+    {
+      "id": "T196",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Run monkey-lang demo program and verify all features work together",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T197",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net MicroGPT — can it train on a small corpus?",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -2851,6 +2876,18 @@
     {
       "time": "2026-04-26T00:07:24.525Z",
       "msg": "Added T194 (MAINTAIN) after end: MAINTAIN: Final MEMORY.md and daily log cleanup"
+    },
+    {
+      "time": "2026-04-26T00:08:20.844Z",
+      "msg": "Added T195 (EXPLORE) after end: EXPLORE: Test HenryDB performance — query 10K rows with complex joins"
+    },
+    {
+      "time": "2026-04-26T00:08:20.964Z",
+      "msg": "Added T196 (EXPLORE) after end: EXPLORE: Run monkey-lang demo program and verify all features work together"
+    },
+    {
+      "time": "2026-04-26T00:08:21.084Z",
+      "msg": "Added T197 (EXPLORE) after end: EXPLORE: Test neural-net MicroGPT — can it train on a small corpus?"
     }
   ]
 }
