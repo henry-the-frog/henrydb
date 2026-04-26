@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:42:01.894Z",
+  "generated": "2026-04-26T14:42:58.920Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Afternoon direction. Dead code elimination via SSA or HenryDB COUNT(DISTINCT)?",
-    "completedAt": "2026-04-26T14:42:01.894Z",
-    "taskId": "T13",
-    "summary": "SSA→DCE is the right call. Depth check passed (3/3 yes). SSA is genuine compiler engineering, builds on existing infra.",
-    "durationMs": 30000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-26T14:42:58.920Z",
+    "taskId": "T14",
+    "summary": "Plan: 3 tasks — AST-level DCE first (unreachable + constant folding), wire into pipeline, then SSA-level if time.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7559,52 +7559,86 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: close fuzzer gap - mixed type comparisons and UNION type affinity",
         "task": null,
-        "started": "2026-04-26T14:29:14.816Z"
+        "started": "2026-04-26T14:29:14.816Z",
+        "completed": "2026-04-26T14:31:15.900Z",
+        "duration_ms": 120000,
+        "summary": "Planned 2 BUILD tasks: (1) sqliteCompare for WHERE, (2) sqliteCompare for UNION ORDER BY. Targeting 98.6% → 99%+."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Add sqliteCompare function + use in WHERE COMPARE (LT/GT/LE/GE)",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-26T14:31:26.969Z",
+        "completed": "2026-04-26T14:40:27.790Z",
+        "duration_ms": 300000,
+        "summary": "Added sqliteCompare (NULL<num<text<blob). Updated WHERE COMPARE (LT/GT/LE/GE), BETWEEN, 4x ORDER BY sites, set-ops. Fixed fuzzer harness parseFloat bug. All fuzzer tests pass."
       },
       {
         "id": "T20",
         "mode": "BUILD",
         "task": "Use sqliteCompare in UNION/set-ops ORDER BY + run diff fuzzer to measure improvement",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-26T14:40:39.540Z",
+        "completed": "2026-04-26T14:41:00.248Z",
+        "duration_ms": 60000,
+        "summary": "Set-ops already updated in T11. Verified: mixed type comparisons match SQLite (int < string). All 84 diff fuzzer tests pass."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: commit, push, dashboard, knowledge capture"
+        "status": "done",
+        "task": "Housekeeping: commit, push, dashboard, knowledge capture",
+        "started": "2026-04-26T14:41:09.717Z",
+        "completed": "2026-04-26T14:41:36.988Z",
+        "duration_ms": 60000,
+        "summary": "Pushed workspace and HenryDB. Cleaned TODO (removed completed VM callback and fuzzer gap items)."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon direction. Dead code elimination via SSA or HenryDB COUNT(DISTINCT)?"
+        "status": "done",
+        "task": "Afternoon direction. Dead code elimination via SSA or HenryDB COUNT(DISTINCT)?",
+        "started": "2026-04-26T14:41:44.536Z",
+        "completed": "2026-04-26T14:42:01.858Z",
+        "duration_ms": 30000,
+        "summary": "SSA→DCE is the right call. Depth check passed (3/3 yes). SSA is genuine compiler engineering, builds on existing infra."
       },
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Per-function SSA enabling dead code elimination in monkey-lang compiler",
-        "task": null
+        "task": null,
+        "started": "2026-04-26T14:42:11.846Z"
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Implement AST-level DCE pass (unreachable after return + constant branch folding)",
         "plan_ref": "T14",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "Wire DCE into compilation pipeline + add tests",
+        "status": "upcoming",
+        "plan_ref": "T14"
+      },
+      {
+        "id": "T22",
+        "mode": "BUILD",
+        "task": "Explore SSA-level DCE (mark dead defs via def-use chains, annotate AST)",
+        "status": "upcoming",
+        "plan_ref": "T14"
       },
       {
         "id": "T16",
@@ -7630,11 +7664,11 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 15,
-    "blocksTotal": 20,
+    "blocksCompleted": 16,
+    "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 4,
-      "PLAN": 3,
+      "PLAN": 4,
       "BUILD": 5,
       "MAINTAIN": 3
     }

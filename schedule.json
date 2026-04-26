@@ -165,17 +165,35 @@
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Per-function SSA enabling dead code elimination in monkey-lang compiler",
-      "task": null
+      "task": null,
+      "started": "2026-04-26T14:42:11.846Z",
+      "completed": "2026-04-26T14:42:58.885Z",
+      "duration_ms": 90000,
+      "summary": "Plan: 3 tasks — AST-level DCE first (unreachable + constant folding), wire into pipeline, then SSA-level if time."
     },
     {
       "id": "T15",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Implement AST-level DCE pass (unreachable after return + constant branch folding)",
       "plan_ref": "T14",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Wire DCE into compilation pipeline + add tests",
+      "status": "upcoming",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Explore SSA-level DCE (mark dead defs via def-use chains, annotate AST)",
+      "status": "upcoming",
+      "plan_ref": "T14"
     },
     {
       "id": "T16",
@@ -291,6 +309,10 @@
     {
       "time": "2026-04-26T14:31:09.684Z",
       "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-26T14:42:53.612Z",
+      "msg": "PLAN T14 filled 3 BUILD tasks"
     }
   ]
 }
