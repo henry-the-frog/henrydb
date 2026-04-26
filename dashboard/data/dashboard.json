@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T01:18:15.170Z",
+  "generated": "2026-04-26T01:18:44.214Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang VM try/catch error handling",
-    "completedAt": "2026-04-26T01:18:15.170Z",
-    "taskId": "T324",
-    "summary": "try/catch is evaluator-only, not compiled to VM bytecode. TryExpression/ThrowStatement not handled in compiler. Would need OpTry/OpThrow opcodes.",
-    "durationMs": 15000
+    "task": "EXPLORE: Test HenryDB EXPLAIN ANALYZE output format",
+    "completedAt": "2026-04-26T01:18:44.214Z",
+    "taskId": "T327",
+    "summary": "EXPLAIN ANALYZE: Volcano operator tree with per-operator timing. SeqScan→HashAggregate→Project. Buffer stats, planning/execution time. PostgreSQL-quality output.",
+    "durationMs": 10000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 296,
+    "blocksCompleted": 298,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 156
+      "EXPLORE": 158
     }
   },
   "artifacts": [
