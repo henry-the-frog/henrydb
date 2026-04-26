@@ -94,6 +94,9 @@ export class PLParser {
     // Check for SELECT ... INTO
     if (token === 'SELECT') return this._parseSelectInto();
 
+    // DML statements: pass directly to DB engine
+    if (token === 'INSERT' || token === 'UPDATE' || token === 'DELETE') return this._parseDML();
+
     // Assignment: name := expr;
     return this._parseAssignment();
   }
@@ -269,6 +272,17 @@ export class PLParser {
     }
     this._expect(';');
     return { type: 'perform', sql: parts.join(' ') };
+  }
+
+  _parseDML() {
+    // Collect all tokens until ; to form the SQL statement
+    // Variable interpolation: $1, $name, etc. will be handled by the interpreter
+    const parts = [];
+    while (this._peek() !== ';' && this._peek() !== null) {
+      parts.push(this._advance());
+    }
+    this._expect(';');
+    return { type: 'dml', sql: parts.join(' ') };
   }
 
   _parseSelectInto() {
@@ -582,6 +596,9 @@ export class PLInterpreter {
       case 'case':
         return this._executeCase(stmt, scope);
 
+      case 'dml':
+        return this._executeDML(stmt, scope);
+
       case 'return':
         throw new PLReturn(stmt.value ? this._evalExpr(stmt.value, scope) : undefined);
 
@@ -636,6 +653,28 @@ export class PLInterpreter {
         throw e;
       }
     }
+  }
+
+  _executeDML(stmt, scope) {
+    // Substitute PL variables in the SQL string
+    let sql = stmt.sql;
+    // Replace variable references (simple name match against scope)
+    for (const [name, value] of scope.entries()) {
+      // Replace occurrences of the variable name with its value
+      // Only replace whole words
+      const regex = new RegExp(`\\b${name}\\b`, 'gi');
+      if (regex.test(sql)) {
+        const val = value;
+        if (typeof val === 'string') {
+          sql = sql.replace(regex, `'${val.replace(/'/g, "''")}'`);
+        } else if (val === null) {
+          sql = sql.replace(regex, 'NULL');
+        } else {
+          sql = sql.replace(regex, String(val));
+        }
+      }
+    }
+    this.db.execute(sql);
   }
 
   _executeCase(stmt, scope) {
