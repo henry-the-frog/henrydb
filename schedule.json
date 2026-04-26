@@ -4375,9 +4375,53 @@
     {
       "id": "T424",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB multi-column UNIQUE constraint",
+      "project": "henrydb",
+      "started": "2026-04-26T01:38:47.247Z",
+      "completed": "2026-04-26T01:38:52.107Z",
+      "duration_ms": 10000,
+      "summary": "Multi-column UNIQUE(a,b): (1,1) duplicate rejected, (1,2)+(2,1) accepted. Composite constraint enforcement."
+    },
+    {
+      "id": "T425",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM memoize higher-order function",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T426",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CHECK constraint",
+      "project": "henrydb",
+      "started": "2026-04-26T01:39:04.587Z",
+      "completed": "2026-04-26T01:39:09.580Z",
+      "duration_ms": 10000,
+      "summary": "CHECK constraint: age CHECK(>=0 AND <=150). -5 rejected, 200 rejected, 25 accepted. Expression-based validation."
+    },
+    {
+      "id": "T427",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM reduce to build hash from array",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T428",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB UNION ALL with different column counts",
       "project": "henrydb"
+    },
+    {
+      "id": "T429",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test monkey-lang VM fizzbuzz implementation",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:39:15.763Z"
     }
   ],
   "focusProjects": [
@@ -6069,6 +6113,26 @@
     {
       "time": "2026-04-26T01:38:01.605Z",
       "msg": "Added T424 (EXPLORE) after end: EXPLORE: Test HenryDB multi-column UNIQUE constraint"
+    },
+    {
+      "time": "2026-04-26T01:38:58.238Z",
+      "msg": "Added T425 (EXPLORE) after end: EXPLORE: Test monkey-lang VM memoize higher-order function"
+    },
+    {
+      "time": "2026-04-26T01:38:58.362Z",
+      "msg": "Added T426 (EXPLORE) after end: EXPLORE: Test HenryDB CHECK constraint"
+    },
+    {
+      "time": "2026-04-26T01:38:58.483Z",
+      "msg": "Added T427 (EXPLORE) after end: EXPLORE: Test monkey-lang VM reduce to build hash from array"
+    },
+    {
+      "time": "2026-04-26T01:38:58.606Z",
+      "msg": "Added T428 (EXPLORE) after end: EXPLORE: Test HenryDB UNION ALL with different column counts"
+    },
+    {
+      "time": "2026-04-26T01:38:58.732Z",
+      "msg": "Added T429 (EXPLORE) after end: EXPLORE: Test monkey-lang VM fizzbuzz implementation"
     }
   ]
 }
