@@ -266,6 +266,24 @@ export class PLParser {
     const varName = this._advance();
     this._expect('IN');
 
+    // Check for query FOR loop: FOR rec IN SELECT ... LOOP
+    if (this._peek() === 'SELECT') {
+      const queryParts = [];
+      while (this._peek() !== 'LOOP' && this._peek() !== null) {
+        queryParts.push(this._advance());
+      }
+      this._expect('LOOP');
+      const statements = [];
+      while (this._peek() !== 'END') {
+        statements.push(this._parseStatement());
+      }
+      this._expect('END');
+      this._expect('LOOP');
+      this._expect(';');
+      return { type: 'for_query', varName, query: queryParts.join(' '), statements };
+    }
+
+    // Range FOR loop: FOR i IN [REVERSE] start..end LOOP
     let reverse = false;
     if (this._peek() === 'REVERSE') {
       this._advance();
@@ -670,6 +688,9 @@ export class PLInterpreter {
       case 'for':
         return this._executeFor(stmt, scope);
 
+      case 'for_query':
+        return this._executeForQuery(stmt, scope);
+
       case 'case':
         return this._executeCase(stmt, scope);
 
@@ -690,8 +711,10 @@ export class PLInterpreter {
         if (cond === 'NOT FOUND') {
           if (this._lastFetchEmpty) throw new PLExit();
         } else {
-          // General condition
-          const val = this._evalExprStr(cond, scope);
+          // Evaluate condition as SQL expression
+          const condExpr = this._substituteVars(stmt.condition, scope);
+          const result = this.db.execute(`SELECT (${condExpr}) as _v`);
+          const val = result.rows?.[0]?._v;
           if (val) throw new PLExit();
         }
         return;
@@ -890,6 +913,44 @@ export class PLInterpreter {
           if (e instanceof PLReturn) throw e;
           throw e;
         }
+      }
+    }
+  }
+
+  _executeForQuery(stmt, scope) {
+    const varName = stmt.varName.toLowerCase();
+    // Substitute variables in the query
+    let sql = stmt.query;
+    for (const [name, value] of scope.entries()) {
+      const regex = new RegExp(`\\b${name}\\b`, 'gi');
+      if (regex.test(sql)) {
+        if (typeof value === 'string') {
+          sql = sql.replace(regex, `'${value.replace(/'/g, "''")}'`);
+        } else if (value === null) {
+          sql = sql.replace(regex, 'NULL');
+        } else {
+          sql = sql.replace(regex, String(value));
+        }
+      }
+    }
+    
+    const result = this.db.execute(sql);
+    const rows = result.rows || [];
+    
+    for (const row of rows) {
+      // Store row as a record
+      const record = {};
+      for (const [k, v] of Object.entries(row)) {
+        record[k.toLowerCase()] = v;
+      }
+      scope.set(varName, record);
+      
+      try {
+        this._executeStatements(stmt.statements, scope);
+      } catch (e) {
+        if (e instanceof PLReturn) throw e;
+        if (e instanceof PLExit) break;
+        throw e;
       }
     }
   }
