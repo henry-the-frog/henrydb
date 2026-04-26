@@ -4093,6 +4093,53 @@
       "task": "EXPLORE: Test monkey-lang VM pipeline of transformations",
       "project": "monkey-lang",
       "started": "2026-04-26T01:32:36.240Z"
+    },
+    {
+      "id": "T394",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB LATERAL join",
+      "project": "henrydb",
+      "started": "2026-04-26T01:32:57.801Z",
+      "completed": "2026-04-26T01:33:02.872Z",
+      "duration_ms": 10000,
+      "summary": "LATERAL join: subquery references outer table. Top salary per dept: Eng=120, Sales=110. PostgreSQL-style feature."
+    },
+    {
+      "id": "T395",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM string format builtin",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T396",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB NULLS FIRST/LAST in ORDER BY",
+      "project": "henrydb",
+      "started": "2026-04-26T01:33:08.557Z",
+      "completed": "2026-04-26T01:33:15.148Z",
+      "duration_ms": 10000,
+      "summary": "NULLS FIRST: NULLs at top. NULLS LAST: NULLs at bottom. SQL:2003 NULL ordering."
+    },
+    {
+      "id": "T397",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM iterative binary search",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:33:22.110Z",
+      "completed": "2026-04-26T01:33:35.491Z",
+      "duration_ms": 15000,
+      "summary": "Binary search BUG: arr[floor(x)] returns NULL. Array indexing may not accept float even after floor(). INTEGER/NULL comparison fails. Needs investigation."
+    },
+    {
+      "id": "T398",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-column INSERT with RETURNING *",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -5660,6 +5707,26 @@
     {
       "time": "2026-04-26T01:31:35.017Z",
       "msg": "Added T393 (EXPLORE) after end: EXPLORE: Test monkey-lang VM pipeline of transformations"
+    },
+    {
+      "time": "2026-04-26T01:32:49.877Z",
+      "msg": "Added T394 (EXPLORE) after end: EXPLORE: Test HenryDB LATERAL join"
+    },
+    {
+      "time": "2026-04-26T01:32:49.999Z",
+      "msg": "Added T395 (EXPLORE) after end: EXPLORE: Test monkey-lang VM string format builtin"
+    },
+    {
+      "time": "2026-04-26T01:32:50.121Z",
+      "msg": "Added T396 (EXPLORE) after end: EXPLORE: Test HenryDB NULLS FIRST/LAST in ORDER BY"
+    },
+    {
+      "time": "2026-04-26T01:32:50.243Z",
+      "msg": "Added T397 (EXPLORE) after end: EXPLORE: Test monkey-lang VM iterative binary search"
+    },
+    {
+      "time": "2026-04-26T01:32:50.365Z",
+      "msg": "Added T398 (EXPLORE) after end: EXPLORE: Test HenryDB multi-column INSERT with RETURNING *"
     }
   ]
 }
