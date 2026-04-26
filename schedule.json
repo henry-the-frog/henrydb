@@ -476,6 +476,25 @@
       "completed": "2026-04-26T15:39:26.231Z",
       "duration_ms": 120000,
       "summary": "HenryDB sweep: 4310/4310 pass, 3 skipped, 0 failures. Clean."
+    },
+    {
+      "id": "T45",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design fix for class method collision: hash-based dispatch vs name mangling",
+      "project": "monkey-lang",
+      "started": "2026-04-26T15:39:55.077Z",
+      "completed": "2026-04-26T15:40:22.214Z",
+      "duration_ms": 120000,
+      "summary": "Decision: Store methods on instance hash + change parseMethodCall to index-based dispatch + VM fallback for builtins. Most correct solution."
+    },
+    {
+      "id": "T46",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Fix class method collision via hash-based method dispatch",
+      "task": null,
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -643,6 +662,14 @@
     {
       "time": "2026-04-26T15:30:32.272Z",
       "msg": "Added T44 (MAINTAIN) after end: [DEPTH PIVOT] Full test sweep of HenryDB"
+    },
+    {
+      "time": "2026-04-26T15:39:49.710Z",
+      "msg": "Added T45 (THINK) after end: Design fix for class method collision: hash-based dispatch vs name mangling"
+    },
+    {
+      "time": "2026-04-26T15:39:49.828Z",
+      "msg": "Added T46 (PLAN) after end: Fix class method collision via hash-based method dispatch"
     }
   ]
 }
